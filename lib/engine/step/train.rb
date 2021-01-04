@@ -16,9 +16,9 @@ module Engine
         can_buy_normal = room?(entity) &&
           buying_power(entity) >= @depot.min_price(entity)
 
-        can_buy_normal || @depot
+        can_buy_normal || (discountable_trains_allowed?(entity) && @depot
           .discountable_trains_for(entity)
-          .any? { |_, _, _, price| buying_power(entity) >= price }
+          .any? { |_, _, _, price| buying_power(entity) >= price })
       end
 
       def room?(entity, _shell = nil)
@@ -38,6 +38,10 @@ module Engine
       end
 
       def should_buy_train?(entity); end
+
+      def discountable_trains_allowed?(_entity)
+        true
+      end
 
       def buy_train_action(action, entity = nil)
         entity ||= action.entity
@@ -84,7 +88,7 @@ module Engine
         @game.flush_log!
 
         try_take_loan(entity, price)
-        entity.buy_train(train, price)
+        @game.buy_train(entity, train, price)
         pass! unless can_buy_train?(entity)
       end
 

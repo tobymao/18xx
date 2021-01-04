@@ -68,12 +68,22 @@ def repair(game, original_actions, actions, broken_action)
       actions.insert(action_idx, pass.to_h)
       return
     end
+  elsif game.active_step.is_a?(Engine::Step::G1867::SingleItemAuction)
+    pass = Engine::Action::Pass.new(game.active_step.current_entity)
+    pass.user = pass.entity.player.id
+    actions.insert(action_idx, pass.to_h)
+    return
   elsif broken_action['type'] == 'pass'
     if game.active_step.is_a?(Engine::Step::G1817::PostConversionLoans)
       actions.delete(broken_action)
       return
     end
     if game.active_step.is_a?(Engine::Step::G1817::Acquire)
+      # Remove corps passes that went into acquisition
+      actions.delete(broken_action)
+      return
+    end
+    if game.active_step.is_a?(Engine::Step::G1867::Merge)
       # Remove corps passes that went into acquisition
       actions.delete(broken_action)
       return
@@ -233,8 +243,7 @@ def attempt_repair(actions, debug)
     filtered_actions.each.with_index do |action, _index|
       action = action.copy(game) if action.is_a?(Engine::Action::Base)
       begin
-        game.process_action(action)
-        raise game.exception if game.exception
+        game.process_action(action).maybe_raise!
       rescue Exception => e
         puts e.backtrace if debug
         puts "Break at #{e} #{action}"
@@ -265,9 +274,7 @@ end
 def migrate_data(data)
   begin
     data['actions'], repairs = attempt_repair(data['actions'], true) do
-      engine = Engine::Game.load(data, actions: [])
-      raise engine.exception if engine.exception
-      engine
+      Engine::Game.load(data, actions: []).maybe_raise!
     end
   rescue Exception => e
     puts 'Failed to fix :(', e
@@ -281,12 +288,9 @@ end
 def migrate_db_actions_in_mem(data)
   original_actions = data.actions.map(&:to_h)
 
-  engine = Engine::GAMES_BY_TITLE[data.title]
   begin
     actions, repairs = attempt_repair(original_actions) do
-      engine = Engine::Game.load(data, actions: [])
-      raise engine.exception if engine.exception
-      engine
+      Engine::Game.load(data, actions: []).maybe_raise!
     end
     puts repairs
     return actions || original_actions
@@ -302,12 +306,9 @@ def migrate_db_actions(data, pin, dry_run=false, delete=false, debug=false)
   raise Exception, "pin is not valid" unless pin || delete
 
   original_actions = data.actions.map(&:to_h)
-  engine = Engine::GAMES_BY_TITLE[data.title]
   begin
     actions, repairs = attempt_repair(original_actions, debug) do
-      engine = Engine::Game.load(data, actions: [])
-      raise engine.exception if engine.exception
-      engine
+      Engine::Game.load(data, actions: []).maybe_raise!
     end
     if actions && !dry_run
       if repairs
@@ -320,8 +321,7 @@ def migrate_db_actions(data, pin, dry_run=false, delete=false, debug=false)
       else # Full rewrite.
         DB.transaction do
           Action.where(game: data).delete
-          game = Engine::Game.load(data, actions: [])
-          raise game.exception if game.exception
+          game = Engine::Game.load(data, actions: []).maybe_raise!
           actions.each do |action|
             game.process_action(action)
             Action.create(

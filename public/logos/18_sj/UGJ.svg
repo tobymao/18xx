@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   sodipodi:docname="UGJ.svg"
+   inkscape:version="1.0 (1.0+r73+1)"
+   id="svg36697"
+   version="1.1"
+   viewBox="0 0 14.308668 14.308666"
+   height="14.308666mm"
+   width="14.308668mm">
+  <defs
+     id="defs36691">
+    <clipPath
+       id="clipPath3683"
+       clipPathUnits="userSpaceOnUse">
+      <path
+         style="clip-rule:evenodd"
+         inkscape:connector-curvature="0"
+         id="path3681"
+         d="m 258.41,558.55 h 27.12 v 27.144 h -27.12 z" />
+    </clipPath>
+    <clipPath
+       id="clipPath3691"
+       clipPathUnits="userSpaceOnUse">
+      <path
+         style="clip-rule:evenodd"
+         inkscape:connector-curvature="0"
+         id="path3689"
+         d="m 258.41,558.55 h 27.12 v 27.144 h -27.12 z" />
+    </clipPath>
+    <clipPath
+       id="clipPath3703"
+       clipPathUnits="userSpaceOnUse">
+      <path
+         style="clip-rule:evenodd"
+         inkscape:connector-curvature="0"
+         id="path3701"
+         d="m 258.41,558.55 h 27.12 v 27.144 h -27.12 z" />
+    </clipPath>
+  </defs>
+  <sodipodi:namedview
+     inkscape:window-maximized="0"
+     inkscape:window-y="0"
+     inkscape:window-x="213"
+     inkscape:window-height="1025"
+     inkscape:window-width="1474"
+     fit-margin-bottom="0"
+     fit-margin-right="0"
+     fit-margin-left="0"
+     fit-margin-top="0"
+     showgrid="false"
+     inkscape:document-rotation="0"
+     inkscape:current-layer="layer1"
+     inkscape:document-units="mm"
+     inkscape:cy="181.32571"
+     inkscape:cx="12.754287"
+     inkscape:zoom="0.35"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     borderopacity="1.0"
+     bordercolor="#666666"
+     pagecolor="#ffffff"
+     id="base" />
+  <metadata
+     id="metadata36694">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     transform="translate(-102.45876,-100.19091)"
+     id="layer1"
+     inkscape:groupmode="layer"
+     inkscape:label="Layer 1">
+    <g
+       transform="translate(12.733266,4.7822376)"
+       id="g36664">
+      <path
+         inkscape:connector-curvature="0"
+         id="path3673"
+         style="fill:#c4e0b2;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.352778"
+         d="m 89.894829,102.563 c 0,-3.859388 3.125612,-6.984999 6.985,-6.984999 3.859391,0 6.985001,3.125611 6.985001,6.984999 0,3.85939 -3.12561,6.985 -6.985001,6.985 -3.859388,0 -6.985,-3.12561 -6.985,-6.985 z" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path3675"
+         style="fill:none;stroke:#000000;stroke-width:0.338667;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+         d="m 89.894829,102.563 c 0,-3.859388 3.125612,-6.984999 6.985,-6.984999 3.859391,0 6.985001,3.125611 6.985001,6.984999 0,3.85939 -3.12561,6.985 -6.985001,6.985 -3.859388,0 -6.985,-3.12561 -6.985,-6.985 z" />
+      <g
+         transform="matrix(0.35277777,0,0,-0.35277777,0.9524981,304.40833)"
+         id="g3677">
+        <g
+           clip-path="url(#clipPath3683)"
+           id="g3679">
+          <g
+             id="g3685">
+            <g
+               clip-path="url(#clipPath3691)"
+               id="g3687">
+              <text
+                 y="0"
+                 id="text3695"
+                 style="font-variant:normal;font-weight:normal;font-size:12px;font-family:Verdana;-inkscape-font-specification:Verdana;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+                 transform="matrix(1,0,0,-1,260.09,567.94)"><tspan
+                   id="tspan3693"
+                   sodipodi:role="line"
+                   y="0"
+                   x="0 8.7840004 18.108">UGJ</tspan></text>
+            </g>
+          </g>
+          <g
+             id="g3697">
+            <g
+               clip-path="url(#clipPath3703)"
+               id="g3699" />
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

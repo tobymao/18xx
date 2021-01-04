@@ -2,6 +2,7 @@
 
 require_relative '../tracker'
 require_relative '../track'
+require_relative '../upgrade_track_max_exits'
 require_relative 'automatic_loan'
 
 module Engine
@@ -9,6 +10,7 @@ module Engine
     module G1867
       class Track < Track
         include AutomaticLoan
+        include UpgradeTrackMaxExits
         def setup
           super
           @hex = nil

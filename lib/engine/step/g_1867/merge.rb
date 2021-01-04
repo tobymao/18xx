@@ -21,7 +21,7 @@ module Engine
           return ['merge'] if @converting || @merge_major
 
           actions << 'merge' if can_merge?(entity)
-          actions << 'convert' if can_convert?(entity)
+          actions << 'convert' if !@merging && can_convert?(entity)
           actions << 'pass' if actions.any?
           actions
         end
@@ -31,6 +31,12 @@ module Engine
           return 'Finish Merge' if @merge_major
 
           'Merge'
+        end
+
+        def pass_description
+          return 'Done Adding Corporations' if @merging
+
+          super
         end
 
         def can_convert?(entity)
@@ -92,13 +98,13 @@ module Engine
             from.spend(from.cash, to)
           end
 
-          companies = from.transfer(:companies, to).map(&:name)
+          companies = @game.transfer(:companies, from, to).map(&:name)
           receiving << "companies (#{companies.join(', ')})" if companies.any?
 
-          loans = from.transfer(:loans, to).size
+          loans = @game.transfer(:loans, from, to).size
           receiving << "loans (#{loans})" if loans.positive?
 
-          trains = from.transfer(:trains, to).map(&:name)
+          trains = @game.transfer(:trains, from, to).map(&:name)
           receiving << "trains (#{trains})" if trains.any?
 
           receiving

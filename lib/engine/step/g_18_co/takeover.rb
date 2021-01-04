@@ -167,7 +167,7 @@ module Engine
         def transfer_companies(source, destination)
           return unless source.companies.any?
 
-          transferred = source.transfer(:companies, destination)
+          transferred = @game.transfer(:companies, source, destination)
 
           @game.log << "#{destination.name} takes #{transferred.map(&:name).join(', ')} from #{source.name}"
         end
@@ -176,7 +176,7 @@ module Engine
           return unless source.trains.any?
 
           source.trains.each { |train| train.operated = false }
-          transferred = source.transfer(:trains, destination)
+          transferred = @game.transfer(:trains, source, destination)
 
           @game.log << "#{destination.name} takes #{transferred.map(&:name).join(', ')}"\
                        " train#{transferred.one? ? '' : 's'} from #{source.name}"

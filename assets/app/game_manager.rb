@@ -40,6 +40,12 @@ module GameManager
     end
   end
 
+  def enter_fixture(path)
+    @connection.safe_get("/fixtures/#{path}.json", '') do |data|
+      store(:game_data, data, skip: false)
+    end
+  end
+
   def get_games(params = nil)
     params ||= `window.location.search`
 

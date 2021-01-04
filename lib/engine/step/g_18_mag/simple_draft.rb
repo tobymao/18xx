@@ -124,13 +124,10 @@ module Engine
             @shares_b.delete(corp)
           end
 
-          normal_share = @game.share_pool.shares_of(corp).find { |s| s.percent == 10 }
-          bundle = ShareBundle.new([normal_share])
-
           @log << "#{player.name} chooses share of #{corp.name} (#{corp.full_name})"
 
           @game.share_pool.transfer_shares(
-            bundle,
+            @game.share_pool.shares_of(corp).find { |s| s.percent == 10 }.to_bundle,
             player,
             spender: player,
             receiver: @game.bank,

@@ -168,7 +168,9 @@ module Engine
       end
 
       def rust_obsolete_trains!(entity)
-        (rusted_trains = entity.trains.select(&:obsolete)).each(&:rust!)
+        rusted_trains = entity.trains.select(&:obsolete).each do |train|
+          @game.rust(train)
+        end
 
         @log << '-- Event: Obsolete trains rust --' if rusted_trains.any?
       end

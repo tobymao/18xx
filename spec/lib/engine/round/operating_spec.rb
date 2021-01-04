@@ -74,7 +74,7 @@ module Engine
       game.depot.remove_train(train)
       corp.cash += train.price
       game.phase.buying_train!(corp, train)
-      corp.buy_train(train, train.price)
+      game.buy_train(corp, train, train.price)
     end
 
     def real_buy_depot_train(corporation, variant)
@@ -185,7 +185,7 @@ module Engine
         it 'returns only returns cheapest trains available if the corp cannot afford any' do
           while (train = subject.active_step.buyable_trains(corporation).first).name == '2'
             game.depot.remove_train(train)
-            corporation2.buy_train(train, train.price)
+            game.buy_train(corporation2, train, train.price)
           end
           game.depot.reclaim_train(corporation2.trains.first) while corporation2.trains.any?
 
@@ -241,7 +241,7 @@ module Engine
             end
 
             train = subject.active_step.buyable_trains(corporation).first
-            corporation2.buy_train(train, train.price)
+            game.buy_train(corporation2, train, train.price)
 
             corporation.cash = 1
             train = subject.active_step.buyable_trains(corporation).first
@@ -847,7 +847,7 @@ module Engine
         end
 
         it 'is an available until buy train step' do
-          corporation.buy_train(game.trains.first, :free)
+          game.buy_train(corporation, game.trains.first, :free)
           city.place_token(corporation, corporation.tokens.first, free: true)
           next_round!
 
@@ -934,7 +934,7 @@ module Engine
         end
 
         it 'is an available until buy train step' do
-          corporation.buy_train(game.trains.first, :free)
+          game.buy_train(corporation, game.trains.first, :free)
           city.place_token(corporation, corporation.tokens.first, free: true)
           next_round!
 

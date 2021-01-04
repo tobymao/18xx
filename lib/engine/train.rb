@@ -7,9 +7,8 @@ module Engine
   class Train
     include Ownable
 
-    attr_accessor :obsolete, :operated, :events, :variants, :obsolete_on, :rusts_on, :index
-    attr_reader :available_on, :name, :distance, :discount, :multiplier, :rusted, :sym,
-                :variant
+    attr_accessor :obsolete, :operated, :events, :variants, :obsolete_on, :rusted, :rusts_on, :index
+    attr_reader :available_on, :name, :distance, :discount, :multiplier, :sym, :variant
     attr_writer :buyable
 
     def initialize(name:, distance:, price:, index: 0, **opts)
@@ -65,12 +64,6 @@ module Engine
 
     def id
       "#{@sym}-#{@index}"
-    end
-
-    def rust!
-      owner&.remove_train(self)
-      @owner = nil
-      @rusted = true
     end
 
     def min_price

@@ -33,7 +33,7 @@ module Engine
     def reclaim_train(train)
       return unless train.owner
 
-      train.owner.remove_train(train)
+      @game.remove_train(train)
       train.owner = self
       @discarded << train if @game.class::DISCARDED_TRAINS == :discard && !train.obsolete
     end
