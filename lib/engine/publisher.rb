@@ -39,6 +39,10 @@ module Engine
         name: 'Lonny Games',
         url: 'https://www.lonny.at/',
       },
+      self_published: {
+        name: 'Selfpublished',
+        url: 'https://www.google.com/',
+      },
     }.freeze
   end
 end
