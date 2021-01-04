@@ -40,7 +40,7 @@ module Engine
         url: 'https://www.lonny.at/',
       },
       self_published: {
-        name: 'Selfpublished',
+        name: 'Self-published',
         url: 'https://www.google.com/',
       },
     }.freeze
