@@ -17,9 +17,7 @@ module View
 
     def render_notification
       message = <<~MESSAGE
-        <p>18CO: Rock & Stock, 1817WO, 1860, 1867 are now in alpha!</p>
-        <p>18Chesapeake After Dark is now in alpha (it plays like 1857)!</p>
-        <p>18MEX is now in production!</p>
+        <p>Performance improvements -- more to come. 1817 should be more playable now.</p>
 
         <p>Please file <a href='https://github.com/tobymao/18xx/issues'>issues and ideas</a> on
         <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>.<br>
