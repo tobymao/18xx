@@ -622,6 +622,7 @@ module Engine
         @actions.pop
         @exception = e
         @broken_action = action
+        @actions.delete(action)
         self
       end
 
