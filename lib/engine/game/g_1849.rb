@@ -200,6 +200,10 @@ module Engine
         corporation.next_to_par = true if @corporations[@corporations.length - 2].floated?
       end
 
+      def float_str(entity)
+        "#{format_currency(entity.token_fee)} token fee" if entity.corporation?
+      end
+
       def new_stock_round
         @corporations.each { |c| c.closed_recently = false }
         super
@@ -295,14 +299,34 @@ module Engine
           .reject { |bundle| bundle.shares.size > 1 || entity.cash < bundle.price || !last_cert_last?(bundle) }
       end
 
-      def dumpable(bundle)
+      def dumpable(bundle, would_be_pres)
         return true unless bundle.presidents_share
+        return false unless would_be_pres
 
         owner_percent = bundle.owner.percent_of(bundle.corporation)
-        other_percent = @players.reject { |p| p.id == bundle.owner.id }.map { |o| o.percent_of(bundle.corporation) }.max
+        other_percent = would_be_pres.percent_of(bundle.corporation)
 
         owner_after_percent = owner_percent - bundle.percent
+
+        if other_percent == 20 && would_be_pres.certs_of(bundle.corporation).size == 1
+          return false unless owner_after_percent == 0
+        end
+
         owner_after_percent < 20 && other_percent > owner_after_percent
+      end
+
+      def find_would_be_pres(player, corporation)
+        return nil unless corporation.president?(player)
+        sorted_candidates =
+          @players
+            .select { |p| p.id != player.id && p.percent_of(corporation) >= 20 }
+            .sort_by { |p| p.percent_of(corporation) }
+            .reverse!
+        return nil if sorted_candidates.empty?
+        max_percent = sorted_candidates[0].percent_of(corporation)
+        sorted_candidates
+          .take_while { |c| c.percent_of(corporation) == max_percent }
+          .min_by { |c| share_pool.distance(player, c) }
       end
 
       def bundles_for_corporation(share_holder, corporation, shares: nil)
@@ -314,11 +338,13 @@ module Engine
           shares.combination(n).to_a.map { |ss| Engine::ShareBundle.new(ss) }
         end
 
+        would_be_pres = find_would_be_pres(share_holder, corporation)
+
         (bundles.uniq do |b|
           [b.shares.count { |s| s.percent == 10 },
            b.presidents_share ? 1 : 0,
            b.shares.find(&:last_cert) ? 1 : 0]
-        end).select { |b| dumpable(b) }.sort_by(&:percent)
+        end).select { |b| dumpable(b, would_be_pres) }.sort_by(&:percent)
       end
 
       def last_cert_last?(bundle)
