@@ -45,11 +45,7 @@ module Engine
 
         # IPO and float all corporations with semi-randomly chosen prices
         # They will start off in receivership with all shares in market
-        prices = START_PRICES.dup
-        rand_prices = @corporations.size.times.map do |_|
-          prices.rotate!(rand % prices.size)
-          prices.pop
-        end
+        rand_prices = START_PRICES.sort_by { rand }
         @corporations.each do |corp|
           share_price = @stock_market.par_prices.find { |p| p.price == rand_prices[0] }
           rand_prices.shift
@@ -57,9 +53,8 @@ module Engine
           corp.ipoed = true
 
           corp.ipo_shares.each do |share|
-            bundle = ShareBundle.new([share])
             @share_pool.transfer_shares(
-              bundle,
+              share.to_bundle,
               share_pool,
               spender: share_pool,
               receiver: @bank,
