@@ -65,7 +65,7 @@ module Engine
         end
 
         def pass_description
-          "Pay #{@game.format_currency(amount_owed)} to cover loans"
+          "Pay #{@game.format_currency(amount_owed - @game.nationalizables.first.cash)} to cover loans"
         end
 
         def process_merge(action)
@@ -73,7 +73,8 @@ module Engine
         end
 
         def process_pass(_action)
-          @game.nationalization_president_payoff(@game.nationalizables.first, amount_owed)
+          presidential_contribution = amount_owed - @game.nationalizables.first.cash
+          @game.nationalization_president_payoff(@game.nationalizables.first, presidential_contribution)
         end
 
         private

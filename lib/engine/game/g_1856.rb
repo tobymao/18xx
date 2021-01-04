@@ -38,6 +38,7 @@ module Engine
       # These plain city hexes upgrade to L tiles in brown
       LAKE_HEXES = %w[B19 C14 F17 O18 P9 N3 L13].freeze
       BROWN_OO_TILES = %w[64 65 66 67 68].freeze
+      PORT_HEXES = %w[C14 D19 E18 F17 F9 H17 H7 H5 J17 J5 K2 M18 O18].freeze
 
       # These cities upgrade to the common BarrieLondon green tile,
       #  but upgrade to specialized brown tiles
@@ -77,6 +78,8 @@ module Engine
       ASSIGNMENT_TOKENS = {
         'GLSC' => '/icons/1846/sc_token.svg',
       }.freeze
+
+      EVENTS_TEXT = Base::EVENTS_TEXT.merge('remove_tokens' => ['Remove Port token']).freeze
 
       def national
         @national ||= corporation_by_id('CGR')
@@ -387,6 +390,36 @@ module Engine
           Step::SpecialTrack,
           Step::G1856::BuySellParShares,
         ])
+      end
+
+      def event_remove_tokens!
+        removals = Hash.new { |h, k| h[k] = {} }
+
+        @corporations.each do |corp|
+          corp.assignments.dup.each do |company, _|
+            removals[company][:corporation] = corp.name
+            corp.remove_assignment!(company)
+          end
+        end
+
+        @hexes.each do |hex|
+          hex.assignments.dup.each do |company, _|
+            removals[company][:hex] = hex.name
+            hex.remove_assignment!(company)
+          end
+        end
+
+        self.class::PORT_HEXES.each do |hex|
+          hex_by_id(hex).tile.icons.reject! do |icon|
+            %w[port].include?(icon.name)
+          end
+        end
+
+        removals.each do |company, removal|
+          hex = removal[:hex]
+          corp = removal[:corporation]
+          @log << "-- Event: #{corp}'s #{company_by_id(company).name} token removed from #{hex} --"
+        end
       end
 
       # Nationalization Methods
@@ -731,8 +764,10 @@ module Engine
       end
 
       def nationalization_president_payoff(major, owed)
+        major.spend(major.cash, @bank)
         major.owner.spend(owed, @bank)
         @loans << major.loans.pop(major.loans.size)
+        @log << "#{major.name} spends the remainder of its cash towards repaying loans"
         @log << "#{major.owner.name} pays off the #{format_currency(owed)} debt for #{major.name}"
         nationalizables.delete(major)
         post_corp_nationalization

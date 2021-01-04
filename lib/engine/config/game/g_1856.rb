@@ -599,9 +599,12 @@ module Engine
       "price": 700,
       "num": 2,
       "events":[
-      {
-         "type":"nationalization"
-      }
+        {
+           "type":"nationalization"
+        },
+        {
+          "type": "remove_tokens"
+        }
       ]
     },
     {
