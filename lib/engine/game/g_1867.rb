@@ -510,9 +510,7 @@ module Engine
         # Done elsewhere
       end
 
-      def event_train_trade_allowed!
-        # No-op
-      end
+      def event_train_trade_allowed!; end
 
       def event_minors_cannot_start!
         @corporations, removed = @corporations.partition do |corporation|

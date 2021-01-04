@@ -12,7 +12,7 @@ module Engine
         # When upgrading normal cities to brown, players must use tiles with as many exits as will fit.
         # Find maximum number of exits
         max_edges = tiles.map { |t| t.edges.length }.max
-        tiles.select { |t| t.edges.length == max_edges }
+        tiles.select { |t| t.edges.size == max_edges }
       end
     end
   end
