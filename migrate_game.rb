@@ -68,6 +68,11 @@ def repair(game, original_actions, actions, broken_action)
       actions.insert(action_idx, pass.to_h)
       return
     end
+  elsif game.active_step.is_a?(Engine::Step::G1867::SingleItemAuction)
+    pass = Engine::Action::Pass.new(game.active_step.current_entity)
+    pass.user = pass.entity.player.id
+    actions.insert(action_idx, pass.to_h)
+    return
   elsif broken_action['type'] == 'pass'
     if game.active_step.is_a?(Engine::Step::G1817::PostConversionLoans)
       actions.delete(broken_action)
