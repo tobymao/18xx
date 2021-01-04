@@ -19,8 +19,7 @@ def run_game(game, actions = nil)
   begin
     $total += 1
     time = Time.now
-    engine = Engine::Game.load(game)
-    raise engine.exception if engine.exception
+    engine = Engine::Game.load(game).maybe_raise!
 
     time = Time.now - time
     $total_time += time
@@ -106,7 +105,7 @@ def revalidate_broken(filename)
 end
 
 def validate_json(filename)
-  Engine::Game.load(filename)
+  Engine::Game.load(filename).maybe_raise!
 end
 
 def pin_games(pin_version, game_ids)

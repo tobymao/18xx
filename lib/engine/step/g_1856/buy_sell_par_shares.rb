@@ -11,7 +11,7 @@ module Engine
         end
 
         def can_sell?(entity, bundle)
-          super && !attempt_cgr_action_while_not_floated?(bundle)
+          super && !attempt_cgr_action_while_not_floated?(bundle) && vested?(entity, bundle)
         end
 
         def can_gain?(entity, bundle)
@@ -20,6 +20,19 @@ module Engine
 
         def attempt_cgr_action_while_not_floated?(bundle)
           bundle.corporation == @game.national && !bundle.corporation.floated?
+        end
+
+        def vested?(player, bundle)
+          # If the player will be left with at least 1 share, or is fully vested, this is fair game
+          return true unless @round.players_unvested_holdings[player] == bundle.corporation
+
+          # The player has an unvested share, will they be left with at least 1 share?
+          bundle.num_shares < player.num_shares_of(bundle.corporation)
+        end
+
+        def process_buy_shares(action)
+          super
+          @round.players_unvested_holdings[action.entity] = action.bundle.corporation
         end
 
         def process_par(action)

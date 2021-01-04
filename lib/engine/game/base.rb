@@ -627,14 +627,16 @@ module Engine
         @last_processed_action = action.id
         self
       rescue Engine::GameError => e
+        @actions.pop
         @exception = e
         @broken_action = action
         self
       end
 
-      def next_turn
-        @last_turn_start = @turn_start
-        @turn_start = current_action_id
+      def maybe_raise!
+        raise @exception if @exception
+
+        self
       end
 
       def store_player_info
@@ -665,6 +667,11 @@ module Engine
 
       def last_game_action
         @last_game_action || 0
+      end
+
+      def next_turn
+        @last_turn_start = @turn_start
+        @turn_start = current_action_id
       end
 
       def action_from_h(h)

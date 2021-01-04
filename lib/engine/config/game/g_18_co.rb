@@ -531,6 +531,7 @@ module Engine
 			],
 			"coordinates": "G17",
 			"color": "lightBlue",
+      "text_color": "black",
 			"abilities": [
 				{
 					"type": "description",
@@ -540,7 +541,7 @@ module Engine
 		},
 		{
 			"sym": "CS",
-			"name": "Colorado and Southern Railway",
+			"name": "Colorado & Southern Railway",
 			"group": "III",
 			"float_percent": 40,
 			"always_market_price": true,
@@ -552,7 +553,7 @@ module Engine
 				100
 			],
 			"coordinates": "K17",
-			"color": "black",
+			"color": "#232b2b",
 			"abilities": [
 				{
 					"type": "description",
@@ -573,7 +574,7 @@ module Engine
 			],
 			"city": 2,
 			"coordinates": "E15",
-			"color": "purple",
+			"color": "#82009c",
 			"abilities": [
 				{
 					"type": "description",
@@ -583,7 +584,7 @@ module Engine
 		},
 		{
 			"sym": "DSL",
-			"name": "Denver and Salt Lake Railroad",
+			"name": "Denver & Salt Lake Railroad",
 			"group": "III",
 			"float_percent": 40,
 			"always_market_price": true,
@@ -604,7 +605,7 @@ module Engine
 		},
 		{
 			"sym": "DRG",
-			"name": "Denver and Rio Grande Railroad",
+			"name": "Denver & Rio Grande Railroad",
 			"group": "II",
 			"float_percent": 50,
 			"always_market_price": true,
@@ -619,7 +620,7 @@ module Engine
 			],
 			"city": 0,
 			"coordinates": "E15",
-			"color": "yellow",
+			"color": "gold",
 			"text_color": "black",
 			"abilities": [
 				{
@@ -630,7 +631,7 @@ module Engine
 		},
 		{
 			"sym": "ATSF",
-			"name": "Atchinson, Tokepa and Santa Fe",
+			"name": "Atchinson, Tokepa & Santa Fe",
 			"group": "II",
 			"float_percent": 50,
 			"always_market_price": true,
@@ -644,7 +645,7 @@ module Engine
 				100
 			],
 			"coordinates": "J26",
-			"color": "blue",
+			"color": "#0323ad",
 			"abilities": [
 				{
 					"type": "description",
@@ -654,7 +655,7 @@ module Engine
 		},
 		{
 			"sym": "CBQ",
-			"name": "Chicago, Burlington and Quincy",
+			"name": "Chicago, Burlington & Quincy",
 			"group": "I",
 			"float_percent": 60,
 			"always_market_price": true,
@@ -680,7 +681,7 @@ module Engine
 		},
 		{
 			"sym": "ROCK",
-			"name": "Chicago, Rock Island and Pacific",
+			"name": "Chicago, Rock Island & Pacific",
 			"group": "I",
 			"float_percent": 60,
 			"always_market_price": true,
@@ -722,8 +723,8 @@ module Engine
 				100
 			],
 			"coordinates": "A17",
-			"color": "white",
-			"text_color": "black",
+			"color": "#ffffeb",
+      "text_color":"black",
 			"abilities": [
 				{
 					"type": "description",
@@ -733,7 +734,7 @@ module Engine
 		},
 		{
 			"sym": "DSNG",
-			"name": "Durango and Silverton Narrow Gauge",
+			"name": "Durango & Silverton Narrow Gauge",
 			"group": "X",
 			"float_percent": 20,
 			"always_market_price": true,
@@ -744,7 +745,7 @@ module Engine
 				40
 			],
 			"coordinates": "K5",
-			"color": "pink",
+			"color": "#db00c0",
 			"abilities": [
 				{
 					"type": "description",

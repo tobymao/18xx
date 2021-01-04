@@ -25,6 +25,15 @@ module Engine
       @stops = nil
     end
 
+    def clear_cache!
+      @connection_hexes = nil
+      @hexes = nil
+      @revenue = nil
+      @revenue_str = nil
+      @subsidy = nil
+      @stops = nil
+    end
+
     def reset!
       clear_cache!
 
@@ -125,7 +134,7 @@ module Engine
         @last_node = node
       end
 
-      clear_cache!
+      @routes.each(&:clear_cache!)
     end
 
     def paths
@@ -250,15 +259,6 @@ module Engine
     end
 
     private
-
-    def clear_cache!
-      @connection_hexes = nil
-      @hexes = nil
-      @revenue = nil
-      @revenue_str = nil
-      @subsidy = nil
-      @stops = nil
-    end
 
     def find_connections(connections_a, connections_b, other_paths)
       connections_a = connections_a.select { |a| (a.paths & other_paths).empty? }
