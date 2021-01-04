@@ -66,19 +66,19 @@ module Engine
       end
 
       def bank_cash
-        return super unless option_cislethania
+        return super unless option_cisleithania
 
         BANK_CASH_CISLEITHANIA[@players.size] - @players.sum(&:cash)
       end
 
       def init_bank
-        return super unless option_cislethania
+        return super unless option_cisleithania
 
         Engine::Bank.new(BANK_CASH_CISLEITHANIA[@players.size], log: @log)
       end
 
       def init_starting_cash(players, bank)
-        return super unless option_cislethania
+        return super unless option_cisleithania
 
         players.each do |player|
           bank.spend(CASH_CISLEITHANIA[@players.size], player)
@@ -89,7 +89,7 @@ module Engine
         corporations = CORPORATIONS.dup
 
         # Remove Coal Railway C4 (SPB), Regional Railway BH and SB
-        corporations.reject! { |c| %w[SPB SB BH].include?(c[:sym]) } if option_cislethania
+        corporations.reject! { |c| %w[SPB SB BH].include?(c[:sym]) } if option_cisleithania
 
         corporations.map do |corporation|
           Corporation.new(
@@ -103,7 +103,7 @@ module Engine
       def init_minors
         minors = MINORS.dup
 
-        if option_cislethania
+        if option_cisleithania
           if @players.size == 2
             # Remove Pre-Staatsbahn U1 and U2
             minors.reject! { |m| %w[U1 U2].include?(m[:sym]) }
@@ -131,7 +131,7 @@ module Engine
           when 2
             2
           when 3
-            option_cislethania ? 3 : 4
+            option_cisleithania ? 3 : 4
           when 4
             6
           when 5
@@ -141,7 +141,7 @@ module Engine
           end
         mountain_railway_count.times { |index| companies << mountain_railway_definition(index) }
 
-        if option_cislethania
+        if option_cisleithania
           # Remove Pre-Staatsbahn U2 and possibly U1
           p2 = players.size == 2
           companies.reject! { |m| m['sym'] == 'U2' || (p2 && m['sym'] == 'U1') }
@@ -172,7 +172,7 @@ module Engine
         end
       end
 
-      def option_cislethania
+      def option_cisleithania
         @optional_rules&.include?(:cisleithania)
       end
 
@@ -181,7 +181,7 @@ module Engine
       end
 
       def location_name(coord)
-        return super unless option_cislethania
+        return super unless option_cisleithania
 
         unless @location_names
           @location_names = LOCATION_NAMES.dup
@@ -193,7 +193,7 @@ module Engine
       end
 
       def optional_hexes
-        option_cislethania ? cislethania_map : base_map
+        option_cisleithania ? cisleithania_map : base_map
       end
 
       def operating_round(round_num)
@@ -251,7 +251,7 @@ module Engine
       private
 
       def coal_railways
-        @coal_railways ||= (option_cislethania ? %w[EPP EOD MLB] : %w[EPP EOD MLB SPB])
+        @coal_railways ||= (option_cisleithania ? %w[EPP EOD MLB] : %w[EPP EOD MLB SPB])
           .map { |c| corporation_by_id(c) }
       end
 
@@ -375,7 +375,7 @@ module Engine
         }
       end
 
-      def cislethania_map
+      def cisleithania_map
         # For 3 players Budapest is a city for Pre-staatsbahn U1
         budapest = @players.size == 3 ? 'city' : 'offboard'
         {
