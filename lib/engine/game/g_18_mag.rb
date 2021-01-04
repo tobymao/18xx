@@ -54,7 +54,7 @@ module Engine
 
           corp.ipo_shares.each do |share|
             @share_pool.transfer_shares(
-              share_price.to_bundle,
+              share.to_bundle,
               share_pool,
               spender: share_pool,
               receiver: @bank,
