@@ -7,18 +7,11 @@ module Engine
   module Step
     module G1867
       class Token < Token
-        def can_place_token?(entity)
-          # Cheaper to do the graph first, then check affordability
-          current_entity == entity &&
-            (tokens = available_tokens(entity)).any? &&
-            @game.graph.can_token?(entity) &&
-            can_afford_token?(tokens, buying_power(entity))
-        end
-
         def log_skip(entity)
           super if entity.type == :major
         end
 
+        # @note, this is presently unused as the CPU overhead is too high
         def can_afford_token?(tokens, cash)
           token = tokens.first
           # Distance must be at least 1, so check minimum price.

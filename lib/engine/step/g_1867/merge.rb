@@ -20,7 +20,7 @@ module Engine
 
           return ['merge'] if @converting || @merge_major
 
-          actions << 'merge' if can_merge?(entity)
+          actions << 'merge' # performance improvement
           actions << 'convert' if !@merging && can_convert?(entity)
           actions << 'pass' if actions.any?
           actions
@@ -211,7 +211,7 @@ module Engine
 
           return finish_merge_to_major(action) if @merge_major
 
-          unless mergeable(action.entity).include?(action.corporation)
+          if !@game.loading && !mergeable(action.entity).include?(action.corporation)
             raise GameError, "Cannot merge with t#{action.corporation.name}"
           end
 
