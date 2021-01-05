@@ -63,6 +63,31 @@ module View
       end
 
       def log
+        has_timestamps = !@game.actions.empty?(&:created_at) || @game.actions.empty?
+
+        # Create a fake action zero, so special handling isn't required throughout
+        action_zero = Engine::Action::Base.new(Engine::Player.new(0, ''))
+        action_zero.id = 0
+        action_zero.created_at = @game.actions[0]&.created_at || Time.now
+
+        last_action = nil
+        the_log = @game.log.group_by(&:action_id).flat_map do |action_id, entries|
+          children = []
+          action = action_id.zero? ? action_zero : @game.actions[action_id - 1]
+
+          if has_timestamps
+            action.created_at ||= Time.now
+
+            if !last_action || Time.at(action.created_at).yday != Time.at(last_action.created_at).yday
+              children << date_banner(action.created_at) if action.created_at
+            end
+          end
+          last_action = action
+
+          children << log_for_action(entries, action, has_timestamps)
+          children
+        end
+
         scroll_to_bottom = lambda do |vnode|
           next unless @follow_scroll
 
@@ -100,41 +125,59 @@ module View
           props[:style][:boxSizing] = 'border-box'
         end
 
-        messages = @game.log.group_by(&:action).flat_map do |action_id, entries|
-          has_game_action = false
-          group = entries.map do |entry|
-            line_props = { style: { marginTop: '0.5em',
-                                    marginBottom: '0.2rem',
-                                    paddingLeft: '0.5rem',
-                                    textIndent: '-0.5rem' },
-                           on: { click: -> { store(:action_id, action_id) } } }
-
-            line = entry.message
-            if line.is_a?(String)
-              has_game_action = true
-              line_props[:style][:fontWeight] = 'bold' if line.start_with?('--')
-              h(:div, line_props, line)
-            elsif line.is_a?(Engine::Action::Message)
-              sender = line.entity.name || line.user
-              h(:div, { style: { fontWeight: 'bold' } }, "#{sender}: #{line.message}")
-            end
-          end
-
-          group << action_buttons if has_game_action && @action_id == action_id && @game.last_game_action != action_id
-          group
-        end
-
-        h('div#chatlog', props, messages)
+        h('div#chatlog', props, the_log)
       end
 
-      def action_buttons
+      def log_for_action(log, action, include_timestamps)
+        timestamp_props = { style: { margin: '0 0.2rem',
+                                     fontSize: 'smaller' } }
+        message_props = { style: { margin: '0 0.2rem' } }
+
+        timestamp = "[#{Time.at(action.created_at || Time.now).strftime('%R')}]" if include_timestamps
+
+        action_log = log.flat_map do |entry|
+          line = entry.message
+
+          line_props = { style: { marginTop: '0.5em',
+                                  marginBottom: '0.2rem',
+                                  paddingLeft: '0.5rem',
+                                  textIndent: '-0.5rem' },
+                         on: { click: -> { store(:action_id, action.id) } } }
+          line_props[:style][:fontWeight] = 'bold' if line.is_a?(String) && line.start_with?('--')
+
+          if line.is_a?(Engine::Action::Message)
+            line_props[:style][:fontWeight] = 'bold'
+
+            sender = line.entity.name || line.user
+            line = "#{sender}: #{line.message}"
+          end
+
+          children = []
+          children << h('span.timestamp', timestamp_props, timestamp) if include_timestamps
+          children << h('span.message', message_props, line)
+          h('div.chatline', line_props, children)
+        end
+
+        if !action.is_a?(Engine::Action::Message) && @action_id == action.id && @game.last_game_action != action.id
+          action_log << action_buttons(action.id)
+        end
+
+        h(:div, action_log)
+      end
+
+      def action_buttons(action_id)
         rewind_action = lambda do
-          process_action(Engine::Action::Undo.new(@game.current_entity, action_id: @action_id))
+          process_action(Engine::Action::Undo.new(@game.current_entity, action_id: action_id))
           store(:action_id, nil, skip: true)
         end
 
-        h(:div, [history_link('Review from Here', '', @action_id, {}, true),
+        h(:div, [history_link('Review from Here', '', action_id, {}, true),
                  h(:button, { on: { click: rewind_action } }, 'Rewind to Here')])
+      end
+
+      def date_banner(time)
+        date = "-- #{Time.at(time).strftime('%F')} --"
+        h('div.chatline', { style: { textAlign: :center } }, date)
       end
     end
   end

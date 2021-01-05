@@ -38,7 +38,7 @@ module Engine
           @snaking_up = !@snaking_up
         else
           plus_or_minus = @snaking_up ? :+ : :-
-          @game.next_turn
+          @game.next_turn!
           @entity_index = @entity_index.send(plus_or_minus, 1) % @entities.size
         end
       end

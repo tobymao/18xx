@@ -9,17 +9,17 @@ module View
 
       def render
         button_text = nil
-        turn_start = nil
-        if @game.turn_start != @game.last_game_action
+        turn_start_action = nil
+        if @game.turn_start_action != @game.last_game_action
           button_text = 'Restart Turn'
-          turn_start = @game.turn_start
+          turn_start_action = @game.turn_start_action
         else
           button_text = 'Restart Last Turn'
-          turn_start = @game.last_turn_start
+          turn_start_action = @game.last_turn_start_action
         end
 
         action = lambda do
-          process_action(Engine::Action::Undo.new(@game.current_entity, action_id: turn_start))
+          process_action(Engine::Action::Undo.new(@game.current_entity, action_id: turn_start_action))
         end
 
         h('button',
@@ -28,7 +28,7 @@ module View
       end
 
       def button_disabled?
-        !@game.undo_possible || !@game.turn_start
+        !@game.undo_possible || !@game.turn_start_action
       end
     end
   end

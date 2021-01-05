@@ -28,7 +28,7 @@ require_relative '../stock_market'
 require_relative '../tile'
 require_relative '../train'
 require_relative '../player_info'
-require_relative '../log'
+require_relative '../game_log'
 
 module Engine
   module Game
@@ -77,7 +77,8 @@ module Engine
                   :depot, :finished, :graph, :hexes, :id, :loading, :loans, :log, :minors,
                   :phase, :players, :operating_rounds, :round, :share_pool, :stock_market,
                   :tiles, :turn, :total_loans, :undo_possible, :redo_possible, :round_history, :all_tiles,
-                  :optional_rules, :exception, :last_processed_action, :broken_action, :turn_start, :last_turn_start
+                  :optional_rules, :exception, :last_processed_action, :broken_action,
+                  :turn_start_action, :last_turn_start_action
 
       DEV_STAGES = %i[production beta alpha prealpha].freeze
       DEV_STAGE = :prealpha
@@ -405,11 +406,11 @@ module Engine
         @loading = false
         @strict = strict
         @finished = false
-        @log = Engine::Log.new(self)
+        @log = Engine::GameLog.new(self)
         @queued_log = []
         @actions = []
-        @turn_start = 0
-        @last_turn_start = 0
+        @turn_start_action = 0
+        @last_turn_start_action = 0
 
         @exception = nil
         @names = if names.is_a?(Hash)
@@ -576,7 +577,9 @@ module Engine
             process_action(action)
           else
             # Restore the original action to the list to ensure action ids remain consistent but don't apply them
-            @actions << actions[index]
+            action = actions[index].is_a?(Hash) ? action_from_h(actions[index]) : actions[index]
+            action.id = current_action_id + 1
+            @actions << action
           end
         end
         @redo_possible = active_undos.any?
@@ -585,7 +588,7 @@ module Engine
 
       def process_action(action)
         action = action_from_h(action) if action.is_a?(Hash)
-        action.id = current_action_id
+        action.id = current_action_id + 1
         @actions << action
         return clone(@actions) if action.is_a?(Action::Undo) || action.is_a?(Action::Redo)
 
@@ -662,16 +665,16 @@ module Engine
       end
 
       def current_action_id
-        @actions.size + 1
+        @actions[-1]&.id || 0
       end
 
       def last_game_action
         @last_game_action || 0
       end
 
-      def next_turn
-        @last_turn_start = @turn_start
-        @turn_start = current_action_id
+      def next_turn!
+        @last_turn_start_action = @turn_start_action
+        @turn_start_action = current_action_id
       end
 
       def action_from_h(h)
@@ -1841,7 +1844,6 @@ module Engine
 
       def event_close_companies!
         @log << '-- Event: Private companies close --'
-
         @companies.each do |company|
           if (ability = abilities(company, :close))
             next if ability.when == 'never' ||

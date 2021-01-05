@@ -38,7 +38,7 @@ module Engine
         end
 
         def passed_next_entity_index!
-          @game.next_turn
+          @game.next_turn!
           @entity_index = @entity_index % @entities.size
         end
 
