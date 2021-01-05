@@ -63,12 +63,12 @@ module View
       end
 
       def log
-        has_timestamps = !@game.actions.empty?(&:created_at) || @game.actions.empty?
+        has_timestamps = @game.actions.any? { |a| a.is_a?(Engine::Action::Base) && a.created_at }
 
         # Create a fake action zero, so special handling isn't required throughout
-        action_zero = Engine::Action::Base.new(Engine::Player.new(0, ''))
+        action_zero = Engine::Action::Base.new(@game.players.first)
         action_zero.id = 0
-        action_zero.created_at = @game.actions[0]&.created_at || Time.now
+        action_zero.created_at = (@game.actions[0]&.created_at || Time.now) if has_timestamps
 
         last_action = nil
         the_log = @game.log.group_by(&:action_id).flat_map do |action_id, entries|
@@ -79,7 +79,7 @@ module View
             action.created_at ||= Time.now
 
             if !last_action || Time.at(action.created_at).yday != Time.at(last_action.created_at).yday
-              children << date_banner(action.created_at) if action.created_at
+              children << date_banner(action.created_at)
             end
           end
           last_action = action

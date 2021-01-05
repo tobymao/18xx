@@ -577,9 +577,7 @@ module Engine
             process_action(action)
           else
             # Restore the original action to the list to ensure action ids remain consistent but don't apply them
-            action = actions[index].is_a?(Hash) ? action_from_h(actions[index]) : actions[index]
-            action.id = current_action_id + 1
-            @actions << action
+            @actions << actions[index]
           end
         end
         @redo_possible = active_undos.any?
@@ -665,7 +663,7 @@ module Engine
       end
 
       def current_action_id
-        @actions[-1]&.id || 0
+        @actions.size
       end
 
       def last_game_action
