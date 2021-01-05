@@ -34,7 +34,7 @@ module Engine
     end
 
     def operated?
-      @operating_history.any?
+      !@operating_history.empty?
     end
 
     def next_token

@@ -104,7 +104,7 @@ module Engine
         trains.each do |train_name|
           train = depot.upcoming.select { |t| t.name == train_name }.last
           @sc_reserve_trains << train
-          depot.upcoming.delete(train)
+          depot.remove_train(train)
         end
 
         # Due to SC adding an extra train this isn't quite a phase change, so the event needs to be tied to a train.

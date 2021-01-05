@@ -804,7 +804,9 @@ module Engine
       end
 
       def num_certs(entity)
-        certs = entity.shares.select { |s| s.corporation.counts_for_limit && s.counts_for_limit }.sum(&:cert_size)
+        certs = entity.shares.sum do |s|
+          s.corporation.counts_for_limit && s.counts_for_limit ? s.cert_size : 0
+        end
         certs + (self.class::CERT_LIMIT_INCLUDES_PRIVATES ? entity.companies.size : 0)
       end
 
@@ -849,7 +851,7 @@ module Engine
       def must_buy_train?(entity)
         !entity.rusted_self &&
           entity.trains.empty? &&
-          depot.depot_trains.any? &&
+          !depot.depot_trains.empty? &&
           (self.class::MUST_BUY_TRAIN == :always ||
            (self.class::MUST_BUY_TRAIN == :route && @graph.route_info(entity)&.dig(:route_train_purchase)))
       end
@@ -2014,8 +2016,13 @@ module Engine
             end
           return true unless corporation
 
-          tokened_hexes = corporation.tokens.select(&:used).map(&:city).map(&:hex).map(&:id)
-          (ability.hexes - tokened_hexes).any?
+          tokened_hexes = []
+
+          corporation.tokens.each do |token|
+            tokened_hexes << token.city.hex.id if token.used
+          end
+
+          !(ability.hexes - tokened_hexes).empty?
         else
           true
         end

@@ -44,6 +44,7 @@ module Engine
       SEED_MONEY = 200
       MUST_BUY_TRAIN = :never
       EBUY_PRES_SWAP = false # allow presidential swaps of other corps when ebuying
+      CERT_LIMIT_INCLUDES_PRIVATES = false
       POOL_SHARE_DROP = :each
       SELL_MOVEMENT = :none
       ALL_COMPANIES_ASSIGNABLE = true
@@ -175,11 +176,6 @@ module Engine
         player.cash + player.companies.sum(&:value)
       end
 
-      def num_certs(entity)
-        # Privates don't count towards limit
-        entity.shares.count { |s| s.corporation.counts_for_limit && s.counts_for_limit }
-      end
-
       def home_token_locations(corporation)
         hexes.select do |hex|
           hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
@@ -260,7 +256,13 @@ module Engine
       end
 
       def shorts(corporation)
-        @_shares.values.select { |share| share.corporation == corporation && share.percent.negative? }
+        shares = []
+
+        @_shares.each do |_, share|
+          shares << share if share.corporation == corporation && share.percent.negative?
+        end
+
+        shares
       end
 
       def entity_shorts(entity, corporation)
@@ -442,7 +444,7 @@ module Engine
       def can_take_loan?(entity)
         entity.corporation? &&
           entity.loans.size < maximum_loans(entity) &&
-          @loans.any?
+          !@loans.empty?
       end
 
       def float_str(_entity)

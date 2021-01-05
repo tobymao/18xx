@@ -39,7 +39,7 @@ module Engine
     end
 
     def route_info(corporation)
-      compute(corporation) unless @routes[corporation]
+      compute(corporation, routes_only: true) unless @routes[corporation]
       @routes[corporation]
     end
 
@@ -89,7 +89,7 @@ module Engine
       @reachable_hexes[corporation]
     end
 
-    def compute(corporation)
+    def compute(corporation, routes_only: false)
       hexes = Hash.new { |h, k| h[k] = {} }
       nodes = {}
       paths = {}
@@ -128,8 +128,11 @@ module Engine
         end
       end
 
-      routes = {}
+      routes = @routes[corporation] || {}
+
       tokens.keys.each do |node|
+        return nil if routes[:route_train_purchase] && routes_only
+
         visited = tokens.reject { |token, _| token == node }
         local_nodes = {}
 
@@ -149,6 +152,8 @@ module Engine
           end
         end
 
+        next if routes[:route_train_purchase]
+
         mandatory_nodes = 0
         optional_nodes = 0
         local_nodes.each do |p_node, _|
@@ -163,6 +168,7 @@ module Engine
         if mandatory_nodes > 1
           routes[:route_available] = true
           routes[:route_train_purchase] = true
+          @routes[corporation] = routes
         elsif mandatory_nodes == 1 && optional_nodes.positive?
           routes[:route_available] = true
         end
@@ -171,10 +177,10 @@ module Engine
       hexes.default = nil
       hexes.transform_values!(&:keys)
 
+      @routes[corporation] = routes
       @connected_hexes[corporation] = hexes
       @connected_nodes[corporation] = nodes
       @connected_paths[corporation] = paths
-      @routes[corporation] = routes
       @reachable_hexes[corporation] = paths.map { |path, _| [path.hex, true] }.to_h
     end
   end
