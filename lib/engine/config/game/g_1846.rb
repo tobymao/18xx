@@ -461,7 +461,7 @@ module Engine
     {
       "float_percent": 20,
       "sym": "NYC",
-      "name": "New York Central",
+      "name": "New York Central Railroad",
       "logo": "1846/NYC",
       "tokens": [
         0,
@@ -476,7 +476,7 @@ module Engine
     {
       "float_percent": 20,
       "sym": "B&O",
-      "name": "Baltimore & Ohio",
+      "name": "Baltimore & Ohio Railroad",
       "logo": "1846/BO",
       "tokens": [
         0,
@@ -508,7 +508,7 @@ module Engine
     {
       "float_percent": 20,
       "sym": "C&O",
-      "name": "Chesapeake & Ohio",
+      "name": "Chesapeake & Ohio Railroad",
       "logo": "1846/CO",
       "tokens": [
         0,
@@ -557,7 +557,7 @@ module Engine
     {
       "float_percent": 20,
       "sym": "GT",
-      "name": "Grand Trunk",
+      "name": "Grand Trunk Railway",
       "logo": "1846/GT",
       "tokens": [
         0,
@@ -571,7 +571,7 @@ module Engine
     {
       "float_percent": 20,
       "sym": "IC",
-      "name": "Illinois Central",
+      "name": "Illinois Central Railroad",
       "logo": "1846/IC",
       "tokens": [
         0,
