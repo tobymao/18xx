@@ -139,10 +139,9 @@ module Engine
       end
 
       def buyable_train_variants(train, entity)
-        return [] unless buyable_trains(entity).include?(train)
+        return [] unless buyable_trains(entity).any? { |bt| bt.variants[bt.name] }
 
         variants = train.variants.values
-
         return variants if train.owned_by_corporation?
 
         variants.reject! { |v| entity.cash < v[:price] } if must_issue_before_ebuy?(entity)
