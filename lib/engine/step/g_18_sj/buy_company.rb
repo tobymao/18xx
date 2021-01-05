@@ -42,7 +42,7 @@ module Engine
         # Any trains in minor are transfered, and made buyable
         # Rule 7.3 allows train to be reused during the OR.
         def transfer_trains(buyer, minor)
-          return unless minor.trains.any?
+          return if minor.trains.empty?
 
           minor.trains.each do |t|
             t.operated = false

@@ -130,13 +130,13 @@ module Engine
       end
 
       def select(collection)
-        collection[rand % collection.length]
+        collection[rand % collection.size]
       end
 
       def find_company(companies, collection)
-        sym = collection[rand % collection.length]
+        sym = collection[rand % collection.size]
         to_find = companies.find { |comp| comp.sym == sym }
-        @log << "Could not find company with sym='#{sym}' in #{@companies}" if to_find.nil?
+        @log << "Could not find company with sym='#{sym}' in #{@companies}" unless to_find
         to_find
       end
 
@@ -256,7 +256,7 @@ module Engine
 
       def action_processed(action)
         is_tile_lay = action.is_a?(Action::LayTile)
-        check_second_lay(action) if is_tile_lay && @tile_lays.any? && !special_tile_lay?(action)
+        check_second_lay(action) if is_tile_lay && !@tile_lays.empty? && !special_tile_lay?(action)
 
         super
 
@@ -372,8 +372,7 @@ module Engine
 
       def event_full_cap!
         @corporations
-          .select { |c| c.percent_of(c) == 100 }
-          .reject(&:closed?)
+          .select { |c| c.percent_of(c) == 100 && !c.closed? }
           .each do |c|
             @log << "#{c.name} becomes full capitalization as not pared"
             c.capitalization = :full
@@ -428,10 +427,11 @@ module Engine
       end
 
       def transfer_non_home_tokens(target, merged)
-        merged_tokens = merged.tokens.select(&:city)
-        return unless merged_tokens.any?
+        merged.tokens.each do |token|
+          next unless token.city
 
-        merged_tokens.each { |token| transfer_token(token, merged, target) }
+          transfer_token(token, merged, target)
+        end
       end
 
       def check_connected(route, token)
@@ -506,20 +506,17 @@ module Engine
         { hex_name: action.hex.name, tile_name: action.tile.name }
       end
 
+      CERT_LIMITS = {
+        10 => { 2 => 39, 3 => 26, 4 => 20, 5 => 16, 6 => 13 },
+        9 => { 2 => 35, 3 => 23, 4 => 18, 5 => 14, 6 => 12 },
+        8 => { 2 => 30, 3 => 20, 4 => 15, 5 => 12, 6 => 10 },
+        7 => { 2 => 26, 3 => 17, 4 => 13, 5 => 11, 6 => 9 },
+      }.freeze
+
       def current_cert_limit
-        certs_per_player =
-          case @corporations.reject(&:closed?).size
-          when 10
-            { 2 => 39, 3 => 26, 4 => 20, 5 => 16, 6 => 13 }
-          when 9
-            { 2 => 35, 3 => 23, 4 => 18, 5 => 14, 6 => 12 }
-          when 8
-            { 2 => 30, 3 => 20, 4 => 15, 5 => 12, 6 => 10 }
-          when 7
-            { 2 => 26, 3 => 17, 4 => 13, 5 => 11, 6 => 9 }
-          else
-            game_error("No cert limit defined for #{@corporations.length} corporations")
-          end.freeze
+        available_corporations = @corporations.count { |c| !c.closed? }
+        certs_per_player = CERT_LIMITS[available_corporations]
+        game_error("No cert limit defined for #{available_corporations} corporations") unless certs_per_player
         set_cert_limit = certs_per_player[@players.size]
         game_error("No cert limit defined for #{@players.size} players") unless set_cert_limit
         set_cert_limit
@@ -532,7 +529,7 @@ module Engine
         transfer_home_token(@sj, major)
         transfer_non_home_tokens(@sj, major)
 
-        major.companies.each(&:close!)
+        major.companies.dup.each(&:close!)
 
         # Decrease share price two step and then give compensation with this price
         prev = major.share_price.price
@@ -586,7 +583,11 @@ module Engine
       def visited_icons(stops)
         icons = []
         stops.each do |s|
-          icons.concat(s.hex.tile.icons.map(&:name).select { |n| BONUS_ICONS.include?(n) })
+          s.hex.tile.icons.each do |icon|
+            next unless BONUS_ICONS.include?(icon.name)
+
+            icons << icon.name
+          end
         end
         icons.sort!
       end
@@ -710,13 +711,13 @@ module Engine
       end
 
       def remove_icons(to_be_cleaned, icon_names)
-        @hexes
-          .select { |hex| to_be_cleaned.include?(hex.name) }
-          .each do |hex|
-            icons = hex.tile.icons
-            icons.reject! { |i| icon_names.include?(i.name) }
-            hex.tile.icons = icons
-          end
+        @hexes.each do |hex|
+          next unless to_be_cleaned.include?(hex.name)
+
+          icons = hex.tile.icons
+          icons.reject! { |i| icon_names.include?(i.name) }
+          hex.tile.icons = icons
+        end
       end
 
       def friendly_city?(route, stop)
