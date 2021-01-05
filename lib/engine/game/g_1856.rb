@@ -32,7 +32,7 @@ module Engine
                       brown: '#7b352a')
 
       load_from_json(Config::Game::G1856::JSON)
-      attr_reader :post_nationalization
+      attr_reader :post_nationalization, :bankrupted
       DEV_STAGE = :prealpha
 
       # These plain city hexes upgrade to L tiles in brown
@@ -204,6 +204,8 @@ module Engine
 
         @pre_national_market_prices = {}
         @nationalized_corps = []
+
+        @bankrupted = false
 
         # Is the president of the national a "false" president?
         # A false president gets the presidency with only one share; in this case the president gets
@@ -466,7 +468,7 @@ module Engine
         @log << "-- #{major.name} merges into #{national.name} --"
         # Trains are transferred
         major.trains.dup.each do |t|
-          national.buy_train(t, :free)
+          buy_train(national, t, :free)
         end
         # Leftover cash is transferred
         major.spend(major.cash, national) if major.cash.positive?
@@ -499,7 +501,7 @@ module Engine
           @pre_national_percent_by_player[player] ||= 0
           @pre_national_percent_by_player[player] += num
         end
-        @pre_national_market_percent += (major.num_market_shares * 5)
+        @pre_national_market_percent += major.num_market_shares * 10
       end
 
       # Issue more shares
@@ -519,10 +521,6 @@ module Engine
           new_share = Share.new(national, percent: 5, index: num_shares + i, cert_size: 0.5)
           national.shares_by_corporation[national] << new_share
         end
-      end
-
-      def total_national_percent_issued
-        @pre_national_market_percent + @pre_national_percent_by_player.values.sum
       end
 
       def calculate_national_price
@@ -571,15 +569,17 @@ module Engine
         #  where the exact value doesn't really matter
         players_in_order = (0..@players.count - 1).to_a.sort { |i| i < index_for_trigger ? i + 10 : i }
         # Determine the president before exchanging shares for ease of distribution
-        shares_to_distribute = max_national_shares
+        shares_left_to_distribute = max_national_shares
         president_shares = 0
         president = nil
         players_in_order.each do |i|
           player = @players[i]
           next unless @pre_national_percent_by_player[player]
 
-          shares_awarded = [(@pre_national_percent_by_player[player] / 20).to_i, shares_to_distribute].min
-          shares_to_distribute -= shares_awarded
+          shares_awarded = [(@pre_national_percent_by_player[player] / 20).to_i, shares_left_to_distribute].min
+          # Single shares that are discarded to the market
+          @pre_national_market_percent += @pre_national_percent_by_player[player] % 20
+          shares_left_to_distribute -= shares_awarded
           @log << "#{player.name} gets #{shares_awarded} shares of #{national.name}"
 
           next unless shares_awarded > president_shares
@@ -597,21 +597,25 @@ module Engine
           president_shares = shares_awarded
           president = player
         end
+        # Determine how many market shares need to be issued; this may trigger a second issue of national shares
+        national_market_share_count = [(@pre_national_market_percent / 20).to_i, shares_left_to_distribute].min
+        shares_left_to_distribute -= national_market_share_count
         # More than 10 shares were issued so issue the second set
-        national_issue_shares! if shares_to_distribute < 10
+        national_issue_shares! if shares_left_to_distribute < 10
         national_share_index = 1
         players_in_order.each do |i|
           player = @players[i]
           player_national_shares = (@pre_national_percent_by_player[player] / 20).to_i
-          # Extra single shares are placed in the market
-          @pre_national_market_percent += (@pre_national_percent_by_player[player] % 20)
           # We will distribute shares from the national starting with the second, skipping the presidency
           next unless player_national_shares.positive?
 
           if player == president
             if @false_national_president
               # TODO: Handle this case properly.
-              puts 'TODO'
+              @log << "#{player.name} is the president of the #{national.name} but is only awarded 1 share}"
+              national.presidents_share.percent /= 2
+              @share_pool.buy_shares(player, national.presidents_share, exchange: :free, exchange_price: 0)
+              player_national_shares -= 1
             else # This player gets the presidency, which is 2 shares
               @share_pool.buy_shares(player, national.presidents_share, exchange: :free, exchange_price: 0)
               player_national_shares -= 2
@@ -634,6 +638,12 @@ module Engine
             end
           end
         end
+        # Distribute market shares to the market
+        @share_pool.buy_shares(
+          @share_pool,
+          ShareBundle.new(national.shares_by_corporation[national][-1 * national_market_share_count..-1]),
+          exchange: :free
+        )
       end
 
       def national_token_swap
@@ -675,6 +685,11 @@ module Engine
 
         @log << "#{national.name} has #{remaining_tokens} spare #{format_currency(national_token_price)} tokens"
         remaining_tokens.times { national.tokens << Engine::Token.new(@national, price: national_token_price) }
+      end
+
+      def declare_bankrupt(player)
+        @bankrupted = true
+        super
       end
 
       # Called regardless of if president saved or merged corp

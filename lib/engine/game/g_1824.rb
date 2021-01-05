@@ -78,7 +78,7 @@ module Engine
         g_trains = @depot.upcoming.select { |t| t.name.end_with?('g') }
         @coal_corporations.each do |coalcorp|
           train = g_trains.shift
-          coalcorp.buy_train(train, :free)
+          buy_train(coalcorp, train, :free)
           coalcorp.spend(120, @bank, check_cash: false)
         end
 

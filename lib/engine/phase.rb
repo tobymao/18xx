@@ -121,7 +121,7 @@ module Engine
         rusted_trains << t.name
         owners[t.owner.name] += 1
         entity.rusted_self = true if entity && entity == t.owner
-        t.rust!
+        @game.rust(t)
       end
 
       @log << "-- Event: #{obsolete_trains.uniq.join(', ')} trains are obsolete --" if obsolete_trains.any?

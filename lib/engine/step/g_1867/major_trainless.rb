@@ -49,7 +49,15 @@ module Engine
         end
 
         def choice_available?(entity)
-          entity.corporation?
+          entity == trainless_major&.first && entity.corporation?
+        end
+
+        def can_sell?(_entity, _bundle)
+          false
+        end
+
+        def ipo_type(_entity)
+          nil
         end
       end
     end

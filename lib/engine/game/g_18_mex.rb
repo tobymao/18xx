@@ -141,7 +141,7 @@ module Engine
         @minors.each do |minor|
           train = @depot.upcoming[0]
           train.buyable = false
-          minor.buy_train(train, :free)
+          buy_train(minor, train, :free)
           hex = hex_by_id(minor.coordinates)
           hex.tile.cities[0].place_token(minor, minor.next_token)
         end
@@ -463,7 +463,7 @@ module Engine
           major.spend(major.cash, ndm)
         end
         if major.trains.any?
-          trains_transfered = major.transfer(:trains, ndm).map(&:name)
+          trains_transfered = transfer(:trains, major, ndm).map(&:name)
           @log << "#{ndm.name} receives the trains: #{trains_transfered}"
         end
 
@@ -593,7 +593,7 @@ module Engine
 
         # Delete train so it wont appear in rust message
         train = minor.trains.first
-        minor.remove_train(train)
+        remove_train(train)
         trains.delete(train)
 
         minor.close!

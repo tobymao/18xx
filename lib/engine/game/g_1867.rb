@@ -64,6 +64,9 @@ module Engine
                                             'nationalize_companies' =>
                                             ['Nationalize Companies',
                                              'All companies close paying their owner their value'],
+                                            'train_trade_allowed' =>
+                                            ['Train trade in allowed',
+                                             'Trains can be traded in for 50% towards Phase 8 trains'],
                                             'trainless_nationalization' =>
                                             ['Trainless Nationalization',
                                              'Operating Trainless Minors are nationalized'\
@@ -190,7 +193,9 @@ module Engine
       def nationalize!(corporation)
         @log << "#{corporation.name} is nationalized"
 
-        repay_loan(corporation, corporation.loan.first) while corporation.cash > @loan_value && corporation.loans.any?
+        while corporation.cash > @loan_value && !corporation.loans.empty?
+          repay_loan(corporation, corporation.loans.first)
+        end
 
         # Move once automatically
         price = corporation.share_price.price
@@ -441,6 +446,8 @@ module Engine
       end
 
       def round_end
+        return Round::Operating if phase.name.to_i >= 8
+
         Round::G1867::Merger
       end
 
@@ -507,6 +514,8 @@ module Engine
         # Done elsewhere
       end
 
+      def event_train_trade_allowed!; end
+
       def event_minors_cannot_start!
         @corporations, removed = @corporations.partition do |corporation|
           corporation.owned_by_player? || corporation.type != :minor
@@ -555,6 +564,8 @@ module Engine
         @log << '-- Event: Private companies are nationalized --'
 
         @companies.each do |company|
+          next if company.closed?
+
           if (ability = abilities(company, :close))
             next if ability.when == 'never' ||
               @phase.phases.any? { |phase| ability.when == phase[:name] }

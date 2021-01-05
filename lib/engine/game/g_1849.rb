@@ -3,6 +3,7 @@
 require_relative '../config/game/g_1849'
 require_relative 'base'
 require_relative '../g_1849/corporation'
+require_relative '../g_1849/share_pool'
 require_relative '../g_1849/stock_market'
 
 module Engine
@@ -114,6 +115,8 @@ module Engine
       AFG_HEXES = %w[C1 H8 M9 M11 B14].freeze
       PORT_HEXES = %w[a12 A5 L14 N8].freeze
 
+      attr_accessor :swap_choice_player, :swap_other_player, :swap_corporation
+
       def setup
         @corporations.sort_by! { rand }
         remove_corp if @players.size == 3
@@ -184,6 +187,10 @@ module Engine
         end
       end
 
+      def init_share_pool
+        Engine::G1849::SharePool.new(self)
+      end
+
       def close_corporation(corporation, quiet: false)
         super
         corporation = reset_corporation(corporation)
@@ -202,6 +209,7 @@ module Engine
         Round::Stock.new(self, [
           Step::DiscardTrain,
           Step::HomeToken,
+          Step::G1849::SwapChoice,
           Step::G1849::BuySellParShares,
         ])
       end
@@ -209,7 +217,7 @@ module Engine
       def operating_round(round_num)
         Round::Operating.new(self, [
                                Step::Bankrupt,
-                               Step::Exchange,
+                               Step::G1849::SwapChoice,
                                Step::SpecialTrack,
                                Step::BuyCompany,
                                Step::G1849::Track,
@@ -293,7 +301,8 @@ module Engine
         owner_percent = bundle.owner.percent_of(bundle.corporation)
         other_percent = @players.reject { |p| p.id == bundle.owner.id }.map { |o| o.percent_of(bundle.corporation) }.max
 
-        other_percent > owner_percent - bundle.percent
+        owner_after_percent = owner_percent - bundle.percent
+        owner_after_percent < 20 && other_percent > owner_after_percent
       end
 
       def bundles_for_corporation(share_holder, corporation, shares: nil)

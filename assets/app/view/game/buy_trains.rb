@@ -28,9 +28,11 @@ module View
                               end
         share_funds_possible = @game.liquidity(player, emergency: true) - player.cash
 
-        children << h(:div, "#{player.name} #{verb} contribute "\
-                            "#{@game.format_currency(@depot.min_depot_price - @corporation.cash)} "\
-                            "for #{@corporation.name} to afford a train from the Depot.")
+        if @depot.min_depot_price > @corporation.cash
+          children << h(:div, "#{player.name} #{verb} contribute "\
+                              "#{@game.format_currency(@depot.min_depot_price - @corporation.cash)} "\
+                              "for #{@corporation.name} to afford a train from the Depot.")
+        end
 
         children << h(:div, "#{player.name} has #{@game.format_currency(player.cash)} in cash.")
 
@@ -118,7 +120,7 @@ module View
 
         discountable_trains = @depot.discountable_trains_for(@corporation)
 
-        if discountable_trains.any?
+        if discountable_trains.any? && step.discountable_trains_allowed?(@corporation)
           children << h(:h3, h3_props, 'Exchange Trains')
 
           discountable_trains.each do |train, discount_train, variant, price|

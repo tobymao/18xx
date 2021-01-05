@@ -28,7 +28,7 @@ module Engine
         @mine = @minors.find { |m| m.name == 'mine' }
         @minors.reject! { |m| m.name == 'mine' }.each do |minor|
           train = @depot.upcoming[0]
-          minor.buy_train(train, :free)
+          buy_train(minor, train, :free)
           hex = hex_by_id(minor.coordinates)
           hex.tile.cities[minor.city || 0].place_token(minor, minor.next_token)
         end

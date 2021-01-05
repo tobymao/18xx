@@ -96,6 +96,7 @@ module Engine
         step.acted = true
         step.send("process_#{action.type}", action)
 
+        after_process_before_skip(action)
         skip_steps
         clear_cache!
         after_process(action)
@@ -165,6 +166,8 @@ module Engine
       end
 
       def before_process(_action); end
+
+      def after_process_before_skip(_action); end
 
       def after_process(_action); end
     end

@@ -11,12 +11,8 @@ module Engine
           minors + majors
         end
 
-        def start_operating
-          super
-
-          # Skip closed minors
-          entity = @entities[@entity_index]
-          next_entity! unless @game.corporations.include?(entity)
+        def skip_entity?(entity)
+          !entity.floated? || !@game.corporations.include?(entity)
         end
       end
     end

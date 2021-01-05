@@ -215,14 +215,14 @@ module Engine
           end
           @liquidation_cash += @winner.price if acquired_corp.share_price.liquidation?
           @shareholder_cash = @winner.price
-          companies = acquired_corp.transfer(:companies, buyer).map(&:name)
+          companies = @game.transfer(:companies, acquired_corp, buyer).map(&:name)
           receiving << "companies (#{companies.join(', ')})" if companies.any?
 
-          @unpaid_loans = acquired_corp.transfer(:loans, buyer).size
+          @unpaid_loans = @game.transfer(:loans, acquired_corp, buyer).size
           receiving << "loans (#{@unpaid_loans})" if @unpaid_loans.positive?
           # share price modification is delayed until after the player has passed paying off loans
 
-          trains = acquired_corp.transfer(:trains, buyer).map(&:name)
+          trains = @game.transfer(:trains, acquired_corp, buyer).map(&:name)
           receiving << "trains (#{trains})" if trains.any?
 
           remove_duplicate_tokens(buyer, acquired_corp)

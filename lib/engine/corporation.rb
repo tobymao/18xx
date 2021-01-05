@@ -10,7 +10,6 @@ require_relative 'share'
 require_relative 'share_holder'
 require_relative 'spender'
 require_relative 'token'
-require_relative 'transfer'
 
 module Engine
   class Corporation
@@ -22,7 +21,6 @@ module Engine
     include Passer
     include ShareHolder
     include Spender
-    include Transfer
 
     attr_accessor :ipoed, :par_via_exchange, :max_ownership_percent, :float_percent, :capitalization, :max_share_price
     attr_reader :companies, :min_price, :name, :full_name, :fraction_shares, :type, :id, :needs_token_to_par

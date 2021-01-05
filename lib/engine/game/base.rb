@@ -1402,6 +1402,53 @@ module Engine
         true
       end
 
+      # price is nil, :free, or a positive int
+      def buy_train(operator, train, price = nil)
+        operator.spend(price || train.price, train.owner) if price != :free
+        remove_train(train)
+        train.owner = operator
+        operator.trains << train
+        operator.rusted_self = false
+        @crowded_corps = nil
+      end
+
+      def remove_train(train)
+        return unless (owner = train.owner)
+        return @depot.remove_train(train) if train.from_depot?
+
+        owner.trains.delete(train)
+        @crowded_corps = nil
+      end
+
+      def rust(train)
+        remove_train(train)
+        train.owner = nil
+        train.rusted = true
+      end
+
+      def crowded_corps
+        @crowded_corps ||= corporations.select do |c|
+          trains = self.class::OBSOLETE_TRAINS_COUNT_FOR_LIMIT ? c.trains.size : c.trains.count { |t| !t.obsolete }
+          trains > @phase.train_limit(c)
+        end
+      end
+
+      def transfer(ownable_type, from, to)
+        ownables = from.send(ownable_type)
+        to_ownables = to.send(ownable_type)
+
+        @crowded_corps = nil if ownable_type == :trains
+
+        ownables.each do |ownable|
+          ownable.owner = to
+          to_ownables << ownable
+        end
+
+        transferred = ownables.dup
+        ownables.clear
+        transferred
+      end
+
       private
 
       def init_bank

@@ -27,6 +27,10 @@ module Engine
           super
         end
 
+        def discountable_trains_allowed?(_entity)
+          @game.phase.name.to_i == 8
+        end
+
         def can_sell?(_entity, _bundle)
           # Players cannot sell shares in EMR for 1867
           false

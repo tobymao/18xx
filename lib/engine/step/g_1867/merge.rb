@@ -21,7 +21,7 @@ module Engine
           return ['merge'] if @converting || @merge_major
 
           actions << 'merge' if can_merge?(entity)
-          actions << 'convert' if can_convert?(entity)
+          actions << 'convert' if !@merging && can_convert?(entity)
           actions << 'pass' if actions.any?
           actions
         end
@@ -31,6 +31,12 @@ module Engine
           return 'Finish Merge' if @merge_major
 
           'Merge'
+        end
+
+        def pass_description
+          return 'Done Adding Corporations' if @merging
+
+          super
         end
 
         def can_convert?(entity)
@@ -92,13 +98,13 @@ module Engine
             from.spend(from.cash, to)
           end
 
-          companies = from.transfer(:companies, to).map(&:name)
+          companies = @game.transfer(:companies, from, to).map(&:name)
           receiving << "companies (#{companies.join(', ')})" if companies.any?
 
-          loans = from.transfer(:loans, to).size
+          loans = @game.transfer(:loans, from, to).size
           receiving << "loans (#{loans})" if loans.positive?
 
-          trains = from.transfer(:trains, to).map(&:name)
+          trains = @game.transfer(:trains, from, to).map(&:name)
           receiving << "trains (#{trains})" if trains.any?
 
           receiving
@@ -127,10 +133,10 @@ module Engine
           target = action.corporation
           initiator = action.entity.owner
           # PAR price is average of lowest and highest priced
-          # rounded down between 100-200 (200 can be ignored since max price of minor) between
+          # rounded down between 100-200
           min = @merging.map { |c| c.share_price.price }.min
           max = @merging.map { |c| c.share_price.price }.max
-          merged_par = @game.find_share_price([100, (max + min)].max)
+          merged_par = @game.find_share_price([200, [100, (max + min)].max].min)
 
           # Players who owned shares are eligable to buy shares unlike merger
           owners = @merging.map(&:owner)

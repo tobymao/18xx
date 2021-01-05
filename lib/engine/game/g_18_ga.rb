@@ -67,7 +67,7 @@ module Engine
         # Store it in neutral corporation in the meantime
         @free_2_train = train_by_id('2-5')
         @free_2_train.buyable = false
-        neutral.buy_train(@free_2_train, :free)
+        buy_train(neutral, @free_2_train, :free)
       end
 
       # Only buy and sell par shares is possible action during SR
@@ -125,7 +125,7 @@ module Engine
 
       def add_free_two_train(corporation)
         @free_2_train.buyable = true
-        corporation.buy_train(@free_2_train, :free)
+        buy_train(corporation, @free_2_train, :free)
         @free_2_train.buyable = false
         @log << "#{corporation.name} receives a bonus non sellable 2 train"
       end
