@@ -6,16 +6,19 @@ require_relative 'base'
 module Engine
   module Game
     class G18CZ < Base
-      register_colors(brightGreen: '#c2ce33', beige: '#e5d19e', lightBlue: '#1EA2D6', mintGreen: '#B1CEC7',
-                      yellow: '#ffe600', lightRed: '#F3B1B3')
+      register_colors(brightGreen: '#c2ce33',
+                      beige: '#e5d19e',
+                      lightBlue: '#1EA2D6',
+                      mintGreen: '#B1CEC7',
+                      yellow: '#ffe600',
+                      lightRed: '#F3B1B3')
 
       load_from_json(Config::Game::G18CZ::JSON)
 
-      DEV_STAGE = :prealpha
       GAME_LOCATION = 'Czech Republic'
       GAME_RULES_URL = 'https://www.lonny.at/app/download/9940504884/rules_English.pdf'
       GAME_DESIGNER = 'Leonhard Orgler'
-      GAME_PUBLISHER = nil
+      GAME_PUBLISHER = :lonny_games
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18CZ'
 
       SELL_BUY_ORDER = :sell_buy
@@ -27,7 +30,6 @@ module Engine
         1 => [50, 55, 60, 65, 70],
         2 => [60, 70, 880, 90, 100],
         3 => [90, 100, 110, 120],
-
       }.freeze
 
       COMPANY_VALUES = [40, 45, 50, 55, 60, 65, 70, 75, 80, 90, 100, 110, 120].freeze
