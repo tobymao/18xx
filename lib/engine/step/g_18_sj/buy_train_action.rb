@@ -9,6 +9,6 @@ module BuyTrainAction
     return if !(exchange = action.exchange) || exchange.name == '4'
 
     @log << "The exchanged #{exchange.name} is removed from game"
-    @depot.discarded.delete(exchange)
+    @game.remove_train(exchange)
   end
 end

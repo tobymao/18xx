@@ -532,11 +532,6 @@ module Engine
         transfer_home_token(@sj, major)
         transfer_non_home_tokens(@sj, major)
 
-        major.trains.each do |train|
-          minor.remove_train(train)
-          trains.delete(train)
-        end
-
         major.companies.each(&:close!)
 
         # Decrease share price two step and then give compensation with this price
