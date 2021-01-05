@@ -11,6 +11,14 @@ module Engine
           action.tile.upgrades = action.hex.tile.upgrades
           super
         end
+
+        def process_lay_tile(action)
+          lay_tile_action(action)
+
+          @game.update_garibaldi
+
+          pass!
+        end
       end
     end
   end

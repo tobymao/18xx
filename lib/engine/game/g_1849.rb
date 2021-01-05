@@ -121,6 +121,7 @@ module Engine
         @corporations.sort_by! { rand }
         remove_corp if @players.size == 3
         @corporations.each do |c|
+          c.slot_open = true
           c.next_to_par = false
           c.shares.last.last_cert = true
         end
@@ -156,7 +157,7 @@ module Engine
         corporation.next_to_par = false
         index = @corporations.index(corporation)
 
-        @corporations[index + 1].next_to_par = true unless index == @corporations.length - 1
+        @corporations[index + 1].next_to_par = true unless @corporations.last == corporation
       end
 
       def home_token_locations(corporation)
@@ -195,13 +196,28 @@ module Engine
         Engine::G1849::SharePool.new(self)
       end
 
+      def update_garibaldi
+        afg = @corporations.find { |c| c.name == 'AFG' }
+        return unless afg && !afg.slot_open && !home_token_locations(afg).empty?
+
+        afg.slot_open = true
+        afg.closed_recently = true
+        @log << 'AFG now has a token spot available and can be opened in the next stock round.'
+      end
+
       def close_corporation(corporation, quiet: false)
         super
         corporation = reset_corporation(corporation)
         corporation.shares.last.last_cert = true
-        @corporations.push(corporation)
+        @corporations << corporation
         corporation.closed_recently = true
-        corporation.next_to_par = true if @corporations[@corporations.length - 2].floated?
+        index = @corporations.index(corporation)
+        unless @corporations[index - 1].slot_open
+          @corporations[index - 1].next_to_par = false
+          @corporations[index - 1], @corporations[index] = @corporations[index], @corporations[index - 1]
+        end
+        corporation.next_to_par = true if @corporations[index - 1].floated?
+        update_garibaldi
       end
 
       def float_str(entity)
@@ -230,7 +246,7 @@ module Engine
                                Step::SpecialTrack,
                                Step::BuyCompany,
                                Step::G1849::Track,
-                               Step::Token,
+                               Step::G1849::Token,
                                Step::Route,
                                Step::G1849::Dividend,
                                Step::DiscardTrain,
@@ -400,8 +416,8 @@ module Engine
         !ever_not_nil
       end
 
-      def can_par?(corporation, _parrer)
-        !corporation.ipoed && corporation.next_to_par && !corporation.closed_recently
+      def can_par?(corp, _parrer)
+        !corp.ipoed && corp.next_to_par && !corp.closed_recently && corp.slot_open
       end
 
       def upgrade_cost(tile, hex, entity)
@@ -463,6 +479,10 @@ module Engine
         # Messina cannot be upgraded until after next stock round
         @log << '-- Messina cannot be upgraded until after the next stock round. --'
         @messina_upgradeable = false
+      end
+
+      def bank_sort(corporations)
+        corporations
       end
     end
   end

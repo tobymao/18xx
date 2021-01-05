@@ -1965,6 +1965,10 @@ module Engine
         []
       end
 
+      def bank_sort(corporations)
+        corporations.sort_by(&:name)
+      end
+
       def ability_right_type?(ability, type)
         !type || (ability.type == type)
       end
