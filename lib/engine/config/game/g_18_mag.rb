@@ -420,7 +420,7 @@ module Engine
     },
     {
       "sym": "G&C",
-      "name": "Ganz &amp; Cie",
+      "name": "Ganz & Cie",
       "logo": "18_mag/GC",
       "float_percent": 0,
       "max_ownership_percent": 60,
@@ -434,7 +434,7 @@ module Engine
     },
     {
       "sym": "SNW",
-      "name": "Schlick-Nicholson&#39;sche Waggon-Fabrik A.-G.",
+      "name": "Schlick-Nicholsonsche Waggon-Fabrik A.-G.",
       "logo": "18_mag/SNW",
       "float_percent": 0,
       "max_ownership_percent": 60,

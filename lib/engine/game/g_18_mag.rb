@@ -23,12 +23,14 @@ module Engine
       SELL_BUY_ORDER = :sell_buy
       MARKET_SHARE_LIMIT = 100
 
+      START_PRICES = [60, 60, 65, 65, 70, 70, 75, 75, 80, 80].freeze
+      MINOR_STARTING_CASH = 50
+
       def setup
         # start with first minor tokens placed (as opposed to just reserved)
         @mine = @minors.find { |m| m.name == 'mine' }
-        @minors.reject! { |m| m.name == 'mine' }.each do |minor|
-          train = @depot.upcoming[0]
-          buy_train(minor, train, :free)
+        @minors.delete(@mine)
+        @minors.each do |minor|
           hex = hex_by_id(minor.coordinates)
           hex.tile.cities[minor.city || 0].place_token(minor, minor.next_token)
         end
@@ -40,6 +42,33 @@ module Engine
           hex.tile.cities[0].place_token(@mine, @mine.next_token)
         end
         @mine.tokens.each { |t| t.type = :neutral }
+
+        # IPO and float all corporations with semi-randomly chosen prices
+        # They will start off in receivership with all shares in market
+        rand_prices = START_PRICES.sort_by { rand }
+        @corporations.each do |corp|
+          share_price = @stock_market.par_prices.find { |p| p.price == rand_prices[0] }
+          rand_prices.shift
+          @stock_market.set_par(corp, share_price)
+          corp.ipoed = true
+
+          corp.ipo_shares.each do |share|
+            @share_pool.transfer_shares(
+              share.to_bundle,
+              share_pool,
+              spender: share_pool,
+              receiver: @bank,
+              price: 0
+            )
+          end
+          corp.owner = @share_pool
+        end
+      end
+
+      def float_minor(minor)
+        train = @depot.upcoming[0]
+        buy_train(minor, train, :free)
+        @bank.spend(MINOR_STARTING_CASH, minor)
       end
 
       def init_starting_cash(players, bank)
@@ -49,6 +78,49 @@ module Engine
         players.each do |player|
           bank.spend(cash, player, check_positive: false)
         end
+      end
+
+      def new_auction_round
+        Round::Draft.new(self, [Step::G18Mag::SimpleDraft],
+                         rotating_order: (players.size <= 4),
+                         snake_order: (players.size > 4))
+      end
+
+      def operating_round(round_num)
+        Round::Operating.new(self, [
+          Step::Exchange,
+          Step::DiscardTrain,
+          Step::Track,
+          Step::Token,
+          Step::Route,
+          Step::Dividend,
+          Step::BuyTrain,
+        ], round_num: round_num)
+      end
+
+      def next_round!
+        @round =
+          case @round
+          when Round::Stock
+            @operating_rounds = @phase.operating_rounds
+            reorder_players
+            new_operating_round
+          when Round::Operating
+            if @round.round_num < @operating_rounds
+              or_round_finished
+              new_operating_round(@round.round_num + 1)
+            else
+              @turn += 1
+              or_round_finished
+              or_set_finished
+              new_stock_round
+            end
+          when init_round.class
+            @operating_rounds = @phase.operating_rounds
+            init_round_finished
+            reorder_players
+            new_operating_round
+          end
       end
     end
   end
