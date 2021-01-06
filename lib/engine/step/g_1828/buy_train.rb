@@ -6,6 +6,12 @@ module Engine
   module Step
     module G1828
       class BuyTrain < BuyTrain
+        def actions(entity)
+          actions = super
+          actions.delete('pass') if entity.corporation? && must_buy_train?(entity)
+          actions
+        end
+
         def process_buy_train(action)
           super
           action.shell.trains << action.train if action.entity.system?

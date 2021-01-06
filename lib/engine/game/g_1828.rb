@@ -81,7 +81,7 @@ module Engine
           Step::G1828::DiscardTrain,
           Step::G1828::RemoveTokens,
           Step::G1828::Merger,
-          Step::Exchange,
+          Step::G1828::Exchange,
           Step::G1828::BuySellParShares,
         ])
       end

@@ -51,6 +51,10 @@ module Engine
         def can_merge?(entity, corporation)
           @game.merge_candidates(entity, corporation).any?
         end
+
+        def stock_action(action)
+          @current_actions << action
+        end
       end
     end
   end
