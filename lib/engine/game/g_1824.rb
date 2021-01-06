@@ -19,7 +19,8 @@ module Engine
       GAME_DESIGNER = 'Leonhard Orgler & Helmut Ohley'
       GAME_PUBLISHER = :lonny_games
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1824'
-      GAME_END_CHECK = { bankrupt: :immediate }.freeze
+
+      GAME_END_CHECK = { bank: :full_or }.freeze
 
       EVENTS_TEXT = Base::EVENTS_TEXT.merge(
         'tokens_removed' => ['Tokens removed', 'Tokens for all private companies removed']
@@ -63,12 +64,6 @@ module Engine
         opt_rules -= [:goods_time] if opt_rules.include?(:cisleithania)
 
         opt_rules
-      end
-
-      def bank_cash
-        return super unless option_cisleithania
-
-        BANK_CASH_CISLEITHANIA[@players.size] - @players.sum(&:cash)
       end
 
       def init_bank
