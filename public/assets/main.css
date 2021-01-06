@@ -31,7 +31,7 @@ button:last-child, button.par_price:nth-of-type(6n), button.sell_share:nth-of-ty
   margin-right: 0;
 }
 button:disabled {
-  background: lightgray;
+  background: gray;
 }
 
 h2 {
