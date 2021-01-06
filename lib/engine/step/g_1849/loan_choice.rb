@@ -5,7 +5,7 @@ require_relative '../base'
 module Engine
   module Step
     module G1849
-      class SwapChoice < Base
+      class LoanChoice < Base
         def actions(entity)
           return [] unless entity == current_entity
 
@@ -13,13 +13,13 @@ module Engine
         end
 
         def active_entities
-          return [] unless @game.swap_choice_player
+          return [] unless @game.loan_choice_player
 
-          [@game.swap_choice_player]
+          [@game.loan_choice_player]
         end
 
         def description
-          'Presidency Swap Choice'
+          'Bankruptcy Choice'
         end
 
         def active?
@@ -27,7 +27,7 @@ module Engine
         end
 
         def choice_available?(entity)
-          entity == @game.swap_choice_player
+          entity == @game.loan_choice_player
         end
 
         def can_sell?
@@ -41,26 +41,27 @@ module Engine
         def swap_sell(_player, _corporation, _bundle, _pool_share); end
 
         def choices
-          ['Two 10% certs', 'One 20% cert']
+          ["Take #{@game.format_currency(500)} loan", 'Leave game']
         end
 
         def choice_name
-          'Swap for Presidency'
+          'Bankruptcy Decision'
         end
 
         def process_choose(action)
-          choice = action.choice
-          entity = action.entity
+          player = action.entity
 
-          if choice == 'Two 10% certs'
-            @log << "#{entity.name} chooses two 10% certificates"
-            @game.share_pool.swap_double_cert(@game.swap_choice_player, @game.swap_other_player, @game.swap_corporation)
+          if action.choice == 'Leave game'
+            @log << "#{player.name} chooses to leave game"
+            @game.declare_bankrupt(player)
           else
-            @log << "#{entity.name} chooses the 20% last certificate"
+            @log << "#{player.name} chooses to take #{@game.format_currency(500)} loan
+                     and reduce #{@game.format_currency(750)} from their score."
+            @game.bank.spend(500, player)
+            @game.player_debts[player] += 750
           end
-          @game.swap_choice_player = nil
-          @game.swap_other_player = nil
-          @game.swap_corporation = nil
+
+          @game.loan_choice_player = nil
         end
       end
     end
