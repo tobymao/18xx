@@ -79,6 +79,12 @@ module Engine
           !@round.choice_done && entity&.player? && entity == chooser && entity != @game.players.first
         end
 
+        def can_sell?
+          false
+        end
+
+        def ipo_type(_entity) end
+
         private
 
         def chooser
