@@ -23,11 +23,16 @@ module Engine
       GAME_END_CHECK = { bank: :full_or }.freeze
 
       EVENTS_TEXT = Base::EVENTS_TEXT.merge(
-        'tokens_removed' => ['Tokens removed', 'Tokens for all private companies removed']
+        'close_mountain_railways' => ['Mountain railways closed', 'Any still open Montain railways are exchanged'],
+        'sd_formation' => ['SD formation', 'The Suedbahn is founded at the end of the OR'],
+        'close_coal_railways' => ['Coal railways closed', 'Any still open Coal railways are exchanged'],
+        'ug_formation' => ['UG formation', 'The Ungarische Staatsbahn is founded at the end of the OR'],
+        'kk_formation' => ['k&k formation', 'k&k Staatsbahn is founded at the end of the OR']
       ).freeze
 
       STATUS_TEXT = Base::STATUS_TEXT.merge(
-        'can_buy_p5' => ['Can buy P5', 'P5 can be bought']
+        'may_exchange_coal_railways' => ['Coal Railway exchange', 'May exchange Coal Railways during SR'],
+        'may_exchange_mountain_railways' => ['Mountain Railway exchange', 'May exchange Mountain Railways during SR']
       ).freeze
 
       OPTIONAL_RULES = [
