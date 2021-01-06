@@ -99,7 +99,7 @@ module View
 
       @connection = nil if @game_data[:mode] == :hotseat || cursor
 
-      @connection&.subscribe(game_path, -2) do |data|
+      @connection&.subscribe(game_path) do |data|
         # make sure we're using the newest stored vars
         # since connection is only created on the initial view
         # and views are ephemeral
