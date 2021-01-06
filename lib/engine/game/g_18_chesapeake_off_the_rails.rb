@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-require_relative '../config/game/g_18_chesapeake_after_dark'
+require_relative '../config/game/g_18_chesapeake_off_the_rails'
 require_relative 'g_18_chesapeake'
 
 module Engine
   module Game
-    class G18ChesapeakeAfterDark < G18Chesapeake
-      load_from_json(Config::Game::G18ChesapeakeAfterDark::JSON)
+    class G18ChesapeakeOffTheRails < G18Chesapeake
+      load_from_json(Config::Game::G18ChesapeakeOffTheRails::JSON)
 
       DEV_STAGE = :alpha
 
@@ -16,7 +16,7 @@ module Engine
       SELL_BUY_ORDER = :sell_buy_sell
 
       def self.title
-        '18Chesapeake After Dark'
+        '18Chesapeake: Off the Rails'
       end
 
       def or_set_finished; end

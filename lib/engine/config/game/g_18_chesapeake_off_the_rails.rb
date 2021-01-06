@@ -7,11 +7,11 @@
 module Engine
   module Config
     module Game
-      module G18ChesapeakeAfterDark
+      module G18ChesapeakeOffTheRails
         JSON = <<-'DATA'
 {
-  "filename": "18_chesapeake_after_dark",
-  "modulename": "18Chesapeake After Dark",
+  "filename": "18_chesapeake_off_the_rails",
+  "modulename": "18Chesapeake Off The Rails",
   "currencyFormatStr": "$%d",
   "bankCash": 12000,
   "certLimit": {
