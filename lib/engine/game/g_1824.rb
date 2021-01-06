@@ -22,6 +22,9 @@ module Engine
 
       GAME_END_CHECK = { bank: :full_or }.freeze
 
+      # Move down one step for a whole block, not per share
+      SELL_MOVEMENT = :down_block
+
       EVENTS_TEXT = Base::EVENTS_TEXT.merge(
         'close_mountain_railways' => ['Mountain railways closed', 'Any still open Montain railways are exchanged'],
         'sd_formation' => ['SD formation', 'The Suedbahn is founded at the end of the OR'],
