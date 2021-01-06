@@ -367,35 +367,14 @@ module Engine
       "sym": "NFSBC",
       "value": 100,
       "revenue": 20,
-      "desc": "The public company that owns this private company may add a $10 bonus when running to Buffalo (P17/P19). Other public companies may purchase the right for $50.",
-      "abilities": [
-        {
-        "type": "hex_bonus",
-        "owner_type": "corporation",
-        "description": "+10 bonus when running to Buffalo",
-        "hexes": [
-          "P17",
-          "P19"
-        ],
-        "amount": 10
-      }]
+      "desc": "The public company that owns this private company may add a $10 bonus when running to Buffalo (P17/P19). Other public companies may purchase the right for $50."
     },
     {
       "name": "St. Clair Frontier Tunnel Company",
       "sym": "SCFTC",
       "value": 100,
       "revenue": 20,
-      "desc": "The public company that owns this private company may add a $10 Port Huron bonus when running to Sarnia (B13). Other public companies may purchase the right for $50.",
-      "abilities": [
-        {
-        "type": "hex_bonus",
-        "description": "+10 bonus when running to Sarnia",
-        "owner_type": "corporation",
-        "hexes": [
-          "B13"
-        ],
-        "amount": 10
-      }]
+      "desc": "The public company that owns this private company may add a $10 Port Huron bonus when running to Sarnia (B13). Other public companies may purchase the right for $50."
     }
   ],
   "corporations": [

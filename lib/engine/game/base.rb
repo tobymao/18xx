@@ -1364,6 +1364,9 @@ module Engine
         @queued_log = []
       end
 
+      # This is a hook to allow game specific logic to be invoked after a company is bought
+      def company_bought(company, buyer); end
+
       def ipo_name(_entity = nil)
         'IPO'
       end

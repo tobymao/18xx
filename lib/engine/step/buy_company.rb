@@ -87,6 +87,9 @@ module Engine
 
         entity.companies << company
         entity.spend(price, owner.nil? ? @game.bank : owner)
+
+        @game.company_bought(company, entity)
+
         @log << "#{entity.name} buys #{company.name} from "\
                 "#{owner.nil? ? 'the market' : owner.name} for "\
                 "#{@game.format_currency(price)}"

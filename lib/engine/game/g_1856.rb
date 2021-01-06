@@ -59,6 +59,8 @@ module Engine
 
       HOME_TOKEN_TIMING = :operating_round
 
+      RIGHT_COST = 50
+
       PRE_NATIONALIZATION_CERT_LIMIT = { 3 => 20, 4 => 16, 5 => 13, 6 => 11 }.freeze
       POST_NATIONALIZATION_CERT_LIMIT = {
         11 => { 3 => 28, 4 => 22, 5 => 18, 6 => 15 },
@@ -231,6 +233,10 @@ module Engine
         # true: 1-share false presidency has been awarded
         # false: 2-sahre true presidency has been awarded
         @false_national_president = nil
+
+        # 1 of each right is reserved w/ the private when it gets bought in. This leaves 2 extra to sell.
+        @available_bridge_tokens = 2
+        @available_tunnel_tokens = 2
       end
 
       def num_corporations
@@ -339,27 +345,66 @@ module Engine
         return false unless entity.corporation?
         return false if tunnel.owned_by_player?
 
-        # todo: logic
-        true
+        @available_tunnel_tokens.positive? && !tunnel?(entity) && buying_power(entity) >= RIGHT_COST
       end
 
       def can_buy_bridge_token?(entity)
         return false unless entity.corporation?
         return false if bridge.owned_by_player?
 
-        # todo: logic
-        true
+        @available_bridge_tokens.positive? && !bridge?(entity) && buying_power(entity) >= RIGHT_COST
       end
 
       def buy_tunnel_token(entity)
-        # todo: logic
-        puts 'bought tunnel'
+        seller = tunnel.closed? ? @bank : tunnel.owner
+        seller_name = tunnel.closed? ? 'the bank' : tunnel.owner.name
+        @log << "#{entity.name} buys a tunnel token from #{seller_name} for #{format_currency(RIGHT_COST)}"
+        entity.spend(RIGHT_COST, seller)
+        @available_tunnel_tokens -= 1
+        grant_right(entity, :tunnel)
       end
 
       def buy_bridge_token(entity)
-        # todo: logic
-        puts 'bought bridge'
+        seller = bridge.closed? ? @bank : bridge.owner
+        seller_name = bridge.closed? ? 'the bank' : bridge.owner.name
+        @log << "#{entity.name} buys a bridge token from #{seller_name} for #{format_currency(RIGHT_COST)}"
+        entity.spend(RIGHT_COST, seller)
+        @available_bridge_tokens -= 1
+        grant_right(entity, :bridge)
       end
+
+      def tunnel?(corporation)
+        # abilities will return an array if many or an Ability if one. [*foo(bar)] gets around that
+        corporation.all_abilities.any? { |ability| ability.type == :hex_bonus && ability.hexes.include?('B13') }
+      end
+
+      def bridge?(corporation)
+        # abilities will return an array if many or an Ability if one. [*foo(bar)] gets around that
+        corporation.all_abilities.any? { |ability| ability.type == :hex_bonus && ability.hexes.include?('P17') }
+      end
+
+      def grant_right(corporation, type)
+        corporation.add_ability(Engine::Ability::HexBonus.new(
+          type: :hex_bonus,
+          description: "+10 bonus when running to #{type == :tunnel ? 'Sarnia' : 'Buffalo'}",
+          hexes: type == :tunnel ? %w[B13] : %w[P17 P19],
+          amount: 10,
+          owner_type: :corporation
+        ))
+      end
+
+      def event_close_companies!
+        # The tokens reserved for the company's buyer are sent to the bank if closed before being bought in
+        @available_bridge_tokens += 1 if bridge.owned_by_player?
+        @available_tunnel_tokens += 1 if tunnel.owned_by_player?
+        super
+      end
+
+      def company_bought(company, entity)
+        grant_right(entity, :bridge) if company == bridge
+        grant_right(entity, :tunnel) if company == tunnel
+      end
+
       # Trying to do {static literal}.merge(super.static_literal) so that the capitalization shows up first.
       STATUS_TEXT = {
         'escrow' => [
