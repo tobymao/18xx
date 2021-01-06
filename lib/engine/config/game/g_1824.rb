@@ -803,7 +803,11 @@ module Engine
       "num": 4,
       "price": 360,
       "available_on": "4",
-      "rusts_on": "5g"
+      "rusts_on": "5g",
+      "events": [
+        {"type": "close_mountain_railways"},
+        {"type": "sd_formation"}
+      ]
     },
     {
       "name": "5",
@@ -812,7 +816,8 @@ module Engine
       "price": 450,
       "rusts_on": "10",
       "events": [
-        {"type": "close_companies"}
+        {"type": "close_coal_railways"},
+        {"type": "ug_formation"}
       ]
     },
     {
@@ -821,7 +826,7 @@ module Engine
       "num": 3,
       "price": 630,
       "events": [
-        {"type": "tokens_removed"}
+        {"type": "kk_formation"}
       ]
     },
     {
@@ -895,9 +900,6 @@ module Engine
       "tiles": [
         "yellow"
       ],
-      "status": [
-        "can_buy_p5"
-      ],
       "operating_rounds": 1
     },
     {
@@ -911,7 +913,9 @@ module Engine
         "green"
       ],
       "status": [
-        "can_buy_companies"
+        "can_buy_companies",
+        "may_exchange_coal_railways",
+        "may_exchange_mountain_railways"
       ],
       "operating_rounds": 2
     },
@@ -926,7 +930,8 @@ module Engine
         "green"
       ],
       "status": [
-        "can_buy_companies"
+        "can_buy_companies",
+        "may_exchange_coal_railways"
       ],
       "operating_rounds": 2
     },
