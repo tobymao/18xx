@@ -32,8 +32,7 @@ module Engine
       # TODO: game ends immediately after a company that has reached 377 finishes operating
       GAME_END_CHECK = { bank: :full_or }.freeze
 
-      # TODO: player leaves game or takes loan
-      BANKRUPTCY_ALLOWED = false
+      BANKRUPTCY_ALLOWED = true
 
       CLOSED_CORP_RESERVATIONS = :remain
 
@@ -115,7 +114,8 @@ module Engine
       AFG_HEXES = %w[C1 H8 M9 M11 B14].freeze
       PORT_HEXES = %w[a12 A5 L14 N8].freeze
 
-      attr_accessor :swap_choice_player, :swap_other_player, :swap_corporation
+      attr_accessor :swap_choice_player, :swap_other_player, :swap_corporation,
+                    :loan_choice_player, :player_debts
 
       def setup
         @corporations.sort_by! { rand }
@@ -126,6 +126,8 @@ module Engine
           c.shares.last.last_cert = true
         end
         @corporations[0].next_to_par = true
+
+        @player_debts = Hash.new { |h, k| h[k] = 0 }
       end
 
       def remove_corp
@@ -241,7 +243,8 @@ module Engine
 
       def operating_round(round_num)
         Round::Operating.new(self, [
-                               Step::Bankrupt,
+                               Step::G1849::LoanChoice,
+                               Step::G1849::Bankrupt,
                                Step::G1849::SwapChoice,
                                Step::SpecialTrack,
                                Step::BuyCompany,
@@ -483,6 +486,10 @@ module Engine
 
       def bank_sort(corporations)
         corporations
+      end
+
+      def player_value(player)
+        player.value - @player_debts[player]
       end
     end
   end

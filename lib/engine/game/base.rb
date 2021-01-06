@@ -506,9 +506,9 @@ module Engine
 
       def result
         @players
-          .sort_by(&:value)
-          .reverse
           .map { |p| [p.name, player_value(p)] }
+          .sort_by { |_, v| v }
+          .reverse
           .to_h
       end
 
