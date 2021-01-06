@@ -34,7 +34,7 @@ module Engine
         private
 
         def bonus_available?(entity)
-          return false if entity != gkb_owner || !@game.gkb
+          return false if !@game.gkb || entity.player != gkb_owner
 
           !@gkb_bonus_bought &&
           !@game.gkb.closed? &&

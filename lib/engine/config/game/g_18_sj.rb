@@ -314,7 +314,7 @@ module Engine
       "name": "Göta kanalbolag",
       "value": 40,
       "revenue": 10,
-      "desc": "Owning corporation may add +50/30/20 to train runs in hex E8, C8 and C16 in three different ORs",
+      "desc": "Owning corporation may add +50/30/20 to each train runs in hex E8, C8 and C16 in three different ORs. Each train can receive the bonus multiple times.",
       "sym": "GKB",
       "abilities": [
         {

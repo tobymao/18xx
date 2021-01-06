@@ -680,11 +680,11 @@ module Engine
 
         return bonus unless @gkb_bonus.positive?
 
-        revenue = 0
-        stops.select { |s| GKB_HEXES.include?(s.hex.name) }.each { |_s| revenue += @gkb_bonus }
-        if revenue.positive?
-          bonus[:revenue] = revenue
+        bonuses = stops.count { |s| GKB_HEXES.include?(s.hex.name) }
+        if bonuses.positive?
+          bonus[:revenue] = @gkb_bonus * bonuses
           bonus[:description] = 'GKB'
+          bonus[:description] += "x#{bonuses}" if bonuses > 1
         end
 
         bonus
