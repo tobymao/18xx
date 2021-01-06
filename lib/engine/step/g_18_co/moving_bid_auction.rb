@@ -17,7 +17,11 @@ module Engine
         end
 
         def active?
-          !entities.all?(&:passed?)
+          !all_passed?
+        end
+
+        def all_passed?
+          entities.all?(&:passed?)
         end
 
         def available
@@ -26,13 +30,14 @@ module Engine
 
         def skip!
           entity = @round.entities[@round.entity_index]
-          return unless entity.player? && entity.cash <= committed_cash(entity)
+          return unless entity.player?
+          return if entity.cash > committed_cash(entity)
 
           entity.pass!
           log_skip(entity)
-          all_passed! if entities.all?(&:passed?)
+          end_auction! if all_passed?
           @round.next_entity_index!
-          skip! unless entities.all?(&:passed?)
+          skip! if active?
         end
 
         def log_skip(entity)
@@ -43,7 +48,7 @@ module Engine
           entity = action.entity
           @log << "#{entity.name} passes bidding"
           entity.pass!
-          all_passed! if entities.all?(&:passed?)
+          end_auction! if all_passed?
           @round.next_entity_index!
         end
 
@@ -60,7 +65,7 @@ module Engine
         end
 
         def actions(entity)
-          return [] if entities.all?(&:passed?)
+          return [] unless active?
           return [] if entity.player? && entity.cash <= committed_cash(entity)
 
           ACTIONS
@@ -134,7 +139,7 @@ module Engine
           true
         end
 
-        def all_passed!
+        def end_auction!
           # company is deleted from @companies when they are won, so we can't loop
           # through @companies instead of @bids.
           @bids.each do |company, bids|
