@@ -23,6 +23,16 @@ module Engine
         @disabled_par_prices.delete(par)
       end
 
+      def move(corp)
+        super
+        return if corp.reached_max_value || !corp.share_price.end_game_trigger?
+
+        @game.log << "#{corp.name} reached #{@game.format_currency(377)} share value,
+                      game will end after it operates."
+        corp.reached_max_value = true
+        @game.max_value_reached = true
+      end
+
       def move_up(corporation)
         price = corporation.share_price.price
         return super unless BLOCKED_UP_PRICES.include?(price) && !@game.phase.status.include?('blue_zone')

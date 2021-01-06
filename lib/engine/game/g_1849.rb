@@ -29,9 +29,6 @@ module Engine
       GAME_PUBLISHER = :all_aboard_games
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1849'
 
-      # TODO: game ends immediately after a company that has reached 377 finishes operating
-      GAME_END_CHECK = { bank: :full_or }.freeze
-
       BANKRUPTCY_ALLOWED = true
 
       CLOSED_CORP_RESERVATIONS = :remain
@@ -115,7 +112,33 @@ module Engine
       PORT_HEXES = %w[a12 A5 L14 N8].freeze
 
       attr_accessor :swap_choice_player, :swap_other_player, :swap_corporation,
-                    :loan_choice_player, :player_debts
+                    :loan_choice_player, :player_debts,
+                    :max_value_reached
+
+      def game_ending_description
+        _, after = game_end_check
+        return unless after
+
+        return "Bank Broken : Game Ends at conclusion of
+                #{round_end.short_name} #{turn}.#{operating_rounds}" if after == :full_or
+        'Company hit max stock value : Game Ends after it operates'
+      end
+
+      def end_now?(after)
+        return false unless after
+
+        return false if after == :after_max_operates
+
+        @round.round_num == @operating_rounds
+      end
+
+      def game_end_check
+        return %i[custom after_max_operates] if @max_value_reached
+
+        return %i[bank full_or] if @bank.broken?
+
+        nil
+      end
 
       def setup
         @corporations.sort_by! { rand }
@@ -242,21 +265,21 @@ module Engine
       end
 
       def operating_round(round_num)
-        Round::Operating.new(self, [
-                               Step::G1849::LoanChoice,
-                               Step::G1849::Bankrupt,
-                               Step::G1849::SwapChoice,
-                               Step::SpecialTrack,
-                               Step::BuyCompany,
-                               Step::G1849::Track,
-                               Step::G1849::Token,
-                               Step::Route,
-                               Step::G1849::Dividend,
-                               Step::DiscardTrain,
-                               Step::BuyTrain,
-                               Step::G1849::IssueShares,
-                               [Step::BuyCompany, blocks: true],
-                             ], round_num: round_num)
+        Round::G1849::Operating.new(self, [
+          Step::G1849::LoanChoice,
+          Step::G1849::Bankrupt,
+          Step::G1849::SwapChoice,
+          Step::SpecialTrack,
+          Step::BuyCompany,
+          Step::G1849::Track,
+          Step::G1849::Token,
+          Step::Route,
+          Step::G1849::Dividend,
+          Step::DiscardTrain,
+          Step::BuyTrain,
+          Step::G1849::IssueShares,
+          [Step::BuyCompany, blocks: true],
+        ], round_num: round_num)
       end
 
       def track_type(paths)
@@ -305,6 +328,10 @@ module Engine
         return stop.route_revenue(phase, train) unless GRAY_REVENUE_CENTERS.keys.include?(stop.hex.id)
 
         GRAY_REVENUE_CENTERS[stop.hex.id][@phase.name]
+      end
+
+      def buying_power(entity, **)
+        entity.cash
       end
 
       def issuable_shares(entity)
