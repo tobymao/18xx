@@ -6,6 +6,23 @@ module Engine
   module Step
     module G1849
       class BuySellParShares < BuySellParShares
+        def setup
+          super
+          @game.old_operating_order = @game.corporations.sort
+        end
+
+        def pass!
+          @passed = true
+          if @current_actions.empty?
+            @round.pass_order |= [current_entity]
+            current_entity.pass!
+          else
+            @game.reorder_corps
+            @round.pass_order.delete(current_entity)
+            current_entity.unpass!
+          end
+        end
+
         def can_buy?(entity, bundle)
           super && @game.last_cert_last?(bundle)
         end

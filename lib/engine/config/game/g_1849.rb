@@ -12,8 +12,8 @@ module Engine
 {
   "filename": "1849",
   "modulename": "1849",
-  "currencyFormatStr": "L.%d",
   "bankCash": 7760,
+  "currencyFormatStr": "L.%d",
   "certLimit": {
     "3": 12,
     "4": 11,
@@ -24,9 +24,7 @@ module Engine
     "4": 375,
     "5": 300
   },
-  "capitalization": "incremental",
   "layout": "flat",
-  "mustSellInBlocks": true,
   "locationNames": {
     "A13": "Milazzo",
     "B14": "Messina",
@@ -425,16 +423,16 @@ module Engine
       ]
     },
     "blue": {
-      "offboard=revenue:20;path=a:5,b:_0": [
+      "offboard=revenue:20,route:optional;path=a:5,b:_0": [
         "a12"
       ],
-      "offboard=revenue:10;path=a:0,b:_0": [
+      "offboard=revenue:10,route:optional;path=a:0,b:_0": [
         "A5"
       ],
-      "offboard=revenue:20;path=a:4,b:_0,track:dual": [
+      "offboard=revenue:20,route:optional;path=a:4,b:_0,track:dual": [
         "N8"
       ],
-      "offboard=revenue:60;path=a:2,b:_0": [
+      "offboard=revenue:60,route:optional;path=a:2,b:_0": [
         "L14"
       ]
     },

@@ -23,7 +23,7 @@ module Engine
         @disabled_par_prices.delete(par)
       end
 
-      def move(corp)
+      def move(corp, row, column, force: false)
         super
         return if corp.reached_max_value || !corp.share_price.end_game_trigger?
 
