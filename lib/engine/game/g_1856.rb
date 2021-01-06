@@ -108,6 +108,14 @@ module Engine
         @port ||= company_by_id('GLSC')
       end
 
+      def tunnel
+        @tunnel ||= company_by_id('SCFTC')
+      end
+
+      def bridge
+        @bridge ||= company_by_id('NFSBC')
+      end
+
       def maximum_loans(entity)
         entity.num_player_shares
       end
@@ -327,6 +335,31 @@ module Engine
         corporation.capitalization = :incremental
       end
 
+      def can_buy_tunnel_token?(entity)
+        return false unless entity.corporation?
+        return false if tunnel.owned_by_player?
+
+        # todo: logic
+        true
+      end
+
+      def can_buy_bridge_token?(entity)
+        return false unless entity.corporation?
+        return false if bridge.owned_by_player?
+
+        # todo: logic
+        true
+      end
+
+      def buy_tunnel_token(entity)
+        # todo: logic
+        puts 'bought tunnel'
+      end
+
+      def buy_bridge_token(entity)
+        # todo: logic
+        puts 'bought bridge'
+      end
       # Trying to do {static literal}.merge(super.static_literal) so that the capitalization shows up first.
       STATUS_TEXT = {
         'escrow' => [
@@ -378,6 +411,7 @@ module Engine
 
           # Nationalization!!
           Step::G1856::NationalizationPayoff,
+          Step::G1856::SpecialBuy,
           Step::G1856::Track,
           Step::Token,
           Step::Route,

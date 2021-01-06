@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'view/game/buy_companies'
-require 'view/game/buy_special'
+require 'view/game/special_buy'
 require 'view/game/buy_trains'
 require 'view/game/company'
 require 'view/game/corporation'
@@ -28,7 +28,7 @@ module View
           entity = entity.owner if entity.company? && !round.active_entities.one?
 
           left = []
-          left << h(BuySpecial) if @current_actions.include?('buy_special')
+          left << h(SpecialBuy) if @current_actions.include?('special_buy')
           left << h(RouteSelector) if @current_actions.include?('run_routes')
           left << h(Dividend) if @current_actions.include?('dividend')
 

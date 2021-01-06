@@ -385,7 +385,7 @@ module Engine
       "sym": "SCFTC",
       "value": 100,
       "revenue": 20,
-      "desc": "The public company that owns this private company may add a $10 Port Huron bonus when running to Sarnia (B13). Other public companies may purchase the right for $50.",      "abilities": [
+      "desc": "The public company that owns this private company may add a $10 Port Huron bonus when running to Sarnia (B13). Other public companies may purchase the right for $50.",
       "abilities": [
         {
         "type": "hex_bonus",

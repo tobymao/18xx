@@ -95,7 +95,7 @@ module Engine
           Step::G1828::SpecialTrack,
           Step::G1828::BuyCompany,
           Step::G1828::SpecialToken,
-          Step::G1828::BuySpecial,
+          Step::G1828::SpecialBuy,
           Step::G1828::Track,
           Step::G1828::Token,
           Step::G1828::Route,
