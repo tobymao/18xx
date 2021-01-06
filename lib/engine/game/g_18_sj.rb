@@ -247,7 +247,7 @@ module Engine
           Step::Track,
           Step::Token,
           Step::G18SJ::BuyTrainBeforeRunRoute,
-          Step::G18SJ::BuySpecial,
+          Step::G18SJ::SpecialBuy,
           Step::G18SJ::Route,
           Step::G18SJ::Dividend,
           Step::SpecialBuyTrain,

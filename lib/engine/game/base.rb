@@ -1209,6 +1209,11 @@ module Engine
         !corporation.ipoed
       end
 
+      # Called by Engine::Step::BuyCompany to determine if the company's owner is even allowed to sell the company
+      def company_sellable(company)
+        !company.owner.is_a?(Corporation)
+      end
+
       def float_corporation(corporation)
         @log << "#{corporation.name} floats"
 
@@ -1358,6 +1363,9 @@ module Engine
         @queued_log.each { |l| @log << l }
         @queued_log = []
       end
+
+      # This is a hook to allow game specific logic to be invoked after a company is bought
+      def company_bought(company, buyer); end
 
       def ipo_name(_entity = nil)
         'IPO'

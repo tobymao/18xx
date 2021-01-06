@@ -88,7 +88,7 @@ module Engine
         )
 
         next_or!
-        expect(game.round.actions_for(ic)).to_not include('buy_special')
+        expect(game.round.actions_for(ic)).to_not include('special_buy')
         game.round.process_action(
           Engine::Action::LayTile.new(ic, tile: game.tile_by_id('8-2'), hex: game.hex_by_id('J10'), rotation: 5)
         )
@@ -99,10 +99,10 @@ module Engine
         next_or!
         expect(game.graph.connected_hexes(ic).include?(game.hex_by_id('J12'))).to be_falsey
         expect(game.graph.connected_hexes(ic).include?(game.hex_by_id('K13'))).to be_falsey
-        expect(game.round.actions_for(ic)).to include('buy_special')
+        expect(game.round.actions_for(ic)).to include('special_buy')
 
-        item = game.round.step_for(ic, 'buy_special').items.first
-        game.round.process_action(Engine::Action::BuySpecial.new(ic, item: item))
+        item = game.round.step_for(ic, 'special_buy').coal_marker
+        game.round.process_action(Engine::Action::SpecialBuy.new(ic, item: item))
         expect(game.coal_marker?(ic)).to be_truthy
         expect(va_tile.icons.count { |icon| icon.name == 'coal' }).to eq(1)
         expect(game.graph.connected_hexes(ic).include?(game.hex_by_id('J12'))).to be_truthy

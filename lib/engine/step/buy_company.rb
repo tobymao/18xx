@@ -50,8 +50,7 @@ module Engine
         company = action.company
         price = action.price
         owner = company.owner
-
-        raise GameError, "Cannot buy #{company.name} from #{owner.name}" if owner.is_a?(Corporation)
+        raise GameError, "Cannot buy #{company.name} from #{owner.name}" unless @game.company_sellable(company)
 
         min = company.min_price
         max = company.max_price
@@ -88,6 +87,9 @@ module Engine
 
         entity.companies << company
         entity.spend(price, owner.nil? ? @game.bank : owner)
+
+        @game.company_bought(company, entity)
+
         @log << "#{entity.name} buys #{company.name} from "\
                 "#{owner.nil? ? 'the market' : owner.name} for "\
                 "#{@game.format_currency(price)}"

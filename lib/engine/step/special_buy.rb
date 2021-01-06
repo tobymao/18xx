@@ -5,28 +5,27 @@ require_relative '../item'
 
 module Engine
   module Step
-    class BuySpecial < Base
-      ACTIONS = %w[buy_special pass].freeze
-      ACTIONS_NO_PASS = %w[buy_special].freeze
-
-      attr_accessor :items
+    class SpecialBuy < Base
+      ACTIONS = %w[special_buy pass].freeze
+      ACTIONS_NO_PASS = %w[special_buy].freeze
 
       def actions(entity)
-        return blocks? ? ACTIONS : ACTIONS_NO_PASS if can_buy_special?(entity)
+        return blocks? ? ACTIONS : ACTIONS_NO_PASS unless buyable_items(entity).empty?
 
         []
-      end
-
-      def can_buy_special?(_entity)
-        false
       end
 
       def blocks?
         @blocks
       end
 
+      # Which items are buyable for this entity?
+      def buyable_items(_entity)
+        []
+      end
+
       def description
-        'Buy Special'
+        'Special Buy'
       end
 
       def short_description; end
@@ -35,10 +34,9 @@ module Engine
         @acted ? "Done (#{short_description})" : "Skip (#{short_description})"
       end
 
-      def process_buy_special(action); end
+      def process_special_buy(action); end
 
       def setup
-        @items = []
         @blocks = @opts[:blocks] || false
       end
     end
