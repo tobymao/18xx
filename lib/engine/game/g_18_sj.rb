@@ -100,7 +100,7 @@ module Engine
         'L-S' => 'Stochholm-Luleå',
       }.freeze
 
-      BONUS_ICONS = %w[N S O V M m B b].freeze
+      BONUS_ICONS = %w[N S O V M m_lower_case B b_lower_case].freeze
 
       ASSIGNMENT_TOKENS = {
         'SB' => '/icons/18_sj/sb_token.svg',
@@ -632,11 +632,11 @@ module Engine
       def bergslagen_bonus(icons)
         bonus = { revenue: 0 }
 
-        if icons.include?('B') && icons.count('b') == 1
+        if icons.include?('B') && icons.count('b_lower_case') == 1
           bonus[:revenue] += 50
           bonus[:description] = 'b/B'
         end
-        if icons.include?('B') && icons.count('b') > 1
+        if icons.include?('B') && icons.count('b_lower_case') > 1
           bonus[:revenue] += 80
           bonus[:description] = 'b/B/b'
         end
@@ -647,11 +647,11 @@ module Engine
       def orefields_bonus(icons)
         bonus = { revenue: 0 }
 
-        if icons.include?('M') && icons.count('m') == 1
+        if icons.include?('M') && icons.count('m_lower_case') == 1
           bonus[:revenue] += 50
           bonus[:description] = 'm/M'
         end
-        if icons.include?('M') && icons.count('m') > 1
+        if icons.include?('M') && icons.count('m_lower_case') > 1
           bonus[:revenue] += 100
           bonus[:description] = 'm/M/m'
         end
