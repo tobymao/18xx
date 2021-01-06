@@ -555,8 +555,26 @@ module Engine
         end
         # Leftover cash is transferred
         major.spend(major.cash, national) if major.cash.positive?
+
         # Tunnel / Bridge rights are transferred
-        # TODO: Implement tunnel / bridge rights
+        if tunnel?(major)
+          if tunnel?(national)
+            @log << "#{national.name} already has a tunnel token, the token is returned to the bank pool"
+            @available_tunnel_tokens += 1
+          else
+            @log << "#{national.name} gets #{major.name}'s tunnel token"
+            grant_right(national, :tunnel)
+          end
+        end
+        if bridge?(major)
+          if bridge?(national)
+            @log << "#{national.name} already has a bridge token, the token is returned to the bank pool"
+            @available_bridge_tokens += 1
+          else
+            @log << "#{national.name} gets #{major.name}'s bridge token"
+            grant_right(national, :bridge)
+          end
+        end
 
         # Tokens:
         # Remove reservations
