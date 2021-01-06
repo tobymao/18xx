@@ -27,7 +27,7 @@ module Engine
 
         def setup
           super
-          @gkb_bonus_item = Item.new(description: 'GKB bonus', cost: 0)
+          @gkb_bonus_item ||= Item.new(description: 'GKB bonus', cost: 0)
           @gkb_bonus_bought = false
         end
 
