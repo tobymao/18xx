@@ -99,7 +99,7 @@ module Engine
         # TODO: Add bridge and tunnel private revenue modifiers
         route.corporation.companies.each do |company|
           abilities(company, :hex_bonus) do |ability|
-            revenue += stops.map { |s| s.hex.id }.uniq&.sum { |id| ability.hexes.include?(id) ? ability.amount : 0 }
+            revenue += stops.map { |s| s.hex.id }.uniq.sum { |id| ability.hexes.include?(id) ? ability.amount : 0 }
           end
         end
 
