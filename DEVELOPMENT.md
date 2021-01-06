@@ -9,10 +9,10 @@ See [Developing on Windows](https://github.com/tobymao/18xx/wiki/Developing-For-
 
 If configuring the droplet from scratch, these are the requirements:
 
-* `docker`
-* `docker-compose`
-* `make`
-* this repo (via `git clone`)
+- `docker`
+- `docker-compose`
+- `make`
+- this repo (via `git clone`)
 
 ### Docker
 
@@ -45,7 +45,7 @@ To update the code on the server with the latest master and rerun
 make prod_deploy
 ```
 
-* access the site at http://localhost:9292
+- access the site at http://localhost:9292
 
 Make code changes, and within a few seconds the app should restart. Manually
 refresh your browser to load the new app.
@@ -89,13 +89,13 @@ https://docs.docker.com/get-started/
 If `docker-compose up` requires login, you probably need to create an access
 token and login with the Docker CLI:
 
-* https://docs.docker.com/docker-hub/access-tokens/
-* https://docs.docker.com/engine/reference/commandline/login/
+- https://docs.docker.com/docker-hub/access-tokens/
+- https://docs.docker.com/engine/reference/commandline/login/
 
 Compose documentation:
 
-* https://docs.docker.com/compose/
-* https://docs.docker.com/compose/compose-file/
+- https://docs.docker.com/compose/
+- https://docs.docker.com/compose/compose-file/
 
 #### Before filing a pull request
 
@@ -109,3 +109,14 @@ Run `docker-compose exec rack rake stackprof[spec/fixtures/18_chesapeake/1277.js
 stackprof --d3-flamegraph stackprof.dump >stackprof.html
 stackprof stackprof.dump
 ```
+
+#### Testing a Game Migration
+
+Once a game has been made available on the website, bugs may be found where the solutions requires breaking active gamestates due to missing or added required actions. If the action is known to always need removal, or the additional action needed able to be determined computationally, we can automate this fix. This assumes you have a fixture/json file locally you want to fix.
+
+1. Update `repair` within `migrate_game.rb` with the logic required to add/delete a step
+2. Run `docker-compose exec rack irb`
+3. Execute `require migrate_game.rb`
+4. Execute `migrate_json('your_json_file.json')`
+
+This will apply the migrations to the game file you specified, allowing you to verify it worked as expected.
