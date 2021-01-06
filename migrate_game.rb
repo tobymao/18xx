@@ -72,7 +72,7 @@ def repair(game, original_actions, actions, broken_action)
     pass = Engine::Action::Pass.new(game.active_step.current_entity)
     pass.user = pass.entity.player.id
     actions.insert(action_idx, pass.to_h)
-    return    
+    return
   elsif game.active_step.is_a?(Engine::Step::G1867::SingleItemAuction)
     pass = Engine::Action::Pass.new(game.active_step.current_entity)
     pass.user = pass.entity.player.id
@@ -81,6 +81,11 @@ def repair(game, original_actions, actions, broken_action)
   elsif broken_action['type'] == 'pass'
     if game.active_step.is_a?(Engine::Step::G18CO::MovingBidAuction)
       # Added logic of skipping players with all committed cash removed need to pass
+      actions.delete(broken_action)
+      return
+    end
+    if game.is_a?(Engine::Game::G18CO) && game.active_step.is_a?(Engine::Step::CorporateBuyShares)
+      # Company buy step is now skipped as DSNG is closed and no companies are available
       actions.delete(broken_action)
       return
     end

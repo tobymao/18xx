@@ -565,7 +565,8 @@ module Engine
 
       def purchasable_companies(entity = nil)
         @companies.select do |company|
-          (company.owner&.player? || company.owner.nil?) &&
+          !company.closed? &&
+            (company.owner&.player? || company.owner.nil?) &&
             (entity.nil? || entity != company.owner) &&
             !abilities(company, :no_buy)
         end
