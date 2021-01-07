@@ -753,6 +753,21 @@ module Engine
         value
       end
 
+      def check_sale_timing(entity, corporation)
+        case self.class::SELL_AFTER
+        when :first
+          @turn > 1 || @round.operating?
+        when :operate
+          corporation.operated?
+        when :p_any_operate
+          corporation.operated? || corporation.president?(entity)
+        when :any_time
+          true
+        else
+          raise NotImplementedError
+        end
+      end
+
       def value_for_sellable(player, corporation)
         max_bundle = sellable_bundles(player, corporation).max_by(&:price)
         max_bundle&.price || 0

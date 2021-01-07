@@ -15,7 +15,8 @@ module Engine
         @round.recalculate_order if @round.respond_to?(:recalculate_order)
       end
 
-      def can_sell?(_entity, bundle)
+      def can_sell?(entity, bundle)
+        return false unless @game.check_sale_timing(entity, bundle.corporation)
         return false unless sellable_bundle?(bundle)
         return true if @game.class::EBUY_SELL_MORE_THAN_NEEDED
 
