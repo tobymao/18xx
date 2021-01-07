@@ -15,6 +15,7 @@ module Engine
         end
 
         def setup
+          @game.next_turn!
           start_entity
         end
 
@@ -26,6 +27,7 @@ module Engine
           return if action.free?
 
           if action.pass?
+            @game.next_turn!
             @entities.delete(action.entity)
             return finish_round if finished?
 
@@ -50,7 +52,6 @@ module Engine
         end
 
         def start_entity
-          @game.next_turn!
           @steps.each(&:unpass!)
           @steps.each(&:setup)
 
