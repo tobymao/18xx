@@ -96,7 +96,6 @@ module Engine
 
         revenue += 20 if route.corporation.assigned?(port.id) && stops.any? { |stop| stop.hex.assigned?(port.id) }
 
-        # TODO: Add bridge and tunnel private revenue modifiers
         route.corporation.companies.each do |company|
           abilities(company, :hex_bonus) do |ability|
             revenue += stops.map { |s| s.hex.id }.uniq.sum { |id| ability.hexes.include?(id) ? ability.amount : 0 }
@@ -231,7 +230,7 @@ module Engine
         # they'd have to buy 2 shares in one action which is a no-no
         # nil: Presidency not awarded yet at all
         # true: 1-share false presidency has been awarded
-        # false: 2-sahre true presidency has been awarded
+        # false: 2-share true presidency has been awarded
         @false_national_president = nil
 
         # 1 of each right is reserved w/ the private when it gets bought in. This leaves 2 extra to sell.
@@ -556,8 +555,26 @@ module Engine
         end
         # Leftover cash is transferred
         major.spend(major.cash, national) if major.cash.positive?
+
         # Tunnel / Bridge rights are transferred
-        # TODO: Implement tunnel / bridge rights
+        if tunnel?(major)
+          if tunnel?(national)
+            @log << "#{national.name} already has a tunnel token, the token is returned to the bank pool"
+            @available_tunnel_tokens += 1
+          else
+            @log << "#{national.name} gets #{major.name}'s tunnel token"
+            grant_right(national, :tunnel)
+          end
+        end
+        if bridge?(major)
+          if bridge?(national)
+            @log << "#{national.name} already has a bridge token, the token is returned to the bank pool"
+            @available_bridge_tokens += 1
+          else
+            @log << "#{national.name} gets #{major.name}'s bridge token"
+            grant_right(national, :bridge)
+          end
+        end
 
         # Tokens:
         # Remove reservations
