@@ -48,7 +48,7 @@ module Engine
       POOL_SHARE_DROP = :each
       SELL_MOVEMENT = :none
       ALL_COMPANIES_ASSIGNABLE = true
-      SELL_AFTER = :operate
+      SELL_AFTER = :after_ipo
       DEV_STAGE = :production
       OBSOLETE_TRAINS_COUNT_FOR_LIMIT = true
 
