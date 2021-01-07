@@ -940,9 +940,11 @@ module Engine
         "E13",
         "E15",
         "C17",
-        "G15",
         "I15",
         "N12"
+      ],
+      "city=revenue:0;stub=edge:1": [
+        "G15"
       ],
       "city=revenue:0;label=Y": [
         "E17",
@@ -952,7 +954,7 @@ module Engine
       "city=revenue:0;label=Y;label=O;upgrade=cost:20,terrain:water": [
         "J12"
       ],
-      "town=revenue:0;border=edge:5,type:water,cost:80": [
+      "town=revenue:0;border=edge:5,type:water,cost:80;stub=edge:0": [
         "L10"
       ],
       "town=revenue:0;border=edge:0,type:impassable": [
@@ -962,8 +964,10 @@ module Engine
         "C15",
         "B18",
         "H10",
-        "K13",
         "M13"
+      ],
+      "town=revenue:0;stub=edge:4": [
+        "K13"
       ]
     },
     "gray": {

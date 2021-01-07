@@ -39,6 +39,14 @@ def repair(game, original_actions, actions, broken_action)
     # Move token is now place token.
     broken_action['type'] = 'place_token'
     return [broken_action]
+  elsif broken_action['type'] == 'place_token' && game.is_a?(Engine::Game::G1867)
+    # Stub changed token numbering
+    hex_id = broken_action['city'].split('-')[0]
+    hex = game.hex_by_id(hex_id)
+    raise 'multiple city' unless hex.tile.cities.one?
+
+    broken_action['city'] = hex.tile.cities.first.id
+    return [broken_action]
   elsif game.active_step.is_a?(Engine::Step::BuyCompany)
     pass = Engine::Action::Pass.new(game.active_step.current_entity)
     pass.user = pass.entity.player.id

@@ -96,6 +96,10 @@ module Engine
         5 # constant
       end
 
+      def legal_tile_rotation?(_entity, hex, tile)
+        hex.tile.stubs.empty? || tile.exits.include?(hex.tile.stubs.first.edge)
+      end
+
       def init_corporations(stock_market)
         major_min_price = stock_market.par_prices.map(&:price).min
         minor_min_price = MINIMUM_MINOR_PRICE
@@ -535,7 +539,8 @@ module Engine
       def event_signal_end_game!
         # There's always 3 ORs after the 8 train is bought
         @final_operating_rounds = 3
-
+        # Hit the game end check now to set the correct turn
+        game_end_check
         @log << "First 8 train bought/exported, ending game at the end of #{@turn + 1}.#{@final_operating_rounds}"
       end
 
