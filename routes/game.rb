@@ -88,7 +88,7 @@ class Api
 
                 engine = engine.process_action(r.params)
                 halt(500, "Illegal action: #{engine.exception}") if engine.exception
-                action = engine.actions.last.to_h
+                action = engine.raw_actions.last.to_h
 
                 Action.create(
                   game: game,

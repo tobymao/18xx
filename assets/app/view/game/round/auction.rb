@@ -4,7 +4,6 @@ require 'view/game/actionable'
 require 'view/game/company'
 require 'view/game/par'
 require 'view/game/players'
-require 'view/game/undo_and_pass'
 
 module View
   module Game

@@ -28,6 +28,7 @@ require_relative '../stock_market'
 require_relative '../tile'
 require_relative '../train'
 require_relative '../player_info'
+require_relative '../game_log'
 
 module Engine
   module Game
@@ -72,11 +73,12 @@ module Engine
     end
 
     class Base
-      attr_reader :actions, :bank, :cert_limit, :cities, :companies, :corporations,
+      attr_reader :raw_actions, :actions, :bank, :cert_limit, :cities, :companies, :corporations,
                   :depot, :finished, :graph, :hexes, :id, :loading, :loans, :log, :minors,
                   :phase, :players, :operating_rounds, :round, :share_pool, :stock_market,
                   :tiles, :turn, :total_loans, :undo_possible, :redo_possible, :round_history, :all_tiles,
-                  :optional_rules, :exception, :last_processed_action, :broken_action
+                  :optional_rules, :exception, :last_processed_action, :broken_action,
+                  :turn_start_action_id, :last_turn_start_action_id
 
       DEV_STAGES = %i[production beta alpha prealpha].freeze
       DEV_STAGE = :prealpha
@@ -409,9 +411,13 @@ module Engine
         @loading = false
         @strict = strict
         @finished = false
-        @log = []
+        @log = Engine::GameLog.new(self)
         @queued_log = []
         @actions = []
+        @raw_actions = []
+        @turn_start_action_id = 0
+        @last_turn_start_action_id = 0
+
         @exception = nil
         @names = if names.is_a?(Hash)
                    names.freeze
@@ -541,12 +547,15 @@ module Engine
         actions.each.with_index do |action, index|
           case action['type']
           when 'undo'
-            i = filtered_actions.rindex { |a| a && a['type'] != 'message' }
-            active_undos << [filtered_actions[i], i]
-            filtered_actions[i] = nil
+            undo_to = action[:action_id] || filtered_actions.rindex { |a| a && a['type'] != 'message' }
+            active_undos << filtered_actions[undo_to...index].map.with_index do |a, i|
+              next if !a || a[:type] == 'message'
+
+              filtered_actions[undo_to + i] = nil
+              [a, undo_to + i]
+            end.compact
           when 'redo'
-            a, i = active_undos.pop
-            filtered_actions[i] = a
+            active_undos.pop.each { |undo| filtered_actions[undo.last] = undo.first }
           when 'message'
             # Messages do not get undoed.
             # warning adding more types of action here will break existing game
@@ -574,7 +583,7 @@ module Engine
             process_action(action)
           else
             # Restore the original action to the list to ensure action ids remain consistent but don't apply them
-            @actions << actions[index]
+            @raw_actions << actions[index]
           end
         end
         @redo_possible = active_undos.any?
@@ -583,9 +592,11 @@ module Engine
 
       def process_action(action)
         action = action_from_h(action) if action.is_a?(Hash)
-        action.id = current_action_id
+        action.id = current_action_id + 1
+        @raw_actions << action.to_h
+        return clone(@raw_actions) if action.is_a?(Action::Undo) || action.is_a?(Action::Redo)
+
         @actions << action
-        return clone(@actions) if action.is_a?(Action::Undo) || action.is_a?(Action::Redo)
 
         if action.user
           @log << "• Action(#{action.type}) via Master Mode by: #{player_by_id(action.user)&.name || 'Owner'}"
@@ -598,6 +609,7 @@ module Engine
         unless action.is_a?(Action::Message)
           @redo_possible = false
           @undo_possible = true
+          @last_game_action_id = action.id
         end
 
         action_processed(action)
@@ -659,7 +671,16 @@ module Engine
       end
 
       def current_action_id
-        @actions.size + 1
+        @raw_actions[-1]&.fetch('id') || 0
+      end
+
+      def last_game_action_id
+        @last_game_action_id || 0
+      end
+
+      def next_turn!
+        @last_turn_start_action_id = @turn_start_action_id
+        @turn_start_action_id = current_action_id
       end
 
       def action_from_h(h)
@@ -1888,7 +1909,6 @@ module Engine
 
       def event_close_companies!
         @log << '-- Event: Private companies close --'
-
         @companies.each do |company|
           if (ability = abilities(company, :close))
             next if ability.when == 'never' ||

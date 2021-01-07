@@ -9,7 +9,6 @@ require 'view/game/par'
 require 'view/game/players'
 require 'view/game/sell_shares'
 require 'view/game/stock_market'
-require 'view/game/undo_and_pass'
 require 'view/game/bid'
 
 module View

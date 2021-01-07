@@ -137,6 +137,8 @@ module Engine
       end
 
       def next_entity_index!
+        # If overriding, make sure to call @game.next_turn!
+        @game.next_turn!
         @entity_index = (@entity_index + 1) % @entities.size
       end
 

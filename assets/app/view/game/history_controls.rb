@@ -17,13 +17,13 @@ module View
 
         divs = [h('b.margined', 'History')]
         cursor = Lib::Params['action']&.to_i
-        style_extra = { marginRight: '2rem' }
+        style_extra = { marginRight: '2rem', color: 'currentColor' }
 
         unless cursor&.zero?
           divs << history_link('|<', 'Start', 0, style_extra)
 
           last_round =
-            if cursor == @game.actions.size
+            if cursor == @game.raw_actions.size
               @game.round_history[-2]
             else
               @game.round_history[-1]

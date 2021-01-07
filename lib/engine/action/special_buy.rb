@@ -8,7 +8,7 @@ module Engine
       attr_reader :entity, :item
 
       def initialize(entity, item:)
-        @entity = entity
+        super(entity)
         @item = item
       end
 

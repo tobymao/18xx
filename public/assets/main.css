@@ -30,6 +30,9 @@ button.small {
 button:last-child, button.par_price:nth-of-type(6n), button.sell_share:nth-of-type(3n) {
   margin-right: 0;
 }
+button:disabled {
+  background: gray;
+}
 
 h2 {
   font-size: 1.2rem;
@@ -53,7 +56,7 @@ p {
   a:active {
     outline: 0;
   }
-  button:hover, .button_link:hover {
+  button:hover:not([disabled]), .button_link:hover {
     background: black;
     border-color: gainsboro;
     color: gainsboro;
@@ -114,6 +117,10 @@ th, td {
 
   button, .button_link, input, select, textarea {
     background-color: gainsboro;
+  }
+
+  div.undo {
+    float: left;
   }
 }
 
@@ -356,4 +363,18 @@ table.center {
 div.game.card em {
   font-style: normal;
   text-decoration: underline;
+}
+
+div.history {
+  float: left;
+}
+
+div.undo {
+  float: right;
+}
+
+@media only screen and (max-width: 420px) {
+  div.undo {
+    float: left;
+  }
 }

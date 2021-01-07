@@ -8,7 +8,7 @@ module Engine
       attr_reader :company, :corporation, :price, :from_company, :from_price
 
       def initialize(entity, price:, company: nil, corporation: nil, from_company:, from_price:)
-        @entity = entity
+        super(entity)
         @company = company
         @corporation = corporation
         @price = price

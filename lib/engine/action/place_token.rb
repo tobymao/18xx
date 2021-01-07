@@ -8,7 +8,7 @@ module Engine
       attr_reader :city, :slot, :token
 
       def initialize(entity, city:, slot:, token_type: nil)
-        @entity = entity
+        super(entity)
         @city = city
         @slot = slot
         # token may be nil because when you upgrade someone's 00

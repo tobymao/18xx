@@ -3,7 +3,6 @@
 require 'lib/color'
 require 'lib/settings'
 require 'view/game/actionable'
-require 'view/game/undo_and_pass'
 
 module View
   module Game

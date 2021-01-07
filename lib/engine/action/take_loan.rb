@@ -8,7 +8,7 @@ module Engine
       attr_reader :loan
 
       def initialize(entity, loan:)
-        @entity = entity
+        super(entity)
         @loan = loan
       end
 

@@ -8,7 +8,7 @@ module Engine
       attr_reader :message
 
       def initialize(entity, message:)
-        @entity = entity
+        super(entity)
         @message = message
       end
 

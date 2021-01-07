@@ -9,7 +9,7 @@ module Engine
       attr_reader :train, :price, :exchange, :variant, :shell
 
       def initialize(entity, train:, price:, variant: nil, exchange: nil, shell: nil)
-        @entity = entity
+        super(entity)
         @train = train
         @price = price
         @variant = variant

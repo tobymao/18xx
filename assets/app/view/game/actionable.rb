@@ -16,6 +16,7 @@ module View
         base.needs :selected_company, default: nil, store: true
         base.needs :app_route, default: nil, store: true
         base.needs :round_history, default: nil, store: true
+        base.needs :selected_action_id, default: nil, store: true
       end
 
       def save_user_settings(settings)
@@ -109,9 +110,10 @@ module View
       def clear_ui_state
         store(:selected_company, nil, skip: true)
         store(:tile_selector, nil, skip: true)
+        store(:selected_action_id, nil, skip: true)
       end
 
-      def history_link(text, title, action_id = nil, style_extra = {})
+      def history_link(text, title, action_id = nil, style_extra = {}, as_button = false)
         route = Lib::Params.add(@app_route, 'action', action_id)
 
         click = lambda do
@@ -121,18 +123,19 @@ module View
           clear_ui_state
         end
 
-        h(
-          Link,
+        props = {
           href: route,
           click: click,
           title: title,
           children: text,
           style: {
-            color: 'currentColor',
             textDecoration: 'none',
             **style_extra,
           },
-        )
+        }
+        props['class'] = '.button_link' if as_button
+
+        h(Link, props)
       end
     end
   end
