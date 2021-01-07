@@ -436,12 +436,6 @@ module Engine
         end
       end
 
-      def check_connected(route, token)
-        return if route.train.name == 'E'
-
-        super
-      end
-
       private
 
       def check_second_lay(action)
