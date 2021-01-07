@@ -78,7 +78,7 @@ module Engine
                   :phase, :players, :operating_rounds, :round, :share_pool, :stock_market,
                   :tiles, :turn, :total_loans, :undo_possible, :redo_possible, :round_history, :all_tiles,
                   :optional_rules, :exception, :last_processed_action, :broken_action,
-                  :turn_start_action, :last_turn_start_action
+                  :turn_start_action_id, :last_turn_start_action_id
 
       DEV_STAGES = %i[production beta alpha prealpha].freeze
       DEV_STAGE = :prealpha
@@ -410,8 +410,8 @@ module Engine
         @queued_log = []
         @actions = []
         @raw_actions = []
-        @turn_start_action = 0
-        @last_turn_start_action = 0
+        @turn_start_action_id = 0
+        @last_turn_start_action_id = 0
 
         @exception = nil
         @names = if names.is_a?(Hash)
@@ -604,7 +604,7 @@ module Engine
         unless action.is_a?(Action::Message)
           @redo_possible = false
           @undo_possible = true
-          @last_game_action = action.id
+          @last_game_action_id = action.id
         end
 
         action_processed(action)
@@ -669,13 +669,13 @@ module Engine
         @raw_actions[-1]&.fetch('id') || 0
       end
 
-      def last_game_action
-        @last_game_action || 0
+      def last_game_action_id
+        @last_game_action_id || 0
       end
 
       def next_turn!
-        @last_turn_start_action = @turn_start_action
-        @turn_start_action = current_action_id
+        @last_turn_start_action_id = @turn_start_action_id
+        @turn_start_action_id = current_action_id
       end
 
       def action_from_h(h)

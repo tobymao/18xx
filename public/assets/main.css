@@ -118,6 +118,10 @@ th, td {
   button, .button_link, input, select, textarea {
     background-color: gainsboro;
   }
+
+  div.undo {
+    float: left;
+  }
 }
 
 nav#game_menu {
@@ -359,4 +363,18 @@ table.center {
 div.game.card em {
   font-style: normal;
   text-decoration: underline;
+}
+
+div.history {
+  float: left;
+}
+
+div.undo {
+  float: right;
+}
+
+@media only screen and (max-width: 420px) {
+  div.undo {
+    float: left;
+  }
 }

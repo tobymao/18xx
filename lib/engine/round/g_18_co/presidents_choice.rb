@@ -38,7 +38,6 @@ module Engine
         end
 
         def passed_next_entity_index!
-          @game.next_turn!
           @entity_index = @entity_index % @entities.size
         end
 
@@ -51,6 +50,7 @@ module Engine
         end
 
         def start_entity
+          @game.next_turn!
           @steps.each(&:unpass!)
           @steps.each(&:setup)
 

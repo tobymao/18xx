@@ -17,11 +17,11 @@ module View
       end
 
       def history
-        h(:div, { style: { float: :left, marginBottom: '0.5rem' } }, [h(HistoryControls, num_actions: @num_actions)])
+        h('div.history', { style: { marginBottom: '0.5rem' } }, [h(HistoryControls, num_actions: @num_actions)])
       end
 
       def undo
-        h(:div, { style: { float: :right } }, [h(UndoButton), h(RestartTurnButton), h(RedoButton)])
+        h('div.undo', [h(UndoButton), h(RestartTurnButton), h(RedoButton)])
       end
     end
   end
