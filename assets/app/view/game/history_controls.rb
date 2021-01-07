@@ -23,7 +23,7 @@ module View
           divs << history_link('|<', 'Start', 0, style_extra)
 
           last_round =
-            if cursor == @game.actions.size
+            if cursor == @game.raw_actions.size
               @game.round_history[-2]
             else
               @game.round_history[-1]

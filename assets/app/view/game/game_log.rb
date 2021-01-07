@@ -63,28 +63,24 @@ module View
       end
 
       def log
-        has_timestamps = @game.actions.any? { |a| a.is_a?(Engine::Action::Base) && a.created_at }
-
         # Create a fake action zero, so special handling isn't required throughout
         action_zero = Engine::Action::Base.new(@game.players.first)
         action_zero.id = 0
-        action_zero.created_at = (@game.actions[0]&.created_at || Time.now) if has_timestamps
+        action_zero.created_at = @game.actions[0]&.created_at || Time.now
 
         last_action = nil
         the_log = @game.log.group_by(&:action_id).flat_map do |action_id, entries|
           children = []
-          action = action_id.zero? ? action_zero : @game.actions[action_id - 1]
+          action = action_id.zero? ? action_zero : @game.actions.find { |a| a.id == action_id }
 
-          if has_timestamps
-            action.created_at ||= Time.now
-
-            if !last_action || Time.at(action.created_at).yday != Time.at(last_action.created_at).yday
-              children << date_banner(action.created_at)
-            end
+          puts last_action.to_h
+          puts action.to_h
+          if !last_action || Time.at(action.created_at).yday != Time.at(last_action.created_at).yday
+            children << date_banner(action.created_at)
           end
           last_action = action
 
-          children << log_for_action(entries, action, has_timestamps)
+          children << log_for_action(entries, action)
           children
         end
 
@@ -128,12 +124,12 @@ module View
         h('div#chatlog', props, the_log)
       end
 
-      def log_for_action(log, action, include_timestamps)
+      def log_for_action(log, action)
         timestamp_props = { style: { margin: '0 0.2rem',
                                      fontSize: 'smaller' } }
         message_props = { style: { margin: '0 0.2rem' } }
 
-        timestamp = "[#{Time.at(action.created_at || Time.now).strftime('%R')}]" if include_timestamps
+        timestamp = "[#{Time.at(action.created_at || Time.now).strftime('%R')}]"
 
         action_log = log.flat_map do |entry|
           line = entry.message
@@ -152,10 +148,8 @@ module View
             line = "#{sender}: #{line.message}"
           end
 
-          children = []
-          children << h('span.timestamp', timestamp_props, timestamp) if include_timestamps
-          children << h('span.message', message_props, line)
-          h('div.chatline', line_props, children)
+          h('div.chatline', line_props,
+            [h('span.timestamp', timestamp_props, timestamp), h('span.message', message_props, line)])
         end
 
         if !action.is_a?(Engine::Action::Message) && @action_id == action.id && @game.last_game_action != action.id

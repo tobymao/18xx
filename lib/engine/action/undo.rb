@@ -8,7 +8,7 @@ module Engine
       attr_reader :action_id
 
       def initialize(entity, action_id: nil)
-        @entity = entity
+        super(entity)
         @action_id = action_id
       end
 

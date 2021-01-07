@@ -8,7 +8,7 @@ module Engine
       attr_reader :corporation
 
       def initialize(entity, corporation:)
-        @entity = entity
+        super(entity)
         @corporation = corporation
       end
 
