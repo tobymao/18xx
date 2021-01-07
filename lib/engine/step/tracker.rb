@@ -142,7 +142,8 @@ module Engine
           "#{spender == entity ? '' : " (#{entity.sym})"}"\
           "#{cost.zero? ? '' : " spends #{@game.format_currency(cost)} and"}"\
           " lays tile ##{tile.name}"\
-          " with rotation #{rotation} on #{hex.name}"
+          " with rotation #{rotation} on #{hex.name}"\
+          "#{tile.location_name.to_s.empty? ? '' : " (#{tile.location_name})"}"
 
         return unless terrain.any?
 
