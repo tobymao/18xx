@@ -52,6 +52,8 @@ module Engine
           entity == trainless_major&.first && entity.corporation?
         end
 
+        def swap_sell(_player, _corporation, _bundle, _pool_share); end
+
         def can_sell?(_entity, _bundle)
           false
         end

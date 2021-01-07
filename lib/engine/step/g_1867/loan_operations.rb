@@ -23,7 +23,7 @@ module Engine
 
           owed = @game.pay_interest!(entity)
           if owed
-            nationalize!(entity)
+            @game.nationalize!(entity)
             # @todo: will this skip the rest of the entities turn?
             return
           end
