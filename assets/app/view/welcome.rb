@@ -17,8 +17,8 @@ module View
 
     def render_notification
       message = <<~MESSAGE
+        <p>You can now click on the log to view history or undo to any point in time!</p>
         <p>18Chesapeake After Dark has been renamed to be 18Chesapeake Off The Rails.</p>
-        <p>Performance improvements -- more to come. 1817 should be more playable now.</p>
 
         <p>Please file <a href='https://github.com/tobymao/18xx/issues'>issues and ideas</a> on
         <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>.<br>

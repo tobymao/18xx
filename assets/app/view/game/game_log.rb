@@ -54,6 +54,7 @@ module View
 
         props = {
           style: {
+            cursor: 'pointer',
             display: 'inline-block',
             width: '100%',
           },
@@ -64,14 +65,17 @@ module View
 
       def render_log
         # Create a fake action zero, so special handling isn't required throughout
-        action_zero = Engine::Action::Base.new(@game.players.first)
-        action_zero.id = 0
-        action_zero.created_at = @game.actions[0]&.created_at || Time.now
+        blank_action = Engine::Action::Base.new(@game.players.first)
+        blank_action.id = 0
+        blank_action.created_at = @game.actions[0]&.created_at || Time.now
 
         last_action = nil
+
+        actions = @game.actions.map { |a| [a.id, a] }.to_h
+
         the_log = @game.log.group_by(&:action_id).flat_map do |action_id, entries|
           children = []
-          action = action_id.zero? ? action_zero : @game.actions.find { |a| a.id == action_id }
+          action = actions[action_id] || blank_action
 
           if !last_action || Time.at(action.created_at).yday != Time.at(last_action.created_at).yday
             children << render_date_banner(action.created_at)
@@ -129,6 +133,10 @@ module View
 
         timestamp = "[#{Time.at(action.created_at || Time.now).strftime('%R')}]"
 
+        click = lambda do
+          store(:selected_action_id, @selected_action_id == action.id ? nil : action.id)
+        end
+
         action_log = log.flat_map do |entry|
           line = entry.message
 
@@ -136,7 +144,7 @@ module View
                                   marginBottom: '0.2rem',
                                   paddingLeft: '0.5rem',
                                   textIndent: '-0.5rem' },
-                         on: { click: -> { store(:selected_action_id, action.id) } } }
+                         on: { click: click } }
           line_props[:style][:fontWeight] = 'bold' if line.is_a?(String) && line.start_with?('--')
 
           if line.is_a?(Engine::Action::Message)
