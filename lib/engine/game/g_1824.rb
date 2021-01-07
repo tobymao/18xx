@@ -22,6 +22,9 @@ module Engine
 
       GAME_END_CHECK = { bank: :full_or }.freeze
 
+      # Do not allow presidency swap during emergency buy
+      EBUY_PRES_SWAP = false
+
       # Move down one step for a whole block, not per share
       SELL_MOVEMENT = :down_block
 
@@ -201,7 +204,7 @@ module Engine
 
       def operating_round(round_num)
         Round::Operating.new(self, [
-          Step::Bankrupt,
+          Step::G1824::Loan,
           Step::DiscardTrain,
           Step::BuyCompany,
           Step::HomeToken,
@@ -210,7 +213,7 @@ module Engine
           Step::Token,
           Step::Route,
           Step::Dividend,
-          Step::BuyTrain,
+          Step::G1824::BuyTrain,
           [Step::BuyCompany, blocks: true],
         ], round_num: round_num)
       end
@@ -221,6 +224,22 @@ module Engine
         Round::G1824::Stock.new(self, [
           Step::G1824::BuySellParShares,
         ])
+      end
+
+      def new_operating_round(round_num = 1)
+        if round_num == 1
+          # Players need to pay interest if in debt after SR
+          @players.each do |p|
+            next unless p.cash.negative?
+
+            debt = -p.cash
+            interest = (debt / 2.0).ceil
+            p.spend(interest, @bank, check_cash: false)
+            @log << "#{p.name} has to borrow another #{format_currency(interest)} as being in debt at end of SR"
+          end
+        end
+
+        super
       end
 
       def purchasable_companies(_entity = nil)
@@ -249,6 +268,42 @@ module Engine
 
       def can_par?(corporation, parrer)
         super && !corporation.all_abilities.find { |a| a.type == :no_buy }
+      end
+
+      def head_loan
+        @depot.min_depot_price - current_entity.cash - current_entity.player.cash
+      endloan
+
+      def take_loan(entity, amount)
+        raise GameError, 'Cannot take loan' unless amount.positive?
+
+        player = entity.player
+        @loan_amount = 1.5 * amount
+        @loanee = player
+        @log << "#{player.name} takes a loan and receives #{format_currency(amount)}" \
+          " and the debt of #{format_currency(@loan_amount)} (150% of loan) will" \
+          ' be incurred after the train buy.'
+        @log << "As long as #{player.name} has negative cash #{player.name} cannot buy shares "\
+          ' and will get 50% interest of current debt added at the end of each SR'
+        @bank.spend(amount, entity.player)
+      end
+
+      def after_process(action)
+        super
+
+        if @loanee
+          p.spend(@loan_amount, @bank, check_cash: false)
+          @log << "#{@loanee.name} gets debt of #{format_currency(@loan_amount)} due to loan taken during emergency buy"
+        end
+
+        @loan_amount = nil
+        @loanee = nil
+      end
+
+      def emergency?(entity)
+        return false unless @round.active_step.respond_to?(:must_buy_train?)
+
+        @round.active_step.must_buy_train?(entity)
       end
 
       private

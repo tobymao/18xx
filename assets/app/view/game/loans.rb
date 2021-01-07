@@ -17,7 +17,7 @@ module View
           children << h(
             :button,
             { on: { click: lambda do
-              process_action(Engine::Action::TakeLoan.new(@corporation, loan: @game.loans[0]))
+              process_action(Engine::Action::TakeLoan.new(@corporation, loan: @game.head_loan))
             end } },
             'Take Loan',
           )

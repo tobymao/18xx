@@ -1515,6 +1515,10 @@ module Engine
         0
       end
 
+      def head_loan
+        @loans.first
+      end
+
       def corporation_opts
         {}
       end

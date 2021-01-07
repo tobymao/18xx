@@ -9,7 +9,7 @@ module InterestOnLoans
     owed = interest_owed(entity)
 
     while owed > entity.cash &&
-        (loan = loans[0]) &&
+        (loan = head_loan) &&
         entity.loans.size < maximum_loans(entity)
       take_loan(entity, loan)
       owed = interest_owed(entity)

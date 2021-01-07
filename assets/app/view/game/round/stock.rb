@@ -160,7 +160,7 @@ module View
           take_loan = lambda do
             process_action(Engine::Action::TakeLoan.new(
               corporation,
-              loan: @game.loans[0],
+              loan: @game.head_loan,
             ))
           end
 
