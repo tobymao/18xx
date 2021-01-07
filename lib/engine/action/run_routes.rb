@@ -24,6 +24,7 @@ module Engine
             revenue_str: route['revenue_str'],
             subsidy: route['subsidy'],
             halts: route['halts'],
+            ability: route['ability'],
           }.select { |_, v| v }
 
           routes << Route.new(
@@ -48,6 +49,7 @@ module Engine
             'revenue_str' => route.revenue_str,
             'subsidy' => route.subsidy,
             'halts' => route.halts,
+            'ability' => route.ability,
           }.select { |_, v| v }
         end
 

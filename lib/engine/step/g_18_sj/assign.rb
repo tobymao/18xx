@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../assign'
+require_relative '../../game_error'
 
 module Engine
   module Step
@@ -86,7 +87,7 @@ module Engine
         end
 
         def process_pass(action)
-          @game.game_error("Not #{action.entity.name}'s turn: #{action.to_h}") unless action.entity == @sveabolaget
+          raise GameError "Not #{action.entity.name}'s turn: #{action.to_h}" unless action.entity == @sveabolaget
 
           if (ability = @game.abilities(@sveabolaget, :assign_hexes))
             ability.use!

@@ -5,7 +5,7 @@ require_relative 'game_error'
 module Engine
   class Route
     attr_accessor :halts
-    attr_reader :last_node, :phase, :train, :routes
+    attr_reader :last_node, :phase, :train, :routes, :ability
 
     def initialize(game, phase, train, **opts)
       @game = game
@@ -19,6 +19,7 @@ module Engine
       @revenue_str = opts[:revenue_str]
       @subsidy = opts[:subsidy]
       @halts = opts[:halts]
+      @ability = opts[:ability]
 
       @connection_data = nil
       @last_node = nil

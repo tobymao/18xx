@@ -41,6 +41,11 @@ module Engine
           @log << "#{entity.name} runs a #{train.name} train for #{revenue}: #{route.revenue_str}"
         end
         pass!
+
+        abilities = @round.routes.map(&:ability)
+        return unless (ability_type = abilities.first)
+
+        @game.abilities(action.entity, ability_type)&.use!
       end
 
       def available_hex(entity, hex)

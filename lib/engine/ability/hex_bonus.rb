@@ -5,7 +5,8 @@ require_relative 'base'
 module Engine
   module Ability
     class HexBonus < Base
-      attr_reader :hexes, :amount
+      attr_accessor :amount
+      attr_reader :hexes
 
       def setup(hexes:, amount:)
         @hexes = hexes

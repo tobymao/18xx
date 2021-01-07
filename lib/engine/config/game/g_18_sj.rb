@@ -314,15 +314,21 @@ module Engine
       "name": "Göta kanalbolag",
       "value": 40,
       "revenue": 10,
-      "desc": "Owning corporation may add +50/30/20 to each train runs in hex E8, C8 and C16 in three different ORs. Each train can receive the bonus multiple times.",
+      "desc": "Owning corporation may add a hex bonus to each train visit to any of the hexes E8, C8 and C16 in three different ORs. Each train can receive the bonus multiple times. The bonus are 50kr the first time this ability is used, 30kr the second and 20kr the third and last time. Using this ability will not close the prive.",
       "sym": "GKB",
       "abilities": [
         {
-          "type": "base",
-          "count": 3,
-          "owner_type": "corporation"
-        }
-      ]
+        "type": "hex_bonus",
+        "owner_type": "corporation",
+        "hexes": [
+          "C8",
+          "C16",
+          "E8"
+        ],
+        "count": 3,
+        "amount": 50,
+        "when": "route"
+      }]
     },
     {
       "name": "Sveabolaget",
