@@ -33,6 +33,8 @@ module Engine
           player.spend(player.cash, corp) if player.cash.positive?
           @game.close_corporation(corp)
 
+          @game.reorder_corps
+
           # play continues if the player has any assets at all
           return if !player.shares.empty? || !player.companies.empty?
 

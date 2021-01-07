@@ -29,6 +29,8 @@ module Engine
       GAME_PUBLISHER = :all_aboard_games
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1849'
 
+      CAPITALIZATION = :incremental
+
       BANKRUPTCY_ALLOWED = true
 
       CLOSED_CORP_RESERVATIONS = :remain
@@ -39,9 +41,6 @@ module Engine
       SELL_BUY_ORDER = :sell_buy
       SELL_MOVEMENT = :down_per_10
       POOL_SHARE_DROP = :one
-
-      # TODO: companies must be sold in operating order
-      # SELL_ORDER = :market_value
 
       MARKET_TEXT = Base::MARKET_TEXT.merge(phase_limited: 'Can only enter during phase 16').freeze
       STOCKMARKET_COLORS = {
@@ -113,7 +112,8 @@ module Engine
 
       attr_accessor :swap_choice_player, :swap_other_player, :swap_corporation,
                     :loan_choice_player, :player_debts,
-                    :max_value_reached
+                    :max_value_reached,
+                    :old_operating_order
 
       def game_ending_description
         _, after = game_end_check
@@ -276,7 +276,7 @@ module Engine
           Step::Route,
           Step::G1849::Dividend,
           Step::DiscardTrain,
-          Step::BuyTrain,
+          Step::G1849::BuyTrain,
           Step::G1849::IssueShares,
           [Step::BuyCompany, blocks: true],
         ], round_num: round_num)
@@ -332,6 +332,29 @@ module Engine
 
       def buying_power(entity, **)
         entity.cash
+      end
+
+      def reorder_corps
+        same_spot =
+          @corporations
+            .select(&:floated?)
+            .group_by(&:share_price)
+            .select { |_, v| v.size > 1 }
+        return if same_spot.empty?
+
+        same_spot.each do |sp, corps|
+          current_order = corps.sort.map(&:name)
+          reordered = corps.sort_by { |c| @old_operating_order.index(c) }
+          new_order = reordered.map(&:name)
+          next if current_order == new_order
+
+          @log << 'Updating operating order for corporations
+                    on same share value space to maintain relative order before sales.'
+          @log << "#{current_order} --> #{new_order}"
+          sp.corporations.clear
+          sp.corporations.concat(reordered)
+        end
+        @old_operating_order = nil
       end
 
       def issuable_shares(entity)

@@ -59,6 +59,10 @@ module Engine
       @limited = !unlimited_types.include?(type)
     end
 
+    def ==(other)
+      @coordinates == other.coordinates
+    end
+
     def id
       "#{@price},#{@coordinates.join(',')}"
     end
