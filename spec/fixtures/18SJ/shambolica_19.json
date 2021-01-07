@@ -4960,6 +4960,12 @@
       "id": 551
     },
     {
+      "type": "pass",
+      "entity": "SNJ",
+      "entity_type": "corporation",
+      "id": 552
+    },
+    {
       "type": "lay_tile",
       "entity": "SNJ",
       "entity_type": "corporation",
@@ -6014,16 +6020,6 @@
       "id": 660
     },
     {
-      "type": "sell_shares",
-      "entity": 6,
-      "entity_type": "player",
-      "id": 660.5,
-      "shares": [
-        "MÖJ_3"
-      ],
-      "percent": 10
-    },
-    {
       "type": "buy_train",
       "entity": "SWB",
       "entity_type": "corporation",
@@ -6267,6 +6263,70 @@
     },
     {
       "type": "lay_tile",
+      "entity": "MÖJ",
+      "entity_type": "corporation",
+      "id": 681,
+      "hex": "E10",
+      "tile": "23-2",
+      "rotation": 1
+    },
+    {
+      "type": "pass",
+      "entity": "MÖJ",
+      "entity_type": "corporation",
+      "id": 682
+    },
+    {
+      "type": "run_routes",
+      "entity": "MÖJ",
+      "entity_type": "corporation",
+      "id": 683,
+      "routes": [
+        {
+          "train": "6-0",
+          "connections": [
+            [
+              "C2",
+              "C4",
+              "B5"
+            ],
+            [
+              "B5",
+              "A6"
+            ],
+            [
+              "C8",
+              "B7",
+              "A6"
+            ],
+            [
+              "C8",
+              "C10",
+              "B11"
+            ],
+            [
+              "B11",
+              "A10"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "MÖJ",
+      "entity_type": "corporation",
+      "id": 684,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "MÖJ",
+      "entity_type": "corporation",
+      "id": 685
+    },
+    {
+      "type": "lay_tile",
       "entity": "TGOJ",
       "entity_type": "corporation",
       "id": 686,
@@ -6359,70 +6419,6 @@
       "entity": "TGOJ",
       "entity_type": "corporation",
       "id": 693
-    },
-    {
-      "type": "lay_tile",
-      "entity": "MÖJ",
-      "entity_type": "corporation",
-      "id": 693.2,
-      "hex": "E10",
-      "tile": "23-2",
-      "rotation": 1
-    },
-    {
-      "type": "pass",
-      "entity": "MÖJ",
-      "entity_type": "corporation",
-      "id": 693.3
-    },
-    {
-      "type": "run_routes",
-      "entity": "MÖJ",
-      "entity_type": "corporation",
-      "id": 693.4,
-      "routes": [
-        {
-          "train": "6-0",
-          "connections": [
-            [
-              "C2",
-              "C4",
-              "B5"
-            ],
-            [
-              "B5",
-              "A6"
-            ],
-            [
-              "C8",
-              "B7",
-              "A6"
-            ],
-            [
-              "C8",
-              "C10",
-              "B11"
-            ],
-            [
-              "B11",
-              "A10"
-            ]
-          ]
-        }
-      ]
-    },
-    {
-      "type": "dividend",
-      "entity": "MÖJ",
-      "entity_type": "corporation",
-      "id": 693.5,
-      "kind": "payout"
-    },
-    {
-      "type": "pass",
-      "entity": "MÖJ",
-      "entity_type": "corporation",
-      "id": 693.6
     },
     {
       "type": "lay_tile",
@@ -7321,6 +7317,89 @@
     },
     {
       "type": "lay_tile",
+      "entity": "MÖJ",
+      "entity_type": "corporation",
+      "id": 794,
+      "hex": "F9",
+      "tile": "9-12",
+      "rotation": 2
+    },
+    {
+      "type": "pass",
+      "entity": "MÖJ",
+      "entity_type": "corporation",
+      "id": 795
+    },
+    {
+      "type": "run_routes",
+      "entity": "MÖJ",
+      "entity_type": "corporation",
+      "id": 796,
+      "routes": [
+        {
+          "train": "6-0",
+          "connections": [
+            [
+              "G10",
+              "H9"
+            ],
+            [
+              "E8",
+              "F9",
+              "G10"
+            ],
+            [
+              "E8",
+              "D7",
+              "C6",
+              "B5"
+            ],
+            [
+              "B5",
+              "A6"
+            ],
+            [
+              "A10",
+              "B9",
+              "B7",
+              "A6"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": 797,
+      "kind": "withhold",
+      "type": "dividend",
+      "entity": "MÖJ",
+      "entity_type": "corporation",
+      "user": 6,
+      "created_at": 1609677170
+    },
+    {
+      "id": 798,
+      "type": "undo",
+      "entity": "MÖJ",
+      "entity_type": "corporation",
+      "user": 6,
+      "created_at": 1609677196
+    },
+    {
+      "type": "dividend",
+      "entity": "MÖJ",
+      "entity_type": "corporation",
+      "id": 799,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "MÖJ",
+      "entity_type": "corporation",
+      "id": 816.8
+    },
+    {
+      "type": "lay_tile",
       "entity": "TGOJ",
       "entity_type": "corporation",
       "id": 800,
@@ -7514,95 +7593,6 @@
       "entity": "ÖKJ",
       "entity_type": "corporation",
       "id": 816
-    },
-    {
-      "type": "pass",
-      "entity": "MÖJ",
-      "entity_type": "corporation",
-      "id": 816.1
-    },
-    {
-      "type": "lay_tile",
-      "entity": "MÖJ",
-      "entity_type": "corporation",
-      "id": 816.2,
-      "hex": "F9",
-      "tile": "9-12",
-      "rotation": 2
-    },
-    {
-      "type": "pass",
-      "entity": "MÖJ",
-      "entity_type": "corporation",
-      "id": 816.3
-    },
-    {
-      "type": "run_routes",
-      "entity": "MÖJ",
-      "entity_type": "corporation",
-      "id": 816.4,
-      "routes": [
-        {
-          "train": "6-0",
-          "connections": [
-            [
-              "G10",
-              "H9"
-            ],
-            [
-              "E8",
-              "F9",
-              "G10"
-            ],
-            [
-              "E8",
-              "D7",
-              "C6",
-              "B5"
-            ],
-            [
-              "B5",
-              "A6"
-            ],
-            [
-              "A10",
-              "B9",
-              "B7",
-              "A6"
-            ]
-          ]
-        }
-      ]
-    },
-    {
-      "id": 816.5,
-      "kind": "withhold",
-      "type": "dividend",
-      "entity": "MÖJ",
-      "entity_type": "corporation",
-      "user": 6,
-      "created_at": 1609677170
-    },
-    {
-      "id": 816.6,
-      "type": "undo",
-      "entity": "MÖJ",
-      "entity_type": "corporation",
-      "user": 6,
-      "created_at": 1609677196
-    },
-    {
-      "type": "dividend",
-      "entity": "MÖJ",
-      "entity_type": "corporation",
-      "id": 816.7,
-      "kind": "payout"
-    },
-    {
-      "type": "pass",
-      "entity": "MÖJ",
-      "entity_type": "corporation",
-      "id": 816.8
     },
     {
       "type": "lay_tile",
@@ -7930,6 +7920,73 @@
     },
     {
       "type": "lay_tile",
+      "entity": "MÖJ",
+      "entity_type": "corporation",
+      "id": 837,
+      "hex": "B9",
+      "tile": "25-0",
+      "rotation": 3
+    },
+    {
+      "type": "pass",
+      "entity": "MÖJ",
+      "entity_type": "corporation",
+      "id": 838
+    },
+    {
+      "type": "run_routes",
+      "entity": "MÖJ",
+      "entity_type": "corporation",
+      "id": 839,
+      "routes": [
+        {
+          "train": "6-0",
+          "connections": [
+            [
+              "G10",
+              "H9"
+            ],
+            [
+              "E8",
+              "F9",
+              "G10"
+            ],
+            [
+              "E8",
+              "D7",
+              "C6",
+              "B5"
+            ],
+            [
+              "C8",
+              "B7",
+              "B5"
+            ],
+            [
+              "A10",
+              "B9",
+              "C10",
+              "C8"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "MÖJ",
+      "entity_type": "corporation",
+      "id": 840,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "MÖJ",
+      "entity_type": "corporation",
+      "id": 841
+    },
+    {
+      "type": "lay_tile",
       "entity": "TGOJ",
       "entity_type": "corporation",
       "id": 842,
@@ -8062,79 +8119,6 @@
       "entity": "ÖKJ",
       "entity_type": "corporation",
       "id": 851
-    },
-    {
-      "type": "pass",
-      "entity": "MÖJ",
-      "entity_type": "corporation",
-      "id": 851.1
-    },
-    {
-      "type": "lay_tile",
-      "entity": "MÖJ",
-      "entity_type": "corporation",
-      "id": 851.2,
-      "hex": "B9",
-      "tile": "25-0",
-      "rotation": 3
-    },
-    {
-      "type": "pass",
-      "entity": "MÖJ",
-      "entity_type": "corporation",
-      "id": 851.3
-    },
-    {
-      "type": "run_routes",
-      "entity": "MÖJ",
-      "entity_type": "corporation",
-      "id": 851.4,
-      "routes": [
-        {
-          "train": "6-0",
-          "connections": [
-            [
-              "G10",
-              "H9"
-            ],
-            [
-              "E8",
-              "F9",
-              "G10"
-            ],
-            [
-              "E8",
-              "D7",
-              "C6",
-              "B5"
-            ],
-            [
-              "C8",
-              "B7",
-              "B5"
-            ],
-            [
-              "A10",
-              "B9",
-              "C10",
-              "C8"
-            ]
-          ]
-        }
-      ]
-    },
-    {
-      "type": "dividend",
-      "entity": "MÖJ",
-      "entity_type": "corporation",
-      "id": 851.5,
-      "kind": "payout"
-    },
-    {
-      "type": "pass",
-      "entity": "MÖJ",
-      "entity_type": "corporation",
-      "id": 851.6
     },
     {
       "type": "lay_tile",
@@ -8515,7 +8499,74 @@
       "type": "pass",
       "entity": "KFJ",
       "entity_type": "corporation",
-      "id": 872.5
+      "id": 873
+    },
+    {
+      "type": "lay_tile",
+      "entity": "MÖJ",
+      "entity_type": "corporation",
+      "id": 876,
+      "hex": "F9",
+      "tile": "20-0",
+      "rotation": 2
+    },
+    {
+      "type": "pass",
+      "entity": "MÖJ",
+      "entity_type": "corporation",
+      "id": 878
+    },
+    {
+      "type": "run_routes",
+      "entity": "MÖJ",
+      "entity_type": "corporation",
+      "id": 879,
+      "routes": [
+        {
+          "train": "6-0",
+          "connections": [
+            [
+              "G10",
+              "H9"
+            ],
+            [
+              "E8",
+              "F9",
+              "G10"
+            ],
+            [
+              "E8",
+              "D7",
+              "C6",
+              "B5"
+            ],
+            [
+              "C8",
+              "B7",
+              "B5"
+            ],
+            [
+              "A10",
+              "B9",
+              "C10",
+              "C8"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "MÖJ",
+      "entity_type": "corporation",
+      "id": 890,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "MÖJ",
+      "entity_type": "corporation",
+      "id": 891
     },
     {
       "type": "pass",
@@ -8642,79 +8693,6 @@
       "entity": "ÖKJ",
       "entity_type": "corporation",
       "id": 900
-    },
-    {
-      "type": "pass",
-      "entity": "MÖJ",
-      "entity_type": "corporation",
-      "id": 900.1
-    },
-    {
-      "type": "lay_tile",
-      "entity": "MÖJ",
-      "entity_type": "corporation",
-      "id": 900.2,
-      "hex": "F9",
-      "tile": "20-0",
-      "rotation": 2
-    },
-    {
-      "type": "pass",
-      "entity": "MÖJ",
-      "entity_type": "corporation",
-      "id": 900.3
-    },
-    {
-      "type": "run_routes",
-      "entity": "MÖJ",
-      "entity_type": "corporation",
-      "id": 900.4,
-      "routes": [
-        {
-          "train": "6-0",
-          "connections": [
-            [
-              "G10",
-              "H9"
-            ],
-            [
-              "E8",
-              "F9",
-              "G10"
-            ],
-            [
-              "E8",
-              "D7",
-              "C6",
-              "B5"
-            ],
-            [
-              "C8",
-              "B7",
-              "B5"
-            ],
-            [
-              "A10",
-              "B9",
-              "C10",
-              "C8"
-            ]
-          ]
-        }
-      ]
-    },
-    {
-      "type": "dividend",
-      "entity": "MÖJ",
-      "entity_type": "corporation",
-      "id": 900.5,
-      "kind": "payout"
-    },
-    {
-      "type": "pass",
-      "entity": "MÖJ",
-      "entity_type": "corporation",
-      "id": 900.6
     },
     {
       "type": "lay_tile",
@@ -9171,9 +9149,9 @@
     7
   ],
   "result": {
-    "NilsE": 6299,
-    "Adrianos": 5211,
-    "Daisys Husse": 7495
+    "NilsE": 6865,
+    "Adrianos": 6119,
+    "Daisys Husse": 8183
   },
   "loaded": true,
   "created_at": "2021-01-04",
