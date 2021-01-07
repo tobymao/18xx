@@ -12,7 +12,7 @@ module View
       needs :user
       needs :negative_pad, default: false
       needs :follow_scroll, default: true, store: true
-      needs :action_id, default: nil, store: true
+      needs :selected_action_id, default: nil, store: true
 
       def render
         children = [render_log]
@@ -136,7 +136,7 @@ module View
                                   marginBottom: '0.2rem',
                                   paddingLeft: '0.5rem',
                                   textIndent: '-0.5rem' },
-                         on: { click: -> { store(:action_id, action.id) } } }
+                         on: { click: -> { store(:selected_action_id, action.id) } } }
           line_props[:style][:fontWeight] = 'bold' if line.is_a?(String) && line.start_with?('--')
 
           if line.is_a?(Engine::Action::Message)
@@ -150,7 +150,9 @@ module View
             [h('span.timestamp', timestamp_props, timestamp), h('span.message', message_props, line)])
         end
 
-        if !action.is_a?(Engine::Action::Message) && @action_id == action.id && @game.last_game_action_id != action.id
+        if !action.is_a?(Engine::Action::Message) &&
+          @selected_action_id == action.id &&
+          @game.last_game_action_id != action.id
           action_log << render_action_buttons(action.id)
         end
 
@@ -160,7 +162,7 @@ module View
       def render_action_buttons(action_id)
         rewind_action = lambda do
           process_action(Engine::Action::Undo.new(@game.current_entity, action_id: action_id))
-          store(:action_id, nil, skip: true)
+          store(:selected_action_id, nil, skip: true)
         end
 
         h(:div, [history_link('Review from Here', '', action_id, {}, true),

@@ -16,6 +16,7 @@ module View
         base.needs :selected_company, default: nil, store: true
         base.needs :app_route, default: nil, store: true
         base.needs :round_history, default: nil, store: true
+        base.needs :selected_action_id, default: nil, store: true
       end
 
       def save_user_settings(settings)
@@ -109,6 +110,7 @@ module View
       def clear_ui_state
         store(:selected_company, nil, skip: true)
         store(:tile_selector, nil, skip: true)
+        store(:selected_action_id, nil, skip: true)
       end
 
       def history_link(text, title, action_id = nil, style_extra = {}, as_button = false)
