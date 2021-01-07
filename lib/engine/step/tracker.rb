@@ -66,10 +66,7 @@ module Engine
           raise GameError, "#{old_tile.name} is not legally rotated for #{tile.name}"
         end
 
-        @game.add_extra_tile(tile) if tile.unlimited
-
-        @game.tiles.delete(tile)
-        @game.tiles << old_tile unless old_tile.preprinted
+        update_tile_lists(tile, old_tile)
 
         hex.lay(tile)
 
@@ -155,6 +152,13 @@ module Engine
               " for the #{ability.terrain} tile built by #{company.name}"
           end
         end
+      end
+
+      def update_tile_lists(tile, old_tile)
+        @game.add_extra_tile(tile) if tile.unlimited
+
+        @game.tiles.delete(tile)
+        @game.tiles << old_tile unless old_tile.preprinted
       end
 
       def border_cost(tile, entity)

@@ -6,6 +6,8 @@ require_relative 'base'
 module Engine
   module Game
     class G18Mag < Base
+      attr_reader :tile_groups, :unused_tiles
+
       load_from_json(Config::Game::G18Mag::JSON)
 
       GAME_LOCATION = 'Hungary'
@@ -23,10 +25,16 @@ module Engine
       SELL_BUY_ORDER = :sell_buy
       MARKET_SHARE_LIMIT = 100
 
+      DOUBLE_SIDED_TILES = true
+
       START_PRICES = [60, 60, 65, 65, 70, 70, 75, 75, 80, 80].freeze
       MINOR_STARTING_CASH = 50
 
       def setup
+        @tile_groups = init_tile_groups
+        update_opposites
+        @unused_tiles = []
+
         # start with first minor tokens placed (as opposed to just reserved)
         @mine = @minors.find { |m| m.name == 'mine' }
         @minors.delete(@mine)
@@ -65,7 +73,77 @@ module Engine
         end
       end
 
+      def init_tile_groups
+        [
+          %w[7],
+          %w[8 9],
+          %w[3],
+          %w[58 4],
+          %w[5 57],
+          %w[6],
+          %w[L32],
+          %w[L33],
+          %w[16 19],
+          %w[20],
+          %w[23 24],
+          %w[25],
+          %w[26 27],
+          %w[28 29],
+          %w[30 31],
+          %w[204],
+          %w[88 87],
+          %w[619],
+          %w[14 15],
+          %w[209],
+          %w[236],
+          %w[237],
+          %w[238],
+          %w[8858],
+          %w[8859],
+          %w[8860],
+          %w[8863],
+          %w[8864],
+          %w[8865],
+          %w[39 40],
+          %w[41 42],
+          %w[43 70],
+          %w[44 47],
+          %w[45 46],
+          %w[G17],
+          %w[611],
+          %w[L17],
+          %w[L34],
+          %w[L35],
+          %w[L38],
+          %w[455],
+          %w[X9],
+          %w[L36],
+          %w[L37],
+        ]
+      end
+
+      # set opposite correctly for two-sided tiles
+      def update_opposites
+        by_name = @tiles.group_by(&:name)
+        @tile_groups.each do |grp|
+          next unless grp.size == 2
+
+          name_a, name_b = grp
+          num = by_name[name_a].size
+          raise GameError, 'Sides of double-sided tiles need to have same number' if num != by_name[name_b].size
+
+          num.times.each do |idx|
+            tile_a = tile_by_id("#{name_a}-#{idx}")
+            tile_b = tile_by_id("#{name_b}-#{idx}")
+
+            tile_a.opposite!(tile_b)
+            tile_b.opposite!(tile_a)
+          end
+        end
+      end
+
       def float_minor(minor)
+        minor.float!
         train = @depot.upcoming[0]
         buy_train(minor, train, :free)
         @bank.spend(MINOR_STARTING_CASH, minor)
@@ -90,10 +168,11 @@ module Engine
         Round::Operating.new(self, [
           Step::Exchange,
           Step::DiscardTrain,
-          Step::Track,
+          Step::G18Mag::Track,
+          Step::HomeToken,
           Step::Token,
           Step::Route,
-          Step::Dividend,
+          Step::G18Mag::Dividend,
           Step::BuyTrain,
         ], round_num: round_num)
       end
@@ -122,6 +201,34 @@ module Engine
             new_operating_round
           end
       end
+
+      def upgrades_to?(from, to, special = false)
+        # correct color progression?
+        return false unless Engine::Tile::COLORS.index(to.color) == (Engine::Tile::COLORS.index(from.color) + 1)
+
+        # honors pre-existing track?
+        return false unless from.paths_are_subset_of?(to.paths)
+
+        # If special ability then remaining checks is not applicable
+        return true if special
+
+        # correct label?
+        return false if from.label != to.label && !(from.label.to_s == 'K' && to.color == 'yellow')
+
+        # honors existing town/city counts?
+        # - allow labelled cities to upgrade regardless of count; they're probably
+        #   fine (e.g., 18Chesapeake's OO cities merge to one city in brown)
+        # - TODO: account for games that allow double dits to upgrade to one town
+        return false if from.towns.size != to.towns.size
+        return false if (!from.label || from.label.to_s == 'K') && from.cities.size != to.cities.size
+
+        # handle case where we are laying a yellow OO tile and want to exclude single-city tiles
+        return false if (from.color == :white) && from.label.to_s == 'OO' && from.cities.size != to.cities.size
+
+        true
+      end
+
+      def place_home_token(_corp); end
     end
   end
 end
