@@ -18,7 +18,7 @@ module View
       needs :routes, store: true, default: []
       needs :selected_route, store: true, default: nil
       needs :selected_company, default: nil, store: true
-      needs :ability, store: true, default: nil
+      needs :abilities, store: true, default: []
 
       # Get routes that have a length greater than zero
       # Due to the way this and the map hook up routes needs to have
@@ -32,7 +32,7 @@ module View
         operating = @game.round.current_entity.operating_history
         last_run = operating[operating.keys.max]&.routes
         return [] unless last_run
-        return [] if @ability
+        return [] unless @abilities.empty?
 
         halts = operating[operating.keys.max]&.halts
         last_run.map do |train, connections|
@@ -59,11 +59,11 @@ module View
             cleanup
             store(:last_company, @selected_company, skip: true)
           end
-          store(:ability, ability, skip: true)
+          store(:abilities, ability ? [ability.type] : [], skip: true)
         else
           cleanup if @last_company
           store(:last_company, nil, skip: true)
-          store(:ability, nil, skip: true)
+          store(:abilities, [], skip: true)
         end
 
         # this is needed for the rare case when moving directly between run_routes steps
@@ -90,7 +90,7 @@ module View
         end
 
         if !@selected_route && (first_train = trains[0])
-          route = Engine::Route.new(@game, @game.phase, first_train, ability: @ability&.type, routes: @routes)
+          route = Engine::Route.new(@game, @game.phase, first_train, abilities: @abilities, routes: @routes)
           @routes << route
           store(:routes, @routes, skip: true)
           store(:selected_route, route, skip: true)
@@ -100,7 +100,7 @@ module View
         trains = trains.flat_map do |train|
           onclick = lambda do
             unless (route = @routes.find { |t| t.train == train })
-              route = Engine::Route.new(@game, @game.phase, train, ability: @ability&.type, routes: @routes)
+              route = Engine::Route.new(@game, @game.phase, train, abilities: @abilities, routes: @routes)
               @routes << route
               store(:routes, @routes)
             end

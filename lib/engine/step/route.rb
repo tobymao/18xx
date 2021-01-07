@@ -42,10 +42,9 @@ module Engine
         end
         pass!
 
-        abilities = @round.routes.map(&:ability)
-        return unless (ability_type = abilities.first)
+        return unless (route = @round.routes.first)
 
-        @game.abilities(action.entity, ability_type)&.use!
+        route.abilities.each { |type| @game.abilities(action.entity, type)&.use! }
       end
 
       def available_hex(entity, hex)

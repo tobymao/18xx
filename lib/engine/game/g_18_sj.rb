@@ -295,8 +295,8 @@ module Engine
          stockholm_malmo_bonus(icons, stops),
          bergslagen_bonus(icons),
          orefields_bonus(icons),
-         sveabolaget_bonus(route, stops),
-         gkb_bonus(route, stops)].map { |b| b[:revenue] }.each { |r| revenue += r }
+         sveabolaget_bonus(route),
+         gkb_bonus(route)].map { |b| b[:revenue] }.each { |r| revenue += r }
 
         return revenue unless route.train.name == 'E'
 
@@ -320,8 +320,8 @@ module Engine
          stockholm_malmo_bonus(icons, stops),
          bergslagen_bonus(icons),
          orefields_bonus(icons),
-         sveabolaget_bonus(route, stops),
-         gkb_bonus(route, stops)].map { |b| b[:description] }.compact.each { |d| str += " + #{d}" }
+         sveabolaget_bonus(route),
+         gkb_bonus(route)].map { |b| b[:description] }.compact.each { |d| str += " + #{d}" }
 
         str
       end
@@ -655,12 +655,13 @@ module Engine
         bonus
       end
 
-      def sveabolaget_bonus(route, stops)
+      def sveabolaget_bonus(route)
         bonus = { revenue: 0 }
 
         steam = sveabolaget&.id
         revenue = 0
-        if route.corporation == sveabolaget&.owner && (port = stops.map(&:hex).find { |hex| hex.assigned?(steam) })
+        if route.corporation == sveabolaget&.owner &&
+           (port = route.stops.map(&:hex).find { |hex| hex.assigned?(steam) })
           revenue += 30 * port.tile.icons.select { |icon| icon.name == 'port' }.size
         end
         if revenue.positive?
@@ -671,15 +672,16 @@ module Engine
         bonus
       end
 
-      def gkb_bonus(route, stops)
+      def gkb_bonus(route)
         bonus = { revenue: 0 }
 
-        return bonus unless route.ability
+        return bonus if route.abilities.empty?
+        raise GameError, "Only one ability supported: #{route.abilities}" if route.abilities.size > 1
 
-        ability = abilities(route.train.owner, route.ability)
-        raise GameError, "Cannot find ability #{route.ability}" unless ability
+        ability = abilities(route.train.owner, route.abilities.first)
+        raise GameError, "Cannot find ability #{route.abilities.first}" unless ability
 
-        bonuses = stops.count { |s| ability.hexes.include?(s.hex.name) }
+        bonuses = route.stops.count { |s| ability.hexes.include?(s.hex.name) }
         if bonuses.positive?
           bonus[:revenue] = ability.amount * bonuses
           bonus[:description] = 'GKB'

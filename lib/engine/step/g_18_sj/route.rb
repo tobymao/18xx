@@ -26,14 +26,15 @@ module Engine
         GKB_BONUS = { 3 => 50, 2 => 30, 1 => 20 }.freeze
 
         def process_run_routes(action)
-          abilities = action.routes.map(&:ability)
-          ability_type = abilities.first
+          route = action.routes.first
+          abilities = route&.abilities
+          ability_type = abilities.first if abilities
           used_ability = @game.abilities(action.entity, ability_type) if ability_type
           count = used_ability&.count
 
           super
 
-          return unless used_ability
+          return unless count
 
           if count == 1
             @game.log << "All OR bonuses for #{@game.gkb.name} used up"
