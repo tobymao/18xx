@@ -99,7 +99,7 @@ module View
 
       @connection = nil if @game_data[:mode] == :hotseat || cursor
 
-      @connection&.subscribe(game_path, -2) do |data|
+      @connection&.subscribe(game_path) do |data|
         # make sure we're using the newest stored vars
         # since connection is only created on the initial view
         # and views are ephemeral
@@ -112,7 +112,7 @@ module View
           game_data['actions'] << data
           store(:game_data, game_data, skip: true)
           store(:game, game.process_action(data))
-        elsif n_id > o_id
+        else
           store['connection'].get(game_path) do |new_data|
             store(:game_data, new_data, skip: true)
             store(:game, game.clone(new_data['actions']))

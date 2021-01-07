@@ -23,9 +23,9 @@ module Engine
         end
 
         def after_process(action)
-          return if action.type == :message
+          return if action.free?
 
-          if action.type == :pass
+          if action.pass?
             @entities.delete(action.entity)
             return finish_round if finished?
 
@@ -59,7 +59,7 @@ module Engine
         end
 
         def finished?
-          @game.finished || @entities.empty?
+          @game.finished || @game.presidents_choice == :done || @entities.empty?
         end
 
         private

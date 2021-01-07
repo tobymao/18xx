@@ -4,21 +4,21 @@ require 'view/game/actionable'
 
 module View
   module Game
-    class BuySpecial < Snabberb::Component
+    class SpecialBuy < Snabberb::Component
       include Actionable
       needs :entity, default: nil
 
       def render
         @entity ||= @game.current_entity
-        @step = @game.round.step_for(@entity, 'buy_special')
+        @step = @game.round.step_for(@entity, 'special_buy')
 
-        h('div.margined', [render_items(@step.items)])
+        h('div.margined', [render_items(@step.buyable_items(@entity))])
       end
 
       def render_items(items)
         rendered_items = items.map do |item|
           render_button(item) do
-            process_action(Engine::Action::BuySpecial.new(@entity, item: item))
+            process_action(Engine::Action::SpecialBuy.new(@entity, item: item))
           end
         end
 

@@ -25,6 +25,7 @@ module Engine
 
       rust_trains!(train, entity)
       close_companies_on_train!(entity)
+      @depot.depot_trains(clear: true)
     end
 
     def current

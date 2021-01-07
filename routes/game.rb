@@ -84,19 +84,16 @@ class Api
               else
                 engine = Engine::Game.load(game, actions: actions_h(game))
 
-                action_id = r.params['id']
-                halt(400, 'Game out of sync') unless engine.actions.size + 1 == action_id
-
                 r.params['user'] = user.id
 
                 engine = engine.process_action(r.params)
-                halt(500, "Illegal action #{engine.exception}") if engine.exception
+                halt(500, "Illegal action: #{engine.exception}") if engine.exception
                 action = engine.actions.last.to_h
 
                 Action.create(
                   game: game,
                   user: user,
-                  action_id: action_id,
+                  action_id: action['id'],
                   turn: engine.turn,
                   round: engine.round.name,
                   action: action,

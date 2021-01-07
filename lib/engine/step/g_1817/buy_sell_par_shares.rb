@@ -126,14 +126,16 @@ module Engine
 
         def can_short?(entity, corporation)
           # check total shorts
-          corporation.total_shares > 2 &&
-            (!@game.option_five_shorts? || @game.shorts(corporation).length < 5) &&
-            @game.shorts(corporation).length < corporation.total_shares &&
-            corporation.operated? &&
+          shorts = @game.shorts(corporation).size
+
+          @game.phase.name != '8' &&
+            corporation.total_shares > 2 &&
+            (!@game.option_five_shorts? || shorts < 5) &&
+            shorts < corporation.total_shares &&
             entity.num_shares_of(corporation) <= 0 &&
             !(corporation.share_price.acquisition? || corporation.share_price.liquidation?) &&
-            !@round.players_sold[entity].values.include?(:short) &&
-            @game.phase.name != '8'
+            corporation.operated? &&
+            !@round.players_sold[entity].values.include?(:short)
         end
 
         def choice_name

@@ -68,12 +68,27 @@ def repair(game, original_actions, actions, broken_action)
       actions.insert(action_idx, pass.to_h)
       return
     end
+  elsif game.active_step.is_a?(Engine::Step::G1867::Merge)
+    pass = Engine::Action::Pass.new(game.active_step.current_entity)
+    pass.user = pass.entity.player.id
+    actions.insert(action_idx, pass.to_h)
+    return
   elsif game.active_step.is_a?(Engine::Step::G1867::SingleItemAuction)
     pass = Engine::Action::Pass.new(game.active_step.current_entity)
     pass.user = pass.entity.player.id
     actions.insert(action_idx, pass.to_h)
     return
   elsif broken_action['type'] == 'pass'
+    if game.active_step.is_a?(Engine::Step::G18CO::MovingBidAuction)
+      # Added logic of skipping players with all committed cash removed need to pass
+      actions.delete(broken_action)
+      return
+    end
+    if game.is_a?(Engine::Game::G18CO) && game.active_step.is_a?(Engine::Step::CorporateBuyShares)
+      # Company buy step is now skipped as DSNG is closed and no companies are available
+      actions.delete(broken_action)
+      return
+    end
     if game.active_step.is_a?(Engine::Step::G1817::PostConversionLoans)
       actions.delete(broken_action)
       return
@@ -280,8 +295,11 @@ def migrate_data(data)
     puts 'Failed to fix :(', e
     return data
   end
-  fixed = true
-  return data if fixed
+
+  # running a migration on a game without issues returns nil actions
+  return unless data['actions']
+
+  data
 end
 
 # This doesn't write to the database
@@ -358,6 +376,7 @@ def migrate_db_actions(data, pin, dry_run=false, delete=false, debug=false)
 end
 
 def migrate_json(filename)
+  puts "Loading #{filename} for migration"
   data = migrate_data(JSON.parse(File.read(filename)))
   if data
     File.write(filename, JSON.pretty_generate(data))

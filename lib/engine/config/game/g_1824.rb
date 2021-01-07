@@ -13,12 +13,14 @@ module Engine
   "currencyFormatStr": "%dG",
   "bankCash": 12000,
   "certLimit": {
+      "2": 14,
       "3": 21,
       "4": 16,
       "5": 13,
       "6": 11
   },
   "startingCash": {
+     "2": 680,
      "3": 820,
      "4": 680,
      "5": 560,
@@ -266,7 +268,7 @@ module Engine
       "name":"Wien-Gloggnitzer Eisenbahngesellschaft (S1)",
       "value":240,
       "revenue":0,
-      "desc":"Buyer take control of pre-staatsbahn S1, which will be exchanged for the Director's certificate of SB when the first 4 train is sold. Pre-Staatsbahnen starts in Wien (E12). Cannot be sold.",
+      "desc":"Buyer take control of pre-staatsbahn S1, which will be exchanged for the Director's certificate of SD when the first 4 train is sold. Pre-Staatsbahnen starts in Wien (E12). Cannot be sold.",
       "abilities": [
         {
           "type": "no_buy",
@@ -279,7 +281,7 @@ module Engine
       "name":"Kärntner Bahn (S2)",
       "value":120,
       "revenue":0,
-      "desc":"Buyer take control of pre-staatsbahn S2, which will be exchanged for a 10% share of SB when the first 4 train is sold. Pre-Staatsbahnen starts in Graz (G10). Cannot be sold.",
+      "desc":"Buyer take control of pre-staatsbahn S2, which will be exchanged for a 10% share of SD when the first 4 train is sold. Pre-Staatsbahnen starts in Graz (G10). Cannot be sold.",
       "abilities": [
         {
           "type": "no_buy",
@@ -292,7 +294,7 @@ module Engine
       "name":"Nordtiroler Staatsbahn (S3)",
       "value":120,
       "revenue":0,
-      "desc":"Buyer take control of pre-staatsbahn S3, which will be exchanged for a 10% share of SB when the first 4 train is sold. Pre-Staatsbahnen starts in Innsbruck (G4). Cannot be sold.",
+      "desc":"Buyer take control of pre-staatsbahn S3, which will be exchanged for a 10% share of SD when the first 4 train is sold. Pre-Staatsbahnen starts in Innsbruck (G4). Cannot be sold.",
       "abilities": [
         {
           "type": "no_buy",
@@ -305,7 +307,7 @@ module Engine
       "name":"Eisenbahn Pest - Waitzen (U1)",
       "value":240,
       "revenue":0,
-      "desc":"Buyer take control of pre-staatsbahn U1, which will be exchanged for the Director's certificate of UG when the first 5 train is sold. Pre-Staatsbahnen starts in Pest (F17). Cannot be sold.",
+      "desc":"Buyer take control of pre-staatsbahn U1, which will be exchanged for the Director's certificate of UG when the first 5 train is sold. Pre-Staatsbahnen starts in Pest (F17) in base 1824 and in Budapest (G12) for 3 players on the Cislethania map. Cannot be sold.",
       "abilities": [
         {
           "type": "no_buy",
@@ -801,7 +803,11 @@ module Engine
       "num": 4,
       "price": 360,
       "available_on": "4",
-      "rusts_on": "5g"
+      "rusts_on": "5g",
+      "events": [
+        {"type": "close_mountain_railways"},
+        {"type": "sd_formation"}
+      ]
     },
     {
       "name": "5",
@@ -810,7 +816,8 @@ module Engine
       "price": 450,
       "rusts_on": "10",
       "events": [
-        {"type": "close_companies"}
+        {"type": "close_coal_railways"},
+        {"type": "ug_formation"}
       ]
     },
     {
@@ -819,7 +826,7 @@ module Engine
       "num": 3,
       "price": 630,
       "events": [
-        {"type": "tokens_removed"}
+        {"type": "kk_formation"}
       ]
     },
     {
@@ -882,173 +889,6 @@ module Engine
     }
   ],
   "hexes": {
-    "red": {
-      "offboard=revenue:yellow_10|green_20|brown_30|gray_40,hide:1,groups:Dresden;path=a:4,b:_0,terminal:1;path=a:5,b:_0,terminal:1": [
-        "A4"
-      ],
-      "offboard=revenue:yellow_10|green_30|brown_40|gray_50,hide:1,groups:Kiew;path=a:0,b:_0,terminal:1;path=a:5,b:_0,terminal:1": [
-        "A24"
-      ],
-      "offboard=revenue:yellow_10|green_30|brown_40|gray_50,groups:Kiew;path=a:0,b:_0,terminal:1": [
-        "A26"
-      ],
-      "offboard=revenue:yellow_10|green_20|brown_30|gray_40,groups:Dresden;path=a:4,b:_0,terminal:1": [
-        "B3"
-      ],
-      "offboard=revenue:yellow_10|green_30|brown_40|gray_50,hide:1,groups:Bukarest;path=a:1,b:_0,terminal:1": [
-        "G28"
-      ],
-      "offboard=revenue:yellow_10|green_30|brown_40|gray_50,groups:Bukarest;path=a:2,b:_0,terminal:1": [
-        "H27"
-      ],
-      "offboard=revenue:yellow_10|green_30|brown_50|gray_70,hide:1,groups:Mainland;path=a:3,b:_0,terminal:1;path=a:4,b:_0,terminal:1": [
-        "H1"
-      ],
-      "offboard=revenue:yellow_10|green_30|brown_50|gray_70,groups:Mainland;path=a:3,b:_0,terminal:1": [
-        "I2"
-      ],
-      "offboard=revenue:yellow_10|green_10|brown_50|gray_50,hide:1,groups:Sarajevo;path=a:2,b:_0,terminal:1;path=a:3,b:_0,terminal:1": [
-        "J11"
-      ],
-      "city=revenue:yellow_10|green_10|brown_50|gray_50,hide:1,groups:Sarajevo;path=a:2,b:_0,terminal:1;path=a:3,b:_0,terminal:1": [
-        "J13"
-      ],
-      "offboard=revenue:yellow_10|green_10|brown_50|gray_50,groups:Mainland;path=a:2,b:_0,terminal:1;path=a:3,b:_0,terminal:1": [
-        "J15"
-      ]
-    },
-    "gray": {
-      "city=revenue:yellow_10|green_40;path=a:1,b:_0,terminal:1;path=a:5,b:_0,terminal:1": [
-        "A12"
-      ],
-      "city=revenue:yellow_20|green_60;path=a:1,b:_0,terminal:1;path=a:5,b:_0,terminal:1": [
-        "A22"
-      ],
-      "city=revenue:yellow_10|green_40;path=a:2,b:_0,terminal:1;path=a:3,b:_0,terminal:1": [
-        "C6"
-      ],
-      "city=revenue:yellow_10|green_40;path=a:1,b:_0,terminal:1;path=a:3,b:_0,terminal:1": [
-        "H25"
-      ]
-    },
-    "white": {
-      "town=revenue:0": [
-        "A8",
-        "A20",
-        "C10",
-        "C16",
-        "D25",
-        "E20",
-        "E24",
-        "F19",
-        "G2",
-        "G20",
-        "H11",
-        "I20",
-        "I22"
-      ],
-      "town=revenue:0;upgrade=cost:40,terrain:mountain": [
-        "A6",
-        "A10"
-      ],
-      "town=revenue:0;town=revenue:0": [
-        "B13",
-        "B25",
-        "F11",
-        "I16"
-      ],
-      "city=revenue:0;upgrade=cost:40,terrain:mountain": [
-        "D19",
-        "H3"
-      ],
-      "city=revenue:0;label=T": [
-        "A18",
-        "C26",
-        "E26",
-        "I8"
-      ],
-      "city=revenue:0": [
-        "B5",
-        "B9",
-        "B15",
-        "B23",
-        "C12",
-        "E8",
-        "F7",
-        "F23",
-        "G4",
-        "G10",
-        "G26",
-        "H15",
-        "H23"
-      ],
-      "": [
-        "B7",
-        "B11",
-        "B17",
-        "B19",
-        "B21",
-        "C8",
-        "C14",
-        "C20",
-        "C22",
-        "C24",
-        "D9",
-        "D11",
-        "D13",
-        "D15",
-        "D17",
-        "E6",
-        "E18",
-        "E22",
-        "F9",
-        "F13",
-        "F15",
-        "F21",
-        "F25",
-        "G6",
-        "G12",
-        "G14",
-        "G22",
-        "G24",
-        "H9",
-        "H13",
-        "H19",
-        "H21",
-        "I10",
-        "I12",
-        "I14"
-      ],
-      "upgrade=cost:40,terrain:mountain": [
-        "C18",
-        "D21",
-        "D23",
-        "G8",
-        "H5",
-        "H7"
-      ],
-      "upgrade=cost:20,terrain:water": [
-        "E10",
-        "G16"
-      ],
-      "city=revenue:30;path=a:0,b:_0;city=revenue:30;path=a:1,b:_1;city=revenue:30;path=a:2,b:_2;upgrade=cost:20,terrain:water;label=W": [
-        "E12"
-      ],
-      "city=revenue:20;path=a:0,b:_0;city=revenue:20;path=a:3,b:_1;upgrade=cost:20,terrain:water;label=Bu": [
-        "F17"
-      ],
-      "city=revenue:0;upgrade=cost:20,terrain:water": [
-        "E14",
-        "G18"
-      ],
-      "town=revenue:0;upgrade=cost:20,terrain:water": [
-        "H17",
-        "I18"
-      ],
-      "town=revenue:0;town=revenue:0;upgrade=cost:20,terrain:water": [
-        "E16"
-      ]
-    }
   },
   "phases": [
     {
@@ -1059,9 +899,6 @@ module Engine
       },
       "tiles": [
         "yellow"
-      ],
-      "status": [
-        "can_buy_p5"
       ],
       "operating_rounds": 1
     },
@@ -1076,7 +913,9 @@ module Engine
         "green"
       ],
       "status": [
-        "can_buy_companies"
+        "can_buy_companies",
+        "may_exchange_coal_railways",
+        "may_exchange_mountain_railways"
       ],
       "operating_rounds": 2
     },
@@ -1091,7 +930,8 @@ module Engine
         "green"
       ],
       "status": [
-        "can_buy_companies"
+        "can_buy_companies",
+        "may_exchange_coal_railways"
       ],
       "operating_rounds": 2
     },

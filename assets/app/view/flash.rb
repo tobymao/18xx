@@ -12,6 +12,8 @@ module View
       @flash_opts = { message: @flash_opts } if @flash_opts.is_a?(String)
       return h(:div) unless @flash_opts&.any?
 
+      `setTimeout(function() { self['$store']('flash_opts', Opal.hash()) }, 3000)`
+
       props = {
         style: {
           padding: '1em',

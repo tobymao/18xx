@@ -29,11 +29,7 @@ module Engine
       GAME_PUBLISHER = :all_aboard_games
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1849'
 
-      # TODO: game ends immediately after a company that has reached 377 finishes operating
-      GAME_END_CHECK = { bank: :full_or }.freeze
-
-      # TODO: player leaves game or takes loan
-      BANKRUPTCY_ALLOWED = false
+      BANKRUPTCY_ALLOWED = true
 
       CLOSED_CORP_RESERVATIONS = :remain
 
@@ -115,21 +111,55 @@ module Engine
       AFG_HEXES = %w[C1 H8 M9 M11 B14].freeze
       PORT_HEXES = %w[a12 A5 L14 N8].freeze
 
-      attr_accessor :swap_choice_player, :swap_other_player, :swap_corporation
+      attr_accessor :swap_choice_player, :swap_other_player, :swap_corporation,
+                    :loan_choice_player, :player_debts,
+                    :max_value_reached
+
+      def game_ending_description
+        _, after = game_end_check
+        return unless after
+
+        return "Bank Broken : Game Ends at conclusion of
+                #{round_end.short_name} #{turn}.#{operating_rounds}" if after == :full_or
+        'Company hit max stock value : Game Ends after it operates'
+      end
+
+      def end_now?(after)
+        return false unless after
+
+        return false if after == :after_max_operates
+
+        @round.round_num == @operating_rounds
+      end
+
+      def game_end_check
+        return %i[custom after_max_operates] if @max_value_reached
+
+        return %i[bank full_or] if @bank.broken?
+
+        nil
+      end
 
       def setup
         @corporations.sort_by! { rand }
         remove_corp if @players.size == 3
         @corporations.each do |c|
+          c.slot_open = true
           c.next_to_par = false
           c.shares.last.last_cert = true
         end
         @corporations[0].next_to_par = true
+
+        @player_debts = Hash.new { |h, k| h[k] = 0 }
       end
 
       def remove_corp
         removed = @corporations.pop
         @log << "Removed #{removed.name}"
+        return if removed.name == 'AFG'
+
+        hex_by_id(removed.coordinates).tile.city_towns.first.remove_reservation!(removed)
+        @log << "Removed token reservation at #{removed.coordinates}"
       end
 
       def num_trains(train)
@@ -152,7 +182,7 @@ module Engine
         corporation.next_to_par = false
         index = @corporations.index(corporation)
 
-        @corporations[index + 1].next_to_par = true unless index == @corporations.length - 1
+        @corporations[index + 1].next_to_par = true unless @corporations.last == corporation
       end
 
       def home_token_locations(corporation)
@@ -191,17 +221,37 @@ module Engine
         Engine::G1849::SharePool.new(self)
       end
 
+      def update_garibaldi
+        afg = @corporations.find { |c| c.name == 'AFG' }
+        return unless afg && !afg.slot_open && !home_token_locations(afg).empty?
+
+        afg.slot_open = true
+        afg.closed_recently = true
+        @log << 'AFG now has a token spot available and can be opened in the next stock round.'
+      end
+
       def close_corporation(corporation, quiet: false)
         super
         corporation = reset_corporation(corporation)
         corporation.shares.last.last_cert = true
-        @corporations.push(corporation)
+        @corporations << corporation
         corporation.closed_recently = true
-        corporation.next_to_par = true if @corporations[@corporations.length - 2].floated?
+        index = @corporations.index(corporation)
+        unless @corporations[index - 1].slot_open
+          @corporations[index - 1].next_to_par = false
+          @corporations[index - 1], @corporations[index] = @corporations[index], @corporations[index - 1]
+        end
+        corporation.next_to_par = true if @corporations[index - 1].floated?
+        update_garibaldi
+      end
+
+      def float_str(entity)
+        "#{format_currency(entity.token_fee)} token fee" if entity.corporation?
       end
 
       def new_stock_round
         @corporations.each { |c| c.closed_recently = false }
+        @messina_upgradeable = true
         super
       end
 
@@ -215,20 +265,21 @@ module Engine
       end
 
       def operating_round(round_num)
-        Round::Operating.new(self, [
-                               Step::Bankrupt,
-                               Step::G1849::SwapChoice,
-                               Step::SpecialTrack,
-                               Step::BuyCompany,
-                               Step::G1849::Track,
-                               Step::Token,
-                               Step::Route,
-                               Step::G1849::Dividend,
-                               Step::DiscardTrain,
-                               Step::BuyTrain,
-                               Step::G1849::IssueShares,
-                               [Step::BuyCompany, blocks: true],
-                             ], round_num: round_num)
+        Round::G1849::Operating.new(self, [
+          Step::G1849::LoanChoice,
+          Step::G1849::Bankrupt,
+          Step::G1849::SwapChoice,
+          Step::SpecialTrack,
+          Step::BuyCompany,
+          Step::G1849::Track,
+          Step::G1849::Token,
+          Step::Route,
+          Step::G1849::Dividend,
+          Step::DiscardTrain,
+          Step::BuyTrain,
+          Step::G1849::IssueShares,
+          [Step::BuyCompany, blocks: true],
+        ], round_num: round_num)
       end
 
       def track_type(paths)
@@ -279,6 +330,10 @@ module Engine
         GRAY_REVENUE_CENTERS[stop.hex.id][@phase.name]
       end
 
+      def buying_power(entity, **)
+        entity.cash
+      end
+
       def issuable_shares(entity)
         return [] unless entity.operating_history.size > 1
 
@@ -295,14 +350,34 @@ module Engine
           .reject { |bundle| bundle.shares.size > 1 || entity.cash < bundle.price || !last_cert_last?(bundle) }
       end
 
-      def dumpable(bundle)
+      def dumpable_on(bundle, would_be_pres)
         return true unless bundle.presidents_share
+        return false unless would_be_pres
 
         owner_percent = bundle.owner.percent_of(bundle.corporation)
-        other_percent = @players.reject { |p| p.id == bundle.owner.id }.map { |o| o.percent_of(bundle.corporation) }.max
+        other_percent = would_be_pres.percent_of(bundle.corporation)
 
         owner_after_percent = owner_percent - bundle.percent
+
+        if other_percent == 20 && would_be_pres.certs_of(bundle.corporation).one?
+          return false unless owner_after_percent.zero?
+        end
+
         owner_after_percent < 20 && other_percent > owner_after_percent
+      end
+
+      def find_would_be_pres(player, corporation)
+        sorted_candidates =
+          @players
+            .select { |p| p.id != player.id && p.percent_of(corporation) >= 20 }
+            .sort_by { |p| p.percent_of(corporation) }
+            .reverse!
+        return nil if sorted_candidates.empty?
+
+        max_percent = sorted_candidates.first.percent_of(corporation)
+        sorted_candidates
+          .take_while { |c| c.percent_of(corporation) == max_percent }
+          .min_by { |c| share_pool.distance(player, c) }
       end
 
       def bundles_for_corporation(share_holder, corporation, shares: nil)
@@ -314,11 +389,19 @@ module Engine
           shares.combination(n).to_a.map { |ss| Engine::ShareBundle.new(ss) }
         end
 
-        (bundles.uniq do |b|
+        bundles = bundles.uniq do |b|
           [b.shares.count { |s| s.percent == 10 },
            b.presidents_share ? 1 : 0,
            b.shares.find(&:last_cert) ? 1 : 0]
-        end).select { |b| dumpable(b) }.sort_by(&:percent)
+        end
+
+        (if corporation.president?(share_holder)
+           bundles << Engine::ShareBundle.new(corporation.presidents_share, 10)
+           would_be_pres = find_would_be_pres(share_holder, corporation)
+           bundles.select { |b| dumpable_on(b, would_be_pres) }
+         else
+           bundles
+         end).sort_by(&:percent)
       end
 
       def last_cert_last?(bundle)
@@ -342,22 +425,29 @@ module Engine
         end
       end
 
+      def upgrades_to?(from, to, special = false)
+        super && (from.hex.id != 'B14' || @messina_upgradeable)
+      end
+
       def legal_tile_rotation?(corp, hex, tile)
         connection_directions = graph.connected_hexes(corp).find { |k, _| k.id == hex.id }[1]
+        ever_not_nil = false # to permit teleports and SFA/AFG initial tile lay
         connection_directions.each do |dir|
           connecting_path = tile.paths.find { |p| p.exits.include?(dir) }
           next unless connecting_path
 
-          connecting_track = connecting_path.track
           neighboring_tile = hex.neighbors[dir].tile
           neighboring_path = neighboring_tile.paths.find { |p| p.exits.include?(Engine::Hex.invert(dir)) }
-          return true if neighboring_path.tracks_match(connecting_track)
+          if neighboring_path
+            ever_not_nil = true
+            return true if connecting_path.tracks_match(neighboring_path, dual_ok: true)
+          end
         end
-        false
+        !ever_not_nil
       end
 
-      def can_par?(corporation, _parrer)
-        !corporation.ipoed && corporation.next_to_par && !corporation.closed_recently
+      def can_par?(corp, _parrer)
+        !corp.ipoed && corp.next_to_par && !corp.closed_recently && corp.slot_open
       end
 
       def upgrade_cost(tile, hex, entity)
@@ -396,13 +486,37 @@ module Engine
 
       def event_earthquake!
         @log << '-- Event: Messina Earthquake --'
-        # Remove tile from Messina
+        messina = @hexes.find { |h| h.id == 'B14' }
 
-        # Remove from game tokens on Messina
+        city = messina.tile.cities[0]
 
         # If Garibaldi's only token removed, close Garibaldi
+        if (garibaldi = @corporations.find { |c| c.name == 'AFG' })
+          if city.tokened_by?(garibaldi) && garibaldi.placed_tokens.one?
+            @log << '-- AFG loses only token, closing. --'
+            close_corporation(garibaldi)
+          end
+        end
+
+        # Remove from game tokens on Messina
+        @log << '-- Removing tokens from game. --'
+        city.tokens.each { |t| t&.destroy! }
+
+        # Remove tile from Messina
+        @log << '-- Returning Messina to yellow. --'
+        messina.lay_downgrade(messina.original_tile)
 
         # Messina cannot be upgraded until after next stock round
+        @log << '-- Messina cannot be upgraded until after the next stock round. --'
+        @messina_upgradeable = false
+      end
+
+      def bank_sort(corporations)
+        corporations
+      end
+
+      def player_value(player)
+        player.value - @player_debts[player]
       end
     end
   end

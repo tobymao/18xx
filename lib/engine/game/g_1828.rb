@@ -81,7 +81,7 @@ module Engine
           Step::G1828::DiscardTrain,
           Step::G1828::RemoveTokens,
           Step::G1828::Merger,
-          Step::Exchange,
+          Step::G1828::Exchange,
           Step::G1828::BuySellParShares,
         ])
       end
@@ -95,7 +95,7 @@ module Engine
           Step::G1828::SpecialTrack,
           Step::G1828::BuyCompany,
           Step::G1828::SpecialToken,
-          Step::G1828::BuySpecial,
+          Step::G1828::SpecialBuy,
           Step::G1828::Track,
           Step::G1828::Token,
           Step::G1828::Route,

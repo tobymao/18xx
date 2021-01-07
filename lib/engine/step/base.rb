@@ -73,7 +73,7 @@ module Engine
       end
 
       def blocking?
-        blocks? && current_actions.any?
+        blocks? && !current_actions.empty?
       end
 
       def blocks?

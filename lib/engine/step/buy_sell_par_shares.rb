@@ -20,10 +20,10 @@ module Engine
         actions = []
         actions << 'buy_shares' if can_buy_any?(entity)
         actions << 'par' if can_ipo_any?(entity)
-        actions << 'buy_company' if purchasable_companies(entity).any?
+        actions << 'buy_company' unless purchasable_companies(entity).empty?
         actions << 'sell_shares' if can_sell_any?(entity)
 
-        actions << 'pass' if actions.any?
+        actions << 'pass' unless actions.empty?
         actions
       end
 

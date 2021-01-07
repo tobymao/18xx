@@ -31,7 +31,7 @@ module Engine
                         .corporations
                         .select(&:floated?)
                         .sort.reverse
-          @game.players.select { |p| p.presidencies.any? }
+          @game.players.reject { |p| p.presidencies.empty? }
         end
 
         attr_reader :entities

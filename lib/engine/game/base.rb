@@ -306,6 +306,11 @@ module Engine
         self.class::HEXES
       end
 
+      # use to modify location names based on optional rules
+      def location_name(coord)
+        self.class::LOCATION_NAMES[coord]
+      end
+
       # use to modify tiles based on optional rules
       def optional_tiles; end
 
@@ -507,9 +512,9 @@ module Engine
 
       def result
         @players
-          .sort_by(&:value)
-          .reverse
           .map { |p| [p.name, player_value(p)] }
+          .sort_by { |_, v| v }
+          .reverse
           .to_h
       end
 
@@ -825,7 +830,9 @@ module Engine
       end
 
       def num_certs(entity)
-        certs = entity.shares.select { |s| s.corporation.counts_for_limit && s.counts_for_limit }.sum(&:cert_size)
+        certs = entity.shares.sum do |s|
+          s.corporation.counts_for_limit && s.counts_for_limit ? s.cert_size : 0
+        end
         certs + (self.class::CERT_LIMIT_INCLUDES_PRIVATES ? entity.companies.size : 0)
       end
 
@@ -870,7 +877,7 @@ module Engine
       def must_buy_train?(entity)
         !entity.rusted_self &&
           entity.trains.empty? &&
-          depot.depot_trains.any? &&
+          !depot.depot_trains.empty? &&
           (self.class::MUST_BUY_TRAIN == :always ||
            (self.class::MUST_BUY_TRAIN == :route && @graph.route_info(entity)&.dig(:route_train_purchase)))
       end
@@ -1223,6 +1230,11 @@ module Engine
         !corporation.ipoed
       end
 
+      # Called by Engine::Step::BuyCompany to determine if the company's owner is even allowed to sell the company
+      def company_sellable(company)
+        !company.owner.is_a?(Corporation)
+      end
+
       def float_corporation(corporation)
         @log << "#{corporation.name} floats"
 
@@ -1372,6 +1384,9 @@ module Engine
         @queued_log.each { |l| @log << l }
         @queued_log = []
       end
+
+      # This is a hook to allow game specific logic to be invoked after a company is bought
+      def company_bought(company, buyer); end
 
       def ipo_name(_entity = nil)
         'IPO'
@@ -1595,7 +1610,7 @@ module Engine
               end
 
               # name the location (city/town)
-              location_name = self.class::LOCATION_NAMES[coord]
+              location_name = location_name(coord)
 
               Hex.new(coord, layout: layout, axes: axes, tile: tile, location_name: location_name)
             end
@@ -1604,31 +1619,33 @@ module Engine
       end
 
       def init_tiles
-        self.class::TILES.flat_map do |name, val|
-          if val.is_a?(Integer) || val == 'unlimited'
-            count = val == 'unlimited' ? 1 : val
-            count.times.map do |i|
-              Tile.for(
-                name,
-                index: i,
-                reservation_blocks: self.class::TILE_RESERVATION_BLOCKS_OTHERS,
-                unlimited: val == 'unlimited'
-              )
-            end
-          else
-            count = val['count'] == 'unlimited' ? 1 : val['count']
-            color = val['color']
-            code = val['code']
-            count.times.map do |i|
-              Tile.from_code(
-                name,
-                color,
-                code,
-                index: i,
-                reservation_blocks: self.class::TILE_RESERVATION_BLOCKS_OTHERS,
-                unlimited: val['count'] == 'unlimited'
-              )
-            end
+        self.class::TILES.flat_map { |name, val| init_tile(name, val) }
+      end
+
+      def init_tile(name, val)
+        if val.is_a?(Integer) || val == 'unlimited'
+          count = val == 'unlimited' ? 1 : val
+          count.times.map do |i|
+            Tile.for(
+              name,
+              index: i,
+              reservation_blocks: self.class::TILE_RESERVATION_BLOCKS_OTHERS,
+              unlimited: val == 'unlimited'
+            )
+          end
+        else
+          count = val['count'] == 'unlimited' ? 1 : val['count']
+          color = val['color']
+          code = val['code']
+          count.times.map do |i|
+            Tile.from_code(
+              name,
+              color,
+              code,
+              index: i,
+              reservation_blocks: self.class::TILE_RESERVATION_BLOCKS_OTHERS,
+              unlimited: val['count'] == 'unlimited'
+            )
           end
         end
       end
@@ -1976,6 +1993,10 @@ module Engine
         []
       end
 
+      def bank_sort(corporations)
+        corporations.sort_by(&:name)
+      end
+
       def ability_right_type?(ability, type)
         !type || (ability.type == type)
       end
@@ -2034,8 +2055,13 @@ module Engine
             end
           return true unless corporation
 
-          tokened_hexes = corporation.tokens.select(&:used).map(&:city).map(&:hex).map(&:id)
-          (ability.hexes - tokened_hexes).any?
+          tokened_hexes = []
+
+          corporation.tokens.each do |token|
+            tokened_hexes << token.city.hex.id if token.used
+          end
+
+          !(ability.hexes - tokened_hexes).empty?
         else
           true
         end

@@ -50,8 +50,6 @@ module Engine
         price = action.price
         exchange = action.exchange
 
-        @game.queue_log! { @game.phase.buying_train!(entity, train) }
-
         # Check if the train is actually buyable in the current situation
         raise GameError, 'Not a buyable train' unless buyable_train_variants(train, entity).include?(train.variant)
         raise GameError, 'Must pay face value' if must_pay_face_value?(train, entity, price)
@@ -72,6 +70,8 @@ module Engine
           player.spend(remaining, entity)
           @log << "#{player.name} contributes #{@game.format_currency(remaining)}"
         end
+
+        @game.queue_log! { @game.phase.buying_train!(entity, train) }
 
         if exchange
           verb = "exchanges a #{exchange.name} for"
@@ -139,10 +139,9 @@ module Engine
       end
 
       def buyable_train_variants(train, entity)
-        return [] unless buyable_trains(entity).include?(train)
+        return [] unless buyable_trains(entity).any? { |bt| bt.variants[bt.name] }
 
         variants = train.variants.values
-
         return variants if train.owned_by_corporation?
 
         variants.reject! { |v| entity.cash < v[:price] } if must_issue_before_ebuy?(entity)

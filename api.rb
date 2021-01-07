@@ -81,7 +81,7 @@ class Api < Roda
 
         publish(
           '/chat',
-          50,
+          100,
           user: user.to_h,
           message: hr.params['message'],
           created_at: Time.now.to_i,
