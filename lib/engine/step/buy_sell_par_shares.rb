@@ -95,19 +95,7 @@ module Engine
 
         corporation = bundle.corporation
 
-        timing =
-          case @game.class::SELL_AFTER
-          when :first
-            @game.turn > 1
-          when :operate
-            corporation.operated?
-          when :p_any_operate
-            corporation.operated? || corporation.president?(entity)
-          when :any_time
-            true
-          else
-            raise NotImplementedError
-          end
+        timing = @game.check_sale_timing(entity, corporation)
 
         timing &&
           !(@game.class::MUST_SELL_IN_BLOCKS && @round.players_sold[entity][corporation] == :now) &&
