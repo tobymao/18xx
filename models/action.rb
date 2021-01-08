@@ -8,6 +8,7 @@ class Action < Base
 
   def before_create
     action.delete('user')
+    action.delete('created_at')
     super
   end
 

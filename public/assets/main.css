@@ -118,10 +118,6 @@ th, td {
   button, .button_link, input, select, textarea {
     background-color: gainsboro;
   }
-
-  div.undo {
-    float: left;
-  }
 }
 
 nav#game_menu {
