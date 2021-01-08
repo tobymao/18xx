@@ -9,10 +9,11 @@ module View
       include Actionable
       include Lib::Settings
 
-      needs :user
+      needs :user, default: nil
       needs :negative_pad, default: false
       needs :follow_scroll, default: true, store: true
       needs :selected_action_id, default: nil, store: true
+      needs :limit, default: nil
 
       def render
         children = [render_log]
@@ -73,7 +74,8 @@ module View
 
         actions = @game.actions.map { |a| [a.id, a] }.to_h
 
-        the_log = @game.log.group_by(&:action_id).flat_map do |action_id, entries|
+        log = @limit ? @game.log.last(@limit) : @game.log
+        the_log = log.group_by(&:action_id).flat_map do |action_id, entries|
           children = []
           action = actions[action_id] || blank_action
 
