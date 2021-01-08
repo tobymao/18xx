@@ -10,6 +10,9 @@ module Engine
 
       DEV_STAGE = :prealpha
       GAME_PUBLISHER = nil
+      GAME_LOCATION = 'Southern Italy'
+      GAME_RULES_URL = 'https://docs.google.com/document/d/1gNn2RmtcPWh0KpNduv3p0Lraa3iWIAV3cWcHpCu8X-E/edit'
+      GAME_DESIGNER = 'Scott Petersen (Based on Federico Vellani 1849)'
 
       NEW_AFG_HEXES = %w[E11 H8 I13 I17 J18 K19 L12 L20 O9].freeze
 
@@ -22,8 +25,25 @@ module Engine
       end
 
       def self.title
-        '1849Boot'
+        '1849: Kingdom of the Two Sicilies'
       end
+
+      def num_trains(train)
+        fewer = @players.size < 4
+        case train[:name]
+        when '6H'
+          fewer ? 4 : 4
+        when '8H'
+          fewer ? 4 : 4
+        when '16H'
+          fewer ? 6 : 6
+        end
+      end
+
+      def remove_corp
+
+      end
+
     end
   end
 end

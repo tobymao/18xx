@@ -46,13 +46,11 @@ module Engine
       "J10":"Rofrano",
       "J16":"Matera",
       "J18":"Bari",
-      "K19":"Monopoli",
       "K9":"Scalea",
       "L12":"Montegiordano",
       "L18":"Taranto",
       "L20":"Brindisi",
       "M9":"Cosenza",
-      "N12":"Torretta",
       "N20":"Lecce",
       "N2":"Messina",
       "O11":"Crotone",
@@ -160,47 +158,37 @@ module Engine
       "X2":{
          "count":1,
          "color":"green",
-         "code":"label=F;city=revenue:30;path=a:2,b:_0,track:narrow;path=a:0,b:_0;path=a:4,b:_0"
+         "code":"label=N;city=revenue:60,slots:2;path=a:4,b:_0,track:narrow;path=a:5,b:_0;path=a:1,b:_0,track:dual"
       },
       "X3":{
          "count":1,
          "color":"green",
-         "code":"label=N;city=revenue:60,slots:2;path=a:4,b:_0,track:narrow;path=a:5,b:_0;path=a:1,b:_0,track:dual"
+         "code":"label=R;city=revenue:40,slots:2;path=a:3,b:_0,track:narrow;path=a:4,b:_0;path=a:2,b:_0,track:dual"
       },
       "X4":{
          "count":1,
          "color":"green",
-         "code":"label=R;city=revenue:40,slots:2;path=a:3,b:_0,track:narrow;path=a:4,b:_0;path=a:1,b:_0,track:dual"
+         "code":"label=T;city=revenue:30,slots:2;path=a:2,b:_0,track:dual;path=a:1,b:_0,track:dual;path=a:5,b:_0"
       },
       "X5":{
-         "count":1,
-         "color":"green",
-         "code":"label=T;city=revenue:30,slots:2;path=a:2,b:_0,track:narrow;path=a:1,b:_0,track:dual;path=a:5,b:_0"
-      },
-      "X6":{
          "count":1,
          "color":"brown",
          "code":"label=A;city=revenue:70,slots:2;path=a:1,b:_0,track:dual;path=a:4,b:_0;path=a:0,b:_0,track:narrow;path=a:5,b:_0,track:narrow"
       },
-      "X7":{
-         "count":1,
-         "color":"brown",
-         "code":"label=F;city=revenue:40,slots:2;path=a:2,b:_0,track:dual;path=a:0,b:_0;path=a:4,b:_0"
-      },
-      "X8":{
+      "X6":{
          "count":1,
          "color":"brown",
          "code":"label=N;city=revenue:90,slots:3;path=a:4,b:_0,track:dual;path=a:5,b:_0;path=a:1,b:_0,track:dual;path=a:3,b:_0"
       },
-      "X9":{
+      "X7":{
          "count":1,
          "color":"brown",
-         "code":"label=R;city=revenue:50,slots:2;path=a:3,b:_0,track:dual;path=a:4,b:_0;path=a:1,b:_0,track:dual"
+         "code":"label=R;city=revenue:50,slots:2;path=a:3,b:_0,track:dual;path=a:4,b:_0;path=a:2,b:_0,track:dual"
       },
-      "X10":{
+      "X8":{
          "count":1,
          "color":"brown",
-         "code":"label=T;city=revenue:30,slots:2;path=a:2,b:_0,track:dual;path=a:1,b:_0,track:dual;path=a:5,b:_0;path=a:3,b:_0"
+         "code":"label=T;city=revenue:30,slots:2;path=a:2,b:_0,track:dual;path=a:1,b:_0,track:dual;path=a:5,b:_0;path=a:4,b:_0"
       }
    },
    "market":[
@@ -363,10 +351,12 @@ module Engine
             "H14",
             "H16",
             "J8",
+            "K19",
             "K15",
             "M11",
-            "N18",
-            "P4"
+            "M19",
+            "M21",
+            "N18"
          ],
          "upgrade=cost:40,terrain:mountain":[
             "F12",
@@ -375,46 +365,43 @@ module Engine
             "H12",
             "I9",
             "I11",
-            "I15",
-            "J14",
             "K13",
-            "K17",
-            "O3",
+            "P4",
             "O7"
          ],
          "upgrade=cost:80,terrain:mountain":[
             "C9",
-            "J12",
-            "K11",
+            "I15",
+            "J14",
+            "K17",
             "L10",
-            "N8"
+            "N8",
+            "O3"
          ],
          "upgrade=cost:160,terrain:mountain":[
             "B8",
             "B10",
             "C11",
             "D12",
+            "J12",
+            "K11",
             "N10"
          ],
          "city=revenue:0":[
-            "H8",
             "I17",
-            "K19",
             "L20",
-            "N20",
             "O9"
          ],
          "town=revenue:0":[
             "D14",
             "F8",
-            "G9",
             "G17",
             "K9",
             "O19",
             "P6"
          ],
          "town=revenue:0;upgrade=cost:40,terrain:mountain":[
-            "F10",
+            "G9",
             "J10",
             "J16",
             "M9",
@@ -424,7 +411,8 @@ module Engine
             "L12"
          ],
          "town=revenue:0;upgrade=cost:80,terrain:mountain":[
-            "D10"
+            "D10",
+            "F10"
          ]
       },
       "blue":{
@@ -454,13 +442,13 @@ module Engine
          "path=a:3,b:5,track:dual":[
             "O1"
          ],
-         "town=revenue:20;path=a:0,b:_0,track:dual;path=a:2,b:_0,track:dual":[
+         "path=a:0,b:2,track:dual":[
             "N12"
          ],
          "town=revenue:20;path=a:3,b:_0,track:dual;path=a:1,b:_0,track:dual":[
             "O11"
          ],
-         "city=slots:2,revenue:yellow_20|green_30|brown_40;path=a:4,b:_0,track:dual;path=a:2,b:_0;path=a:3,b:_0,track:narrow;path=a:1,b:_0,track:narrow;path=a:5,b:_0":[
+         "city=slots:2,revenue:yellow_20|green_30|brown_40;path=a:4,b:_0,track:dual;path=a:2,b:_0;path=a:1,b:_0,track:narrow;path=a:5,b:_0":[
             "J18"
          ],
          "city=revenue:yellow_20|green_30|brown_40;path=a:0,b:_0,track:dual;path=a:1,b:_0,track:dual;path=a:2,b:_0,track:dual;path=a:4,b:_0,track:dual":[
@@ -468,6 +456,9 @@ module Engine
          ],
          "city=slots:2,revenue:yellow_20|green_30|brown_40;path=a:4,b:_0,track:dual;path=a:2,b:_0,track:dual;path=a:3,b:_0,track:dual;path=a:1,b:_0,track:dual;path=a:5,b:_0,track:dual;path=a:0,b:_0,track:dual;path=a:5,b:_0,track:dual":[
             "I13"
+         ],
+         "city=slots:1,revenue:yellow_20|green_30|brown_40;path=a:0,b:_0,track:dual;path=a:3,b:_0,track:dual;path=a:2,b:_0,track:dual":[
+            "N20"
          ]
       },
       "yellow":{
@@ -477,10 +468,10 @@ module Engine
          "label=R;city=revenue:30;upgrade=cost:40,terrain:mountain;path=a:3,b:_0,track:narrow;path=a:4,b:_0":[
             "P2"
          ],
-         "label=F;city=revenue:20;path=a:2,b:_0,track:narrow;path=a:4,b:_0":[
+         "city=revenue:20;path=a:2,b:_0,track:narrow;path=a:4,b:_0":[
             "G15"
          ],
-         "label=T;city=revenue:20;path=a:2,b:_0,track:narrow":[
+         "label=T;city=revenue:20;path=a:2,b:_0,track:dual":[
             "L18"
          ],
          "label=N;city=revenue:20;path=a:4,b:_0,track:narrow;path=a:5,b:_0":[
@@ -489,8 +480,8 @@ module Engine
          "city=revenue:20;path=a:1,b:_0,track:narrow;path=a:4,b:_0,track:narrow":[
             "E11"
          ],
-         "path=a:5,b:3":[
-            "M19"
+         "city=revenue:10;path=a:2,b:_0":[
+            "H8"
          ]
       }
    },
@@ -749,9 +740,9 @@ module Engine
       },
       {
          "float_percent":20,
-         "sym":"NEW1",
-         "name":"New1",
-         "logo":"1849/NEW1",
+         "sym":"TSR",
+         "name":"Terni–Sulmona Railway",
+         "logo":"1849_K_2_S/TSR",
          "token_fee":40,
          "tokens":[
             0,
@@ -774,9 +765,9 @@ module Engine
       },
       {
          "float_percent":20,
-         "sym":"NEW2",
-         "name":"New2",
-         "logo":"1849/NEW2",
+         "sym":"BTR",
+         "name":"Bari–Taranto Railway",
+         "logo":"1849_K_2_S/BTR",
          "token_fee":40,
          "tokens":[
             0,
@@ -808,7 +799,7 @@ module Engine
       },
       {
          "name":"6H",
-         "num":5,
+         "num":4,
          "distance":6,
          "price":200,
          "rusts_on":"10H",
@@ -827,7 +818,7 @@ module Engine
       },
       {
          "name":"10H",
-         "num":2,
+         "num":3,
          "distance":10,
          "price":550,
          "events":[
@@ -840,15 +831,7 @@ module Engine
          "name":"12H",
          "num":2,
          "distance":12,
-         "price":800,
-         "events":[
-            {
-               "type":"close_companies"
-            },
-            {
-               "type":"earthquake"
-            }
-         ]
+         "price":800
       },
       {
          "name":"16H",
