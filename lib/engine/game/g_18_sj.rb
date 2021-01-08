@@ -107,7 +107,6 @@ module Engine
       }.freeze
 
       GKB_HEXES = %w[C8 C16 E8].freeze
-      GKB_BONUSES = [0, 20, 30, 50].freeze
 
       def init_corporations(stock_market)
         corporations = super
@@ -213,7 +212,6 @@ module Engine
         @sj.owner = @bank
 
         @pending_nationalization = false
-        @gkb_bonus = 0
       end
 
       def cert_limit
@@ -247,7 +245,6 @@ module Engine
           Step::Track,
           Step::Token,
           Step::G18SJ::BuyTrainBeforeRunRoute,
-          Step::G18SJ::SpecialBuy,
           Step::G18SJ::Route,
           Step::G18SJ::Dividend,
           Step::SpecialBuyTrain,
@@ -298,8 +295,8 @@ module Engine
          stockholm_malmo_bonus(icons, stops),
          bergslagen_bonus(icons),
          orefields_bonus(icons),
-         sveabolaget_bonus(route, stops),
-         gkb_bonus(stops)].map { |b| b[:revenue] }.each { |r| revenue += r }
+         sveabolaget_bonus(route),
+         gkb_bonus(route)].map { |b| b[:revenue] }.each { |r| revenue += r }
 
         return revenue unless route.train.name == 'E'
 
@@ -323,17 +320,14 @@ module Engine
          stockholm_malmo_bonus(icons, stops),
          bergslagen_bonus(icons),
          orefields_bonus(icons),
-         sveabolaget_bonus(route, stops),
-         gkb_bonus(stops)].map { |b| b[:description] }.compact.each { |d| str += " + #{d}" }
+         sveabolaget_bonus(route),
+         gkb_bonus(route)].map { |b| b[:description] }.compact.each { |d| str += " + #{d}" }
 
         str
       end
 
       def clean_up_after_entity
         @tile_lays = []
-
-        # Reset possible gkb bonus
-        @gkb_bonus = 0
 
         # Remove Gellivare Company tile lay ability if it has been used this OR
         abilities(gc, :tile_lay) do |ability|
@@ -442,7 +436,7 @@ module Engine
         last_tile_lay = @tile_lays.first
 
         if !main_line_lay?(last_tile_lay) && !main_line_lay?(action)
-          game_error('Second tile lay or upgrade only allowed if first or second improves the main line!')
+          raise GameError, 'Second tile lay or upgrade only allowed if first or second improves the main line!'
         end
 
         @log << "#{last_tile_lay.entity.name} gets extra tile lay/upgrade as main line improvement."
@@ -512,9 +506,11 @@ module Engine
       def current_cert_limit
         available_corporations = @corporations.count { |c| !c.closed? }
         certs_per_player = CERT_LIMITS[available_corporations]
-        game_error("No cert limit defined for #{available_corporations} corporations") unless certs_per_player
+        raise GameError, "No cert limit defined for #{available_corporations} corporations" unless certs_per_player
+
         set_cert_limit = certs_per_player[@players.size]
-        game_error("No cert limit defined for #{@players.size} players") unless set_cert_limit
+        raise GameError, "No cert limit defined for #{@players.size} players" unless set_cert_limit
+
         set_cert_limit
       end
 
@@ -653,12 +649,13 @@ module Engine
         bonus
       end
 
-      def sveabolaget_bonus(route, stops)
+      def sveabolaget_bonus(route)
         bonus = { revenue: 0 }
 
         steam = sveabolaget&.id
         revenue = 0
-        if route.corporation == sveabolaget&.owner && (port = stops.map(&:hex).find { |hex| hex.assigned?(steam) })
+        if route.corporation == sveabolaget&.owner &&
+           (port = route.stops.map(&:hex).find { |hex| hex.assigned?(steam) })
           revenue += 30 * port.tile.icons.select { |icon| icon.name == 'port' }.size
         end
         if revenue.positive?
@@ -669,24 +666,23 @@ module Engine
         bonus
       end
 
-      def gkb_bonus(stops)
+      def gkb_bonus(route)
         bonus = { revenue: 0 }
 
-        return bonus unless @gkb_bonus.positive?
+        return bonus if !route.abilities || route.abilities.empty?
+        raise GameError, "Only one ability supported: #{route.abilities}" if route.abilities.size > 1
 
-        revenue = 0
-        stops.select { |s| GKB_HEXES.include?(s.hex.name) }.each { |_s| revenue += @gkb_bonus }
-        if revenue.positive?
-          bonus[:revenue] = revenue
+        ability = abilities(route.train.owner, route.abilities.first)
+        raise GameError, "Cannot find ability #{route.abilities.first}" unless ability
+
+        bonuses = route.stops.count { |s| ability.hexes.include?(s.hex.name) }
+        if bonuses.positive?
+          bonus[:revenue] = ability.amount * bonuses
           bonus[:description] = 'GKB'
+          bonus[:description] += "x#{bonuses}" if bonuses > 1
         end
 
         bonus
-      end
-
-      def buy_gkb_bonus(count)
-        game_error('No bonuses remains to be bought') unless count.positive?
-        @gkb_bonus = GKB_BONUSES[count]
       end
 
       def close_cleanup(company)

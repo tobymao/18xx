@@ -13,8 +13,11 @@ module View
 
       needs :last_entity, store: true, default: nil
       needs :last_round, store: true, default: nil
+      needs :last_company, store: true, default: nil
       needs :routes, store: true, default: []
       needs :selected_route, store: true, default: nil
+      needs :selected_company, default: nil, store: true
+      needs :abilities, store: true, default: nil
 
       # Get routes that have a length greater than zero
       # Due to the way this and the map hook up routes needs to have
@@ -28,6 +31,7 @@ module View
         operating = @game.round.current_entity.operating_history
         last_run = operating[operating.keys.max]&.routes
         return [] unless last_run
+        return [] if @abilities&.any?
 
         halts = operating[operating.keys.max]&.halts
         last_run.map do |train, connections|
@@ -47,6 +51,20 @@ module View
 
       def render
         current_entity = @game.round.current_entity
+        if @selected_company&.owner == current_entity
+          ability = @game.abilities(@selected_company, :hex_bonus, time: 'route')
+          # Clean routes if we select company, but just when we select
+          unless @last_company
+            cleanup
+            store(:last_company, @selected_company, skip: true)
+          end
+          store(:abilities, ability ? [ability.type] : nil, skip: true)
+        else
+          cleanup if @last_company
+          store(:last_company, nil, skip: true)
+          store(:abilities, nil, skip: true)
+        end
+
         # this is needed for the rare case when moving directly between run_routes steps
         if @last_entity != current_entity || @last_round != @game.round
           cleanup
@@ -71,7 +89,7 @@ module View
         end
 
         if !@selected_route && (first_train = trains[0])
-          route = Engine::Route.new(@game, @game.phase, first_train, routes: @routes)
+          route = Engine::Route.new(@game, @game.phase, first_train, abilities: @abilities, routes: @routes)
           @routes << route
           store(:routes, @routes, skip: true)
           store(:selected_route, route, skip: true)
@@ -81,7 +99,7 @@ module View
         trains = trains.flat_map do |train|
           onclick = lambda do
             unless (route = @routes.find { |t| t.train == train })
-              route = Engine::Route.new(@game, @game.phase, train, routes: @routes)
+              route = Engine::Route.new(@game, @game.phase, train, abilities: @abilities, routes: @routes)
               @routes << route
               store(:routes, @routes)
             end
