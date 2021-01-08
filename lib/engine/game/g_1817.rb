@@ -466,6 +466,8 @@ module Engine
       end
 
       def liquidate!(corporation)
+        return if corporation.owner == @share_pool
+
         @owner_when_liquidated[corporation] = corporation.owner
         @stock_market.move(corporation, 0, 0, force: true)
       end
