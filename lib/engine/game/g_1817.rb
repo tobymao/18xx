@@ -134,6 +134,10 @@ module Engine
         @interest_fixed || future_interest_rate
       end
 
+      def loans_due_interest(entity)
+        entity.loans.size
+      end
+
       def interest_owed_for_loans(loans)
         (interest_rate * loans * @loan_value) / 100
       end
