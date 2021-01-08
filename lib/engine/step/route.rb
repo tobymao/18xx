@@ -29,6 +29,7 @@ module Engine
         entity = action.entity
         @round.routes = action.routes
         trains = {}
+        abilities = []
 
         @round.routes.each do |route|
           train = route.train
@@ -39,12 +40,11 @@ module Engine
           trains[train] = true
           revenue = @game.format_currency(route.revenue)
           @log << "#{entity.name} runs a #{train.name} train for #{revenue}: #{route.revenue_str}"
+          abilities += route.abilities if route.abilities
         end
         pass!
 
-        return unless (route = @round.routes.first)
-
-        route.abilities.each { |type| @game.abilities(action.entity, type)&.use! }
+        abilities.uniq.each { |type| @game.abilities(action.entity, type)&.use! }
       end
 
       def available_hex(entity, hex)

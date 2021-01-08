@@ -675,7 +675,7 @@ module Engine
       def gkb_bonus(route)
         bonus = { revenue: 0 }
 
-        return bonus if route.abilities.empty?
+        return bonus if !route.abilities || route.abilities.empty?
         raise GameError, "Only one ability supported: #{route.abilities}" if route.abilities.size > 1
 
         ability = abilities(route.train.owner, route.abilities.first)

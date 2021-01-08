@@ -19,7 +19,7 @@ module Engine
       @revenue_str = opts[:revenue_str]
       @subsidy = opts[:subsidy]
       @halts = opts[:halts]
-      @abilities = opts[:abilities] || []
+      @abilities = opts[:abilities]
 
       @connection_data = nil
       @last_node = nil

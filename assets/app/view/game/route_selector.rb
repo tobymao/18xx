@@ -18,7 +18,7 @@ module View
       needs :routes, store: true, default: []
       needs :selected_route, store: true, default: nil
       needs :selected_company, default: nil, store: true
-      needs :abilities, store: true, default: []
+      needs :abilities, store: true, default: nil
 
       # Get routes that have a length greater than zero
       # Due to the way this and the map hook up routes needs to have
@@ -32,7 +32,7 @@ module View
         operating = @game.round.current_entity.operating_history
         last_run = operating[operating.keys.max]&.routes
         return [] unless last_run
-        return [] unless @abilities.empty?
+        return [] if @abilities&.any?
 
         halts = operating[operating.keys.max]&.halts
         last_run.map do |train, connections|
@@ -59,11 +59,11 @@ module View
             cleanup
             store(:last_company, @selected_company, skip: true)
           end
-          store(:abilities, ability ? [ability.type] : [], skip: true)
+          store(:abilities, ability ? [ability.type] : nil, skip: true)
         else
           cleanup if @last_company
           store(:last_company, nil, skip: true)
-          store(:abilities, [], skip: true)
+          store(:abilities, nil, skip: true)
         end
 
         # this is needed for the rare case when moving directly between run_routes steps
