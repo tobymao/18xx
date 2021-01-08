@@ -637,6 +637,7 @@ module Engine
         @last_processed_action = action.id
         self
       rescue Engine::GameError => e
+        @raw_actions.pop
         @actions.pop
         @exception = e
         @broken_action = action
@@ -644,7 +645,12 @@ module Engine
       end
 
       def maybe_raise!
-        raise @exception if @exception
+        if @exception
+          exception = @exception
+          @exception = nil
+          @broken_action = nil
+          raise exception
+        end
 
         self
       end
