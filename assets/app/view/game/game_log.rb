@@ -132,8 +132,7 @@ module View
         action_log = log.flat_map do |entry|
           line = entry.message
 
-          line_props = { style: { marginTop: '0.5em',
-                                  marginBottom: '0.2rem',
+          line_props = { style: { marginBottom: '0.2rem',
                                   paddingLeft: '0.5rem',
                                   textIndent: '-0.5rem' },
                          on: { click: -> { store(:selected_action_id, action.id) } } }
@@ -141,6 +140,7 @@ module View
 
           if line.is_a?(Engine::Action::Message)
             line_props[:style][:fontWeight] = 'bold'
+            line_props[:style][:marginTop] = '0.5em'
 
             sender = line.entity.name || line.user
             line = "#{sender}: #{line.message}"
