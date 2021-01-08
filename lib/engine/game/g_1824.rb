@@ -62,6 +62,9 @@ module Engine
         6 => 'Wocheinerbahn',
       }.freeze
 
+      MINE_HEX_NAMES = %w[C6 A12 A22 H25].freeze
+      MINE_HEX_NAMES_CISLEITHANIA = %w[C6 A12 A22 H25].freeze
+
       def init_optional_rules(optional_rules)
         opt_rules = super
 
@@ -210,7 +213,7 @@ module Engine
           Step::Token,
           Step::Route,
           Step::Dividend,
-          Step::BuyTrain,
+          Step::G1824::BuyTrain,
           [Step::BuyCompany, blocks: true],
         ], round_num: round_num)
       end
@@ -228,7 +231,7 @@ module Engine
       end
 
       def setup
-        g_trains = @depot.upcoming.select { |t| t.name.end_with?('g') }
+        g_trains = @depot.upcoming.select { |t| g_train?(t) }
         coal_railways.each do |coalcorp|
           train = g_trains.shift
           buy_train(coalcorp, train, :free)
@@ -251,11 +254,29 @@ module Engine
         super && !corporation.all_abilities.find { |a| a.type == :no_buy }
       end
 
-      private
+      def g_train?(train)
+        train.name.end_with?('g')
+      end
 
       def coal_railways
         @coal_railways ||= (option_cisleithania ? %w[EPP EOD MLB] : %w[EPP EOD MLB SPB])
           .map { |c| corporation_by_id(c) }
+      end
+
+      def revenue_for(route, stops)
+        # Ensure only g-trains visit mines, and that g-trains visit exactly one mine
+        mine_visits = route.hexes.count { |h| mine_hex?(h) }
+
+        raise GameError, 'Exactly one mine need to be visited' if g_train?(route.train) && mine_visits != 1
+        raise GameError, 'Only g-trains may visit mines' if !g_train?(route.train) && mine_visits.positive?
+
+        super
+      end
+
+      private
+
+      def mine_hex?(hex)
+        option_cisleithania ? MINE_HEX_NAMES_CISLEITHANIA.include?(hex.name) : MINE_HEX_NAMES.include?(hex.name)
       end
 
       MOUNTAIN_RAILWAY_DEFINITION = {
