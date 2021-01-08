@@ -161,10 +161,8 @@ module Engine
 
       def block_lay_for_purple_tiles
         @tiles.each do |tile|
-          if tile.name.end_with?("p")
-             tile.blocks_lay = true
-          end
-         end
+          tile.blocks_lay = true if tile.name.end_with?('p')
+        end
       end
     end
   end
