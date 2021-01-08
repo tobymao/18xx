@@ -164,7 +164,7 @@ module Engine
       "X3":{
          "count":1,
          "color":"green",
-         "code":"label=R;city=revenue:40,slots:2;path=a:3,b:_0,track:narrow;path=a:4,b:_0;path=a:2,b:_0,track:dual"
+         "code":"label=R;city=revenue:40,slots:2;path=a:3,b:_0,track:dual;path=a:4,b:_0;path=a:2,b:_0,track:dual"
       },
       "X4":{
          "count":1,
