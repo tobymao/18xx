@@ -30,8 +30,8 @@ module SwapBuySell
   # Private method used by other methods in this module
   def bundle_reduced_five_percent(shares)
     # Dup is needed to avoid affecting the actual percentage in the original bundle
-    updated_bundle = Engine::ShareBundle.new(shares.map(&:dup))
-    updated_bundle.shares.first.percent -= 5
-    updated_bundle
+    updated_shares = shares.map(&:dup)
+    updated_shares.first.percent -= 5
+    Engine::ShareBundle.new(updated_shares)
   end
 end
