@@ -25,8 +25,6 @@ module Engine
       SELL_BUY_ORDER = :sell_buy
       MARKET_SHARE_LIMIT = 100
 
-      DOUBLE_SIDED_TILES = true
-
       START_PRICES = [60, 60, 65, 65, 70, 70, 75, 75, 80, 80].freeze
       MINOR_STARTING_CASH = 50
 
@@ -136,8 +134,8 @@ module Engine
             tile_a = tile_by_id("#{name_a}-#{idx}")
             tile_b = tile_by_id("#{name_b}-#{idx}")
 
-            tile_a.opposite!(tile_b)
-            tile_b.opposite!(tile_a)
+            tile_a.opposite = tile_b
+            tile_b.opposite = tile_a
           end
         end
       end

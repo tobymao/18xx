@@ -74,7 +74,7 @@ module Engine
     class Base
       attr_reader :actions, :bank, :cert_limit, :cities, :companies, :corporations,
                   :depot, :finished, :graph, :hexes, :id, :loading, :loans, :log, :minors,
-                  :phase, :players, :operating_rounds, :round, :share_pool, :stock_market,
+                  :phase, :players, :operating_rounds, :round, :share_pool, :stock_market, :tile_groups,
                   :tiles, :turn, :total_loans, :undo_possible, :redo_possible, :round_history, :all_tiles,
                   :optional_rules, :exception, :last_processed_action, :broken_action
 
@@ -225,8 +225,6 @@ module Engine
       CLOSED_CORP_RESERVATIONS = :removed # remain or removed?
 
       MUST_BUY_TRAIN = :route # When must the company buy a train if it doesn't have one (route, never, always)
-
-      DOUBLE_SIDED_TILES = false # if true, requires @tile_groups to be set
 
       # Default tile lay, one tile either upgrade or lay at zero cost
       # allows multiple lays, value must be either true, false or :not_if_upgraded
@@ -454,6 +452,7 @@ module Engine
         @tiles = init_tiles
         @all_tiles = init_tiles
         optional_tiles
+        @tile_groups = []
         @cert_limit = init_cert_limit
         @removals = []
 

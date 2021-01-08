@@ -46,7 +46,7 @@ module View
       def render
         remaining = @game.tiles.group_by(&:name)
 
-        if !@game.class::DOUBLE_SIDED_TILES
+        if @game.tile_groups.empty?
           children = @game.all_tiles.sort.group_by(&:name).flat_map do |name, tiles|
             num = remaining[name]&.size || 0
             unavailable = num.positive? ? nil : 'None Left'

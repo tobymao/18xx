@@ -14,10 +14,10 @@ module Engine
   class Tile
     include Config::Tile
 
-    attr_accessor :hex, :icons, :index, :legal_rotations, :location_name, :name, :reservations, :upgrades
+    attr_accessor :hex, :icons, :index, :legal_rotations, :location_name, :name, :opposite, :reservations, :upgrades
     attr_reader :blocks_lay, :borders, :cities, :color, :edges, :junction, :nodes, :label,
                 :parts, :preprinted, :rotation, :stops, :towns, :offboards, :blockers,
-                :city_towns, :unlimited, :stubs, :partitions, :id, :frame, :opposite
+                :city_towns, :unlimited, :stubs, :partitions, :id, :frame
 
     ALL_EDGES = [0, 1, 2, 3, 4, 5].freeze
 
@@ -242,10 +242,6 @@ module Engine
 
     def terrain
       @upgrades.flat_map(&:terrains).uniq
-    end
-
-    def opposite!(tile)
-      @opposite = tile
     end
 
     # if tile has more than one intra-tile paths, connections using those paths
