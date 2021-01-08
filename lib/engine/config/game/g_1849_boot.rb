@@ -15,14 +15,16 @@ module Engine
    "currencyFormatStr":"L.%d",
    "bankCash":7760,
    "certLimit":{
-      "3":12,
-      "4":11,
-      "5":9
+      "3":20,
+      "4":15,
+      "5":12,
+      "6":10
    },
    "startingCash":{
       "3":500,
       "4":375,
-      "5":300
+      "5":300,
+      "6":250
    },
    "layout":"pointy",
    "mustSellInBlocks":true,
@@ -742,7 +744,7 @@ module Engine
          "float_percent":20,
          "sym":"TSR",
          "name":"Terni–Sulmona Railway",
-         "logo":"1849_K_2_S/TSR",
+         "logo":"1849_K2S/TSR",
          "token_fee":40,
          "tokens":[
             0,
@@ -767,7 +769,7 @@ module Engine
          "float_percent":20,
          "sym":"BTR",
          "name":"Bari–Taranto Railway",
-         "logo":"1849_K_2_S/BTR",
+         "logo":"1849_K2S/BTR",
          "token_fee":40,
          "tokens":[
             0,
