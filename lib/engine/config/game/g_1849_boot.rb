@@ -44,7 +44,6 @@ module Engine
       "G9":"Avellino",
       "H8":"Salerno",
       "I13":"Potenza",
-      "I17":"Andria",
       "J10":"Rofrano",
       "J16":"Matera",
       "J18":"Bari",
@@ -352,6 +351,7 @@ module Engine
             "H10",
             "H14",
             "H16",
+            "I17",
             "J8",
             "K19",
             "K15",
@@ -390,7 +390,6 @@ module Engine
             "N10"
          ],
          "city=revenue:0":[
-            "I17",
             "L20",
             "O9"
          ],
