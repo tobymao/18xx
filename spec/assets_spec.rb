@@ -294,7 +294,7 @@ describe 'Assets' do
           'New York, Susquehanna and Western Railway']]]],
       ['18Chesapeake',
        1905,
-       [[166, 'blocking_special_track', ['Lay Track for Columbia - Philadelphia Railroad']]]],
+       [[151, 'blocking_special_track', ['Lay Track for Columbia - Philadelphia Railroad']]]],
       ['18CO',
        20_708,
        [[456,
