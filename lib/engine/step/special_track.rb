@@ -76,12 +76,17 @@ module Engine
           .select { |t| @game.phase.tiles.include?(t.color) && @game.upgrades_to?(hex.tile, t, tile_ability.special) }
       end
 
-      def tile_lay_abilities(entity, &block)
+      def tile_lay_abilities(entity, **kwargs, &block)
         return unless entity&.company?
 
-        ability = @game.abilities(entity, :tile_lay, time: 'sold', &block) if @round.respond_to?(:just_sold_company) &&
-          entity == @round.just_sold_company
-        ability || @game.abilities(entity, :tile_lay, time: 'track', &block)
+        if @round.respond_to?(:just_sold_company) && entity == @round.just_sold_company
+          ability = @game.abilities(entity, :tile_lay, time: 'sold', **kwargs, &block)
+        end
+
+        ability ||
+          @game.abilities(
+            entity, :tile_lay, time: %w[special_track %current_step% owning_corp_or_turn], **kwargs, &block
+          )
       end
 
       def check_connect(_action, ability)

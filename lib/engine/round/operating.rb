@@ -5,6 +5,8 @@ require_relative 'base'
 module Engine
   module Round
     class Operating < Base
+      attr_reader :current_operator
+
       def self.short_name
         'OR'
       end
@@ -18,6 +20,7 @@ module Engine
       end
 
       def setup
+        @current_operator = nil
         @home_token_timing = @game.class::HOME_TOKEN_TIMING
         @game.payout_companies
         @entities.each { |c| @game.place_home_token(c) } if @home_token_timing == :operating_round
@@ -63,6 +66,7 @@ module Engine
 
       def start_operating
         entity = @entities[@entity_index]
+        @current_operator = entity
         if (ability = teleported?(entity))
           entity.remove_ability(ability)
         end

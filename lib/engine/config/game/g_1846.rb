@@ -189,7 +189,7 @@ module Engine
       "abilities": [
         {
           "type": "token",
-          "when": "owning_corp_or_turn",
+          "when": ["owning_corp_or_turn", "other_or"],
           "owner_type":"corporation",
           "hexes": [
             "D6"
@@ -217,7 +217,7 @@ module Engine
       "abilities": [
         {
           "type": "close",
-          "when": "never",
+          "on_phase": "never",
           "owner_type": "corporation"
         }
       ]
@@ -246,7 +246,7 @@ module Engine
       "abilities": [
         {
           "type": "assign_hexes",
-          "when": "owning_corp_or_turn",
+          "when": ["owning_corp_or_turn", "owning_player_sr_turn", "other_or"],
           "hexes": [
             "I1",
             "D6"
@@ -288,7 +288,7 @@ module Engine
         },
         {
           "type": "assign_hexes",
-          "when": "owning_corp_or_turn",
+          "when": ["owning_corp_or_turn", "other_or", "owning_player_sr_turn"],
           "hexes": [
             "B8",
             "C5",
@@ -316,7 +316,7 @@ module Engine
       "abilities": [
         {
            "type":"tile_lay",
-           "when": "owning_corp_or_turn",
+           "when": ["owning_corp_or_turn", "other_or"],
            "owner_type":"corporation",
            "free":true,
            "hexes":[
@@ -353,7 +353,7 @@ module Engine
         },
         {
            "type":"tile_lay",
-           "when": "owning_corp_or_turn",
+           "when": ["owning_corp_or_turn", "other_or"],
            "owner_type":"corporation",
            "free":true,
            "must_lay_together": true,
@@ -387,7 +387,7 @@ module Engine
         },
         {
            "type":"tile_lay",
-           "when": "owning_corp_or_turn",
+           "when": ["owning_corp_or_turn", "other_or"],
            "owner_type":"corporation",
            "free":true,
            "must_lay_together": true,
@@ -584,6 +584,8 @@ module Engine
             "type":"tile_lay",
             "free":true,
             "description": "Free tile lay: E5, F6, G5, H6, J4",
+            "passive": true,
+            "when": "track_and_token",
             "hexes":[
                "E5",
                "F6",

@@ -266,7 +266,7 @@ module Engine
                 "F5"
               ],
               "count": 1,
-              "when": "track"
+              "when": ["special_track", "track", "other_or"]
             }
         ]
       },
@@ -342,9 +342,9 @@ module Engine
                "shares":"NdM_0"
             },
             {
-               "type":"close",
-               "when":"train",
-               "corporation":"NdM"
+               "type": "close",
+               "when": "bought_train",
+               "corporation": "NdM"
             },
             {
                "type":"no_buy"

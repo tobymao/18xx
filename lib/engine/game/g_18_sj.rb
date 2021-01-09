@@ -187,7 +187,7 @@ module Engine
 
         nils_ericsson.add_ability(Ability::Close.new(
           type: :close,
-          when: :train,
+          when: 'bought_train',
           corporation: abilities(nils_ericsson, :shares).shares.first.corporation.name,
         )) if nils_ericsson && !nils_ericsson.closed?
 
@@ -259,7 +259,7 @@ module Engine
 
         super
 
-        return if !is_tile_lay || special_tile_lay?(action)
+        return if !is_tile_lay || special_tile_lay?(action) || action.entity.company?
 
         remove_main_line_bonus(action)
         @tile_lays << action
