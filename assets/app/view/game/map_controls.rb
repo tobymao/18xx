@@ -17,8 +17,8 @@ module View
           location_names_controls,
           hex_coord_controls,
           starting_map_controls,
-          route_controls,
-          map_zoom_controls,
+          *route_controls,
+          *map_zoom_controls,
         ].compact
 
         h(:div, children)
@@ -107,7 +107,7 @@ module View
         end
 
         @route_input = render_select(id: :route, on: { input: route_change }, children: operators)
-        h('label.inline-block', ['Show Last Route For:', @route_input])
+        ['Show Last Route For:', @route_input]
       end
 
       def render_select(id:, on: {}, children: [])
@@ -128,21 +128,26 @@ module View
           end
         end
 
-        h('div.inline-block', [
-          render_button('Zoom out', on_click.call(@map_zoom / 1.1)),
-          render_button('Default zoom', on_click.call(1)),
-          render_button('Zoom in', on_click.call(@map_zoom * 1.1)),
-        ])
+        [render_button('Zoom out', on_click.call(@map_zoom / 1.1)),
+         render_button('Default zoom', on_click.call(1)),
+         render_button('Zoom in', on_click.call(@map_zoom * 1.1))]
       end
 
       def render_button(text, action)
         props = {
+          style: {
+            top: '1rem',
+            # float: 'right',
+            borderRadius: '5px',
+            margin: '0 0.3rem',
+            padding: '0.2rem 0.5rem',
+          },
           on: {
             click: action,
           },
         }
 
-        h('button.small', props, text)
+        h(:button, props, text)
       end
     end
   end
