@@ -36,17 +36,19 @@ module View
 
         if participant?
           children << h(:div, { style: {
-            margin: '1vmin 0',
+            margin: '0 0 1vmin 0',
             display: 'flex',
             flexDirection: 'row',
+            maxWidth: '960px',
           } }, [
             h(:span, { style: {
               fontWeight: 'bold',
               margin: 'auto 0',
             } }, [@user['name'] + ':']),
-            h(:input,
+            h(:textarea,
               style: {
               marginLeft: '0.5rem',
+              height: '1.25rem',
               flex: '1',
             },
               on: { keyup: enter }),
