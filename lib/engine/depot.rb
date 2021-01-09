@@ -1,9 +1,12 @@
 # frozen_string_literal: true
 
 require_relative 'action/buy_train.rb'
+require_relative 'entity'
 
 module Engine
   class Depot
+    include Entity
+
     attr_reader :trains, :upcoming, :discarded
 
     def initialize(trains, game)

@@ -56,6 +56,10 @@ module Engine
         @game.finished || @entities.all?(&:passed?)
       end
 
+      def stock?
+        true
+      end
+
       private
 
       def finish_round

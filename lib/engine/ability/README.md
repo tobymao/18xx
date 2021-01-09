@@ -17,11 +17,30 @@ These attributes may be set for all ability types
   order for the ability to be active. Either "player" or
   "corporation".
 - `remove`: Game phase when this ability is removed
-- `when`: The game step or phase when this ability is active
 - `count`: The number of times the ability may be used
 - `count_per_or`: The number of times the ability may be used in each OR; the
   property `count_this_or` is reset to 0 at the start of each OR and increments
   each time the ability is used
+- `on_phase`: The phase when this ability is active
+- `when`: (string or array of strings) The game steps or special time descriptor
+  when this ability is active. If no values are provided, this ability is
+  considered to be "passive", i.e., its effect applies without the user needinng
+  to click on the abilities button to activate it. For an ability to be included
+  in an `abilities()` call, either a `time` kwarg or the name of the current
+  game phase class must match (one of) the ability's `when` string(s). Examples:
+    - `any`: usable at any time during the game
+    - `buying_train`: train buying step
+    - `Track`, `TrackAndToken`: track-laying step; if normal track lays are used
+      up, but there is still a `Track` ability, then the active step will not
+      pass on to the next step automatically
+    - `special_track`: make the ability available to the SpecialTrack step
+    - `sold`: when the company is bought from a player by a corporation
+    - `bought_train`: when the owning corporation has bought a train; generally
+      used with `close` abilities
+    - `other_or`: usable during the OR turn of another corporation
+    - `owning_corp_or_turn`: usable at any point during the owning corporation's OR turn
+    - `never`: use with `close` abilities to prevent a company from closing
+    - `has_train`: when the owning corporation owns at least one train
 
 ## additional_token
 

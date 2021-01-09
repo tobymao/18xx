@@ -75,7 +75,7 @@ module Engine
     class Base
       attr_reader :raw_actions, :actions, :bank, :cert_limit, :cities, :companies, :corporations,
                   :depot, :finished, :graph, :hexes, :id, :loading, :loans, :log, :minors,
-                  :phase, :players, :operating_rounds, :round, :share_pool, :stock_market,
+                  :phase, :players, :operating_rounds, :round, :share_pool, :stock_market, :tile_groups,
                   :tiles, :turn, :total_loans, :undo_possible, :redo_possible, :round_history, :all_tiles,
                   :optional_rules, :exception, :last_processed_action, :broken_action,
                   :turn_start_action_id, :last_turn_start_action_id
@@ -459,6 +459,7 @@ module Engine
         @tiles = init_tiles
         @all_tiles = init_tiles
         optional_tiles
+        @tile_groups = []
         @cert_limit = init_cert_limit
         @removals = []
 
@@ -637,6 +638,7 @@ module Engine
         @last_processed_action = action.id
         self
       rescue Engine::GameError => e
+        @raw_actions.pop
         @actions.pop
         @exception = e
         @broken_action = action
@@ -644,7 +646,12 @@ module Engine
       end
 
       def maybe_raise!
-        raise @exception if @exception
+        if @exception
+          exception = @exception
+          @exception = nil
+          @broken_action = nil
+          raise exception
+        end
 
         self
       end
@@ -1414,16 +1421,17 @@ module Engine
         'IPO Reserved'
       end
 
-      def abilities(entity, type = nil, time: nil, owner_type: nil, strict_time: false)
+      def abilities(entity, type = nil, time: nil, on_phase: nil, passive_ok: nil)
         return nil unless entity
 
         active_abilities = entity.all_abilities.select do |ability|
           ability_right_type?(ability, type) &&
-            ability_right_owner?(ability.owner, ability, owner_type) &&
+            ability_right_owner?(ability.owner, ability) &&
             ability_usable_this_or?(ability) &&
-            ability_right_time?(ability, time, strict_time) &&
+            ability_right_time?(ability, time, on_phase, passive_ok.nil? ? true : passive_ok) &&
             ability_usable?(ability)
         end
+
         active_abilities.each { |a| yield a, a.owner } if block_given?
 
         return nil if active_abilities.empty?
@@ -1928,9 +1936,9 @@ module Engine
       def event_close_companies!
         @log << '-- Event: Private companies close --'
         @companies.each do |company|
-          if (ability = abilities(company, :close))
-            next if ability.when == 'never' ||
-              @phase.phases.any? { |phase| ability.when == phase[:name] }
+          if (ability = abilities(company, :close, on_phase: 'any'))
+            next if ability.on_phase == 'never' ||
+                    @phase.phases.any? { |phase| ability.on_phase == phase[:name] }
           end
 
           company.close!
@@ -2019,7 +2027,7 @@ module Engine
         !type || (ability.type == type)
       end
 
-      def ability_right_owner?(entity, ability, owner_type)
+      def ability_right_owner?(entity, ability)
         correct_owner_type =
           case ability.owner_type
           when :player
@@ -2029,35 +2037,60 @@ module Engine
           when nil
             true
           end
-        return false unless correct_owner_type
-        return false if owner_type && (ability.owner_type.to_s != owner_type.to_s)
 
-        true
+        !!correct_owner_type
       end
 
       def ability_usable_this_or?(ability)
         !ability.count_per_or || (ability.count_this_or < ability.count_per_or)
       end
 
-      def ability_right_time?(ability, time, strict_time)
-        return false if strict_time && !ability.when
-        return true unless time
+      def ability_right_time?(ability, time, on_phase, passive_ok)
+        return true unless @round
+        return true if time == 'any' || ability.when?('any')
+        return (on_phase == ability.on_phase) || (on_phase == 'any') if on_phase
+        return false if ability.passive && !passive_ok
+        return true if ability.passive && ability.when.empty?
 
-        if (ability.type == :tile_lay) && (step = ability_blocking_step)&.is_a?(Step::SpecialTrack)
-          return step.company == ability.owner
+        # using active_step causes an infinite loop
+        current_step = ability_blocking_step
+        current_step_name = current_step&.type
+
+        if (ability.type == :tile_lay) && current_step&.is_a?(Step::SpecialTrack)
+          return current_step.company == ability.owner
         end
 
-        if ability.when == 'any'
-          !strict_time
-        elsif ability.when == 'owning_corp_or_turn'
-          %w[owning_corp_or_turn track].include?(time)
-        else
-          ability.when == time.to_s
+        return false if @round.operating? &&
+                        ability.owner.owned_by_corporation? &&
+                        @round.current_operator != ability.corporation &&
+                        !ability.when?('other_or')
+
+        times = Array(time).map { |t| t == '%current_step%' ? current_step_name : t.to_s }
+        return ability.when?(*times) unless times.empty?
+
+        ability.when.any? do |ability_when|
+          case ability_when
+          when current_step_name
+            (@round.operating? && @round.current_operator == ability.corporation) ||
+              (@round.stock? && @round.current_entity == ability.player)
+          when 'owning_corp_or_turn'
+            @round.operating? && @round.current_operator == ability.corporation
+          when 'owning_player_sr_turn'
+            @round.stock? && @round.current_entity == ability.player
+          when 'other_or'
+            @round.operating? && @round.current_operator != ability.corporation
+          else
+            false
+          end
         end
       end
 
       def ability_blocking_step
-        @round.steps.find { |step| step.blocks? && !step.passed? }
+        @round.steps.find do |step|
+          # currently, abilities only care about Tracker, the is_a? check could
+          # be expanded to a list of possible classes/modules when needed
+          step.blocks? && !step.passed? && step.is_a?(Step::Tracker)
+        end
       end
 
       def ability_usable?(ability)

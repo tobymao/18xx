@@ -240,7 +240,7 @@ module Engine
                  "P5"
                ],
                "count": 1,
-               "when": "track"
+               "when": ["special_track", "other_or"]
              }
          ]
       },
@@ -268,7 +268,7 @@ module Engine
                  "5"
               ],
               "count": 1,
-              "when": "train"
+              "when": "buying_train"
             }
          ]
       }

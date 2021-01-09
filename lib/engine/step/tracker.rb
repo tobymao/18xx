@@ -11,6 +11,8 @@ module Engine
       end
 
       def can_lay_tile?(entity)
+        return true if tile_lay_abilities(entity, time: type, passive_ok: false)
+
         action = get_tile_lay(entity)
         return false unless action
 
@@ -30,16 +32,17 @@ module Engine
       def lay_tile_action(action)
         tile = action.tile
         tile_lay = get_tile_lay(action.entity)
-        raise GameError, 'Cannot lay an upgrade now' if tile.color != :yellow && !tile_lay[:upgrade]
-        raise GameError, 'Cannot lay an yellow now' if tile.color == :yellow && !tile_lay[:lay]
+        raise GameError, 'Cannot lay an upgrade now' if tile.color != :yellow && !(tile_lay && tile_lay[:upgrade])
+        raise GameError, 'Cannot lay a yellow now' if tile.color == :yellow && !(tile_lay && tile_lay[:lay])
 
         lay_tile(action, extra_cost: tile_lay[:cost])
         @upgraded = true if action.tile.color != :yellow
         @laid_track += 1
       end
 
-      def tile_lay_abilities(entity, &block)
-        @game.abilities(entity, :tile_lay, &block)
+      def tile_lay_abilities(entity, **kwargs, &block)
+        kwargs[:time] = [type, 'owning_corp_or_turn'] unless kwargs[:time]
+        @game.abilities(entity, :tile_lay, **kwargs, &block)
       end
 
       def lay_tile(action, extra_cost: 0, entity: nil, spender: nil)
@@ -66,10 +69,7 @@ module Engine
           raise GameError, "#{old_tile.name} is not legally rotated for #{tile.name}"
         end
 
-        @game.add_extra_tile(tile) if tile.unlimited
-
-        @game.tiles.delete(tile)
-        @game.tiles << old_tile unless old_tile.preprinted
+        update_tile_lists(tile, old_tile)
 
         hex.lay(tile)
 
@@ -156,6 +156,13 @@ module Engine
               " for the #{ability.terrain} tile built by #{company.name}"
           end
         end
+      end
+
+      def update_tile_lists(tile, old_tile)
+        @game.add_extra_tile(tile) if tile.unlimited
+
+        @game.tiles.delete(tile)
+        @game.tiles << old_tile unless old_tile.preprinted
       end
 
       def border_cost(tile, entity)

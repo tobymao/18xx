@@ -83,8 +83,8 @@ module View
 
         def should_render_company_sym?
           blocker_open? && (!@blocker.owned_by_corporation? ||
-                            @game.abilities(@blocker, :tile_lay) ||
-                            @game.abilities(@blocker, :teleport))
+                            @game.abilities(@blocker, :tile_lay, time: 'any') ||
+                            @game.abilities(@blocker, :teleport, time: 'any'))
         end
 
         def should_render_barbell?

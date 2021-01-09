@@ -314,6 +314,7 @@ module Engine
           "type": "exchange",
           "corporation": "IR",
           "owner_type": "player",
+          "when": "any",
           "from": "ipo"
         }
       ]
@@ -336,13 +337,13 @@ module Engine
       "abilities": [
         {
           "type": "close",
-          "when": "never",
+          "on_phase": "never",
           "owner_type": "player"
         },
         {
           "type": "revenue_change",
           "revenue": 50,
-          "when": "5",
+          "on_phase": "5",
           "owner_type": "player"
         }
       ]

@@ -69,7 +69,7 @@ To restore the local database from a `db.backup.gz`:
 2. copy backup to db container
 
 ```
-CONTAINER_ID=$(docker ps | grep 18xxgames_db | awk '{print $1}')
+CONTAINER_ID=$(docker ps | grep 18xx_db | awk '{print $1}')
 docker cp db.backup.gz $CONTAINER_ID:/home/db
 ```
 

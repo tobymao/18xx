@@ -34,11 +34,20 @@ module Engine
         Engine::G18Chesapeake::SharePool.new(self)
       end
 
+      def preprocess_action(action)
+        case action
+        when Action::LayTile
+          queue_log! do
+            check_special_tile_lay(action, baltimore)
+            check_special_tile_lay(action, columbia)
+          end
+        end
+      end
+
       def action_processed(action)
         case action
         when Action::LayTile
-          check_special_tile_lay(action, columbia)
-          check_special_tile_lay(action, baltimore)
+          flush_log!
         end
       end
 
@@ -67,7 +76,7 @@ module Engine
       def setup
         cornelius.add_ability(Ability::Close.new(
           type: :close,
-          when: :train,
+          when: 'bought_train',
           corporation: abilities(cornelius, :shares).shares.first.corporation.name,
         ))
 
@@ -87,7 +96,7 @@ module Engine
       end
 
       def check_special_tile_lay(action, company)
-        abilities(company, :tile_lay) do |ability|
+        abilities(company, :tile_lay, time: 'any') do |ability|
           hexes = ability.hexes
           next unless hexes.include?(action.hex.id)
           next if company.closed? || action.entity == company

@@ -72,14 +72,22 @@ module View
           size: @corporation.cash.to_s.size,
         })
 
-        buy = lambda do
+        buy_click = lambda do
           price = input.JS['elm'].JS['value'].to_i
-          process_action(Engine::Action::BuyCompany.new(
-            @corporation,
-            company: @selected_company,
-            price: price,
-          ))
-          store(:selected_company, nil, skip: true)
+          buy = lambda do
+            process_action(Engine::Action::BuyCompany.new(
+              @corporation,
+              company: @selected_company,
+              price: price,
+            ))
+            store(:selected_company, nil, skip: true)
+          end
+
+          if !@selected_company.owner || @selected_company.owner == @corporation.owner
+            buy.call
+          else
+            check_consent(@selected_company.owner, buy)
+          end
         end
 
         props = {
@@ -91,7 +99,7 @@ module View
 
         h(:div, props, [
           input,
-          h(:button, { on: { click: buy } }, 'Buy'),
+          h(:button, { on: { click: buy_click } }, 'Buy'),
         ])
       end
     end

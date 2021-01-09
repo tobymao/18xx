@@ -862,7 +862,7 @@
     },
     {
       "id": 81,
-      "city": "G15-5-0",
+      "city": "G15-0-0",
       "slot": 0,
       "type": "place_token",
       "entity": "OP",
@@ -1820,7 +1820,7 @@
     },
     {
       "id": 158,
-      "city": "N12-7-0",
+      "city": "N12-6-0",
       "slot": 0,
       "type": "place_token",
       "entity": "PM",
@@ -4221,7 +4221,7 @@
     },
     {
       "id": 364,
-      "city": "I15-6-0",
+      "city": "I15-5-0",
       "slot": 0,
       "type": "place_token",
       "entity": "THB",

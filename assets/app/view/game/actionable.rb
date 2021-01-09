@@ -10,10 +10,12 @@ module View
         base.needs :game_data, default: {}, store: true
         base.needs :game, store: true
         base.needs :flash_opts, default: {}, store: true
+        base.needs :confirm_opts, default: {}, store: true
         base.needs :connection, store: true, default: nil
         base.needs :user, store: true, default: nil
         base.needs :tile_selector, default: nil, store: true
         base.needs :selected_company, default: nil, store: true
+        base.needs :selected_corporation, default: nil, store: true
         base.needs :app_route, default: nil, store: true
         base.needs :round_history, default: nil, store: true
         base.needs :selected_action_id, default: nil, store: true
@@ -30,6 +32,15 @@ module View
         return @participant if defined?(@participant)
 
         @participant = (@game.players.map(&:id) + [@game_data['user']['id']]).include?(@user&.dig('id'))
+      end
+
+      def check_consent(player, click)
+        opts = {
+          color: :yellow,
+          click: click,
+          message: "This action requires consent from #{player.name}!",
+        }
+        store(:confirm_opts, opts, skip: false)
       end
 
       def process_action(action)
@@ -64,8 +75,8 @@ module View
         @game_data[:actions] << action.to_h
         store(:game_data, @game_data, skip: true)
 
-        if @game.finished
-          @game_data[:result] = @game.result
+        if game.finished
+          @game_data[:result] = game.result
           @game_data[:status] = 'finished'
         else
           @game_data[:result] = {}
@@ -90,7 +101,13 @@ module View
             }
             json['meta'] = meta
           end
-          @connection.safe_post("/game/#{@game_data['id']}/action", json)
+          game_path = "/game/#{@game_data['id']}"
+          @connection.post("#{game_path}/action", json) do |data|
+            if (error = data['error'])
+              store(:flash_opts, "The server did not accept this action due to: #{error}... refreshing.")
+              `setTimeout(function() { location.reload() }, 5000)`
+            end
+          end
         else
           store(
             :flash_opts,
@@ -102,13 +119,14 @@ module View
         clear_ui_state
         store(:game, game)
       rescue StandardError => e
-        store(:game, @game.clone(@game.actions), skip: true)
+        clear_ui_state
         store(:flash_opts, e.message)
-        e.backtrace.each { |line| puts line }
+        `setTimeout(function() { self['$store']('game', Opal.nil) }, 10)`
       end
 
       def clear_ui_state
         store(:selected_company, nil, skip: true)
+        store(:selected_corporation, nil, skip: true)
         store(:tile_selector, nil, skip: true)
         store(:selected_action_id, nil, skip: true)
       end

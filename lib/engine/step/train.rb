@@ -57,8 +57,9 @@ module Engine
         remaining = price - buying_power(entity)
         if remaining.positive? && president_may_contribute?(entity, action.shell)
           cheapest = @depot.min_depot_train
-          raise GameError, "Cannot purchase #{train.name} train: #{cheapest.name} train available" if
-            train != cheapest &&
+          cheapest_name = name_of_cheapest_variant(cheapest)
+          raise GameError, "Cannot purchase #{train.name} train: #{cheapest_name} train available" if
+            train.name != cheapest_name &&
             @game.class::EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST &&
             (!@game.class::EBUY_OTHER_VALUE || train.from_depot?)
 
@@ -196,6 +197,10 @@ module Engine
       def face_value_ability?(entity)
         @game.abilities(entity, :train_buy) { |ability| return ability.face_value }
         false
+      end
+
+      def name_of_cheapest_variant(train)
+        train.variants.min_by { |_, v| v[:price] }.first
       end
     end
   end

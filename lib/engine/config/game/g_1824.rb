@@ -452,7 +452,7 @@ module Engine
       "abilities": [
         {
           "type": "base",
-          "owner_type": "player",
+          "owner_type": "corporation",
           "description": "Coal company - may only own g trains"
         },
         {
@@ -486,7 +486,7 @@ module Engine
       "abilities": [
         {
           "type": "base",
-          "owner_type": "player",
+          "owner_type": "corporation",
           "description": "Coal company - may only own g trains"
         },
         {
@@ -520,7 +520,7 @@ module Engine
       "abilities": [
         {
           "type": "base",
-          "owner_type": "player",
+          "owner_type": "corporation",
           "description": "Coal company - may only own g trains"
         },
         {
@@ -554,7 +554,7 @@ module Engine
       "abilities": [
         {
           "type": "base",
-          "owner_type": "player",
+          "owner_type": "corporation",
           "description": "Coal company - may only own g trains"
         },
         {
@@ -727,8 +727,8 @@ module Engine
               "city",
               "offboard"
            ],
-           "pay":1,
-           "visit":1
+           "pay":2,
+           "visit":2
         },
         {
            "nodes":[
@@ -748,41 +748,13 @@ module Engine
       "distance": 3,
       "num": 7,
       "price": 180,
-      "rusts_on": "6"
+      "rusts_on": "6",
+      "discount": {
+        "2": 40
+      }
     },
     {
       "name": "2g",
-      "distance":[
-        {
-           "nodes":[
-              "city",
-              "offboard"
-           ],
-           "pay":2,
-           "visit":2
-        },
-        {
-           "nodes":[
-              "town"
-           ],
-           "pay":99,
-           "visit":99
-        }
-      ],
-      "num": 5,
-      "price": 240,
-      "available_on": "3",
-      "rusts_on": "4g"
-    },
-    {
-      "name": "4",
-      "distance": 4,
-      "num": 4,
-      "price": 300,
-      "rusts_on": "8"
-    },
-    {
-      "name": "3g",
       "distance":[
         {
            "nodes":[
@@ -800,37 +772,26 @@ module Engine
            "visit":99
         }
       ],
+      "num": 5,
+      "price": 240,
+      "available_on": "3",
+      "rusts_on": "4g",
+      "discount": {
+        "1g": 60
+      }
+    },
+    {
+      "name": "4",
+      "distance": 4,
       "num": 4,
-      "price": 360,
-      "available_on": "4",
-      "rusts_on": "5g",
-      "events": [
-        {"type": "close_mountain_railways"},
-        {"type": "sd_formation"}
-      ]
+      "price": 300,
+      "rusts_on": "8",
+      "discount": {
+        "3": 90
+      }
     },
     {
-      "name": "5",
-      "distance": 5,
-      "num": 3,
-      "price": 450,
-      "rusts_on": "10",
-      "events": [
-        {"type": "close_coal_railways"},
-        {"type": "ug_formation"}
-      ]
-    },
-    {
-      "name": "6",
-      "distance": 6,
-      "num": 3,
-      "price": 630,
-      "events": [
-        {"type": "kk_formation"}
-      ]
-    },
-    {
-      "name": "4g",
+      "name": "3g",
       "distance":[
         {
            "nodes":[
@@ -848,18 +809,46 @@ module Engine
            "visit":99
         }
       ],
-      "num": 3,
-      "price": 600,
-      "available_on": "6"
+      "num": 4,
+      "price": 360,
+      "available_on": "4",
+      "rusts_on": "5g",
+      "events": [
+        {"type": "close_mountain_railways"},
+        {"type": "sd_formation"}
+      ],
+      "discount": {
+        "2g": 120
+      }
     },
     {
-      "name": "8",
-      "distance": 8,
+      "name": "5",
+      "distance": 5,
       "num": 3,
-      "price": 800
+      "price": 450,
+      "rusts_on": "10",
+      "events": [
+        {"type": "close_coal_railways"},
+        {"type": "ug_formation"}
+      ],
+      "discount": {
+        "4": 140
+      }
     },
     {
-      "name": "5g",
+      "name": "6",
+      "distance": 6,
+      "num": 3,
+      "price": 630,
+      "events": [
+        {"type": "kk_formation"}
+      ],
+      "discount": {
+        "5": 200
+      }
+    },
+    {
+      "name": "4g",
       "distance":[
         {
            "nodes":[
@@ -877,15 +866,56 @@ module Engine
            "visit":99
         }
       ],
+      "num": 3,
+      "price": 600,
+      "available_on": "6",
+      "discount": {
+        "3g": 180
+      }
+    },
+    {
+      "name": "8",
+      "distance": 8,
+      "num": 3,
+      "price": 800,
+      "discount": {
+        "6": 300
+      }
+    },
+    {
+      "name": "5g",
+      "distance":[
+        {
+           "nodes":[
+              "city",
+              "offboard"
+           ],
+           "pay":6,
+           "visit":6
+        },
+        {
+           "nodes":[
+              "town"
+           ],
+           "pay":99,
+           "visit":99
+        }
+      ],
       "num": 2,
       "price": 800,
-      "available_on": "8"
+      "available_on": "8",
+      "discount": {
+        "4g": 300
+      }
     },
     {
       "name": "10",
       "distance": 10,
       "num": 20,
-      "price": 950
+      "price": 950,
+      "discount": {
+        "8": 400
+      }
     }
   ],
   "hexes": {

@@ -70,7 +70,7 @@ module View
         step = @game.round.active_step
         @corporation = step.current_entity
         if @selected_company&.owner == @corporation
-          @ability = @game.abilities(@selected_company, :train_discount, time: 'train')
+          @ability = @game.abilities(@selected_company, :train_discount, time: 'buying_train')
         end
 
         @depot = @game.depot
@@ -215,14 +215,22 @@ module View
               attrs: price_range(group[0]),
             )
 
-            buy_train = lambda do
+            buy_train_click = lambda do
               price = input.JS['elm'].JS['value'].to_i
-              process_action(Engine::Action::BuyTrain.new(
-                @corporation,
-                train: group[0],
-                price: price,
-                shell: @active_shell,
-              ))
+              buy_train = lambda do
+                process_action(Engine::Action::BuyTrain.new(
+                  @corporation,
+                  train: group[0],
+                  price: price,
+                  shell: @active_shell,
+                ))
+              end
+
+              if other.owner == @corporation.owner
+                buy_train.call
+              else
+                check_consent(other.owner, buy_train)
+              end
             end
 
             count = group.size
@@ -231,7 +239,7 @@ module View
               [h(:div, name),
                h('div.nowrap', "#{other.name} (#{count > 1 ? "#{count}, " : ''}#{other.owner.name})"),
                input,
-               h('button.no_margin', { on: { click: buy_train } }, 'Buy')]
+               h('button.no_margin', { on: { click: buy_train_click } }, 'Buy')]
             else
               hidden_trains = true
               nil

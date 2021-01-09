@@ -294,7 +294,7 @@ module Engine
                   "2",
                   "56"
                 ],
-               "when":"track",
+               "when": ["special_track", "other_or"],
                "count":1
             }
          ]
@@ -383,7 +383,7 @@ module Engine
             },
             {
                "type":"close",
-               "when": "train",
+               "when": "bought_train",
                "corporation":"Nord"
             },
             {

@@ -216,7 +216,7 @@ module Engine
                   "8",
                   "9"
                ],
-               "when":"track"
+               "when": "track"
             }
          ]
       },
@@ -240,7 +240,7 @@ module Engine
                   "8",
                   "9"
                ],
-               "when":"track"
+               "when": "track"
             }
          ]
       },
@@ -264,7 +264,7 @@ module Engine
                   "6",
                   "57"
                ],
-               "when":"track"
+               "when": "track"
             }
          ]
       },
@@ -288,7 +288,7 @@ module Engine
                   "8",
                   "9"
                ],
-               "when":"track"
+               "when": "track"
             }
          ]
       },

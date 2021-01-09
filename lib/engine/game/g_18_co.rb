@@ -582,12 +582,6 @@ module Engine
 
         value - drgr.value
       end
-
-      private
-
-      def ability_blocking_step
-        @round.steps.find { |step| step.blocks? && !step.passed? && !step.is_a?(Step::DiscardTrain) }
-      end
     end
   end
 end

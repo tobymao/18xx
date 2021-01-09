@@ -334,7 +334,7 @@ module Engine
       "name": "Sveabolaget",
       "value": 45,
       "revenue": 15,
-      "desc": "May lay or shift port token in Halmstad (A6), Ystad(C2), Göteborg (D5), Sundsvall (F19), Umeå (F23), and Luleå (G26).  Add 30 kr/symbol to all routes run to this location by owning company.",
+      "desc": "May lay or shift port token in Halmstad (A6), Ystad(C2), Kalmar (D5), Sundsvall (F19), Umeå (F23), and Luleå (G26).  Add 30 kr/symbol to all routes run to this location by owning company.",
       "sym": "SB",
       "abilities": [
         {
@@ -379,7 +379,7 @@ module Engine
             "8",
             "9"
           ],
-          "when": "track",
+          "when": ["track", "owning_corp_or_turn"],
           "count": 2
         },
         {
@@ -436,7 +436,7 @@ module Engine
           ],
           "count": 1,
           "closed_when_used_up": false,
-          "when": "train"
+          "when": "buying_train"
         }
      ]
     },
@@ -476,7 +476,7 @@ module Engine
         },
         {
            "type":"close",
-           "when":"train",
+           "when":"bought_train",
            "corporation":"ÖKJ"
         },
         {
