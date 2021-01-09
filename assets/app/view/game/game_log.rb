@@ -129,7 +129,7 @@ module View
       end
 
       def render_log_for_action(log, action)
-        timestamp_props = { style: { margin: '0 0.2rem',
+        timestamp_props = { style: { margin: '0 0.2rem 0 0',
                                      fontSize: 'smaller' } }
         message_props = { style: { margin: '0 0.2rem' } }
 

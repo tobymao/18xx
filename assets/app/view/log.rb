@@ -56,7 +56,7 @@ module View
                               paddingLeft: '0.5rem',
                               textIndent: '-0.5rem' },
                      on: { click: -> { store(:action_id, action_id) } } }
-      timestamp_props = { style: { margin: '0 0.2rem',
+      timestamp_props = { style: { margin: '0 0.2rem 0 0',
                                    fontSize: 'smaller' } }
       username_props = { style: { margin: '0 0.2rem',
                                   fontWeight: 'bold' } }
