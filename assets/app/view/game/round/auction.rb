@@ -140,11 +140,15 @@ module View
             size: @current_entity.cash.to_s.size,
           })
 
-          [
-            input,
-            h(:button, { on: { click: -> { create_bid(company, input) } } }, 'Place Bid'),
-            *render_move_bid_buttons(company, input),
-          ].compact
+          buttons = []
+          if @step.min_bid(company) <= @step.max_place_bid(@current_entity, company)
+            buttons << h(:button, { on: { click: -> { create_bid(company, input) } } }, 'Place Bid')
+          end
+          buttons.concat(render_move_bid_buttons(company, input))
+
+          return [] if buttons.empty?
+
+          [input, *buttons]
         end
 
         def render_move_bid_buttons(company, input)
@@ -155,10 +159,14 @@ module View
 
           moveable_bids.flat_map do |from_company, from_bids|
             from_bids.map do |from_bid|
+              bid_max = @step.max_move_bid(@current_entity, company, from_bid.price)
+              bid_min = @step.min_move_bid(company, from_bid.price)
+              next if bid_max < bid_min
+
               h(:button, { on: { click: -> { move_bid(company, input, from_company, from_bid.price) } } },
                 "Move #{from_company.sym} #{@game.format_currency(from_bid.price)} Bid")
             end
-          end
+          end.compact
         end
 
         def render_turn_bid

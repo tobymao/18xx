@@ -65,6 +65,10 @@ module Engine
         raise NotImplementedError
       end
 
+      def max_place_bid(entity, company)
+        max_bid(entity, company)
+      end
+
       def max_bid(_entity, _company)
         # Maximum that a bid can be increased to by an entity
         raise NotImplementedError
