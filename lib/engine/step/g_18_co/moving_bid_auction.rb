@@ -136,7 +136,7 @@ module Engine
         end
 
         def max_bid(player, _company)
-          player_highest_bid = bids_for_player(player).map { |b| b[:price] }.max
+          player_highest_bid = bids_for_player(player).map { |b| b[:price] }.max || 0
           available_cash(player) + player_highest_bid
         end
 
