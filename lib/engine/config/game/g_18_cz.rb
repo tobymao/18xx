@@ -308,7 +308,6 @@ module Engine
                             "type":"tile_lay",
                             "count": 1,
                             "owner_type":"corporation",
-                            "free": false,
                             "tiles":[
                                "14p",
                                "15p",
@@ -324,9 +323,10 @@ module Engine
                                "595p",
                                "8857p"
                             ],
-                            "when": "track",
+                            "when": "owning_corp_or_turn",
                             "hexes": [],
-                            "reachable": true
+                            "reachable": true,
+                            "special": false
                         }
                     ]
                 },
@@ -340,7 +340,6 @@ module Engine
                             "type":"tile_lay",
                             "count": 1,
                             "owner_type":"corporation",
-                            "free": false,
                             "tiles":[
                                "14p",
                                "15p",
@@ -356,9 +355,10 @@ module Engine
                                "595p",
                                "8857p"
                             ],
-                            "when": "track",
+                            "when": "owning_corp_or_turn",
                             "hexes": [],
-                            "reachable": true
+                            "reachable": true,
+                            "special": false
                         }
                     ]
                 },
@@ -372,7 +372,6 @@ module Engine
                             "type":"tile_lay",
                             "count": 1,
                             "owner_type":"corporation",
-                            "free": false,
                             "tiles":[
                                "14p",
                                "15p",
@@ -388,9 +387,10 @@ module Engine
                                "595p",
                                "8857p"
                             ],
-                            "when": "track",
+                            "when": "owning_corp_or_turn",
                             "hexes": [],
-                            "reachable": true
+                            "reachable": true,
+                            "special": false
                         }
                     ]
                 },
@@ -404,7 +404,6 @@ module Engine
                             "type":"tile_lay",
                             "count": 1,
                             "owner_type":"corporation",
-                            "free": false,
                             "tiles":[
                                "14p",
                                "15p",
@@ -420,9 +419,10 @@ module Engine
                                "595p",
                                "8857p"
                             ],
-                            "when": "track",
+                            "when": "owning_corp_or_turn",
                             "hexes": [],
-                            "reachable": true
+                            "reachable": true,
+                            "special": false
                         }
                     ]
                 },
@@ -436,7 +436,6 @@ module Engine
                             "type":"tile_lay",
                             "count": 1,
                             "owner_type":"corporation",
-                            "free": false,
                             "tiles":[
                                "14p",
                                "15p",
@@ -452,9 +451,10 @@ module Engine
                                "595p",
                                "8857p"
                             ],
-                            "when": "track",
+                            "when": "owning_corp_or_turn",
                             "hexes": [],
-                            "reachable": true
+                            "reachable": true,
+                            "special": false
                         }
                     ]
                 },
@@ -468,7 +468,6 @@ module Engine
                             "type":"tile_lay",
                             "count": 1,
                             "owner_type":"corporation",
-                            "free": false,
                             "tiles":[
                                "14p",
                                "15p",
@@ -484,9 +483,10 @@ module Engine
                                "595p",
                                "8857p"
                             ],
-                            "when": "track",
+                            "when": "owning_corp_or_turn",
                             "hexes": [],
-                            "reachable": true
+                            "reachable": true,
+                            "special": false
                         }
                     ]
                 },
@@ -500,7 +500,6 @@ module Engine
                             "type":"tile_lay",
                             "count": 1,
                             "owner_type":"corporation",
-                            "free": false,
                             "tiles":[
                                "14p",
                                "15p",
@@ -516,9 +515,10 @@ module Engine
                                "595p",
                                "8857p"
                             ],
-                            "when": "track",
+                            "when": "owning_corp_or_turn",
                             "hexes": [],
-                            "reachable": true
+                            "reachable": true,
+                            "special": false
                         }
                     ]
                 },
@@ -532,7 +532,6 @@ module Engine
                             "type":"tile_lay",
                             "count": 1,
                             "owner_type":"corporation",
-                            "free": false,
                             "tiles":[
                                "14p",
                                "15p",
@@ -548,9 +547,10 @@ module Engine
                                "595p",
                                "8857p"
                             ],
-                            "when": "track",
+                            "when": "owning_corp_or_turn",
                             "hexes": [],
-                            "reachable": true
+                            "reachable": true,
+                            "special": false
                         }
                     ]
                 },
@@ -564,7 +564,6 @@ module Engine
                             "type":"tile_lay",
                             "count": 1,
                             "owner_type":"corporation",
-                            "free": false,
                             "tiles":[
                                "14p",
                                "15p",
@@ -580,9 +579,10 @@ module Engine
                                "595p",
                                "8857p"
                             ],
-                            "when": "track",
+                            "when": "owning_corp_or_turn",
                             "hexes": [],
-                            "reachable": true
+                            "reachable": true,
+                            "special": false
                         }
                     ]
                 },
@@ -596,7 +596,6 @@ module Engine
                             "type":"tile_lay",
                             "count": 1,
                             "owner_type":"corporation",
-                            "free": false,
                             "tiles":[
                                "14p",
                                "15p",
@@ -612,9 +611,10 @@ module Engine
                                "595p",
                                "8857p"
                             ],
-                            "when": "track",
+                            "when": "owning_corp_or_turn",
                             "hexes": [],
-                            "reachable": true
+                            "reachable": true,
+                            "special": false
                         }
                     ]
                 },
@@ -628,7 +628,6 @@ module Engine
                             "type":"tile_lay",
                             "count": 1,
                             "owner_type":"corporation",
-                            "free": false,
                             "tiles":[
                                "14p",
                                "15p",
@@ -644,9 +643,10 @@ module Engine
                                "595p",
                                "8857p"
                             ],
-                            "when": "track",
+                            "when": "owning_corp_or_turn",
                             "hexes": [],
-                            "reachable": true
+                            "reachable": true,
+                            "special": false
                         }
                     ]
                 },
@@ -660,7 +660,6 @@ module Engine
                             "type":"tile_lay",
                             "count": 1,
                             "owner_type":"corporation",
-                            "free": false,
                             "tiles":[
                                "14p",
                                "15p",
@@ -676,9 +675,10 @@ module Engine
                                "595p",
                                "8857p"
                             ],
-                            "when": "track",
+                            "when": "owning_corp_or_turn",
                             "hexes": [],
-                            "reachable": true
+                            "reachable": true,
+                            "special": false
                         }
                     ]
                 },
@@ -692,7 +692,6 @@ module Engine
                             "type":"tile_lay",
                             "count": 1,
                             "owner_type":"corporation",
-                            "free": false,
                             "tiles":[
                                "14p",
                                "15p",
@@ -708,9 +707,10 @@ module Engine
                                "595p",
                                "8857p"
                             ],
-                            "when": "track",
+                            "when": "owning_corp_or_turn",
                             "hexes": [],
-                            "reachable": true
+                            "reachable": true,
+                            "special": false
                         }
                     ]
                 },
@@ -724,7 +724,6 @@ module Engine
                             "type":"tile_lay",
                             "count": 1,
                             "owner_type":"corporation",
-                            "free": false,
                             "tiles":[
                                "14p",
                                "15p",
@@ -740,9 +739,10 @@ module Engine
                                "595p",
                                "8857p"
                             ],
-                            "when": "track",
+                            "when": "owning_corp_or_turn",
                             "hexes": [],
-                            "reachable": true
+                            "reachable": true,
+                            "special": false
                         }
                     ]
                 },
@@ -756,7 +756,6 @@ module Engine
                             "type":"tile_lay",
                             "count": 1,
                             "owner_type":"corporation",
-                            "free": false,
                             "tiles":[
                                "14p",
                                "15p",
@@ -772,9 +771,10 @@ module Engine
                                "595p",
                                "8857p"
                             ],
-                            "when": "track",
+                            "when": "owning_corp_or_turn",
                             "hexes": [],
-                            "reachable": true
+                            "reachable": true,
+                            "special": false
                         }
                     ]
                 },
@@ -788,7 +788,6 @@ module Engine
                             "type":"tile_lay",
                             "count": 1,
                             "owner_type":"corporation",
-                            "free": false,
                             "tiles":[
                                "14p",
                                "15p",
@@ -804,9 +803,10 @@ module Engine
                                "595p",
                                "8857p"
                             ],
-                            "when": "track",
+                            "when": "owning_corp_or_turn",
                             "hexes": [],
-                            "reachable": true
+                            "reachable": true,
+                            "special": false
                         }
                     ]
                 },
@@ -820,7 +820,6 @@ module Engine
                             "type":"tile_lay",
                             "count": 1,
                             "owner_type":"corporation",
-                            "free": false,
                             "tiles":[
                                "14p",
                                "15p",
@@ -836,9 +835,10 @@ module Engine
                                "595p",
                                "8857p"
                             ],
-                            "when": "track",
+                            "when": "owning_corp_or_turn",
                             "hexes": [],
-                            "reachable": true
+                            "reachable": true,
+                            "special": false
                         }
                     ]
                 },
@@ -852,7 +852,6 @@ module Engine
                             "type":"tile_lay",
                             "count": 1,
                             "owner_type":"corporation",
-                            "free": false,
                             "tiles":[
                                "14p",
                                "15p",
@@ -868,9 +867,10 @@ module Engine
                                "595p",
                                "8857p"
                             ],
-                            "when": "track",
+                            "when": "owning_corp_or_turn",
                             "hexes": [],
-                            "reachable": true
+                            "reachable": true,
+                            "special": false
                         }
                     ]
                 }
