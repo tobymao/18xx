@@ -352,6 +352,7 @@ table.center {
 
 #chatlog {
   height: 200px;
+  resize: both;
 }
 @media only screen and (min-width: 900px) {
   #homepage #chatlog {
