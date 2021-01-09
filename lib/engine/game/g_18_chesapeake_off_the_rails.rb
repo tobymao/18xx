@@ -15,6 +15,8 @@ module Engine
 
       SELL_BUY_ORDER = :sell_buy_sell
 
+      GAME_END_CHECK = { bankrupt: :immediate, stock_market: :current_round, bank: :full_or }.freeze
+
       def self.title
         '18Chesapeake: Off the Rails'
       end
