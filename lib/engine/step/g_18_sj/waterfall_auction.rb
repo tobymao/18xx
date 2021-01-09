@@ -6,11 +6,24 @@ module Engine
   module Step
     module G18SJ
       class WaterfallAuction < WaterfallAuction
+        def setup
+          super
+
+          # Remove any 0 value companies - they are not part of
+          # the auction, but used for player abilities.
+          @companies.select! { |c| c.value.positive? }
+          @cheapest = @companies.first
+        end
+
         def buy_company(player, company, price)
           super
 
-          # Give the buyer a one time priority deal steal if buying Nils Ericsson
-          @game.priority_deal_chooser = player if company.id == 'NE'
+          if company.id == 'NE'
+            # Give the buyer a one time priority deal steal
+            pdc = @game.company_by_id('NEFT')
+            pdc.owner = player
+            player.companies << pdc
+          end
 
           minor = @game.minor_khj
 
