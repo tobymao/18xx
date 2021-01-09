@@ -6,8 +6,6 @@ require_relative 'base'
 module Engine
   module Game
     class G18SJ < Base
-      attr_accessor :priority_deal_chooser
-
       register_colors(
         black: '#0a0a0a', # STJ
         brightGreen: '#7bb137', # UGJ
@@ -127,6 +125,18 @@ module Engine
           @removed_companies << to_remove
         end
         @log << "Removed companies: #{@removed_companies.map(&:name).join(', ')}"
+
+        # Handle Priority Deal Chooser private (NEFT)
+        # It is removed if Nils Ericsson is removed (as it does not appear among the buyable ones).
+        # If Nils Ericsson remains, put NEFT last and let bank be owner, so it wont disturb auction,
+        # and it will be assigned to NE owner in the auction.
+        pdc = companies.find { |c| c.sym == 'NEFT' }
+        if @removed_companies.find { |c| c.sym == 'NE' }
+          @removed_companies << pdc
+        else
+          pdc.owner = @bank
+        end
+
         companies - @removed_companies
       end
 
@@ -151,6 +161,10 @@ module Engine
 
       def nils_ericsson
         @nils_ericsson ||= company_by_id('NE')
+      end
+
+      def priority_deal_chooser
+        @priority_deal_chooser ||= company_by_id('NEFT')
       end
 
       def sveabolaget
@@ -216,6 +230,12 @@ module Engine
 
       def cert_limit
         current_cert_limit
+      end
+
+      def num_certs(entity)
+        count = super
+        count -= 1 if priority_deal_chooser&.owner == entity
+        count
       end
 
       def new_auction_round
