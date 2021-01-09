@@ -21,7 +21,7 @@ module Engine
       load_from_json(Config::Game::G1849::JSON)
       AXES = { x: :number, y: :letter }.freeze
 
-      DEV_STAGE = :prealpha
+      DEV_STAGE = :alpha
 
       GAME_LOCATION = 'Sicily'
       GAME_RULES_URL = 'https://boardgamegeek.com/filepage/206628/1849-rules'
