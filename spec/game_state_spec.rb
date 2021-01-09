@@ -62,14 +62,14 @@ module Engine
 
       describe 14_377 do
         it 'closes Cornelius Vanderbilt when the first 5-train is bought' do
-          game = game_at_action(game_file, 195)
+          game = game_at_action(game_file, 199)
           expect(game.cornelius.closed?).to eq(false)
 
           ca = game.corporation_by_id('C&A')
           expect(game.abilities(game.cornelius, :shares).shares.first.corporation).to eq(ca)
           expect(ca.trains).to eq([])
 
-          game = game_at_action(game_file, 196)
+          game = game_at_action(game_file, 200)
           expect(game.cornelius.closed?).to eq(true)
         end
       end
