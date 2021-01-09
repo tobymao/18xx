@@ -21,7 +21,7 @@ module Engine
       load_from_json(Config::Game::G1849::JSON)
       AXES = { x: :number, y: :letter }.freeze
 
-      DEV_STAGE = :prealpha
+      DEV_STAGE = :alpha
 
       GAME_LOCATION = 'Sicily'
       GAME_RULES_URL = 'https://boardgamegeek.com/filepage/206628/1849-rules'
@@ -48,6 +48,10 @@ module Engine
         endgame: :orange,
         close: :purple,
         phase_limited: :blue,
+      }.freeze
+
+      ASSIGNMENT_TOKENS = {
+        'CNM': '/icons/1849/cnm_token.svg',
       }.freeze
 
       EVENTS_TEXT = Base::EVENTS_TEXT.merge(
@@ -109,11 +113,16 @@ module Engine
 
       AFG_HEXES = %w[C1 H8 M9 M11 B14].freeze
       PORT_HEXES = %w[a12 A5 L14 N8].freeze
+      SMS_HEXES = %w[B14 C1 C5 H12 J6 M9 M13].freeze
 
       attr_accessor :swap_choice_player, :swap_other_player, :swap_corporation,
                     :loan_choice_player, :player_debts,
                     :max_value_reached,
                     :old_operating_order
+
+      def sms_hexes
+        SMS_HEXES
+      end
 
       def game_ending_description
         _, after = game_end_check
@@ -142,6 +151,7 @@ module Engine
 
       def setup
         @corporations.sort_by! { rand }
+        setup_companies
         remove_corp if @players.size == 3
         @corporations.each do |c|
           c.slot_open = true
@@ -151,6 +161,24 @@ module Engine
         @corporations[0].next_to_par = true
 
         @player_debts = Hash.new { |h, k| h[k] = 0 }
+      end
+
+      def setup_companies
+        # RSA to close on train buy
+        rsa = company_by_id('RSA')
+        rsa_share = rsa.all_abilities[0].shares.first
+        rsa.add_ability(Ability::Close.new(
+          type: :close,
+          when: 'bought_train',
+          corporation: rsa_share.corporation.name,
+        ))
+
+        # RSA corp to be first
+        index = @corporations.index { |corp| corp.id == rsa_share.corporation.id }
+        @corporations[0], @corporations[index] = @corporations[index], @corporations[0]
+
+        # min_price == 1
+        companies.each { |c| c.min_price = 1 }
       end
 
       def remove_corp
@@ -183,6 +211,7 @@ module Engine
         index = @corporations.index(corporation)
 
         @corporations[index + 1].next_to_par = true unless @corporations.last == corporation
+        place_home_token(corporation)
       end
 
       def home_token_locations(corporation)
@@ -269,8 +298,9 @@ module Engine
           Step::G1849::LoanChoice,
           Step::G1849::Bankrupt,
           Step::G1849::SwapChoice,
-          Step::SpecialTrack,
           Step::BuyCompany,
+          Step::G1849::SMSTeleport,
+          Step::G1849::Assign,
           Step::G1849::Track,
           Step::G1849::Token,
           Step::Route,
@@ -280,6 +310,11 @@ module Engine
           Step::G1849::IssueShares,
           [Step::BuyCompany, blocks: true],
         ], round_num: round_num)
+      end
+
+      def next_round!
+        super
+        @corporations.each { |c| c.sms_hexes = nil }
       end
 
       def track_type(paths)
@@ -321,12 +356,21 @@ module Engine
       end
 
       def revenue_for(route, stops)
-        stops.sum { |stop| stop_revenue(stop, route.phase, route.train) }
+        total = stops.sum { |stop| stop_revenue(stop, route.phase, route.train) }
+        total + cnm_bonus(route.corporation, stops)
+      end
+
+      def cnm_bonus(corp, stops)
+        corp.assigned?('CNM') && stops.map(&:hex).find { |hex| hex.assigned?('CNM') } ? 20 : 0
       end
 
       def stop_revenue(stop, phase, train)
-        return stop.route_revenue(phase, train) unless GRAY_REVENUE_CENTERS.keys.include?(stop.hex.id)
+        return gray_revenue(stop) if GRAY_REVENUE_CENTERS.keys.include?(stop.hex.id)
 
+        stop.route_revenue(phase, train)
+      end
+
+      def gray_revenue(stop)
         GRAY_REVENUE_CENTERS[stop.hex.id][@phase.name]
       end
 
@@ -453,6 +497,8 @@ module Engine
       end
 
       def legal_tile_rotation?(corp, hex, tile)
+        return true if corp.sms_hexes
+
         connection_directions = graph.connected_hexes(corp).find { |k, _| k.id == hex.id }[1]
         ever_not_nil = false # to permit teleports and SFA/AFG initial tile lay
         connection_directions.each do |dir|
