@@ -128,7 +128,6 @@ module View
 
         props = {
           style: {
-            overflow: 'auto',
             margin: '1rem 0',
             position: 'relative',
           },
@@ -162,7 +161,13 @@ module View
       def render_map
         width, height = map_size
 
-        props = {
+        div_props = {
+          style: {
+            overflow: 'auto',
+          },
+        }
+
+        map_props = {
           attrs: {
             id: 'map',
             width: width.to_s,
@@ -170,19 +175,21 @@ module View
           },
         }
 
-        h(:svg, props, [
-          h(:g, { attrs: { transform: "scale(#{@scale})" } }, [
-            h(:g, { attrs: { id: 'map-hexes', transform: "translate(#{map_x} #{map_y})" } }, @hexes),
-            h(Axis,
-              cols: @cols,
-              rows: @rows,
-              axes: @game.axes,
-              layout: @layout,
-              font_size: FONT_SIZE,
-              gap: GAP,
-              map_x: map_x,
-              map_y: map_y,
-              start_pos: @start_pos),
+        h(:div, div_props, [
+          h(:svg, map_props, [
+            h(:g, { attrs: { transform: "scale(#{@scale})" } }, [
+              h(:g, { attrs: { id: 'map-hexes', transform: "translate(#{map_x} #{map_y})" } }, @hexes),
+              h(Axis,
+                cols: @cols,
+                rows: @rows,
+                axes: @game.axes,
+                layout: @layout,
+                font_size: FONT_SIZE,
+                gap: GAP,
+                map_x: map_x,
+                map_y: map_y,
+                start_pos: @start_pos),
+            ]),
           ]),
         ])
       end
