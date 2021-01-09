@@ -154,6 +154,10 @@ module Engine
         false
       end
 
+      def stock?
+        false
+      end
+
       private
 
       def skip_steps

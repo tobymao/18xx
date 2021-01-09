@@ -31,7 +31,7 @@ module Engine
           @game.companies.each do |company|
             next if company.closed?
 
-            @game.abilities(company, :close, time: :run_train) do |ability|
+            @game.abilities(company, :close, time: 'run_train') do |ability|
               next if entity&.name != ability.corporation
 
               company.close!

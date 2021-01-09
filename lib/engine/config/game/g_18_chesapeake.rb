@@ -283,7 +283,7 @@ module Engine
             "8",
             "9"
           ],
-          "when": "track",
+          "when": ["special_track", "other_or"],
           "count": 2
         }
       ]
@@ -316,7 +316,7 @@ module Engine
             "8",
             "9"
           ],
-          "when": "track",
+          "when": ["special_track", "other_or"],
           "count": 2
         }
       ]

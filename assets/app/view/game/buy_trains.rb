@@ -70,7 +70,7 @@ module View
         step = @game.round.active_step
         @corporation = step.current_entity
         if @selected_company&.owner == @corporation
-          @ability = @game.abilities(@selected_company, :train_discount, time: 'train')
+          @ability = @game.abilities(@selected_company, :train_discount, time: 'buying_train')
         end
 
         @depot = @game.depot

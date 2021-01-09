@@ -341,7 +341,7 @@ module Engine
 				{
 					"type": "close",
 					"owner_type": "corporation",
-					"when": "6"
+					"on_phase": "6"
 				}
 			]
 		},
@@ -356,7 +356,7 @@ module Engine
 					"type": "tile_lay",
 					"free": true,
 					"owner_type": "corporation",
-					"when": "track",
+					"when": ["special_track", "other_or"],
 					"count": 1,
 					"special": true,
 					"tiles": [
@@ -432,7 +432,7 @@ module Engine
 					"special": false,
 					"reachable": true,
 					"owner_type": "corporation",
-					"when": "track",
+					"when": ["special_track", "other_or"],
 					"count": 1,
 					"hexes": [
 

@@ -255,7 +255,7 @@ module Engine
       "abilities": [
         {
           "type": "close",
-          "when": 6
+          "on_phase": "6"
         },
         {
           "type": "blocks_hexes",
@@ -291,7 +291,7 @@ module Engine
         },
         {
           "type": "tile_lay",
-          "when": "track",
+          "when": ["special_track", "other_or"],
           "owner_type": "corporation",
           "count": 1,
           "hexes": [

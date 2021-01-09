@@ -177,7 +177,7 @@ module Engine
              ],
              "tiles": [
              ],
-             "when":"track"
+             "when": ["special_track", "track", "other_or"]
            }
          ]
         },
@@ -200,7 +200,7 @@ module Engine
              ],
              "tiles": [
              ],
-             "when":"track"
+             "when": ["special_track", "track"]
            }
          ]
       },
@@ -244,7 +244,7 @@ module Engine
                  "4+"
               ],
               "count": 1,
-              "when": "train"
+              "when": "buying_train"
             }
          ]
       }

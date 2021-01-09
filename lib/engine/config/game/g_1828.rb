@@ -616,7 +616,7 @@ module Engine
                 },
                 {
                     "type": "close",
-                    "when": "train",
+                    "when": "bought_train",
                     "corporation": "CPR"
                 }
             ]
@@ -640,7 +640,7 @@ module Engine
                 },
                 {
                     "type": "close",
-                    "when": "train",
+                    "when": "bought_train",
                     "corporation": "GT"
                 }
             ]
@@ -664,7 +664,7 @@ module Engine
                 },
                 {
                     "type": "close",
-                    "when": "train",
+                    "when": "bought_train",
                     "corporation": "IC"
                 }
             ]
@@ -688,7 +688,7 @@ module Engine
                 },
                 {
                     "type": "close",
-                    "when": "train",
+                    "when": "bought_train",
                     "corporation": "MC"
                 }
             ]
@@ -712,7 +712,7 @@ module Engine
                 },
                 {
                     "type": "close",
-                    "when": "train",
+                    "when": "bought_train",
                     "corporation": "MP"
                 }
             ]
@@ -736,7 +736,7 @@ module Engine
                 },
                 {
                     "type": "close",
-                    "when": "train",
+                    "when": "bought_train",
                     "corporation": "NKP"
                 }
             ]
@@ -760,7 +760,7 @@ module Engine
                 },
                 {
                     "type": "close",
-                    "when": "train",
+                    "when": "bought_train",
                     "corporation": "NW"
                 }
             ]
@@ -784,7 +784,7 @@ module Engine
                 },
                 {
                     "type": "close",
-                    "when": "train",
+                    "when": "bought_train",
                     "corporation": "OS&H"
                 }
             ]

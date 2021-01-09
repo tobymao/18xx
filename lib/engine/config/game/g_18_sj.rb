@@ -379,7 +379,7 @@ module Engine
             "8",
             "9"
           ],
-          "when": "track",
+          "when": ["track", "owning_corp_or_turn"],
           "count": 2
         },
         {
@@ -436,7 +436,7 @@ module Engine
           ],
           "count": 1,
           "closed_when_used_up": false,
-          "when": "train"
+          "when": "buying_train"
         }
      ]
     },
@@ -476,7 +476,7 @@ module Engine
         },
         {
            "type":"close",
-           "when":"train",
+           "when":"bought_train",
            "corporation":"ÖKJ"
         },
         {

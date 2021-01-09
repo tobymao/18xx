@@ -120,7 +120,7 @@ module Engine
         cp = @companies.find { |company| company.name == 'Canadian Pacific' }
         cp.add_ability(Ability::Close.new(
           type: :close,
-          when: :train,
+          when: 'bought_train',
           corporation: abilities(cp, :shares).shares.first.corporation.name,
         ))
       end
