@@ -14,8 +14,8 @@ module Engine
   class Tile
     include Config::Tile
 
-
-    attr_accessor :blocks_lay, :hex, :icons, :index, :legal_rotations, :location_name, :name, :opposite, :reservations, :upgrades
+    attr_accessor :blocks_lay, :hex, :icons, :index, :legal_rotations, :location_name,
+                  :name, :opposite, :reservations, :upgrades
     attr_reader :borders, :cities, :color, :edges, :junction, :nodes, :label,
                 :parts, :preprinted, :rotation, :stops, :towns, :offboards, :blockers,
                 :city_towns, :unlimited, :stubs, :partitions, :id, :frame
