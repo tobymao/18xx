@@ -10,6 +10,7 @@ module View
         base.needs :game_data, default: {}, store: true
         base.needs :game, store: true
         base.needs :flash_opts, default: {}, store: true
+        base.needs :confirm_opts, default: {}, store: true
         base.needs :connection, store: true, default: nil
         base.needs :user, store: true, default: nil
         base.needs :tile_selector, default: nil, store: true
@@ -31,6 +32,15 @@ module View
         return @participant if defined?(@participant)
 
         @participant = (@game.players.map(&:id) + [@game_data['user']['id']]).include?(@user&.dig('id'))
+      end
+
+      def check_consent(player, click)
+        opts = {
+          color: :yellow,
+          click: click,
+          message: "This action requires consent from #{player.name}!",
+        }
+        store(:confirm_opts, opts, skip: false)
       end
 
       def process_action(action)

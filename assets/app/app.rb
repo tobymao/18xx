@@ -9,6 +9,7 @@ require 'view/about'
 require 'view/create_game'
 require 'view/invite_game'
 require 'view/home'
+require 'view/confirm'
 require 'view/flash'
 require 'view/game_page'
 require 'view/map_page'
@@ -39,6 +40,7 @@ class App < Snabberb::Component
     h(:div, props, [
       h(View::Navigation),
       h(View::Flash),
+      h(View::Confirm),
       render_content,
     ])
   end

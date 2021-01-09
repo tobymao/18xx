@@ -34,7 +34,16 @@ module View
             price: price,
           ))
         end
-        h(:button, { on: { click: buy_company } }, "Buy (#{@game.format_currency(price)})")
+
+        buy = lambda do
+          if !company.owner || company.owner == @corporation.owner
+            buy_company.call
+          else
+            check_consent(company.owner, buy_company)
+          end
+        end
+
+        h(:button, { on: { click: buy } }, "Buy (#{@game.format_currency(price)})")
       end
     end
   end
