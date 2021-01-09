@@ -13,7 +13,7 @@ module View
       needs :num_actions, default: 0
 
       def render
-        h(:div, { style: { overflow: :auto } }, [history, undo])
+        h('div#history_undo', { style: { overflow: :auto } }, [history, undo])
       end
 
       def history

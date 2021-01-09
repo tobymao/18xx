@@ -129,7 +129,7 @@ module View
       end
 
       def render_log_for_action(log, action)
-        timestamp_props = { style: { margin: '0 0.2rem',
+        timestamp_props = { style: { margin: '0 0.2rem 0 0',
                                      fontSize: 'smaller' } }
         message_props = { style: { margin: '0 0.2rem' } }
 
@@ -175,8 +175,8 @@ module View
           store(:selected_action_id, nil, skip: true)
         end
 
-        h(:div, [history_link('Review from Here', '', action_id, {}, true),
-                 h(:button, { on: { click: rewind_action } }, 'Rewind to Here')])
+        h(:div, [history_link('Review from Here', '', action_id, { margin: '0 1rem 0.5rem 0' }, true),
+                 h(:button, { style: { margin: '0 0 0.5rem 0' }, on: { click: rewind_action } }, 'Undo to Here')])
       end
 
       def render_date_banner(time)

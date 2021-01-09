@@ -23,6 +23,9 @@ button, .button_link {
   cursor: pointer;
   text-decoration: none;
 }
+.button_link {
+  display: inline-block; /* else padding doesn’t work => different height than button */
+}
 button.small {
   padding: 0.2rem 0.5rem;
   margin-right: 0.5rem;
@@ -354,6 +357,10 @@ table.center {
   #homepage #chatlog {
     height: 350px;
   }
+}
+
+#chatlog, #chatbar, #history_undo {
+  max-width: 960px;
 }
 
 div.game.card em {

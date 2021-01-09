@@ -17,7 +17,7 @@ module View
 
         divs = [h('b.margined', 'History')]
         cursor = Lib::Params['action']&.to_i
-        style_extra = { marginRight: '2rem', color: 'currentColor' }
+        style_extra = { padding: '0 1rem' }
 
         unless cursor&.zero?
           divs << history_link('|<', 'Start', 0, style_extra)
