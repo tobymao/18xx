@@ -303,126 +303,516 @@ module Engine
                     "value": 25,
                     "revenue": 5,
                     "sym": "PT",
-                    "abilities": []
+                    "abilities": [
+                        {
+                            "type":"tile_lay",
+                            "count": 1,
+                            "owner_type":"corporation",
+                            "tiles":[
+                               "14p",
+                               "15p",
+                               "887p",
+                               "888p",
+                               "8866p"
+                            ],
+                            "when": "owning_corp_or_turn",
+                            "hexes": [],
+                            "reachable": true,
+                            "special": false
+                        }
+                    ]
                 },
                 {
                     "name": "Melnik – Mscheno",
                     "value": 30,
                     "revenue": 5,
                     "sym": "MM",
-                    "abilities": []
+                    "abilities": [
+                        {
+                            "type":"tile_lay",
+                            "count": 1,
+                            "owner_type":"corporation",
+                            "tiles":[
+                               "14p",
+                               "15p",
+                               "887p",
+                               "888p",
+                               "8866p"
+                            ],
+                            "when": "owning_corp_or_turn",
+                            "hexes": [],
+                            "reachable": true,
+                            "special": false
+                        }
+                    ]
                 },
                 {
                     "name": "Zwittau – Politschka",
                     "value": 35,
                     "revenue": 5,
                     "sym": "ZP",
-                    "abilities": []
+                    "abilities": [
+                        {
+                            "type":"tile_lay",
+                            "count": 1,
+                            "owner_type":"corporation",
+                            "tiles":[
+                               "14p",
+                               "15p",
+                               "887p",
+                               "888p",
+                               "8866p"
+                            ],
+                            "when": "owning_corp_or_turn",
+                            "hexes": [],
+                            "reachable": true,
+                            "special": false
+                        }
+                    ]
                 },
                 {
                     "name": "Wolframs – Teltsch",
                     "value": 40,
                     "revenue": 5,
                     "sym": "WT",
-                    "abilities": []
+                    "abilities": [
+                        {
+                            "type":"tile_lay",
+                            "count": 1,
+                            "owner_type":"corporation",
+                            "tiles":[
+                               "14p",
+                               "15p",
+                               "887p",
+                               "888p",
+                               "8866p"
+                            ],
+                            "when": "owning_corp_or_turn",
+                            "hexes": [],
+                            "reachable": true,
+                            "special": false
+                        }
+                    ]
                 },
                 {
                     "name": "Strakonitz – Blatna – Bresnitz",
                     "value": 45,
                     "revenue": 5,
                     "sym": "SBB",
-                    "abilities": []
+                    "abilities": [
+                        {
+                            "type":"tile_lay",
+                            "count": 1,
+                            "owner_type":"corporation",
+                            "tiles":[
+                               "14p",
+                               "15p",
+                               "887p",
+                               "888p",
+                               "8866p"
+                            ],
+                            "when": "owning_corp_or_turn",
+                            "hexes": [],
+                            "reachable": true,
+                            "special": false
+                        }
+                    ]
                 },
                 {
                     "name": "Martinitz – Rochlitz",
                     "value": 50,
                     "revenue": 5,
                     "sym": "MR",
-                    "abilities": []
+                    "abilities": [
+                        {
+                            "type":"tile_lay",
+                            "count": 1,
+                            "owner_type":"corporation",
+                            "tiles":[
+                               "14p",
+                               "15p",
+                               "887p",
+                               "888p",
+                               "8866p"
+                            ],
+                            "when": "owning_corp_or_turn",
+                            "hexes": [],
+                            "reachable": true,
+                            "special": false
+                        }
+                    ]
                 },
                 {
                     "name": "Raudnitz – Kmetnowes",
                     "value": 40,
                     "revenue": 10,
                     "sym": "RK",
-                    "abilities": []
+                    "abilities": [
+                        {
+                            "type":"tile_lay",
+                            "count": 1,
+                            "owner_type":"corporation",
+                            "tiles":[
+                               "14p",
+                               "15p",
+                               "887p",
+                               "888p",
+                               "8866p",
+                               "216p",
+                               "611p",
+                               "889p",
+                               "8894p",
+                               "8895p",
+                               "8896p"
+                            ],
+                            "when": "owning_corp_or_turn",
+                            "hexes": [],
+                            "reachable": true,
+                            "special": false
+                        }
+                    ]
                 },
                 {
                     "name": "Schweißing – Haid",
                     "value": 45,
                     "revenue": 10,
                     "sym": "SH",
-                    "abilities": []
+                    "abilities": [
+                        {
+                            "type":"tile_lay",
+                            "count": 1,
+                            "owner_type":"corporation",
+                            "tiles":[
+                               "14p",
+                               "15p",
+                               "887p",
+                               "888p",
+                               "8866p",
+                               "216p",
+                               "611p",
+                               "889p",
+                               "8894p",
+                               "8895p",
+                               "8896p"
+                            ],
+                            "when": "owning_corp_or_turn",
+                            "hexes": [],
+                            "reachable": true,
+                            "special": false
+                        }
+                    ]
                 },
                 {
                     "name": "Deutschbrod – Tischnowitz",
                     "value": 50,
                     "revenue": 10,
                     "sym": "DT",
-                    "abilities": []
+                    "abilities": [
+                        {
+                            "type":"tile_lay",
+                            "count": 1,
+                            "owner_type":"corporation",
+                            "tiles":[
+                               "14p",
+                               "15p",
+                               "887p",
+                               "888p",
+                               "8866p",
+                               "216p",
+                               "611p",
+                               "889p",
+                               "8894p",
+                               "8895p",
+                               "8896p"
+                            ],
+                            "when": "owning_corp_or_turn",
+                            "hexes": [],
+                            "reachable": true,
+                            "special": false
+                        }
+                    ]
                 },
                 {
                     "name": "Troppau – Grätz",
                     "value": 55,
                     "revenue": 10,
                     "sym": "TG",
-                    "abilities": []
+                    "abilities": [
+                        {
+                            "type":"tile_lay",
+                            "count": 1,
+                            "owner_type":"corporation",
+                            "tiles":[
+                               "14p",
+                               "15p",
+                               "887p",
+                               "888p",
+                               "8866p",
+                               "216p",
+                               "611p",
+                               "889p",
+                               "8894p",
+                               "8895p",
+                               "8896p"
+                            ],
+                            "when": "owning_corp_or_turn",
+                            "hexes": [],
+                            "reachable": true,
+                            "special": false
+                        }
+                    ]
                 },
                 {
                     "name": "Hannsdorf – Mährisch Altstadt",
                     "value": 60,
                     "revenue": 10,
                     "sym": "HMA",
-                    "abilities": []
+                    "abilities": [
+                        {
+                            "type":"tile_lay",
+                            "count": 1,
+                            "owner_type":"corporation",
+                            "tiles":[
+                               "14p",
+                               "15p",
+                               "887p",
+                               "888p",
+                               "8866p",
+                               "216p",
+                               "611p",
+                               "889p",
+                               "8894p",
+                               "8895p",
+                               "8896p"
+                            ],
+                            "when": "owning_corp_or_turn",
+                            "hexes": [],
+                            "reachable": true,
+                            "special": false
+                        }
+                    ]
                 },
                 {
                     "name": "Friedland - Bila",
                     "value": 65,
                     "revenue": 10,
                     "sym": "FB",
-                    "abilities": []
+                    "abilities": [
+                        {
+                            "type":"tile_lay",
+                            "count": 1,
+                            "owner_type":"corporation",
+                            "tiles":[
+                               "14p",
+                               "15p",
+                               "887p",
+                               "888p",
+                               "8866p",
+                               "216p",
+                               "611p",
+                               "889p",
+                               "8894p",
+                               "8895p",
+                               "8896p"
+                            ],
+                            "when": "owning_corp_or_turn",
+                            "hexes": [],
+                            "reachable": true,
+                            "special": false
+                        }
+                    ]
                 },
                 {
                     "name": "Aujezd – Luhatschowitz",
                     "value": 55,
                     "revenue": 20,
                     "sym": "AL",
-                    "abilities": []
+                    "abilities": [
+                        {
+                            "type":"tile_lay",
+                            "count": 1,
+                            "owner_type":"corporation",
+                            "tiles":[
+                               "14p",
+                               "15p",
+                               "887p",
+                               "888p",
+                               "8866p",
+                               "216p",
+                               "611p",
+                               "889p",
+                               "8894p",
+                               "8895p",
+                               "8896p",
+                               "595p",
+                               "8857p"
+                            ],
+                            "when": "owning_corp_or_turn",
+                            "hexes": [],
+                            "reachable": true,
+                            "special": false
+                        }
+                    ]
                 },
                 {
                     "name": "Neuhaus – Wobratain",
                     "value": 60,
                     "revenue": 20,
                     "sym": "NW",
-                    "abilities": []
+                    "abilities": [
+                        {
+                            "type":"tile_lay",
+                            "count": 1,
+                            "owner_type":"corporation",
+                            "tiles":[
+                               "14p",
+                               "15p",
+                               "887p",
+                               "888p",
+                               "8866p",
+                               "216p",
+                               "611p",
+                               "889p",
+                               "8894p",
+                               "8895p",
+                               "8896p",
+                               "595p",
+                               "8857p"
+                            ],
+                            "when": "owning_corp_or_turn",
+                            "hexes": [],
+                            "reachable": true,
+                            "special": false
+                        }
+                    ]
                 },
                 {
                     "name": "Opočno – Dobruschka",
                     "value": 65,
                     "revenue": 20,
                     "sym": "OD",
-                    "abilities": []
+                    "abilities": [
+                        {
+                            "type":"tile_lay",
+                            "count": 1,
+                            "owner_type":"corporation",
+                            "tiles":[
+                               "14p",
+                               "15p",
+                               "887p",
+                               "888p",
+                               "8866p",
+                               "216p",
+                               "611p",
+                               "889p",
+                               "8894p",
+                               "8895p",
+                               "8896p",
+                               "595p",
+                               "8857p"
+                            ],
+                            "when": "owning_corp_or_turn",
+                            "hexes": [],
+                            "reachable": true,
+                            "special": false
+                        }
+                    ]
                 },
                 {
                     "name": "Wekelsdorf – Parschnitz – Trautenau",
                     "value": 70,
                     "revenue": 20,
                     "sym": "WPT",
-                    "abilities": []
+                    "abilities": [
+                        {
+                            "type":"tile_lay",
+                            "count": 1,
+                            "owner_type":"corporation",
+                            "tiles":[
+                               "14p",
+                               "15p",
+                               "887p",
+                               "888p",
+                               "8866p",
+                               "216p",
+                               "611p",
+                               "889p",
+                               "8894p",
+                               "8895p",
+                               "8896p",
+                               "595p",
+                               "8857p"
+                            ],
+                            "when": "owning_corp_or_turn",
+                            "hexes": [],
+                            "reachable": true,
+                            "special": false
+                        }
+                    ]
                 },
                 {
                     "name": "Nezamislitz – Morkowitz",
                     "value": 75,
                     "revenue": 20,
                     "sym": "NM",
-                    "abilities": []
+                    "abilities": [
+                        {
+                            "type":"tile_lay",
+                            "count": 1,
+                            "owner_type":"corporation",
+                            "tiles":[
+                               "14p",
+                               "15p",
+                               "887p",
+                               "888p",
+                               "8866p",
+                               "216p",
+                               "611p",
+                               "889p",
+                               "8894p",
+                               "8895p",
+                               "8896p",
+                               "595p",
+                               "8857p"
+                            ],
+                            "when": "owning_corp_or_turn",
+                            "hexes": [],
+                            "reachable": true,
+                            "special": false
+                        }
+                    ]
                 },
                 {
                     "name": "Taus – Tachau",
                     "value": 80,
                     "revenue": 20,
                     "sym": "TT",
-                    "abilities": []
+                    "abilities": [
+                        {
+                            "type":"tile_lay",
+                            "count": 1,
+                            "owner_type":"corporation",
+                            "tiles":[
+                               "14p",
+                               "15p",
+                               "887p",
+                               "888p",
+                               "8866p",
+                               "216p",
+                               "611p",
+                               "889p",
+                               "8894p",
+                               "8895p",
+                               "8896p",
+                               "595p",
+                               "8857p"
+                            ],
+                            "when": "owning_corp_or_turn",
+                            "hexes": [],
+                            "reachable": true,
+                            "special": false
+                        }
+                    ]
                 }
             ],
             "corporations": [
@@ -766,7 +1156,7 @@ module Engine
                     ],
                     "events": [
                         {
-                            "type": "middle_companies_available"
+                            "type": "medium_corps_available"
                         }
                     ]
                 },
@@ -855,7 +1245,7 @@ module Engine
                     ],
                     "events": [
                         {
-                            "type": "large_companies_available"
+                            "type": "large_corps_available"
                         }
                     ]
                 },

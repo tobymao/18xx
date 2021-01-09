@@ -63,6 +63,8 @@ module Engine
         @or = 0
         @current_layer = 1
         @recently_floated = []
+
+        block_lay_for_purple_tiles
       end
 
       def init_round
@@ -74,7 +76,6 @@ module Engine
       def stock_round
         Round::Stock.new(self, [
           Step::DiscardTrain,
-          Step::SpecialTrack,
           Step::G18CZ::BuySellParShares,
         ])
       end
@@ -156,6 +157,12 @@ module Engine
         return super unless @recently_floated.include?(entity)
 
         [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }]
+      end
+
+      def block_lay_for_purple_tiles
+        @tiles.each do |tile|
+          tile.blocks_lay = true if tile.name.end_with?('p')
+        end
       end
     end
   end
