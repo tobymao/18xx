@@ -356,6 +356,10 @@ table.center {
   }
 }
 
+#chatlog, #chatbar, #history_undo {
+  max-width: 960px;
+}
+
 div.game.card em {
   font-style: normal;
   text-decoration: underline;
