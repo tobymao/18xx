@@ -15,6 +15,7 @@ module Engine
       GAME_DESIGNER = 'Scott Petersen (Based on Federico Vellani 1849)'
 
       NEW_AFG_HEXES = %w[E11 H8 I13 I17 J18 K19 L12 L20 O9].freeze
+      SMS_HEXES = %w[A9 B14 G7 H8 J18 L12 L18 L20 N20 O9 P2].freeze
 
       def home_token_locations(corporation)
         raise NotImplementedError unless corporation.name == 'AFG'
