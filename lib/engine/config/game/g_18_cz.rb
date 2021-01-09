@@ -313,15 +313,7 @@ module Engine
                                "15p",
                                "887p",
                                "888p",
-                               "8866p",
-                               "216p",
-                               "611p",
-                               "889p",
-                               "8894p",
-                               "8895p",
-                               "8896p",
-                               "595p",
-                               "8857p"
+                               "8866p"
                             ],
                             "when": "owning_corp_or_turn",
                             "hexes": [],
@@ -345,15 +337,7 @@ module Engine
                                "15p",
                                "887p",
                                "888p",
-                               "8866p",
-                               "216p",
-                               "611p",
-                               "889p",
-                               "8894p",
-                               "8895p",
-                               "8896p",
-                               "595p",
-                               "8857p"
+                               "8866p"
                             ],
                             "when": "owning_corp_or_turn",
                             "hexes": [],
@@ -377,15 +361,7 @@ module Engine
                                "15p",
                                "887p",
                                "888p",
-                               "8866p",
-                               "216p",
-                               "611p",
-                               "889p",
-                               "8894p",
-                               "8895p",
-                               "8896p",
-                               "595p",
-                               "8857p"
+                               "8866p"
                             ],
                             "when": "owning_corp_or_turn",
                             "hexes": [],
@@ -409,15 +385,7 @@ module Engine
                                "15p",
                                "887p",
                                "888p",
-                               "8866p",
-                               "216p",
-                               "611p",
-                               "889p",
-                               "8894p",
-                               "8895p",
-                               "8896p",
-                               "595p",
-                               "8857p"
+                               "8866p"
                             ],
                             "when": "owning_corp_or_turn",
                             "hexes": [],
@@ -441,15 +409,7 @@ module Engine
                                "15p",
                                "887p",
                                "888p",
-                               "8866p",
-                               "216p",
-                               "611p",
-                               "889p",
-                               "8894p",
-                               "8895p",
-                               "8896p",
-                               "595p",
-                               "8857p"
+                               "8866p"
                             ],
                             "when": "owning_corp_or_turn",
                             "hexes": [],
@@ -473,15 +433,7 @@ module Engine
                                "15p",
                                "887p",
                                "888p",
-                               "8866p",
-                               "216p",
-                               "611p",
-                               "889p",
-                               "8894p",
-                               "8895p",
-                               "8896p",
-                               "595p",
-                               "8857p"
+                               "8866p"
                             ],
                             "when": "owning_corp_or_turn",
                             "hexes": [],
@@ -511,9 +463,7 @@ module Engine
                                "889p",
                                "8894p",
                                "8895p",
-                               "8896p",
-                               "595p",
-                               "8857p"
+                               "8896p"
                             ],
                             "when": "owning_corp_or_turn",
                             "hexes": [],
@@ -543,9 +493,7 @@ module Engine
                                "889p",
                                "8894p",
                                "8895p",
-                               "8896p",
-                               "595p",
-                               "8857p"
+                               "8896p"
                             ],
                             "when": "owning_corp_or_turn",
                             "hexes": [],
@@ -575,9 +523,7 @@ module Engine
                                "889p",
                                "8894p",
                                "8895p",
-                               "8896p",
-                               "595p",
-                               "8857p"
+                               "8896p"
                             ],
                             "when": "owning_corp_or_turn",
                             "hexes": [],
@@ -607,9 +553,7 @@ module Engine
                                "889p",
                                "8894p",
                                "8895p",
-                               "8896p",
-                               "595p",
-                               "8857p"
+                               "8896p"
                             ],
                             "when": "owning_corp_or_turn",
                             "hexes": [],
@@ -639,9 +583,7 @@ module Engine
                                "889p",
                                "8894p",
                                "8895p",
-                               "8896p",
-                               "595p",
-                               "8857p"
+                               "8896p"
                             ],
                             "when": "owning_corp_or_turn",
                             "hexes": [],
@@ -671,9 +613,7 @@ module Engine
                                "889p",
                                "8894p",
                                "8895p",
-                               "8896p",
-                               "595p",
-                               "8857p"
+                               "8896p"
                             ],
                             "when": "owning_corp_or_turn",
                             "hexes": [],
