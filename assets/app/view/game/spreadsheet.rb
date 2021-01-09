@@ -136,8 +136,7 @@ module View
               if hist[x]&.dividend&.id&.positive?
                 link_h = history_link(hist[x].revenue.abs.to_s,
                                       "Go to run #{x} of #{corporation.name}",
-                                      hist[x].dividend.id - 1,
-                                      color: 'currentColor')
+                                      hist[x].dividend.id - 1)
                 h(:td, props, [link_h])
               else
                 h(:td, props, hist[x].revenue.abs.to_s)
