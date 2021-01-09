@@ -329,7 +329,7 @@ describe 'Assets' do
          'endgame',
          ['Operating Round 6.3 (of 3) - Game Over']]]],
       ['1860',
-       '19_354',
+       19_354,
        [[215,
          'stock_round_1',
          ['!!<div>Fishbourne Ferry Company',
