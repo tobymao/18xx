@@ -40,7 +40,7 @@ module Engine
       SELL_AFTER = :operate
       DEV_STAGE = :alpha
       SELL_BUY_ORDER = :sell_buy
-
+      EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
       GAME_END_CHECK = { bank: :current_or, custom: :one_more_full_or_set }.freeze
 
       HEX_WITH_O_LABEL = %w[J12].freeze
