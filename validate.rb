@@ -104,8 +104,12 @@ def revalidate_broken(filename)
   File.write("revalidate.json", JSON.pretty_generate(data))
 end
 
-def validate_json(filename)
-  Engine::Game.load(filename).maybe_raise!
+def validate_json(filename, strict: false)
+  game = Engine::Game.load(filename, strict: strict)
+  if game.exception
+    puts game.broken_action.to_h
+  end
+  game.maybe_raise!
 end
 
 def pin_games(pin_version, game_ids)
