@@ -10,7 +10,7 @@ module Engine
 
       DEV_STAGE = :beta
 
-      GAME_RULES_URL = 'https://docs.google.com/document/d/1HI9HyOoCamBEbuE_HCzr2b86xtRDI_hBI3Sbc53KxyA/edit'
+      GAME_RULES_URL = 'https://www.dropbox.com/s/ivm4jsopnzabhru/18ChesOTR_Rules.png?dl=0'
       GAME_DESIGNER = 'Scott Petersen'
 
       SELL_BUY_ORDER = :sell_buy_sell
