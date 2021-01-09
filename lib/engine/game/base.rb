@@ -75,7 +75,7 @@ module Engine
     class Base
       attr_reader :raw_actions, :actions, :bank, :cert_limit, :cities, :companies, :corporations,
                   :depot, :finished, :graph, :hexes, :id, :loading, :loans, :log, :minors,
-                  :phase, :players, :operating_rounds, :round, :share_pool, :stock_market,
+                  :phase, :players, :operating_rounds, :round, :share_pool, :stock_market, :tile_groups,
                   :tiles, :turn, :total_loans, :undo_possible, :redo_possible, :round_history, :all_tiles,
                   :optional_rules, :exception, :last_processed_action, :broken_action,
                   :turn_start_action_id, :last_turn_start_action_id
@@ -459,6 +459,7 @@ module Engine
         @tiles = init_tiles
         @all_tiles = init_tiles
         optional_tiles
+        @tile_groups = []
         @cert_limit = init_cert_limit
         @removals = []
 

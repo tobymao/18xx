@@ -14,7 +14,7 @@ module Engine
   class Tile
     include Config::Tile
 
-    attr_accessor :hex, :icons, :index, :legal_rotations, :location_name, :name, :reservations, :upgrades
+    attr_accessor :hex, :icons, :index, :legal_rotations, :location_name, :name, :opposite, :reservations, :upgrades
     attr_reader :blocks_lay, :borders, :cities, :color, :edges, :junction, :nodes, :label,
                 :parts, :preprinted, :rotation, :stops, :towns, :offboards, :blockers,
                 :city_towns, :unlimited, :stubs, :partitions, :id, :frame
@@ -190,6 +190,7 @@ module Engine
       @blocks_lay = nil
       @reservation_blocks = opts[:reservation_blocks] || false
       @unlimited = opts[:unlimited] || false
+      @opposite = nil
       @id = "#{@name}-#{@index}"
 
       separate_parts
