@@ -76,6 +76,9 @@ module Engine
         @current_layer = 1
         @recently_floated = []
 
+        # Only small companies are available until later phases
+        @corporations, @future_corporations = @corporations.partition { |corporation| corporation.type == :small }
+
         block_lay_for_purple_tiles
       end
 
@@ -154,6 +157,7 @@ module Engine
 
       def event_medium_corps_available!
         increase_layer
+        # TODO - add future_corps for med in
       end
 
       def event_large_corps_available!
