@@ -327,8 +327,12 @@ def migrate_db_actions(data, pin, dry_run=false, debug=false)
         DB.transaction do
           Action.where(game: data).delete
           game = Engine::Game.load(data, actions: []).maybe_raise!
+          # Set back to loading
+          game.instance_variable_set(:@loading, true)
           actions.each do |action|
             game.process_action(action)
+            game.maybe_raise!
+
             Action.create(
               game: data,
               user: action.key?('user') ? User[action['user']] : data.user,
@@ -347,12 +351,13 @@ def migrate_db_actions(data, pin, dry_run=false, debug=false)
     puts e.backtrace if debug
     puts 'Something went wrong', e
     if !dry_run
-      if pin != :delete
+      if pin == :delete
+        puts "Deleting #{data.id}"
+        data.destroy
+      else
         puts "Pinning #{data.id} to #{pin}"
         data.settings['pin']=pin
         data.save
-        puts "Deleting #{data.id}"
-        data.destroy
       end
     else
       puts "Needs pinning #{data.id}"
