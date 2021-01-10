@@ -10,6 +10,7 @@
 /vendor/
 /public/assets/*
 /public/pinned/*
+/public/commit
 
 .tags
 .DS_STORE

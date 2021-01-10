@@ -113,6 +113,7 @@ task :precompile do
   pin_dir = Assets::OUTPUT_BASE + Assets::PIN_DIR
   FileUtils.mkdir_p(pin_dir)
   FileUtils.cp("#{bundle}.gz", "#{pin_dir}/#{git_rev}.js.gz")
+  sh("echo #{git_rev} > #{Assets::OUTPUT_BASE}/commit")
 end
 
 desc 'Profile loading data'
