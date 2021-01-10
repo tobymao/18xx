@@ -65,7 +65,7 @@ module View
         end
         @hexes.compact!
 
-        children = [render_map, render_controls]
+        children = [render_map]
 
         if current_entity && @tile_selector
           left = (@tile_selector.x + map_x) * @scale
@@ -134,7 +134,7 @@ module View
           },
         }
 
-        h(:div, props, children)
+        h(:div, [h(:div, props, children), render_controls])
       end
 
       def map_x
