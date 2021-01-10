@@ -631,7 +631,7 @@ module Engine
 
             # Finalize round setup (for things that need round correctly set like place_home_token)
             @round.setup
-            @round_history << @actions.size
+            @round_history << current_action_id
           end
         end
 
