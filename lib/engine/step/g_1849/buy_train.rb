@@ -8,13 +8,12 @@ module Engine
       class BuyTrain < BuyTrain
         def setup
           super
-          @game.old_operating_order = @game.corporations.sort
-          @sold_any = false
         end
 
         def pass!
           super
           @game.reorder_corps if @sold_any
+          @sold_any = false
         end
 
         def process_sell_shares(action)
