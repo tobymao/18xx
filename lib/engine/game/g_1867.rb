@@ -40,7 +40,7 @@ module Engine
       SELL_AFTER = :operate
       DEV_STAGE = :alpha
       SELL_BUY_ORDER = :sell_buy
-
+      EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
       GAME_END_CHECK = { bank: :current_or, custom: :one_more_full_or_set }.freeze
 
       HEX_WITH_O_LABEL = %w[J12].freeze
@@ -112,12 +112,22 @@ module Engine
         end
       end
 
+      def calculate_interest
+        # Number of loans interest is due on is set before taking loans in that OR
+        @interest.clear
+        @corporations.each { |c| @interest[c] = c.loans.size }
+      end
+
       def interest_owed_for_loans(loans)
         interest_rate * loans
       end
 
+      def loans_due_interest(entity)
+        @interest[entity] || 0
+      end
+
       def interest_owed(entity)
-        interest_owed_for_loans(entity.loans.size)
+        interest_rate * loans_due_interest(entity)
       end
 
       def maximum_loans(entity)
@@ -381,6 +391,7 @@ module Engine
       end
 
       def operating_round(round_num)
+        calculate_interest
         Round::G1867::Operating.new(self, [
           Step::G1867::MajorTrainless,
           Step::BuyCompany,
@@ -464,6 +475,7 @@ module Engine
       end
 
       def setup
+        @interest = {}
         setup_company_price_up_to_face
 
         # Hide the special 3 company

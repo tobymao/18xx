@@ -10,7 +10,6 @@ module Engine
         include ShareBuying
 
         def actions(entity)
-          # @todo: this needs to catch the failed merge case
           return [] if !entity.player? || !@round.converted
 
           actions = []

@@ -63,6 +63,10 @@ module Engine
           end
         end
 
+        def needed_cash(_entity)
+          @depot.min_depot_price
+        end
+
         def try_take_loan(entity, cost)
           if must_buy_train?(entity) && @depot_train
             super

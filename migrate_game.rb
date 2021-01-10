@@ -24,6 +24,7 @@ def switch_actions(actions, first, second)
 end
 
 # Returns either the actions that are modified inplace, or nil if inserted/deleted
+
 def repair(game, original_actions, actions, broken_action)
   optionalish_actions = %w[message buy_company]
   action_idx = actions.index(broken_action)
@@ -35,6 +36,13 @@ def repair(game, original_actions, actions, broken_action)
   next_actions = actions[action_idx + 1..]
   next_action = next_actions.find { |a| !optionalish_actions.include?(a['type']) }
   puts broken_action
+
+  add_pass = lambda do
+    pass = Engine::Action::Pass.new(game.active_step.current_entity)
+    pass.user = pass.entity.player.id
+    actions.insert(action_idx, pass.to_h)
+  end
+
   if broken_action['type'] == 'move_token'
     # Move token is now place token.
     broken_action['type'] = 'place_token'
@@ -48,43 +56,29 @@ def repair(game, original_actions, actions, broken_action)
     broken_action['city'] = hex.tile.cities.first.id
     return [broken_action]
   elsif game.active_step.is_a?(Engine::Step::BuyCompany)
-    pass = Engine::Action::Pass.new(game.active_step.current_entity)
-    pass.user = pass.entity.player.id
-    actions.insert(action_idx, pass.to_h)
+    add_pass.call
     return
   elsif game.active_step.is_a?(Engine::Step::G1817::PostConversion)
-    pass = Engine::Action::Pass.new(game.active_step.current_entity)
-    pass.user = pass.entity.player.id
-    actions.insert(action_idx, pass.to_h)
+    add_pass.call
     return
   elsif game.active_step.is_a?(Engine::Step::G1817::Acquire)
-    pass = Engine::Action::Pass.new(game.active_step.current_entity)
-    pass.user = pass.entity.player.id
-    actions.insert(action_idx, pass.to_h)
+    add_pass.call
     return
   elsif game.active_step.is_a?(Engine::Step::BuySellParShares) && game.is_a?(Engine::Game::G1867) && broken_action['type']=='bid'
-    pass = Engine::Action::Pass.new(game.active_step.current_entity)
-    pass.user = pass.entity.player.id
-    actions.insert(action_idx, pass.to_h)
+    add_pass.call
     return
   elsif game.active_step.is_a?(Engine::Step::G1889::SpecialTrack)
     # laying track for Ehime Railway didn't always block, now it needs an
     # explicit pass
     if broken_action['entity'] != 'ER'
-      pass = Engine::Action::Pass.new(game.active_step.current_entity)
-      pass.user = pass.entity.player.id
-      actions.insert(action_idx, pass.to_h)
+      add_pass.call
       return
     end
   elsif game.active_step.is_a?(Engine::Step::G1867::Merge)
-    pass = Engine::Action::Pass.new(game.active_step.current_entity)
-    pass.user = pass.entity.player.id
-    actions.insert(action_idx, pass.to_h)
+    add_pass.call
     return
   elsif game.active_step.is_a?(Engine::Step::G1867::SingleItemAuction)
-    pass = Engine::Action::Pass.new(game.active_step.current_entity)
-    pass.user = pass.entity.player.id
-    actions.insert(action_idx, pass.to_h)
+    add_pass.call
     return
   elsif broken_action['type'] == 'pass'
     if game.active_step.is_a?(Engine::Step::G18CO::MovingBidAuction)
@@ -146,24 +140,17 @@ def repair(game, original_actions, actions, broken_action)
     end
   elsif broken_action['type'] == 'lay_tile'
     if game.active_step.is_a?(Engine::Step::BuyCompany)
-      pass = Engine::Action::Pass.new(game.active_step.current_entity)
-      pass.user = pass.entity.player.id
-      actions.insert(action_idx, pass.to_h)
+      add_pass.call
       return
     end
     if game.active_step.is_a?(Engine::Step::BuyTrain) && game.active_step.actions(game.active_step.current_entity).include?('pass')
-      pass = Engine::Action::Pass.new(game.active_step.current_entity)
-      pass.user = pass.entity.player.id
-      actions.insert(action_idx, pass.to_h)
+      add_pass.call
       return
     end
     if game.active_step.is_a?(Engine::Step::IssueShares)
-      pass = Engine::Action::Pass.new(game.active_step.current_entity)
-      pass.user = pass.entity.player.id
-      actions.insert(action_idx, pass.to_h)
+      add_pass.call
       return
     end
-    puts prev_action
     if game.active_step.is_a?(Engine::Step::Route) and prev_action['type'] == 'pass'
       actions.delete(prev_action)
       return
@@ -172,7 +159,6 @@ def repair(game, original_actions, actions, broken_action)
       actions.delete(prev_action)
       return
     end
-
   elsif broken_action['type'] == 'buy_train'
     if prev_action['type'] == 'pass' && game.active_step.is_a?(Engine::Step::Track)
       # Remove the pass, as it was probably meant for a token
@@ -183,15 +169,11 @@ def repair(game, original_actions, actions, broken_action)
       return switch_actions(original_actions, broken_action, next_action)
     end
     if game.active_step.is_a?(Engine::Step::Track)
-      pass = Engine::Action::Pass.new(game.active_step.current_entity)
-      pass.user = pass.entity.player.id
-      actions.insert(action_idx, pass.to_h)
+      add_pass.call
       return
     end
     if game.active_step.is_a?(Engine::Step::Token)
-      pass = Engine::Action::Pass.new(game.active_step.current_entity)
-      pass.user = pass.entity.player.id
-      actions.insert(action_idx, pass.to_h)
+      add_pass.call
       return
     end
     if game.active_step.is_a?(Engine::Step::BuyCompany) && prev_action['type'] == 'pass'
@@ -204,15 +186,11 @@ def repair(game, original_actions, actions, broken_action)
       return
     end
     if game.active_step.is_a?(Engine::Step::Track)
-      pass = Engine::Action::Pass.new(game.active_step.current_entity)
-      pass.user = pass.entity.player.id
-      actions.insert(action_idx, pass.to_h)
+      add_pass.call
       return
     end
     if game.active_step.is_a?(Engine::Step::Token)
-      pass = Engine::Action::Pass.new(game.active_step.current_entity)
-      pass.user = pass.entity.player.id
-      actions.insert(action_idx, pass.to_h)
+      add_pass.call
       return
     end
   elsif broken_action['type']=='place_token' &&
@@ -223,9 +201,7 @@ def repair(game, original_actions, actions, broken_action)
     broken_action['entity_type'] = 'company'
     return [broken_action]
   elsif game.active_step.is_a?(Engine::Step::Token)
-    pass = Engine::Action::Pass.new(game.active_step.current_entity)
-    pass.user = pass.entity.player.id
-    actions.insert(action_idx, pass.to_h)
+    add_pass.call
     return
 
   elsif game.active_step.is_a?(Engine::Step::TrackAndToken)
@@ -234,9 +210,7 @@ def repair(game, original_actions, actions, broken_action)
       actions.delete(prev_action)
       return
     end
-    pass = Engine::Action::Pass.new(game.active_step.current_entity)
-    pass.user = pass.entity.player.id
-    actions.insert(action_idx, pass.to_h)
+    add_pass.call
     return
   elsif game.active_step.is_a?(Engine::Step::IssueShares) && broken_action['type']=='buy_company'
     # Stray pass from buy trains
@@ -328,8 +302,8 @@ def migrate_db_actions_in_mem(data)
   return original_actions
 end
 
-def migrate_db_actions(data, pin, dry_run=false, delete=false, debug=false)
-  raise Exception, "pin is not valid" unless pin || delete
+def migrate_db_actions(data, pin, dry_run=false, debug=false)
+  raise Exception, "pin is not valid" unless pin
 
   original_actions = data.actions.map(&:to_h)
   begin
@@ -368,11 +342,10 @@ def migrate_db_actions(data, pin, dry_run=false, delete=false, debug=false)
     puts e.backtrace if debug
     puts 'Something went wrong', e
     if !dry_run
-      if pin
+      if pin != :delete
         puts "Pinning #{data.id} to #{pin}"
         data.settings['pin']=pin
         data.save
-      elsif delete
         puts "Deleting #{data.id}"
         data.destroy
       end
@@ -407,17 +380,18 @@ def migrate_db_to_json(id, filename)
   File.write(filename, JSON.pretty_generate(json))
 end
 
-def migrate_title(title, pin, dry_run=false, delete = false, debug = false)
+# Pass pin=:delete to delete failed games
+def migrate_title(title, pin, dry_run=false, debug = false)
   DB[:games].order(:id).where(Sequel.pg_jsonb_op(:settings).has_key?('pin') => false, status: %w[active finished], title: title).select(:id).paged_each(rows_per_fetch: 1) do |game|
     games = Game.eager(:user, :players, :actions).where(id: [game[:id]]).all
     games.each {|data|
-      migrate_db_actions(data, pin, dry_run, delete, debug)
+      migrate_db_actions(data, pin, dry_run, debug)
     }
 
   end
 end
 
-def migrate_all(pin, dry_run=false, delete = false, debug = false, game_ids: nil)
+def migrate_all(pin, dry_run=false, debug = false, game_ids: nil)
   where_args = {
     Sequel.pg_jsonb_op(:settings).has_key?('pin') => false,
     status: %w[active finished],
@@ -427,7 +401,7 @@ def migrate_all(pin, dry_run=false, delete = false, debug = false, game_ids: nil
   DB[:games].order(:id).where(**where_args).select(:id).paged_each(rows_per_fetch: 1) do |game|
     games = Game.eager(:user, :players, :actions).where(id: [game[:id]]).all
     games.each {|data|
-      migrate_db_actions(data, pin, dry_run, delete, debug)
+      migrate_db_actions(data, pin, dry_run, debug)
     }
 
   end
