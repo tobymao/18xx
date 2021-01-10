@@ -468,6 +468,7 @@ module Engine
         @share_pool = init_share_pool
         @hexes = init_hexes(@companies, @corporations)
         @graph = Graph.new(self)
+        @action_queue = []
 
         # call here to set up ids for all cities before any tiles from @tiles
         # can be placed onto the map
@@ -549,7 +550,9 @@ module Engine
         actions.each.with_index do |action, index|
           case action['type']
           when 'undo'
-            undo_to = action['action_id'] || filtered_actions.rindex { |a| a && a['type'] != 'message' }
+            undo_to = action['action_id'] || filtered_actions.rindex do |a|
+              a && a['type'] != 'message' && !a['derived']
+            end
             active_undos << filtered_actions[undo_to...index].map.with_index do |a, i|
               next if !a || a['type'] == 'message'
 
@@ -592,8 +595,28 @@ module Engine
         @loading = false
       end
 
+      def process_derived_action(action)
+        action = action_from_h(action) if action.is_a?(Hash)
+        raise GameError, "Only derived actions may use process_derived_action, not #{action}" unless action.derived
+
+        @action_queue.prepend(action)
+      end
+
       def process_action(action)
         action = action_from_h(action) if action.is_a?(Hash)
+        raise GameError, "Derived actions may not use process_action, especially #{action}" if action.derived
+
+        # Process the action we came here to do first
+        result = process_single_action(action)
+
+        # Process any other actions put on the queue since our action
+        process_single_action(@action_queue.pop) until @action_queue.empty?
+
+        # Return the result from the action passed in
+        result
+      end
+
+      def process_single_action(action)
         action.id = current_action_id + 1
         @raw_actions << action.to_h
         return clone(@raw_actions) if action.is_a?(Action::Undo) || action.is_a?(Action::Redo)
