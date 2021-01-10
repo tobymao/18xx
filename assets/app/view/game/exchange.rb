@@ -19,7 +19,12 @@ module View
           store(:selected_company, nil, skip: true)
         end
 
-        h('button.small', { on: { click: exchange } }, "#{share.corporation.name} #{share_origin} share")
+        text =
+          if share.president
+            text = "#{100 / share.num_shares}% of #{share.corporation.name} Presidency"
+          end
+
+        h('button.small', { on: { click: exchange } }, text || "#{share.corporation.name} #{share_origin} share")
       end
 
       def render
@@ -31,6 +36,10 @@ module View
         corporations.each do |corporation|
           ipo_share = corporation.shares.find { |s| !s.president }
           children << render_exchange(ipo_share, @game.ipo_name(corporation)) if ability.from.include?(:ipo)
+
+          if !corporation.ipoed# && ability.allow_partial_presidency && can_par?
+            children << render_exchange(corporation.shares.find(&:president), 'Presidency')
+          end
 
           pool_share = @game.share_pool.shares_by_corporation[corporation]&.first
           children << render_exchange(pool_share, 'Market') if ability.from.include?(:market)

@@ -12,6 +12,7 @@ require 'view/game/corporate_buy_shares'
 require 'view/game/map'
 require 'view/game/route_selector'
 require 'view/game/cash_crisis'
+require 'view/game/corporation_pending_par'
 
 module View
   module Game
@@ -26,6 +27,11 @@ module View
           @current_actions = round.actions_for(entity)
 
           entity = entity.owner if entity.company? && !round.active_entities.one?
+
+          if @current_actions.include?('par') &&
+             @step.respond_to?(:corporation_pending_par) && @step.corporation_pending_par
+            return h(CorporationPendingPar, corporation: @step.corporation_pending_par)
+          end
 
           left = []
           left << h(SpecialBuy) if @current_actions.include?('special_buy')

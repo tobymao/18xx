@@ -89,7 +89,7 @@ module Engine
       def operating_round(round_num)
         Round::Operating.new(self, [
           Step::Bankrupt,
-          Step::Exchange,
+          Step::G1828::Exchange,
           Step::G1828::DiscardTrain,
           Step::HomeToken,
           Step::G1828::SpecialTrack,

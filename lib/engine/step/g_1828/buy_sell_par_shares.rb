@@ -14,10 +14,19 @@ module Engine
 
           unless bought?
             actions << 'choose' if can_merge_any?(entity)
-            actions << 'pass' if actions.any? && !actions.include?('pass')
+            actions << 'buy_shares' if player_can_exchange?(entity)
+            actions << 'pass' if !actions.empty? && !actions.include?('pass')
           end
 
           actions
+        end
+
+        def player_can_exchange?(entity)
+          return false unless entity.player?
+
+          company = entity.companies.find { |c| c.id == 'M&H' }
+          step = @round.steps.find { |r| r.is_a?(Engine::Step::G1828::Exchange) }
+          company && step&.can_exchange?(company)
         end
 
         def choice_available?(_entity)
