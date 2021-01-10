@@ -582,7 +582,7 @@ module Engine
           end
         end
 
-        minor.spend(minor.cash, major)
+        minor.spend(minor.cash, major) if minor.cash.positive?
         hexes.each do |hex|
           hex.tile.cities.each do |city|
             if city.tokened_by?(minor)
