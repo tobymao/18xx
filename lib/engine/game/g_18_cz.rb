@@ -26,11 +26,10 @@ module Engine
 
       HOME_TOKEN_TIMING = :operate
 
-      STOCKMARKET_COLORS = {
+      STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
         par: :red,
-        par_1: :blue,
         par_2: :green,
-      }.freeze
+      ).freeze
 
       # TODO - do we need this approach or can we use similar to CO
       PAR_RANGE = {
@@ -40,9 +39,9 @@ module Engine
       }.freeze
 
       MARKET_TEXT = {
-        par: 'Small',
-        par_1: 'Medium',
-        par_2: 'Large',
+        par: 'Small Corporation Par',
+        par_overlap: 'Medium Corporation Par',
+        par_2: 'Large Corporation Par',
       }.freeze
 
       COMPANY_VALUES = [40, 45, 50, 55, 60, 65, 70, 75, 80, 90, 100, 110, 120].freeze

@@ -94,6 +94,17 @@ module View
           @previous_convert_range = false
         end
 
+        if types.include?(:par_overlap)
+          # This only works on 1D at present
+
+          style[:borderTopColor] = style[:borderBottomColor] = COLOR_MAP[:blue]
+          style[:borderTopWidth] = style[:borderBottomWidth] = "#{BORDER * 4}px"
+          style[:borderLeftColor] = style[:borderTopColor]
+          style[:borderLeftWidth] = style[:borderTopWidth]
+          style[:borderRightColor] = style[:borderTopColor]
+          style[:borderRightWidth] = style[:borderTopWidth]
+        end
+
         if types.include?(:max_price)
           style[:borderRightWidth] = "#{BORDER * 4}px"
           style[:borderRightColor] = COLOR_MAP[:purple]
