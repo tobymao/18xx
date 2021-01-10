@@ -11,7 +11,7 @@ module Engine
   module Round
     class Base
       attr_reader :entities, :entity_index, :round_num, :steps
-      attr_accessor :last_to_act, :pass_order
+      attr_accessor :last_to_act, :pass_order, :at_start
 
       DEFAULT_STEPS = [
         Step::EndGame,
@@ -95,6 +95,8 @@ module Engine
 
         step.acted = true
         step.send("process_#{action.type}", action)
+
+        @at_start = false
 
         after_process_before_skip(action)
         skip_steps

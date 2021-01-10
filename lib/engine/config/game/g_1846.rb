@@ -189,7 +189,7 @@ module Engine
       "abilities": [
         {
           "type": "token",
-          "when": ["owning_corp_or_turn", "other_or"],
+          "when": "owning_corp_or_turn",
           "owner_type":"corporation",
           "hexes": [
             "D6"
@@ -246,7 +246,7 @@ module Engine
       "abilities": [
         {
           "type": "assign_hexes",
-          "when": ["owning_corp_or_turn", "owning_player_sr_turn", "other_or"],
+          "when": "owning_corp_or_turn",
           "hexes": [
             "I1",
             "D6"
@@ -279,16 +279,18 @@ module Engine
             "G19"
           ],
           "count_per_or": 1,
+          "when": "or_start",
           "owner_type": "player"
         },
         {
           "type": "assign_corporation",
           "count_per_or": 1,
+          "when": "or_start",
           "owner_type": "player"
         },
         {
           "type": "assign_hexes",
-          "when": ["owning_corp_or_turn", "other_or", "owning_player_sr_turn"],
+          "when": "owning_corp_or_turn",
           "hexes": [
             "B8",
             "C5",
@@ -316,7 +318,7 @@ module Engine
       "abilities": [
         {
            "type":"tile_lay",
-           "when": ["owning_corp_or_turn", "other_or"],
+           "when": "owning_corp_or_turn",
            "owner_type":"corporation",
            "free":true,
            "hexes":[
@@ -353,7 +355,7 @@ module Engine
         },
         {
            "type":"tile_lay",
-           "when": ["owning_corp_or_turn", "other_or"],
+           "when": "owning_corp_or_turn",
            "owner_type":"corporation",
            "free":true,
            "must_lay_together": true,
@@ -387,7 +389,7 @@ module Engine
         },
         {
            "type":"tile_lay",
-           "when": ["owning_corp_or_turn", "other_or"],
+           "when": "owning_corp_or_turn",
            "owner_type":"corporation",
            "free":true,
            "must_lay_together": true,
