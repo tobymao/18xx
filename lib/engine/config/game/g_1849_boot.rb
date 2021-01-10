@@ -368,7 +368,6 @@ module Engine
             "I9",
             "I11",
             "K13",
-            "P4",
             "O7"
          ],
          "upgrade=cost:80,terrain:mountain":[
@@ -378,7 +377,8 @@ module Engine
             "K17",
             "L10",
             "N8",
-            "O3"
+            "O3",
+            "P4"
          ],
          "upgrade=cost:160,terrain:mountain":[
             "B8",
@@ -614,10 +614,10 @@ module Engine
           "type": "assign_hexes",
           "when": "owning_corp_or_turn",
           "hexes": [
-            "A5",
-            "a12",
-            "L14",
-            "N8"
+            "B16",
+            "G5",
+            "J20",
+            "L16"
           ],
           "count": 1,
           "owner_type": "corporation"

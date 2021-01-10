@@ -12,7 +12,7 @@ module Engine
       GAME_PUBLISHER = nil
       GAME_LOCATION = 'Southern Italy'
       GAME_RULES_URL = 'https://docs.google.com/document/d/1gNn2RmtcPWh0KpNduv3p0Lraa3iWIAV3cWcHpCu8X-E/edit'
-      GAME_DESIGNER = 'Scott Petersen (Based on Federico Vellani 1849)'
+      GAME_DESIGNER = 'Scott Petersen (Based on 1849 by Federico Vellani)'
 
       NEW_AFG_HEXES = %w[E11 H8 I13 I17 J18 K19 L12 L20 O9].freeze
       SMS_HEXES = %w[A9 B14 G7 H8 J18 L12 L18 L20 N20 O9 P2].freeze
