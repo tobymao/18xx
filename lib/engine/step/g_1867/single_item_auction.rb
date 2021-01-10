@@ -77,7 +77,7 @@ module Engine
           setup_auction
           @companies = @game.companies.reject { |c| c.id == '3' || c.owner&.player? }.sort_by(&:value)
 
-          auction_entity_log(@companies.first) if @companies.any?
+          auction_entity_log(@companies.first) unless @companies.empty?
         end
 
         def starting_bid(company)
