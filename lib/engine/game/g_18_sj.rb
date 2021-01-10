@@ -62,41 +62,45 @@ module Engine
       OPTIONAL_PRIVATE_D = %w[GKB SB].freeze
       OPTIONAL_PUBLIC = %w[STJ TGOJ ÖSJ MYJ].freeze
 
-      MAIN_LINE_INFO = {
+      MAIN_LINE_ORIENTATION = {
         # Stockholm-Malmo main line
-        'F9' => { orientation: [2, 5], main_line: 'M-S' },
-        'E8' => { orientation: [2, 5], main_line: 'M-S' },
-        'D7' => { orientation: [2, 5], main_line: 'M-S' },
-        'C6' => { orientation: [2, 5], main_line: 'M-S' },
-        'B5' => { orientation: [2, 5], main_line: 'M-S' },
-        'A4' => { orientation: [1, 5], main_line: 'M-S' },
+        'F9' => [2, 5],
+        'E8' => [2, 5],
+        'D7' => [2, 5],
+        'C6' => [2, 5],
+        'B5' => [2, 5],
+        'A4' => [1, 5],
         # Stockholm-Goteborg main line
-        'F11' => { orientation: [0, 3], main_line: 'G-S' },
-        'E12' => { orientation: [0, 3], main_line: 'G-S' },
-        'D13' => { orientation: [0, 2], main_line: 'G-S' },
-        'C12' => { orientation: [2, 5], main_line: 'G-S' },
-        'B11' => { orientation: [2, 5], main_line: 'G-S' },
+        'F11' => [0, 3],
+        'E12' => [0, 3],
+        'D13' => [0, 2],
+        'C12' => [2, 5],
+        'B11' => [2, 5],
         # Stockholm-Lulea main line
-        'G12' => { orientation: [1, 3], main_line: 'L-S' },
-        'F13' => { orientation: [0, 3], main_line: 'L-S' },
-        'E14' => { orientation: [0, 4], main_line: 'L-S' },
-        'E16' => { orientation: [1, 4], main_line: 'L-S' },
-        'E18' => { orientation: [1, 4], main_line: 'L-S' },
-        'E20' => { orientation: [1, 4], main_line: 'L-S' },
-        'E22' => { orientation: [1, 4], main_line: 'L-S' },
-        'E24' => { orientation: [1, 5], main_line: 'L-S' },
-        'F25' => { orientation: [2, 5], main_line: 'L-S' },
+        'G12' => [1, 3],
+        'F13' => [0, 3],
+        'E14' => [0, 4],
+        'E16' => [1, 4],
+        'E18' => [1, 4],
+        'E20' => [1, 4],
+        'E22' => [1, 4],
+        'E24' => [1, 5],
+        'F25' => [2, 5],
       }.freeze
+
       MAIN_LINE_COUNT = {
         'M-S' => 6,
         'G-S' => 5,
         'L-S' => 9,
       }.freeze
+
       MAIN_LINE_DESCRIPTION = {
         'M-S' => 'Stockholm-Malmö',
         'G-S' => 'Stockholm-Göteborg',
         'L-S' => 'Stochholm-Luleå',
       }.freeze
+
+      MAIN_LINE_ICONS = %w[M-S G-S L-S].freeze
 
       BONUS_ICONS = %w[N S O V M m_lower_case B b_lower_case].freeze
 
@@ -205,15 +209,12 @@ module Engine
           corporation: abilities(nils_ericsson, :shares).shares.first.corporation.name,
         )) if nils_ericsson && !nils_ericsson.closed?
 
-        @main_line_hexes = @hexes.select { |h| main_line_hex?(h) }
-
-        @tile_lays = []
         @special_tile_lays = []
-        @fulfilled_main_line_hexes = []
+
         @main_line_built = {
-          'M-S' => [],
-          'G-S' => [],
-          'L-S' => [],
+          'M-S' => 0,
+          'G-S' => 0,
+          'L-S' => 0,
         }
 
         # Create virtual SJ corporation
@@ -262,7 +263,7 @@ module Engine
           Step::G18SJ::BuyCompany,
           Step::G18SJ::IssueShares,
           Step::HomeToken,
-          Step::Track,
+          Step::G18SJ::Track,
           Step::Token,
           Step::G18SJ::BuyTrainBeforeRunRoute,
           Step::G18SJ::Route,
@@ -273,24 +274,22 @@ module Engine
         ], round_num: round_num)
       end
 
-      def action_processed(action)
-        is_tile_lay = action.is_a?(Action::LayTile)
-        check_second_lay(action) if is_tile_lay && !@tile_lays.empty? && !special_tile_lay?(action)
+      # Check if tile lay action improves a main line hex
+      # If it does return the main line name
+      # If not remove nil
+      # Side effect: Remove the main line icon from the hex if improvement is done
+      def main_line_improvement(action)
+        main_line_icon = action.hex.tile.icons.find { |i| MAIN_LINE_ICONS.include?(i.name) }
+        return if !main_line_icon || !connects_main_line?(action.hex)
 
-        super
-
-        return if !is_tile_lay || special_tile_lay?(action) || action.entity.company?
-
-        remove_main_line_bonus(action)
-        @tile_lays << action
+        main_line_icon_name = main_line_icon.name
+        @log << "Main line #{MAIN_LINE_DESCRIPTION[main_line_icon_name]} was "\
+          "#{main_line_completed?(main_line_icon_name) ? 'completed!' : 'improved'}"
+        remove_icon(action.hex, [main_line_icon_name])
       end
 
       def special_tile_lay(action)
-        @special_tile_lays << action.hex.name
-      end
-
-      def special_tile_lay?(action)
-        @special_tile_lays.include?(action.hex.name)
+        @special_tile_lays << action
       end
 
       def redeemable_shares(entity)
@@ -347,8 +346,6 @@ module Engine
       end
 
       def clean_up_after_entity
-        @tile_lays = []
-
         # Remove Gellivare Company tile lay ability if it has been used this OR
         abilities(gc, :tile_lay) do |ability|
           company.remove_ability(ability)
@@ -390,7 +387,7 @@ module Engine
         @corporations
           .select { |c| c.percent_of(c) == 100 && !c.closed? }
           .each do |c|
-            @log << "#{c.name} becomes full capitalization as not pared"
+            @log << "#{c.name} becomes full capitalization corporation as it has not been pared"
             c.capitalization = :full
           end
       end
@@ -452,68 +449,22 @@ module Engine
 
       private
 
-      def check_second_lay(action)
-        last_tile_lay = @tile_lays.first
-
-        if !main_line_lay?(last_tile_lay) && !main_line_lay?(action)
-          raise GameError, 'Second tile lay or upgrade only allowed if first or second improves the main line!'
-        end
-
-        @log << "#{last_tile_lay.entity.name} gets extra tile lay/upgrade as main line improvement."
-      end
-
-      def main_line_lay?(action)
-        return false unless action
-        return false unless @main_line_hexes.include?(action.hex)
-        return true if @fulfilled_main_line_hexes.include?(main_line_lay(action))
-        return false if main_line_fulfilled_by_other?(action)
-
-        main_line_hex?(action.hex) && connects_main_line?(action.hex)
-      end
-
-      def main_line_fulfilled_by_other?(action)
-        return false if @fulfilled_main_line_hexes.include?(main_line_lay(action))
-
-        @fulfilled_main_line_hexes.each do |info|
-          return true if info[:hex_name] == action.hex.name && info[:tile_name] != action.tile.name
-        end
-        false
-      end
-
       def main_line_hex?(hex)
-        MAIN_LINE_INFO[hex.name]
+        MAIN_LINE_ORIENTATION[hex.name]
       end
 
       def connects_main_line?(hex)
-        info = MAIN_LINE_INFO[hex.name]
-        return unless info
+        return unless (orientation = MAIN_LINE_ORIENTATION[hex.name])
 
-        orientation = info[:orientation]
         edge1 = "#{hex.name}_#{orientation[0]}_0"
         edge2 = "#{hex.name}_#{orientation[1]}_0"
         edges = hex.tile.paths.flat_map(&:edges).map(&:id)
         edges.include?(edge1) && edges.include?(edge2)
       end
 
-      def remove_main_line_bonus(action)
-        return unless main_line_lay?(action)
-
-        lay = main_line_lay(action)
-        return if @fulfilled_main_line_hexes.include?(lay)
-
-        info = MAIN_LINE_INFO[action.hex.name]
-        @fulfilled_main_line_hexes << lay
-        main_line = info[:main_line]
-        @main_line_built[main_line] = (@main_line_built[main_line] << action.hex.name)
-        return if @main_line_built[main_line].size < MAIN_LINE_COUNT[main_line]
-
-        @log << "-- Main line #{MAIN_LINE_DESCRIPTION[main_line]} completed!"
-        @log << 'Removes icons for main line'
-        remove_icons(@main_line_built[main_line], [main_line])
-      end
-
-      def main_line_lay(action)
-        { hex_name: action.hex.name, tile_name: action.tile.name }
+      def main_line_completed?(main_line_icon_name)
+        @main_line_built[main_line_icon_name] += 1
+        @main_line_built[main_line_icon_name] == MAIN_LINE_COUNT[main_line_icon_name]
       end
 
       CERT_LIMITS = {
@@ -723,11 +674,13 @@ module Engine
       end
 
       def remove_icons(to_be_cleaned, icon_names)
-        @hexes.each do |hex|
-          next unless to_be_cleaned.include?(hex.name)
+        @hexes.each { |hex| remove_icon(hex, icon_names) if to_be_cleaned.include?(hex.name) }
+      end
 
+      def remove_icon(hex, icon_names)
+        icon_names.each do |name|
           icons = hex.tile.icons
-          icons.reject! { |i| icon_names.include?(i.name) }
+          icons.reject! { |i| name == i.name }
           hex.tile.icons = icons
         end
       end
