@@ -147,7 +147,7 @@ module Engine
       def operating_round(round_num)
         Round::G1846::Operating.new(self, [
           Step::G1846::Bankrupt,
-          Step::G1846::Assign,
+          Step::Assign,
           Step::G18LosAngeles::SpecialToken,
           Step::SpecialTrack,
           Step::G1846::BuyCompany,

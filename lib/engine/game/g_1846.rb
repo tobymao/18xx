@@ -73,7 +73,7 @@ module Engine
       MEAT_REVENUE_DESC = 'Meat-Packing'
 
       TILE_COST = 20
-      EVENTS_TEXT = Base::EVENTS_TEXT.merge('remove_tokens' => ['Remove Tokens', 'Remove Steamboat and Meat Packing tokens']).freeze
+      EVENTS_TEXT = Base::EVENTS_TEXT.merge('remove_tokens' => ['Remove Tokens', 'Remove Steamboat and Meat Packing markers']).freeze
 
       ASSIGNMENT_TOKENS = {
         'MPC' => '/icons/1846/mpc_token.svg',
@@ -586,6 +586,10 @@ module Engine
 
       def train_buying_power(entity)
         buying_power(entity) + potential_minor_cash(entity, allowed_trains: (1..2))
+      end
+
+      def ability_time_is_or_start?
+        active_step.is_a?(Step::G1846::Assign) || super
       end
     end
   end

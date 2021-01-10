@@ -630,6 +630,7 @@ module Engine
             next_round!
 
             # Finalize round setup (for things that need round correctly set like place_home_token)
+            @round.at_start = true
             @round.setup
             @round_history << current_action_id
           end
@@ -2079,17 +2080,23 @@ module Engine
             @round.stock? && @round.current_entity == ability.player
           when 'other_or'
             @round.operating? && @round.current_operator != ability.corporation
+          when 'or_start'
+            ability_time_is_or_start?
           else
             false
           end
         end
       end
 
+      def ability_time_is_or_start?
+        @round.operating? && @round.at_start
+      end
+
       def ability_blocking_step
         @round.steps.find do |step|
           # currently, abilities only care about Tracker, the is_a? check could
           # be expanded to a list of possible classes/modules when needed
-          step.blocks? && !step.passed? && step.is_a?(Step::Tracker)
+          step.is_a?(Step::Tracker) && !step.passed? && step.blocks?
         end
       end
 
