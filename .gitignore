@@ -1,4 +1,4 @@
-/.env.rb
+/.env*
 /.yardoc
 /_yardoc/
 /coverage/
@@ -23,3 +23,7 @@
 /db/data/
 
 docker-compose.override.yml
+
+db.backup*
+validate*.json
+.pgpass
