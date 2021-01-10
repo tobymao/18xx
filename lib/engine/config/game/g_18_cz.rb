@@ -830,7 +830,7 @@ module Engine
                         "A8",
                         "B5"
                     ],
-                    "color": "red",
+                    "color": "#e31e24",
                     "type": "large"
                 },
                 {
@@ -847,7 +847,7 @@ module Engine
                         "A22",
                         "B19"
                     ],
-                    "color": "black",
+                    "color": "#2b2a29",
                     "type": "large"
                 },
                 {
@@ -864,7 +864,7 @@ module Engine
                         "F3",
                         "H5"
                     ],
-                    "color": "blue",
+                    "color": "#0971b7",
                     "type": "large"
                 },
                 {
@@ -881,7 +881,7 @@ module Engine
                         "J15",
                         "I18"
                     ],
-                    "color": "orange",
+                    "color": "#cc6f3c",
                     "type": "large"
                 },
                 {
@@ -898,7 +898,7 @@ module Engine
                         "G28",
                         "I24"
                     ],
-                    "color": "purple",
+                    "color": "#ae4a84",
                     "type": "large"
                 },
                 {
@@ -920,7 +920,8 @@ module Engine
                     ],
                     "city": 1,
                     "coordinates": "E12",
-                    "color": "grey",
+                    "color": "darkGrey",
+                    "text_color": "black",
                     "type": "medium"
                 },
                 {
@@ -942,7 +943,7 @@ module Engine
                     ],
                     "city": 0,
                     "coordinates": "E12",
-                    "color": "yellow",
+                    "color": "#e1af33",
                     "text_color": "black",
                     "type": "medium"
                 },
@@ -986,7 +987,7 @@ module Engine
                         100
                     ],
                     "coordinates": "D3",
-                    "color": "brightGreen",
+                    "color": "#dbe285",
                     "text_color": "black",
                     "type": "medium"
                 },
@@ -1008,13 +1009,14 @@ module Engine
                         100
                     ],
                     "coordinates": "G20",
-                    "color": "lightBlue",
+                    "color": "#a2d9f7",
+                    "text_color": "black",
                     "type": "medium"
                 },
                 {
                     "float_percent": 50,
                     "sym": "EKJ",
-                    "name": "Eisenbahn Karlsbad – Johanngeorgenstadt",
+                    "name": "Eisenbahn Karlsbad Johanngeorgenstadt",
                     "logo": "18_cz/EKJ",
                     "max_ownership_percent": 75,
                     "shares": [
@@ -1028,7 +1030,7 @@ module Engine
                         100
                     ],
                     "coordinates": "D5",
-                    "color": "white",
+                    "color": "antiqueWhite",
                     "text_color": "black",
                     "type": "small"
                 },
@@ -1070,7 +1072,7 @@ module Engine
                         100
                     ],
                     "coordinates": "E16",
-                    "color": "orange",
+                    "color": "#fabc48",
                     "text_color": "black",
                     "type": "small"
                 },
@@ -1112,7 +1114,7 @@ module Engine
                         100
                     ],
                     "coordinates": "I10",
-                    "color": "turquoise",
+                    "color": "#009846",
                     "type": "small"
                 }
             ],
