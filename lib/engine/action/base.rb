@@ -8,13 +8,14 @@ module Engine
       include Helper::Type
 
       attr_reader :entity
-      attr_accessor :id, :user, :created_at
+      attr_accessor :id, :user, :created_at, :derived
 
       def self.from_h(h, game)
         entity = game.get(h['entity_type'], h['entity']) || Player.new(nil, h['entity'])
         obj = new(entity, **h_to_args(h, game))
         obj.user = h['user'] if entity.player && h['user'] != entity.player&.id
         obj.created_at = h['created_at'] || Time.now
+        obj.derived = h['derived'] || false
         obj
       end
 
@@ -28,6 +29,7 @@ module Engine
 
       def initialize(entity)
         @entity = entity
+        @dervied = false
         @created_at = Time.now
       end
 
@@ -43,6 +45,7 @@ module Engine
           'id' => @id,
           'user' => @user,
           'created_at' => @created_at.to_i,
+          'derived' => @derived,
           **args_to_h,
         }.reject { |_, v| v.nil? }
       end
