@@ -475,7 +475,7 @@ module Engine
         },
         {
           "type": "close",
-          "when": "never",
+          "on_phase": "never",
           "owner_type": "player"
         }
       ]
