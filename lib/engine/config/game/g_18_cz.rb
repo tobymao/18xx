@@ -1685,15 +1685,15 @@ module Engine
                         "E10",
                         "D3",
                         "D5",
-                        "F23"
+                        "F23",
+                        "I10"
                     ],
                     "city=revenue:0;label=Y": [
                         "B13",
                         "I12",
                         "F7",
                         "C26",
-                        "G20",
-                        "I10"
+                        "G20"
                     ],
                     "town=revenue:0": [
                         "C14",
