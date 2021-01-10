@@ -643,7 +643,7 @@ module Engine
         return bonus if !route.abilities || route.abilities.empty?
         raise GameError, "Only one ability supported: #{route.abilities}" if route.abilities.size > 1
 
-        ability = abilities(route.train.owner, route.abilities.first)
+        ability = abilities(route.train.owner, route.abilities.first, time: 'route')
         raise GameError, "Cannot find ability #{route.abilities.first}" unless ability
 
         bonuses = route.stops.count { |s| ability.hexes.include?(s.hex.name) }
