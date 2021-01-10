@@ -55,6 +55,11 @@ def repair(game, original_actions, actions, broken_action)
 
     broken_action['city'] = hex.tile.cities.first.id
     return [broken_action]
+  elsif game.active_step.is_a?(Engine::Step::G18SJ::ChoosePriority)
+    choice = Engine::Action::Choose.new(game.active_step.current_entity, choice: 'wait')
+    choice.user = choice.entity.player.id
+    actions.insert(action_idx, choice.to_h)
+    return
   elsif game.active_step.is_a?(Engine::Step::BuyCompany)
     add_pass.call
     return
