@@ -79,6 +79,8 @@ module View
         end
 
         def value_for_index(index, prop, track)
+          return TRACK[track][prop] if index && track == :narrow && prop == :dash
+
           index ? route_prop(index, prop) : TRACK[track][prop]
         end
 
