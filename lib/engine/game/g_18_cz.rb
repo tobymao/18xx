@@ -26,43 +26,38 @@ module Engine
 
       HOME_TOKEN_TIMING = :operate
 
+      STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
+        par: :red,
+        par_2: :green,
+      ).freeze
+
       PAR_RANGE = {
-        1 => [50, 55, 60, 65, 70],
-        2 => [60, 70, 880, 90, 100],
-        3 => [90, 100, 110, 120],
+        'small' => [50, 55, 60, 65, 70],
+        'medium' => [60, 70, 80, 90, 100],
+        'large' => [90, 100, 110, 120],
+      }.freeze
+
+      MARKET_TEXT = {
+        par: 'Small Corporation Par',
+        par_overlap: 'Medium Corporation Par',
+        par_2: 'Large Corporation Par',
       }.freeze
 
       COMPANY_VALUES = [40, 45, 50, 55, 60, 65, 70, 75, 80, 90, 100, 110, 120].freeze
 
-      LAYER_BY_NAME = {
-        'SX' => 3,
-        'BY' => 3,
-        'PR' => 3,
-        'kk' => 3,
-        'Ug' => 3,
-        'BN' => 2,
-        'NWB' => 2,
-        'ATE' => 2,
-        'BTE' => 2,
-        'KFN' => 2,
-        'EKJ' => 1,
-        'OFE' => 1,
-        'BCB' => 1,
-        'MW' => 1,
-        'VBW' => 1,
-      }.freeze
-
       EVENTS_TEXT = Base::EVENTS_TEXT.merge(
-        'medium_corps_available' => ['Medium Sized Corps Available',
+        'medium_corps_available' => ['Medium Corps Available',
                                      '5-share corps ATE, BN, BTE, KFN, NWB are available to start'],
-        'large_corps_available' => ['Large Sized Corps Available',
+        'large_corps_available' => ['Large Corps Available',
                                     '10-share corps By, kk, Sx, Pr, Ug are available to start']
       ).freeze
 
       def setup
         @or = 0
-        @current_layer = 1
         @recently_floated = []
+
+        # Only small companies are available until later phases
+        @corporations, @future_corporations = @corporations.partition { |corporation| corporation.type == :small }
 
         block_lay_for_purple_tiles
       end
@@ -113,39 +108,22 @@ module Engine
         @recently_floated = []
       end
 
-      def sorted_corporations
-        @corporations.sort_by { |c| corp_layer(c) }
-      end
-
-      def corporation_available?(entity)
-        entity.corporation? && can_ipo?(entity)
-      end
-
-      def can_ipo?(corp)
-        corp_layer(corp) <= @current_layer
-      end
-
-      def corp_layer(corp)
-        LAYER_BY_NAME[corp.name]
-      end
-
       def par_prices(corp)
         par_nodes = stock_market.par_prices
-        available_par_prices = PAR_RANGE[corp_layer(corp)]
+        available_par_prices = PAR_RANGE[corp.type]
         par_nodes.select { |par_node| available_par_prices.include?(par_node.price) }
       end
 
-      def increase_layer
-        @current_layer += 1
-        @log << "-- Layer #{@current_layer} corporations now available --"
-      end
-
       def event_medium_corps_available!
-        increase_layer
+        medium_corps, @future_corporations = @future_corporations.partition { |corporation| corporation.type == :medium }
+        @corporations.concat(medium_corps)
+        @log << '-- Medium corporations now available --'
       end
 
       def event_large_corps_available!
-        increase_layer
+        @corporations.concat(@future_corporations)
+        @future_corporations.clear
+        @log << '-- Large corporations now available --'
       end
 
       def float_corporation(corporation)

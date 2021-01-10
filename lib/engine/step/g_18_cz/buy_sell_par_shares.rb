@@ -6,8 +6,8 @@ module Engine
   module Step
     module G18CZ
       class BuySellParShares < BuySellParShares
-        def get_par_prices(_entity, corp)
-          @game.par_prices(corp)
+        def get_par_prices(entity, corp)
+          @game.par_prices(corp).select { |p| p.price * 2 <= entity.cash }
         end
       end
     end
