@@ -388,7 +388,7 @@ module Engine
 
         same_spot.each do |sp, corps|
           current_order = corps.sort.map(&:name)
-          reordered = corps.sort_by { |c| @old_operating_order.index(c) }
+          reordered = corps.sort_by { |c| old_operating_order.index(c) }
           new_order = reordered.map(&:name)
           next if current_order == new_order
 
@@ -398,7 +398,6 @@ module Engine
           sp.corporations.clear
           sp.corporations.concat(reordered)
         end
-        @old_operating_order = nil
       end
 
       def issuable_shares(entity)
@@ -542,13 +541,13 @@ module Engine
       end
 
       def event_green_par!
-        @log << "-- Event: #{EVENTS_TEXT['green_par'][1]} --"
+        @log << "-- Event: #{EVENTS_TEXT[:green_par][1]} --"
         stock_market.enable_par_price(144)
         update_cache(:share_prices)
       end
 
       def event_brown_par!
-        @log << "-- Event: #{EVENTS_TEXT['brown_par'][1]} --"
+        @log << "-- Event: #{EVENTS_TEXT[:brown_par][1]} --"
         stock_market.enable_par_price(216)
         update_cache(:share_prices)
       end

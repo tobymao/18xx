@@ -18,6 +18,11 @@ module Engine
             { share_direction: :right, share_times: 1 }
           end
         end
+
+        def pass!
+          super
+          @game.old_operating_order = @game.corporations.sort
+        end
       end
     end
   end

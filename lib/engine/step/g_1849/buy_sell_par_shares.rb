@@ -16,16 +16,23 @@ module Engine
           @log << "#{action.entity.name} may buy up to two additional shares."
         end
 
+        def process_sell_shares(action)
+          super
+          @sold_any = true
+        end
+
         def pass!
           @passed = true
           if @current_actions.empty?
             @round.pass_order |= [current_entity]
             current_entity.pass!
           else
-            @game.reorder_corps
+            @game.reorder_corps if @sold_any
             @round.pass_order.delete(current_entity)
             current_entity.unpass!
           end
+          @game.old_operating_order = @game.corporations.sort
+          @sold_any = false
         end
 
         def can_buy?(entity, bundle)

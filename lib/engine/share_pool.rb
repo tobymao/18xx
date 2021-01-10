@@ -222,8 +222,6 @@ module Engine
       shares
     end
 
-    private
-
     def distance(player_a, player_b)
       return 0 if !player_a || !player_b
 
@@ -232,6 +230,8 @@ module Engine
       b = entities.find_index(player_b)
       a < b ? b - a : b - (a - entities.size)
     end
+
+    private
 
     def move_share(share, to_entity)
       corporation = share.corporation
