@@ -11,6 +11,11 @@ module Engine
           @game.old_operating_order = @game.corporations.sort
         end
 
+        def process_par(action)
+          super
+          @log << "#{action.entity.name} may buy up to two additional shares."
+        end
+
         def pass!
           @passed = true
           if @current_actions.empty?
