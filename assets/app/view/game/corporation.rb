@@ -266,7 +266,7 @@ module View
         tokens_body = @corporation.tokens.map.with_index do |token, i|
           token_text =
             if i.zero? && @corporation.coordinates
-              @corporation.coordinates
+              @corporation.coordinates.is_a?(Array) ? @corporation.coordinates.join('/') : @corporation.coordinates
             else
               token.city ? token.city.hex.name : token.price
             end
