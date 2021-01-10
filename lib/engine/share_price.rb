@@ -81,7 +81,7 @@ module Engine
     end
 
     def can_par?
-      %i[par par_1 par_2].include?(@type)
+      %i[par par_overlap par_1 par_2].include?(@type)
     end
 
     def end_game_trigger?
