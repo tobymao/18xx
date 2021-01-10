@@ -66,7 +66,7 @@ def repair(game, original_actions, actions, broken_action)
   elsif game.active_step.is_a?(Engine::Step::G1817::PostConversion)
     add_pass.call
     return
-  elsif game.active_step.is_a?(Engine::Step::G1817::Acquire)
+  elsif game.active_step.is_a?(Engine::Step::G1817::Acquire) && broken_action['type'] != 'pass'
     add_pass.call
     return
   elsif game.active_step.is_a?(Engine::Step::BuySellParShares) && game.is_a?(Engine::Game::G1867) && broken_action['type']=='bid'
@@ -83,6 +83,9 @@ def repair(game, original_actions, actions, broken_action)
     add_pass.call
     return
   elsif game.active_step.is_a?(Engine::Step::G1867::SingleItemAuction)
+    add_pass.call
+    return
+  elsif game.active_step.is_a?(Engine::Step::G1817::Loan)
     add_pass.call
     return
   elsif broken_action['type'] == 'pass'
@@ -102,7 +105,14 @@ def repair(game, original_actions, actions, broken_action)
     end
     if game.active_step.is_a?(Engine::Step::G1817::Acquire)
       # Remove corps passes that went into acquisition
-      actions.delete(broken_action)
+      if (game.active_step.current_entity.corporation? && broken_action['entity_type'] == 'player')
+        action2 = Engine::Action::Pass.new(game.active_step.current_entity).to_h
+        broken_action['entity'] = action2['entity']
+        broken_action['entity_type'] = action2['entity_type']
+        return [broken_action]
+      else
+        actions.delete(broken_action)
+      end
       return
     end
     if game.active_step.is_a?(Engine::Step::G1867::Merge)

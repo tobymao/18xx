@@ -57,7 +57,7 @@ module Engine
 
         def active_entities
           # Double check that a cash crisis hasn't just been resolved, as the corp may now be in liquidation.
-          if auctioning_corporation && corporation_entered_acquisition_this_round?(auctioning_corporation)
+          if !@buyer && auctioning_corporation && corporation_entered_acquisition_this_round?(auctioning_corporation)
             @game.log << "#{auctioning_corporation.name} is no longer eligible to be auctioned"
             @round.offering.delete(auctioning_corporation)
             @offer = nil
