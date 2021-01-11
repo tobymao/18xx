@@ -120,7 +120,7 @@ module Engine
         def highest_player_bid(player, company)
           return unless (company_bids = @bids[company])
 
-          company_bids&.select { |b| b.entity == player }&.max(&:price)
+          company_bids&.select { |b| b.entity == player }&.max { |a, b| a[:price] <=> b[:price] }
         end
 
         def current_bid_amount(player, company)
