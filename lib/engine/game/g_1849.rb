@@ -211,7 +211,7 @@ module Engine
         index = @corporations.index(corporation)
 
         @corporations[index + 1].next_to_par = true unless @corporations.last == corporation
-        place_home_token(corporation)
+        place_home_token(corporation) if @round.stock?
       end
 
       def home_token_locations(corporation)
@@ -284,8 +284,12 @@ module Engine
         super
       end
 
+      def afg
+        @afg ||= @corporations.find { |corp| corp.id == 'AFG' }
+      end
+
       def stock_round
-        Round::Stock.new(self, [
+        Round::G1849::Stock.new(self, [
           Step::DiscardTrain,
           Step::HomeToken,
           Step::G1849::SwapChoice,
