@@ -417,16 +417,16 @@ module Engine
          ]
       },
       "blue":{
-         "offboard=revenue:20;path=a:1,b:_0,track:dual":[
+         "offboard=revenue:20,route:optional;path=a:1,b:_0,track:dual":[
             "B16"
          ],
-         "offboard=revenue:60;path=a:1,b:_0,track:dual":[
+         "offboard=revenue:60,route:optional;path=a:1,b:_0,track:dual":[
             "J20"
          ],
-         "offboard=revenue:20;path=a:4,b:_0,track:dual":[
+         "offboard=revenue:20,route:optional;path=a:4,b:_0,track:dual":[
             "G5"
          ],
-         "offboard=revenue:40;path=a:4,b:_0,track:dual":[
+         "offboard=revenue:40,route:optional;path=a:4,b:_0,track:dual":[
             "L16"
          ]
       },
