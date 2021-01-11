@@ -44,7 +44,7 @@ module Engine
         end
         pass!
 
-        abilities.uniq.each { |type| @game.abilities(action.entity, type)&.use! }
+        abilities.uniq.each { |type| @game.abilities(action.entity, type, time: 'route')&.use! }
       end
 
       def available_hex(entity, hex)
