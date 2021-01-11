@@ -352,16 +352,12 @@ table.center {
 
 #chatlog {
   height: 200px;
-  resize: both;
+  resize: vertical;
 }
 @media only screen and (min-width: 900px) {
   #homepage #chatlog {
     height: 350px;
   }
-}
-
-#chatlog, #chatbar, #history_undo {
-  max-width: 960px;
 }
 
 div.game.card em {

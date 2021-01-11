@@ -39,7 +39,6 @@ module View
             margin: '0 0 1vmin 0',
             display: 'flex',
             flexDirection: 'row',
-            maxWidth: '960px',
           } }, [
             h(:span, { style: {
               fontWeight: 'bold',
