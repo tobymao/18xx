@@ -55,9 +55,8 @@ class Api
             DB.with_advisory_lock(:action_lock, game.id) do
               if game.settings['pin']
                 action_id = r.params['id']
-                action = r.params
-                action.delete('_client_id')
-                meta = action.delete('meta')
+                action = r.params.clone
+                meta = action['meta']
                 halt(400, 'Game missing metadata') unless meta
                 halt(400, 'Game out of sync') unless actions_h(game).size + 1 == action_id
 
