@@ -403,7 +403,7 @@ module Engine
       "upgrade=cost:160,terrain:mountain;path=a:0,b:3,track:narrow": [
         "K9"
       ],
-      "label=P;city=revenue:30;path=a:5,b:_0;path=a:2,b:_0;path=a:3,b:_0": [
+      "label=P;city=revenue:50;path=a:5,b:_0;path=a:2,b:_0;path=a:3,b:_0": [
         "C5"
       ],
       "label=C;city=revenue:40;path=a:1,b:_0": [
