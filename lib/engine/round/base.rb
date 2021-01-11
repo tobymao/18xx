@@ -85,7 +85,7 @@ module Engine
 
           process = s.actions(action.entity).include?(type)
           blocking = s.blocking?
-          if blocking && !process
+          if blocking && !process && !(action.derived || action.round_override)
             raise GameError, "Blocking step #{s.description} cannot process action #{action['id']}"
           end
 
