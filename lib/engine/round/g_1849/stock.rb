@@ -7,9 +7,9 @@ module Engine
     module G1849
       class Stock < Stock
         def setup
-          afg = @game.afg
-          @game.place_home_token(afg) if afg&.floated? && afg.unplaced_tokens.size == 3
-
+          @game.corporations
+            .select { |c| c.floated? && c.unplaced_tokens.size == 3 }
+            .each { |c| @game.place_home_token(c) }
           super
         end
       end
