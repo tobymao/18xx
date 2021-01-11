@@ -365,16 +365,16 @@ div.game.card em {
   text-decoration: underline;
 }
 
-div.history {
+#history {
   float: left;
 }
 
-div.undo {
+#undo {
   float: right;
 }
 
 @media only screen and (max-width: 420px) {
-  div.undo {
+  #undo {
     float: left;
   }
 }
