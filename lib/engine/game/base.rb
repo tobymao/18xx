@@ -1491,6 +1491,10 @@ module Engine
         transferred
       end
 
+      def exchange_for_partial_presidency?
+        false
+      end
+
       private
 
       def init_bank

@@ -387,6 +387,10 @@ module Engine
         hex.tile.cities[city_index].place_token(@blocking_corporation, token, check_tokenable: false)
       end
 
+      def exchange_for_partial_presidency?
+        true
+      end
+
       private
 
       def setup_minors
