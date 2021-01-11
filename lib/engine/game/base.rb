@@ -601,7 +601,7 @@ module Engine
 
       def process_derived_action(action)
         action = action_from_h(action) if action.is_a?(Hash)
-        raise GameError, "Only derived actions may use process_derived_action, not #{action}" unless action.derived
+        action.derived = true
 
         @action_queue.prepend(action)
       end
@@ -614,7 +614,11 @@ module Engine
         result = process_single_action(action)
 
         # Process any other actions put on the queue since our action
-        process_single_action(@action_queue.pop) until @action_queue.empty?
+        until @action_queue.empty?
+          derived_action = @action_queue.pop
+          process_single_action(derived_action)
+          action.derived_children << derived_action
+        end
 
         # Return the result from the action passed in
         result
