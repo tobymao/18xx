@@ -159,7 +159,7 @@ module Engine
       "X2":{
          "count":1,
          "color":"green",
-         "code":"label=N;city=revenue:60,slots:2;path=a:4,b:_0,track:narrow;path=a:5,b:_0;path=a:1,b:_0,track:dual"
+         "code":"label=N;city=revenue:60,slots:1;path=a:4,b:_0,track:narrow;path=a:5,b:_0;path=a:1,b:_0,track:dual"
       },
       "X3":{
          "count":1,

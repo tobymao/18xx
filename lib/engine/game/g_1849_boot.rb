@@ -15,7 +15,8 @@ module Engine
       GAME_DESIGNER = 'Scott Petersen (Based on 1849 by Federico Vellani)'
 
       NEW_AFG_HEXES = %w[E11 H8 I13 I17 J18 K19 L12 L20 O9].freeze
-      SMS_HEXES = %w[A9 B14 G7 H8 J18 L12 L18 L20 N20 O9 P2].freeze
+      PORT_HEXES = %w[B16 G5 J20 L16].freeze
+      NEW_SMS_HEXES = %w[B14 G7 H8 J18 L12 L18 L20 N20 O9 P2].freeze
 
       def home_token_locations(corporation)
         raise NotImplementedError unless corporation.name == 'AFG'
@@ -23,6 +24,10 @@ module Engine
         NEW_AFG_HEXES.map { |coord| hex_by_id(coord) }.select do |hex|
           hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
         end
+      end
+
+      def sms_hexes
+        NEW_SMS_HEXES
       end
 
       def self.title
