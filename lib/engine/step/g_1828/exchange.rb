@@ -31,7 +31,7 @@ module Engine
           bundle = action.bundle
 
           if @round.stock?
-            unless @round.current_entity == company.owner
+            if @round.current_entity != company.owner
               raise GameError, "Must use #{company.name} on your turn when in a stock round"
             end
             raise GameError, 'Cannot exchange and buy on the same turn' if buy_sell_step&.bought?(company.owner)
@@ -47,8 +47,7 @@ module Engine
             buy_sell_step&.stock_action(action)
 
             # Corporation operates at the start of the operating round where it floated
-            if @round.operating? && @game.last_game_action_id == @game.round_history.last &&
-               !already_floated && corporation.floated?
+            if @round.operating? && @game.round_start? && !already_floated && corporation.floated?
               @round.entities.replace(@round.select_entities)
             end
           else

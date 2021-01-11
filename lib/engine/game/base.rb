@@ -1495,6 +1495,10 @@ module Engine
         false
       end
 
+      def round_start?
+        @last_game_action_id == @round_history.last
+      end
+
       private
 
       def init_bank
