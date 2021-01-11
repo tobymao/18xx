@@ -25,7 +25,7 @@ module View
         end
 
         def load_from_tile
-          @assignments = @tile.hex.assignments
+          @assignments = @tile.hex&.assignments || {}
         end
 
         def render_part
