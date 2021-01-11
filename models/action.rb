@@ -9,6 +9,8 @@ class Action < Base
   def before_create
     action.delete('user')
     action.delete('created_at')
+    action.delete('meta')
+    action.delete('_client_id')
     super
   end
 
