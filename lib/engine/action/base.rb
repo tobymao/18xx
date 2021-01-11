@@ -8,7 +8,7 @@ module Engine
       include Helper::Type
 
       attr_reader :entity
-      attr_accessor :id, :user, :created_at, :derived, :round_override
+      attr_accessor :id, :user, :created_at, :derived, :round_override, :derived_children
 
       def self.from_h(h, game)
         entity = game.get(h['entity_type'], h['entity']) || Player.new(nil, h['entity'])
@@ -17,6 +17,9 @@ module Engine
         obj.created_at = h['created_at'] || Time.now
         obj.derived = h['derived'] || false
         obj.round_override = h['round_override'] || false
+        # derived_children is meant to be used as a vehicle for informing the view of derived actions
+        #  spawned from this action; derived actions will get their own actions in the game history
+        obj.derived_children = []
         obj
       end
 
@@ -33,6 +36,7 @@ module Engine
         @dervied = false
         @round_override = false
         @created_at = Time.now
+        @derived_children = []
       end
 
       def [](field)
@@ -48,6 +52,7 @@ module Engine
           'user' => @user,
           'created_at' => @created_at.to_i,
           'derived' => @derived,
+          # derived_children is intentionally omitted
           'round_override' => @round_override,
           **args_to_h,
         }.reject { |_, v| v.nil? }
