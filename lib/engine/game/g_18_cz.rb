@@ -29,6 +29,7 @@ module Engine
       STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
         par: :red,
         par_2: :green,
+        par_overlap: :blue
       ).freeze
 
       PAR_RANGE = {
