@@ -585,7 +585,11 @@ module Engine
 
           if action
             action = action.copy(self) if action.is_a?(Action::Base)
-            process_action(action)
+            if action['derived']
+              process_derived_action(action)
+            else
+              process_action(action)
+            end
           else
             # Restore the original action to the list to ensure action ids remain consistent but don't apply them
             @raw_actions << actions[index]

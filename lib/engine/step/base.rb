@@ -117,6 +117,10 @@ module Engine
       def inspect
         "<#{self.class.name}: #{id}>"
       end
+
+      def process_bonus(action)
+        @log << "#{action.corporation.name} pays bonuses to executives as part of compensation packages"
+      end
     end
   end
 end
