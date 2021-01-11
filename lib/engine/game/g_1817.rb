@@ -83,7 +83,7 @@ module Engine
       OPTIONAL_RULES = [
         { sym: :short_squeeze,
           short_name: 'Short Squeeze',
-          desc: '100% sold out corporations move twice at end of SR' },
+          desc: 'Corporations with > 100% player ownership move a second time at end of SR' },
         { sym: :five_shorts,
           short_name: '5 Shorts',
           desc: 'Only allow 5 shorts on 10 share corporations' },
