@@ -6,16 +6,17 @@ module Engine
   module Step
     module G1828
       class BuySellParShares < BuySellParShares
-        PURCHASE_ACTIONS = Engine::Step::BuySellParShares::PURCHASE_ACTIONS + [Action::Choose]
+        PURCHASE_ACTIONS = Engine::Step::BuySellParShares::PURCHASE_ACTIONS + [Action::FailedMerge]
 
         def actions(entity)
           actions = super
           return actions if entity != current_entity || must_sell?(entity)
 
-          unless bought?
-            actions << 'choose' if can_merge_any?(entity)
-            actions << 'pass' if actions.any? && !actions.include?('pass')
+          if !bought? && can_merge_any?(entity)
+            actions << 'choose' 
+            actions << 'failed_merge'
           end
+          actions << 'pass' if !actions.empty? && !actions.include?('pass')
 
           actions
         end
@@ -35,6 +36,11 @@ module Engine
           @round.last_to_act = action.entity
           @current_actions << action
         end
+
+        def process_failed_merge(action)
+          @log << "#{action.entity.name} failed to merge #{action.corporations.map(&:name).join(' and ')}"
+          @current_actions << action
+        end 
 
         def can_buy_multiple?(entity, corporation)
           super && corporation.owner == entity && num_shares_bought(corporation) < 2

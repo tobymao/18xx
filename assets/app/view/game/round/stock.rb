@@ -41,6 +41,15 @@ module View
 
           children << h(Choose) if @current_actions.include?('choose') && @step.choice_available?(@current_entity)
 
+          if @current_actions.include?('failed_merge') && @step.respond_to?(:merge_failed?) && @step.merge_failed?
+            failed_merge = lambda do
+              process_action(Engine::Action::Undo.new(@game.current_entity, action_id: @step.action_id_before_merge))
+              process_action(Engine::Action::FailedMerge.new(@game.current_entity, corporations: @step.merging_corporations))
+            end
+
+            children << h(:button, { on: { click: failed_merge } } ,'Acknowledge')
+          end
+
           if @step.respond_to?(:must_sell?) && @step.must_sell?(@current_entity)
             children << if @game.num_certs(@current_entity) > @game.cert_limit
                           h('div.margined', 'Must sell stock: above certificate limit')

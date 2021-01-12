@@ -150,6 +150,8 @@ module View
 
       # Put up one exchange button for each exchangable percentage share type in market.
       def render_share_exchange(shares, company, source: 'Market')
+        return [] unless @step.respond_to?(:can_gain?)
+
         shares.map do |share|
           next unless @step.can_gain?(company.owner, share, exchange: true)
 

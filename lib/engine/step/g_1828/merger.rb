@@ -10,13 +10,17 @@ module Engine
   module Step
     module G1828
       class Merger < Base
-        MERGE_ACTIONS = %w[merge].freeze
-        CHOOSE_ACTIONS = %w[choose].freeze
-
         def actions(_entity)
           return [] unless merge_in_progress?
 
-          %i[select_target failed].include?(@state) ? MERGE_ACTIONS : CHOOSE_ACTIONS
+          case @state
+          when :select_target
+            'merge'
+          when :failed
+            'failed_merge'
+          else
+            'choose'
+          end
         end
 
         def description
@@ -35,6 +39,10 @@ module Engine
 
         def merge_in_progress?
           mergeable_entity
+        end
+
+        def merge_failed?
+          @state == :failed
         end
 
         def process_merge(action)
@@ -63,12 +71,19 @@ module Engine
           @state == :failed ? 'Acknowledge' : 'Merge'
         end
 
+        def action_id_before_merge
+          @merge_start_action_id
+        end
+
         def mergeable_type(corporation)
           "Corporations that can merge with #{corporation.name}"
         end
 
         def mergeable_entity
-          @state = :select_target if !@state && @round.merge_initiator
+          if !@state && @round.merge_initiator
+            @state = :select_target
+            @merge_start_action_id = @game.last_game_action_id
+          end
           @system || @round.merge_initiator
         end
 
@@ -96,10 +111,10 @@ module Engine
           merge_corporations if @state == :token_removal
           return [] unless merge_in_progress?
 
-          if !@state || @state == :select_target
-            [@round.acting_player]
-          else
+          if @state == :choose
             [@players.first]
+          else
+            [@round.acting_player]
           end
         end
 
@@ -479,7 +494,6 @@ module Engine
             @game.share_pool.transfer_shares(share.to_bundle, @system)
           else
             @state = :failed
-            # TODO: Implement multi-turn undo
             return
           end
 
