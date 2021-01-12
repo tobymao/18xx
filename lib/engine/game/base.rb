@@ -675,6 +675,10 @@ module Engine
         ipoed.sort + others
       end
 
+      def operating_order
+        @minors.select(&:floated?) + @corporations.select(&:floated?).sort
+      end
+
       def operated_operators
         (@corporations + @minors).select(&:operated?)
       end

@@ -333,6 +333,10 @@ module Engine
         Engine::G1856::SharePool.new(self)
       end
 
+      def operating_order
+        @corporations.select { |c| c.floated? || c.floatable? }.sort
+      end
+
       def release_escrow!(corporation)
         @log << "Releasing #{format_currency(corporation.escrow)} from escrow for #{corporation.name}"
         corporation.cash += corporation.escrow

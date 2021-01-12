@@ -20,19 +20,6 @@ module Engine
           @emergency_issued = false
         end
 
-        def select_entities
-          corporations = @game.corporations.select(&:floated?)
-          if @game.turn == 1 && @round_num == 1
-            corporations.sort_by! do |c|
-              sp = c.share_price
-              [sp.price, sp.corporations.find_index(c)]
-            end
-          else
-            corporations.sort!
-          end
-          @game.minors.select(&:floated?) + corporations
-        end
-
         def after_process(action)
           if (entity = @entities[@entity_index]).receivership?
             case action
