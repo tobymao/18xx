@@ -19,7 +19,7 @@ module Engine
 
         def buyable_trains(entity)
           # All trains start out available
-          depot_trains = @depot.upcoming.group_by(&:name).map { |k,v| v.first }
+          depot_trains = @depot.upcoming.group_by(&:name).map { |_k, v| v.first }
           other_trains = @depot.other_trains(entity)
 
           depot_trains.reject! { |t| entity.cash < t.price }

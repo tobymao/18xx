@@ -7,6 +7,7 @@ module Engine
     module G18Mag
       class Dividend < Dividend
         MIN_CORP_PAYOUT = 10
+        CORP_TYPES = %i[variable withhold].freeze
 
         def actions(entity)
           return [] if entity.minor?
@@ -26,7 +27,7 @@ module Engine
             amount = (current_entity.cash / MIN_CORP_PAYOUT).to_i * MIN_CORP_PAYOUT
             process_dividend(Action::Dividend.new(
               current_entity,
-              kind: 'payout',
+              kind: 'variable',
               amount: amount,
             ))
           end
@@ -50,7 +51,7 @@ module Engine
 
           @round.routes = []
 
-          corp_log_run_payout(entity, kind, amount)
+          corp_log_run_payout(entity, amount)
 
           corp_payout_shares(entity, amount) if amount.positive?
 
@@ -74,7 +75,6 @@ module Engine
 
           @log << "#{entity.name} pays out #{@game.format_currency(amount)} = "\
             "#{@game.format_currency(per_share)} (#{receivers})"
-
         end
 
         def corp_payout_entity(entity, holder, per_share, payouts, receiver = nil)
@@ -86,8 +86,13 @@ module Engine
           entity.spend(amount, receiver, check_positive: false)
         end
 
+        def dividend_types
+          return super if current_entity.minor?
 
-        def corp_dividend_options(entity, amount)
+          self.class::CORP_TYPES
+        end
+
+        def corp_dividend_options(entity, amount = 0)
           dividend_types.map do |type|
             payout = send(type, entity, amount)
             payout[:divs_to_corporation] = 0
@@ -101,12 +106,16 @@ module Engine
           { corporation: 0, per_share: 0 }
         end
 
-        def corp_log_run_payout(entity, kind, amount)
+        def variable(entity, amount)
+          { corporation: 0, per_share: payout_per_share(entity, amount) }
+        end
+
+        def corp_log_run_payout(entity, amount)
           if amount.positive?
             @log << "#{entity.name} pays out #{@game.format_currency(amount)}"
-          else
-            @log << "#{entity.name} does not pay out"
+            return
           end
+          @log << "#{entity.name} does not pay out"
         end
 
         def share_price_change(entity, revenue = 0)
@@ -145,7 +154,7 @@ module Engine
           MIN_CORP_PAYOUT
         end
 
-        def max_amount
+        def variable_max
           (current_entity.cash / MIN_CORP_PAYOUT).to_i * MIN_CORP_PAYOUT
         end
       end

@@ -13,7 +13,7 @@ module View
         @step = @game.active_step
 
         entity = @step.current_entity
-        return render_variable(entity) if @step.respond_to?(:max_amount)
+        return render_variable(entity) if @step.dividend_types.include?(:variable)
 
         options = @step.dividend_options(entity)
 
@@ -133,8 +133,7 @@ module View
       end
 
       def render_variable(entity)
-        max = (@step.max_amount(entity) / entity.total_shares).to_i
-
+        max = (@step.variable_max(entity) / entity.total_shares).to_i
 
         input = h(:input, style: { margin: '1rem 0px', marginRight: '1rem' }, props: {
           value: max,
@@ -155,7 +154,7 @@ module View
 
       def create_dividend(input)
         amount = input.JS['elm'].JS['value'].to_i * @step.current_entity.total_shares
-        process_action(Engine::Action::Dividend.new(@step.current_entity, kind: 'payout', amount: amount))
+        process_action(Engine::Action::Dividend.new(@step.current_entity, kind: 'variable', amount: amount))
       end
     end
   end

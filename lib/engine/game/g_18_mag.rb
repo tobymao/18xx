@@ -243,9 +243,9 @@ module Engine
         cost = price || train.price
         if price != :free && train.owner == @depot
           corp = %w[2 4].include?(train.name) ? @ldsteg : @mavag
-          operator.spend(cost/2, @bank)
-          operator.spend(cost/2, corp)
-          @log << "#{corp.name} earns #{format_currency(cost/2)}"
+          operator.spend(cost / 2, @bank)
+          operator.spend(cost / 2, corp)
+          @log << "#{corp.name} earns #{format_currency(cost / 2)}"
         elsif price != :free
           operator.spend(cost, train.owner)
         end
