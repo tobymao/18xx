@@ -37,6 +37,7 @@ module Engine
       "D14":"Vasto",
       "E11":"Campobasso",
       "F10":"Benevento",
+      "F14":"Lucera",
       "F8":"Caserta",
       "G15":"Foggia",
       "G17":"Vieste",
@@ -346,11 +347,9 @@ module Engine
             "E9",
             "E13",
             "E15",
-            "F14",
             "F16",
             "H10",
             "H14",
-            "H16",
             "I17",
             "J8",
             "K19",
@@ -359,6 +358,9 @@ module Engine
             "M19",
             "M21",
             "N18"
+         ],
+         "border=edge:3,type:impassable":[
+            "H16"
          ],
          "upgrade=cost:40,terrain:mountain":[
             "F12",
@@ -396,10 +398,13 @@ module Engine
          "town=revenue:0":[
             "D14",
             "F8",
-            "G17",
             "K9",
             "O19",
+            "F14",
             "P6"
+         ],
+         "town=revenue:0;border=edge:0,type:impassable":[
+            "G17"
          ],
          "town=revenue:0;upgrade=cost:40,terrain:mountain":[
             "G9",
@@ -417,7 +422,7 @@ module Engine
          ]
       },
       "blue":{
-         "offboard=revenue:20,route:optional;path=a:1,b:_0,track:dual":[
+         "offboard=revenue:40,route:optional;path=a:1,b:_0,track:dual":[
             "B16"
          ],
          "offboard=revenue:60,route:optional;path=a:1,b:_0,track:dual":[
@@ -587,77 +592,77 @@ module Engine
                ]
             }
          ]
-    },
-    {
-      "name": "Studio di Ingegneria Giuseppe Incorpora",
-      "value": 45,
-      "revenue": 10,
-      "desc": "During its operating turn, the owning corporation can lay or upgrade standard gauge track on mountain, hill or rough hexes at half cost. Narrow gauge track is still at normal cost.",
-      "sym": "SIGI",
-      "abilities": [
-        {
-          "type": "tile_discount",
-          "discount" : "half",
-          "terrain": "mountain",
-          "owner_type": "corporation"
-        }
-      ]
-    },
-    {
-      "name": "Compagnia Navale Mediterranea",
-      "value": 75,
-      "revenue": 15,
-      "desc": "During its operating turn, the owning corporation may close this company to place the +L. 20 token on any port. The corporation that placed the token adds L. 20 to the revenue of the port for the rest of the game.",
-      "sym": "CNM",
-      "abilities": [
-        {
-          "type": "assign_hexes",
-          "when": "owning_corp_or_turn",
-          "hexes": [
-            "B16",
-            "G5",
-            "J20",
-            "L16"
-          ],
-          "count": 1,
-          "owner_type": "corporation"
-        },
-        {
-          "type": "assign_corporation",
-          "when": "sold",
-          "count": 1,
-          "owner_type": "corporation"
-        }
-      ]
-    },
-    {
-      "name": "Società Marittima Siciliana",
-      "value": 110,
-      "revenue": 20,
-      "desc": "During its operating turn, the owning corporation may close this private company in lieu of performing both its tile and token placement steps. Performing this action allows the corporation to select any coastal city hex (all cities except Foggia, Campobasso, and Potenza), optionally lay or upgrade a tile there, and optionally place a station token there. This power may be used even if the corporation is unable to trace a route to that city, but all other normal tile placement and station token placement rules apply.",
-      "sym": "SMS",
-      "abilities": [
-        {
-          "type": "description",
-          "description": "Lay/upgrade and/or teleport on any coastal city"
-        }
-      ]
-    },
-    {
-      "name": "Reale Società d'Affari",
-      "value": 150,
-      "revenue": 25,
-      "desc": "Cannot be bought by a corporation. This private closes when the associated corporation buys its first train. If the associated corporation closes before buying a train, this private remains open until all private companies are closed at the start of Phase 12.",
-      "sym": "RSA",
-      "abilities": [
-        {
-          "type": "shares",
-          "shares": "random_president"
-        },
-        {
-          "type": "no_buy"
-        }
-      ]
+      },
+      {
+         "name":"Studio di Ingegneria Giuseppe Incorpora",
+         "value":45,
+         "revenue":10,
+         "desc":"During its operating turn, the owning corporation can lay or upgrade standard gauge track on mountain, hill or rough hexes at half cost. Narrow gauge track is still at normal cost.",
+         "sym":"SIGI",
+         "abilities":[
+            {
+               "type":"tile_discount",
+               "discount":"half",
+               "terrain":"mountain",
+               "owner_type":"corporation"
+            }
+         ]
+      },
+      {
+         "name":"Compagnia Navale Mediterranea",
+         "value":75,
+         "revenue":15,
+         "desc":"During its operating turn, the owning corporation may close this company to place the +L. 20 token on any port. The corporation that placed the token adds L. 20 to the revenue of the port for the rest of the game.",
+         "sym":"CNM",
+         "abilities":[
+            {
+               "type":"assign_hexes",
+               "when":"owning_corp_or_turn",
+               "hexes":[
+                  "B16",
+                  "G5",
+                  "J20",
+                  "L16"
+               ],
+               "count":1,
+               "owner_type":"corporation"
+            },
+            {
+               "type":"assign_corporation",
+               "when":"sold",
+               "count":1,
+               "owner_type":"corporation"
+            }
+         ]
+      },
+      {
+         "name":"Società Marittima Siciliana",
+         "value":110,
+         "revenue":20,
+         "desc":"During its operating turn, the owning corporation may close this private company in lieu of performing both its tile and token placement steps. Performing this action allows the corporation to select any coastal city hex (all cities except Foggia, Campobasso, and Potenza), optionally lay or upgrade a tile there, and optionally place a station token there. This power may be used even if the corporation is unable to trace a route to that city, but all other normal tile placement and station token placement rules apply.",
+         "sym":"SMS",
+         "abilities":[
+            {
+               "type":"description",
+               "description":"Lay/upgrade and/or teleport on any coastal city"
+            }
+         ]
+      },
+      {
+         "name":"Reale Società d'Affari",
+         "value":150,
+         "revenue":25,
+         "desc":"Cannot be bought by a corporation. This private closes when the associated corporation buys its first train. If the associated corporation closes before buying a train, this private remains open until all private companies are closed at the start of Phase 12.",
+         "sym":"RSA",
+         "abilities":[
+            {
+               "type":"shares",
+               "shares":"random_president"
+            },
+            {
+               "type":"no_buy"
+            }
+         ]
       }
    ],
    "corporations":[
@@ -756,7 +761,7 @@ module Engine
             10,
             20
          ],
-         "coordinates":"G15",
+         "coordinates":"B14",
          "always_market_price":true,
          "color":"blue"
       },
@@ -806,9 +811,10 @@ module Engine
             10,
             20
          ],
-         "coordinates":"B14",
+         "coordinates":"G15",
          "always_market_price":true,
-         "color":"pink"
+         "color":"pink",
+         "text_color":"black"
       },
       {
          "float_percent":20,
@@ -840,7 +846,7 @@ module Engine
          "sym":"BTR",
          "name":"Bari–Taranto Railway",
          "logo":"1849_K2S/BTR",
-         "token_fee":40,
+         "token_fee":90,
          "tokens":[
             0,
             0,
