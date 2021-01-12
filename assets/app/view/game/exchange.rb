@@ -19,8 +19,9 @@ module View
           store(:selected_company, nil, skip: true)
         end
 
-        text =
-          "#{share.president ? "#{100 / share.num_shares}% of " : ''}#{share.corporation.name} #{share_origin} share"
+        text = ''
+        text += "#{@game.exchange_partial_percent(share)}% of " if share.president
+        text += "#{share.corporation.name} #{share_origin} share"
 
         h('button.small', { on: { click: exchange } }, text)
       end

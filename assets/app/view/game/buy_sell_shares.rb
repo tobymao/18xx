@@ -140,15 +140,13 @@ module View
             next unless company.owner == @current_entity
 
             if ability.from.include?(:ipo)
-              children.concat(render_share_exchange(@ipo_shares.reject(&:president),
+              president_share, other_ipo_shares = @ipo_shares.partition(&:president)
+              children.concat(render_share_exchange(other_ipo_shares,
                                                     company,
                                                     source: @game.ipo_name(@corporation)))
-              if @game.exchange_for_partial_presidency? && (presidency_share = @ipo_shares.find(&:president))
-                children.concat(render_share_exchange([presidency_share],
-                                                      company,
-                                                      source: 'Presidency',
-                                                      partial_percent: 100 / presidency_share.num_shares))
-              end
+              children.concat(render_share_exchange(president_share,
+                                                    company,
+                                                    source: 'Presidency'))
             end
 
             children.concat(render_share_exchange(@pool_shares, company)) if ability.from.include?(:market)
@@ -159,14 +157,15 @@ module View
       end
 
       # Put up one exchange button for each exchangable percentage share type in market.
-      def render_share_exchange(shares, company, source: 'Market', partial_percent: nil)
+      def render_share_exchange(shares, company, source: 'Market')
         shares.map do |share|
           next unless @step.can_gain?(company.owner, share, exchange: true)
+          next if share.president && !@game.exchange_for_partial_presidency?
 
           h(Button::BuyShare,
             share: share,
             entity: company,
-            partial_percent: partial_percent,
+            partial_percent: @game.exchange_partial_percent(share),
             percentages_available: shares.size,
             prefix: "Exchange #{company.sym} for ",
             source: source)

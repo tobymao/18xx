@@ -391,6 +391,12 @@ module Engine
         true
       end
 
+      def exchange_partial_percent(share)
+        return nil unless share.president
+
+        100 / share.num_shares
+      end
+
       private
 
       def setup_minors
