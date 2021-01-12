@@ -121,8 +121,7 @@ module Engine
             @game.tile_cost_with_discount(tile, hex, entity, base_cost)
           end
 
-        try_take_loan(spender, cost)
-        spender.spend(cost, @game.bank) if cost.positive?
+        pay_tile_cost(spender, cost, extra_cost)
 
         cities = tile.cities
         if old_tile.paths.empty? &&
@@ -163,6 +162,11 @@ module Engine
 
         @game.tiles.delete(tile)
         @game.tiles << old_tile unless old_tile.preprinted
+      end
+
+      def pay_tile_cost(spender, cost, _extra_cost)
+        try_take_loan(spender, cost)
+        spender.spend(cost, @game.bank) if cost.positive?
       end
 
       def border_cost(tile, entity)

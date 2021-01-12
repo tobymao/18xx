@@ -13,6 +13,8 @@ module View
         @step = @game.active_step
 
         entity = @step.current_entity
+        return render_variable(entity) if @step.respond_to?(:max_amount)
+
         options = @step.dividend_options(entity)
 
         store(:routes, @step.routes, skip: true)
@@ -128,6 +130,32 @@ module View
 
       def cleanup
         store(:routes, [], skip: true)
+      end
+
+      def render_variable(entity)
+        max = (@step.max_amount(entity) / entity.total_shares).to_i
+
+
+        input = h(:input, style: { margin: '1rem 0px', marginRight: '1rem' }, props: {
+          value: max,
+          min: 0,
+          max: max,
+          type: 'number',
+          size: max.to_s.size,
+        })
+
+        h(:div,
+          [
+            "Select per share amount to distribute to shareholders, between #{@game.format_currency(0)}",
+            " and #{@game.format_currency(max)}",
+            input,
+            h(:button, { on: { click: -> { create_dividend(input) } } }, 'Pay Dividend'),
+        ])
+      end
+
+      def create_dividend(input)
+        amount = input.JS['elm'].JS['value'].to_i * @step.current_entity.total_shares
+        process_action(Engine::Action::Dividend.new(@step.current_entity, kind: 'payout', amount: amount))
       end
     end
   end
