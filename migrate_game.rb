@@ -79,7 +79,7 @@ def repair(game, original_actions, actions, broken_action)
       add_pass.call
       return
     end
-  elsif game.active_step.is_a?(Engine::Step::G1867::Merge)
+  elsif game.active_step.is_a?(Engine::Step::G1867::Merge) && broken_action['type'] != 'pass'
     add_pass.call
     return
   elsif game.active_step.is_a?(Engine::Step::G1867::SingleItemAuction)
@@ -100,6 +100,10 @@ def repair(game, original_actions, actions, broken_action)
       return
     end
     if game.active_step.is_a?(Engine::Step::G1817::PostConversionLoans)
+      actions.delete(broken_action)
+      return
+    end
+    if game.active_step.is_a?(Engine::Step::G1867::PostMergerShares)
       actions.delete(broken_action)
       return
     end

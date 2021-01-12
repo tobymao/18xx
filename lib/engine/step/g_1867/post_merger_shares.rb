@@ -64,6 +64,8 @@ module Engine
           log_pass(action.entity)
           action.entity.pass!
           check_merge
+          # Don't make the current player pass again
+          @round.share_dealing_players.delete(action.entity) if active_entities&.first == action.entity
         end
 
         def can_buy_any?(entity)
