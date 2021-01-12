@@ -11,6 +11,9 @@ module Engine
       def initialize(sym:, name:, **opts)
         super
         @token_fee = opts[:token_fee]
+        @slot_open = true
+        @next_to_par = false
+        shares.last.last_cert = true
       end
     end
   end
