@@ -359,6 +359,12 @@ table.center {
     height: 350px;
   }
 }
+.timestamp.hidden {
+  visibility: hidden;
+}
+.chatline:hover > .timestamp.hidden {
+  visibility: visible;
+}
 
 div.game.card em {
   font-style: normal;
