@@ -60,15 +60,15 @@ module View
           height = @width.to_i / 2 + 4
           width = height * 4
           children = [h(:rect, attrs: {
-            transform: "#{translate} #{rotation}",
-            x: -width / 2,
-            y: -height / 2,
-            width: width,
-            height: height,
-            fill: (@town.halt? ? 'gray' : @color),
-            stroke: (@town.halt? ? @color : 'none'),
-            'stroke-width': 4,
-          })]
+                          transform: "#{translate} #{rotation}",
+                          x: -width / 2,
+                          y: -height / 2,
+                          width: width,
+                          height: height,
+                          fill: (@town.halt? ? 'gray' : @color),
+                          stroke: (@town.halt? ? @color : 'none'),
+                          'stroke-width': 4,
+                        })]
 
           if (revenue = render_revenue)
             children << revenue

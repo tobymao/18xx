@@ -119,9 +119,9 @@ class Assets
     File.write(sm_path, JSON.dump(sm_data)) if @make_map
 
     source_map = {
-       version: 3,
-       file: "#{name}.js",
-       sections: [],
+      version: 3,
+      file: "#{name}.js",
+      sections: [],
     }
 
     offset_line = 0

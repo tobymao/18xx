@@ -235,21 +235,27 @@ module Engine
 
       IMPASSABLE_HEX_COLORS = %i[blue gray red].freeze
 
-      EVENTS_TEXT = { 'close_companies' =>
-                      ['Companies Close', 'All companies unless otherwise noted are discarded from the game'] }.freeze
+      EVENTS_TEXT = {
+        'close_companies' =>
+          ['Companies Close', 'All companies unless otherwise noted are discarded from the game'],
+      }.freeze
 
-      STATUS_TEXT = { 'can_buy_companies' =>
-                      ['Can Buy Companies', 'All corporations can buy companies from players'] }.freeze
+      STATUS_TEXT = {
+        'can_buy_companies' =>
+          ['Can Buy Companies', 'All corporations can buy companies from players'],
+      }.freeze
 
-      MARKET_TEXT = { par: 'Par value',
-                      no_cert_limit: 'Corporation shares do not count towards cert limit',
-                      unlimited: 'Corporation shares can be held above 60%',
-                      multiple_buy: 'Can buy more than one share in the corporation per turn',
-                      close: 'Corporation closes',
-                      endgame: 'End game trigger',
-                      liquidation: 'Liquidation',
-                      repar: 'Par value after bankruptcy',
-                      ignore_one_sale: 'Ignore first share sold when moving price' }.freeze
+      MARKET_TEXT = {
+        par: 'Par value',
+        no_cert_limit: 'Corporation shares do not count towards cert limit',
+        unlimited: 'Corporation shares can be held above 60%',
+        multiple_buy: 'Can buy more than one share in the corporation per turn',
+        close: 'Corporation closes',
+        endgame: 'End game trigger',
+        liquidation: 'Liquidation',
+        repar: 'Par value after bankruptcy',
+        ignore_one_sale: 'Ignore first share sold when moving price',
+      }.freeze
 
       MARKET_SHARE_LIMIT = 50 # percent
       ALL_COMPANIES_ASSIGNABLE = false
@@ -1623,16 +1629,20 @@ module Engine
 
         reservations = Hash.new { |k, v| k[v] = [] }
         corporations.each do |c|
-          reservations[c.coordinates] << { entity: c,
-                                           city: c.city }
+          reservations[c.coordinates] << {
+            entity: c,
+            city: c.city,
+          }
         end
 
         (corporations + companies).each do |c|
           abilities(c, :reservation) do |ability|
-            reservations[ability.hex] << { entity: c,
-                                           city: ability.city.to_i,
-                                           slot: ability.slot.to_i,
-                                           ability: ability }
+            reservations[ability.hex] << {
+              entity: c,
+              city: ability.city.to_i,
+              slot: ability.slot.to_i,
+              ability: ability,
+            }
           end
         end
 

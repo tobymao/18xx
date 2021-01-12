@@ -107,12 +107,12 @@ module View
 
         def render_part
           children = [h(:circle, attrs: {
-            transform: translate.to_s,
-            r: 10 * (0.8 + @width.to_i / 40),
-            fill: (@town.halt? ? 'gray' : @color),
-            stroke: (@town.halt? ? @color : 'none'),
-            'stroke-width': 4,
-          })]
+                          transform: translate.to_s,
+                          r: 10 * (0.8 + @width.to_i / 40),
+                          fill: (@town.halt? ? 'gray' : @color),
+                          stroke: (@town.halt? ? @color : 'none'),
+                          'stroke-width': 4,
+                        })]
 
           children << render_revenue
           children << h(HitBox, click: -> { touch_node(@town) }, transform: translate) unless @town.solo?

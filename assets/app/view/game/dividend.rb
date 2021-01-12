@@ -135,13 +135,18 @@ module View
       def render_variable(entity)
         max = (@step.variable_max(entity) / entity.total_shares).to_i
 
-        input = h(:input, style: { margin: '1rem 0px', marginRight: '1rem' }, props: {
-          value: max,
-          min: 0,
-          max: max,
-          type: 'number',
-          size: max.to_s.size,
-        })
+        input = h(:input,
+                  style: {
+                    margin: '1rem 0px',
+                    marginRight: '1rem',
+                  },
+                  props: {
+                    value: max,
+                    min: 0,
+                    max: max,
+                    type: 'number',
+                    size: max.to_s.size,
+                  })
 
         h(:div,
           [

@@ -116,11 +116,11 @@ module View
 
           # Move the position to the middle of the hex
           props = {
-           style: {
-             position: 'absolute',
-             left: "#{left}px",
-             top: "#{top}px",
-           },
+            style: {
+              position: 'absolute',
+              left: "#{left}px",
+              top: "#{top}px",
+            },
           }
           # This needs to be before the map, so that the relative positioning works
           children.unshift(h(:div, props, [selector]))

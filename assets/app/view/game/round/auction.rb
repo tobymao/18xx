@@ -141,13 +141,13 @@ module View
           return [h(:button, { on: { click: -> { choose } } }, 'Choose')] if @step.may_choose?(company)
 
           input = h(:input, style: { marginRight: '1rem' }, props: {
-            value: @step.min_bid(company),
-            step: @step.min_increment,
-            min: @step.min_bid(company),
-            max: @step.max_bid(@current_entity, company),
-            type: 'number',
-            size: @current_entity.cash.to_s.size,
-          })
+                      value: @step.min_bid(company),
+                      step: @step.min_increment,
+                      min: @step.min_bid(company),
+                      max: @step.max_bid(@current_entity, company),
+                      type: 'number',
+                      size: @current_entity.cash.to_s.size,
+                    })
 
           buttons = []
           if @step.min_bid(company) <= @step.max_place_bid(@current_entity, company)
@@ -182,13 +182,13 @@ module View
           return if !@current_actions.include?('bid') || @step.auctioning != :turn
 
           input = h(:input, style: { margin: '1rem 0px', marginRight: '1rem' }, props: {
-            value: @step.min_player_bid,
-            step: @step.min_increment,
-            min: @step.min_player_bid,
-            max: @step.max_player_bid(@current_entity),
-            type: 'number',
-            size: @current_entity.cash.to_s.size,
-          })
+                      value: @step.min_player_bid,
+                      step: @step.min_increment,
+                      min: @step.min_player_bid,
+                      max: @step.max_player_bid(@current_entity),
+                      type: 'number',
+                      size: @current_entity.cash.to_s.size,
+                    })
 
           h(:div,
             [

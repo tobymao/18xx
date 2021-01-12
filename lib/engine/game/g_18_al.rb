@@ -37,18 +37,26 @@ module Engine
       STANDARD_YELLOW_CITY_TILES = %w[5 6 57].freeze
 
       OPTIONAL_RULES = [
-        { sym: :double_yellow_first_or,
+        {
+          sym: :double_yellow_first_or,
           short_name: 'Extra yellow',
-          desc: 'Allow corporation to lay 2 yellows its first OR' },
-        { sym: :LN_home_city_moved,
+          desc: 'Allow corporation to lay 2 yellows its first OR',
+        },
+        {
+          sym: :LN_home_city_moved,
           short_name: 'Move L&N home',
-          desc: 'Move L&N home city to Decatur - Nashville becomes off board hex' },
-        { sym: :unlimited_4d,
+          desc: 'Move L&N home city to Decatur - Nashville becomes off board hex',
+        },
+        {
+          sym: :unlimited_4d,
           short_name: 'Unlimited 4D',
-          desc: 'Unlimited number of 4D' },
-        { sym: :hard_rust_t4,
+          desc: 'Unlimited number of 4D',
+        },
+        {
+          sym: :hard_rust_t4,
           short_name: 'Hard rust',
-          desc: '4 trains rust when 7 train is bought' },
+          desc: '4 trains rust when 7 train is bought',
+        },
       ].freeze
 
       ASSIGNMENT_TOKENS = {

@@ -182,23 +182,23 @@ module View
           if layout == :flat
             y = @name_segments.size > 1 ? 54 : 61
             {
-             region_weights_in: {
-               TRACK_TO_EDGE_3 => 1,
-               TOP_ROW => 2,
-             },
-             region_weights_out: { TOP_ROW => 1 },
-             x: 0,
-             y: -(y + delta_y),
+              region_weights_in: {
+                TRACK_TO_EDGE_3 => 1,
+                TOP_ROW => 2,
+              },
+              region_weights_out: { TOP_ROW => 1 },
+              x: 0,
+              y: -(y + delta_y),
             }
           elsif layout == :pointy
             y = @name_segments.size > 1 ? 63 : 70
             {
-             region_weights: {
-               [0, 1] => 1,
-               [2, 3, 5, 6] => 0.5,
-             },
-             x: 0,
-             y: -(y + delta_y),
+              region_weights: {
+                [0, 1] => 1,
+                [2, 3, 5, 6] => 0.5,
+              },
+              x: 0,
+              y: -(y + delta_y),
             }
           end
         end
