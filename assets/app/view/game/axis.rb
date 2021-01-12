@@ -66,13 +66,13 @@ module View
         h(:g,
           { attrs: { transform: "translate(#{t_x + @font_size} 0)" } },
           [
-            h(:g,
-              { attrs: { 'dominant-baseline': 'top' } },
-              labels),
-            h(:g,
-              { attrs: { transform: "translate(0 #{bottom_t_y - @font_size})",
-                         'dominant-baseline': 'baseline' } },
-              labels),
+            h(:g, { attrs: { 'dominant-baseline': 'top' } }, labels),
+            h(:g, {
+                attrs: {
+                  transform: "translate(0 #{bottom_t_y - @font_size})",
+                  'dominant-baseline': 'baseline',
+                },
+              }, labels),
           ])
       end
 
@@ -102,16 +102,24 @@ module View
 
         right_t_x += @font_size if @layout == :pointy
 
-        h(:g, { attrs: { 'dominant-baseline': 'hanging',
-                         transform: "translate(#{t_x} #{t_y})",
-                         textLength: @font_size } },
+        h(:g, {
+            attrs: {
+              'dominant-baseline': 'hanging',
+              transform: "translate(#{t_x} #{t_y})",
+              textLength: @font_size,
+            },
+          },
           [
             h(:g,
               { attrs: { 'text-anchor': 'middle' } },
               labels),
             h(:g,
-              { attrs: { transform: "translate(#{right_t_x} 0)",
-                         'text-anchor': 'middle' } },
+              {
+                attrs: {
+                  transform: "translate(#{right_t_x} 0)",
+                  'text-anchor': 'middle',
+                },
+              },
               labels),
           ])
       end

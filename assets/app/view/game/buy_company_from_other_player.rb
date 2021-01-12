@@ -18,12 +18,12 @@ module View
 
         max = @game.current_entity.cash.to_s.size
         input = h(:input, style: { marginBottom: '0.5rem', marginRight: '1rem' }, props: {
-          value: 1,
-          type: 'number',
-          min: 1,
-          max: max,
-          size: max,
-        })
+                    value: 1,
+                    type: 'number',
+                    min: 1,
+                    max: max,
+                    size: max,
+                  })
         children = [input]
         @game.round.active_step.purchasable_companies(@game.current_entity).each do |company|
           children << render_company_buy(input, company)

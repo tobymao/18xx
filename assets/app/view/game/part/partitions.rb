@@ -86,10 +86,10 @@ module View
             d = "M #{vertex_a.join(' ')} C #{da}#{magnet_str} #{db}, #{vertex_b.join(' ')}"
 
             children << h(:path, attrs: {
-              d: d,
-              stroke: color(partition),
-              'stroke-width': '5',
-            })
+                            d: d,
+                            stroke: color(partition),
+                            'stroke-width': '5',
+                          })
           end
 
           h(:g, children)

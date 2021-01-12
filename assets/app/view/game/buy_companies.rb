@@ -65,12 +65,12 @@ module View
 
       def render_input
         input = h(:input, style: { marginRight: '1rem' }, props: {
-          value: @selected_company.max_price,
-          type: 'number',
-          min: @selected_company.min_price,
-          max: @selected_company.max_price,
-          size: @corporation.cash.to_s.size,
-        })
+                    value: @selected_company.max_price,
+                    type: 'number',
+                    min: @selected_company.min_price,
+                    max: @selected_company.max_price,
+                    size: @corporation.cash.to_s.size,
+                  })
 
         buy_click = lambda do
           price = input.JS['elm'].JS['value'].to_i

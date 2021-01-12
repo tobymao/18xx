@@ -107,10 +107,10 @@ module View
             next unless border.type
 
             children << h(:line, attrs: {
-              **EDGES[border.edge],
-              stroke: color(border),
-              'stroke-width': '8',
-            })
+                            **EDGES[border.edge],
+                            stroke: color(border),
+                            'stroke-width': '8',
+                          })
             children << render_cost(border) if border.cost
           end
 

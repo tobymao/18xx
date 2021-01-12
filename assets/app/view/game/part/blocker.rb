@@ -96,12 +96,14 @@ module View
         end
 
         def render_company_sym
-          h(:text, { attrs: {
-                       fill: 'black',
-                       'dominant-baseline': 'baseline',
-                       x: 0,
-                       y: -5,
-                     } },
+          h(:text, {
+              attrs: {
+                fill: 'black',
+                'dominant-baseline': 'baseline',
+                x: 0,
+                y: -5,
+              },
+            },
             @blocker.sym)
         end
 

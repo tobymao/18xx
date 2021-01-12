@@ -40,18 +40,22 @@ module View
         children << render_table
         children << render_spreadsheet_controls
 
-        h('div#spreadsheet', { style: {
-          overflow: 'auto',
-        } }, children.compact)
+        h('div#spreadsheet', {
+            style: {
+              overflow: 'auto',
+            },
+          }, children.compact)
       end
 
       def render_table
-        h(:table, { style: {
-          margin: '1rem 0 1.5rem 0',
-          borderCollapse: 'collapse',
-          textAlign: 'center',
-          whiteSpace: 'nowrap',
-        } }, [
+        h(:table, {
+            style: {
+              margin: '1rem 0 1.5rem 0',
+              borderCollapse: 'collapse',
+              textAlign: 'center',
+              whiteSpace: 'nowrap',
+            },
+          }, [
           h(:thead, render_title),
           h(:tbody, render_corporations),
           h(:thead, [
@@ -306,7 +310,7 @@ module View
               background: corporation.color,
               color: corporation.text_color,
             },
-        }
+          }
 
         tr_props = zebra_props(index.odd?)
         market_props = { style: { borderRight: border_style } }

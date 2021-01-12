@@ -46,18 +46,26 @@ module Engine
       ).freeze
 
       OPTIONAL_RULES = [
-        { sym: :triple_yellow_first_or,
+        {
+          sym: :triple_yellow_first_or,
           short_name: 'Extra yellow',
-          desc: 'Allow corporations to lay 3 yellow tiles their first OR' },
-        { sym: :early_buy_of_kcmo,
+          desc: 'Allow corporations to lay 3 yellow tiles their first OR',
+        },
+        {
+          sym: :early_buy_of_kcmo,
           short_name: 'Early buy of KCM&O private',
-          desc: 'KCM&O private may be bought in for up to face value' },
-        { sym: :delay_minor_close,
+          desc: 'KCM&O private may be bought in for up to face value',
+        },
+        {
+          sym: :delay_minor_close,
           short_name: 'Delay minor close',
-          desc: "Minor closes at the start of the SR following buy of first 3'" },
-        { sym: :hard_rust_t4,
+          desc: "Minor closes at the start of the SR following buy of first 3'",
+        },
+        {
+          sym: :hard_rust_t4,
           short_name: 'Hard rust',
-          desc: "4 trains rust when 6' train is bought" },
+          desc: "4 trains rust when 6' train is bought",
+        },
       ].freeze
 
       def self.title
