@@ -133,15 +133,22 @@ module View
         end
 
         def render_pre_ipo(corporation)
+          children = []
+
           type = @step.ipo_type(corporation)
           case type
           when :par
-            return h(Par, corporation: corporation) if @current_actions.include?('par')
+            children << h(Par, corporation: corporation) if @current_actions.include?('par')
           when :bid
-            return h(Bid, entity: @current_entity, corporation: corporation) if @current_actions.include?('bid')
+            children << h(Bid, entity: @current_entity, corporation: corporation) if @current_actions.include?('bid')
           when String
-            return h(:div, type)
+            children << h(:div, type)
           end
+          children << h(BuySellShares, corporation: corporation)
+
+          children.compact!
+          return h(:div, children) unless children.empty?
+
           nil
         end
 

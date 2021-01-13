@@ -11,6 +11,7 @@ module View
         needs :share
         needs :entity
         needs :swap_share, default: nil
+        needs :partial_percent, default: nil
         needs :percentages_available, default: 1
         needs :prefix, default: 'Buy'
         needs :source, default: 'Market'
@@ -22,6 +23,7 @@ module View
           reduced_price = @game.format_currency(@share.price - @swap_share.price) if @swap_share
 
           text = @prefix.to_s
+          text += " #{@partial_percent}% of" if @partial_percent
           text += " #{@share.percent}%" if show_percentage
           text += " #{@source} Share"
           text += " (#{reduced_price} + #{@swap_share.percent}% Share)" if @swap_share

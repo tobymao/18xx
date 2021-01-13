@@ -1496,6 +1496,18 @@ module Engine
         transferred
       end
 
+      def exchange_for_partial_presidency?
+        false
+      end
+
+      def exchange_partial_percent(_share)
+        nil
+      end
+
+      def round_start?
+        @last_game_action_id == @round_history.last
+      end
+
       private
 
       def init_bank
