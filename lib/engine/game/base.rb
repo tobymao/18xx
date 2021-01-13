@@ -675,6 +675,10 @@ module Engine
         ipoed.sort + others
       end
 
+      def operating_order
+        @minors.select(&:floated?) + @corporations.select(&:floated?).sort
+      end
+
       def operated_operators
         (@corporations + @minors).select(&:operated?)
       end
@@ -1492,6 +1496,18 @@ module Engine
         transferred = ownables.dup
         ownables.clear
         transferred
+      end
+
+      def exchange_for_partial_presidency?
+        false
+      end
+
+      def exchange_partial_percent(_share)
+        nil
+      end
+
+      def round_start?
+        @last_game_action_id == @round_history.last
       end
 
       private

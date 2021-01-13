@@ -325,6 +325,10 @@ module Engine
           company_value
       end
 
+      def operating_order
+        @corporations.select { |c| c.floated? && !nationalized?(c) }.sort
+      end
+
       def place_home_token(corporation)
         # will this break the game?
         return if sr_after_southern

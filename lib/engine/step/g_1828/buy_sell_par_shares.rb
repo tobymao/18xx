@@ -12,13 +12,24 @@ module Engine
           actions = super
           return actions if entity != current_entity || must_sell?(entity)
 
-          if !bought? && can_merge_any?(entity)
-            actions << 'choose'
-            actions << 'failed_merge'
+          unless bought?
+            if can_merge_any?(entity)
+              actions << 'choose'
+              actions << 'failed_merge'
+            end
+            actions << 'buy_shares' if player_can_exchange?(entity)
+            actions << 'pass' if !actions.empty? && !actions.include?('pass')
           end
-          actions << 'pass' if !actions.empty? && !actions.include?('pass')
 
           actions
+        end
+
+        def player_can_exchange?(entity)
+          return false unless entity.player?
+
+          company = entity.companies.find { |c| c.id == 'M&H' }
+          step = @round.steps.find { |r| r.is_a?(Engine::Step::G1828::Exchange) }
+          company && step&.can_exchange?(company)
         end
 
         def choice_available?(_entity)

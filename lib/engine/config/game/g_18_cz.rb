@@ -1654,10 +1654,12 @@ module Engine
                     ],
                     "upgrade=cost:10,terrain:water": [
                         "D11",
-                        "D13",
                         "D15",
                         "G10",
                         "H11"
+                    ],
+                    "upgrade=cost:10,terrain:water;stub=edge:0": [
+                        "D13"
                     ],
                     "upgrade=cost:10,terrain:water;border=edge:3,type:impassible": [
                         "C18"
@@ -1695,9 +1697,11 @@ module Engine
                     ],
                     "town=revenue:0": [
                         "C14",
-                        "F13",
                         "G22",
                         "C28"
+                    ],
+                    "town=revenue:0;stub=edge:2": [
+                        "F13"
                     ],
                     "town=revenue:0;border=edge:0,type:impassible": [
                         "E4"
