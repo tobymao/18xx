@@ -2,10 +2,13 @@
 
 require_relative '../config/game/g_18_cz'
 require_relative 'base'
+require_relative 'stubs_are_restricted'
 
 module Engine
   module Game
     class G18CZ < Base
+      include StubsAreRestricted
+
       register_colors(brightGreen: '#c2ce33',
                       beige: '#e5d19e',
                       lightBlue: '#1EA2D6',
@@ -163,10 +166,6 @@ module Engine
         @tiles.each do |tile|
           tile.blocks_lay = true if tile.name.end_with?('p')
         end
-      end
-
-      def legal_tile_rotation?(_entity, hex, tile)
-        hex.tile.stubs.empty? || tile.exits.include?(hex.tile.stubs.first.edge)
       end
     end
   end
