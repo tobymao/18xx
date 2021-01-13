@@ -387,7 +387,7 @@ module Engine
         @corporations
           .select { |c| c.percent_of(c) == 100 && !c.closed? }
           .each do |c|
-            @log << "#{c.name} becomes full capitalization corporation as it has not been pared"
+            @log << "#{c.name} becomes full capitalization corporation as it has not been parred"
             c.capitalization = :full
           end
       end
