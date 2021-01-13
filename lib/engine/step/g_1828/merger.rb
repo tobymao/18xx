@@ -15,11 +15,11 @@ module Engine
 
           case @state
           when :select_target
-            'merge'
+            ['merge']
           when :failed
-            'failed_merge'
+            ['failed_merge']
           else
-            'choose'
+            ['choose']
           end
         end
 
@@ -91,14 +91,6 @@ module Engine
           [@merger, @target]
         end
 
-        def choice_name
-          @player_choice&.choice_description
-        end
-
-        def choices
-          @player_choice&.choices
-        end
-
         def show_other_players
           false
         end
@@ -107,11 +99,19 @@ module Engine
           @player_choice && entity == @players.first
         end
 
+        def choice_name
+          @player_choice&.choice_description
+        end
+
+        def choices
+          @player_choice&.choices
+        end
+
         def active_entities
           merge_corporations if @state == :token_removal
           return [] unless merge_in_progress?
 
-          if @state == :choose
+          if @player_choice
             [@players.first]
           else
             [@round.acting_player]

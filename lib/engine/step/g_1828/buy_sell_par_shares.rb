@@ -13,7 +13,7 @@ module Engine
           return actions if entity != current_entity || must_sell?(entity)
 
           if !bought? && can_merge_any?(entity)
-            actions << 'choose' 
+            actions << 'choose'
             actions << 'failed_merge'
           end
           actions << 'pass' if !actions.empty? && !actions.include?('pass')
@@ -22,6 +22,10 @@ module Engine
         end
 
         def choice_available?(_entity)
+          false
+        end
+
+        def merge_failed?
           false
         end
 
@@ -40,7 +44,7 @@ module Engine
         def process_failed_merge(action)
           @log << "#{action.entity.name} failed to merge #{action.corporations.map(&:name).join(' and ')}"
           @current_actions << action
-        end 
+        end
 
         def can_buy_multiple?(entity, corporation)
           super && corporation.owner == entity && num_shares_bought(corporation) < 2
