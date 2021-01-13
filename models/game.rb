@@ -11,6 +11,21 @@ class Game < Base
   QUERY_LIMIT = 13
   PERSONAL_QUERY_LIMIT = 9
 
+  FILTER_QUERY = <<~SQL
+    SELECT *
+    FROM (SELECT g.*,
+        setweight(to_tsvector(g.title), 'A') ||
+        setweight(to_tsvector(g.round), 'D') ||
+        setweight(to_tsvector(g.description), 'C') ||
+        setweight(to_tsvector(coalesce(string_agg(u.name, ' '))), 'B') as ts_vector
+       FROM games g
+       JOIN game_users gu ON g.id = gu.game_id
+       JOIN users u ON u.id = gu.user_id
+       GROUP BY g.id) g_search
+    WHERE g_search.ts_vector @@ to_tsquery('(183:* & (test | local2)) | !Auction')
+    ORDER BY ts_rank(g_search.ts_vector, to_tsquery('(183:* & (test | local2)) | !Auction')) DESC, updated_at DESC;
+  SQL
+
   ALL_GAMES_QUERY = <<~SQL
     SELECT *
     FROM games
@@ -46,9 +61,24 @@ class Game < Base
       FROM game_users
       WHERE user_id = :user_id
     )
+    , filtered_games AS (
+      SELECT id, user_id, description, title, max_players, settings, status, turn, round, acting, result, created_at, updated_at
+      FROM (SELECT g.*,
+          setweight(to_tsvector(g.title), 'A') ||
+          setweight(to_tsvector(g.round), 'D') ||
+          setweight(to_tsvector(g.description), 'C') ||
+          setweight(to_tsvector(coalesce(string_agg(u.name, ' '))), 'B') as ts_vector
+         FROM games g
+         JOIN game_users gu ON g.id = gu.game_id
+         JOIN users u ON u.id = gu.user_id
+         GROUP BY g.id) g_search
+      WHERE g_search.ts_vector @@ to_tsquery('Ches')
+      /* WHERE g_search.ts_vector @@ to_tsquery('(183:* & (test | local2)) | !Auction') */
+      ORDER BY ts_rank(g_search.ts_vector, to_tsquery('(183:* & (test | local2)) | !Auction')) DESC, updated_at DESC
+    )
 
     SELECT g.*
-    FROM games g
+    FROM filtered_games g
     JOIN user_games ug
       ON g.id = ug.id
     WHERE g.status = :status
@@ -62,8 +92,10 @@ class Game < Base
       type: opts['games'] || (user ? 'personal' : 'all'),
       page: opts['p']&.to_i || 0,
       status: opts['status'] || (user ? 'active' : 'new'),
+      search_string: opts['search_string'] || '',
     }
     opts[:user_id] = user.id if user
+    # opts[:search_string] = Lib::Storage["search_#{opts[:type]}_#{opts[:status]}"]
 
     query =
       if user && opts[:type] == 'personal'

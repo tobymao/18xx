@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require 'game_manager'
+require 'lib/storage'
+require 'view/form'
 require 'view/game_card'
 
 module View
@@ -30,17 +32,18 @@ module View
       @offset = @type == :hotseat ? (p * @limit) : 0
       children << render_more('Prev', "?#{params}&p=#{p - 1}") if p.positive?
       children << render_more('Next', "?#{params}&p=#{p + 1}") if @game_row_games.size > @offset + @limit
+      children << render_search
 
       props = {
         style: {
           display: 'grid',
-          grid: '1fr / minmax(10rem, auto) repeat(2, minmax(3rem, auto)) 1fr',
+          grid: '1fr / 11.5rem 3rem 3rem 1fr',
           gap: '1rem',
           alignItems: 'center',
         },
       }
 
-      h('div.card_header', props, children)
+      h(:div, props, children)
     end
 
     def render_more(text, params)
@@ -63,6 +66,36 @@ module View
       }
 
       h("a.#{text.downcase}", props, text)
+    end
+
+    def render_search
+      search_id = "search_#{@type}_#{@status}"
+
+      search_games = lambda do |event|
+        if event.JS['type'] == 'click' || event.JS['keyCode'] == 13
+          val = Native(@inputs[search_id]).elm.value
+          val == '' ? Lib::Storage.delete(search_id) : Lib::Storage[search_id] = val
+          update
+        end
+      end
+
+      input_props = {
+        attrs: {
+          id: search_id,
+          name: 'q',
+          type: 'search',
+          value: Lib::Storage[search_id] || '',
+          placeholder: 'game, description, players, …',
+        },
+        style: { width: '13.5rem' },
+        on: { keyup: search_games },
+      }
+      @inputs = {}
+
+      h(:div, { style: { gridColumnStart: 4 } }, [
+        @inputs[search_id] = h(:input, input_props),
+        h(:button, { on: { click: search_games } }, 'Search'),
+      ])
     end
 
     def render_row
