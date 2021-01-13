@@ -51,7 +51,7 @@ module View
           end
 
           children = []
-          if entity.corporation?
+          if entity.corporation? || entity.minor?
             size = TOKEN_SIZES[@game.corporation_size(entity)]
             logo_props = {
               attrs: { src: entity.logo },
