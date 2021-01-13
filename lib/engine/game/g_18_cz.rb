@@ -164,6 +164,10 @@ module Engine
           tile.blocks_lay = true if tile.name.end_with?('p')
         end
       end
+
+      def legal_tile_rotation?(_entity, hex, tile)
+        hex.tile.stubs.empty? || tile.exits.include?(hex.tile.stubs.first.edge)
+      end
     end
   end
 end
