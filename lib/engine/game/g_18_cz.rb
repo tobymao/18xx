@@ -7,8 +7,6 @@ require_relative 'stubs_are_restricted'
 module Engine
   module Game
     class G18CZ < Base
-      include StubsAreRestricted
-
       register_colors(brightGreen: '#c2ce33',
                       beige: '#e5d19e',
                       lightBlue: '#1EA2D6',
@@ -61,6 +59,8 @@ module Engine
         'large_corps_available' => ['Large Sized Corps Available',
                                     '10-share corps By, kk, Sx, Pr, Ug are available to start']
       ).freeze
+
+      include StubsAreRestricted
 
       def setup
         @or = 0
