@@ -251,10 +251,15 @@ module View
       end
 
       def sorted_corporations
-        floated_corporations = @game.round.entities
+        operating_corporations =
+          if @game.round.operating?
+            @game.round.entities
+          else
+            @game.operating_order
+          end
 
         result = @game.all_corporations.map do |c|
-          operating_order = (floated_corporations.find_index(c) || -1) + 1
+          operating_order = (operating_corporations.find_index(c) || -1) + 1
           [operating_order, c]
         end
 

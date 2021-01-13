@@ -199,6 +199,11 @@ module Engine
         entity.cash + ((maximum_loans(entity) - entity.loans.size) * (@loan_value - 5))
       end
 
+      def operating_order
+        minors, majors = @corporations.select(&:floated?).sort.partition { |c| c.type == :minor }
+        minors + majors
+      end
+
       def unstarted_corporation_summary
         minor, major = @corporations.reject(&:ipoed).partition { |c| c.type == :minor }
         "#{minor.size} minor, #{major.size} major"

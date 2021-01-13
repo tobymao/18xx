@@ -178,6 +178,19 @@ module Engine
         end
       end
 
+      def operating_order
+        corporations = @corporations.select(&:floated?)
+        if @turn == 1 && (@round_num || 1) == 1
+          corporations.sort_by! do |c|
+            sp = c.share_price
+            [sp.price, sp.corporations.find_index(c)]
+          end
+        else
+          corporations.sort!
+        end
+        @minors.select(&:floated?) + corporations
+      end
+
       def num_removals(_group)
         two_player? ? 1 : 5 - @players.size
       end
@@ -369,6 +382,7 @@ module Engine
       end
 
       def operating_round(round_num)
+        @round_num = round_num
         Round::G1846::Operating.new(self, [
           Step::G1846::Bankrupt,
           Step::G1846::Assign,

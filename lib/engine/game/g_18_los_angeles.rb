@@ -145,6 +145,7 @@ module Engine
       end
 
       def operating_round(round_num)
+        @round_num = round_num
         Round::G1846::Operating.new(self, [
           Step::G1846::Bankrupt,
           Step::Assign,

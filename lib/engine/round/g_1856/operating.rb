@@ -21,10 +21,6 @@ module Engine
           super
         end
 
-        def select_entities
-          @game.corporations.select { |c| c.floated? || c.floatable? }.sort
-        end
-
         def start_operating
           corporation = @entities[@entity_index]
           if !corporation.floated? && corporation.floatable?

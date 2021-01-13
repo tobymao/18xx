@@ -180,6 +180,10 @@ module Engine
         player.cash + player.companies.sum(&:value)
       end
 
+      def operating_order
+        super.reject { |c| c.share_price.liquidation? }
+      end
+
       def home_token_locations(corporation)
         hexes.select do |hex|
           hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
