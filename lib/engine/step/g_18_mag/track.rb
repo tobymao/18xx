@@ -8,6 +8,17 @@ module Engine
       class Track < Track
         K_HEXES = %w[I1 H23 H27].freeze
 
+        def actions(entity)
+          return [] unless entity == current_entity
+          return [] if entity.corporation?
+
+          super
+        end
+
+        def log_skip(entity)
+          super unless entity.corporation?
+        end
+
         def process_lay_tile(action)
           old_tile = action.hex.tile
           super
@@ -34,6 +45,18 @@ module Engine
 
           @game.unused_tiles.delete(old_tile.opposite)
           @game.tiles << old_tile.opposite
+        end
+
+        def pay_tile_cost(spender, cost, extra_cost)
+          # FIXME: deal with terrain tokens
+          if extra_cost.positive?
+            spender.spend(extra_cost, @game.skev)
+            @log << "#{@game.skev.name} earns #{@game.format_currency(extra_cost)}"
+          end
+          return unless (cost - extra_cost).positive?
+
+          spender.spend(cost - extra_cost, @game.sik)
+          @log << "#{@game.sik.name} earns #{@game.format_currency(cost - extra_cost)}"
         end
       end
     end
