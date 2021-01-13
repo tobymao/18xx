@@ -115,7 +115,7 @@ module Engine
       def try_take_loan(entity, price); end
 
       def inspect
-        "<#{self.class.name}: #{id}>"
+        "<#{self.class.name}>"
       end
     end
   end

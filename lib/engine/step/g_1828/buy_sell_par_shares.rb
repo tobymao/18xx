@@ -6,14 +6,17 @@ module Engine
   module Step
     module G1828
       class BuySellParShares < BuySellParShares
-        PURCHASE_ACTIONS = Engine::Step::BuySellParShares::PURCHASE_ACTIONS + [Action::Choose]
+        PURCHASE_ACTIONS = Engine::Step::BuySellParShares::PURCHASE_ACTIONS + [Action::FailedMerge]
 
         def actions(entity)
           actions = super
           return actions if entity != current_entity || must_sell?(entity)
 
           unless bought?
-            actions << 'choose' if can_merge_any?(entity)
+            if can_merge_any?(entity)
+              actions << 'choose'
+              actions << 'failed_merge'
+            end
             actions << 'buy_shares' if player_can_exchange?(entity)
             actions << 'pass' if !actions.empty? && !actions.include?('pass')
           end
@@ -33,6 +36,10 @@ module Engine
           false
         end
 
+        def merge_failed?
+          false
+        end
+
         def process_choose(action)
           corporation = @game.corporation_by_id(action.choice)
           raise GameError, 'No eligible corporation to merge with' unless can_merge?(action.entity, corporation)
@@ -42,6 +49,11 @@ module Engine
           @round.merge_initiator = corporation
 
           @round.last_to_act = action.entity
+          @current_actions << action
+        end
+
+        def process_failed_merge(action)
+          @log << "#{action.entity.name} failed to merge #{action.corporations.map(&:name).join(' and ')}"
           @current_actions << action
         end
 

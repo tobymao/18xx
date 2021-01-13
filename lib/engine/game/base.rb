@@ -825,8 +825,10 @@ module Engine
       end
 
       def sellable_bundles(player, corporation)
+        return [] unless @round.active_step&.respond_to?(:can_sell?)
+
         bundles = bundles_for_corporation(player, corporation)
-        bundles.select { |bundle| @round.active_step&.can_sell?(player, bundle) }
+        bundles.select { |bundle| @round.active_step.can_sell?(player, bundle) }
       end
 
       def bundles_for_corporation(share_holder, corporation, shares: nil)

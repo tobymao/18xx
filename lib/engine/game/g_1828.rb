@@ -263,6 +263,7 @@ module Engine
         system_data = CORPORATIONS.find { |c| c['sym'] == corporations.first.id }.dup
         system_data['sym'] = corporations.map(&:name).join('-')
         system_data['tokens'] = []
+        system_data['game'] = self
         system_data['corporations'] = corporations
         system = init_system(@stock_market, system_data)
 
@@ -395,6 +396,10 @@ module Engine
         return nil unless share.president
 
         100 / share.num_shares
+      end
+
+      def system_by_id(id)
+        corporation_by_id(id)
       end
 
       private
