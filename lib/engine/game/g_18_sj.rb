@@ -378,7 +378,7 @@ module Engine
         return if minor_khj.closed?
 
         @log << "Minor #{minor_khj.name} closes and its home token is removed"
-        minor_khj.spend(minor_khj.cash, p) if minor_khj.positive?
+        minor_khj.spend(minor_khj.cash, @bank) if minor_khj.cash.positive?
         minor_khj.tokens.first.remove!
         minor_khj.close!
       end
