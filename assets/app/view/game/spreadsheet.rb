@@ -169,7 +169,9 @@ module View
         }
 
         extra = []
-        extra << h(:th, 'Loans') if @game.total_loans&.nonzero?
+        extra << h(:th, render_sort_link('Loans', :loans)) if @game.total_loans&.nonzero?
+        extra << h(:th, render_sort_link('Shorts', :shorts)) if @game.respond_to?(:available_shorts)
+        extra << h(:th, render_sort_link('Buying Power', :buying_power)) if @game.total_loans.positive?
         [
           h(:tr, [
             h(:th, ''),
@@ -275,6 +277,12 @@ module View
             corporation.par_price&.price || 0
           when :share_price
             corporation.share_price&.price || 0
+          when :loans
+            corporation.loans.size
+          when :short
+            @game.available_shorts(corporation)
+          when :buying_power
+            @game.buying_power(corporation, full: true)
           else
             @game.player_by_id(@spreadsheet_sort_by)&.num_shares_of(corporation)
           end
@@ -310,6 +318,13 @@ module View
 
         extra = []
         extra << h(:td, "#{corporation.loans.size}/#{@game.maximum_loans(corporation)}") if @game.total_loans&.nonzero?
+        if @game.respond_to?(:available_shorts)
+          taken, total = @game.available_shorts(corporation)
+          extra << h(:td, "#{taken} / #{total}")
+        end
+        if @game.total_loans.positive?
+          extra << h(:td, @game.format_currency(@game.buying_power(corporation, full: true)))
+        end
 
         h(:tr, tr_props, [
           h(:th, name_props, corporation.name),
