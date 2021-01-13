@@ -9,84 +9,72 @@ class Game < Base
   many_to_many :players, class: :User, right_key: :user_id, join_table: :game_users
 
   QUERY_LIMIT = 13
+  PERSONAL_QUERY_LIMIT = 9
 
-  STATUS_QUERY = <<~SQL
-    SELECT %<status>s_games.*
-    FROM (
-      SELECT *
-      FROM games
-      WHERE status = '%<status>s'
-      ORDER BY created_at DESC
-      LIMIT #{QUERY_LIMIT}
-      OFFSET :%<status>s_offset * #{QUERY_LIMIT - 1}
-    ) %<status>s_games
+  ALL_GAMES_QUERY = <<~SQL
+    SELECT *
+    FROM games
+    WHERE status = :status
+      AND (settings->>'unlisted')::boolean = false
+    ORDER BY updated_at DESC
+    LIMIT #{QUERY_LIMIT}
+    OFFSET :page * #{QUERY_LIMIT - 1}
   SQL
 
-  USER_STATUS_QUERY = <<~SQL
-    SELECT %<status>s_games.*
-    FROM (
-      SELECT g.*
-      FROM games g
-      LEFT JOIN user_games ug
-        ON g.id = ug.id
-      WHERE g.status = '%<status>s'
-        AND ug.id IS NULL
-        AND NOT (g.status = 'new' AND COALESCE((settings->>'unlisted')::boolean, false))
-      ORDER BY g.created_at DESC
-      LIMIT #{QUERY_LIMIT}
-      OFFSET :%<status>s_offset * #{QUERY_LIMIT - 1}
-    ) %<status>s_games
-  SQL
-
-  USER_QUERY = <<~SQL
+  NON_PERSONAL_GAMES_QUERY = <<~SQL
     WITH user_games AS (
-      select game_id AS id
-      from game_users
-      where user_id = :user_id
+      SELECT game_id AS id
+      FROM game_users
+      WHERE user_id = :user_id
     )
 
-    SELECT personal_games.*
-    FROM (
-      SELECT g.*
-      FROM games g
-      LEFT JOIN user_games ug
-        ON g.id = ug.id
-      WHERE ug.id IS NOT NULL
-        OR g.user_id = :user_id
-      ORDER BY g.id DESC
-      LIMIT 1000
-    ) personal_games
+    SELECT g.*
+    FROM games g
+    LEFT JOIN user_games ug
+      ON g.id = ug.id
+    WHERE g.status = :status
+      AND ug.id IS NULL
+      AND (settings->>'unlisted')::boolean = false
+    ORDER BY g.updated_at DESC
+    LIMIT #{QUERY_LIMIT}
+    OFFSET :page * #{QUERY_LIMIT - 1}
   SQL
 
-  # rubocop:disable Style/FormatString
-  LOGGED_IN_QUERY = <<~SQL
-    #{USER_QUERY}
-    UNION
-    #{USER_STATUS_QUERY % { status: 'new' }}
-    UNION
-    #{USER_STATUS_QUERY % { status: 'active' }}
-    UNION
-    #{USER_STATUS_QUERY % { status: 'finished' }}
-  SQL
+  PERSONAL_GAMES_QUERY = <<~SQL
+    WITH user_games AS (
+      SELECT game_id AS id
+      FROM game_users
+      WHERE user_id = :user_id
+    )
 
-  LOGGED_OUT_QUERY = <<~SQL
-    #{STATUS_QUERY % { status: 'new' }}
-    UNION
-    #{STATUS_QUERY % { status: 'active' }}
-    UNION
-    #{STATUS_QUERY % { status: 'finished' }}
+    SELECT g.*
+    FROM games g
+    JOIN user_games ug
+      ON g.id = ug.id
+    WHERE g.status = :status
+    ORDER BY g.acting && '{:user_id}' DESC, g.updated_at DESC
+    LIMIT #{PERSONAL_QUERY_LIMIT}
+    OFFSET :page * #{PERSONAL_QUERY_LIMIT - 1}
   SQL
-  # rubocop:enable Style/FormatString
 
   def self.home_games(user, **opts)
     opts = {
-      new_offset: opts['new'],
-      active_offset: opts['active'],
-      finished_offset: opts['finished'],
-    }.transform_values { |v| v&.to_i || 0 }
-
+      type: opts['games'] || user ? 'personal' : 'all',
+      page: opts['p']&.to_i || 0,
+      status: opts['status'] || user ? 'active' : 'new',
+    }
     opts[:user_id] = user.id if user
-    fetch(user ? LOGGED_IN_QUERY : LOGGED_OUT_QUERY, **opts,).all.sort_by(&:id).reverse
+
+    query =
+      if user && opts[:type] == 'personal'
+        PERSONAL_GAMES_QUERY
+      elsif user
+        NON_PERSONAL_GAMES_QUERY
+      else
+        ALL_GAMES_QUERY
+      end
+
+    fetch(query, **opts,).all
   end
 
   SETTINGS = %w[
