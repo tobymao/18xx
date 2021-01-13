@@ -254,6 +254,11 @@ module View
 
       return h(Game::DiscardTrains) if current_entity_actions.include?('discard_train')
 
+      if current_entity_actions.include?('par') &&
+          step.respond_to?(:corporation_pending_par) && step.corporation_pending_par
+        return h(Game::CorporationPendingPar, corporation: step.corporation_pending_par)
+      end
+
       case @round
       when Engine::Round::Stock
         if !(%w[place_token lay_tile remove_token] & current_entity_actions).empty?
@@ -293,6 +298,10 @@ module View
 
     def current_entity_actions
       @current_entity_actions ||= @game.round.actions_for(@game.round.active_step&.current_entity) || []
+    end
+
+    def step
+      @game.round.active_step
     end
   end
 end

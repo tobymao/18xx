@@ -10,7 +10,6 @@ require 'view/game/players'
 require 'view/game/sell_shares'
 require 'view/game/stock_market'
 require 'view/game/bid'
-require 'view/game/corporation_pending_par'
 
 module View
   module Game
@@ -36,11 +35,6 @@ module View
           if @last_player != @current_entity && !@auctioning_corporation
             store(:selected_corporation, nil, skip: true)
             store(:last_player, @current_entity, skip: true)
-          end
-
-          if @current_actions.include?('par') &&
-             @step.respond_to?(:corporation_pending_par) && @step.corporation_pending_par
-            return h(CorporationPendingPar, corporation: @step.corporation_pending_par)
           end
 
           children = []
