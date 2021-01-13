@@ -10,14 +10,12 @@ module Engine
         include BuyTrainAction
 
         def actions(entity)
-          return [] unless ability(entity)
-
-          super
+          ability(entity) && can_buy_train?(entity) ? %w[buy_train pass] : []
         end
 
         def round_state
           {
-            premature_trains_bought: nil,
+            premature_trains_bought: [],
           }
         end
 
@@ -26,7 +24,7 @@ module Engine
           buy_train_action(action)
 
           @round.bought_trains << corporation if from_depot && @round.respond_to?(:bought_trains)
-          @round.premature_trains_bought = action.entity
+          @round.premature_trains_bought << action.entity
 
           pass! unless can_buy_train?(action.entity)
         end
@@ -35,16 +33,15 @@ module Engine
           "Owning #{@game.motala_verkstad.name} gives the ability to buy trains before running any routes."
         end
 
-        def pass!
-          super
-
-          ability(@game.current_entity)&.use! if @round.premature_trains_bought == @game.current_entity
-        end
-
         def ability(entity)
-          return if !@game.motala_verkstad || @game.motala_verkstad.owner != entity
+          return if !@game.motala_verkstad || entity.minor? || @game.motala_verkstad.owner != entity
 
           @game.abilities(@game.motala_verkstad, :train_buy)
+        end
+
+        def do_after_buy_train_action(action, _entity)
+          # Trains bought with this ability can be run even if they have already run this OR
+          action.train.operated = false
         end
       end
     end
