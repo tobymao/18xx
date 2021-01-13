@@ -295,6 +295,9 @@ module Engine
       def close_bank_shorts
         # Close out shorts in stock market with the bank buying shares from the treasury
         @corporations.each do |corporation|
+          next unless corporation.share_price
+          next if corporation.share_price.acquisition? || corporation.share_price.liquidation?
+
           count = 0
           while entity_shorts(@share_pool, corporation).any? &&
             corporation.shares.any?

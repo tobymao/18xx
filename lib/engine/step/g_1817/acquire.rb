@@ -15,6 +15,7 @@ module Engine
         attr_reader :auctioning, :last_president, :buyer
 
         def actions(entity)
+          return [] if entity.company?
           return %w[assign pass] if @offer
           return %w[bid pass] if @auctioning
           return %w[take_loan pass] if can_take_loan?(entity)
