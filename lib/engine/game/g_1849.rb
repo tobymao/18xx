@@ -426,7 +426,9 @@ module Engine
         owner_after_percent = owner_percent - bundle.percent
 
         if other_percent == 20 && would_be_pres.certs_of(bundle.corporation).one?
-          return false unless owner_after_percent.zero?
+          return true if owner_after_percent.zero?
+
+          owner_percent > 20 && owner_after_percent == 10
         end
 
         owner_after_percent < 20 && other_percent > owner_after_percent
@@ -475,7 +477,7 @@ module Engine
         last_cert = bundle.shares.find(&:last_cert)
         return true unless last_cert
 
-        location = last_cert.corporation.shares.include?(last_cert) ? last_cert.corporation.shares : share_pool.shares
+        location = bundle.owner.share_pool? ? share_pool.shares_of(bundle.corporation) : bundle.corporation.ipo_shares
         location.size == bundle.shares.size
       end
 

@@ -12,8 +12,8 @@ module Engine
 
         double = incoming_pres_shares.find(&:last_cert)
         shares =
-          if double && swap_to.name != 'Market'
-            if incoming_pres_shares.sum(&:percent) >= 40
+          if double
+            if !swap_to.share_pool? && incoming_pres_shares.sum(&:percent) >= 40
               @game.swap_choice_player = swap_to
               @game.swap_other_player = president
               @game.swap_corporation = corporation
