@@ -87,7 +87,7 @@ module Engine
           Step::Track,
           Step::Token,
           Step::Route,
-          Step::Dividend,
+          Step::G18CZ::Dividend,
           Step::DiscardTrain,
           Step::BuyTrain,
           [Step::BuyCompany, { blocks: true }],
