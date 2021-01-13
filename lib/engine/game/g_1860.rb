@@ -23,7 +23,7 @@ module Engine
       GAME_LOCATION = 'Isle of Wight'
       GAME_RULES_URL = 'https://www.dropbox.com/s/usfbqtdjzx6ug8f/1860-rules.pdf'
       GAME_DESIGNER = 'Mike Hutton'
-      GAME_PUBLISHER = nil
+      GAME_PUBLISHER = :all_aboard_games
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1860'
 
       DEV_STAGE = :beta
