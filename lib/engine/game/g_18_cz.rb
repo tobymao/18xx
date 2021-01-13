@@ -92,7 +92,7 @@ module Engine
           Step::Route,
           Step::G18CZ::Dividend,
           Step::DiscardTrain,
-          Step::BuyTrain,
+          Step::G18CZ::BuyTrain,
           [Step::BuyCompany, { blocks: true }],
         ], round_num: round_num)
       end
@@ -166,6 +166,14 @@ module Engine
         @tiles.each do |tile|
           tile.blocks_lay = true if tile.name.end_with?('p')
         end
+      end
+
+      def must_buy_train?(entity)
+        !entity.rusted_self &&
+        !depot.depot_trains.empty? &&
+        (entity.trains.empty? ||
+          (entity.type == :medium && !entity.trains.any? { |item| !!(item.name =~ /^[2-5]\+[2-5][a-j]$/) }) ||
+          (entity.type == :large && !entity.trains.any? { |item| !!(item.name =~ /^[3-8]E[a-j]?$/) }))
       end
     end
   end
