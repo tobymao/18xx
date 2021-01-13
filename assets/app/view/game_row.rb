@@ -9,13 +9,14 @@ module View
 
     needs :header
     needs :game_row_games
-    needs :user
+    needs :status, default: 'active'
     needs :type
+    needs :user
 
     LIMIT = 12
 
     def render
-      @limit = @type == :personal ? 1000 : LIMIT
+      @limit = @type == :personal ? 8 : LIMIT
       h("div##{@type}.game_row", { key: @header }, [
         render_header(@header),
         *render_row,
@@ -25,9 +26,10 @@ module View
     def render_header(header)
       children = [h(:h2, header)]
       p = page.to_i
+      params = "games=#{@type}#{@type != :hotseat ? "&status=#{@status}" : ''}"
       @offset = @type == :hotseat ? (p * @limit) : 0
-      children << render_more('Prev', "?#{@type}=#{p - 1}") if p.positive?
-      children << render_more('Next', "?#{@type}=#{p + 1}") if @game_row_games.size > @offset + @limit
+      children << render_more('Prev', "?#{params}&p=#{p - 1}") if p.positive?
+      children << render_more('Next', "?#{params}&p=#{p + 1}") if @game_row_games.size > @offset + @limit
 
       props = {
         style: {
@@ -72,7 +74,7 @@ module View
     def page
       return 0 if `typeof URLSearchParams === 'undefined'` # rubocop:disable Lint/LiteralAsCondition
 
-      `(new URLSearchParams(window.location.search)).get(#{@type})` || 0
+      `(new URLSearchParams(window.location.search)).get('p')` || 0
     end
   end
 end
