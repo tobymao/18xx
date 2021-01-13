@@ -204,7 +204,7 @@ module View
           player_corps = mergeable_entities.select do |target|
             target.owner == @mergeable_entity.owner || @step.show_other_players
           end
-          @selected_corporation = player_corps.first if player_corps.one?
+          @selected_corporation = player_corps.first if mergeable_entities.one?
           return unless mergeable_entities
 
           children = []
