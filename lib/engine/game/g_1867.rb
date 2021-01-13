@@ -38,7 +38,7 @@ module Engine
       SELL_MOVEMENT = :left_block_pres
       ALL_COMPANIES_ASSIGNABLE = true
       SELL_AFTER = :operate
-      DEV_STAGE = :alpha
+      DEV_STAGE = :beta
       SELL_BUY_ORDER = :sell_buy
       EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
       GAME_END_CHECK = { bank: :current_or, custom: :one_more_full_or_set }.freeze
@@ -112,10 +112,14 @@ module Engine
         end
       end
 
+      def calculate_corporation_interest(corporation)
+        @interest[corporation] = corporation.loans.size
+      end
+
       def calculate_interest
         # Number of loans interest is due on is set before taking loans in that OR
         @interest.clear
-        @corporations.each { |c| @interest[c] = c.loans.size }
+        @corporations.each { |c| calculate_corporation_interest(c) }
       end
 
       def interest_owed_for_loans(loans)
@@ -197,6 +201,11 @@ module Engine
 
         # Loans are actually generate $5 less than when taken out.
         entity.cash + ((maximum_loans(entity) - entity.loans.size) * (@loan_value - 5))
+      end
+
+      def operating_order
+        minors, majors = @corporations.select(&:floated?).sort.partition { |c| c.type == :minor }
+        minors + majors
       end
 
       def unstarted_corporation_summary

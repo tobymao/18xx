@@ -16,10 +16,6 @@ module Engine
           after_setup
         end
 
-        def select_entities
-          super.reject { |c| c.share_price.liquidation? }
-        end
-
         def after_process(action)
           # Keep track of last_player for Cash Crisis
           entity = @entities[@entity_index]

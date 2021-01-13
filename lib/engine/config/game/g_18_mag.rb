@@ -459,9 +459,9 @@ module Engine
       "color": "green"
     },
     {
-      "sym": "KSB",
+      "sym": "SKEV",
       "name": "Gróf Széchenyi István Konsortium",
-      "logo": "18_mag/KSB",
+      "logo": "18_mag/SKEV",
       "float_percent": 0,
       "max_ownership_percent": 60,
       "tokens": [

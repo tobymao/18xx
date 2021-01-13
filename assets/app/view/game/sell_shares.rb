@@ -41,6 +41,7 @@ module View
         @game.bundles_for_corporation(@player, @corporation).map do |bundle|
           pool_shares = @game.share_pool.shares_by_corporation[@corporation].group_by(&:percent).values.map(&:first)
           pool_shares.each do |pool_share|
+            next unless step.respond_to?(:swap_sell)
             next unless (swap_sell = step.swap_sell(@player, @corporation, bundle, pool_share))
 
             buttons << sell_with_swap(@player, bundle, swap_sell)

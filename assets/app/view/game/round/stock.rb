@@ -57,6 +57,7 @@ module View
           end
 
           children.concat(render_buttons)
+          children.concat(render_failed_merge) if @current_actions.include?('failed_merge')
           children << h(BuyCompaniesAtFaceValue, game: @game) if @current_actions.include?('buy_company') &&
             @step.purchasable_unsold_companies.any?
           children.concat(render_corporations)
@@ -94,6 +95,21 @@ module View
           [h(:button, { on: { click: merge } }, @step.merge_action)]
         end
 
+        def render_failed_merge
+          return [] unless @step.merge_failed?
+
+          failed_merge = lambda do
+            process_action(Engine::Action::Undo.new(@game.current_entity, action_id: @step.action_id_before_merge))
+            process_action(Engine::Action::FailedMerge.new(@game.current_entity,
+                                                           corporations: @step.merging_corporations))
+          end
+
+          text = 'The merger has failed. The President did not have a share to donate to the system.' \
+                 " Press the 'Merge Failed' button to continue. You will not be able to undo to this point afterwards."
+          [h(:div, text),
+           h(:button, { on: { click: failed_merge } }, 'Merge Failed')]
+        end
+
         def render_corporations
           props = {
             style: {
@@ -101,6 +117,8 @@ module View
               verticalAlign: 'top',
             },
           }
+
+          merging = @step.respond_to?(:merge_in_progress?) && @step.merge_in_progress?
 
           @game.sorted_corporations.reject(&:closed?).map do |corporation|
             next if @auctioning_corporation && @auctioning_corporation != corporation
@@ -113,7 +131,7 @@ module View
             input = render_input(corporation) if @game.corporation_available?(corporation)
             choose = h(Choose) if @current_actions.include?('choose') && @step.choice_available?(corporation)
 
-            children << h(Corporation, corporation: corporation, interactive: input || choose)
+            children << h(Corporation, corporation: corporation, interactive: input || choose || merging)
             children << input if input && @selected_corporation == corporation
             children << choose if choose
 
@@ -133,15 +151,22 @@ module View
         end
 
         def render_pre_ipo(corporation)
+          children = []
+
           type = @step.ipo_type(corporation)
           case type
           when :par
-            return h(Par, corporation: corporation) if @current_actions.include?('par')
+            children << h(Par, corporation: corporation) if @current_actions.include?('par')
           when :bid
-            return h(Bid, entity: @current_entity, corporation: corporation) if @current_actions.include?('bid')
+            children << h(Bid, entity: @current_entity, corporation: corporation) if @current_actions.include?('bid')
           when String
-            return h(:div, type)
+            children << h(:div, type)
           end
+          children << h(BuySellShares, corporation: corporation)
+
+          children.compact!
+          return h(:div, children) unless children.empty?
+
           nil
         end
 
@@ -186,7 +211,7 @@ module View
           player_corps = mergeable_entities.select do |target|
             target.owner == @mergeable_entity.owner || @step.show_other_players
           end
-          @selected_corporation = player_corps.first if player_corps.one?
+          @selected_corporation = player_corps.first if mergeable_entities.one?
           return unless mergeable_entities
 
           children = []

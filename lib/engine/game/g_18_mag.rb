@@ -6,7 +6,7 @@ require_relative 'base'
 module Engine
   module Game
     class G18Mag < Base
-      attr_reader :tile_groups, :unused_tiles
+      attr_reader :tile_groups, :unused_tiles, :sik, :skev, :ldsteg, :mavag, :raba, :snw, :gc
 
       load_from_json(Config::Game::G18Mag::JSON)
 
@@ -25,10 +25,22 @@ module Engine
       SELL_BUY_ORDER = :sell_buy
       MARKET_SHARE_LIMIT = 100
 
+      TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded, cost: 10 }].freeze
+
       START_PRICES = [60, 60, 65, 65, 70, 70, 75, 75, 80, 80].freeze
       MINOR_STARTING_CASH = 50
 
+      TRAIN_PRICE_MIN = 1
+
       def setup
+        @sik = @corporations.find { |c| c.name == 'SIK' }
+        @skev = @corporations.find { |c| c.name == 'SKEV' }
+        @ldsteg = @corporations.find { |c| c.name == 'LdStEG' }
+        @mavag = @corporations.find { |c| c.name == 'MAVAG' }
+        @raba = @corporations.find { |c| c.name == 'RABA' }
+        @snw = @corporations.find { |c| c.name == 'SNW' }
+        @gc = @corporations.find { |c| c.name == 'G&C' }
+
         @tile_groups = init_tile_groups
         update_opposites
         @unused_tiles = []
@@ -165,13 +177,13 @@ module Engine
       def operating_round(round_num)
         Round::Operating.new(self, [
           Step::Exchange,
-          Step::DiscardTrain,
-          Step::G18Mag::Track,
           Step::HomeToken,
-          Step::Token,
-          Step::Route,
+          Step::G18Mag::Track,
+          Step::G18Mag::Token,
+          Step::G18Mag::DiscardTrain,
+          Step::G18Mag::Route,
           Step::G18Mag::Dividend,
-          Step::BuyTrain,
+          Step::G18Mag::BuyTrain,
         ], round_num: round_num)
       end
 
@@ -224,6 +236,24 @@ module Engine
         return false if (from.color == :white) && from.label.to_s == 'OO' && from.cities.size != to.cities.size
 
         true
+      end
+
+      # price is nil, :free, or a positive int
+      def buy_train(operator, train, price = nil)
+        cost = price || train.price
+        if price != :free && train.owner == @depot
+          corp = %w[2 4].include?(train.name) ? @ldsteg : @mavag
+          operator.spend(cost / 2, @bank)
+          operator.spend(cost / 2, corp)
+          @log << "#{corp.name} earns #{format_currency(cost / 2)}"
+        elsif price != :free
+          operator.spend(cost, train.owner)
+        end
+        remove_train(train)
+        train.owner = operator
+        operator.trains << train
+        operator.rusted_self = false
+        @crowded_corps = nil
       end
 
       def place_home_token(_corp); end

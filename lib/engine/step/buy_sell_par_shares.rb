@@ -213,7 +213,7 @@ module Engine
       end
 
       def sell_shares(entity, shares, swap: nil)
-        raise GameError "Cannot sell shares of #{shares.corporation.name}" if !can_sell?(entity, shares) && !swap
+        raise GameError, "Cannot sell shares of #{shares.corporation.name}" if !can_sell?(entity, shares) && !swap
 
         @round.players_sold[shares.owner][shares.corporation] = :now
         @game.sell_shares_and_change_price(shares, swap: swap)
@@ -233,7 +233,7 @@ module Engine
         price = action.price
         owner = company.owner
 
-        raise GameError "Cannot buy #{company.name} from #{owner.name}" if owner&.corporation?
+        raise GameError, "Cannot buy #{company.name} from #{owner.name}" if owner&.corporation?
 
         company.owner = entity
         owner&.companies&.delete(company)
