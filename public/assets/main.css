@@ -10,6 +10,9 @@ a {
   color: currentColor;
   text-underline-offset: 0.2em;
 }
+nav a {
+  text-decoration: none;
+}
 
 button, .button_link {
   font-size: 14px;
@@ -187,6 +190,27 @@ nav#game_menu {
   font-weight: bold;
 }
 
+#header div {
+  display: grid;
+  grid: 1fr / 1fr auto;
+}
+#games_nav {
+  justify-self: center;
+}
+
+@media only screen and (max-width: 479px) {
+  #header div {
+    grid: 2fr / auto;
+  }
+  #games_nav {
+    grid-row-start: 2;
+    justify-self: start;
+  }
+}
+
+#profile-settings > div {
+  margin: 0.2rem 0;
+}
 #profile-settings > div * {
   vertical-align: middle;
 }
