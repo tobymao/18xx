@@ -66,7 +66,11 @@ module View
     end
 
     def render_row
-      @game_row_games.slice(@offset, @limit).map { |game| h(GameCard, gdata: game, user: @user) }
+      if @game_row_games.any?
+        @game_row_games.slice(@offset, @limit).map { |game| h(GameCard, gdata: game, user: @user) }
+      else
+        [h(:div, 'No games to display')]
+      end
     end
 
     private
