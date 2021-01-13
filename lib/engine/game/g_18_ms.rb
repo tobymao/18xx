@@ -84,7 +84,7 @@ module Engine
         buy_train(neutral, @free_train, :free)
 
         @or = 0
-        @last_or = @optional_rules&.include?(:or_11) ? 11 : 10
+        @last_or = option_or_11 ? 11 : 10
         @three_or_round = false
       end
 
@@ -126,7 +126,7 @@ module Engine
         end
 
         # In case of 11 ORs, the last set will be 3 ORs
-        if @or == 9 && @optional_rules&.include?(:or_11)
+        if @or == 9 && option_or_11
           @operating_rounds = 3
           @three_or_round = true
         end
@@ -203,7 +203,7 @@ module Engine
         ((turn - 1) * 2 + round).to_s
       end
 
-      # Game will end directly after the end of OR 10
+      # Game will end directly after the end of OR 10 (or 11 with optional rule)
       def end_now?(_after)
         @or == @last_or
       end
@@ -242,7 +242,7 @@ module Engine
 
           # Trains that are going to be salvaged at the end of this OR
           # cannot be sold when they have been run
-          t.buyable = false unless @optional_rules&.include?(:allow_buy_rusting)
+          t.buyable = false unless option_allow_buy_rusting
         end if @round.round_num == 2
 
         super
@@ -348,6 +348,14 @@ module Engine
         @log << "-- Event: #{rusted_trains.map(&:name).uniq} trains rust " \
           "( #{owners.map { |c, t| "#{c} x#{t}" }.join(', ')}) --"
         @log << "Corporations salvage #{format_currency(salvage)} from each rusted train"
+      end
+
+      def option_or_11
+        @optional_rules&.include?(:or_11)
+      end
+
+      def option_allow_buy_rusting
+        @optional_rules&.include?(:allow_buy_rusting)
       end
     end
   end

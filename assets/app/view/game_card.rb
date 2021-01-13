@@ -242,7 +242,7 @@ module View
       elsif @gdata['round']
         children << h('div.inline', [
           h(:strong, 'Round: '),
-          "#{@gdata['round']&.split(' ')&.first} #{@gdata['turn']}",
+          @gdata['round_info'] || '',
         ])
 
         children << h('div.inline', { style: { float: 'right' } }, [

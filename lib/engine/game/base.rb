@@ -75,7 +75,7 @@ module Engine
     class Base
       attr_reader :raw_actions, :actions, :bank, :cert_limit, :cities, :companies, :corporations,
                   :depot, :finished, :graph, :hexes, :id, :loading, :loans, :log, :minors,
-                  :phase, :players, :operating_rounds, :round, :share_pool, :stock_market, :tile_groups,
+                  :phase, :players, :operating_rounds, :round, :round_info, :share_pool, :stock_market, :tile_groups,
                   :tiles, :turn, :total_loans, :undo_possible, :redo_possible, :round_history, :all_tiles,
                   :optional_rules, :exception, :last_processed_action, :broken_action,
                   :turn_start_action_id, :last_turn_start_action_id
@@ -478,6 +478,7 @@ module Engine
 
         @round_history = []
         @round = init_round
+        @round_info = create_round_info
 
         cache_objects
         connect_hexes
@@ -633,6 +634,7 @@ module Engine
             @round.at_start = true
             @round.setup
             @round_history << current_action_id
+            @round_info = create_round_info
           end
         end
 
@@ -644,6 +646,14 @@ module Engine
         @exception = e
         @broken_action = action
         self
+      end
+
+      def create_round_info
+        r = @round.name.split(' ').first
+
+        t = r == 'Operating' ? or_description_short(@turn, @round.round_num) : @turn
+
+        "#{r} #{t}"
       end
 
       def maybe_raise!
