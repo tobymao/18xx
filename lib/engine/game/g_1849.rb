@@ -153,11 +153,6 @@ module Engine
         @corporations.sort_by! { rand }
         setup_companies
         remove_corp if @players.size == 3
-        @corporations.each do |c|
-          c.slot_open = true
-          c.next_to_par = false
-          c.shares.last.last_cert = true
-        end
         @corporations[0].next_to_par = true
 
         @player_debts = Hash.new { |h, k| h[k] = 0 }
@@ -262,10 +257,11 @@ module Engine
       def close_corporation(corporation, quiet: false)
         super
         corporation = reset_corporation(corporation)
-        corporation.shares.last.last_cert = true
         @corporations << corporation
         corporation.closed_recently = true
         index = @corporations.index(corporation)
+
+        # let this corp skip AFG in line if AFG is blocked from opening
         unless @corporations[index - 1].slot_open
           @corporations[index - 1].next_to_par = false
           @corporations[index - 1], @corporations[index] = @corporations[index], @corporations[index - 1]
