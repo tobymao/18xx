@@ -429,13 +429,13 @@ module Engine
          ]
       },
       "gray":{
-         "offboard=revenue:yellow_10|green_40|brown_60;path=a:4,b:_0,track:dual":[
+         "offboard=revenue:white_10|gray_40|black_60;path=a:4,b:_0,track:dual":[
             "A7"
          ],
-         "offboard=revenue:yellow_30|green_50|brown_80;path=a:0,b:_0,track:dual":[
+         "offboard=revenue:white_30|gray_50|black_80;path=a:0,b:_0,track:dual":[
             "N2"
          ],
-         "offboard=revenue:yellow_80|green_120|brown_160;path=a:5,b:_0,track:dual":[
+         "offboard=revenue:white_80|gray_120|black_160;path=a:5,b:_0,track:dual":[
             "C5"
          ],
          "path=a:3,b:5,track:dual":[
@@ -456,16 +456,16 @@ module Engine
          "town=revenue:20;path=a:3,b:_0,track:dual;path=a:2,b:_0,track:dual;path=a:4,b:_0,track:dual;path=a:5,b:_0,track:dual":[
             "K9"
          ],
-         "city=slots:2,revenue:yellow_20|green_30|brown_40;path=a:4,b:_0,track:dual;path=a:2,b:_0;path=a:1,b:_0,track:narrow;path=a:5,b:_0":[
+         "city=slots:2,revenue:white_20|gray_30|black_40;path=a:4,b:_0,track:dual;path=a:2,b:_0;path=a:1,b:_0,track:narrow;path=a:5,b:_0":[
             "J18"
          ],
-         "city=revenue:yellow_20|green_30|brown_40,slots:2;path=a:0,b:_0,track:dual;path=a:1,b:_0,track:dual;path=a:2,b:_0,track:dual;path=a:4,b:_0,track:dual":[
+         "city=revenue:white_20|gray_30|black_40,slots:2;path=a:0,b:_0,track:dual;path=a:1,b:_0,track:dual;path=a:2,b:_0,track:dual;path=a:4,b:_0,track:dual":[
             "B14"
          ],
-         "city=slots:2,revenue:yellow_20|green_30|brown_40;path=a:4,b:_0,track:dual;path=a:2,b:_0,track:dual;path=a:3,b:_0,track:dual;path=a:1,b:_0,track:dual;path=a:5,b:_0,track:dual;path=a:0,b:_0,track:dual;path=a:5,b:_0,track:dual":[
+         "city=slots:2,revenue:white_20|gray_30|black_40;path=a:4,b:_0,track:dual;path=a:2,b:_0,track:dual;path=a:3,b:_0,track:dual;path=a:1,b:_0,track:dual;path=a:5,b:_0,track:dual;path=a:0,b:_0,track:dual;path=a:5,b:_0,track:dual":[
             "I13"
          ],
-         "city=slots:1,revenue:yellow_20|green_30|brown_40;path=a:0,b:_0,track:dual;path=a:3,b:_0,track:dual;path=a:2,b:_0,track:dual":[
+         "city=slots:1,revenue:white_20|gray_30|black_40;path=a:0,b:_0,track:dual;path=a:3,b:_0,track:dual;path=a:2,b:_0,track:dual":[
             "N20"
          ]
       },

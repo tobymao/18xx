@@ -18,6 +18,73 @@ module Engine
       NEW_PORT_HEXES = %w[B16 G5 J20 L16].freeze
       NEW_SMS_HEXES = %w[B14 G7 H8 J18 L12 L18 L20 N20 O9 P2].freeze
 
+      NEW_GRAY_REVENUE_CENTERS =
+        {
+         'A7':
+           {
+            '4H': 10,
+            '6H': 10,
+            '8H': 40,
+            '10H': 40,
+            '12H': 60,
+            '16H': 60,
+           },
+         'N2':
+           {
+            '4H': 30,
+            '6H': 30,
+            '8H': 50,
+            '10H': 50,
+            '12H': 80,
+            '16H': 80,
+           },
+         'C5':
+           {
+            '4H': 80,
+            '6H': 80,
+            '8H': 120,
+            '10H': 120,
+            '12H': 160,
+            '16H': 160,
+           },
+         'J18':
+           {
+            '4H': 20,
+            '6H': 20,
+            '8H': 30,
+            '10H': 30,
+            '12H': 40,
+            '16H': 40,
+           },
+         'B14':
+           {
+            '4H': 20,
+            '6H': 20,
+            '8H': 30,
+            '10H': 30,
+            '12H': 40,
+            '16H': 40,
+           },
+         'I13':
+           {
+            '4H': 20,
+            '6H': 20,
+            '8H': 30,
+            '10H': 30,
+            '12H': 40,
+            '16H': 40,
+           },
+         'N20':
+           {
+            '4H': 20,
+            '6H': 20,
+            '8H': 30,
+            '10H': 30,
+            '12H': 40,
+            '16H': 40,
+           },
+        }.freeze
+
       def home_token_locations(corporation)
         raise NotImplementedError unless corporation.name == 'AFG'
 
@@ -41,21 +108,27 @@ module Engine
       end
 
       def num_trains(train)
-        fewer = @players.size < 4
         case train[:name]
         when '6H'
-          fewer ? 4 : 4
+          4
         when '8H'
-          fewer ? 4 : 4
+          4
         when '16H'
-          fewer ? 6 : 6
+          6
         end
       end
 
-      def remove_corp
+      def stop_revenue(stop, phase, train)
+        return gray_revenue(stop) if NEW_GRAY_REVENUE_CENTERS.keys.include?(stop.hex.id)
 
+        stop.route_revenue(phase, train)
       end
 
+      def gray_revenue(stop)
+        NEW_GRAY_REVENUE_CENTERS[stop.hex.id][@phase.name]
+      end
+
+      def remove_corp; end
     end
   end
 end
