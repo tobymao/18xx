@@ -40,6 +40,10 @@ module Engine
           super && @game.last_cert_last?(bundle)
         end
 
+        def can_buy_any_from_ipo?(entity)
+          @game.corporations.any? { |c| c.ipoed && can_buy?(entity, c.shares.min_by(&:percent)&.to_bundle) }
+        end
+
         def can_buy_multiple?(entity, corp)
           super || (corp.owner == entity && just_parred(corp) && num_shares_bought(corp) < 2)
         end
