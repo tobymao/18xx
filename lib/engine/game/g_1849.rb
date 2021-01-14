@@ -118,7 +118,7 @@ module Engine
       attr_accessor :swap_choice_player, :swap_other_player, :swap_corporation,
                     :loan_choice_player, :player_debts,
                     :max_value_reached,
-                    :old_operating_order
+                    :old_operating_order, :sold_this_turn
 
       def sms_hexes
         SMS_HEXES
@@ -156,6 +156,7 @@ module Engine
         @corporations[0].next_to_par = true
 
         @player_debts = Hash.new { |h, k| h[k] = 0 }
+        @sold_this_turn = []
       end
 
       def setup_companies
@@ -257,6 +258,7 @@ module Engine
       def close_corporation(corporation, quiet: false)
         super
         corporation = reset_corporation(corporation)
+        hex_by_id(corporation.coordinates).tile.add_reservation!(corporation, 0) unless corporation == afg
         @corporations << corporation
         corporation.closed_recently = true
         index = @corporations.index(corporation)
@@ -379,6 +381,8 @@ module Engine
       end
 
       def reorder_corps
+        just_sold = @sold_this_turn.uniq
+        @sold_this_turn = []
         same_spot =
           @corporations
             .select(&:floated?)
@@ -387,16 +391,17 @@ module Engine
         return if same_spot.empty?
 
         same_spot.each do |sp, corps|
-          current_order = corps.sort.map(&:name)
-          reordered = corps.sort_by { |c| old_operating_order.index(c) }
-          new_order = reordered.map(&:name)
+          current_order = corps.sort
+          sold, unsold = current_order.partition { |c| just_sold.include?(c) }
+          sold_ordered = sold.sort_by { |c| old_operating_order.index(c) }
+          new_order = unsold + sold_ordered
           next if current_order == new_order
 
-          @log << 'Updating operating order for corporations
+          @log << 'Updating operating order for sold corporations
                     on same share value space to maintain relative order before sales.'
-          @log << "#{current_order} --> #{new_order}"
+          @log << "#{current_order.map(&:name)} --> #{new_order.map(&:name)}"
           sp.corporations.clear
-          sp.corporations.concat(reordered)
+          sp.corporations.concat(new_order)
         end
       end
 
