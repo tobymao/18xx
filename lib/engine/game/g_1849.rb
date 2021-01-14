@@ -66,9 +66,9 @@ module Engine
 
       STATUS_TEXT = Base::STATUS_TEXT.merge(
         'blue_zone': ['Blue Zone Available', 'Corporation share prices can enter the blue zone'],
-        'gray_uses_yellow': ['Yellow Revenues', 'Gray locations use yellow revenue values'],
-        'gray_uses_green': ['Green Revenues', 'Gray locations use green revenue values'],
-        'gray_uses_brown': ['Brown Revenues', 'Gray locations use brown revenue values']
+        'gray_uses_white': ['White Revenues', 'Gray locations use white revenue values'],
+        'gray_uses_gray': ['Gray Revenues', 'Gray locations use gray revenue values'],
+        'gray_uses_black': ['Black Revenues', 'Gray locations use black revenue values']
       ).freeze
 
       GRAY_REVENUE_CENTERS =
