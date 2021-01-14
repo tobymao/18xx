@@ -516,7 +516,7 @@ module Engine
           neighboring_path = neighboring_tile.paths.find { |p| p.exits.include?(Engine::Hex.invert(dir)) }
           if neighboring_path
             ever_not_nil = true
-            return true if connecting_path.tracks_match(neighboring_path, dual_ok: true)
+            return true if connecting_path.tracks_match?(neighboring_path, dual_ok: true)
           end
         end
         !ever_not_nil
