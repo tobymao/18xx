@@ -2,6 +2,7 @@
 
 require_relative '../config/game/g_18_cz'
 require_relative 'base'
+require_relative 'stubs_are_restricted'
 
 module Engine
   module Game
@@ -58,6 +59,8 @@ module Engine
         'large_corps_available' => ['Large Sized Corps Available',
                                     '10-share corps By, kk, Sx, Pr, Ug are available to start']
       ).freeze
+
+      include StubsAreRestricted
 
       def setup
         @or = 0

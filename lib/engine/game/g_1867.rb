@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
 require_relative '../config/game/g_1867'
-require_relative '../loan.rb'
+require_relative '../loan'
 require_relative 'base'
 require_relative 'interest_on_loans'
+require_relative 'stubs_are_restricted'
 
 module Engine
   module Game
@@ -81,8 +82,10 @@ module Engine
       # A token is reserved for Montreal is reserved for nationalization
       CN_RESERVATIONS = ['L12'].freeze
       GREEN_CORPORATIONS = %w[BBG LPS QLS SLA TGB THB].freeze
+
       include InterestOnLoans
       include CompanyPriceUpToFace
+      include StubsAreRestricted
 
       # Minors are done as corporations with a size of 2
 
@@ -94,10 +97,6 @@ module Engine
 
       def interest_rate
         5 # constant
-      end
-
-      def legal_tile_rotation?(_entity, hex, tile)
-        hex.tile.stubs.empty? || tile.exits.include?(hex.tile.stubs.first.edge)
       end
 
       def init_corporations(stock_market)
