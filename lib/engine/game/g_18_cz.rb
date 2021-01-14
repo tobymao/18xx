@@ -172,8 +172,20 @@ module Engine
         !entity.rusted_self &&
         !depot.depot_trains.empty? &&
         (entity.trains.empty? ||
-          (entity.type == :medium && entity.trains.none? { |item| !!(item.name =~ /^[2-5]\+[2-5][a-j]$/) }) ||
-          (entity.type == :large && entity.trains.none? { |item| !!(item.name =~ /^[3-8]E[a-j]?$/) }))
+          (entity.type == :medium && entity.trains.none? { |item| !!(item.name =~ medium_train_regex) }) ||
+          (entity.type == :large && entity.trains.none? { |item| !!(item.name =~ large_train_regex) }))
+      end
+
+      def small_train_regex
+        /^[2-5][a-j]$/
+      end
+
+      def medium_train_regex
+        /^[2-5]\+[2-5][a-j]$/
+      end
+
+      def large_train_regex
+        /^[3-8]E[a-j]?$/
       end
     end
   end
