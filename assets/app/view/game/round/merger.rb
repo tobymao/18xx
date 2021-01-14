@@ -71,6 +71,7 @@ module View
           elsif merge_entity
             children << h(:div, props, [h(Corporation, corporation: merge_entity, selectable: false)])
           end
+          children << h(Player, game: @game, player: entity.owner) if entity.owner.player?
 
           if mergeable_entities
             props = {
