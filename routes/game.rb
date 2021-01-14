@@ -64,8 +64,7 @@ class Api
                   game: game,
                   user: user,
                   action_id: action_id,
-                  turn: meta['turn'],
-                  round: meta['round'],
+                  round_info: meta['round_info'],
                   action: action,
                 )
 
@@ -91,8 +90,7 @@ class Api
                   game: game,
                   user: user,
                   action_id: action['id'],
-                  turn: engine.turn,
-                  round: engine.round.name,
+                  round_info: engine.round_info,
                   action: action,
                 )
 
@@ -177,7 +175,7 @@ class Api
               optional_rules: r['optional_rules'],
             },
             title: title,
-            round: Engine::GAMES_BY_TITLE[title].new([]).round&.name,
+            round_info: Engine::GAMES_BY_TITLE[title].new([]).round_info,
           }
 
           game = Game.create(params)
