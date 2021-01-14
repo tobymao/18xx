@@ -72,7 +72,8 @@ class Api
 
         # POST '/api/user/logout'
         r.post 'logout' do
-          logout_session(session)
+          session.destroy
+          clear_cookies!
           { games: Game.home_games(nil, **r.params).map(&:to_h) }
         end
 
@@ -80,15 +81,14 @@ class Api
         r.is 'delete' do
           Game.where(id: user.game_users.map(&:game_id)).delete
           user.destroy
-          logout_session(session)
+          clear_cookies!
           {}
         end
       end
     end
   end
 
-  def logout_session(session)
-    session.destroy
+  def clear_cookies!
     request.response.set_cookie(
       'auth_token',
       value: nil,

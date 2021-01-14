@@ -19,7 +19,7 @@ module UserManager
 
   def edit_user(params)
     @connection.safe_post('/user/edit', params) do |data|
-      store(:user, data['user'], skip: false)
+      store(:user, data)
     end
   end
 
