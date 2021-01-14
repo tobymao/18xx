@@ -46,8 +46,6 @@ class Api < Roda
   plugin :error_handler
 
   error do |e|
-    puts e.backtrace.reverse
-    puts "#{e.class}: #{e.message}"
     LOGGER.error e.backtrace
     { error: e.message }
   end
@@ -58,6 +56,7 @@ class Api < Roda
   plugin :json
   plugin :json_parser
   plugin :halt
+  plugin :cookies
 
   ASSETS = Assets.new(precompiled: PRODUCTION)
 
@@ -116,6 +115,8 @@ class Api < Roda
   end
 
   def render(**needs)
+    needs[:user] = user&.to_h(for_user: true)
+
     return render_pin(**needs) if needs[:pin]
 
     script = Snabberb.prerender_script(
@@ -172,7 +173,7 @@ class Api < Roda
   end
 
   def session
-    return unless (token = request.env['HTTP_AUTHORIZATION'])
+    return unless (token = request.cookies['auth_token'])
 
     @session ||= Session.find(token: token)
   end
@@ -199,7 +200,7 @@ class Api < Roda
   end
 
   MessageBus.user_id_lookup do |env|
-    next unless (token = env['HTTP_AUTHORIZATION'])
+    next unless (token = Rack::Request.new(env).cookies['auth_token'])
 
     ip =
       if (addr = env['HTTP_X_FORWARDED_FOR'])

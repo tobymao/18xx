@@ -2050,6 +2050,10 @@ module Engine
         corporations.sort_by(&:name)
       end
 
+      def info_on_trains(phase)
+        Array(phase[:on]).first
+      end
+
       def ability_right_type?(ability, type)
         !type || (ability.type == type)
       end

@@ -18,6 +18,7 @@ module Engine
 
         def process_sell_shares(action)
           super
+          @game.sold_this_turn << action.bundle.corporation
           @sold_any = true
         end
 
@@ -37,6 +38,10 @@ module Engine
 
         def can_buy?(entity, bundle)
           super && @game.last_cert_last?(bundle)
+        end
+
+        def can_buy_any_from_ipo?(entity)
+          @game.corporations.any? { |c| c.ipoed && can_buy?(entity, c.shares.min_by(&:percent)&.to_bundle) }
         end
 
         def can_buy_multiple?(entity, corp)

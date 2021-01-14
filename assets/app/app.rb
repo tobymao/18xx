@@ -48,7 +48,6 @@ class App < Snabberb::Component
   def render_content
     store(:connection, Lib::Connection.new(root), skip: true) unless @connection
 
-    refresh_user
     js_handlers
 
     needs_consent = @user && !@user.dig('settings', 'consent')

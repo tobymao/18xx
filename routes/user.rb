@@ -73,30 +73,45 @@ class Api
         # POST '/api/user/logout'
         r.post 'logout' do
           session.destroy
-
+          clear_cookies!
           { games: Game.home_games(nil, **r.params).map(&:to_h) }
-        end
-
-        # POST '/api/user/refresh'
-        r.is 'refresh' do
-          login_user(user, new_session: false)
         end
 
         # POST '/api/user/login'
         r.is 'delete' do
           Game.where(id: user.game_users.map(&:game_id)).delete
           user.destroy
+          clear_cookies!
           {}
         end
       end
     end
   end
 
-  def login_user(user, new_session: true)
-    token = (new_session ? Session.create(token: SecureRandom.hex, user: user) : session).token
+  def clear_cookies!
+    request.response.set_cookie(
+      'auth_token',
+      value: nil,
+      expires: Date.today - 1000,
+      domain: nil,
+      path: '/',
+    )
+  end
+
+  def login_user(user)
+    token = Session.create(token: SecureRandom.hex, user: user).token
+
+    request.response.set_cookie(
+      'auth_token',
+      value: token,
+      expires: Date.today + Session::EXPIRE_TIME,
+      domain: nil,
+      httponly: true,
+      secure: true,
+      path: '/',
+    )
 
     {
-      auth_token: token,
       user: user.to_h(for_user: true),
       games: Game.home_games(user, **request.params).map(&:to_h),
     }

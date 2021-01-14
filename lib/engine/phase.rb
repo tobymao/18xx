@@ -4,6 +4,7 @@ require_relative 'action/buy_train'
 
 module Engine
   class Phase
+    attr_accessor :next_on
     attr_reader :name, :operating_rounds, :tiles, :phases, :status, :corporation_sizes
 
     def initialize(phases, game)
@@ -30,6 +31,10 @@ module Engine
 
     def current
       @phases[@index]
+    end
+
+    def upcoming
+      @phases[@index + 1]
     end
 
     def train_limit(entity)
