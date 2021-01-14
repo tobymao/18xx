@@ -16,21 +16,19 @@ module Engine
 
           medium_trains = trains.select { |item| (item[:name] =~ @game.medium_train_regex) }
           if entity.type == :medium
-            if entity.trains.none? { |item| (item.name =~ @game.medium_train_regex) } && room_for_only_one?(entity)
-              return medium_trains
-            else
-              return default_trains + medium_trains
-            end
+            return medium_trains if entity.trains.none? do |item|
+                                      (item.name =~ @game.medium_train_regex)
+                                    end && room_for_only_one?(entity)
+
+            return default_trains + medium_trains
           end
 
-          # large corporation left
           large_trains = trains.select { |item| (item[:name] =~ @game.large_train_regex) }
 
-          if entity.trains.none? { |item| (item.name =~ @game.large_train_regex) } && room_for_only_one?(entity)
-            large_trains
-          else
-            default_trains + medium_trains + large_trains
-          end
+          large_trains if entity.trains.none? do |item|
+                            (item.name =~ @game.large_train_regex)
+                          end && room_for_only_one?(entity)
+          default_trains + medium_trains + large_trains
         end
 
         def room_for_only_one?(entity)
