@@ -1,3 +1,6 @@
+AllCops:
+  TargetRubyVersion: 2.7
+
 Layout/FirstArgumentIndentation:
   Enabled: false
 
@@ -5,7 +8,10 @@ Layout/FirstArrayElementIndentation:
   Enabled: false
 
 Layout/FirstHashElementIndentation:
-  Enabled: False
+  Enabled: true
+
+Layout/FirstHashElementLineBreak:
+  Enabled: true
 
 Layout/LineLength:
   Max: 120
@@ -13,16 +19,56 @@ Layout/LineLength:
     - 'assets/js/view/svg_tokens/**/*'
 
 Layout/MultilineMethodCallIndentation:
-  Enabled: False
+  Enabled: false
+
+Layout/MultilineHashBraceLayout:
+  Enabled: true
+  EnforcedStyle: new_line
+
+Layout/MultilineHashKeyLineBreaks:
+  Enabled: true
 
 Layout/MultilineOperationIndentation:
-  Enabled: False
+  Enabled: false
+
+Layout/SpaceBeforeBrackets:
+  Enabled: true
+
+Lint/AmbiguousAssignment:
+  Enabled: true
+
+Lint/ConstantDefinitionInBlock: # TODO: check
+  Enabled: false
+
+Lint/DuplicateBranch:
+  Enabled: true
+
+Lint/DuplicateRegexpCharacterClassElement:
+  Enabled: true
+
+Lint/EmptyBlock:
+  Enabled: true
+
+Lint/EmptyClass:
+  Enabled: true
+
+Lint/NoReturnInBeginEndBlocks:
+  Enabled: true
+
+Lint/ToEnumArguments:
+  Enabled: true
+
+Lint/UnexpectedBlockArity:
+  Enabled: false
+
+Lint/UnmodifiedReduceAccumulator:
+  Enabled: true
 
 Metrics/AbcSize:
   Enabled: false
 
 Metrics/BlockLength:
-  Enabled: False
+  Enabled: false
 
 Metrics/ClassLength:
   Enabled: false
@@ -48,7 +94,13 @@ Metrics/PerceivedComplexity:
 Naming/MethodParameterName:
   Enabled: false
 
+Style/ArgumentsForwarding:
+  Enabled: true
+
 Style/ClassVars:
+  Enabled: false
+
+Style/CollectionCompact:
   Enabled: false
 
 Style/CommandLiteral:
@@ -57,13 +109,31 @@ Style/CommandLiteral:
 Style/Documentation:
   Enabled: false
 
+Style/DocumentDynamicEvalDefinition:
+  Enabled: true
+
 Style/EmptyCaseCondition:
   Enabled: false
+
+Style/HashExcept:
+  Enabled: true
 
 Style/MultipleComparison:
   Enabled: false
 
 Style/MultilineIfModifier:
+  Enabled: false
+
+Style/NegatedIfElseCondition:
+  Enabled: false
+
+Style/NilLambda:
+  Enabled: true
+
+Style/RedundantArgument:
+  Enabled: false
+
+Style/SwapValues:
   Enabled: false
 
 Style/TrailingCommaInArguments:
@@ -77,6 +147,3 @@ Style/TrailingCommaInHashLiteral:
 
 Style/DoubleNegation:
   Enabled: false
-
-AllCops:
-  TargetRubyVersion: 2.7
