@@ -287,11 +287,12 @@ module Engine
           ],
           "price": 0,
           "teleport_price": 0,
+          "when": ["special_track", "owning_corp_or_turn"],
           "count": 1
         },
         {
           "type": "tile_lay",
-          "when": ["special_track", "other_or"],
+          "when": ["special_track", "owning_corp_or_turn"],
           "owner_type": "corporation",
           "count": 1,
           "hexes": [
