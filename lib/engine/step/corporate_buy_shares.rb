@@ -62,6 +62,7 @@ module Engine
       def can_buy?(entity, bundle)
         return unless bundle
         return unless bundle.buyable
+        return unless bundle.corporation.ipoed
         return if bundle.presidents_share
         return if entity == bundle.corporation
 
