@@ -239,10 +239,10 @@ module View
           h(:strong, 'Ended: '),
           render_time_or_date('updated_at'),
         ])
-      elsif @gdata['round']
+      elsif @gdata['round_info']
         children << h('div.inline', [
           h(:strong, 'Round: '),
-          @gdata['round_info'] || '',
+          @gdata['round_info']
         ])
 
         children << h('div.inline', { style: { float: 'right' } }, [

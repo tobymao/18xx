@@ -72,8 +72,6 @@ class Api
                 active_players = meta['active_players']
                 acting = users.select { |u| active_players.include?(u.id) || active_players.include?(u.name) }
 
-                game.round = meta['round']
-                game.turn = meta['turn']
                 game.acting = acting.map(&:id)
 
                 game.result = meta['game_result']

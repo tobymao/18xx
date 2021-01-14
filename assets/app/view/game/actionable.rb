@@ -84,8 +84,6 @@ module View
         end
 
         if hotseat
-          @game_data[:turn] = game.turn
-          @game_data[:round] = game.round.name
           @game_data[:round_info] = game.round_info
           @game_data[:acting] = game.active_players_id
           @game_data[:updated_at] = Time.now.to_i
@@ -97,8 +95,6 @@ module View
               'game_result': @game_data[:result],
               'game_status': @game_data[:status],
               'active_players': game.active_players_id,
-              'turn': game.turn,
-              'round': game.round.name,
               'round_info': game.round_info,
             }
             json['meta'] = meta
