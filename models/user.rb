@@ -9,7 +9,7 @@ class User < Base
   one_to_many :session
   one_to_many :game_users
 
-  RESET_WINDOW = 60 * 15 # 15 minutes
+  RESET_WINDOW = 60 * 30 # 30 minutes
 
   SETTINGS = (Lib::Settings::ROUTE_COLORS.size.times.flat_map do |index|
     %w[color dash width].map do |prop|
