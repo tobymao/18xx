@@ -32,6 +32,16 @@ module Engine
 
       TRAIN_PRICE_MIN = 1
 
+      EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+        'first_three' => ['First 3', 'Advance phase'],
+        'first_four' => ['First 4', 'Advance phase'],
+        'first_six' => ['First 6', 'Advance phase'],
+      ).freeze
+
+      STATUS_TEXT = Base::STATUS_TEXT.merge(
+        'end_game_triggered' => ['End Game', 'After next SR, final three ORs are played'],
+      ).freeze
+
       def setup
         @sik = @corporations.find { |c| c.name == 'SIK' }
         @skev = @corporations.find { |c| c.name == 'SKEV' }
@@ -81,6 +91,8 @@ module Engine
           end
           corp.owner = @share_pool
         end
+
+        @trains_left = %w[3 4 6]
       end
 
       def init_tile_groups
@@ -257,6 +269,31 @@ module Engine
       end
 
       def place_home_token(_corp); end
+
+      def event_first_three!
+        @trains_left.delete('3')
+        @phase.current[:on] = nil
+        @phase.upcoming[:on] = @trains_left if @phase.upcoming
+        @phase.next_on = @trains_left
+      end
+
+      def event_first_four!
+        @trains_left.delete('4')
+        @phase.current[:on] = nil
+        @phase.upcoming[:on] = @trains_left if @phase.upcoming
+        @phase.next_on = @trains_left
+      end
+
+      def event_first_six!
+        @trains_left.delete('6')
+        @phase.current[:on] = nil
+        @phase.upcoming[:on] = @trains_left if @phase.upcoming
+        @phase.next_on = @trains_left
+      end
+
+      def info_on_trains(phase)
+        Array(phase[:on]).join(', ')
+      end
     end
   end
 end
