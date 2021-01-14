@@ -1510,6 +1510,10 @@ module Engine
         @last_game_action_id == @round_history.last
       end
 
+      def can_hold_above_limit?(_entity)
+        false
+      end
+
       private
 
       def init_bank

@@ -169,8 +169,8 @@ module Engine
         tile_lays
       end
 
-      def corporation_opts
-        { can_hold_above_max: true }
+      def can_hold_above_limit?(_entity)
+        true
       end
 
       def init_round_finished
