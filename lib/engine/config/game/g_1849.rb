@@ -446,7 +446,7 @@ module Engine
       "path=a:1,b:2,track:dual": [
         "B16"
       ],
-      "offboard=revenue:yellow_10|green_30|brown_90;path=a:4,b:_0,track:dual": [
+      "offboard=revenue:white_10|gray_30|black_90;path=a:4,b:_0,track:dual": [
         "C15"
       ],
       "town=revenue:10;path=a:0,b:_0,track:narrow;path=a:1,b:_0;path=a:5,b:_0": [
@@ -462,13 +462,13 @@ module Engine
         "A13",
         "K13"
       ],
-      "border=edge:4,type:impassable;city=revenue:yellow_20|green_30|brown_40;path=a:0,b:_0,track:dual;path=a:5,b:_0,track:dual": [
+      "border=edge:4,type:impassable;city=revenue:white_20|gray_30|black_40;path=a:0,b:_0,track:dual;path=a:5,b:_0,track:dual": [
         "C1"
       ],
-      "city=revenue:yellow_20|green_30|brown_40;path=a:0,b:_0,track:dual;path=a:3,b:_0,track:dual;path=a:4,b:_0,track:dual;path=a:5,b:_0,track:dual": [
+      "city=revenue:white_20|gray_30|black_40;path=a:0,b:_0,track:dual;path=a:3,b:_0,track:dual;path=a:4,b:_0,track:dual;path=a:5,b:_0,track:dual": [
         "E1"
       ],
-      "city=slots:2,revenue:yellow_20|green_30|brown_40;path=a:1,b:_0,track:dual;path=a:2,b:_0;path=a:3,b:_0,track:narrow;path=a:4,b:_0,track:narrow;path=a:5,b:_0": [
+      "city=slots:2,revenue:white_20|gray_30|black_40;path=a:1,b:_0,track:dual;path=a:2,b:_0;path=a:3,b:_0,track:narrow;path=a:4,b:_0,track:narrow;path=a:5,b:_0": [
         "M9"
       ]
     }
@@ -482,7 +482,7 @@ module Engine
       ],
       "operating_rounds": 1,
       "status": [
-        "gray_uses_yellow"
+        "gray_uses_white"
       ]
     },
     {
@@ -495,7 +495,7 @@ module Engine
       ],
       "operating_rounds": 2,
       "status": [
-        "gray_uses_yellow",
+        "gray_uses_white",
         "can_buy_companies"
       ]
     },
@@ -509,7 +509,7 @@ module Engine
       ],
       "operating_rounds": 2,
       "status": [
-        "gray_uses_green",
+        "gray_uses_gray",
         "can_buy_companies"
       ]
     },
@@ -524,7 +524,7 @@ module Engine
       ],
       "operating_rounds": 3,
       "status": [
-        "gray_uses_green",
+        "gray_uses_gray",
         "can_buy_companies"
       ]
     },
@@ -539,7 +539,7 @@ module Engine
       ],
       "operating_rounds": 3,
       "status": [
-        "gray_uses_brown"
+        "gray_uses_black"
       ]
     },
     {
@@ -553,7 +553,7 @@ module Engine
       ],
       "operating_rounds": 3,
       "status": [
-        "gray_uses_brown",
+        "gray_uses_black",
         "blue_zone"
       ]
     }
