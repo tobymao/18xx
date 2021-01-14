@@ -1514,6 +1514,10 @@ module Engine
         false
       end
 
+      def show_game_cert_limit?
+        true
+      end
+
       private
 
       def init_bank

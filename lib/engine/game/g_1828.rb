@@ -173,6 +173,10 @@ module Engine
         true
       end
 
+      def show_game_cert_limit?
+        false
+      end
+
       def init_round_finished
         @players.rotate!(@round.entity_index)
 
