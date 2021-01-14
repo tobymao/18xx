@@ -59,7 +59,7 @@ class User < Base
 
     if for_user
       h[:email] = email
-      h[:settings] = settings
+      h[:settings] = settings.to_h
     end
 
     h
