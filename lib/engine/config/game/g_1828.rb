@@ -160,7 +160,7 @@ module Engine
         ],
         [
             "112",
-            "120p",
+            "120w",
             "127",
             "136",
             "145",
@@ -195,7 +195,7 @@ module Engine
         [
             "95",
             "100",
-            "105p",
+            "105z",
             "111",
             "117",
             "124",
@@ -230,7 +230,7 @@ module Engine
             "81",
             "86",
             "90",
-            "94p",
+            "94x",
             "99",
             "104",
             "109",
@@ -262,7 +262,7 @@ module Engine
             "75",
             "78",
             "82",
-            "86p",
+            "86x",
             "91",
             "95",
             "101",
@@ -535,7 +535,7 @@ module Engine
                 {
                     "type": "tile_lay",
                     "owner_type": "corporation",
-                    "when": "sold",
+                    "time": "sold",
                     "blocks": true,
                     "count": 1,
                     "hexes": [
