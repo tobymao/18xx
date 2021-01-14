@@ -9,8 +9,8 @@ module Engine
       class BuyCert < Base
         attr_reader :companies
 
-        ALL_ACTIONS = %w[bid pass par].freeze
         AUCTION_ACTIONS = %w[bid pass].freeze
+        BUY_ACTION = %w[bid par].freeze
         PASS_ACTION = %w[pass].freeze
         MIN_BID_RAISE = 5
 
@@ -60,7 +60,7 @@ module Engine
         def actions(entity)
           return [] if finished?
           return [] unless entity == current_entity
-          return ALL_ACTIONS unless in_auction?
+          return BUY_ACTION unless in_auction?
           return AUCTION_ACTIONS if min_player_bid + cheapest_price <= entity.cash
 
           PASS_ACTION

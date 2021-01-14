@@ -378,7 +378,7 @@ module Engine
         return if minor_khj.closed?
 
         @log << "Minor #{minor_khj.name} closes and its home token is removed"
-        minor_khj.spend(minor_khj.cash, p) if minor_khj.positive?
+        minor_khj.spend(minor_khj.cash, @bank) if minor_khj.cash.positive?
         minor_khj.tokens.first.remove!
         minor_khj.close!
       end
@@ -387,7 +387,7 @@ module Engine
         @corporations
           .select { |c| c.percent_of(c) == 100 && !c.closed? }
           .each do |c|
-            @log << "#{c.name} becomes full capitalization corporation as it has not been pared"
+            @log << "#{c.name} becomes full capitalization corporation as it has not been parred"
             c.capitalization = :full
           end
       end

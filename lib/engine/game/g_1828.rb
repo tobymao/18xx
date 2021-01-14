@@ -103,7 +103,7 @@ module Engine
       def operating_round(round_num)
         Round::Operating.new(self, [
           Step::Bankrupt,
-          Step::Exchange,
+          Step::G1828::Exchange,
           Step::G1828::DiscardTrain,
           Step::HomeToken,
           Step::G1828::SpecialTrack,
@@ -277,6 +277,7 @@ module Engine
         system_data = CORPORATIONS.find { |c| c['sym'] == corporations.first.id }.dup
         system_data['sym'] = corporations.map(&:name).join('-')
         system_data['tokens'] = []
+        system_data['game'] = self
         system_data['corporations'] = corporations
         system = init_system(@stock_market, system_data)
 
@@ -399,6 +400,20 @@ module Engine
         @log << "Placing a blocking token on #{hex.name} (#{hex.location_name})"
         token = Token.new(@blocking_corporation)
         hex.tile.cities[city_index].place_token(@blocking_corporation, token, check_tokenable: false)
+      end
+
+      def exchange_for_partial_presidency?
+        true
+      end
+
+      def exchange_partial_percent(share)
+        return nil unless share.president
+
+        100 / share.num_shares
+      end
+
+      def system_by_id(id)
+        corporation_by_id(id)
       end
 
       private

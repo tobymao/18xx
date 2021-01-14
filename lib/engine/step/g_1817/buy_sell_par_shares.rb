@@ -50,7 +50,7 @@ module Engine
         end
 
         def can_sell_order?
-          !bought? && !shorted?
+          !bought?
         end
 
         def shorted?

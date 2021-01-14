@@ -13,6 +13,7 @@ module Engine
         opts[:float_percent] = 50
         super(sym: sym, name: name, **opts)
 
+        @game = opts[:game]
         @corporations = opts[:corporations]
         @name = @corporations.first.name
         @shells = []
@@ -59,7 +60,7 @@ module Engine
 
       def transfer_trains(corporation, shell)
         corporation.trains.dup.each do |train|
-          buy_train(train, :free)
+          @game.buy_train(self, train, :free)
           shell.trains << train
         end
       end

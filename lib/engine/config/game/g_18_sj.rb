@@ -407,14 +407,13 @@ module Engine
       "name": "Motala Verkstad",
       "value": 90,
       "revenue": 15,
-      "desc": "Owning corporation may buy trains at any one time during operating rounds. For 18xx.games this means that owning corporation can buy trains before Run Routes.",
+      "desc": "Owning corporation may do a premature buy of one or more trains, just before Run Routes. These trains can be run even if they have run earlier in the OR. If ability is used the owning corporation cannot buy any trains later in the same OR.",
       "sym": "MV",
       "abilities": [
         {
            "type": "train_buy",
-           "description": "Buy train any time during its OR",
-           "owner_type": "corporation",
-           "count": 1
+           "description": "Buy trains before instead of after Run Routes",
+           "owner_type": "corporation"
         }
       ]
     },

@@ -60,10 +60,11 @@ def repair(game, original_actions, actions, broken_action)
     choice.user = choice.entity.player.id
     actions.insert(action_idx, choice.to_h)
     return
-  elsif game.active_step.is_a?(Engine::Step::BuyCompany)
-    add_pass.call
-    return
-  elsif game.active_step.is_a?(Engine::Step::G1817::PostConversion)
+  elsif game.active_step.is_a?(Engine::Step::BuyCompany) ||
+    game.active_step.is_a?(Engine::Step::G1817::PostConversion) ||
+    game.active_step.is_a?(Engine::Step::G1817::BuySellParShares) ||
+    game.active_step.is_a?(Engine::Step::G1867::SingleItemAuction) ||
+    game.active_step.is_a?(Engine::Step::G1817::Loan)
     add_pass.call
     return
   elsif game.active_step.is_a?(Engine::Step::G1817::Acquire) && broken_action['type'] != 'pass'
@@ -79,13 +80,7 @@ def repair(game, original_actions, actions, broken_action)
       add_pass.call
       return
     end
-  elsif game.active_step.is_a?(Engine::Step::G1867::Merge)
-    add_pass.call
-    return
-  elsif game.active_step.is_a?(Engine::Step::G1867::SingleItemAuction)
-    add_pass.call
-    return
-  elsif game.active_step.is_a?(Engine::Step::G1817::Loan)
+  elsif game.active_step.is_a?(Engine::Step::G1867::Merge) && broken_action['type'] != 'pass'
     add_pass.call
     return
   elsif broken_action['type'] == 'pass'
@@ -100,6 +95,10 @@ def repair(game, original_actions, actions, broken_action)
       return
     end
     if game.active_step.is_a?(Engine::Step::G1817::PostConversionLoans)
+      actions.delete(broken_action)
+      return
+    end
+    if game.active_step.is_a?(Engine::Step::G1867::PostMergerShares)
       actions.delete(broken_action)
       return
     end
