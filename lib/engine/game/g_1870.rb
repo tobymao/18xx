@@ -149,8 +149,8 @@ module Engine
         []
       end
 
-      def corporation_opts
-        { can_hold_above_max: true }
+      def can_hold_above_limit?(_entity)
+        true
       end
 
       def assignment_tokens(assignment)
