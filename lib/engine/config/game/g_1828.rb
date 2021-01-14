@@ -535,7 +535,7 @@ module Engine
                 {
                     "type": "tile_lay",
                     "owner_type": "corporation",
-                    "time": "sold",
+                    "when": "sold",
                     "blocks": true,
                     "count": 1,
                     "hexes": [
