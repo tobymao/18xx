@@ -75,7 +75,7 @@ module View
           ])
         end
 
-        return unless trs.any?
+        return h(:div) if trs.empty?
 
         h('div.bank.card', [
           h('div.title.nowrap', title_props, [h(:em, 'The Bank')]),

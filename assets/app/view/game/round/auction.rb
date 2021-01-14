@@ -102,6 +102,17 @@ module View
 
           @selected_company = @step.auctioning if @step.auctioning
 
+          companies = @step.available.select(&:company?)
+          if @step.respond_to?(:tiered_auction?) && @step.tiered_auction?
+            companies.group_by(&:value).values.map do |tier|
+              h(:div, { style: { display: 'table' } }, tier.map { |company| render_company(company) })
+            end
+          else
+            companies.map { |company| render_company(company) }
+          end
+        end
+
+        def render_company(company)
           props = {
             style: {
               display: 'inline-block',
@@ -109,11 +120,9 @@ module View
             },
           }
 
-          @step.available.select(&:company?).map do |company|
-            children = [h(Company, company: company, bids: @step.bids[company])]
-            children << render_input(company) if @selected_company == company
-            h(:div, props, children)
-          end
+          children = [h(Company, company: company, bids: @step.bids[company])]
+          children << render_input(company) if @selected_company == company
+          h(:div, props, children)
         end
 
         def render_input(company)

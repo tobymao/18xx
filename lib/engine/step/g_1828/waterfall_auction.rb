@@ -18,6 +18,10 @@ module Engine
           super
         end
 
+        def tiered_auction?
+          true
+        end
+
         protected
 
         def resolve_bids

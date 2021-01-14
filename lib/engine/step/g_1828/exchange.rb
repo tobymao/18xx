@@ -34,7 +34,7 @@ module Engine
             if @round.current_entity != company.owner
               raise GameError, "Must use #{company.name} on your turn when in a stock round"
             end
-            raise GameError, 'Cannot exchange and buy on the same turn' if buy_sell_step&.bought?(company.owner)
+            raise GameError, 'Cannot exchange and buy on the same turn' if buy_sell_step&.bought?
           end
 
           if !bundle.presidents_share

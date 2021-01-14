@@ -49,6 +49,20 @@ module Engine
 
       NEXT_SR_PLAYER_ORDER = :first_to_pass
 
+      MARKET_TEXT = Base::MARKET_TEXT.merge(par: 'Yellow Phase Par',
+                                            par_1: 'Green Phase Par',
+                                            par_2: 'Blue Phase Par',
+                                            par_3: 'Brown Phase Par',
+                                            unlimited: 'Corporation shares can be held above 60%, ' \
+                                                       'President may buy two shares at a time')
+
+      STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(par: :yellow,
+                                                          par_1: :green,
+                                                          par_2: :blue,
+                                                          par_3: :brown,
+                                                          unlimited: :gray,
+                                                          endgame: :red)
+
       EVENTS_TEXT = Base::EVENTS_TEXT.merge(
         'green_par' => ['Green phase pars',
                         '$86 and $94 par prices are now available'],
