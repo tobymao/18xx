@@ -294,7 +294,7 @@ module Engine
 
       def redeemable_shares(entity)
         return [] unless entity.corporation?
-        return [] unless round.steps.find { |step| step.class == Step::G18SJ::IssueShares }.active?
+        return [] unless round.steps.find { |step| step.instance_of?(Step::G18SJ::IssueShares) }.active?
 
         share_price = stock_market.find_share_price(entity, :right).price
 

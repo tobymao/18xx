@@ -455,7 +455,7 @@ module Engine
 
       def issuable_shares(entity)
         return [] unless entity.corporation?
-        return [] unless round.steps.find { |step| step.class == Step::G1846::IssueShares }.active?
+        return [] unless round.steps.find { |step| step.instance_of?(Step::G1846::IssueShares) }.active?
 
         num_shares = entity.num_player_shares - entity.num_market_shares
         bundles = bundles_for_corporation(entity, entity)
@@ -468,7 +468,7 @@ module Engine
 
       def redeemable_shares(entity)
         return [] unless entity.corporation?
-        return [] unless round.steps.find { |step| step.class == Step::G1846::IssueShares }.active?
+        return [] unless round.steps.find { |step| step.instance_of?(Step::G1846::IssueShares) }.active?
 
         share_price = stock_market.find_share_price(entity, :right).price
 

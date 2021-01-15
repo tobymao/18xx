@@ -198,7 +198,7 @@ module Engine
 
       def redeemable_shares(entity)
         return [] unless entity.corporation?
-        return [] unless round.steps.find { |step| step.class == Step::G1817::BuySellParShares }.active?
+        return [] unless round.steps.find { |step| step.instance_of?(Step::G1817::BuySellParShares) }.active?
         return [] if entity.share_price.acquisition? || entity.share_price.liquidation?
 
         bundles_for_corporation(share_pool, entity)
