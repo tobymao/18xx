@@ -598,7 +598,7 @@ module Engine
 
         shares = (shares || share_holder.shares_of(corporation)).sort_by(&:price)
 
-        bundles = shares.flat_map.with_index do |share, index|
+        shares.flat_map.with_index do |share, index|
           bundle = shares.take(index + 1)
           percent = bundle.sum(&:percent)
           bundles = [Engine::ShareBundle.new(bundle, percent)]
@@ -613,8 +613,6 @@ module Engine
           bundles.each { |b| b.share_price = (b.price_per_share / 2).to_i if corporation.trains.empty? }
           bundles
         end
-
-        bundles
       end
 
       def selling_movement?(corporation)

@@ -128,11 +128,9 @@ module Engine
         cache << offboard
         offboard
       when 'label'
-        label = Part::Label.new(params)
-        label
+        Part::Label.new(params)
       when 'upgrade'
-        upgrade = Part::Upgrade.new(params['cost'], params['terrain']&.split('|'))
-        upgrade
+        Part::Upgrade.new(params['cost'], params['terrain']&.split('|'))
       when 'border'
         Part::Border.new(params['edge'], params['type'], params['cost'])
       when 'junction'
