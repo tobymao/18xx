@@ -9,26 +9,26 @@ module Engine
         def buyable_train_variants(train, entity)
           trains = super
 
-          return [] unless trains.any?
+          return [] if trains.empty?
 
-          default_trains = trains.select { |item| (item[:name] =~ @game.small_train_regex) }
+          default_trains = trains.select { |item| @game.train_of_size?(item, :small) }
           return default_trains if entity.type == :small
 
-          medium_trains = trains.select { |item| (item[:name] =~ @game.medium_train_regex) }
+          medium_trains = trains.select { |item| @game.train_of_size?(item, :medium) }
           if entity.type == :medium
             return medium_trains if entity.trains.none? do |item|
-                                      (item.name =~ @game.medium_train_regex)
+                                      @game.train_of_size?(item, :medium)
                                     end && room_for_only_one?(entity)
 
-            return default_trains + medium_trains
+            return default_trains.concat(medium_trains)
           end
 
-          large_trains = trains.select { |item| (item[:name] =~ @game.large_train_regex) }
+          large_trains = trains.select { |item| @game.train_of_size?(item, :large) }
 
           large_trains if entity.trains.none? do |item|
-                            (item.name =~ @game.large_train_regex)
+                            @game.train_of_size?(item, :large)
                           end && room_for_only_one?(entity)
-          default_trains + medium_trains + large_trains
+          default_trains.concat(medium_trains).concat(large_trains)
         end
 
         def room_for_only_one?(entity)

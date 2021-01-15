@@ -60,6 +60,12 @@ module Engine
                                     '10-share corps By, kk, Sx, Pr, Ug are available to start']
       ).freeze
 
+      TRAINS_FOR_CORPORATIONS = {
+        'small' => %w[2a 2b 3c 3d 4e 4f 5g 5h 5i 5j],
+        'medium' => ['2+2b', '2+2c', '3+3d', '3+3e', '4+4f', '4+4g', '5+5h', '5+5i', '5+5j'],
+        'large' => %w[3Ed 3Ee 4EF 4Eg 5E 6E 8E],
+      }.freeze
+
       include StubsAreRestricted
 
       def setup
@@ -172,20 +178,18 @@ module Engine
         !entity.rusted_self &&
         !depot.depot_trains.empty? &&
         (entity.trains.empty? ||
-          (entity.type == :medium && entity.trains.none? { |item| !!(item.name =~ medium_train_regex) }) ||
-          (entity.type == :large && entity.trains.none? { |item| !!(item.name =~ large_train_regex) }))
+          (entity.type == :medium && entity.trains.none? { |item| train_of_size?(item, :medium) }) ||
+          (entity.type == :large && entity.trains.none? { |item| train_of_size?(item, :large) }))
       end
 
-      def small_train_regex
-        /^[2-5][a-j]$/
-      end
+      def train_of_size?(item, size)
+        name = if item.is_a?(Hash)
+                 item[:name]
+               else
+                 item.name
+               end
 
-      def medium_train_regex
-        /^[2-5]\+[2-5][a-j]$/
-      end
-
-      def large_train_regex
-        /^[3-8]E[a-j]?$/
+        TRAINS_FOR_CORPORATIONS[size].include?(name)
       end
     end
   end
