@@ -151,9 +151,7 @@ module Engine
           return unless entity.company?
 
           case @state
-          when nil
-            @game.abilities(entity, :token)
-          when :place_token
+          when nil, :place_token
             @game.abilities(entity, :token)
           when :lay_tile
             @game.abilities(entity, :tile_lay, time: 'special_track')
