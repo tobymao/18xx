@@ -96,7 +96,7 @@ module View
           ])
         end
 
-        def svg(delta_x: 0, delta_y: 0, icon:)
+        def svg(icon:, delta_x: 0, delta_y: 0)
           h(
             :image, attrs: {
               href: "/icons/#{icon}.svg",
