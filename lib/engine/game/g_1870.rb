@@ -26,7 +26,7 @@ module Engine
       EBUY_PRES_SWAP = false
       EBUY_OTHER_VALUE = false
 
-      CLOSED_CORP_TRAINS = :discarded
+      CLOSED_CORP_TRAINS_REMOVED = false
 
       CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT = true
       IPO_RESERVED_NAME = 'Treasury'

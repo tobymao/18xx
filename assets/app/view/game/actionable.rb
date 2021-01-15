@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'game_manager'
 require 'lib/params'
 require 'lib/storage'
 
@@ -22,7 +23,7 @@ module View
       end
 
       def save_user_settings(settings)
-        @connection.safe_post("/game/#{@game_data['id']}/user_settings", settings)
+        @connection.safe_post(GameManager.url(@game_data, '/user_settings'), settings)
 
         @game_data['user_settings'] ||= {}
         @game_data['user_settings'].merge!(settings)
@@ -101,8 +102,7 @@ module View
             }
             json['meta'] = meta
           end
-          game_path = "/game/#{@game_data['id']}"
-          @connection.post("#{game_path}/action", json) do |data|
+          @connection.post(GameManager.url(@game_data, '/action'), json) do |data|
             if (error = data['error'])
               store(:flash_opts, "The server did not accept this action due to: #{error}... refreshing.")
               `setTimeout(function() { location.reload() }, 5000)`

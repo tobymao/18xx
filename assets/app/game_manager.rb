@@ -142,8 +142,12 @@ module GameManager
     game['status'] == 'active' && game['acting'].include?(user&.dig('id'))
   end
 
-  def url(game, path = '')
+  def self.url(game, path = '')
     "/game/#{game['id']}#{path}"
+  end
+
+  def url(game, path = '')
+    GameManager.url(game, path)
   end
 
   protected
