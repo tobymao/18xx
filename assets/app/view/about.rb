@@ -11,7 +11,7 @@ module View
 
     def render
       @connection&.get('/version.json', prefix='/assets') do |version|
-        link = node_to_s(h(:a, { attrs: { href: version['url']} }, version['hash']))
+        link = node_to_s(h(:a, { attrs: { href: version['url'] } }, version['hash']))
         `document.getElementById('version').innerHTML = #{link}`
       end
 
