@@ -24,6 +24,8 @@ module Engine
       SELL_BUY_ORDER = :sell_buy
       SELL_MOVEMENT = :down_block
 
+      MUST_BUY_TRAIN = :always
+
       HOME_TOKEN_TIMING = :operate
 
       STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
