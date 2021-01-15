@@ -35,6 +35,7 @@ module Engine
         end
 
         def check_track_restrictions!(entity, old_tile, new_tile)
+          return if @game.loading || !entity.operator?
           return true if pending_token(entity)
 
           super(entity, old_tile, new_tile)
@@ -67,6 +68,8 @@ module Engine
         end
 
         def prior_connected_paths(entity, old_tile)
+          return [] if @game.loading
+
           @game.graph.connected_paths(entity).map do |connected_path, _b|
             next unless connected_path.hex == old_tile.hex
 
