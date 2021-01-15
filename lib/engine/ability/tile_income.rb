@@ -6,6 +6,7 @@ module Engine
   module Ability
     class TileIncome < Base
       attr_reader :terrain, :income, :owner_only
+
       def setup(terrain:, income:, owner_only: false)
         @terrain = terrain.to_sym
         @income = income

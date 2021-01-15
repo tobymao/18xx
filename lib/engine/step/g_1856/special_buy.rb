@@ -7,6 +7,7 @@ module Engine
     module G1856
       class SpecialBuy < SpecialBuy
         attr_reader :tunnel_item, :bridge_item
+
         def buyable_items(entity)
           items = []
           items << @tunnel_item if @game.can_buy_tunnel_token?(entity)

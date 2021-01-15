@@ -7,6 +7,7 @@ module Engine
     module G1828
       class SpecialBuy < SpecialBuy
         attr_reader :coal_marker
+
         def buyable_items(entity)
           @game.can_buy_coal_marker?(entity) ? [@coal_marker] : []
         end
