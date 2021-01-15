@@ -33,7 +33,7 @@ module Engine
 
       BANKRUPTCY_ALLOWED = true
 
-      CLOSED_CORP_RESERVATIONS = :remain
+      CLOSED_CORP_RESERVATIONS_REMOVED = false
 
       EBUY_OTHER_VALUE = false
       HOME_TOKEN_TIMING = :float

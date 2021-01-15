@@ -224,8 +224,8 @@ module Engine
 
       DISCARDED_TRAINS = :discard # discarded or removed?
       DISCARDED_TRAIN_DISCOUNT = 0 # percent
-      CLOSED_CORP_TRAINS = :removed # discarded or removed?
-      CLOSED_CORP_RESERVATIONS = :removed # remain or removed?
+      CLOSED_CORP_TRAINS_REMOVED = true
+      CLOSED_CORP_RESERVATIONS_REMOVED = true
 
       MUST_BUY_TRAIN = :route # When must the company buy a train if it doesn't have one (route, never, always)
 
@@ -1283,20 +1283,23 @@ module Engine
       def close_corporation(corporation, quiet: false)
         @log << "#{corporation.name} closes" unless quiet
 
+        corporation.tokens(&:remove!)
+
         hexes.each do |hex|
           hex.tile.cities.each do |city|
-            if city.tokened_by?(corporation) || city.reserved_by?(corporation)
-              city.tokens.map! { |token| token&.corporation == corporation ? nil : token }
-              city.reservations.delete(corporation) if self.class::CLOSED_CORP_RESERVATIONS == :removed
+            city.tokens.select { |t| t&.corporation == corporation }.each(&:remove!)
+
+            if self.class::CLOSED_CORP_RESERVATIONS_REMOVED && city.reserved_by?(corporation)
+              city.reservations.delete(corporation)
             end
           end
         end
 
         corporation.spend(corporation.cash, @bank) if corporation.cash.positive?
-        if self.class::CLOSED_CORP_TRAINS == :discarded
-          corporation.trains.dup.each { |t| depot.reclaim_train(t) }
-        else
+        if self.class::CLOSED_CORP_TRAINS_REMOVED
           corporation.trains.each { |t| t.buyable = false }
+        else
+          corporation.trains.dup.each { |t| depot.reclaim_train(t) }
         end
         if corporation.companies.any?
           @log << "#{corporation.name}'s companies close: #{corporation.companies.map(&:sym).join(', ')}"
