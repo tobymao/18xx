@@ -52,8 +52,7 @@ module View
       bg_color =
         case @gdata['status']
         when 'new'
-          if owner?
-          elsif user_in_game?(@user, @gdata)
+          if user_in_game?(@user, @gdata)
             buttons << render_button('Leave', -> { leave_game(@gdata) })
           elsif players.size < @gdata['max_players']
             buttons << render_button('Join', -> { join_game(@gdata) })
