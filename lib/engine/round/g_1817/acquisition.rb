@@ -6,8 +6,7 @@ module Engine
   module Round
     module G1817
       class Acquisition < Round::Merger
-        attr_accessor :offering
-        attr_accessor :cash_crisis_player
+        attr_accessor :offering, :cash_crisis_player
 
         def self.short_name
           'AR'
