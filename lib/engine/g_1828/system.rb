@@ -29,7 +29,7 @@ module Engine
           transfer_trains(corporation, shell)
         end
 
-        max_price = tokens.max(&:price).price + 1
+        max_price = tokens.max_by(&:price).price + 1
         tokens.sort_by! { |t| (t.used ? -max_price : max_price) + t.price }
       end
 
@@ -38,7 +38,6 @@ module Engine
       end
 
       def remove_train(train)
-        super
         @shells.each { |shell| shell.trains.delete(train) }
       end
 

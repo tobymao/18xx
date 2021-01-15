@@ -100,6 +100,12 @@ module Engine
         def buy_sell_step
           @round.steps.find { |s| s.is_a?(Engine::Step::G1828::BuySellParShares) }
         end
+
+        def can_gain?(entity, bundle, exchange: false)
+          return true if exchange
+
+          super
+        end
       end
     end
   end

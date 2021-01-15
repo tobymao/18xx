@@ -9,9 +9,9 @@ module Engine
       class Dividend < Dividend
         include MinorHalfPay
 
-        def dividends_for_entity(entity, holder, per_share)
-          # Include payout for treasury share
-          entity.system? ? ((holder.num_shares_of(entity) + 1) * per_share).ceil : super
+        # Systems also get paid for their treasury share
+        def corporation_dividends(entity, per_share)
+          super + (entity.system? ? per_share : 0)
         end
       end
     end

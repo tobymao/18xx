@@ -278,11 +278,11 @@ module Engine
                     "#{shares_needed} system share#{'s' if shares_needed > 1}"
           else
             # Execute trade to get share(s) needed for the exchange
-            shares_to_trade = [merger_pshare, target_pshare, entity.shares_of(@target).first].compact
+            shares_to_trade = [merger_pshare || target_pshare || entity.shares_of(@target).first]
             from_merger_shares = from.shares_of(@merger).reject(&:president)
             shares_to_receive = [from_merger_shares.first,
                                  from.shares_of(@target).reject(&:president).first,
-                                 from_merger_shares[2]].take(shares_needed)
+                                 from_merger_shares[1]].compact.take(shares_needed)
             trade_share(entity, shares_to_trade, from, shares_to_receive)
 
             # Exchange the shares
@@ -332,6 +332,7 @@ module Engine
 
         def restore_odd_share(entity)
           @odd_share&.transfer(entity)
+          @odd_share = nil
         end
 
         def exchange_singles(entity)
@@ -401,7 +402,7 @@ module Engine
               merger_shares = src.shares_of(@merger).reject(&:president)
               target_shares = src.shares_of(@target).reject(&:president)
 
-              merger_shares.size.positive? && [merger_shares + target_shares].size >= num_needed
+              merger_shares.size.positive? && (merger_shares.size + target_shares.size) >= num_needed
             end
 
             # If exchanging with another player, check to see if there are options to choose from
