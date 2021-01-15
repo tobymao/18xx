@@ -126,7 +126,7 @@ module View
                                  [@game.format_currency(route.revenue), nil]
                                rescue Engine::GameError => e
                                  ['N/A', e.to_s]
-                               end
+            end
 
             bg_color = route_prop(@routes.index(route), :color)
             style[:backgroundColor] = bg_color
@@ -255,7 +255,7 @@ module View
                     @game.format_currency(@game.routes_revenue(active_routes))
                   rescue Engine::GameError
                     '(Invalid Route)'
-                  end
+        end
 
         subsidy = render_halts ? ' + ' + @game.format_currency(@game.routes_subsidy(active_routes)) : ''
         h(:div, { style: { overflow: 'auto', marginBottom: '1rem' } }, [
