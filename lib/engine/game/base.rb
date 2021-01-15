@@ -2087,7 +2087,7 @@ module Engine
         current_step = ability_blocking_step
         current_step_name = current_step&.type
 
-        if (ability.type == :tile_lay) && current_step&.is_a?(Step::SpecialTrack)
+        if ability.type == :tile_lay && ability.must_lay_all && current_step&.is_a?(Step::SpecialTrack)
           return current_step.company == ability.owner
         end
 
