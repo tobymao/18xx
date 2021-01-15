@@ -10,7 +10,7 @@ module View
     needs :connection, store: true, default: nil
 
     def render
-      @connection&.get('/version.json', prefix='/assets') do |version|
+      @connection&.get('/version.json', '/assets') do |version|
         link = node_to_s(h(:a, { attrs: { href: version['url'] } }, version['hash']))
         `document.getElementById('version').innerHTML = #{link}`
       end

@@ -111,10 +111,10 @@ task :precompile do
   # Copy to the pin directory
   git_rev = `git rev-parse --short HEAD`.strip
   pin_dir = Assets::OUTPUT_BASE + Assets::PIN_DIR
-  File.write(Assets::OUTPUT_BASE + '/assets/version.json', JSON.dump({
+  File.write(Assets::OUTPUT_BASE + '/assets/version.json', JSON.dump(
     hash: git_rev,
     url: "https://github.com/tobymao/18xx/commit/#{git_rev}",
-  }))
+  ))
   FileUtils.mkdir_p(pin_dir)
   FileUtils.cp("#{bundle}.gz", "#{pin_dir}/#{git_rev}.js.gz")
 end
