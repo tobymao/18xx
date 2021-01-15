@@ -7,6 +7,7 @@ module Engine
   module Game
     class G1817WO < G1817
       attr_reader :new_zealand_city
+
       load_from_json(Config::Game::G1817WO::JSON)
 
       DEV_STAGE = :alpha

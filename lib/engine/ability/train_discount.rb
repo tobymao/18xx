@@ -6,6 +6,7 @@ module Engine
   module Ability
     class TrainDiscount < Base
       attr_reader :discount, :trains, :closed_when_used_up
+
       def setup(discount:, trains:, closed_when_used_up: true)
         @discount = discount
         @trains = trains

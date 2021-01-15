@@ -33,6 +33,7 @@ module Engine
 
       load_from_json(Config::Game::G1856::JSON)
       attr_reader :post_nationalization, :bankrupted
+
       DEV_STAGE = :prealpha
 
       # These plain city hexes upgrade to L tiles in brown

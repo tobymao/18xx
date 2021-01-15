@@ -6,6 +6,7 @@ module Engine
   module G1856
     class Corporation < Corporation
       attr_accessor :escrow, :presidents_share
+
       CAPITALIZATION_STRS = {
         full: 'Full',
         incremental: 'Incremental',
