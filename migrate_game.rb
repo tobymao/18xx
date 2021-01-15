@@ -346,8 +346,6 @@ def migrate_db_actions(data, pin, dry_run=false, debug=false)
               game: data,
               user: action.key?('user') ? User[action['user']] : data.user,
               action_id: game.actions.last.id,
-              turn: game.turn,
-              round: game.round.name,
               action: action,
             )
           end

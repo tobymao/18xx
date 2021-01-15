@@ -64,8 +64,6 @@ class Api
                   game: game,
                   user: user,
                   action_id: action_id,
-                  turn: meta['turn'],
-                  round: meta['round'],
                   action: action,
                 )
 
@@ -93,8 +91,6 @@ class Api
                   game: game,
                   user: user,
                   action_id: action['id'],
-                  turn: engine.turn,
-                  round: engine.round.name,
                   action: action,
                 )
 
