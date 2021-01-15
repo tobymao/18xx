@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'game_manager'
 require 'lib/color'
 require 'lib/connection'
 require 'lib/params'
@@ -147,7 +148,7 @@ module View
     end
 
     def game_path
-      "/game/#{@game_data['id']}"
+      GameManager.url(@game_data)
     end
 
     private
