@@ -1278,7 +1278,7 @@ module Engine
 
         return if corporation.capitalization == :incremental
 
-        @bank.spend(corporation.par_price.price * 10, corporation)
+        @bank.spend(corporation.par_price.price * corporation.total_shares, corporation)
         @log << "#{corporation.name} receives #{format_currency(corporation.cash)}"
       end
 
