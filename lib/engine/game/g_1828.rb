@@ -29,7 +29,7 @@ module Engine
 
       load_from_json(Config::Game::G1828::JSON)
 
-      DEV_STAGE = :prealpha
+      DEV_STAGE = :alpha
 
       GAME_LOCATION = 'North East, USA'
       GAME_RULES_URL = 'https://github.com/tobymao/18xx/wiki/1828.Games#rules'
