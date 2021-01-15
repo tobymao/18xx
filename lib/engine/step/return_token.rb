@@ -52,7 +52,7 @@ module Engine
 
         @log <<
           "#{corporation.name} returns the token from #{hex.name}#{city_string} using #{company.name}"\
-          "#{(return_ability.reimburse ? " and is reimbursed #{@game.format_currency(last_used_token.price)}" : '')}"
+          "#{return_ability.reimburse ? " and is reimbursed #{@game.format_currency(last_used_token.price)}" : ''}"
       end
 
       def can_replace_token?(company, token)
