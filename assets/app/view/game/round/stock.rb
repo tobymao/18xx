@@ -203,9 +203,8 @@ module View
         end
 
         def render_mergeable_entities
-          step = @game.round.active_step
-          return unless step.current_actions.include?('merge')
-          return unless (mergeable_entities = @step.mergeable_entities)
+          return unless @step.current_actions.include?('merge')
+          return unless @step.mergeable_entities
 
           children = []
 
@@ -218,7 +217,7 @@ module View
 
           hidden_corps = false
           @show_other_players = true if @step.show_other_players
-          mergeable_entities.each do |target|
+          @step.mergeable_entities.each do |target|
             if @show_other_players || target.owner == @mergeable_entity.owner || !target.owner
               children << h(Corporation, corporation: target, selected_corporation: @selected_corporation)
             else
