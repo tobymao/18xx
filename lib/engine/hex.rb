@@ -32,8 +32,8 @@ module Engine
     LETTERS = ('A'..'Z').to_a
     NEGATIVE_LETTERS = [0] + ('a'..'z').to_a
 
-    COORD_LETTER = /([A-Za-z]+)/.freeze
-    COORD_NUMBER = /([0-9]+)/.freeze
+    COORD_LETTER = /([A-Za-z]+)/
+    COORD_NUMBER = /([0-9]+)/
 
     def self.invert(dir)
       (dir + 3) % 6

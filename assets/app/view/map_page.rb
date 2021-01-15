@@ -6,7 +6,7 @@ module View
   class MapPage < Snabberb::Component
     needs :route
 
-    ROUTE_FORMAT = %r{/map/([^/?]*)/?}.freeze
+    ROUTE_FORMAT = %r{/map/([^/?]*)/?}
 
     def render
       game_title = @route.match(ROUTE_FORMAT)[1].gsub('%20', ' ')
