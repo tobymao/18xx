@@ -226,7 +226,7 @@ module Engine
       end
 
       def sold?
-        @current_actions.any? { |x| x.class == Action::SellShares }
+        @current_actions.any? { |x| x.instance_of?(Action::SellShares) }
       end
 
       def process_buy_company(action)

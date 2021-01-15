@@ -485,7 +485,7 @@ module Engine
 
         # restart stock round if in middle of one
         @round.clear_cache!
-        return unless @round.class == Round::Stock
+        return unless @round.instance_of?(Round::Stock)
 
         @log << 'Restarting Stock Round'
         @round.entities.each(&:unpass!)
