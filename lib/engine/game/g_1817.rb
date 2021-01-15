@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../config/game/g_1817'
-require_relative '../loan.rb'
+require_relative '../loan'
 require_relative 'base'
 require_relative 'interest_on_loans'
 

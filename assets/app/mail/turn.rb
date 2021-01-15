@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require_relative '../view/game/game_log.rb'
-require_relative '../view/game/players.rb'
-require_relative '../view/game/spreadsheet.rb'
+require_relative '../view/game/game_log'
+require_relative '../view/game/players'
+require_relative '../view/game/spreadsheet'
 
 class Turn < Snabberb::Component
   needs :game_data, store: true

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require_relative '../base.rb'
-require_relative '../auctioner.rb'
+require_relative '../base'
+require_relative '../auctioner'
 
 module Engine
   module Step
