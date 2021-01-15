@@ -693,16 +693,16 @@ module Engine
       ]
     },
     "gray": {
-      "city=revenue:yellow_30|brown_50;path=a:0,b:_0;path=a:4,b:_0;path=a:5,b:_0": [
+      "city=revenue:yellow_30|brown_50,visit_cost:0;path=a:0,b:_0;path=a:4,b:_0;path=a:5,b:_0": [
         "A10"
       ],
-      "city=revenue:yellow_30|brown_50;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0": [
+      "city=revenue:yellow_30|brown_50,visit_cost:0;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0": [
         "A18"
       ],
-      "city=revenue:yellow_30|brown_50;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:5,b:_0": [
+      "city=revenue:yellow_30|brown_50,visit_cost:0;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:5,b:_0": [
         "E26"
       ],
-      "city=revenue:yellow_30|brown_50;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0": [
+      "city=revenue:yellow_30|brown_50,visit_cost:0;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0": [
         "I20"
       ]
     }

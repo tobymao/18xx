@@ -34,7 +34,14 @@ module Engine
         end
 
         def process_dividend(action)
-          return super if action.entity.minor?
+          if action.entity.minor?
+            subsidy = @game.routes_subsidy(routes)
+            if subsidy.positive?
+              @game.bank.spend(subsidy, action.entity)
+              @log << "#{action.entity.name} retains a subsidy of #{@game.format_currency(subsidy)}"
+            end
+            return super
+          end
 
           entity = action.entity
           kind = action.kind.to_sym
