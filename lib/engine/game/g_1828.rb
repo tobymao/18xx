@@ -451,7 +451,7 @@ module Engine
       def remove_extra_trains
         return unless @players.size < 5
 
-        to_remove = @depot.trains.reverse.find { |train| train.name == '5' }
+        to_remove = @depot.trains.reverse.find { |train| train.name == '6' }
         @depot.remove_train(to_remove)
         @log << "Removing #{to_remove.name} train"
       end
