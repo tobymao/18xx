@@ -18,9 +18,9 @@ module View
     def render_notification
       message = <<~MESSAGE
 
+        <p>The authentication system is now more efficient. You need to log back in and all pins have been deleted.</p>
         <p>1849 is now in alpha.</p>
         <p>1860 and 1867 are now in beta. 18Chesapeake: Off The Rails is now in beta with a new stock market.</p>
-        <p>You can now click on the log to view history or undo to any point in time!</p>
 
         <p>Please file <a href='https://github.com/tobymao/18xx/issues'>issues and ideas</a> on
         <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>.<br>
