@@ -6,7 +6,7 @@ module View
   class MarketPage < Snabberb::Component
     needs :route
 
-    ROUTE_FORMAT = %r{/market/([^/?]*)/?}
+    ROUTE_FORMAT = %r{/market/([^/?]*)/?}.freeze
 
     def render
       game_title = @route.match(ROUTE_FORMAT)[1].gsub('%20', ' ')

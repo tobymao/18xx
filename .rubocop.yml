@@ -1,5 +1,5 @@
 AllCops:
-  TargetRubyVersion: 2.7
+  TargetRubyVersion: 3.0
 
 Layout/FirstArgumentIndentation:
   Enabled: false
@@ -178,6 +178,9 @@ Style/OptionalBooleanParameter: # TODO enable & check offenses
   Enabled: false
 
 Style/RedundantArgument:
+  Enabled: false
+
+Style/RedundantFreeze: # conflicts with Style/MutableConstant
   Enabled: false
 
 Style/RedundantRegexpEscape: # TODO enable & check offenses
