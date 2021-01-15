@@ -25,9 +25,8 @@ module View
           @step = @game.round.active_step
           @current_actions = @step.current_actions
           @auctioning_corporation = @step.auctioning_corporation if @step.respond_to?(:auctioning_corporation)
-          @mergeable_entity = @step.mergeable_entity if @step.respond_to?(:mergeable_entity)
           @selected_corporation ||= @auctioning_corporation
-
+          @mergeable_entity = @step.mergeable_entity if @step.respond_to?(:mergeable_entity)
           @price_protection = @step.price_protection if @step.respond_to?(:price_protection)
           @selected_corporation ||= @price_protection&.corporation
 
@@ -206,13 +205,7 @@ module View
         def render_mergeable_entities
           step = @game.round.active_step
           return unless step.current_actions.include?('merge')
-
-          mergeable_entities = @step.mergeable_entities
-          player_corps = mergeable_entities.select do |target|
-            target.owner == @mergeable_entity.owner || @step.show_other_players
-          end
-          @selected_corporation = player_corps.first if mergeable_entities.one?
-          return unless mergeable_entities
+          return unless (mergeable_entities = @step.mergeable_entities)
 
           children = []
 
