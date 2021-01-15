@@ -142,9 +142,7 @@ module Engine
             2
           when 3
             option_cisleithania ? 3 : 4
-          when 4
-            6
-          when 5
+          when 4, 5
             6
           when 6
             4
