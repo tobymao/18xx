@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../buy_train.rb'
+require_relative '../buy_train'
 
 module Engine
   module Step
