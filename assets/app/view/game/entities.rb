@@ -50,7 +50,7 @@ module View
           *extra_bank,
         ].compact)
 
-        children = children.concat(bankrupt_players.map { |p| h(:div, [h(Player, player: p, game: @game)]) })
+        children.concat(bankrupt_players.map { |p| h(:div, [h(Player, player: p, game: @game)]) })
 
         h('div#entities', div_props, children)
       end
