@@ -18,6 +18,7 @@ module View
     def render_notification
       message = <<~MESSAGE
 
+        <p>1828.Games is now in alpha.<p>
         <p>1849 is now in alpha.</p>
         <p>1860 and 1867 are now in beta. 18Chesapeake: Off The Rails is now in beta with a new stock market.</p>
         <p>You can now click on the log to view history or undo to any point in time!</p>
