@@ -6,7 +6,7 @@ module Engine
   module Step
     module G1828
       class BuySellParShares < BuySellParShares
-        PURCHASE_ACTIONS = Engine::Step::BuySellParShares::PURCHASE_ACTIONS + [Action::FailedMerge]
+        PURCHASE_ACTIONS = Engine::Step::BuySellParShares::PURCHASE_ACTIONS + [Action::Choose, Action::FailedMerge]
 
         def actions(entity)
           actions = super
@@ -71,6 +71,12 @@ module Engine
 
         def can_merge?(entity, corporation)
           @game.merge_candidates(entity, corporation).any?
+        end
+
+        def can_gain?(entity, bundle, exchange: false)
+          return true if exchange
+
+          super
         end
 
         def stock_action(action)
