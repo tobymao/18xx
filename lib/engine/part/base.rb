@@ -18,7 +18,7 @@ module Engine
       end
 
       def <=(other)
-        self.instance_of?(other.class)
+        instance_of?(other.class)
       end
 
       def <=>(other)
