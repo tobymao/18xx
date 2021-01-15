@@ -32,16 +32,16 @@ Layout/MultilineOperationIndentation:
   Enabled: false
 
 Layout/SpaceBeforeBrackets:
-  Enabled: true
+  Enabled: false
 
 Lint/AmbiguousAssignment:
   Enabled: true
 
-Lint/ConstantDefinitionInBlock: # TODO: check
+Lint/ConstantDefinitionInBlock: # TODO enable & check offenses
   Enabled: false
 
-Lint/DuplicateBranch:
-  Enabled: true
+Lint/DuplicateBranch: # TODO enable & check offenses
+  Enabled: false
 
 Lint/DuplicateRegexpCharacterClassElement:
   Enabled: true
@@ -52,8 +52,17 @@ Lint/EmptyBlock:
 Lint/EmptyClass:
   Enabled: true
 
+Lint/FloatComparison: # TODO enable & check offenses
+  Enabled: false
+
+Lint/MissingSuper: # TODO enable & check offenses
+  Enabled: false
+
 Lint/NoReturnInBeginEndBlocks:
   Enabled: true
+
+Lint/RedundantSafeNavigation: # TODO enable & check offenses
+  Enabled: false
 
 Lint/ToEnumArguments:
   Enabled: true
@@ -63,6 +72,12 @@ Lint/UnexpectedBlockArity:
 
 Lint/UnmodifiedReduceAccumulator:
   Enabled: true
+
+Lint/UselessMethodDefinition: # TODO enable & check offenses
+  Enabled: false
+
+Lint/UselessTimes: # TODO enable & check offenses
+  Enabled: false
 
 Metrics/AbcSize:
   Enabled: false
@@ -85,11 +100,15 @@ Metrics/ModuleLength:
 Metrics/ParameterLists:
   Enabled: false
 
+Metrics/PerceivedComplexity:
+  Enabled: false
+
 Naming/MemoizedInstanceVariableName:
   Enabled: false
 
-Metrics/PerceivedComplexity:
+Naming/VariableNumber: # TODO enable & check offenses, default or snake_case?
   Enabled: false
+  # EnforcedStyle: snake_case
 
 Naming/MethodParameterName:
   Enabled: false
@@ -97,10 +116,16 @@ Naming/MethodParameterName:
 Style/ArgumentsForwarding:
   Enabled: true
 
+Style/CaseLikeIf: # TODO enable & check offenses
+  Enabled: false
+
 Style/ClassVars:
   Enabled: false
 
 Style/CollectionCompact:
+  Enabled: false
+
+Style/CombinableLoops: # TODO enable & check offenses
   Enabled: false
 
 Style/CommandLiteral:
@@ -115,8 +140,27 @@ Style/DocumentDynamicEvalDefinition:
 Style/EmptyCaseCondition:
   Enabled: false
 
+Style/ExplicitBlockArgument: # TODO enable & check offenses, EnforcedStyle?
+  Enabled: false
+  # EnforcedStyle: no_braces
+
+Style/HashAsLastArrayItem: # TODO enable & check offenses
+  Enabled: false
+
+Style/HashEachMethods: # TODO enable & check offenses
+  Enabled: false
+
 Style/HashExcept:
   Enabled: true
+
+Style/HashLikeCase: # TODO enable & check offenses
+  Enabled: false
+
+Style/HashTransformKeys: # TODO enable & check offenses
+  Enabled: false
+
+Style/HashTransformValues: # TODO enable & check offenses
+  Enabled: false
 
 Style/MultipleComparison:
   Enabled: false
@@ -130,7 +174,22 @@ Style/NegatedIfElseCondition:
 Style/NilLambda:
   Enabled: true
 
+Style/OptionalBooleanParameter: # TODO enable & check offenses
+  Enabled: false
+
 Style/RedundantArgument:
+  Enabled: false
+
+Style/RedundantRegexpEscape: # TODO enable & check offenses
+  Enabled: false
+
+Style/SlicingWithRange: # TODO enable & check offenses
+  Enabled: false
+
+Style/SoleNestedConditional: # TODO enable & check offenses
+  Enabled: false
+
+Style/StringConcatenation:
   Enabled: false
 
 Style/SwapValues:
