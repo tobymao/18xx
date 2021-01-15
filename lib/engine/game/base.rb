@@ -1283,8 +1283,6 @@ module Engine
       def close_corporation(corporation, quiet: false)
         @log << "#{corporation.name} closes" unless quiet
 
-        corporation.tokens(&:remove!)
-
         hexes.each do |hex|
           hex.tile.cities.each do |city|
             city.tokens.select { |t| t&.corporation == corporation }.each(&:remove!)
