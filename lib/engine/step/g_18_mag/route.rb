@@ -7,6 +7,7 @@ module Engine
     module G18Mag
       class Route < Route
         BUY_ACTION = %w[special_buy].freeze
+        RAILCAR_BASE = [10, 10, 20, 20].freeze
 
         def actions(entity)
           return [] if !entity.operator? || entity.runnable_trains.empty? || !@game.can_run_route?(entity)
@@ -52,7 +53,7 @@ module Engine
         end
 
         def item_cost
-          10 * (@round.rail_cars.size + 1)
+          RAILCAR_BASE[@game.phase.current[:tiles].size - 1] + 10 * @round.rail_cars.size
         end
 
         def round_state
