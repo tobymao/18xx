@@ -15,7 +15,7 @@ module View
             verticalAlign: 'top',
           },
         }
-        buyable_companies = @game.round.active_step.purchasable_unsold_companies.map do |company|
+        buyable_companies = @game.purchasable_unsold_companies.map do |company|
           children = [h(Company, company: company)]
           children << render_company_buy(company)
           h(:div, props, children)

@@ -762,6 +762,10 @@ module Engine
         end
       end
 
+      def purchasable_unsold_companies
+        []
+      end
+
       def player_value(player)
         player.value
       end
@@ -890,6 +894,8 @@ module Engine
           percent = bundle.percent
           percent -= swap.percent if swap
           (percent / 10).to_i.times { @stock_market.move_down(corporation) }
+        when :down_block
+          @stock_market.move_down(corporation)
         when :left_block_pres
           stock_market.move_left(corporation) if was_president
         when :none
@@ -944,7 +950,9 @@ module Engine
       end
 
       def float_str(entity)
-        "#{entity.percent_to_float}% to float" if entity.corporation?
+        return unless entity.corporation?
+
+        entity.floatable? ? "#{entity.percent_to_float}% to float" : 'Not floatable'
       end
 
       def route_distance(route)

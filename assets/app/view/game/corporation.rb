@@ -202,7 +202,8 @@ module View
       end
 
       def render_to_float
-        render_header_segment("#{@corporation.percent_to_float}%", 'to float')
+        float_str = @corporation.floatable? ? "#{@corporation.percent_to_float}%" : 'Not floatable'
+        render_header_segment(float_str, 'to float')
       end
 
       def render_trains

@@ -22,7 +22,8 @@ module Engine
     include ShareHolder
     include Spender
 
-    attr_accessor :ipoed, :par_via_exchange, :max_ownership_percent, :float_percent, :capitalization, :max_share_price
+    attr_accessor :ipoed, :par_via_exchange, :max_ownership_percent, :float_percent, :capitalization, :max_share_price,
+                  :floatable
     attr_reader :companies, :min_price, :name, :full_name, :fraction_shares, :type, :id, :needs_token_to_par,
                 :presidents_share
     attr_writer :par_price, :share_price
@@ -53,6 +54,7 @@ module Engine
       @closed = false
       @float_percent = opts[:float_percent] || 60
       @floated = false
+      @floatable = true
       @max_ownership_percent = opts[:max_ownership_percent] || 60
       @min_price = opts[:min_price]
       @always_market_price = opts[:always_market_price] || false
@@ -157,7 +159,11 @@ module Engine
     end
 
     def floated?
-      @floated ||= percent_of(self) <= 100 - @float_percent
+      @floatable && (@floated ||= percent_of(self) <= 100 - @float_percent)
+    end
+
+    def floatable?
+      @floatable
     end
 
     def percent_to_float
