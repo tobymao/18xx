@@ -17,8 +17,8 @@ module Engine
           medium_trains = trains.select { |item| @game.train_of_size?(item, :medium) }
           if entity.type == :medium
             return medium_trains if entity.trains.none? do |item|
-                                      @game.train_of_size?(item, :medium)
-                                    end && room_for_only_one?(entity)
+              @game.train_of_size?(item, :medium)
+            end && room_for_only_one?(entity)
 
             return default_trains.concat(medium_trains)
           end
@@ -26,8 +26,8 @@ module Engine
           large_trains = trains.select { |item| @game.train_of_size?(item, :large) }
 
           large_trains if entity.trains.none? do |item|
-                            @game.train_of_size?(item, :large)
-                          end && room_for_only_one?(entity)
+            @game.train_of_size?(item, :large)
+          end && room_for_only_one?(entity)
           default_trains.concat(medium_trains).concat(large_trains)
         end
 
