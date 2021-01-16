@@ -56,10 +56,23 @@ module Engine
                                     '10-share corps By, kk, Sx, Pr, Ug are available to start']
       ).freeze
 
+      def end_now?(_after)
+        @or == @last_or
+      end
+
+      def timeline
+        @timeline = [
+          "Game ends after OR #{@last_or}",
+        ]
+        @timeline.append("Current value of each private company is #{COMPANY_VALUES[[0, @or - 1].max]}")
+      end
+
       include StubsAreRestricted
 
       def setup
         @or = 0
+        # We can modify COMPANY_VALUES if we want to support the shorter variant
+        @last_or = COMPANY_VALUES.length
         @recently_floated = []
 
         # Only small companies are available until later phases
@@ -111,7 +124,7 @@ module Engine
       end
 
       def or_round_finished
-        @recently_floated = []
+        @recently_floated.clear
       end
 
       def par_prices(corp)
@@ -135,6 +148,10 @@ module Engine
       def float_corporation(corporation)
         @recently_floated << corporation
         super
+      end
+
+      def or_set_finished
+        depot.export!
       end
 
       def tile_lays(entity)
