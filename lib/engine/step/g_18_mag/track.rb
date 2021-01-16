@@ -22,6 +22,12 @@ module Engine
           }
         end
 
+        def setup
+          super
+
+          @round.terrain_token = nil
+        end
+
         def buyable_items(entity)
           return [] unless @game.terrain_tokens[entity.name]&.positive?
           return [] if @round.terrain_token
