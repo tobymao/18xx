@@ -568,7 +568,7 @@ module Engine
         # If Garibaldi's only token removed, close Garibaldi
         if afg && city.tokened_by?(afg) && afg.placed_tokens.one?
           @log << '-- AFG loses only token, closing. --'
-          @round.entities.delete(afg)
+          @round.force_next_entity! if @round.current_entity == afg
           close_corporation(afg)
         end
 
