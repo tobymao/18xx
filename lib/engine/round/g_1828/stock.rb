@@ -18,8 +18,7 @@ module Engine
         def sold_out?(corporation)
           return super unless corporation.system?
 
-          # Systems have one share permanently in the treasury that
-          # doesn't count against being sold out
+          # System's treasury share doesn't count against being sold out
           corporation.player_share_holders.values.sum == 90
         end
       end
