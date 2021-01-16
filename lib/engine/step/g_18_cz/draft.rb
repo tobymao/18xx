@@ -67,6 +67,14 @@ module Engine
 
           @log << "#{player.name} buys #{company.name} for #{@game.format_currency(price)}"
 
+          action.entity.unpass!
+          @round.next_entity_index!
+          action_finalized
+        end
+
+        def process_pass(action)
+          @log << "#{action.entity.name} passes"
+          action.entity.pass!
           @round.next_entity_index!
           action_finalized
         end
