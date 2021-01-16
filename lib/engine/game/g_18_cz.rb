@@ -49,6 +49,8 @@ module Engine
 
       COMPANY_VALUES = [40, 45, 50, 55, 60, 65, 70, 75, 80, 90, 100, 110, 120].freeze
 
+      OR_SETS = [1, 1, 1, 1, 2, 2, 2, 3].freeze
+
       EVENTS_TEXT = Base::EVENTS_TEXT.merge(
         'medium_corps_available' => ['Medium Corps Available',
                                      '5-share corps ATE, BN, BTE, KFN, NWB are available to start'],
@@ -71,7 +73,7 @@ module Engine
 
       def setup
         @or = 0
-        # We can modify COMPANY_VALUES if we want to support the shorter variant
+        # We can modify COMPANY_VALUES and OR_SETS if we want to support the shorter variant
         @last_or = COMPANY_VALUES.length
         @recently_floated = []
 
@@ -152,6 +154,30 @@ module Engine
 
       def or_set_finished
         depot.export!
+      end
+
+      def next_round!
+        @round =
+          case @round
+          when Round::Stock
+            @operating_rounds = OR_SETS[@turn - 1]
+            reorder_players
+            new_operating_round
+          when Round::Operating
+            if @round.round_num < @operating_rounds
+              or_round_finished
+              new_operating_round(@round.round_num + 1)
+            else
+              @turn += 1
+              or_round_finished
+              or_set_finished
+              new_stock_round
+            end
+          when init_round.class
+            init_round_finished
+            reorder_players
+            new_stock_round
+          end
       end
 
       def tile_lays(entity)
