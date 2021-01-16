@@ -152,6 +152,7 @@ module Engine
       def setup
         @corporations.sort_by! { rand }
         setup_companies
+        afg # init afg helper
         remove_corp if @players.size == 3
         @corporations[0].next_to_par = true
 
