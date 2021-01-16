@@ -631,7 +631,7 @@ module Engine
 		},
 		{
 			"sym": "ATSF",
-			"name": "Atchinson, Tokepa & Santa Fe",
+			"name": "Atchison, Topeka & Santa Fe",
 			"group": "II",
 			"float_percent": 50,
 			"always_market_price": true,
