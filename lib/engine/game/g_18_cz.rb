@@ -61,9 +61,32 @@ module Engine
       ).freeze
 
       TRAINS_FOR_CORPORATIONS = {
-        'small' => %w[2a 2b 3c 3d 4e 4f 5g 5h 5i 5j],
-        'medium' => ['2+2b', '2+2c', '3+3d', '3+3e', '4+4f', '4+4g', '5+5h', '5+5i', '5+5j'],
-        'large' => %w[3Ed 3Ee 4EF 4Eg 5E 6E 8E],
+        '2a' => :small,
+        '2b' => :small,
+        '3c' => :small,
+        '3d' => :small,
+        '4e' => :small,
+        '4f' => :small,
+        '5g' => :small,
+        '5h' => :small,
+        '5i' => :small,
+        '5j' => :small,
+        '2+2b' => :medium,
+        '2+2c' => :medium,
+        '3+3d' => :medium,
+        '3+3e' => :medium,
+        '4+4f' => :medium,
+        '4+4g' => :medium,
+        '5+5h' => :medium,
+        '5+5i' => :medium,
+        '5+5j' => :medium,
+        '3Ed' => :large,
+        '3Ee' => :large,
+        '4EF' => :large,
+        '4Eg' => :large,
+        '5E' => :large,
+        '6E' => :large,
+        '8E' => :large,
       }.freeze
 
       include StubsAreRestricted
@@ -189,7 +212,7 @@ module Engine
                  item.name
                end
 
-        TRAINS_FOR_CORPORATIONS[size].include?(name)
+        TRAINS_FOR_CORPORATIONS[name] == size
       end
     end
   end
