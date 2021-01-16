@@ -32,7 +32,7 @@ module Engine
       DEV_STAGE = :alpha
 
       GAME_LOCATION = 'North East, USA'
-      GAME_RULES_URL = 'https://github.com/tobymao/18xx/wiki/1828.Games#rules'
+      GAME_RULES_URL = 'https://kanga.nu/~claw/1828/1828-Rules.pdf'
       GAME_IMPLEMENTER = 'Chris Rericha based on 1828 by J C Lawrence'
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1828.Games'
 
