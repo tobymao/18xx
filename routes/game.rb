@@ -110,7 +110,7 @@ class Api
                 ['Your Turn', acting.map(&:id), false]
               end
 
-            publish_turn(user_ids, game.id, type, force) unless user_ids.empty?
+            publish_turn(user_ids, game, r.base_url, type, force) unless user_ids.empty?
             publish("/game/#{game.id}", **action)
 
             game.to_h
@@ -133,7 +133,7 @@ class Api
             end
 
             acting = set_game_state(game, engine, users)
-            publish_turn(acting.map(&:id), game.id, 'Your turn', false)
+            publish_turn(acting.map(&:id), game, r.base_url, 'Your turn', false)
 
             game.to_h
           end
@@ -203,12 +203,14 @@ class Api
     acting
   end
 
-  def publish_turn(user_ids, game_id, type, force)
+  def publish_turn(user_ids, game, url, type, force)
+    game_id = game.id
+
     MessageBus.publish(
       '/turn',
       user_ids: user_ids,
       game_id: game_id,
-      game_url: "#{r.base_url}/game/#{game_id}",
+      game_url: "#{url}/game/#{game_id}",
       type: type,
       force: force,
     )
