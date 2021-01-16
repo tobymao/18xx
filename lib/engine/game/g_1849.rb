@@ -180,7 +180,7 @@ module Engine
       def remove_corp
         removed = @corporations.pop
         @log << "Removed #{removed.name}"
-        return if removed.name == 'AFG'
+        return if removed == afg
 
         hex_by_id(removed.coordinates).tile.city_towns.first.remove_reservation!(removed)
         @log << "Removed token reservation at #{removed.coordinates}"
@@ -211,7 +211,7 @@ module Engine
       end
 
       def home_token_locations(corporation)
-        raise NotImplementedError unless corporation.name == 'AFG'
+        raise NotImplementedError unless corporation == afg
 
         AFG_HEXES.map { |coord| hex_by_id(coord) }.select do |hex|
           hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
@@ -247,7 +247,6 @@ module Engine
       end
 
       def update_garibaldi
-        afg = @corporations.find { |c| c.name == 'AFG' }
         return unless afg && !afg.slot_open && !home_token_locations(afg).empty?
 
         afg.slot_open = true
@@ -567,11 +566,10 @@ module Engine
         city = messina.tile.cities[0]
 
         # If Garibaldi's only token removed, close Garibaldi
-        if (garibaldi = @corporations.find { |c| c.name == 'AFG' })
-          if city.tokened_by?(garibaldi) && garibaldi.placed_tokens.one?
-            @log << '-- AFG loses only token, closing. --'
-            close_corporation(garibaldi)
-          end
+        if afg && city.tokened_by?(afg) && afg.placed_tokens.one?
+          @log << '-- AFG loses only token, closing. --'
+          @round.entities.delete(afg)
+          close_corporation(afg)
         end
 
         # Remove from game tokens on Messina
