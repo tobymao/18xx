@@ -20,7 +20,7 @@ module View
         <p>18xx.Games is created and maintained by Toby Mao. It is an open source project, and you can find the
         code on <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>. All games are used with express written consent from their respective rights holders. You can find more information about the games on the <a href='https://github.com/tobymao/18xx/wiki'>wiki</a>.</p>
 
-        <p>Current version <span id='version'>unknown</span>.</p>
+        <p>Current version <span id='version'>unknown</span> (<a href="https://github.com/tobymao/18xx/commits/master">recent commits</a>).</p>
 
         <H2>Privacy Policy</H2>
         Upon your request and expression of consent, we collect the following data for the purpose of providing services to you. It is removed upon your request to terminate these services.
