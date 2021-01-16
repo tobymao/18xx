@@ -35,7 +35,7 @@ module Engine
                 "B11": "Decin",
                 "B13": "Liberec",
                 "C24": "Opava",
-                "E22": "Opava",
+                "E22": "Olomouc",
                 "G24": "Hulin",
                 "G12": "Tabor",
                 "I12": "Ceske Budejovice",
