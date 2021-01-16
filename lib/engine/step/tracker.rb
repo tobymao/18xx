@@ -121,7 +121,7 @@ module Engine
             @game.tile_cost_with_discount(tile, hex, entity, base_cost)
           end
 
-        pay_tile_cost(spender, cost, extra_cost)
+        pay_tile_cost!(entity, tile, rotation, hex, spender, cost, extra_cost)
 
         cities = tile.cities
         if old_tile.paths.empty? &&
@@ -137,13 +137,6 @@ module Engine
 
           token.remove!
         end
-        @log << "#{spender.name}"\
-          "#{spender == entity ? '' : " (#{entity.sym})"}"\
-          "#{cost.zero? ? '' : " spends #{@game.format_currency(cost)} and"}"\
-          " lays tile ##{tile.name}"\
-          " with rotation #{rotation} on #{hex.name}"\
-          "#{tile.location_name.to_s.empty? ? '' : " (#{tile.location_name})"}"
-
         return unless terrain.any?
 
         @game.all_companies_with_ability(:tile_income) do |company, ability|
@@ -164,9 +157,16 @@ module Engine
         @game.tiles << old_tile unless old_tile.preprinted
       end
 
-      def pay_tile_cost(spender, cost, _extra_cost)
+      def pay_tile_cost!(entity, tile, rotation, hex, spender, cost, _extra_cost)
         try_take_loan(spender, cost)
         spender.spend(cost, @game.bank) if cost.positive?
+
+        @log << "#{spender.name}"\
+          "#{spender == entity ? '' : " (#{entity.sym})"}"\
+          "#{cost.zero? ? '' : " spends #{@game.format_currency(cost)} and"}"\
+          " lays tile ##{tile.name}"\
+          " with rotation #{rotation} on #{hex.name}"\
+          "#{tile.location_name.to_s.empty? ? '' : " (#{tile.location_name})"}"
       end
 
       def border_cost(tile, entity)
