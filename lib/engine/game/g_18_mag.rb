@@ -6,7 +6,7 @@ require_relative 'base'
 module Engine
   module Game
     class G18Mag < Base
-      attr_reader :tile_groups, :unused_tiles, :sik, :skev, :ldsteg, :mavag, :raba, :snw, :gc
+      attr_reader :tile_groups, :unused_tiles, :sik, :skev, :ldsteg, :mavag, :raba, :snw, :gc, :terrain_tokens
 
       load_from_json(Config::Game::G18Mag::JSON)
 
@@ -45,6 +45,14 @@ module Engine
       RABA_BONUS = [20, 20, 30, 30].freeze
       SNW_BONUS = [30, 30, 50, 50].freeze
 
+      TERRAIN_TOKENS = {
+        '5' => 3,
+        '6' => 1,
+        '7' => 1,
+        '12' => 2,
+        '13' => 1,
+      }.freeze
+
       def setup
         @sik = @corporations.find { |c| c.name == 'SIK' }
         @skev = @corporations.find { |c| c.name == 'SKEV' }
@@ -53,6 +61,8 @@ module Engine
         @raba = @corporations.find { |c| c.name == 'RABA' }
         @snw = @corporations.find { |c| c.name == 'SNW' }
         @gc = @corporations.find { |c| c.name == 'G&C' }
+
+        @terrain_tokens = TERRAIN_TOKENS.dup
 
         @tile_groups = init_tile_groups
         update_opposites
@@ -415,6 +425,12 @@ module Engine
 
       def routes_subsidy(routes)
         routes.sum(&:subsidy)
+      end
+
+      def status_str(entity)
+        return unless @terrain_tokens[entity.name]
+
+        "Terrain Tokens: #{@terrain_tokens[entity.name]}"
       end
     end
   end
