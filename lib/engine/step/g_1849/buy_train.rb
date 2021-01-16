@@ -19,6 +19,7 @@ module Engine
         def process_sell_shares(action)
           super
           @sold_any = true
+          @game.sold_this_turn << action.bundle.corporation
         end
       end
     end

@@ -26,7 +26,7 @@ module Engine
       EBUY_PRES_SWAP = false
       EBUY_OTHER_VALUE = false
 
-      CLOSED_CORP_TRAINS = :discarded
+      CLOSED_CORP_TRAINS_REMOVED = false
 
       CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT = true
       IPO_RESERVED_NAME = 'Treasury'
@@ -149,8 +149,8 @@ module Engine
         []
       end
 
-      def corporation_opts
-        { can_hold_above_max: true }
+      def can_hold_above_limit?(_entity)
+        true
       end
 
       def assignment_tokens(assignment)

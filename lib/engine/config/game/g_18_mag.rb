@@ -412,7 +412,6 @@ module Engine
       "float_percent": 0,
       "max_ownership_percent": 60,
       "tokens": [
-        0,
         40,
         80
       ],
@@ -425,7 +424,6 @@ module Engine
       "float_percent": 0,
       "max_ownership_percent": 60,
       "tokens": [
-        0,
         40,
         80
       ],
@@ -439,7 +437,6 @@ module Engine
       "float_percent": 0,
       "max_ownership_percent": 60,
       "tokens": [
-        0,
         40,
         80
       ],
@@ -452,20 +449,18 @@ module Engine
       "float_percent": 0,
       "max_ownership_percent": 60,
       "tokens": [
-        0,
         40,
         80
       ],
       "color": "green"
     },
     {
-      "sym": "KSB",
+      "sym": "SKEV",
       "name": "Gróf Széchenyi István Konsortium",
-      "logo": "18_mag/KSB",
+      "logo": "18_mag/SKEV",
       "float_percent": 0,
       "max_ownership_percent": 60,
       "tokens": [
-        0,
         40,
         80
       ],
@@ -479,7 +474,6 @@ module Engine
       "float_percent": 0,
       "max_ownership_percent": 60,
       "tokens": [
-        0,
         40,
         80
       ],
@@ -492,7 +486,6 @@ module Engine
       "float_percent": 0,
       "max_ownership_percent": 60,
       "tokens": [
-        0,
         40,
         80
       ],
@@ -510,19 +503,28 @@ module Engine
       "name": "3",
       "distance": 3,
       "price": 120,
-      "num": 25
+      "num": 25,
+      "events": [
+        {"type": "first_three"}
+      ]
     },
     {
       "name": "4",
       "distance": 4,
       "price": 200,
-      "num": 25
+      "num": 25,
+      "events": [
+        {"type": "first_four"}
+      ]
     },
     {
       "name": "6",
       "distance": 6,
       "price": 320,
-      "num": 25
+      "num": 25,
+      "events": [
+        {"type": "first_six"}
+      ]
     }
   ],
   "hexes": {
@@ -707,7 +709,7 @@ module Engine
   },
   "phases": [
     {
-      "name": "yellow",
+      "name": "Yellow",
       "train_limit": 2,
       "tiles": [
         "yellow"
@@ -715,8 +717,8 @@ module Engine
       "operating_rounds": 1
     },
     {
-      "name": "green",
-      "on": "3",
+      "name": "Green",
+      "on": ["3", "4", "6"],
       "train_limit": 2,
       "tiles": [
         "yellow",
@@ -725,8 +727,7 @@ module Engine
       "operating_rounds": 2
     },
     {
-      "name": "brown",
-      "on": "4",
+      "name": "Brown",
       "train_limit": 2,
       "tiles": [
         "yellow",
@@ -736,8 +737,7 @@ module Engine
       "operating_rounds": 2
     },
     {
-      "name": "gray",
-      "on": "6",
+      "name": "Gray",
       "train_limit": 2,
       "tiles": [
         "yellow",
@@ -745,7 +745,10 @@ module Engine
         "brown",
         "gray"
       ],
-      "operating_rounds": 3
+      "operating_rounds": 3,
+      "status":[
+        "end_game_triggered"
+      ]
     }
   ]
 }

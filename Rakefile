@@ -21,22 +21,6 @@ migrate = lambda do |env, version|
   Sequel::Migrator.apply(DB, 'migrate', version)
 end
 
-desc 'Migrate test database to latest version'
-task :test_up do
-  migrate.call('test', nil)
-end
-
-desc 'Migrate test database all the way down'
-task :test_down do
-  migrate.call('test', 0)
-end
-
-desc 'Migrate test database all the way down and then back up'
-task :test_bounce do
-  migrate.call('test', 0)
-  Sequel::Migrator.apply(DB, 'migrate')
-end
-
 desc 'Migrate development database to latest version'
 task :dev_up do
   migrate.call('development', nil)
@@ -44,12 +28,14 @@ end
 
 desc 'Migrate development database to all the way down'
 task :dev_down do
+  DB[:actions].truncate if DB.tables.include?(:actions)
   migrate.call('development', 0)
 end
 
 desc 'Migrate development database all the way down and then back up'
 task :dev_bounce do
   migrate.call('development', 0)
+  DB[:actions].truncate if DB.tables.include?(:actions)
   Sequel::Migrator.apply(DB, 'migrate')
 end
 
@@ -111,6 +97,10 @@ task :precompile do
   # Copy to the pin directory
   git_rev = `git rev-parse --short HEAD`.strip
   pin_dir = Assets::OUTPUT_BASE + Assets::PIN_DIR
+  File.write(Assets::OUTPUT_BASE + '/assets/version.json', JSON.dump(
+    hash: git_rev,
+    url: "https://github.com/tobymao/18xx/commit/#{git_rev}",
+  ))
   FileUtils.mkdir_p(pin_dir)
   FileUtils.cp("#{bundle}.gz", "#{pin_dir}/#{git_rev}.js.gz")
 end

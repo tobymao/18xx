@@ -22,8 +22,7 @@ module Engine
                                                          hexes: [minor.coordinates],
                                                          price: 0,
                                                          teleport_price: 0,
-                                                         from_owner: true,
-                                                         when: 'sold'))
+                                                         from_owner: true))
 
           @game.remove_minor!(minor)
         end

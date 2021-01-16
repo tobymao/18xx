@@ -63,10 +63,10 @@ module Engine
 
       def <=(other)
         other_ends = other.ends
-        ends.all? { |t| other_ends.any? { |o| t <= o } } && tracks_match(other)
+        ends.all? { |t| other_ends.any? { |o| t <= o } } && tracks_match?(other)
       end
 
-      def tracks_match(other_path, dual_ok: false)
+      def tracks_match?(other_path, dual_ok: false)
         other_track = other_path.track
         case @track
         when :broad
@@ -135,6 +135,7 @@ module Engine
           neighbor.paths[np_edge].each do |np|
             next if on && !on[np]
             next unless lane_match?(@exit_lanes[edge], np.exit_lanes[np_edge])
+            next unless tracks_match?(np, dual_ok: true)
 
             if chain
               np.walk(skip: np_edge, visited: visited, chain: chained) { |c| yield c }

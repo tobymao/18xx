@@ -102,6 +102,17 @@ module View
 
           @selected_company = @step.auctioning if @step.auctioning
 
+          companies = @step.available.select(&:company?)
+          if @step.respond_to?(:tiered_auction?) && @step.tiered_auction?
+            companies.group_by(&:value).values.map do |tier|
+              h(:div, { style: { display: 'table' } }, tier.map { |company| render_company(company) })
+            end
+          else
+            companies.map { |company| render_company(company) }
+          end
+        end
+
+        def render_company(company)
           props = {
             style: {
               display: 'inline-block',
@@ -109,11 +120,9 @@ module View
             },
           }
 
-          @step.available.select(&:company?).map do |company|
-            children = [h(Company, company: company, bids: @step.bids[company])]
-            children << render_input(company) if @selected_company == company
-            h(:div, props, children)
-          end
+          children = [h(Company, company: company, bids: @step.bids[company])]
+          children << render_input(company) if @selected_company == company
+          h(:div, props, children)
         end
 
         def render_input(company)
@@ -132,13 +141,13 @@ module View
           return [h(:button, { on: { click: -> { choose } } }, 'Choose')] if @step.may_choose?(company)
 
           input = h(:input, style: { marginRight: '1rem' }, props: {
-            value: @step.min_bid(company),
-            step: @step.min_increment,
-            min: @step.min_bid(company),
-            max: @step.max_bid(@current_entity, company),
-            type: 'number',
-            size: @current_entity.cash.to_s.size,
-          })
+                      value: @step.min_bid(company),
+                      step: @step.min_increment,
+                      min: @step.min_bid(company),
+                      max: @step.max_bid(@current_entity, company),
+                      type: 'number',
+                      size: @current_entity.cash.to_s.size,
+                    })
 
           buttons = []
           if @step.min_bid(company) <= @step.max_place_bid(@current_entity, company)
@@ -173,13 +182,13 @@ module View
           return if !@current_actions.include?('bid') || @step.auctioning != :turn
 
           input = h(:input, style: { margin: '1rem 0px', marginRight: '1rem' }, props: {
-            value: @step.min_player_bid,
-            step: @step.min_increment,
-            min: @step.min_player_bid,
-            max: @step.max_player_bid(@current_entity),
-            type: 'number',
-            size: @current_entity.cash.to_s.size,
-          })
+                      value: @step.min_player_bid,
+                      step: @step.min_increment,
+                      min: @step.min_player_bid,
+                      max: @step.max_player_bid(@current_entity),
+                      type: 'number',
+                      size: @current_entity.cash.to_s.size,
+                    })
 
           h(:div,
             [

@@ -83,9 +83,11 @@ module View
         end
 
         def mountain(delta_x: 0, delta_y: 0)
-          h(:polygon, attrs: { transform: "translate(#{delta_x} #{delta_y})",
-                               fill: '#cb7745',
-                               points: TRIANGLE_PATH })
+          h(:polygon, attrs: {
+              transform: "translate(#{delta_x} #{delta_y})",
+              fill: '#cb7745',
+              points: TRIANGLE_PATH,
+            })
         end
 
         def water(delta_x: 0, delta_y: 0)
@@ -94,7 +96,7 @@ module View
           ])
         end
 
-        def svg(delta_x: 0, delta_y: 0, icon:)
+        def svg(icon:, delta_x: 0, delta_y: 0)
           h(
             :image, attrs: {
               href: "/icons/#{icon}.svg",

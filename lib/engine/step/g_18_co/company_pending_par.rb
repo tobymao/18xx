@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../company_pending_par.rb'
+require_relative '../company_pending_par'
 
 module Engine
   module Step

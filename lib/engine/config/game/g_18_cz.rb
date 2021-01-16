@@ -1586,26 +1586,26 @@ module Engine
                         "H13",
                         "H21"
                     ],
-                    "border=edge:5,type:impassible": [
+                    "border=edge:5,type:offboard": [
                         "H23",
                         "I14"
                     ],
-                    "border=edge:4,type:impassible": [
+                    "border=edge:4,type:offboard": [
                         "J13",
                         "I22",
                         "G26"
                     ],
-                    "border=edge:2,type:impassible": [
+                    "border=edge:2,type:offboard": [
                         "B23"
                     ],
-                    "border=edge:1,type:impassible": [
+                    "border=edge:1,type:offboard": [
                         "F5",
                         "I20"
                     ],
-                    "border=edge:2,type:impassible;border=edge:5,type:impassible": [
+                    "border=edge:2,type:offboard;border=edge:5,type:offboard": [
                         "G4"
                     ],
-                    "border=edge:0,type:impassible": [
+                    "border=edge:0,type:offboard": [
                         "G6",
                         "H19",
                         "H25"
@@ -1615,13 +1615,13 @@ module Engine
                         "C22",
                         "I8"
                     ],
-                    "upgrade=cost:40,terrain:mountain;border=edge:1,type:impassible;border=edge:3,type:impassible": [
+                    "upgrade=cost:40,terrain:mountain;border=edge:1,type:offboard;border=edge:3,type:offboard": [
                         "B21"
                     ],
-                    "upgrade=cost:40,terrain:mountain;border=edge:3,type:impassible": [
+                    "upgrade=cost:40,terrain:mountain;border=edge:3,type:offboard": [
                         "C4"
                     ],
-                    "upgrade=cost:40,terrain:mountain;border=edge:3,type:impassible;border=edge:1,type:impassible": [
+                    "upgrade=cost:40,terrain:mountain;border=edge:3,type:offboard;border=edge:1,type:offboard": [
                         "B7"
                     ],
                     "upgrade=cost:20,terrain:mountain": [
@@ -1632,23 +1632,23 @@ module Engine
                         "H15",
                         "G14"
                     ],
-                    "upgrade=cost:20,terrain:mountain;border=edge:5,type:impassible": [
+                    "upgrade=cost:20,terrain:mountain;border=edge:5,type:offboard": [
                         "F27"
                     ],
-                    "town=revenue:0;upgrade=cost:40,terrain:mountain;border=edge:2,type:impassible": [
+                    "town=revenue:0;upgrade=cost:40,terrain:mountain;border=edge:2,type:offboard": [
                         "C6"
                     ],
                     "town=revenue:0;upgrade=cost:20,terrain:mountain": [
                         "J11",
                         "G18"
                     ],
-                    "town=revenue:0;upgrade=cost:20,terrain:mountain;border=edge:5,type:impassible": [
+                    "town=revenue:0;upgrade=cost:20,terrain:mountain;border=edge:5,type:offboard": [
                         "H17"
                     ],
-                    "town=revenue:0;upgrade=cost:20,terrain:mountain;border=edge:1,type:impassible": [
+                    "town=revenue:0;upgrade=cost:20,terrain:mountain;border=edge:1,type:offboard": [
                         "H7"
                     ],
-                    "town=revenue:0;upgrade=cost:20,terrain:mountain;border=edge:4,type:impassible": [
+                    "town=revenue:0;upgrade=cost:20,terrain:mountain;border=edge:4,type:offboard": [
                         "B17"
                     ],
                     "city=revenue:0;upgrade=cost:20,terrain:mountain": [
@@ -1656,12 +1656,14 @@ module Engine
                     ],
                     "upgrade=cost:10,terrain:water": [
                         "D11",
-                        "D13",
                         "D15",
                         "G10",
                         "H11"
                     ],
-                    "upgrade=cost:10,terrain:water;border=edge:3,type:impassible": [
+                    "upgrade=cost:10,terrain:water;stub=edge:0": [
+                        "D13"
+                    ],
+                    "upgrade=cost:10,terrain:water;border=edge:3,type:offboard": [
                         "C18"
                     ],
                     "town=revenue:0;upgrade=cost:10,terrain:water": [
@@ -1669,7 +1671,7 @@ module Engine
                         "C10",
                         "C12"
                     ],
-                    "town=revenue:0;upgrade=cost:10,terrain:water;border=edge:1,type:impassible": [
+                    "town=revenue:0;upgrade=cost:10,terrain:water;border=edge:1,type:offboard": [
                         "A10"
                     ],
                     "city=revenue:0;upgrade=cost:10,terrain:water": [
@@ -1697,17 +1699,19 @@ module Engine
                     ],
                     "town=revenue:0": [
                         "C14",
-                        "F13",
                         "G22",
                         "C28"
                     ],
-                    "town=revenue:0;border=edge:0,type:impassible": [
+                    "town=revenue:0;stub=edge:2": [
+                        "F13"
+                    ],
+                    "town=revenue:0;border=edge:0,type:offboard": [
                         "E4"
                     ],
-                    "town=revenue:0;border=edge:5,type:impassible": [
+                    "town=revenue:0;border=edge:5,type:offboard": [
                         "E2"
                     ],
-                    "town=revenue:0;border=edge:2,type:impassible": [
+                    "town=revenue:0;border=edge:2,type:offboard": [
                         "C20"
                     ],
                     "town=revenue:0;town=revenue:0": [
@@ -1718,32 +1722,32 @@ module Engine
                     "city=revenue:20;city=revenue:20;path=a:5,b:_0;path=a:3,b:_1;label=P;upgrade=cost:10,terrain:water": [
                         "E12"
                     ],
-                    "label=SX;border=edge:0,type:impassible;border=edge:5,type:impassible;border=edge:4,type:impassible": [
+                    "label=SX;border=edge:0,type:offboard;border=edge:5,type:offboard;border=edge:4,type:offboard": [
                         "A8",
                         "B5"
                     ],
-                    "label=PR;border=edge:0,type:impassible;border=edge:5,type:impassible;border=edge:4,type:impassible;border=edge:1,type:impassible": [
+                    "label=PR;border=edge:0,type:offboard;border=edge:5,type:offboard;border=edge:4,type:offboard;border=edge:1,type:offboard": [
                         "B19"
                     ],
-                    "label=PR;border=edge:0,type:impassible;border=edge:5,type:impassible": [
+                    "label=PR;border=edge:0,type:offboard;border=edge:5,type:offboard": [
                         "A22"
                     ],
-                    "label=BY;border=edge:2,type:impassible;border=edge:3,type:impassible;border=edge:4,type:impassible": [
+                    "label=BY;border=edge:2,type:offboard;border=edge:3,type:offboard;border=edge:4,type:offboard": [
                         "H5"
                     ],
-                    "label=BY;border=edge:2,type:impassible;border=edge:3,type:impassible;border=edge:4,type:impassible;border=edge:5,type:impassible": [
+                    "label=BY;border=edge:2,type:offboard;border=edge:3,type:offboard;border=edge:4,type:offboard;border=edge:5,type:offboard": [
                         "F3"
                     ],
-                    "label=kk;border=edge:2,type:impassible;border=edge:3,type:impassible;border=edge:4,type:impassible": [
+                    "label=kk;border=edge:2,type:offboard;border=edge:3,type:offboard;border=edge:4,type:offboard": [
                         "I18"
                     ],
-                    "label=kk;border=edge:1,type:impassible;border=edge:2,type:impassible": [
+                    "label=kk;border=edge:1,type:offboard;border=edge:2,type:offboard": [
                         "J15"
                     ],
-                    "label=Ug;border=edge:1,type:impassible;border=edge:2,type:impassible;border=edge:3,type:impassible": [
+                    "label=Ug;border=edge:1,type:offboard;border=edge:2,type:offboard;border=edge:3,type:offboard": [
                         "I24"
                     ],
-                    "label=Ug;border=edge:1,type:impassible;border=edge:2,type:impassible": [
+                    "label=Ug;border=edge:1,type:offboard;border=edge:2,type:offboard": [
                         "G28"
                     ]
                 },
@@ -1752,7 +1756,7 @@ module Engine
                         "D27",
                         "C8"
                     ],
-                    "city=revenue:0;city=revenue:0;label=OO;upgrade=cost:10,terrain:water;border=edge:2,type:impassible": [
+                    "city=revenue:0;city=revenue:0;label=OO;upgrade=cost:10,terrain:water;border=edge:2,type:offboard": [
                         "B9"
                     ]
                 }

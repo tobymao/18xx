@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-require_relative '../config/game/g_18_mag.rb'
+require_relative '../config/game/g_18_mag'
 require_relative 'base'
 
 module Engine
   module Game
     class G18Mag < Base
-      attr_reader :tile_groups, :unused_tiles
+      attr_reader :tile_groups, :unused_tiles, :sik, :skev, :ldsteg, :mavag, :raba, :snw, :gc
 
       load_from_json(Config::Game::G18Mag::JSON)
 
@@ -25,10 +25,32 @@ module Engine
       SELL_BUY_ORDER = :sell_buy
       MARKET_SHARE_LIMIT = 100
 
+      TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded, cost: 10 }].freeze
+
       START_PRICES = [60, 60, 65, 65, 70, 70, 75, 75, 80, 80].freeze
       MINOR_STARTING_CASH = 50
 
+      TRAIN_PRICE_MIN = 1
+
+      EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+        'first_three' => ['First 3', 'Advance phase'],
+        'first_four' => ['First 4', 'Advance phase'],
+        'first_six' => ['First 6', 'Advance phase'],
+      ).freeze
+
+      STATUS_TEXT = Base::STATUS_TEXT.merge(
+        'end_game_triggered' => ['End Game', 'After next SR, final three ORs are played'],
+      ).freeze
+
       def setup
+        @sik = @corporations.find { |c| c.name == 'SIK' }
+        @skev = @corporations.find { |c| c.name == 'SKEV' }
+        @ldsteg = @corporations.find { |c| c.name == 'LdStEG' }
+        @mavag = @corporations.find { |c| c.name == 'MAVAG' }
+        @raba = @corporations.find { |c| c.name == 'RABA' }
+        @snw = @corporations.find { |c| c.name == 'SNW' }
+        @gc = @corporations.find { |c| c.name == 'G&C' }
+
         @tile_groups = init_tile_groups
         update_opposites
         @unused_tiles = []
@@ -69,6 +91,8 @@ module Engine
           end
           corp.owner = @share_pool
         end
+
+        @trains_left = %w[3 4 6]
       end
 
       def init_tile_groups
@@ -165,13 +189,13 @@ module Engine
       def operating_round(round_num)
         Round::Operating.new(self, [
           Step::Exchange,
-          Step::DiscardTrain,
-          Step::G18Mag::Track,
           Step::HomeToken,
-          Step::Token,
-          Step::Route,
+          Step::G18Mag::Track,
+          Step::G18Mag::Token,
+          Step::G18Mag::DiscardTrain,
+          Step::G18Mag::Route,
           Step::G18Mag::Dividend,
-          Step::BuyTrain,
+          Step::G18Mag::BuyTrain,
         ], round_num: round_num)
       end
 
@@ -226,7 +250,50 @@ module Engine
         true
       end
 
+      # price is nil, :free, or a positive int
+      def buy_train(operator, train, price = nil)
+        cost = price || train.price
+        if price != :free && train.owner == @depot
+          corp = %w[2 4].include?(train.name) ? @ldsteg : @mavag
+          operator.spend(cost / 2, @bank)
+          operator.spend(cost / 2, corp)
+          @log << "#{corp.name} earns #{format_currency(cost / 2)}"
+        elsif price != :free
+          operator.spend(cost, train.owner)
+        end
+        remove_train(train)
+        train.owner = operator
+        operator.trains << train
+        operator.rusted_self = false
+        @crowded_corps = nil
+      end
+
       def place_home_token(_corp); end
+
+      def event_first_three!
+        @trains_left.delete('3')
+        @phase.current[:on] = nil
+        @phase.upcoming[:on] = @trains_left if @phase.upcoming
+        @phase.next_on = @trains_left
+      end
+
+      def event_first_four!
+        @trains_left.delete('4')
+        @phase.current[:on] = nil
+        @phase.upcoming[:on] = @trains_left if @phase.upcoming
+        @phase.next_on = @trains_left
+      end
+
+      def event_first_six!
+        @trains_left.delete('6')
+        @phase.current[:on] = nil
+        @phase.upcoming[:on] = @trains_left if @phase.upcoming
+        @phase.next_on = @trains_left
+      end
+
+      def info_on_trains(phase)
+        Array(phase[:on]).join(', ')
+      end
     end
   end
 end

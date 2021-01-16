@@ -7,6 +7,7 @@ module Engine
   module Game
     class G1817WO < G1817
       attr_reader :new_zealand_city
+
       load_from_json(Config::Game::G1817WO::JSON)
 
       DEV_STAGE = :alpha
@@ -68,7 +69,7 @@ module Engine
       # This must be overridden to use 1817WO step
       def redeemable_shares(entity)
         return [] unless entity.corporation?
-        return [] unless round.steps.find { |step| step.class == Step::G1817WO::BuySellParShares }.active?
+        return [] unless round.steps.find { |step| step.instance_of?(Step::G1817WO::BuySellParShares) }.active?
 
         bundles_for_corporation(share_pool, entity)
           .reject { |bundle| entity.cash < bundle.price }

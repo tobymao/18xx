@@ -356,7 +356,7 @@ module Engine
 					"type": "tile_lay",
 					"free": true,
 					"owner_type": "corporation",
-					"when": ["special_track", "other_or"],
+					"when": ["special_track"],
 					"count": 1,
 					"special": true,
 					"tiles": [
@@ -432,7 +432,7 @@ module Engine
 					"special": false,
 					"reachable": true,
 					"owner_type": "corporation",
-					"when": ["special_track", "other_or"],
+					"when": "track",
 					"count": 1,
 					"hexes": [
 

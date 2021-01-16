@@ -19,6 +19,7 @@ module Engine
       'x' => :par_1,
       'X' => :par_overlap,
       'z' => :par_2,
+      'w' => :par_3,
       'C' => :convert_range,
       'm' => :max_price,
       'u' => :phase_limited,

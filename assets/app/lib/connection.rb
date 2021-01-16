@@ -55,19 +55,7 @@ module Lib
       end
     end
 
-    def authenticate!
-      `MessageBus.headers = {'Authorization': #{auth_token}}`
-    end
-
-    def invalidate!
-      `MessageBus.headers = {}`
-    end
-
     private
-
-    def auth_token
-      Lib::Storage['auth_token']
-    end
 
     def send(path, method, data, prefix, block) # rubocop:disable Lint/UnusedMethodArgument
       data = data&.merge('_client_id': `MessageBus.clientId`)
@@ -77,7 +65,6 @@ module Lib
           method: #{method},
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': #{auth_token},
           }
         }
 

@@ -116,7 +116,7 @@ module View
         end
         trs << h(:tr, [
           h(:td, 'Certs'),
-          h('td.right', td_cert_props, "#{num_certs}/#{cert_limit}"),
+          h('td.right', td_cert_props, @game.show_game_cert_limit? ? "#{num_certs}/#{cert_limit}" : num_certs.to_s),
         ])
 
         priority_props = {

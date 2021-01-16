@@ -27,6 +27,7 @@ module Engine
             next unless (bundle = @game.sellable_bundles(player, c).max_by(&:price))
 
             @game.sell_shares_and_change_price(bundle)
+            @game.sold_this_turn << bundle.corporation
           end
 
           # player cash given to corp, corp closed

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../config/game/g_1856'
-require_relative '../loan.rb'
+require_relative '../loan'
 require_relative '../g_1856/corporation'
 require_relative '../g_1856/share_pool'
 require_relative 'base'
@@ -33,6 +33,7 @@ module Engine
 
       load_from_json(Config::Game::G1856::JSON)
       attr_reader :post_nationalization, :bankrupted
+
       DEV_STAGE = :prealpha
 
       # These plain city hexes upgrade to L tiles in brown
@@ -331,6 +332,10 @@ module Engine
 
       def init_share_pool
         Engine::G1856::SharePool.new(self)
+      end
+
+      def operating_order
+        @corporations.select { |c| c.floated? || c.floatable? }.sort
       end
 
       def release_escrow!(corporation)

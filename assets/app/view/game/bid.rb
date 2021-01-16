@@ -17,13 +17,13 @@ module View
           min_bid = step.min_bid(@corporation)
           max_bid = step.max_bid(@entity, @corporation)
           price_input = h(:input, style: { marginRight: '1rem' }, props: {
-            value: min_bid,
-            step: min_increment,
-            min: min_bid + min_increment,
-            max: max_bid,
-            type: 'number',
-            size: [@entity.cash.to_s.size, max_bid.to_s.size].max,
-          })
+                            value: min_bid,
+                            step: min_increment,
+                            min: min_bid + min_increment,
+                            max: max_bid,
+                            type: 'number',
+                            size: [@entity.cash.to_s.size, max_bid.to_s.size].max,
+                          })
 
           place_bid = lambda do
             process_action(Engine::Action::Bid.new(

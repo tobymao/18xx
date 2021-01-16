@@ -29,6 +29,7 @@ module Engine
           end
 
           @game.repay_loan(entity, entity.loans.first) while can_payoff?(entity)
+          @game.calculate_corporation_interest(entity)
         end
       end
     end

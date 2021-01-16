@@ -11,11 +11,13 @@ module Engine
         include BuyTrainAction
 
         def actions(entity)
-          # If this entity has used Motala Verkstad to buy train(s) do not allow any more train buys
-          return [] if @round.respond_to?(:premature_trains_bought) && @round.premature_trains_bought == entity
+          # If this entity has used Motala Verkstad to buy train(s) do not allow any normal train buys
+          return [] if @round.respond_to?(:premature_trains_bought) && @round.premature_trains_bought.include?(entity)
 
           super
         end
+
+        def do_after_buy_train_action(_action, _entity); end
       end
     end
   end

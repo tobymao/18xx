@@ -18,11 +18,11 @@ module View
 
         # Move the position to the middle of the hex
         props = {
-         style: {
-           position: 'absolute',
-           left: "#{WIDTH * shift + WIDTH / 2}px",
-           top: "#{(WIDTH / 2) - 1}px",
-         },
+          style: {
+            position: 'absolute',
+            left: "#{WIDTH * shift + WIDTH / 2}px",
+            top: "#{(WIDTH / 2) - 1}px",
+          },
         }
 
         selector = h(TileSelector,

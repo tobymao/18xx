@@ -60,13 +60,14 @@ def repair(game, original_actions, actions, broken_action)
     choice.user = choice.entity.player.id
     actions.insert(action_idx, choice.to_h)
     return
-  elsif game.active_step.is_a?(Engine::Step::BuyCompany)
+  elsif game.active_step.is_a?(Engine::Step::BuyCompany) ||
+    game.active_step.is_a?(Engine::Step::G1817::PostConversion) ||
+    game.active_step.is_a?(Engine::Step::G1817::BuySellParShares) ||
+    game.active_step.is_a?(Engine::Step::G1867::SingleItemAuction) ||
+    game.active_step.is_a?(Engine::Step::G1817::Loan)
     add_pass.call
     return
-  elsif game.active_step.is_a?(Engine::Step::G1817::PostConversion)
-    add_pass.call
-    return
-  elsif game.active_step.is_a?(Engine::Step::G1817::Acquire)
+  elsif game.active_step.is_a?(Engine::Step::G1817::Acquire) && broken_action['type'] != 'pass'
     add_pass.call
     return
   elsif game.active_step.is_a?(Engine::Step::BuySellParShares) && game.is_a?(Engine::Game::G1867) && broken_action['type']=='bid'
@@ -79,10 +80,7 @@ def repair(game, original_actions, actions, broken_action)
       add_pass.call
       return
     end
-  elsif game.active_step.is_a?(Engine::Step::G1867::Merge)
-    add_pass.call
-    return
-  elsif game.active_step.is_a?(Engine::Step::G1867::SingleItemAuction)
+  elsif game.active_step.is_a?(Engine::Step::G1867::Merge) && broken_action['type'] != 'pass'
     add_pass.call
     return
   elsif broken_action['type'] == 'pass'
@@ -100,9 +98,20 @@ def repair(game, original_actions, actions, broken_action)
       actions.delete(broken_action)
       return
     end
+    if game.active_step.is_a?(Engine::Step::G1867::PostMergerShares)
+      actions.delete(broken_action)
+      return
+    end
     if game.active_step.is_a?(Engine::Step::G1817::Acquire)
       # Remove corps passes that went into acquisition
-      actions.delete(broken_action)
+      if (game.active_step.current_entity.corporation? && broken_action['entity_type'] == 'player')
+        action2 = Engine::Action::Pass.new(game.active_step.current_entity).to_h
+        broken_action['entity'] = action2['entity']
+        broken_action['entity_type'] = action2['entity_type']
+        return [broken_action]
+      else
+        actions.delete(broken_action)
+      end
       return
     end
     if game.active_step.is_a?(Engine::Step::G1867::Merge)
@@ -337,8 +346,6 @@ def migrate_db_actions(data, pin, dry_run=false, debug=false)
               game: data,
               user: action.key?('user') ? User[action['user']] : data.user,
               action_id: game.actions.last.id,
-              turn: game.turn,
-              round: game.round.name,
               action: action,
             )
           end

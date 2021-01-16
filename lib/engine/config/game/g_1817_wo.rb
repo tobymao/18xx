@@ -136,7 +136,7 @@ module Engine
            "tiles": [
              "X00"
            ],
-           "when": ["special_track", "other_or"],
+           "when": ["special_track", "owning_corp_or_turn"],
            "owner_type": "corporation",
            "count": 1
          }
@@ -217,7 +217,7 @@ module Engine
             "7","8", "9"
           ],
           "free": false,
-          "when": ["special_track", "other_or"],
+          "when": ["special_track", "owning_corp_or_turn"],
           "owner_type": "corporation",
           "count": 1
         }
@@ -244,7 +244,7 @@ module Engine
             "7","8", "9"
           ],
           "free": false,
-          "when": ["special_track", "other_or"],
+          "when": ["special_track", "owning_corp_or_turn"],
           "owner_type": "corporation",
           "count": 2
         }

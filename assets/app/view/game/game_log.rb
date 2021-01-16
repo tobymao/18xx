@@ -35,22 +35,25 @@ module View
         end
 
         if participant?
-          children << h(:div, { style: {
-            margin: '0 0 1vmin 0',
-            display: 'flex',
-            flexDirection: 'row',
-            maxWidth: '960px',
-          } }, [
-            h(:span, { style: {
-              fontWeight: 'bold',
-              margin: 'auto 0',
-            } }, [@user['name'] + ':']),
+          children << h(:div, {
+                          style: {
+                            margin: '0 0 1vmin 0',
+                            display: 'flex',
+                            flexDirection: 'row',
+                          },
+                        }, [
+            h(:span, {
+                style: {
+                  fontWeight: 'bold',
+                  margin: 'auto 0',
+                },
+              }, [@user['name'] + ':']),
             h(:textarea,
               style: {
-              marginLeft: '0.5rem',
-              height: '1.25rem',
-              flex: '1',
-            },
+                marginLeft: '0.5rem',
+                height: '1.25rem',
+                flex: '1',
+              },
               on: { keyup: enter }),
             ])
         end
@@ -131,8 +134,12 @@ module View
       end
 
       def render_log_for_action(log, action)
-        timestamp_props = { style: { margin: '0 0.2rem 0 0',
-                                     fontSize: 'smaller' } }
+        timestamp_props = {
+          style: {
+            margin: '0 0.2rem 0 0',
+            fontSize: 'smaller',
+          },
+        }
         message_props = { style: { margin: '0 0.2rem' } }
 
         timestamp = "[#{Time.at(action.created_at || Time.now).strftime('%R')}]"
@@ -144,10 +151,14 @@ module View
         action_log = log.flat_map do |entry|
           line = entry.message
 
-          line_props = { style: { marginBottom: '0.2rem',
-                                  paddingLeft: '0.5rem',
-                                  textIndent: '-0.5rem' },
-                         on: { click: click } }
+          line_props = {
+            style: {
+              marginBottom: '0.2rem',
+              paddingLeft: '0.5rem',
+              textIndent: '-0.5rem',
+            },
+            on: { click: click },
+          }
           line_props[:style][:fontWeight] = 'bold' if line.is_a?(String) && line.start_with?('--')
 
           if line.is_a?(Engine::Action::Message)

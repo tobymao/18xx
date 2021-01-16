@@ -13,6 +13,7 @@ module Engine
         opts[:float_percent] = 50
         super(sym: sym, name: name, **opts)
 
+        @game = opts[:game]
         @corporations = opts[:corporations]
         @name = @corporations.first.name
         @shells = []
@@ -28,7 +29,7 @@ module Engine
           transfer_trains(corporation, shell)
         end
 
-        max_price = tokens.max(&:price).price + 1
+        max_price = tokens.max_by(&:price).price + 1
         tokens.sort_by! { |t| (t.used ? -max_price : max_price) + t.price }
       end
 
@@ -37,7 +38,6 @@ module Engine
       end
 
       def remove_train(train)
-        super
         @shells.each { |shell| shell.trains.delete(train) }
       end
 
@@ -59,7 +59,7 @@ module Engine
 
       def transfer_trains(corporation, shell)
         corporation.trains.dup.each do |train|
-          buy_train(train, :free)
+          @game.buy_train(self, train, :free)
           shell.trains << train
         end
       end

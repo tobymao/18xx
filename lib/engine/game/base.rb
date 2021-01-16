@@ -224,8 +224,8 @@ module Engine
 
       DISCARDED_TRAINS = :discard # discarded or removed?
       DISCARDED_TRAIN_DISCOUNT = 0 # percent
-      CLOSED_CORP_TRAINS = :removed # discarded or removed?
-      CLOSED_CORP_RESERVATIONS = :removed # remain or removed?
+      CLOSED_CORP_TRAINS_REMOVED = true
+      CLOSED_CORP_RESERVATIONS_REMOVED = true
 
       MUST_BUY_TRAIN = :route # When must the company buy a train if it doesn't have one (route, never, always)
 
@@ -235,21 +235,27 @@ module Engine
 
       IMPASSABLE_HEX_COLORS = %i[blue gray red].freeze
 
-      EVENTS_TEXT = { 'close_companies' =>
-                      ['Companies Close', 'All companies unless otherwise noted are discarded from the game'] }.freeze
+      EVENTS_TEXT = {
+        'close_companies' =>
+          ['Companies Close', 'All companies unless otherwise noted are discarded from the game'],
+      }.freeze
 
-      STATUS_TEXT = { 'can_buy_companies' =>
-                      ['Can Buy Companies', 'All corporations can buy companies from players'] }.freeze
+      STATUS_TEXT = {
+        'can_buy_companies' =>
+          ['Can Buy Companies', 'All corporations can buy companies from players'],
+      }.freeze
 
-      MARKET_TEXT = { par: 'Par value',
-                      no_cert_limit: 'Corporation shares do not count towards cert limit',
-                      unlimited: 'Corporation shares can be held above 60%',
-                      multiple_buy: 'Can buy more than one share in the corporation per turn',
-                      close: 'Corporation closes',
-                      endgame: 'End game trigger',
-                      liquidation: 'Liquidation',
-                      repar: 'Par value after bankruptcy',
-                      ignore_one_sale: 'Ignore first share sold when moving price' }.freeze
+      MARKET_TEXT = {
+        par: 'Par value',
+        no_cert_limit: 'Corporation shares do not count towards cert limit',
+        unlimited: 'Corporation shares can be held above 60%',
+        multiple_buy: 'Can buy more than one share in the corporation per turn',
+        close: 'Corporation closes',
+        endgame: 'End game trigger',
+        liquidation: 'Liquidation',
+        repar: 'Par value after bankruptcy',
+        ignore_one_sale: 'Ignore first share sold when moving price',
+      }.freeze
 
       MARKET_SHARE_LIMIT = 50 # percent
       ALL_COMPANIES_ASSIGNABLE = false
@@ -384,7 +390,7 @@ module Engine
 
         hex_ids = data['hexes'].values.map(&:keys).flatten
 
-        dup_hexes = hex_ids.group_by(&:itself).select { |_, v| v.size > 1 } .keys
+        dup_hexes = hex_ids.group_by(&:itself).select { |_, v| v.size > 1 }.keys
         raise GameError, "Found multiple definitions in #{self} for hexes #{dup_hexes}" if dup_hexes.any?
 
         const_set(:CURRENCY_FORMAT_STR, data['currencyFormatStr'])
@@ -630,6 +636,7 @@ module Engine
             next_round!
 
             # Finalize round setup (for things that need round correctly set like place_home_token)
+            @round.at_start = true
             @round.setup
             @round_history << current_action_id
           end
@@ -672,6 +679,10 @@ module Engine
         # Corporations sorted by some potential game rules
         ipoed, others = corporations.partition(&:ipoed)
         ipoed.sort + others
+      end
+
+      def operating_order
+        @minors.select(&:floated?) + @corporations.select(&:floated?).sort
       end
 
       def operated_operators
@@ -820,8 +831,10 @@ module Engine
       end
 
       def sellable_bundles(player, corporation)
+        return [] unless @round.active_step&.respond_to?(:can_sell?)
+
         bundles = bundles_for_corporation(player, corporation)
-        bundles.select { |bundle| @round.active_step&.can_sell?(player, bundle) }
+        bundles.select { |bundle| @round.active_step.can_sell?(player, bundle) }
       end
 
       def bundles_for_corporation(share_holder, corporation, shares: nil)
@@ -1265,7 +1278,7 @@ module Engine
 
         return if corporation.capitalization == :incremental
 
-        @bank.spend(corporation.par_price.price * 10, corporation)
+        @bank.spend(corporation.par_price.price * corporation.total_shares, corporation)
         @log << "#{corporation.name} receives #{format_currency(corporation.cash)}"
       end
 
@@ -1278,18 +1291,19 @@ module Engine
 
         hexes.each do |hex|
           hex.tile.cities.each do |city|
-            if city.tokened_by?(corporation) || city.reserved_by?(corporation)
-              city.tokens.map! { |token| token&.corporation == corporation ? nil : token }
-              city.reservations.delete(corporation) if self.class::CLOSED_CORP_RESERVATIONS == :removed
+            city.tokens.select { |t| t&.corporation == corporation }.each(&:remove!)
+
+            if self.class::CLOSED_CORP_RESERVATIONS_REMOVED && city.reserved_by?(corporation)
+              city.reservations.delete(corporation)
             end
           end
         end
 
         corporation.spend(corporation.cash, @bank) if corporation.cash.positive?
-        if self.class::CLOSED_CORP_TRAINS == :discarded
-          corporation.trains.dup.each { |t| depot.reclaim_train(t) }
-        else
+        if self.class::CLOSED_CORP_TRAINS_REMOVED
           corporation.trains.each { |t| t.buyable = false }
+        else
+          corporation.trains.dup.each { |t| depot.reclaim_train(t) }
         end
         if corporation.companies.any?
           @log << "#{corporation.name}'s companies close: #{corporation.companies.map(&:sym).join(', ')}"
@@ -1491,6 +1505,26 @@ module Engine
         transferred
       end
 
+      def exchange_for_partial_presidency?
+        false
+      end
+
+      def exchange_partial_percent(_share)
+        nil
+      end
+
+      def round_start?
+        @last_game_action_id == @round_history.last
+      end
+
+      def can_hold_above_limit?(_entity)
+        false
+      end
+
+      def show_game_cert_limit?
+        true
+      end
+
       private
 
       def init_bank
@@ -1595,16 +1629,20 @@ module Engine
 
         reservations = Hash.new { |k, v| k[v] = [] }
         corporations.each do |c|
-          reservations[c.coordinates] << { entity: c,
-                                           city: c.city }
+          reservations[c.coordinates] << {
+            entity: c,
+            city: c.city,
+          }
         end
 
         (corporations + companies).each do |c|
           abilities(c, :reservation) do |ability|
-            reservations[ability.hex] << { entity: c,
-                                           city: ability.city.to_i,
-                                           slot: ability.slot.to_i,
-                                           ability: ability }
+            reservations[ability.hex] << {
+              entity: c,
+              city: ability.city.to_i,
+              slot: ability.slot.to_i,
+              ability: ability,
+            }
           end
         end
 
@@ -2023,6 +2061,10 @@ module Engine
         corporations.sort_by(&:name)
       end
 
+      def info_on_trains(phase)
+        Array(phase[:on]).first
+      end
+
       def ability_right_type?(ability, type)
         !type || (ability.type == type)
       end
@@ -2056,7 +2098,7 @@ module Engine
         current_step = ability_blocking_step
         current_step_name = current_step&.type
 
-        if (ability.type == :tile_lay) && current_step&.is_a?(Step::SpecialTrack)
+        if ability.type == :tile_lay && ability.must_lay_all && current_step&.is_a?(Step::SpecialTrack)
           return current_step.company == ability.owner
         end
 
@@ -2079,17 +2121,23 @@ module Engine
             @round.stock? && @round.current_entity == ability.player
           when 'other_or'
             @round.operating? && @round.current_operator != ability.corporation
+          when 'or_start'
+            ability_time_is_or_start?
           else
             false
           end
         end
       end
 
+      def ability_time_is_or_start?
+        @round.operating? && @round.at_start
+      end
+
       def ability_blocking_step
         @round.steps.find do |step|
           # currently, abilities only care about Tracker, the is_a? check could
           # be expanded to a list of possible classes/modules when needed
-          step.blocks? && !step.passed? && step.is_a?(Step::Tracker)
+          step.is_a?(Step::Tracker) && !step.passed? && step.blocks?
         end
       end
 

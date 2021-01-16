@@ -50,6 +50,8 @@ module Engine
           # Phase change triggered here to avoid problems that 2D is cheaper than 6 train (see issue #1553)
           @game.phase.next! if train.name == '6' && !@game.phase.available?('6')
           @game.phase.next! if train.name.include?('D') && !@game.phase.available?('D')
+          # Make D trains available in case 6 train is bought (see issue #3192)
+          @depot.depot_trains(clear: true) if train.name == '6'
 
           return unless emergency_buy_with_loan
 

@@ -498,15 +498,20 @@ module View
       end
 
       def render_operating_order
-        return [] unless @game.round.current_entity&.operator?
-
         round = @game.round
-        if (n = @game.round.entities.index(@corporation))
-          m = round.entities.index(round.current_entity)
-          span_class = '.bold' if n && m && n >= m
+        order =
+          if @game.round.operating?
+            @game.round.entities.index(@corporation)
+          else
+            @game.operating_order.index(@corporation)
+          end
+
+        if order
+          m = round.entities.index(round.current_entity) if @game.round.operating?
+          span_class = '.bold' if order && m && order >= m
           [h(:div, { style: { display: 'inline' } }, [
             'Order: ',
-            h("span#{span_class}", n + 1),
+            h("span#{span_class}", order + 1),
           ])]
         else
           []

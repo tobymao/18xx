@@ -7,12 +7,20 @@ module View
     include UserManager
 
     needs :needs_consent, default: false
+    needs :connection, store: true, default: nil
 
     def render
+      @connection&.get('/version.json', '/assets') do |version|
+        link = node_to_s(h(:a, { attrs: { href: version['url'] } }, version['hash']))
+        `document.getElementById('version').innerHTML = #{link}`
+      end
+
       message = <<~MESSAGE
         <h2>About 18xx.Games</h2>
         <p>18xx.Games is created and maintained by Toby Mao. It is an open source project, and you can find the
         code on <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>. All games are used with express written consent from their respective rights holders. You can find more information about the games on the <a href='https://github.com/tobymao/18xx/wiki'>wiki</a>.</p>
+
+        <p>Current version <span id='version'>unknown</span>.</p>
 
         <H2>Privacy Policy</H2>
         Upon your request and expression of consent, we collect the following data for the purpose of providing services to you. It is removed upon your request to terminate these services.
@@ -47,6 +55,11 @@ module View
         <a href='https://github.com/scottredracecar'>scottredracecar</a>
         <a href='https://github.com/perwestling'>perwestling</a>
         <a href='https://github.com/roseundy'>roseundy</a>
+        <a href='https://github.com/ryandriskel'>ryandriskel</a>
+        <a href='https://github.com/crericha'>crericha</a>
+        <a href='https://github.com/ventusignis'>ventusignis</a>
+        <a href='https://github.com/tysen'>tysen</a>
+        <a href='https://github.com/daniel-sousa-me'>daniel-sousa-me</a>
 
         <p>This website will always be open-source and free to play. If you'd like support this project, you can become a patron on
         <a href='https://www.patreon.com/18xxgames'>Patreon</a>.</p>

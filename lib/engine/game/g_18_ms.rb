@@ -38,12 +38,16 @@ module Engine
       ).freeze
 
       OPTIONAL_RULES = [
-        { sym: :or_11,
+        {
+          sym: :or_11,
           short_name: '11 ORs',
-          desc: 'There is an extra, final, OR, directly after OR 10' },
-        { sym: :allow_buy_rusting,
+          desc: 'There is an extra, final, OR, directly after OR 10',
+        },
+        {
+          sym: :allow_buy_rusting,
           short_name: 'Allow buy rusting',
-          desc: 'A corporation is allowed to buy trains that are to be rusted, even if they have already run this OR' },
+          desc: 'A corporation is allowed to buy trains that are to be rusted, even if they have already run this OR',
+        },
       ].freeze
 
       HEXES_FOR_GRAY_TILE = %w[C9 E11].freeze

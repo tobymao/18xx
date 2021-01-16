@@ -6,21 +6,37 @@ module Engine
   module Step
     module G1828
       class BuySellParShares < BuySellParShares
-        PURCHASE_ACTIONS = Engine::Step::BuySellParShares::PURCHASE_ACTIONS + [Action::Choose]
+        PURCHASE_ACTIONS = Engine::Step::BuySellParShares::PURCHASE_ACTIONS + [Action::Choose, Action::FailedMerge]
 
         def actions(entity)
           actions = super
           return actions if entity != current_entity || must_sell?(entity)
 
           unless bought?
-            actions << 'choose' if can_merge_any?(entity)
-            actions << 'pass' if actions.any? && !actions.include?('pass')
+            if can_merge_any?(entity)
+              actions << 'choose'
+              actions << 'failed_merge'
+            end
+            actions << 'buy_shares' if player_can_exchange?(entity)
+            actions << 'pass' if !actions.empty? && !actions.include?('pass')
           end
 
           actions
         end
 
+        def player_can_exchange?(entity)
+          return false unless entity.player?
+
+          company = entity.companies.find { |c| c.id == 'M&H' }
+          step = @round.steps.find { |r| r.is_a?(Engine::Step::G1828::Exchange) }
+          company && step&.can_exchange?(company)
+        end
+
         def choice_available?(_entity)
+          false
+        end
+
+        def merge_failed?
           false
         end
 
@@ -33,6 +49,11 @@ module Engine
           @round.merge_initiator = corporation
 
           @round.last_to_act = action.entity
+          @current_actions << action
+        end
+
+        def process_failed_merge(action)
+          @log << "#{action.entity.name} failed to merge #{action.corporations.map(&:name).join(' and ')}"
           @current_actions << action
         end
 
@@ -50,6 +71,12 @@ module Engine
 
         def can_merge?(entity, corporation)
           @game.merge_candidates(entity, corporation).any?
+        end
+
+        def can_gain?(entity, bundle, exchange: false)
+          return true if exchange
+
+          super
         end
 
         def stock_action(action)

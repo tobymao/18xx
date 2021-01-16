@@ -52,19 +52,49 @@ module View
     end
 
     def chat_log(log)
-      line_props = { style: { marginBottom: '0.2rem',
-                              paddingLeft: '0.5rem',
-                              textIndent: '-0.5rem' },
-                     on: { click: -> { store(:action_id, action_id) } } }
-      timestamp_props = { style: { margin: '0 0.2rem 0 0',
-                                   fontSize: 'smaller' } }
-      username_props = { style: { margin: '0 0.2rem',
-                                  fontWeight: 'bold' } }
+      return unless log[0]
+
+      prev_username = log[0][:user][:name]
+      line_props = {
+        style: {
+          marginTop: '0.2rem',
+          paddingLeft: '3.8rem',
+          textIndent: '-3.7rem',
+        },
+      }
+      timestamp_props = {
+        style: {
+          margin: '0 0.2rem 0 0',
+          fontSize: 'smaller',
+        },
+        class: { hidden: false },
+      }
+      username_props = {
+        style: {
+          margin: '0 0.2rem',
+          fontWeight: 'bold',
+        },
+      }
       message_props = { style: { margin: '0 0.2rem' } }
 
-      log.map do |line|
+      log.map.with_index do |line, i|
+        if i.positive?
+          username = line[:user][:name]
+          if username == prev_username
+            line_props[:style][:marginTop] = '0'
+            timestamp_props[:class][:hidden] = true
+            username_props[:style][:display] = 'none'
+          else
+            line_props[:style][:marginTop] = '0.2rem'
+            timestamp_props[:class][:hidden] = false
+            username_props[:style][:display] = ''
+            prev_username = username
+          end
+        end
+
         time = Time.at(line[:created_at])
         timestamp = time.strftime(time + 86_400 < Time.now ? '%F %T' : '%T')
+
         h('div.chatline', line_props, [
           h('span.timestamp', timestamp_props, timestamp),
           h('span.username', username_props, line[:user][:name]),

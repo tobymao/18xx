@@ -50,11 +50,11 @@ module Engine
         end
 
         def can_sell_order?
-          !bought? && !shorted?
+          !bought?
         end
 
         def shorted?
-          @current_actions.any? { |x| x.class == Action::Short }
+          @current_actions.any? { |x| x.instance_of?(Action::Short) }
         end
 
         def redeemable_shares(entity)

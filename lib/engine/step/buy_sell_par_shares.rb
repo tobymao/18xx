@@ -2,7 +2,7 @@
 
 require_relative 'base'
 require_relative 'share_buying'
-require_relative '../action/buy_company.rb'
+require_relative '../action/buy_company'
 require_relative '../action/buy_shares'
 require_relative '../action/par'
 
@@ -86,6 +86,8 @@ module Engine
       end
 
       def must_sell?(entity)
+        return false if @game.can_hold_above_limit?(entity)
+
         @game.num_certs(entity) > @game.cert_limit ||
           !@game.corporations.all? { |corp| corp.holding_ok?(entity) }
       end
@@ -213,7 +215,7 @@ module Engine
       end
 
       def sell_shares(entity, shares, swap: nil)
-        raise GameError "Cannot sell shares of #{shares.corporation.name}" if !can_sell?(entity, shares) && !swap
+        raise GameError, "Cannot sell shares of #{shares.corporation.name}" if !can_sell?(entity, shares) && !swap
 
         @round.players_sold[shares.owner][shares.corporation] = :now
         @game.sell_shares_and_change_price(shares, swap: swap)
@@ -224,7 +226,7 @@ module Engine
       end
 
       def sold?
-        @current_actions.any? { |x| x.class == Action::SellShares }
+        @current_actions.any? { |x| x.instance_of?(Action::SellShares) }
       end
 
       def process_buy_company(action)
@@ -233,7 +235,7 @@ module Engine
         price = action.price
         owner = company.owner
 
-        raise GameError "Cannot buy #{company.name} from #{owner.name}" if owner&.corporation?
+        raise GameError, "Cannot buy #{company.name} from #{owner.name}" if owner&.corporation?
 
         company.owner = entity
         owner&.companies&.delete(company)

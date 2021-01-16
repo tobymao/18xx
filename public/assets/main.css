@@ -352,16 +352,18 @@ table.center {
 
 #chatlog {
   height: 200px;
-  resize: both;
+  resize: vertical;
 }
 @media only screen and (min-width: 900px) {
   #homepage #chatlog {
     height: 350px;
   }
 }
-
-#chatlog, #chatbar, #history_undo {
-  max-width: 960px;
+.timestamp.hidden {
+  visibility: hidden;
+}
+.chatline:hover > .timestamp.hidden {
+  visibility: visible;
 }
 
 div.game.card em {
@@ -369,16 +371,16 @@ div.game.card em {
   text-decoration: underline;
 }
 
-div.history {
+#history {
   float: left;
 }
 
-div.undo {
+#undo {
   float: right;
 }
 
 @media only screen and (max-width: 420px) {
-  div.undo {
+  #undo {
     float: left;
   }
 }

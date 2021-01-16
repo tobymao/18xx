@@ -29,7 +29,7 @@ module Engine
 
       load_from_json(Config::Game::G1828::JSON)
 
-      DEV_STAGE = :prealpha
+      DEV_STAGE = :alpha
 
       GAME_LOCATION = 'North East, USA'
       GAME_RULES_URL = 'https://github.com/tobymao/18xx/wiki/1828.Games#rules'
@@ -48,6 +48,20 @@ module Engine
       SELL_BUY_ORDER = :sell_buy_sell
 
       NEXT_SR_PLAYER_ORDER = :first_to_pass
+
+      MARKET_TEXT = Base::MARKET_TEXT.merge(par: 'Yellow Phase Par',
+                                            par_1: 'Green Phase Par',
+                                            par_2: 'Blue Phase Par',
+                                            par_3: 'Brown Phase Par',
+                                            unlimited: 'Corporation shares can be held above 60%, ' \
+                                                       'President may buy two shares at a time')
+
+      STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(par: :yellow,
+                                                          par_1: :green,
+                                                          par_2: :blue,
+                                                          par_3: :brown,
+                                                          unlimited: :gray,
+                                                          endgame: :red)
 
       EVENTS_TEXT = Base::EVENTS_TEXT.merge(
         'green_par' => ['Green phase pars',
@@ -89,7 +103,7 @@ module Engine
       def operating_round(round_num)
         Round::Operating.new(self, [
           Step::Bankrupt,
-          Step::Exchange,
+          Step::G1828::Exchange,
           Step::G1828::DiscardTrain,
           Step::HomeToken,
           Step::G1828::SpecialTrack,
@@ -141,22 +155,24 @@ module Engine
         tiles
       end
 
-      SYSTEM_EXTRA_TILE_LAY = { lay: true, upgrade: :not_if_upgraded }.freeze
-      CORP_EXTRA_TILE_LAY = { lay: :not_if_upgraded, upgrade: false, cost: 40 }.freeze
       EXTRA_TILE_LAY_CORPS = %w[B&M NYH].freeze
 
       def tile_lays(entity)
         tile_lays = super
-        tile_lays += [SYSTEM_EXTRA_TILE_LAY] if entity.system?
+        tile_lays += [{ lay: true, upgrade: :not_if_upgraded }] if entity.system?
         (entity.system? ? entity.corporations.map(&:name) : [entity.name]).each do |corp_name|
-          tile_lays += [CORP_EXTRA_TILE_LAY] if EXTRA_TILE_LAY_CORPS.include?(corp_name)
+          tile_lays += [{ lay: :not_if_upgraded, upgrade: false, cost: 40 }] if EXTRA_TILE_LAY_CORPS.include?(corp_name)
         end
 
         tile_lays
       end
 
-      def corporation_opts
-        { can_hold_above_max: true }
+      def can_hold_above_limit?(_entity)
+        true
+      end
+
+      def show_game_cert_limit?
+        false
       end
 
       def init_round_finished
@@ -198,7 +214,7 @@ module Engine
 
       def event_remove_corporations!
         @log << "-- Event: #{EVENTS_TEXT['remove_corporations'][1]}. --"
-        @corporations.reject(&:ipoed).each do |corporation|
+        @corporations.reject(&:ipoed).reject(&:closed?).each do |corporation|
           place_home_blocking_token(corporation)
           place_second_home_blocking_token(corporation) if corporation.name == 'ERIE'
           @log << "Removing #{corporation.name}"
@@ -260,10 +276,11 @@ module Engine
       def create_system(corporations)
         return nil unless corporations.size == 2
 
-        system_data = CORPORATIONS.find { |c| c['sym'] == corporations.first.id }.dup
-        system_data['sym'] = corporations.map(&:name).join('-')
-        system_data['tokens'] = []
-        system_data['corporations'] = corporations
+        system_data = CORPORATIONS.find { |c| c[:sym] == corporations.first.id }.dup
+        system_data[:sym] = corporations.map(&:name).join('-')
+        system_data[:tokens] = []
+        system_data[:game] = self
+        system_data[:corporations] = corporations
         system = init_system(@stock_market, system_data)
 
         @corporations << system
@@ -385,6 +402,26 @@ module Engine
         @log << "Placing a blocking token on #{hex.name} (#{hex.location_name})"
         token = Token.new(@blocking_corporation)
         hex.tile.cities[city_index].place_token(@blocking_corporation, token, check_tokenable: false)
+      end
+
+      def exchange_for_partial_presidency?
+        true
+      end
+
+      def exchange_partial_percent(share)
+        return nil unless share.president
+
+        100 / share.num_shares
+      end
+
+      def system_by_id(id)
+        corporation_by_id(id)
+      end
+
+      def remove_train(train)
+        super
+
+        train.owner.remove_train(train) if train.owner&.system?
       end
 
       private

@@ -40,18 +40,22 @@ module View
         children << render_table
         children << render_spreadsheet_controls
 
-        h('div#spreadsheet', { style: {
-          overflow: 'auto',
-        } }, children.compact)
+        h('div#spreadsheet', {
+            style: {
+              overflow: 'auto',
+            },
+          }, children.compact)
       end
 
       def render_table
-        h(:table, { style: {
-          margin: '1rem 0 1.5rem 0',
-          borderCollapse: 'collapse',
-          textAlign: 'center',
-          whiteSpace: 'nowrap',
-        } }, [
+        h(:table, {
+            style: {
+              margin: '1rem 0 1.5rem 0',
+              borderCollapse: 'collapse',
+              textAlign: 'center',
+              whiteSpace: 'nowrap',
+            },
+          }, [
           h(:thead, render_title),
           h(:tbody, render_corporations),
           h(:thead, [
@@ -169,7 +173,12 @@ module View
         }
 
         extra = []
-        extra << h(:th, 'Loans') if @game.total_loans&.nonzero?
+        extra << h(:th, render_sort_link('Loans', :loans)) if @game.total_loans&.nonzero?
+        extra << h(:th, render_sort_link('Shorts', :shorts)) if @game.respond_to?(:available_shorts)
+        if @game.total_loans.positive?
+          extra << h(:th, render_sort_link('Buying Power', :buying_power))
+          extra << h(:th, render_sort_link('Interest Due', :interest))
+        end
         [
           h(:tr, [
             h(:th, ''),
@@ -251,10 +260,15 @@ module View
       end
 
       def sorted_corporations
-        floated_corporations = @game.round.entities
+        operating_corporations =
+          if @game.round.operating?
+            @game.round.entities
+          else
+            @game.operating_order
+          end
 
         result = @game.all_corporations.map do |c|
-          operating_order = (floated_corporations.find_index(c) || -1) + 1
+          operating_order = (operating_corporations.find_index(c) || -1) + 1
           [operating_order, c]
         end
 
@@ -270,6 +284,14 @@ module View
             corporation.par_price&.price || 0
           when :share_price
             corporation.share_price&.price || 0
+          when :loans
+            corporation.loans.size
+          when :short
+            @game.available_shorts(corporation)
+          when :buying_power
+            @game.buying_power(corporation, full: true)
+          when :interest
+            @game.interest_owed(corporation)
           else
             @game.player_by_id(@spreadsheet_sort_by)&.num_shares_of(corporation)
           end
@@ -288,7 +310,7 @@ module View
               background: corporation.color,
               color: corporation.text_color,
             },
-        }
+          }
 
         tr_props = zebra_props(index.odd?)
         market_props = { style: { borderRight: border_style } }
@@ -305,6 +327,20 @@ module View
 
         extra = []
         extra << h(:td, "#{corporation.loans.size}/#{@game.maximum_loans(corporation)}") if @game.total_loans&.nonzero?
+        if @game.respond_to?(:available_shorts)
+          taken, total = @game.available_shorts(corporation)
+          extra << h(:td, "#{taken} / #{total}")
+        end
+        if @game.total_loans.positive?
+          extra << h(:td, @game.format_currency(@game.buying_power(corporation, full: true)))
+          interest_props = { style: {} }
+          unless @game.can_pay_interest?(corporation)
+            color = StockMarket::COLOR_MAP[:yellow]
+            interest_props[:style][:backgroundColor] = color
+            interest_props[:style][:color] = contrast_on(color)
+          end
+          extra << h(:td, interest_props, @game.format_currency(@game.interest_owed(corporation)).to_s)
+        end
 
         h(:tr, tr_props, [
           h(:th, name_props, corporation.name),

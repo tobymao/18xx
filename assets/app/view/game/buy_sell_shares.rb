@@ -24,15 +24,17 @@ module View
 
         children = []
 
-        children.concat(render_buy_shares)
-        children.concat(render_merge)
-        children.concat(render_short)
+        if @corporation.ipoed
+          children.concat(render_buy_shares)
+          children.concat(render_merge)
+          children.concat(render_short)
+        end
         children.concat(render_exchanges)
 
-        children << h(SellShares, player: @current_entity, corporation: @corporation)
+        children << h(SellShares, player: @current_entity, corporation: @corporation) if @corporation.ipoed
 
-        children = children.compact
-        return h(:div, children) if children.any?
+        children.compact!
+        return h(:div, children) unless children.empty?
 
         nil
       end
@@ -138,7 +140,13 @@ module View
             next unless company.owner == @current_entity
 
             if ability.from.include?(:ipo)
-              children.concat(render_share_exchange(@ipo_shares, company, source: @game.ipo_name(@corporation)))
+              president_share, other_ipo_shares = @ipo_shares.partition(&:president)
+              children.concat(render_share_exchange(other_ipo_shares,
+                                                    company,
+                                                    source: @game.ipo_name(@corporation)))
+              children.concat(render_share_exchange(president_share,
+                                                    company,
+                                                    source: 'Presidency'))
             end
 
             children.concat(render_share_exchange(@pool_shares, company)) if ability.from.include?(:market)
@@ -150,12 +158,16 @@ module View
 
       # Put up one exchange button for each exchangable percentage share type in market.
       def render_share_exchange(shares, company, source: 'Market')
+        return [] unless @step.respond_to?(:can_gain?)
+
         shares.map do |share|
           next unless @step.can_gain?(company.owner, share, exchange: true)
+          next if share.president && !@game.exchange_for_partial_presidency?
 
           h(Button::BuyShare,
             share: share,
             entity: company,
+            partial_percent: @game.exchange_partial_percent(share),
             percentages_available: shares.size,
             prefix: "Exchange #{company.sym} for ",
             source: source)

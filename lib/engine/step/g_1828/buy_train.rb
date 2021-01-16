@@ -8,7 +8,14 @@ module Engine
       class BuyTrain < BuyTrain
         def actions(entity)
           actions = super
-          actions.delete('pass') if entity.corporation? && must_buy_train?(entity)
+
+          # Actions in base class don't align with system behavior. Fix here.
+          if entity.corporation? && must_buy_train?(entity)
+            actions.delete('pass')
+          elsif actions.include?('buy_train')
+            actions << 'pass'
+          end
+
           actions
         end
 

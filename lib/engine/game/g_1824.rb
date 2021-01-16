@@ -39,12 +39,16 @@ module Engine
       ).freeze
 
       OPTIONAL_RULES = [
-        { sym: :cisleithania,
+        {
+          sym: :cisleithania,
           short_name: 'Cisleithania',
-          desc: 'Use the smaller Cislethania map, with some reduction of components - 2-3 players' },
-        { sym: :goods_time,
+          desc: 'Use the smaller Cislethania map, with some reduction of components - 2-3 players',
+        },
+        {
+          sym: :goods_time,
           short_name: 'Goods Time',
-          desc: 'Use the Goods Time Variant (3-6 players) - pre-set scenario' },
+          desc: 'Use the Goods Time Variant (3-6 players) - pre-set scenario',
+        },
       ].freeze
 
       CERT_LIMIT_CISLEITHANIA = { 2 => 14, 3 => 16 }.freeze
@@ -138,9 +142,7 @@ module Engine
             2
           when 3
             option_cisleithania ? 3 : 4
-          when 4
-            6
-          when 5
+          when 4, 5
             6
           when 6
             4

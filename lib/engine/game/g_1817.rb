@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../config/game/g_1817'
-require_relative '../loan.rb'
+require_relative '../loan'
 require_relative 'base'
 require_relative 'interest_on_loans'
 
@@ -81,15 +81,21 @@ module Engine
       CORPORATION_SIZES = { 2 => :small, 5 => :medium, 10 => :large }.freeze
 
       OPTIONAL_RULES = [
-        { sym: :short_squeeze,
+        {
+          sym: :short_squeeze,
           short_name: 'Short Squeeze',
-          desc: '100% sold out corporations move twice at end of SR' },
-        { sym: :five_shorts,
+          desc: 'Corporations with > 100% player ownership move a second time at end of SR',
+        },
+        {
+          sym: :five_shorts,
           short_name: '5 Shorts',
-          desc: 'Only allow 5 shorts on 10 share corporations' },
-        { sym: :modern_trains,
+          desc: 'Only allow 5 shorts on 10 share corporations',
+        },
+        {
+          sym: :modern_trains,
           short_name: 'Modern Trains',
-          desc: '7 & 8 trains earn $10 & $20 respectively for each station marker of the corporation' },
+          desc: '7 & 8 trains earn $10 & $20 respectively for each station marker of the corporation',
+        },
       ].freeze
 
       include InterestOnLoans
@@ -180,6 +186,10 @@ module Engine
         player.cash + player.companies.sum(&:value)
       end
 
+      def operating_order
+        super.reject { |c| c.share_price.liquidation? }
+      end
+
       def home_token_locations(corporation)
         hexes.select do |hex|
           hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
@@ -188,7 +198,7 @@ module Engine
 
       def redeemable_shares(entity)
         return [] unless entity.corporation?
-        return [] unless round.steps.find { |step| step.class == Step::G1817::BuySellParShares }.active?
+        return [] unless round.steps.find { |step| step.instance_of?(Step::G1817::BuySellParShares) }.active?
         return [] if entity.share_price.acquisition? || entity.share_price.liquidation?
 
         bundles_for_corporation(share_pool, entity)
@@ -259,6 +269,12 @@ module Engine
         new_shares
       end
 
+      def available_shorts(corporation)
+        return [0, 0] if corporation&.total_shares == 2
+
+        [shorts(corporation).size, corporation.total_shares]
+      end
+
       def shorts(corporation)
         shares = []
 
@@ -291,6 +307,9 @@ module Engine
       def close_bank_shorts
         # Close out shorts in stock market with the bank buying shares from the treasury
         @corporations.each do |corporation|
+          next unless corporation.share_price
+          next if corporation.share_price.acquisition? || corporation.share_price.liquidation?
+
           count = 0
           while entity_shorts(@share_pool, corporation).any? &&
             corporation.shares.any?

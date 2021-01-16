@@ -160,7 +160,7 @@ module Engine
         ],
         [
             "112",
-            "120p",
+            "120w",
             "127",
             "136",
             "145",
@@ -195,7 +195,7 @@ module Engine
         [
             "95",
             "100",
-            "105p",
+            "105z",
             "111",
             "117",
             "124",
@@ -230,7 +230,7 @@ module Engine
             "81",
             "86",
             "90",
-            "94p",
+            "94x",
             "99",
             "104",
             "109",
@@ -262,7 +262,7 @@ module Engine
             "75",
             "78",
             "82",
-            "86p",
+            "86x",
             "91",
             "95",
             "101",
@@ -522,7 +522,7 @@ module Engine
             "name": "Erie & Kalamazoo Railroad",
             "value": 120,
             "revenue": 20,
-            "desc": "Blocks Adrian & Ann Arbor (E7) while owned by a player. A yellow track tile is placed at E7 when purchased by a company. Owning company may (once) place an additional yellow track tile at $20 as part of its normal track build.",
+            "desc": "Blocks Adrian & Ann Arbor (E7) while owned by a player. A yellow track tile is placed at E7 when purchased by a company. Owning company may (once) place a second yellow track tile at $20 as part of its normal track build.",
             "sym": "E&K",
             "abilities": [
                 {
@@ -818,7 +818,7 @@ module Engine
             "abilities": [
                 {
                     "type": "description",
-                    "description": "Place an additional yellow tile for $40"
+                    "description": "Place a second yellow tile for $40"
                 }
             ]
         },
@@ -961,7 +961,7 @@ module Engine
             "abilities": [
                 {
                     "type": "description",
-                    "description": "Place an additional yellow tile for $40"
+                    "description": "Place a second yellow tile for $40"
                 }
             ]
         },

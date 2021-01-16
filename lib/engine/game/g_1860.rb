@@ -23,7 +23,7 @@ module Engine
       GAME_LOCATION = 'Isle of Wight'
       GAME_RULES_URL = 'https://www.dropbox.com/s/usfbqtdjzx6ug8f/1860-rules.pdf'
       GAME_DESIGNER = 'Mike Hutton'
-      GAME_PUBLISHER = nil
+      GAME_PUBLISHER = :all_aboard_games
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1860'
 
       DEV_STAGE = :beta
@@ -55,15 +55,17 @@ module Engine
         safe_par: :white,
       }.freeze
 
-      MARKET_TEXT = { par: 'Par values (varies by corporation)',
-                      no_cert_limit: 'UNUSED',
-                      unlimited: 'UNUSED',
-                      multiple_buy: 'UNUSED',
-                      close: 'Corporation bankrupts',
-                      endgame: 'End game trigger',
-                      liquidation: 'UNUSED',
-                      repar: 'Par values after bankruptcy (varies by corporation)',
-                      ignore_one_sale: 'Ignore first share sold when moving price' }.freeze
+      MARKET_TEXT = {
+        par: 'Par values (varies by corporation)',
+        no_cert_limit: 'UNUSED',
+        unlimited: 'UNUSED',
+        multiple_buy: 'UNUSED',
+        close: 'Corporation bankrupts',
+        endgame: 'End game trigger',
+        liquidation: 'UNUSED',
+        repar: 'Par values after bankruptcy (varies by corporation)',
+        ignore_one_sale: 'Ignore first share sold when moving price',
+      }.freeze
 
       HALT_SUBSIDY = 10
 
@@ -74,18 +76,26 @@ module Engine
       ).freeze
 
       OPTIONAL_RULES = [
-        { sym: :two_player_map,
+        {
+          sym: :two_player_map,
           short_name: '2-3P map',
-          desc: 'Use the smaller first edition map suitable for 2-3 players' },
-        { sym: :original_insolvency,
+          desc: 'Use the smaller first edition map suitable for 2-3 players',
+        },
+        {
+          sym: :original_insolvency,
           short_name: 'Original insolvency',
-          desc: 'Use the original (first edition) insolvency rules' },
-        { sym: :no_skip_towns,
+          desc: 'Use the original (first edition) insolvency rules',
+        },
+        {
+          sym: :no_skip_towns,
           short_name: 'No skipping towns',
-          desc: "Use the original (first edition) town rules - they can't be skipped on runs" },
-        { sym: :original_game,
+          desc: "Use the original (first edition) town rules - they can't be skipped on runs",
+        },
+        {
+          sym: :original_game,
           short_name: 'First edition rules and map',
-          desc: 'Use all of the first edition rules (smaller map, original insolvency, no skipping towns)' },
+          desc: 'Use all of the first edition rules (smaller map, original insolvency, no skipping towns)',
+        },
       ].freeze
 
       OPTION_REMOVE_HEXES = %w[A5 A7 B4 E11].freeze
@@ -325,6 +335,10 @@ module Engine
           company_value
       end
 
+      def operating_order
+        @corporations.select { |c| c.floated? && !nationalized?(c) }.sort
+      end
+
       def place_home_token(corporation)
         # will this break the game?
         return if sr_after_southern
@@ -471,7 +485,7 @@ module Engine
 
         # restart stock round if in middle of one
         @round.clear_cache!
-        return unless @round.class == Round::Stock
+        return unless @round.instance_of?(Round::Stock)
 
         @log << 'Restarting Stock Round'
         @round.entities.each(&:unpass!)
@@ -584,7 +598,7 @@ module Engine
 
         shares = (shares || share_holder.shares_of(corporation)).sort_by(&:price)
 
-        bundles = shares.flat_map.with_index do |share, index|
+        shares.flat_map.with_index do |share, index|
           bundle = shares.take(index + 1)
           percent = bundle.sum(&:percent)
           bundles = [Engine::ShareBundle.new(bundle, percent)]
@@ -599,8 +613,6 @@ module Engine
           bundles.each { |b| b.share_price = (b.price_per_share / 2).to_i if corporation.trains.empty? }
           bundles
         end
-
-        bundles
       end
 
       def selling_movement?(corporation)

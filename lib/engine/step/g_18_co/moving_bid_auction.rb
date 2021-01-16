@@ -66,7 +66,8 @@ module Engine
 
         def actions(entity)
           return [] unless active?
-          return [] if entity.player? && entity.cash <= committed_cash(entity)
+          return [] unless entity.player?
+          return [] if entity.cash <= committed_cash(entity)
 
           ACTIONS
         end
@@ -111,16 +112,16 @@ module Engine
         end
 
         def committed_cash(player, _show_hidden = false)
-          bids = bids_for_player(player)
-          return 0 if bids.empty?
+          player_bids = bids_for_player(player)
+          return 0 if player_bids.empty?
 
-          bids.sum(&:price)
+          player_bids.sum(&:price)
         end
 
         def highest_player_bid(player, company)
           return unless (company_bids = @bids[company])
 
-          company_bids&.select { |b| b.entity == player }&.max(&:price)
+          company_bids&.select { |b| b.entity == player }&.max_by(&:price)
         end
 
         def current_bid_amount(player, company)
@@ -236,7 +237,7 @@ module Engine
           from_company = bid.from_company
           price = bid.price
           from_price = bid.from_price
-          min = min_bid(company)
+          min = min_move_bid(company, from_price)
 
           raise GameError, "Minimum bid is #{@game.format_currency(min)} for #{company.name}" if price < min
 
@@ -246,7 +247,7 @@ module Engine
 
           if price > max_move_bid(entity, company, from_price)
             raise GameError, "Cannot afford #{@game.format_currency(price)} movement bid. "\
-              "Maximum possible bid is #{@game.format_currency(max_bid(entity, company, from_price))}"
+              "Maximum possible bid is #{@game.format_currency(max_move_bid(entity, company, from_price))}"
           end
 
           if price < from_price + min_increment

@@ -6,9 +6,13 @@ class Action < Base
   many_to_one :game
   many_to_one :user
 
+  unrestrict_primary_key
+
   def before_create
     action.delete('user')
     action.delete('created_at')
+    action.delete('meta')
+    action.delete('_client_id')
     super
   end
 

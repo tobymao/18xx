@@ -5,6 +5,7 @@ require_relative '../config/game/g_1846'
 require_relative '../config/game/g_18_los_angeles'
 require_relative '../step/g_18_los_angeles/draft_distribution'
 require_relative '../step/g_18_los_angeles/special_token'
+require_relative 'stubs_are_restricted'
 
 module Engine
   module Game
@@ -84,6 +85,8 @@ module Engine
         'remove_tokens' => ['Remove Tokens', 'Remove LA Steamship and LA Citrus tokens']
       ).freeze
 
+      include StubsAreRestricted
+
       def self.title
         '18 Los Angeles'
       end
@@ -145,9 +148,10 @@ module Engine
       end
 
       def operating_round(round_num)
+        @round_num = round_num
         Round::G1846::Operating.new(self, [
           Step::G1846::Bankrupt,
-          Step::G1846::Assign,
+          Step::Assign,
           Step::G18LosAngeles::SpecialToken,
           Step::SpecialTrack,
           Step::G1846::BuyCompany,
@@ -213,10 +217,6 @@ module Engine
 
       # unlike in 1846, none of the private companies get 2 tile lays
       def check_special_tile_lay(_action); end
-
-      def legal_tile_rotation?(_entity, hex, tile)
-        hex.tile.stubs.empty? || tile.exits.include?(hex.tile.stubs.first.edge)
-      end
 
       def east_west_bonus(stops)
         bonus = { revenue: 0 }

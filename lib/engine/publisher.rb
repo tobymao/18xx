@@ -41,7 +41,7 @@ module Engine
       },
       self_published: {
         name: 'Self-published',
-        url: 'https://www.google.com/',
+        url: 'https://18xx.games',
       },
     }.freeze
   end

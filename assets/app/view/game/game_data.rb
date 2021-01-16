@@ -29,6 +29,7 @@ module View
 
       def render_game_data_buttons
         clone_game = lambda do
+          @connection.unsubscribe(url(@game_data))
           store(:game, nil, skip: true)
           create_hotseat(**@game_data, description: "Cloned from game #{@game_data[:id]}")
         end

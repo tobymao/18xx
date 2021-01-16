@@ -118,12 +118,9 @@ module Engine
 
         payouts = {}
         (@game.players + @game.corporations).each do |payee|
-          next if entity == payee
-
           payout_entity(entity, payee, per_share, payouts)
         end
 
-        payout_entity(entity, holder_for_corporation(entity), per_share, payouts, entity)
         receivers = payouts
                       .sort_by { |_r, c| -c }
                       .map { |receiver, cash| "#{@game.format_currency(cash)} to #{receiver.name}" }.join(', ')
@@ -132,8 +129,13 @@ module Engine
                         "#{@game.format_currency(per_share)} (#{receivers})"
       end
 
-      def payout_entity(entity, holder, per_share, payouts, receiver = nil)
-        amount = dividends_for_entity(entity, holder, per_share)
+      def payout_entity(entity, holder, per_share, payouts)
+        amount =
+          if entity == holder
+            corporation_dividends(entity, per_share)
+          else
+            dividends_for_entity(entity, holder, per_share)
+          end
         return if amount.zero?
 
         receiver ||= holder

@@ -11,9 +11,11 @@ module View
         subject do
           described_class.new(nil,
                               tile: nil,
-                              region_use: { 0 => 1,
-                                            1 => 0.25,
-                                            2 => 0.33 })
+                              region_use: {
+                                0 => 1,
+                                1 => 0.25,
+                                2 => 0.33,
+                              })
         end
 
         describe '#combined_cost' do

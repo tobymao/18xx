@@ -6,9 +6,6 @@ GEM
       ffi-compiler (>= 0.1)
     ast (2.4.1)
     byebug (11.1.3)
-    c_lexer (2.6.4.1.1)
-      ast (~> 2.4.0)
-      parser (= 2.6.4.1)
     coderay (1.1.3)
     diff-lcs (1.4.4)
     execjs (2.7.0)
@@ -18,7 +15,6 @@ GEM
       rake
     get_process_mem (0.2.7)
       ffi (~> 1.0)
-    jaro_winkler (1.5.4)
     kgio (2.11.3)
     libv8 (8.4.255.0-x86_64-linux)
     listen (3.3.3)
@@ -33,8 +29,8 @@ GEM
       ast (>= 2.3.0)
       parser (~> 2.6)
     parallel (1.20.1)
-    parser (2.6.4.1)
-      ast (~> 2.4.0)
+    parser (2.7.2.0)
+      ast (~> 2.4.1)
     pg (1.2.3)
     pry (0.13.1)
       coderay (~> 1.1)
@@ -49,9 +45,11 @@ GEM
     rb-fsevent (0.10.4)
     rb-inotify (0.10.1)
       ffi (~> 1.0)
+    regexp_parser (2.0.3)
     require_all (3.0.0)
     rerun (0.13.1)
       listen (~> 3.0)
+    rexml (3.2.4)
     roda (3.39.0)
       rack
     rspec (3.10.0)
@@ -67,13 +65,17 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.10.0)
     rspec-support (3.10.0)
-    rubocop (0.78.0)
-      jaro_winkler (~> 1.5.1)
+    rubocop (1.7.0)
       parallel (~> 1.10)
-      parser (>= 2.6)
+      parser (>= 2.7.1.5)
       rainbow (>= 2.2.2, < 4.0)
+      regexp_parser (>= 1.8, < 3.0)
+      rexml
+      rubocop-ast (>= 1.2.0, < 2.0)
       ruby-progressbar (~> 1.7)
-      unicode-display_width (>= 1.4.0, < 1.7)
+      unicode-display_width (>= 1.4.0, < 2.0)
+    rubocop-ast (1.4.0)
+      parser (>= 2.7.1.5)
     ruby-progressbar (1.10.1)
     sequel (5.39.0)
     sequel-annotate (1.6.0)
@@ -103,7 +105,6 @@ PLATFORMS
 
 DEPENDENCIES
   argon2
-  c_lexer
   message_bus
   mini_racer
   opal
@@ -126,4 +127,4 @@ DEPENDENCIES
   unicorn-worker-killer
 
 BUNDLED WITH
-   2.2.2
+   2.2.3
