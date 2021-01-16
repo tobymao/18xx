@@ -70,8 +70,8 @@ module Engine
                        '$105 par price is now available'],
         'brown_par' => ['Brown phase pars',
                         '$120 par price is now available'],
-        'remove_corporations' => ['Non-parred corporations removed',
-                                  'All non-parred corporations are removed. Blocking tokens placed in home stations']
+        'remove_corporations' => ['Unparred corporations removed',
+                                  'All unparred corporations are removed at the beginning of next stock round. Blocking tokens placed in home stations']
       ).freeze
 
       VA_COALFIELDS_HEX = 'K11'
@@ -214,16 +214,25 @@ module Engine
 
       def event_remove_corporations!
         @log << "-- Event: #{EVENTS_TEXT['remove_corporations'][1]}. --"
+        @log << 'Unparred corporations will be removed at the beginning of the next stock round'
+      end
+
+      def custom_end_game_reached?
+        @phase.current[:name] == 'Purple'
+      end
+
+      def new_stock_round
+        super
+        remove_unparred_corporations! if @phase.current[:name] == 'Purple'
+      end
+
+      def remove_unparred_corporations!
         @corporations.reject(&:ipoed).reject(&:closed?).each do |corporation|
           place_home_blocking_token(corporation)
           place_second_home_blocking_token(corporation) if corporation.name == 'ERIE'
           @log << "Removing #{corporation.name}"
           @corporations.delete(corporation)
         end
-      end
-
-      def custom_end_game_reached?
-        @phase.current[:name] == 'Purple'
       end
 
       def remove_minor!(minor, block: false)
