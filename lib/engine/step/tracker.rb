@@ -80,7 +80,7 @@ module Engine
 
         tile_lay_abilities(entity) do |ability|
           next if ability.owner != entity
-          next if ability.hexes.any? && (!ability.hexes.include?(hex.id) || !ability.tiles.include?(tile.name))
+          next if !ability.hexes.empty? && (!ability.hexes.include?(hex.id) || !ability.tiles.include?(tile.name))
 
           raise GameError, "Track laid must be connected to one of #{spender.id}'s stations" if ability.reachable &&
             hex.name != spender.coordinates &&
@@ -125,9 +125,9 @@ module Engine
 
         cities = tile.cities
         if old_tile.paths.empty? &&
-             tile.paths.any? &&
-             cities.size > 1 &&
-             cities.flat_map(&:tokens).any?
+            !tile.paths.empty? &&
+            cities.size > 1 &&
+            cities.flat_map(&:tokens).any?
           token = cities.flat_map(&:tokens).find(&:itself)
           @round.pending_tokens << {
             entity: entity,
@@ -137,7 +137,7 @@ module Engine
 
           token.remove!
         end
-        return unless terrain.any?
+        return if terrain.empty?
 
         @game.all_companies_with_ability(:tile_income) do |company, ability|
           if terrain.include?(ability.terrain) && (!ability.owner_only || company.owner == entity)
@@ -267,7 +267,7 @@ module Engine
         multi_city_upgrade = new_ctedges.size > 1 && old_ctedges.size > 1
 
         new_exits.all? { |edge| hex.neighbors[edge] } &&
-          (new_exits & available_hex(entity, hex)).any? &&
+          !(new_exits & available_hex(entity, hex)).empty? &&
           old_paths.all? { |path| new_paths.any? { |p| path <= p } } &&
           # Count how many cities on the new tile that aren't included by any of the old tile.
           # Make sure this isn't more than the number of new cities added.
