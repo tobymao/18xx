@@ -257,7 +257,8 @@ module View
           '(Invalid Route)'
         end
 
-        subsidy = render_halts ? ' + ' + @game.format_currency(@game.routes_subsidy(active_routes)) : ''
+        render_halts ||= @game.respond_to?(:routes_subsidy) && @game.routes_subsidy(active_routes).positive?
+        subsidy = render_halts ? " + #{@game.format_currency(@game.routes_subsidy(active_routes))} (subsidy)" : ''
         h(:div, { style: { overflow: 'auto', marginBottom: '1rem' } }, [
           h(:div, [
             h('button.small', { on: { click: clear } }, 'Clear Train'),

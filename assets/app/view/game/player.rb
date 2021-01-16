@@ -14,6 +14,7 @@ module View
       needs :game
       needs :display, default: 'inline-block'
       needs :show_hidden, default: false
+      needs :hide_logo, store: true, default: false
 
       def render
         card_style = {
@@ -181,12 +182,13 @@ module View
           },
         }
 
+        children = []
+        children << h('td.center', td_props, [h(:div, div_props, [h(:img, logo_props)])]) unless @hide_logo
+
         president_marker = corporation.president?(@player) ? '*' : ''
-        h('tr.row', [
-          h('td.center', td_props, [h(:div, div_props, [h(:img, logo_props)])]),
-          h(:td, td_props, corporation.name + president_marker),
-          h('td.right', td_props, "#{shares.sum(&:percent)}%"),
-        ])
+        children << h(:td, td_props, corporation.name + president_marker)
+        children << h('td.right', td_props, "#{shares.sum(&:percent)}%")
+        h('tr.row', children)
       end
     end
   end

@@ -8,11 +8,13 @@ class Turn < Snabberb::Component
   needs :game_data, store: true
   needs :game_url
   needs :game, store: true, default: nil
+  needs :hide_logo, store: true, default: true
 
   def render
     @game = Engine::Game.load(@game_data)
 
     store(:game, @game, skip: true)
+    store(:hide_logo, @hide_logo, skip: true)
 
     h(:div, [
       render_link,

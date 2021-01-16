@@ -58,16 +58,34 @@ module Engine
                                     '10-share corps By, kk, Sx, Pr, Ug are available to start']
       ).freeze
 
-      def end_now?(_after)
-        @or == @last_or
-      end
-
-      def timeline
-        @timeline = [
-          "Game ends after OR #{@last_or}",
-        ]
-        @timeline.append("Current value of each private company is #{COMPANY_VALUES[[0, @or - 1].max]}")
-      end
+      TRAINS_FOR_CORPORATIONS = {
+        '2a' => :small,
+        '2b' => :small,
+        '3c' => :small,
+        '3d' => :small,
+        '4e' => :small,
+        '4f' => :small,
+        '5g' => :small,
+        '5h' => :small,
+        '5i' => :small,
+        '5j' => :small,
+        '2+2b' => :medium,
+        '2+2c' => :medium,
+        '3+3d' => :medium,
+        '3+3e' => :medium,
+        '4+4f' => :medium,
+        '4+4g' => :medium,
+        '5+5h' => :medium,
+        '5+5i' => :medium,
+        '5+5j' => :medium,
+        '3Ed' => :large,
+        '3Ee' => :large,
+        '4EF' => :large,
+        '4Eg' => :large,
+        '5E' => :large,
+        '6E' => :large,
+        '8E' => :large,
+      }.freeze
 
       include StubsAreRestricted
 
@@ -105,7 +123,7 @@ module Engine
           Step::Route,
           Step::G18CZ::Dividend,
           Step::DiscardTrain,
-          Step::BuyTrain,
+          Step::G18CZ::BuyTrain,
           [Step::BuyCompany, { blocks: true }],
         ], round_num: round_num)
       end
@@ -127,6 +145,17 @@ module Engine
 
       def or_round_finished
         @recently_floated.clear
+      end
+
+      def end_now?(_after)
+        @or == @last_or
+      end
+
+      def timeline
+        @timeline = [
+          "Game ends after OR #{@last_or}",
+        ]
+        @timeline.append("Current value of each private company is #{COMPANY_VALUES[[0, @or - 1].max]}")
       end
 
       def par_prices(corp)
@@ -190,6 +219,24 @@ module Engine
         @tiles.each do |tile|
           tile.blocks_lay = true if tile.name.end_with?('p')
         end
+      end
+
+      def must_buy_train?(entity)
+        !entity.rusted_self &&
+        !depot.depot_trains.empty? &&
+        (entity.trains.empty? ||
+          (entity.type == :medium && entity.trains.none? { |item| train_of_size?(item, :medium) }) ||
+          (entity.type == :large && entity.trains.none? { |item| train_of_size?(item, :large) }))
+      end
+
+      def train_of_size?(item, size)
+        name = if item.is_a?(Hash)
+                 item[:name]
+               else
+                 item.name
+               end
+
+        TRAINS_FOR_CORPORATIONS[name] == size
       end
     end
   end

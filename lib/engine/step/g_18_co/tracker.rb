@@ -25,7 +25,17 @@ module Engine
           @log << "#{corporation.name} collects a mine token from #{hex.name}"
         end
 
+        def lay_tile(action, extra_cost: 0, entity: nil, spender: nil)
+          entity ||= action.entity
+          @previous_connections = prior_connected_paths(entity, action.hex.tile)
+
+          super
+
+          @previous_connections = []
+        end
+
         def check_track_restrictions!(entity, old_tile, new_tile)
+          return if @game.loading || !entity.operator?
           return true if pending_token(entity)
 
           super(entity, old_tile, new_tile)
@@ -36,11 +46,9 @@ module Engine
 
           brand_new_exit_junctions = new_exit_junctions(old_tile, new_tile)
           return if brand_new_exit_junctions.empty?
+          return if all_prior_paths_accessible?(old_tile.paths, @previous_connections)
 
-          old_connected_paths = prior_connected_paths(entity, new_tile, old_tile)
-          return if all_prior_paths_accessible?(old_tile.paths, old_connected_paths)
-
-          raise GameError, 'Must have route to access existing track' if old_connected_paths.empty?
+          raise GameError, 'Must have route to access existing track' if @previous_connections.empty?
 
           return if accessible_new_path_creates_new_exit?(brand_new_exit_junctions)
           return if all_new_paths_have_new_exits?(brand_new_exit_junctions)
@@ -59,9 +67,11 @@ module Engine
           end.compact
         end
 
-        def prior_connected_paths(entity, new_tile, old_tile)
+        def prior_connected_paths(entity, old_tile)
+          return [] if @game.loading
+
           @game.graph.connected_paths(entity).map do |connected_path, _b|
-            next unless connected_path.hex == new_tile.hex
+            next unless connected_path.hex == old_tile.hex
 
             old_tile.paths.find { |op| op <= connected_path }
           end.compact

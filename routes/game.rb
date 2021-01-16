@@ -110,18 +110,9 @@ class Api
                 ['Your Turn', acting.map(&:id), false]
               end
 
-            if user_ids.any?
-              MessageBus.publish(
-                '/turn',
-                user_ids: user_ids,
-                game_id: game.id,
-                game_url: "#{r.base_url}/game/#{game.id}",
-                type: type,
-                force: force,
-              )
-            end
-
+            publish_turn(user_ids, game, r.base_url, type, force) unless user_ids.empty?
             publish("/game/#{game.id}", **action)
+
             game.to_h
           end
 
@@ -141,7 +132,9 @@ class Api
               halt(400, 'Player count not supported')
             end
 
-            set_game_state(game, engine, users)
+            acting = set_game_state(game, engine, users)
+            publish_turn(acting.map(&:id), game, r.base_url, 'Your turn', false)
+
             game.to_h
           end
 
@@ -208,5 +201,18 @@ class Api
 
     game.save
     acting
+  end
+
+  def publish_turn(user_ids, game, url, type, force)
+    game_id = game.id
+
+    MessageBus.publish(
+      '/turn',
+      user_ids: user_ids,
+      game_id: game_id,
+      game_url: "#{url}/game/#{game_id}",
+      type: type,
+      force: force,
+    )
   end
 end
