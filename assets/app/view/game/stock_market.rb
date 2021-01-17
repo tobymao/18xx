@@ -75,7 +75,7 @@ module View
         color = @game.class::STOCKMARKET_COLORS[types&.first]
         color_to_use = color ? COLOR_MAP[color] : color_for(:bg2)
 
-        style = if types.include?(:par_overlap) && types.length > 1
+        style = if types.include?(:par_overlap) && types.size > 1
                   box_style.merge(background: "repeating-linear-gradient(45deg, #{color_to_use}, #{color_to_use} 10px,
                     #{COLOR_MAP[:blue]} 10px, #{COLOR_MAP[:blue]} 20px)")
                 else

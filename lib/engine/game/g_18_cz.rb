@@ -36,9 +36,9 @@ module Engine
       ).freeze
 
       PAR_RANGE = {
-        'small' => [50, 55, 60, 65, 70],
-        'medium' => [60, 70, 80, 90, 100],
-        'large' => [90, 100, 110, 120],
+        small: [50, 55, 60, 65, 70],
+        medium: [60, 70, 80, 90, 100],
+        large: [90, 100, 110, 120],
       }.freeze
 
       MARKET_TEXT = {
@@ -92,7 +92,7 @@ module Engine
       def setup
         @or = 0
         # We can modify COMPANY_VALUES and OR_SETS if we want to support the shorter variant
-        @last_or = COMPANY_VALUES.length
+        @last_or = COMPANY_VALUES.size
         @recently_floated = []
 
         # Only small companies are available until later phases
