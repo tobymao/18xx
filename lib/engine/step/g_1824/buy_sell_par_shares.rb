@@ -13,16 +13,19 @@ module Engine
         end
 
         def can_buy?(_entity, bundle)
-          corp = bundle.corporation
-          super && !@game.abilities(corp, :no_buy) && !(@game.coal_railway?(corp) && corp.floated?)
+          super && @game.buyable?(bundle.corporation)
         end
 
         def can_sell?(_entity, bundle)
-          super && !@game.abilities(bundle.corporation, :no_buy)
+          super && @game.buyable?(bundle.corporation)
         end
 
         def can_gain?(_entity, bundle)
-          super && !@game.abilities(bundle.corporation, :no_buy)
+          super && @game.buyable?(bundle.corporation)
+        end
+
+        def purchasable_unsold_companies
+          @game.companies.reject { |c| c.owner || c.closed? }
         end
 
         def process_buy_company(action)

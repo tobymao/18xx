@@ -762,10 +762,6 @@ module Engine
         end
       end
 
-      def purchasable_unsold_companies
-        []
-      end
-
       def player_value(player)
         player.value
       end
@@ -950,9 +946,7 @@ module Engine
       end
 
       def float_str(entity)
-        return unless entity.corporation?
-
-        entity.floatable? ? "#{entity.percent_to_float}% to float" : 'Not floatable'
+        "#{entity.percent_to_float}% to float" if entity.corporation?
       end
 
       def route_distance(route)
