@@ -34,6 +34,44 @@ module Engine
       GAME_LOCATION = 'Venezuela'
 
       DEV_STAGE = :prealpha
+
+      def size_corporation(corporation, size)
+        return unless size == 10
+        raise GameError, 'Can only convert 5 share corporation' unless corporation.total_shares == 5
+
+        original_shares = @_shares.values.select { |share| share.corporation == corporation }
+
+        corporation.share_holders.clear
+        original_shares[0].percent = 20
+        shares = 8.times.map { |i| Share.new(corporation, percent: 10, index: i + 1) }
+        original_shares.each { |share| corporation.share_holders[share.owner] += share.percent }
+
+        shares.each do |share|
+          add_new_share(share)
+        end
+      end
+
+      def float_corporation(corporation)
+        @log << "#{corporation.name} floats"
+        @bank.spend((corporation.par_price.price * corporation.total_shares) / 2, corporation)
+      end
+
+      private
+
+      def init_round
+        stock_round
+      end
+
+      def stock_round
+        close_bank_shorts
+        @interest_fixed = nil
+
+        Round::G1817::Stock.new(self, [
+          Step::DiscardTrain,
+          Step::HomeToken,
+          Step::G1877::BuySellParShares,
+        ])
+      end
     end
   end
 end
