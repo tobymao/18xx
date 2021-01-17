@@ -29,7 +29,7 @@ module Engine
 
       load_from_json(Config::Game::G1877::JSON)
 
-      GAME_DESIGNER = 'Scott Petersen'
+      GAME_DESIGNER = 'Scott Petersen & Toby Mao'
       GAME_PUBLISHER = :all_aboard_games
       GAME_LOCATION = 'Venezuela'
 
