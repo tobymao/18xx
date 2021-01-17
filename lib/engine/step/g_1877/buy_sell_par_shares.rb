@@ -22,7 +22,19 @@ module Engine
           @corporation_size = nil
           size_corporation(@game.phase.corporation_sizes.first) if @game.phase.corporation_sizes.one?
 
+          @game.share_pool.transfer_shares(ShareBundle.new(corporation.shares), @game.share_pool)
+
           par_corporation if available_subsidiaries(winner.entity).none?
+        end
+
+        def can_short?(entity, corporation)
+          shorts = @game.shorts(corporation).size
+
+          corporation.floated? &&
+            shorts < corporation.total_shares &&
+            entity.num_shares_of(corporation) <= 0 &&
+            !(corporation.share_price.acquisition? || corporation.share_price.liquidation?) &&
+            !@round.players_sold[entity].values.include?(:short)
         end
       end
     end

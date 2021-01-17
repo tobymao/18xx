@@ -29,11 +29,13 @@ module Engine
 
       load_from_json(Config::Game::G1877::JSON)
 
-      GAME_DESIGNER = 'Scott Petersen'
+      GAME_DESIGNER = 'Scott Petersen & Toby Mao'
       GAME_PUBLISHER = :all_aboard_games
       GAME_LOCATION = 'Venezuela'
 
       DEV_STAGE = :prealpha
+
+      SELL_AFTER = :any_time
 
       def size_corporation(corporation, size)
         return unless size == 10
@@ -52,7 +54,7 @@ module Engine
       end
 
       def float_corporation(corporation)
-        @log << "#{corporation.name} floats"
+        @log << "#{corporation.name} floats and transfers remaining shares to the market"
         @bank.spend((corporation.par_price.price * corporation.total_shares) / 2, corporation)
       end
 
