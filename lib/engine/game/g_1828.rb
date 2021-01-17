@@ -51,6 +51,8 @@ module Engine
 
       TRACK_RESTRICTION = :permissive
 
+      DISCARDED_TRAINS = :remove
+
       MARKET_TEXT = Base::MARKET_TEXT.merge(par: 'Yellow Phase Par',
                                             par_1: 'Green Phase Par',
                                             par_2: 'Blue Phase Par',
