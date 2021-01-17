@@ -892,6 +892,8 @@ module Engine
           (percent / 10).to_i.times { @stock_market.move_down(corporation) }
         when :left_block_pres
           stock_market.move_left(corporation) if was_president
+        when :left_block
+          stock_market.move_left(corporation)
         when :none
           nil
         else

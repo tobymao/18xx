@@ -23,7 +23,7 @@ module Engine
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18CZ'
 
       SELL_BUY_ORDER = :sell_buy
-      SELL_MOVEMENT = :down_block
+      SELL_MOVEMENT = :left_block
 
       MUST_BUY_TRAIN = :always
 
