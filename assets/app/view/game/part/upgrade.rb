@@ -74,6 +74,7 @@ module View
               desert: svg(delta_x: delta_x, delta_y: delta_y, icon: 'cactus'),
               lake: svg(delta_x: delta_x, delta_y: delta_y, icon: 'lake'),
               river: svg(delta_x: delta_x, delta_y: delta_y, icon: 'river'),
+              hill: svg(delta_x: delta_x, delta_y: delta_y, icon: 'hill'),
             }[t]
           end
 
