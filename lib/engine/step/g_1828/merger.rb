@@ -352,6 +352,7 @@ module Engine
                @exchange_selection == 'Sell')
             share.transfer(@discard)
             sold_share(entity, share.corporation)
+            @game.bank.spend(share.price, entity)
             @exchange_selection = nil
 
             @log << "#{entity.name} discards 1 #{share.corporation.name} share and receives " \
