@@ -25,6 +25,10 @@ module Engine
       SELL_BUY_ORDER = :sell_buy
       MARKET_SHARE_LIMIT = 100
 
+      TRACK_RESTRICTION = :permissive
+
+      SELL_MOVEMENT = :left_block
+
       TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded, cost: 10 }].freeze
 
       START_PRICES = [60, 60, 65, 65, 70, 70, 75, 75, 80, 80].freeze
@@ -44,6 +48,12 @@ module Engine
 
       RABA_BONUS = [20, 20, 30, 30].freeze
       SNW_BONUS = [30, 30, 50, 50].freeze
+
+      CORP_TOKEN_REVENUE = 10
+
+      FIXED_ROTATION_TILES = {
+        'L33' => 2,
+      }.freeze
 
       TERRAIN_TOKENS = {
         '5' => 3,
@@ -263,6 +273,10 @@ module Engine
         true
       end
 
+      def must_buy_train?(_entity)
+        false
+      end
+
       # price is nil, :free, or a positive int
       def buy_train(operator, train, price = nil)
         cost = price || train.price
@@ -282,6 +296,10 @@ module Engine
       end
 
       def place_home_token(_corp); end
+
+      def init_phase
+        Phase.new(self.class::PHASES.dup.map(&:dup), self)
+      end
 
       def event_first_three!
         @trains_left.delete('3')
@@ -306,6 +324,12 @@ module Engine
 
       def info_on_trains(phase)
         Array(phase[:on]).join(', ')
+      end
+
+      def legal_tile_rotation?(_entity, _hex, tile)
+        return true unless FIXED_ROTATION_TILES.include?(tile.name)
+
+        tile.rotation == FIXED_ROTATION_TILES[tile.name]
       end
 
       def check_distance(route, visits)
@@ -370,7 +394,7 @@ module Engine
       def route_distance(route)
         return super if @round.gc_train != route.train
 
-        n_cities = route.stops.count { |n| n.city? || n.offboard? }
+        n_cities = route.stops.select { |s| s.visit_cost.positive? }.count { |n| n.city? || n.offboard? }
         n_towns = route.stops.count(&:town?)
         "#{n_cities}+#{n_towns}"
       end
@@ -401,8 +425,11 @@ module Engine
       # Modify revenue of offboard if RABA is used
       def revenue_for(route, stops)
         raba_add = @round.raba_trains.first == route.train ? raba_delta(@phase) : 0
+
+        corp_tokens = stops.select(&:city?).sum { |c| c.tokens.count { |t| t&.corporation&.corporation? } }
+
         stops.select { |s| s.visit_cost.positive? }.sum { |stop| stop.route_revenue(route.phase, route.train) } +
-          raba_add
+          raba_add + corp_tokens * CORP_TOKEN_REVENUE
       end
 
       def raba_delta(phase)

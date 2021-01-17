@@ -38,7 +38,7 @@ module Engine
           items = []
 
           unless @round.rail_cars.include?('G&C')
-            items << Item.new(description: 'Plus-train Upgrade from G&C', cost: item_cost)
+            items << Item.new(description: 'Train Upgrade from G&C', cost: item_cost)
           end
 
           unless @round.rail_cars.include?('RABA')
@@ -75,6 +75,8 @@ module Engine
 
           action.entity.spend(item.cost, corp)
           @log << "#{action.entity.name} buys #{desc} for #{@game.format_currency(item.cost)}"
+
+          @round.routes.each(&:clear_cache!)
         end
       end
     end

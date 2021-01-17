@@ -890,6 +890,10 @@ module Engine
           percent = bundle.percent
           percent -= swap.percent if swap
           (percent / 10).to_i.times { @stock_market.move_down(corporation) }
+        when :down_block
+          @stock_market.move_down(corporation)
+        when :left_block
+          @stock_market.move_left(corporation)
         when :left_block_pres
           stock_market.move_left(corporation) if was_president
         when :none

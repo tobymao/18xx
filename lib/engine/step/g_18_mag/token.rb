@@ -21,11 +21,20 @@ module Engine
         end
 
         def pay_token_cost(entity, cost)
+          return super unless entity.minor?
+
           skev_income = (cost / 2).to_i
           entity.spend(cost - skev_income, @game.bank)
           entity.spend(skev_income, @game.skev)
 
           @log << "#{@game.skev.name} earns #{@game.format_currency(skev_income)}"
+        end
+
+        def process_place_token(action)
+          entity = action.entity
+
+          place_token(entity, action.city, action.token, teleport: entity.corporation?)
+          pass!
         end
 
         def available_hex(entity, hex)
