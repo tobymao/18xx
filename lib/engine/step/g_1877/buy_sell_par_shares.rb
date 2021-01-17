@@ -22,6 +22,8 @@ module Engine
           @corporation_size = nil
           size_corporation(@game.phase.corporation_sizes.first) if @game.phase.corporation_sizes.one?
 
+          @game.share_pool.transfer_shares(ShareBundle.new(corporation.shares), @game.share_pool)
+
           par_corporation if available_subsidiaries(winner.entity).none?
         end
       end

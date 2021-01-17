@@ -35,6 +35,8 @@ module Engine
 
       DEV_STAGE = :prealpha
 
+      SELL_AFTER = :any_time
+
       def size_corporation(corporation, size)
         return unless size == 10
         raise GameError, 'Can only convert 5 share corporation' unless corporation.total_shares == 5
@@ -52,7 +54,7 @@ module Engine
       end
 
       def float_corporation(corporation)
-        @log << "#{corporation.name} floats"
+        @log << "#{corporation.name} floats and transfers remaining shares to the market"
         @bank.spend((corporation.par_price.price * corporation.total_shares) / 2, corporation)
       end
 
