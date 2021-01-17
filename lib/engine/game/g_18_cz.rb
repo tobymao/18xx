@@ -193,7 +193,7 @@ module Engine
           case @round
           when Round::Stock
             @operating_rounds = OR_SETS[@turn - 1]
-            reorder_players
+            reorder_players(:most_cash)
             new_operating_round
           when Round::Operating
             if @round.round_num < @operating_rounds
@@ -207,7 +207,7 @@ module Engine
             end
           when init_round.class
             init_round_finished
-            reorder_players
+            reorder_players(:least_cash)
             new_stock_round
           end
       end
@@ -216,6 +216,15 @@ module Engine
         return super unless @recently_floated.include?(entity)
 
         [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }]
+      end
+
+      def corporation_size(entity)
+        # For display purposes is a corporation small, medium or large
+        entity.type
+      end
+
+      def status_str(corp)
+        corp.type.capitalize
       end
 
       def block_lay_for_purple_tiles

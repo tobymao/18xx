@@ -1922,13 +1922,20 @@ module Engine
         player_order.reject(&:bankrupt).index(entity)
       end
 
-      def reorder_players
-        case self.class::NEXT_SR_PLAYER_ORDER
+      def reorder_players(order = nil)
+        order ||= self.class::NEXT_SR_PLAYER_ORDER
+        case order
         when :after_last_to_act
           player = @players.reject(&:bankrupt)[@round.entity_index]
           @players.rotate!(@players.index(player))
         when :first_to_pass
           @players = @round.pass_order if @round.pass_order.any?
+        when :most_cash
+          current_order = @players.dup
+          @players.sort_by! { |p| [p.cash, current_order.index(p)] }.reverse!
+        when :least_cash
+          current_order = @players.dup
+          @players.sort_by! { |p| [p.cash, current_order.index(p)] }
         end
         @log << "#{@players.first.name} has priority deal"
       end
