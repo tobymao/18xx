@@ -21,9 +21,6 @@ module Engine
           super
 
           @round.rail_cars = []
-          @round.raba_trains = []
-          @round.snw_train = nil
-          @round.gc_train = nil
         end
 
         def log_skip(entity)
@@ -60,9 +57,6 @@ module Engine
           {
             routes: [],
             rail_cars: [],
-            raba_trains: [],
-            snw_train: nil,
-            gc_train: nil,
           }
         end
 
@@ -75,8 +69,6 @@ module Engine
 
           action.entity.spend(item.cost, corp)
           @log << "#{action.entity.name} buys #{desc} for #{@game.format_currency(item.cost)}"
-
-          @round.routes.each(&:clear_cache!)
         end
       end
     end

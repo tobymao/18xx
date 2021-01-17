@@ -27,6 +27,7 @@ module Engine
     end
 
     def clear_cache!
+      connection_data
       @connection_hexes = nil
       @hexes = nil
       @revenue = nil

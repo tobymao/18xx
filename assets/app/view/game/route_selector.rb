@@ -86,7 +86,6 @@ module View
           @selected_route = @routes.first
           store(:routes, @routes, skip: true)
           store(:selected_route, @selected_route, skip: true)
-          @game.round.routes = @routes
         end
 
         if !@selected_route && (first_train = trains[0])
@@ -94,8 +93,9 @@ module View
           @routes << route
           store(:routes, @routes, skip: true)
           store(:selected_route, route, skip: true)
-          @game.round.routes = @routes
         end
+
+        @routes.each(&:clear_cache!)
 
         render_halts = false
         trains = trains.flat_map do |train|
@@ -106,7 +106,6 @@ module View
               store(:routes, @routes)
             end
             store(:selected_route, route)
-            @game.round.routes = @routes
           end
 
           selected = @selected_route&.train == train
@@ -233,7 +232,6 @@ module View
 
         clear = lambda do
           @selected_route&.reset!
-          @game.reset_route!(@selected_route)
           store(:selected_route, @selected_route)
         end
 
@@ -241,14 +239,11 @@ module View
           @selected_route = nil
           store(:selected_route, @selected_route)
           @routes.clear
-          @game.round.routes = @routes
-          @game.reset_all_routes!
           store(:routes, @routes)
         end
 
         clear_all = lambda do
           @routes.each(&:reset!)
-          @game.reset_all_routes!
           store(:routes, @routes)
         end
 
