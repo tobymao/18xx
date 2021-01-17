@@ -166,7 +166,9 @@ module Engine
       end
 
       def event_medium_corps_available!
-        medium_corps, @future_corporations = @future_corporations.partition { |corporation| corporation.type == :medium }
+        medium_corps, @future_corporations = @future_corporations.partition do |corporation|
+          corporation.type == :medium
+        end
         @corporations.concat(medium_corps)
         @log << '-- Medium corporations now available --'
       end

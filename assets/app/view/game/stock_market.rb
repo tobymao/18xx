@@ -76,7 +76,8 @@ module View
         color_to_use = color ? COLOR_MAP[color] : color_for(:bg2)
 
         style = if types.include?(:par_overlap) && types.length > 1
-                  box_style.merge(background: "repeating-linear-gradient(45deg, #{color_to_use}, #{color_to_use} 10px, #{COLOR_MAP[:blue]} 10px, #{COLOR_MAP[:blue]} 20px)")
+                  box_style.merge(background: "repeating-linear-gradient(45deg, #{color_to_use}, #{color_to_use} 10px,
+                    #{COLOR_MAP[:blue]} 10px, #{COLOR_MAP[:blue]} 20px)")
                 else
                   box_style.merge(backgroundColor: color_to_use)
                 end
