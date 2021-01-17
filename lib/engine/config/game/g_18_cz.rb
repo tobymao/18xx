@@ -320,6 +320,14 @@ module Engine
                             "hexes": [],
                             "reachable": true,
                             "special": false
+                        },
+                        {
+                            "type":"tile_discount",
+                            "count": 1,
+                            "when": "owning_corp_or_turn",
+                            "owner_type":"corporation",
+                            "discount": 10,
+                            "terrain": "river"
                         }
                     ]
                 },
@@ -345,6 +353,14 @@ module Engine
                             "hexes": [],
                             "reachable": true,
                             "special": false
+                        },
+                        {
+                            "type":"tile_discount",
+                            "count": 1,
+                            "when": "owning_corp_or_turn",
+                            "owner_type":"corporation",
+                            "discount": 10,
+                            "terrain": "river"
                         }
                     ]
                 },
@@ -370,6 +386,14 @@ module Engine
                             "hexes": [],
                             "reachable": true,
                             "special": false
+                        },
+                        {
+                            "type":"tile_discount",
+                            "count": 1,
+                            "when": "owning_corp_or_turn",
+                            "owner_type":"corporation",
+                            "discount": 10,
+                            "terrain": "river"
                         }
                     ]
                 },
@@ -395,6 +419,14 @@ module Engine
                             "hexes": [],
                             "reachable": true,
                             "special": false
+                        },
+                        {
+                            "type":"tile_discount",
+                            "count": 1,
+                            "when": "owning_corp_or_turn",
+                            "owner_type":"corporation",
+                            "discount": 10,
+                            "terrain": "river"
                         }
                     ]
                 },
@@ -420,6 +452,14 @@ module Engine
                             "hexes": [],
                             "reachable": true,
                             "special": false
+                        },
+                        {
+                            "type":"tile_discount",
+                            "count": 1,
+                            "when": "owning_corp_or_turn",
+                            "owner_type":"corporation",
+                            "discount": 10,
+                            "terrain": "river"
                         }
                     ]
                 },
@@ -445,6 +485,14 @@ module Engine
                             "hexes": [],
                             "reachable": true,
                             "special": false
+                        },
+                        {
+                            "type":"tile_discount",
+                            "count": 1,
+                            "when": "owning_corp_or_turn",
+                            "owner_type":"corporation",
+                            "discount": 10,
+                            "terrain": "river"
                         }
                     ]
                 },
@@ -476,6 +524,22 @@ module Engine
                             "hexes": [],
                             "reachable": true,
                             "special": false
+                        },
+                        {
+                            "type":"tile_discount",
+                            "count": 1,
+                            "when": "owning_corp_or_turn",
+                            "owner_type":"corporation",
+                            "discount": 10,
+                            "terrain": "river"
+                        },
+                        {
+                            "type":"tile_discount",
+                            "count": 1,
+                            "when": "owning_corp_or_turn",
+                            "owner_type":"corporation",
+                            "discount": 20,
+                            "terrain": "hill"
                         }
                     ]
                 },
@@ -507,6 +571,22 @@ module Engine
                             "hexes": [],
                             "reachable": true,
                             "special": false
+                        },
+                        {
+                            "type":"tile_discount",
+                            "count": 1,
+                            "when": "owning_corp_or_turn",
+                            "owner_type":"corporation",
+                            "discount": 10,
+                            "terrain": "river"
+                        },
+                        {
+                            "type":"tile_discount",
+                            "count": 1,
+                            "when": "owning_corp_or_turn",
+                            "owner_type":"corporation",
+                            "discount": 20,
+                            "terrain": "hill"
                         }
                     ]
                 },
@@ -538,6 +618,22 @@ module Engine
                             "hexes": [],
                             "reachable": true,
                             "special": false
+                        },
+                        {
+                            "type":"tile_discount",
+                            "count": 1,
+                            "when": "owning_corp_or_turn",
+                            "owner_type":"corporation",
+                            "discount": 10,
+                            "terrain": "river"
+                        },
+                        {
+                            "type":"tile_discount",
+                            "count": 1,
+                            "when": "owning_corp_or_turn",
+                            "owner_type":"corporation",
+                            "discount": 20,
+                            "terrain": "hill"
                         }
                     ]
                 },
@@ -569,6 +665,22 @@ module Engine
                             "hexes": [],
                             "reachable": true,
                             "special": false
+                        },
+                        {
+                            "type":"tile_discount",
+                            "count": 1,
+                            "when": "owning_corp_or_turn",
+                            "owner_type":"corporation",
+                            "discount": 10,
+                            "terrain": "river"
+                        },
+                        {
+                            "type":"tile_discount",
+                            "count": 1,
+                            "when": "owning_corp_or_turn",
+                            "owner_type":"corporation",
+                            "discount": 20,
+                            "terrain": "hill"
                         }
                     ]
                 },
@@ -600,6 +712,22 @@ module Engine
                             "hexes": [],
                             "reachable": true,
                             "special": false
+                        },
+                        {
+                            "type":"tile_discount",
+                            "count": 1,
+                            "when": "owning_corp_or_turn",
+                            "owner_type":"corporation",
+                            "discount": 10,
+                            "terrain": "river"
+                        },
+                        {
+                            "type":"tile_discount",
+                            "count": 1,
+                            "when": "owning_corp_or_turn",
+                            "owner_type":"corporation",
+                            "discount": 20,
+                            "terrain": "hill"
                         }
                     ]
                 },
@@ -631,6 +759,22 @@ module Engine
                             "hexes": [],
                             "reachable": true,
                             "special": false
+                        },
+                        {
+                            "type":"tile_discount",
+                            "count": 1,
+                            "when": "owning_corp_or_turn",
+                            "owner_type":"corporation",
+                            "discount": 10,
+                            "terrain": "river"
+                        },
+                        {
+                            "type":"tile_discount",
+                            "count": 1,
+                            "when": "owning_corp_or_turn",
+                            "owner_type":"corporation",
+                            "discount": 20,
+                            "terrain": "hill"
                         }
                     ]
                 },
@@ -664,6 +808,30 @@ module Engine
                             "hexes": [],
                             "reachable": true,
                             "special": false
+                        },
+                        {
+                            "type":"tile_discount",
+                            "count": 1,
+                            "when": "owning_corp_or_turn",
+                            "owner_type":"corporation",
+                            "discount": 10,
+                            "terrain": "river"
+                        },
+                        {
+                            "type":"tile_discount",
+                            "count": 1,
+                            "when": "owning_corp_or_turn",
+                            "owner_type":"corporation",
+                            "discount": 20,
+                            "terrain": "hill"
+                        },
+                        {
+                            "type":"tile_discount",
+                            "count": 1,
+                            "when": "owning_corp_or_turn",
+                            "owner_type":"corporation",
+                            "discount": 40,
+                            "terrain": "mountain"
                         }
                     ]
                 },
@@ -697,6 +865,30 @@ module Engine
                             "hexes": [],
                             "reachable": true,
                             "special": false
+                        },
+                        {
+                            "type":"tile_discount",
+                            "count": 1,
+                            "when": "owning_corp_or_turn",
+                            "owner_type":"corporation",
+                            "discount": 10,
+                            "terrain": "river"
+                        },
+                        {
+                            "type":"tile_discount",
+                            "count": 1,
+                            "when": "owning_corp_or_turn",
+                            "owner_type":"corporation",
+                            "discount": 20,
+                            "terrain": "hill"
+                        },
+                        {
+                            "type":"tile_discount",
+                            "count": 1,
+                            "when": "owning_corp_or_turn",
+                            "owner_type":"corporation",
+                            "discount": 40,
+                            "terrain": "mountain"
                         }
                     ]
                 },
@@ -730,6 +922,30 @@ module Engine
                             "hexes": [],
                             "reachable": true,
                             "special": false
+                        },
+                        {
+                            "type":"tile_discount",
+                            "count": 1,
+                            "when": "owning_corp_or_turn",
+                            "owner_type":"corporation",
+                            "discount": 10,
+                            "terrain": "river"
+                        },
+                        {
+                            "type":"tile_discount",
+                            "count": 1,
+                            "when": "owning_corp_or_turn",
+                            "owner_type":"corporation",
+                            "discount": 20,
+                            "terrain": "hill"
+                        },
+                        {
+                            "type":"tile_discount",
+                            "count": 1,
+                            "when": "owning_corp_or_turn",
+                            "owner_type":"corporation",
+                            "discount": 40,
+                            "terrain": "mountain"
                         }
                     ]
                 },
@@ -763,6 +979,30 @@ module Engine
                             "hexes": [],
                             "reachable": true,
                             "special": false
+                        },
+                        {
+                            "type":"tile_discount",
+                            "count": 1,
+                            "when": "owning_corp_or_turn",
+                            "owner_type":"corporation",
+                            "discount": 10,
+                            "terrain": "river"
+                        },
+                        {
+                            "type":"tile_discount",
+                            "count": 1,
+                            "when": "owning_corp_or_turn",
+                            "owner_type":"corporation",
+                            "discount": 20,
+                            "terrain": "hill"
+                        },
+                        {
+                            "type":"tile_discount",
+                            "count": 1,
+                            "when": "owning_corp_or_turn",
+                            "owner_type":"corporation",
+                            "discount": 40,
+                            "terrain": "mountain"
                         }
                     ]
                 },
@@ -796,6 +1036,30 @@ module Engine
                             "hexes": [],
                             "reachable": true,
                             "special": false
+                        },
+                        {
+                            "type":"tile_discount",
+                            "count": 1,
+                            "when": "owning_corp_or_turn",
+                            "owner_type":"corporation",
+                            "discount": 10,
+                            "terrain": "river"
+                        },
+                        {
+                            "type":"tile_discount",
+                            "count": 1,
+                            "when": "owning_corp_or_turn",
+                            "owner_type":"corporation",
+                            "discount": 20,
+                            "terrain": "hill"
+                        },
+                        {
+                            "type":"tile_discount",
+                            "count": 1,
+                            "when": "owning_corp_or_turn",
+                            "owner_type":"corporation",
+                            "discount": 40,
+                            "terrain": "mountain"
                         }
                     ]
                 },
@@ -829,6 +1093,30 @@ module Engine
                             "hexes": [],
                             "reachable": true,
                             "special": false
+                        },
+                        {
+                            "type":"tile_discount",
+                            "count": 1,
+                            "when": "owning_corp_or_turn",
+                            "owner_type":"corporation",
+                            "discount": 10,
+                            "terrain": "river"
+                        },
+                        {
+                            "type":"tile_discount",
+                            "count": 1,
+                            "when": "owning_corp_or_turn",
+                            "owner_type":"corporation",
+                            "discount": 20,
+                            "terrain": "hill"
+                        },
+                        {
+                            "type":"tile_discount",
+                            "count": 1,
+                            "when": "owning_corp_or_turn",
+                            "owner_type":"corporation",
+                            "discount": 40,
+                            "terrain": "mountain"
                         }
                     ]
                 }
