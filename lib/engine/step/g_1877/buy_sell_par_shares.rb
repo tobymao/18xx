@@ -26,6 +26,16 @@ module Engine
 
           par_corporation if available_subsidiaries(winner.entity).none?
         end
+
+        def can_short?(entity, corporation)
+          shorts = @game.shorts(corporation).size
+
+          corporation.floated? &&
+            shorts < corporation.total_shares &&
+            entity.num_shares_of(corporation) <= 0 &&
+            !(corporation.share_price.acquisition? || corporation.share_price.liquidation?) &&
+            !@round.players_sold[entity].values.include?(:short)
+        end
       end
     end
   end
