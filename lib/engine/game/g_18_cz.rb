@@ -223,6 +223,10 @@ module Engine
         entity.type
       end
 
+      def status_str(corp)
+        corp.type.capitalize
+      end
+
       def block_lay_for_purple_tiles
         @tiles.each do |tile|
           tile.blocks_lay = true if tile.name.end_with?('p')
