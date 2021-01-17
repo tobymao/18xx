@@ -8,7 +8,6 @@ class Api
       r.post do
         # POST '/api/user/login'
         r.is 'login' do
-          halt(400, 'Invalid email address') unless /^[^@\s]+@[^@\s]+\.[^@\s]+$/.match?(r['email'])
           halt(400, 'Could not find user') unless (user = User.by_email(r['email']))
           halt(401, 'Incorrect password') unless Argon2::Password.verify_password(r['password'], user.password)
 
