@@ -104,7 +104,7 @@ module View
 
       title = 'Login'
       inputs = [
-        render_input('Email', id: :email, type: :email, attrs: { autocomplete: 'email' }),
+        render_input('Email or Username', id: :email, type: :email, attrs: { autocomplete: 'email' }),
         render_input('Password', id: :password, type: :password, attrs: { autocomplete: 'current-password' }),
         h(:div, { style: { marginBottom: '1rem' } }, [render_button('Login') { submit }]),
         h(:a, { attrs: { href: '/forgot' } }, 'Forgot Password'),
