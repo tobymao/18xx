@@ -313,6 +313,10 @@ module Engine
         system
       end
 
+      def ipo_reserved_name(_entity = nil)
+        'Treasury'
+      end
+
       def coal_marker_available?
         hex_by_id(VA_COALFIELDS_HEX).tile.icons.any? { |icon| icon.name == COAL_MARKER_ICON }
       end
