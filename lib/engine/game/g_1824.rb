@@ -320,12 +320,12 @@ module Engine
       BUKAREST_1 = 'offboard=revenue:yellow_10|green_30|brown_40|gray_50,hide:1,groups:Bukarest;'\
                    'path=a:1,b:_0,terminal:1'
       BUKAREST_2 = 'offboard=revenue:yellow_10|green_30|brown_40|gray_50,groups:Bukarest;path=a:2,b:_0,terminal:1'
-      SARAJEVO_1 = 'offboard=revenue:yellow_10|green_10|brown_50|gray_50,hide:1,groups:Sarajevo;'\
-                   'path=a:2,b:_0,terminal:1;path=a:3,b:_0,terminal:1'
-      SARAJEVO_2 = 'city=revenue:yellow_10|green_10|brown_50|gray_50,hide:1,groups:Sarajevo;'\
-                   'path=a:2,b:_0,terminal:1;path=a:3,b:_0,terminal:1'
-      SARAJEVO_3 = 'offboard=revenue:yellow_10|green_10|brown_50|gray_50,groups:Sarajevo;'\
-                   'path=a:2,b:_0,terminal:1;path=a:3,b:_0,terminal:1'
+      SARAJEVO = 'city=revenue:yellow_10|green_10|brown_50|gray_50;'\
+                   'path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;path=a:2,b:_0,terminal:1;'\
+                   'path=a:3,b:_0,terminal:1;path=a:4,b:_0,terminal:1;path=a:5,b:_0,terminal:1'
+      SARAJEVO_W = 'path=a:2,b:5;path=a:3,b:4'
+      SARAJEVO_E = 'path=a:0,b:3;path=a:1,b:2'
+      SARAJEVO_S = 'path=a:2,b:3'
       WIEN = 'city=revenue:30;path=a:0,b:_0;city=revenue:30;'\
              'path=a:1,b:_1;city=revenue:30;path=a:2,b:_2;upgrade=cost:20,terrain:water;label=W'
 
@@ -371,15 +371,16 @@ module Engine
             ['H27'] => BUKAREST_2,
             ['H1'] => MAINLAND_1,
             ['I2'] => MAINLAND_2,
-            ['J11'] => SARAJEVO_1,
-            ['J13'] => SARAJEVO_2,
-            ['J15'] => SARAJEVO_3,
+            ['J13'] => SARAJEVO,
           },
           gray: {
             ['A12'] => MINE_2,
             ['A22'] => MINE_3,
             ['C6'] => MINE_1,
             ['H25'] => MINE_4,
+            ['J11'] => SARAJEVO_W,
+            ['J15'] => SARAJEVO_E,
+            %w[K12 ̈́K14] => SARAJEVO_S,
           },
           white: {
             one_town => TOWN,
