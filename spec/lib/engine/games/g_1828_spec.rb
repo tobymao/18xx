@@ -13,16 +13,20 @@ module Engine
     let(:phase) { game.phase }
 
     def next_round!
-      game.send(:next_round!)
-      game.round.setup
+      loop do
+        game.send(:next_round!)
+        game.round.setup
+        break if yield
+      end
+      game.round
     end
 
     def next_or!
-      loop do
-        next_round!
-        break if game.round.is_a?(Round::Operating)
-      end
-      game.round
+      next_round! { game.round.is_a?(Round::Operating) }
+    end
+
+    def next_sr!
+      next_round! { game.round.is_a?(Round::Stock) }
     end
 
     describe 'events' do
@@ -52,7 +56,12 @@ module Engine
         erie_home_tile = game.hex_by_id(erie.coordinates).tile
 
         next_or!
-        phase.buying_train!(corporation, game.trains.find { |t| t.name == 'D' })
+        loop do
+          train = game.trains.shift
+          phase.buying_train!(corporation, train)
+          break if train.name == 'D'
+        end
+        next_sr!
         expect(game.corporations.size).to be(1)
         expect(game.corporations.first).to eq(corporation)
         expect(erie_home_tile.cities[0].available_slots).to eq(0)

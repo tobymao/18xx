@@ -71,7 +71,8 @@ module Engine
         'brown_par' => ['Brown phase pars',
                         '$120 par price is now available'],
         'remove_corporations' => ['Unparred corporations removed',
-                                  'All unparred corporations are removed at the beginning of next stock round. Blocking tokens placed in home stations']
+                                  'All unparred corporations are removed at the beginning of next stock round.' \
+                                  ' Blocking tokens placed in home stations.']
       ).freeze
 
       VA_COALFIELDS_HEX = 'K11'
@@ -222,8 +223,9 @@ module Engine
       end
 
       def new_stock_round
-        super
+        new_sr = super
         remove_unparred_corporations! if @phase.current[:name] == 'Purple'
+        new_sr
       end
 
       def remove_unparred_corporations!
