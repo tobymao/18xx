@@ -26,7 +26,7 @@ module Engine
     }.freeze
 
     # Types which are info only and shouldn't
-    NON_HIGHLIGHT_TYPES = %i[par safe_par par_1 par_2 par_overlap safe_par convert_range max_price repar].freeze
+    NON_HIGHLIGHT_TYPES = %i[par safe_par par_1 par_2 par_3 par_overlap safe_par convert_range max_price repar].freeze
 
     def self.from_code(code, row, column, unlimited_types, multiple_buy_types: [])
       return nil if !code || code == ''
@@ -82,7 +82,7 @@ module Engine
     end
 
     def can_par?
-      %i[par par_overlap par_1 par_2].include?(@type)
+      %i[par par_overlap par_1 par_2 par_3].include?(@type)
     end
 
     def end_game_trigger?
