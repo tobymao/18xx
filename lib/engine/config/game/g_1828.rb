@@ -487,6 +487,13 @@ module Engine
             "sym": "C&P",
             "abilities": [
                 {
+                    "type": "blocks_hexes",
+                    "owner_type": "player",
+                    "hexes": [
+                        "C15"
+                    ]
+                },
+                {
                     "type": "revenue_change",
                     "revenue": 0,
                     "when": "auction_end"
