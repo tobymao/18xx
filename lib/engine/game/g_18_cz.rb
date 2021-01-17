@@ -156,6 +156,7 @@ module Engine
           "Game ends after OR #{@last_or}",
         ]
         @timeline.append("Current value of each private company is #{COMPANY_VALUES[[0, @or - 1].max]}")
+        @timeline.append("Next set of Operating Rounds will have #{OR_SETS[@turn - 1]} ORs")
       end
 
       def par_prices(corp)
