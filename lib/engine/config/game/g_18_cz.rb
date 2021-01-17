@@ -35,7 +35,7 @@ module Engine
                 "B11": "Decin",
                 "B13": "Liberec",
                 "C24": "Opava",
-                "E22": "Opava",
+                "E22": "Olomouc",
                 "G24": "Hulin",
                 "G12": "Tabor",
                 "I12": "Ceske Budejovice",
@@ -252,24 +252,24 @@ module Engine
                     "40",
                     "45",
                     "50p",
-                    "53p",
+                    "53",
                     "55p",
-                    "58p",
-                    "60p",
-                    "63p",
+                    "58",
+                    "60pP",
+                    "63",
                     "65p",
-                    "68p",
-                    "70p",
-                    "75p",
-                    "80p",
-                    "85p",
-                    "90p",
-                    "95p",
-                    "100p",
-                    "105p",
-                    "110p",
-                    "115p",
-                    "120p",
+                    "68",
+                    "70pP",
+                    "75",
+                    "80P",
+                    "85",
+                    "90zP",
+                    "95",
+                    "100zP",
+                    "105",
+                    "110z",
+                    "115",
+                    "120z",
                     "126",
                     "132",
                     "138",
@@ -299,10 +299,11 @@ module Engine
             ],
             "companies": [
                 {
-                    "name": "Plan - Tachau",
+                    "name": "Small #1",
                     "value": 25,
                     "revenue": 5,
-                    "sym": "PT",
+                    "sym": "S1",
+                    "desc":"May either ignore the cost to build a river tile or lay a special purple-edged tile on yellow cities",
                     "abilities": [
                         {
                             "type":"tile_lay",
@@ -323,10 +324,11 @@ module Engine
                     ]
                 },
                 {
-                    "name": "Melnik – Mscheno",
+                    "name": "Small #2",
                     "value": 30,
                     "revenue": 5,
-                    "sym": "MM",
+                    "sym": "S2",
+                    "desc":"May either ignore the cost to build a river tile or lay a special purple-edged tile on yellow cities",
                     "abilities": [
                         {
                             "type":"tile_lay",
@@ -347,10 +349,11 @@ module Engine
                     ]
                 },
                 {
-                    "name": "Zwittau – Politschka",
+                    "name": "Small #3",
                     "value": 35,
                     "revenue": 5,
-                    "sym": "ZP",
+                    "sym": "S3",
+                    "desc":"May either ignore the cost to build a river tile or lay a special purple-edged tile on yellow cities",
                     "abilities": [
                         {
                             "type":"tile_lay",
@@ -371,10 +374,11 @@ module Engine
                     ]
                 },
                 {
-                    "name": "Wolframs – Teltsch",
+                    "name": "Small #4",
                     "value": 40,
                     "revenue": 5,
-                    "sym": "WT",
+                    "sym": "S4",
+                    "desc":"May either ignore the cost to build a river tile or lay a special purple-edged tile on yellow cities",
                     "abilities": [
                         {
                             "type":"tile_lay",
@@ -395,10 +399,11 @@ module Engine
                     ]
                 },
                 {
-                    "name": "Strakonitz – Blatna – Bresnitz",
+                    "name": "Small #5",
                     "value": 45,
                     "revenue": 5,
-                    "sym": "SBB",
+                    "sym": "S5",
+                    "desc":"May either ignore the cost to build a river tile or lay a special purple-edged tile on yellow cities",
                     "abilities": [
                         {
                             "type":"tile_lay",
@@ -419,10 +424,11 @@ module Engine
                     ]
                 },
                 {
-                    "name": "Martinitz – Rochlitz",
+                    "name": "Small #6",
                     "value": 50,
                     "revenue": 5,
-                    "sym": "MR",
+                    "sym": "S6",
+                    "desc":"May either ignore the cost to build a river tile or lay a special purple-edged tile on yellow cities",
                     "abilities": [
                         {
                             "type":"tile_lay",
@@ -443,10 +449,11 @@ module Engine
                     ]
                 },
                 {
-                    "name": "Raudnitz – Kmetnowes",
+                    "name": "Medium #1",
                     "value": 40,
                     "revenue": 10,
-                    "sym": "RK",
+                    "sym": "M1",
+                    "desc":"May either ignore the cost to build a river or hill tile or lay a special purple-edged tile on yellow or green cities",
                     "abilities": [
                         {
                             "type":"tile_lay",
@@ -473,10 +480,11 @@ module Engine
                     ]
                 },
                 {
-                    "name": "Schweißing – Haid",
+                    "name": "Medium #2",
                     "value": 45,
                     "revenue": 10,
-                    "sym": "SH",
+                    "sym": "M2",
+                    "desc":"May either ignore the cost to build a river or hill tile or lay a special purple-edged tile on yellow or green cities",
                     "abilities": [
                         {
                             "type":"tile_lay",
@@ -503,10 +511,11 @@ module Engine
                     ]
                 },
                 {
-                    "name": "Deutschbrod – Tischnowitz",
+                    "name": "Medium #3",
                     "value": 50,
                     "revenue": 10,
-                    "sym": "DT",
+                    "sym": "M3",
+                    "desc":"May either ignore the cost to build a river or hill tile or lay a special purple-edged tile on yellow or green cities",
                     "abilities": [
                         {
                             "type":"tile_lay",
@@ -533,10 +542,11 @@ module Engine
                     ]
                 },
                 {
-                    "name": "Troppau – Grätz",
+                    "name": "Medium #4",
                     "value": 55,
                     "revenue": 10,
-                    "sym": "TG",
+                    "sym": "M4",
+                    "desc":"May either ignore the cost to build a river or hill tile or lay a special purple-edged tile on yellow or green cities",
                     "abilities": [
                         {
                             "type":"tile_lay",
@@ -563,10 +573,11 @@ module Engine
                     ]
                 },
                 {
-                    "name": "Hannsdorf – Mährisch Altstadt",
+                    "name": "Medium #5",
                     "value": 60,
                     "revenue": 10,
-                    "sym": "HMA",
+                    "sym": "M5",
+                    "desc":"May either ignore the cost to build a river or hill tile or lay a special purple-edged tile on yellow or green cities",
                     "abilities": [
                         {
                             "type":"tile_lay",
@@ -593,10 +604,11 @@ module Engine
                     ]
                 },
                 {
-                    "name": "Friedland - Bila",
+                    "name": "Medium #6",
                     "value": 65,
                     "revenue": 10,
-                    "sym": "FB",
+                    "sym": "M6",
+                    "desc":"May either ignore the cost to build a river or hill tile or lay a special purple-edged tile on yellow or green cities",
                     "abilities": [
                         {
                             "type":"tile_lay",
@@ -623,10 +635,11 @@ module Engine
                     ]
                 },
                 {
-                    "name": "Aujezd – Luhatschowitz",
+                    "name": "Large #1",
                     "value": 55,
                     "revenue": 20,
-                    "sym": "AL",
+                    "sym": "L1",
+                    "desc":"May either ignore the cost to build a river, hill or mountain tile or lay a special purple-edged tile on yellow, green or brown cities",
                     "abilities": [
                         {
                             "type":"tile_lay",
@@ -655,10 +668,11 @@ module Engine
                     ]
                 },
                 {
-                    "name": "Neuhaus – Wobratain",
+                    "name": "Large #2",
                     "value": 60,
                     "revenue": 20,
-                    "sym": "NW",
+                    "sym": "L2",
+                    "desc":"May either ignore the cost to build a river, hill or mountain tile or lay a special purple-edged tile on yellow, green or brown cities",
                     "abilities": [
                         {
                             "type":"tile_lay",
@@ -687,10 +701,11 @@ module Engine
                     ]
                 },
                 {
-                    "name": "Opočno – Dobruschka",
+                    "name": "Large #3",
                     "value": 65,
                     "revenue": 20,
-                    "sym": "OD",
+                    "sym": "L3",
+                    "desc":"May either ignore the cost to build a river, hill or mountain tile or lay a special purple-edged tile on yellow, green or brown cities",
                     "abilities": [
                         {
                             "type":"tile_lay",
@@ -719,10 +734,11 @@ module Engine
                     ]
                 },
                 {
-                    "name": "Wekelsdorf – Parschnitz – Trautenau",
+                    "name": "Large #4",
                     "value": 70,
                     "revenue": 20,
-                    "sym": "WPT",
+                    "sym": "L4",
+                    "desc":"May either ignore the cost to build a river, hill or mountain tile or lay a special purple-edged tile on yellow, green or brown cities",
                     "abilities": [
                         {
                             "type":"tile_lay",
@@ -751,10 +767,11 @@ module Engine
                     ]
                 },
                 {
-                    "name": "Nezamislitz – Morkowitz",
+                    "name": "Large #5",
                     "value": 75,
                     "revenue": 20,
-                    "sym": "NM",
+                    "sym": "L5",
+                    "desc":"May either ignore the cost to build a river, hill or mountain tile or lay a special purple-edged tile on yellow, green or brown cities",
                     "abilities": [
                         {
                             "type":"tile_lay",
@@ -783,10 +800,11 @@ module Engine
                     ]
                 },
                 {
-                    "name": "Taus – Tachau",
+                    "name": "Large #6",
                     "value": 80,
                     "revenue": 20,
-                    "sym": "TT",
+                    "sym": "L6",
+                    "desc":"May either ignore the cost to build a river, hill or mountain tile or lay a special purple-edged tile on yellow, green or brown cities",
                     "abilities": [
                         {
                             "type":"tile_lay",
@@ -830,7 +848,7 @@ module Engine
                         "A8",
                         "B5"
                     ],
-                    "color": "red",
+                    "color": "#e31e24",
                     "type": "large"
                 },
                 {
@@ -847,7 +865,7 @@ module Engine
                         "A22",
                         "B19"
                     ],
-                    "color": "black",
+                    "color": "#2b2a29",
                     "type": "large"
                 },
                 {
@@ -864,7 +882,7 @@ module Engine
                         "F3",
                         "H5"
                     ],
-                    "color": "blue",
+                    "color": "#0971b7",
                     "type": "large"
                 },
                 {
@@ -881,7 +899,7 @@ module Engine
                         "J15",
                         "I18"
                     ],
-                    "color": "orange",
+                    "color": "#cc6f3c",
                     "type": "large"
                 },
                 {
@@ -898,7 +916,7 @@ module Engine
                         "G28",
                         "I24"
                     ],
-                    "color": "purple",
+                    "color": "#ae4a84",
                     "type": "large"
                 },
                 {
@@ -920,7 +938,8 @@ module Engine
                     ],
                     "city": 1,
                     "coordinates": "E12",
-                    "color": "grey",
+                    "color": "darkGrey",
+                    "text_color": "black",
                     "type": "medium"
                 },
                 {
@@ -942,7 +961,7 @@ module Engine
                     ],
                     "city": 0,
                     "coordinates": "E12",
-                    "color": "yellow",
+                    "color": "#e1af33",
                     "text_color": "black",
                     "type": "medium"
                 },
@@ -986,7 +1005,7 @@ module Engine
                         100
                     ],
                     "coordinates": "D3",
-                    "color": "brightGreen",
+                    "color": "#dbe285",
                     "text_color": "black",
                     "type": "medium"
                 },
@@ -1008,13 +1027,14 @@ module Engine
                         100
                     ],
                     "coordinates": "G20",
-                    "color": "lightBlue",
+                    "color": "#a2d9f7",
+                    "text_color": "black",
                     "type": "medium"
                 },
                 {
                     "float_percent": 50,
                     "sym": "EKJ",
-                    "name": "Eisenbahn Karlsbad – Johanngeorgenstadt",
+                    "name": "Eisenbahn Karlsbad Johanngeorgenstadt",
                     "logo": "18_cz/EKJ",
                     "max_ownership_percent": 75,
                     "shares": [
@@ -1028,7 +1048,7 @@ module Engine
                         100
                     ],
                     "coordinates": "D5",
-                    "color": "white",
+                    "color": "antiqueWhite",
                     "text_color": "black",
                     "type": "small"
                 },
@@ -1070,7 +1090,7 @@ module Engine
                         100
                     ],
                     "coordinates": "E16",
-                    "color": "orange",
+                    "color": "#fabc48",
                     "text_color": "black",
                     "type": "small"
                 },
@@ -1112,7 +1132,7 @@ module Engine
                         100
                     ],
                     "coordinates": "I10",
-                    "color": "turquoise",
+                    "color": "#009846",
                     "type": "small"
                 }
             ],
@@ -1622,7 +1642,7 @@ module Engine
                     "upgrade=cost:40,terrain:mountain;border=edge:3,type:offboard;border=edge:1,type:offboard": [
                         "B7"
                     ],
-                    "upgrade=cost:20,terrain:mountain": [
+                    "upgrade=cost:20,terrain:hill": [
                         "A14",
                         "D29",
                         "E28",
@@ -1630,26 +1650,26 @@ module Engine
                         "H15",
                         "G14"
                     ],
-                    "upgrade=cost:20,terrain:mountain;border=edge:5,type:offboard": [
+                    "upgrade=cost:20,terrain:hill;border=edge:5,type:offboard": [
                         "F27"
                     ],
                     "town=revenue:0;upgrade=cost:40,terrain:mountain;border=edge:2,type:offboard": [
                         "C6"
                     ],
-                    "town=revenue:0;upgrade=cost:20,terrain:mountain": [
+                    "town=revenue:0;upgrade=cost:20,terrain:hill": [
                         "J11",
                         "G18"
                     ],
-                    "town=revenue:0;upgrade=cost:20,terrain:mountain;border=edge:5,type:offboard": [
+                    "town=revenue:0;upgrade=cost:20,terrain:hill;border=edge:5,type:offboard": [
                         "H17"
                     ],
-                    "town=revenue:0;upgrade=cost:20,terrain:mountain;border=edge:1,type:offboard": [
+                    "town=revenue:0;upgrade=cost:20,terrain:hill;border=edge:1,type:offboard": [
                         "H7"
                     ],
-                    "town=revenue:0;upgrade=cost:20,terrain:mountain;border=edge:4,type:offboard": [
+                    "town=revenue:0;upgrade=cost:20,terrain:hill;border=edge:4,type:offboard": [
                         "B17"
                     ],
-                    "city=revenue:0;upgrade=cost:20,terrain:mountain": [
+                    "city=revenue:0;upgrade=cost:20,terrain:hill": [
                         "G16"
                     ],
                     "upgrade=cost:10,terrain:water": [
@@ -1685,15 +1705,15 @@ module Engine
                         "E10",
                         "D3",
                         "D5",
-                        "F23"
+                        "F23",
+                        "I10"
                     ],
                     "city=revenue:0;label=Y": [
                         "B13",
                         "I12",
                         "F7",
                         "C26",
-                        "G20",
-                        "I10"
+                        "G20"
                     ],
                     "town=revenue:0": [
                         "C14",
@@ -1768,7 +1788,7 @@ module Engine
                     "tiles": [
                         "yellow"
                     ],
-                    "operating_rounds": 1
+                    "operating_rounds": "n/a"
                 },
                 {
                     "name": "b",
@@ -1780,7 +1800,7 @@ module Engine
                     "tiles": [
                         "yellow"
                     ],
-                    "operating_rounds": 1,
+                    "operating_rounds": "n/a",
                     "status": [
                         "can_buy_companies"
                     ]
@@ -1795,7 +1815,7 @@ module Engine
                     "tiles": [
                         "yellow"
                     ],
-                    "operating_rounds": 1,
+                    "operating_rounds": "n/a",
                     "status": [
                         "can_buy_companies"
                     ]
@@ -1812,7 +1832,7 @@ module Engine
                         "yellow",
                         "green"
                     ],
-                    "operating_rounds": 1,
+                    "operating_rounds": "n/a",
                     "status": [
                         "can_buy_companies"
                     ]
@@ -1829,7 +1849,7 @@ module Engine
                         "yellow",
                         "green"
                     ],
-                    "operating_rounds": 1,
+                    "operating_rounds": "n/a",
                     "status": [
                         "can_buy_companies"
                     ]
@@ -1846,7 +1866,7 @@ module Engine
                         "yellow",
                         "green"
                     ],
-                    "operating_rounds": 1,
+                    "operating_rounds": "n/a",
                     "status": [
                         "can_buy_companies"
                     ]
@@ -1864,7 +1884,7 @@ module Engine
                         "green",
                         "brown"
                     ],
-                    "operating_rounds": 1,
+                    "operating_rounds": "n/a",
                     "status": [
                         "can_buy_companies"
                     ]
@@ -1882,7 +1902,7 @@ module Engine
                         "green",
                         "brown"
                     ],
-                    "operating_rounds": 1,
+                    "operating_rounds": "n/a",
                     "status": [
                         "can_buy_companies"
                     ]
@@ -1901,7 +1921,7 @@ module Engine
                         "brown",
                         "gray"
                     ],
-                    "operating_rounds": 1,
+                    "operating_rounds": "n/a",
                     "status": [
                         "can_buy_companies"
                     ]
@@ -1920,7 +1940,7 @@ module Engine
                         "brown",
                         "gray"
                     ],
-                    "operating_rounds": 1,
+                    "operating_rounds": "n/a",
                     "status": [
                         "can_buy_companies"
                     ]
