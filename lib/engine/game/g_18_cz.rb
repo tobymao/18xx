@@ -218,6 +218,11 @@ module Engine
         [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }]
       end
 
+      def corporation_size(entity)
+        # For display purposes is a corporation small, medium or large
+        entity.type
+      end
+
       def block_lay_for_purple_tiles
         @tiles.each do |tile|
           tile.blocks_lay = true if tile.name.end_with?('p')
