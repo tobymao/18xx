@@ -51,6 +51,7 @@ module Engine
       SELL_AFTER = :after_ipo
       DEV_STAGE = :production
       OBSOLETE_TRAINS_COUNT_FOR_LIMIT = true
+      DISCARDED_TRAINS = :remove
 
       ASSIGNMENT_TOKENS = {
         'bridge' => '/icons/1817/bridge_token.svg',
