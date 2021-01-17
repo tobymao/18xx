@@ -123,6 +123,7 @@ module Engine
 
       def setup
         setup_minors
+        setup_company_min_price
 
         @log << "-- Setting game up for #{@players.size} players --"
         remove_extra_private_companies
@@ -450,6 +451,10 @@ module Engine
           hex = hex_by_id(minor.coordinates)
           hex.tile.cities[0].place_token(minor, minor.next_token, free: true)
         end
+      end
+
+      def setup_company_min_price
+        @companies.each { |company| company.min_price = 1 }
       end
 
       def remove_extra_private_companies
