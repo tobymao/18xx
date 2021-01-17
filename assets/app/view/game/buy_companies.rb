@@ -64,11 +64,12 @@ module View
       end
 
       def render_input
+        max_price = max_purchase_price(@corporation, @selected_company)
         input = h(:input, style: { marginRight: '1rem' }, props: {
-                    value: @selected_company.max_price,
+                    value: max_price,
                     type: 'number',
                     min: @selected_company.min_price,
-                    max: @selected_company.max_price,
+                    max: max_price,
                     size: @corporation.cash.to_s.size,
                   })
 
@@ -101,6 +102,10 @@ module View
           input,
           h(:button, { on: { click: buy_click } }, 'Buy'),
         ])
+      end
+
+      def max_purchase_price(corporation, company)
+        [company.max_price, corporation.cash].min
       end
     end
   end
