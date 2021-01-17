@@ -49,6 +49,12 @@ module Engine
 
       CERT_LIMIT_CHANGE_ON_BANKRUPTCY = true
 
+      STATUS_TEXT = Base::STATUS_TEXT.merge(
+        'export_train' => ['Train Export to CN',
+                           'At the end of each OR the next available train will be exported
+                            (given to the CN, triggering phase change as if purchased)'],
+      ).freeze
+
       # Two lays with one being an upgrade, second tile costs 20
       TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded, cost: 20 }].freeze
 
