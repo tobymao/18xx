@@ -233,6 +233,7 @@ module View
 
         clear = lambda do
           @selected_route&.reset!
+          @game.reset_route!(@selected_route)
           store(:selected_route, @selected_route)
         end
 
@@ -240,12 +241,14 @@ module View
           @selected_route = nil
           store(:selected_route, @selected_route)
           @routes.clear
-          store(:routes, @routes)
           @game.round.routes = @routes
+          @game.reset_all_routes!
+          store(:routes, @routes)
         end
 
         clear_all = lambda do
           @routes.each(&:reset!)
+          @game.reset_all_routes!
           store(:routes, @routes)
         end
 

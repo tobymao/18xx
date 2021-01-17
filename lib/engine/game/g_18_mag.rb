@@ -385,7 +385,7 @@ module Engine
         raise GameError, 'Must visit minimum of two non-mine stops' if visits.sum(&:visit_cost) < 2
 
         return unless @round.rail_cars.include?('G&C')
-        return unless visits.sum(&:visit_cost) <= route.train.distance
+        return unless visits.sum(&:visit_cost) > route.train.distance
 
         @round.gc_train = route.train
       end
@@ -452,6 +452,18 @@ module Engine
 
       def routes_subsidy(routes)
         routes.sum(&:subsidy)
+      end
+
+      def reset_route!(route)
+        @round.snw_train = nil if route.train == @round.snw_train
+        @round.gc_train = nil if route.train == @round.gc_train
+        @round.raba_trains.delete(route.train)
+      end
+
+      def reset_all_routes!
+        @round.snw_train = nil
+        @round.gc_train = nil
+        @round.raba_trains.clear
       end
 
       def status_str(entity)

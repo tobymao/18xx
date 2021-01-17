@@ -724,6 +724,10 @@ module Engine
         entity.runnable_trains
       end
 
+      def reset_route!(_route); end
+
+      def reset_all_routes!; end
+
       # Before rusting, check if this train individual should rust.
       def rust?(_train)
         true
