@@ -19,7 +19,7 @@ module Engine
       end
 
       def active?
-        crowded_corps.any?
+        !crowded_corps.empty?
       end
 
       def description

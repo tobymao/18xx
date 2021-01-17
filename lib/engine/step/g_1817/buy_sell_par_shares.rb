@@ -130,6 +130,7 @@ module Engine
 
           @game.phase.name != '8' &&
             corporation.total_shares > 2 &&
+            corporation.floated? &&
             (!@game.option_five_shorts? || shorts < 5) &&
             shorts < corporation.total_shares &&
             entity.num_shares_of(corporation) <= 0 &&
