@@ -255,7 +255,16 @@ module Engine
         @log << 'AFG now has a token spot available and can be opened in the next stock round.'
       end
 
+      def remove_rsa(corporation)
+        rsa = company_by_id('RSA')
+        ability = rsa.all_abilities.find { |abil| abil.type == :shares }
+        return unless ability && ability.shares.first.corporation == corporation
+
+        rsa.remove_ability(ability)
+      end
+
       def close_corporation(corporation, quiet: false)
+        remove_rsa(corporation)
         super
         corporation = reset_corporation(corporation)
         @afg = corporation if corporation.id == 'AFG'
