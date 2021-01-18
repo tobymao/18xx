@@ -12,11 +12,13 @@ e.g. "[18Chesapeake] Incorrect revenue for route from Baltimore to DC"
 
 **What's your Game ID?**
 
-Provide the link to the game. Copy the link from your browser which will look something like `https://18xx.games/game/31337`
+If your game is "Multiplayer", provide the link to the game. Copy the link from your browser which will look something like `https://18xx.games/game/31337`
 
 - (optional) Provide a link to the specific action that triggered the bug using the `Game` tab and `History` navigation arrows. Copy the resulting link from your browser which will look something like `https://18xx.games/game/31337?action=42`
 
-- (optional) Provide a link to your raw game data by using the `Tools` tab and `Copy Game Data`. Paste that data [into a github gist](https://gist.github.com/) and share the resulting link which will look something like `https://gist.github.com/[your_name]/[some_letters]`.
+If your game is "Hotseat", provide a link to your raw game data by using the `Tools` tab and `Copy Game Data`.
+
+Paste that data [into a github gist](https://gist.github.com/) and share the resulting link which will look something like `https://gist.github.com/[your_name]/[some_letters]`.
 
 **How to Reproduce the Bug?**
 
