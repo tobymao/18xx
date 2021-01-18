@@ -2076,6 +2076,7 @@ module Engine
                     "tiles": [
                         "yellow"
                     ],
+                    "corporation_sizes": ["small"]
                 },
                 {
                     "name": "b",
@@ -2089,7 +2090,8 @@ module Engine
                     ],
                     "status": [
                         "can_buy_companies"
-                    ]
+                    ],
+                    "corporation_sizes": ["small", "medium"]
                 },
                 {
                     "name": "c",
@@ -2103,7 +2105,8 @@ module Engine
                     ],
                     "status": [
                         "can_buy_companies"
-                    ]
+                    ],
+                    "corporation_sizes": ["small", "medium"]
                 },
                 {
                     "name": "d",
@@ -2119,7 +2122,8 @@ module Engine
                     ],
                     "status": [
                         "can_buy_companies"
-                    ]
+                    ],
+                    "corporation_sizes": ["small", "medium", "large"]
                 },
                 {
                     "name": "e",
@@ -2135,7 +2139,8 @@ module Engine
                     ],
                     "status": [
                         "can_buy_companies"
-                    ]
+                    ],
+                    "corporation_sizes": ["small", "medium", "large"]
                 },
                 {
                     "name": "f",
@@ -2149,9 +2154,11 @@ module Engine
                         "yellow",
                         "green"
                     ],
+
                     "status": [
                         "can_buy_companies"
-                    ]
+                    ],
+                    "corporation_sizes": ["small", "medium", "large"]
                 },
                 {
                     "name": "g",
@@ -2166,9 +2173,11 @@ module Engine
                         "green",
                         "brown"
                     ],
+
                     "status": [
                         "can_buy_companies"
-                    ]
+                    ],
+                    "corporation_sizes": ["small", "medium", "large"]
                 },
                 {
                     "name": "h",
@@ -2183,9 +2192,11 @@ module Engine
                         "green",
                         "brown"
                     ],
+
                     "status": [
                         "can_buy_companies"
-                    ]
+                    ],
+                    "corporation_sizes": ["small", "medium", "large"]
                 },
                 {
                     "name": "i",
@@ -2201,9 +2212,11 @@ module Engine
                         "brown",
                         "gray"
                     ],
+
                     "status": [
                         "can_buy_companies"
-                    ]
+                    ],
+                    "corporation_sizes": ["small", "medium", "large"]
                 },
                 {
                     "name": "j",
@@ -2221,7 +2234,8 @@ module Engine
                     ],
                     "status": [
                         "can_buy_companies"
-                    ]
+                    ],
+                    "corporation_sizes": ["small", "medium", "large"]
                 }
             ]
         }
