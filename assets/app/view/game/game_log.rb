@@ -48,10 +48,9 @@ module View
                   margin: 'auto 0',
                 },
               }, [@user['name'] + ':']),
-            h(:textarea,
+            h(:input,
               style: {
                 marginLeft: '0.5rem',
-                height: '1.25rem',
                 flex: '1',
               },
               on: { keyup: enter }),
