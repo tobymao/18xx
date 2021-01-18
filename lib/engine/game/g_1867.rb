@@ -259,7 +259,11 @@ module Engine
           city = token.city
           token.remove!
 
-          next if city.tile.cities.any? { |c| c.tokened_by?(@cn_corporation) }
+          next if city.tile.cities.any? do |c|
+                    c.tokens.any? do |t|
+                      t&.corporation == @cn_corporation && t&.type != :neutral
+                    end
+                  end
 
           new_token = @cn_corporation.next_token
           next unless new_token

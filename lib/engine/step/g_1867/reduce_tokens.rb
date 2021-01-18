@@ -15,6 +15,12 @@ module Engine
           new_token = Engine::Token.new(surviving, price: 40)
           surviving.tokens << new_token
         end
+
+        def help
+          'When merging more than 2 minor corporations the new corporation can only keep 2 tokens.'\
+          ' Choose which tokens to remove.'\
+          ' After merging an additional token will be available on the charter.'
+        end
       end
     end
   end
