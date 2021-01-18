@@ -49,6 +49,8 @@ module Engine
 
       NEXT_SR_PLAYER_ORDER = :first_to_pass
 
+      MARKET_SHARE_LIMIT = 80 # percent
+
       MARKET_TEXT = Base::MARKET_TEXT.merge(par: 'Yellow Phase Par',
                                             par_1: 'Green Phase Par',
                                             par_2: 'Blue Phase Par',
