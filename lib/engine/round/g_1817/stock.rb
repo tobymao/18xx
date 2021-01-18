@@ -17,7 +17,7 @@ module Engine
 
           # This is done here, as the tokens need to be checked before closing the train station
           train_station = @game.company_by_id(@game.class::TRAIN_STATION_PRIVATE_NAME)
-          train_station.close! if train_station.owner&.corporation?
+          train_station.close! if train_station&.owner&.corporation?
         end
 
         def tokens_needed?(corporation)
