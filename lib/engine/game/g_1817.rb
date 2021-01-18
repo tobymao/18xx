@@ -101,6 +101,13 @@ module Engine
       include InterestOnLoans
       attr_reader :loan_value, :owner_when_liquidated, :stock_prices_start_merger
 
+      def timeline
+        @timeline = [
+          'At the end of each OR the next available train will be exported
+           (removed, triggering phase change as if purchased)',
+        ]
+      end
+
       def init_cert_limit
         @log << '1817 has not been tested thoroughly with more than seven players.' if @players.size > 7
 
