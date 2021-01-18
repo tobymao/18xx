@@ -26,8 +26,8 @@ module Engine
       @stops = nil
     end
 
-    def clear_cache!
-      @connection_hexes = nil
+    def clear_cache!(all: false)
+      @connection_hexes = nil if all
       @hexes = nil
       @revenue = nil
       @revenue_str = nil
@@ -36,7 +36,7 @@ module Engine
     end
 
     def reset!
-      clear_cache!
+      clear_cache!(all: true)
 
       @halts = nil
       @connection_data = nil
@@ -135,7 +135,7 @@ module Engine
         @last_node = node
       end
 
-      @routes.each(&:clear_cache!)
+      @routes.each { |r| r.clear_cache!(all: true) }
     end
 
     def paths

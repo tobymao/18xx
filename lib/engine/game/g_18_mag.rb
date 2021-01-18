@@ -25,6 +25,10 @@ module Engine
       SELL_BUY_ORDER = :sell_buy
       MARKET_SHARE_LIMIT = 100
 
+      TRACK_RESTRICTION = :permissive
+
+      SELL_MOVEMENT = :left_block
+
       TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded, cost: 10 }].freeze
 
       START_PRICES = [60, 60, 65, 65, 70, 70, 75, 75, 80, 80].freeze
@@ -44,6 +48,12 @@ module Engine
 
       RABA_BONUS = [20, 20, 30, 30].freeze
       SNW_BONUS = [30, 30, 50, 50].freeze
+
+      CORP_TOKEN_REVENUE = 10
+
+      FIXED_ROTATION_TILES = {
+        'L33' => 2,
+      }.freeze
 
       TERRAIN_TOKENS = {
         '5' => 3,
@@ -263,6 +273,10 @@ module Engine
         true
       end
 
+      def must_buy_train?(_entity)
+        false
+      end
+
       # price is nil, :free, or a positive int
       def buy_train(operator, train, price = nil)
         cost = price || train.price
@@ -282,6 +296,10 @@ module Engine
       end
 
       def place_home_token(_corp); end
+
+      def init_phase
+        Phase.new(self.class::PHASES.dup.map(&:dup), self)
+      end
 
       def event_first_three!
         @trains_left.delete('3')
@@ -308,8 +326,51 @@ module Engine
         Array(phase[:on]).join(', ')
       end
 
+      def legal_tile_rotation?(_entity, _hex, tile)
+        return true unless FIXED_ROTATION_TILES.include?(tile.name)
+
+        tile.rotation == FIXED_ROTATION_TILES[tile.name]
+      end
+
+      def gc_train?(route)
+        @round.rail_cars.include?('G&C') && route.visited_stops.sum(&:visit_cost) > route.train.distance
+      end
+
+      def other_gc_train?(route)
+        route.routes.each do |r|
+          return false if r == route
+          return true if gc_train?(r)
+        end
+        false
+      end
+
+      def snw_train?(route)
+        @round.rail_cars.include?('SNW') &&
+          route.visited_stops.any? { |n| n.city? && n.tokens.any? { |t| t&.type == :neutral } }
+      end
+
+      def other_snw_train?(route)
+        route.routes.each do |r|
+          return false if r == route
+          return true if snw_train?(r)
+        end
+        false
+      end
+
+      def raba_train?(route)
+        @round.rail_cars.include?('RABA') && route.visited_stops.any?(&:offboard?)
+      end
+
+      def other_raba_train?(route)
+        route.routes.each do |r|
+          return false if r == route
+          return true if raba_train?(r)
+        end
+        false
+      end
+
       def check_distance(route, visits)
-        distance = if @round.rail_cars.include?('G&C') && (!@round.gc_train || @round.gc_train == route.train)
+        distance = if gc_train?(route) && !other_gc_train?(route)
                      [
                        {
                          nodes: %w[city offboard],
@@ -359,50 +420,38 @@ module Engine
           raise GameError, 'Route has too many stops' if num.positive?
         end
         raise GameError, 'Must visit minimum of two non-mine stops' if visits.sum(&:visit_cost) < 2
-
-        return unless @round.rail_cars.include?('G&C')
-        return unless visits.sum(&:visit_cost) <= route.train.distance
-
-        @round.gc_train = route.train
       end
 
       # Change "Stop" displayed if G&C power is used
       def route_distance(route)
-        return super if @round.gc_train != route.train
+        return super unless gc_train?(route) && !other_gc_train?(route)
 
-        n_cities = route.stops.count { |n| n.city? || n.offboard? }
+        n_cities = route.stops.select { |s| s.visit_cost.positive? }.count { |n| n.city? || n.offboard? }
         n_towns = route.stops.count(&:town?)
         "#{n_cities}+#{n_towns}"
       end
 
-      # See if RABA power is used
       # Check to see if it's OK to visit a mine (SNW power)
       def check_other(route)
-        if @round.rail_cars.include?('RABA')
-          if route.stops.select(&:offboard?).empty?
-            @round.raba_trains.delete(route.train)
-          elsif !@round.raba_trains.include?(route.train)
-            @round.raba_trains << route.train
-          end
-        end
-
-        visited = route.visited_stops
-        mines = visited.select { |n| n.city? && n.tokens.any? { |t| t&.type == :neutral } }
-        if @round.rail_cars.include?('SNW') && (!@round.snw_train || @round.snw_train == route.train)
-          route.clear_cache! if !@round.snw_train || @round.snw_train && mines.empty?
-          @round.snw_train = mines.empty? ? nil : route.train
-        elsif !mines.empty?
+        mines = route.visited_stops.select { |n| n.city? && n.tokens.any? { |t| t&.type == :neutral } }
+        if !mines.empty? && (!@round.rail_cars.include?('SNW') || other_snw_train?(route))
           raise GameError, 'Cannot visit mine'
         end
-
         raise GameError, 'Cannot visit multiple mines' if mines.size > 1
       end
 
       # Modify revenue of offboard if RABA is used
       def revenue_for(route, stops)
-        raba_add = @round.raba_trains.first == route.train ? raba_delta(@phase) : 0
+        raba_add = if raba_train?(route) && !other_raba_train?(route)
+                     raba_delta(@phase)
+                   else
+                     0
+                   end
+
+        corp_tokens = stops.select(&:city?).sum { |c| c.tokens.count { |t| t&.corporation&.corporation? } }
+
         stops.select { |s| s.visit_cost.positive? }.sum { |stop| stop.route_revenue(route.phase, route.train) } +
-          raba_add
+          raba_add + corp_tokens * CORP_TOKEN_REVENUE
       end
 
       def raba_delta(phase)
@@ -411,12 +460,16 @@ module Engine
 
       # Modify revenue string if RABA is used
       def revenue_str(route)
-        raba_add = @round.raba_trains.first == route.train ? ' (RABA)' : ''
+        raba_add = if raba_train?(route) && !other_raba_train?(route)
+                     ' (RABA)'
+                   else
+                     ''
+                   end
         route.hexes.map(&:name).join('-') + raba_add
       end
 
       def subsidy_for(route, _stops)
-        @round.snw_train == route.train ? snw_delta : 0
+        snw_train?(route) ? snw_delta : 0
       end
 
       def snw_delta

@@ -95,6 +95,8 @@ module View
           store(:selected_route, route, skip: true)
         end
 
+        @routes.each(&:clear_cache!)
+
         render_halts = false
         trains = trains.flat_map do |train|
           onclick = lambda do

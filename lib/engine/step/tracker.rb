@@ -136,6 +136,7 @@ module Engine
             hexes: [action.hex],
             token: token,
           }
+          @log << "#{entity.name} must choose city for token"
 
           token.remove!
         end
