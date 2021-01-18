@@ -1,19 +1,38 @@
 ---
-name: Game-related issue
-about: Create a report to help us improve
+name: Bug Report
+about: Report a bug you encountered while playing
 title: ''
-labels: ''
+labels: bug, needs triage
 assignees: ''
 
 ---
+Please fill out the bug report title with the game name and description
 
-**Please provide**
-* Issue title including game title and concise description, e.g. [18Chesapeake] C-P Private usable out of operating order
-* Multiplayer? Link to the game with action number: Game tab -> History, press < to go to the previous action, copy the link and paste here, e.g. https://www.18xx.games/game/4011?action=173
-* Hotseat? JSON: Tools -> Copy Game Data -> Create public gist on https://gist.github.com/ and paste link here, e.g. https://gist.github.com/username/07f4d5a2178...
+e.g. "[18Chesapeake] Incorrect revenue for route from Baltimore to DC"
 
-It really helps us having a sample game to reproduce the issue.
+**What's your Game ID?**
 
-**Describe the bug**
-A clear and concise description of what the bug is. Include steps to reproduce the behavior. If applicable, add screenshots to help explain your problem.
-e.g. In OR 2.1 B&O ran a 3 train from A to B to C. Revenue was $80 instead of $100.
+Provide the link to the game. Copy the link from your browser which will look something like `https://18xx.games/game/31337`
+
+- (optional) Provide a link to the specific action that triggered the bug using the `Game` tab and `History` navigation arrows. Copy the resulting link from your browser which will look something like `https://18xx.games/game/31337?action=42`
+
+- (optional) Provide a link to your raw game data by using the `Tools` tab and `Copy Game Data`. Paste that data [into a github gist](https://gist.github.com/) and share the resulting link which will look something like `https://gist.github.com/[your_name]/[some_letters]`.
+
+**How to Reproduce the Bug?**
+
+What steps cause the unexpected behavior?
+
+e.g.
+- During Operating Round 2.1 the B&O ran a 2 train from Baltimore to DC
+- B&O has a token in Baltimore, and both cities are yellow tiles
+- Revenue was less than the $60 that I expected
+
+Please include screenshots (you can drag and drop or upload them into this issue)
+
+**Which Browser / Operating System?**
+- Browser Version
+  - On Chrome, see [chrome://version](chrome://version)
+  - On Firefox, see [about:support](about:support)
+  - On Safari, see [these methods](https://www.lifewire.com/check-the-version-number-of-safari-446563)
+- Operating System (iOS, Android, Windows)
+- Device Type (Mobile, iPad, Desktop)
