@@ -31,7 +31,7 @@ module View
 
         children = []
         corporations =
-          ability.corporation == 'any' ? @game.corporations : [@game.corporation_by_id(ability.corporation)]
+          ability.corporation == 'any' ? @game.corporations : ability.corporation.map { |c| @game.corporation_by_id(c) }
         corporations.each do |corporation|
           ipo_share = corporation.shares.find { |s| !s.president }
           children << render_exchange(ipo_share, @game.ipo_name(corporation)) if ability.from.include?(:ipo)

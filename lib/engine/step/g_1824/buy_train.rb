@@ -46,6 +46,17 @@ module Engine
 
           trains
         end
+
+        def buy_train_action(action, entity = nil)
+          exchange = action.exchange
+
+          super
+
+          return unless exchange
+
+          # The exchanged train is removed from game
+          @game.remove_train(exchange)
+        end
       end
     end
   end

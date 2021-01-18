@@ -48,7 +48,7 @@ module Engine
           buy_shares(entity, share.to_bundle)
           @game.after_par(corporation)
           @round.last_to_act = entity
-          @current_actions << action
+          @round.player_actions << action
         end
       end
     end

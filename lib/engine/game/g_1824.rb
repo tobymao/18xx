@@ -120,18 +120,27 @@ module Engine
       def init_corporations(stock_market)
         corporations = CORPORATIONS.dup
 
-        # Remove Coal Railway C4 (SPB), Regional Railway BH and SB, and possibly UG
-        corporations.reject! do |c|
-          option_cisleithania && (%w[SPB SB BH].include?(c[:sym]) || (two_player? && c[:sym] == 'UG'))
-        end
-
-        corporations.map do |corporation|
+        corporations.map! do |corporation|
           Engine::G1824::Corporation.new(
             min_price: stock_market.par_prices.map(&:price).min,
             capitalization: self.class::CAPITALIZATION,
             **corporation.merge(corporation_opts),
           )
         end
+
+        return corporations unless option_cisleithania
+
+        # Some corporations need to be removed, but they need to exists (for implementation reasons)
+        # So set them as closed and removed so that they do not appear
+        # Effected: Coal Railway C4 (SPB), Regional Railway BH and SB, and possibly UG
+        corporations.reject! do |c|
+          next unless %w[SPB SB BH].include?(c.id) || (two_player? && c.id == 'UG')
+
+          c.close!
+          c.removed = true
+        end
+
+        corporations
       end
 
       def init_minors
@@ -255,9 +264,9 @@ module Engine
       def stock_round
         Round::G1824::Stock.new(self, [
           Step::DiscardTrain,
-          Step::Exchange,
+          Step::G1824::Exchange,
           Step::SpecialTrack,
-          Step::BuySellParShares,
+          Step::G1824::BuySellParShares,
         ])
       end
 
@@ -447,6 +456,12 @@ module Engine
           {
             type: 'no_buy',
             owner_type: 'player',
+          },
+          {
+            'type': 'exchange',
+            'corporation': %w[BK MS CL SB BH],
+            'owner_type': 'player',
+            'from': %w[ipo market],
           },
         ],
       }.freeze

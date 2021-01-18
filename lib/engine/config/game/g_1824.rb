@@ -463,7 +463,7 @@ module Engine
         {
           "type": "exchange",
           "owner_type": "corporation",
-          "corporation": "",
+          "corporation": "BK",
           "from": "IPO",
           "description": "Phase 3-5: Exchange for BK presidency"
         }
@@ -493,7 +493,7 @@ module Engine
         {
           "type": "exchange",
           "owner_type": "corporation",
-          "corporation": "",
+          "corporation": "MS",
           "from": "IPO",
           "description": "Phase 3-5: Exchange for MS presidency"
         }
@@ -523,7 +523,7 @@ module Engine
         {
           "type": "exchange",
           "owner_type": "corporation",
-          "corporation": "",
+          "corporation": "CL",
           "from": "IPO",
           "description": "Phase 3-5: Exchange for CL presidency"
         }
@@ -553,7 +553,7 @@ module Engine
         {
           "type": "exchange",
           "owner_type": "corporation",
-          "corporation": "",
+          "corporation": "SB",
           "from": "IPO",
           "description": "Phase 3-5: Exchange for SB presidency"
         }

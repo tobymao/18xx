@@ -7,11 +7,11 @@ module Engine
     module G1870
       class BuySellParShares < BuySellParShares
         def actions(entity)
-          return [] if @current_actions.last&.entity&.corporation?
+          return [] if @round.player_actions.last&.entity&.corporation?
 
           if entity.corporation? && entity.owned_by?(current_entity)
             actions = []
-            actions << 'buy_shares' if @current_actions.none? &&
+            actions << 'buy_shares' if @round.player_actions.none? &&
                                        entity.operated? &&
                                        entity.num_ipo_shares < 4
 
@@ -74,7 +74,7 @@ module Engine
           end
 
           @round.last_to_act = action.entity.owner
-          @current_actions << action
+          @round.player_actions << action
         end
       end
     end

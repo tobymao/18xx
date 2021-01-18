@@ -43,7 +43,7 @@ module Engine
         return can_gain?(owner, bundle, exchange: true) if bundle
 
         corporations =
-          ability.corporation == 'any' ? @game.corporations : [@game.corporation_by_id(ability.corporation)]
+          ability.corporation == 'any' ? @game.corporations : ability.corporation.map { |c| @game.corporation_by_id(c) }
 
         shares = []
         corporations.each do |corporation|

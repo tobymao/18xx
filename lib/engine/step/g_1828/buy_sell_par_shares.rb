@@ -49,12 +49,12 @@ module Engine
           @round.merge_initiator = corporation
 
           @round.last_to_act = action.entity
-          @current_actions << action
+          @round.player_actions << action
         end
 
         def process_failed_merge(action)
           @log << "#{action.entity.name} failed to merge #{action.corporations.map(&:name).join(' and ')}"
-          @current_actions << action
+          @round.player_actions << action
         end
 
         def can_buy_multiple?(entity, corporation)
@@ -62,7 +62,7 @@ module Engine
         end
 
         def num_shares_bought(corporation)
-          @current_actions.count { |x| x.is_a?(Action::BuyShares) && x.bundle.corporation == corporation }
+          @round.player_actions.count { |x| x.is_a?(Action::BuyShares) && x.bundle.corporation == corporation }
         end
 
         def can_merge_any?(entity)
@@ -80,7 +80,7 @@ module Engine
         end
 
         def stock_action(action)
-          @current_actions << action
+          @round.player_actions << action
         end
       end
     end

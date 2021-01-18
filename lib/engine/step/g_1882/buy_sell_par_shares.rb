@@ -53,7 +53,7 @@ module Engine
             @game.place_home_token(corporation)
             corporation.par_via_exchange.close!
 
-            @current_actions << action
+            @round.player_actions << action
           else
             super
           end

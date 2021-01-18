@@ -8,7 +8,7 @@ module Engine
       attr_reader :corporation, :from
 
       def setup(corporation:, from:)
-        @corporation = corporation
+        @corporation = Array(corporation)
         @from = Array(from).map(&:to_sym)
       end
     end

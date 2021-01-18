@@ -32,7 +32,7 @@ module Engine
         end
 
         def pass_description
-          if @current_actions.empty?
+          if @round.player_actions.empty?
             'Pass (Certificates)'
           else
             'Done (Certificates)'
@@ -87,7 +87,7 @@ module Engine
 
           player.companies << company
           player.spend(price, owner)
-          @current_actions << action
+          @round.player_actions << action
           @log << "#{player.name} buys #{company.name} from #{owner.name} for #{@game.format_currency(price)}"
 
           @game.close_other_companies!(company) if company.sym == 'FFC'

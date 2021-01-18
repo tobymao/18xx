@@ -6,13 +6,13 @@ module Engine
   module Step
     module G1824
       class BuySellParShares < BuySellParShares
-        def actions(_entity)
+        def actions(entity)
           result = super
           result << 'buy_company' unless result.empty?
           result
         end
 
-        def can_buy?(_entity, bundle)
+        def can_buy?(entity, bundle)
           super && @game.buyable?(bundle.corporation)
         end
 
@@ -20,7 +20,9 @@ module Engine
           super && @game.buyable?(bundle.corporation)
         end
 
-        def can_gain?(_entity, bundle)
+        def can_gain?(entity, bundle, exchange: false)
+          return false if exchange && !exchange_phase?
+
           super && @game.buyable?(bundle.corporation)
         end
 
@@ -57,10 +59,15 @@ module Engine
 
           par_coal_railway(entity, share_price, coal_railway, regional_railway)
           @round.last_to_act = entity
-          @current_actions << action
+          @round.player_actions << action
         end
 
         private
+
+        def exchange_phase?
+          @game.phase.status.include?('may_exchange_coal_railways') ||
+            @game.phase.status.include?('may_exchange_mountain_railways')
+        end
 
         def par_coal_railway(entity, share_price, coal_railway, regional_railway)
           share = coal_railway.shares.first

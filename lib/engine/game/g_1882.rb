@@ -131,7 +131,7 @@ module Engine
 
           next unless ability.from.include?(:par)
 
-          corporation = corporation_by_id(ability.corporation)
+          corporation = corporation_by_id(ability.corporation.first)
           corporation.par_via_exchange = company
           @sc_company = company
         end
