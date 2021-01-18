@@ -257,6 +257,7 @@ module Engine
 
       def close_corporation(corporation, quiet: false)
         super
+        corporation.close!
         corporation = reset_corporation(corporation)
         @afg = corporation if corporation.id == 'AFG'
         hex_by_id(corporation.coordinates).tile.add_reservation!(corporation, 0) unless corporation == afg

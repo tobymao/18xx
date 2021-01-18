@@ -1337,7 +1337,7 @@ module Engine
 
         corporation.companies.dup.each(&:close!)
 
-        corporation.share_price.corporations.delete(corporation)
+        corporation.share_price&.corporations&.delete(corporation)
         corporation = init_corporations(@stock_market).find { |c| c.id == corporation.id }
 
         @corporations.map! { |c| c.id == corporation.id ? corporation : c }
