@@ -2,10 +2,15 @@
 
 require_relative '../config/game/g_1824'
 require_relative 'base'
-require_relative '../corporation'
+require_relative '../g_1824/corporation'
+require_relative '../g_1824/depot'
+require_relative '../g_1824/minor'
+
 module Engine
   module Game
     class G1824 < Base
+      attr_accessor :two_train_bought
+
       register_colors(
         gray70: '#B3B3B3',
         gray50: '#7F7F7F'
@@ -25,6 +30,12 @@ module Engine
       # Move down one step for a whole block, not per share
       SELL_MOVEMENT = :down_block
 
+      # Cannot sell until operated
+      SELL_AFTER = :operate
+
+      # Sell zero or more, then Buy zero or one
+      SELL_BUY_ORDER = :sell_buy
+
       EVENTS_TEXT = Base::EVENTS_TEXT.merge(
         'close_mountain_railways' => ['Mountain railways closed', 'Any still open Montain railways are exchanged'],
         'sd_formation' => ['SD formation', 'The Suedbahn is founded at the end of the OR'],
@@ -34,6 +45,7 @@ module Engine
       ).freeze
 
       STATUS_TEXT = Base::STATUS_TEXT.merge(
+        'can_buy_trains' => ['Can Buy trains', 'Can buy trains from other corporations'],
         'may_exchange_coal_railways' => ['Coal Railway exchange', 'May exchange Coal Railways during SR'],
         'may_exchange_mountain_railways' => ['Mountain Railway exchange', 'May exchange Mountain Railways during SR']
       ).freeze
@@ -73,7 +85,7 @@ module Engine
         opt_rules = super
 
         # 2 player variant always use the Cisleithania map
-        opt_rules << :cisleithania if @players.size == 2 && !opt_rules.include?(:cisleithania)
+        opt_rules << :cisleithania if two_player? && !opt_rules.include?(:cisleithania)
 
         # Good Time variant is not applicable if Cisleithania is used
         opt_rules -= [:goods_time] if opt_rules.include?(:cisleithania)
@@ -95,14 +107,26 @@ module Engine
         end
       end
 
+      def init_train_handler
+        trains = self.class::TRAINS.flat_map do |train|
+          (train[:num] || num_trains(train)).times.map do |index|
+            Train.new(**train, index: index)
+          end
+        end
+
+        Engine::G1824::Depot.new(trains, self)
+      end
+
       def init_corporations(stock_market)
         corporations = CORPORATIONS.dup
 
-        # Remove Coal Railway C4 (SPB), Regional Railway BH and SB
-        corporations.reject! { |c| %w[SPB SB BH].include?(c[:sym]) } if option_cisleithania
+        # Remove Coal Railway C4 (SPB), Regional Railway BH and SB, and possibly UG
+        corporations.reject! do |c|
+          option_cisleithania && (%w[SPB SB BH].include?(c[:sym]) || (two_player? && c[:sym] == 'UG'))
+        end
 
         corporations.map do |corporation|
-          Corporation.new(
+          Engine::G1824::Corporation.new(
             min_price: stock_market.par_prices.map(&:price).min,
             capitalization: self.class::CAPITALIZATION,
             **corporation.merge(corporation_opts),
@@ -114,7 +138,7 @@ module Engine
         minors = MINORS.dup
 
         if option_cisleithania
-          if @players.size == 2
+          if two_player?
             # Remove Pre-Staatsbahn U1 and U2
             minors.reject! { |m| %w[U1 U2].include?(m[:sym]) }
           else
@@ -130,7 +154,7 @@ module Engine
           end
         end
 
-        minors.map { |minor| Minor.new(**minor) }
+        minors.map { |minor| Engine::G1824::Minor.new(**minor) }
       end
 
       def init_companies(players)
@@ -214,7 +238,7 @@ module Engine
           Step::Track,
           Step::Token,
           Step::Route,
-          Step::Dividend,
+          Step::G1824::Dividend,
           Step::G1824::BuyTrain,
           [Step::BuyCompany, blocks: true],
         ], round_num: round_num)
@@ -223,46 +247,150 @@ module Engine
       def init_round
         @log << '-- First Stock Round --'
         @log << 'Player order is reversed the first turn'
-        Round::G1824::Stock.new(self, [
+        Round::G1824::FirstStock.new(self, [
           Step::G1824::BuySellParShares,
         ])
       end
 
-      def purchasable_companies(_entity = nil)
-        []
+      def stock_round
+        Round::G1824::Stock.new(self, [
+          Step::DiscardTrain,
+          Step::Exchange,
+          Step::SpecialTrack,
+          Step::BuySellParShares,
+        ])
+      end
+
+      def regional_bk
+        @bk ||= corporation_by_id('BK')
+      end
+
+      def regional_ms
+        @ms ||= corporation_by_id('MS')
+      end
+
+      def regional_cl
+        @cl ||= corporation_by_id('CL')
+      end
+
+      def regional_sb
+        @sb ||= corporation_by_id('SB')
+      end
+
+      def state_sd
+        @sd ||= corporation_by_id('SD')
+      end
+
+      def state_ug
+        @ug ||= corporation_by_id('UG')
+      end
+
+      def state_kk
+        @kk ||= corporation_by_id('KK')
       end
 
       def setup
-        g_trains = @depot.upcoming.select { |t| g_train?(t) }
-        coal_railways.each do |coalcorp|
-          train = g_trains.shift
-          buy_train(coalcorp, train, :free)
-          coalcorp.spend(120, @bank, check_cash: false)
-        end
+        @two_train_bought = false
 
         @minors.each do |minor|
           hex = hex_by_id(minor.coordinates)
           hex.tile.cities[minor.city].place_token(minor, minor.next_token)
         end
+
+        # Reserve the presidency share to have it as exchange for associated coal railway
+        @corporations.each do |c|
+          next if !regional?(c) && !staatsbahn?(c)
+          next if c.id == 'BH'
+
+          c.shares.find(&:president).buyable = false
+          c.floatable = false
+        end
       end
 
       def ipo_name(entity)
-        return 'Treasury' if coal_railways.include?(entity)
+        return 'Treasury' if entity && coal_railway?(entity)
 
         'IPO'
       end
 
       def can_par?(corporation, parrer)
-        super && !corporation.all_abilities.find { |a| a.type == :no_buy }
+        super && buyable?(corporation)
       end
 
       def g_train?(train)
         train.name.end_with?('g')
       end
 
-      def coal_railways
-        @coal_railways ||= (option_cisleithania ? %w[EPP EOD MLB] : %w[EPP EOD MLB SPB])
-          .map { |c| corporation_by_id(c) }
+      def mountain_railway?(entity)
+        entity.company? && entity.sym.start_with?('B')
+      end
+
+      def coal_railway?(entity)
+        entity.corporation? && entity.type == :Coal
+      end
+
+      def pre_staatsbahn?(entity)
+        entity.minor? && entity.type == :PreStaatsbahn
+      end
+
+      def regional?(entity)
+        entity.corporation? && entity.type == :Regional
+      end
+
+      def staatsbahn?(entity)
+        entity.corporation? && entity.type == :Staatsbahn
+      end
+
+      def floated_coal_railway?(entity)
+        coal_railway?(entity) && entity.floated?
+      end
+
+      def reserved_regional(entity)
+        return false unless regional?(entity)
+
+        president_share = entity.shares.find(&:president)
+        president_share && !president_share.buyable
+      end
+
+      def buyable?(entity)
+        return true unless entity.corporation?
+
+        entity.all_abilities.none? { |a| a.type == :no_buy } &&
+          !reserved_regional(entity) &&
+          !floated_coal_railway?(entity)
+      end
+
+      def corporation_available?(entity)
+        buyable?(entity)
+      end
+
+      def associated_regional_railway(coal_railway)
+        case coal_railway.name
+        when 'EPP'
+          regional_bk
+        when 'EOD'
+          regional_ms
+        when 'MLB'
+          regional_cl
+        when 'SPB'
+          regional_sb
+        end
+      end
+
+      def associated_state_railway(prestate_railway)
+        case prestate_railway.id
+        when 'S1', 'S2', 'S3'
+          state_sd
+        when 'U1', 'U2'
+          state_ug
+        when 'K1', 'K2'
+          state_kk
+        end
+      end
+
+      def operating_order
+        coal_railways, other_corporations = all_corporations.select(&:floated?).partition { |c| coal_railway?(c) }
+        coal_railways + @minors.select(&:floated?) + other_corporations.sort
       end
 
       def revenue_for(route, stops)
@@ -273,6 +401,32 @@ module Engine
         raise GameError, 'Only g-trains may visit mines' if !g_train?(route.train) && mine_visits.positive?
 
         super
+      end
+
+      def mine_revenue(routes)
+        routes.sum { |r| r.stops.sum { |stop| mine_hex?(stop.hex) ? stop.route_revenue(r.phase, r.train) : 0 } }
+      end
+
+      def float_str(entity)
+        return super if !entity.corporation || entity.floatable
+
+        case entity.id
+        when 'BK', 'MS', 'CL', 'SB'
+          needed = entity.percent_to_float
+          needed.positive? ? "#{entity.percent_to_float}% (including exchange) to float" : 'Exchange to float'
+        when 'UG'
+          'U1 exchange floats'
+        when 'KK'
+          'K1 exchange floats'
+        when 'SD'
+          'S1 exchange floats'
+        else
+          'Not floatable'
+        end
+      end
+
+      def all_corporations
+        @corporations.reject(&:removed)
       end
 
       private
@@ -329,10 +483,10 @@ module Engine
       WIEN = 'city=revenue:30;path=a:0,b:_0;city=revenue:30;'\
              'path=a:1,b:_1;city=revenue:30;path=a:2,b:_2;upgrade=cost:20,terrain:water;label=W'
 
-      MINE_1 = 'city=revenue:yellow_10|brown_40;path=a:2,b:_0,terminal:1;path=a:3,b:_0,terminal:1'
-      MINE_2 = 'city=revenue:yellow_10|brown_40;path=a:1,b:_0,terminal:1;path=a:5,b:_0,terminal:1'
-      MINE_3 = 'city=revenue:yellow_20|brown_60;path=a:1,b:_0,terminal:1;path=a:5,b:_0,terminal:1'
-      MINE_4 = 'city=revenue:yellow_10|brown_40;path=a:1,b:_0,terminal:1;path=a:3,b:_0,terminal:1'
+      MINE_1 = 'city=revenue:yellow_10|green_10|brown_40|gray_40;path=a:2,b:_0,terminal:1;path=a:3,b:_0,terminal:1'
+      MINE_2 = 'city=revenue:yellow_10|green_10|brown_40|gray_40;path=a:1,b:_0,terminal:1;path=a:5,b:_0,terminal:1'
+      MINE_3 = 'city=revenue:yellow_20|green_20|brown_60|gray_60;path=a:1,b:_0,terminal:1;path=a:5,b:_0,terminal:1'
+      MINE_4 = 'city=revenue:yellow_10|green_10|brown_40|gray_40;path=a:1,b:_0,terminal:1;path=a:3,b:_0,terminal:1'
 
       TOWN = 'town=revenue:0'
       TOWN_WITH_WATER = 'town=revenue:0;upgrade=cost:20,terrain:water'

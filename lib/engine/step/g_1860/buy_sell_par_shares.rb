@@ -43,10 +43,6 @@ module Engine
           []
         end
 
-        def purchasable_unsold_companies
-          []
-        end
-
         def can_buy_company?(player, company)
           !did_sell?(company, player)
         end

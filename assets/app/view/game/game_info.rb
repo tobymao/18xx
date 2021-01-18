@@ -108,7 +108,7 @@ module View
           extra << h(:td, phase[:corporation_sizes].join(', ')) if corporation_sizes
 
           train_limit = phase[:train_limit]
-          train_limit = train_limit.map { |type, limit| "#{type} => #{limit}" }.join(',') if train_limit.is_a?(Hash)
+          train_limit = @game.phase.train_limit_to_s(train_limit)
 
           h(:tr, [
             h(:td, (current_phase == phase ? '→ ' : '') + phase[:name]),

@@ -359,10 +359,11 @@ module Engine
     {
        "sym": "S1",
        "name": "Wien-Gloggnitzer Eisenbahngesellschaft",
-       "logo": "1824/S1",
+       "type": "PreStaatsbahn",
        "tokens": [
-          0
+         0
        ],
+       "logo": "1824/S1",
        "coordinates": "E12",
        "city": 0,
        "color": "orange"
@@ -370,10 +371,11 @@ module Engine
     {
       "sym": "S2",
       "name": "Kärntner Bahn",
-      "logo": "1824/S2",
+      "type": "PreStaatsbahn",
       "tokens": [
-         0
+        0
       ],
+      "logo": "1824/S2",
       "coordinates": "G10",
       "city": 0,
       "color": "orange"
@@ -381,10 +383,11 @@ module Engine
     {
       "sym": "S3",
       "name": "Nordtiroler Staatsbahn",
-      "logo": "1824/S3",
+      "type": "PreStaatsbahn",
       "tokens": [
         0
       ],
+      "logo": "1824/S3",
       "coordinates": "G4",
       "city": 0,
       "color": "orange"
@@ -392,10 +395,11 @@ module Engine
     {
       "sym": "U1",
       "name": "Eisenbahn Pest - Waitzen",
-      "logo": "1824/U1",
+      "type": "PreStaatsbahn",
       "tokens": [
         0
       ],
+      "logo": "1824/U1",
       "coordinates": "F17",
       "city": 1,
       "color": "purple"
@@ -403,10 +407,11 @@ module Engine
     {
       "sym": "U2",
       "name": "Mohacs-Fünfkirchner Bahn",
-      "logo": "1824/U2",
+      "type": "PreStaatsbahn",
       "tokens": [
         0
       ],
+      "logo": "1824/U2",
       "coordinates": "H15",
       "city": 0,
       "color": "purple"
@@ -414,21 +419,23 @@ module Engine
     {
       "sym": "K1",
       "name": "Kaiserin Elisabeth-Bahn",
-      "logo": "1824/K1",
+      "type": "PreStaatsbahn",
       "tokens": [
           0
       ],
       "coordinates": "E12",
       "city": 1,
-      "color": "brown"
+      "color": "brown",
+      "logo": "1824/K1"
     },
     {
       "sym": "K2",
       "name": "Kaiser Franz Joseph-Bahn",
-      "logo": "1824/K2",
+      "type": "PreStaatsbahn",
       "tokens": [
         0
       ],
+      "logo": "1824/K2",
       "coordinates": "E12",
       "city": 2,
       "color": "brown"
@@ -436,10 +443,10 @@ module Engine
   ],
   "corporations": [
     {
-      "float_percent": 100,
       "sym": "EPP",
       "name": "Eisenbahn Pilsen - Priesen",
-      "logo": "1824/C1",
+      "type": "Coal",
+      "float_percent": 100,
       "capitalization": "incremental",
       "shares": [100],
       "max_ownership_percent": 100,
@@ -447,8 +454,6 @@ module Engine
         0
       ],
       "always_market_price": true,
-      "coordinates": "C6",
-      "color": "gray50",
       "abilities": [
         {
           "type": "base",
@@ -461,19 +466,17 @@ module Engine
           "corporation": "",
           "from": "IPO",
           "description": "Phase 3-5: Exchange for BK presidency"
-        },
-        {
-            "type": "train_limit",
-            "description": "Train limit 2",
-            "constant": 2
         }
-      ]
+      ],
+      "logo": "1824/C1",
+      "coordinates": "C6",
+      "color": "gray50"
     },
     {
-      "float_percent": 100,
       "sym": "EOD",
       "name": "Eisenbahn Oderberg - Dombran",
-      "logo": "1824/C2",
+      "type": "Coal",
+      "float_percent": 100,
       "capitalization": "incremental",
       "shares": [100],
       "max_ownership_percent": 100,
@@ -481,8 +484,6 @@ module Engine
         0
       ],
       "always_market_price": true,
-      "coordinates": "A12",
-      "color": "gray50",
       "abilities": [
         {
           "type": "base",
@@ -495,19 +496,17 @@ module Engine
           "corporation": "",
           "from": "IPO",
           "description": "Phase 3-5: Exchange for MS presidency"
-        },
-        {
-            "type": "train_limit",
-            "description": "Train limit 2",
-            "constant": 2
         }
-      ]
-    },
+      ],
+      "logo": "1824/C2",
+      "coordinates": "A12",
+      "color": "gray50"
+  },
     {
       "float_percent": 100,
       "sym": "MLB",
       "name": "Mosty - Lemberg Bahn",
-      "logo": "1824/C3",
+      "type": "Coal",
       "capitalization": "incremental",
       "shares": [100],
       "max_ownership_percent": 100,
@@ -515,8 +514,6 @@ module Engine
         0
       ],
       "always_market_price": true,
-      "coordinates": "A22",
-      "color": "gray50",
       "abilities": [
         {
           "type": "base",
@@ -529,19 +526,17 @@ module Engine
           "corporation": "",
           "from": "IPO",
           "description": "Phase 3-5: Exchange for CL presidency"
-        },
-        {
-            "type": "train_limit",
-            "description": "Train limit 2",
-            "constant": 2
         }
-      ]
+      ],
+      "logo": "1824/C3",
+      "coordinates": "A22",
+      "color": "gray50"
     },
     {
       "float_percent": 100,
       "sym": "SPB",
       "name": "Simeria-Petrosani Bahn",
-      "logo": "1824/C4",
+      "type": "Coal",
       "capitalization": "incremental",
       "shares": [100],
       "max_ownership_percent": 100,
@@ -549,8 +544,6 @@ module Engine
         0
       ],
       "always_market_price": true,
-      "coordinates": "H25",
-      "color": "gray50",
       "abilities": [
         {
           "type": "base",
@@ -563,152 +556,169 @@ module Engine
           "corporation": "",
           "from": "IPO",
           "description": "Phase 3-5: Exchange for SB presidency"
-        },
-        {
-            "type": "train_limit",
-            "description": "Train limit 2",
-            "constant": 2
         }
-      ]
+      ],
+      "logo": "1824/C4",
+      "coordinates": "H25",
+      "color": "gray50"
     },
     {
       "float_percent": 50,
       "name": "Böhmische Kommerzbahn",
       "sym": "BK",
-      "logo": "1824/BK",
+      "type": "Regional",
       "tokens": [
-         0,
-         40,
-         60,
-         80
+        0,
+        40,
+        60,
+        80
       ],
+      "abilities": [
+        {
+          "type": "base",
+          "description": "Presidency reserved for EPP (C1)"
+        }
+      ],
+      "logo": "1824/BK",
       "color": "blue",
       "coordinates": "B9"
     },
     {
-      "float_percent": 50,
       "name": "Mährisch-Schlesische Eisenbahn",
       "sym": "MS",
-      "logo": "1824/MS",
+      "type": "Regional",
+      "float_percent": 50,
       "tokens": [
-         0,
-         40,
-         60,
-         80
+        0,
+        40,
+        60,
+        80
       ],
+      "abilities": [
+        {
+          "type": "base",
+          "description": "Presidency reserved for EOD (C2)"
+        }
+      ],
+      "logo": "1824/MS",
       "color": "yellow",
       "text_color": "black",
       "coordinates": "C12"
     },
     {
-      "float_percent": 50,
       "name": "Carl Ludwigs-Bahn",
       "sym": "CL",
-      "logo": "1824/CL",
+      "type": "Regional",
+      "float_percent": 50,
       "tokens": [
-         0,
-         40,
-         60,
-         80
+        0,
+        40,
+        60,
+        80
+      ],
+      "abilities": [
+        {
+          "type": "base",
+          "description": "Presidency reserved for MLB (C3)"
+        }
       ],
       "color": "gray70",
+      "logo": "1824/CL",
       "coordinates": "B23"
     },
     {
-      "float_percent": 50,
       "name": "Siebenbürgische Bahn",
       "sym": "SB",
-      "logo": "1824/SB",
+      "type": "Regional",
+      "float_percent": 50,
       "tokens": [
-         0,
-         40,
-         60,
-         80
+        0,
+        40,
+        60,
+        80
       ],
+      "abilities": [
+        {
+          "type": "base",
+          "description": "Presidency reserved for SPB (C4)"
+        }
+      ],
+      "logo": "1824/SB",
       "color": "green",
       "text_color": "black",
       "coordinates": "G26"
     },
     {
-      "float_percent": 50,
       "name": "Bosnisch-Herzegowinische Landesbahn",
       "sym": "BH",
-      "logo": "1824/BH",
+      "type": "Regional",
+      "float_percent": 50,
       "tokens": [
-         0,
-         40,
-         100
+        0,
+        40,
+        100
       ],
+      "logo": "1824/BH",
       "color": "red",
       "coordinates": "J13"
     },
     {
-      "float_percent": 50,
       "name": "Ungarische Staatsbahn",
       "sym": "UG",
-      "color": "purple",
-      "logo": "1824/UG",
+      "type": "Staatsbahn",
+      "float_percent": 10,
       "tokens": [
-          100,
-          100,
-          100
+        100,
+        100,
+        100
       ],
       "abilities": [
         {
             "type": "no_buy",
             "description": "Unavailable in SR before phase 5"
-        },
-        {
-           "type": "train_limit",
-           "description": "+1 train limit",
-           "increase": 1
         }
-      ]
+      ],
+      "logo": "1824/UG",
+      "color": "purple"
     },
     {
       "name": "k&k Staatsbahn",
       "sym": "KK",
-      "color": "brown",
-      "logo": "1824/KK",
+      "type": "Staatsbahn",
+      "float_percent": 10,
       "tokens": [
-          40,
-          100,
-          100,
-          100
+        40,
+        100,
+        100,
+        100
       ],
       "abilities": [
         {
             "type": "no_buy",
             "description": "Unavailable in SR before phase 6"
-        },
-        {
-           "type": "train_limit",
-           "description": "+1 train limit",
-           "increase": 1
         }
-      ]
+      ],
+      "logo": "1824/KK",
+      "color": "brown"
     },
     {
       "name": "Südbahn",
       "sym": "SD",
-      "color": "orange",
-      "text_color": "black",
-      "logo": "1824/SD",
+      "type": "Staatsbahn",
+      "float_percent": 10,
       "tokens": [
-          100,
-          100
+        100,
+        100
       ],
       "abilities": [
         {
             "type": "no_buy",
             "description": "Unavailable in SR before phase 4"
-        },
-        {
-           "type": "train_limit",
-           "description": "+1 train limit",
-           "increase": 1
         }
-      ]
+      ],
+      "logo": "1824/SD",
+      "color": "orange",
+      "text_color": "black"
     }
   ],
   "trains": [
@@ -923,9 +933,11 @@ module Engine
   "phases": [
     {
       "name": "2",
+      "on": "2",
       "train_limit": {
-        "corporation":4,
-        "minor":2
+        "PreStaatsbahn":2,
+        "Coal":2,
+        "Regional":4
       },
       "tiles": [
         "yellow"
@@ -934,16 +946,18 @@ module Engine
     },
     {
       "name": "3",
+      "on": "3",
       "train_limit": {
-        "corporation":4,
-        "minor":2
+        "PreStaatsbahn":2,
+        "Coal":2,
+        "Regional":4
       },
       "tiles": [
         "yellow",
         "green"
       ],
       "status": [
-        "can_buy_companies",
+        "can_buy_trains",
         "may_exchange_coal_railways",
         "may_exchange_mountain_railways"
       ],
@@ -951,59 +965,90 @@ module Engine
     },
     {
       "name": "4",
+      "on": "4",
       "train_limit": {
-        "corporation":3,
-        "minor":2
+        "PreStaatsbahn":2,
+        "Coal":2,
+        "Regional":3
       },
       "tiles": [
         "yellow",
         "green"
       ],
       "status": [
-        "can_buy_companies",
+        "can_buy_trains",
         "may_exchange_coal_railways"
       ],
       "operating_rounds": 2
     },
     {
       "name": "5",
-      "train_limit": "2",
+      "on": "5",
+      "train_limit": {
+        "PreStaatsbahn":2,
+        "Regional":3,
+        "Staatsbahn":4
+      },
       "tiles": [
         "yellow",
         "green",
         "brown"
+      ],
+      "status": [
+        "can_buy_trains"
       ],
       "operating_rounds": 3
     },
     {
       "name": "6",
-      "train_limit": "2",
+      "on": "6",
+      "train_limit": {
+        "Regional":2,
+        "Staatsbahn":3
+      },
       "tiles": [
         "yellow",
         "green",
         "brown"
       ],
+      "status": [
+        "can_buy_trains"
+      ],
       "operating_rounds": 3
     },
     {
       "name": "8",
-      "train_limit": "2",
+      "on": "8",
+      "train_limit": {
+        "Regional":2,
+        "Staatsbahn":3
+      },
       "tiles": [
         "yellow",
         "green",
         "brown",
         "gray"
       ],
+      "status": [
+        "can_buy_trains"
+      ],
       "operating_rounds": 3
     },
     {
       "name": "10",
-      "train_limit": "2",
+      "on": "10",
+      "train_limit": {
+        "Regional":2,
+        "Staatsbahn":3
+      },
       "tiles": [
         "yellow",
         "green",
         "brown",
         "gray"
+      ],
+      "status": [
+        "can_buy_trains"
       ],
       "operating_rounds": 3
     }
