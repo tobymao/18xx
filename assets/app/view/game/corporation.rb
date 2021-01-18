@@ -202,7 +202,7 @@ module View
       end
 
       def render_to_float
-        render_header_segment("#{@corporation.percent_to_float}%", 'to float')
+        render_header_segment(@game.float_str(@corporation))
       end
 
       def render_trains
