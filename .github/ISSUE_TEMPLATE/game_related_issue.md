@@ -29,10 +29,9 @@ e.g.
 
 Please include screenshots (you can drag and drop or upload them into this issue)
 
-**Which Browser / Operating System?**
+**Which Browser / Platform?**
 - Browser Version
   - On Chrome, see [chrome://version](chrome://version)
   - On Firefox, see [about:support](about:support)
   - On Safari, see [these methods](https://www.lifewire.com/check-the-version-number-of-safari-446563)
-- Operating System (iOS, Android, Windows)
-- Device Type (Mobile, iPad, Desktop)
+- Platform (Mobile, Tablet, Desktop)
