@@ -83,10 +83,10 @@ module View
           merge = lambda do
             if @selected_corporation
               do_merge = lambda do
-                  process_action(Engine::Action::Merge.new(
-                    @mergeable_entity,
-                    corporation: @selected_corporation,
-                  ))
+                process_action(Engine::Action::Merge.new(
+                  @mergeable_entity,
+                  corporation: @selected_corporation,
+                ))
               end
 
               if @mergeable_entity.owner == @selected_corporation.owner
