@@ -30,22 +30,17 @@ module Engine
       GAME_LOCATION = 'Germany'
       GAME_RULES_URL = 'http://google.com'
       GAME_DESIGNER = 'Michael Meier-Bachl, Francis Tresham'
-#      GAME_PUBLISHER = :hans_im_gluck
       GAME_INFO_URL = 'https://google.com'
 
       HOME_TOKEN_TIMING = :operating_round
 
-
       def setup
-
         # 1 of each right is reserved w/ the private when it gets bought in. This leaves 2 extra to sell.
         @available_bridge_tokens = 2
         @available_tunnel_tokens = 2
       end
 
-
-
-       def operating_round(round_num)
+      def operating_round(round_num)
         Round::Operating.new(self, [
           Step::Bankrupt,
           Step::Exchange,
@@ -59,8 +54,6 @@ module Engine
           [Step::BuyCompany, blocks: true],
         ], round_num: round_num)
       end
-
-
     end
   end
 end

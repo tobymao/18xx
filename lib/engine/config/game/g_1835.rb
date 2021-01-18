@@ -1,13 +1,10 @@
-# coding: utf-8
 # frozen_string_literal: true
 
-# TODO list (packrat)
+# TODO: figure out the status of the following in this config.
 # trains are correct
 # cert limits are correct
 # cash is correct
-
 # phases aren't checked yet.
-
 # tiles are not correct.
 # market is not correct
 # map hexes are not correct
