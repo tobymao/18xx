@@ -53,7 +53,7 @@ module Engine
                                             par_1: 'Green Phase Par',
                                             par_2: 'Blue Phase Par',
                                             par_3: 'Brown Phase Par',
-                                            unlimited: 'Corporation shares can be held above 60%, ' \
+                                            unlimited: 'Corporation shares can be held above 60% and ' \
                                                        'President may buy two shares at a time')
 
       STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(par: :yellow,
@@ -137,7 +137,7 @@ module Engine
       end
 
       def init_stock_market
-        sm = Engine::G1828::StockMarket.new(self.class::MARKET, self.class::CERT_LIMIT_TYPES,
+        sm = Engine::G1828::StockMarket.new(self.class::MARKET, [],
                                             multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
         sm.enable_par_price(67)
         sm.enable_par_price(71)
