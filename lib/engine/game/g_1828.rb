@@ -49,6 +49,8 @@ module Engine
 
       NEXT_SR_PLAYER_ORDER = :first_to_pass
 
+      TRACK_RESTRICTION = :permissive
+      DISCARDED_TRAINS = :remove
       MARKET_SHARE_LIMIT = 80 # percent
 
       MARKET_TEXT = Base::MARKET_TEXT.merge(par: 'Yellow Phase Par',
