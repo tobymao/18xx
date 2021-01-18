@@ -95,6 +95,13 @@ module Engine
         end
       end
 
+      def timeline
+        @timeline = [
+          'At the end of each set of ORs the next available non-permanent (2,3 or 4) train will be exported
+           (removed, triggering phase change as if purchased)',
+        ]
+      end
+
       def check_special_tile_lay(action, company)
         abilities(company, :tile_lay, time: 'any') do |ability|
           hexes = ability.hexes

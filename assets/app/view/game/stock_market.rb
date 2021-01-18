@@ -73,7 +73,15 @@ module View
 
       def cell_style(box_style, types)
         color = @game.class::STOCKMARKET_COLORS[types&.first]
-        style = box_style.merge(backgroundColor: color ? COLOR_MAP[color] : color_for(:bg2))
+        color_to_use = color ? COLOR_MAP[color] : color_for(:bg2)
+
+        style = if types.include?(:par_overlap) && types.size > 1
+                  box_style.merge(background: "repeating-linear-gradient(45deg, #{color_to_use}, #{color_to_use} 10px,
+                    #{COLOR_MAP[:blue]} 10px, #{COLOR_MAP[:blue]} 20px)")
+                else
+                  box_style.merge(backgroundColor: color_to_use)
+                end
+
         if types.include?(:convert_range)
           # This only works on 1D at present
 

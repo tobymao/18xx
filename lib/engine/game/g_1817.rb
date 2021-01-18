@@ -101,6 +101,13 @@ module Engine
       include InterestOnLoans
       attr_reader :loan_value, :owner_when_liquidated, :stock_prices_start_merger
 
+      def timeline
+        @timeline = [
+          'At the end of each OR the next available train will be exported
+           (removed, triggering phase change as if purchased)',
+        ]
+      end
+
       def init_cert_limit
         @log << '1817 has not been tested thoroughly with more than seven players.' if @players.size > 7
 
@@ -198,7 +205,7 @@ module Engine
 
       def redeemable_shares(entity)
         return [] unless entity.corporation?
-        return [] unless round.steps.find { |step| step.instance_of?(Step::G1817::BuySellParShares) }.active?
+        return [] unless round.steps.find { |step| step.is_a?(Step::BuySellParShares) }.active?
         return [] if entity.share_price.acquisition? || entity.share_price.liquidation?
 
         bundles_for_corporation(share_pool, entity)

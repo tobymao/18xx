@@ -57,7 +57,9 @@ module Engine
           next if company.closed?
           next unless (ability = @game.abilities(company, :blocks_hexes))
 
-          raise GameError, "#{hex.id} is blocked by #{company.name}" if ability.hexes.include?(hex.id)
+          if @game.hex_blocked_by_ability?(entity, ability, hex)
+            raise GameError, "#{hex.id} is blocked by #{company.name}"
+          end
         end
 
         tile.rotate!(rotation)
@@ -134,6 +136,7 @@ module Engine
             hexes: [action.hex],
             token: token,
           }
+          @log << "#{entity.name} must choose city for token"
 
           token.remove!
         end

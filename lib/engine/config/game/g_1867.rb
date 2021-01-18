@@ -1065,7 +1065,8 @@ module Engine
         "green"
       ],
       "status":[
-        "can_buy_companies"
+        "can_buy_companies",
+        "export_train"
       ],
       "on": "4",
       "operating_rounds": 2
@@ -1082,7 +1083,8 @@ module Engine
         "brown"
       ],
       "status":[
-        "can_buy_companies"
+        "can_buy_companies",
+        "export_train"
       ],
       "on": "5",
       "operating_rounds": 2
@@ -1099,7 +1101,8 @@ module Engine
         "brown"
       ],
       "on": "6",
-      "operating_rounds": 2
+      "operating_rounds": 2,
+      "status":["export_train"]
     },
     {
       "name": "7",
@@ -1114,7 +1117,8 @@ module Engine
         "gray"
       ],
       "on": "7",
-      "operating_rounds": 2
+      "operating_rounds": 2,
+      "status":["export_train"]
     },
     {
       "name": "8",

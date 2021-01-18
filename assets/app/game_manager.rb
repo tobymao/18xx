@@ -49,8 +49,8 @@ module GameManager
   def get_games(params = nil)
     params ||= `window.location.search`
 
-    @connection.safe_get("/game#{params}") do |data|
-      store(:games, data[:games])
+    @connection.get("/game#{params}") do |data|
+      store(:games, data[:games]) unless data[:error]
     end
   end
 

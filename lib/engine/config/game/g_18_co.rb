@@ -1184,7 +1184,7 @@ module Engine
 			"upgrade=cost:40,terrain:mountain;border=edge:0,type:mountain,cost:40;border=edge:3,type:mountain,cost:40;border=edge:4,type:mountain,cost:40;border=edge:5,type:mountain,cost:40;": [
 				"H10"
 			],
-			"upgrade=cost:40,terrain:mountain;border=edge:1,type:mountain,cost:40;border=edge:1,type:mountain,cost:40;border=edge:3,type:mountain,cost:40;border=edge:4,type:mountain,cost:40;": [
+			"upgrade=cost:40,terrain:mountain;border=edge:1,type:mountain,cost:40;border=edge:3,type:mountain,cost:40;border=edge:4,type:mountain,cost:40;": [
 				"I15"
 			],
 			"upgrade=cost:40,terrain:mountain;border=edge:1,type:mountain,cost:40;border=edge:2,type:mountain,cost:40;border=edge:3,type:mountain,cost:40;border=edge:4,type:mountain,cost:40;": [

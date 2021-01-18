@@ -32,7 +32,7 @@ module Engine
       DEV_STAGE = :alpha
 
       GAME_LOCATION = 'North East, USA'
-      GAME_RULES_URL = 'https://github.com/tobymao/18xx/wiki/1828.Games#rules'
+      GAME_RULES_URL = 'https://kanga.nu/~claw/1828/1828-Rules.pdf'
       GAME_IMPLEMENTER = 'Chris Rericha based on 1828 by J C Lawrence'
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1828.Games'
 
@@ -49,11 +49,15 @@ module Engine
 
       NEXT_SR_PLAYER_ORDER = :first_to_pass
 
+      TRACK_RESTRICTION = :permissive
+      DISCARDED_TRAINS = :remove
+      MARKET_SHARE_LIMIT = 80 # percent
+
       MARKET_TEXT = Base::MARKET_TEXT.merge(par: 'Yellow Phase Par',
                                             par_1: 'Green Phase Par',
                                             par_2: 'Blue Phase Par',
                                             par_3: 'Brown Phase Par',
-                                            unlimited: 'Corporation shares can be held above 60%, ' \
+                                            unlimited: 'Corporation shares can be held above 60% and ' \
                                                        'President may buy two shares at a time')
 
       STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(par: :yellow,
@@ -70,8 +74,9 @@ module Engine
                        '$105 par price is now available'],
         'brown_par' => ['Brown phase pars',
                         '$120 par price is now available'],
-        'remove_corporations' => ['Non-parred corporations removed',
-                                  'All non-parred corporations are removed. Blocking tokens placed in home stations']
+        'remove_corporations' => ['Unparred corporations removed',
+                                  'All unparred corporations are removed at the beginning of next stock round.' \
+                                  ' Blocking tokens placed in home stations.']
       ).freeze
 
       VA_COALFIELDS_HEX = 'K11'
@@ -122,6 +127,7 @@ module Engine
 
       def setup
         setup_minors
+        setup_company_min_price
 
         @log << "-- Setting game up for #{@players.size} players --"
         remove_extra_private_companies
@@ -135,7 +141,7 @@ module Engine
       end
 
       def init_stock_market
-        sm = Engine::G1828::StockMarket.new(self.class::MARKET, self.class::CERT_LIMIT_TYPES,
+        sm = Engine::G1828::StockMarket.new(self.class::MARKET, [],
                                             multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
         sm.enable_par_price(67)
         sm.enable_par_price(71)
@@ -214,16 +220,26 @@ module Engine
 
       def event_remove_corporations!
         @log << "-- Event: #{EVENTS_TEXT['remove_corporations'][1]}. --"
+        @log << 'Unparred corporations will be removed at the beginning of the next stock round'
+      end
+
+      def custom_end_game_reached?
+        @phase.current[:name] == 'Purple'
+      end
+
+      def new_stock_round
+        new_sr = super
+        remove_unparred_corporations! if @phase.current[:name] == 'Purple'
+        new_sr
+      end
+
+      def remove_unparred_corporations!
         @corporations.reject(&:ipoed).reject(&:closed?).each do |corporation|
           place_home_blocking_token(corporation)
           place_second_home_blocking_token(corporation) if corporation.name == 'ERIE'
           @log << "Removing #{corporation.name}"
           @corporations.delete(corporation)
         end
-      end
-
-      def custom_end_game_reached?
-        @phase.current[:name] == 'Purple'
       end
 
       def remove_minor!(minor, block: false)
@@ -300,6 +316,10 @@ module Engine
         system.ipoed = true
 
         system
+      end
+
+      def ipo_reserved_name(_entity = nil)
+        'Treasury'
       end
 
       def coal_marker_available?
@@ -424,6 +444,12 @@ module Engine
         train.owner.remove_train(train) if train.owner&.system?
       end
 
+      def hex_blocked_by_ability?(entity, _ability, hex)
+        return false if entity.name == 'C&P' && hex.id == 'C15'
+
+        super
+      end
+
       private
 
       def setup_minors
@@ -435,6 +461,10 @@ module Engine
           hex = hex_by_id(minor.coordinates)
           hex.tile.cities[0].place_token(minor, minor.next_token, free: true)
         end
+      end
+
+      def setup_company_min_price
+        @companies.each { |company| company.min_price = 1 }
       end
 
       def remove_extra_private_companies

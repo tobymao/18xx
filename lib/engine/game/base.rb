@@ -892,6 +892,8 @@ module Engine
           (percent / 10).to_i.times { @stock_market.move_down(corporation) }
         when :down_block
           @stock_market.move_down(corporation)
+        when :left_block
+          @stock_market.move_left(corporation)
         when :left_block_pres
           stock_market.move_left(corporation) if was_president
         when :none
@@ -1339,7 +1341,7 @@ module Engine
 
         corporation.companies.dup.each(&:close!)
 
-        corporation.share_price.corporations.delete(corporation)
+        corporation.share_price&.corporations&.delete(corporation)
         corporation = init_corporations(@stock_market).find { |c| c.id == corporation.id }
 
         @corporations.map! { |c| c.id == corporation.id ? corporation : c }
@@ -1525,6 +1527,10 @@ module Engine
 
       def show_game_cert_limit?
         true
+      end
+
+      def hex_blocked_by_ability?(_entity, ability, hex)
+        ability.hexes.include?(hex.id)
       end
 
       private
