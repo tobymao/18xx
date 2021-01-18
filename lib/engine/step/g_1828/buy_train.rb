@@ -12,7 +12,7 @@ module Engine
           # Actions in base class don't align with system behavior. Fix here.
           if entity.corporation? && must_buy_train?(entity)
             actions.delete('pass')
-          elsif actions.include?('buy_train')
+          elsif actions.include?('buy_train') && @corporations_sold.empty?
             actions << 'pass'
           end
 
