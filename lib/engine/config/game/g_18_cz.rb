@@ -2076,7 +2076,6 @@ module Engine
                     "tiles": [
                         "yellow"
                     ],
-                    "operating_rounds": "n/a"
                 },
                 {
                     "name": "b",
@@ -2088,7 +2087,6 @@ module Engine
                     "tiles": [
                         "yellow"
                     ],
-                    "operating_rounds": "n/a",
                     "status": [
                         "can_buy_companies"
                     ]
@@ -2103,7 +2101,6 @@ module Engine
                     "tiles": [
                         "yellow"
                     ],
-                    "operating_rounds": "n/a",
                     "status": [
                         "can_buy_companies"
                     ]
@@ -2120,7 +2117,6 @@ module Engine
                         "yellow",
                         "green"
                     ],
-                    "operating_rounds": "n/a",
                     "status": [
                         "can_buy_companies"
                     ]
@@ -2137,7 +2133,6 @@ module Engine
                         "yellow",
                         "green"
                     ],
-                    "operating_rounds": "n/a",
                     "status": [
                         "can_buy_companies"
                     ]
@@ -2154,7 +2149,6 @@ module Engine
                         "yellow",
                         "green"
                     ],
-                    "operating_rounds": "n/a",
                     "status": [
                         "can_buy_companies"
                     ]
@@ -2172,7 +2166,6 @@ module Engine
                         "green",
                         "brown"
                     ],
-                    "operating_rounds": "n/a",
                     "status": [
                         "can_buy_companies"
                     ]
@@ -2190,7 +2183,6 @@ module Engine
                         "green",
                         "brown"
                     ],
-                    "operating_rounds": "n/a",
                     "status": [
                         "can_buy_companies"
                     ]
@@ -2209,7 +2201,6 @@ module Engine
                         "brown",
                         "gray"
                     ],
-                    "operating_rounds": "n/a",
                     "status": [
                         "can_buy_companies"
                     ]
@@ -2228,7 +2219,6 @@ module Engine
                         "brown",
                         "gray"
                     ],
-                    "operating_rounds": "n/a",
                     "status": [
                         "can_buy_companies"
                     ]
