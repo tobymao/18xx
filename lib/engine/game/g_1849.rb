@@ -118,7 +118,7 @@ module Engine
       attr_accessor :swap_choice_player, :swap_other_player, :swap_corporation,
                     :loan_choice_player, :player_debts,
                     :max_value_reached,
-                    :old_operating_order, :sold_this_turn
+                    :old_operating_order, :moved_this_turn
 
       def sms_hexes
         SMS_HEXES
@@ -157,7 +157,7 @@ module Engine
         @corporations[0].next_to_par = true
 
         @player_debts = Hash.new { |h, k| h[k] = 0 }
-        @sold_this_turn = []
+        @moved_this_turn = []
       end
 
       def setup_companies
@@ -255,8 +255,18 @@ module Engine
         @log << 'AFG now has a token spot available and can be opened in the next stock round.'
       end
 
+      def remove_rsa(corporation)
+        rsa = company_by_id('RSA')
+        ability = rsa.all_abilities.find { |abil| abil.type == :shares }
+        return unless ability && ability.shares.first.corporation == corporation
+
+        rsa.remove_ability(ability)
+      end
+
       def close_corporation(corporation, quiet: false)
+        remove_rsa(corporation)
         super
+        corporation.close!
         corporation = reset_corporation(corporation)
         @afg = corporation if corporation.id == 'AFG'
         hex_by_id(corporation.coordinates).tile.add_reservation!(corporation, 0) unless corporation == afg
@@ -382,8 +392,8 @@ module Engine
       end
 
       def reorder_corps
-        just_sold = @sold_this_turn.uniq
-        @sold_this_turn = []
+        just_moved = @moved_this_turn.uniq
+        @moved_this_turn = []
         same_spot =
           @corporations
             .select(&:floated?)
@@ -393,12 +403,12 @@ module Engine
 
         same_spot.each do |sp, corps|
           current_order = corps.sort
-          sold, unsold = current_order.partition { |c| just_sold.include?(c) }
-          sold_ordered = sold.sort_by { |c| old_operating_order.index(c) }
-          new_order = unsold + sold_ordered
+          moved, unmoved = current_order.partition { |c| just_moved.include?(c) }
+          moved_ordered = moved.sort_by { |c| old_operating_order.index(c) }
+          new_order = unmoved + moved_ordered
           next if current_order == new_order
 
-          @log << 'Updating operating order for sold corporations
+          @log << 'Updating operating order for sold (and moved) corporations now
                     on same share value space to maintain relative order before sales.'
           @log << "#{current_order.map(&:name)} --> #{new_order.map(&:name)}"
           sp.corporations.clear
