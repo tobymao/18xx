@@ -1,6 +1,6 @@
 ---
 name: Bug Report
-about: Report a bug you encountered while playing
+about: Report a bug you encountered while playing a game
 title: ''
 labels: bug, needs triage
 assignees: ''
