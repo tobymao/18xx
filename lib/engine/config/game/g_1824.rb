@@ -57,7 +57,7 @@ module Engine
     "H23": "Hermannstadt",
     "H27": "Bukarest",
     "I8": "Triest",
-    "J11": "Sarajevo"
+    "J13": "Sarajevo"
   },
   "tiles": {
     "1": 1,
