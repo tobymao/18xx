@@ -192,7 +192,9 @@ module Engine
             end
 
             tokens = target.tokens.map { |t| t.city&.hex&.id }
-            @log << "#{target.name} has tokens (#{target.tokens.size}: hexes #{tokens.compact}) after merger"
+            charter_tokens = tokens.size - tokens.compact.size
+            @log << "#{target.name} has tokens (#{tokens.size}: #{tokens.compact.size} on hexes #{tokens.compact}"\
+            "#{charter_tokens.positive? ? " & #{charter_tokens} on the charter" : ''})"
           end
 
           # Deleting the entity changes turn order, restore it.
