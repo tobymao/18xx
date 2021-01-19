@@ -83,8 +83,6 @@ module View
         @must_buy_train = step.must_buy_train?(@corporation)
         @should_buy_train = step.should_buy_train?(@corporation)
 
-        @president_may_contribute = step.president_may_contribute?(@corporation, @active_shell)
-
         h3_props = {
           style: {
             margin: '0.5rem 0 0 0',
@@ -100,6 +98,7 @@ module View
         }
 
         if @corporation.system?
+          store(:active_shell, @corporation.shells.first, skip: true) unless @active_shell
           children << render_shells
         else
           store(:active_shell, nil, skip: true)
@@ -155,7 +154,8 @@ module View
                               'must issue shares before the president may contribute).')
         end
 
-        if (@must_buy_train && step.ebuy_president_can_contribute?(@corporation)) || @president_may_contribute
+        if (@must_buy_train && step.ebuy_president_can_contribute?(@corporation)) ||
+           step.president_may_contribute?(@corporation, @active_shell)
           children.concat(render_president_contributions)
         end
 

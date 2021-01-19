@@ -1858,7 +1858,7 @@ module Engine
       end
 
       def final_operating_rounds
-        operating_rounds
+        @phase.operating_rounds
       end
 
       def game_ending_description

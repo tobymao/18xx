@@ -263,7 +263,7 @@ module View
           },
         }
 
-        children << h(:div, props, [h(Bank, game: @game)])
+        children << h(:div, props, [h(Bank, game: @game)].compact)
         children.concat(grid)
 
         if @explain_colors
