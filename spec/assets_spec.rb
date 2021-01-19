@@ -353,6 +353,12 @@ describe 'Assets' do
         [nil,
          'endgame',
          ['1860: Operating Round 8.4 (Nationalization) - Game Over - Nationalization complete']]]],
+      ['1828',
+       23_366,
+       [[nil, 'endgame', '1828.Games: Operating Round 7.4 (of 4) - Game Over']]],
+      ['1828',
+       23_459,
+       [[nil, 'endgame', '1828.Games: Operating Round 6.4 (of 4) - Game Over']]],
     ].freeze
 
     def render_game_at_action(data, action_count, string)
