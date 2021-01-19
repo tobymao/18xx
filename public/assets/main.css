@@ -25,6 +25,7 @@ button, .button_link {
 }
 .button_link {
   display: inline-block; /* else padding doesn’t work => different height than button */
+  box-sizing: border-box;
 }
 button.small {
   padding: 0.2rem 0.5rem;
