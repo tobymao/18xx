@@ -62,7 +62,10 @@ module Engine
       CERT_LIMIT_CHANGE_ON_BANKRUPTCY = true
 
       # Two lays with one being an upgrade, second tile costs 20
-      TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded, cost: 20 }].freeze
+      TILE_LAYS = [
+        { lay: true, upgrade: true },
+        { lay: true, upgrade: :not_if_upgraded, cost: 20, upgrade_same_hex: false },
+      ].freeze
 
       LIMIT_TOKENS_AFTER_MERGER = 8
 

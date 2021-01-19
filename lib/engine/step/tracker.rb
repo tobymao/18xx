@@ -8,6 +8,7 @@ module Engine
       def setup
         @upgraded = false
         @laid_track = 0
+        @previous_laid_hexes = []
       end
 
       def can_lay_tile?(entity)
@@ -26,6 +27,7 @@ module Engine
         action[:lay] = !@upgraded if action[:lay] == :not_if_upgraded
         action[:upgrade] = !@upgraded if action[:upgrade] == :not_if_upgraded
         action[:cost] = action[:cost] || 0
+        action[:upgrade_same_hex] = true if action[:upgrade_same_hex].nil?
         action
       end
 
@@ -34,10 +36,14 @@ module Engine
         tile_lay = get_tile_lay(action.entity)
         raise GameError, 'Cannot lay an upgrade now' if tile.color != :yellow && !(tile_lay && tile_lay[:upgrade])
         raise GameError, 'Cannot lay a yellow now' if tile.color == :yellow && !(tile_lay && tile_lay[:lay])
+        if tile.color != :yellow && !tile_lay[:upgrade_same_hex] && @previous_laid_hexes.include?(action.hex)
+          raise GameError, "#{action.hex.id} cannot be upgraded as the tile was just laid"
+        end
 
         lay_tile(action, extra_cost: tile_lay[:cost])
         @upgraded = true if action.tile.color != :yellow
         @laid_track += 1
+        @previous_laid_hexes << action.hex
       end
 
       def tile_lay_abilities(entity, **kwargs, &block)

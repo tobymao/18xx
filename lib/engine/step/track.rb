@@ -17,7 +17,16 @@ module Engine
       end
 
       def description
-        'Lay Track'
+        tile_lay = get_tile_lay(current_entity)
+        return 'Lay Track' unless tile_lay
+
+        if tile_lay[:lay] && tile_lay[:upgrade]
+          'Lay/Upgrade Track'
+        elsif tile_lay[:lay]
+          'Lay Track'
+        else
+          'Upgrade Track'
+        end
       end
 
       def pass_description

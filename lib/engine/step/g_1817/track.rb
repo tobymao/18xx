@@ -12,17 +12,10 @@ module Engine
         # Special track lays act as normal lays for 1817
         attr_accessor :laid_track
 
-        def setup
-          super
-          @hex = nil
-        end
-
         def lay_tile(action, extra_cost: 0, entity: nil)
-          raise GameError, 'Cannot lay and upgrade the same tile in the same turn' if action.hex == @hex
           raise GameError, 'Cannot upgrade mines' if action.hex.assigned?('mine')
 
           super
-          @hex = action.hex
 
           return unless action.hex.name == @game.class::PITTSBURGH_PRIVATE_HEX
 

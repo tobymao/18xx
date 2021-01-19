@@ -9,12 +9,6 @@ module Engine
       class Track < Track
         include Tracker
 
-        def setup
-          @previous_laid_hexes = []
-
-          super
-        end
-
         def process_lay_tile(action)
           lay_tile_action(action)
           clear_upgrade_icon(action.hex.tile)
@@ -31,16 +25,6 @@ module Engine
           end
 
           super
-        end
-
-        def lay_tile_action(action)
-          if @previous_laid_hexes.include?(action.hex)
-            raise GameError, "#{action.hex.id} cannot be upgraded as the tile was just laid"
-          end
-
-          super
-
-          @previous_laid_hexes << action.hex
         end
       end
     end
