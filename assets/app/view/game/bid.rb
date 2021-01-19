@@ -19,7 +19,7 @@ module View
           price_input = h(:input, style: { marginRight: '1rem' }, props: {
                             value: min_bid,
                             step: min_increment,
-                            min: min_bid + min_increment,
+                            min: min_bid,
                             max: max_bid,
                             type: 'number',
                             size: [@entity.cash.to_s.size, max_bid.to_s.size].max,

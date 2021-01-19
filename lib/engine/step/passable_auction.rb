@@ -17,7 +17,7 @@ module Engine
 
       include Auctioner
 
-      def pass_auction(entity)
+      def remove_from_auction(entity)
         @active_bidders.delete(entity)
         super
       end
@@ -47,8 +47,13 @@ module Engine
 
       def auction_entity(entity)
         @auctioning = entity
-        @active_bidders = initial_auction_entities.select do |player|
-          player == @auction_triggerer || max_bid(player, @auctioning) >= min_bid(@auctioning)
+        min = min_bid(@auctioning)
+        @active_bidders, cannot_bid = initial_auction_entities.partition do |player|
+          player == @auction_triggerer || max_bid(player, @auctioning) >= min
+        end
+        cannot_bid.each do |player|
+          @game.log << "#{player.name} cannot bid #{@game.format_currency(min)}"\
+          " and is out of the auction for #{auctioning.name}"
         end
         resolve_bids
       end
@@ -66,10 +71,15 @@ module Engine
 
         # Remove players who cannot afford the bid
         # This has to be two step, as pass_auction modifies active_bidder list.
+        min = min_bid(@auctioning)
         passing = @active_bidders.reject do |player|
-          player == bid.entity || max_bid(player, @auctioning) >= min_bid(@auctioning)
+          player == bid.entity || max_bid(player, @auctioning) >= min
         end
-        passing.each { |player| pass_auction(player) }
+        passing.each do |player|
+          @game.log << "#{player.name} cannot bid #{@game.format_currency(min)}"\
+          " and is out of the auction for #{auctioning.name}"
+          remove_from_auction(player)
+        end
       end
 
       def win_bid(winner, company)
