@@ -295,13 +295,19 @@ module Engine
         system_data = CORPORATIONS.find { |c| c[:sym] == corporations.first.id }.dup
         system_data[:sym] = corporations.map(&:name).join('-')
         system_data[:tokens] = []
-        system_data[:game] = self
-        system_data[:corporations] = corporations
+        system_data[:abilities] = []
         system = init_system(@stock_market, system_data)
 
         @corporations << system
         @_corporations[system.id] = system
         system.shares.each { |share| @_shares[share.id] = share }
+
+        system.corporations.replace(corporations)
+        corporations.each { |corporation| transfer_assets_to_system(corporation, system) }
+
+        # Order tokens for better visual
+        max_price = system.tokens.max_by(&:price).price + 1
+        system.tokens.sort_by! { |t| (t.used ? -max_price : max_price) + t.price }
 
         place_system_blocking_tokens(system)
 
@@ -316,6 +322,41 @@ module Engine
         system.ipoed = true
 
         system
+      end
+
+      def transfer_assets_to_system(corporation, system)
+        corporation.spend(corporation.cash, system) if corporation.cash.positive?
+
+        # Transfer tokens
+        used, unused = corporation.tokens.partition(&:used)
+        used.each do |t|
+          new_token = Engine::Token.new(system, price: t.price)
+          system.tokens << new_token
+          t.swap!(new_token, check_tokenable: false)
+        end
+        unused.sort_by(&:price).each { |t| system.tokens << Engine::Token.new(system, price: t.price) }
+        corporation.tokens.clear
+
+        # Transfer companies
+        corporation.companies.each do |company|
+          company.owner = system
+          system.companies << company
+        end
+        corporation.companies.clear
+
+        # Transfer abilities
+        corporation.all_abilities.dup.each do |ability|
+          corporation.remove_ability(ability)
+          system.add_ability(ability)
+        end
+
+        # Create shell and transfer
+        shell = Engine::G1828::Shell.new(corporation.name, system)
+        system.shells << shell
+        corporation.trains.dup.each do |train|
+          buy_train(system, train, :free)
+          shell.trains << train
+        end
       end
 
       def ipo_reserved_name(_entity = nil)

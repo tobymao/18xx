@@ -228,11 +228,11 @@ module Engine
             @round.hexes_to_remove_tokens = hexes
           end
 
-          trains = @system.trains.any? ? @system.trains.map(&:name).join(', ') : 'None'
+          trains = @system.trains.empty? ? 'None' : @system.trains.map(&:name).join(', ')
           @log << "Merging #{@target.name} into #{@merger.name}. #{@merger.name} system " \
                   "receives #{@game.format_currency(@system.cash)} cash, " \
-                  "trains (#{trains}), and tokens (#{@target.tokens.size}). " \
-                  "New share price is #{@game.format_currency(@merger.share_price.price)}. "
+                  "trains (#{trains}), and tokens (#{@system.tokens.size}). " \
+                  "New share price is #{@game.format_currency(@system.share_price.price)}. "
         end
 
         def combine_ipo_shares
