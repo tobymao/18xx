@@ -405,7 +405,7 @@ module Engine
        "abilities":[
          {
            "type": "blocks_partition",
-            "partition_type": "water"
+           "partition_type": "water"
          }
        ]
      }

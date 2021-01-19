@@ -285,7 +285,7 @@ module Engine
         return true if special
 
         # correct label?
-        return false if from.label != to.label && !(from.label.to_s == 'K' && to.color == 'yellow')
+        return false if from.label != to.label && !(from.label.to_s == 'K' && to.color == :yellow)
 
         # honors existing town/city counts?
         # - allow labelled cities to upgrade regardless of count; they're probably

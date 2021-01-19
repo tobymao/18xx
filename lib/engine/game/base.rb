@@ -375,6 +375,7 @@ module Engine
         data['minors'].map! do |minor|
           minor.transform_keys!(&:to_sym)
           minor[:color] = const_get(:COLORS)[minor[:color]] if const_defined?(:COLORS)
+          minor[:abilities]&.each { |ability| ability.transform_keys!(&:to_sym) }
           minor
         end
 

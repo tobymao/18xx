@@ -20,13 +20,13 @@ module Engine
 
     attr_reader :name, :full_name
 
-    def initialize(sym:, name:, **opts)
+    def initialize(sym:, name:, abilities: [], **opts)
       @name = sym
       @full_name = name
       @floated = false
       @closed = false
       init_operator(opts)
-      init_abilities(opts[:abilities])
+      init_abilities(abilities)
     end
 
     def companies
