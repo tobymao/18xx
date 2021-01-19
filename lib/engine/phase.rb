@@ -69,7 +69,7 @@ module Engine
       @next_on = Array(@phases[@index + 1]&.dig(:on))
 
       log_msg =  "-- Phase #{@name} ("
-      log_msg += "Operating Rounds: #{@operating_rounds} | " unless @operating_rounds.nil?
+      log_msg += "Operating Rounds: #{@operating_rounds} | " if @operating_rounds
       log_msg += "Train Limit: #{train_limit_to_s(@train_limit)}"
       log_msg += " | Available Tiles: #{@tiles.map(&:capitalize).join(', ')}"
       log_msg += ') --'
