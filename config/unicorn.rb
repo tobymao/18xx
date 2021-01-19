@@ -6,7 +6,7 @@ require 'message_bus'
 PRODUCTION = ENV['RACK_ENV'] == 'production'
 
 listen 9292
-worker_processes PRODUCTION ? 4 : 1
+worker_processes PRODUCTION ? 5 : 1
 timeout PRODUCTION ? 10 : 60
 preload_app true
 
