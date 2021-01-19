@@ -34,5 +34,9 @@ module Engine
     def name
       'The Bank'
     end
+
+    def inspect
+      "<#{self.class.name}>"
+    end
   end
 end
