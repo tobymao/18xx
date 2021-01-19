@@ -11,12 +11,12 @@ module Engine
       load_from_json(Config::Game::G18Mag::JSON)
 
       GAME_LOCATION = 'Hungary'
-      GAME_RULES_URL = 'https://www.lonny.at/app/download/10079056984/18Mag_rules_KS.pdf?t=1609359467'
+      GAME_RULES_URL = 'https://www.lonny.at/games/18magyarorsz%C3%A1g/'
       GAME_DESIGNER = 'Leonhard "Lonny" Orgler'
       GAME_PUBLISHER = :lonny_games
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18Mag'
 
-      # DEV_STAGE = :alpha
+      DEV_STAGE = :alpha
 
       EBUY_PRES_SWAP = false # allow presidential swaps of other corps when ebuying
       EBUY_OTHER_VALUE = false # allow ebuying other corp trains for up to face
