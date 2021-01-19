@@ -6,7 +6,7 @@ module Engine
   module Step
     module G18Mag
       class Track < Track
-        K_HEXES = %w[I1 H23 H27].freeze
+        K_HEXES = %w[I2 H23 H27].freeze
         BUY_ACTION = %w[special_buy].freeze
 
         def actions(entity)
@@ -58,8 +58,8 @@ module Engine
           return unless K_HEXES.include?(action.hex.coordinates)
 
           # Handle special upgrade rules from K hexes
-          action.tile.label = 'K' if action.tile.color == 'yellow'
-          old_tile.label = nil if old_tile.color == 'yellow'
+          action.tile.label = 'K' if action.tile.color == :yellow
+          old_tile.label = nil if old_tile.color == :yellow
         end
 
         def update_tile_lists(tile, old_tile)

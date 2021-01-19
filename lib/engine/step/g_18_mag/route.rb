@@ -12,9 +12,11 @@ module Engine
         def actions(entity)
           return [] if !entity.operator? || entity.runnable_trains.empty? || !@game.can_run_route?(entity)
 
-          route_actions = ACTIONS
-          route_actions.concat(BUY_ACTION) unless buyable_items(entity).empty?
-          route_actions
+          if buyable_items(entity).empty?
+            ACTIONS
+          else
+            ACTIONS + BUY_ACTION
+          end
         end
 
         def setup
