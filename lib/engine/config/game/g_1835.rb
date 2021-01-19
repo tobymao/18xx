@@ -1,3 +1,4 @@
+# coding: utf-8
 # frozen_string_literal: true
 
 # TODO: figure out the status of the following in this config.
@@ -73,7 +74,8 @@ module Engine
       "382",
       "418"
     ],
-    [ "",
+    [
+      "",
       "",
       "98",
       "108",
@@ -90,7 +92,8 @@ module Engine
       "350",
       "384"
     ],
-    [ "82",
+    [
+      "82",
       "86",
       "92p",
       "100",
@@ -106,7 +109,8 @@ module Engine
       "290",
       "320"
     ],
-    [ "78",
+    [
+      "78",
       "84p",
       "88p",
       "94",
@@ -119,7 +123,8 @@ module Engine
       "192",
       "214"
     ],
-    [ "72",
+    [
+      "72",
       "80p",
       "86",
       "90",
@@ -129,7 +134,8 @@ module Engine
       "126",
       "140"
     ],
-    [ "64",
+    [
+      "64",
       "74",
       "82",
       "88",
@@ -137,7 +143,8 @@ module Engine
       "98",
       "106"
     ],
-    [ "54",
+    [
+      "54",
       "66",
       "76",
       "84",
@@ -151,23 +158,23 @@ module Engine
       "value": 190,
       "revenue": 20,
       "desc": "Leipzig-Dresdner Bahn - Sachsen Direktor Papier",
-            "abilities": [
-                {
-                    "type": "shares",
-                    "shares": [
-                        "SX_0",
-                        "SX_1"
-                    ]
-                },
-                {
-                    "type": "no_buy"
-                },
-                {
-                    "type": "close",
-                    "when": "bought_train",
-                    "corporation": "SX"
-                }
-            ]
+      "abilities": [
+        {
+          "type": "shares",
+          "shares": [
+            "SX_0",
+            "SX_1"
+          ]
+        },
+        {
+          "type": "no_buy"
+        },
+        {
+          "type": "close",
+          "when": "bought_train",
+          "corporation": "SX"
+        }
+      ]
     },
     {
       "name": "Ostbayrische Bahn",
@@ -176,22 +183,23 @@ module Engine
       "revenue": 10,
       "desc": "Ostbayrische Bahn - 2 Tiles on M15, M17 extra (one per OR) and without cost",
       "abilities": [
-                {
-                    "type": "tile_lay",
-                    "description": "Place a free track tile at m15, M17 at any time during the corporation's operations.",
-                    "owner_type": "player",
-                    "hexes": [
-                        "M15", "M17"
-                    ],
-                    "tiles": [
-                        "3",
-                        "4",
-                        "58"
-                    ],
-                    "free": true,
-                    "count": 1
-                }
-            ]
+        {
+          "type": "tile_lay",
+          "description": "Place a free track tile at m15, M17 at any time during the corporation's operations.",
+          "owner_type": "player",
+          "hexes": [
+            "M15",
+            "M17"
+          ],
+          "tiles": [
+            "3",
+            "4",
+            "58"
+          ],
+          "free": true,
+          "count": 1
+        }
+      ]
     },
     {
       "name": "Nürnberg-Fürth",
@@ -206,18 +214,19 @@ module Engine
       "value": 160,
       "revenue": 30,
       "desc": "10 Percent Share of Preussische Bahn on Exchange",
-       "abilities": [
-            {
-                    "type": "exchange",
-                    "corporation": "PR",
-                    "owner_type": "player",
-                    "when" : [
-                          "Phase 2.3",
-                          "Phase 2.4",
-                          "Phase 3.1"],
-                    "from": "ipo"
-            }
-        ]
+      "abilities": [
+        {
+          "type": "exchange",
+          "corporation": "PR",
+          "owner_type": "player",
+          "when": [
+            "Phase 2.3",
+            "Phase 2.4",
+            "Phase 3.1"
+          ],
+          "from": "ipo"
+        }
+      ]
     },
     {
       "name": "Pfalzbahnen",
@@ -226,23 +235,23 @@ module Engine
       "revenue": 15,
       "desc": "Can lay a tile on L6 and Token on L6 if Baden AG is active already",
       "abilities": [
-                {
-                    "type": "teleport",
-                    "owner_type": "player",
-                    "free_tile_lay": true,
-                    "hexes": [
-                      "L6"
-                    ],
-                    "tiles": [
-                        "210",
-                        "211",
-                        "212",
-                        "213",
-                        "214",
-                        "215"
-                    ]
-                }
-            ]
+        {
+          "type": "teleport",
+          "owner_type": "player",
+          "free_tile_lay": true,
+          "hexes": [
+            "L6"
+          ],
+          "tiles": [
+            "210",
+            "211",
+            "212",
+            "213",
+            "214",
+            "215"
+          ]
+        }
+      ]
     },
     {
       "name": "Braunschweigische Bahn",
@@ -250,18 +259,19 @@ module Engine
       "value": 130,
       "revenue": 25,
       "desc": "Can be exchanged for a 10% share of Preussische Bahn",
-        "abilities": [
-              {
-                    "type": "exchange",
-                    "corporation": "PR",
-                    "owner_type": "player",
-                    "when" : [
-                          "Phase 2.3",
-                          "Phase 2.4",
-                          "Phase 3.1"],
-                    "from": "ipo"
-              }
-        ]
+      "abilities": [
+        {
+          "type": "exchange",
+          "corporation": "PR",
+          "owner_type": "player",
+          "when": [
+            "Phase 2.3",
+            "Phase 2.4",
+            "Phase 3.1"
+          ],
+          "from": "ipo"
+        }
+      ]
     }
   ],
   "minors": [
@@ -326,7 +336,7 @@ module Engine
       "color": "black"
     }
   ],
- "corporations": [
+  "corporations": [
     {
       "sym": "BY",
       "name": "Bayrische Eisenbahn",
@@ -338,7 +348,7 @@ module Engine
         0,
         0
       ],
-      "coordinates" : "O15",
+      "coordinates": "O15",
       "color": "Blue"
     },
     {
@@ -490,161 +500,205 @@ module Engine
     }
   ],
   "hexes": {
-              "white": {
-                        "": [
-                          "A13",
-                          "B10",
-                          "B12",
-                          "B14"
-                            ],
-                          "city=revenue:0": [
-                         "A11"
-                          ]
-                        },
-              "yellow": {
-                          "city=revenue:20;path=a:2,b:_0": [
-                          "C13"
-                          ]
-                        }
-            },
+    "white": {
+      "": [
+        "B10",
+        "B18",
+        "C9"
+      ],
+      "city=revenue:0": [
+        "A11",
+        "D8",
+        "F10",
+        "F14",
+        "G5",
+        "H2",
+        "H20",
+        "I3",
+        "N12",
+        "O5"
+      ],
+      "town=revenue:0": [
+        "B12",
+        "B14",
+        "B16"
+      ],
+      "upgrade=cost:50,terrain:water": [
+        "D14",
+        "E15"
+      ]
+    },
+    "yellow": {
+      "city=revenue:20;path=a:2,b:_0": [
+        "E13"
+      ]
+    },
+    "green": {
+      "city=revenue:40;path=a:0,b:_0;city=revenue:40;path=a:2,b:_1;city=revenue=40;path=a:4,b:_2;path=a:3,b:_2;label=HH": [
+        "C13"
+      ]
+    },
+    "brown": {
+      "": [
+        "D4",
+        "D6"
+      ],
+      "path=a:4,b:5": [
+        "A9",
+        "G1"
+      ],
+      "path=a:5,b:0": [
+        "B8"
+      ],
+      "town=revenue:10;path=a:3,b:_0;path=a:5,b:_0;path=a:0,b:1": [
+        "C7"
+      ],
+      "town=revenue:10;path=a:4,b:_0;town=revenue:10;path=a:5,b:_1;path=a:0,b:_1": [
+        "C5"
+      ],
+      "town=revenue:10;path=a:5,b:_0": [
+        "A17"
+      ]
+    }
+  },
   "phases": [
-              {
-                "name": "1.1",
-                "on": "2",
-                "train_limit": {
-                  "minor":2,
-                  "major":4
-                },
-                "tiles": [
-                  "yellow"
-                ],
-                "operating_rounds": 1
-              },
-              {
-                "name": "1.2",
-                "on": "2+2",
-                "train_limit": {
-                  "minor":2,
-                  "major":4
-                },
-                "tiles": [
-                  "yellow"
-                ],
-                "operating_rounds": 1
-              },
-              {
-                "name": "2.1",
-                "on": "3",
-                "train_limit": {
-                  "minor":2,
-                  "major":4
-                },
-                "tiles": [
-                  "yellow",
-                  "green"
-                ],
-                "operating_rounds": 2
-              },
-              {
-                "name": "2.2",
-                "on": "3+3",
-                "train_limit": {
-                    "major" : 4,
-                    "minor" : 2
-                          },
-                "tiles": [
-                  "yellow",
-                  "green"
-                ],
-                "operating_rounds": 2
-              },
-{
-                "name": "2.3",
-                "on": "4",
-                "train_limit": {
-                    "major" : 3 ,
-                    "minor" : 1
-                          },
-                "tiles": [
-                  "yellow",
-                  "green"
-                ],
-                "operating_rounds": 2
-              },
-              {
-                "name": "2.4",
-                "on": "4+4",
-                "train_limit": {
-                    "prussian" : 4,
-                    "major" : 3 ,
-                    "minor" : 1
-                          },
-                "tiles": [
-                  "yellow",
-                  "green"
-                ],
-                "operating_rounds": 2
-              },
-              {
-                "name": "3.1",
-                "on": "5",
-                "train_limit": {
-                    "prussian" : 4,
-                    "major" : 3 ,
-                    "minor" : 1
-                          },
-                "tiles": [
-                  "yellow",
-                  "green"
-                ],
-                "operating_rounds": 3,
-                "events": {
-                  "close_companies": true
-                }
-              },
-              {
-                "name": "3.2",
-                "on": "5+5",
-                "train_limit": {
-                    "prussian" : 3 ,
-                    "major" : 2
-                          },
-                "tiles": [
-                  "yellow",
-                  "green",
-                  "brown"
-                ],
-                "operating_rounds": 3
-              },
-              {
-                "name": "3.3",
-                "on": "6",
-                "train_limit": {
-                    "prussian" : 3 ,
-                    "major" : 2
-                          },
-                "tiles": [
-                  "yellow",
-                  "green",
-                  "brown"
-                ],
-                "operating_rounds": 3
-              },
-              {
-                "name": "3.4",
-                "on": "6+6",
-                "train_limit": {
-                    "prussian" : 3 ,
-                    "major" : 2
-                          },
-                "tiles": [
-                  "yellow",
-                  "green",
-                  "brown"
-                ],
-                "operating_rounds": 3
-              }
-    ]
+    {
+      "name": "1.1",
+      "on": "2",
+      "train_limit": {
+        "minor": 2,
+        "major": 4
+      },
+      "tiles": [
+        "yellow"
+      ],
+      "operating_rounds": 1
+    },
+    {
+      "name": "1.2",
+      "on": "2+2",
+      "train_limit": {
+        "minor": 2,
+        "major": 4
+      },
+      "tiles": [
+        "yellow"
+      ],
+      "operating_rounds": 1
+    },
+    {
+      "name": "2.1",
+      "on": "3",
+      "train_limit": {
+        "minor": 2,
+        "major": 4
+      },
+      "tiles": [
+        "yellow",
+        "green"
+      ],
+      "operating_rounds": 2
+    },
+    {
+      "name": "2.2",
+      "on": "3+3",
+      "train_limit": {
+        "major": 4,
+        "minor": 2
+      },
+      "tiles": [
+        "yellow",
+        "green"
+      ],
+      "operating_rounds": 2
+    },
+    {
+      "name": "2.3",
+      "on": "4",
+      "train_limit": {
+        "major": 3,
+        "minor": 1
+      },
+      "tiles": [
+        "yellow",
+        "green"
+      ],
+      "operating_rounds": 2
+    },
+    {
+      "name": "2.4",
+      "on": "4+4",
+      "train_limit": {
+        "prussian": 4,
+        "major": 3,
+        "minor": 1
+      },
+      "tiles": [
+        "yellow",
+        "green"
+      ],
+      "operating_rounds": 2
+    },
+    {
+      "name": "3.1",
+      "on": "5",
+      "train_limit": {
+        "prussian": 4,
+        "major": 3,
+        "minor": 1
+      },
+      "tiles": [
+        "yellow",
+        "green"
+      ],
+      "operating_rounds": 3,
+      "events": {
+        "close_companies": true
+      }
+    },
+    {
+      "name": "3.2",
+      "on": "5+5",
+      "train_limit": {
+        "prussian": 3,
+        "major": 2
+      },
+      "tiles": [
+        "yellow",
+        "green",
+        "brown"
+      ],
+      "operating_rounds": 3
+    },
+    {
+      "name": "3.3",
+      "on": "6",
+      "train_limit": {
+        "prussian": 3,
+        "major": 2
+      },
+      "tiles": [
+        "yellow",
+        "green",
+        "brown"
+      ],
+      "operating_rounds": 3
+    },
+    {
+      "name": "3.4",
+      "on": "6+6",
+      "train_limit": {
+        "prussian": 3,
+        "major": 2
+      },
+      "tiles": [
+        "yellow",
+        "green",
+        "brown"
+      ],
+      "operating_rounds": 3
+    }
+  ]
 }
         DATA
       end
