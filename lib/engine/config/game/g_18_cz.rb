@@ -1128,6 +1128,7 @@ module Engine
                     "name": "Sächsische Eisenbahn",
                     "logo": "18_cz/SX",
                     "max_ownership_percent": 60,
+                    "always_market_price": true,
                     "tokens": [
                         0,
                         40
@@ -1145,6 +1146,7 @@ module Engine
                     "name": "Preußische Eisenbahn",
                     "logo": "18_cz/PR",
                     "max_ownership_percent": 60,
+                    "always_market_price": true,
                     "tokens": [
                         0,
                         40
@@ -1162,6 +1164,7 @@ module Engine
                     "name": "Bayrische Staatsbahn",
                     "logo": "18_cz/BY",
                     "max_ownership_percent": 60,
+                    "always_market_price": true,
                     "tokens": [
                         0,
                         40
@@ -1179,6 +1182,7 @@ module Engine
                     "name": "kk Staatsbahn",
                     "logo": "18_cz/kk",
                     "max_ownership_percent": 60,
+                    "always_market_price": true,
                     "tokens": [
                         0,
                         40
@@ -1196,6 +1200,7 @@ module Engine
                     "name": "Ungarische Staatsbahn",
                     "logo": "18_cz/Ug",
                     "max_ownership_percent": 60,
+                    "always_market_price": true,
                     "tokens": [
                         0,
                         40
@@ -1213,6 +1218,7 @@ module Engine
                     "name": "Böhmische Nordbahn",
                     "logo": "18_cz/BN",
                     "max_ownership_percent": 60,
+                    "always_market_price": true,
                     "shares": [
                         40,
                         20,
@@ -1236,6 +1242,7 @@ module Engine
                     "name": "Österreichische Nordwestbahn",
                     "logo": "18_cz/NWB",
                     "max_ownership_percent": 60,
+                    "always_market_price": true,
                     "shares": [
                         40,
                         20,
@@ -1259,6 +1266,7 @@ module Engine
                     "name": "Aussig-Teplitzer Eisenbahn",
                     "logo": "18_cz/ATE",
                     "max_ownership_percent": 60,
+                    "always_market_price": true,
                     "shares": [
                         40,
                         20,
@@ -1281,6 +1289,7 @@ module Engine
                     "name": "Buschtehrader Eisenbahn",
                     "logo": "18_cz/BTE",
                     "max_ownership_percent": 60,
+                    "always_market_price": true,
                     "shares": [
                         40,
                         20,
@@ -1303,6 +1312,7 @@ module Engine
                     "name": "Kaiser Ferdinands Nordbahn",
                     "logo": "18_cz/KFN",
                     "max_ownership_percent": 60,
+                    "always_market_price": true,
                     "shares": [
                         40,
                         20,
@@ -1325,6 +1335,7 @@ module Engine
                     "name": "Eisenbahn Karlsbad Johanngeorgenstadt",
                     "logo": "18_cz/EKJ",
                     "max_ownership_percent": 75,
+                    "always_market_price": true,
                     "shares": [
                         50,
                         25,
@@ -1346,6 +1357,7 @@ module Engine
                     "name": "Ostrau-Friedlander Eisenbahn",
                     "logo": "18_cz/OFE",
                     "max_ownership_percent": 75,
+                    "always_market_price": true,
                     "shares": [
                         50,
                         25,
@@ -1367,6 +1379,7 @@ module Engine
                     "name": "Böhmische Commercialbahn",
                     "logo": "18_cz/BCB",
                     "max_ownership_percent": 75,
+                    "always_market_price": true,
                     "shares": [
                         50,
                         25,
@@ -1388,6 +1401,7 @@ module Engine
                     "name": "Mährische Westbahn",
                     "logo": "18_cz/MW",
                     "max_ownership_percent": 75,
+                    "always_market_price": true,
                     "shares": [
                         50,
                         25,
@@ -1409,6 +1423,7 @@ module Engine
                     "name": "Vereinigte Böhmerwaldbahnen",
                     "logo": "18_cz/VBW",
                     "max_ownership_percent": 75,
+                    "always_market_price": true,
                     "shares": [
                         50,
                         25,
