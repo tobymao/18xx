@@ -6,7 +6,7 @@ module Engine
   module Step
     module G18Mag
       class Track < Track
-        K_HEXES = %w[I1 H23 H27].freeze
+        K_HEXES = %w[I2 H23 H27].freeze
         BUY_ACTION = %w[special_buy].freeze
 
         def actions(entity)
