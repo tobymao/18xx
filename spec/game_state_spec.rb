@@ -73,6 +73,32 @@ module Engine
           expect(game.cornelius.closed?).to eq(true)
         end
       end
+
+      describe 22_383 do
+        it '2p: when one share is in the market for an unfloated corporation, the '\
+           'non-president may do a "buy" action, but then the share is owned by the bank' do
+          game = game_at_action(game_file, 104)
+
+          share_id = 'LV_1'
+          share = game.share_by_id(share_id)
+
+          action = {
+            'type' => 'buy_shares',
+            'entity' => 4985,
+            'entity_type' => 'player',
+            'shares' => [
+              share_id,
+            ],
+            'percent' => 10,
+          }
+
+          expect(share.owner).to eq(game.share_pool)
+
+          game.process_action(action)
+
+          expect(share.owner).to eq(game.bank)
+        end
+      end
     end
 
     describe '1846' do

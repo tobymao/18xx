@@ -231,6 +231,10 @@ module Engine
       a < b ? b - a : b - (a - entities.size)
     end
 
+    def inspect
+      "<#{self.class.name}>"
+    end
+
     private
 
     def move_share(share, to_entity)
