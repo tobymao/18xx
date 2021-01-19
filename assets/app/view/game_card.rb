@@ -18,6 +18,13 @@ module View
     needs :confirm_kick, store: true, default: nil
     needs :flash_opts, default: {}, store: true
 
+    BUTTON_STYLE = {
+      margin: '0',
+      padding: '0.2rem 0',
+      textAlign: 'center',
+      width: '3.5rem',
+    }.freeze
+
     def render
       h('div.game.card', [
         render_header,
@@ -52,6 +59,7 @@ module View
       bg_color =
         case @gdata['status']
         when 'new'
+          buttons << render_invite_link if owner?
           if user_in_game?(@user, @gdata)
             buttons << render_button('Leave', -> { leave_game(@gdata) })
           elsif players.size < @gdata['max_players']
@@ -82,8 +90,11 @@ module View
 
       div_props = {
         style: {
-          position: 'relative',
-          padding: '0.3em 0.1rem 0 0.5rem',
+          display: 'grid',
+          grid: '1fr / minmax(10rem, 1fr) 7.5rem',
+          gap: '0.5rem',
+          justifyContent: 'space-between',
+          padding: '0.3rem 0.5rem',
           backgroundColor: bg_color,
         },
       }
@@ -91,8 +102,15 @@ module View
       text_props = {
         style: {
           color: contrast_on(bg_color),
-          display: 'inline-block',
-          maxWidth: '13rem',
+        },
+      }
+      buttons_props = {
+        style: {
+          display: 'grid',
+          grid: '1fr / 1fr 1fr',
+          gap: '0.3rem 0.4rem',
+          direction: 'rtl',
+          height: 'max-content',
         },
       }
       owner_props = { attrs: { title: @gdata['user']['name'].to_s } }
@@ -102,18 +120,14 @@ module View
           h(:div, "Game: #{@gdata['title']}"),
           h('div.nowrap', owner_props, "Owner: #{@gdata['user']['name']}"),
         ]),
-        *buttons,
+        h(:div, buttons_props, buttons),
       ])
     end
 
     def render_button(text, action)
       props = {
         style: {
-          top: '1rem',
-          float: 'right',
-          borderRadius: '5px',
-          margin: '0 0.3rem',
-          padding: '0.2rem 0.5rem',
+          **BUTTON_STYLE,
         },
         on: {
           click: action,
@@ -130,10 +144,7 @@ module View
         click: click,
         children: text,
         style: {
-          float: 'right',
-          borderRadius: '5px',
-          margin: '0 0.3rem',
-          padding: '0.2rem 0.5rem',
+          **BUTTON_STYLE,
         },
         class: '.button_link'
       )
@@ -156,6 +167,18 @@ module View
         .join('; ')
 
       h(:div, [h(:strong, 'Optional Rules: '), rendered_rules])
+    end
+
+    def render_invite_link
+      msg = 'Copied invite link to clipboard; you can share this link with '\
+            'other players to invite them to the game'
+
+      invite_url = url(@gdata)
+      flash = lambda do
+        `navigator.clipboard.writeText((window.location + invite_url).replace('//game', '/game'))`
+        store(:flash_opts, { message: msg, color: 'lightgreen' }, skip: false)
+      end
+      render_link(invite_url, flash, 'Invite')
     end
 
     def render_body
@@ -196,20 +219,7 @@ module View
         elm
       end
 
-      id_line = [h(:strong, 'Id: '), @gdata['id'].to_s]
-      if new? && owner?
-        msg = 'Copied invite link to clipboard; you can share this link with '\
-              'other players to invite them to the game'
-
-        invite_url = url(@gdata)
-        flash = lambda do
-          `navigator.clipboard.writeText((window.location + invite_url).replace('//game', '/game'))`
-          store(:flash_opts, { message: msg, color: 'lightgreen' }, skip: false)
-        end
-        id_line << render_link(invite_url, flash, 'Copy Invite Link')
-      end
-
-      children = [h(:div, id_line)]
+      children = [h(:div, [h(:strong, 'Id: '), @gdata['id'].to_s])]
       children << h(:div, [h(:i, 'Private game')]) if @gdata['status'] == 'new' && @gdata.dig('settings', 'unlisted')
       children << h(:div, [h(:strong, 'Description: '), @gdata['description']]) unless @gdata['description'].empty?
 

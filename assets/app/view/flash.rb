@@ -16,6 +16,7 @@ module View
 
       props = {
         style: {
+          boxSizing: 'border-box',
           padding: '1em',
           position: 'fixed',
           cursor: 'pointer',

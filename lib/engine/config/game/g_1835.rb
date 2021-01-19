@@ -7,7 +7,8 @@
 # phases are checked.
 # tiles are not correct.
 # market is correct
-# map hexes are not correct
+# map hexes are mostly there, but not verified
+# river/water is not on the map yet.
 # companies are correct.
 # minors are correct.
 # privates are partially correct.
@@ -44,7 +45,8 @@ module Engine
   "layout": "pointy",
   "mustSellInBlocks": false,
   "locationNames": {
-    "A11": "Kiel"
+    "A11": "Kiel",
+	"L14": "Fürth Nürnberg"
   },
   "tiles": {
     "3": 2,
@@ -517,63 +519,284 @@ module Engine
   "hexes": {
     "white": {
       "": [
-        "B10",
         "B18",
-        "C9"
+        "C15",
+        "C17",
+        "C19",
+        "D10",
+        "D12",
+        "D16",
+        "D18",
+        "D20",
+        "E5",
+        "E7",
+        "E9",
+        "E11",
+        "E13",
+        "E17",
+        "F8",
+        "F16",
+        "F18",
+        "F20",
+        "G7",
+        "G9",
+        "G17",
+        "G19",
+        "H14",
+        "H18",
+        "I5",
+        "I11",
+        "J2",
+        "J10",
+        "J12",
+        "K5",
+        "K13",
+        "L4",
+        "L10",
+        "L12",
+        "L16",
+        "M11",
+        "N14",
+        "N16",
+        "N18",
+        "O9",
+        "O11",
+        "O13",
+        "O17"
+      ],
+      "city=revenue:0,loc:5.5": [
+        "A11"
+      ],
+      "city=revenue:0,loc:center;upgrade=cost:50": [
+        "D8"
+      ],
+      "city=revenue:0,loc:1.5": [
+        "F10"
+      ],
+      "city=revenue:0,loc:center": [
+        "F14"
+      ],
+      "city=revenue:0,loc:0": [
+        "G5"
+      ],
+      "city=revenue:0,loc:3.5;label=Y": [
+        "H2"
+      ],
+      "city=revenue:0,loc:2.5;label=Y": [
+        "H16"
+      ],
+      "city=revenue:0,loc:0.5;upgrade=cost:50;label=Y": [
+        "H20"
+      ],
+      "city=revenue:0;label=Y;upgrade=cost:50": [
+        "I3"
+      ],
+      "city=revenue:0,loc:0.5": [
+        "M9"
+      ],
+      "city=revenue:0,loc:5": [
+        "N12"
       ],
       "city=revenue:0": [
-        "A11",
-        "D8",
-        "F10",
-        "F14",
-        "G5",
-        "H2",
-        "H20",
-        "I3",
-        "N12",
         "O5"
       ],
+      "city=revenue:0,loc:1;label=Y": [
+        "O15"
+      ],
+      "town=revenue:0,loc:5.5": [
+        "B12"
+      ],
       "town=revenue:0": [
-        "B12",
-        "B14",
+        "B14"
+      ],
+      "town=revenue:0,loc:3": [
         "B16"
+      ],
+      "town=revenue:0,loc:4": [
+        "F4"
+      ],
+      "town=revenue:0,loc:2": [
+        "F6"
+      ],
+      "town=revenue:0,loc:0.5": [
+        "G11"
+      ],
+      "town=revenue:0,loc:5": [
+        "G15"
+      ],
+      "town=revenue:0,loc:1;town=revenue:0,loc:2.5": [
+        "H4"
+      ],
+      "town=revenue:0,loc:2.5": [
+        "H10"
+      ],
+      "upgrade=cost:70,terrain:mountain;town=revenue:0,loc:2.5": [
+        "I13"
+      ],
+      "town=revenue:0,loc:3.5": [
+        "I15"
+      ],
+      "town=revenue:0,loc:0.5;town=revenue:0,loc:3.5": [
+        "I17"
+      ],
+      "town=revenue:0,loc:1.5": [
+        "K3"
+      ],
+      "town=revenue:0,loc:1": [
+        "K11"
+      ],
+      "town=revenue:0,loc:1": [
+        "K3"
+      ],
+      "town=revenue:0,loc:1": [
+        "K11"
+      ],
+      "town=revenue:0,loc:4.5": [
+        "L2"
+      ],
+      "town=revenue:0,loc:1;town=revenue:0,loc:5": [
+        "L8"
+      ],
+      "town=revenue:0,loc:0;town=revenue:0,loc:1.5": [
+        "M7"
+      ],
+      "town=revenue:0,loc:5;town=revenue:0,loc:center": [
+        "N10"
+      ],
+      "upgrade=cost:50,terrain:water;town=revenue:0,loc:3": [
+        "M15"
       ],
       "upgrade=cost:50,terrain:water": [
         "D14",
-        "E15"
+        "E15",
+        "K7",
+        "K9",
+        "M13",
+        "M17"
+      ],
+      "upgrade=cost:70,terrain:mountain": [
+        "G13",
+        "H6",
+        "H8",
+        "H12",
+        "I7",
+        "I9",
+        "J14",
+        "K15",
+        "N8",
+        "O7"
+      ],
+      "border=edge:3,type:water": [
+        "C9"
+      ],
+      "border=edge:0,type:water": [
+        "B10"
+      ]
+    },
+    "red": {
+      "offboard=revenue:yellow_20|green_20|brown_40;path=a:1,b:_0": [
+        "C21"
+      ],
+     "offboard=revenue:yellow_20|green_30|brown_40,groups:OS;path=a:1,b:_0;border=edge:0": [
+        "H22"
+      ],
+      "offboard=revenue:yellow_20|green_30|brown_40,hide:1,groups:OS;border=edge:3": [
+        "I21"
+      ],
+      "offboard=revenue:yellow_0|green_50|brown_0,groups:Alsace;path=a:3,b:_0;border=edge:0": [
+        "M5"
+      ],
+      "offboard=revenue:yellow_0|green_50|brown_0,hide:1,groups:Alsace;path=a:4,b:_0;border=edge:3": [
+        "N4"
       ]
     },
     "yellow": {
-      "city=revenue:20;path=a:2,b:_0": [
-        "E13"
+      "city=revenue:30,loc:1;city=revenue:30,loc:3;path=a:1,b:_0;path=a:2,b:_1": [
+        "E19"
+      ],
+      "city=revenue:0,loc:0;city=revenue:0,loc:4.5;label=XX;upgrade=cost:50": [
+        "G3"
+      ],
+      "city=revenue:0;city=revenue:0;label=XX;upgrade=cost:50": [
+        "J6"
+      ],
+      "city=revenue:0,loc:5.5;city=revenue:0,loc:4;label=XX": [
+        "L6"
       ]
     },
     "green": {
       "city=revenue:40;path=a:0,b:_0;city=revenue:40;path=a:2,b:_1;city=revenue=40;path=a:4,b:_2;path=a:3,b:_2;label=HH": [
-        "C13"
+        "C11"
+      ],
+      "city=revenue:40,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;upgrade=cost:50;label=Y": [
+        "J8"
+      ],
+      "city=revenue:30,loc:2.5;path=a:3,b:_0;path=a:2,b:_0;city=revenue:30,loc:5.5;path=a:5,b:_1;path=a:0,b:_1;label=XX": [
+        "L14"
       ]
     },
     "brown": {
-      "": [
-        "D4",
-        "D6"
-      ],
       "path=a:4,b:5": [
         "A9",
         "G1"
       ],
+      "town=revenue:10,loc:5;path=a:5,b:_0": [
+        "A17"
+      ],
       "path=a:5,b:0": [
         "B8"
-      ],
-      "town=revenue:10;path=a:3,b:_0;path=a:5,b:_0;path=a:0,b:1": [
-        "C7"
       ],
       "town=revenue:10;path=a:4,b:_0;town=revenue:10;path=a:5,b:_1;path=a:0,b:_1": [
         "C5"
       ],
-      "town=revenue:10;path=a:5,b:_0": [
-        "A17"
+      "town=revenue:10;path=a:3,b:_0;path=a:5,b:_0;path=a:0,b:1": [
+        "C7"
+      ],
+      "city=revenue:10,loc:3;path=a:3,b:_0;path=a:1,b:_0;path=a:1,b:5;path=a:5,b:_0": [
+        "C13"
+      ],
+      "path=a:3,b:5": [
+        "D4"
+      ],
+      "city=revenue:10;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0": [
+        "D6"
+      ],
+      "town=revenue:10;path=a:1,b:_0;path=a:0,b:_0;path=a:2,b:_0": [
+        "E21"
+      ],
+      "city=revenue:20;path=a:1,b:_0;path=a:0,b:_0;path=a:4,b:_0": [
+        "F12"
+      ],
+      "path=a:2,b:0": [
+        "G21"
+      ],
+      "town=revenue:10;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0": [
+        "I1"
+      ],
+      "path=a:1,b:2;path=a:2,b:3;path=a:1,b:3": [
+        "I19"
+      ],
+      "town=revenue:10;path=a:2,b:_0;path=a:5,b:_0;path=a:3,b:4": [
+        "J4"
+      ],
+      "path=a:0,b:1;path=a:0,b:3;path=a:1,b:3": [
+        "J16"
+      ],
+      "town=revenue:10;path=a:0,b:_0;path=a:1,b:_0": [
+        "M19"
+      ],
+      "path=a:0,b:1;path=a:1,b:3;path=a:0,b:3": [
+        "N6"
+      ],
+      "path=a:2,b:3": [
+        "P6",
+        "P14"
+      ],
+      "town=revenue:10;path=a:2,b:_0;path=a:3,b:_0": [
+        "P10"
       ]
+
+
     }
   },
   "phases": [
