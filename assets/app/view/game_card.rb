@@ -59,7 +59,7 @@ module View
       bg_color =
         case @gdata['status']
         when 'new'
-          buttons << render_invite_link
+          buttons << render_invite_link if owner?
           if user_in_game?(@user, @gdata)
             buttons << render_button('Leave', -> { leave_game(@gdata) })
           elsif players.size < @gdata['max_players']
@@ -170,8 +170,6 @@ module View
     end
 
     def render_invite_link
-      return unless new? && owner?
-
       msg = 'Copied invite link to clipboard; you can share this link with '\
             'other players to invite them to the game'
 
