@@ -890,6 +890,10 @@ module Engine
           percent = bundle.percent
           percent -= swap.percent if swap
           (percent / 10).to_i.times { @stock_market.move_down(corporation) }
+        when :down_block
+          @stock_market.move_down(corporation)
+        when :left_block
+          @stock_market.move_left(corporation)
         when :left_block_pres
           stock_market.move_left(corporation) if was_president
         when :left_block
@@ -1339,7 +1343,7 @@ module Engine
 
         corporation.companies.dup.each(&:close!)
 
-        corporation.share_price.corporations.delete(corporation)
+        corporation.share_price&.corporations&.delete(corporation)
         corporation = init_corporations(@stock_market).find { |c| c.id == corporation.id }
 
         @corporations.map! { |c| c.id == corporation.id ? corporation : c }

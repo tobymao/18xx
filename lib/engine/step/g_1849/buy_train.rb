@@ -12,14 +12,17 @@ module Engine
 
         def pass!
           super
-          @game.reorder_corps if @sold_any
-          @sold_any = false
+          @game.reorder_corps if @moved_any
+          @moved_any = false
         end
 
         def process_sell_shares(action)
+          price_before = action.bundle.shares.first.price
           super
-          @sold_any = true
-          @game.sold_this_turn << action.bundle.corporation
+          return unless price_before != action.bundle.shares.first.price
+
+          @game.moved_this_turn << action.bundle.corporation
+          @moved_any = true
         end
       end
     end

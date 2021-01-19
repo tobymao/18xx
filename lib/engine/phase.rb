@@ -68,12 +68,10 @@ module Engine
       @corporation_sizes = phase[:corporation_sizes]
       @next_on = Array(@phases[@index + 1]&.dig(:on))
 
-      log_msg =  "-- Phase #{@name} ("
-      log_msg += "Available Tiles: (#{@tiles.map(&:capitalize).join(', ')})"
-      log_msg += ", Operating Rounds: #{@operating_rounds}" unless @operating_rounds.nil?
-      log_msg += ", Train Limit: #{@train_limit}"
-      log_msg += ')'
-      @log << log_msg
+      @log << "-- Phase #{@name} " \
+        "(Operating Rounds: #{@operating_rounds}, Train Limit: #{train_limit_to_s(@train_limit)}, "\
+        "Available Tiles: #{@tiles.map(&:capitalize).join(', ')} "\
+        ') --'
       trigger_events!
     end
 
@@ -140,6 +138,12 @@ module Engine
     def next!
       @index += 1
       setup_phase!
+    end
+
+    def train_limit_to_s(train_limit)
+      return train_limit unless train_limit.is_a?(Hash)
+
+      train_limit.map { |type, limit| "#{type} => #{limit}" }.join(',')
     end
 
     private

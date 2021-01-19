@@ -202,7 +202,7 @@ module View
       end
 
       def render_to_float
-        render_header_segment("#{@corporation.percent_to_float}%", 'to float')
+        render_header_segment(@game.float_str(@corporation))
       end
 
       def render_trains
@@ -354,7 +354,7 @@ module View
           .map do |other_corp, president, num_shares, did_sell, at_limit|
             flags = (president ? '*' : '') + (at_limit ? 'L' : '')
             h('tr.corp', [
-              h("td.left.name.nowrap.#{president ? 'president' : ''}", other_corp.name),
+              h("td.left.name.nowrap.#{president ? 'president' : ''}", "© #{other_corp.name}"),
               h('td.right', shares_props, "#{flags.empty? ? '' : flags + ' '}#{share_number_str(num_shares)}"),
               did_sell ? h('td.italic', 'Sold') : '',
             ])

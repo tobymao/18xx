@@ -21,9 +21,6 @@ module Engine
           super
 
           @round.rail_cars = []
-          @round.raba_trains = []
-          @round.snw_train = nil
-          @round.gc_train = nil
         end
 
         def log_skip(entity)
@@ -38,7 +35,7 @@ module Engine
           items = []
 
           unless @round.rail_cars.include?('G&C')
-            items << Item.new(description: 'Plus-train Upgrade from G&C', cost: item_cost)
+            items << Item.new(description: 'Train Upgrade from G&C', cost: item_cost)
           end
 
           unless @round.rail_cars.include?('RABA')
@@ -60,9 +57,6 @@ module Engine
           {
             routes: [],
             rail_cars: [],
-            raba_trains: [],
-            snw_train: nil,
-            gc_train: nil,
           }
         end
 

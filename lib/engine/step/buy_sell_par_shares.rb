@@ -177,7 +177,7 @@ module Engine
       end
 
       def can_buy_any_from_ipo?(entity)
-        @game.corporations.any? { |c| c.ipoed && can_buy?(entity, c.shares.first&.to_bundle) }
+        @game.corporations.any? { |c| c.ipoed && c.shares.any? { |s| can_buy?(entity, s.to_bundle) } }
       end
 
       def can_buy_any?(entity)
@@ -204,7 +204,7 @@ module Engine
       end
 
       def purchasable_unsold_companies
-        @game.companies.reject(&:owner).reject(&:closed?)
+        []
       end
 
       def get_par_prices(entity, _corp)

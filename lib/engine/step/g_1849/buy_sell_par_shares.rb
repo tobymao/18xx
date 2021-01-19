@@ -17,9 +17,12 @@ module Engine
         end
 
         def process_sell_shares(action)
+          price_before = action.bundle.shares.first.price
           super
-          @game.sold_this_turn << action.bundle.corporation
-          @sold_any = true
+          return unless price_before != action.bundle.shares.first.price
+
+          @game.moved_this_turn << action.bundle.corporation
+          @moved_any = true
         end
 
         def pass!
@@ -28,12 +31,12 @@ module Engine
             @round.pass_order |= [current_entity]
             current_entity.pass!
           else
-            @game.reorder_corps if @sold_any
+            @game.reorder_corps if @moved_any
             @round.pass_order.delete(current_entity)
             current_entity.unpass!
           end
           @game.old_operating_order = @game.corporations.sort
-          @sold_any = false
+          @moved_any = false
         end
 
         def can_buy?(entity, bundle)

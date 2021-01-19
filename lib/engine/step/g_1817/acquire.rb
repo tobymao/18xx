@@ -232,7 +232,10 @@ module Engine
             @round.corporations_removing_tokens = [buyer, acquired_corp]
           else
             tokens = move_tokens_to_surviving(buyer, acquired_corp)
-            receiving << "and tokens (#{tokens.size}: hexes #{tokens.compact})"
+            charter_tokens = tokens.size - tokens.compact.size
+            receiving << 'and ' unless receiving.empty?
+            receiving << "tokens (#{tokens.size}: #{tokens.compact.size} on hexes #{tokens.compact}"\
+            "#{charter_tokens.positive? ? " & #{charter_tokens} on the charter" : ''})"
           end
           @game.log << "#{buyer.name} acquires #{acquired_corp.name} "\
             "receiving #{receiving.join(', ')}"

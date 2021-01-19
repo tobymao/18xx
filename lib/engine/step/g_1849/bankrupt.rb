@@ -26,8 +26,9 @@ module Engine
           player.shares_by_corporation.each do |c, _|
             next unless (bundle = @game.sellable_bundles(player, c).max_by(&:price))
 
+            price_before = bundle.shares.first.price
             @game.sell_shares_and_change_price(bundle)
-            @game.sold_this_turn << bundle.corporation
+            @game.moved_this_turn << bundle.corporation if price_before != bundle.shares.first.price
           end
 
           # player cash given to corp, corp closed

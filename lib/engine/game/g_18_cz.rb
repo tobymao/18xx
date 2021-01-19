@@ -153,8 +153,10 @@ module Engine
 
       def timeline
         @timeline = [
-          "Game ends after OR #{@last_or}",
+          'At the end of each set of ORs the next available train will be exported
+           (removed, triggering phase change as if purchased)',
         ]
+        @timeline.append("Game ends after OR #{@last_or}")
         @timeline.append("Current value of each private company is #{COMPANY_VALUES[[0, @or - 1].max]}")
         @timeline.append("Next set of Operating Rounds will have #{OR_SETS[@turn - 1]} ORs")
       end
