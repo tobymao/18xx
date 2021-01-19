@@ -615,7 +615,7 @@ module Engine
 
       def process_action(action)
         action = action_from_h(action) if action.is_a?(Hash)
-        raise GameError, "Derived actions may not use process_action, especially #{action}" if action.derived
+        raise GameError, "Derived actions may not use process_action! ref: #{action}" if action.derived
 
         # Process the action we came here to do first
         result = process_single_action(action)

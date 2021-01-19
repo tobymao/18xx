@@ -33,7 +33,7 @@ module Engine
 
       def initialize(entity)
         @entity = entity
-        @dervied = false
+        @derived = false
         @round_override = false
         @created_at = Time.now
         @derived_children = []
