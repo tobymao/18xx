@@ -88,9 +88,8 @@ module Engine
           @game.graph.connected_hexes(entity)[hex]
         end
 
-        def potential_tiles(_entity, _hex)
-          @game.tiles
-            .select { |tile| tile.name == '8896' }
+        def potential_tiles(entity, _hex)
+          @game.potential_tiles(entity)
         end
 
         def legal_tile_rotation?(entity, hex, tile)

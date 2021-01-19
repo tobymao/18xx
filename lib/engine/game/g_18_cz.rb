@@ -87,6 +87,22 @@ module Engine
         '8E' => :large,
       }.freeze
 
+      OFFBOARD_TILES_FOR_CORPORATION = {
+        'Ug' => '8894',
+        'kk' => '8895',
+        'SX' => '8896',
+        'PR' => '8897',
+        'BY' => '8898',
+      }.freeze
+
+      COORDINATES_FOR_LARGE_CORPORATION = {
+        'Ug' => %w[A8 B5],
+        'kk' => %w[J15 I18],
+        'SX' => %w[A8 B5],
+        'PR' => %w[A22 B19],
+        'BY' => %w[G28 I24],
+      }.freeze
+
       include StubsAreRestricted
 
       def setup
@@ -255,12 +271,8 @@ module Engine
       end
 
       def home_token_locations(corporation)
-        hexes.select { |hex| %w[A8 B5].include?(hex.coordinates) } if corporation.sym == 'SX'
-        hexes.select { |hex| %w[A22 B19].include?(hex.coordinates) } if corporation.sym == 'PR'
-        hexes.select { |hex| %w[F3 H5].include?(hex.coordinates) } if corporation.sym == 'BY'
-        hexes.select { |hex| %w[J15 I18].include?(hex.coordinates) } if corporation.sym == 'kk'
-        hexes.select { |hex| %w[G28 I24].include?(hex.coordinates) } if corporation.sym == 'Ug'
-        # %w[A8 B5] if corporation.sym == 'SX'
+        coordinates = COORDINATES_FOR_LARGE_CORPORATION[corporation.id]
+        hexes.select { |hex| coordinates.include?(hex.coordinates) }
       end
 
       def place_home_token(corporation)
@@ -303,6 +315,11 @@ module Engine
         return true if from.color == :white && to.color == :red
 
         super
+      end
+
+      def potential_tiles(corporation)
+        tile_id = OFFBOARD_TILES_FOR_CORPORATION[corporation.id]
+        @tiles.select { |tile| tile.name == tile_id }
       end
     end
   end
