@@ -4,13 +4,13 @@
 # trains are correct
 # cert limits are correct
 # cash is correct
-# phases aren't checked yet.
+# phases are checked.
 # tiles are not correct.
-# market is not correct
+# market is correct
 # map hexes are not correct
-# companies are not correct.
-# minors aren't there
-# privates aren't correct.
+# companies are correct.
+# minors are correct.
+# privates are partially correct.
 
 # File original exported from 18xx-maker/export-rb
 # https://github.com/18xx-maker/export-rb
@@ -56,287 +56,371 @@ module Engine
   },
   "market": [
     [
-      "75",
-      "80",
-      "90",
-      "100p",
-      "110"
+      "",
+      "",
+      "",
+      "",
+      "132",
+      "148",
+      "166",
+      "186",
+      "208",
+      "232",
+      "258",
+      "286",
+      "316",
+      "348",
+      "382",
+      "418"
     ],
-    [
-      "70",
-      "75",
-      "80",
-      "90p",
-      "100"
+    [ "",
+      "",
+      "98",
+      "108",
+      "120",
+      "134",
+      "150",
+      "168",
+      "188",
+      "210",
+      "234",
+      "260",
+      "288",
+      "318",
+      "350",
+      "384"
+    ],
+    [ "82",
+      "86",
+      "92p",
+      "100",
+      "110",
+      "122",
+      "136",
+      "152",
+      "170",
+      "190",
+      "212",
+      "236",
+      "262",
+      "290",
+      "320"
+    ],
+    [ "78",
+      "84p",
+      "88p",
+      "94",
+      "102",
+      "112",
+      "124",
+      "138",
+      "154p",
+      "172",
+      "192",
+      "214"
+    ],
+    [ "72",
+      "80p",
+      "86",
+      "90",
+      "96",
+      "104",
+      "114",
+      "126",
+      "140"
+    ],
+    [ "64",
+      "74",
+      "82",
+      "88",
+      "92",
+      "98",
+      "106"
+    ],
+    [ "54",
+      "66",
+      "76",
+      "84",
+      "90"
     ]
   ],
   "companies": [
     {
-      "name": "Private with an icon",
-      "sym": "P1",
+      "name": "Leipzig-Dresdner Bahn",
+      "sym": "LD",
+      "value": 190,
+      "revenue": 20,
+      "desc": "Leipzig-Dresdner Bahn - Sachsen Direktor Papier",
+            "abilities": [
+                {
+                    "type": "shares",
+                    "shares": [
+                        "SX_0",
+                        "SX_1"
+                    ]
+                },
+                {
+                    "type": "no_buy"
+                },
+                {
+                    "type": "close",
+                    "when": "bought_train",
+                    "corporation": "SX"
+                }
+            ]
+    },
+    {
+      "name": "Ostbayrische Bahn",
+      "sym": "OBB",
+      "value": 120,
+      "revenue": 10,
+      "desc": "Ostbayrische Bahn - 2 Tiles on M15, M17 extra (one per OR) and without cost",
+      "abilities": [
+                {
+                    "type": "tile_lay",
+                    "description": "Place a free track tile at m15, M17 at any time during the corporation's operations.",
+                    "owner_type": "player",
+                    "hexes": [
+                        "M15", "M17"
+                    ],
+                    "tiles": [
+                        "3",
+                        "4",
+                        "58"
+                    ],
+                    "free": true,
+                    "count": 1
+                }
+            ]
+    },
+    {
+      "name": "Nürnberg-Fürth",
+      "sym": "NF",
       "value": 100,
       "revenue": 5,
-      "desc": "Description"
+      "desc": "Nürnberg-Fürth Bahn, Director of AG may lay token on L14 north or south"
     },
     {
-      "name": "Private with a company",
-      "sym": "P1",
-      "value": 140,
-      "revenue": 10,
-      "desc": "Description"
-    },
-    {
-      "name": "Private with a token",
-      "sym": "P1",
+      "name": "Hannoversche Bahn",
+      "sym": "HB",
       "value": 160,
-      "revenue": 15,
-      "desc": "Description",
-      "min_players": 3
-    },
-    {
-      "name": "Private with a tile",
-      "sym": "P1",
-      "value": 160,
-      "revenue": 15,
-      "desc": "This tile (2) is aliased in this game to 57"
-    },
-    {
-      "name": "Private with a custom tile",
-      "sym": "P1",
-      "value": 180,
-      "revenue": 20,
-      "desc": "This tile is defined in the game file"
-    },
-    {
-      "name": "Private with Hex and Note",
-      "sym": "P1",
-      "value": 220,
       "revenue": 30,
-      "desc": "Description"
+      "desc": "10 Percent Share of Preussische Bahn on Exchange",
+       "abilities": [
+            {
+                    "type": "exchange",
+                    "corporation": "PR",
+                    "owner_type": "player",
+                    "when" : [
+                          "Phase 2.3",
+                          "Phase 2.4",
+                          "Phase 3.1"],
+                    "from": "ipo"
+            }
+        ]
+    },
+    {
+      "name": "Pfalzbahnen",
+      "sym": "PB",
+      "value": 150,
+      "revenue": 15,
+      "desc": "Can lay a tile on L6 and Token on L6 if Baden AG is active already",
+      "abilities": [
+                {
+                    "type": "teleport",
+                    "owner_type": "player",
+                    "free_tile_lay": true,
+                    "hexes": [
+                      "L6"
+                    ],
+                    "tiles": [
+                        "210",
+                        "211",
+                        "212",
+                        "213",
+                        "214",
+                        "215"
+                    ]
+                }
+            ]
+    },
+    {
+      "name": "Braunschweigische Bahn",
+      "sym": "BB",
+      "value": 130,
+      "revenue": 25,
+      "desc": "Can be exchanged for a 10% share of Preussische Bahn",
+        "abilities": [
+              {
+                    "type": "exchange",
+                    "corporation": "PR",
+                    "owner_type": "player",
+                    "when" : [
+                          "Phase 2.3",
+                          "Phase 2.4",
+                          "Phase 3.1"],
+                    "from": "ipo"
+              }
+        ]
     }
   ],
-  "corporations": [
+  "minors": [
     {
-      "sym": "MS",
-      "name": "Black Railroad",
-      "logo": "1835/MS",
+      "sym": "VP1",
+      "name": "Bergisch Märkische Bahn",
+      "logo": "1835/PR",
       "tokens": [
-        0,
-        40,
-        100
+        0
       ],
-      "coordinates": "C11",
-      "color": "red"
+      "coordinates": "H2",
+      "color": "black"
     },
     {
-      "sym": "LBRR",
-      "name": "Light Blue Railroad",
-      "logo": "1835/LBRR",
+      "sym": "VP2",
+      "name": "Berlin Potsdamer Bahn",
+      "logo": "1835/PR",
+      "tokens": [
+        0
+      ],
+      "coordinates": "E19",
+      "color": "black"
+    },
+    {
+      "sym": "VP3",
+      "name": "Magdeburger-Bahn",
+      "logo": "1835/PR",
+      "tokens": [
+        0
+      ],
+      "coordinates": "F14",
+      "color": "black"
+    },
+    {
+      "sym": "VP4",
+      "name": "Köln-Mindener Bahn",
+      "logo": "1835/PR",
+      "tokens": [
+        0
+      ],
+      "coordinates": "G5",
+      "color": "black"
+    },
+    {
+      "sym": "VP5",
+      "name": "Berlin Stettiner Bahn",
+      "logo": "1835/PR",
+      "tokens": [
+        0
+      ],
+      "coordinates": "E19",
+      "color": "black"
+    },
+    {
+      "sym": "VP6",
+      "name": "Altona Kiel Bahn",
+      "logo": "1835/PR",
+      "tokens": [
+        0
+      ],
+      "coordinates": "C11",
+      "color": "black"
+    }
+  ],
+ "corporations": [
+    {
+      "sym": "BY",
+      "name": "Bayrische Eisenbahn",
+      "logo": "1835/BY",
       "tokens": [
         0,
-        40,
-        100
+        0,
+        0,
+        0,
+        0
       ],
-      "color": "lightBlue"
+      "coordinates" : "O15",
+      "color": "Blue"
     },
     {
       "sym": "OL",
-      "name": "Blue Railroad",
+      "name": "Oldenburgische Eisenbahn",
       "logo": "1835/OL",
       "tokens": [
         0,
-        40,
-        100
+        0
       ],
       "coordinates": "D6",
-      "color": "blue"
-    },
-    {
-      "sym": "NRR",
-      "name": "Navy Railroad",
-      "logo": "1835/NRR",
-      "tokens": [
-        0,
-        40,
-        100
-      ],
-      "color": "navy"
-    },
-    {
-      "sym": "BRR",
-      "name": "Brown Railroad",
-      "logo": "1835/BRR",
-      "tokens": [
-        0,
-        40,
-        100
-      ],
-      "color": "brown"
-    },
-    {
-      "sym": "GRR",
-      "name": "Gray Railroad",
-      "logo": "1835/GRR",
-      "tokens": [
-        0,
-        40,
-        100
-      ],
       "color": "gray"
     },
     {
-      "sym": "GRR",
-      "name": "Green Railroad",
-      "logo": "1835/GRR",
+      "sym": "SX",
+      "name": "Sächsische Eisenbahn",
+      "logo": "1835/SX",
       "tokens": [
         0,
-        40,
-        100
-      ],
-      "color": "green"
-    },
-    {
-      "sym": "LRR",
-      "name": "Lavender Railroad",
-      "logo": "1835/LRR",
-      "tokens": [
         0,
-        40,
-        100
+        0
       ],
-      "color": "lavender"
-    },
-    {
-      "sym": "LRR",
-      "name": "Lime Railroad",
-      "logo": "1835/LRR",
-      "tokens": [
-        0,
-        40,
-        100
-      ],
-      "color": "lime"
-    },
-    {
-      "sym": "BGRR",
-      "name": "Bright Green Railroad",
-      "logo": "1835/BGRR",
-      "tokens": [
-        0,
-        40,
-        100
-      ],
-      "color": "brightGreen"
-    },
-    {
-      "sym": "GRR",
-      "name": "Gold Railroad",
-      "logo": "1835/GRR",
-      "tokens": [
-        0,
-        40,
-        100
-      ],
-      "color": "gold"
-    },
-    {
-      "sym": "NRR",
-      "name": "Natural Railroad",
-      "logo": "1835/NRR",
-      "tokens": [
-        0,
-        40,
-        100
-      ],
-      "color": "natural"
-    },
-    {
-      "sym": "ORR",
-      "name": "Orange Railroad",
-      "logo": "1835/ORR",
-      "tokens": [
-        0,
-        40,
-        100
-      ],
-      "color": "orange"
-    },
-    {
-      "sym": "PRR",
-      "name": "Pink Railroad",
-      "logo": "1835/PRR",
-      "tokens": [
-        0,
-        40,
-        100
-      ],
-      "color": "pink"
-    },
-    {
-      "sym": "VRR",
-      "name": "Violet Railroad",
-      "logo": "1835/VRR",
-      "tokens": [
-        0,
-        40,
-        100
-      ],
-      "color": "violet"
-    },
-    {
-      "sym": "RRR",
-      "name": "Red Railroad",
-      "logo": "1835/RRR",
-      "tokens": [
-        0,
-        40,
-        100
-      ],
+      "coordinates": "H16",
       "color": "red"
     },
     {
-      "sym": "LBRR",
-      "name": "Light Brown Railroad",
-      "logo": "1835/LBRR",
+      "sym": "BA",
+      "name": "Badische Eisenbahn",
+      "logo": "1835/BA",
       "tokens": [
         0,
-        40,
-        100
+        0
       ],
-      "color": "lightBrown"
+      "coordinates": "L6",
+      "color": "brown"
     },
     {
-      "sym": "TRR",
-      "name": "Turquoise Railroad",
-      "logo": "1835/TRR",
+      "sym": "HE",
+      "name": "Hessische Eisenbahn",
+      "logo": "1835/HE",
       "tokens": [
         0,
-        40,
-        100
+        0
       ],
-      "color": "turquoise"
+      "coordinates": "J8",
+      "color": "green"
     },
     {
-      "sym": "WRR",
-      "name": "White Railroad",
-      "logo": "1835/WRR",
+      "sym": "WT",
+      "name": "Württembergische Eisenbahn",
+      "logo": "1835/WT",
       "tokens": [
         0,
-        40,
-        100
+        0
       ],
-      "color": "white"
-    },
-    {
-      "sym": "YRR",
-      "name": "Yellow Railroad",
-      "logo": "1835/YRR",
-      "tokens": [
-        0,
-        40,
-        100
-      ],
+      "coordinates": "M9",
       "color": "yellow"
+    },
+    {
+      "sym": "MS",
+      "name": "Eisenbahn Mecklenburg Schwerin",
+      "logo": "1835/MS",
+      "tokens": [
+        0,
+        0
+      ],
+      "coordinates": "C13",
+      "color": "violet"
+    },
+    {
+      "sym": "PR",
+      "name": "Preussische Eisenbahn",
+      "logo": "1835/PR",
+      "tokens": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "coordinates": "E19",
+      "color": "black"
     }
   ],
   "trains": [
@@ -406,216 +490,161 @@ module Engine
     }
   ],
   "hexes": {
-    "white": {
-      "": [
-        "B10",
-        "B18",
-		"C9"
-      ],
-      "city=revenue:0": [
-        "A11",
-		"D8",
-		"F10",
-		"F14",
-		"G5",
-		"H2",
-		"H20",
-		"I3",
-		"N12",
-		"O5"
-      ],
-	  "town=revenue:0": [
-	    "B12",
-		"B14",
-		"B16"
-	  ],
-	  "upgrade=cost:50,terrain:water": [
-	    "D14",
-		"E15"
-	  ]
-    },
-    "yellow": {
-      "city=revenue:20;path=a:2,b:_0": [
-        "E13"
-      ]
-    },
-	"green": {
-	  "city=revenue:40;path=a:0,b:_0;city=revenue:40;path=a:2,b:_1;city=revenue=40;path=a:4,b:_2;path=a:3,b:_2;label=HH": [
-	    "C13"
-	  ]
-	},
-	"brown": {
-	  "": [
-		"D4",
-		"D6"
-	  ],
-	  "path=a:4,b:5": [
-	     "A9",
-		 "G1"
-	  ],
-	  "path=a:5,b:0": [
-	     "B8"
-	  ],
-	  "town=revenue:10;path=a:3,b:_0;path=a:5,b:_0;path=a:0,b:1": [
-	     "C7"
-	  ],
-	  "town=revenue:10;path=a:4,b:_0;town=revenue:10;path=a:5,b:_1;path=a:0,b:_1": [
-	    "C5"
-	  ],
-	  "town=revenue:10;path=a:5,b:_0": [
-	    "A17"
-	  ]
-	}
-  },
+              "white": {
+                        "": [
+                          "A13",
+                          "B10",
+                          "B12",
+                          "B14"
+                            ],
+                          "city=revenue:0": [
+                         "A11"
+                          ]
+                        },
+              "yellow": {
+                          "city=revenue:20;path=a:2,b:_0": [
+                          "C13"
+                          ]
+                        }
+            },
   "phases": [
-    {
-      "name": "1.1",
-      "train_limit": 4,
-      "tiles": [
-        "yellow"
-      ],
-      "operating_rounds": 1
-    },
-    {
-      "name": "1.1",
-      "train_limit": 2,
-      "tiles": [
-        "yellow"
-      ],
-      "operating_rounds": 1
-    },
-    {
-      "name": "1.2",
-      "train_limit": 4,
-      "tiles": [
-        "yellow"
-      ],
-      "operating_rounds": 1
-    },
-    {
-      "name": "1.2",
-      "train_limit": 2,
-      "tiles": [
-        "yellow"
-      ],
-      "operating_rounds": 1
-    },
-    {
-      "name": "2.1",
-      "train_limit": 4,
-      "tiles": [
-        "yellow",
-        "green"
-      ],
-      "operating_rounds": 2
-    },
-    {
-      "name": "2.1",
-      "train_limit": 2,
-      "tiles": [
-        "yellow",
-        "green"
-      ],
-      "operating_rounds": 2
-    },
-    {
-      "name": "2.2",
-      "train_limit": 4,
-      "tiles": [
-        "yellow",
-        "green"
-      ],
-      "operating_rounds": 2
-    },
-    {
-      "name": "2.2",
-      "train_limit": 2,
-      "tiles": [
-        "yellow",
-        "green"
-      ],
-      "operating_rounds": 2
-    },
-    {
-      "name": "2.3",
-      "train_limit": 3,
-      "tiles": [
-        "yellow",
-        "green"
-      ],
-      "operating_rounds": 2
-    },
-    {
-      "name": "2.3",
-      "train_limit": 1,
-      "tiles": [
-        "yellow",
-        "green"
-      ],
-      "operating_rounds": 2
-    },
-    {
-      "name": "2.4",
-      "train_limit": 3,
-      "tiles": [
-        "yellow",
-        "green"
-      ],
-      "operating_rounds": 2
-    },
-    {
-      "name": "2.4",
-      "train_limit": 1,
-      "tiles": [
-        "yellow",
-        "green"
-      ],
-      "operating_rounds": 2
-    },
-    {
-      "name": "3.1",
-      "train_limit": 2,
-      "tiles": [
-        "yellow",
-        "green",
-        "brown"
-      ],
-      "operating_rounds": 3,
-      "events": {
-        "close_companies": true
-      }
-    },
-    {
-      "name": "3.2",
-      "train_limit": 2,
-      "tiles": [
-        "yellow",
-        "green",
-        "brown"
-      ],
-      "operating_rounds": 3
-    },
-    {
-      "name": "3.3",
-      "train_limit": 2,
-      "tiles": [
-        "yellow",
-        "green",
-        "brown"
-      ],
-      "operating_rounds": 3
-    },
-    {
-      "name": "3.4",
-      "train_limit": 2,
-      "tiles": [
-        "yellow",
-        "green",
-        "brown"
-      ],
-      "operating_rounds": 3
-    }
-  ]
+              {
+                "name": "1.1",
+                "on": "2",
+                "train_limit": {
+                  "minor":2,
+                  "major":4
+                },
+                "tiles": [
+                  "yellow"
+                ],
+                "operating_rounds": 1
+              },
+              {
+                "name": "1.2",
+                "on": "2+2",
+                "train_limit": {
+                  "minor":2,
+                  "major":4
+                },
+                "tiles": [
+                  "yellow"
+                ],
+                "operating_rounds": 1
+              },
+              {
+                "name": "2.1",
+                "on": "3",
+                "train_limit": {
+                  "minor":2,
+                  "major":4
+                },
+                "tiles": [
+                  "yellow",
+                  "green"
+                ],
+                "operating_rounds": 2
+              },
+              {
+                "name": "2.2",
+                "on": "3+3",
+                "train_limit": {
+                    "major" : 4,
+                    "minor" : 2
+                          },
+                "tiles": [
+                  "yellow",
+                  "green"
+                ],
+                "operating_rounds": 2
+              },
+{
+                "name": "2.3",
+                "on": "4",
+                "train_limit": {
+                    "major" : 3 ,
+                    "minor" : 1
+                          },
+                "tiles": [
+                  "yellow",
+                  "green"
+                ],
+                "operating_rounds": 2
+              },
+              {
+                "name": "2.4",
+                "on": "4+4",
+                "train_limit": {
+                    "prussian" : 4,
+                    "major" : 3 ,
+                    "minor" : 1
+                          },
+                "tiles": [
+                  "yellow",
+                  "green"
+                ],
+                "operating_rounds": 2
+              },
+              {
+                "name": "3.1",
+                "on": "5",
+                "train_limit": {
+                    "prussian" : 4,
+                    "major" : 3 ,
+                    "minor" : 1
+                          },
+                "tiles": [
+                  "yellow",
+                  "green"
+                ],
+                "operating_rounds": 3,
+                "events": {
+                  "close_companies": true
+                }
+              },
+              {
+                "name": "3.2",
+                "on": "5+5",
+                "train_limit": {
+                    "prussian" : 3 ,
+                    "major" : 2
+                          },
+                "tiles": [
+                  "yellow",
+                  "green",
+                  "brown"
+                ],
+                "operating_rounds": 3
+              },
+              {
+                "name": "3.3",
+                "on": "6",
+                "train_limit": {
+                    "prussian" : 3 ,
+                    "major" : 2
+                          },
+                "tiles": [
+                  "yellow",
+                  "green",
+                  "brown"
+                ],
+                "operating_rounds": 3
+              },
+              {
+                "name": "3.4",
+                "on": "6+6",
+                "train_limit": {
+                    "prussian" : 3 ,
+                    "major" : 2
+                          },
+                "tiles": [
+                  "yellow",
+                  "green",
+                  "brown"
+                ],
+                "operating_rounds": 3
+              }
+    ]
 }
         DATA
       end

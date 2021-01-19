@@ -33,7 +33,7 @@ class User < Base
   end
 
   def self.by_email(email)
-    self[Sequel.function(:lower, :email) => email.downcase]
+    self[Sequel.function(:lower, :email) => email.downcase] || self[Sequel.function(:lower, :name) => email.downcase]
   end
 
   def reset_hashes

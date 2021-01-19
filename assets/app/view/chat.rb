@@ -46,19 +46,17 @@ module View
           placeholder: 'Send a message (Please keep discussions to 18xx)',
         },
         style: {
-          height: '1.4rem',
           width: '100%',
           margin: '0',
           boxSizing: 'border-box',
           borderRadius: '0',
           background: color_for(:bg2),
           color: color_for(:font2),
-          resize: 'vertical',
         },
         on: { keyup: enter },
       }
 
-      children << h('textarea#chatbar', chatbar_props) if @user
+      children << h('input#chatbar', chatbar_props) if @user
 
       props = {
         key: 'global_chat',

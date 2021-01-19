@@ -397,7 +397,7 @@ module Engine
       end
 
       def revenue_str(route)
-        str = super
+        str = route.stops.map { |s| s.hex.name }.join('-')
 
         bonus = east_west_bonus(route.stops)[:description]
         str += " + #{bonus}" if bonus
