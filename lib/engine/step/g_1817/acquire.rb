@@ -351,7 +351,12 @@ module Engine
 
         def finalize_acquisition(acquired_corp)
           # Step 10
-          @round.cash_crisis_player = acquired_corp.owner unless acquired_corp.owner == @game.share_pool
+          @round.cash_crisis_player =
+            if acquired_corp.owner == @game.share_pool
+              @game.owner_when_liquidated[acquired_corp]
+            else
+              acquired_corp.owner
+            end
           @game.reset_corporation(acquired_corp)
           @shareholder_cash = 0
           @buyer = nil
