@@ -295,6 +295,7 @@ module Engine
         system_data = CORPORATIONS.find { |c| c[:sym] == corporations.first.id }.dup
         system_data[:sym] = corporations.map(&:name).join('-')
         system_data[:tokens] = []
+        system_data[:abilities] = []
         system = init_system(@stock_market, system_data)
 
         @corporations << system
