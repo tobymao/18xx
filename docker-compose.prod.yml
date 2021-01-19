@@ -56,4 +56,4 @@ services:
       - rack
     logging:
       options:
-        max-size: "100m"
+        max-size: "300m"
