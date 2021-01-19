@@ -219,6 +219,8 @@ module Engine
       end
 
       def nationalize!(corporation)
+        return if !corporation.floated? || !@corporations.include?(corporation)
+
         @log << "#{corporation.name} is nationalized"
 
         while corporation.cash > @loan_value && !corporation.loans.empty?
@@ -289,6 +291,7 @@ module Engine
           close_corporation(corporation)
         else
           reset_corporation(corporation)
+          @round.force_next_entity! if @round.current_entity == corporation
         end
       end
 

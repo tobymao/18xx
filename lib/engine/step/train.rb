@@ -72,6 +72,7 @@ module Engine
           @log << "#{player.name} contributes #{@game.format_currency(remaining)}"
         end
 
+        try_take_loan(entity, price)
         @game.queue_log! { @game.phase.buying_train!(entity, train) }
 
         if exchange
@@ -88,7 +89,6 @@ module Engine
 
         @game.flush_log!
 
-        try_take_loan(entity, price)
         @game.buy_train(entity, train, price)
         pass! unless can_buy_train?(entity)
       end
