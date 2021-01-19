@@ -197,7 +197,11 @@ module Engine
           ],
           "free": true,
           "count": 1
-        }
+        },
+                {
+                    "type": "shares",
+                    "shares": "BY_2"
+                }
       ]
     },
     {
@@ -205,7 +209,12 @@ module Engine
       "sym": "NF",
       "value": 100,
       "revenue": 5,
-      "desc": "Nürnberg-Fürth Bahn, Director of AG may lay token on L14 north or south"
+      "desc": "Nürnberg-Fürth Bahn, Director of AG may lay token on L14 north or south",
+      "abilities": [
+          { "type": "shares",
+                    "shares": "BY_2"
+          }
+      ]
     },
     {
       "name": "Hannoversche Bahn",
@@ -249,7 +258,11 @@ module Engine
             "214",
             "215"
           ]
-        }
+        },
+                {
+                    "type": "shares",
+                    "shares": "BY_1"
+                }
       ]
     },
     {
