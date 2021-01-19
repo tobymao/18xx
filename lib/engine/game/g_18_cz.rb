@@ -116,6 +116,7 @@ module Engine
 
       def operating_round(round_num)
         Round::Operating.new(self, [
+          Step::G18CZ::HomeTrack,
           Step::SpecialTrack,
           Step::BuyCompany,
           Step::Track,
@@ -251,6 +252,57 @@ module Engine
                end
 
         TRAINS_FOR_CORPORATIONS[name] == size
+      end
+
+      def home_token_locations(corporation)
+        hexes.select { |hex| %w[A8 B5].include?(hex.coordinates) } if corporation.sym == 'SX'
+        hexes.select { |hex| %w[A22 B19].include?(hex.coordinates) } if corporation.sym == 'PR'
+        hexes.select { |hex| %w[F3 H5].include?(hex.coordinates) } if corporation.sym == 'BY'
+        hexes.select { |hex| %w[J15 I18].include?(hex.coordinates) } if corporation.sym == 'kk'
+        hexes.select { |hex| %w[G28 I24].include?(hex.coordinates) } if corporation.sym == 'Ug'
+        # %w[A8 B5] if corporation.sym == 'SX'
+      end
+
+      def place_home_token(corporation)
+        return unless corporation.next_token # 1882
+        # If a corp has laid it's first token assume it's their home token
+        return if corporation.tokens.first&.used
+
+        hex = hex_by_id(corporation.coordinates)
+
+        tile = hex&.tile
+        if !tile || (tile.reserved_by?(corporation) && tile.paths.any?)
+
+          hexes =
+            if hex
+              [hex]
+            else
+              home_token_locations(corporation)
+            end
+          @log << "#{corporation.name} (#{corporation.owner.name}) must choose tile for home location"
+
+          @round.pending_tracks << {
+            entity: corporation,
+            hexes: hexes,
+          }
+
+          @round.clear_cache!
+          return
+        end
+
+        cities = tile.cities
+        city = cities.find { |c| c.reserved_by?(corporation) } || cities.first
+        token = corporation.find_token_by_type
+        return unless city.tokenable?(corporation, tokens: token)
+
+        @log << "#{corporation.name} places a token on #{hex.name}"
+        city.place_token(corporation, token)
+      end
+
+      def upgrades_to?(from, to, special = false)
+        return true if from.color == :white && to.color == :red
+
+        super
       end
     end
   end

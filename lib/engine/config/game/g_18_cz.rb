@@ -169,7 +169,7 @@ module Engine
                 "8896": {
                     "count": 1,
                     "color": "red",
-                    "code": "city=revenue:yellow_20|green_30|brown_40|gray_50;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;icon=image:18_cz/50"
+                    "code": "city=revenue:yellow_20|green_30|brown_40|gray_50;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;icon=image:18_cz/50;label=SX"
                 },
                 "8897": {
                     "count": 1,
@@ -1133,10 +1133,6 @@ module Engine
                         0,
                         40
                     ],
-                    "coordinates": [
-                        "A8",
-                        "B5"
-                    ],
                     "color": "#e31e24",
                     "type": "large"
                 },
@@ -1150,10 +1146,6 @@ module Engine
                     "tokens": [
                         0,
                         40
-                    ],
-                    "coordinates": [
-                        "A22",
-                        "B19"
                     ],
                     "color": "#2b2a29",
                     "type": "large"
@@ -1169,10 +1161,6 @@ module Engine
                         0,
                         40
                     ],
-                    "coordinates": [
-                        "F3",
-                        "H5"
-                    ],
                     "color": "#0971b7",
                     "type": "large"
                 },
@@ -1187,10 +1175,6 @@ module Engine
                         0,
                         40
                     ],
-                    "coordinates": [
-                        "J15",
-                        "I18"
-                    ],
                     "color": "#cc6f3c",
                     "type": "large"
                 },
@@ -1204,10 +1188,6 @@ module Engine
                     "tokens": [
                         0,
                         40
-                    ],
-                    "coordinates": [
-                        "G28",
-                        "I24"
                     ],
                     "color": "#ae4a84",
                     "type": "large"
