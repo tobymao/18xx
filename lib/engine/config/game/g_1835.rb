@@ -408,22 +408,65 @@ module Engine
   "hexes": {
     "white": {
       "": [
-        "A13",
         "B10",
-        "B12",
-        "B14"
+        "B18",
+		"C9"
       ],
       "city=revenue:0": [
-        "A11"
-      ]
+        "A11",
+		"D8",
+		"F10",
+		"F14",
+		"G5",
+		"H2",
+		"H20",
+		"I3",
+		"N12",
+		"O5"
+      ],
+	  "town=revenue:0": [
+	    "B12",
+		"B14",
+		"B16"
+	  ],
+	  "upgrade=cost:50,terrain:water": [
+	    "D14",
+		"E15"
+	  ]
     },
     "yellow": {
       "city=revenue:20;path=a:2,b:_0": [
-        "C13"
+        "E13"
       ]
-    }
+    },
+	"green": {
+	  "city=revenue:40;path=a:0,b:_0;city=revenue:40;path=a:2,b:_1;city=revenue=40;path=a:4,b:_2;path=a:3,b:_2;label=HH": [
+	    "C13"
+	  ]
+	},
+	"brown": {
+	  "": [
+		"D4",
+		"D6"
+	  ],
+	  "path=a:4,b:5": [
+	     "A9",
+		 "G1"
+	  ],
+	  "path=a:5,b:0": [
+	     "B8"
+	  ],
+	  "town=revenue:10;path=a:3,b:_0;path=a:5,b:_0;path=a:0,b:1": [
+	     "C7"
+	  ],
+	  "town=revenue:10;path=a:4,b:_0;town=revenue:10;path=a:5,b:_1;path=a:0,b:_1": [
+	    "C5"
+	  ],
+	  "town=revenue:10;path=a:5,b:_0": [
+	    "A17"
+	  ]
+	}
   },
-
   "phases": [
     {
       "name": "1.1",
