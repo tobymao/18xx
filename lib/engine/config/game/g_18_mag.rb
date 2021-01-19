@@ -502,7 +502,7 @@ module Engine
     {
       "name": "2",
       "distance": 2,
-      "price": 480,
+      "price": 80,
       "num": 25
     },
     {
