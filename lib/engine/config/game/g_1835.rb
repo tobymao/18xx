@@ -193,15 +193,18 @@ module Engine
           "tiles": [
             "3",
             "4",
+            "7",
+            "8",
+            "9",
             "58"
           ],
           "free": true,
           "count": 1
         },
-                {
-                    "type": "shares",
-                    "shares": "BY_2"
-                }
+        {
+            "type": "shares",
+            "shares": "BY_2"
+        }
       ]
     },
     {
@@ -259,10 +262,10 @@ module Engine
             "215"
           ]
         },
-                {
-                    "type": "shares",
-                    "shares": "BY_1"
-                }
+        {
+          "type": "shares",
+          "shares": "BY_1"
+        }
       ]
     },
     {
@@ -288,7 +291,7 @@ module Engine
   ],
   "minors": [
     {
-      "sym": "VP1",
+      "sym": "P1",
       "name": "Bergisch Märkische Bahn",
       "logo": "1835/PR",
       "tokens": [
@@ -298,7 +301,7 @@ module Engine
       "color": "black"
     },
     {
-      "sym": "VP2",
+      "sym": "P2",
       "name": "Berlin Potsdamer Bahn",
       "logo": "1835/PR",
       "tokens": [
@@ -308,7 +311,7 @@ module Engine
       "color": "black"
     },
     {
-      "sym": "VP3",
+      "sym": "P3",
       "name": "Magdeburger-Bahn",
       "logo": "1835/PR",
       "tokens": [
@@ -318,7 +321,7 @@ module Engine
       "color": "black"
     },
     {
-      "sym": "VP4",
+      "sym": "P4",
       "name": "Köln-Mindener Bahn",
       "logo": "1835/PR",
       "tokens": [
@@ -328,7 +331,7 @@ module Engine
       "color": "black"
     },
     {
-      "sym": "VP5",
+      "sym": "P5",
       "name": "Berlin Stettiner Bahn",
       "logo": "1835/PR",
       "tokens": [
@@ -338,7 +341,7 @@ module Engine
       "color": "black"
     },
     {
-      "sym": "VP6",
+      "sym": "P6",
       "name": "Altona Kiel Bahn",
       "logo": "1835/PR",
       "tokens": [
