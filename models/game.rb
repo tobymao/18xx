@@ -72,9 +72,9 @@ class Game < Base
          JOIN game_users gu ON g.id = gu.game_id
          JOIN users u ON u.id = gu.user_id
          GROUP BY g.id) g_search
-      WHERE g_search.ts_vector @@ to_tsquery('Ches')
+      WHERE g_search.ts_vector @@ to_tsquery(:search_string)
+      ORDER BY ts_rank(g_search.ts_vector, to_tsquery(:search_string)) DESC, updated_at DESC
       /* WHERE g_search.ts_vector @@ to_tsquery('(183:* & (test | local2)) | !Auction') */
-      ORDER BY ts_rank(g_search.ts_vector, to_tsquery('(183:* & (test | local2)) | !Auction')) DESC, updated_at DESC
     )
 
     SELECT g.*
@@ -92,10 +92,9 @@ class Game < Base
       type: opts['games'] || (user ? 'personal' : 'all'),
       page: opts['p']&.to_i || 0,
       status: opts['status'] || (user ? 'active' : 'new'),
-      search_string: opts['search_string'] || '',
+      search_string: opts['s'] || '18:*',
     }
     opts[:user_id] = user.id if user
-    # opts[:search_string] = Lib::Storage["search_#{opts[:type]}_#{opts[:status]}"]
 
     query =
       if user && opts[:type] == 'personal'
