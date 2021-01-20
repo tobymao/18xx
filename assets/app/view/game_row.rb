@@ -28,10 +28,10 @@ module View
     def render_header(header)
       children = [h(:h2, header)]
       p = page.to_i
-      params = "games=#{@type}#{@type != :hotseat ? "&status=#{@status}" : ''}"
-      @offset = @type == :hotseat ? (p * @limit) : 0
-      children << render_more('Prev', "?#{params}&p=#{p - 1}") if p.positive?
-      children << render_more('Next', "?#{params}&p=#{p + 1}") if @game_row_games.size > @offset + @limit
+      params = "games=#{@type}#{@type != :hs ? "&status=#{@status}" : ''}"
+      @offset = @type == :hs ? (p * @limit) : 0
+      children << render_more('<', "?#{params}&p=#{p - 1}") if p.positive?
+      children << render_more('>', "?#{params}&p=#{p + 1}") if @game_row_games.size > @offset + @limit
       children << render_search
 
       props = {
@@ -61,11 +61,12 @@ module View
         },
         style: {
           justifySelf: 'center',
-          gridColumnStart: text == 'Next' ? '3' : '2',
+          gridColumnStart: text == '>' ? '3' : '2',
+          margin: '0',
         },
       }
 
-      h("a.#{text.downcase}", props, text)
+      h('a.button_link', props, text)
     end
 
     def render_search
