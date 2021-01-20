@@ -396,7 +396,7 @@ module Engine
 			"name": "Denver, Northwestern and Pacific Railroad",
 			"value": 50,
 			"revenue": 10,
-			"desc": "An owning Corporation may return a station token to its charter to gain the token cost. Corporation must always have at least one token on the board. Action closes the company or closes on purchase of “5” train.",
+			"desc": "An owning Corporation may return a station token to its charter to gain the token cost. The token is placed on the rightmost (most expensive) empty token slot with money gained corresponding to empty token slot's price. The corporation must always have at least one token on the board. Action closes the company or closes on purchase of “5” train.",
 			"abilities": [
 				{
 					"type": "return_token",
