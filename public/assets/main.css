@@ -31,7 +31,7 @@ button, .button_link {
   box-sizing: border-box;
   text-align: center;
 }
-button.small {
+button.small, .button_link.small {
   padding: 0.2rem 0.5rem;
   margin-right: 0.5rem;
 }

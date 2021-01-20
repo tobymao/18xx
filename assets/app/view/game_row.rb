@@ -32,18 +32,18 @@ module View
       @offset = @type == :hs ? (p * @limit) : 0
       children << render_more('<', "?#{params}&p=#{p - 1}") if p.positive?
       children << render_more('>', "?#{params}&p=#{p + 1}") if @game_row_games.size > @offset + @limit
-      children << render_search
 
       props = {
         style: {
-          display: 'grid',
-          grid: '1fr / 11.5rem 3rem 3rem 1fr',
-          gap: '1rem',
+          display: 'inline-grid',
+          grid: '1fr / 13rem 2.5rem 2.5rem',
+          gap: '0 0.5rem',
           alignItems: 'center',
+          width: '20rem',
+          marginRight: '0.5rem',
         },
       }
-
-      h(:div, props, children)
+      h(:div, [h('div#header', props, children), render_search])
     end
 
     def render_more(text, params)
@@ -62,11 +62,12 @@ module View
         style: {
           justifySelf: 'center',
           gridColumnStart: text == '>' ? '3' : '2',
+          width: '2.5rem',
           margin: '0',
         },
       }
 
-      h('a.button_link', props, text)
+      h('a.button_link.small.no_margin', props, text)
     end
 
     def render_search
@@ -88,14 +89,33 @@ module View
           value: Lib::Storage[search_id] || '',
           placeholder: 'game, description, players, …',
         },
-        style: { width: '13.5rem' },
+        style: { width: '13rem' },
         on: { keyup: search_games },
       }
-      @inputs = {}
 
-      h(:div, { style: { gridColumnStart: 4 } }, [
-        @inputs[search_id] = h(:input, input_props),
-        h(:button, { on: { click: search_games } }, 'Search'),
+      props = {
+        style: {
+          display: 'inline-grid',
+          grid: '1fr / 13rem 2.5rem 2.5rem',
+          gap: '0 0.5rem',
+          width: '20rem',
+          alignItems: 'center',
+          marginBottom: '1rem',
+        },
+      }
+      @inputs = {}
+      h(:div, props, [
+        @inputs[search_id] = h('input.no_margin', input_props),
+        h('button.small', { style: { width: '2.5rem', margin: '0' }, on: { click: search_games } }, '🔍'),
+        h('a.button_link.small',
+          {
+            attrs: {
+              href: 'https://github.com/tobymao/18xx/wiki',
+              title: 'ts_vector explanation', # TODO: short overview + wiki page
+            },
+            style: { width: '2.5rem', textAlign: 'center', margin: '0' },
+          },
+          '?'),
       ])
     end
 
