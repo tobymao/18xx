@@ -334,7 +334,7 @@ module Engine
          "abilities":[
             {
                "type":"exchange",
-               "corporation":"B",
+               "corporations":["B"],
                "owner_type":"player",
                "from":["ipo","market"]
             },

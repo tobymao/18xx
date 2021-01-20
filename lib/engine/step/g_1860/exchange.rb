@@ -52,7 +52,7 @@ module Engine
           owner = entity.owner
           return can_gain?(owner, bundle, exchange: true) if bundle
 
-          corporation = @game.corporation_by_id(ability.corporation)
+          corporation = ability.corporations(@game).first
           return false unless corporation.ipoed
 
           shares = []

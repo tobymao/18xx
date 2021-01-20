@@ -399,7 +399,7 @@ module Engine
       "abilities": [
         {
           "type": "exchange",
-          "corporation": "BHI&R",
+          "corporations": ["BHI&R"],
           "owner_type": "player",
           "from": "ipo"
         }
@@ -414,7 +414,7 @@ module Engine
       "abilities": [
         {
           "type": "exchange",
-          "corporation": "FYN",
+          "corporations": ["FYN"],
           "owner_type": "player",
           "from": "ipo"
         }
@@ -429,7 +429,7 @@ module Engine
       "abilities": [
         {
           "type": "exchange",
-          "corporation": "C&N",
+          "corporations": ["C&N"],
           "owner_type": "player",
           "from": "ipo"
         }
@@ -444,7 +444,7 @@ module Engine
       "abilities": [
         {
           "type": "exchange",
-          "corporation": "IOW",
+          "corporations": ["IOW"],
           "owner_type": "player",
           "from": "ipo"
         }

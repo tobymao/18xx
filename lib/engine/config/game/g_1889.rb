@@ -312,7 +312,7 @@ module Engine
       "abilities": [
         {
           "type": "exchange",
-          "corporation": "IR",
+          "corporations": ["IR"],
           "owner_type": "player",
           "when": "any",
           "from": "ipo"
