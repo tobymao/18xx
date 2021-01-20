@@ -60,7 +60,7 @@ module Engine
         def process_choose(action)
           raise GameError, 'Invalid action' unless @player_choice
           raise GameError, 'Not your turn' unless action.entity == @players.first
-          raise GameError, 'Invalid choice' if @player_choice.choices.empty? { |c| c.include?(action.choice) }
+          raise GameError, 'Invalid choice' unless @player_choice.choices.any? { |c| c.include?(action.choice) }
 
           @player_selection = action.choice
           @player_choice = nil
