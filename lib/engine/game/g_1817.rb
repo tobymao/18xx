@@ -64,7 +64,7 @@ module Engine
       # Two lays with one being an upgrade, second tile costs 20
       TILE_LAYS = [
         { lay: true, upgrade: true },
-        { lay: true, upgrade: :not_if_upgraded, cost: 20, upgrade_same_hex: false },
+        { lay: true, upgrade: :not_if_upgraded, cost: 20, cannot_reuse_same_hex: true },
       ].freeze
 
       LIMIT_TOKENS_AFTER_MERGER = 8

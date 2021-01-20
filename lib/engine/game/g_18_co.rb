@@ -47,7 +47,7 @@ module Engine
       # Two tiles can be laid, only one upgrade
       TILE_LAYS = [
         { lay: true, upgrade: true },
-        { lay: true, upgrade: :not_if_upgraded, upgrade_same_hex: false },
+        { lay: true, upgrade: :not_if_upgraded, cannot_reuse_same_hex: true },
       ].freeze
       REDUCED_TILE_LAYS = [{ lay: true, upgrade: true }].freeze
 
