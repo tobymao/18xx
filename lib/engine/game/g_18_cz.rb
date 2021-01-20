@@ -87,22 +87,6 @@ module Engine
         '8E' => :large,
       }.freeze
 
-      OFFBOARD_TILES_FOR_CORPORATION = {
-        'Ug' => '8894',
-        'kk' => '8895',
-        'SX' => '8896',
-        'PR' => '8897',
-        'BY' => '8898',
-      }.freeze
-
-      COORDINATES_FOR_LARGE_CORPORATION = {
-        'Ug' => %w[A8 B5],
-        'kk' => %w[J15 I18],
-        'SX' => %w[A8 B5],
-        'PR' => %w[A22 B19],
-        'BY' => %w[G28 I24],
-      }.freeze
-
       include StubsAreRestricted
 
       def setup
@@ -280,18 +264,10 @@ module Engine
         # If a corp has laid it's first token assume it's their home token
         return if corporation.tokens.first&.used
 
-        hex = hex_by_id(corporation.coordinates)
-
-        tile = hex&.tile
-        if !tile || (tile.reserved_by?(corporation) && tile.paths.any?)
-
-          hexes =
-            if hex
-              [hex]
-            else
-              home_token_locations(corporation)
-            end
+        if corporation.coordinates.is_a?(Array)
           @log << "#{corporation.name} (#{corporation.owner.name}) must choose tile for home location"
+
+          hexes = corporation.coordinates.map { |item| hex_by_id(item) }
 
           @round.pending_tracks << {
             entity: corporation,
@@ -299,16 +275,19 @@ module Engine
           }
 
           @round.clear_cache!
-          return
+        else
+          hex = hex_by_id(corporation.coordinates)
+
+          tile = hex&.tile
+
+          cities = tile.cities
+          city = cities.find { |c| c.reserved_by?(corporation) } || cities.first
+          token = corporation.find_token_by_type
+          return unless city.tokenable?(corporation, tokens: token)
+
+          @log << "#{corporation.name} places a token on #{hex.name}"
+          city.place_token(corporation, token)
         end
-
-        cities = tile.cities
-        city = cities.find { |c| c.reserved_by?(corporation) } || cities.first
-        token = corporation.find_token_by_type
-        return unless city.tokenable?(corporation, tokens: token)
-
-        @log << "#{corporation.name} places a token on #{hex.name}"
-        city.place_token(corporation, token)
       end
 
       def upgrades_to?(from, to, special = false)
@@ -318,8 +297,7 @@ module Engine
       end
 
       def potential_tiles(corporation)
-        tile_id = OFFBOARD_TILES_FOR_CORPORATION[corporation.id]
-        @tiles.select { |tile| tile.name == tile_id }
+        tiles.select { |tile| tile.label&.to_s == corporation.name }
       end
     end
   end

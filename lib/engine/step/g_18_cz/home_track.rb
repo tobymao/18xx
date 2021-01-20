@@ -11,11 +11,9 @@ module Engine
         include Tracker
         include Tokener
         ACTIONS = %w[lay_tile].freeze
-        ALL_ACTIONS = %w[pass lay_tile].freeze
 
         def actions(entity)
           return [] unless entity == pending_entity
-          return ALL_ACTIONS unless any_tiles?(entity)
 
           ACTIONS
         end
@@ -50,16 +48,6 @@ module Engine
           "Lay home track for #{pending_entity.name}"
         end
 
-        def any_tiles?(_entity)
-          true
-        end
-
-        def process_pass(action)
-          log_pass(action.entity)
-          @round.pending_tracks.shift
-          pass!
-        end
-
         def process_lay_tile(action)
           lay_tile_action(action)
           @round.pending_tracks.shift
@@ -72,20 +60,8 @@ module Engine
           )
         end
 
-        def reachable_node?(_entity, _node)
-          true
-        end
-
-        def reachable_hex?(_entity, _hex)
-          true
-        end
-
         def available_hex(_entity, hex)
           pending_track[:hexes].include?(hex)
-        end
-
-        def hex_neighbors(entity, hex)
-          @game.graph.connected_hexes(entity)[hex]
         end
 
         def potential_tiles(entity, _hex)
