@@ -74,16 +74,7 @@ module View
         ]),
       ]
 
-      finished_games = @games
-        .select { |game| user_in_game?(@user, game) && %w[finished archived].include?(game['status']) }
-        .sort_by { |game| -game['updated_at'] }
-
-      [render_form(title, inputs),
-       h(GameRow,
-         header: 'Your Finished Games',
-         game_row_games: finished_games,
-         type: :personal,
-         user: @user)]
+      [render_form(title, inputs)]
     end
 
     def render_signup
