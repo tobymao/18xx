@@ -88,7 +88,7 @@ class App < Snabberb::Component
   def render_game
     match = @app_route.match(%r{(hotseat|game|fixture)\/((18.*\/)?(hs.*_)?\d+)})
 
-    if !@game_data&.any? # this is a hotseat game
+    if @game_data&.empty? # this is a hotseat game
       if @app_route.include?('tutorial')
         enter_tutorial
       elsif @app_route.include?('fixture')
