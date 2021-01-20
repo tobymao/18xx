@@ -73,8 +73,9 @@ module View
         ]),
       ]
 
-      finished_games = @games.select { |game| user_in_game?(@user, game) && game['status'] == 'finished' }
-                         .sort_by { |game| -game['updated_at'] }
+      finished_games = @games
+        .select { |game| user_in_game?(@user, game) && %w[finished archived].include?(game['status']) }
+        .sort_by { |game| -game['updated_at'] }
 
       [render_form(title, inputs),
        h(GameRow,

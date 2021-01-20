@@ -50,6 +50,8 @@ class Api
 
           # POST '/api/game/<game_id>/action'
           r.is 'action' do
+            halt(400, 'Archived games cannot be changed.') if game.status == 'archived'
+
             acting, action = nil
 
             DB.with_advisory_lock(:action_lock, game.id) do

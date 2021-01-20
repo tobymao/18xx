@@ -69,7 +69,7 @@ module View
         when 'active'
           buttons << render_link(url(@gdata), -> { enter_game(@gdata) }, 'Enter')
           acting?(@user) ? color_for(:your_turn) : ENTER_GREEN
-        when 'finished'
+        when 'finished', 'archived'
           buttons << render_link(url(@gdata), -> { enter_game(@gdata) }, 'Review')
           FINISHED_GREY
         end
@@ -225,7 +225,7 @@ module View
 
       optional = render_optional_rules
       children << optional if optional
-      children << h(:div, [h(:strong, 'Players: '), *p_elm]) if @gdata['status'] != 'finished'
+      children << h(:div, [h(:strong, 'Players: '), *p_elm]) unless %w[finished archived].include?(@gdata['status'])
 
       if new?
         seats = @min_p.to_s + (@min_p == @gdata['max_players'] ? '' : " - #{@gdata['max_players']}")
@@ -234,7 +234,7 @@ module View
           h(:strong, 'Created: '),
           render_time_or_date('created_at'),
         ])
-      elsif @gdata['status'] == 'finished'
+      elsif %w[finished archived].include?(@gdata['status'])
         result = @gdata['result']
           .sort_by { |_, v| -v }
           .map { |k, v| "#{k.truncate} #{v}" }
