@@ -12,6 +12,7 @@ module View
 
       needs :player
       needs :game
+      needs :user, default: nil, store: true
       needs :display, default: 'inline-block'
       needs :show_hidden, default: false
       needs :hide_logo, store: true, default: false
@@ -175,7 +176,7 @@ module View
         }
         logo_props = {
           attrs: {
-            src: corporation.logo,
+            src: @user&.dig('settings', 'simple_logos') ? corporation.simple_logo : corporation.logo,
           },
           style: {
             height: '20px',

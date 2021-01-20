@@ -9,6 +9,7 @@ module View
       include Lib::Settings
 
       needs :game
+      needs :user, default: nil, store: true
       needs :show_bank, default: false
       needs :explain_colors, default: false
 
@@ -134,7 +135,10 @@ module View
         row = @game.stock_market.market.first.map do |price|
           tokens = price.corporations.map do |corporation|
             props = {
-              attrs: { src: corporation.logo, width: "#{TOKEN_SIZES[@game.corporation_size(corporation)]}px" },
+              attrs: {
+                src: logo_for_user(corporation),
+                width: "#{TOKEN_SIZES[@game.corporation_size(corporation)]}px",
+              },
               style: { marginTop: "#{VERTICAL_TOKEN_PAD}px" },
             }
             h(:img, props)
@@ -170,7 +174,10 @@ module View
         @game.stock_market.market.first.each_with_index do |price, idx|
           tokens = price.corporations.map do |corporation|
             props = {
-              attrs: { src: corporation.logo, width: "#{TOKEN_SIZES[@game.corporation_size(corporation)]}px" },
+              attrs: {
+                src: logo_for_user(corporation),
+                width: "#{TOKEN_SIZES[@game.corporation_size(corporation)]}px",
+              },
               style: { marginTop: "#{VERTICAL_TOKEN_PAD}px" },
             }
             h(:img, props)
@@ -203,7 +210,7 @@ module View
 
               tokens = corporations.map.with_index do |corporation, index|
                 props = {
-                  attrs: { src: corporation.logo, width: "#{TOKEN_SIZE}px" },
+                  attrs: { src: logo_for_user(corporation), width: "#{TOKEN_SIZE}px" },
                   style: {
                     position: 'absolute',
                     left: num > 1 ? "#{LEFT_TOKEN_POS + ((num - index - 1) * spacing)}px" : "#{MID_TOKEN_POS}px",
@@ -224,6 +231,10 @@ module View
 
           h(:div, { style: { width: 'max-content' } }, row)
         end
+      end
+
+      def logo_for_user(entity)
+        @user&.dig('settings', 'simple_logos') ? entity.simple_logo : entity.logo
       end
 
       def render

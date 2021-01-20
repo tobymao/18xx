@@ -291,6 +291,7 @@ module Engine
       "sym": "CNR",
       "name": "Canadian Northern Railway",
       "logo": "1867/CNR",
+      "simple_logo": "1867/CNR.alt",
       "float_percent": 20,
       "always_market_price": true,
       "tokens": [
@@ -305,6 +306,7 @@ module Engine
       "sym": "CPR",
       "name": "Canadian Pacific Railway",
       "logo": "1867/CPR",
+      "simple_logo": "1867/CPR.alt",
       "float_percent": 20,
       "always_market_price": true,
       "tokens": [
@@ -319,6 +321,7 @@ module Engine
       "sym": "C&O",
       "name": "Chesapeake and Ohio Railway",
       "logo": "1867/CO",
+      "simple_logo": "1867/CO.alt",
       "float_percent": 20,
       "always_market_price": true,
       "tokens": [
@@ -333,6 +336,7 @@ module Engine
       "sym": "GTR",
       "name": "Grand Trunk Railway",
       "logo": "1867/GTR",
+      "simple_logo": "1867/GTR.alt",
       "float_percent": 20,
       "always_market_price": true,
       "tokens": [
@@ -347,6 +351,7 @@ module Engine
       "sym": "GWR",
       "name": "Great Western Railway",
       "logo": "1867/GWR",
+      "simple_logo": "1867/GWR.alt",
       "float_percent": 20,
       "always_market_price": true,
       "tokens": [
@@ -361,6 +366,7 @@ module Engine
       "sym": "ICR",
       "name": "Intercolonial Railway",
       "logo": "1867/ICR",
+      "simple_logo": "1867/ICR.alt",
       "float_percent": 20,
       "always_market_price": true,
       "tokens": [
@@ -375,6 +381,7 @@ module Engine
       "sym": "NTR",
       "name": "National Transcontinental Railway",
       "logo": "1867/NTR",
+      "simple_logo": "1867/NTR.alt",
       "float_percent": 20,
       "always_market_price": true,
       "tokens": [
@@ -389,6 +396,7 @@ module Engine
       "sym": "NYC",
       "name": "New York Central Railroad",
       "logo": "1867/NYC",
+      "simple_logo": "1867/NYC.alt",
       "float_percent": 20,
       "always_market_price": true,
       "tokens": [

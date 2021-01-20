@@ -12,6 +12,7 @@ module View
       include Lib::Color
       include Lib::Settings
 
+      needs :user, default: nil, store: true
       needs :corporation
       needs :selected_company, default: nil, store: true
       needs :selected_corporation, default: nil, store: true
@@ -131,7 +132,7 @@ module View
           },
         }
         logo_props = {
-          attrs: { src: @corporation.logo },
+          attrs: { src: logo_for_user(@corporation) },
           style: {
             height: '1.6rem',
             width: '1.6rem',
@@ -270,7 +271,7 @@ module View
             else
               token.city ? token.city.hex.name : token.price
             end
-          [token.logo, token.used, token_text]
+          [logo_for_user(token), token.used, token_text]
         end
 
         @corporation.assignments.each do |assignment, _active|
@@ -456,7 +457,7 @@ module View
         }
         logo_props = {
           attrs: {
-            src: corporation.logo,
+            src: logo_for_user(corporation),
           },
           style: {
             height: '20px',
@@ -580,6 +581,10 @@ module View
 
       def selected?
         @corporation == @selected_corporation
+      end
+
+      def logo_for_user(entity)
+        @user&.dig('settings', 'simple_logos') ? entity.simple_logo : entity.logo
       end
 
       def can_assign_corporation?

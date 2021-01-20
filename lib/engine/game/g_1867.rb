@@ -89,14 +89,6 @@ module Engine
       CN_RESERVATIONS = ['L12'].freeze
       GREEN_CORPORATIONS = %w[BBG LPS QLS SLA TGB THB].freeze
 
-      OPTIONAL_RULES = [
-        {
-          sym: :boring_major_tokens,
-          short_name: 'Alternate Major Tokens',
-          desc: 'Tokens for majors only have the company\'s abbreviation',
-        },
-      ].freeze
-
       include InterestOnLoans
       include CompanyPriceUpToFace
       include StubsAreRestricted
@@ -117,9 +109,6 @@ module Engine
         major_min_price = stock_market.par_prices.map(&:price).min
         minor_min_price = MINIMUM_MINOR_PRICE
         self.class::CORPORATIONS.map do |corporation|
-          corporation[:logo] += '.alt' if corporation[:type] == :major &&
-              @optional_rules&.include?(:boring_major_tokens) &&
-              !corporation[:logo].include?('.')
           Corporation.new(
             min_price: corporation[:type] == :major ? major_min_price : minor_min_price,
             capitalization: self.class::CAPITALIZATION,

@@ -43,6 +43,7 @@ module View
       inputs = [
         render_username,
         render_notifications(setting_for(:notifications)),
+        render_simple_logos(setting_for(:simple_logos)),
         h('div#settings__colors', [
           render_logo_color(setting_for(:red_logo)),
           h(:div, [
@@ -120,6 +121,7 @@ module View
       input_elm(:font2).value = default_for(:font2)
       input_elm(:your_turn).value = default_for(:your_turn)
       input_elm(:hotseat_game).value = default_for(:hotseat_game)
+      input_elm(:simple_logos).value = default_for(:simple_logos)
       input_elm(:red_logo).checked = false
 
       TILE_COLORS.each do |color, hex_color|
@@ -150,6 +152,17 @@ module View
         render_input(
           'Allow Turn and Message Notifications',
           id: :notifications,
+          type: :checkbox,
+          attrs: { checked: checked },
+        ),
+      ])
+    end
+
+    def render_simple_logos(checked = true)
+      h('div#settings__simple_logos', [
+        render_input(
+          'Prefer Alternative (Simplified) Logos',
+          id: :simple_logos,
           type: :checkbox,
           attrs: { checked: checked },
         ),
