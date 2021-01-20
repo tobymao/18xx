@@ -45,7 +45,10 @@ module Engine
       MAX_SHARE_VALUE = 485
 
       # Two tiles can be laid, only one upgrade
-      TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded }].freeze
+      TILE_LAYS = [
+        { lay: true, upgrade: true },
+        { lay: true, upgrade: :not_if_upgraded, cannot_reuse_same_hex: true },
+      ].freeze
       REDUCED_TILE_LAYS = [{ lay: true, upgrade: true }].freeze
 
       # First 3 are Denver, Second 3 are CO Springs
