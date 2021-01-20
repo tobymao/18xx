@@ -227,6 +227,9 @@ module Engine
         @sj.owner = @bank
 
         @pending_nationalization = false
+
+        @e_train_bought = false
+        @sj_tokens_passable = false
       end
 
       def cert_limit
@@ -345,15 +348,13 @@ module Engine
         str
       end
 
-      def clean_up_after_entity
+      def clean_up_after_dividend
         # Remove Gellivare Company tile lay ability if it has been used this OR
         abilities(gc, :tile_lay) do |ability|
           company.remove_ability(ability)
           @log << "#{gc.name} tile lay ability removed"
         end unless @special_tile_lays.empty?
         @special_tile_lays = []
-
-        return unless @round.current_entity
 
         make_sj_tokens_impassable
       end
@@ -362,13 +363,17 @@ module Engine
       # This is a workaround that is not perfect in case a
       # corporation has E train + other train, but very unlikely
       def make_sj_tokens_passable_for_electric_trains(entity)
-        return unless entity.trains.any? { |t| t.name == 'E' }
+        return if !@e_train_bought || !owns_electric_train?(entity)
 
         @sj.tokens.each { |t| t.type = :neutral }
+        @sj_tokens_passable = true
       end
 
       def make_sj_tokens_impassable
+        return if !@e_train_bought || !@sj_tokens_passable
+
         @sj.tokens.each { |t| t.type = :blocking }
+        @sj_tokens_passable = false
       end
 
       def event_close_companies!
@@ -445,6 +450,10 @@ module Engine
 
           transfer_token(token, merged, target)
         end
+      end
+
+      def buy_electric_train
+        @e_train_bought = true
       end
 
       private
@@ -692,6 +701,10 @@ module Engine
 
       def tokened_hex_by(hex, corporation)
         hex.tile.cities.any? { |c| c.tokened_by?(corporation) }
+      end
+
+      def owns_electric_train?(entity)
+        entity.trains.any? { |t| t.name == 'E' }
       end
     end
   end

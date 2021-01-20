@@ -7,11 +7,6 @@ module Engine
   module Round
     module G18SJ
       class Operating < Operating
-        def next_entity!
-          @game.clean_up_after_entity
-          super
-        end
-
         def cash_crisis_player
           @game.cash_crisis_player
         end
