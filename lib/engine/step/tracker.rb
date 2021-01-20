@@ -27,7 +27,7 @@ module Engine
         action[:lay] = !@upgraded if action[:lay] == :not_if_upgraded
         action[:upgrade] = !@upgraded if action[:upgrade] == :not_if_upgraded
         action[:cost] = action[:cost] || 0
-        action[:upgrade_same_hex] = true if action[:upgrade_same_hex].nil?
+        action[:upgrade_same_hex] = true unless action[:upgrade_same_hex]
         action
       end
 
