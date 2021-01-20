@@ -253,7 +253,12 @@ module Engine
           # Determine where the system share will come from
           from = exchange_source(entity, num_needed: shares_needed)
           return if @player_choice
-          return entity.shares_of(@target).dup.each { |share| share.transfer(@discard) } unless from
+
+          unless from
+            restore_odd_share(entity)
+            entity.shares_of(@target).dup.each { |share| share.transfer(@discard) }
+            return
+          end
 
           if from == entity
             # Entity already has the required shares, execute exchange, including presidency edge cases
