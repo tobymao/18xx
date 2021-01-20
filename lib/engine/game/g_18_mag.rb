@@ -128,6 +128,7 @@ module Engine
         end
 
         @trains_left = %w[3 4 6]
+        @phase_change = false
       end
 
       def partition_companies
@@ -244,10 +245,11 @@ module Engine
             reorder_players
             new_operating_round
           when Round::Operating
-            if @round.round_num < @operating_rounds && (!@final_turn || @final_turn == @turn)
+            if @round.round_num < @operating_rounds && !@phase_change
               or_round_finished
               new_operating_round(@round.round_num + 1)
             else
+              @phase_change = false
               @turn += 1
               or_round_finished
               or_set_finished
@@ -261,13 +263,9 @@ module Engine
           end
       end
 
-      def final_operating_rounds
-        @phase.operating_rounds
-      end
-
       def total_rounds(name)
         # Return the total number of rounds for those with more than one.
-        if !@final_turn || @final_turn == @turn
+        if !@phase_change
           @operating_rounds if name == 'Operating'
         elsif name == 'Operating'
           @round.round_num
@@ -333,6 +331,7 @@ module Engine
         @phase.current[:on] = nil
         @phase.upcoming[:on] = @trains_left if @phase.upcoming
         @phase.next_on = @trains_left
+        @phase_change = true
       end
 
       def event_first_four!
@@ -340,6 +339,7 @@ module Engine
         @phase.current[:on] = nil
         @phase.upcoming[:on] = @trains_left if @phase.upcoming
         @phase.next_on = @trains_left
+        @phase_change = true
       end
 
       def event_first_six!
@@ -347,6 +347,7 @@ module Engine
         @phase.current[:on] = nil
         @phase.upcoming[:on] = @trains_left if @phase.upcoming
         @phase.next_on = @trains_left
+        @phase_change = true
       end
 
       def info_on_trains(phase)
