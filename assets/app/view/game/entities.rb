@@ -47,13 +47,18 @@ module View
           h(Bank, game: @game),
           h(GameInfo, game: @game, layout: 'upcoming_trains'),
           *@game.corporations.select(&:receivership?).map { |c| h(Corporation, corporation: c) },
-          @game.unsold_purchasable_companies(@current_entity).empty? ? nil : h(UnOwnedCompanies, companies: @game.unsold_purchasable_companies(@current_entity)),
+          render_unsold_companies,
           *extra_bank,
         ].compact)
 
         children.concat(bankrupt_players.map { |p| h(:div, [h(Player, player: p, game: @game)]) })
 
         h('div#entities', div_props, children)
+      end
+
+      def render_unsold_companies
+        companies = @game.unsold_purchasable_companies(@current_entity)
+        h(UnOwnedCompanies, companies: @game.unsold_purchasable_companies(@current_entity)) unless companies.empty?
       end
     end
   end
