@@ -5,10 +5,10 @@
 # rubocop:disable Lint/RedundantCopDisableDirective, Layout/LineLength, Layout/HeredocIndentation
 
 module Engine
-    module Config
-      module Game
-        module G18CZ
-          JSON = <<-'DATA'
+  module Config
+    module Game
+      module G18CZ
+        JSON = <<-'DATA'
           {
               "filename": "18_cz",
               "modulename": "18CZ",
@@ -2169,7 +2169,6 @@ module Engine
                           "yellow",
                           "green"
                       ],
-  
                       "status": [
                           "can_buy_companies"
                       ],
@@ -2188,7 +2187,6 @@ module Engine
                           "green",
                           "brown"
                       ],
-  
                       "status": [
                           "can_buy_companies"
                       ],
@@ -2207,7 +2205,6 @@ module Engine
                           "green",
                           "brown"
                       ],
-  
                       "status": [
                           "can_buy_companies"
                       ],
@@ -2227,7 +2224,6 @@ module Engine
                           "brown",
                           "gray"
                       ],
-  
                       "status": [
                           "can_buy_companies"
                       ],
@@ -2254,11 +2250,10 @@ module Engine
                   }
               ]
           }
-          DATA
-        end
+        DATA
       end
     end
   end
-  
-  # rubocop:enable Lint/RedundantCopDisableDirective, Layout/LineLength, Layout/HeredocIndentation
-  
+end
+
+# rubocop:enable Lint/RedundantCopDisableDirective, Layout/LineLength, Layout/HeredocIndentation
