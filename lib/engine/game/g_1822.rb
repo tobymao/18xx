@@ -42,7 +42,6 @@ module Engine
           hex = hex_by_id(minor.coordinates)
           hex.tile.add_reservation!(minor, minor.city, nil)
         end
-
       end
 
       def operating_round(round_num)
@@ -55,7 +54,7 @@ module Engine
           Step::Route,
           Step::Dividend,
           Step::DiscardTrain,
-          Step::BuyTrain
+          Step::BuyTrain,
         ], round_num: round_num)
       end
     end

@@ -976,7 +976,7 @@ module Engine
       ],
       "type": "major",
       "float_percent": 20,
-      "always_market_price": true,      
+      "always_market_price": true,
       "coordinates": "E6",
       "color": "crBlue"
     },
@@ -989,7 +989,7 @@ module Engine
       ],
       "type": "major",
       "float_percent": 20,
-      "always_market_price": true,      
+      "always_market_price": true,
       "coordinates": "M38",
       "city": 1,
       "color": "gwrGreen"
@@ -1003,7 +1003,7 @@ module Engine
       ],
       "type": "major",
       "float_percent": 20,
-      "always_market_price": true,      
+      "always_market_price": true,
       "coordinates": "M38",
       "city": 0,
       "color": "lbscrYellow",
@@ -1018,7 +1018,7 @@ module Engine
       ],
       "type": "major",
       "float_percent": 20,
-      "always_market_price": true,      
+      "always_market_price": true,
       "coordinates": "M38",
       "city": 3,
       "color": "lnwrBlack"
@@ -1032,7 +1032,7 @@ module Engine
       ],
       "type": "major",
       "float_percent": 20,
-      "always_market_price": true,      
+      "always_market_price": true,
       "coordinates": "G22",
       "color": "lyrPurple"
     },
@@ -1045,7 +1045,7 @@ module Engine
       ],
       "type": "major",
       "float_percent": 20,
-      "always_market_price": true,      
+      "always_market_price": true,
       "coordinates": "J29",
       "color": "mrRed"
     },
@@ -1058,7 +1058,7 @@ module Engine
       ],
       "type": "major",
       "float_percent": 20,
-      "always_market_price": true,      
+      "always_market_price": true,
       "coordinates": "H5",
       "color": "nbrBrown"
     },
@@ -1071,7 +1071,7 @@ module Engine
       ],
       "type": "major",
       "float_percent": 20,
-      "always_market_price": true,      
+      "always_market_price": true,
       "coordinates": "L19",
       "color": "nerGreen"
     },
@@ -1084,7 +1084,7 @@ module Engine
       ],
       "type": "major",
       "float_percent": 20,
-      "always_market_price": true,      
+      "always_market_price": true,
       "coordinates": "M38",
       "city": 5,
       "color": "secrOrange"
@@ -1098,7 +1098,7 @@ module Engine
       ],
       "type": "major",
       "float_percent": 20,
-      "always_market_price": true,      
+      "always_market_price": true,
       "coordinates": "H33",
       "color": "swrGray",
       "text_color": "black"
@@ -1256,7 +1256,7 @@ module Engine
       ],
       "border=edge:2,type:water,cost:40;border=edge:3,type:water,cost:40;border=edge:5,type:impassable": [
         "O38"
-      ],      
+      ],
       "border=edge:0,type:water,cost:40;border=edge:5,type:water,cost:40;stub=edge:1": [
         "N37"
       ],
@@ -1283,10 +1283,10 @@ module Engine
       ],
       "upgrade=cost:20,terrain:swamp;border=edge:2,type:water,cost:40": [
         "H35"
-      ],      
+      ],
       "upgrade=cost:20,terrain:swamp;border=edge:3,type:water,cost:40;stub=edge:2": [
         "N39"
-      ],      
+      ],
       "upgrade=cost:20,terrain:swamp;border=edge:2,type:impassable;border=edge:3,type:impassable": [
         "F37"
       ],
@@ -1366,7 +1366,7 @@ module Engine
       ],
       "town=revenue:0;stub=edge:0": [
         "M36"
-      ],      
+      ],
       "town=revenue:0;town=revenue:0": [
         "F7",
         "H21"
@@ -1540,7 +1540,7 @@ module Engine
         "F15",
         "F21"
       ]
-    }    
+    }
   },
   "phases": [
     {
@@ -1643,5 +1643,5 @@ module Engine
     end
   end
 end
-  
-# rubocop:enable Lint/RedundantCopDisableDirective, Layout/LineLength, Layout/HeredocIndentation  
+
+# rubocop:enable Lint/RedundantCopDisableDirective, Layout/LineLength, Layout/HeredocIndentation
