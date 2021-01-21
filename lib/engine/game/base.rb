@@ -1278,6 +1278,11 @@ module Engine
         !company.owner.is_a?(Corporation)
       end
 
+      # Called by View::Game::Entities to determine if the company should be shown on entities
+      def unsold_purchasable_companies(_company)
+        []
+      end
+
       def float_corporation(corporation)
         @log << "#{corporation.name} floats"
 
