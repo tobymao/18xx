@@ -2,7 +2,6 @@
 
 require 'game_manager'
 require 'lib/storage'
-require 'view/form'
 require 'view/game_card'
 
 module View
@@ -11,6 +10,7 @@ module View
 
     needs :header
     needs :game_row_games
+    needs :search_string, default: nil
     needs :status, default: 'active'
     needs :type
     needs :user
@@ -29,6 +29,8 @@ module View
       children = [h(:h2, header)]
       p = page.to_i
       params = "games=#{@type}#{@type != :hs ? "&status=#{@status}" : ''}"
+      @search_string ||= Lib::Storage["search_#{@type}_#{@status}"] || nil
+
       @offset = @type == :hs ? (p * @limit) : 0
       children << render_more('<', "?#{params}&p=#{p - 1}") if p.positive?
       children << render_more('>', "?#{params}&p=#{p + 1}") if @game_row_games.size > @offset + @limit
@@ -47,17 +49,20 @@ module View
     end
 
     def render_more(text, params)
-      click = lambda do
+      params += "&s=#{@search_string}" if @search_string
+
+      change_page = lambda do
         get_games(params)
-        store(:app_route, "#{@app_route.split('?').first}#{params}")
+        store(:app_route, params)
       end
+
       props = {
         attrs: {
           href: params,
           onclick: 'return false',
         },
         on: {
-          click: click,
+          click: change_page,
         },
         style: {
           justifySelf: 'center',
@@ -77,7 +82,9 @@ module View
         if event.JS['type'] == 'click' || event.JS['keyCode'] == 13
           val = Native(@inputs[search_id]).elm.value
           val == '' ? Lib::Storage.delete(search_id) : Lib::Storage[search_id] = val
-          update
+          params = "/?games=#{@type}&status=#{@status}#{"&s=#{val}" if val != ''}"
+          get_games(params)
+          store(:app_route, params)
         end
       end
 

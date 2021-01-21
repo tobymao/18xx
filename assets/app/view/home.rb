@@ -16,48 +16,44 @@ module View
     needs :refreshing, default: nil, store: true
 
     def render
-      your_games, other_games = @games.partition { |game| user_in_game?(@user, game) || user_owns_game?(@user, game) }
+      type = get_url_param('games') || (@user ? 'personal' : 'all')
+      status = get_url_param('status') || (@user ? 'active' : 'new')
 
       children = [
         render_header,
-        h(Welcome, show_intro: your_games.size < 2),
+        h(Welcome, show_intro: false), # personal_games.size < 2), # TODO: change condition
         h(Chat, user: @user, connection: @connection),
       ]
 
-      # these will show up in the profile page
-      your_games.reject! { |game| %w[finished archived].include?(game['status']) }
+      children << render_games_links
 
-      grouped = other_games.group_by { |game| game['status'] }
+      acting = false
 
-      # Ready, then active, then unstarted, then completed
-      your_games.sort_by! do |game|
-        [
-          user_is_acting?(@user, game) ? -game['updated_at'] : 0,
-          game['status'] == 'active' ? -game['updated_at'] : 0,
-          game['status'] == 'new' ? -game['created_at'] : 0,
-          -game['updated_at'],
-        ]
+      case type
+      when 'personal'
+        if @games.any? { |game| user_is_acting?(@user, game) }
+          acting = true
+          @games.sort_by! { |game| user_is_acting?(@user, game) ? -game['updated_at'] : 0 }
+        end
+        render_row(children, "Your #{status.capitalize} Games", @games, :personal, status)
+      when 'hs'
+        hs_games = Lib::Storage
+          .all_keys
+          .select { |k| k.start_with?('hs_') }
+          .map { |k| Lib::Storage[k] }
+          .sort_by { |gd| gd[:id] }
+          .reverse
+
+        render_row(children, 'Hotseat Games', hs_games, :hs)
+      else
+        render_row(children, "#{status&.capitalize} Games", @games, :all, status)
       end
 
-      hotseat = Lib::Storage
-        .all_keys
-        .select { |k| k.start_with?('hs_') }
-        .map { |k| Lib::Storage[k] }
-        .sort_by { |gd| gd[:id] }
-        .reverse
-
-      render_row(children, 'Your Games', your_games, :personal) if @user
-      render_row(children, 'Hotseat Games', hotseat, :hotseat) if hotseat.any?
-      render_row(children, 'New Games', grouped['new'], :new) if @user
-      render_row(children, 'Active Games', grouped['active'], :active)
-      render_row(children, 'Finished Games', grouped['finished'], :finished)
-
-      game_refresh
-
-      acting = your_games.any? { |game| user_is_acting?(@user, game) }
       `document.title = #{(acting ? '* ' : '') + '18xx.Games'}`
       change_favicon(acting)
       change_tab_color(acting)
+
+      game_refresh
 
       destroy = lambda do
         `clearTimeout(#{@refreshing})`
@@ -88,22 +84,80 @@ module View
       store(:refreshing, timeout, skip: true)
     end
 
-    def render_row(children, header, games, type)
-      return unless games&.any?
-
+    def render_row(children, header, games, type, status = 'active')
       children << h(
         GameRow,
         header: header,
         game_row_games: games,
+        status: status,
         type: type,
         user: @user,
       )
     end
 
     def render_header
-      h('div#greeting.card_header', [
+      h('div#greeting', [
         h(:h2, "Welcome#{@user ? ' ' + @user['name'] : ''}!"),
       ])
+    end
+
+    def render_games_links
+      links =
+        if @user
+          [
+            h(:label, { style: { margin: '0 0.3rem 0 0' } }, 'Your Games:'),
+            item('Active', 'personal', 'active'),
+            item('New', 'personal', 'new'),
+            item('Finished', 'personal', 'finished'),
+            item('Archived', 'personal', 'archived'),
+            item('Hotseat', 'hs'),
+            h(:label, { style: { margin: '0 0.3rem 0 1rem' } }, 'Other Games:'),
+          ]
+        else
+          [
+            h(:label, { style: { margin: '0 0.3rem 0 0' } }, 'Games:'),
+          ]
+        end
+      links.concat [
+        item('Active', 'all', 'active'),
+        item('New', 'all', 'new'),
+        item('Finished', 'all', 'finished'),
+        item('Archived', 'all', 'archived'),
+      ]
+
+      h('nav', links)
+    end
+
+    def item(name, type, status)
+      search_string = Lib::Storage["search_#{type}_#{status}"]
+      params = "?games=#{type}"
+      params += "&status=#{status}" if status
+      params += "&s=#{search_string}" if search_string
+
+      store_route = lambda do
+        get_games(params)
+        store(:app_route, params)
+      end
+
+      props = {
+        attrs: {
+          href: params,
+          onclick: 'return false',
+        },
+        on: {
+          click: store_route,
+        },
+        style: {
+          margin: '0 0.3rem',
+        },
+      }
+      h(:a, props, name)
+    end
+
+    def get_url_param(param)
+      return if `typeof URLSearchParams === 'undefined'` # rubocop:disable Lint/LiteralAsCondition
+
+      `(new URLSearchParams(window.location.search)).get(#{param})`
     end
   end
 end
