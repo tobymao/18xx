@@ -50,6 +50,13 @@ module Engine
 
         def process_lay_tile(action)
           lay_tile_action(action)
+          action.hex.tile.borders.clear
+
+          action.hex.neighbors.each do |neighbor|
+            edge = neighbor[0]
+            neighbor[1].tile.borders.map! { |nb| nb.edge == action.hex.invert(edge) ? nil : nb }.compact!
+          end
+
           @round.pending_tracks.shift
 
           place_token(
