@@ -7,6 +7,7 @@ x-rack: &rack
     RACK_ENV: production
     DATABASE_URL: $DATABASE_URL
     ELASTIC_KEY: $ELASTIC_KEY
+    NEW_RELIC_LICENSE_KEY: $NEW_RELIC_LICENSE_KEY
     RUBYOPTS: --jit
     PORT: 9292
   build:
@@ -28,21 +29,8 @@ services:
       context: .
 
   queue:
-    image: 18xx_queue:prod
+    <<: *rack
     command: bundle exec ruby queue.rb
-    environment:
-      RACK_ENV: production
-      DATABASE_URL: $DATABASE_URL
-      ELASTIC_KEY: $ELASTIC_KEY
-      RUBYOPTS: --jit
-    build:
-      args:
-        RACK_ENV: production
-    volumes:
-      - ./public:/18xx/public
-    logging:
-      options:
-        max-size: "10m"
 
   db:
     environment:

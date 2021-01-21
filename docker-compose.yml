@@ -10,7 +10,6 @@ services:
     build: .
     depends_on:
       - db
-      - rack
 
   db:
     build: ./db/

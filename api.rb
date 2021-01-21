@@ -14,6 +14,8 @@ require_relative 'lib/mail'
 
 require_rel './models'
 
+require 'newrelic_rpm' if PRODUCTION
+
 class Api < Roda
   opts[:check_dynamic_arity] = false
   opts[:check_arity] = :warn
