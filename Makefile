@@ -39,7 +39,16 @@ prod_up_b : prod_link data_dir ensure_prod_env
 	docker-compose up --build
 prod_up_b_d : prod_link data_dir ensure_prod_env
 	docker-compose up --build --detach
+prod_rack_up_b_d : prod_link data_dir ensure_prod_env
+	docker-compose up --build --no-deps --detach rack_backup && \
+		sleep 30 && \
+		docker-compose up --build --no-deps --detach rack
 
 # remotely deploy latest master in prod
 prod_deploy :
-	./scripts/deploy_prod.sh
+	docker-compose run rack rake precompile && \
+		scp public/assets/main.js \
+		public/assets/main.js.gz \
+		public/assets/version.json \
+		deploy@18xx:~/18xx/public/assets/ && \
+		ssh -l deploy 18xx "cd ~/18xx/ && git pull && make prod_rack_up_b_d"

@@ -1,22 +1,31 @@
 version: '3.5'
 
+x-rack: &rack
+  command: bash -c "bundle exec rake prod_up && bundle exec unicorn -c config/unicorn.rb"
+  image: 18xx_rack:prod
+  environment:
+    RACK_ENV: production
+    DATABASE_URL: $DATABASE_URL
+    ELASTIC_KEY: $ELASTIC_KEY
+    RUBYOPTS: --jit
+    PORT: 9292
+  build:
+    args:
+      RACK_ENV: production
+  volumes:
+    - ./public:/18xx/public
+  logging:
+    options:
+      max-size: "50m"
+
 services:
   rack:
-    command: bash -c "bundle exec rake prod_up && bundle exec unicorn -c config/unicorn.rb"
-    image: 18xx_rack:prod
-    environment:
-      RACK_ENV: production
-      DATABASE_URL: $DATABASE_URL
-      ELASTIC_KEY: $ELASTIC_KEY
-      RUBYOPTS: --jit
+    <<: *rack
+
+  rack_backup:
+    <<: *rack
     build:
-      args:
-        RACK_ENV: production
-    volumes:
-      - ./public:/18xx/public
-    logging:
-      options:
-        max-size: "50m"
+      context: .
 
   queue:
     image: 18xx_queue:prod
