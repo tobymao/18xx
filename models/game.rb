@@ -92,7 +92,7 @@ class Game < Base
       type: opts['games'] || (user ? 'personal' : 'all'),
       page: opts['p']&.to_i || 0,
       status: opts['status'] || (user ? 'active' : 'new'),
-      search_string: opts['s'] || '18:*',
+      search_string: opts['s'] || '1:*',
     }
     opts[:user_id] = user.id if user
 
