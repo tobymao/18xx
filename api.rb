@@ -8,13 +8,8 @@ require 'roda'
 require 'snabberb'
 
 require_relative 'models'
-require_relative 'lib/assets'
-require_relative 'lib/bus'
-require_relative 'lib/mail'
-
+require_rel './lib'
 require_rel './models'
-
-require 'newrelic_rpm' if PRODUCTION
 
 class Api < Roda
   opts[:check_dynamic_arity] = false
@@ -59,6 +54,7 @@ class Api < Roda
   plugin :json_parser
   plugin :halt
   plugin :cookies
+  plugin :new_relic if PRODUCTION
 
   ASSETS = Assets.new(precompiled: PRODUCTION)
 
