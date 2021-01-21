@@ -53,6 +53,8 @@ module Engine
 
       CORP_TOKEN_REVENUE = 10
 
+      MAX_ORS_NO_TRAIN = 3
+
       FIXED_ROTATION_TILES = {
         'L33' => 2,
       }.freeze
@@ -93,10 +95,10 @@ module Engine
         # start with first minor tokens placed (as opposed to just reserved)
         @mine = @minors.find { |m| m.name == 'mine' }
         @minors.delete(@mine)
-        @minors.each do |minor|
-          hex = hex_by_id(minor.coordinates)
-          hex.tile.cities[minor.city || 0].place_token(minor, minor.next_token)
-        end
+        # @minors.each do |minor|
+        #  hex = hex_by_id(minor.coordinates)
+        #  hex.tile.cities[minor.city || 0].place_token(minor, minor.next_token)
+        # end
 
         # Place all mine tokens and mark them as non-blocking
         # route restrictions will be handled elsewhere
@@ -129,10 +131,16 @@ module Engine
 
         @trains_left = %w[3 4 6]
         @phase_change = false
+        @train_bought = false
+        @ors_no_train = 0
       end
 
       def partition_companies
         init_minors.select { |m| m.name == 'mine' }
+      end
+
+      def reservation_corporations
+        minors.reject { |m| m.name == 'mine' }
       end
 
       def init_tile_groups
@@ -158,8 +166,7 @@ module Engine
           %w[14 15],
           %w[209],
           %w[236],
-          %w[237],
-          %w[238],
+          %w[237 238],
           %w[8858],
           %w[8859],
           %w[8860],
@@ -209,6 +216,8 @@ module Engine
         train = @depot.upcoming[0]
         buy_train(minor, train, :free)
         @bank.spend(MINOR_STARTING_CASH, minor)
+        hex = hex_by_id(minor.coordinates)
+        hex.tile.cities[minor.city || 0].place_token(minor, minor.next_token)
       end
 
       def init_starting_cash(players, bank)
@@ -237,6 +246,12 @@ module Engine
         ], round_num: round_num)
       end
 
+      def new_operating_round(round_num = 1)
+        @train_bought = false
+        @log << "-- #{round_description('Operating', round_num)} --"
+        operating_round(round_num)
+      end
+
       def next_round!
         @round =
           case @round
@@ -245,6 +260,7 @@ module Engine
             reorder_players
             new_operating_round
           when Round::Operating
+            no_train_advance!
             if @round.round_num < @operating_rounds && !@phase_change
               or_round_finished
               new_operating_round(@round.round_num + 1)
@@ -304,6 +320,7 @@ module Engine
 
       # price is nil, :free, or a positive int
       def buy_train(operator, train, price = nil)
+        @train_bought = true if train.owner == @depot # No idea if this is what Lonny wants
         cost = price || train.price
         if price != :free && train.owner == @depot
           corp = %w[2 4].include?(train.name) ? @ldsteg : @mavag
@@ -326,10 +343,32 @@ module Engine
         Phase.new(self.class::PHASES.dup.map(&:dup), self)
       end
 
+      def no_train_advance!
+        if @train_bought
+          @ors_no_train = 0
+          return
+        end
+
+        @ors_no_train += 1
+        return unless @phase.upcoming && @ors_no_train >= MAX_ORS_NO_TRAIN
+
+        @log << "-- No trains purchased in #{MAX_ORS_NO_TRAIN} Operating Rounds --"
+        @ors_no_train = 0
+        @phase.next!
+        @phase.current[:on] = nil
+        @phase_change = true
+        return unless @phase.upcoming
+
+        @phase.upcoming[:on] = @trains_left
+        @phase.next_on = @trains_left
+      end
+
       def event_first_three!
         @trains_left.delete('3')
         @phase.current[:on] = nil
-        @phase.upcoming[:on] = @trains_left if @phase.upcoming
+        return unless @phase.upcoming
+
+        @phase.upcoming[:on] = @trains_left
         @phase.next_on = @trains_left
         @phase_change = true
       end
@@ -337,7 +376,9 @@ module Engine
       def event_first_four!
         @trains_left.delete('4')
         @phase.current[:on] = nil
-        @phase.upcoming[:on] = @trains_left if @phase.upcoming
+        return unless @phase.upcoming
+
+        @phase.upcoming[:on] = @trains_left
         @phase.next_on = @trains_left
         @phase_change = true
       end
@@ -345,7 +386,9 @@ module Engine
       def event_first_six!
         @trains_left.delete('6')
         @phase.current[:on] = nil
-        @phase.upcoming[:on] = @trains_left if @phase.upcoming
+        return unless @phase.upcoming
+
+        @phase.upcoming[:on] = @trains_left
         @phase.next_on = @trains_left
         @phase_change = true
       end
@@ -521,6 +564,15 @@ module Engine
         elsif entity.corporation?
           CORPORATE_POWERS[entity.name]
         end
+      end
+
+      def player_card_minors(player)
+        minors.select { |m| m.owner == player }
+      end
+
+      def player_sort(entities)
+        minors, majors = entities.partition(&:minor?)
+        (minors.sort_by { |m| m.name.to_i } + majors.sort_by(&:name)).group_by(&:owner)
       end
     end
   end
