@@ -276,7 +276,7 @@ module Engine
         multi_city_upgrade = new_ctedges.size > 1 && old_ctedges.size > 1
 
         new_exits.all? { |edge| hex.neighbors[edge] } &&
-          !(new_exits & available_hex(entity, hex)).empty? &&
+          !(new_exits & hex_neighbors(entity, hex)).empty? &&
           old_paths.all? { |path| new_paths.any? { |p| path <= p } } &&
           # Count how many cities on the new tile that aren't included by any of the old tile.
           # Make sure this isn't more than the number of new cities added.
@@ -291,6 +291,10 @@ module Engine
           tile.rotate!(rotation)
           legal_tile_rotation?(entity, hex, tile)
         end
+      end
+
+      def hex_neighbors(entity, hex)
+        @game.graph.connected_hexes(entity)[hex]
       end
     end
   end

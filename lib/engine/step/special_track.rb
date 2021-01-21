@@ -58,6 +58,10 @@ module Engine
       end
 
       def available_hex(entity, hex)
+        hex_neighbors(entity, hex)
+      end
+
+      def hex_neighbors(entity, hex)
         return unless (ability = tile_lay_abilities(entity))
         return if ability.hexes&.any? && !ability.hexes&.include?(hex.id)
         return if ability.reachable && !@game.graph.connected_hexes(entity.owner)[hex]
