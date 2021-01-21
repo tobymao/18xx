@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative '../g_18_cz/phase'
 require_relative '../config/game/g_18_cz'
 require_relative 'base'
 require_relative 'stubs_are_restricted'
@@ -99,6 +100,10 @@ module Engine
         @corporations, @future_corporations = @corporations.partition { |corporation| corporation.type == :small }
 
         block_lay_for_purple_tiles
+      end
+
+      def init_phase
+        Engine::G18CZ::Phase.new(self.class::PHASES, self)
       end
 
       def init_round
