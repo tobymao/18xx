@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-return unless ENV['prod']
+return unless ENV['RACK_ENV'] == 'production'
 
 require 'new_relic/agent/instrumentation/controller_instrumentation'
 require 'new_relic/agent/parameter_filtering'
