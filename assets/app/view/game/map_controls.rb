@@ -8,12 +8,14 @@ module View
       needs :show_coords, default: nil, store: true
       needs :show_location_names, default: true, store: true
       needs :show_starting_map, default: false, store: true
+      needs :show_player_colors, default: false, store: true
       needs :historical_routes, default: [], store: true
       needs :game, default: nil, store: true
       needs :map_zoom, default: nil, store: true
 
       def render
         children = [
+          player_colors_controls,
           location_names_controls,
           hex_coord_controls,
           starting_map_controls,
@@ -22,6 +24,19 @@ module View
         ].compact
 
         h(:div, children)
+      end
+
+      def player_colors_controls
+        show_hide = @show_player_colors ? 'Hide' : 'Show'
+        text = "#{show_hide} Player Colors"
+
+        on_click = lambda do
+          new_value = !@show_player_colors
+          Lib::Storage['show_player_colors'] = new_value
+          store(:show_player_colors, new_value)
+        end
+
+        render_button(text, on_click)
       end
 
       def location_names_controls

@@ -18,6 +18,7 @@ module View
 
       needs :show_coords, default: nil
       needs :show_location_names, default: true
+      needs :player_colors, default: nil
 
       # helper method to pass @tile and @region_use to every part
       def render_tile_part(part_class, **kwargs)
@@ -52,7 +53,8 @@ module View
 
         render_revenue = should_render_revenue?
         children << render_tile_part(Part::Track, routes: @routes) if !@tile.paths.empty? || !@tile.stubs.empty?
-        children << render_tile_part(Part::Cities, show_revenue: !render_revenue) unless @tile.cities.empty?
+        children << render_tile_part(Part::Cities, show_revenue: !render_revenue,
+                                                   player_colors: @player_colors) unless @tile.cities.empty?
         children << render_tile_part(Part::Towns, routes: @routes) unless @tile.towns.empty?
 
         borders = render_tile_part(Part::Borders) if @tile.borders.any?(&:type)
