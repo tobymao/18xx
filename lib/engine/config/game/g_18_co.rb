@@ -140,7 +140,7 @@ module Engine
 		"co2": {
 			"count": 1,
 			"color": "green",
-			"code": "city=revenue:50,slots:3;city=revenue:50,hide:1;path=a:0,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;path=a:1,b:_1;path=a:2,b:_1;label=D;"
+			"code": "city=revenue:50,slots:3,loc:16.5;city=revenue:50;path=a:0,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;path=a:1,b:_1;path=a:2,b:_1;label=D;"
 		},
 		"co6": {
 			"count": 1,

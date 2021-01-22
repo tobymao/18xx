@@ -18,10 +18,9 @@ module View
     def render_notification
       message = <<~MESSAGE
 
-        <p>18Mag and 1828.Games are now in alpha.<p>
+        <p>18Mag, 1828.Games and 1849 are now in alpha.<p>
+        <p>18CO: Rock & Stock, 1860 and 1867 are now in beta. 18Chesapeake: Off The Rails is now in beta with a new stock market.</p>
         <p>The authentication system is now more efficient. You need to log back in and all pins have been deleted.</p>
-        <p>1849 is now in alpha.</p>
-        <p>1860 and 1867 are now in beta. 18Chesapeake: Off The Rails is now in beta with a new stock market.</p>
 
         <p>Please file <a href='https://github.com/tobymao/18xx/issues'>issues and ideas</a> on
         <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>.<br>
