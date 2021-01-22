@@ -6,15 +6,24 @@ services:
     depends_on:
       - db
       - redis
+    logging:
+      options:
+        max-size: "10m"
 
   queue:
     build: .
     depends_on:
       - db
       - redis
+    logging:
+      options:
+        max-size: "10m"
 
   redis:
     build: ./redis/
+    logging:
+      options:
+        max-size: "10m"
 
   db:
     build: ./db/
@@ -22,3 +31,6 @@ services:
       - ./db/data:/var/lib/postgresql/data
     ports:
       - 127.0.0.1:5433:5432
+    logging:
+      options:
+        max-size: "10m"

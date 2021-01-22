@@ -37,9 +37,6 @@ services:
       - POSTGRES_USER
       - POSTGRES_PASSWORD
       - POSTGRES_DB
-    logging:
-      options:
-        max-size: "10m"
 
   nginx:
     build: ./nginx/
@@ -51,6 +48,7 @@ services:
       - /etc/18xxgames/ssl:/etc/18xxgames/ssl
     depends_on:
       - rack
+      - rack_backup
     logging:
       options:
         max-size: "300m"
