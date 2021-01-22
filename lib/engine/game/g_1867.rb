@@ -511,14 +511,15 @@ module Engine
         @corporations.delete(@cn_corporation)
 
         @green_tokens = []
+        logo = '/logos/1867/neutral.svg'
         @hexes.each do |hex|
           case hex.id
           when 'D2'
-            token = Token.new(@cn_corporation, price: 0, logo: '/logos/1867/neutral.svg', type: :neutral)
+            token = Token.new(@cn_corporation, price: 0, logo: logo, simple_logo: logo, type: :neutral)
             hex.tile.cities.first.exchange_token(token)
             @green_tokens << token
           when 'L12'
-            token = Token.new(@cn_corporation, price: 0, logo: '/logos/1867/neutral.svg', type: :neutral)
+            token = Token.new(@cn_corporation, price: 0, logo: logo, simple_logo: logo, type: :neutral)
             hex.tile.cities.last.exchange_token(token)
             @green_tokens << token
           when 'F16'
