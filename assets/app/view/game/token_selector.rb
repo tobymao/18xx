@@ -9,6 +9,7 @@ module View
       include Lib::RadialSelector
       include Actionable
 
+      needs :user, default: nil, store: true
       needs :tile_selector, store: true
       needs :zoom, default: 1
 
@@ -33,7 +34,7 @@ module View
 
           props = {
             attrs: {
-              src: token.logo,
+              src: @user&.dig('settings', 'simple_logos') ? token.simple_logo : token.logo,
             },
             on: {
               click: click,
