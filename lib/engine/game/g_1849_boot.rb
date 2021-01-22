@@ -8,11 +8,12 @@ module Engine
     class G1849Boot < G1849
       load_from_json(Config::Game::G1849Boot::JSON)
 
-      DEV_STAGE = :prealpha
+      DEV_STAGE = :alpha
       GAME_PUBLISHER = nil
       GAME_LOCATION = 'Southern Italy'
       GAME_RULES_URL = 'https://docs.google.com/document/d/1gNn2RmtcPWh0KpNduv3p0Lraa3iWIAV3cWcHpCu8X-E/edit'
       GAME_DESIGNER = 'Scott Petersen (Based on 1849 by Federico Vellani)'
+      GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1849#variants-and-optional-rules'
 
       NEW_AFG_HEXES = %w[E11 H8 I13 I17 J18 K19 L12 L20 O9].freeze
       NEW_PORT_HEXES = %w[B16 G5 J20 L16].freeze
