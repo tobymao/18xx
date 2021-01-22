@@ -5,11 +5,16 @@ services:
     build: .
     depends_on:
       - db
+      - redis
 
   queue:
     build: .
     depends_on:
       - db
+      - redis
+
+  redis:
+    build: ./redis/
 
   db:
     build: ./db/

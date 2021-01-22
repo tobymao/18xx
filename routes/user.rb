@@ -99,7 +99,7 @@ class Api
   end
 
   def login_user(user)
-    token = Session.create(token: SecureRandom.hex, user: user).token
+    token = Session.create(token: SecureRandom.hex, user: user, ip: request.ip).token
 
     request.response.set_cookie(
       'auth_token',

@@ -46,6 +46,7 @@ GEM
     rb-fsevent (0.10.4)
     rb-inotify (0.10.1)
       ffi (~> 1.0)
+    redis (4.2.5)
     regexp_parser (2.0.3)
     require_all (3.0.0)
     rerun (0.13.1)
@@ -112,6 +113,7 @@ DEPENDENCIES
   opal
   pry-byebug
   rake
+  redis
   require_all
   rerun
   roda
