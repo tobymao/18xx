@@ -116,6 +116,7 @@ module Engine
 
       def operating_round(round_num)
         Round::Operating.new(self, [
+          Step::G18CZ::HomeTrack,
           Step::SpecialTrack,
           Step::BuyCompany,
           Step::Track,
@@ -251,6 +252,52 @@ module Engine
                end
 
         TRAINS_FOR_CORPORATIONS[name] == size
+      end
+
+      def home_token_locations(corporation)
+        coordinates = COORDINATES_FOR_LARGE_CORPORATION[corporation.id]
+        hexes.select { |hex| coordinates.include?(hex.coordinates) }
+      end
+
+      def place_home_token(corporation)
+        return unless corporation.next_token # 1882
+        # If a corp has laid it's first token assume it's their home token
+        return if corporation.tokens.first&.used
+
+        if corporation.coordinates.is_a?(Array)
+          @log << "#{corporation.name} (#{corporation.owner.name}) must choose tile for home location"
+
+          hexes = corporation.coordinates.map { |item| hex_by_id(item) }
+
+          @round.pending_tracks << {
+            entity: corporation,
+            hexes: hexes,
+          }
+
+          @round.clear_cache!
+        else
+          hex = hex_by_id(corporation.coordinates)
+
+          tile = hex&.tile
+
+          cities = tile.cities
+          city = cities.find { |c| c.reserved_by?(corporation) } || cities.first
+          token = corporation.find_token_by_type
+          return unless city.tokenable?(corporation, tokens: token)
+
+          @log << "#{corporation.name} places a token on #{hex.name}"
+          city.place_token(corporation, token)
+        end
+      end
+
+      def upgrades_to?(from, to, special = false)
+        return true if from.color == :white && to.color == :red
+
+        super
+      end
+
+      def potential_tiles(corporation)
+        tiles.select { |tile| tile.label&.to_s == corporation.name }
       end
     end
   end
