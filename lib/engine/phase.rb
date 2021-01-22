@@ -24,7 +24,7 @@ module Engine
       end
       train.events.clear
 
-      rust_trains!(train, entity)
+      @game.rust_trains!(train, entity)
       close_companies_on_train!(entity)
       @depot.depot_trains(clear: true)
     end
@@ -105,36 +105,6 @@ module Engine
           @log << "#{company.name} closes"
         end
       end
-    end
-
-    def rust_trains!(train, entity)
-      obsolete_trains = []
-      rusted_trains = []
-      owners = Hash.new(0)
-
-      @game.trains.each do |t|
-        next if t.obsolete || t.obsolete_on != train.sym
-
-        obsolete_trains << t.name
-        t.obsolete = true
-      end
-
-      @game.trains.each do |t|
-        next if t.rusted
-
-        should_rust = t.rusts_on == train.sym || (t.obsolete_on == train.sym && @depot.discarded.include?(t))
-        next unless should_rust
-        next unless @game.rust?(t)
-
-        rusted_trains << t.name
-        owners[t.owner.name] += 1
-        entity.rusted_self = true if entity && entity == t.owner
-        @game.rust(t)
-      end
-
-      @log << "-- Event: #{obsolete_trains.uniq.join(', ')} trains are obsolete --" if obsolete_trains.any?
-      @log << "-- Event: #{rusted_trains.uniq.join(', ')} trains rust " \
-        "( #{owners.map { |c, t| "#{c} x#{t}" }.join(', ')}) --" if rusted_trains.any?
     end
 
     def next!

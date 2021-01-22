@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require_relative '../g_18_cz/phase'
 require_relative '../config/game/g_18_cz'
 require_relative 'base'
 require_relative 'stubs_are_restricted'
@@ -100,10 +99,6 @@ module Engine
         @corporations, @future_corporations = @corporations.partition { |corporation| corporation.type == :small }
 
         block_lay_for_purple_tiles
-      end
-
-      def init_phase
-        Engine::G18CZ::Phase.new(self.class::PHASES, self)
       end
 
       def init_round
@@ -303,6 +298,29 @@ module Engine
 
       def potential_tiles(corporation)
         tiles.select { |tile| tile.label&.to_s == corporation.name }
+      end
+
+      def rust_trains!(train, entity)
+        rusted_trains = []
+        owners = Hash.new(0)
+
+        trains.each do |t|
+          next if t.rusted
+
+          # entity is nil when a train is exported. Then all trains are rusting
+          train_symbol_to_compare = entity.nil? ? train.sym : train.name
+          should_rust = t.rusts_on == train_symbol_to_compare
+          next unless should_rust
+          next unless rust?(t)
+
+          rusted_trains << t.name
+          owners[t.owner.name] += 1
+          entity.rusted_self = true if entity && entity == t.owner
+          rust(t)
+        end
+
+        @log << "-- Event: #{rusted_trains.uniq.join(', ')} trains rust " \
+          "( #{owners.map { |c, t| "#{c} x#{t}" }.join(', ')}) --" if rusted_trains.any?
       end
     end
   end
