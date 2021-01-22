@@ -568,7 +568,7 @@ module Engine
         "A11"
       ],
 
-      "city=revenue:0,loc:center;upgrade=cost:50M": [
+      "city=revenue:0,loc:center;upgrade=cost:50": [
         "D8"
       ],
       "city=revenue:0,loc:1.5": [
@@ -586,10 +586,10 @@ module Engine
       "city=revenue:0,loc:2.5": [
         "H16"
       ],
-      "city=revenue:0,loc:0.5;upgrade=cost:50M;label=Y": [
+      "city=revenue:0,loc:0.5;upgrade=cost:50;label=Y": [
         "H20"
       ],
-      "city=revenue:0;label=Y;upgrade=cost:50M": [
+      "city=revenue:0;label=Y;upgrade=cost:50": [
         "I3"
       ],
       "city=revenue:0,loc:0.5": [
