@@ -1637,7 +1637,7 @@ module Engine
         end
 
         reservations = Hash.new { |k, v| k[v] = [] }
-        corporations.each do |c|
+        reservation_corporations.each do |c|
           reservations[c.coordinates] << {
             entity: c,
             city: c.city,
@@ -1693,6 +1693,10 @@ module Engine
 
       def partition_companies
         companies
+      end
+
+      def reservation_corporations
+        corporations
       end
 
       def init_tiles
@@ -2077,6 +2081,15 @@ module Engine
       # Override this, and add elements (paragraphs of text) here to display it on Info page.
       def timeline
         []
+      end
+
+      # minors to show on player cards
+      def player_card_minors(_player)
+        []
+      end
+
+      def player_sort(entities)
+        entities.sort_by(&:name).group_by(&:owner)
       end
 
       def bank_sort(corporations)
