@@ -5,12 +5,14 @@ require 'lib/color'
 require 'lib/connection'
 require 'lib/params'
 require 'lib/settings'
+require 'lib/player_colors'
 require_tree './game'
 
 module View
   class GamePage < Snabberb::Component
     include Lib::Color
     include Lib::Settings
+    include Lib::PlayerColors
 
     needs :game_data, store: true
     needs :game, default: nil, store: true
@@ -71,6 +73,7 @@ module View
 
       @game = Engine::Game.load(@game_data, at_action: cursor)
       store(:game, @game, skip: true)
+      store(:player_colors, player_colors, skip: true) if show_player_colors
     end
 
     def render

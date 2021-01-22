@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require '../lib/storage'
-require '../lib/player_colors'
 require 'view/game/axis'
 require 'view/game/hex'
 require 'view/game/tile_confirmation'
@@ -11,8 +10,6 @@ require 'view/game/token_selector'
 module View
   module Game
     class Map < Snabberb::Component
-      include Lib::Settings
-      include Lib::PlayerColors
       needs :game
       needs :tile_selector, default: nil, store: true
       needs :selected_route, default: nil, store: true
@@ -62,7 +59,6 @@ module View
             actions: actions,
             show_coords: show_coords,
             show_location_names: show_location_names,
-            player_colors: player_colors,
             routes: routes,
             start_pos: @start_pos
           )
@@ -160,11 +156,7 @@ module View
       end
 
       def render_controls
-        h(MapControls,
-          show_player_colors: show_player_colors,
-          show_location_names: show_location_names,
-          show_coords: show_coords,
-          map_zoom: map_zoom)
+        h(MapControls, show_location_names: show_location_names, show_coords: show_coords, map_zoom: map_zoom)
       end
 
       def render_map

@@ -23,7 +23,7 @@ module View
         needs :reservation, default: nil
         needs :game, default: nil, store: true
         needs :city_render_location, default: nil
-        needs :player_colors, default: nil
+        needs :player_colors, default: nil, store: true
 
         RESERVATION_FONT_SIZE = {
           1 => 22,

@@ -5,10 +5,11 @@ require '../lib/storage'
 module View
   module Game
     class MapControls < Snabberb::Component
+      include Lib::Settings
+      include Lib::PlayerColors
       needs :show_coords, default: nil, store: true
       needs :show_location_names, default: true, store: true
       needs :show_starting_map, default: false, store: true
-      needs :show_player_colors, default: false, store: true
       needs :historical_routes, default: [], store: true
       needs :game, default: nil, store: true
       needs :map_zoom, default: nil, store: true
@@ -27,13 +28,13 @@ module View
       end
 
       def player_colors_controls
-        show_hide = @show_player_colors ? 'Hide' : 'Show'
+        show_hide = show_player_colors ? 'Hide' : 'Show'
         text = "#{show_hide} Player Colors"
 
         on_click = lambda do
-          new_value = !@show_player_colors
+          new_value = !show_player_colors
           Lib::Storage['show_player_colors'] = new_value
-          store(:show_player_colors, new_value)
+          store(:player_colors, new_value ? player_colors : nil, skip: false)
         end
 
         render_button(text, on_click)
