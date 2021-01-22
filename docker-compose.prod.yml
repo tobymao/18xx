@@ -54,20 +54,3 @@ services:
     logging:
       options:
         max-size: "300m"
-
-  newrelic:
-    build: ./newrelic/
-    cap_add:
-      - SYS_PTRACE
-    network_mode: host
-    pid: host
-    privileged: true
-    volumes:
-      - "/:/host:ro"
-      - "/var/run/docker.sock:/var/run/docker.sock"
-    restart: unless-stopped
-    environment:
-      NRIA_LICENSE_KEY: $NEW_RELIC_LICENSE_KEY
-    logging:
-      options:
-        max-size: "10m"

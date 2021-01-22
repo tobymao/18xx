@@ -1,1 +1,0 @@
-FROM newrelic/infrastructure:latest
