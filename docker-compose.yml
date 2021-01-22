@@ -21,6 +21,8 @@ services:
 
   redis:
     build: ./redis/
+    ports:
+      - 127.0.0.1:6380:6379
     logging:
       options:
         max-size: "10m"
