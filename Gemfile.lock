@@ -25,6 +25,7 @@ GEM
     method_source (1.0.0)
     mini_racer (0.3.1)
       libv8 (~> 8.4.255)
+    newrelic_rpm (6.15.0)
     opal (1.0.5)
       ast (>= 2.3.0)
       parser (~> 2.6)
@@ -45,6 +46,7 @@ GEM
     rb-fsevent (0.10.4)
     rb-inotify (0.10.1)
       ffi (~> 1.0)
+    redis (4.2.5)
     regexp_parser (2.0.3)
     require_all (3.0.0)
     rerun (0.13.1)
@@ -107,9 +109,11 @@ DEPENDENCIES
   argon2
   message_bus
   mini_racer
+  newrelic_rpm
   opal
   pry-byebug
   rake
+  redis
   require_all
   rerun
   roda

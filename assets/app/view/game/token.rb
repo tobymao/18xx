@@ -5,6 +5,7 @@ module View
     class Token < Snabberb::Component
       needs :token
       needs :radius
+      needs :user, default: nil, store: true
 
       RED_WIDTH = 7
       WHITE_WIDTH = 2
@@ -22,7 +23,7 @@ module View
       def render_token
         h(
           :image, attrs: {
-            href: @token.logo,
+            href: @user&.dig('settings', 'simple_logos') ? @token.simple_logo : @token.logo,
             x: -@radius,
             y: -@radius,
             height: (2 * @radius),

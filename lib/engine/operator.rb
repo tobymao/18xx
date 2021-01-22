@@ -7,7 +7,7 @@ module Engine
     include Entity
 
     attr_accessor :rusted_self, :coordinates
-    attr_reader :color, :city, :loans, :logo, :operating_history, :text_color, :tokens, :trains
+    attr_reader :color, :city, :loans, :logo, :simple_logo, :operating_history, :text_color, :tokens, :trains
 
     def init_operator(opts)
       @cash = 0
@@ -17,6 +17,7 @@ module Engine
       # where buying a train rusts yourself and it looks like you must buy a train
       @rusted_self = false
       @logo = "/logos/#{opts[:logo]}.svg"
+      @simple_logo = opts[:simple_logo] ? "/logos/#{opts[:simple_logo]}.svg" : @logo
       @coordinates = opts[:coordinates]
       @city = opts[:city]
       @tokens = opts[:tokens].map { |price| Token.new(self, price: price) }

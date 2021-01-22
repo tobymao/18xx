@@ -25,7 +25,7 @@ module Engine
       load_from_json(Config::Game::G18CO::JSON)
       AXES = { x: :number, y: :letter }.freeze
 
-      DEV_STAGE = :alpha
+      DEV_STAGE = :beta
 
       GAME_LOCATION = 'Colorado, USA'
       GAME_RULES_URL = 'https://drive.google.com/open?id=0B3lRHMrbLMG_eEp4elBZZ0toYnM'
@@ -45,7 +45,10 @@ module Engine
       MAX_SHARE_VALUE = 485
 
       # Two tiles can be laid, only one upgrade
-      TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded }].freeze
+      TILE_LAYS = [
+        { lay: true, upgrade: true },
+        { lay: true, upgrade: :not_if_upgraded, cannot_reuse_same_hex: true },
+      ].freeze
       REDUCED_TILE_LAYS = [{ lay: true, upgrade: true }].freeze
 
       # First 3 are Denver, Second 3 are CO Springs

@@ -96,7 +96,7 @@ module Engine
       #   after: When game should end if check triggered
       # Leave out a reason if game does not support that.
       # Allowed reasons:
-      #  bankrupt, stock_market, bank, final_train
+      #  bankrupt, stock_market, bank, final_train, final_phase, custom
       # Allowed after:
       #  immediate - ends in current turn
       #  current_round - ends at the end of the current round
@@ -375,6 +375,7 @@ module Engine
         data['minors'].map! do |minor|
           minor.transform_keys!(&:to_sym)
           minor[:color] = const_get(:COLORS)[minor[:color]] if const_defined?(:COLORS)
+          minor[:abilities]&.each { |ability| ability.transform_keys!(&:to_sym) }
           minor
         end
 
@@ -1629,7 +1630,7 @@ module Engine
         end
 
         partition_blockers = {}
-        companies.each do |company|
+        partition_companies.each do |company|
           abilities(company, :blocks_partition) do |ability|
             partition_blockers[ability.partition_type] = company
           end
@@ -1688,6 +1689,10 @@ module Engine
             end
           end
         end.flatten.compact
+      end
+
+      def partition_companies
+        companies
       end
 
       def init_tiles
@@ -1824,6 +1829,7 @@ module Engine
           bank: @bank.broken?,
           stock_market: @stock_market.max_reached?,
           final_train: @depot.empty?,
+          final_phase: @phase.phases.last == @phase.current,
           custom: custom_end_game_reached?,
         }.select { |_, t| t }
 
@@ -1892,6 +1898,7 @@ module Engine
           bankrupt: 'Bankruptcy',
           stock_market: 'Company hit max stock value',
           final_train: 'Final train was purchased',
+          final_phase: 'Final phase was reached',
         }
         "#{reason_map[reason]}#{after_text}"
       end

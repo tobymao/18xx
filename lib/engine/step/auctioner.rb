@@ -35,13 +35,16 @@ module Engine
         true
       end
 
-      def pass_auction(entity)
-        @log << "#{entity.name} passes on #{auctioning.name}"
-
+      def remove_from_auction(entity)
         @bids[auctioning]&.reject! do |bid|
           bid.entity == entity
         end
         resolve_bids
+      end
+
+      def pass_auction(entity)
+        @log << "#{entity.name} passes on #{auctioning.name}"
+        remove_from_auction(entity)
       end
 
       def min_increment

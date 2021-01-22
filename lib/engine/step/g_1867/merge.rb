@@ -153,6 +153,8 @@ module Engine
           @round.entities[@round.entity_index] = target
 
           @merge_major = false
+          # Set that this has been ipoed so presidentless corps can have shares be bought
+          target.ipoed = true
 
           # Transfer assets starting with the initiator
           @merging.sort_by { |m| players.index(m.owner) }.each do |corporation|

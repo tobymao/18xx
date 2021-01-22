@@ -1,6 +1,9 @@
 AllCops:
   TargetRubyVersion: 3.0
 
+Layout/EndOfLine:
+  EnforcedStyle: lf
+
 Layout/FirstArgumentIndentation:
   Enabled: false
 

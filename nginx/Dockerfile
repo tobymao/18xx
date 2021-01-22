@@ -1,3 +1,4 @@
-FROM nginx:1.19
+FROM nginx:latest
 
+COPY ./nginx.conf /etc/nginx/
 COPY ./conf.d/* /etc/nginx/conf.d/

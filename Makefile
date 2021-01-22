@@ -1,4 +1,4 @@
-.DEFAULT_GOAL := dev_up
+.DEFAULT_GOAL := dev_up_b
 
 clean:
 	sudo rm -rfv build/ public/assets/app.js public/assets/deps.js public/assets/engine.js public/assets/main.js public/assets/main.js.gz public/assets/opal.js
@@ -39,7 +39,17 @@ prod_up_b : prod_link data_dir ensure_prod_env
 	docker-compose up --build
 prod_up_b_d : prod_link data_dir ensure_prod_env
 	docker-compose up --build --detach
+prod_rack_up_b_d : prod_link data_dir ensure_prod_env
+	docker-compose up --build --no-deps --detach rack && \
+		docker-compose up --build --no-deps --detach queue && \
+		sleep 20 && \
+		docker-compose up --build --no-deps --detach rack_backup
 
 # remotely deploy latest master in prod
 prod_deploy :
-	./scripts/deploy_prod.sh
+	docker-compose run rack rake precompile && \
+		scp public/assets/main.js \
+		public/assets/main.js.gz \
+		public/assets/version.json \
+		deploy@18xx:~/18xx/public/assets/ && \
+		ssh -l deploy 18xx "source ~/.profile && cd ~/18xx/ && git pull && make prod_rack_up_b_d"

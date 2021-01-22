@@ -165,7 +165,7 @@ module Engine
     "L35": {
       "count": 1,
       "color": "brown",
-      "code": "city=revenue:60,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=K"
+      "code": "city=revenue:60,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=B"
     },
     "L38": {
       "count": 1,
@@ -186,7 +186,7 @@ module Engine
     "L37": {
       "count": 1,
       "color": "gray",
-      "code": "city=revenue:60,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=B"
+      "code": "city=revenue:80,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=B"
     }
   },
   "market": [
@@ -263,7 +263,7 @@ module Engine
     },
     {
       "sym":"4",
-      "name":"Tisza Vidéki Vasút",
+      "name":"TiszaVidéki Vasút",
       "logo":"18_mag/4",
        "tokens":[
          0,
@@ -313,7 +313,7 @@ module Engine
     },
     {
       "sym":"8",
-      "name":"Hrvatske željeznice",
+      "name":"Hrvatske Željeznice",
       "logo":"18_mag/8",
        "tokens":[
          0,
@@ -325,7 +325,7 @@ module Engine
     },
     {
       "sym":"9",
-      "name":"Szeged-Petrovaradin-Zemun Vasútvonal",
+      "name":"Szabadka-Újvidék Vasút",
       "logo":"18_mag/9",
        "tokens":[
          0,
@@ -351,7 +351,7 @@ module Engine
     },
     {
       "sym":"11",
-      "name":"Győr-Sopron-Ebenfurti Vasút Zrt.",
+      "name":"Győr-Sopron-Ebenfurti Vasút",
       "logo":"18_mag/11",
        "tokens":[
          0,
@@ -363,7 +363,7 @@ module Engine
     },
     {
       "sym":"12",
-      "name":"Calea ferată îngustă Sibiu-Agnita",
+      "name":"Segesvár–Szentágotai Vasút",
       "logo":"18_mag/12",
        "tokens":[
          0,
@@ -401,13 +401,19 @@ module Engine
          "E26",
          "I20"
         ],
-       "color":"white"
-    }
+       "color":"white",
+       "abilities":[
+         {
+           "type": "blocks_partition",
+           "partition_type": "water"
+         }
+       ]
+     }
   ],
   "corporations": [
     {
       "sym": "RABA",
-      "name": "RÁBA Company",
+      "name": "Magyar Waggon-és Gépgyár Rt.",
       "logo": "18_mag/RABA",
       "float_percent": 0,
       "max_ownership_percent": 60,
@@ -432,7 +438,7 @@ module Engine
     },
     {
       "sym": "SNW",
-      "name": "Schlick-Nicholsonsche Waggon-Fabrik A.-G.",
+      "name": "Schlick-Nicholson Gép-, Waggon és Hajógyár Rt.",
       "logo": "18_mag/SNW",
       "float_percent": 0,
       "max_ownership_percent": 60,
@@ -440,11 +446,11 @@ module Engine
         40,
         80
       ],
-      "color": "black"
+      "color": "dimgray"
     },
     {
       "sym": "SIK",
-      "name": "Károly Széchy Tunnelbau",
+      "name": "Gróf Széchenyi István Konsorcium",
       "logo": "18_mag/SIK",
       "float_percent": 0,
       "max_ownership_percent": 60,
@@ -456,7 +462,7 @@ module Engine
     },
     {
       "sym": "SKEV",
-      "name": "Gróf Széchenyi István Konsortium",
+      "name": "Széchy Károly Építőipari Vállalat",
       "logo": "18_mag/SKEV",
       "float_percent": 0,
       "max_ownership_percent": 60,
@@ -469,7 +475,7 @@ module Engine
     },
     {
       "sym": "LdStEG",
-      "name": "Lokomotivfabrik der StEG",
+      "name": "Lokomotivfabrik der Staatseisenbahn-Gesellschaft",
       "logo": "18_mag/LdStEG",
       "float_percent": 0,
       "max_ownership_percent": 60,

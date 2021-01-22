@@ -30,6 +30,13 @@ module Engine
 
           super
         end
+
+        def process_dividend(action)
+          super
+
+          # Do some clean up for the entity in the OR
+          @game.clean_up_after_dividend
+        end
       end
     end
   end

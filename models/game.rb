@@ -104,6 +104,11 @@ class Game < Base
       .shuffle(random: Random.new(settings['seed'] || 1))
   end
 
+  def archive!
+    Action.where(game: self).delete
+    update(status: 'archived')
+  end
+
   def to_h(include_actions: false, player: nil)
     actions_h = include_actions ? actions.map(&:to_h) : []
     settings_h = settings.to_h

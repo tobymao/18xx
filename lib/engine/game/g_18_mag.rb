@@ -11,12 +11,12 @@ module Engine
       load_from_json(Config::Game::G18Mag::JSON)
 
       GAME_LOCATION = 'Hungary'
-      GAME_RULES_URL = 'https://www.lonny.at/app/download/10079056984/18Mag_rules_KS.pdf?t=1609359467'
+      GAME_RULES_URL = 'https://www.lonny.at/games/18magyarorsz%C3%A1g/'
       GAME_DESIGNER = 'Leonhard "Lonny" Orgler'
       GAME_PUBLISHER = :lonny_games
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18Mag'
 
-      # DEV_STAGE = :alpha
+      DEV_STAGE = :alpha
 
       EBUY_PRES_SWAP = false # allow presidential swaps of other corps when ebuying
       EBUY_OTHER_VALUE = false # allow ebuying other corp trains for up to face
@@ -42,6 +42,8 @@ module Engine
         'first_six' => ['First 6', 'Advance phase'],
       ).freeze
 
+      GAME_END_CHECK = { final_phase: :one_more_full_or_set }.freeze
+
       STATUS_TEXT = Base::STATUS_TEXT.merge(
         'end_game_triggered' => ['End Game', 'After next SR, final three ORs are played'],
       ).freeze
@@ -61,6 +63,16 @@ module Engine
         '7' => 1,
         '12' => 2,
         '13' => 1,
+      }.freeze
+
+      CORPORATE_POWERS = {
+        'SIK' => 'Earns for each terrain symbol',
+        'SKEV' => 'Earns for tokens and 2nd tile lay',
+        'LdStEG' => 'Sells 2, 4 trains',
+        'MAVAG' => 'Sells 3, 6 trains',
+        'RABA' => 'Sells off board bonus',
+        'SNW' => 'Sells mine access',
+        'G&C' => 'Sells plus-train conversion',
       }.freeze
 
       def setup
@@ -116,6 +128,11 @@ module Engine
         end
 
         @trains_left = %w[3 4 6]
+        @phase_change = false
+      end
+
+      def partition_companies
+        init_minors.select { |m| m.name == 'mine' }
       end
 
       def init_tile_groups
@@ -204,9 +221,7 @@ module Engine
       end
 
       def new_auction_round
-        Round::Draft.new(self, [Step::G18Mag::SimpleDraft],
-                         rotating_order: (players.size <= 4),
-                         snake_order: (players.size > 4))
+        Round::Draft.new(self, [Step::G18Mag::SimpleDraft], rotating_order: true)
       end
 
       def operating_round(round_num)
@@ -230,10 +245,11 @@ module Engine
             reorder_players
             new_operating_round
           when Round::Operating
-            if @round.round_num < @operating_rounds
+            if @round.round_num < @operating_rounds && !@phase_change
               or_round_finished
               new_operating_round(@round.round_num + 1)
             else
+              @phase_change = false
               @turn += 1
               or_round_finished
               or_set_finished
@@ -247,6 +263,15 @@ module Engine
           end
       end
 
+      def total_rounds(name)
+        # Return the total number of rounds for those with more than one.
+        if !@phase_change
+          @operating_rounds if name == 'Operating'
+        elsif name == 'Operating'
+          @round.round_num
+        end
+      end
+
       def upgrades_to?(from, to, special = false)
         # correct color progression?
         return false unless Engine::Tile::COLORS.index(to.color) == (Engine::Tile::COLORS.index(from.color) + 1)
@@ -258,7 +283,7 @@ module Engine
         return true if special
 
         # correct label?
-        return false if from.label != to.label && !(from.label.to_s == 'K' && to.color == 'yellow')
+        return false if from.label != to.label && !(from.label.to_s == 'K' && to.color == :yellow)
 
         # honors existing town/city counts?
         # - allow labelled cities to upgrade regardless of count; they're probably
@@ -306,6 +331,7 @@ module Engine
         @phase.current[:on] = nil
         @phase.upcoming[:on] = @trains_left if @phase.upcoming
         @phase.next_on = @trains_left
+        @phase_change = true
       end
 
       def event_first_four!
@@ -313,6 +339,7 @@ module Engine
         @phase.current[:on] = nil
         @phase.upcoming[:on] = @trains_left if @phase.upcoming
         @phase.next_on = @trains_left
+        @phase_change = true
       end
 
       def event_first_six!
@@ -320,16 +347,24 @@ module Engine
         @phase.current[:on] = nil
         @phase.upcoming[:on] = @trains_left if @phase.upcoming
         @phase.next_on = @trains_left
+        @phase_change = true
       end
 
       def info_on_trains(phase)
         Array(phase[:on]).join(', ')
       end
 
-      def legal_tile_rotation?(_entity, _hex, tile)
-        return true unless FIXED_ROTATION_TILES.include?(tile.name)
-
-        tile.rotation == FIXED_ROTATION_TILES[tile.name]
+      def legal_tile_rotation?(_entity, hex, tile)
+        if FIXED_ROTATION_TILES.include?(tile.name)
+          tile.rotation == FIXED_ROTATION_TILES[tile.name]
+        else
+          (tile.exits & hex.tile.borders.select { |b| b.type == :water }.map(&:edge)).empty? &&
+            hex.tile.partitions.all? do |partition|
+              tile.paths.all? do |path|
+                (path.exits - partition.inner).empty? || (path.exits - partition.outer).empty?
+              end
+            end
+        end
       end
 
       def gc_train?(route)
@@ -481,9 +516,11 @@ module Engine
       end
 
       def status_str(entity)
-        return unless @terrain_tokens[entity.name]
-
-        "Terrain Tokens: #{@terrain_tokens[entity.name]}"
+        if entity.minor? && @terrain_tokens[entity.name]&.positive?
+          "Terrain Tokens: #{@terrain_tokens[entity.name]}"
+        elsif entity.corporation?
+          CORPORATE_POWERS[entity.name]
+        end
       end
     end
   end
