@@ -13,8 +13,12 @@ x-rack: &rack
   build:
     args:
       RACK_ENV: production
+    context: .
   volumes:
     - ./public:/18xx/public
+  depends_on:
+    - db
+    - redis
   logging:
     options:
       max-size: "50m"
@@ -25,7 +29,6 @@ services:
 
   rack_backup:
     <<: *rack
-    build: .
 
   queue:
     <<: *rack
