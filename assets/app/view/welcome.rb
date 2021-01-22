@@ -17,11 +17,8 @@ module View
 
     def render_notification
       message = <<~MESSAGE
-
-        <p>18Mag, 1828.Games and 1849 are now in alpha.<p>
-        <p>18CO: Rock & Stock, 1860 and 1867 are now in beta. 18Chesapeake: Off The Rails is now in beta with a new stock market.</p>
-        <p>The authentication system is now more efficient. You need to log back in and all pins have been deleted.</p>
-
+        <p>The messaging system now uses Redis in order to scale during peak hours. Hopefully there will be no more 502 errors.<p>
+        <p>You can now choose simple tokens (1867, 1817) in your profile where available.<p>
         <p>Please file <a href='https://github.com/tobymao/18xx/issues'>issues and ideas</a> on
         <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>.<br>
         If you have any questions, check out the <a href="https://github.com/tobymao/18xx/wiki/FAQ">FAQ</a> and other
@@ -56,7 +53,6 @@ module View
     def render_introduction
       message = <<~MESSAGE
         <p>18xx.games is a website where you can play async or real-time 18xx games (based on the system originally devised by the brilliant Francis Tresham)!
-        <p>Right now, 1817, 1817NA, 1817WO, 1836Jr30, 1846, 1849, 1860, 1867, 1882, 1889, 18AL, 18Chesapeake, 18CO: Rock & Stock, 18GA, 18 Los Angeles, 18MEX, 18MS, 18SJ, and 18TN are implemented.</br>
         If you are new to 18xx games then 1889, 18Chesapeake, or 18MS are good games to begin with.</p>
 
         <p>You can play locally with hot seat mode without an account. If you want to play multiplayer, you'll need to create an account.</p>
