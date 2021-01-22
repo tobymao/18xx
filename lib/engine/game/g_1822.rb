@@ -34,14 +34,18 @@ module Engine
 
       HOME_TOKEN_TIMING = :operating_round
 
+      BIDDING_TOKES = {
+        "3": 6,
+        "4": 5,
+        "5": 4,
+        "6": 3,
+        "7": 3,
+      }.freeze
+
       include StubsAreRestricted
 
       def setup
-        # Reserve all the minor cities
-        @minors.each do |minor|
-          hex = hex_by_id(minor.coordinates)
-          hex.tile.add_reservation!(minor, minor.city, nil)
-        end
+        setup_minors
       end
 
       def operating_round(round_num)
@@ -56,6 +60,16 @@ module Engine
           Step::DiscardTrain,
           Step::BuyTrain,
         ], round_num: round_num)
+      end
+
+      private
+
+      def setup_minors
+        # Reserve all the minor cities
+        @minors.each do |minor|
+          hex = hex_by_id(minor.coordinates)
+          hex.tile.add_reservation!(minor, minor.city, nil)
+        end
       end
     end
   end

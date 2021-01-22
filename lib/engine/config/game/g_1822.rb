@@ -672,11 +672,101 @@ module Engine
       "desc": "Station Marker Swap. Allows the owning company to move a token from the exchange token area of its charter to the available token area, or vice versa. This company closes when its power is exercised.",
       "abilities": [
       ]
+    },
+    {
+      "name": "Concession: London and North West Railway",
+      "sym": "C1",
+      "value": 100,
+      "revenue": 10,
+      "desc": "Have a face value £100 and converts into the LNWR's 10% director certificate. LNWR may also put it's destination token into Manchester when converted.",
+      "abilities": [
+      ]
+    },
+    {
+      "name": "Concession: Great Western Railway",
+      "sym": "C2",
+      "value": 100,
+      "revenue": 10,
+      "desc": "Have a face value £100 and contribute £100 to the conversion into the GWR director’s certificate.",
+      "abilities": [
+      ]
+    },
+    {
+      "name": "Concession: London, Brighton and South Coast Railway",
+      "sym": "C3",
+      "value": 100,
+      "revenue": 10,
+      "desc": "Have a face value £100 and contribute £100 to the conversion into the LBSCR director’s certificate.",
+      "abilities": [
+      ]
+    },
+    {
+      "name": "Concession: South Eastern & Chatham Railway",
+      "sym": "C4",
+      "value": 100,
+      "revenue": 10,
+      "desc": "Have a face value £100 and contribute £100 to the conversion into the SECR director’s certificate.",
+      "abilities": [
+      ]
+    },
+    {
+      "name": "Concession: Caledonian Railway",
+      "sym": "C5",
+      "value": 100,
+      "revenue": 10,
+      "desc": "Have a face value £100 and contribute £100 to the conversion into the CR director’s certificate.",
+      "abilities": [
+      ]
+    },
+    {
+      "name": "Concession: Midland Railway",
+      "sym": "C6",
+      "value": 100,
+      "revenue": 10,
+      "desc": "Have a face value £100 and contribute £100 to the conversion into the MR director’s certificate.",
+      "abilities": [
+      ]
+    },
+    {
+      "name": "Concession: Lancashire & Yorkshire",
+      "sym": "C7",
+      "value": 100,
+      "revenue": 10,
+      "desc": "Have a face value £100 and contribute £100 to the conversion into the L&YR director’s certificate.",
+      "abilities": [
+      ]
+    },
+    {
+      "name": "Concession: North British Railway",
+      "sym": "C8",
+      "value": 100,
+      "revenue": 10,
+      "desc": "Have a face value £100 and contribute £100 to the conversion into the NBR director’s certificate.",
+      "abilities": [
+      ]
+    },
+    {
+      "name": "Concession: South Wales Railway",
+      "sym": "C9",
+      "value": 100,
+      "revenue": 10,
+      "desc": "Have a face value £100 and contribute £100 to the conversion into the SWR director’s certificate.",
+      "abilities": [
+      ]
+    },
+    {
+      "name": "Concession: North Eastern Railway",
+      "sym": "C10",
+      "value": 100,
+      "revenue": 10,
+      "desc": "Have a face value £100 and contribute £100 to the conversion into the NER director’s certificate.",
+      "abilities": [
+      ]
     }
   ],
   "minors": [
     {
-      "sym": "1",
+      "sym": "M1",
       "name": "Great North of Scotland Railway",
       "logo": "1822/1",
       "tokens": [
@@ -688,7 +778,7 @@ module Engine
       "text_color": "black"
     },
     {
-      "sym": "2",
+      "sym": "M2",
       "name": "Lanarkshire & Dumbartonshire Railway",
       "logo": "1822/2",
       "tokens": [
@@ -700,7 +790,7 @@ module Engine
       "text_color": "black"
     },
     {
-      "sym": "3",
+      "sym": "M3",
       "name": "Edinburgh & Dalkeith Railway",
       "logo": "1822/3",
       "tokens": [
@@ -712,7 +802,7 @@ module Engine
       "text_color": "black"
     },
     {
-      "sym": "4",
+      "sym": "M4",
       "name": "Newcastle & North shields Railway",
       "logo": "1822/4",
       "tokens": [
@@ -724,7 +814,7 @@ module Engine
       "text_color": "black"
     },
     {
-      "sym": "5",
+      "sym": "M5",
       "name": "Stockton and Darlington Railway",
       "logo": "1822/5",
       "tokens": [
@@ -736,7 +826,7 @@ module Engine
       "text_color": "black"
     },
     {
-      "sym": "6",
+      "sym": "M6",
       "name": "Furness railway",
       "logo": "1822/6",
       "tokens": [
@@ -748,7 +838,7 @@ module Engine
       "text_color": "black"
     },
     {
-      "sym": "7",
+      "sym": "M7",
       "name": "Warrington & Newton Railway",
       "logo": "1822/7",
       "tokens": [
@@ -760,7 +850,7 @@ module Engine
       "text_color": "black"
     },
     {
-      "sym": "8",
+      "sym": "M8",
       "name": "Manchester Sheffield & Lincolnshire Railway",
       "logo": "1822/8",
       "tokens": [
@@ -772,7 +862,7 @@ module Engine
       "text_color": "black"
     },
     {
-      "sym": "9",
+      "sym": "M9",
       "name": "East Lincolnshire Railway",
       "logo": "1822/9",
       "tokens": [
@@ -784,7 +874,7 @@ module Engine
       "text_color": "black"
     },
     {
-      "sym": "10",
+      "sym": "M10",
       "name": "Grand Junction Railway",
       "logo": "1822/10",
       "tokens": [
@@ -796,7 +886,7 @@ module Engine
       "text_color": "black"
     },
     {
-      "sym": "11",
+      "sym": "M11",
       "name": "Great Northern Railway",
       "logo": "1822/11",
       "tokens": [
@@ -808,7 +898,7 @@ module Engine
       "text_color": "black"
     },
     {
-      "sym": "12",
+      "sym": "M12",
       "name": "Eastern Union Railway",
       "logo": "1822/12",
       "tokens": [
@@ -820,7 +910,7 @@ module Engine
       "text_color": "black"
     },
     {
-      "sym": "13",
+      "sym": "M13",
       "name": "Headcorn & Maidstone Junction Light Railway",
       "logo": "1822/13",
       "tokens": [
@@ -832,7 +922,7 @@ module Engine
       "text_color": "black"
     },
     {
-      "sym": "14",
+      "sym": "M14",
       "name": "Metropolitan Railway",
       "logo": "1822/14",
       "tokens": [
@@ -844,7 +934,7 @@ module Engine
       "text_color": "black"
     },
     {
-      "sym": "15",
+      "sym": "M15",
       "name": "London Tilbury & Southend Railway",
       "logo": "1822/15",
       "tokens": [
@@ -857,7 +947,7 @@ module Engine
       "text_color": "black"
     },
     {
-      "sym": "16",
+      "sym": "M16",
       "name": "Wycombe Railway",
       "logo": "1822/16",
       "tokens": [
@@ -870,7 +960,7 @@ module Engine
       "text_color": "black"
     },
     {
-      "sym": "17",
+      "sym": "M17",
       "name": "London & Southampton Railway",
       "logo": "1822/17",
       "tokens": [
@@ -882,7 +972,7 @@ module Engine
       "text_color": "black"
     },
     {
-      "sym": "18",
+      "sym": "M18",
       "name": "Somerset & Dorset Joint Railway",
       "logo": "1822/18",
       "tokens": [
@@ -894,7 +984,7 @@ module Engine
       "text_color": "black"
     },
     {
-      "sym": "19",
+      "sym": "M19",
       "name": "Penarth Harbour & Dock Railway Company",
       "logo": "1822/19",
       "tokens": [
@@ -906,7 +996,7 @@ module Engine
       "text_color": "black"
     },
     {
-      "sym": "20",
+      "sym": "M20",
       "name": "Monmouthshire Railway & Canal Company",
       "logo": "1822/20",
       "tokens": [
@@ -918,7 +1008,7 @@ module Engine
       "text_color": "black"
     },
     {
-      "sym": "21",
+      "sym": "M21",
       "name": "Taff Vale railway",
       "logo": "1822/21",
       "tokens": [
@@ -930,7 +1020,7 @@ module Engine
       "text_color": "black"
     },
     {
-      "sym": "22",
+      "sym": "M22",
       "name": "Exeter and Crediton Railway",
       "logo": "1822/22",
       "tokens": [
@@ -942,7 +1032,7 @@ module Engine
       "text_color": "black"
     },
     {
-      "sym": "23",
+      "sym": "M23",
       "name": "West Cornwall Railway",
       "logo": "1822/23",
       "tokens": [
@@ -954,7 +1044,7 @@ module Engine
       "text_color": "black"
     },
     {
-      "sym": "24",
+      "sym": "M24",
       "name": "The Swansea and Mumbles Railway",
       "logo": "1822/24",
       "tokens": [
@@ -968,17 +1058,18 @@ module Engine
   ],
   "corporations": [
     {
-      "sym": "CR",
-      "name": "Caledonian Railway",
-      "logo": "1822/CR",
+      "sym": "LNWR",
+      "name": "London and North West Railway",
+      "logo": "1822/LNWR",
       "tokens": [
         0
       ],
       "type": "major",
       "float_percent": 20,
       "always_market_price": true,
-      "coordinates": "E6",
-      "color": "crBlue"
+      "coordinates": "M38",
+      "city": 3,
+      "color": "lnwrBlack"
     },
     {
       "sym": "GWR",
@@ -1010,9 +1101,9 @@ module Engine
       "text_color": "black"
     },
     {
-      "sym": "LNWR",
-      "name": "London and North West Railway",
-      "logo": "1822/LNWR",
+      "sym": "SECR",
+      "name": "South Eastern & Chatham Railway",
+      "logo": "1822/SECR",
       "tokens": [
         0
       ],
@@ -1020,21 +1111,21 @@ module Engine
       "float_percent": 20,
       "always_market_price": true,
       "coordinates": "M38",
-      "city": 3,
-      "color": "lnwrBlack"
+      "city": 5,
+      "color": "secrOrange"
     },
     {
-      "sym": "L&YR",
-      "name": "Lancashire & Yorkshire",
-      "logo": "1822/LYR",
+      "sym": "CR",
+      "name": "Caledonian Railway",
+      "logo": "1822/CR",
       "tokens": [
         0
       ],
       "type": "major",
       "float_percent": 20,
       "always_market_price": true,
-      "coordinates": "G22",
-      "color": "lyrPurple"
+      "coordinates": "E6",
+      "color": "crBlue"
     },
     {
       "sym": "MR",
@@ -1050,6 +1141,19 @@ module Engine
       "color": "mrRed"
     },
     {
+      "sym": "L&YR",
+      "name": "Lancashire & Yorkshire",
+      "logo": "1822/LYR",
+      "tokens": [
+        0
+      ],
+      "type": "major",
+      "float_percent": 20,
+      "always_market_price": true,
+      "coordinates": "G22",
+      "color": "lyrPurple"
+    },
+    {
       "sym": "NBR",
       "name": "North British Railway",
       "logo": "1822/NBR",
@@ -1061,33 +1165,6 @@ module Engine
       "always_market_price": true,
       "coordinates": "H5",
       "color": "nbrBrown"
-    },
-    {
-      "sym": "NER",
-      "name": "North Eastern Railway",
-      "logo": "1822/NER",
-      "tokens": [
-        0
-      ],
-      "type": "major",
-      "float_percent": 20,
-      "always_market_price": true,
-      "coordinates": "L19",
-      "color": "nerGreen"
-    },
-    {
-      "sym": "SECR",
-      "name": "South Eastern & Chatham Railway",
-      "logo": "1822/SECR",
-      "tokens": [
-        0
-      ],
-      "type": "major",
-      "float_percent": 20,
-      "always_market_price": true,
-      "coordinates": "M38",
-      "city": 5,
-      "color": "secrOrange"
     },
     {
       "sym": "SWR",
@@ -1102,34 +1179,28 @@ module Engine
       "coordinates": "H33",
       "color": "swrGray",
       "text_color": "black"
+    },
+    {
+      "sym": "NER",
+      "name": "North Eastern Railway",
+      "logo": "1822/NER",
+      "tokens": [
+        0
+      ],
+      "type": "major",
+      "float_percent": 20,
+      "always_market_price": true,
+      "coordinates": "L19",
+      "color": "nerGreen"
     }
   ],
   "trains": [
     {
-      "name": "L",
-      "distance": [
-        {
-           "nodes": ["city", "offboard"],
-           "pay": 1,
-           "visit": 1
-        },
-        {
-           "nodes": ["town"],
-           "pay": 1,
-           "visit": 1
-        }
-      ],
+      "name": "2",
+      "distance": 2,
       "num": 22,
-      "price": 60,
-      "rusts_on": "3",
-      "variants": [
-        {
-          "name": "2",
-          "distance": 2,
-          "price": 120,
-          "rusts_on": "4"
-        }
-      ]
+      "price": 120,
+      "rusts_on": "4"
     },
     {
       "name": "3",
@@ -1543,18 +1614,6 @@ module Engine
     }
   },
   "phases": [
-    {
-      "name": "1",
-      "on": "L",
-      "train_limit": {
-        "minor": 2,
-        "major": 4
-      },
-      "tiles": [
-        "yellow"
-      ],
-      "operating_rounds": 1
-    },
     {
       "name": "2",
       "on": "2",
