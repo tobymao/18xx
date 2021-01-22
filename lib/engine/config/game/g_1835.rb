@@ -625,7 +625,6 @@ module Engine
       "city=revenue:0,loc:5.5": [
         "A11"
       ],
-
       "city=revenue:0,loc:center;upgrade=cost:50": [
         "D8"
       ],
