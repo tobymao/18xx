@@ -26,7 +26,7 @@ MessageBus.subscribe '/turn' do |msg|
   users = users.reject do |user|
     next true if user.settings['notifications'] == false
     next false if data['force']
-    next true if (Bus[Bus::USER_TS % id] || minute_ago) > minute_ago
+    next true if (Bus[Bus::USER_TS % user.id] || minute_ago) > minute_ago
 
     email_sent = user.settings['email_sent'] || 0
     email_sent > minute_ago
