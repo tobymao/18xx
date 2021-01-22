@@ -95,10 +95,6 @@ module Engine
         # start with first minor tokens placed (as opposed to just reserved)
         @mine = @minors.find { |m| m.name == 'mine' }
         @minors.delete(@mine)
-        # @minors.each do |minor|
-        #  hex = hex_by_id(minor.coordinates)
-        #  hex.tile.cities[minor.city || 0].place_token(minor, minor.next_token)
-        # end
 
         # Place all mine tokens and mark them as non-blocking
         # route restrictions will be handled elsewhere
