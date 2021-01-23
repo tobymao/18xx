@@ -126,7 +126,12 @@ module Engine
         {
           sym: :priority_order_pass,
           short_name: 'Priority Oder Pass',
-          desc: 'Priority is awarded in pass order in both Auction and Stock Rounds.',
+          desc: '(alpha) Priority is awarded in pass order in both Auction and Stock Rounds.',
+        },
+        {
+          sym: :major_investors,
+          short_name: 'Major Investors',
+          desc: '(alpha) The Presidency cannot be transferred to another player during Corporate Share Buying.',
         },
       ].freeze
 
@@ -237,7 +242,7 @@ module Engine
         Step::G18CO::ReturnToken,
         Step::BuyCompany,
         Step::G18CO::RedeemShares,
-        Step::CorporateBuyShares,
+        Step::G18CO::CorporateBuyShares,
         Step::G18CO::SpecialTrack,
         Step::G18CO::Track,
         Step::Token,
