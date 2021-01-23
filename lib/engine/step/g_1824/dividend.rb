@@ -81,7 +81,7 @@ module Engine
         end
 
         def payout_shares(entity, revenue)
-          return super unless entity.minor?
+          return super unless minor_style_dividend?(entity)
 
           @log << "#{entity.owner.name} receives #{@game.format_currency(revenue)}"
           @game.bank.spend(revenue, entity.owner)
@@ -103,7 +103,11 @@ module Engine
           elsif payout[:per_share].zero?
             @log << "#{entity.name} withholds #{@game.format_currency(revenue)}"
           end
-          @log << "#{entity.name} gets mine income of #{@game.format_currency(mine_revenue)}" if mine_revenue.positive?
+
+          return unless payout[:corporation].positive?
+
+          mine = mine_revenue.positive? ? " of which #{@game.format_currency(mine_revenue)} is from mine(s)" : ''
+          @log << "#{entity.name} receives #{@game.format_currency(payout[:corporation])}#{mine}"
         end
       end
     end
