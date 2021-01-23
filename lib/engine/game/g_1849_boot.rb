@@ -95,8 +95,7 @@ module Engine
       end
 
       def check_other(route)
-        return unless (route.stops.map(&:hex).map(&:id) & NEW_PORT_HEXES).any?
-
+        return if (route.stops.map(&:hex).map(&:id) & NEW_PORT_HEXES).empty?
         raise GameError, 'Route must include two non-port stops.' unless route.stops.size > 2
       end
 
