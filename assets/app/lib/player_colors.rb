@@ -22,8 +22,7 @@ module Lib
     end
 
     def show_player_colors
-      show = Lib::Storage['show_player_colors']
-      show.nil? ? true : show
+      Lib::Storage['show_player_colors']
     end
   end
 end
