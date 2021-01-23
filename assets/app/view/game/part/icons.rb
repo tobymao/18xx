@@ -7,21 +7,26 @@ module View
   module Game
     module Part
       class Icons < Base
+        needs :show_destinations, store: true
         include SmallItem
 
         ICON_RADIUS = 16
         DELTA_X = (ICON_RADIUS * 2) + 2
 
         def preferred_render_locations
-          if layout == :pointy && @icons.one?
+          if layout == :pointy && num_rendered_icons == 1
             POINTY_SMALL_ITEM_LOCATIONS
           elsif layout == :pointy
             POINTY_WIDE_ITEM_LOCATIONS
-          elsif layout == :flat && @icons.one?
+          elsif layout == :flat && num_rendered_icons == 1
             SMALL_ITEM_LOCATIONS
           else
             WIDE_ITEM_LOCATIONS
           end
+        end
+
+        def num_rendered_icons
+          @icons.count { |i| @show_destinations || !i.destination? }
         end
 
         def load_from_tile
@@ -55,13 +60,15 @@ module View
         end
 
         def render_part
-          patterns = destination_icon_patterns
-          children = @icons.map.with_index do |icon, index|
+          children = []
+          children << h(:defs, destination_icon_patterns) if @show_destinations
+
+          icon_images = @icons.select { |i| @show_destinations || !i.destination? }.map.with_index do |icon, index|
             if icon.destination?
               h(:circle,
                 attrs: {
                   fill: "url(##{@tile.id}_#{index})",  # icon.image,
-                  cx: "#{ICON_RADIUS + ((index - (@icons.size - 1) / 2.0) * -DELTA_X).round(2)}px",
+                  cx: "#{ICON_RADIUS + ((index - (num_rendered_icons - 1) / 2.0) * -DELTA_X).round(2)}px",
                   cy: "#{ICON_RADIUS}px",
                   r: "#{ICON_RADIUS}px",
                 })
@@ -69,18 +76,18 @@ module View
               h(:image,
                 attrs: {
                   href: icon.image,
-                  x: ((index - (@icons.size - 1) / 2.0) * -DELTA_X).round(2),
+                  x: ((index - (num_rendered_icons - 1) / 2.0) * -DELTA_X).round(2),
                   width: "#{ICON_RADIUS * 2}px",
                   height: "#{ICON_RADIUS * 2}px",
                 })
             end
           end
-          h(:g, [
-            h(:defs, patterns),
-            h(:g, { attrs: { transform: "#{rotation_for_layout} translate(#{-ICON_RADIUS} #{-ICON_RADIUS})" } }, [
-              h(:g, { attrs: { transform: translate } }, children),
-            ]),
+
+          children << h(:g, { attrs: { transform: "#{rotation_for_layout} translate(#{-ICON_RADIUS} #{-ICON_RADIUS})" } }, [
+            h(:g, { attrs: { transform: translate } }, icon_images),
           ])
+
+          h(:g, children)
         end
       end
     end

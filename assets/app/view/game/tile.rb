@@ -18,6 +18,7 @@ module View
 
       needs :show_coords, default: nil
       needs :show_location_names, default: true
+      needs :show_destinations
 
       # helper method to pass @tile and @region_use to every part
       def render_tile_part(part_class, **kwargs)
@@ -66,7 +67,7 @@ module View
         children << render_tile_part(Part::Blocker)
         rendered_loc_name = render_tile_part(Part::LocationName) if @tile.location_name && (@tile.cities.size <= 1)
         @tile.reservations.each { |x| children << render_tile_part(Part::Reservation, reservation: x) }
-        children << render_tile_part(Part::Icons) unless @tile.icons.empty?
+        children << render_tile_part(Part::Icons, show_destinations: @show_destinations) unless @tile.icons.empty?
 
         children << render_tile_part(Part::Assignments) unless @tile.hex&.assignments&.empty?
         # borders should always be the top layer

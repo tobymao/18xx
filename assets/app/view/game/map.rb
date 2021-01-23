@@ -59,6 +59,7 @@ module View
             clickable: clickable,
             actions: actions,
             show_coords: show_coords,
+            show_destinations: show_destinations,
             show_location_names: show_location_names,
             routes: routes,
             start_pos: @start_pos
