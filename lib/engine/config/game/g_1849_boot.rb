@@ -816,7 +816,7 @@ module Engine
          "float_percent":20,
          "sym":"TSR",
          "name":"Terni–Sulmona Railway",
-         "logo":"1849_K2S/TSR",
+         "logo":"1849_boot/TSR",
          "token_fee":40,
          "tokens":[
             0,
@@ -841,7 +841,7 @@ module Engine
          "float_percent":20,
          "sym":"BTR",
          "name":"Bari–Taranto Railway",
-         "logo":"1849_K2S/BTR",
+         "logo":"1849_boot/BTR",
          "token_fee":90,
          "tokens":[
             0,
