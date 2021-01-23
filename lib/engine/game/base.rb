@@ -1471,6 +1471,21 @@ module Engine
         operator.trains << train
         operator.rusted_self = false
         @crowded_corps = nil
+
+        close_companies_on_train!(operator)
+      end
+
+      def close_companies_on_train!(entity)
+        @companies.each do |company|
+          next if company.closed?
+
+          abilities(company, :close, time: 'bought_train') do |ability|
+            next if entity&.name != ability.corporation
+
+            company.close!
+            @log << "#{company.name} closes"
+          end
+        end
       end
 
       def remove_train(train)
