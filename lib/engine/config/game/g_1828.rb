@@ -516,7 +516,7 @@ module Engine
                 },
                 {
                     "type": "exchange",
-                    "corporation": "any",
+                    "corporations": "any",
                     "owner_type": "player",
                     "from": [
                         "ipo",
