@@ -903,7 +903,7 @@ module Engine
       },
       {
          "name":"12H",
-         "num":2,
+         "num":1,
          "distance":12,
          "price":800
       },
