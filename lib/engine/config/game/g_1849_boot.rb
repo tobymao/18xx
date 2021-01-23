@@ -905,7 +905,10 @@ module Engine
          "name":"12H",
          "num":1,
          "distance":12,
-         "price":800
+         "price":800,
+         "events": [
+           {"type": "close_companies"}
+         ]
       },
       {
          "name":"16H",

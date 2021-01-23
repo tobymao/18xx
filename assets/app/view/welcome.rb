@@ -17,6 +17,7 @@ module View
 
     def render_notification
       message = <<~MESSAGE
+        <p>1849: Kingdom of the Two Sicilies (Prototype) is now available!<p>
         <p>The messaging system now uses Redis in order to scale during peak hours. Hopefully there will be no more 502 errors.<p>
         <p>You can now choose simple tokens (1867, 1817) in your profile where available.<p>
         <p>Please file <a href='https://github.com/tobymao/18xx/issues'>issues and ideas</a> on
