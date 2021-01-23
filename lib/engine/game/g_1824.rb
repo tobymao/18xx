@@ -261,6 +261,10 @@ module Engine
         ])
       end
 
+      def or_set_finished
+        depot.export!
+      end
+
       def regional_bk
         @bk ||= corporation_by_id('BK')
       end
@@ -305,6 +309,11 @@ module Engine
           c.shares.find(&:president).buyable = false
           c.floatable = false
         end
+      end
+
+      def timeline
+        @timeline ||= ['At the end of each OR set, the cheapest train in bank is exported.'].freeze
+        @timeline
       end
 
       def ipo_name(entity)

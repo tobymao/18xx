@@ -8,9 +8,22 @@ module Engine
       def depot_trains(clear: false)
         @depot_trains = nil if clear
         @depot_trains ||= [
-          @upcoming.reject { |t| @game.g_train?(t) }.first,
+          first_normal_upcoming_train,
           *@upcoming.select { |t| @game.phase.available?(t.available_on) },
         ].compact.uniq(&:name) + @discarded.uniq(&:name)
+      end
+
+      def export!
+        train = first_normal_upcoming_train
+        @game.log << "-- Event: A #{train.name} train exports --"
+        remove_train(train)
+        @game.phase.buying_train!(nil, train)
+      end
+
+      private
+
+      def first_normal_upcoming_train
+        @upcoming.reject { |t| @game.g_train?(t) }.first
       end
     end
   end
