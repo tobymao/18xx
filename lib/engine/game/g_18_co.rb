@@ -122,6 +122,14 @@ module Engine
         ]
       ).freeze
 
+      OPTIONAL_RULES = [
+        {
+          sym: :priority_order_pass,
+          short_name: 'Priority Oder Pass',
+          desc: 'Priority is awarded in pass order in both Auction and Stock Rounds.',
+        },
+      ].freeze
+
       include CompanyPrice50To150Percent
 
       def ipo_name(_entity = nil)
@@ -144,6 +152,12 @@ module Engine
         setup_company_price_50_to_150_percent
         setup_corporations
         @presidents_choice = nil
+      end
+
+      def next_sr_player_order
+        return :first_to_pass if @optional_rules&.include?(:priority_order_pass)
+
+        super
       end
 
       def setup_corporations
