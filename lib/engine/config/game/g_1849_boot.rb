@@ -907,7 +907,7 @@ module Engine
          "distance":12,
          "price":800,
          "events": [
-           {"type": "earthquake"}
+           {"type": "close_companies"}
          ]
       },
       {
