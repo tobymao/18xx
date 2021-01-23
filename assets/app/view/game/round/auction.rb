@@ -42,6 +42,7 @@ module View
               *render_minors,
               *render_corporations,
               render_players,
+              render_map,
             ].compact)
           end
         end
@@ -330,6 +331,13 @@ module View
             from_price: from_price,
           ))
           store(:selected_company, nil, skip: true)
+        end
+
+        # show the map if there are minors to pick from
+        def render_map
+          return nil unless @step.available.any?(&:minor?)
+
+          h(Game::Map, game: @game)
         end
       end
     end
