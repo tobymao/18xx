@@ -265,28 +265,21 @@ module Engine
   "companies": [
     {
       "sym":"EPP",
-      "name":"Eisenbahn Pilsen - Priesen (C1)",
+      "name":"C1 Eisenbahn Pilsen - Priesen",
       "value":200,
       "interval": [120, 140, 160, 180, 200],
       "revenue":0,
-      "desc":"Buyer take control of minor Coal Railway EPP (C1), which can be exchanged for the Director's certificate of Regional Railway MS during SRs in phase 3 or 4, or automatically when phase 5 starts. BK floats after exchange as soon as 50% or more are owned by players. This private cannot be sold.",
+      "desc":"Buyer take control of minor Coal Railway EPP (C1), which can be exchanged for the Director's certificate of Regional Railway BK during SRs in phase 3 or 4, or automatically when phase 5 starts. BK floats after exchange as soon as 50% or more are owned by players. This private cannot be sold.",
       "abilities": [
         {
           "type": "no_buy",
           "owner_type": "player"
-        },
-        {
-          "type": "exchange",
-          "owner_type": "player",
-          "corporations": ["BK"],
-          "from": "IPO",
-          "description": "SR phase 3-5: Exchange for BK presidency"
         }
       ]
     },
     {
       "sym":"EOD",
-      "name":"Eisenbahn Oderberg - Dombran (C2)",
+      "name":"C2 Eisenbahn Oderberg - Dombran",
       "value":200,
       "interval": [120, 140, 160, 180, 200],
       "revenue":0,
@@ -295,19 +288,12 @@ module Engine
         {
           "type": "no_buy",
           "owner_type": "player"
-        },
-        {
-          "type": "exchange",
-          "owner_type": "player",
-          "corporations": ["BK"],
-          "from": "IPO",
-          "description": "SR phase 3-5: Exchange for MS presidency"
         }
       ]
     },
     {
       "sym":"MLB",
-      "name":"Mosty - Lemberg Bahn (C3)",
+      "name":"C3 Mosty - Lemberg Bahn",
       "value":200,
       "interval": [120, 140, 160, 180, 200],
       "revenue":0,
@@ -316,19 +302,12 @@ module Engine
         {
           "type": "no_buy",
           "owner_type": "player"
-        },
-        {
-          "type": "exchange",
-          "owner_type": "player",
-          "corporations": ["CL"],
-          "from": "IPO",
-          "description": "SR phase 3-5: Exchange for CL presidency"
         }
       ]
     },
     {
       "sym":"SPB",
-      "name":"Simeria-Petrosani Bahn (C4)",
+      "name":"C4 Simeria-Petrosani Bahn",
       "value":200,
       "interval": [120, 140, 160, 180, 200],
       "revenue":0,
@@ -337,19 +316,12 @@ module Engine
         {
           "type": "no_buy",
           "owner_type": "player"
-        },
-        {
-          "type": "exchange",
-          "owner_type": "player",
-          "corporations": ["SB"],
-          "from": "IPO",
-          "description": "SR phase 3-5: Exchange for SB presidency"
         }
       ]
     },
     {
       "sym":"S1",
-      "name":"Wien-Gloggnitzer Eisenbahngesellschaft (S1)",
+      "name":"S1 Wien-Gloggnitzer Eisenbahngesellschaft",
       "value":240,
       "revenue":0,
       "desc":"Buyer take control of pre-staatsbahn S1, which will be exchanged for the Director's certificate of SD when the first 4 train is sold. Pre-Staatsbahnen starts in Wien (E12). Cannot be sold.",
@@ -362,7 +334,7 @@ module Engine
     },
     {
       "sym":"S2",
-      "name":"Kärntner Bahn (S2)",
+      "name":"S2 Kärntner Bahn",
       "value":120,
       "revenue":0,
       "desc":"Buyer take control of pre-staatsbahn S2, which will be exchanged for a 10% share of SD when the first 4 train is sold. Pre-Staatsbahnen starts in Graz (G10). Cannot be sold.",
@@ -375,7 +347,7 @@ module Engine
     },
     {
       "sym":"S3",
-      "name":"Nordtiroler Staatsbahn (S3)",
+      "name":"S3 Nordtiroler Staatsbahn",
       "value":120,
       "revenue":0,
       "desc":"Buyer take control of pre-staatsbahn S3, which will be exchanged for a 10% share of SD when the first 4 train is sold. Pre-Staatsbahnen starts in Innsbruck (G4). Cannot be sold.",
@@ -388,7 +360,7 @@ module Engine
     },
     {
       "sym":"U1",
-      "name":"Eisenbahn Pest - Waitzen (U1)",
+      "name":"U1 Eisenbahn Pest - Waitzen",
       "value":240,
       "revenue":0,
       "desc":"Buyer take control of pre-staatsbahn U1, which will be exchanged for the Director's certificate of UG when the first 5 train is sold. Pre-Staatsbahnen starts in Pest (F17) in base 1824 and in Budapest (G12) for 3 players on the Cislethania map. Cannot be sold.",
@@ -401,7 +373,7 @@ module Engine
     },
     {
       "sym":"U2",
-      "name":"Mohacs-Fünfkirchner Bahn (U2)",
+      "name":"U2 Mohacs-Fünfkirchner Bahn",
       "value":120,
       "revenue":0,
       "desc":"Buyer take control of pre-staatsbahn U2, which will be exchanged for a 10% share of UG when the first 5 train is sold. Pre-Staatsbahnen starts in Fünfkirchen (H15). Cannot be sold.",
@@ -414,7 +386,7 @@ module Engine
     },
     {
       "sym":"K1",
-      "name":"Kaiserin Elisabeth-Bahn (K1)",
+      "name":"K1 Kaiserin Elisabeth-Bahn",
       "value":240,
       "revenue":0,
       "desc":"Buyer take control of pre-staatsbahn K1, which will be exchanged for the Director's certificate of KK when the first 6 train is sold. Pre-Staatsbahnen starts in Wien (E12). Cannot be sold.",
@@ -427,7 +399,7 @@ module Engine
     },
     {
       "sym":"K2",
-      "name":"Kaiser Franz Joseph-Bahn (K2)",
+      "name":"K2 Kaiser Franz Joseph-Bahn",
       "value":120,
       "revenue":0,
       "desc":"Buyer take control of pre-staatsbahn K2, which will be exchanged for a 10% share of KK when the first 6 train is sold. Pre-Staatsbahnen starts in Wien (E12). Cannot be sold.",
@@ -442,7 +414,7 @@ module Engine
   "minors":[
     {
       "sym": "EPP",
-      "name": "Eisenbahn Pilsen - Priesen (C1)",
+      "name": "C1 Eisenbahn Pilsen - Priesen",
       "type": "Coal",
       "tokens": [
         0
@@ -454,7 +426,7 @@ module Engine
     },
     {
       "sym": "EOD",
-      "name": "Eisenbahn Oderberg - Dombran (C2)",
+      "name": "C2 Eisenbahn Oderberg - Dombran",
       "type": "Coal",
       "tokens": [
         0
@@ -467,7 +439,7 @@ module Engine
     {
       "float_percent": 100,
       "sym": "MLB",
-      "name": "Mosty - Lemberg Bahn (C3)",
+      "name": "C3 Mosty - Lemberg Bahn",
       "type": "Coal",
       "tokens": [
         0
@@ -479,7 +451,7 @@ module Engine
     },
     {
       "sym": "SPB",
-      "name": "Simeria-Petrosani Bahn (C4)",
+      "name": "C4 Simeria-Petrosani Bahn",
       "type": "Coal",
       "tokens": [
         0
@@ -491,7 +463,7 @@ module Engine
     },
     {
        "sym": "S1",
-       "name": "Wien-Gloggnitzer Eisenbahngesellschaft",
+       "name": "S1 Wien-Gloggnitzer Eisenbahngesellschaft",
        "type": "PreStaatsbahn",
        "tokens": [
          0
@@ -503,7 +475,7 @@ module Engine
     },
     {
       "sym": "S2",
-      "name": "Kärntner Bahn",
+      "name": "S2 Kärntner Bahn",
       "type": "PreStaatsbahn",
       "tokens": [
         0
@@ -515,7 +487,7 @@ module Engine
     },
     {
       "sym": "S3",
-      "name": "Nordtiroler Staatsbahn",
+      "name": "S3 Nordtiroler Staatsbahn",
       "type": "PreStaatsbahn",
       "tokens": [
         0
@@ -527,7 +499,7 @@ module Engine
     },
     {
       "sym": "U1",
-      "name": "Eisenbahn Pest - Waitzen",
+      "name": "U1 Eisenbahn Pest - Waitzen",
       "type": "PreStaatsbahn",
       "tokens": [
         0
@@ -539,7 +511,7 @@ module Engine
     },
     {
       "sym": "U2",
-      "name": "Mohacs-Fünfkirchner Bahn",
+      "name": "U2 Mohacs-Fünfkirchner Bahn",
       "type": "PreStaatsbahn",
       "tokens": [
         0
@@ -551,7 +523,7 @@ module Engine
     },
     {
       "sym": "K1",
-      "name": "Kaiserin Elisabeth-Bahn",
+      "name": "K1 Kaiserin Elisabeth-Bahn",
       "type": "PreStaatsbahn",
       "tokens": [
           0
@@ -563,7 +535,7 @@ module Engine
     },
     {
       "sym": "K2",
-      "name": "Kaiser Franz Joseph-Bahn",
+      "name": "K2 Kaiser Franz Joseph-Bahn",
       "type": "PreStaatsbahn",
       "tokens": [
         0
