@@ -18,7 +18,7 @@ module Engine
                   :name, :opposite, :reservations, :upgrades
     attr_reader :borders, :cities, :color, :edges, :junction, :nodes, :label,
                 :parts, :preprinted, :rotation, :stops, :towns, :offboards, :blockers,
-                :city_towns, :unlimited, :stubs, :partitions, :id, :frame, :destination
+                :city_towns, :unlimited, :stubs, :partitions, :id, :frame
 
     ALL_EDGES = [0, 1, 2, 3, 4, 5].freeze
 
@@ -182,7 +182,6 @@ module Engine
       @edges = nil
       @frame = nil
       @junction = nil
-      @destinations = []
       @icons = []
       @location_name = location_name
       @legal_rotations = []
@@ -287,7 +286,6 @@ module Engine
 
     def add_destination!(destination)
       @icons << destination
-      @destinations << destination
     end
 
     def reserved_by?(corporation)
@@ -514,7 +512,6 @@ module Engine
         elsif part.junction?
           @junction = part
         elsif part.destination?
-          @destinations << part
           # A destination also acts as an icon while still being a logically distinct feature
           @icons << part
         elsif part.icon?
