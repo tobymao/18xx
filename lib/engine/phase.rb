@@ -25,7 +25,6 @@ module Engine
       train.events.clear
 
       rust_trains!(train, entity)
-      close_companies_on_train!(entity)
       @depot.depot_trains(clear: true)
     end
 
@@ -92,19 +91,6 @@ module Engine
       end
 
       (@game.companies + @game.corporations).each { |c| c.remove_ability_when(@name) }
-    end
-
-    def close_companies_on_train!(entity)
-      @game.companies.each do |company|
-        next if company.closed?
-
-        @game.abilities(company, :close, time: 'bought_train') do |ability|
-          next if entity&.name != ability.corporation
-
-          company.close!
-          @log << "#{company.name} closes"
-        end
-      end
     end
 
     def rust_trains!(train, entity)
