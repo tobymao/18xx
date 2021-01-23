@@ -47,7 +47,7 @@ module View
           h(Bank, game: @game),
           h(GameInfo, game: @game, layout: 'upcoming_trains'),
           *@game.corporations.select(&:receivership?).map { |c| h(Corporation, corporation: c) },
-          render_unsold_companies,
+          *unowned_companies,
           *extra_bank,
         ].compact)
 
@@ -56,9 +56,9 @@ module View
         h('div#entities', div_props, children)
       end
 
-      def render_unsold_companies
-        companies = @game.unsold_purchasable_companies(@current_entity)
-        h(UnOwnedCompanies, companies: @game.unsold_purchasable_companies(@current_entity)) unless companies.empty?
+      def unowned_companies
+        companies = @game.unowned_purchasable_companies(@current_entity)
+        companies.flat_map { |company| h(Company, company: company) } unless companies.empty?
       end
     end
   end
