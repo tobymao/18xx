@@ -456,6 +456,10 @@ module Engine
       @label = Part::Label.new(label_name)
     end
 
+    def clear_label!
+      @label = nil
+    end
+
     def restore_borders(edges = nil)
       edges ||= ALL_EDGES
 

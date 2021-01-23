@@ -55,11 +55,11 @@ module Engine
         def process_lay_tile(action)
           old_tile = action.hex.tile
           super
+          old_tile.clear_label! if old_tile.color == :yellow && old_tile.label.to_s == 'K'
           return unless K_HEXES.include?(action.hex.coordinates)
 
           # Handle special upgrade rules from K hexes
           action.tile.label = 'K' if action.tile.color == :yellow
-          old_tile.label = nil if old_tile.color == :yellow
         end
 
         def update_tile_lists(tile, old_tile)
