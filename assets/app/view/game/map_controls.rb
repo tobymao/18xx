@@ -1,18 +1,19 @@
 # frozen_string_literal: true
 
+require '../lib/settings'
 require '../lib/storage'
 
 module View
   module Game
     class MapControls < Snabberb::Component
       include Lib::Settings
-      include Lib::PlayerColors
       needs :show_coords, default: nil, store: true
       needs :show_location_names, default: true, store: true
       needs :show_starting_map, default: false, store: true
       needs :historical_routes, default: [], store: true
       needs :game, default: nil, store: true
       needs :map_zoom, default: nil, store: true
+      needs :show_player_colors, default: nil, store: true
 
       def render
         children = [
@@ -28,16 +29,15 @@ module View
       end
 
       def player_colors_controls
-        show_hide = show_player_colors ? 'Hide' : 'Show'
-        text = "#{show_hide} Player Colors"
+        show_player_colors = Lib::Storage['show_player_colors']
 
         on_click = lambda do
           new_value = !show_player_colors
           Lib::Storage['show_player_colors'] = new_value
-          store(:player_colors, new_value ? player_colors : nil, skip: false)
+          store(:show_player_colors, new_value)
         end
 
-        render_button(text, on_click)
+        render_button("#{show_player_colors ? 'Hide' : 'Show'} Player Colors", on_click)
       end
 
       def location_names_controls
