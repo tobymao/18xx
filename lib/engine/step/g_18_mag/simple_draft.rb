@@ -142,6 +142,7 @@ module Engine
             @log << "Minor #{minor.name} is removed from the game"
             hex = @game.hex_by_id(minor.coordinates)
             hex.tile.cities[minor.city || 0].remove_tokens!
+            hex.tile.cities[minor.city || 0].remove_reservation!(minor)
 
             @game.minors.delete(minor)
           end

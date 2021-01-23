@@ -846,7 +846,7 @@ module Engine
       def all_bundles_for_corporation(share_holder, corporation, shares: nil)
         return [] unless corporation.ipoed
 
-        shares = (shares || share_holder.shares_of(corporation)).sort_by { |h| [h.president ? 1 : 0, h.price] }
+        shares = (shares || share_holder.shares_of(corporation)).sort_by { |h| [h.president ? 1 : 0, h.percent] }
 
         bundles = shares.flat_map.with_index do |share, index|
           bundle = shares.take(index + 1)
@@ -1476,6 +1476,21 @@ module Engine
         operator.trains << train
         operator.rusted_self = false
         @crowded_corps = nil
+
+        close_companies_on_train!(operator)
+      end
+
+      def close_companies_on_train!(entity)
+        @companies.each do |company|
+          next if company.closed?
+
+          abilities(company, :close, time: 'bought_train') do |ability|
+            next if entity&.name != ability.corporation
+
+            company.close!
+            @log << "#{company.name} closes"
+          end
+        end
       end
 
       def remove_train(train)
@@ -1523,6 +1538,15 @@ module Engine
         nil
       end
 
+      def exchange_corporations(exchange_ability)
+        candidates = if exchange_ability.corporations == 'any'
+                       corporations
+                     else
+                       exchange_ability.corporations.map { |c| corporation_by_id(c) }
+                     end
+        candidates.reject(&:closed?)
+      end
+
       def round_start?
         @last_game_action_id == @round_history.last
       end
@@ -1537,6 +1561,36 @@ module Engine
 
       def hex_blocked_by_ability?(_entity, ability, hex)
         ability.hexes.include?(hex.id)
+      end
+
+      def rust_trains!(train, entity)
+        obsolete_trains = []
+        rusted_trains = []
+        owners = Hash.new(0)
+
+        trains.each do |t|
+          next if t.obsolete || t.obsolete_on != train.sym
+
+          obsolete_trains << t.name
+          t.obsolete = true
+        end
+
+        trains.each do |t|
+          next if t.rusted
+
+          should_rust = t.rusts_on == train.sym || (t.obsolete_on == train.sym && @depot.discarded.include?(t))
+          next unless should_rust
+          next unless rust?(t)
+
+          rusted_trains << t.name
+          owners[t.owner.name] += 1
+          entity.rusted_self = true if entity && entity == t.owner
+          rust(t)
+        end
+
+        @log << "-- Event: #{obsolete_trains.uniq.join(', ')} trains are obsolete --" if obsolete_trains.any?
+        @log << "-- Event: #{rusted_trains.uniq.join(', ')} trains rust " \
+          "( #{owners.map { |c, t| "#{c} x#{t}" }.join(', ')}) --" if rusted_trains.any?
       end
 
       private
@@ -1642,7 +1696,7 @@ module Engine
         end
 
         reservations = Hash.new { |k, v| k[v] = [] }
-        corporations.each do |c|
+        reservation_corporations.each do |c|
           reservations[c.coordinates] << {
             entity: c,
             city: c.city,
@@ -1698,6 +1752,10 @@ module Engine
 
       def partition_companies
         companies
+      end
+
+      def reservation_corporations
+        corporations
       end
 
       def init_tiles
@@ -2082,6 +2140,15 @@ module Engine
       # Override this, and add elements (paragraphs of text) here to display it on Info page.
       def timeline
         []
+      end
+
+      # minors to show on player cards
+      def player_card_minors(_player)
+        []
+      end
+
+      def player_sort(entities)
+        entities.sort_by(&:name).group_by(&:owner)
       end
 
       def bank_sort(corporations)

@@ -3,6 +3,8 @@
 require 'view/game/actionable'
 require 'view/game/part/base'
 require 'view/game/token'
+require 'lib/settings'
+require 'lib/storage'
 require 'lib/tile_selector'
 require 'lib/token_selector'
 
@@ -12,6 +14,7 @@ module View
       # a "slot" is a space in a city for a token
       class CitySlot < Base
         include Actionable
+        include Lib::Settings
 
         needs :token
         needs :slot_index, default: 0
@@ -44,9 +47,16 @@ module View
 
         def render_part
           children = []
-          children << h(:circle, attrs: { r: @radius, fill: 'white' })
+          color = 'white'
+          radius = @radius
+          if (owner = @token&.corporation&.owner) && Lib::Storage['show_player_colors']
+            color = player_colors(@game.players)[owner]
+            radius -= 4
+          end
+
+          children << h(:circle, attrs: { r: @radius, fill: color })
           children << reservation if @reservation && !@token
-          children << h(Token, token: @token, radius: @radius) if @token
+          children << h(Token, token: @token, radius: radius) if @token
 
           props = { on: { click: ->(event) { on_click(event) } } }
 

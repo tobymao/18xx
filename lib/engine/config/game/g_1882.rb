@@ -266,7 +266,7 @@ module Engine
         },
         {
           "type": "exchange",
-          "corporation": "SC",
+          "corporations": ["SC"],
           "owner_type": "player",
           "from": "par"
         }

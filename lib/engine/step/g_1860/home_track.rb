@@ -75,10 +75,6 @@ module Engine
         def available_hex(_entity, hex)
           pending_track[:hexes].include?(hex)
         end
-
-        def hex_neighbors(entity, hex)
-          @game.graph.connected_hexes(entity)[hex]
-        end
       end
     end
   end

@@ -5,10 +5,10 @@ require_relative 'base'
 module Engine
   module Ability
     class Exchange < Base
-      attr_reader :corporation, :from
+      attr_reader :from, :corporations
 
-      def setup(corporation:, from:)
-        @corporation = corporation
+      def setup(corporations:, from:)
+        @corporations = corporations
         @from = Array(from).map(&:to_sym)
       end
     end

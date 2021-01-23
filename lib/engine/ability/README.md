@@ -105,9 +105,11 @@ Provide a description for an ability that is implemented outside of the ability 
 
 ## exchange
 
-Exchange this company for a share of a corporation.
+This company may be exchanged for a single share of a specified corporation during a step
+that allows exchange.
 
-- `corporation`: The corporation whose share may be exchanged. Use `"any"` to allow for all corporations.
+- `corporations`: An array with corporation names, whose share may be exchanged.
+  Use a simple `"any"` (no array) to allow for any corporation.
 - `from`: Where the share may be take from, either `"ipo"`,
   `"market"`, or an array containing both.
 

@@ -8,13 +8,8 @@ require 'roda'
 require 'snabberb'
 
 require_relative 'models'
-require_relative 'lib/assets'
-require_relative 'lib/bus'
-require_relative 'lib/mail'
-
+require_rel './lib'
 require_rel './models'
-
-require 'newrelic_rpm' if PRODUCTION
 
 class Api < Roda
   opts[:check_dynamic_arity] = false
@@ -59,10 +54,11 @@ class Api < Roda
   plugin :json_parser
   plugin :halt
   plugin :cookies
+  plugin :new_relic if PRODUCTION
 
   ASSETS = Assets.new(precompiled: PRODUCTION)
 
-  Bus.configure(DB)
+  Bus.configure
 
   use MessageBus::Rack::Middleware
   use Rack::Deflater unless PRODUCTION
@@ -130,7 +126,7 @@ class Api < Roda
       **needs,
     )
 
-    '<!DOCTYPE html>' + ASSETS.context.eval(script, warmup: request.path.split('/')[1].to_s)
+    '<!DOCTYPE html>' + ASSETS.context.eval(script)
   end
 
   def render_pin(**needs)
@@ -203,14 +199,10 @@ class Api < Roda
 
   MessageBus.user_id_lookup do |env|
     next unless (token = Rack::Request.new(env).cookies['auth_token'])
+    next unless (id = Session.first(token: token)&.user_id)
 
-    ip =
-      if (addr = env['HTTP_X_FORWARDED_FOR'])
-        addr.split(',')[-1].strip
-      else
-        env['REMOTE_ADDR']
-      end
-    Session.where(token: token).update(updated_at: Sequel::CURRENT_TIMESTAMP, ip: ip)
+    Bus[Bus::USER_TS % id] = Time.now.to_i
+
     nil
   end
 end

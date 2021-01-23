@@ -39,7 +39,18 @@ module Engine
       end
 
       def available_hex(entity, hex)
-        @game.graph.connected_hexes(entity)[hex]
+        connected = hex_neighbors(entity, hex)
+        return nil unless connected
+
+        tile_lay = get_tile_lay(entity)
+        return nil unless tile_lay
+
+        color = hex.tile.color
+        return nil if color == :white && !tile_lay[:lay]
+        return nil if color != :white && !tile_lay[:upgrade]
+        return nil if color != :white && !tile_lay[:upgrade_same_hex] && @previous_laid_hexes.include?(hex)
+
+        connected
       end
     end
   end

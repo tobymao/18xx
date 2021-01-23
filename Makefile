@@ -1,4 +1,4 @@
-.DEFAULT_GOAL := dev_up
+.DEFAULT_GOAL := dev_up_b
 
 clean:
 	sudo rm -rfv build/ public/assets/app.js public/assets/deps.js public/assets/engine.js public/assets/main.js public/assets/main.js.gz public/assets/opal.js

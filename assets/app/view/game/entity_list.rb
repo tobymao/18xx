@@ -8,6 +8,7 @@ module View
     class EntityList < Snabberb::Component
       needs :round
       needs :entities
+      needs :user, default: nil, store: true
       needs :acting_entity, default: nil
       needs :game, store: true
 
@@ -54,7 +55,7 @@ module View
           if entity.corporation? || entity.minor?
             size = TOKEN_SIZES[@game.corporation_size(entity)]
             logo_props = {
-              attrs: { src: entity.logo },
+              attrs: { src: @user&.dig('settings', 'simple_logos') ? entity.simple_logo : entity.logo },
               style: {
                 padding: "#{TOKEN_SIZES[:large] - size}rem 0.4rem 0 0",
                 height: "#{size}rem",

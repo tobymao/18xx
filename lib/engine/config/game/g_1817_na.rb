@@ -299,6 +299,7 @@ module Engine
       "sym": "DL&W",
       "name": "Delaware, Lackawanna and Western Railroad",
       "logo": "1817/DLW",
+      "simple_logo": "1817/DLW.alt",
       "shares": [100],
       "max_ownership_percent": 100,
       "tokens": [
@@ -312,6 +313,7 @@ module Engine
       "sym": "J",
       "name": "Elgin, Joliet and Eastern Railway",
       "logo": "1817/J",
+      "simple_logo": "1817/J.alt",
       "shares": [100],
       "max_ownership_percent": 100,
       "tokens": [
@@ -326,6 +328,7 @@ module Engine
       "sym": "GT",
       "name": "Grand Trunk Western Railroad",
       "logo": "1817/GT",
+      "simple_logo": "1817/GT.alt",
       "shares": [100],
       "max_ownership_percent": 100,
       "tokens": [
@@ -339,6 +342,7 @@ module Engine
       "sym": "H",
       "name": "Housatonic Railroad",
       "logo": "1817/H",
+      "simple_logo": "1817/H.alt",
       "shares": [100],
       "max_ownership_percent": 100,
       "tokens": [
@@ -353,6 +357,7 @@ module Engine
       "sym": "ME",
       "name": "Morristown and Erie Railway",
       "logo": "1817/ME",
+      "simple_logo": "1817/ME.alt",
       "shares": [100],
       "max_ownership_percent": 100,
       "tokens": [
@@ -367,6 +372,7 @@ module Engine
       "sym": "NYOW",
       "name": "New York, Ontario and Western Railway",
       "logo": "1817/W",
+      "simple_logo": "1817/W.alt",
       "shares": [100],
       "max_ownership_percent": 100,
       "tokens": [
@@ -380,6 +386,7 @@ module Engine
       "sym": "NYSW",
       "name": "New York, Susquehanna and Western Railway",
       "logo": "1817/S",
+      "simple_logo": "1817/S.alt",
       "shares": [100],
       "max_ownership_percent": 100,
       "tokens": [
@@ -394,6 +401,7 @@ module Engine
       "sym": "PSNR",
       "name": "Pittsburgh, Shawmut and Northern Railroad",
       "logo": "1817/PSNR",
+      "simple_logo": "1817/PSNR.alt",
       "shares": [100],
       "max_ownership_percent": 100,
       "tokens": [
@@ -407,6 +415,7 @@ module Engine
       "sym": "PLE",
       "name": "Pittsburgh and Lake Erie Railroad",
       "logo": "1817/PLE",
+      "simple_logo": "1817/PLE.alt",
       "shares": [100],
       "max_ownership_percent": 100,
       "tokens": [
@@ -420,6 +429,7 @@ module Engine
       "sym": "PW",
       "name": "Providence and Worcester Railroad",
       "logo": "1817/PW",
+      "simple_logo": "1817/PW.alt",
       "shares": [100],
       "max_ownership_percent": 100,
       "tokens": [
@@ -434,6 +444,7 @@ module Engine
       "sym": "R",
       "name": "Rutland Railroad",
       "logo": "1817/R",
+      "simple_logo": "1817/R.alt",
       "shares": [100],
       "max_ownership_percent": 100,
       "tokens": [
@@ -447,6 +458,7 @@ module Engine
       "sym": "SR",
       "name": "Strasburg Railroad",
       "logo": "1817/SR",
+      "simple_logo": "1817/SR.alt",
       "shares": [100],
       "max_ownership_percent": 100,
       "tokens": [
@@ -460,6 +472,7 @@ module Engine
       "sym": "UR",
       "name": "Union Railroad",
       "logo": "1817/UR",
+      "simple_logo": "1817/UR.alt",
       "shares": [100],
       "max_ownership_percent": 100,
       "tokens": [
@@ -473,6 +486,7 @@ module Engine
       "sym": "WT",
       "name": "Warren & Trumbull Railroad",
       "logo": "1817/WT",
+      "simple_logo": "1817/WT.alt",
       "shares": [100],
       "max_ownership_percent": 100,
       "tokens": [
@@ -486,6 +500,7 @@ module Engine
       "sym": "WC",
       "name": "West Chester Railroad",
       "logo": "1817/WC",
+      "simple_logo": "1817/WC.alt",
       "shares": [100],
       "max_ownership_percent": 100,
       "tokens": [

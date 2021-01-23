@@ -131,8 +131,7 @@ module Engine
 
           next unless ability.from.include?(:par)
 
-          corporation = corporation_by_id(ability.corporation)
-          corporation.par_via_exchange = company
+          exchange_corporations(ability).first.par_via_exchange = company
           @sc_company = company
         end
         super
@@ -152,9 +151,10 @@ module Engine
 
         # CN's tokens use a neutral logo, but as layed become owned by cn but don't block other players
         cn_corp = corporations.find { |x| x.name == 'CN' }
+        logo = '/logos/1882/neutral.svg'
         corporations.each do |x|
           unless CORPORATIONS_WITHOUT_NEUTRAL.include?(x.name)
-            x.tokens << Token.new(cn_corp, price: 0, logo: '/logos/1882/neutral.svg', type: :neutral)
+            x.tokens << Token.new(cn_corp, price: 0, logo: logo, simple_logo: logo, type: :neutral)
           end
         end
         corporations

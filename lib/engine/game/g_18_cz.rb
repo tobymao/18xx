@@ -116,10 +116,12 @@ module Engine
 
       def operating_round(round_num)
         Round::Operating.new(self, [
+          Step::G18CZ::HomeTrack,
+          Step::HomeToken,
           Step::SpecialTrack,
           Step::BuyCompany,
           Step::Track,
-          Step::Token,
+          Step::G18CZ::Token,
           Step::Route,
           Step::G18CZ::Dividend,
           Step::DiscardTrain,
@@ -251,6 +253,110 @@ module Engine
                end
 
         TRAINS_FOR_CORPORATIONS[name] == size
+      end
+
+      def home_token_locations(corporation)
+        coordinates = COORDINATES_FOR_LARGE_CORPORATION[corporation.id]
+        hexes.select { |hex| coordinates.include?(hex.coordinates) }
+      end
+
+      def place_home_token(corporation)
+        return unless corporation.next_token # 1882
+        # If a corp has laid it's first token assume it's their home token
+        return if corporation.tokens.first&.used
+
+        if corporation.coordinates.is_a?(Array)
+          @log << "#{corporation.name} (#{corporation.owner.name}) must choose tile for home location"
+
+          hexes = corporation.coordinates.map { |item| hex_by_id(item) }
+
+          @round.pending_tracks << {
+            entity: corporation,
+            hexes: hexes,
+          }
+
+          @round.clear_cache!
+        else
+          hex = hex_by_id(corporation.coordinates)
+
+          tile = hex&.tile
+
+          if corporation.id == 'ATE'
+            @log << "#{corporation.name} must choose city for home token"
+
+            @round.pending_tokens << {
+              entity: corporation,
+              hexes: [hex],
+              token: corporation.find_token_by_type,
+            }
+
+            @round.clear_cache!
+            return
+          end
+
+          cities = tile.cities
+          city = cities.find { |c| c.reserved_by?(corporation) } || cities.first
+          token = corporation.find_token_by_type
+          return unless city.tokenable?(corporation, tokens: token)
+
+          @log << "#{corporation.name} places a token on #{hex.name}"
+          city.place_token(corporation, token)
+        end
+      end
+
+      def upgrades_to?(from, to, special = false)
+        return true if from.color == :white && to.color == :red
+
+        super
+      end
+
+      def potential_tiles(corporation)
+        tiles.select { |tile| tile.label&.to_s == corporation.name }
+      end
+
+      def rust_trains!(train, entity)
+        rusted_trains = []
+        owners = Hash.new(0)
+
+        trains.each do |t|
+          next if t.rusted
+
+          # entity is nil when a train is exported. Then all trains are rusting
+          train_symbol_to_compare = entity.nil? ? train.sym : train.name
+          should_rust = t.rusts_on == train_symbol_to_compare
+          next unless should_rust
+          next unless rust?(t)
+
+          rusted_trains << t.name
+          owners[t.owner.name] += 1
+          entity.rusted_self = true if entity && entity == t.owner
+          rust(t)
+        end
+
+        @log << "-- Event: #{rusted_trains.uniq.join(', ')} trains rust " \
+          "( #{owners.map { |c, t| "#{c} x#{t}" }.join(', ')}) --" if rusted_trains.any?
+      end
+
+      def revenue_for(route, stops)
+        if route.corporation.type == :large
+          number_of_stops = route.train.distance[0][:pay]
+          all_stops = stops.map do |stop|
+            stop.route_revenue(route.phase, route.train)
+          end.sort.reverse.take(number_of_stops)
+          revenue = all_stops.sum
+          revenue += 50 if stops.any? { |stop| stop.tile.label.to_s == route.corporation.id }
+          return revenue
+        end
+        stops.sum { |stop| stop.route_revenue(route.phase, route.train) }
+      end
+
+      def revenue_str(route)
+        str = super
+        str += " + #{route.corporation.name} bonus" if route.stops.any? do |stop|
+                                                         stop.tile.label.to_s == route.corporation.id
+                                                       end
+
+        str
       end
     end
   end

@@ -12,31 +12,24 @@ PRODUCTION = ENV['RACK_ENV'] == 'production'
 
 LOGGER = Logger.new($stdout)
 
-Bus.configure(DB)
+Bus.configure
 
 ASSETS = Assets.new(precompiled: PRODUCTION)
 
-MessageBus.subscribe '/turn', -1 do |msg|
+MessageBus.subscribe '/turn' do |msg|
   data = msg.data
 
   users = User.where(id: data['user_ids']).all
   game = Game[data['game_id']]
-  minute_ago = Time.now - 60
-
-  connected = Session
-    .where(user: users)
-    .group_by(:user_id)
-    .having { max(updated_at) > minute_ago }
-    .select(:user_id)
-    .all
-    .map(&:user_id)
+  minute_ago = (Time.now - 60).to_i
 
   users = users.reject do |user|
     next true if user.settings['notifications'] == false
     next false if data['force']
+    next true if (Bus[Bus::USER_TS % user.id].to_i || minute_ago) > minute_ago
 
     email_sent = user.settings['email_sent'] || 0
-    connected.include?(user.id) || email_sent > minute_ago.to_i
+    email_sent > minute_ago
   end
 
   next if users.empty?

@@ -12,7 +12,7 @@ module Engine
           # Actions in base class don't align with system behavior. Fix here.
           if entity.corporation? && must_buy_train?(entity)
             actions.delete('pass')
-          elsif actions.include?('buy_train') && @corporations_sold.empty?
+          elsif actions.include?('buy_train') && (@corporations_sold.empty? || @just_bought_train)
             actions << 'pass'
           end
 
@@ -22,6 +22,12 @@ module Engine
         def process_buy_train(action)
           super
           action.shell.trains << action.train if action.entity.system?
+          @just_bought_train = true
+        end
+
+        def process_sell_shares(action)
+          super
+          @just_bought_train = false
         end
 
         def can_buy_train?(entity, shell = nil)

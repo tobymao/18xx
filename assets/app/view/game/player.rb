@@ -12,6 +12,7 @@ module View
 
       needs :player
       needs :game
+      needs :user, default: nil, store: true
       needs :display, default: 'inline-block'
       needs :show_hidden, default: false
       needs :hide_logo, store: true, default: false
@@ -30,6 +31,10 @@ module View
 
         if @player.companies.any? || @show_hidden
           divs << h(Companies, owner: @player, game: @game, show_hidden: @show_hidden)
+        end
+
+        unless (minors = @game.player_card_minors(@player)).empty?
+          divs << render_minors(minors)
         end
 
         h('div.player.card', { style: card_style }, divs)
@@ -175,7 +180,7 @@ module View
         }
         logo_props = {
           attrs: {
-            src: corporation.logo,
+            src: @user&.dig('settings', 'simple_logos') ? corporation.simple_logo : corporation.logo,
           },
           style: {
             height: '20px',
@@ -189,6 +194,33 @@ module View
         children << h(:td, td_props, corporation.name + president_marker)
         children << h('td.right', td_props, "#{shares.sum(&:percent)}%")
         h('tr.row', children)
+      end
+
+      def render_minors(minors)
+        minor_logos = minors.map do |minor|
+          logo_props = {
+            attrs: {
+              src: minor.logo,
+            },
+            style: {
+              paddingRight: '1px',
+              paddingLeft: '1px',
+              height: '20px',
+            },
+          }
+          h(:img, logo_props)
+        end
+        inner_props = {
+          style: {
+            display: 'inline-block',
+          },
+        }
+        outer_props = {
+          style: {
+            textAlign: 'center',
+          },
+        }
+        h('div', outer_props, [h('div', inner_props, minor_logos)])
       end
     end
   end

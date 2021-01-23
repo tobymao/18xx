@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative '../lib/engine'
-
 class Api
   hash_routes :api do |hr|
     hr.on 'game' do |r|

@@ -16,7 +16,7 @@ module Engine
           extra_cities = [0, new_ctedges.size - old_ctedges.size].max
 
           new_exits.all? { |edge| hex.neighbors[edge] } &&
-            (new_exits & available_hex(entity, hex)).any? &&
+            (new_exits & hex_neighbors(entity, hex)).any? &&
             old_paths_are_preserved(old_paths, new_paths) &&
             # Count how many cities on the new tile that aren't included by any of the old tile.
             # Make sure this isn't more than the number of new cities added.

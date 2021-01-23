@@ -27,7 +27,7 @@ module View
         player_owned, bank_owned = (@game.corporations + @game.minors)
           .reject(&:closed?)
           .partition(&:owner)
-        player_owned = player_owned.sort_by(&:name).group_by(&:owner)
+        player_owned = @game.player_sort(player_owned)
         bank_owned = @game.bank_sort(bank_owned)
 
         children = players.map do |p|

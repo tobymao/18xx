@@ -136,10 +136,6 @@ module Engine
 
           false
         end
-
-        def hex_neighbors(entity, hex)
-          @game.graph.connected_hexes(entity)[hex]
-        end
       end
     end
   end
