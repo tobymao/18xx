@@ -43,8 +43,9 @@ services:
   nginx:
     build: ./nginx/
     ports:
-      - "80:80"
-      - "443:443"
+      - 80:80
+      - 443:443
+      - 127.0.0.1:8080:8080
     volumes:
       - ./public:/public
       - /etc/18xxgames/ssl:/etc/18xxgames/ssl
