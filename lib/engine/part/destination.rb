@@ -15,8 +15,8 @@ module Engine
           raise 'One and only one of minor or corporation must be specified'
         end
 
-        @name |= corporation
-        @name |= minor
+        @name ||= corporation
+        @name ||= minor
         @image = "/#{image}.svg"
         @sticky = !!sticky
         @preprinted = preprinted

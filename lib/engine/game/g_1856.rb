@@ -110,7 +110,19 @@ module Engine
         'GLSC' => '/icons/1846/sc_token.svg',
       }.freeze
 
-      EVENTS_TEXT = Base::EVENTS_TEXT.merge('remove_tokens' => ['Remove Port token']).freeze
+      EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+        {
+          'nationalization' => ['CGR Formation',
+                                'Corporations must pay back loans or forcefully be merged into the CGR.' \
+                                ' Presidents may contribute personal cash but may not sell shares.' \
+                                ' CGR does not form if all corporations pay back their loans'],
+          'remove_tokens' => ['Remove Port Token'],
+          'no_more_escrow_corps' => ['New Corporations are Incremental Cap',
+                                     'Does not affect corporations which have already been parred'],
+          'no_more_incremental_corps' => ['New Corporations are Full Cap',
+                                          'Does not affect corporations which have already been parred'],
+        }
+      ).freeze
 
       def national
         @national ||= corporation_by_id('CGR')
@@ -276,9 +288,10 @@ module Engine
           ability = Ability::Base.new(
               type: 'destination',
               description: "Connect #{hex_by_id(dest_arr[0]).tile.location_name} to"\
-                "#{hex_by_id(dest_arr[1]).tile.location_name}"
+                " #{hex_by_id(dest_arr[1]).tile.location_name}"
             )
           corporation_by_id(corp).add_ability(ability)
+          corporation_by_id(corp).destinations = dest_arr
           dest_arr.each do |d|
             hex_by_id(d).original_tile.add_destination!(
               Part::Destination.new(image: "logos/1856/#{corp}", corporation: corp)
@@ -445,11 +458,28 @@ module Engine
         ))
       end
 
+      def event_no_more_escrow_corps!
+        @log << 'New corporations will be started as incremental cap corporations'
+        remove_destinations
+      end
+
+      def event_no_more_incremental_corps!
+        @log << 'New corporations will be started as full cap corporations'
+      end
+
       def event_close_companies!
         # The tokens reserved for the company's buyer are sent to the bank if closed before being bought in
         @available_bridge_tokens += 1 if bridge.owned_by_player?
         @available_tunnel_tokens += 1 if tunnel.owned_by_player?
         super
+      end
+
+      def remove_destinations
+        @corporations.select { |corp| corp.capitalization != :escrow && corp != national }.each do |corp|
+          corp.destinations.each do |dest|
+            hex_by_id(dest).tile.icons.reject! { |icon| icon.destination? && icon.name == corp.id }
+          end
+        end
       end
 
       def company_bought(company, entity)

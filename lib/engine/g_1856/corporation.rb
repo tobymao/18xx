@@ -5,7 +5,7 @@ require_relative '../corporation'
 module Engine
   module G1856
     class Corporation < Corporation
-      attr_accessor :escrow, :presidents_share
+      attr_accessor :escrow, :presidents_share, :destinations
 
       CAPITALIZATION_STRS = {
         full: 'Full',

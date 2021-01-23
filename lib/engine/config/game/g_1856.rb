@@ -575,24 +575,34 @@ module Engine
       "distance": 4,
       "price": 350,
       "rusts_on": "D",
-      "num": 1
+      "num": 1,
+      "events": [
+        {
+          "type": "no_more_escrow_corps"
+        }
+      ]
     },
     {
       "name": "5",
       "distance": 5,
       "price": 550,
       "num": 2,
-      "events":[
-      {
-         "type":"close_companies"
-      }
+      "events": [
+        {
+          "type":"close_companies"
+        }
       ]
     },
     {
       "name": "5'",
       "distance": 5,
       "price": 550,
-      "num": 1
+      "num": 1,
+      "events": [
+        {
+          "type": "no_more_incremental_corps"
+        }
+      ]
     },
     {
       "name": "6",
