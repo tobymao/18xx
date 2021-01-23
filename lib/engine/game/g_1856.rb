@@ -274,7 +274,7 @@ module Engine
           ability = Ability::Base.new(
             type: 'destination',
             description: "Destination: #{hex_by_id(dest).tile.location_name}")
-          corporation_by_id(corp).add_ability(ability)
+          # corporation_by_id(corp).add_ability(ability)
           hex_by_id(dest).original_tile.add_destination!(Part::Destination.new(image: "logos/1856/#{corp}", corporation: corp))
         end
       end
