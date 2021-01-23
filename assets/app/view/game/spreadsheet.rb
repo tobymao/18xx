@@ -363,7 +363,10 @@ module View
           h('td.padded_number', @game.format_currency(corporation.cash)),
           h('td.left', order_props, operating_order_text),
           h(:td, corporation.trains.map(&:name).join(', ')),
-          h(:td, "#{corporation.tokens.map { |t| t.used ? 0 : 1 }.sum}/#{corporation.tokens.size}"),
+          h(:td, "#{corporation.tokens.map { |t| t.used || t.corporation != corporation ? 0 : 1 }.sum}"\
+          "/#{corporation.tokens.map { |t| t.corporation != corporation ? 0 : 1 }.sum}"\
+          "#{corporation.tokens.map { |t| t.type == :neutral && t.corporation != corporation ? '+N' : '' }
+          .join('')}"),
           *extra,
           render_companies(corporation),
           h(:th, name_props, corporation.name),
