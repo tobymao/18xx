@@ -79,9 +79,6 @@ module Engine
             # Make reserved share of associated corporation unreserved
             regional.shares.find(&:president).buyable = true
             regional.floatable = true
-            @game.abilities(regional, :base) do |ability|
-              regional.remove_ability(ability)
-            end
           end
         end
 

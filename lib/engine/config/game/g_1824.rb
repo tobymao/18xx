@@ -456,11 +456,6 @@ module Engine
       "always_market_price": true,
       "abilities": [
         {
-          "type": "base",
-          "owner_type": "corporation",
-          "description": "Coal company - may only own g trains"
-        },
-        {
           "type": "exchange",
           "owner_type": "corporation",
           "corporation": "",
@@ -485,11 +480,6 @@ module Engine
       ],
       "always_market_price": true,
       "abilities": [
-        {
-          "type": "base",
-          "owner_type": "corporation",
-          "description": "Coal company - may only own g trains"
-        },
         {
           "type": "exchange",
           "owner_type": "corporation",
@@ -516,11 +506,6 @@ module Engine
       "always_market_price": true,
       "abilities": [
         {
-          "type": "base",
-          "owner_type": "corporation",
-          "description": "Coal company - may only own g trains"
-        },
-        {
           "type": "exchange",
           "owner_type": "corporation",
           "corporation": "",
@@ -546,11 +531,6 @@ module Engine
       "always_market_price": true,
       "abilities": [
         {
-          "type": "base",
-          "owner_type": "corporation",
-          "description": "Coal company - may only own g trains"
-        },
-        {
           "type": "exchange",
           "owner_type": "corporation",
           "corporation": "",
@@ -573,12 +553,6 @@ module Engine
         60,
         80
       ],
-      "abilities": [
-        {
-          "type": "base",
-          "description": "Presidency reserved for EPP (C1)"
-        }
-      ],
       "logo": "1824/BK",
       "color": "blue",
       "coordinates": "B9"
@@ -593,12 +567,6 @@ module Engine
         40,
         60,
         80
-      ],
-      "abilities": [
-        {
-          "type": "base",
-          "description": "Presidency reserved for EOD (C2)"
-        }
       ],
       "logo": "1824/MS",
       "color": "yellow",
@@ -616,12 +584,6 @@ module Engine
         60,
         80
       ],
-      "abilities": [
-        {
-          "type": "base",
-          "description": "Presidency reserved for MLB (C3)"
-        }
-      ],
       "color": "gray70",
       "logo": "1824/CL",
       "coordinates": "B23"
@@ -636,12 +598,6 @@ module Engine
         40,
         60,
         80
-      ],
-      "abilities": [
-        {
-          "type": "base",
-          "description": "Presidency reserved for SPB (C4)"
-        }
       ],
       "logo": "1824/SB",
       "color": "green",
