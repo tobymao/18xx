@@ -43,7 +43,7 @@ module Engine
         return can_gain?(owner, bundle, exchange: true) if bundle
 
         shares = []
-        ability.corporations(@game).each do |corporation|
+        @game.exchange_corporations(ability).each do |corporation|
           shares << corporation.available_share if ability.from.include?(:ipo)
           shares << @game.share_pool.shares_by_corporation[corporation]&.first if ability.from.include?(:market)
         end

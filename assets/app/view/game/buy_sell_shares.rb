@@ -136,7 +136,7 @@ module View
 
         @game.companies.each do |company|
           @game.abilities(company, :exchange) do |ability|
-            next unless ability.corporations(@game).include?(@corporation)
+            next unless @game.exchange_corporations(ability).include?(@corporation)
             next unless company.owner == @current_entity
 
             if ability.from.include?(:ipo)

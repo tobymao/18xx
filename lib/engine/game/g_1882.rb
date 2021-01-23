@@ -131,7 +131,7 @@ module Engine
 
           next unless ability.from.include?(:par)
 
-          ability.corporations(self).first.par_via_exchange = company
+          exchange_corporations(ability).first.par_via_exchange = company
           @sc_company = company
         end
         super

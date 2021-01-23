@@ -1518,6 +1518,15 @@ module Engine
         nil
       end
 
+      def exchange_corporations(exchange_ability)
+        candidates = if exchange_ability.corporations == 'any'
+                       corporations
+                     else
+                       exchange_ability.corporations.map { |c| corporation_by_id(c) }
+                     end
+        candidates.reject(&:closed?)
+      end
+
       def round_start?
         @last_game_action_id == @round_history.last
       end
