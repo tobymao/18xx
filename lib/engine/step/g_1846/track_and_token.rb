@@ -12,6 +12,13 @@ module Engine
         def buying_power(entity)
           @game.track_buying_power(entity)
         end
+
+        def lay_tile_action(action)
+          super
+          return unless @game.lake_shore_line && @game.class::LSL_HEXES.include?(action.hex.id) && @upgraded
+
+          action.tile.icons.reject! { |icon| icon.name == @game.class::LSL_ICON }
+        end
       end
     end
   end
