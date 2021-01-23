@@ -129,6 +129,12 @@ module Engine
           desc: '(alpha) Priority is awarded in pass order in both Auction and Stock Rounds.',
         },
         {
+          sym: :pay_per_trash,
+          short_name: 'Pay Per Trash',
+          desc: '(alpha) Selling multiple shares before a corporation\'s first OR returns the amount'\
+                'listed in each movement down on the market, starting at the current share price.',
+        },
+        {
           sym: :major_investors,
           short_name: 'Major Investors',
           desc: '(alpha) The Presidency cannot be transferred to another player during Corporate Share Buying.',
@@ -569,6 +575,27 @@ module Engine
 
         bundles_for_corporation(share_pool, entity)
           .reject { |bundle| entity.cash < bundle.price }
+      end
+
+      def sellable_bundles(player, corporation)
+        bundles = super
+        return bundles unless @optional_rules&.include?(:pay_per_trash)
+        return bundles if corporation.operated?
+
+        bundles.map { |bundle| reduced_bundle_price_for_market_drop(bundle) }
+      end
+
+      # we can use this same logic for issuing multiple shares
+      def reduced_bundle_price_for_market_drop(bundle)
+        return bundle if bundle.num_shares == 1
+
+        new_price = (0..bundle.num_shares - 1).sum do |max_drops|
+          @stock_market.find_share_price(bundle.corporation, (1..max_drops).map { |_| :up }).price
+        end
+
+        bundle.share_price = new_price / bundle.num_shares
+
+        bundle
       end
 
       def all_bundles_for_corporation(share_holder, corporation, shares: nil)
