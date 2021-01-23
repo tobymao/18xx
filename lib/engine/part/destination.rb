@@ -11,7 +11,10 @@ module Engine
 
       def initialize(image:, name: nil, sticky: true, blocks_lay: nil, preprinted: true, minor: nil, corporation: nil)
         # There is almost certainly a better error than this th
-        raise 'One and only one of minor or corporation must be specified' unless (minor || corporation) || (minor && corporation)
+        unless (minor || corporation) || (minor && corporation)
+          raise 'One and only one of minor or corporation must be specified'
+        end
+
         @name |= corporation
         @name |= minor
         @image = "/#{image}.svg"

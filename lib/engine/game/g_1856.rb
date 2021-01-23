@@ -88,12 +88,12 @@ module Engine
         TGB: 'H5',
         THB: 'J11',
         WGB: 'F9',
-        WR: 'L15'
+        WR: 'L15',
       }.freeze
 
       ALTERNATE_DESTINATIONS = {
         BBG: 'N11',
-        CA: ['A20', 'F15'], # Connect London to Detroit
+        CA: %w[A20 F15], # Connect London to Detroit
         CPR: 'P9',
         CV: 'M4',
         GT: 'L13',
@@ -102,7 +102,7 @@ module Engine
         TGB: 'O2', # [['N1', 'O2']] # Canadaian West, but it's a 2 hex offboard
         THB: 'H15',
         WGB: 'H5',
-        WR: 'L15'
+        WR: 'L15',
       }.freeze
 
       # TODO: Get a proper token
@@ -264,7 +264,7 @@ module Engine
 
         # 1 of each right is reserved w/ the private when it gets bought in. This leaves 2 extra to sell.
         @available_bridge_tokens = 2
-        @available_tunnel_tokens = 2        
+        @available_tunnel_tokens = 2
 
         set_destinations DESTINATIONS
       end
@@ -278,11 +278,11 @@ module Engine
               description: "Connect #{hex_by_id(dest_arr[0]).tile.location_name} to #{hex_by_id(dest_arr[1]).tile.location_name}"
             )
           corporation_by_id(corp).add_ability(ability)
-          dest_arr.each { |d|
+          dest_arr.each do |d|
             hex_by_id(d).original_tile.add_destination!(
               Part::Destination.new(image: "logos/1856/#{corp}", corporation: corp)
             )
-          }
+          end
         end
       end
 

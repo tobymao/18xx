@@ -16,6 +16,7 @@ module View
       needs :selected_company, default: nil, store: true
       needs :opacity, default: nil
       needs :show_coords, default: nil, store: true
+      needs :show_destinations, default: nil, store: true
       needs :show_location_names, default: nil, store: true
       needs :show_starting_map, default: false, store: true
       needs :routes, default: [], store: true
@@ -190,6 +191,11 @@ module View
       def show_coords
         show = Lib::Storage['show_coords']
         show.nil? ? false : show
+      end
+
+      def show_destinations
+        show = Lib::Storage['show_destinations']
+        show.nil? ? true : show
       end
 
       def show_location_names

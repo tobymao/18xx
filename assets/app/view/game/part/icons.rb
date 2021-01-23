@@ -32,25 +32,25 @@ module View
         def destination_icon_patterns
           @icons.map.with_index do |icon, index|
             next unless icon.destination?
+
             h(:pattern,
               {
                 attrs: {
                   id: "#{@tile.id}_#{index}",
-                  width: "#{2 * ICON_RADIUS}",
-                  height: "#{2 * ICON_RADIUS}"
-                }
+                  width: (2 * ICON_RADIUS).to_s,
+                  height: (2 * ICON_RADIUS).to_s,
+                },
               },
               [
                 h(
                   :image,
                   attrs: {
                     href: icon.image,
-                    width: "#{2 * ICON_RADIUS}",
-                    height: "#{2 * ICON_RADIUS}",
+                    width: (2 * ICON_RADIUS).to_s,
+                    height: (2 * ICON_RADIUS).to_s,
                   }
-                )
-              ]
-            )
+                ),
+              ])
           end.compact
         end
 
@@ -60,10 +60,10 @@ module View
             if icon.destination?
               h(:circle,
                 attrs: {
-                  fill: "url(##{@tile.id}_#{index})",#icon.image,
+                  fill: "url(##{@tile.id}_#{index})",  # icon.image,
                   cx: "#{ICON_RADIUS + ((index - (@icons.size - 1) / 2.0) * -DELTA_X).round(2)}px",
                   cy: "#{ICON_RADIUS}px",
-                  r: "#{ICON_RADIUS}px"
+                  r: "#{ICON_RADIUS}px",
                 })
             else
               h(:image,
@@ -79,7 +79,7 @@ module View
             h(:defs, patterns),
             h(:g, { attrs: { transform: "#{rotation_for_layout} translate(#{-ICON_RADIUS} #{-ICON_RADIUS})" } }, [
               h(:g, { attrs: { transform: translate } }, children),
-            ])
+            ]),
           ])
         end
       end

@@ -138,7 +138,8 @@ module Engine
         cache << junction
         junction
       when 'destination'
-        Part::Destination.new(image: params['image'], sticky: true, blocks_lay: false, corporation: params['corporation'], minor: params['minor'])
+        Part::Destination.new(image: params['image'], sticky: true, blocks_lay: false,
+                              corporation: params['corporation'], minor: params['minor'])
       when 'icon'
         Part::Icon.new(params['image'], params['name'], params['sticky'], params['blocks_lay'])
       when 'stub'
