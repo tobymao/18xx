@@ -30,7 +30,7 @@ module Engine
           step.laid_track = step.laid_track + 1
         end
 
-        def available_hex(entity, hex)
+        def hex_neighbors(entity, hex)
           return super if entity.company? && entity.id == @game.class::PITTSBURGH_PRIVATE_NAME
 
           hexes = tile_lay_abilities(entity)&.hexes

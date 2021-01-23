@@ -67,8 +67,12 @@ module Engine
           )
         end
 
-        def available_hex(_entity, hex)
+        def hex_neighbors(_entity, hex)
           pending_track[:hexes].include?(hex)
+        end
+
+        def available_hex(entity, hex)
+          hex_neighbors(entity, hex)
         end
 
         def potential_tiles(entity, _hex)

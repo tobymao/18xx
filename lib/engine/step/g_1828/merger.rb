@@ -401,7 +401,7 @@ module Engine
           source = nil
 
           if @player_selection
-            source = players.find { |p| p.name == @player_selection }
+            source = @players.find { |p| p.name == @player_selection }
             @player_selection = nil
           elsif entity.num_shares_of(@merger) >= num_needed &&
                 [@merger, @target].sum { |c| entity.num_shares_of(c) } >= num_needed * 2

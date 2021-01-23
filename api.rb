@@ -126,7 +126,7 @@ class Api < Roda
       **needs,
     )
 
-    '<!DOCTYPE html>' + ASSETS.context.eval(script, warmup: request.path.split('/')[1].to_s)
+    '<!DOCTYPE html>' + ASSETS.context.eval(script)
   end
 
   def render_pin(**needs)

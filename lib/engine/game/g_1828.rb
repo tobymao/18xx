@@ -479,6 +479,14 @@ module Engine
         corporation_by_id(id)
       end
 
+      def close_companies_on_train!(entity)
+        if entity.system?
+          entity.corporations.each { |c| super(c) }
+        else
+          super
+        end
+      end
+
       def remove_train(train)
         super
 

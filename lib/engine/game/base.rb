@@ -846,7 +846,7 @@ module Engine
       def all_bundles_for_corporation(share_holder, corporation, shares: nil)
         return [] unless corporation.ipoed
 
-        shares = (shares || share_holder.shares_of(corporation)).sort_by { |h| [h.president ? 1 : 0, h.price] }
+        shares = (shares || share_holder.shares_of(corporation)).sort_by { |h| [h.president ? 1 : 0, h.percent] }
 
         bundles = shares.flat_map.with_index do |share, index|
           bundle = shares.take(index + 1)
@@ -1471,6 +1471,21 @@ module Engine
         operator.trains << train
         operator.rusted_self = false
         @crowded_corps = nil
+
+        close_companies_on_train!(operator)
+      end
+
+      def close_companies_on_train!(entity)
+        @companies.each do |company|
+          next if company.closed?
+
+          abilities(company, :close, time: 'bought_train') do |ability|
+            next if entity&.name != ability.corporation
+
+            company.close!
+            @log << "#{company.name} closes"
+          end
+        end
       end
 
       def remove_train(train)

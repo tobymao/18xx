@@ -13,8 +13,12 @@ x-rack: &rack
   build:
     args:
       RACK_ENV: production
+    context: .
   volumes:
     - ./public:/18xx/public
+  depends_on:
+    - db
+    - redis
   logging:
     options:
       max-size: "50m"
@@ -25,7 +29,6 @@ services:
 
   rack_backup:
     <<: *rack
-    build: .
 
   queue:
     <<: *rack
@@ -40,8 +43,9 @@ services:
   nginx:
     build: ./nginx/
     ports:
-      - "80:80"
-      - "443:443"
+      - 80:80
+      - 443:443
+      - 127.0.0.1:8080:8080
     volumes:
       - ./public:/public
       - /etc/18xxgames/ssl:/etc/18xxgames/ssl
