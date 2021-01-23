@@ -915,7 +915,7 @@ module Engine
       },
       {
          "name":"R6H",
-         "num":3,
+         "num":2,
          "available_on":"16H",
          "distance":6,
          "price":350
