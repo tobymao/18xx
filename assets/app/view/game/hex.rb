@@ -35,7 +35,7 @@ module View
       needs :entity, default: nil
       needs :unavailable, default: nil
       needs :show_coords, default: nil
-      needs :show_destinations
+      needs :show_destinations, default: false
       needs :show_location_names, default: true
       needs :routes, default: []
       needs :start_pos, default: [1, 1]

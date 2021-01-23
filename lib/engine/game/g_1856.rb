@@ -78,31 +78,31 @@ module Engine
       }.freeze
 
       DESTINATIONS = {
-        BBG: 'N17',
-        CA: 'H15',
-        CPR: 'N11',
-        CV: 'I14',
-        GT: 'K8',
-        GW: 'A20',
-        LPS: 'F17',
-        TGB: 'H5',
-        THB: 'J11',
-        WGB: 'F9',
-        WR: 'L15',
+        'BBG' => 'N17',
+        'CA' => 'H15',
+        'CPR' => 'N11',
+        'CV' => 'I14',
+        'GT' => 'K8',
+        'GW' => 'A20',
+        'LPS' => 'F17',
+        'TGB' => 'H5',
+        'THB' => 'J11',
+        'WGB' => 'F9',
+        'WR' => 'L15',
       }.freeze
 
       ALTERNATE_DESTINATIONS = {
-        BBG: 'N11',
-        CA: %w[A20 F15], # Connect London to Detroit
-        CPR: 'P9',
-        CV: 'M4',
-        GT: 'L13',
-        GW: 'J15',
-        LPS: 'F15',
-        TGB: 'O2', # [['N1', 'O2']] # Canadaian West, but it's a 2 hex offboard
-        THB: 'H15',
-        WGB: 'H5',
-        WR: 'L15',
+        'BBG' => 'N11',
+        'CA' => %w[A20 F15], # Connect London to Detroit
+        'CPR' => 'P9',
+        'CV' => 'M4',
+        'GT' => 'L13',
+        'GW' => 'J15',
+        'LPS' => 'F15',
+        'TGB' => 'O2', # [['N1', 'O2']] # Canadaian West, but it's a 2 hex offboard
+        'THB' => 'H15',
+        'WGB' => 'H5',
+        'WR' => 'L15',
       }.freeze
 
       # TODO: Get a proper token
@@ -266,16 +266,17 @@ module Engine
         @available_bridge_tokens = 2
         @available_tunnel_tokens = 2
 
-        set_destinations DESTINATIONS
+        create_destinations DESTINATIONS
       end
 
-      def set_destinations(destinations)
+      def create_destinations(destinations)
         destinations.each do |corp, dest|
           dest_arr = Array(dest)
-          dest_arr << corporation_by_id(corp).coordinates if dest_arr.count == 1
+          dest_arr << corporation_by_id(corp).coordinates if dest_arr.size == 1
           ability = Ability::Base.new(
               type: 'destination',
-              description: "Connect #{hex_by_id(dest_arr[0]).tile.location_name} to #{hex_by_id(dest_arr[1]).tile.location_name}"
+              description: "Connect #{hex_by_id(dest_arr[0]).tile.location_name} to"\
+                "#{hex_by_id(dest_arr[1]).tile.location_name}"
             )
           corporation_by_id(corp).add_ability(ability)
           dest_arr.each do |d|

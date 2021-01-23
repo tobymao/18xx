@@ -9,7 +9,7 @@ module Engine
       attr_accessor :preprinted
       attr_reader :image, :name, :sticky, :minor, :corporation
 
-      def initialize(image:, name: nil, sticky: true, blocks_lay: nil, preprinted: true, minor: nil, corporation: nil)
+      def initialize(image:, sticky: true, blocks_lay: nil, preprinted: true, minor: nil, corporation: nil)
         # There is almost certainly a better error than this th
         unless (minor || corporation) || (minor && corporation)
           raise 'One and only one of minor or corporation must be specified'

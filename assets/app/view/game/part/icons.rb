@@ -83,8 +83,9 @@ module View
             end
           end
 
-          children << h(:g, { attrs: { transform: "#{rotation_for_layout} translate(#{-ICON_RADIUS} #{-ICON_RADIUS})" } }, [
-            h(:g, { attrs: { transform: translate } }, icon_images),
+          children << h(:g,
+                        { attrs: { transform: "#{rotation_for_layout} translate(#{-ICON_RADIUS} #{-ICON_RADIUS})" } }, [
+              h(:g, { attrs: { transform: translate } }, icon_images),
           ])
 
           h(:g, children)
