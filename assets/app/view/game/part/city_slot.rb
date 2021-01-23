@@ -23,6 +23,7 @@ module View
         needs :reservation, default: nil
         needs :game, default: nil, store: true
         needs :city_render_location, default: nil
+        needs :player_colors, default: nil, store: true
 
         RESERVATION_FONT_SIZE = {
           1 => 22,
@@ -44,9 +45,16 @@ module View
 
         def render_part
           children = []
-          children << h(:circle, attrs: { r: @radius, fill: 'white' })
+          color = 'white'
+          radius = @radius
+          if @token && @player_colors && (player_color = @player_colors[@token.corporation&.owner])
+            color = player_color
+            radius -= 4
+          end
+
+          children << h(:circle, attrs: { r: @radius, fill: color })
           children << reservation if @reservation && !@token
-          children << h(Token, token: @token, radius: @radius) if @token
+          children << h(Token, token: @token, radius: radius) if @token
 
           props = { on: { click: ->(event) { on_click(event) } } }
 
