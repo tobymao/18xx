@@ -93,7 +93,7 @@ module Engine
 
       ALTERNATE_DESTINATIONS = {
         BBG: 'N11',
-        CA: 'A20', # ['A20', 'F15'], # Connect London to Detroit
+        CA: ['A20', 'F15'], # Connect London to Detroit
         CPR: 'P9',
         CV: 'M4',
         GT: 'L13',
@@ -271,11 +271,18 @@ module Engine
 
       def set_destinations(destinations)
         destinations.each do |corp, dest|
+          dest_arr = Array(dest)
+          dest_arr << corporation_by_id(corp).coordinates if dest_arr.count == 1
           ability = Ability::Base.new(
-            type: 'destination',
-            description: "Destination: #{hex_by_id(dest).tile.location_name}")
-          # corporation_by_id(corp).add_ability(ability)
-          hex_by_id(dest).original_tile.add_destination!(Part::Destination.new(image: "logos/1856/#{corp}", corporation: corp))
+              type: 'destination',
+              description: "Connect #{hex_by_id(dest_arr[0]).tile.location_name} to #{hex_by_id(dest_arr[1]).tile.location_name}"
+            )
+          corporation_by_id(corp).add_ability(ability)
+          dest_arr.each { |d|
+            hex_by_id(d).original_tile.add_destination!(
+              Part::Destination.new(image: "logos/1856/#{corp}", corporation: corp)
+            )
+          }
         end
       end
 
