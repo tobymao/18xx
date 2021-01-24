@@ -24,7 +24,7 @@ module Engine
           revenue = @game.routes_revenue(routes) - penalty
           kind = action.kind.to_sym
           payout = dividend_options(entity)[kind]
-          @game.process_derived_action(Engine::Action::Bonus.new(entity)) unless @game.loading
+
           rust_obsolete_trains!(entity)
 
           entity.operating_history[[@game.turn, @round.round_num]] = OperatingInfo.new(

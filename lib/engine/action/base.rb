@@ -8,19 +8,21 @@ module Engine
       include Helper::Type
 
       attr_reader :entity
-      attr_accessor :id, :user, :created_at, :derived, :round_override, :derived_children
+      attr_accessor :id, :user, :created_at, :derived
 
       def self.from_h(h, game)
         entity = game.get(h['entity_type'], h['entity']) || Player.new(nil, h['entity'])
         obj = new(entity, **h_to_args(h, game))
         obj.user = h['user'] if entity.player && h['user'] != entity.player&.id
         obj.created_at = h['created_at'] || Time.now
-        obj.derived = h['derived'] || false
-        obj.round_override = h['round_override'] || false
-        # derived_children is meant to be used as a vehicle for informing the view of derived actions
-        #  spawned from this action; derived actions will get their own actions in the game history
-        obj.derived_children = []
+        obj.derived = (h['derived'] || []).map { |derived_h| Base.action_from_h(derived_h, game) }
         obj
+      end
+
+      def self.action_from_h(h, game)
+        Object
+        .const_get("Engine::Action::#{Action::Base.type(h['type'])}")
+        .from_h(h, game)
       end
 
       def self.h_to_args(_h, _game)
@@ -33,14 +35,16 @@ module Engine
 
       def initialize(entity)
         @entity = entity
-        @derived = false
-        @round_override = false
         @created_at = Time.now
-        @derived_children = []
+        @derived = []
       end
 
       def [](field)
         to_h[field]
+      end
+
+      def clear_cache
+        @_h = nil
       end
 
       def to_h
@@ -51,9 +55,7 @@ module Engine
           'id' => @id,
           'user' => @user,
           'created_at' => @created_at.to_i,
-          'derived' => @derived,
-          # derived_children is intentionally omitted
-          'round_override' => @round_override,
+          'derived' => @derived.empty? ? nil : @derived.map(&:to_h),
           **args_to_h,
         }.reject { |_, v| v.nil? }
       end

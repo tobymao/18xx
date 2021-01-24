@@ -74,9 +74,6 @@ module View
         game = @game.process_action(action).maybe_raise!
 
         @game_data[:actions] << action.to_h
-        action.derived_children.each do |derived_action|
-          @game_data[:actions] << derived_action.to_h
-        end
         store(:game_data, @game_data, skip: true)
 
         if game.finished

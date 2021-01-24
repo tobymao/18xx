@@ -85,7 +85,7 @@ module Engine
 
           process = s.actions(action.entity).include?(type)
           blocking = s.blocking?
-          if blocking && !process && !(action.derived || action.round_override)
+          if blocking && !process
             raise GameError, "Blocking step #{s.description} cannot process action #{action['id']}"
           end
 
@@ -128,6 +128,10 @@ module Engine
         return @steps.find { |step| step.active? && step.actions(entity).any? } if entity
 
         @active_step ||= @steps.find { |step| step.active? && step.blocking? }
+      end
+
+      def derived_actions
+        active_step(nil)&.derived_actions(current_entity)
       end
 
       def finished?

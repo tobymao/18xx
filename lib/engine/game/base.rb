@@ -475,7 +475,6 @@ module Engine
         @share_pool = init_share_pool
         @hexes = init_hexes(@companies, @corporations)
         @graph = Graph.new(self)
-        @action_queue = []
 
         # call here to set up ids for all cities before any tiles from @tiles
         # can be placed onto the map
@@ -557,9 +556,7 @@ module Engine
         actions.each.with_index do |action, index|
           case action['type']
           when 'undo'
-            undo_to = action['action_id'] || filtered_actions.rindex do |a|
-              a && a['type'] != 'message' && !a['derived']
-            end
+            undo_to = action['action_id'] || filtered_actions.rindex { |a| a && a['type'] != 'message' }
             active_undos << filtered_actions[undo_to...index].map.with_index do |a, i|
               next if !a || a['type'] == 'message'
 
@@ -592,11 +589,7 @@ module Engine
 
           if action
             action = action.copy(self) if action.is_a?(Action::Base)
-            if action['derived']
-              process_derived_action(action)
-            else
-              process_action(action)
-            end
+            process_action(action)
           else
             # Restore the original action to the list to ensure action ids remain consistent but don't apply them
             @raw_actions << actions[index]
@@ -606,38 +599,43 @@ module Engine
         @loading = false
       end
 
-      def process_derived_action(action)
-        action = action_from_h(action) if action.is_a?(Hash)
-        action.derived = true
-
-        @action_queue.prepend(action)
-      end
-
       def process_action(action)
         action = action_from_h(action) if action.is_a?(Hash)
-        raise GameError, "Derived actions may not use process_action! ref: #{action}" if action.derived
 
-        # Process the action we came here to do first
-        result = process_single_action(action)
-
-        # Process any other actions put on the queue since our action
-        until @action_queue.empty?
-          derived_action = @action_queue.pop
-          process_single_action(derived_action)
-          action.derived_children << derived_action
-        end
-
-        # Return the result from the action passed in
-        result
-      end
-
-      def process_single_action(action)
         action.id = current_action_id + 1
         @raw_actions << action.to_h
         return clone(@raw_actions) if action.is_a?(Action::Undo) || action.is_a?(Action::Redo)
 
         @actions << action
 
+        # Process the action we came here to do first
+        process_single_action(action)
+
+        # Process any derived actions
+        # derived actions cannot be undos so we don't need to worry about state
+        action.derived.each { |a| process_single_action(a) }
+        any_derived = !action.derived.empty?
+
+        unless @loading
+          # Check and add derived_actions
+          while (derived_action = @round.derived_actions)
+            # Consistency check, both the client and server should supply the same derived actions
+            # So we should either have no derived actions or all.
+            raise 'Derived out of sync' if any_derived
+
+            action.derived << derived_action
+            process_single_action(derived_action)
+          end
+          # Update the last raw actions
+          action.clear_cache
+          @raw_actions.pop
+          @raw_actions << action.to_h
+        end
+
+        self
+      end
+
+      def process_single_action(action)
         if action.user
           @log << "• Action(#{action.type}) via Master Mode by: #{player_by_id(action.user)&.name || 'Owner'}"
         end
@@ -675,13 +673,11 @@ module Engine
         end
 
         @last_processed_action = action.id
-        self
       rescue Engine::GameError => e
         @raw_actions.pop
         @actions.pop
         @exception = e
         @broken_action = action
-        self
       end
 
       def maybe_raise!
@@ -735,9 +731,7 @@ module Engine
       end
 
       def action_from_h(h)
-        Object
-          .const_get("Engine::Action::#{Action::Base.type(h['type'])}")
-          .from_h(h, self)
+        Engine::Action::Base.action_from_h(h, self)
       end
 
       def clone(actions)

@@ -32,6 +32,8 @@ module Engine
         []
       end
 
+      def derived_actions(_entity); end
+
       def available_hex(entity, hex); end
 
       def did_sell?(_corporation, _entity)
@@ -116,10 +118,6 @@ module Engine
 
       def inspect
         "<#{self.class.name}>"
-      end
-
-      def process_bonus(action)
-        @log << "#{action.corporation.name} pays bonuses to executives as part of compensation packages"
       end
     end
   end
