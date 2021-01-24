@@ -225,6 +225,10 @@ module Engine
         end
       end
 
+      def all_corporations
+        minors + corporations
+      end
+
       def new_auction_round
         Round::Draft.new(self, [Step::G18Mag::SimpleDraft], rotating_order: true)
       end
