@@ -116,7 +116,7 @@ Once a game has been made available on the website, bugs may be found where the 
 
 1. Update `repair` within `migrate_game.rb` with the logic required to add/delete a step
 2. Run `docker-compose exec rack irb`
-3. Execute `require migrate_game.rb`
+3. Execute `load migrate_game.rb`
 4. Execute `migrate_json('your_json_file.json')`
 
 This will apply the migrations to the game file you specified, allowing you to verify it worked as expected.
