@@ -29,6 +29,11 @@ module Engine
       HOME_TOKEN_TIMING = :operating_round
       SELL_BUY_ORDER = :sell_buy
 
+      EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+        'hurricane' => ['Florida Keys Hurricane', 'Track and hotels in the Florida Keys (M24, M26) is removed'],
+        'close_port' => ['Port Token Removed'],
+        'forced_conversions' => ['Forced Conversions', 'All remaining 5 share corporations immediately convert to 10 share corporations']
+      ).freeze
       MARKET_TEXT = Base::MARKET_TEXT.merge(max_price: 'Maximum price for a 5-share corporation').freeze
 
       def event_close_port!
