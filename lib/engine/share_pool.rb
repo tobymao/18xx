@@ -50,7 +50,6 @@ module Engine
 
       share_str = "a #{bundle.percent}% share "
       share_str += "of #{corporation.name}" unless entity == corporation
-      incremental = corporation.capitalization == :incremental
 
       from = if bundle.owner.corporation?
                (bundle.owner == bundle.corporation ? "the #{@game.ipo_name(corporation)}" : bundle.owner.name)
@@ -85,11 +84,19 @@ module Engine
       if price.zero?
         transfer_shares(bundle, entity)
       else
+        receiver = if corporation.capitalization == :incremental && bundle.owner.corporation? || bundle.owner.player?
+                     bundle.owner
+                   elsif corporation.capitalization == :escrow && bundle.owner.corporation?
+                     # When another game with escrow capitalization is implemented put this into @game
+                     bundle.owner
+                   else
+                     @bank
+                   end
         transfer_shares(
           bundle,
           entity,
           spender: entity == self ? @bank : entity,
-          receiver: (incremental && bundle.owner.corporation?) || bundle.owner.player? ? bundle.owner : @bank,
+          receiver: receiver,
           price: price,
           swap: swap,
           swap_to_entity: swap ? self : nil
@@ -158,7 +165,21 @@ module Engine
         move_share(swap, swap_to_entity)
       end
 
-      spender.spend(price, receiver) if spender && receiver && price.positive?
+      if corporation.capitalization == :escrow && receiver == corporation
+        # If another game comes around that needs to work w/ escrow capitalization
+        # feel free to put this into the game logic
+        if corporation.percent_of(corporation) > 50 && spender && price.positive?
+          spender.spend(price, receiver) if spender && receiver
+        else
+          # In the bottom half of the IPO the funds "are held by the bank in escrow"
+          # Record in the corporation that money is in escrow, but move *nothing*
+          spender.spend(price, @bank)
+          corporation.escrow += price
+        end
+      elsif spender && receiver && price.positive?
+        spender.spend(price, receiver)
+      end
+
       bundle.shares.each { |s| move_share(s, to_entity) }
 
       return unless allow_president_change
@@ -183,6 +204,10 @@ module Engine
       return if owner == president || !previous_president
 
       presidents_share = bundle.presidents_share || previous_president.shares_of(corporation).find(&:president)
+
+      # Bail out if there is no president's share in the prior president's bundle.
+      # This happens during 1856 nationalization sometimes
+      return unless presidents_share
 
       # take two shares away from the current president and give it to the
       # previous president if they haven't sold the president's share
