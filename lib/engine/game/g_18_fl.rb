@@ -33,9 +33,22 @@ module Engine
         @log << "Port closes"
       end
 
+      def event_hurricane!
+        @log << '-- Event: Florida Keys Hurricane --'
+        key_west = @hexes.find { |h| h.id == 'M24' }
+        key_island = @hexes.find { |h| h.id == 'M26' }
+
+        @log << 'A hurricane destroys track in the Florida Keys (M24, M26)'
+        key_island.lay_downgrade(key_island.original_tile)
+        key_west.tokens.each { |t| t&.destroy! }
+
+        @log << 'The hurricane also destroys the hotels in Key West'
+        key_west.icons.each { |i| i&.destroy! }
+      end
+
       # 5 => 10 share conversion logic
       def event_forced_conversions!
-        @log << "All 5 share corporations must convert to 10 share corporations immediately"
+        @log << '-- Event: All 5 share corporations must convert to 10 share corporations immediately --'
         @corporations.select { |c| c.total_shares == 5 }.each { |c| convert(c) }
       end
 
