@@ -1991,8 +1991,12 @@ module Engine
         player_order.reject(&:bankrupt).index(entity)
       end
 
+      def next_sr_player_order
+        self.class::NEXT_SR_PLAYER_ORDER
+      end
+
       def reorder_players(order = nil)
-        order ||= self.class::NEXT_SR_PLAYER_ORDER
+        order ||= next_sr_player_order
         case order
         when :after_last_to_act
           player = @players.reject(&:bankrupt)[@round.entity_index]
