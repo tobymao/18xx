@@ -501,7 +501,7 @@ module Engine
       "corporation_sizes": [5, 10],
       "operating_rounds": 2,
       "status":[
-        "can_buy_companies"
+        "may_convert"
       ]
     },
     {
@@ -515,7 +515,7 @@ module Engine
       "corporation_sizes": [5, 10],
       "operating_rounds": 2,
       "status":[
-        "can_buy_companies"
+        "may_convert"
       ]
     },
     {
