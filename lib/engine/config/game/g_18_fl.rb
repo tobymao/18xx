@@ -53,7 +53,16 @@ module Engine
   "tiles": {
     "3": 6,
     "4": 8,
-    "6": 2,
+    "6o": {
+      "count": 1,
+      "color": "yellow",
+      "code": "city=revenue:20,slots:1;path=a:1,b:_0;path=a:3,b:_0;label=O"
+    },
+    "6fl": {
+      "count": 1,
+      "color": "yellow",
+      "code": "city=revenue:20,slots:1;path=a:1,b:_0;path=a:3,b:_0;label=FL"
+    },
     "8": 10,
     "9": 14,
     "58": 8,
@@ -235,6 +244,7 @@ module Engine
       "sym": "LN",
       "name": "Louisville and Nashville Railroad",
       "logo": "18_fl/LN",
+      "shares": [40, 20, 20, 20],
       "tokens": [
         0,
         20,
@@ -249,6 +259,7 @@ module Engine
       "sym": "Plant",
       "name": "The Plant System",
       "logo": "18_fl/Plant",
+      "shares": [40, 20, 20, 20],
       "tokens": [
         0,
         20,
@@ -263,6 +274,7 @@ module Engine
       "sym": "SR",
       "name": "Southern Railway",
       "logo": "18_fl/SR",
+      "shares": [40, 20, 20, 20],
       "tokens": [
         0,
         20,
@@ -278,6 +290,7 @@ module Engine
       "sym": "SAL",
       "name": "Seaboard Air Line",
       "logo": "18_fl/SAL",
+      "shares": [40, 20, 20, 20],
       "tokens": [
         0,
         20,
@@ -293,6 +306,7 @@ module Engine
       "sym": "ACL",
       "name": "Atlantic Coast Line",
       "logo": "18_fl/ACL",
+      "shares": [40, 20, 20, 20],
       "tokens": [
         0,
         20,
@@ -307,6 +321,7 @@ module Engine
       "sym": "FECR",
       "name": "Florida East Coast Railway",
       "logo": "18_fl/FECR",
+      "shares": [40, 20, 20, 20],
       "tokens": [
         0,
         20,

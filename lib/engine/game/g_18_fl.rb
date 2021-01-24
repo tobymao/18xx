@@ -41,6 +41,16 @@ module Engine
                            'At the start of a corporations Operating turn it
                            may choose to convert to a 10 share corporation'],
       ).freeze
+
+      def stock_round
+        Round::Stock.new(self, [
+          Step::DiscardTrain,
+          Step::HomeToken,
+          Step::G18FL::BuySellParShares,
+        ])
+      end
+
+      # Event logic goes here
       def event_close_port!
         @log << "Port closes"
       end
@@ -68,7 +78,7 @@ module Engine
         @game.convert(action.entity)
       end
 
-      def convert(corporation)
+      def convert(corporation, funding: true)
         before = corporation.total_shares
         shares = @_shares.values.select { |share| share.corporation == corporation }
 
@@ -90,15 +100,25 @@ module Engine
           add_new_share(share)
         end
 
-        after = corporation.total_shares
-        @log << "#{corporation.name} converts from #{before} to #{after} shares"
 
-        converted_price = corporation.share_price
-        conversion_funding = 5 * converted_price
-        @log << "#{corporation.name} gets #{format_currency(conversion_funding)} from the conversion"
-        @bank.spend(conversion_funding, corporation)
+        if funding
+          after = corporation.total_shares
+          @log << "#{corporation.name} converts from #{before} to #{after} shares"
+
+          conversion_funding = 5 * corporation.share_price.price
+          @log << "#{corporation.name} gets #{format_currency(conversion_funding)} from the conversion"
+          @bank.spend(conversion_funding, corporation) 
+        end
 
         new_shares
+      end
+
+      def add_new_share(share)
+        owner = share.owner
+        corporation = share.corporation
+        corporation.share_holders[owner] += share.percent if owner
+        owner.shares_by_corporation[corporation] << share
+        @_shares[share.id] = share
       end
     end
   end
