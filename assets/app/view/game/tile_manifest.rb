@@ -100,12 +100,7 @@ module View
           end
         end
 
-        props = {
-          style: {
-            'margin': '70px',
-          },
-        }
-        h('div#tile_manifest', props, children)
+        h('div#tile_manifest', children)
       end
     end
   end
