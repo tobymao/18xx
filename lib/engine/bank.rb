@@ -12,16 +12,22 @@ module Engine
 
     attr_reader :companies
 
-    def initialize(cash, log: [])
+    def initialize(cash, log: [], check: true)
       @cash = cash
       @log = log
       @broken = false
       @companies = []
+      @check = check
     end
 
     def check_cash(amount)
+      return unless @check
       return unless (@cash - amount).negative?
 
+      break!
+    end
+
+    def break!
       @log << '-- The bank has broken --' unless @broken
       @broken = true
     end
