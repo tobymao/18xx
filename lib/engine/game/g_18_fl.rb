@@ -29,6 +29,8 @@ module Engine
       HOME_TOKEN_TIMING = :operating_round
       SELL_BUY_ORDER = :sell_buy
 
+      MARKET_TEXT = Base::MARKET_TEXT.merge(max_price: 'Maximum price for a 5-share corporation').freeze
+
       def event_close_port!
         @log << "Port closes"
       end
