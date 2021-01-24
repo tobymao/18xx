@@ -248,7 +248,7 @@ module Engine
         @log << '-- First Stock Round --'
         @log << 'Player order is reversed the first turn'
         Round::G1824::FirstStock.new(self, [
-          Step::G1824::BuySellParShares,
+          Step::G1824::BuySellParSharesFirstSR,
         ])
       end
 
@@ -311,6 +311,11 @@ module Engine
 
       def setup
         @two_train_bought = false
+
+        @companies.each do |c|
+          c.owner = @bank
+          @bank.companies << c
+        end
 
         @minors.each do |minor|
           hex = hex_by_id(minor.coordinates)
@@ -402,6 +407,14 @@ module Engine
 
       def corporation_available?(entity)
         buyable?(entity)
+      end
+
+      def sorted_corporations
+        sorted_corporations = super
+        return sorted_corporations unless @turn == 1
+
+        # Remove unbuyable stuff in SR 1 to reduce information
+        sorted_corporations.select { |c| buyable?(c) }
       end
 
       def associated_regional_railway(coal_railway)
