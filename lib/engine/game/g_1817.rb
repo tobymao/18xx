@@ -495,7 +495,7 @@ module Engine
       end
 
       def unstarted_corporation_summary
-        (@corporations.count { |c| !c.ipoed }).to_s
+        [(@corporations.count { |c| !c.ipoed }).to_s, []]
       end
 
       def liquidate!(corporation)
