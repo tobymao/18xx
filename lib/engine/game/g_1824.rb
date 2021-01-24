@@ -329,7 +329,6 @@ module Engine
 
       def timeline
         @timeline ||= ['At the end of each OR set, the cheapest train in bank is exported.'].freeze
-        @timeline
       end
 
       def ipo_name(entity)
