@@ -19,6 +19,10 @@ module Engine
           'Scrap Trains'
         end
 
+        def log_skip(entity)
+          super unless entity.corporation?
+        end
+
         def crowded_corps
           return [current_entity] if current_entity.minor?
 
