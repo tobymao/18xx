@@ -10,20 +10,21 @@ module Engine
           return [] unless entity == current_entity
           return ['sell_shares'] if must_sell?(entity)
           return ['choose'] if @parred && !@corporation_size
-  
+
           actions = []
           actions << 'buy_shares' if can_buy_any?(entity)
           actions << 'par' if can_ipo_any?(entity)
           actions << 'buy_company' unless purchasable_companies(entity).empty?
           actions << 'sell_shares' if can_sell_any?(entity)
-  
+
           actions << 'pass' unless actions.empty?
           actions
         end
 
         def active_entities
           return [@parred.entity] if @parred
-          return super
+
+          super
         end
 
         def choice_name
@@ -50,12 +51,12 @@ module Engine
 
         def par_corporation
           return unless @corporation_size
+
           @parred = nil
         end
 
         def process_choose(action)
           size = action.choice
-          entity = action.entity
           raise GameError, 'Corporation size is invalid' unless choices.include?(size)
 
           size_corporation(size)

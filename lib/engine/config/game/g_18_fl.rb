@@ -146,7 +146,6 @@ module Engine
       "180",
       "200m",
 
-
       "225",
       "250",
       "275",
@@ -375,7 +374,7 @@ module Engine
       "name": "6",
       "distance": 6,
       "price": 600,
-      "variants": [   
+      "variants": [
         {
           "name": "3E",
           "distance":[

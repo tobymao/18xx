@@ -34,13 +34,14 @@ module Engine
       EVENTS_TEXT = Base::EVENTS_TEXT.merge(
         'hurricane' => ['Florida Keys Hurricane', 'Track and hotels in the Florida Keys (M24, M26) is removed'],
         'close_port' => ['Port Token Removed'],
-        'forced_conversions' => ['Forced Conversions', 'All remaining 5 share corporations immediately convert to 10 share corporations']
+        'forced_conversions' => ['Forced Conversions',
+                                 'All remaining 5 share corporations immediately convert to 10 share corporations']
       ).freeze
       MARKET_TEXT = Base::MARKET_TEXT.merge(max_price: 'Maximum price for a 5-share corporation').freeze
 
       STATUS_TEXT = Base::STATUS_TEXT.merge(
         'may_convert' => ['Corporations May Convert',
-                           'At the start of a corporations Operating turn it
+                          'At the start of a corporations Operating turn it
                            may choose to convert to a 10 share corporation'],
       ).freeze
 
@@ -71,7 +72,7 @@ module Engine
 
       # Event logic goes here
       def event_close_port!
-        @log << "Port closes"
+        @log << 'Port closes'
       end
 
       def event_hurricane!
@@ -119,14 +120,13 @@ module Engine
           add_new_share(share)
         end
 
-
         if funding
           after = corporation.total_shares
           @log << "#{corporation.name} converts from #{before} to #{after} shares"
 
           conversion_funding = 5 * corporation.share_price.price
           @log << "#{corporation.name} gets #{format_currency(conversion_funding)} from the conversion"
-          @bank.spend(conversion_funding, corporation) 
+          @bank.spend(conversion_funding, corporation)
         end
 
         new_shares
