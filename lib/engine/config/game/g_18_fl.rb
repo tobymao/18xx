@@ -1,0 +1,554 @@
+# frozen_string_literal: true
+
+# File made by copying and editing g_1889.rb
+# rubocop:disable Lint/RedundantCopDisableDirective, Layout/LineLength, Layout/HeredocIndentation
+
+module Engine
+  module Config
+    module Game
+      module G18FL
+        JSON = <<-'DATA'
+{
+  "filename": "18FL",
+  "modulename": "18FL",
+  "currencyFormatStr": "$%d",
+  "bankCash": 8000,
+  "certLimit": {
+    "2": 21,
+    "3": 15,
+    "4": 12
+  },
+  "startingCash": {
+    "2": 300,
+    "3": 300,
+    "4": 300
+  },
+  "capitalization": "full",
+  "layout": "pointy",
+  "mustSellInBlocks": true,
+  "locationNames": {
+    "A22": "Savannah",
+    "B1": "New Orleans",
+    "B5": "Mobile",
+    "B7": "Pensacola",
+    "B13": "Chattahoochee",
+    "B15": "Talahassee",
+    "B19": "Lake City",
+    "B23": "Jacksonville",
+    "C14": "St. Marks",
+    "C24": "St. Augustine",
+    "D19": "Cedar Key",
+    "D23": "Palatka",
+    "D25": "Daytona",
+    "E26": "Titusville",
+    "F23": "Orlando",
+    "G20": "Tampa",
+    "I22": "Punta Gorda",
+    "I28": "West Palm Beach",
+    "J27": "Fort Lauderdale",
+    "K28": "Miami",
+    "M24": "Key West",
+    "N23": "Havana"
+  },
+  "tiles": {
+    "3": 6,
+    "4": 8,
+    "6": 2,
+    "8": 10,
+    "9": 14,
+    "58": 8,
+
+    "15": {
+      "count": 2,
+      "color": "green",
+      "code": "city=revenue:30,slots:2;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=K"
+    },
+    "80": 4,
+    "81": 4,
+    "82": 6,
+    "83": 6,
+    "141": 5,
+    "142": 5,
+    "143": 5,
+    "405": {
+      "count": 2,
+      "color": "green",
+      "code": "city=revenue:40,slots:2;path=a:1,b:_0;path=a:5,b:_0;path=a:6,b:_0;label=T"
+    },
+    "443o": {
+      "count": 1,
+      "color": "green",
+      "code": "city=revenue:30,slots:2;path=a:1,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=O"
+    },
+    "443fl": {
+      "count": 1,
+      "color": "green",
+      "code": "city=revenue:30,slots:2;path=a:1,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=FL"
+    },
+    "487": {
+      "count": 1,
+      "color": "green",
+      "code": "city=revenue:40,slots:1;city=revenue:40,slots:1;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_1;path=a:4,b:_1;label=Jax"
+    },
+
+    "63": {
+      "count": 1,
+      "color": "brown",
+      "code": "city=revenue:40,slots:2;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;path=a:0,b:_0;label=O"
+    },
+    "146": 8,
+    "431": {
+      "count": 2,
+      "color": "brown",
+      "code": "city=revenue:60,slots:2;path=a:1,b:_0;path=a:5,b:_0;path=a:6,b:_0;label=T"
+    },
+    "488": {
+      "count": 1,
+      "color": "brown",
+      "code": "city=revenue:50,slots:1;city=revenue:50,slots:1;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_1;path=a:4,b:_1;label=Jax"
+    },
+    "544": 2,
+    "545": 2,
+    "546": 2,
+    "611": {
+      "count": 1,
+      "color": "brown",
+      "code": "city=revenue:40,slots:2;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=FL"
+    },
+
+    "489": {
+      "count": 1,
+      "color": "gray",
+      "code": "city=revenue:70,slots:3;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=Jax"
+    }
+  },
+  "market": [[
+      "60",
+      "65",
+      "70p",
+      "75p",
+      "80p",
+      "90p",
+      "100p",
+      "110p",
+      "125",
+      "140",
+      "160",
+      "180",
+      "200m",
+
+
+      "225",
+      "250",
+      "275",
+      "300",
+      "330",
+      "360",
+      "400"
+  ]],
+  "companies": [
+    {
+      "name": "Talahassee Railroad",
+      "value": 20,
+      "revenue": 5,
+      "desc": "Blocks Takamatsu (K4) while owned by a player.",
+      "sym": "TR",
+      "abilities": [
+        {
+          "type": "blocks_hexes",
+          "owner_type": "player",
+          "hexes": [
+            "K4"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Peninsular and Occidental Steamship Company",
+      "value": 30,
+      "revenue": 5,
+      "desc": "Player owner may place the port tile on a coastal town (B11, G10, I12, or J9) without a tile on it already, outside of the operating rounds of a corporation controlled by another player. The player need not control a corporation or have connectivity to the placed tile from one of their corporations. This does not close the company.",
+      "sym": "MF",
+      "abilities": [
+        {
+          "type": "tile_lay",
+          "when": "any",
+          "hexes": [
+            "B11",
+            "G10",
+            "I12",
+            "J9"
+          ],
+          "tiles": [
+            "437"
+          ],
+          "owner_type": "player",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Terminal Company",
+      "value": 70,
+      "revenue": 15,
+      "desc": "When this company is sold to a corporation, the selling player may immediately place a green tile on Ohzu (C4), in addition to any tile which it may lay during the same operating round. This does not close the company. Blocks C4 while owned by a player.",
+      "sym": "ER",
+      "abilities": [
+        {
+          "type": "blocks_hexes",
+          "owner_type": "player",
+          "hexes": [
+            "C4"
+          ]
+        },
+        {
+          "type": "tile_lay",
+          "hexes": [
+            "C4"
+          ],
+          "tiles": [
+            "12",
+            "13",
+            "14",
+            "15",
+            "205",
+            "206"
+          ],
+          "when": "sold",
+          "owner_type": "corporation",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Florida East Coast Canal and Transportation Company",
+      "value": 110,
+      "revenue": 20,
+      "desc": "Owning corporation may ignore building cost for mountain hexes which do not also contain rivers. This does not close the company.",
+      "sym": "SMR",
+      "abilities": [
+        {
+          "type": "tile_discount",
+          "discount" : 80,
+          "terrain": "mountain",
+          "owner_type": "corporation"
+        }
+      ]
+    }
+  ],
+  "corporations": [
+    {
+      "float_percent": 50,
+      "sym": "LN",
+      "name": "Louisville and Nashville Railroad",
+      "logo": "1889/AR",
+      "tokens": [
+        0,
+        20,
+        20,
+        20
+      ],
+      "coordinates": "B5",
+      "color": "darkblue"
+    },
+    {
+      "float_percent": 50,
+      "sym": "Plant",
+      "name": "The Plant System",
+      "logo": "1889/IR",
+      "tokens": [
+        0,
+        20,
+        20,
+        20
+      ],
+      "coordinates": "B15",
+      "color": "deepskyblue"
+    },
+    {
+      "float_percent": 50,
+      "sym": "SR",
+      "name": "Southern Railway",
+      "logo": "1889/SR",
+      "tokens": [
+        0,
+        20,
+        20,
+        20
+      ],
+      "coordinates": "B23",
+      "city": 1,
+      "color": "brightGreen"
+    },
+    {
+      "float_percent": 50,
+      "sym": "SAL",
+      "name": "Seaboard Air Line",
+      "logo": "1889/KO",
+      "tokens": [
+        0,
+        20,
+        20,
+        20
+      ],
+      "coordinates": "B23",
+      "city": 0,
+      "color": "orange"
+    },
+    {
+      "float_percent": 50,
+      "sym": "ACL",
+      "name": "Atlantic Coast Line",
+      "logo": "1889/TR",
+      "tokens": [
+        0,
+        20,
+        20,
+        20
+      ],
+      "coordinates": "G20",
+      "color": "purple"
+    },
+    {
+      "float_percent": 50,
+      "sym": "FECR",
+      "name": "Florida East Coast Railway",
+      "logo": "1889/KU",
+      "tokens": [
+        0,
+        20,
+        20,
+        20
+      ],
+      "coordinates": "K28",
+      "color": "red"
+    }
+  ],
+  "trains": [
+    {
+      "name": "2",
+      "distance": 2,
+      "price": 100,
+      "rusts_on": "4",
+      "num": 5
+    },
+    {
+      "name": "3",
+      "distance": 3,
+      "price": 200,
+      "rusts_on": ["3E", "6"],
+      "num": 4
+    },
+    {
+      "name": "4",
+      "distance": 4,
+      "price": 400,
+      "rusts_on": "D",
+      "num": 3
+    },
+    {
+      "name": "5",
+      "distance": 5,
+      "price": 500,
+      "num": 2,
+      "events":[
+        {"type": "close_companies"}
+      ]
+    },
+    {
+      "name": "6",
+      "distance": 6,
+      "price": 600,
+      "variants": [   
+        {
+          "name": "3E",
+          "distance":[
+              {
+                  "nodes":[
+                      "city",
+                      "offboard"
+                  ],
+                  "pay": 3,
+                  "visit": 3,
+                  "multiplier": 2
+              },
+              {
+                  "nodes": [
+                      "town"
+                  ],
+                  "pay": 99,
+                  "visit": 99,
+                  "multiplier": 0
+              }
+          ],
+          "price": 600
+        }
+      ],
+      "num": 7
+    }
+  ],
+  "hexes": {
+    "white": {
+      "": [
+        "B3", "B9", "B11", "B17", "B21",
+        "C12", "C16", "C18", "C20", "C22",
+        "D21",
+        "E20", "E22", "E24",
+        "F21", "F25",
+        "G22", "G26",
+        "H21"
+      ],
+      "upgrade=cost:40,terrain:swamp": [
+        "G24",
+        "H23",
+        "I24",
+        "J23", "J25",
+        "K24"
+      ],
+      "upgrade=cost:40,terrain:swamp;border=edge:5,type:impassable;border=edge:4,type:impassable": [
+        "H25"
+      ],
+      "upgrade=cost:40,terrain:swamp;border=edge:2,type:impassable;border=edge:3,type:impassable": [
+        "I26"
+      ],
+      "border=edge:0,type:impassable;border=edge:1,type:impassable": [
+        "H27"
+      ],
+      "upgrade=cost:40,terrain:swamp;border=edge:5,type:impassable": [
+        "K26"
+      ],
+      "upgrade=cost:40,terrain:swamp;border=edge:2,type:impassable": [
+        "L27"
+      ],
+      "city=revenue:0;label=FL": [
+        "J27"
+      ],
+      "city=revenue:0;label=O": [
+        "F23"
+      ],
+      "town=revenue:0": [
+        "B7", "B13", "B19",
+        "C14", "C24",
+        "D19", "D23", "D25",
+        "E26",
+        "I22", "I28"
+      ],
+      "upgrade=cost:80,terrain:water": [
+        "M26"
+      ],
+      "town=revenue:0;upgrade=cost:80,terrain:water": [
+        "M24"
+      ]
+    },
+    "yellow": {
+      "city=revenue:20;path=a:1,b:_0;path=a:4,b:_0;label=K": [
+        "B5"
+      ],
+      "city=revenue:20;path=a:1,b:_0;path=a:4,b:_0;path=a:6,b:_0;label=K": [
+        "B15"
+      ],
+      "city=revenue:30;city=revenue:30;path=a:5,b:_0;path=a:6,b:_0;path=a:1,b:_1;path=a:2,b:_1;label=Jax": [
+        "B23"
+      ],
+      "city=revenue:30;path=a:5,b:_0;path=a:3,b:_0;label=T": [
+        "G20"
+      ],
+      "city=revenue:30;path=a:6,b:_0;path=a:2,b:_0;label=T": [
+        "K28"
+      ]
+    },
+    "red": {
+      "offboard=revenue:yellow_30|brown_80;path=a:5,b:_0": [
+        "A22"
+      ],
+      "offboard=revenue:yellow_40|brown_70;path=a:4,b:_0": [
+        "B1"
+      ],
+      "offboard=revenue:yellow_60|brown_100;path=a:3,b:_0": [
+        "N23"
+      ]
+    },
+    "gray": {
+      "": [
+        "A2", "A8", "A10", "A12", "A14", "A16", "A18", "A20"
+      ],
+      "offboard=revenue:yellow_0,visit_cost:99;path=a:5,b:_0": [
+        "A4"
+      ],
+      "offboard=revenue:yellow_0,visit_cost:99;path=a:6,b:_0": [
+        "A6"
+      ]
+    }
+  },
+  "phases": [
+    {
+      "name": "2",
+      "train_limit": 4,
+      "tiles": [
+        "yellow"
+      ],
+      "corporation_sizes": [5],
+      "operating_rounds": 1
+    },
+    {
+      "name": "3",
+      "on": "3",
+      "train_limit": 4,
+      "tiles": [
+        "yellow",
+        "green"
+      ],
+      "corporation_sizes": [5, 10],
+      "operating_rounds": 2,
+      "status":[
+        "can_buy_companies"
+      ]
+    },
+    {
+      "name": "4",
+      "on": "4",
+      "train_limit": 3,
+      "tiles": [
+        "yellow",
+        "green"
+      ],
+      "corporation_sizes": [5, 10],
+      "operating_rounds": 2,
+      "status":[
+        "can_buy_companies"
+      ]
+    },
+    {
+      "name": "5",
+      "on": "5",
+      "train_limit": 2,
+      "tiles": [
+        "yellow",
+        "green",
+        "brown"
+      ],
+      "corporation_sizes": [10],
+      "operating_rounds": 3
+    },
+    {
+      "name": "6",
+      "on": ["6", "3E"],
+      "train_limit": 2,
+      "tiles": [
+        "yellow",
+        "green",
+        "brown",
+        "gray"
+      ],
+      "corporation_sizes": [10],
+      "operating_rounds": 3
+    }
+  ]
+}
+        DATA
+      end
+    end
+  end
+end
+
+# rubocop:enable Lint/RedundantCopDisableDirective, Layout/LineLength, Layout/HeredocIndentation
