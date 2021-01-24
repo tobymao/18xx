@@ -59,6 +59,7 @@ module Engine
       @needs_token_to_par = opts[:needs_token_to_par] || false
       @par_via_exchange = nil
       @type = opts[:type]&.to_sym
+      @hide_shares = opts[:hide_shares] || false
 
       init_abilities(opts[:abilities])
       init_operator(opts)
@@ -86,6 +87,10 @@ module Engine
 
     def buy_multiple?
       @share_price ? @share_price.buy_multiple? : false
+    end
+
+    def hide_shares?
+      @hide_shares
     end
 
     def share_price
