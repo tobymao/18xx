@@ -140,7 +140,7 @@ module Engine
 
       def init_bank
         # amount doesn't matter here
-        Engine::Bank.new(20_000, log: @log, check: false)
+        Bank.new(20_000, log: @log, check: false)
       end
 
       def init_share_pool
