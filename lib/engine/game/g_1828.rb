@@ -43,6 +43,8 @@ module Engine
 
       HOME_TOKEN_TIMING = :operate
 
+      TILE_RESERVATION_BLOCKS_OTHERS = true
+
       GAME_END_CHECK = { bankrupt: :immediate, stock_market: :current_round, custom: :one_more_full_or_set }.freeze
 
       SELL_BUY_ORDER = :sell_buy_sell
@@ -50,7 +52,9 @@ module Engine
       NEXT_SR_PLAYER_ORDER = :first_to_pass
 
       TRACK_RESTRICTION = :permissive
+
       DISCARDED_TRAINS = :remove
+
       MARKET_SHARE_LIMIT = 80 # percent
 
       MARKET_TEXT = Base::MARKET_TEXT.merge(par: 'Yellow Phase Par',
