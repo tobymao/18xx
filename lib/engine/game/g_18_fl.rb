@@ -50,6 +50,23 @@ module Engine
         ])
       end
 
+      def operating_round(round_num)
+        Round::Operating.new(self, [
+          Step::Bankrupt,
+          Step::Exchange,
+          Step::G18FL::Convert,
+          Step::SpecialTrack,
+          Step::BuyCompany,
+          Step::Track,
+          Step::Token,
+          Step::Route,
+          Step::Dividend,
+          Step::DiscardTrain,
+          Step::BuyTrain,
+          [Step::BuyCompany, blocks: true],
+        ], round_num: round_num)
+      end
+
       # Event logic goes here
       def event_close_port!
         @log << "Port closes"
