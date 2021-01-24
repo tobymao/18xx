@@ -8,10 +8,10 @@
 # Row 2 are the unsubidized cities
 
 module Engine
-    module Config
-      module Game
-        module G18USA
-          JSON = <<-'DATA'
+  module Config
+    module Game
+      module G18USA
+        JSON = <<-'DATA'
   {
     "filename": "18USA",
     "modulename": "18USA",
@@ -897,11 +897,8 @@ module Engine
       }
     ]
   }
-          DATA
-        end
+        DATA
       end
     end
   end
-  
-  # rubocop:enable Lint/RedundantCopDisableDirective, Layout/LineLength, Layout/HeredocIndentation
-  
+end
