@@ -566,11 +566,12 @@ module Engine
 
       def event_minors_nationalized!
         # Given minors have a train limit of 1, this shouldn't cause the order to be disrupted.
-        @corporations, removed = @corporations.partition do |corporation|
+        corporations, removed = @corporations.partition do |corporation|
           corporation.type != :minor
         end
         @log << 'Minors nationalized' if removed.any?
         removed.each { |c| nationalize!(c) }
+        @corporations = corporations
       end
 
       def event_signal_end_game!
