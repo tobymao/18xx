@@ -5,11 +5,15 @@ require_relative '../buy_sell_par_shares'
 module Engine
   module Step
     module G1824
-      class BuySellParShares < BuySellParShares
+      class BuySellParSharesFirstSR < BuySellParShares
         def actions(_entity)
           result = super
           result << 'buy_company' unless result.empty?
           result
+        end
+
+        def can_buy_company?(_player, _company)
+          true
         end
 
         def can_buy?(_entity, bundle)
@@ -22,10 +26,6 @@ module Engine
 
         def can_gain?(_entity, bundle)
           super && @game.buyable?(bundle.corporation)
-        end
-
-        def purchasable_unsold_companies
-          @game.companies.reject { |c| c.owner || c.closed? }
         end
 
         def process_buy_company(action)

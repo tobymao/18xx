@@ -10,10 +10,13 @@ module Engine
     include ShareHolder
     include Spender
 
+    attr_reader :companies
+
     def initialize(cash, log: [])
       @cash = cash
       @log = log
       @broken = false
+      @companies = []
     end
 
     def check_cash(amount)
