@@ -11,7 +11,7 @@ module Engine
           3 => 4,
           4 => 3,
           5 => 2,
-          6 => 1,
+          6 => 2,
         }.freeze
 
         MAX_NUM_SHARES = {
