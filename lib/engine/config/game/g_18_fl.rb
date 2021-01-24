@@ -345,7 +345,9 @@ module Engine
       "price": 500,
       "num": 2,
       "events":[
-        {"type": "close_companies"}
+        {"type": "close_companies"},
+        {"type": "close_port"},
+        {"type": "forced_conversions"}
       ]
     },
     {
