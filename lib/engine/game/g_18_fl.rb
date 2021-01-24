@@ -28,6 +28,8 @@ module Engine
       EBUY_OTHER_VALUE = false # allow ebuying other corp trains for up to face
       HOME_TOKEN_TIMING = :operating_round
       SELL_BUY_ORDER = :sell_buy
+      SELL_MOVEMENT = :left_block
+      TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
 
       EVENTS_TEXT = Base::EVENTS_TEXT.merge(
         'hurricane' => ['Florida Keys Hurricane', 'Track and hotels in the Florida Keys (M24, M26) is removed'],
@@ -60,7 +62,7 @@ module Engine
           Step::Track,
           Step::Token,
           Step::Route,
-          Step::Dividend,
+          Step::G18FL::Dividend,
           Step::DiscardTrain,
           Step::BuyTrain,
           [Step::BuyCompany, blocks: true],
