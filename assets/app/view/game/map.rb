@@ -133,8 +133,7 @@ module View
             position: 'relative',
           },
         }
-
-        h(:div, [h(:div, props, children), render_controls])
+        h(:div, [render_controls, h(:div, props, children)])
       end
 
       def map_x
