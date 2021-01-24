@@ -125,7 +125,7 @@ module Engine
       OPTIONAL_RULES = [
         {
           sym: :priority_order_pass,
-          short_name: 'Priority Oder Pass',
+          short_name: 'Priority Order Pass',
           desc: '(alpha) Priority is awarded in pass order in both Auction and Stock Rounds.',
         },
         {
