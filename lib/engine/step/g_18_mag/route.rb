@@ -64,9 +64,15 @@ module Engine
         def process_special_buy(action)
           item = action.item
           desc = item.description
-          corp_str = desc[desc.index('from ') + 5..-1]
-          corp = @game.corporation_by_id(corp_str)
-          @round.rail_cars << corp_str
+          corp = case desc
+                 when /G\&C/
+                   @game.gc
+                 when /RABA/
+                   @game.raba
+                 when /SNW/
+                   @game.snw
+                 end
+          @round.rail_cars << corp.name
 
           action.entity.spend(item.cost, corp)
           @log << "#{action.entity.name} buys #{desc} for #{@game.format_currency(item.cost)}"
