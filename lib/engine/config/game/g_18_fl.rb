@@ -234,7 +234,7 @@ module Engine
       "float_percent": 50,
       "sym": "LN",
       "name": "Louisville and Nashville Railroad",
-      "logo": "1889/AR",
+      "logo": "18_fl/LN",
       "tokens": [
         0,
         20,
@@ -248,7 +248,7 @@ module Engine
       "float_percent": 50,
       "sym": "Plant",
       "name": "The Plant System",
-      "logo": "1889/IR",
+      "logo": "18_fl/Plant",
       "tokens": [
         0,
         20,
@@ -262,7 +262,7 @@ module Engine
       "float_percent": 50,
       "sym": "SR",
       "name": "Southern Railway",
-      "logo": "1889/SR",
+      "logo": "18_fl/SR",
       "tokens": [
         0,
         20,
@@ -277,7 +277,7 @@ module Engine
       "float_percent": 50,
       "sym": "SAL",
       "name": "Seaboard Air Line",
-      "logo": "1889/KO",
+      "logo": "18_fl/SAL",
       "tokens": [
         0,
         20,
@@ -292,7 +292,7 @@ module Engine
       "float_percent": 50,
       "sym": "ACL",
       "name": "Atlantic Coast Line",
-      "logo": "1889/TR",
+      "logo": "18_fl/ACL",
       "tokens": [
         0,
         20,
@@ -306,7 +306,7 @@ module Engine
       "float_percent": 50,
       "sym": "FECR",
       "name": "Florida East Coast Railway",
-      "logo": "1889/KU",
+      "logo": "18_fl/FECR",
       "tokens": [
         0,
         20,
