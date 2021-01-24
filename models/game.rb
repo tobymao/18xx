@@ -105,6 +105,7 @@ class Game < Base
   SQL
 
   def self.home_games(user, **opts)
+    puts "home_games #{CGI.unescape(opts['s'])}" if opts['s']
     opts = {
       type: opts['games'] || (user ? 'personal' : 'all'),
       page: opts['p']&.to_i || 0,

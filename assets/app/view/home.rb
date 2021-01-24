@@ -132,7 +132,7 @@ module View
       search_string = Lib::Storage["search_#{type}_#{status}"]
       params = "?games=#{type}"
       params += "&status=#{status}" if status
-      params += "&s=#{search_string}" if search_string
+      params += "&s=#{Native(`encodeURI(#{search_string})`)}" if search_string
 
       store_route = lambda do
         get_games(params)

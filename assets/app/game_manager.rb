@@ -48,6 +48,7 @@ module GameManager
 
   def get_games(params = nil)
     params ||= `window.location.search`
+    puts "get_games #{params}" # get_games ?games=all&status=finished&p=1&s=188:*%20&%20!1882
 
     @connection.get("/game#{params}") do |data|
       store(:games, data[:games]) unless data[:error]

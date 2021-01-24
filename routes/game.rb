@@ -147,6 +147,7 @@ class Api
       end
 
       r.get do
+        puts "routes #{r.params}" # routes {"games"=>"all", "status"=>"finished", "s"=>"188:* ", " !1882"=>nil}
         { games: Game.home_games(user, **r.params).map(&:to_h) }
       end
 

@@ -28,6 +28,7 @@ module Lib
     end
 
     def get(path, prefix = '/api', &block)
+      puts "get #{path}" # get /game/?games=all&status=finished&s=188:*%20&%20!1882
       send(path, 'GET', nil, prefix, block)
     end
 
@@ -72,6 +73,7 @@ module Lib
           payload['body'] = JSON.stringify(#{data.to_n})
         }
 
+        console.log("send", #{path}) /* send /game/?games=all&status=finished&s=188:*%20&%20!1882 */
         if (typeof fetch !== 'undefined') {
           fetch(#{prefix + path}, payload).then(res => {
             return res.text()
