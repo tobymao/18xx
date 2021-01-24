@@ -46,7 +46,7 @@ module Engine
             ' and Montain Railways are removed from the game'
 
           @game.companies.each do |c|
-            next if c.owner || c.closed?
+            next if c.owner&.player? || c.closed?
 
             if @game.mountain_railway?(c)
               @game.log << "Mountain Railway #{c.name} closes"
