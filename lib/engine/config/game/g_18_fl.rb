@@ -151,15 +151,19 @@ module Engine
       "name": "Talahassee Railroad",
       "value": 20,
       "revenue": 5,
-      "desc": "Blocks Takamatsu (K4) while owned by a player.",
+      "desc": "The winner of this private gets Priority Deal in the first Stock Round. This may be closed to grant a corporation an additional yellow tile lay. Terrain costs must be paid for normally",
       "sym": "TR",
       "abilities": [
         {
-          "type": "blocks_hexes",
+          "type": "tile_lay",
           "owner_type": "player",
-          "hexes": [
-            "K4"
-          ]
+          "count": 1,
+          "free": false,
+          "special": false,
+          "reachable": true,
+          "hexes": [],
+          "tiles": [],
+          "when": "sold"
         }
       ]
     },
@@ -167,23 +171,23 @@ module Engine
       "name": "Peninsular and Occidental Steamship Company",
       "value": 30,
       "revenue": 5,
-      "desc": "Player owner may place the port tile on a coastal town (B11, G10, I12, or J9) without a tile on it already, outside of the operating rounds of a corporation controlled by another player. The player need not control a corporation or have connectivity to the placed tile from one of their corporations. This does not close the company.",
-      "sym": "MF",
+      "desc": "Closing this private grants the operating Corporation a port token to place on a port city. The port token increases the value of that city by $20 for that corporation only",
+      "sym": "POSC",
       "abilities": [
         {
-          "type": "tile_lay",
-          "when": "any",
+          "type": "assign_hexes",
+          "when": "owning_corp_or_turn",
           "hexes": [
-            "B11",
-            "G10",
-            "I12",
-            "J9"
+            "B5", "B23", "G20", "K28"
           ],
-          "tiles": [
-            "437"
-          ],
-          "owner_type": "player",
-          "count": 1
+          "count_per_or": 1,
+          "owner_type": "corporation"
+        },
+        {
+          "type": "assign_corporation",
+          "when": "sold",
+          "count": 1,
+          "owner_type": "corporation"
         }
       ]
     },
@@ -191,32 +195,22 @@ module Engine
       "name": "Terminal Company",
       "value": 70,
       "revenue": 15,
-      "desc": "When this company is sold to a corporation, the selling player may immediately place a green tile on Ohzu (C4), in addition to any tile which it may lay during the same operating round. This does not close the company. Blocks C4 while owned by a player.",
-      "sym": "ER",
+      "desc": "Allows a Corporation to place an extra token on a city tile of yellow or higher. This is an additional token and free. This token does not use a token slot in the city. This token can be disconnected",
+      "sym": "TC",
+      "min_players": 3,
       "abilities": [
         {
-          "type": "blocks_hexes",
-          "owner_type": "player",
+          "type": "token",
+          "when": "owning_corp_or_turn",
+          "owner_type":"corporation",
+          "count": 1,
+          "from_owner": true,
+          "cheater": 0,
+          "special_only": true,
+          "discount": 0,
           "hexes": [
-            "C4"
+            "B5", "B15", "B23", "G20", "F23", "J27", "K28"
           ]
-        },
-        {
-          "type": "tile_lay",
-          "hexes": [
-            "C4"
-          ],
-          "tiles": [
-            "12",
-            "13",
-            "14",
-            "15",
-            "205",
-            "206"
-          ],
-          "when": "sold",
-          "owner_type": "corporation",
-          "count": 1
         }
       ]
     },
@@ -224,14 +218,13 @@ module Engine
       "name": "Florida East Coast Canal and Transportation Company",
       "value": 110,
       "revenue": 20,
-      "desc": "Owning corporation may ignore building cost for mountain hexes which do not also contain rivers. This does not close the company.",
-      "sym": "SMR",
+      "desc": "This Company comes with a single share of the Florida East Coast Railway",
+      "sym": "FECCTC",
+      "min_players": 4,
       "abilities": [
         {
-          "type": "tile_discount",
-          "discount" : 80,
-          "terrain": "mountain",
-          "owner_type": "corporation"
+           "type":"shares",
+           "shares":"FECR_1"
         }
       ]
     }
@@ -336,7 +329,7 @@ module Engine
       "name": "3",
       "distance": 3,
       "price": 200,
-      "rusts_on": ["3E", "6"],
+      "rusts_on": "6",
       "num": 4
     },
     {
@@ -384,7 +377,12 @@ module Engine
           "price": 600
         }
       ],
-      "num": 7
+      "num": 7,
+      "events": [
+        {
+          "type": "hurricane"
+        }
+      ]
     }
   ],
   "hexes": {
