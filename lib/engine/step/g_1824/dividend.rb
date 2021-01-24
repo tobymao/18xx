@@ -74,7 +74,8 @@ module Engine
         def payout(entity, revenue, mine_revenue)
           if minor_style_dividend?(entity)
             fifty_percent = revenue / 2
-            { corporation: fifty_percent + mine_revenue, per_share: fifty_percent }
+            per_share = @game.coal_railway?(entity) ? fifty_percent / 2 : fifty_percent
+            { corporation: fifty_percent + mine_revenue, per_share: per_share }
           else
             { corporation: mine_revenue, per_share: payout_per_share(entity, revenue) }
           end
@@ -83,8 +84,9 @@ module Engine
         def payout_shares(entity, revenue)
           return super unless minor_style_dividend?(entity)
 
-          @log << "#{entity.owner.name} receives #{@game.format_currency(revenue)}"
-          @game.bank.spend(revenue, entity.owner)
+          owner_revenue = revenue / 2
+          @log << "#{entity.owner.name} receives #{@game.format_currency(owner_revenue)}"
+          @game.bank.spend(owner_revenue, entity.owner)
         end
 
         private
