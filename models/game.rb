@@ -106,7 +106,7 @@ class Game < Base
 
   def self.home_games(user, **opts)
     opts = {
-      type: opts['games'] || (user ? 'personal' : 'all'),
+      games: opts['games'] || (user ? 'personal' : 'all'),
       page: opts['p']&.to_i || 0,
       status: opts['status'] || (user ? 'active' : 'new'),
       search_string: opts['s'] || nil,
@@ -114,7 +114,7 @@ class Game < Base
     opts[:user_id] = user.id if user
 
     query =
-      if user && opts[:type] == 'personal'
+      if user && opts[:games] == 'personal'
         opts[:search_string] ? PERSONAL_GAMES_SEARCH_QUERY : PERSONAL_GAMES_QUERY
       elsif user
         opts[:search_string] ? OTHER_GAMES_SEARCH_QUERY : OTHER_GAMES_QUERY

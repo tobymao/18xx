@@ -49,7 +49,7 @@ module View
     end
 
     def render_more(text, params)
-      params += "&s=#{@search_string}" if @search_string
+      params += "&s=#{Native(`encodeURI(#{@search_string})`)}" if @search_string
 
       change_page = lambda do
         get_games(params)
@@ -82,7 +82,7 @@ module View
         if event.JS['type'] == 'click' || event.JS['keyCode'] == 13
           val = Native(@inputs[search_id]).elm.value
           val == '' ? Lib::Storage.delete(search_id) : Lib::Storage[search_id] = val
-          params = "/?games=#{@type}&status=#{@status}#{"&s=#{val}" if val != ''}"
+          params = "/?games=#{@type}&status=#{@status}#{"&s=#{Native(`encodeURI(#{val})`)}" if val != ''}"
           get_games(params)
           store(:app_route, params)
         end
