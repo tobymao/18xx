@@ -580,6 +580,7 @@ module Engine
       # Initialize actions respecting the undo state
       def initialize_actions(actions)
         @loading = true unless @strict
+        @loading_internal = true
 
         filtered_actions, active_undos = self.class.filtered_actions(actions)
         @undo_possible = false
@@ -597,6 +598,7 @@ module Engine
         end
         @redo_possible = active_undos.any?
         @loading = false
+        @loading_internal = false
       end
 
       def process_action(action)
@@ -616,7 +618,7 @@ module Engine
         action.derived.each { |a| process_single_action(a) }
         any_derived = !action.derived.empty?
 
-        unless @loading
+        unless @loading_internal
           # Check and add derived_actions
           while (derived_action = @round.derived_actions)
             # Consistency check, both the client and server should supply the same derived actions
