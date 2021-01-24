@@ -25,7 +25,7 @@ module View
       ]
 
       # these will show up in the profile page
-      your_games.reject! { |game| game['status'] == 'finished' }
+      your_games.reject! { |game| %w[finished archived].include?(game['status']) }
 
       grouped = other_games.group_by { |game| game['status'] }
 
