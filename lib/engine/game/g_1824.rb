@@ -261,6 +261,26 @@ module Engine
         ])
       end
 
+      def or_set_finished
+        depot.export!
+      end
+
+      def coal_c1
+        @c1 ||= corporation_by_id('EPP')
+      end
+
+      def coal_c2
+        @c2 ||= corporation_by_id('EOD')
+      end
+
+      def coal_c3
+        @c3 ||= corporation_by_id('MLB')
+      end
+
+      def coal_c4
+        @c4 ||= corporation_by_id('SPB')
+      end
+
       def regional_bk
         @bk ||= corporation_by_id('BK')
       end
@@ -307,10 +327,30 @@ module Engine
         end
       end
 
+      def timeline
+        @timeline ||= ['At the end of each OR set, the cheapest train in bank is exported.'].freeze
+      end
+
       def ipo_name(entity)
         return 'Treasury' if entity && coal_railway?(entity)
 
         'IPO'
+      end
+
+      def status_str(entity)
+        if coal_railway?(entity)
+          'Coal Railway - may only own g trains'
+        elsif pre_staatsbahn?(entity)
+          'Pre-Staatsbahn'
+        elsif staatsbahn?(entity)
+          'Staatsbahn'
+        elsif regional?(entity)
+          str = 'Regional Railway'
+          if (coal = associated_coal_railway(entity))
+            str += " - Presidency reserved (#{coal.name})" unless coal.closed?
+          end
+          str
+        end
       end
 
       def can_par?(corporation, parrer)
@@ -374,6 +414,19 @@ module Engine
           regional_cl
         when 'SPB'
           regional_sb
+        end
+      end
+
+      def associated_coal_railway(regional_railway)
+        case regional_railway.name
+        when 'BK'
+          coal_c1
+        when 'MS'
+          coal_c2
+        when 'CL'
+          coal_c3
+        when 'SB'
+          coal_c4
         end
       end
 
