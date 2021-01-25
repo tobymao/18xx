@@ -80,11 +80,19 @@ module View
 
       search_games = lambda do |event|
         if event.JS['type'] == 'click' || event.JS['keyCode'] == 13
-          val = Native(@inputs[search_id]).elm.value
-          val == '' ? Lib::Storage.delete(search_id) : Lib::Storage[search_id] = val
-          params = "/?games=#{@type}&status=#{@status}#{"&s=#{Native(`encodeURI(#{val})`)}" if val != ''}"
-          get_games(params)
-          store(:app_route, params)
+          elm_val = Native(@inputs[search_id]).elm.value
+          val = elm_val.empty? ? nil : elm_val
+          if val != Lib::Storage[search_id]
+            if val
+              Lib::Storage[search_id] = val
+              search_param = "&s=#{`encodeURIComponent(#{val})`}"
+            else
+              Lib::Storage.delete(search_id)
+            end
+            params = "/?games=#{@type}&status=#{@status}#{search_param}"
+            get_games(params)
+            store(:app_route, params)
+          end
         end
       end
 
