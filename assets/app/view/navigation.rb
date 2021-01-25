@@ -28,31 +28,22 @@ module View
           boxShadow: '0 2px 0 0 gainsboro',
         },
       }
-      nav_props = {
-        style: {
-          margin: 'auto 0',
-        },
-      }
 
       h('div#header', props, [
         h(Logo),
         h(:div, [
-          h('nav#games_nav', nav_props, games_links),
-          h('nav#main_nav', nav_props, other_links),
+          h('nav#games_nav', [
+            h('ul.no_margin.no_padding', games_links),
+          ]),
+          h('nav#main_nav', [
+            h('ul.no_margin.no_padding', other_links),
+          ]),
         ]),
       ])
     end
 
-    def item(name, href)
-      props = {
-        attrs: {
-          href: href,
-        },
-        style: {
-          margin: '0 1rem',
-        },
-      }
-      h(:a, props, name)
+    def item(name, anchor)
+      h('li.nav', [h(:a, { attrs: { href: anchor } }, name)])
     end
   end
 end

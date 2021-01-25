@@ -194,18 +194,9 @@ nav#game_menu {
   display: grid;
   grid: 1fr / 1fr auto;
 }
-#games_nav {
+nav#games, nav#main {
   justify-self: center;
-}
-
-@media only screen and (max-width: 479px) {
-  #header div {
-    grid: 2fr / auto;
-  }
-  #games_nav {
-    grid-row-start: 2;
-    justify-self: start;
-  }
+  margin: auto 0;
 }
 
 #profile-settings > div {
