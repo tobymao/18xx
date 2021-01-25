@@ -215,7 +215,7 @@ module Engine
       # if the owner only sold half of their president's share, take one away
       swap_to = previous_president.percent_of(corporation) >= presidents_share.percent ? previous_president : self
 
-      change_president(presidents_share, swap_to, president)
+      change_president(presidents_share, swap_to, president, previous_president)
 
       return unless bundle.partial?
 
@@ -224,7 +224,7 @@ module Engine
       num_shares.times { move_share(shares_of(corporation).first, owner) }
     end
 
-    def change_president(presidents_share, swap_to, president)
+    def change_president(presidents_share, swap_to, president, _previous_president)
       corporation = presidents_share.corporation
 
       num_shares = presidents_share.percent / corporation.share_percent
