@@ -366,14 +366,15 @@ module View
           num_ipo_shares = '* ' + num_ipo_shares
         end
         last_cert = @corporation.shares_of(@corporation).any?(&:last_cert)
-        pool_rows = [
-          h('tr.ipo', [
+
+        pool_rows = []
+        if !num_ipo_shares.empty? || last_cert || @game.show_ipo_shares(@corporation)
+          pool_rows << h('tr.ipo', [
             h('td.left', @game.ipo_name(@corporation)),
-            h('td.right', shares_props,
-              (last_cert ? 'd ' : '') + num_ipo_shares),
+            h('td.right', shares_props, (last_cert ? 'd ' : '') + num_ipo_shares),
             h('td.padded_number', share_price_str(@corporation.par_price)),
-          ]),
-        ]
+          ])
+        end
 
         if @corporation.reserved_shares.any?
           pool_rows << h('tr.reserved', [

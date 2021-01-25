@@ -175,10 +175,10 @@ module Engine
             ['Per Share Dividend', 'Share Price Change'],
             ['0 Ft', '1 space to the left'],
             ['1 - 2 Ft', 'none'],
-            ['3 - 5 Ft', '1 space to the left'],
-            ['6 - 10 Ft', '2 spaces to the left'],
-            ['11 - 20 Ft', '3 spaces to the left'],
-            ['more than 20 Ft', '4 spaces to the left'],
+            ['3 - 5 Ft', '1 space to the right'],
+            ['6 - 10 Ft', '2 spaces to the right'],
+            ['11 - 20 Ft', '3 spaces to the right'],
+            ['more than 20 Ft', '4 spaces to the right'],
           ]
         end
       end
