@@ -224,7 +224,7 @@ module Engine
       num_shares.times { move_share(shares_of(corporation).first, owner) }
     end
 
-    def change_president(presidents_share, swap_to, president, _previous_president)
+    def change_president(presidents_share, swap_to, president, _previous_president = nil)
       corporation = presidents_share.corporation
 
       num_shares = presidents_share.percent / corporation.share_percent

@@ -394,7 +394,7 @@ module Engine
           president_share = previous_president.shares_of(corporation).find(&:president)
           corporation.owner = president
           @log << "#{president.name} becomes the president of #{corporation.name}"
-          @share_pool.change_president(president_share, previous_president, president, previous_president)
+          @share_pool.change_president(president_share, previous_president, president)
         end
 
         # Consolidate shorts with their share pair (including share pool shares)
