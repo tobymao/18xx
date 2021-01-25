@@ -54,11 +54,12 @@ module Engine
 
           if choice == 'Two 10% certs'
             @log << "#{entity.name} chooses two 10% certificates"
-            @game.share_pool.swap_double_cert(@game.swap_choice_player, @game.swap_other_player, @game.swap_corporation)
+            @game.share_pool.swap_double_cert(@game.swap_location, @game.swap_other_player, @game.swap_corporation)
           else
             @log << "#{entity.name} chooses the 20% last certificate"
           end
           @game.swap_choice_player = nil
+          @game.swap_location = nil
           @game.swap_other_player = nil
           @game.swap_corporation = nil
         end

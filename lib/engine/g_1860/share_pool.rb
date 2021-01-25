@@ -98,7 +98,7 @@ module Engine
         # if the owner only sold half of their president's share, take one away
         swap_to = previous_president.percent_of(corporation) >= presidents_share.percent ? previous_president : self
 
-        change_president(presidents_share, swap_to, president)
+        change_president(presidents_share, swap_to, president, previous_president)
 
         return unless bundle.partial?
 

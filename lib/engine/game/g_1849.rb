@@ -115,7 +115,7 @@ module Engine
       PORT_HEXES = %w[a12 A5 L14 N8].freeze
       SMS_HEXES = %w[B14 C1 C5 H12 J6 M9 M13].freeze
 
-      attr_accessor :swap_choice_player, :swap_other_player, :swap_corporation,
+      attr_accessor :swap_choice_player, :swap_location, :swap_other_player, :swap_corporation,
                     :loan_choice_player, :player_debts,
                     :max_value_reached,
                     :old_operating_order, :moved_this_turn
