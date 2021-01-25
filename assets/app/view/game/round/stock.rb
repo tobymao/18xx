@@ -151,6 +151,7 @@ module View
             render_buy_tokens(corporation),
           ]
           inputs << h(IssueShares, entity: corporation) if @step.actions(corporation).include?('buy_shares')
+          inputs << h(BuyTrains, corporation: corporation) if @step.actions(corporation).include?('buy_train')
           inputs = inputs.compact
           h('div.margined_bottom', { style: { width: '20rem' } }, inputs) if inputs.any?
         end

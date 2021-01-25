@@ -9,7 +9,7 @@ module View
       include Actionable
       include EmergencyMoney
       needs :show_other_players, default: nil, store: true
-      needs :selected_corporation, default: nil, store: true
+      needs :corporation, default: nil
       needs :active_shell, default: nil, store: true
 
       def render_president_contributions
@@ -68,7 +68,7 @@ module View
 
       def render
         step = @game.round.active_step
-        @corporation = step.current_entity
+        @corporation ||= step.current_entity
         if @selected_company&.owner == @corporation
           @ability = @game.abilities(@selected_company, :train_discount, time: 'buying_train')
         end

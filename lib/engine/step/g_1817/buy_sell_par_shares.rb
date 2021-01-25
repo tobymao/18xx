@@ -87,14 +87,14 @@ module Engine
           actions = []
           if @current_actions.none?
             actions << 'take_loan' if @game.can_take_loan?(entity) && !@corporate_action.is_a?(Action::BuyShares)
-            actions << 'buy_shares' if @game.redeemable_shares(entity).any?
+            actions << 'buy_shares' unless @game.redeemable_shares(entity).empty?
           end
           actions << 'buy_tokens' if can_buy_tokens?(entity)
           actions
         end
 
         def any_corporate_actions?(entity)
-          @game.corporations.any? { |corp| corp.owner == entity && corporate_actions(corp).any? }
+          @game.corporations.any? { |corp| corp.owner == entity && !corporate_actions(corp).empty? }
         end
 
         def can_buy_tokens?(entity)

@@ -9,10 +9,7 @@ module Engine
       include EmergencyMoney
       def can_buy_train?(entity = nil, _shell = nil)
         entity ||= current_entity
-        can_buy_normal?(entity)
-      end
 
-      def can_buy_normal?(entity)
         can_buy_normal = room?(entity) &&
           buying_power(entity) >= @depot.min_price(entity)
 
