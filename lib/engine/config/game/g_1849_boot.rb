@@ -49,6 +49,7 @@ module Engine
       "J16":"Matera",
       "J18":"Bari",
       "K9":"Scalea",
+      "K13":"Metaponto",
       "L12":"Montegiordano",
       "L18":"Taranto",
       "L20":"Brindisi",
@@ -160,7 +161,7 @@ module Engine
       "X2":{
          "count":1,
          "color":"green",
-         "code":"label=N;city=revenue:70,slots:1;path=a:4,b:_0,track:narrow;path=a:5,b:_0;path=a:1,b:_0,track:dual"
+         "code":"label=N;city=revenue:50,slots:1;path=a:4,b:_0,track:narrow;path=a:5,b:_0;path=a:1,b:_0,track:dual"
       },
       "X3":{
          "count":1,
@@ -180,7 +181,7 @@ module Engine
       "X6":{
          "count":1,
          "color":"brown",
-         "code":"label=N;city=revenue:120,slots:3;path=a:4,b:_0,track:dual;path=a:5,b:_0;path=a:1,b:_0,track:dual;path=a:3,b:_0"
+         "code":"label=N;city=revenue:90,slots:3;path=a:4,b:_0,track:dual;path=a:5,b:_0;path=a:1,b:_0,track:dual;path=a:3,b:_0"
       },
       "X7":{
          "count":1,
@@ -352,7 +353,6 @@ module Engine
             "H14",
             "I17",
             "J8",
-            "K13",
             "K19",
             "K15",
             "M11",
@@ -403,6 +403,7 @@ module Engine
             "F8",
             "F10",
             "F14",
+            "K13",
             "O5",
             "M9"
          ],
@@ -419,8 +420,10 @@ module Engine
          ]
       },
       "blue":{
-         "offboard=revenue:60,route:optional;path=a:1,b:_0,track:dual":[
-            "B16",
+         "offboard=revenue:30,route:optional;path=a:1,b:_0,track:dual":[
+            "B16"
+         ],
+         "offboard=revenue:40,route:optional;path=a:1,b:_0,track:dual":[
             "J20"
          ],
          "offboard=revenue:40,route:optional;path=a:4,b:_0,track:dual":[
@@ -435,7 +438,7 @@ module Engine
          "offboard=revenue:white_30|gray_50|black_80;path=a:0,b:_0,track:dual":[
             "N2"
          ],
-         "offboard=revenue:white_80|gray_120|black_160;path=a:5,b:_0,track:dual":[
+         "offboard=revenue:white_60|gray_90|black_120;path=a:5,b:_0,track:dual":[
             "C5"
          ],
          "path=a:3,b:5,track:dual":[
@@ -921,7 +924,7 @@ module Engine
          "num":2,
          "available_on":"16H",
          "distance":6,
-         "price":350
+         "price":600
       }
    ]
 }

@@ -46,7 +46,7 @@ module Engine
             ' and Montain Railways are removed from the game'
 
           @game.companies.each do |c|
-            next if c.owner || c.closed?
+            next if c.owner&.player? || c.closed?
 
             if @game.mountain_railway?(c)
               @game.log << "Mountain Railway #{c.name} closes"
@@ -79,9 +79,6 @@ module Engine
             # Make reserved share of associated corporation unreserved
             regional.shares.find(&:president).buyable = true
             regional.floatable = true
-            @game.abilities(regional, :base) do |ability|
-              regional.remove_ability(ability)
-            end
           end
         end
 

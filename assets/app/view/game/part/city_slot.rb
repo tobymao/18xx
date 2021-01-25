@@ -3,6 +3,8 @@
 require 'view/game/actionable'
 require 'view/game/part/base'
 require 'view/game/token'
+require 'lib/settings'
+require 'lib/storage'
 require 'lib/tile_selector'
 require 'lib/token_selector'
 
@@ -12,6 +14,7 @@ module View
       # a "slot" is a space in a city for a token
       class CitySlot < Base
         include Actionable
+        include Lib::Settings
 
         needs :token
         needs :slot_index, default: 0
@@ -23,7 +26,6 @@ module View
         needs :reservation, default: nil
         needs :game, default: nil, store: true
         needs :city_render_location, default: nil
-        needs :player_colors, default: nil, store: true
 
         RESERVATION_FONT_SIZE = {
           1 => 22,
@@ -47,8 +49,8 @@ module View
           children = []
           color = 'white'
           radius = @radius
-          if @token && @player_colors && (player_color = @player_colors[@token.corporation&.owner])
-            color = player_color
+          if (owner = @token&.corporation&.owner) && Lib::Storage['show_player_colors']
+            color = player_colors(@game.players)[owner]
             radius -= 4
           end
 

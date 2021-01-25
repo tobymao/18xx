@@ -1533,6 +1533,15 @@ module Engine
         nil
       end
 
+      def exchange_corporations(exchange_ability)
+        candidates = if exchange_ability.corporations == 'any'
+                       corporations
+                     else
+                       exchange_ability.corporations.map { |c| corporation_by_id(c) }
+                     end
+        candidates.reject(&:closed?)
+      end
+
       def round_start?
         @last_game_action_id == @round_history.last
       end
@@ -1547,6 +1556,36 @@ module Engine
 
       def hex_blocked_by_ability?(_entity, ability, hex)
         ability.hexes.include?(hex.id)
+      end
+
+      def rust_trains!(train, entity)
+        obsolete_trains = []
+        rusted_trains = []
+        owners = Hash.new(0)
+
+        trains.each do |t|
+          next if t.obsolete || t.obsolete_on != train.sym
+
+          obsolete_trains << t.name
+          t.obsolete = true
+        end
+
+        trains.each do |t|
+          next if t.rusted
+
+          should_rust = t.rusts_on == train.sym || (t.obsolete_on == train.sym && @depot.discarded.include?(t))
+          next unless should_rust
+          next unless rust?(t)
+
+          rusted_trains << t.name
+          owners[t.owner.name] += 1
+          entity.rusted_self = true if entity && entity == t.owner
+          rust(t)
+        end
+
+        @log << "-- Event: #{obsolete_trains.uniq.join(', ')} trains are obsolete --" if obsolete_trains.any?
+        @log << "-- Event: #{rusted_trains.uniq.join(', ')} trains rust " \
+          "( #{owners.map { |c, t| "#{c} x#{t}" }.join(', ')}) --" if rusted_trains.any?
       end
 
       private
@@ -1952,8 +1991,12 @@ module Engine
         player_order.reject(&:bankrupt).index(entity)
       end
 
+      def next_sr_player_order
+        self.class::NEXT_SR_PLAYER_ORDER
+      end
+
       def reorder_players(order = nil)
-        order ||= self.class::NEXT_SR_PLAYER_ORDER
+        order ||= next_sr_player_order
         case order
         when :after_last_to_act
           player = @players.reject(&:bankrupt)[@round.entity_index]

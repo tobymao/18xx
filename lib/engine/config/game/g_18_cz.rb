@@ -1559,7 +1559,7 @@ module Engine
                                       "nodes": [
                                           "town"
                                       ],
-                                      "pay": 0,
+                                      "pay": 3,
                                       "visit": 99
                                   }
                               ],
@@ -1616,7 +1616,7 @@ module Engine
                                       "nodes": [
                                           "town"
                                       ],
-                                      "pay": 0,
+                                      "pay": 3,
                                       "visit": 99
                                   }
                               ],
@@ -1666,7 +1666,7 @@ module Engine
                                       "nodes": [
                                           "town"
                                       ],
-                                      "pay": 0,
+                                      "pay": 3,
                                       "visit": 99
                                   }
                               ],
@@ -1716,7 +1716,7 @@ module Engine
                                       "nodes": [
                                           "town"
                                       ],
-                                      "pay": 0,
+                                      "pay": 3,
                                       "visit": 99
                                   }
                               ],
@@ -1766,7 +1766,7 @@ module Engine
                                       "nodes": [
                                           "town"
                                       ],
-                                      "pay": 0,
+                                      "pay": 3,
                                       "visit": 99
                                   }
                               ],
@@ -1816,7 +1816,7 @@ module Engine
                                       "nodes": [
                                           "town"
                                       ],
-                                      "pay": 0,
+                                      "pay": 3,
                                       "visit": 99
                                   }
                               ],
@@ -1866,7 +1866,7 @@ module Engine
                                       "nodes": [
                                           "town"
                                       ],
-                                      "pay": 0,
+                                      "pay": 3,
                                       "visit": 99
                                   }
                               ],

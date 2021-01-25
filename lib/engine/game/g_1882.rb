@@ -131,8 +131,7 @@ module Engine
 
           next unless ability.from.include?(:par)
 
-          corporation = corporation_by_id(ability.corporation)
-          corporation.par_via_exchange = company
+          exchange_corporations(ability).first.par_via_exchange = company
           @sc_company = company
         end
         super

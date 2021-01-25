@@ -225,6 +225,10 @@ module Engine
         end
       end
 
+      def all_corporations
+        minors + corporations
+      end
+
       def new_auction_round
         Round::Draft.new(self, [Step::G18Mag::SimpleDraft], rotating_order: true)
       end
@@ -353,40 +357,48 @@ module Engine
         @phase.next!
         @phase.current[:on] = nil
         @phase_change = true
-        return unless @phase.upcoming
-
-        @phase.upcoming[:on] = @trains_left
-        @phase.next_on = @trains_left
+        if @phase.upcoming
+          @phase.upcoming[:on] = @trains_left
+          @phase.next_on = @trains_left
+        else
+          @depot.trains.each { |t| t.events.clear }
+        end
       end
 
       def event_first_three!
+        @phase_change = true
         @trains_left.delete('3')
         @phase.current[:on] = nil
-        return unless @phase.upcoming
-
-        @phase.upcoming[:on] = @trains_left
-        @phase.next_on = @trains_left
-        @phase_change = true
+        if @phase.upcoming
+          @phase.upcoming[:on] = @trains_left
+          @phase.next_on = @trains_left
+        else
+          @depot.trains.each { |t| t.events.clear }
+        end
       end
 
       def event_first_four!
+        @phase_change = true
         @trains_left.delete('4')
         @phase.current[:on] = nil
-        return unless @phase.upcoming
-
-        @phase.upcoming[:on] = @trains_left
-        @phase.next_on = @trains_left
-        @phase_change = true
+        if @phase.upcoming
+          @phase.upcoming[:on] = @trains_left
+          @phase.next_on = @trains_left
+        else
+          @depot.trains.each { |t| t.events.clear }
+        end
       end
 
       def event_first_six!
+        @phase_change = true
         @trains_left.delete('6')
         @phase.current[:on] = nil
-        return unless @phase.upcoming
-
-        @phase.upcoming[:on] = @trains_left
-        @phase.next_on = @trains_left
-        @phase_change = true
+        if @phase.upcoming
+          @phase.upcoming[:on] = @trains_left
+          @phase.next_on = @trains_left
+        else
+          @depot.trains.each { |t| t.events.clear }
+        end
       end
 
       def info_on_trains(phase)

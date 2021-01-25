@@ -13,7 +13,7 @@ module Engine
   "filename": "18_mag",
   "modulename": "18Mag",
   "currencyFormatStr": "%d Ft",
-  "bankCash": 12000,
+  "bankCash": 100000,
   "certLimit": {
     "3": 18,
     "4": 14,

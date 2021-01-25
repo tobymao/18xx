@@ -217,8 +217,17 @@ module Engine
       end
 
       def unstarted_corporation_summary
-        minor, major = @corporations.reject(&:ipoed).partition { |c| c.type == :minor }
-        "#{minor.size} minor, #{major.size} major"
+        unipoed = @corporations.reject(&:ipoed)
+        minor = unipoed.select { |c| c.type == :minor }
+        major = unipoed.select { |c| c.type == :major }
+        ["#{minor.size} minor, #{major.size} major", []]
+      end
+
+      def nationalization_loan_movement(corporation)
+        corporation.loans.each do
+          stock_market.move_left(corporation)
+          stock_market.move_left(corporation)
+        end
       end
 
       def nationalize!(corporation)
@@ -234,10 +243,7 @@ module Engine
         price = corporation.share_price.price
         stock_market.move_left(corporation)
 
-        corporation.loans.each do
-          stock_market.move_left(corporation)
-          stock_market.move_left(corporation)
-        end
+        nationalization_loan_movement(corporation)
         log_share_price(corporation, price)
 
         # Payout players for shares
@@ -507,6 +513,10 @@ module Engine
 
         # CN corporation only exists to hold tokens
         @cn_corporation = corporation_by_id('CN')
+        @cn_corporation.ipoed = true
+        @cn_corporation.shares.clear
+        @cn_corporation.shares_by_corporation[@cn_corporation].clear
+
         @cn_reservations = CN_RESERVATIONS.dup
         @corporations.delete(@cn_corporation)
 
@@ -566,11 +576,12 @@ module Engine
 
       def event_minors_nationalized!
         # Given minors have a train limit of 1, this shouldn't cause the order to be disrupted.
-        @corporations, removed = @corporations.partition do |corporation|
+        corporations, removed = @corporations.partition do |corporation|
           corporation.type != :minor
         end
         @log << 'Minors nationalized' if removed.any?
         removed.each { |c| nationalize!(c) }
+        @corporations = corporations
       end
 
       def event_signal_end_game!

@@ -456,14 +456,9 @@ module Engine
       "always_market_price": true,
       "abilities": [
         {
-          "type": "base",
-          "owner_type": "corporation",
-          "description": "Coal company - may only own g trains"
-        },
-        {
           "type": "exchange",
           "owner_type": "corporation",
-          "corporation": "",
+          "corporations": ["BK"],
           "from": "IPO",
           "description": "Phase 3-5: Exchange for BK presidency"
         }
@@ -486,14 +481,9 @@ module Engine
       "always_market_price": true,
       "abilities": [
         {
-          "type": "base",
-          "owner_type": "corporation",
-          "description": "Coal company - may only own g trains"
-        },
-        {
           "type": "exchange",
           "owner_type": "corporation",
-          "corporation": "",
+          "corporations": ["MS"],
           "from": "IPO",
           "description": "Phase 3-5: Exchange for MS presidency"
         }
@@ -516,14 +506,9 @@ module Engine
       "always_market_price": true,
       "abilities": [
         {
-          "type": "base",
-          "owner_type": "corporation",
-          "description": "Coal company - may only own g trains"
-        },
-        {
           "type": "exchange",
           "owner_type": "corporation",
-          "corporation": "",
+          "corporations": ["CL"],
           "from": "IPO",
           "description": "Phase 3-5: Exchange for CL presidency"
         }
@@ -546,14 +531,9 @@ module Engine
       "always_market_price": true,
       "abilities": [
         {
-          "type": "base",
-          "owner_type": "corporation",
-          "description": "Coal company - may only own g trains"
-        },
-        {
           "type": "exchange",
           "owner_type": "corporation",
-          "corporation": "",
+          "corporations": ["SB"],
           "from": "IPO",
           "description": "Phase 3-5: Exchange for SB presidency"
         }
@@ -573,13 +553,8 @@ module Engine
         60,
         80
       ],
-      "abilities": [
-        {
-          "type": "base",
-          "description": "Presidency reserved for EPP (C1)"
-        }
-      ],
       "logo": "1824/BK",
+      "simple_logo": "1824/BK.alt",
       "color": "blue",
       "coordinates": "B9"
     },
@@ -594,13 +569,8 @@ module Engine
         60,
         80
       ],
-      "abilities": [
-        {
-          "type": "base",
-          "description": "Presidency reserved for EOD (C2)"
-        }
-      ],
       "logo": "1824/MS",
+      "simple_logo": "1824/MS.alt",
       "color": "yellow",
       "text_color": "black",
       "coordinates": "C12"
@@ -616,14 +586,9 @@ module Engine
         60,
         80
       ],
-      "abilities": [
-        {
-          "type": "base",
-          "description": "Presidency reserved for MLB (C3)"
-        }
-      ],
       "color": "gray70",
       "logo": "1824/CL",
+      "simple_logo": "1824/CL.alt",
       "coordinates": "B23"
     },
     {
@@ -637,13 +602,8 @@ module Engine
         60,
         80
       ],
-      "abilities": [
-        {
-          "type": "base",
-          "description": "Presidency reserved for SPB (C4)"
-        }
-      ],
       "logo": "1824/SB",
+      "simple_logo": "1824/SB.alt",
       "color": "green",
       "text_color": "black",
       "coordinates": "G26"
@@ -659,6 +619,7 @@ module Engine
         100
       ],
       "logo": "1824/BH",
+      "simple_logo": "1824/BH.alt",
       "color": "red",
       "coordinates": "J13"
     },
@@ -679,6 +640,7 @@ module Engine
         }
       ],
       "logo": "1824/UG",
+      "simple_logo": "1824/UG.alt",
       "color": "purple"
     },
     {
@@ -699,6 +661,7 @@ module Engine
         }
       ],
       "logo": "1824/KK",
+      "simple_logo": "1824/KK.alt",
       "color": "brown"
     },
     {
@@ -717,6 +680,7 @@ module Engine
         }
       ],
       "logo": "1824/SD",
+      "simple_logo": "1824/SD.alt",
       "color": "orange",
       "text_color": "black"
     }

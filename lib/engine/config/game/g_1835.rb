@@ -288,7 +288,7 @@ module Engine
       "abilities": [
         {
           "type": "exchange",
-          "corporation": "PR",
+          "corporations": ["PR"],
           "owner_type": "player",
           "when": [
             "Phase 2.3",
@@ -337,7 +337,7 @@ module Engine
       "abilities": [
         {
           "type": "exchange",
-          "corporation": "PR",
+          "corporations": ["PR"],
           "owner_type": "player",
           "when": [
             "Phase 2.3",

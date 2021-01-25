@@ -71,7 +71,7 @@ module View
         if @game.respond_to?(:unstarted_corporation_summary)
           trs << h(:tr, [
             h(:td, 'Unstarted corporations'),
-            h('td.right', @game.unstarted_corporation_summary),
+            h('td.right', @game.unstarted_corporation_summary.first),
           ])
         end
 

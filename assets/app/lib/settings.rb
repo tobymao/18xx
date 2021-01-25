@@ -68,5 +68,14 @@ module Lib
       `document.getElementById('theme_apple').content = #{color}`
       `document.getElementById('theme_ms').content = #{color}`
     end
+
+    def player_colors(players)
+      # Rotate around the user if they're logged in
+      if @user && (player_idx = players.index { |p| p.id == @user['id'] })
+        players = players.rotate(player_idx)
+      end
+
+      players.map.with_index { |p, idx| [p, route_prop(idx, 'color')] }.to_h
+    end
   end
 end

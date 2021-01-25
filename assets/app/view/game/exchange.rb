@@ -30,9 +30,7 @@ module View
         return h(:span) unless (ability = @game.abilities(@selected_company, :exchange))
 
         children = []
-        corporations =
-          ability.corporation == 'any' ? @game.corporations : [@game.corporation_by_id(ability.corporation)]
-        corporations.each do |corporation|
+        @game.exchange_corporations(ability).each do |corporation|
           ipo_share = corporation.shares.find { |s| !s.president }
           children << render_exchange(ipo_share, @game.ipo_name(corporation)) if ability.from.include?(:ipo)
 

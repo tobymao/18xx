@@ -46,16 +46,6 @@ module Engine
         CAPITALIZATION_STRS[@capitalization || _capitalization_type]
       end
 
-      # This is invoked BEFORE the share is moved out of the corporation
-      def escrow_share_buy!
-        # Take in money normally when buying the first 50% of stock
-        return if percent_of(self) > 50
-
-        # Otherwise everything goes to escrow..
-        @escrow += @par_price.price
-        @cash -= @par_price.price
-      end
-
       def _capitalization_type
         # TODO: escrow
         return :escrow if @game.phase.status.include? :escrow

@@ -48,6 +48,7 @@ module Engine
           entity = action.entity
           @log << "#{entity.name} passes bidding"
           entity.pass!
+          @round.pass_order |= [current_entity]
           end_auction! if all_passed?
           @round.next_entity_index!
         end
@@ -55,12 +56,14 @@ module Engine
         def process_bid(action)
           add_bid(action)
           action.entity.unpass!
+          @round.pass_order.delete(current_entity)
           @round.next_entity_index!
         end
 
         def process_move_bid(action)
           move_bid(action)
           action.entity.unpass!
+          @round.pass_order.delete(current_entity)
           @round.next_entity_index!
         end
 

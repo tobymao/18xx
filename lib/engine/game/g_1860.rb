@@ -2,7 +2,6 @@
 
 require_relative '../config/game/g_1860'
 require_relative 'base'
-require_relative '../g_1860/bank'
 require_relative '../g_1860/share_pool'
 
 module Engine
@@ -141,7 +140,7 @@ module Engine
 
       def init_bank
         # amount doesn't matter here
-        Engine::G1860::Bank.new(20_000, self, log: @log)
+        Bank.new(20_000, log: @log, check: false)
       end
 
       def init_share_pool
