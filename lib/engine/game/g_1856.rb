@@ -3,7 +3,6 @@
 require_relative '../config/game/g_1856'
 require_relative '../loan'
 require_relative '../g_1856/corporation'
-require_relative '../g_1856/share_pool'
 require_relative 'base'
 
 module Engine
@@ -328,10 +327,6 @@ module Engine
       def float_corporation(corporation)
         corporation.float!
         super
-      end
-
-      def init_share_pool
-        Engine::G1856::SharePool.new(self)
       end
 
       def operating_order

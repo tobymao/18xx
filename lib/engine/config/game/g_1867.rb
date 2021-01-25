@@ -645,7 +645,10 @@ module Engine
         0,
         0
       ],
-      "color": "white"
+      "shares": [100],
+      "hide_shares": true,
+      "type": "national",
+      "color": "red"
     }
   ],
   "trains": [

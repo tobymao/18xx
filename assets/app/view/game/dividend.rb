@@ -150,8 +150,8 @@ module View
 
         h(:div,
           [
-            "Select per share amount to distribute to shareholders, between #{@game.format_currency(0)}",
-            " and #{@game.format_currency(max)}",
+            dividend_chart,
+            @step.help_str(max),
             input,
             h(:button, { on: { click: -> { create_dividend(input) } } }, 'Pay Dividend'),
         ])
@@ -160,6 +160,42 @@ module View
       def create_dividend(input)
         amount = input.JS['elm'].JS['value'].to_i * @step.current_entity.total_shares
         process_action(Engine::Action::Dividend.new(@step.current_entity, kind: 'variable', amount: amount))
+      end
+
+      def dividend_chart
+        header, *chart = @step.chart
+
+        props = {
+          style: {
+            border: '1px solid black',
+          },
+        }
+
+        rows = chart.map do |r|
+          h(:tr, props, [
+            h('td.right', props, r[0]),
+            h(:td, props, r[1]),
+          ])
+        end
+
+        table_props = {
+          style: {
+            margin: '0.5rem 0 0 0',
+            textAlign: 'left',
+            border: '1px solid black',
+            borderCollapse: 'collapse',
+          },
+        }
+
+        h(:table, table_props, [
+          h(:thead, [
+            h(:tr, props, [
+              h('th.no_padding', props, header[0]),
+              h(:th, props, header[1]),
+            ]),
+          ]),
+          h(:tbody, rows),
+        ])
       end
     end
   end

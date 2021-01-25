@@ -40,7 +40,10 @@ module View
         end
 
         extra_bank = []
-        unless @game.respond_to?(:unstarted_corporation_summary)
+        if @game.respond_to?(:unstarted_corporation_summary)
+          others = @game.unstarted_corporation_summary.last
+          extra_bank.concat(others.map { |c| h(Corporation, corporation: c) })
+        else
           extra_bank.concat(bank_owned.map { |c| h(Corporation, corporation: c) })
         end
         children << h(:div, [

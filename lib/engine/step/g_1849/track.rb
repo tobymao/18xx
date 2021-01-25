@@ -27,6 +27,12 @@ module Engine
           return [0, 1, 2, 3, 4, 5] if entity.sms_hexes.find { |h| h == hex.id }
         end
 
+        def hex_neighbors(entity, hex)
+          return super unless entity.sms_hexes
+
+          return [0, 1, 2, 3, 4, 5] if entity.sms_hexes.find { |h| h == hex.id }
+        end
+
         def check_track_restrictions!(entity, old_tile, new_tile)
           super unless entity.sms_hexes
         end

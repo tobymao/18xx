@@ -37,16 +37,15 @@ module Engine
           items = []
 
           unless @round.rail_cars.include?('G&C')
-            items << Item.new(description: 'Train Upgrade from G&C', cost: item_cost)
+            items << Item.new(description: 'Plus Train Upgrade [G&C]', cost: item_cost)
           end
 
           unless @round.rail_cars.include?('RABA')
-            items << Item.new(description: 'Off Board Bonus from RABA', cost: item_cost)
+            items << Item.new(description: "+#{@game.raba_delta(@game.phase)} Offboard Bonus [RABA]",
+                              cost: item_cost)
           end
 
-          unless @round.rail_cars.include?('SNW')
-            items << Item.new(description: 'Mine Access from SNW', cost: item_cost)
-          end
+          items << Item.new(description: 'Mine Access [SNW]', cost: item_cost) unless @round.rail_cars.include?('SNW')
 
           items
         end
@@ -65,9 +64,15 @@ module Engine
         def process_special_buy(action)
           item = action.item
           desc = item.description
-          corp_str = desc[desc.index('from ') + 5..-1]
-          corp = @game.corporation_by_id(corp_str)
-          @round.rail_cars << corp_str
+          corp = case desc
+                 when /G\&C/
+                   @game.gc
+                 when /RABA/
+                   @game.raba
+                 when /SNW/
+                   @game.snw
+                 end
+          @round.rail_cars << corp.name
 
           action.entity.spend(item.cost, corp)
           @log << "#{action.entity.name} buys #{desc} for #{@game.format_currency(item.cost)}"

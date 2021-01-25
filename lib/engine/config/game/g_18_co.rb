@@ -502,6 +502,7 @@ module Engine
 			"float_percent": 40,
 			"always_market_price": true,
 			"logo": "18_co/KPAC",
+			"simple_logo": "18_co/KPAC.alt",
 			"tokens": [
 				0,
 				40,
@@ -523,6 +524,7 @@ module Engine
 			"float_percent": 40,
 			"always_market_price": true,
 			"logo": "18_co/CM",
+			"simple_logo": "18_co/CM.alt",
 			"tokens": [
 				0,
 				40,
@@ -546,6 +548,7 @@ module Engine
 			"float_percent": 40,
 			"always_market_price": true,
 			"logo": "18_co/CS",
+			"simple_logo": "18_co/CS.alt",
 			"tokens": [
 				0,
 				40,
@@ -568,6 +571,7 @@ module Engine
 			"float_percent": 40,
 			"always_market_price": true,
 			"logo": "18_co/DPAC",
+			"simple_logo": "18_co/DPAC.alt",
 			"tokens": [
 				0,
 				40
@@ -589,6 +593,7 @@ module Engine
 			"float_percent": 40,
 			"always_market_price": true,
 			"logo": "18_co/DSL",
+			"simple_logo": "18_co/DSL.alt",
 			"tokens": [
 				0,
 				40
@@ -610,6 +615,7 @@ module Engine
 			"float_percent": 50,
 			"always_market_price": true,
 			"logo": "18_co/DRG",
+			"simple_logo": "18_co/DRG.alt",
 			"tokens": [
 				0,
 				40,
@@ -636,6 +642,7 @@ module Engine
 			"float_percent": 50,
 			"always_market_price": true,
 			"logo": "18_co/ATSF",
+			"simple_logo": "18_co/ATSF.alt",
 			"tokens": [
 				0,
 				40,
@@ -660,6 +667,7 @@ module Engine
 			"float_percent": 60,
 			"always_market_price": true,
 			"logo": "18_co/CBQ",
+			"simple_logo": "18_co/CBQ.alt",
 			"tokens": [
 				0,
 				40,
@@ -686,6 +694,7 @@ module Engine
 			"float_percent": 60,
 			"always_market_price": true,
 			"logo": "18_co/ROCK",
+			"simple_logo": "18_co/ROCK.alt",
 			"tokens": [
 				0,
 				40,
@@ -712,6 +721,7 @@ module Engine
 			"float_percent": 60,
 			"always_market_price": true,
 			"logo": "18_co/UP",
+			"simple_logo": "18_co/UP.alt",
 			"tokens": [
 				0,
 				40,
@@ -739,6 +749,7 @@ module Engine
 			"float_percent": 20,
 			"always_market_price": true,
 			"logo": "18_co/DSNG",
+			"simple_logo": "18_co/DSNG.alt",
 			"shares":[20, 10, 20, 20, 10, 10, 10],
 			"tokens": [
 				0,

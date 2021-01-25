@@ -36,6 +36,8 @@ module View
           ])
         end
 
+        overflow << h(Map, game: @game) if @game.round.is_a?(Engine::Round::Operating)
+
         h(:div, [
           h(:div, { style: { marginBottom: '1rem', fontWeight: 'bold' } }, 'Discard Trains'),
           *overflow,
