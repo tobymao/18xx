@@ -615,21 +615,22 @@ module Engine
 
         # Process any derived actions
         # derived actions cannot be undos so we don't need to worry about state
-        action.derived.each { |a| process_single_action(a) }
-        any_derived = !action.derived.empty?
+        action.auto_actions.each { |a| process_single_action(a) }
+        any_auto = !action.auto_actions.empty?
 
         unless @loading_internal
           # Check and add derived_actions
-          while (derived_action = @round.derived_actions)
-            # Consistency check, both the client and server should supply the same derived actions
-            # So we should either have no derived actions or all.
-            raise 'Derived out of sync' if any_derived
+          while (auto_action = @round.auto_action)
+            # Consistency check, both the client and server should supply the same auto actions
+            # So we should either have no auto actions or all.
+            raise 'Auto actions out of sync' if any_auto
 
-            action.derived << derived_action
-            process_single_action(derived_action)
+            action.auto_actions << auto_action
+            process_single_action(auto_action)
           end
           # Update the last raw actions
           action.clear_cache
+          puts action.auto_actions
           @raw_actions.pop
           @raw_actions << action.to_h
         end

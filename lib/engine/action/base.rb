@@ -8,14 +8,14 @@ module Engine
       include Helper::Type
 
       attr_reader :entity
-      attr_accessor :id, :user, :created_at, :derived
+      attr_accessor :id, :user, :created_at, :auto_actions
 
       def self.from_h(h, game)
         entity = game.get(h['entity_type'], h['entity']) || Player.new(nil, h['entity'])
         obj = new(entity, **h_to_args(h, game))
         obj.user = h['user'] if entity.player && h['user'] != entity.player&.id
         obj.created_at = h['created_at'] || Time.now
-        obj.derived = (h['derived'] || []).map { |derived_h| Base.action_from_h(derived_h, game) }
+        obj.auto_actions = (h['auto_actions'] || []).map { |auto_h| Base.action_from_h(auto_h, game) }
         obj
       end
 
@@ -36,7 +36,7 @@ module Engine
       def initialize(entity)
         @entity = entity
         @created_at = Time.now
-        @derived = []
+        @auto_actions = []
       end
 
       def [](field)
@@ -55,7 +55,7 @@ module Engine
           'id' => @id,
           'user' => @user,
           'created_at' => @created_at.to_i,
-          'derived' => @derived.empty? ? nil : @derived.map(&:to_h),
+          'auto_actions' => @auto_actions.empty? ? nil : @auto_actions.map(&:to_h),
           **args_to_h,
         }.reject { |_, v| v.nil? }
       end

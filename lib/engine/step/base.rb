@@ -32,7 +32,7 @@ module Engine
         []
       end
 
-      def derived_actions(_entity); end
+      def auto_action(_entity); end
 
       def available_hex(entity, hex); end
 
