@@ -124,6 +124,7 @@ module View
         item('Finished', 'all', 'finished'),
         item('Archived', 'all', 'archived'),
       ]
+      links << item('Hotseat', 'hs') unless @user
 
       h('nav', links)
     end
