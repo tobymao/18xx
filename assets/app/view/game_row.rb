@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'game_manager'
+require 'lib/params'
 require 'lib/storage'
 require 'view/game_card'
 
@@ -10,7 +11,6 @@ module View
 
     needs :header
     needs :game_row_games
-    needs :search_string, default: nil
     needs :status, default: 'active'
     needs :type
     needs :user
@@ -27,9 +27,10 @@ module View
 
     def render_header(header)
       children = [h(:h2, header)]
-      p = page.to_i
+      p = Lib::Params['p']&.to_i || 0
+      @search_string = Lib::Params['s']
       params = "games=#{@type}#{@type != :hs ? "&status=#{@status}" : ''}"
-      @search_string ||= Lib::Storage["search_#{@type}_#{@status}"] || nil
+      params += "&s=#{`encodeURIComponent(#{@search_string})`}" if @search_string
 
       @offset = @type == :hs ? (p * @limit) : 0
       children << render_more('<', "?#{params}&p=#{p - 1}") if p.positive?
@@ -49,7 +50,7 @@ module View
     end
 
     def render_more(text, params)
-      params += "&s=#{Native(`encodeURI(#{@search_string})`)}" if @search_string
+      params += @search_param if @search_param
 
       change_page = lambda do
         get_games(params)
@@ -76,32 +77,22 @@ module View
     end
 
     def render_search
-      search_id = "search_#{@type}_#{@status}"
-
       search_games = lambda do |event|
         if event.JS['type'] == 'click' || event.JS['keyCode'] == 13
-          elm_val = Native(@inputs[search_id]).elm.value
-          val = elm_val.empty? ? nil : elm_val
-          if val != Lib::Storage[search_id]
-            if val
-              Lib::Storage[search_id] = val
-              search_param = "&s=#{`encodeURIComponent(#{val})`}"
-            else
-              Lib::Storage.delete(search_id)
-            end
-            params = "/?games=#{@type}&status=#{@status}#{search_param}"
-            get_games(params)
-            store(:app_route, params)
-          end
+          val = Native(@inputs['search']).elm.value
+          @search_param = val.empty? ? '' : "&s=#{`encodeURIComponent(#{val})`}"
+          params = "/?games=#{@type}&status=#{@status}#{@search_param}"
+          get_games(params)
+          store(:app_route, params)
         end
       end
 
       input_props = {
         attrs: {
-          id: search_id,
+          id: 'search',
           name: 'q',
           type: 'search',
-          value: Lib::Storage[search_id] || '',
+          value: @search_string || '',
           placeholder: 'game, description, players, …',
         },
         style: { width: '13rem' },
@@ -120,7 +111,7 @@ module View
       }
       @inputs = {}
       h(:div, props, [
-        @inputs[search_id] = h('input.no_margin', input_props),
+        @inputs['search'] = h('input.no_margin', input_props),
         h('button.small', { style: { width: '2.5rem', margin: '0' }, on: { click: search_games } }, '🔍'),
         h('a.button_link.small',
           {
@@ -140,14 +131,6 @@ module View
       else
         [h(:div, 'No games to display')]
       end
-    end
-
-    private
-
-    def page
-      return 0 if `typeof URLSearchParams === 'undefined'` # rubocop:disable Lint/LiteralAsCondition
-
-      `(new URLSearchParams(window.location.search)).get('p')` || 0
     end
   end
 end

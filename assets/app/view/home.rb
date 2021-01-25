@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'game_manager'
+require 'lib/params'
 require 'lib/settings'
 require 'lib/storage'
 require 'view/chat'
@@ -16,8 +17,8 @@ module View
     needs :refreshing, default: nil, store: true
 
     def render
-      type = get_url_param('games') || (@user ? 'personal' : 'all')
-      status = get_url_param('status') || (@user ? 'active' : 'new')
+      type = Lib::Params['games'] || (@user ? 'personal' : 'all')
+      status = Lib::Params['status'] || (@user ? 'active' : 'new')
 
       children = [
         render_header,
@@ -130,10 +131,8 @@ module View
     end
 
     def item(name, type, status)
-      search_string = Lib::Storage["search_#{type}_#{status}"]
       params = "?games=#{type}"
       params += "&status=#{status}" if status
-      params += "&s=#{Native(`encodeURI(#{search_string})`)}" if search_string
 
       store_route = lambda do
         get_games(params)
@@ -153,12 +152,6 @@ module View
         },
       }
       h(:a, props, name)
-    end
-
-    def get_url_param(param)
-      return if `typeof URLSearchParams === 'undefined'` # rubocop:disable Lint/LiteralAsCondition
-
-      `(new URLSearchParams(window.location.search)).get(#{param})`
     end
   end
 end
