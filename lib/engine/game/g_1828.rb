@@ -296,13 +296,13 @@ module Engine
         system_data[:sym] = corporations.map(&:name).join('-')
         system_data[:tokens] = []
         system_data[:abilities] = []
+        system_data[:corporations] = corporations
         system = init_system(@stock_market, system_data)
 
         @corporations << system
         @_corporations[system.id] = system
         system.shares.each { |share| @_shares[share.id] = share }
 
-        system.corporations.replace(corporations)
         corporations.each { |corporation| transfer_assets_to_system(corporation, system) }
 
         # Order tokens for better visual

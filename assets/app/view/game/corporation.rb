@@ -124,7 +124,7 @@ module View
       def render_title
         title_row_props = {
           style: {
-            grid: '1fr / auto auto',
+            grid: '1fr / auto auto auto',
             padding: '0.2rem 0.4rem',
             background: @corporation.color,
             color: @corporation.text_color,
@@ -147,14 +147,23 @@ module View
           style: {
             color: 'currentColor',
             display: 'inline-block',
-            justifySelf: 'start',
+            justifySelf: 'center',
           },
         }
+        children = [h(:img, logo_props),
+                    h('div.title', name_props, @corporation.full_name)]
 
-        h('div.corp__title', title_row_props, [
-          h(:img, logo_props),
-          h('div.title', name_props, @corporation.full_name),
-        ])
+        if @corporation.system?
+          logo_props[:attrs][:src] = logo_for_user(@corporation.corporations.last)
+        else
+          logo_props[:attrs][:src] = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'
+          logo_props[:style][:border] = nil
+          logo_props[:style][:borderRadius] = nil
+        end
+        logo_props[:style][:justifySelf] = 'end'
+        children << h(:img, logo_props)
+
+        h('div.corp__title', title_row_props, children)
       end
 
       def render_holdings
@@ -207,17 +216,23 @@ module View
       end
 
       def render_trains
-        trains = @corporation.trains.map do |train|
-          train.obsolete ? "(#{train.name})" : train.name
+        trains = (@corporation.system? ? @corporation.shells : [@corporation]).map do |c|
+          if c.trains.empty?
+            'None'
+          else
+            c.trains.map { |t| t.obsolete ? "(#{t.name})" : t.name }.join(' ')
+          end
         end
 
-        render_header_segment(trains.empty? ? 'None' : trains.join(' '), 'Trains')
+        render_header_segment(trains, 'Trains')
       end
 
-      def render_header_segment(value, key)
+      def render_header_segment(values, key)
+        values = [values] unless values.is_a?(Array)
+
         segment_props = {
           style: {
-            grid: '25px auto / 1fr',
+            grid: @corporation.system? ? '45px auto / 1fr' : '25px auto / 1fr',
           },
         }
 
@@ -228,8 +243,9 @@ module View
           },
         }
 
-        value_props[:style].merge!(fontSize: 'small') if value.size > 6
-        value_props[:style].merge!(fontSize: 'x-small') if value.size > 10
+        max_size = values.max_by(&:size).size
+        value_props[:style].merge!(fontSize: 'small') if max_size > 6
+        value_props[:style].merge!(fontSize: 'x-small') if max_size > 10
 
         key_props = {
           style: {
@@ -237,7 +253,7 @@ module View
           },
         }
         h(:div, segment_props, [
-          h('div.right.nowrap', value_props, value),
+          h('div.right.nowrap', values.map { |v| h(:div, value_props, v) }),
           h(:div, key_props, key),
         ])
       end

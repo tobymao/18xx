@@ -13,7 +13,9 @@ module Engine
         opts[:float_percent] = 50
         super(sym: sym, name: name, **opts)
 
-        @corporations = []
+        @corporations = opts[:corporations]
+        @name = @corporations.first.name
+
         @shells = []
       end
 
