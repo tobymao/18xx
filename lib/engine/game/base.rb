@@ -266,8 +266,6 @@ module Engine
 
       VARIABLE_FLOAT_PERCENTAGES = false
 
-      ALWAYS_SHOW_IPO_SHARES = true
-
       CACHABLE = [
         %i[players player],
         %i[corporations corporation],
@@ -2158,10 +2156,6 @@ module Engine
 
       def info_on_trains(phase)
         Array(phase[:on]).first
-      end
-
-      def show_ipo_shares(_corp)
-        !!self.class::ALWAYS_SHOW_IPO_SHARES
       end
 
       def ability_right_type?(ability, type)

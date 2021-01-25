@@ -48,8 +48,6 @@ module Engine
         'end_game_triggered' => ['End Game', 'After next SR, final three ORs are played'],
       ).freeze
 
-      ALWAYS_SHOW_IPO_SHARES = false
-
       RABA_BONUS = [20, 20, 30, 30].freeze
       SNW_BONUS = [30, 30, 50, 50].freeze
 

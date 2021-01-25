@@ -368,7 +368,7 @@ module View
         last_cert = @corporation.shares_of(@corporation).any?(&:last_cert)
 
         pool_rows = []
-        if !num_ipo_shares.empty? || last_cert || @game.show_ipo_shares(@corporation)
+        if !num_ipo_shares.empty? || last_cert || @corporation.capitalization != :full
           pool_rows << h('tr.ipo', [
             h('td.left', @game.ipo_name(@corporation)),
             h('td.right', shares_props, (last_cert ? 'd ' : '') + num_ipo_shares),
