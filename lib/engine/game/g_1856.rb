@@ -555,6 +555,10 @@ module Engine
         ])
       end
 
+      def destinations_toggle?
+        true
+      end
+
       def event_remove_tokens!
         removals = Hash.new { |h, k| h[k] = {} }
 

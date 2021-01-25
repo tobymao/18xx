@@ -905,6 +905,10 @@ module Engine
         log_share_price(corporation, price) if self.class::SELL_MOVEMENT != :none
       end
 
+      def destinations_toggle?
+        false
+      end
+
       def log_share_price(entity, from)
         to = entity.share_price.price
         return unless from != to

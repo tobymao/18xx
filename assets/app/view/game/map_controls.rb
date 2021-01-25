@@ -43,6 +43,8 @@ module View
       end
 
       def destination_controls
+        return nil unless @game&.destinations_toggle?
+
         show_hide = @show_destinations ? 'Hide' : 'Show'
         text = "#{show_hide} Destinations"
 
