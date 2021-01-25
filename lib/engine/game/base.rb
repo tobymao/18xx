@@ -1279,7 +1279,7 @@ module Engine
       end
 
       # Called by View::Game::Entities to determine if the company should be shown on entities
-      def unowned_purchasable_companies(_company)
+      def unowned_purchasable_companies(_entity)
         []
       end
 
