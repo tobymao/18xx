@@ -69,7 +69,7 @@ module Engine
     "8": "unlimited",
     "9": "unlimited",
     "14": 2,
-    "15": 4,
+    "15": 2,
     "16": 2,
     "17": 2,
     "18": 2,
@@ -98,12 +98,8 @@ module Engine
     "57": 2,
     "58": 4,
     "63": 3,
-    "70": 2,
     "87": 2,
     "88": 2,
-    "120": 1,
-    "122": 1,
-    "124": 1,
     "201": 3,
     "202": 3,
     "204": 2,
@@ -117,50 +113,48 @@ module Engine
     "624": 1,
     "625": 1,
     "626": 1,
-    "637": 1,
-    "639": 1,
-    "801": 2,
-    "911": 3,
-    "X1": {
+    "635": {
       "count": 1,
       "color": "green",
-      "code": "city=revenue:50;city=revenue:50;city=revenue:50;path=a:0,b:_0;path=a:_0,b:3;path=a:1,b:_1;path=a:_1,b:4;path=a:2,b:_2;path=a:_2,b:5;label=M"
+      "code": "city=revenue:40,loc:0.5;city=revenue:40,loc:2.5;city=revenue:40,loc:4.5;path=a:0,b:_0;path=a:_0,b:1;path=a:4,b:_2;path=a:_2,b:5;path=a:2,b:_1;path=a:_1,b:3;label=K"
     },
-    "X2": {
-      "count": 1,
-      "color": "green",
-      "code": "city=revenue:50;city=revenue:50;city=revenue:50;path=a:0,b:_0;path=a:_0,b:3;path=a:1,b:_1;path=a:_1,b:5;path=a:2,b:_2;path=a:_2,b:4;label=M"
-    },
-    "X3": {
-      "count": 1,
-      "color": "green",
-      "code": "city=revenue:50;city=revenue:50;city=revenue:50;path=a:0,b:_0;path=a:_0,b:4;path=a:1,b:_1;path=a:_1,b:2;path=a:3,b:_2;path=a:_2,b:5;label=M"
-    },
-    "X4": {
-      "count": 1,
-      "color": "green",
-      "code": "city=revenue:50;city=revenue:50;city=revenue:50;path=a:0,b:_0;path=a:_0,b:3;path=a:1,b:_1;path=a:_1,b:2;path=a:4,b:_2;path=a:_2,b:5;label=M"
-    },
-    "X5": {
+    "636": {
       "count": 1,
       "color": "brown",
-      "code": "city=revenue:70,slots:2;city=revenue:70;path=a:0,b:_1;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_1;path=a:4,b:_0;path=a:5,b:_0;label=M"
+      "code": "city=revenue:50,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=K"
     },
-    "X6": {
+    "637":  {
+      "count": 1,
+      "color": "green",
+      "code": "city=revenue:50,loc:0.5;city=revenue:50,loc:2.5;city=revenue:50,loc:4.5;path=a:0,b:_0;path=a:_0,b:1;path=a:4,b:_2;path=a:_2,b:5;path=a:2,b:_1;path=a:_1,b:3;label=M"
+    },
+    "638":  {
       "count": 1,
       "color": "brown",
-      "code": "city=revenue:70,slots:2;city=revenue:70;path=a:0,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;path=a:1,b:_1;path=a:2,b:_1;label=M"
+      "code": "city=revenue:70,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=M"
     },
-    "X7": {
-      "count": 1,
-      "color": "brown",
-      "code": "city=revenue:70,slots:2;city=revenue:70;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_1;path=a:3,b:_0;path=a:4,b:_1;path=a:5,b:_0;label=M"
-    },
-    "X8": {
+    "639": {
       "count": 1,
       "color": "gray",
-      "code": "city=revenue:60,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=O"
-    }
+      "code": "city=revenue:100,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=M"
+    },
+    "640": {
+      "count": 1,
+      "color": "gray",
+      "code": "city=revenue:60,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=Kh"
+    },
+    "641": {
+      "count": 1,
+      "color": "brown",
+      "code": "city=revenue:50,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0;label=S"
+    },
+    "642": {
+      "count": 1,
+      "color": "gray",
+      "code": "city=revenue:70,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0;label=S"
+    },
+    "801": 2,
+    "911": 3
   },
   "market": [
     [
