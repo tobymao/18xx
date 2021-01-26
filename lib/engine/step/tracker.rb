@@ -77,6 +77,8 @@ module Engine
           raise GameError, "#{old_tile.name} is not legally rotated for #{tile.name}"
         end
 
+        save_old(old_tile, entity)
+
         update_tile_lists(tile, old_tile)
 
         hex.lay(tile)
@@ -158,6 +160,8 @@ module Engine
           end
         end
       end
+
+      def save_old(_old_tile, _entity); end
 
       def update_tile_lists(tile, old_tile)
         @game.add_extra_tile(tile) if tile.unlimited
