@@ -158,23 +158,14 @@ module Engine
   },
   "market": [
     [
-      "35",
-      "40",
-      "45",
-      "50x",
-      "55x",
-      "60x",
-      "65x",
-      "70p",
-      "80p",
-      "90p",
-      "100pC",
-      "110pC",
-      "120pC",
-      "135pC",
-      "150zC",
-      "165zCm",
-      "180z",
+      "",
+      "",
+      "",
+      "",
+      "135",
+      "150",
+      "165mC",
+      "180",
       "200z",
       "220",
       "245",
@@ -186,6 +177,110 @@ module Engine
       "440",
       "490",
       "540"
+    ],
+    [
+      "",
+      "",
+      "",
+      "110",
+      "120",
+      "135",
+      "150mC",
+      "165z",
+      "180z",
+      "200",
+      "220",
+      "245",
+      "270",
+      "300",
+      "330",
+      "360",
+      "400",
+      "440",
+      "490"
+    ],
+    [
+      "",
+      "",
+      "90",
+      "100",
+      "110",
+      "120",
+      "135pmC",
+      "150z",
+      "165",
+      "180",
+      "200",
+      "220",
+      "245",
+      "270",
+      "300",
+      "330",
+      "360",
+      "400",
+      "440"
+    ],
+    [
+      "",
+      "70",
+      "80",
+      "90",
+      "100",
+      "110p",
+      "120pmC",
+      "135",
+      "150",
+      "165",
+      "180",
+      "200"
+    ],
+    [
+      "60",
+      "65",
+      "70",
+      "80",
+      "90p",
+      "100p",
+      "110mC",
+      "120",
+      "135",
+      "150"
+    ],
+    [
+      "55",
+      "60",
+      "65",
+      "70p",
+      "80p",
+      "90",
+      "100mC",
+      "110"
+    ],
+    [
+      "50",
+      "55",
+      "60x",
+      "65x",
+      "70",
+      "80"
+    ],
+    [
+      "45",
+      "50x",
+      "55x",
+      "60",
+      "65"
+    ],
+    [
+      "40",
+      "45",
+      "50",
+      "55"
+    ],
+    [
+      "35",
+      "40",
+      "45"
     ]
   ],
   "companies": [
@@ -1063,7 +1158,8 @@ module Engine
       "name": "4",
       "train_limit": {
         "minor": 1,
-        "major": 3
+        "major": 3,
+        "national": 99
       },
       "tiles": [
         "yellow",
@@ -1071,7 +1167,7 @@ module Engine
       ],
       "status":[
         "can_buy_companies",
-        "export_train"
+        "national_operates"
       ],
       "on": "4",
       "operating_rounds": 2
@@ -1080,7 +1176,8 @@ module Engine
       "name": "5",
       "train_limit": {
         "minor": 1,
-        "major": 3
+        "major": 3,
+        "national": 99
       },
       "tiles": [
         "yellow",
@@ -1089,7 +1186,7 @@ module Engine
       ],
       "status":[
         "can_buy_companies",
-        "export_train"
+        "national_operates"
       ],
       "on": "5",
       "operating_rounds": 2
@@ -1098,22 +1195,25 @@ module Engine
       "name": "6",
       "train_limit": {
         "minor": 1,
-        "major": 2
+        "major": 2,
+        "national": 99
       },
       "tiles": [
         "yellow",
         "green",
-        "brown"
+        "brown",
+        "gray"
       ],
       "on": "6",
       "operating_rounds": 2,
-      "status":["export_train"]
+      "status":["national_operates"]
     },
     {
       "name": "7",
       "train_limit": {
         "minor": 1,
-        "major": 2
+        "major": 2,
+        "national": 99
       },
       "tiles": [
         "yellow",
@@ -1123,12 +1223,13 @@ module Engine
       ],
       "on": "7",
       "operating_rounds": 2,
-      "status":["export_train"]
+      "status":["national_operates"]
     },
     {
       "name": "8",
       "train_limit":  {
-        "major": 2
+        "major": 2,
+        "national": 99
       },
       "tiles": [
         "yellow",

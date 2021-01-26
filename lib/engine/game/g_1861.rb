@@ -10,6 +10,12 @@ module Engine
 
       load_from_json(Config::Game::G1861::JSON)
 
+      STATUS_TEXT = Base::STATUS_TEXT.merge(
+        'national_operates' => ['National railway operates',
+                                'After the minors and majors operates the national runs trains,'\
+                                'withholds and buys as many trains as possible'],
+      ).freeze
+
       def self.title
         '1861'
       end

@@ -538,7 +538,7 @@ module Engine
         end
 
         # Set minors maximum share price
-        max_price = @stock_market.market.first.find { |stockprice| stockprice.types.include?(:max_price) }
+        max_price = @stock_market.market.first.find { |stockprice| stockprice&.types&.include?(:max_price) }
         @corporations.select { |c| c.type == :minor }.each { |c| c.max_share_price = max_price }
 
         # Move green and majors out of the normal list
