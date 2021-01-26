@@ -277,7 +277,7 @@ module Engine
         @available_bridge_tokens = 2
         @available_tunnel_tokens = 2
 
-        create_destinations DESTINATIONS
+        create_destinations(DESTINATIONS)
       end
 
       def create_destinations(destinations)

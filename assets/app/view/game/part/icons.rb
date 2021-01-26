@@ -7,7 +7,7 @@ module View
   module Game
     module Part
       class Icons < Base
-        needs :show_destinations, store: true
+        needs :show_destinations, default: true, store: true
         include SmallItem
 
         ICON_RADIUS = 16

@@ -35,7 +35,6 @@ module View
       needs :entity, default: nil
       needs :unavailable, default: nil
       needs :show_coords, default: nil
-      needs :show_destinations, default: false
       needs :show_location_names, default: true
       needs :routes, default: []
       needs :start_pos, default: [1, 1]
@@ -56,7 +55,6 @@ module View
             Tile,
             tile: @tile,
             show_coords: @show_coords && (@role == :map),
-            show_destinations: @show_destinations,
             show_location_names: @show_location_names,
             routes: @routes
           )
