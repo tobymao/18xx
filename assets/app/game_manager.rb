@@ -66,9 +66,9 @@ module GameManager
   end
 
   def create_game(params)
-    @connection.safe_post('/game', params) do |data|
-      store(:games, [data] + @games)
-      store(:app_route, '/', skip: true)
+    @connection.safe_post('/game', params) do
+      get_games('?games=personal&status=new')
+      store(:app_route, '/?games=personal&status=new')
     end
   end
 
