@@ -7,7 +7,7 @@ module Engine
     module G1824
       class Dividend < Dividend
         def actions(entity)
-          return [] if minor_style_dividend?(entity)
+          return [] if entity.minor?
 
           super
         end
@@ -51,7 +51,7 @@ module Engine
         end
 
         def skip!
-          return super unless minor_style_dividend?(current_entity)
+          return super unless current_entity.minor?
 
           revenue = @game.routes_revenue(routes)
 
@@ -62,7 +62,7 @@ module Engine
         end
 
         def share_price_change(entity, revenue = 0)
-          return super unless minor_style_dividend?(entity)
+          return super unless entity.minor?
 
           {}
         end
@@ -72,17 +72,16 @@ module Engine
         end
 
         def payout(entity, revenue, mine_revenue)
-          if minor_style_dividend?(entity)
+          if entity.minor?
             fifty_percent = revenue / 2
-            per_share = @game.coal_railway?(entity) ? fifty_percent / 2 : fifty_percent
-            { corporation: fifty_percent + mine_revenue, per_share: per_share }
+            { corporation: fifty_percent + mine_revenue, per_share: fifty_percent }
           else
             { corporation: mine_revenue, per_share: payout_per_share(entity, revenue) }
           end
         end
 
         def payout_shares(entity, revenue)
-          return super unless minor_style_dividend?(entity)
+          return super unless entity.minor?
 
           owner_revenue = revenue / 2
           @log << "#{entity.owner.name} receives #{@game.format_currency(owner_revenue)}"
@@ -90,10 +89,6 @@ module Engine
         end
 
         private
-
-        def minor_style_dividend?(entity)
-          @game.pre_staatsbahn?(entity) || @game.coal_railway?(entity)
-        end
 
         def log_run_payout(entity, kind, revenue, mine_revenue, action, payout)
           unless Dividend::DIVIDEND_TYPES.include?(kind)

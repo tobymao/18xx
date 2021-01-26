@@ -36,6 +36,7 @@ module Engine
 
         def finish_round
           # It is possible a regional has been sold out - handle stock movement for that
+
           @game.corporations.select { |c| @game.regional?(c) && c.floated? }.sort.each do |corp|
             prev = corp.share_price.price
             sold_out_stock_movement(corp) if sold_out?(corp)
@@ -54,27 +55,24 @@ module Engine
               next
             end
 
-            # Private is a control of a pre-staatsbahn
-            pre_state = @game.minor_by_id(c.id)
-            state = @game.associated_state_railway(c)
-            @game.log << "Pre-Staatsbahn Railway #{pre_state.name} closes; "\
-              "corresponding share in #{state.name} is no longer reserved"
+            minor = @game.minor_by_id(c.id)
+            if @game.pre_staatsbahn?(minor)
+              # Private is a control of a pre-staatsbahn
+              state = @game.associated_state_railway(c)
+              @game.log << "Pre-Staatsbahn #{minor.name} closes; "\
+                "corresponding share in #{state.name} is no longer reserved"
 
-            # Remove home token
-            pre_state.tokens.first.remove!
+              close_minor(minor)
+              c.close!
+              next
+            end
 
-            close_corporation(pre_state)
+            # Private is a control of a Coal Railway
+            regional = @game.associated_regional_railway(minor)
+            @game.log << "Coal Railway #{minor.name} closes; #{regional.name}'s presidency share is no longer reserved"
 
+            close_minor(minor)
             c.close!
-          end
-
-          @game.corporations.select { |c| @game.coal_railway?(c) }.each do |c|
-            next if c.floated?
-
-            regional = @game.associated_regional_railway(c)
-            @game.log << "#{c.name} closes; #{regional.name}'s presidency share is no longer reserved"
-
-            close_corporation(c)
 
             # Make reserved share of associated corporation unreserved
             regional.shares.find(&:president).buyable = true
@@ -84,20 +82,23 @@ module Engine
 
         private
 
-        def close_corporation(corporation)
+        def close_minor(minor)
           # Remove home city reservation
-          remove_reservation(corporation)
+          remove_reservation(minor)
 
-          corporation.close!
-          corporation.removed = true
+          # Remove home token
+          minor.tokens.first.remove!
+          minor.close!
+          minor.removed = true
         end
 
-        def remove_reservation(corporation)
-          hex = @game.hex_by_id(corporation.coordinates)
+        def remove_reservation(minor)
+          puts("Coordinates for #{minor.name} is #{minor.coordinates}")
+          hex = @game.hex_by_id(minor.coordinates)
           tile = hex.tile
           cities = tile.cities
-          city = cities.find { |c| c.reserved_by?(corporation) } || cities.first
-          city.remove_reservation!(corporation)
+          city = cities.find { |c| c.reserved_by?(minor) } || cities.first
+          city.remove_reservation!(minor)
         end
       end
     end

@@ -120,9 +120,11 @@ module Engine
       def init_corporations(stock_market)
         corporations = CORPORATIONS.dup
 
-        # Remove Coal Railway C4 (SPB), Regional Railway BH and SB, and possibly UG
-        corporations.reject! do |c|
-          option_cisleithania && (%w[SPB SB BH].include?(c[:sym]) || (two_player? && c[:sym] == 'UG'))
+        if option_cisleithania
+          # Remove Coal Railway C4 (SPB), Regional Railway BH and SB, and possibly UG
+          corporations.reject! do |c|
+            (%w[SB BH].include?(c[:sym]) || (two_player? && c[:sym] == 'UG'))
+          end
         end
 
         corporations.map do |corporation|
@@ -139,11 +141,11 @@ module Engine
 
         if option_cisleithania
           if two_player?
-            # Remove Pre-Staatsbahn U1 and U2
-            minors.reject! { |m| %w[U1 U2].include?(m[:sym]) }
+            # Remove Pre-Staatsbahn U1 and U2, and minor SPB
+            minors.reject! { |m| %w[U1 U2 SPB].include?(m[:sym]) }
           else
-            # Remove Pre-Staatsbahn U2, and move home location for U1
-            minors.reject! { |m| %w[U2].include?(m[:sym]) }
+            # Remove Pre-Staatsbahn U2, minor SPB, and move home location for U1
+            minors.reject! { |m| %w[U2 SPB].include?(m[:sym]) }
             minors.map! do |m|
               next m unless m['sym'] == 'U1'
 
@@ -252,33 +254,24 @@ module Engine
         ])
       end
 
-      def stock_round
-        Round::G1824::Stock.new(self, [
-          Step::DiscardTrain,
-          Step::Exchange,
-          Step::SpecialTrack,
-          Step::BuySellParShares,
-        ])
-      end
-
       def or_set_finished
         depot.export!
       end
 
       def coal_c1
-        @c1 ||= corporation_by_id('EPP')
+        @c1 ||= minor_by_id('EPP')
       end
 
       def coal_c2
-        @c2 ||= corporation_by_id('EOD')
+        @c2 ||= minor_by_id('EOD')
       end
 
       def coal_c3
-        @c3 ||= corporation_by_id('MLB')
+        @c3 ||= minor_by_id('MLB')
       end
 
       def coal_c4
-        @c4 ||= corporation_by_id('SPB')
+        @c4 ||= minor_by_id('SPB')
       end
 
       def regional_bk
@@ -336,12 +329,6 @@ module Engine
         @timeline ||= ['At the end of each OR set, the cheapest train in bank is exported.'].freeze
       end
 
-      def ipo_name(entity)
-        return 'Treasury' if entity && coal_railway?(entity)
-
-        'IPO'
-      end
-
       def status_str(entity)
         if coal_railway?(entity)
           'Coal Railway - may only own g trains'
@@ -371,7 +358,7 @@ module Engine
       end
 
       def coal_railway?(entity)
-        entity.corporation? && entity.type == :Coal
+        entity.minor? && entity.type == :Coal
       end
 
       def pre_staatsbahn?(entity)
@@ -386,10 +373,6 @@ module Engine
         entity.corporation? && entity.type == :Staatsbahn
       end
 
-      def floated_coal_railway?(entity)
-        coal_railway?(entity) && entity.floated?
-      end
-
       def reserved_regional(entity)
         return false unless regional?(entity)
 
@@ -400,9 +383,7 @@ module Engine
       def buyable?(entity)
         return true unless entity.corporation?
 
-        entity.all_abilities.none? { |a| a.type == :no_buy } &&
-          !reserved_regional(entity) &&
-          !floated_coal_railway?(entity)
+        entity.all_abilities.none? { |a| a.type == :no_buy } && !reserved_regional(entity)
       end
 
       def corporation_available?(entity)
@@ -452,11 +433,6 @@ module Engine
         when 'K1', 'K2'
           state_kk
         end
-      end
-
-      def operating_order
-        coal_railways, other_corporations = all_corporations.select(&:floated?).partition { |c| coal_railway?(c) }
-        coal_railways + @minors.select(&:floated?) + other_corporations.sort
       end
 
       def revenue_for(route, stops)

@@ -306,6 +306,7 @@ module View
         def render_buy_input(company)
           return [] unless @current_actions.include?('buy_company')
           return [] unless @step.can_buy_company?(@current_entity, company)
+          return render_buy_input_interval(company) if company.interval
 
           buy = lambda do
             process_action(Engine::Action::BuyCompany.new(
@@ -315,10 +316,39 @@ module View
             ))
             store(:selected_company, nil, skip: true)
           end
-
           [h(:button,
              { on: { click: buy } },
              "Buy #{@selected_company.sym} from Bank for #{@game.format_currency(company.value)}")]
+        end
+
+        def render_buy_input_interval(company)
+          prices = company.interval.sort
+
+          buy_buttons = prices.map do |price|
+            buy = lambda do
+              process_action(Engine::Action::BuyCompany.new(
+                @current_entity,
+                company: company,
+                price: price,
+              ))
+            end
+
+            props = {
+              style: {
+                width: 'calc(17.5rem/6)',
+                padding: '0.2rem',
+              },
+              on: { click: buy },
+            }
+
+            h('button.small.buy_company', props, @game.format_currency(price).to_s)
+          end
+
+          div_class = buy_buttons.size < 5 ? '.inline' : ''
+          [h(:div, [
+            h("div#{div_class}", { style: { marginTop: '0.5rem' } }, "Buy #{@selected_company.sym}: "),
+            *buy_buttons,
+          ])]
         end
       end
     end
