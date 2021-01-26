@@ -26,15 +26,15 @@ module View
     end
 
     def render_header(header)
-      children = [h(:h2, header)]
       p = Lib::Params['p']&.to_i || 0
       @search_string = Lib::Params['s']
       params = "games=#{@type}#{@type != :hs ? "&status=#{@status}" : ''}"
       params += "&s=#{`encodeURIComponent(#{@search_string})`}" if @search_string
 
       @offset = @type == :hs ? (p * @limit) : 0
-      children << render_more('<', "?#{params}&p=#{p - 1}") if p.positive?
-      children << render_more('>', "?#{params}&p=#{p + 1}") if @game_row_games.size > @offset + @limit
+      pagination = []
+      pagination << render_more('<', "?#{params}&p=#{p - 1}") if p.positive?
+      pagination << render_more('>', "?#{params}&p=#{p + 1}") if @game_row_games.size > @offset + @limit
 
       props = {
         style: {
@@ -46,7 +46,10 @@ module View
           marginRight: '0.5rem',
         },
       }
-      h(:div, [h('div#header', props, children), render_search])
+      children = [h('div#header', props, [h(:h2, header), *pagination])]
+      children << render_search unless @type == 'hs'
+
+      h(:div, children)
     end
 
     def render_more(text, params)
