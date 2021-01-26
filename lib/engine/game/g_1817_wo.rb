@@ -46,7 +46,8 @@ module Engine
       # Not genericifying 1817's loan logic just so it can be kept simpler, at least for now
       def init_loans
         @loan_value = 100
-        39.times.map { |id| Loan.new(id, @loan_value) }
+        total_loans = option_increased_loans? ? 57 : 39
+        total_loans.times.map { |id| Loan.new(id, @loan_value) }
       end
 
       def future_interest_rate

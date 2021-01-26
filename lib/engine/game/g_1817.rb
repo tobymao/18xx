@@ -99,6 +99,11 @@ module Engine
           short_name: 'Modern Trains',
           desc: '7 & 8 trains earn $10 & $20 respectively for each station marker of the corporation',
         },
+        {
+          sym: :increased_loans,
+          short_name: 'Increased Loan',
+          desc: 'Loans available up to $95 interest',
+        },
       ].freeze
 
       include InterestOnLoans
@@ -127,6 +132,10 @@ module Engine
 
       def option_modern_trains?
         @optional_rules&.include?(:modern_trains)
+      end
+
+      def option_increased_loans?
+        @optional_rules&.include?(:increased_loans)
       end
 
       def ipo_name(_entity = nil)
@@ -648,7 +657,8 @@ module Engine
 
       def init_loans
         @loan_value = 100
-        70.times.map { |id| Loan.new(id, @loan_value) }
+        total_loans = option_increased_loans? ? 95 : 70
+        total_loans.times.map { |id| Loan.new(id, @loan_value) }
       end
 
       def round_end
