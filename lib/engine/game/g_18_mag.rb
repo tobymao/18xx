@@ -459,7 +459,7 @@ module Engine
         distance = if gc_train?(route) && !other_gc_train?(route)
                      [
                        {
-                         nodes: %w[city offboard],
+                         nodes: %w[city offboard town],
                          pay: route.train.distance,
                          visit: route.train.distance,
                        },
@@ -492,14 +492,19 @@ module Engine
 
         grouped = visits.group_by(&:type)
 
-        grouped.each do |type, group|
+        grouped.sort_by { |t, _| type_info[t].size }.each do |type, group|
           num = group.sum(&:visit_cost)
 
-          type_info[type].sort_by(&:size).each do |info|
+          type_info[type].each do |info|
             next unless info[:visit].positive?
 
-            info[:visit] -= num
-            num = info[:visit] * -1
+            if num <= info[:visit]
+              info[:visit] -= num
+              num = 0
+            else
+              num -= info[:visit]
+              info[:visit] = 0
+            end
             break unless num.positive?
           end
 
