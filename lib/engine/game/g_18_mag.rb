@@ -481,8 +481,6 @@ module Engine
           return
         end
 
-        puts "distance = #{distance}"
-
         type_info = Hash.new { |h, k| h[k] = [] }
 
         distance.each do |h|
