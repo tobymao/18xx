@@ -108,6 +108,10 @@ input + label, select + label {
   margin-right: 1rem;
 }
 
+nav li {
+  list-style: none;
+}
+
 p {
   margin: 0.7rem 0;
 }

@@ -26,8 +26,6 @@ module View
         h(Chat, user: @user, connection: @connection),
       ]
 
-      children << render_games_links
-
       acting = false
 
       case type
@@ -100,58 +98,6 @@ module View
       h('div#greeting', [
         h(:h2, "Welcome#{@user ? ' ' + @user['name'] : ''}!"),
       ])
-    end
-
-    def render_games_links
-      links =
-        if @user
-          [
-            h(:label, { style: { margin: '0 0.3rem 0 0' } }, 'Your Games:'),
-            item('Active', 'personal', 'active'),
-            item('New', 'personal', 'new'),
-            item('Finished', 'personal', 'finished'),
-            item('Archived', 'personal', 'archived'),
-            item('Hotseat', 'hs'),
-            h(:label, { style: { margin: '0 0.3rem 0 1rem' } }, 'Other Games:'),
-          ]
-        else
-          [
-            h(:label, { style: { margin: '0 0.3rem 0 0' } }, 'Games:'),
-          ]
-        end
-      links.concat [
-        item('Active', 'all', 'active'),
-        item('New', 'all', 'new'),
-        item('Finished', 'all', 'finished'),
-        item('Archived', 'all', 'archived'),
-      ]
-      links << item('Hotseat', 'hs') unless @user
-
-      h('nav', links)
-    end
-
-    def item(name, type, status)
-      params = "?games=#{type}"
-      params += "&status=#{status}" if status
-
-      store_route = lambda do
-        get_games(params)
-        store(:app_route, params)
-      end
-
-      props = {
-        attrs: {
-          href: params,
-          onclick: 'return false',
-        },
-        on: {
-          click: store_route,
-        },
-        style: {
-          margin: '0 0.3rem',
-        },
-      }
-      h(:a, props, name)
     end
   end
 end

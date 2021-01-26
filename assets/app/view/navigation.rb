@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'game_manager'
+require 'lib/connection'
 require 'view/create_game'
 require 'view/logo'
 
@@ -8,16 +10,16 @@ module View
     needs :app_route, default: nil, store: true
     needs :user, default: nil, store: true
 
+    include GameManager
+
     def render
-      if @user
-        games_links = [item('Your Games', '/?games=personal&status=active')]
-        games_links << item('New Games', '/?games=all&status=new')
-        other_links = [item("Profile (#{@user['name']})", '/profile')]
-      else
-        games_links = [item('All Games', '/?games=all&status=new')]
-        other_links = [item('Signup', '/signup'), item('Login', '/login')]
-      end
-      other_links << item('About', '/about')
+      store(:connection, Lib::Connection.new(root), skip: true) unless @connection
+      links = if @user
+                [item("Profile (#{@user['name']})", '/profile')]
+              else
+                [item('Signup', '/signup'), item('Login', '/login')]
+              end
+      links << item('About', '/about')
 
       props = {
         style: {
@@ -32,18 +34,58 @@ module View
       h('div#header', props, [
         h(Logo),
         h(:div, [
-          h('nav#games_nav', [
-            h('ul.no_margin.no_padding', games_links),
-          ]),
-          h('nav#main_nav', [
-            h('ul.no_margin.no_padding', other_links),
-          ]),
+          h('nav#games', [render_games_links]),
+          h('nav#main', [h('ul.no_margin.no_padding', links)]),
         ]),
       ])
     end
 
     def item(name, anchor)
       h('li.nav', [h(:a, { attrs: { href: anchor } }, name)])
+    end
+
+    def render_games_links
+      links =
+        if @user
+          [
+            h('li.nav', [h(:label, 'Your Games:')]),
+            games_link('Active', 'personal', 'active'),
+            games_link('New', 'personal', 'new'),
+            games_link('Finished', 'personal', 'finished'),
+            games_link('Hotseat', 'hs'),
+            h('li.nav', [h(:label, 'Other Games:')]),
+          ]
+        else
+          [h('li.nav', [h(:label, 'Games:')])]
+        end
+      links.concat [
+        games_link('Active', 'all', 'active'),
+        games_link('New', 'all', 'new'),
+        games_link('Finished', 'all', 'finished'),
+      ]
+      links << games_link('Hotseat', 'hs') unless @user
+      h('ul.no_margin.no_padding', links)
+    end
+
+    def games_link(name, type, status)
+      params = "?games=#{type}"
+      params += "&status=#{status}" if status
+
+      store_route = lambda do
+        get_games(params)
+        store(:app_route, "/#{params}")
+      end
+
+      props = {
+        attrs: {
+          href: "/#{params}",
+          onclick: 'return false',
+        },
+        on: {
+          click: store_route,
+        },
+      }
+      h('li.nav', [h(:a, props, name)])
     end
   end
 end
