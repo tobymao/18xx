@@ -157,7 +157,8 @@ module Engine
   "companies": [
     {
       "name": "Talahassee Railroad",
-      "value": 20,
+      "value": 0,
+      "discount": -20,
       "revenue": 5,
       "desc": "The winner of this private gets Priority Deal in the first Stock Round. This may be closed to grant a corporation an additional yellow tile lay. Terrain costs must be paid for normally",
       "sym": "TR",
@@ -177,8 +178,9 @@ module Engine
     },
     {
       "name": "Peninsular and Occidental Steamship Company",
-      "value": 30,
-      "revenue": 5,
+      "value": 0,
+      "discount": -30,
+      "revenue": 10,
       "desc": "Closing this private grants the operating Corporation a port token to place on a port city. The port token increases the value of that city by $20 for that corporation only",
       "sym": "POSC",
       "abilities": [
@@ -201,7 +203,8 @@ module Engine
     },
     {
       "name": "Terminal Company",
-      "value": 70,
+      "value": 0,
+      "discount": -70,
       "revenue": 15,
       "desc": "Allows a Corporation to place an extra token on a city tile of yellow or higher. This is an additional token and free. This token does not use a token slot in the city. This token can be disconnected",
       "sym": "TC",
@@ -224,7 +227,8 @@ module Engine
     },
     {
       "name": "Florida East Coast Canal and Transportation Company",
-      "value": 110,
+      "value": 0,
+      "discount": -110,
       "revenue": 20,
       "desc": "This Company comes with a single share of the Florida East Coast Railway",
       "sym": "FECCTC",
