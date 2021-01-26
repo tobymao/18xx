@@ -10,7 +10,7 @@ module Engine
 
         def actions(entity)
           actions = super
-          return actions if entity != current_entity || must_sell?(entity)
+          return actions if entity != current_entity
 
           unless bought?
             if can_merge_any?(entity)
@@ -70,7 +70,7 @@ module Engine
         end
 
         def can_merge?(entity, corporation)
-          @game.merge_candidates(entity, corporation).any?
+          !@game.merge_candidates(entity, corporation).empty?
         end
 
         def can_gain?(entity, bundle, exchange: false)

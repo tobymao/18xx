@@ -8,8 +8,8 @@ module Engine
       class SpecialBuy < SpecialBuy
         attr_reader :coal_marker
 
-        def buyable_items(entity)
-          @game.can_buy_coal_marker?(entity) ? [@coal_marker] : []
+        def buyable_items(_entity)
+          [@coal_marker]
         end
 
         def short_description
@@ -17,10 +17,12 @@ module Engine
         end
 
         def process_special_buy(action)
-          item = action.item
-          return @game.buy_coal_marker(action.entity) if item == @coal_marker
+          raise GameError, "Cannot buy unknown item: #{item.description}" if action.item != @coal_marker
+          if !@game.loading && !@game.can_buy_coal_marker?(action.entity)
+            raise GameError, 'Must be connected to Virigina Coalfields to purchase'
+          end
 
-          raise GameError, "Cannot buy unknown item: #{item.description}"
+          @game.buy_coal_marker(action.entity)
         end
 
         def setup
