@@ -49,34 +49,37 @@ module Engine
       "J1":"Trinidad & Tobago",
       "G4":"Zaraza"
    },
-   "tiles":{
+  "tiles":{
       "5":"unlimited",
-      "6":"unlimited",
       "7":"unlimited",
       "8":"unlimited",
       "9":"unlimited",
-      "14":"unlimited",
-      "15":"unlimited",
-      "57":"unlimited",
-      "63":"unlimited",
+      "441":"unlimited",
+      "442":"unlimited",
+      "444":"unlimited",
       "80":"unlimited",
       "81":"unlimited",
       "82":"unlimited",
       "83":"unlimited",
-      "448":"unlimited",
-      "544":"unlimited",
-      "545":"unlimited",
-      "546":"unlimited",
-      "611":"unlimited",
-      "619":"unlimited",
+      "38":"unlimited",
       "X1":{
          "count":"unlimited",
          "color":"green",
-         "code":"city=revenue:60;city=revenue:60;path=a:1,b:_0;path=a:_1,b:5;label=C"
+         "code":"city=revenue:50;city=revenue:60;path=a:1,b:_0;path=a:_1,b:5;label=C"
       },
       "X2":{
          "count":"unlimited",
          "color":"green",
+         "code":"city=revenue:50;path=a:0,b:_0;label=M"
+      },
+      "X3":{
+         "count":"unlimited",
+         "color":"brown",
+         "code":"city=revenue:60,slots:2;path=a:1,b:_0;path=a:_0,b:5;label=C"
+      },
+      "X4":{
+         "count":"unlimited",
+         "color":"brown",
          "code":"city=revenue:60;path=a:0,b:_0;label=M"
       }
    },
@@ -582,11 +585,6 @@ module Engine
          "city=revenue:40;path=a:0,b:_0;label=M;border=edge:5,type:impassable":[
             "B1"
          ]
-      },
-      "blue":{
-         "offboard=revenue:yellow_0,visit_cost:99;path=a:2,b:_0":[
-            "D7"
-         ]
       }
    },
    "phases":[
@@ -633,7 +631,8 @@ module Engine
          "train_limit":3,
          "tiles":[
             "yellow",
-            "green"
+            "green",
+            "brown"
          ],
          "operating_rounds":2,
          "corporation_sizes":[
