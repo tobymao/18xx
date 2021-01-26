@@ -678,6 +678,7 @@ module Engine
         if trains.select { |t| t.owner == @depot }.any? && !option_original_insolvency?
           help << 'Leased trains ignore town/halt allowance.'
           help << "Revenue = #{format_currency(40)} + number_of_stops * #{format_currency(20)}"
+          help << "Max revenue possible: #{format_currency(40 + @depot.min_depot_train.distance[0]['pay'] * 20)}"
         end
         if trains.select { |t| t.owner == @depot }.any? && option_original_insolvency?
           help << 'Leased trains run for half revenue (but full subsidies).'
@@ -1130,6 +1131,14 @@ module Engine
 
       def routes_subsidy(routes)
         routes.sum(&:subsidy)
+      end
+
+      def player_sort(entities)
+        entities.sort_by(&:name).sort_by { |e| corp_layer(e) }.group_by(&:owner)
+      end
+
+      def bank_sort(entities)
+        entities.sort_by(&:name).sort_by { |e| corp_layer(e) }
       end
     end
   end
