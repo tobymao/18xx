@@ -1,11 +1,14 @@
 # frozen_string_literal: true
 
+require_relative '../config/game/g_1861'
 require_relative 'g_1867'
 
 module Engine
   module Game
     class G1861 < G1867
       DEV_STAGE = :prealpha
+
+      load_from_json(Config::Game::G1861::JSON)
 
       def self.title
         '1861'
