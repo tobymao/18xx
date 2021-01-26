@@ -264,6 +264,90 @@ module Engine
   ],
   "companies": [
     {
+      "sym":"EPP",
+      "name":"Eisenbahn Pilsen - Priesen (C1)",
+      "value":200,
+      "interval": [120, 140, 160, 180, 200],
+      "revenue":0,
+      "desc":"Buyer take control of minor Coal Railway EPP (C1), which can be exchanged for the Director's certificate of Regional Railway MS during SRs in phase 3 or 4, or automatically when phase 5 starts. BK floats after exchange as soon as 50% or more are owned by players. This private cannot be sold.",
+      "abilities": [
+        {
+          "type": "no_buy",
+          "owner_type": "player"
+        },
+        {
+          "type": "exchange",
+          "owner_type": "player",
+          "corporations": ["BK"],
+          "from": "IPO",
+          "description": "SR phase 3-5: Exchange for BK presidency"
+        }
+      ]
+    },
+    {
+      "sym":"EOD",
+      "name":"Eisenbahn Oderberg - Dombran (C2)",
+      "value":200,
+      "interval": [120, 140, 160, 180, 200],
+      "revenue":0,
+      "desc":"Buyer take control of minor Coal Railway EOD (C2), which can be exchanged for the Director's certificate of Regional Railway MS during SRs in phase 3 or 4, or automatically when phase 5 starts. MS floats after exchange as soon as 50% or more are owned by players. This private cannot be sold.",
+      "abilities": [
+        {
+          "type": "no_buy",
+          "owner_type": "player"
+        },
+        {
+          "type": "exchange",
+          "owner_type": "player",
+          "corporations": ["BK"],
+          "from": "IPO",
+          "description": "SR phase 3-5: Exchange for MS presidency"
+        }
+      ]
+    },
+    {
+      "sym":"MLB",
+      "name":"Mosty - Lemberg Bahn (C3)",
+      "value":200,
+      "interval": [120, 140, 160, 180, 200],
+      "revenue":0,
+      "desc":"Buyer take control of minor Coal Railway MLB (C3), which can be exchanged for the Director's certificate of Regional Railway CL during SRs in phase 3 or 4, or automatically when phase 5 starts. CL floats after exchange as soon as 50% or more are owned by players. This private cannot be sold.",
+      "abilities": [
+        {
+          "type": "no_buy",
+          "owner_type": "player"
+        },
+        {
+          "type": "exchange",
+          "owner_type": "player",
+          "corporations": ["CL"],
+          "from": "IPO",
+          "description": "SR phase 3-5: Exchange for CL presidency"
+        }
+      ]
+    },
+    {
+      "sym":"SPB",
+      "name":"Simeria-Petrosani Bahn (C4)",
+      "value":200,
+      "interval": [120, 140, 160, 180, 200],
+      "revenue":0,
+      "desc":"Buyer take control of minor Coal Railway SPB (C4), which can be exchanged for the Director's certificate of Regional Railway SB during SRs in phase 3 or 4, or automatically when phase 5 starts. SB floats after exchange as soon as 50% or more are owned by players. This private cannot be sold.",
+      "abilities": [
+        {
+          "type": "no_buy",
+          "owner_type": "player"
+        },
+        {
+          "type": "exchange",
+          "owner_type": "player",
+          "corporations": ["SB"],
+          "from": "IPO",
+          "description": "SR phase 3-5: Exchange for SB presidency"
+        }
+      ]
+    },
+    {
       "sym":"S1",
       "name":"Wien-Gloggnitzer Eisenbahngesellschaft (S1)",
       "value":240,
@@ -357,6 +441,55 @@ module Engine
   ],
   "minors":[
     {
+      "sym": "EPP",
+      "name": "Eisenbahn Pilsen - Priesen (C1)",
+      "type": "Coal",
+      "tokens": [
+        0
+      ],
+      "logo": "1824/C1",
+      "coordinates": "C6",
+      "city": 0,
+      "color": "gray50"
+    },
+    {
+      "sym": "EOD",
+      "name": "Eisenbahn Oderberg - Dombran (C2)",
+      "type": "Coal",
+      "tokens": [
+        0
+      ],
+      "logo": "1824/C2",
+      "coordinates": "A12",
+      "city": 0,
+      "color": "gray50"
+    },
+    {
+      "float_percent": 100,
+      "sym": "MLB",
+      "name": "Mosty - Lemberg Bahn (C3)",
+      "type": "Coal",
+      "tokens": [
+        0
+      ],
+      "logo": "1824/C3",
+      "coordinates": "A22",
+      "city": 0,
+      "color": "gray50"
+    },
+    {
+      "sym": "SPB",
+      "name": "Simeria-Petrosani Bahn (C4)",
+      "type": "Coal",
+      "tokens": [
+        0
+      ],
+      "logo": "1824/C4",
+      "coordinates": "H25",
+      "city": 0,
+      "color": "gray50"
+    },
+    {
        "sym": "S1",
        "name": "Wien-Gloggnitzer Eisenbahngesellschaft",
        "type": "PreStaatsbahn",
@@ -443,106 +576,6 @@ module Engine
   ],
   "corporations": [
     {
-      "sym": "EPP",
-      "name": "Eisenbahn Pilsen - Priesen",
-      "type": "Coal",
-      "float_percent": 100,
-      "capitalization": "incremental",
-      "shares": [100],
-      "max_ownership_percent": 100,
-      "tokens": [
-        0
-      ],
-      "always_market_price": true,
-      "abilities": [
-        {
-          "type": "exchange",
-          "owner_type": "corporation",
-          "corporations": ["BK"],
-          "from": "IPO",
-          "description": "Phase 3-5: Exchange for BK presidency"
-        }
-      ],
-      "logo": "1824/C1",
-      "coordinates": "C6",
-      "color": "gray50"
-    },
-    {
-      "sym": "EOD",
-      "name": "Eisenbahn Oderberg - Dombran",
-      "type": "Coal",
-      "float_percent": 100,
-      "capitalization": "incremental",
-      "shares": [100],
-      "max_ownership_percent": 100,
-      "tokens": [
-        0
-      ],
-      "always_market_price": true,
-      "abilities": [
-        {
-          "type": "exchange",
-          "owner_type": "corporation",
-          "corporations": ["MS"],
-          "from": "IPO",
-          "description": "Phase 3-5: Exchange for MS presidency"
-        }
-      ],
-      "logo": "1824/C2",
-      "coordinates": "A12",
-      "color": "gray50"
-  },
-    {
-      "float_percent": 100,
-      "sym": "MLB",
-      "name": "Mosty - Lemberg Bahn",
-      "type": "Coal",
-      "capitalization": "incremental",
-      "shares": [100],
-      "max_ownership_percent": 100,
-      "tokens": [
-        0
-      ],
-      "always_market_price": true,
-      "abilities": [
-        {
-          "type": "exchange",
-          "owner_type": "corporation",
-          "corporations": ["CL"],
-          "from": "IPO",
-          "description": "Phase 3-5: Exchange for CL presidency"
-        }
-      ],
-      "logo": "1824/C3",
-      "coordinates": "A22",
-      "color": "gray50"
-    },
-    {
-      "float_percent": 100,
-      "sym": "SPB",
-      "name": "Simeria-Petrosani Bahn",
-      "type": "Coal",
-      "capitalization": "incremental",
-      "shares": [100],
-      "max_ownership_percent": 100,
-      "tokens": [
-        0
-      ],
-      "always_market_price": true,
-      "abilities": [
-        {
-          "type": "exchange",
-          "owner_type": "corporation",
-          "corporations": ["SB"],
-          "from": "IPO",
-          "description": "Phase 3-5: Exchange for SB presidency"
-        }
-      ],
-      "logo": "1824/C4",
-      "coordinates": "H25",
-      "color": "gray50"
-    },
-    {
       "float_percent": 50,
       "name": "Böhmische Kommerzbahn",
       "sym": "BK",
@@ -624,6 +657,26 @@ module Engine
       "coordinates": "J13"
     },
     {
+      "name": "Südbahn",
+      "sym": "SD",
+      "type": "Staatsbahn",
+      "float_percent": 10,
+      "tokens": [
+        100,
+        100
+      ],
+      "abilities": [
+        {
+            "type": "no_buy",
+            "description": "Unavailable in SR before phase 4"
+        }
+      ],
+      "logo": "1824/SD",
+      "simple_logo": "1824/SD.alt",
+      "color": "orange",
+      "text_color": "black"
+    },
+    {
       "name": "Ungarische Staatsbahn",
       "sym": "UG",
       "type": "Staatsbahn",
@@ -663,26 +716,6 @@ module Engine
       "logo": "1824/KK",
       "simple_logo": "1824/KK.alt",
       "color": "brown"
-    },
-    {
-      "name": "Südbahn",
-      "sym": "SD",
-      "type": "Staatsbahn",
-      "float_percent": 10,
-      "tokens": [
-        100,
-        100
-      ],
-      "abilities": [
-        {
-            "type": "no_buy",
-            "description": "Unavailable in SR before phase 4"
-        }
-      ],
-      "logo": "1824/SD",
-      "simple_logo": "1824/SD.alt",
-      "color": "orange",
-      "text_color": "black"
     }
   ],
   "trains": [
