@@ -44,8 +44,8 @@ module Engine
         def process_par(action)
           super
           @corporation_size = nil
-          size_corporation(@game.phase.corporation_sizes.first) if @game.phase.corporation_sizes.one?
           @parred = action
+          size_corporation(@game.phase.corporation_sizes.first) if @game.phase.corporation_sizes.one?
           par_corporation
         end
 

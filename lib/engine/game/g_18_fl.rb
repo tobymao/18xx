@@ -65,9 +65,20 @@ module Engine
           Step::Route,
           Step::G18FL::Dividend,
           Step::DiscardTrain,
-          Step::BuyTrain,
+          Step::G18FL::BuyTrain,
           [Step::BuyCompany, blocks: true],
         ], round_num: round_num)
+      end
+
+      def revenue_for(route, stops)
+        revenue = super
+
+        raise GameError, 'Route visits same hex twice' if route.hexes.size != route.hexes.uniq.size
+
+        raise GameError, '3E must visit at least two paying revenue centers' if route.train.variant['name'] == '3E' &&
+           stops.count { |h| !h.town? } <= 1
+
+        revenue
       end
 
       # Event logic goes here
@@ -82,16 +93,16 @@ module Engine
 
         @log << 'A hurricane destroys track in the Florida Keys (M24, M26)'
         key_island.lay_downgrade(key_island.original_tile)
-        key_west.tokens.each { |t| t&.destroy! }
 
         @log << 'The hurricane also destroys the hotels in Key West'
-        key_west.icons.each { |i| i&.destroy! }
+        # TODO: Destroy Key West hotels
+        key_west.lay_downgrade(key_west.original_tile)
       end
 
       # 5 => 10 share conversion logic
       def event_forced_conversions!
         @log << '-- Event: All 5 share corporations must convert to 10 share corporations immediately --'
-        @corporations.select { |c| c.total_shares == 5 }.each { |c| convert(c) }
+        @corporations.select { |c| c.share_price && c.total_shares == 5 }.each { |c| convert(c) }
       end
 
       def process_convert(action)
