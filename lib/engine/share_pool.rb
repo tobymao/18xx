@@ -10,10 +10,11 @@ module Engine
     include Entity
     include ShareHolder
 
-    def initialize(game)
+    def initialize(game, allow_president_sale: false)
       @game = game
       @bank = game.bank
       @log = game.log
+      @allow_president_sale = allow_president_sale
     end
 
     def name
@@ -30,6 +31,9 @@ module Engine
 
     def buy_shares(entity, shares, exchange: nil, exchange_price: nil, swap: nil)
       bundle = shares.is_a?(ShareBundle) ? shares : ShareBundle.new(shares)
+      if @allow_president_sale && bundle.presidents_share && bundle.owner == self
+        bundle = ShareBundle.new(bundle.shares, bundle.corporation.share_percent)
+      end
 
       if !@game.class::CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT && shares.owner.player?
         raise GameError, 'Cannot buy share from player'
@@ -186,6 +190,34 @@ module Engine
 
       # check if we need to change presidency
       max_shares = presidency_check_shares(corporation).values.max
+
+      # handle selling president's share to the pool
+      # if partial, move shares from pool to old president
+      if @allow_president_sale && max_shares <= 10 && bundle.presidents_share && to_entity == self
+        corporation.owner = self
+        @log << "President's share sold to pool. #{corporation.name} enters receivership"
+        return unless bundle.partial?
+
+        difference = bundle.shares.sum(&:percent) - bundle.percent
+        num_shares = difference / corporation.share_percent
+        num_shares.times { move_share(shares_of(corporation).first, owner) }
+        return
+      end
+
+      # handle buying president's share from the pool
+      # swap existing share for it
+      if @allow_president_sale && owner == self && bundle.presidents_share
+        corporation.owner = to_entity
+        @log << "#{to_entity.name} becomes the president of #{corporation.name}"
+        @log << "#{corporation.name} exits receivership"
+        difference = bundle.shares.sum(&:percent) - bundle.percent
+        num_shares = difference / corporation.share_percent
+        num_shares.times { move_share(to_entity.shares_of(corporation).first, self) }
+        return
+      end
+
+      # skip the rest if no player can be president yet
+      return if @allow_president_sale && max_shares <= 10
 
       majority_share_holders = presidency_check_shares(corporation).select { |_, p| p == max_shares }.keys
 
