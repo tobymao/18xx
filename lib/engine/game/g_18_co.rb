@@ -131,8 +131,8 @@ module Engine
         {
           sym: :pay_per_trash,
           short_name: 'Pay Per Trash',
-          desc: '(alpha) Selling multiple shares before a corporation\'s first OR returns the amount'\
-                'listed in each movement down on the market, starting at the current share price.',
+          desc: '(alpha) Selling multiple shares before a corporation\'s first Operating Round returns the '\
+                'amount listed in each movement down on the market, starting at the current share price.',
         },
         {
           sym: :major_investors,
