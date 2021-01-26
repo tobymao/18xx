@@ -7,7 +7,6 @@ module View
   module Game
     class MapControls < Snabberb::Component
       include Lib::Settings
-      needs :show_destinations, default: nil, store: true
       needs :show_coords, default: nil, store: true
       needs :show_location_names, default: true, store: true
       needs :show_starting_map, default: false, store: true
@@ -19,7 +18,6 @@ module View
       def render
         children = [
           player_colors_controls,
-          destination_controls,
           location_names_controls,
           hex_coord_controls,
           starting_map_controls,
@@ -40,21 +38,6 @@ module View
         end
 
         render_button("#{show_player_colors ? 'Hide' : 'Show'} Player Colors", on_click)
-      end
-
-      def destination_controls
-        return nil unless @game&.destinations_toggle?
-
-        show_hide = @show_destinations ? 'Hide' : 'Show'
-        text = "#{show_hide} Destinations"
-
-        on_click = lambda do
-          new_value = !@show_destinations
-          Lib::Storage['show_destinations'] = new_value
-          store(:show_destinations, new_value)
-        end
-
-        render_button(text, on_click)
       end
 
       def location_names_controls

@@ -283,18 +283,17 @@ module Engine
       def create_destinations(destinations)
         destinations.each do |corp, dest|
           dest_arr = Array(dest)
-          dest_arr << corporation_by_id(corp).coordinates if dest_arr.size == 1
+          end_a = dest_arr.first
+          end_b = dest_arr.size > 1 ? dest_arr.last : corporation_by_id(corp).coordinates
           ability = Ability::Base.new(
               type: 'destination',
-              description: "Connect #{hex_by_id(dest_arr[0]).tile.location_name} to"\
-                " #{hex_by_id(dest_arr[1]).tile.location_name}"
+              description: "Connect #{hex_by_id(end_a).tile.location_name} to"\
+                " #{hex_by_id(end_b).tile.location_name}"
             )
           corporation_by_id(corp).add_ability(ability)
           corporation_by_id(corp).destinations = dest_arr
           dest_arr.each do |d|
-            hex_by_id(d).original_tile.add_destination!(
-              Part::Destination.new(image: "logos/1856/#{corp}", corporation: corp)
-            )
+            hex_by_id(d).original_tile.icons << Part::Icon.new("../logos/1856/#{corp}")
           end
         end
       end
@@ -553,10 +552,6 @@ module Engine
           Step::SpecialTrack,
           Step::G1856::BuySellParShares,
         ])
-      end
-
-      def destinations_toggle?
-        true
       end
 
       def event_remove_tokens!

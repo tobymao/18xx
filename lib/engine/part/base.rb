@@ -89,10 +89,6 @@ module Engine
         false
       end
 
-      def destination?
-        false
-      end
-
       def icon?
         false
       end

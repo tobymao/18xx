@@ -137,9 +137,6 @@ module Engine
         junction = Part::Junction.new
         cache << junction
         junction
-      when 'destination'
-        Part::Destination.new(image: params['image'], sticky: true, blocks_lay: false,
-                              corporation: params['corporation'], minor: params['minor'])
       when 'icon'
         Part::Icon.new(params['image'], params['name'], params['sticky'], params['blocks_lay'])
       when 'stub'
@@ -282,10 +279,6 @@ module Engine
     # "ct" for "city or town"
     def preferred_city_town_edges
       @preferred_city_town_edges ||= compute_city_town_edges
-    end
-
-    def add_destination!(destination)
-      @icons << destination
     end
 
     def reserved_by?(corporation)
@@ -511,9 +504,6 @@ module Engine
           @borders << part
         elsif part.junction?
           @junction = part
-        elsif part.destination?
-          # A destination also acts as an icon while still being a logically distinct feature
-          @icons << part
         elsif part.icon?
           @icons << part
         elsif part.stub?
