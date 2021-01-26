@@ -2,7 +2,6 @@
 
 require_relative '../config/game/g_1860'
 require_relative 'base'
-require_relative '../g_1860/share_pool'
 
 module Engine
   module Game
@@ -144,7 +143,7 @@ module Engine
       end
 
       def init_share_pool
-        Engine::G1860::SharePool.new(self)
+        SharePool.new(self, allow_president_sale: true)
       end
 
       def option_23p_map?
