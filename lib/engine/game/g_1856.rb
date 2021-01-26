@@ -278,7 +278,7 @@ module Engine
         # NOT EVEN IF YOU GREEN A DOUBLE DIT ON A LAKE EDTGE
         return to.name == '125' if from.color == :green && LAKE_HEXES.include?(from.hex.name)
         # The L hexes on the map start as plain yellow cities
-        return %w[5 6 57].include?(to.name) if LAKE_HEXES.include?(from.hex.name) && from.color == 'white'
+        return %w[5 6 57].include?(to.name) if LAKE_HEXES.include?(from.hex.name) && from.color == :white
         # B,L to B-L
         return to.name == '121' if from.color == :yellow && [BARRIE_HEX, LONDON_HEX].include?(from.hex.name)
         # Hamilton OO upgrade is yet another case of ignoring labels in upgrades
