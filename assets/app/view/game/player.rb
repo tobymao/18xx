@@ -101,6 +101,13 @@ module View
               h('td.right', @game.format_currency(@player.cash - committed)),
             ]),
           ]) if committed.positive?
+
+          trs.concat([
+             h(:tr, [
+               h(:td, 'Bidding tokens'),
+               h('td.right', "#{@game.active_step.bidding_tokens(@player)} / #{@game.bidding_token_per_player}"),
+             ]),
+           ]) if @game.active_step&.current_actions&.include?('bidding_tokens')
         end
 
         trs.concat([

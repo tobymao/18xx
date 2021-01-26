@@ -57,6 +57,12 @@ module View
 
           children.concat(render_buttons)
           children.concat(render_failed_merge) if @current_actions.include?('failed_merge')
+          children << render_bidbox(@game.bidbox_minors) if @current_actions.include?('bidbox_minors') &&
+            @game.respond_to?(:bidbox_privates)
+          children << render_bidbox(@game.bidbox_concessions) if @current_actions.include?('bidbox_concessions') &&
+            @game.respond_to?(:bidbox_concessions)
+          children << render_bidbox(@game.bidbox_privates) if @current_actions.include?('bidbox_privates') &&
+            @game.respond_to?(:bidbox_privates)
           children.concat(render_corporations)
           children.concat(render_mergeable_entities) if @current_actions.include?('merge')
           children.concat(render_player_companies) if @current_actions.include?('sell_company')
@@ -349,6 +355,68 @@ module View
             h("div#{div_class}", { style: { marginTop: '0.5rem' } }, "Buy #{@selected_company.sym}: "),
             *buy_buttons,
           ])]
+        end
+
+        def render_bidbox(companies)
+          return [] if companies.empty?
+
+          props = {
+            style: {
+              display: 'inline-block',
+              verticalAlign: 'top',
+            },
+          }
+
+          header = []
+          companies.map do |company|
+            children = []
+            children << h(Company, company: company, bids: @step.bids[company])
+            children << h('div.margined_bottom', { style: { width: '20rem' } },
+                          render_bidbox_input(company)) if @selected_company == company
+            header << h(:div, props, children)
+          end
+
+          header_props = {
+            style: {
+              display: 'block',
+              verticalAlign: 'top',
+            },
+          }
+          h(:div, header_props, header)
+        end
+
+        def render_bidbox_input(company)
+          return [] if @step.highest_player_bid?(@current_entity, company)
+          return [] if @step.find_bid(@current_entity, company).nil? && @step.bidding_tokens(@current_entity).zero?
+          return [] if @step.max_bid(@current_entity, company) < @step.min_bid(company)
+
+          input =
+            h(:input, style: { marginRight: '1rem' }, props: {
+                value: @step.min_bid(company),
+                step: @step.min_increment,
+                min: @step.min_bid(company),
+                max: @step.max_bid(@current_entity, company),
+                type: 'number',
+                size: @current_entity.cash.to_s.size,
+              })
+
+          bid = lambda do
+            price = input.JS['elm'].JS['value'].to_i
+            process_action(Engine::Action::Bid.new(
+              @current_entity,
+              company: company,
+              price: price
+            ))
+            store(:selected_company, nil, skip: true)
+          end
+
+          buttons = []
+          if @step.min_bid(company) <= @step.max_place_bid(@current_entity, company)
+            buttons << h(:button, { on: { click: bid } }, 'Place Bid')
+          end
+          return [] if buttons.empty?
+
+          [h(:div, { style: { textAlign: 'center', margin: '1rem' } }, [input, *buttons])]
         end
       end
     end

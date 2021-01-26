@@ -103,9 +103,11 @@ module View
         else
           store(:active_shell, nil, skip: true)
         end
+        puts 'Render buy trains 5'
 
         if (step.can_buy_train?(@corporation, @active_shell) && step.room?(@corporation, @active_shell)) ||
            @must_buy_train
+          puts 'Render buy trains 5.1'
           children << h(:div, "#{@corporation.name} must buy an available train") if @must_buy_train
           if @should_buy_train == :liquidation
             children << h(:div, "#{@corporation.name} must buy a train or it will be liquidated")
@@ -116,6 +118,7 @@ module View
             *other_corp_trains.any? ? other_trains(other_corp_trains) : '',
           ])
         end
+        puts 'Render buy trains 6'
 
         discountable_trains = @depot.discountable_trains_for(@corporation)
 
@@ -143,6 +146,7 @@ module View
           end
         end
 
+        puts 'Render buy trains 7'
         children << h(:h3, h3_props, 'Remaining Trains')
         children << remaining_trains
 
@@ -158,6 +162,7 @@ module View
            step.president_may_contribute?(@corporation, @active_shell)
           children.concat(render_president_contributions)
         end
+        puts 'Render buy trains 8'
 
         props = {
           style: {

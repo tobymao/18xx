@@ -203,6 +203,8 @@ module Engine
 
       CORPORATIONS = [].freeze
 
+      MINORS = [].freeze
+
       PHASES = [].freeze
 
       LOCATION_NAMES = {}.freeze

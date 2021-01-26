@@ -57,6 +57,8 @@ module View
             marginBottom: '0.5rem',
             fontSize: '90%',
           }
+          header_style[:background] = @company.header_color if @company.respond_to?(:header_color)
+          header_style[:color] = @company.header_text_color if @company.respond_to?(:header_text_color)
 
           description_style = {
             margin: '0.5rem 0',
@@ -97,8 +99,9 @@ module View
           end
           props[:style][:display] = @display
 
+          header_name = (@company.respond_to?(:header_name) ? @company.header_name : 'PRIVATE COMPANY')
           children = [
-            h(:div, { style: header_style }, 'PRIVATE COMPANY'),
+            h(:div, { style: header_style }, header_name),
             h(:div, @company.name),
             h(:div, { style: description_style }, @company.desc),
             h(:div, { style: value_style }, "Value: #{@game.format_currency(@company.value)}"),
