@@ -44,7 +44,7 @@ module View
               moves.map do |times, dir|
                 times.times { new_share = @game.stock_market.find_relative_share_price(new_share, dir) }
 
-                "#{times} #{dir}"
+                @step.respond_to?(:movement_str) ? @step.movement_str(times, dir) : "#{times} #{dir}"
               end.join(', ')
             else
               'None'

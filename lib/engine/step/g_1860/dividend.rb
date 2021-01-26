@@ -99,6 +99,10 @@ module Engine
           @log << "#{entity.name} pays out #{@game.format_currency(revenue)} = "\
             "#{@game.format_currency(per_share)} (#{receivers})"
         end
+
+        def movement_str(times, dir)
+          "#{times / 2} #{dir}"
+        end
       end
     end
   end
