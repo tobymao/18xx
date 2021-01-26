@@ -198,9 +198,7 @@ module Engine
         @log << "President's share sold to pool. #{corporation.name} enters receivership"
         return unless bundle.partial?
 
-        difference = bundle.shares.sum(&:percent) - bundle.percent
-        num_shares = difference / corporation.share_percent
-        num_shares.times { move_share(shares_of(corporation).first, owner) }
+        handle_partial(bundle, self, owner)
         return
       end
 
@@ -210,9 +208,7 @@ module Engine
         corporation.owner = to_entity
         @log << "#{to_entity.name} becomes the president of #{corporation.name}"
         @log << "#{corporation.name} exits receivership"
-        difference = bundle.shares.sum(&:percent) - bundle.percent
-        num_shares = difference / corporation.share_percent
-        num_shares.times { move_share(to_entity.shares_of(corporation).first, self) }
+        handle_partial(bundle, to_entity, self)
         return
       end
 
@@ -231,7 +227,7 @@ module Engine
       corporation.owner = president
       @log << "#{president.name} becomes the president of #{corporation.name}"
 
-      # skip the president's share swap if the iniator is already the president
+      # skip the president's share swap if the initiator is already the president
       # or there was no previous president. this is because there is no one to swap with
       return if owner == president || !previous_president
 
@@ -251,9 +247,14 @@ module Engine
 
       return unless bundle.partial?
 
+      handle_partial(bundle, self, owner)
+    end
+
+    def handle_partial(bundle, from, to)
+      corp = bundle.corporation
       difference = bundle.shares.sum(&:percent) - bundle.percent
-      num_shares = difference / corporation.share_percent
-      num_shares.times { move_share(shares_of(corporation).first, owner) }
+      num_shares = difference / corp.share_percent
+      num_shares.times { move_share(from.shares_of(corp).first, to) }
     end
 
     def change_president(presidents_share, swap_to, president, _previous_president = nil)
