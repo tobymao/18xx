@@ -81,9 +81,9 @@ module Engine
   "tiles": {
     "5": 3,
     "6": 4,
-    "7": 15,
-    "8": 30,
-    "9": 30,
+    "7": "unlimited",
+    "8": "unlimited",
+    "9": "unlimited",
     "14": 4,
     "15": 5,
     "16": 2,
