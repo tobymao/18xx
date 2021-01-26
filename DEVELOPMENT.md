@@ -120,3 +120,12 @@ Once a game has been made available on the website, bugs may be found where the 
 4. Execute `migrate_json('your_json_file.json')`
 
 This will apply the migrations to the game file you specified, allowing you to verify it worked as expected.
+
+#### Logging in Locally
+
+You may run into a security problem when trying to log in. As a workaround, one may change the cookie security level.
+
+In routes/user.rb, ~line 110 change
+`secure: true,` to `secure: false,`
+
+Do not try to push this change!
