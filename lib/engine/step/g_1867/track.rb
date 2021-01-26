@@ -14,7 +14,7 @@ module Engine
 
         def lay_tile(action, extra_cost: 0, entity: nil)
           super
-          @game.place_cn_montreal_token(action.hex.tile) if action.tile.name == '639'
+          @game.place_639_token(action.hex.tile) if action.tile.name == '639'
         end
 
         def connects_to?(hex, tile, to)

@@ -13,7 +13,7 @@ module Engine
 
       def unstarted_corporation_summary
         summary, _corps = super
-        [summary, [@cn_corporation]]
+        [summary, [@national]]
       end
 
       def nationalization_loan_movement(corporation)
@@ -22,24 +22,34 @@ module Engine
         end
       end
 
-      def event_majors_can_ipo!
-        super
-        @corporations << @cn_corporation
-      end
-
       def maximum_loans(entity)
         entity.type == :national ? 100 : super
       end
 
       def operating_order
         minors, majors = @corporations.select(&:floated?).sort.partition { |c| c.type == :minor }
-        minors + majors + [@cn_corporation]
+        minors + majors + [@national]
       end
 
       def operating_round(round_num)
-        @cn_corporation.owner = priority_deal_player
-        @log << "#{@cn_corporation.name} run by #{@cn_corporation.owner.name}, as they have priority deal"
-        super
+        @national.owner = priority_deal_player
+        @log << "#{@national.name} run by #{@national.owner.name}, as they have priority deal"
+        calculate_interest
+        Round::G1861::Operating.new(self, [
+          Step::G1867::MajorTrainless,
+          Step::G1861::BuyCompany,
+          Step::G1867::RedeemShares,
+          Step::G1861::Track,
+          Step::G1861::Token,
+          Step::Route,
+          Step::G1861::Dividend,
+          # The blocking buy company needs to be before loan operations
+          [Step::G1861::BuyCompany, blocks: true],
+          Step::G1867::LoanOperations,
+          Step::DiscardTrain,
+          Step::G1861::BuyTrain,
+          [Step::G1861::BuyCompany, blocks: true],
+        ], round_num: round_num)
       end
 
       def or_round_finished; end
