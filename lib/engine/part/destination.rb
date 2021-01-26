@@ -1,13 +1,11 @@
 # frozen_string_literal: true
 
-require_relative 'base'
+require_relative 'icon'
 
 module Engine
   module Part
-    class Destination < Base
-      # Functionally is an extension of Icon
-      attr_accessor :preprinted
-      attr_reader :image, :name, :sticky, :minor, :corporation
+    class Destination < Icon
+      attr_reader :minor, :corporation
 
       def initialize(image:, sticky: true, blocks_lay: nil, preprinted: true, minor: nil, corporation: nil)
         # There is almost certainly a better error than this th
@@ -23,15 +21,7 @@ module Engine
         @blocks_lay = !!blocks_lay
       end
 
-      def blocks_lay?
-        @blocks_lay
-      end
-
       def destination?
-        true
-      end
-
-      def icon?
         true
       end
     end
