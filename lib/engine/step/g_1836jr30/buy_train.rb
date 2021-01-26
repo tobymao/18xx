@@ -24,7 +24,7 @@ module Engine
 
           @depot_trains_bought << action.train.sym
 
-          pass! unless buyable_trains(action.entity).any?
+          pass! if buyable_trains(action.entity).empty?
         end
       end
     end
