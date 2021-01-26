@@ -18,7 +18,7 @@ module View
     LIMIT = 12
 
     def render
-      @limit = @type == :personal ? 8 : LIMIT
+      @limit = @type == :personal ? 12 : LIMIT
       h("div##{@type}.game_row", { key: @header }, [
         render_header(@header),
         *render_row,

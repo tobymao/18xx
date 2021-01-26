@@ -9,7 +9,7 @@ class Game < Base
   many_to_many :players, class: :User, right_key: :user_id, join_table: :game_users
 
   QUERY_LIMIT = 13
-  PERSONAL_QUERY_LIMIT = 9
+  PERSONAL_QUERY_LIMIT = 13
 
   USER_GAMES_IDS = <<~SQL
     SELECT game_id AS id
@@ -19,18 +19,9 @@ class Game < Base
 
   FILTERED_GAMES = <<~SQL
     SELECT *
-    FROM (SELECT g.*,
-        setweight(to_tsvector(g.title), 'A') ||
-        setweight(to_tsvector(g.round), 'D') ||
-        setweight(to_tsvector(COALESCE(g.description, '')), 'C') ||
-        setweight(to_tsvector(coalesce(string_agg(u.name, ' '))), 'B') as ts_vector
-       FROM games g
-       INNER JOIN game_users gu ON g.id = gu.game_id
-       INNER JOIN users u ON u.id = gu.user_id
-       WHERE g.status = :status
-       GROUP BY g.id) g_search
-    WHERE g_search.ts_vector @@ to_tsquery(:search_string)
-    /* ORDER BY ts_rank(g_search.ts_vector, to_tsquery(:search_string)) DESC, updated_at DESC */
+    FROM games
+    WHERE status = :status
+    AND tsv @@ to_tsquery(:search_string)
   SQL
 
   ALL_GAMES_SEARCH_QUERY = <<~SQL
