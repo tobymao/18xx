@@ -567,7 +567,8 @@ module Engine
         return [] unless entity.num_ipo_shares
 
         bundles_for_corporation(entity, entity)
-          .select { |bundle| bundle.shares.size == 1 && @share_pool.fit_in_bank?(bundle) }
+          .select { |bundle| @share_pool.fit_in_bank?(bundle) }
+          .map { |bundle| reduced_bundle_price_for_market_drop(bundle) }
       end
 
       def redeemable_shares(entity)
@@ -611,6 +612,10 @@ module Engine
         end
 
         bundles.sort_by { |b| [b.presidents_share ? 1 : 0, b.percent, -b.shares.size] }.uniq(&:percent)
+      end
+
+      def buying_power(entity)
+        entity.cash
       end
 
       def purchasable_companies(entity = nil)
