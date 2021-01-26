@@ -14,7 +14,7 @@ module Engine
         def can_really_place_token?(entity)
           # Cheaper to do the graph first, then check affordability
           current_entity == entity &&
-            (tokens = available_tokens(entity)).any? &&
+            !(tokens = available_tokens(entity)).empty? &&
             @game.graph.can_token?(entity) &&
             can_afford_token?(tokens, buying_power(entity))
         end

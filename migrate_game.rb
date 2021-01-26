@@ -249,7 +249,7 @@ def attempt_repair(actions, debug)
     filtered_actions.each.with_index do |action, _index|
       action = action.copy(game) if action.is_a?(Engine::Action::Base)
       begin
-        game.process_action(action).maybe_raise!
+        game.process_action(action, add_autoactions:false).maybe_raise!
       rescue Exception => e
         puts e.backtrace if debug
         puts "Break at #{e} #{action}"
@@ -334,7 +334,7 @@ def migrate_db_actions(data, pin, dry_run=false, debug=false)
           # Set back to loading
           game.instance_variable_set(:@loading, true)
           actions.each do |action|
-            game.process_action(action)
+            game.process_action(action, add_autoactions: false)
             game.maybe_raise!
 
             Action.create(

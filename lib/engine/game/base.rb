@@ -580,7 +580,6 @@ module Engine
       # Initialize actions respecting the undo state
       def initialize_actions(actions)
         @loading = true unless @strict
-        @loading_internal = true
 
         filtered_actions, active_undos = self.class.filtered_actions(actions)
         @undo_possible = false
@@ -590,7 +589,8 @@ module Engine
 
           if action
             action = action.copy(self) if action.is_a?(Action::Base)
-            process_action(action)
+
+            process_action(action, add_autoactions: false)
           else
             # Restore the original action to the list to ensure action ids remain consistent but don't apply them
             @raw_actions << actions[index]
@@ -598,11 +598,10 @@ module Engine
         end
         @redo_possible = active_undos.any?
         @loading = false
-        @loading_internal = false
       end
 
-      def process_action(action)
-        action = action_from_h(action) if action.is_a?(Hash)
+      def process_action(action, add_autoactions: true)
+        action = Engine::Action::Base.action_from_h(action, self) if action.is_a?(Hash)
 
         action.id = current_action_id + 1
         @raw_actions << action.to_h
@@ -610,30 +609,28 @@ module Engine
 
         @actions << action
 
-        # Process the action we came here to do first
+        # Process the main action we came here to do first
         process_single_action(action)
 
-        # Process any derived actions
-        # derived actions cannot be undos so we don't need to worry about state
+        unless action.is_a?(Action::Message)
+          @redo_possible = false
+          @undo_possible = true
+          @last_game_action_id = action.id
+        end
+
+        # Process auto actions if supplied
         action.auto_actions.each { |a| process_single_action(a) }
-        any_auto = !action.auto_actions.empty?
-
-        unless @loading_internal
-          # Check and add derived_actions
+        # Add them if needed
+        if add_autoactions
           while (auto_action = @round.auto_action)
-            # Consistency check, both the client and server should supply the same auto actions
-            # So we should either have no auto actions or all.
-            raise 'Auto actions out of sync' if any_auto
-
             action.auto_actions << auto_action
             process_single_action(auto_action)
           end
           # Update the last raw actions
           action.clear_cache
-          puts action.auto_actions
-          @raw_actions.pop
-          @raw_actions << action.to_h
+          @raw_actions[-1] = action.to_h
         end
+        @last_processed_action = action.id
 
         self
       end
@@ -646,12 +643,6 @@ module Engine
         preprocess_action(action)
 
         @round.process_action(action)
-
-        unless action.is_a?(Action::Message)
-          @redo_possible = false
-          @undo_possible = true
-          @last_game_action_id = action.id
-        end
 
         action_processed(action)
 
@@ -674,8 +665,6 @@ module Engine
             @round_history << current_action_id
           end
         end
-
-        @last_processed_action = action.id
       rescue Engine::GameError => e
         @raw_actions.pop
         @actions.pop
@@ -731,10 +720,6 @@ module Engine
       def next_turn!
         @last_turn_start_action_id = @turn_start_action_id
         @turn_start_action_id = current_action_id
-      end
-
-      def action_from_h(h)
-        Engine::Action::Base.action_from_h(h, self)
       end
 
       def clone(actions)
