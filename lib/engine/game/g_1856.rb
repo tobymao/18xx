@@ -291,7 +291,6 @@ module Engine
                 " #{hex_by_id(end_b).tile.location_name}"
             )
           corporation_by_id(corp).add_ability(ability)
-          corporation_by_id(corp).destinations = dest_arr
           dest_arr.each do |d|
             hex_by_id(d).original_tile.icons << Part::Icon.new("../logos/1856/#{corp}")
           end
@@ -454,7 +453,6 @@ module Engine
 
       def event_no_more_escrow_corps!
         @log << 'New corporations will be started as incremental cap corporations'
-        remove_destinations
       end
 
       def event_no_more_incremental_corps!
@@ -466,14 +464,6 @@ module Engine
         @available_bridge_tokens += 1 if bridge.owned_by_player?
         @available_tunnel_tokens += 1 if tunnel.owned_by_player?
         super
-      end
-
-      def remove_destinations
-        @corporations.select { |corp| corp.capitalization != :escrow && corp != national }.each do |corp|
-          corp.destinations.each do |dest|
-            hex_by_id(dest).tile.icons.reject! { |icon| icon.destination? && icon.name == corp.id }
-          end
-        end
       end
 
       def company_bought(company, entity)
