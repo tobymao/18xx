@@ -77,10 +77,6 @@ module Engine
         raise NotImplementedError
       end
 
-      def can_bid?(_entity, _company)
-        true
-      end
-
       protected
 
       def auctioning
