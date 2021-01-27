@@ -627,6 +627,10 @@ module Engine
         end
       end
 
+      def unowned_purchasable_companies(_entity)
+        @companies.select { |company| !company.closed? && company.owner.nil? }
+      end
+
       def entity_can_use_company?(entity, company)
         entity.corporation? && entity == company.owner
       end
