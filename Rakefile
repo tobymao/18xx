@@ -12,12 +12,13 @@ unless ENV['RACK_ENV'] == 'production'
 end
 
 # Migrate
-migrate = lambda do |env, version|
+migrate = lambda do |env, version, truncate = false|
   ENV['RACK_ENV'] = env
   require_relative 'db'
   require 'logger'
   Sequel.extension :migration
   DB.loggers << Logger.new($stdout) if DB.loggers.empty?
+  DB[:actions].truncate if truncate && DB.tables.include?(:actions)
   Sequel::Migrator.apply(DB, 'migrate', version)
 end
 
@@ -28,14 +29,12 @@ end
 
 desc 'Migrate development database to all the way down'
 task :dev_down do
-  DB[:actions].truncate if DB.tables.include?(:actions)
-  migrate.call('development', 0)
+  migrate.call('development', 0, true)
 end
 
 desc 'Migrate development database all the way down and then back up'
 task :dev_bounce do
-  DB[:actions].truncate if DB.tables.include?(:actions)
-  migrate.call('development', 0)
+  migrate.call('development', 0, true)
   Sequel::Migrator.apply(DB, 'migrate')
 end
 
