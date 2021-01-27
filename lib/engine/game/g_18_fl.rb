@@ -46,6 +46,9 @@ module Engine
                            may choose to convert to a 10 share corporation'],
       ).freeze
 
+      ASSIGNMENT_TOKENS = {
+        'POSC' => '/icons/1846/sc_token.svg',
+      }.freeze
       def stock_round
         Round::Stock.new(self, [
           Step::DiscardTrain,
@@ -57,6 +60,7 @@ module Engine
       def operating_round(round_num)
         Round::Operating.new(self, [
           Step::Bankrupt,
+          Step::G18FL::Assign,
           Step::Exchange,
           Step::G18FL::Convert,
           Step::SpecialTrack,
@@ -71,6 +75,10 @@ module Engine
         ], round_num: round_num)
       end
 
+      def steamboat
+        @steamboat ||= company_by_id('POSC')
+      end
+
       def revenue_for(route, stops)
         revenue = super
 
@@ -78,6 +86,11 @@ module Engine
 
         raise GameError, '3E must visit at least two paying revenue centers' if route.train.variant['name'] == '3E' &&
            stops.count { |h| !h.town? } <= 1
+
+        steam = steamboat.id
+        if route.corporation.assigned?(steam) && (port = stops.map(&:hex).find { |hex| hex.assigned?(steam) })
+          revenue += 20 * port.tile.icons.select { |icon| icon.name == 'port' }.size
+        end
 
         revenue
       end

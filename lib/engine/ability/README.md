@@ -196,6 +196,8 @@ normal tile lay actions.
 - `hexes`: Array of hex coordinates where tiles may be laid.
 - `tiles`: Array of tile numbers which may be laid.
 - `cost`: Cost to use the ability.
+- `closed_when_used_up`: This ability has a count that is decreased each time it is used. If this attribute is true the private is closed when count reaches zero, if false the private
+remains open but the discount can no longer be used. Default false.
 - `free`: If true, the tiles are laid with 0 cost. Default false.
 - `discount`: Discount the cost of laying the tile by the given
   amount. Default 0.

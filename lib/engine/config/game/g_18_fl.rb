@@ -187,18 +187,18 @@ module Engine
       "abilities": [
         {
           "type": "assign_hexes",
-          "when": "owning_corp_or_turn",
+          "when": "any",
           "hexes": [
             "B5", "B23", "G20", "K28"
           ],
-          "count_per_or": 1,
-          "owner_type": "corporation"
+          "count": 1,
+          "owner_type": "player"
         },
         {
           "type": "assign_corporation",
-          "when": "sold",
+          "when": "any",
           "count": 1,
-          "owner_type": "corporation"
+          "owner_type": "player"
         }
       ]
     },
@@ -552,19 +552,19 @@ module Engine
       ]
     },
     "yellow": {
-      "city=revenue:20;path=a:1,b:_0;path=a:4,b:_0;label=K": [
+      "city=revenue:20;path=a:1,b:_0;path=a:4,b:_0;label=K;icon=image:port,sticky:1": [
         "B5"
       ],
       "city=revenue:20;path=a:1,b:_0;path=a:4,b:_0;path=a:6,b:_0;label=K": [
         "B15"
       ],
-      "city=revenue:30;city=revenue:30;path=a:5,b:_0;path=a:6,b:_0;path=a:1,b:_1;path=a:2,b:_1;label=Jax": [
+      "city=revenue:30;city=revenue:30;path=a:5,b:_0;path=a:6,b:_0;path=a:1,b:_1;path=a:2,b:_1;label=Jax;icon=image:port,sticky:1": [
         "B23"
       ],
-      "city=revenue:30;path=a:5,b:_0;path=a:3,b:_0;label=T": [
+      "city=revenue:30;path=a:5,b:_0;path=a:3,b:_0;label=T;icon=image:port,sticky:1": [
         "G20"
       ],
-      "city=revenue:30;path=a:6,b:_0;path=a:2,b:_0;label=T": [
+      "city=revenue:30;path=a:6,b:_0;path=a:2,b:_0;label=T;icon=image:port,sticky:1": [
         "K28"
       ]
     },
