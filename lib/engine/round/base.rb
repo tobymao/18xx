@@ -130,8 +130,8 @@ module Engine
         @active_step ||= @steps.find { |step| step.active? && step.blocking? }
       end
 
-      def auto_action
-        active_step(nil)&.auto_action(current_entity)
+      def auto_actions(actions)
+        active_step&.auto_actions(current_entity, actions)
       end
 
       def finished?

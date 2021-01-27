@@ -618,14 +618,18 @@ module Engine
           @last_game_action_id = action.id
         end
 
-        # Process auto actions if supplied
-        action.auto_actions.each { |a| process_single_action(a) }
         # Add them if needed
+        idx = 0
+        loop do
+          @round.auto_actions(action.auto_actions) if add_autoactions && !action.auto_actions[idx]
+
+          break unless (auto_action = action.auto_actions[idx])
+
+          process_single_action(auto_action)
+          idx += 1
+        end
+
         if add_autoactions
-          while (auto_action = @round.auto_action)
-            action.auto_actions << auto_action
-            process_single_action(auto_action)
-          end
           # Update the last raw actions
           action.clear_cache
           @raw_actions[-1] = action.to_h
