@@ -33,6 +33,7 @@ module Engine
       "A9":"L'Aquila",
       "B14":"Pescara",
       "C5":"Rome",
+      "C7":"Avezzano",
       "D10":"Isernia",
       "D14":"Vasto",
       "E11":"Campobasso",
@@ -440,7 +441,7 @@ module Engine
          "offboard=revenue:white_30|gray_50|black_80;path=a:0,b:_0,track:dual":[
             "N2"
          ],
-         "offboard=revenue:white_60|gray_90|black_120;path=a:5,b:_0,track:dual":[
+         "offboard=revenue:white_60|gray_90|black_120;path=a:5,b:_0,track:dual;path=a:4,b:_0,track:dual":[
             "C5"
          ],
          "path=a:3,b:5,track:dual":[
@@ -448,6 +449,9 @@ module Engine
          ],
          "path=a:0,b:2,track:dual":[
             "N12"
+         ],
+         "town=revenue:30;path=a:1,b:_0,track:narrow;path=a:4,b:_0,track:narrow":[
+            "C7"
          ],
          "town=revenue:20;path=a:3,b:_0,track:dual;path=a:1,b:_0,track:dual":[
             "O11"
@@ -914,6 +918,9 @@ module Engine
          "events":[
             {
                "type":"close_companies"
+            },
+            {
+               "type":"earthquake"
             }
          ]
       },
