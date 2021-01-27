@@ -22,6 +22,18 @@ module Engine
           companies.select(&:owner)
         end
 
+        def can_buy_any_from_ipo?(entity)
+          @game.corporations.each do |corporation|
+            next unless corporation.ipoed
+
+            corporation.shares.group_by(&:corporation).each do |_, shares|
+              return true if can_buy_shares?(entity, shares)
+            end
+          end
+
+          false
+        end
+
         def can_buy?(entity, bundle)
           if bundle&.owner&.corporation? && bundle.corporation != bundle.owner && @game.presidents_choice != :done
             return false unless bundle.owner.president?(entity)

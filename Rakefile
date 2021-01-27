@@ -110,7 +110,7 @@ task 'stackprof', [:json] do |_task, args|
   require_relative 'lib/engine'
   starttime = Time.new
   StackProf.run(mode: :cpu, out: 'stackprof.dump', raw: true, interval: 10) do
-    100.times do
+    10.times do
       Engine::Game.load(args[:json])
     end
   end
