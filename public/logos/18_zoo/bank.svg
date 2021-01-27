@@ -1,0 +1,18 @@
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">
+  <defs>
+    <style>
+      .cls-1 {
+      fill: #fff;
+      }
+
+      .cls-2 {
+      fill: #000;
+      font-weight:bold;
+      font-size:14px;
+      font-family:sans-serif;
+      }
+    </style>
+  </defs>
+  <circle class="cls-1" cx="19.98" cy="20" r="19.62"/>
+  <text x="0" y="25" class="cls-2">BANK</text>
+</svg>
