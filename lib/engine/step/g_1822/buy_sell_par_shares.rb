@@ -19,7 +19,7 @@ module Engine
         end
 
         def description
-          'Bid, convert consession or buy/sell shares'
+          'Bid, convert concession or buy/sell shares'
         end
 
         def log_pass(entity)
@@ -50,10 +50,17 @@ module Engine
           @game.bidding_token_per_player - (bids_for_player(player)&.size || 0)
         end
 
+        def can_bid?(entity, company)
+          return false if highest_player_bid?(entity, company)
+
+          !(find_bid(entity, company).nil? && bidding_tokens(entity).zero?)
+        end
+
         protected
 
         def add_bid(action)
           super
+
           company = action.company
           price = action.price
           entity = action.entity
@@ -61,7 +68,7 @@ module Engine
           @bidders[company] |= [entity]
 
           @current_actions << action
-          @log << "#{entity.name} bids #{@game.format_currency(price)} for #{action.company.name}"
+          @log << "#{entity.name} bids #{@game.format_currency(price)} for #{company.name}"
           @round.last_to_act = action.entity
           @bid_actions += 1
 

@@ -357,12 +357,9 @@ module View
 
         def render_bid_input(company)
           return [] if @step.max_bid(@current_entity, company) < @step.min_bid(company)
-          return [] if @current_actions.include?('bidding_tokens') &&
-            @step.highest_player_bid?(@current_entity, company)
-          return [] if @current_actions.include?('bidding_tokens') && @step.find_bid(@current_entity, company).nil? &&
-            @step.bidding_tokens(@current_entity).zero?
+          return [] if @current_actions.include?('bidding_tokens') && !@step.can_bid?(@current_entity, company)
 
-          [h(Bid, entity: @current_entity, company: company)]
+          [h(Bid, entity: @current_entity, corporation: company)]
         end
       end
     end

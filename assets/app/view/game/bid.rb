@@ -8,16 +8,14 @@ module View
       class Bid < Snabberb::Component
         include Actionable
         needs :entity
-        needs :corporation, default: nil
-        needs :company, default: nil
+        needs :corporation
 
         def render
           step = @game.round.active_step
           min_increment = step.min_increment
 
-          corp = (@corporation.nil? ? @company : @corporation)
-          min_bid = step.min_bid(corp)
-          max_bid = step.max_bid(@entity, corp)
+          min_bid = step.min_bid(@corporation)
+          max_bid = step.max_bid(@entity, @corporation)
           price_input = h(:input, style: { marginRight: '1rem' }, props: {
                             value: min_bid,
                             step: min_increment,
@@ -30,8 +28,8 @@ module View
           place_bid = lambda do
             process_action(Engine::Action::Bid.new(
               @entity,
-              corporation: @corporation,
-              company: @company,
+              corporation: @corporation.corporation? ? @corporation : nil,
+              company: @corporation.company? ? @corporation : nil,
               price: Native(price_input)[:elm][:value].to_i,
             ))
           end

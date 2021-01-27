@@ -20,7 +20,7 @@ module Engine
         end
 
         def committed_cash(player, _show_hidden = false)
-          bids_for_player(player, true).sum(&:price)
+          bids_for_player(player, only_committed_bids: true).sum(&:price)
         end
 
         def find_bid(player, company)
@@ -41,7 +41,7 @@ module Engine
           yield company, bids if bids.size > 1
         end
 
-        def bids_for_player(player, only_committed_bids = false)
+        def bids_for_player(player, only_committed_bids: false)
           @bids.values.map do |bids|
             if only_committed_bids
               highest_bid = bids.max_by(&:price)
