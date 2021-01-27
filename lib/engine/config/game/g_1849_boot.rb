@@ -157,7 +157,7 @@ module Engine
       "X1":{
          "count":1,
          "color":"green",
-         "code":"label=A;city=revenue:60,slots:2;path=a:1,b:_0,track:narrow;path=a:4,b:_0;path=a:0,b:_0,track:narrow;path=a:5,b:_0,track:narrow"
+         "code":"label=A;city=revenue:60,slots:2;path=a:1,b:_0,track:dual;path=a:4,b:_0;path=a:0,b:_0,track:narrow;path=a:5,b:_0,track:narrow"
       },
       "X2":{
          "count":1,
@@ -177,7 +177,7 @@ module Engine
       "X5":{
          "count":1,
          "color":"brown",
-         "code":"label=A;city=revenue:90,slots:2;path=a:1,b:_0,track:dual;path=a:4,b:_0;path=a:0,b:_0,track:narrow;path=a:5,b:_0,track:narrow"
+         "code":"label=A;city=revenue:90,slots:2;path=a:1,b:_0,track:dual;path=a:4,b:_0;path=a:0,b:_0,track:dual;path=a:5,b:_0,track:dual"
       },
       "X6":{
          "count":1,
@@ -479,7 +479,7 @@ module Engine
          ]
       },
       "yellow":{
-         "label=A;city=revenue:30;upgrade=cost:80,terrain:mountain;path=a:1,b:_0,track:narrow;path=a:4,b:_0":[
+         "label=A;city=revenue:30;upgrade=cost:80,terrain:mountain;path=a:0,b:_0,track:narrow;path=a:1,b:_0,track:narrow;path=a:5,b:_0,track:narrow;path=a:4,b:_0":[
             "A9"
          ],
          "label=R;city=revenue:10;path=a:3,b:_0,track:narrow;path=a:4,b:_0":[
