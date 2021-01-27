@@ -40,10 +40,18 @@ module Engine
         end
 
         ability = tile_lay_abilities(action.entity)
-        lay_tile(action, spender: action.entity.owner)
+        spender = if !action.entity.owner
+                    nil
+                  elsif action.entity.owner.corporation?
+                    action.entity.owner
+                  else
+                    @game.current_entity
+                  end
+        lay_tile(action, spender: spender)
         check_connect(action, ability)
         ability.use!
 
+        ability.owner.close! unless ability.count.positive? || !ability.closed_when_used_up
         @company = ability.count.positive? ? action.entity : nil if ability.must_lay_together
       end
 
@@ -64,7 +72,9 @@ module Engine
       def hex_neighbors(entity, hex)
         return unless (ability = tile_lay_abilities(entity))
         return if ability.hexes&.any? && !ability.hexes&.include?(hex.id)
-        return if ability.reachable && !@game.graph.connected_hexes(entity.owner)[hex]
+
+        operator = entity.owner.corporation? ? entity.owner : @game.current_entity
+        return if ability.reachable && !@game.graph.connected_hexes(operator)[hex]
 
         @game.hex_by_id(hex.id).neighbors.keys
       end

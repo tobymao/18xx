@@ -172,7 +172,8 @@ module Engine
           "reachable": true,
           "hexes": [],
           "tiles": [],
-          "when": "sold"
+          "closed_when_used_up": "true",
+          "when": "any"
         }
       ]
     },
