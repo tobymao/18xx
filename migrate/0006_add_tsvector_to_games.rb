@@ -2,67 +2,119 @@
 
 Sequel.migration do
   up do
-    alter_table :games do
-      add_column :tsv, :tsvector # , null: false, default: ''
-      add_index :tsv, type: :gin
-    end
+    run("
+SET SCHEMA 'public';
+ALTER TABLE games ADD COLUMN tsv tsvector;
 
-    run "
-      UPDATE games g
-      SET tsv = setweight(to_tsvector(g.title), 'A') ||
-          setweight(to_tsvector(SUBSTRING(g.title, 3, 99)), 'A') ||
-          setweight(to_tsvector(g.round), 'D') ||
-          setweight(to_tsvector(CAST(g.turn AS text)), 'D') ||
-          setweight(to_tsvector(COALESCE(g.settings->>'optional_rules', '')), 'D') ||
-          setweight(to_tsvector(COALESCE(g.description, '')), 'C') ||
-          setweight(to_tsvector(
-            (SELECT STRING_AGG(u.name, ' ')
-              FROM users u
-              INNER JOIN game_users gu ON u.id = gu.user_id
-              INNER JOIN games g2 ON g2.id = gu.game_id
-              WHERE g.id = g2.id)
-          ), 'B');
-    "
+CREATE INDEX games_tsv_index ON games USING gin (tsv);
 
-    run "
-      DROP FUNCTION IF EXISTS games_trigger() CASCADE;
+UPDATE games g
+SET tsv =
+  setweight(to_tsvector(g.title), 'A') ||
+  setweight(to_tsvector(SUBSTRING(g.title, 3, 99)), 'A') ||
+  setweight(to_tsvector(g.round), 'D') ||
+  setweight(to_tsvector(CAST(g.turn AS text)), 'D') ||
+  setweight(to_tsvector(COALESCE(g.settings->>'optional_rules', '')), 'D') ||
+  setweight(to_tsvector(COALESCE(g.description, '')), 'C') ||
+  setweight(to_tsvector(
+    (SELECT STRING_AGG(u.name, ' ')
+      FROM users u
+      INNER JOIN game_users gu ON u.id = gu.user_id
+      WHERE gu.game_id = g.id)
+  ), 'B');
 
-      CREATE OR REPLACE FUNCTION games_trigger() RETURNS trigger AS $$
-      BEGIN
-        UPDATE games g
-        SET tsv = (setweight(to_tsvector(g.title), 'A') ||
-            setweight(to_tsvector(g.round), 'D') ||
-            setweight(to_tsvector(CAST(g.turn AS text)), 'D') ||
-            setweight(to_tsvector(COALESCE(g.settings->>'optional_rules', '')), 'D') ||
-            setweight(to_tsvector(COALESCE(g.description, '')), 'C') ||
-            setweight(to_tsvector(
-              (SELECT STRING_AGG(u.name, ' ')
-                FROM users u
-                INNER JOIN game_users gu ON u.id = gu.user_id
-                INNER JOIN games g2 ON g2.id = gu.game_id
-                WHERE g.id = g2.id)
-            ), 'B'));
-        RETURN NEW;
-      END
-      $$ LANGUAGE plpgsql;
+CREATE OR REPLACE FUNCTION update_game_tsv() RETURNS trigger AS $$
+BEGIN
+  IF OLD.round <> NEW.round THEN
+    UPDATE games g
+    SET tsv = (setweight(to_tsvector(g.title), 'A') ||
+      setweight(to_tsvector(SUBSTRING(g.title, 3, 99)), 'A') ||
+      setweight(to_tsvector(g.round), 'D') ||
+      setweight(to_tsvector(CAST(g.turn AS text)), 'D') ||
+      setweight(to_tsvector(COALESCE(g.settings->>'optional_rules', '')), 'D') ||
+      setweight(to_tsvector(COALESCE(g.description, '')), 'C') ||
+      setweight(to_tsvector(
+        (SELECT STRING_AGG(u.name, ' ')
+          FROM users u
+          INNER JOIN game_users gu ON u.id = gu.user_id
+          WHERE gu.game_id = NEW.id)
+      ), 'B'))
+    WHERE g.id = NEW.id;
+  END IF;
+  RETURN NULL;
+END
+$$ LANGUAGE plpgsql;
 
-      CREATE TRIGGER tsv_update
-      AFTER UPDATE OF round, turn ON games
-      FOR EACH ROW EXECUTE FUNCTION games_trigger();
+DROP TRIGGER IF EXISTS update_game ON games;
+CREATE TRIGGER update_game
+AFTER UPDATE OF round ON games
+FOR EACH ROW EXECUTE FUNCTION update_game_tsv();
+/* first update after start => no update on users joining */
 
-      CREATE TRIGGER tsv_insert
-      AFTER INSERT ON games
-      FOR EACH ROW EXECUTE FUNCTION games_trigger();
-    "
+CREATE OR REPLACE FUNCTION insert_game_tsv() RETURNS trigger AS $$
+BEGIN
+  UPDATE games g
+  SET tsv = (setweight(to_tsvector(g.title), 'A') ||
+    setweight(to_tsvector(SUBSTRING(g.title, 3, 99)), 'A') ||
+    setweight(to_tsvector(g.round), 'D') ||
+    setweight(to_tsvector(CAST(g.turn AS text)), 'D') ||
+    setweight(to_tsvector(COALESCE(g.settings->>'optional_rules', '')), 'D') ||
+    setweight(to_tsvector(COALESCE(g.description, '')), 'C') ||
+    setweight(to_tsvector(
+      (SELECT u.name
+        FROM users u
+        WHERE u.id = g.user_id)
+    ), 'B'))
+  WHERE g.id = NEW.id;
+  RETURN NULL;
+END
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS insert_game ON games;
+CREATE TRIGGER insert_game
+AFTER INSERT ON games
+FOR EACH ROW EXECUTE FUNCTION insert_game_tsv();
+
+CREATE OR REPLACE FUNCTION update_user_tsv() RETURNS trigger AS $$
+BEGIN
+  IF OLD.name <> NEW.name THEN
+    UPDATE games g
+    SET tsv = (setweight(to_tsvector(title), 'A') ||
+      setweight(to_tsvector(SUBSTRING(g.title, 3, 99)), 'A') ||
+      setweight(to_tsvector(round), 'D') ||
+      setweight(to_tsvector(CAST(turn AS text)), 'D') ||
+      setweight(to_tsvector(COALESCE(settings->>'optional_rules', '')), 'D') ||
+      setweight(to_tsvector(COALESCE(description, '')), 'C') ||
+      setweight(to_tsvector(
+        (SELECT STRING_AGG(name, ' ')
+          FROM users u
+          INNER JOIN game_users gu ON u.id = gu.user_id
+          WHERE gu.game_id = g.id)
+      ), 'B'))
+    WHERE id IN (
+      SELECT game_id
+      FROM game_users gu2
+      WHERE gu2.user_id = OLD.id
+    );
+  END IF;
+  RETURN NULL;
+END
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS update_username ON users;
+CREATE TRIGGER update_username
+AFTER UPDATE OF name ON users
+FOR EACH ROW EXECUTE FUNCTION update_user_tsv();
+    ")
   end
 
   down do
-    alter_table :games do
-      drop_column :tsv
-      drop_index :tsv
-    end
-    run 'DROP FUNCTION IF EXISTS games_trigger() CASCADE;'
-    run 'DROP TRIGGER IF EXISTS tsv_update ON games;'
-    run 'DROP TRIGGER IF EXISTS tsv_insert ON games;'
+    run("
+SET SCHEMA 'public';
+ALTER TABLE games DROP COLUMN tsv;
+DROP FUNCTION update_game_tsv() CASCADE;
+DROP FUNCTION insert_game_tsv() CASCADE;
+DROP FUNCTION update_user_tsv() CASCADE;
+    ")
   end
 end
