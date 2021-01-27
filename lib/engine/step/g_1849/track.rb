@@ -8,8 +8,10 @@ module Engine
     module G1849
       class Track < Track
         def lay_tile(action, extra_cost: 0, entity: nil, spender: nil)
-          action.tile.upgrades = action.hex.tile.upgrades
+          old_tile = action.hex.tile
+          action.tile.upgrades = old_tile.upgrades
           super
+          old_tile.upgrades = []
         end
 
         def process_lay_tile(action)
