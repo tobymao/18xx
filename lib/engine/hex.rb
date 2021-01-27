@@ -110,7 +110,7 @@ module Engine
           @tile.cities.zip(tile.cities).to_h
         # if @tile is not blank, ensure connectivity is maintained
         else
-          @tile.cities.map.with_index do |old_city, _index|
+          @tile.cities.map do |old_city|
             new_city = tile.cities.find do |city|
               # we want old_edges to be subset of new_edges
               # without the any? check, first city will always match
