@@ -31,7 +31,7 @@ module Engine
       SELL_AFTER = :operate
       EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
       TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
-
+      STEAMBOAT_HEXES = %w[B5 B23 G20 K28].freeze
       EVENTS_TEXT = Base::EVENTS_TEXT.merge(
         'hurricane' => ['Florida Keys Hurricane', 'Track and hotels in the Florida Keys (M24, M26) is removed'],
         'close_port' => ['Port Token Removed'],
@@ -98,6 +98,32 @@ module Engine
       # Event logic goes here
       def event_close_port!
         @log << 'Port closes'
+        removals = Hash.new { |h, k| h[k] = {} }
+
+        @corporations.each do |corp|
+          corp.assignments.dup.each do |company, _|
+            puts 'axv', corp, company
+            removals[company][:corporation] = corp.name
+            corp.remove_assignment!(company)
+          end
+        end
+
+        @hexes.each do |hex|
+          hex.assignments.dup.each do |company, _|
+            removals[company][:hex] = hex.name
+            hex.remove_assignment!(company)
+          end
+        end
+
+        self.class::STEAMBOAT_HEXES.each do |hex|
+          hex_by_id(hex).tile.icons.reject! { |icon| icon.name == 'port' }
+        end
+
+        removals.each do |company, removal|
+          hex = removal[:hex]
+          corp = removal[:corporation]
+          @log << "-- Event: #{corp}'s #{company_by_id(company).name} token removed from #{hex} --"
+        end
       end
 
       def event_hurricane!
