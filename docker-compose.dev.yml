@@ -4,6 +4,8 @@ x-rack: &rack
   image: 18xx_rack:dev
   environment:
     DATABASE_URL: postgres://root:password@db:5432/18xx_development
+    VAPID_PUBLIC_KEY: BLHSKjvJ5hKgizomDjxqOLoAGXVXxwZrzhoqEch2Py7m4VcbsRo6t8hhfdTJzQgefyj-nhMtULffPbE2-UZ-xho
+    VAPID_PRIVATE_KEY: 8uG0SY8pNq5V2bxOmjy2cbIJlqYPcWGLIYd_ZNFZYLk
     RACK_ENV: development
     RUBYOPTS: --jit
   volumes:

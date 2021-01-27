@@ -211,6 +211,7 @@ class Api
       user_ids: user_ids,
       game_id: game_id,
       game_url: "#{url}/game/#{game_id}",
+      relative_url: "/game/#{game_id}",
       type: type,
       force: force,
     )

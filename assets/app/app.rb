@@ -24,6 +24,7 @@ class App < Snabberb::Component
   include GameManager
   include UserManager
   needs :pin, default: nil
+  needs :vapid_public_key, default: nil, store: true
 
   def render
     props = {

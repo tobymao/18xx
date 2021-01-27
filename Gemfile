@@ -19,6 +19,7 @@ gem 'tilt'
 gem 'uglifier'
 gem 'unicorn'
 gem 'unicorn-worker-killer'
+gem 'webpush'
 
 group :development do
   gem 'pry-byebug'

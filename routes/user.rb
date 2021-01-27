@@ -107,7 +107,7 @@ class Api
       expires: Date.today + Session::EXPIRE_TIME,
       domain: nil,
       httponly: true,
-      secure: true,
+      secure: PRODUCTION,
       path: '/',
     )
 

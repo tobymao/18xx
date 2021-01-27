@@ -15,7 +15,10 @@ GEM
       rake
     get_process_mem (0.2.7)
       ffi (~> 1.0)
+    hkdf (0.3.0)
+    jwt (2.2.2)
     kgio (2.11.3)
+    libv8 (8.4.255.0)
     libv8 (8.4.255.0-x86_64-linux)
     listen (3.3.3)
       rb-fsevent (~> 0.10, >= 0.10.3)
@@ -100,6 +103,9 @@ GEM
     unicorn-worker-killer (0.4.4)
       get_process_mem (~> 0)
       unicorn (>= 4, < 6)
+    webpush (1.1.0)
+      hkdf (~> 0.2)
+      jwt (~> 2.0)
 
 PLATFORMS
   ruby
@@ -129,6 +135,7 @@ DEPENDENCIES
   uglifier
   unicorn
   unicorn-worker-killer
+  webpush
 
 BUNDLED WITH
    2.2.3
