@@ -34,8 +34,8 @@ end
 
 desc 'Migrate development database all the way down and then back up'
 task :dev_bounce do
-  migrate.call('development', 0)
   DB[:actions].truncate if DB.tables.include?(:actions)
+  migrate.call('development', 0)
   Sequel::Migrator.apply(DB, 'migrate')
 end
 
