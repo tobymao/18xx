@@ -2,11 +2,13 @@
 
 require 'game_manager'
 require 'lib/connection'
+require 'lib/settings'
 require 'view/create_game'
 require 'view/logo'
 
 module View
   class Navigation < Snabberb::Component
+    include Lib::Settings
     needs :app_route, default: nil, store: true
     needs :user, default: nil, store: true
 
@@ -25,8 +27,10 @@ module View
         style: {
           display: 'grid',
           grid: '1fr / auto 1fr',
-          marginBottom: '1rem',
-          paddingBottom: '1vmin',
+          position: 'sticky',
+          top: '0',
+          padding: '0.5vmin 0',
+          backgroundColor: color_for(:bg),
           boxShadow: '0 2px 0 0 gainsboro',
         },
       }

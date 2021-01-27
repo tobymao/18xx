@@ -13,6 +13,11 @@ a {
 nav a {
   text-decoration: none;
 }
+nav li {
+  float: left;
+  margin: 0 0.5rem;
+  list-style: none;
+}
 
 button, .button_link {
   font-size: 14px;
@@ -156,7 +161,7 @@ svg {
 }
 
 nav#game_menu {
-  padding: 1rem 2vmin 1rem 2vmin;
+  padding: 1rem 2vmin calc(0.9rem + 0.5vmin) 2vmin;
 }
 /* Safari 10.1+ hack, affects most browsers on iOS => more space for scroll bar */
 @media not all and (min-resolution:.001dpcm) { @media {

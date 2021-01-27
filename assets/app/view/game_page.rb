@@ -342,15 +342,8 @@ module View
         style: { textDecoration: route_anchor == anchor[1..-1] ? 'underline' : 'none' },
         on: { click: ->(_event) { change_anchor(anchor) } },
       }
-      li_props = {
-        style: {
-          float: 'left',
-          margin: '0 0.5rem',
-          listStyle: 'none',
-        },
-      }
 
-      h(:li, li_props, [h(:a, a_props, name)])
+      h(:li, [h(:a, a_props, name)])
     end
 
     def route_anchor
