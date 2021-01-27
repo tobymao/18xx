@@ -28,6 +28,7 @@ module Engine
       MUST_BUY_TRAIN = :always
 
       HOME_TOKEN_TIMING = :operate
+      LIMIT_TOKENS_AFTER_MERGER = 999
 
       STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
         par: :red,

@@ -1,11 +1,14 @@
 # frozen_string_literal: true
 
 require_relative '../base'
+require_relative '../token_merger'
 
 module Engine
   module Step
     module G18CZ
       class BuyCorporation < Base
+        include TokenMerger
+
         ACTIONS = %w[buy_corporation pass].freeze
 
         def actions(entity)
@@ -23,18 +26,31 @@ module Engine
           corporation = action.corporation
           price = action.price
 
-          @log << "#{entity.name} buys #{corporation.name} for #{price} per share"
-
           max_cost = corporation.num_player_shares * price
           raise GameError,
                 "#{entity.name} cannot buy #{corporation.name} for #{price} per share.
                  #{max_cost} is needed but only #{entity.cash} available" if entity.cash < max_cost
 
-          # each player gets 1 price per share of corporation
-          # trains move to new corporation and can be discarded or upgraded
-          # free tokens move to new corporations
-          # placed tokens transform to new corporation, double are now free tokens
-          # corporation closes
+          @game.players.each do |player|
+            num = player.num_shares_of(corporation, ceil: false)
+            if num.positive?
+              entity.spend(num * price, player)
+              @log << "Player #{player.name} receives #{num * price} for #{num} shares from #{entity.name}"
+            end
+          end
+          receiving = []
+
+          trains = @game.transfer(:trains, corporation, entity).map(&:name)
+          receiving << "trains (#{trains})" if trains.any?
+
+          remove_duplicate_tokens(entity, corporation)
+          tokens = move_tokens_to_surviving(entity, corporation, 100)
+          receiving << "and tokens (#{tokens.size}: hexes #{tokens.compact})"
+
+          @log << "#{entity.name} buys #{corporation.name}
+          for #{@game.format_currency(price)} per share receiving #{receiving.join(', ')}"
+          # TODO: make trains upgradable
+
           corporation.close!
         end
 
