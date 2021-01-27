@@ -134,9 +134,10 @@ module View
           },
         }
 
-        trs << render_priority_deal(priority_props) if @game.class::NEXT_SR_PLAYER_ORDER == :after_last_to_act &&
+        order = @game.next_sr_player_order
+        trs << render_priority_deal(priority_props) if order == :after_last_to_act &&
                                                        @player == @game.priority_deal_player
-        trs << render_next_sr_position(priority_props) if @game.class::NEXT_SR_PLAYER_ORDER == :first_to_pass &&
+        trs << render_next_sr_position(priority_props) if order == :first_to_pass &&
                                                           @game.next_sr_position(@player)
 
         h(:table, trs)
