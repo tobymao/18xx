@@ -114,7 +114,7 @@ module Engine
             new_city = tile.cities.find do |city|
               # we want old_edges to be subset of new_edges
               # without the any? check, first city will always match
-              old_city.exits.any? && (old_city.exits - city.exits).empty?
+              !old_city.exits.empty? && (old_city.exits - city.exits).empty?
             end
 
             [old_city, new_city]
