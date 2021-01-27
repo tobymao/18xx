@@ -300,7 +300,7 @@ module View
           backgroundColor: bg_color,
           color: active_player ? contrast_on(bg_color) : color_for(:font2),
           fontSize: 'large',
-          zIndex: '9999',
+          zIndex: '999',
         },
       }
 

@@ -11,7 +11,7 @@ module View
     def render
       h1_props = {
         style: {
-          margin: '0 1rem 0 0',
+          margin: '0',
           fontSize: '1rem',
           whiteSpace: 'nowrap',
         },

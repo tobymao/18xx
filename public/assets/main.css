@@ -13,11 +13,6 @@ a {
 nav a {
   text-decoration: none;
 }
-nav li {
-  float: left;
-  margin: 0 0.5rem;
-  list-style: none;
-}
 
 button, .button_link {
   font-size: 14px;
@@ -113,7 +108,13 @@ input + label, select + label {
   margin-right: 1rem;
 }
 
+nav ul {
+  margin: 0;
+  padding: 0;
+}
 nav li {
+  float: left;
+  padding: 0 0.5rem;
   list-style: none;
 }
 
@@ -199,13 +200,31 @@ nav#game_menu {
   font-weight: bold;
 }
 
-#header div {
-  display: grid;
-  grid: 1fr / 1fr auto;
+nav .submenu {
+  padding: 0.3rem 0.5rem;
 }
-nav#games, nav#main {
-  justify-self: center;
-  margin: auto 0;
+nav .submenu li {
+  float: none;
+}
+nav .submenu a {
+  display: block;
+  min-width: 5.5rem;
+}
+@media only screen and (max-width: 600px) {
+  #main_nav .menu {
+    display: none;
+  }
+  nav .submenu li {
+    padding: 0.4rem 0;
+  }
+}
+@media only screen and (min-width: 601px) {
+  #main_nav a.toggle {
+    display: none;
+  }
+  nav .submenu li {
+    padding: 0.2rem 0;
+  }
 }
 
 #profile-settings > div {

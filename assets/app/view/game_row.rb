@@ -46,7 +46,7 @@ module View
           marginRight: '0.5rem',
         },
       }
-      children = [h('div#header', props, [h(:h2, header), *pagination])]
+      children = [h(:div, props, [h(:h2, header), *pagination])]
       children << render_search unless @type == 'hs'
 
       h(:div, children)
