@@ -57,9 +57,10 @@ module Engine
       end
 
       def current_actions
-        return [] if current_entity&.closed?
+        entity = current_entity
+        return [] if !entity || entity.closed?
 
-        current_entity ? actions(current_entity) : []
+        actions(entity)
       end
 
       def current_entity

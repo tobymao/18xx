@@ -80,9 +80,10 @@ module Engine
         return unless bundle&.buyable
 
         corporation = bundle.corporation
-        entity.cash >= bundle.price && can_gain?(entity, bundle) &&
+        entity.cash >= bundle.price &&
           !@round.players_sold[entity][corporation] &&
-          (can_buy_multiple?(entity, corporation) || !bought?)
+          (can_buy_multiple?(entity, corporation) || !bought?) &&
+          can_gain?(entity, bundle)
       end
 
       def must_sell?(entity)
@@ -172,12 +173,33 @@ module Engine
         end
       end
 
+      def can_buy_shares?(entity, shares)
+        min_share = nil
+
+        shares.each do |share|
+          next unless share.buyable
+
+          min_share = share if !min_share || share.percent < min_share.percent
+        end
+
+        can_buy?(entity, min_share&.to_bundle)
+      end
+
       def can_buy_any_from_market?(entity)
-        @game.share_pool.shares.any? { |s| can_buy?(entity, s.to_bundle) }
+        @game.share_pool.shares.group_by(&:corporation).each do |_, shares|
+          return true if can_buy_shares?(entity, shares)
+        end
+
+        false
       end
 
       def can_buy_any_from_ipo?(entity)
-        @game.corporations.any? { |c| c.ipoed && c.shares.any? { |s| can_buy?(entity, s.to_bundle) } }
+        @game.corporations.each do |corporation|
+          next unless corporation.ipoed
+          return true if can_buy_shares?(entity, corporation.shares)
+        end
+
+        false
       end
 
       def can_buy_any?(entity)
