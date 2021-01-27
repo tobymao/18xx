@@ -586,14 +586,14 @@ module Engine
          "name":"Società Corriere",
          "value":20,
          "revenue":5,
-         "desc":"Blocks Salerno (H8) while owned by a player.",
+         "desc":"Blocks Caserta (F8) while owned by a player.",
          "sym":"SCE",
          "abilities":[
             {
                "type":"blocks_hexes",
                "owner_type":"player",
                "hexes":[
-                  "H8"
+                  "F8"
                ]
             }
          ]
@@ -716,7 +716,7 @@ module Engine
             10,
             20
          ],
-         "coordinates":"P2",
+         "coordinates":"O9",
          "always_market_price":true,
          "color":"green"
       },
