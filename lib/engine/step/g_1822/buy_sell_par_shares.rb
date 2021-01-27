@@ -13,7 +13,6 @@ module Engine
 
         def actions(entity)
           actions = super
-          actions << 'bidding_tokens'
           actions << 'bid'
           actions
         end
@@ -51,7 +50,7 @@ module Engine
         end
 
         def can_bid?(entity, company)
-          return false if highest_player_bid?(entity, company)
+          return false if max_bid(entity, company) < min_bid(company) || highest_player_bid?(entity, company)
 
           !(find_bid(entity, company).nil? && bidding_tokens(entity).zero?)
         end
