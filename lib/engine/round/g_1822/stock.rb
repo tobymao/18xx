@@ -8,26 +8,39 @@ module Engine
       class Stock < Stock
         attr_accessor :bids, :bidders
 
+        def setup
+          super
+          @game.setup_bidboxes
+        end
+
         def finish_round
           @game.bidbox_minors.map do |minor_company|
             bid = highest_bid(minor_company)
-            float_minor(bid) unless bid.nil?
+            if bid.nil?
+              minor_company.owner = nil
+            else
+              float_minor(bid)
+            end
           end
 
           @game.bidbox_concessions.map do |concessions|
             bid = highest_bid(concessions)
-            buy_company(bid) unless bid.nil?
+            if bid.nil?
+              concessions.owner = nil
+            else
+              buy_company(bid)
+            end
           end
 
           @game.bidbox_privates.map do |private_company|
             bid = highest_bid(private_company)
-            buy_company(bid) unless bid.nil?
+            if bid.nil?
+              private_company.owner = nil
+            else
+              buy_company(bid)
+            end
           end
 
-          super
-        end
-
-        def setup
           super
         end
 
@@ -39,8 +52,7 @@ module Engine
           company.owner = player
           player.companies << company
           player.spend(price, @game.bank) if price.positive?
-          @game.companies.delete(company)
-          @log << "#{player.name} buys #{company.name} for #{@game.format_currency(price)}"
+          @log << "#{player.name} wins the bid #{company.name} for #{@game.format_currency(price)}"
         end
 
         def float_minor(bid)
@@ -48,27 +60,48 @@ module Engine
           company = bid.company
           price = bid.price
 
-          return unless (minor = @game.minors.find { |m| m.id == company.id })
+          ## Find the correct minor in the corporations
+          minor_id = company.id[1..-1]
+          minor = @game.corporations.find { |m| m.id == minor_id }
 
+          # TODO: Get the correct par price according to phase
+          par_price = 50
+          share_price = @game.stock_market.par_prices.find { |pp| pp.price == par_price }
+
+          # Temporarily give the player cash to buy the minors PAR shares
+          @game.bank.spend(share_price.price * 2, player)
+
+          # Set the parprice of the minor and let the player get the president share
+          @game.stock_market.set_par(minor, share_price)
+          share = minor.shares.first
+          @game.share_pool.buy_shares(player, share.to_bundle)
+          @game.after_par(minor)
+
+          # Clear the corporation of par cash
+          minor.spend(minor.cash, @game.bank)
+
+          # TODO: Move the correct amount to money to the minor. This is according to phase of the game
+          treasury = par_price * 2
+          @game.bank.spend(treasury, minor)
+
+          # Spend the whole amount the player have bid
           player.spend(price, @game.bank)
 
-          minor.owner = player
-          minor.float!
-          @game.bank.spend(100, minor)
-
-          hex = @game.hex_by_id(minor.coordinates)
-          hex.tile.cities[minor.city || 0].place_token(minor, minor.next_token)
-
-          share_price = @game.stock_market.par_prices.find { |pp| pp.price == 50 }
-          @game.stock_market.set_par(minor, share_price)
-
+          # Remove the proxy company for the minor
           @game.companies.delete(company)
-          @log << "#{player.name} buys #{company.name} for #{@game.format_currency(price)}"
-          @log << "#{minor.name} floats with parprice 50 and a treasury of 100"
+
+          # If there is a difference between the treasury and the money the company get from the IPO
+          treasury_par_difference = treasury - (par_price * 2)
+          @log << "#{minor.name} recives an additional #{@game.format_currency(treasury_par_difference)} "\
+                  'from the bid' if treasury_par_difference != 0
         end
 
         def highest_bid(company)
           @bids[company]&.max_by(&:price)
+        end
+
+        def sold_out?(corporation)
+          corporation.type == :major && super
         end
       end
     end

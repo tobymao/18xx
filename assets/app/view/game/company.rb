@@ -50,15 +50,13 @@ module View
           render_company_on_card(@company)
         else
           header_style = {
-            background: 'yellow',
+            background: @company.color,
+            color: @company.text_color,
             border: '1px solid',
             borderRadius: '5px',
-            color: 'black',
             marginBottom: '0.5rem',
             fontSize: '90%',
           }
-          header_style[:background] = @company.header_color if @company.respond_to?(:header_color)
-          header_style[:color] = @company.header_text_color if @company.respond_to?(:header_text_color)
 
           description_style = {
             margin: '0.5rem 0',
@@ -99,9 +97,8 @@ module View
           end
           props[:style][:display] = @display
 
-          header_name = (@company.respond_to?(:header_name) ? @company.header_name : 'PRIVATE COMPANY')
           children = [
-            h(:div, { style: header_style }, header_name),
+            h(:div, { style: header_style }, 'PRIVATE COMPANY'),
             h(:div, @company.name),
             h(:div, { style: description_style }, @company.desc),
             h(:div, { style: value_style }, "Value: #{@game.format_currency(@company.value)}"),

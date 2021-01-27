@@ -19,14 +19,6 @@ module Engine
           player.cash - committed_cash(player)
         end
 
-        def remove_from_auction(entity)
-          super
-        end
-
-        def setup_auction
-          super
-        end
-
         def committed_cash(player, _show_hidden = false)
           bids_for_player(player, true).sum(&:price)
         end
@@ -49,9 +41,9 @@ module Engine
           yield company, bids if bids.size > 1
         end
 
-        def bids_for_player(player, only_highest_bid_committed = false)
+        def bids_for_player(player, only_committed_bids = false)
           @bids.values.map do |bids|
-            if only_highest_bid_committed
+            if only_committed_bids
               highest_bid = bids.max_by(&:price)
               highest_bid if highest_bid&.entity == player
             else

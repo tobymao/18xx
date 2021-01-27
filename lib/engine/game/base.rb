@@ -369,6 +369,7 @@ module Engine
         data['companies'].map! do |company|
           company.transform_keys!(&:to_sym)
           company[:abilities]&.each { |ability| ability.transform_keys!(&:to_sym) }
+          company[:color] = const_get(:COLORS)[company[:color]] if const_defined?(:COLORS)
           company
         end
 

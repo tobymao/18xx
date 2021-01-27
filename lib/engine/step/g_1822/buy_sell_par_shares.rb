@@ -13,9 +13,6 @@ module Engine
 
         def actions(entity)
           actions = super
-          actions << 'bidbox_minors'
-          actions << 'bidbox_concessions'
-          actions << 'bidbox_privates'
           actions << 'bidding_tokens'
           actions << 'bid'
           actions
