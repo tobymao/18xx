@@ -10,7 +10,6 @@ module Engine
 
         def setup
           @laid_city = false
-          @tr_distance = nil
           @saved_revenues = []
           super
         end
@@ -36,6 +35,7 @@ module Engine
             raise GameError, "#{action.hex.id} cannot be layed as this hex was already layed on this turn"
           end
 
+          @saved_revenues = revenues(action.hex.tile, action.entity)
           lay_tile(action, extra_cost: tile_lay[:cost])
           @upgraded = true if action.tile.color != :yellow
           @laid_city = true if action.tile.cities.any?
@@ -43,30 +43,29 @@ module Engine
           @previous_laid_hexes << action.hex
         end
 
-        def save_old(old_tile, entity)
-          return if @game.loading || !entity.operator?
+        # this must be called before graphs are updated with new tile
+        def revenues(tile, entity)
+          return [] if @game.loading || tile.color == :white || !entity.operator?
 
-          @tr_distance = @game.biggest_train_distance(entity)
-          @saved_revenues = if old_tile.color == :white
-                              []
-                            else
-                              old_tile.nodes.select { |n| reachable_node?(entity, n, @tr_distance) }
-                                .map(&:max_revenue).sort
-                            end
+          tile.nodes.select { |n| reachable_node?(entity, n, @game.biggest_train_distance(entity)) }
+            .map(&:max_revenue).sort
         end
 
         def check_track_restrictions!(entity, old_tile, new_tile)
           @game.clear_distances
           return if @game.loading || !entity.operator?
 
+          tr_distance = @game.biggest_train_distance(entity)
+
           changed_city = false
           if old_tile.color != :white
             # add requirement that paths/nodes be reachable with train
-            unless reachable_hex?(entity, new_tile.hex, @tr_distance)
+            unless reachable_hex?(entity, new_tile.hex, tr_distance)
               raise GameError, 'Tile must be reachable with train'
             end
 
-            new_revenues = new_tile.nodes.select { |n| reachable_node?(entity, n, @tr_distance) }
+            # check to see revenues reachable from old graph have changed
+            new_revenues = new_tile.nodes.select { |n| reachable_node?(entity, n, tr_distance) }
                              .map(&:max_revenue).sort
             changed_city = @saved_revenues != new_revenues
           end
@@ -76,13 +75,14 @@ module Engine
 
           new_tile.paths.each do |np|
             next unless @game.graph.connected_paths(entity)[np]
-            next if old_tile.color != :white && !reachable_path?(entity, np, @tr_distance)
+            next if old_tile.color != :white && !reachable_path?(entity, np, tr_distance)
 
             op = old_paths.find { |path| np <= path }
             used_new_track = true unless op
 
             next unless old_tile.color == :white
 
+            # check to see if revenues on tile have changed
             old_revenues = op&.nodes && op.nodes.map(&:max_revenue).sort
             new_revenues = np&.nodes && np.nodes.map(&:max_revenue).sort
             changed_city = true unless old_revenues == new_revenues
