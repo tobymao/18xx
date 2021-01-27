@@ -19,6 +19,17 @@ module Engine
       NEW_PORT_HEXES = %w[B16 G5 J20 L16].freeze
       NEW_SMS_HEXES = %w[B14 G7 H8 J18 L12 L18 L20 N20 O9 P2].freeze
 
+      EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+        'green_par': ['144 Par Available',
+                      'Corporations may now par at 144 (in addition to 67 and 100)'],
+        'brown_par': ['216 Par Available',
+                      'Corporations may now par at 216 (in addition to 67, 100, and 144)'],
+        'earthquake': ['Avezzano Earthquake',
+                       'Avezzano (C7) loses connection to Rome, revenue reduced to 10.']
+      ).freeze
+
+      AVZ_CODE = 'town=revenue:10;path=a:4,b:_0,track:narrow'.freeze
+
       NEW_GRAY_REVENUE_CENTERS =
         {
           'A7':
@@ -126,6 +137,13 @@ module Engine
 
       def gray_revenue(stop)
         NEW_GRAY_REVENUE_CENTERS[stop.hex.id][@phase.name]
+      end
+
+      def event_earthquake!
+        @log << '-- Event: Avezzano Earthquake --'
+        new_tile = Engine::Tile.from_code('C7', :gray, AVZ_CODE)
+        new_tile.location_name = 'Avezzano'
+        hex_by_id('C7').tile = new_tile
       end
 
       def remove_corp; end
