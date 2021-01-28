@@ -30,11 +30,11 @@ module Engine
             end
           end
 
-          @game.bidbox_privates.each do |private|
-            if (bid = highest_bid(private))
+          @game.bidbox_privates.each do |company|
+            if (bid = highest_bid(company))
               buy_company(bid)
             else
-              private.owner = nil
+              company.owner = nil
             end
           end
 

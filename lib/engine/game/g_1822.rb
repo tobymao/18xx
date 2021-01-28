@@ -123,8 +123,8 @@ module Engine
           concessions.owner = @bank
         end
 
-        bidbox_privates.each do |private|
-          private.owner = @bank
+        bidbox_privates.each do |company|
+          company.owner = @bank
         end
       end
 
