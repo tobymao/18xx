@@ -456,7 +456,17 @@ module Engine
             token = Engine::Token.new(c)
             c.tokens << token
             place_home_token(c)
-            token.swap!(corporation.tokens.find { |t| t.price.zero? && !t.used }, check_tokenable: false)
+
+            system_token = corporation.tokens.find do |t|
+              t.price.zero? && !t.used && !@round.pending_tokens.find { |p_t| p_t[:token] == t }
+            end
+            if (pending_token = @round.pending_tokens.find { |p_t| p_t[:entity] == c })
+              pending_token[:entity] = corporation
+              pending_token[:token] = system_token
+              pending_token[:hexes].first.tile.reservations.map! { |r| r == c ? corporation : r }
+            else
+              token.swap!(system_token, check_tokenable: false)
+            end
           end
         else
           super
