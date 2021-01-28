@@ -204,6 +204,10 @@ module Engine
         @corporations.reject! { |c| c.id == 'SC' }
         @sc_company = nil
       end
+
+      def neutral_tokens(corporation)
+        corporation.tokens.map { |t| t.type == :neutral && t.corporation != corporation ? 1 : 0 }.sum
+      end
     end
   end
 end
