@@ -36,11 +36,11 @@ module View
           h(GameInfo, game: @game, layout: 'upcoming_trains'),
         ].compact)
 
-        neutral_note = h(:div, 'Note: N under Tokens column represents a neutral token.')
+        neutral_note = h(:div, 'Note: N in Tokens column represents a neutral token.')
 
         children << top_line
         children << render_table
-        children << neutral_note
+        children << neutral_note if @game.respond_to?(:neutral_tokens)
         children << render_spreadsheet_controls
 
         h('div#spreadsheet', {
