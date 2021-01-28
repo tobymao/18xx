@@ -296,15 +296,19 @@ module View
 
           @game.companies.select { |c| c.owner == @game.bank }.map do |company|
             children = []
-            children << h(Company, company: company)
-            children << h('div.margined_bottom', { style: { width: '20rem' } },
-                          render_buy_input(company)) if @selected_company == company
+            children << h(Company, company: company,
+                                   bids: (@current_actions.include?('bid') ? @step.bids[company] : nil))
+            if @selected_company == company
+              inputs = []
+              inputs.concat(render_buy_input(company)) if @current_actions.include?('buy_company')
+              inputs.concat(render_bid_input(company)) if @current_actions.include?('bid')
+              children << h('div.margined_bottom', { style: { width: '20rem' } }, inputs)
+            end
             h(:div, props, children)
           end
         end
 
         def render_buy_input(company)
-          return [] unless @current_actions.include?('buy_company')
           return [] unless @step.can_buy_company?(@current_entity, company)
           return render_buy_input_interval(company) if company.interval
 
@@ -349,6 +353,12 @@ module View
             h("div#{div_class}", { style: { marginTop: '0.5rem' } }, "Buy #{@selected_company.sym}: "),
             *buy_buttons,
           ])]
+        end
+
+        def render_bid_input(company)
+          return [] unless @step.can_bid?(@current_entity, company)
+
+          [h(Bid, entity: @current_entity, corporation: company)]
         end
       end
     end

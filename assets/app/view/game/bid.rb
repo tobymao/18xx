@@ -28,7 +28,8 @@ module View
           place_bid = lambda do
             process_action(Engine::Action::Bid.new(
               @entity,
-              corporation: @corporation,
+              corporation: @corporation.corporation? ? @corporation : nil,
+              company: @corporation.company? ? @corporation : nil,
               price: Native(price_input)[:elm][:value].to_i,
             ))
           end
