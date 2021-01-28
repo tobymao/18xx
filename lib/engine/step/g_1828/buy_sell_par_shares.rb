@@ -26,10 +26,10 @@ module Engine
 
         def player_can_exchange?(entity)
           return false unless entity.player?
+          return unless (company = entity.companies.find { |c| c.id == 'M&H' })
 
-          company = entity.companies.find { |c| c.id == 'M&H' }
           step = @round.steps.find { |r| r.is_a?(Engine::Step::G1828::Exchange) }
-          company && step&.can_exchange?(company)
+          step&.can_exchange?(company)
         end
 
         def choice_available?(_entity)

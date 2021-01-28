@@ -151,7 +151,7 @@ module Engine
 
       def pass!
         super
-        if @current_actions.any?
+        if !@current_actions.empty?
           @round.pass_order.delete(current_entity)
           current_entity.unpass!
         else
