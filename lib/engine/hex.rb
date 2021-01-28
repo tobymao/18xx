@@ -128,15 +128,8 @@ module Engine
       @tile.cities.each_with_index do |old_city, index|
         next if city_map[old_city]
 
-        new_city = if !new_cities.include?(tile.cities[index])
-                     tile.cities[index]
-                   elsif !new_cities.include?(tile.cities[0])
-                     tile.cities[0]
-                   else
-                     tile.cities.find { |city| !new_cities.include?(city) }
-                   end
-        # failsafe
-        new_city ||= tile.cities[index] || tile.cities[0]
+        new_city = tile.cities[index]
+        new_city = tile.cities.find { |city| !new_cities.include?(city) } if new_cities.include?(new_city)
 
         city_map[old_city] = new_city
         new_cities << new_city
