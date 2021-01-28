@@ -110,19 +110,30 @@ module Engine
           @tile.cities.zip(tile.cities).to_h
         # if @tile is not blank, ensure connectivity is maintained
         else
-          @tile.cities.map.with_index do |old_city, index|
+          @tile.cities.map do |old_city|
             new_city = tile.cities.find do |city|
               # we want old_edges to be subset of new_edges
               # without the any? check, first city will always match
-              old_city.exits.any? && (old_city.exits - city.exits).empty?
+              !old_city.exits.empty? && (old_city.exits - city.exits).empty?
             end
 
-            # When downgrading from yellow to no-exit tiles, assume it's the same index
-            # Also, when upgrading a no-exit city, assume it's the same index if possible
-            new_city ||= (tile.cities[index] || tile.cities[0])
             [old_city, new_city]
           end.to_h
         end
+
+      # When downgrading from yellow to no-exit tiles, assume it's the same index
+      # Also, when upgrading a no-exit city, assume it's the same index if possible, otherwise
+      # pick first available city
+      new_cities = city_map.values.compact
+      @tile.cities.each_with_index do |old_city, index|
+        next if city_map[old_city]
+
+        new_city = tile.cities[index]
+        new_city = tile.cities.find { |city| !new_cities.include?(city) } if new_cities.include?(new_city)
+
+        city_map[old_city] = new_city
+        new_cities << new_city
+      end
 
       # when upgrading, preserve reservations on previous tile
       city_map.each do |old_city, new_city|
