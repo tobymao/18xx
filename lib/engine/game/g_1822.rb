@@ -98,15 +98,15 @@ module Engine
       end
 
       def bidbox_minors
-        @companies.select { |c| c.id[0] == 'M' && (c.owner.nil? || c.owner == @bank) }.first(4)
+        @companies.select { |c| c.id[0] == 'M' && (!c.owner || c.owner == @bank) }.first(4)
       end
 
       def bidbox_concessions
-        @companies.select { |c| c.id[0] == 'C' && (c.owner.nil? || c.owner == @bank) }.first(3)
+        @companies.select { |c| c.id[0] == 'C' && (!c.owner || c.owner == @bank) }.first(3)
       end
 
       def bidbox_privates
-        @companies.select { |c| c.id[0] == 'P' && (c.owner.nil? || c.owner == @bank) }.first(3)
+        @companies.select { |c| c.id[0] == 'P' && (!c.owner || c.owner == @bank) }.first(3)
       end
 
       def init_bidding_token
