@@ -233,10 +233,10 @@ remains open but the discount can no longer be used. Default true.
 ## train_limit
 
 Modify train limit in some way.
+For performance reasons, the supporting code needs to be added directly to the game class. See G18MEX#train_limit for an example.
 
 - `increase`: If positive, this will increase the train limit with this
   amount in all faces. Default 0.
-- `constant`: If positive, this is the train limit used. Default 0.
 
 ## token
 

@@ -37,16 +37,11 @@ module Engine
     end
 
     def train_limit(entity)
-      limit = train_limit_constant(entity)
-      return limit if limit.positive?
-
-      limit =
-        if @train_limit.is_a?(Hash)
-          @train_limit[entity.type] || 0
-        else
-          @train_limit
-        end
-      limit + train_limit_increase(entity)
+      if @train_limit.is_a?(Hash)
+        @train_limit[entity.type] || 0
+      else
+        @train_limit
+      end
     end
 
     def available?(phase_name)
@@ -102,17 +97,6 @@ module Engine
       return train_limit unless train_limit.is_a?(Hash)
 
       train_limit.map { |type, limit| "#{type} => #{limit}" }.join(',')
-    end
-
-    private
-
-    def train_limit_increase(entity)
-      Array(@game.abilities(entity, :train_limit)).sum(&:increase)
-    end
-
-    def train_limit_constant(entity)
-      @game.abilities(entity, :train_limit) { |ability| return ability.constant if ability.constant }
-      0
     end
   end
 end

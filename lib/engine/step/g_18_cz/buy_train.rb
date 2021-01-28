@@ -32,7 +32,7 @@ module Engine
         end
 
         def room_for_only_one?(entity)
-          @game.phase.train_limit(entity) - entity.trains.size == 1
+          @game.train_limit(entity) - entity.trains.size == 1
         end
       end
     end

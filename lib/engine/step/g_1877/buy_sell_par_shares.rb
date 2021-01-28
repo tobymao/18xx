@@ -13,7 +13,7 @@ module Engine
         end
 
         def room?(entity, _shell = nil)
-          entity.trains.size < @game.phase.train_limit(entity)
+          entity.trains.size < @game.train_limit(entity)
         end
 
         def can_buy_train?(entity)

@@ -717,6 +717,10 @@ module Engine
         @depot.trains
       end
 
+      def train_limit(entity)
+        @phase.train_limit(entity)
+      end
+
       def train_owner(train)
         train.owner
       end
@@ -1515,7 +1519,7 @@ module Engine
       def crowded_corps
         @crowded_corps ||= corporations.select do |c|
           trains = self.class::OBSOLETE_TRAINS_COUNT_FOR_LIMIT ? c.trains.size : c.trains.count { |t| !t.obsolete }
-          trains > @phase.train_limit(c)
+          trains > train_limit(c)
         end
       end
 
