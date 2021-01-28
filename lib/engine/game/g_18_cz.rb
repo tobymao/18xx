@@ -125,9 +125,10 @@ module Engine
           Step::G18CZ::Token,
           Step::Route,
           Step::G18CZ::Dividend,
+          Step::G18CZ::UpgradeTrain,
+          Step::G18CZ::BuyCorporation,
           Step::DiscardTrain,
           Step::G18CZ::BuyTrain,
-          Step::G18CZ::BuyCorporation,
           [Step::BuyCompany, { blocks: true }],
         ], round_num: round_num)
       end

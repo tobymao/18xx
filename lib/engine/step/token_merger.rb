@@ -37,7 +37,7 @@ module Engine
         }
       end
 
-      def move_tokens_to_surviving(surviving, others, price_for_new_token = 0)
+      def move_tokens_to_surviving(surviving, others, price_for_new_token = 0, check_tokenable = true)
         # Moves tokens to surviving company and returns a list of those moved
 
         # Seperate unused tokens to allow them to be moved to the end
@@ -47,7 +47,7 @@ module Engine
           new_token = Engine::Token.new(surviving, price: price_for_new_token)
           if token.city
             used << new_token
-            token.swap!(new_token)
+            token.swap!(new_token, check_tokenable: check_tokenable)
           else
             unused << new_token
           end

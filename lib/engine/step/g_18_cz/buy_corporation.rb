@@ -40,11 +40,16 @@ module Engine
           end
           receiving = []
 
-          trains = @game.transfer(:trains, corporation, entity).map(&:name)
-          receiving << "trains (#{trains})" if trains.any?
+          trains = @game.transfer(:trains, corporation, entity)
+          receiving << "trains (#{trains.map(&:name)})" if trains.any?
+
+          @round.bought_trains << {
+            entity: entity,
+            trains: trains,
+          }
 
           remove_duplicate_tokens(entity, corporation)
-          tokens = move_tokens_to_surviving(entity, corporation, 100)
+          tokens = move_tokens_to_surviving(entity, corporation, 100, false)
           receiving << "and tokens (#{tokens.size}: hexes #{tokens.compact})"
 
           @log << "#{entity.name} buys #{corporation.name}
