@@ -82,7 +82,7 @@ module Engine
           @log << "#{entity.name} wins bid on #{corporation.name} for #{@game.format_currency(price)}"
           par_price = [price / 2, MAX_MINOR_PAR].min
 
-          share_price = @game.find_share_price(par_price)
+          share_price = get_all_par_prices(corporation).find { |sp| sp.price <= par_price }
 
           # Temporarily give the entity cash to buy the corporation PAR shares
           @game.bank.spend(share_price.price * 2, entity)
@@ -135,11 +135,16 @@ module Engine
           end
         end
 
-        def get_par_prices(entity, _corp)
+        def get_all_par_prices(corp)
+          types = corp.type == :major ? %i[par_2 par] : %i[par_1 par]
           @game.stock_market
-          .market[0]
+          .market.flat_map { |m| m.select { |sp| types.include?(sp&.type) } }
+          .sort_by(&:price)
           .reverse
-          .select { |sp| %i[par_2 par].include?(sp.type) && sp.price * 2 <= entity.cash }
+        end
+
+        def get_par_prices(entity, corp)
+          get_all_par_prices(corp).select { |sp| sp.price * 2 <= entity.cash }
         end
 
         def ipo_type(entity)
