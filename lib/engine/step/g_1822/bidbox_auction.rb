@@ -28,7 +28,7 @@ module Engine
         end
 
         def highest_player_bid?(player, company)
-          return false if find_bid(player, company).nil?
+          return false unless find_bid(player, company)
 
           current_bid_amount(player, company) >= (highest_bid(company)&.price || 0)
         end

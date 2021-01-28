@@ -98,15 +98,15 @@ module Engine
       end
 
       def bidbox_minors
-        @companies.select { |c| c.id[0] == 'M' && (c.owner.nil? || c.owner == @bank) }.map.first(4)
+        @companies.select { |c| c.id[0] == 'M' && (c.owner.nil? || c.owner == @bank) }.first(4)
       end
 
       def bidbox_concessions
-        @companies.select { |c| c.id[0] == 'C' && (c.owner.nil? || c.owner == @bank) }.map.first(3)
+        @companies.select { |c| c.id[0] == 'C' && (c.owner.nil? || c.owner == @bank) }.first(3)
       end
 
       def bidbox_privates
-        @companies.select { |c| c.id[0] == 'P' && (c.owner.nil? || c.owner == @bank) }.map.first(3)
+        @companies.select { |c| c.id[0] == 'P' && (c.owner.nil? || c.owner == @bank) }.first(3)
       end
 
       def init_bidding_token
@@ -115,16 +115,16 @@ module Engine
 
       def setup_bidboxes
         # Set the owner to bank for the companies up for auction this stockround
-        bidbox_minors.map do |minor_company|
-          minor_company.owner = @bank
+        bidbox_minors.map do |minor|
+          minor.owner = @bank
         end
 
         bidbox_concessions.map do |concessions|
           concessions.owner = @bank
         end
 
-        bidbox_privates.map do |private_company|
-          private_company.owner = @bank
+        bidbox_privates.map do |private|
+          private.owner = @bank
         end
       end
 

@@ -41,8 +41,8 @@ module Engine
           super
 
           @bid_actions = 0
-          @bidders = (@round.bidders.nil? ? Hash.new { |h, k| h[k] = [] } : @round.bidders)
-          @bids = @round.bids unless @round.bids.nil?
+          @bidders = @round.bidders || Hash.new { |h, k| h[k] = [] }
+          @bids = @round.bids if @round.bids
         end
 
         def bidding_tokens(player)
@@ -52,7 +52,7 @@ module Engine
         def can_bid?(entity, company)
           return false if max_bid(entity, company) < min_bid(company) || highest_player_bid?(entity, company)
 
-          !(find_bid(entity, company).nil? && bidding_tokens(entity).zero?)
+          !(!find_bid(entity, company) && bidding_tokens(entity).zero?)
         end
 
         protected

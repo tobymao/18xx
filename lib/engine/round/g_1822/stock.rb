@@ -14,30 +14,27 @@ module Engine
         end
 
         def finish_round
-          @game.bidbox_minors.map do |minor_company|
-            bid = highest_bid(minor_company)
-            if bid.nil?
-              minor_company.owner = nil
-            else
+          @game.bidbox_minors.each do |minor|
+            if (bid = highest_bid(minor))
               float_minor(bid)
+            else
+              minor.owner = nil
             end
           end
 
-          @game.bidbox_concessions.map do |concessions|
-            bid = highest_bid(concessions)
-            if bid.nil?
+          @game.bidbox_concessions.each do |concessions|
+            if (bid = highest_bid(concessions))
+              buy_company(bid)
+            else
               concessions.owner = nil
-            else
-              buy_company(bid)
             end
           end
 
-          @game.bidbox_privates.map do |private_company|
-            bid = highest_bid(private_company)
-            if bid.nil?
-              private_company.owner = nil
-            else
+          @game.bidbox_privates.each do |private|
+            if (bid = highest_bid(private))
               buy_company(bid)
+            else
+              private.owner = nil
             end
           end
 
