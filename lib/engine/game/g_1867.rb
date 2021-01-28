@@ -3,6 +3,7 @@
 require_relative '../config/game/g_1867'
 require_relative '../loan'
 require_relative 'base'
+require_relative 'company_price_up_to_face'
 require_relative 'interest_on_loans'
 require_relative 'stubs_are_restricted'
 
