@@ -66,7 +66,11 @@ module Engine
         end
 
         def can_merge_any?(entity)
-          @game.corporations.any? { |corporation| can_merge?(entity, corporation) }
+          @game.corporations.any? do |corporation|
+            next if corporation.system?
+
+            @game.corporations.any? { |candidate| @game.merge_candidate?(entity, corporation, candidate) }
+          end
         end
 
         def can_merge?(entity, corporation)

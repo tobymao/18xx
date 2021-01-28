@@ -267,23 +267,24 @@ module Engine
       end
 
       def merge_candidates(player, corporation)
-        return [] if !player || !corporation
         return [] if corporation.system?
 
-        @corporations.select do |candidate|
-          next if candidate == corporation ||
-                  candidate.system? ||
-                  !candidate.ipoed ||
-                  (corporation.owner != player && candidate.owner != player) ||
-                  candidate.operated? != corporation.operated? ||
-                  (!candidate.floated? && !corporation.floated?)
+        @corporations.select { |candidate| merge_candidate?(player, corporation, candidate) }
+      end
 
-          # account for another player having 5+ shares
-          @players.any? do |p|
-            num_shares = p.num_shares_of(candidate) + p.num_shares_of(corporation)
-            num_shares >= 6 ||
-              (num_shares == 5 && !sold_this_round?(p, candidate) && !sold_this_round?(p, corporation))
-          end
+      def merge_candidate?(player, corporation, candidate)
+        return false if candidate == corporation ||
+                        candidate.system? ||
+                        !candidate.ipoed ||
+                        (corporation.owner != player && candidate.owner != player) ||
+                        candidate.operated? != corporation.operated? ||
+                        (!candidate.floated? && !corporation.floated?)
+
+        # account for another player having 5+ shares
+        @players.any? do |p|
+          num_shares = p.num_shares_of(candidate) + p.num_shares_of(corporation)
+          num_shares >= 6 ||
+            (num_shares == 5 && !sold_this_round?(p, candidate) && !sold_this_round?(p, corporation))
         end
       end
 
