@@ -1095,7 +1095,7 @@ module Engine
         end
 
         # update route halts
-        route.halts = num_halts if (num_halts.positive? || route.halts) && !loaner_new_rules?(route)
+        route.halts = num_halts if (halts.any? || route.halts) && !loaner_new_rules?(route) && !ignore_halts?
 
         stops
       end
