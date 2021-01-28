@@ -115,15 +115,15 @@ module Engine
 
       def setup_bidboxes
         # Set the owner to bank for the companies up for auction this stockround
-        bidbox_minors.map do |minor|
+        bidbox_minors.each do |minor|
           minor.owner = @bank
         end
 
-        bidbox_concessions.map do |concessions|
+        bidbox_concessions.each do |concessions|
           concessions.owner = @bank
         end
 
-        bidbox_privates.map do |private|
+        bidbox_privates.each do |private|
           private.owner = @bank
         end
       end
@@ -139,15 +139,15 @@ module Engine
         privates = @companies.select { |c| c.id[0] == 'P' }
 
         # Always set the P1, C1 and M24 in the first biddingbox
-        m24 = minors.find { |c| !c.nil? && c.id == 'M24' }
+        m24 = minors.find { |c| c.id == 'M24' }
         minors.delete(m24)
         minors.unshift(m24)
 
-        c1 = concessions.find { |c| !c.nil? && c.id == 'C1' }
+        c1 = concessions.find { |c| c.id == 'C1' }
         concessions.delete(c1)
         concessions.unshift(c1)
 
-        p1 = privates.find { |c| !c.nil? && c.id == 'P1' }
+        p1 = privates.find { |c| c.id == 'P1' }
         privates.delete(p1)
         privates.unshift(p1)
 
