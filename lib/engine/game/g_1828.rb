@@ -388,10 +388,10 @@ module Engine
       def can_buy_coal_marker?(entity)
         return false unless entity.corporation?
 
-        connected_to_coalfields?(entity) &&
-          coal_marker_available? &&
+        coal_marker_available? &&
           !coal_marker?(entity) &&
-          buying_power(entity) >= COAL_MARKER_COST
+          buying_power(entity) >= COAL_MARKER_COST &&
+          connected_to_coalfields?(entity)
       end
 
       def buy_coal_marker(entity)

@@ -8,8 +8,10 @@ module Engine
       class SpecialBuy < SpecialBuy
         attr_reader :coal_marker
 
-        def buyable_items(_entity)
-          [@coal_marker]
+        def buyable_items(entity)
+          return [@coal_marker] if @game.loading || @game.can_buy_coal_marker?(entity)
+
+          []
         end
 
         def short_description
