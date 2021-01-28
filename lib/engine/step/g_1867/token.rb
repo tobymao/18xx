@@ -7,8 +7,8 @@ module Engine
   module Step
     module G1867
       class Token < Token
-        def auto_actions(entity, actions)
-          actions << Engine::Action::Pass.new(entity) unless can_really_place_token?(entity)
+        def auto_actions(entity)
+          [Engine::Action::Pass.new(entity)] unless can_really_place_token?(entity)
         end
 
         def can_really_place_token?(entity)
