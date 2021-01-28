@@ -9,9 +9,9 @@ module Engine
         include Step::Tracker
 
         def setup
-          @upgraded = false
-          @laid_track = 0
           @laid_city = false
+          @saved_revenues = []
+          super
         end
 
         def get_tile_lay(entity)
@@ -21,6 +21,7 @@ module Engine
           action[:lay] = !@upgraded && !@laid_city if action[:lay] == :not_if_upgraded_or_city
           action[:upgrade] = !@upgraded if action[:upgrade] == :not_if_upgraded
           action[:cost] = action[:cost] || 0
+          action[:cannot_reuse_same_hex] = action[:cannot_reuse_same_hex] || false
           action
         end
 
@@ -30,141 +31,43 @@ module Engine
           raise GameError, 'Cannot lay an upgrade now' if tile.color != :yellow && !tile_lay[:upgrade]
           raise GameError, 'Cannot lay an yellow now' if tile.color == :yellow && !tile_lay[:lay]
           raise GameError, 'Cannot lay a city tile now' if tile.cities.any? && @laid_track.positive?
+          if tile_lay[:cannot_reuse_same_hex] && @previous_laid_hexes.include?(action.hex)
+            raise GameError, "#{action.hex.id} cannot be layed as this hex was already layed on this turn"
+          end
 
+          @saved_revenues = revenues(action.hex.tile, action.entity)
           lay_tile(action, extra_cost: tile_lay[:cost])
           @upgraded = true if action.tile.color != :yellow
           @laid_city = true if action.tile.cities.any?
           @laid_track += 1
+          @previous_laid_hexes << action.hex
         end
 
-        def lay_tile(action, extra_cost: 0, entity: nil, spender: nil)
-          entity ||= action.entity
-          spender ||= entity
-          tile = action.tile
-          hex = action.hex
-          rotation = action.rotation
-          old_tile = hex.tile
+        # this must be called before graphs are updated with new tile
+        def revenues(tile, entity)
+          return [] if @game.loading || tile.color == :white || !entity.operator?
 
-          @game.companies.each do |company|
-            next if company.closed?
-            next unless (ability = @game.abilities(company, :blocks_hexes))
+          tile.nodes.select { |n| reachable_node?(entity, n, @game.biggest_train_distance(entity)) }
+            .map(&:max_revenue).sort
+        end
 
-            raise GameError, "#{hex.id} is blocked by #{company.name}" if ability.hexes.include?(hex.id)
-          end
-
-          tile.rotate!(rotation)
-
-          unless @game.upgrades_to?(old_tile, tile, entity.company?)
-            raise GameError, "#{old_tile.name} is not upgradeable to #{tile.name}"
-          end
-
-          if !@game.loading && !legal_tile_rotation?(entity, hex, tile)
-            raise GameError, "#{old_tile.name} is not legally rotated for #{tile.name}"
-          end
-
-          @game.add_extra_tile(tile) if tile.unlimited
-
-          max_distance = @game.biggest_train_distance(entity)
-          old_revenues = if old_tile.color == :white
-                           []
-                         else
-                           old_tile.nodes.select { |n| reachable_node?(entity, n, max_distance) }
-                             .map(&:max_revenue).sort
-                         end
-
-          @game.tiles.delete(tile)
-          @game.tiles << old_tile unless old_tile.preprinted
-
-          hex.lay(tile)
-
-          @game.graph.clear
+        def check_track_restrictions!(entity, old_tile, new_tile)
           @game.clear_distances
-          check_track_restrictions!(entity, old_tile, tile, old_revenues, max_distance)
-          free = false
-          discount = 0
-
-          tile_lay_abilities(entity) do |ability|
-            next if ability.hexes.any? && (!ability.hexes.include?(hex.id) || !ability.tiles.include?(tile.name))
-
-            raise GameError, "Track laid must be connected to one of #{spender.id}'s stations" if ability.reachable &&
-              hex.name != spender.coordinates &&
-              !@game.loading &&
-              !@game.graph.reachable_hexes(spender)[hex]
-
-            free = ability.free
-            discount = ability.discount
-            extra_cost += ability.cost
-          end
-
-          @game.abilities(entity, :teleport) do |ability, _|
-            ability.use! if ability.hexes.include?(hex.id) && ability.tiles.include?(tile.name)
-          end
-
-          terrain = old_tile.terrain
-          cost =
-            if free
-              # call for the side effect of deleting a completed border cost
-              border_cost(tile, entity)
-
-              extra_cost
-            else
-              border, border_types = border_cost(tile, entity)
-              terrain += border_types if border.positive?
-              @game.upgrade_cost(old_tile, hex, entity) + border + extra_cost - discount
-            end
-
-          if @game.insolvent?(spender) && cost.positive?
-            raise GameError, "#{spender.id} cannot pay for a tile when insolvent"
-          end
-
-          spender.spend(cost, @game.bank) if cost.positive?
-
-          cities = tile.cities
-          if old_tile.paths.empty? &&
-              tile.paths.any? &&
-              cities.size > 1 &&
-              cities.flat_map(&:tokens).any?
-            token = cities.flat_map(&:tokens).find(&:itself)
-            @round.pending_tokens << {
-              entity: entity,
-              hexes: [action.hex],
-              token: token,
-            }
-
-            token.remove!
-          end
-          @log << "#{spender.name}"\
-            "#{cost.zero? ? '' : " spends #{@game.format_currency(cost)} and"}"\
-            " lays tile ##{tile.name}"\
-            " with rotation #{rotation} on #{hex.name}"\
-            "#{tile.location_name.to_s.empty? ? '' : " (#{tile.location_name})"}"
-
-          return unless terrain.any?
-
-          @game.all_companies_with_ability(:tile_income) do |company, ability|
-            if terrain.include?(ability.terrain) && (!ability.owner_only || company.owner == entity)
-              # If multiple borders are connected bonus counts each individually
-              income = ability.income * terrain.find_all { |t| t == ability.terrain }.size
-              @game.bank.spend(income, company.owner)
-              @log << "#{company.owner.name} earns #{@game.format_currency(income)}"\
-                " for the #{ability.terrain} tile built by #{company.name}"
-            end
-          end
-        end
-
-        def check_track_restrictions!(entity, old_tile, new_tile, old_revenues, max_distance)
           return if @game.loading || !entity.operator?
+
+          tr_distance = @game.biggest_train_distance(entity)
 
           changed_city = false
           if old_tile.color != :white
             # add requirement that paths/nodes be reachable with train
-            unless reachable_hex?(entity, new_tile.hex, max_distance)
+            unless reachable_hex?(entity, new_tile.hex, tr_distance)
               raise GameError, 'Tile must be reachable with train'
             end
 
-            new_revenues = new_tile.nodes.select { |n| reachable_node?(entity, n, max_distance) }
+            # check to see revenues reachable from old graph have changed
+            new_revenues = new_tile.nodes.select { |n| reachable_node?(entity, n, tr_distance) }
                              .map(&:max_revenue).sort
-            changed_city = old_revenues != new_revenues
+            changed_city = @saved_revenues != new_revenues
           end
 
           old_paths = old_tile.paths
@@ -172,13 +75,14 @@ module Engine
 
           new_tile.paths.each do |np|
             next unless @game.graph.connected_paths(entity)[np]
-            next if old_tile.color != :white && !reachable_path?(entity, np, max_distance)
+            next if old_tile.color != :white && !reachable_path?(entity, np, tr_distance)
 
             op = old_paths.find { |path| np <= path }
             used_new_track = true unless op
 
             next unless old_tile.color == :white
 
+            # check to see if revenues on tile have changed
             old_revenues = op&.nodes && op.nodes.map(&:max_revenue).sort
             new_revenues = np&.nodes && np.nodes.map(&:max_revenue).sort
             changed_city = true unless old_revenues == new_revenues
