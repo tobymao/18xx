@@ -590,6 +590,7 @@ module Engine
 
           if action
             action = action.copy(self) if action.is_a?(Action::Base)
+
             process_action(action)
           else
             # Restore the original action to the list to ensure action ids remain consistent but don't apply them
@@ -600,14 +601,40 @@ module Engine
         @loading = false
       end
 
-      def process_action(action)
-        action = action_from_h(action) if action.is_a?(Hash)
+      def process_action(action, add_auto_actions: false)
+        action = Engine::Action::Base.action_from_h(action, self) if action.is_a?(Hash)
+
         action.id = current_action_id + 1
         @raw_actions << action.to_h
         return clone(@raw_actions) if action.is_a?(Action::Undo) || action.is_a?(Action::Redo)
 
         @actions << action
 
+        # Process the main action we came here to do first
+        process_single_action(action)
+
+        unless action.is_a?(Action::Message)
+          @redo_possible = false
+          @undo_possible = true
+          @last_game_action_id = action.id
+        end
+
+        action.auto_actions.each { |a| process_single_action(a) }
+        if add_auto_actions
+          until (actions = round.auto_actions || []).empty?
+            actions.each { |a| process_single_action(a) }
+            action.auto_actions.concat(actions)
+          end
+          # Update the last raw actions as the hash maybe incorrect
+          action.clear_cache
+          @raw_actions[-1] = action.to_h
+        end
+        @last_processed_action = action.id
+
+        self
+      end
+
+      def process_single_action(action)
         if action.user
           @log << "• Action(#{action.type}) via Master Mode by: #{player_by_id(action.user)&.name || 'Owner'}"
         end
@@ -615,12 +642,6 @@ module Engine
         preprocess_action(action)
 
         @round.process_action(action)
-
-        unless action.is_a?(Action::Message)
-          @redo_possible = false
-          @undo_possible = true
-          @last_game_action_id = action.id
-        end
 
         action_processed(action)
 
@@ -643,15 +664,11 @@ module Engine
             @round_history << current_action_id
           end
         end
-
-        @last_processed_action = action.id
-        self
       rescue Engine::GameError => e
         @raw_actions.pop
         @actions.pop
         @exception = e
         @broken_action = action
-        self
       end
 
       def maybe_raise!
@@ -702,12 +719,6 @@ module Engine
       def next_turn!
         @last_turn_start_action_id = @turn_start_action_id
         @turn_start_action_id = current_action_id
-      end
-
-      def action_from_h(h)
-        Object
-          .const_get("Engine::Action::#{Action::Base.type(h['type'])}")
-          .from_h(h, self)
       end
 
       def clone(actions)

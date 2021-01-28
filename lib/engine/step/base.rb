@@ -32,6 +32,8 @@ module Engine
         []
       end
 
+      def auto_actions(_entity); end
+
       def available_hex(entity, hex); end
 
       def did_sell?(_corporation, _entity)
