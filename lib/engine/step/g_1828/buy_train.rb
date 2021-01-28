@@ -38,7 +38,7 @@ module Engine
         def room?(entity, shell = nil)
           return super unless entity.system?
 
-          shell ? shell.trains.size < @game.phase.train_limit(entity) : shells_with_room(entity).any?
+          shell ? shell.trains.size < @game.train_limit(entity) : !shells_with_room(entity).empty?
         end
 
         def president_may_contribute?(entity, shell = nil)
@@ -52,7 +52,7 @@ module Engine
         def shells_with_room(entity)
           return [] unless entity.system?
 
-          entity.shells.select { |shell| shell.trains.size < @game.phase.train_limit(entity) }
+          entity.shells.select { |shell| shell.trains.size < @game.train_limit(entity) }
         end
 
         def empty_shells(entity)

@@ -955,6 +955,12 @@ module Engine
         nationalizables.delete(major)
         post_corp_nationalization
       end
+
+      def train_limit(entity)
+        return 3 if entity.id == 'CGR'
+
+        super
+      end
     end
   end
 end

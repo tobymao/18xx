@@ -527,9 +527,8 @@ module Engine
             "face_value": true
          },
          {
-            "type": "train_limit",
-            "description": "3 train limit",
-            "increase": 100
+            "type": "description",
+            "description": "3 train limit"
          }
       ]
     }
