@@ -590,7 +590,7 @@ module Engine
           if action
             action = action.copy(self) if action.is_a?(Action::Base)
 
-            process_action(action, add_autoactions: false)
+            process_action(action)
           else
             # Restore the original action to the list to ensure action ids remain consistent but don't apply them
             @raw_actions << actions[index]
@@ -600,7 +600,7 @@ module Engine
         @loading = false
       end
 
-      def process_action(action, add_autoactions: true)
+      def process_action(action, add_auto_actions: false)
         action = Engine::Action::Base.action_from_h(action, self) if action.is_a?(Hash)
 
         action.id = current_action_id + 1
@@ -619,7 +619,7 @@ module Engine
         end
 
         action.auto_actions.each { |a| process_single_action(a) }
-        if add_autoactions
+        if add_auto_actions
           until (actions = round.auto_actions || []).empty?
             actions.each { |a| process_single_action(a) }
             action.auto_actions.concat(actions)

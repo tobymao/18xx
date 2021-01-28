@@ -38,7 +38,7 @@ module Engine
 
       action = Engine::Action::Base.action_from_h(data['actions'][cursor], game)
       # Check creating new auto actions
-      game.process_action(action)
+      game.process_action(action, add_auto_actions: true)
       expect(action.auto_actions.size).to eq(1)
       expect(action.auto_actions.first).to be_instance_of(Engine::Action::Pass)
       # Game should have autopassed and be at RunRoutes
@@ -46,7 +46,7 @@ module Engine
 
       # Check reading existing actions
       game = Game.load(data, at_action: cursor)
-      game.process_action(action.to_h, add_autoactions: false)
+      game.process_action(action.to_h)
       expect(game.round.active_step).to be_instance_of(Engine::Step::Route)
     end
   end
