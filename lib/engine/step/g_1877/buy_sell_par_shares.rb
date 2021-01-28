@@ -25,7 +25,7 @@ module Engine
         end
 
         def buyable_train_variants(train, entity)
-          train.variants.values.select { |v| v['price'] <= entity.cash }
+          train.variants.values.select { |v| v[:price] <= entity.cash }
         end
 
         def buyable_trains(corporation)
