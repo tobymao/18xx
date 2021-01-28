@@ -1421,6 +1421,7 @@ module Engine
       end
 
       def find_share_price(price)
+        # NOTE: this only works on a 2d stock market
         @stock_market
           .market[0]
           .reverse
