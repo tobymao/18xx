@@ -73,6 +73,10 @@ module Engine
 
           false
         end
+
+        def show_other_players
+          false
+        end
       end
     end
   end

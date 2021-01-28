@@ -36,6 +36,10 @@ module Engine
           bought_trains[:entity]
         end
 
+        def trains
+          bought_trains[:trains]
+        end
+
         def bought_trains
           @round.bought_trains&.first || {}
         end

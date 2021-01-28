@@ -255,7 +255,10 @@ module View
     def render_action
       return h(Game::GameEnd) if @game.finished
 
-      # todo return Upgrade_train when discard && upgrade_train
+      if current_entity_actions.include?('discard_train') &&
+        current_entity_actions.include?('upgrade_train')
+        return h(Game::UpgradeTrains)
+      end
       return h(Game::DiscardTrains) if current_entity_actions.include?('discard_train')
 
       if current_entity_actions.include?('par') &&

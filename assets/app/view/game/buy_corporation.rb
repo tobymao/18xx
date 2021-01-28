@@ -8,15 +8,32 @@ module View
     class BuyCorporation < Snabberb::Component
       include Actionable
       needs :selected_corporation, default: nil, store: true
+      needs :show_other_players, default: nil, store: true
 
       def render
         @step = @game.active_step
         @corporation = @game.current_entity
         children = []
 
-        @game.corporations.select { |item| @step.can_buy?(@corporation, item) }.each do |item|
-          children << h(Corporation, corporation: item)
-          children << render_input if item == @selected_corporation
+        hidden_corps = false
+        @show_other_players = true if @step.show_other_players
+        @game.corporations.select { |item| @step.can_buy?(@corporation, item) }.each do |target|
+          if @show_other_players || target.owner == @corporation.owner || !target.owner
+            children << h(Corporation, corporation: target, selected_corporation: @selected_corporation)
+            children << render_input if target == @selected_corporation
+          else
+            hidden_corps = true
+          end
+        end
+
+        if hidden_corps
+          children << h('button',
+                        { on: { click: -> { store(:show_other_players, true) } } },
+                        'Show corporations from other players')
+        elsif @show_other_players
+          children << h('button',
+                        { on: { click: -> { store(:show_other_players, false) } } },
+                        'Hide corporations from other players')
         end
 
         h(:div, children)
