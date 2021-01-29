@@ -28,7 +28,7 @@ module Engine
       "5":210,
       "6":180
    },
-   "capitalization":"full",
+   "capitalization":"incremental",
    "layout":"flat",
    "mustSellInBlocks":false,
    "locationNames":{
@@ -596,7 +596,7 @@ module Engine
          ],
          "operating_rounds":2,
          "corporation_sizes":[
-            5
+            5, 10
          ]
       },
       {
