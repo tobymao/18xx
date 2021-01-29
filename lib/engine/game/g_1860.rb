@@ -357,7 +357,8 @@ module Engine
       end
 
       def event_southern_forms!
-        @log << 'Southern Railway Forms; End of game triggered (via Nationalization).'
+        @log << 'Southern Railway Forms; '\
+                'Nationalization will be triggered when all players’ companies have at least one train.'
         @southern_formed = true
       end
 
