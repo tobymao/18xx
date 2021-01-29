@@ -482,10 +482,11 @@ module Engine
         @players.rotate!(@players.index(player))
         @log << "#{@players.first.name} has priority deal"
 
+        @round.force_next_entity! if @round.operating?
+        return unless @round.stock?
+
         # restart stock round if in middle of one
         @round.clear_cache!
-        return unless @round.instance_of?(Round::Stock)
-
         @log << 'Restarting Stock Round'
         @round.entities.each(&:unpass!)
         @round = stock_round
@@ -939,7 +940,7 @@ module Engine
         return false unless visits.size > 2
 
         corporation = route.corporation
-        visits[1..-2].any? { |node| node.city? && node.blocks?(corporation) }
+        visits[1..-2].any? { |node| node.city? && custom_blocks?(node, corporation) }
       end
 
       def check_connected(route, token)
