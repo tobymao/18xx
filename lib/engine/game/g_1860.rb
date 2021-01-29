@@ -357,7 +357,7 @@ module Engine
       end
 
       def event_southern_forms!
-        @log << 'Southern Railway Forms; End of game triggered (via Nationalization).'
+        @log << 'Southern Railway Forms; End Game possible via Nationalisation.'
         @southern_formed = true
       end
 
