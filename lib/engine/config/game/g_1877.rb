@@ -506,15 +506,16 @@ module Engine
          "name":"3",
          "distance":3,
          "price":250,
-         "rusts_on":"6",
          "num":10
       },
       {
          "name":"4",
          "distance":4,
          "price":400,
-         "rusts_on":"8",
-         "num":8
+         "num":40,
+         "events": [
+           {"type": "signal_end_game"}
+         ]
       }
    ],
    "hexes":{
