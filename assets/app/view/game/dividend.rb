@@ -1,11 +1,15 @@
 # frozen_string_literal: true
 
+require 'lib/color'
+require 'lib/settings'
 require 'view/game/actionable'
 
 module View
   module Game
     class Dividend < Snabberb::Component
       include Actionable
+      include Lib::Color
+      include Lib::Settings
 
       needs :routes, store: true, default: []
 
@@ -180,18 +184,25 @@ module View
 
         table_props = {
           style: {
-            margin: '0.5rem 0 0 0',
+            margin: '0.5rem 0 0.5rem 0',
             textAlign: 'left',
             border: '1px solid black',
             borderCollapse: 'collapse',
           },
         }
 
+        header_props = {
+          style: {
+            backgroundColor: color_for(:bg2),
+            border: '1px solid black',
+          },
+        }
+
         h(:table, table_props, [
           h(:thead, [
             h(:tr, props, [
-              h('th.no_padding', props, header[0]),
-              h(:th, props, header[1]),
+              h('th.no_padding', header_props, header[0]),
+              h(:th, header_props, header[1]),
             ]),
           ]),
           h(:tbody, rows),

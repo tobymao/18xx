@@ -186,6 +186,7 @@ module View
         instructions += ' Click button under Revenue to pick number of halts.' if render_halts
 
         h(:div, div_props, [
+          dividend_chart,
           h(:h3, { style: { margin: '0.5rem 0 0.2rem' } }, 'Select Routes'),
           h('div.small_font', description),
           h('div.small_font', instructions),
@@ -268,6 +269,52 @@ module View
             h('button.small', { on: { click: reset_all } }, 'Reset'),
           ]),
           h(:button, { style: submit_style, on: { click: submit } }, 'Submit ' + revenue + subsidy),
+        ])
+      end
+
+      def dividend_chart
+        step = @game.active_step
+        return nil unless step.respond_to?(:chart)
+
+        header, *chart = step.chart(@game.round.current_entity)
+
+        props = {
+          style: {
+            border: '1px solid black',
+          },
+        }
+
+        rows = chart.map do |r|
+          h(:tr, props, [
+            h('td.right', props, r[0]),
+            h(:td, props, r[1]),
+          ])
+        end
+
+        table_props = {
+          style: {
+            margin: '0.5rem 0 0 0',
+            textAlign: 'left',
+            border: '1px solid black',
+            borderCollapse: 'collapse',
+          },
+        }
+
+        header_props = {
+          style: {
+            backgroundColor: color_for(:bg2),
+            border: '1px solid black',
+          },
+        }
+
+        h(:table, table_props, [
+          h(:thead, [
+            h(:tr, props, [
+              h('th.right', header_props, header[0]),
+              h(:th, header_props, header[1]),
+            ]),
+          ]),
+          h(:tbody, rows),
         ])
       end
     end
