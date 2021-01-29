@@ -123,9 +123,12 @@ module Engine
             connection_data << segment(connection, left: tail[:right])
           end
         end
+        connection_data.pop if @train.local? && connection_data.size == 2
       elsif @last_node == node
         @last_node = nil
+        connection_data.clear if @train.local? && !connection_data.empty?
       elsif @last_node
+        connection_data.clear if @train.local? && !connection_data.empty?
         if (connection = select(@last_node, node)[0])
           a, b = connection.nodes
           a, b = b, a if @last_node == a
@@ -133,6 +136,9 @@ module Engine
         end
       else
         @last_node = node
+        if @train.local? && connection_data.empty?
+          connection_data << { left: node, right: node, connection: Connection.new }
+        end
       end
 
       @halts = nil
@@ -174,6 +180,8 @@ module Engine
     end
 
     def check_cycles!
+      return if @train.local?
+
       cycles = {}
 
       connection_data.each do |c|
@@ -222,7 +230,9 @@ module Engine
       @revenue ||=
         begin
           visited = visited_stops
-          raise GameError, 'Route must have at least 2 stops' if connection_data.any? && visited.size < 2
+          if connection_data.any? && visited.size < 2 && !@train.local?
+            raise GameError, 'Route must have at least 2 stops'
+          end
           unless (token = visited.find { |stop| @game.city_tokened_by?(stop, corporation) })
             raise GameError, 'Route must contain token'
           end
@@ -257,7 +267,11 @@ module Engine
     end
 
     def connection_hexes
-      @connection_hexes ||= connections&.map(&:id)
+      @connection_hexes ||= if @train.local? && connection_data.one? && connection_data[0][:connection].paths.empty?
+                              [['local', connection_data[0][:left].hex.id]]
+                            else
+                              connections&.map(&:id)
+                            end
     end
 
     private
@@ -284,6 +298,13 @@ module Engine
 
       @connection_data = []
       return @connection_data unless @connection_hexes
+
+      if @train.local? && @connection_hexes.one? && @connection_hexes[0].include?('local')
+        city_node = @game.hex_by_id(@connection_hexes[0][1]).tile.nodes.find do |n|
+          @game.city_tokened_by?(n, corporation)
+        end
+        return @connection_data << { left: city_node, right: city_node, connection: Connection.new }
+      end
 
       possibilities = @connection_hexes.map do |hex_ids|
         hexes = hex_ids.map { |hex_str| @game.hex_by_id(hex_str.split.first) }

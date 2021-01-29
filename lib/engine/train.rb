@@ -27,6 +27,7 @@ module Engine
       @obsolete = false
       @operated = false
       @events = (opts[:events] || []).select { |e| @index == (e[:when] || 0) }
+      @local = nil
       init_variants(opts[:variants])
     end
 
@@ -76,6 +77,18 @@ module Engine
 
     def buyable
       @buyable && !@obsolete
+    end
+
+    def local?
+      return @local unless @local.nil?
+
+      @local = false
+      if @distance.is_a?(Numeric)
+        @local = @distance == 1
+      else
+        distance_city = @distance.find { |n| n['nodes'].include?('city') }
+        @local = distance_city['visit'] == 1 if distance_city
+      end
     end
 
     def inspect

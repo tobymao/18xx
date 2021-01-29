@@ -50,15 +50,44 @@ module Engine
 
       attr_accessor :bidding_token_per_player
 
+      def can_run_route?(entity)
+        entity.trains.any? { |t| t.name == 'L' } ? true : super
+      end
+
       def entity_can_use_company?(_entity, company)
         # Setting bidding companies owner to bank, make sure the abilities dont show for theese
         company.owner != @bank
+      end
+
+      # TODO: Make include with 1817
+      def format_currency(val)
+        # On dividends per share can be a float
+        # But don't show decimal points on all
+        return format('$%.1<val>f', val: val) if val.is_a?(Float) && (val % 1 != 0)
+
+        self.class::CURRENCY_FORMAT_STR % val
+      end
+
+      def train_help(runnable_trains)
+        help = []
+
+        l_trains = runnable_trains.select { |t| t.name == 'L' }
+        if l_trains.any?
+          corporation = l_trains.first.owner
+          help << "L (local) trains run in a city which has a #{corporation.name} token."
+          help << 'They can additionally run to a single small station, but are not required to do so. '\
+                  'They can thus be considered 1 (+1) trains.'
+          help << 'Only one L train may operate on each station token.'
+        end
+
+        help
       end
 
       def init_round
         stock_round
       end
 
+      # TODO: Make include with 1861, 1867
       def operating_order
         minors, majors = @corporations.select(&:floated?).sort.partition { |c| c.type == :minor }
         minors + majors
@@ -72,7 +101,7 @@ module Engine
           Step::Track,
           Step::Token,
           Step::Route,
-          Step::Dividend,
+          Step::G1822::Dividend,
           Step::DiscardTrain,
           Step::BuyTrain,
         ], round_num: round_num)
