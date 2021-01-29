@@ -54,6 +54,20 @@ module Engine
         entity.trains.any? { |t| t.name == 'L' } ? true : super
       end
 
+      def check_overlap(routes)
+        super
+
+        # Check local train not use the same token more then one time
+        local_token_hex = []
+        routes.each do |route|
+          local_token_hex << route.head[:left].hex.id if route.train.local? && !route.connections.empty?
+        end
+
+        local_token_hex.group_by(&:itself).each do |k, v|
+          raise GameError, "Local train can only use the token on #{k[0]} once." if v.size > 1
+        end
+      end
+
       def entity_can_use_company?(_entity, company)
         # Setting bidding companies owner to bank, make sure the abilities dont show for theese
         company.owner != @bank
