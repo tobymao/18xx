@@ -178,7 +178,7 @@ module View
 
       invite_url = url(@gdata)
       flash = lambda do
-        `navigator.clipboard.writeText((window.location + invite_url).replace('//game', '/game'))`
+        `navigator.clipboard.writeText(window.location.origin + invite_url)`
         store(:flash_opts, { message: msg, color: 'lightgreen' }, skip: false)
       end
       render_link(invite_url, flash, 'Invite')
