@@ -507,7 +507,7 @@ module Engine
          "distance":3,
          "price":250,
          "rusts_on":"6",
-         "num":12
+         "num":10
       },
       {
          "name":"4",

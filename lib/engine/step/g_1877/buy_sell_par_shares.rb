@@ -67,6 +67,18 @@ module Engine
           par_corporation if available_subsidiaries(winner.entity).none?
         end
 
+        def par_corporation
+          winner = @winning_bid.entity
+          super
+
+          unpass!
+          winner.unpass!
+          @current_actions.clear
+          @corporate_action = nil
+          @round.pass_order.delete(winner)
+          @round.goto_entity!(winner)
+        end
+
         def can_short?(entity, corporation)
           shorts = @game.shorts(corporation).size
 
