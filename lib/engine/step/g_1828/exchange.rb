@@ -102,6 +102,7 @@ module Engine
         end
 
         def can_gain?(entity, bundle, exchange: false)
+          return false unless bundle.buyable
           return true if exchange
 
           super
