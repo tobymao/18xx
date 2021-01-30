@@ -10,7 +10,7 @@ module Engine
 
       load_from_json(Config::Game::G1817WO::JSON)
 
-      DEV_STAGE = :beta
+      DEV_STAGE = :production
       GAME_PUBLISHER = nil
       PITTSBURGH_PRIVATE_NAME = 'PSM'
       PITTSBURGH_PRIVATE_HEX = 'I6'

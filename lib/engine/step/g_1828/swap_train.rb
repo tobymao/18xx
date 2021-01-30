@@ -46,7 +46,7 @@ module Engine
         end
 
         def over_train_limit?(entity)
-          entity.shells.any? { |shell| shell.trains.size > @game.phase.train_limit(entity) }
+          entity.shells.any? { |shell| shell.trains.size > @game.train_limit(entity) }
         end
       end
     end

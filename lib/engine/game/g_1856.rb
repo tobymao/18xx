@@ -76,12 +76,52 @@ module Engine
         1 => { 3 => 10, 4 => 8, 5 => 7, 6 => 6 },
       }.freeze
 
+      DESTINATIONS = {
+        'BBG' => 'N17',
+        'CA' => 'H15',
+        'CPR' => 'N11',
+        'CV' => 'I14',
+        'GT' => 'K8',
+        'GW' => 'A20',
+        'LPS' => 'F17',
+        'TGB' => 'H5',
+        'THB' => 'J11',
+        'WGB' => 'F9',
+        'WR' => 'L15',
+      }.freeze
+
+      ALTERNATE_DESTINATIONS = {
+        'BBG' => 'N11',
+        'CA' => %w[A20 F15], # Connect London to Detroit
+        'CPR' => 'P9',
+        'CV' => 'M4',
+        'GT' => 'L13',
+        'GW' => 'J15',
+        'LPS' => 'F15',
+        'TGB' => 'O2', # [['N1', 'O2']] # Canadaian West, but it's a 2 hex offboard
+        'THB' => 'H15',
+        'WGB' => 'H5',
+        'WR' => 'L15',
+      }.freeze
+
       # TODO: Get a proper token
       ASSIGNMENT_TOKENS = {
         'GLSC' => '/icons/1846/sc_token.svg',
       }.freeze
 
-      EVENTS_TEXT = Base::EVENTS_TEXT.merge('remove_tokens' => ['Remove Port token']).freeze
+      EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+        {
+          'nationalization' => ['CGR Formation',
+                                'Corporations must pay back loans or forcefully be merged into the CGR.' \
+                                ' Presidents may contribute personal cash but may not sell shares.' \
+                                ' CGR does not form if all corporations pay back their loans'],
+          'remove_tokens' => ['Remove Port Token'],
+          'no_more_escrow_corps' => ['New Corporations are Incremental Cap',
+                                     'Does not affect corporations which have already been parred'],
+          'no_more_incremental_corps' => ['New Corporations are Full Cap',
+                                          'Does not affect corporations which have already been parred'],
+        }
+      ).freeze
 
       def national
         @national ||= corporation_by_id('CGR')
@@ -236,6 +276,25 @@ module Engine
         # 1 of each right is reserved w/ the private when it gets bought in. This leaves 2 extra to sell.
         @available_bridge_tokens = 2
         @available_tunnel_tokens = 2
+
+        create_destinations(DESTINATIONS)
+      end
+
+      def create_destinations(destinations)
+        destinations.each do |corp, dest|
+          dest_arr = Array(dest)
+          end_a = dest_arr.first
+          end_b = dest_arr.size > 1 ? dest_arr.last : corporation_by_id(corp).coordinates
+          ability = Ability::Base.new(
+              type: 'destination',
+              description: "Connect #{hex_by_id(end_a).tile.location_name} to"\
+                " #{hex_by_id(end_b).tile.location_name}"
+            )
+          corporation_by_id(corp).add_ability(ability)
+          dest_arr.each do |d|
+            hex_by_id(d).original_tile.icons << Part::Icon.new("../logos/1856/#{corp}")
+          end
+        end
       end
 
       def num_corporations
@@ -390,6 +449,14 @@ module Engine
           amount: 10,
           owner_type: :corporation
         ))
+      end
+
+      def event_no_more_escrow_corps!
+        @log << 'New corporations will be started as incremental cap corporations'
+      end
+
+      def event_no_more_incremental_corps!
+        @log << 'New corporations will be started as full cap corporations'
       end
 
       def event_close_companies!
@@ -887,6 +954,12 @@ module Engine
         @log << "#{major.owner.name} pays off the #{format_currency(owed)} debt for #{major.name}"
         nationalizables.delete(major)
         post_corp_nationalization
+      end
+
+      def train_limit(entity)
+        return 3 if entity.id == 'CGR'
+
+        super
       end
     end
   end

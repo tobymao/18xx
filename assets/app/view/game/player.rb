@@ -101,6 +101,13 @@ module View
               h('td.right', @game.format_currency(@player.cash - committed)),
             ]),
           ]) if committed.positive?
+
+          trs.concat([
+             h(:tr, [
+               h(:td, 'Bidding tokens'),
+               h('td.right', "#{@game.active_step.bidding_tokens(@player)} / #{@game.bidding_token_per_player}"),
+             ]),
+           ]) if @game.active_step.respond_to?(:bidding_tokens)
         end
 
         trs.concat([
@@ -112,7 +119,7 @@ module View
             h(:td, 'Liquidity'),
             h('td.right', @game.format_currency(@game.liquidity(@player))),
           ]),
-])
+        ])
 
         if @game.respond_to?(:bidding_power)
           trs << h(:tr, [
@@ -134,9 +141,10 @@ module View
           },
         }
 
-        trs << render_priority_deal(priority_props) if @game.class::NEXT_SR_PLAYER_ORDER == :after_last_to_act &&
+        order = @game.next_sr_player_order
+        trs << render_priority_deal(priority_props) if order == :after_last_to_act &&
                                                        @player == @game.priority_deal_player
-        trs << render_next_sr_position(priority_props) if @game.class::NEXT_SR_PLAYER_ORDER == :first_to_pass &&
+        trs << render_next_sr_position(priority_props) if order == :first_to_pass &&
                                                           @game.next_sr_position(@player)
 
         h(:table, trs)

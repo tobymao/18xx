@@ -39,7 +39,7 @@ module Engine
     "D11": "Stranraer",
     "D35": "Swansea & Oystermouth",
     "D41": "Exeter",
-    "E4": "Highlands",
+    "E2": "Highlands",
     "E6": "Glasgow",
     "E32": "Merthyr Tydfil & Pontypool",
     "E40": "Taunton",
@@ -147,6 +147,21 @@ module Engine
     "546": 8,
     "611": 4,
     "60": 2,
+    "X20": {
+      "count": 1,
+      "color": "yellow",
+      "code": "city=revenue:20,slots:2;path=a:1,b:_0;path=a:4,b:_0;label=S"
+    },
+    "X21": {
+      "count": 3,
+      "color": "yellow",
+      "code": "city=revenue:20;path=a:0,b:_0;path=a:1,b:_0;label=T"
+    },
+    "X22": {
+      "count": 3,
+      "color": "yellow",
+      "code": "city=revenue:20;path=a:0,b:_0;path=a:2,b:_0;label=T"
+    },
     "405": {
       "count": 3,
       "color": "green",
@@ -516,7 +531,7 @@ module Engine
       "sym": "P1",
       "value": 0,
       "revenue": 5,
-      "desc": "5-Train. This is a normal 5-train that is subject to all of the normal rules. Note that a company can acquire this private company at the start of its turn, even if it is already at its train limit as this counts as an acquisition action, not a train buying action. However, once acquired the acquiring company needs to check whether it is at train limit and discard any trains held in excess of limit.",
+      "desc": "MAJOR, Phase 5. 5-Train. This is a normal 5-train that is subject to all of the normal rules. Note that a company can acquire this private company at the start of its turn, even if it is already at its train limit as this counts as an acquisition action, not a train buying action. However, once acquired the acquiring company needs to check whether it is at train limit and discard any trains held in excess of limit.",
       "abilities": [
       ]
     },
@@ -525,7 +540,7 @@ module Engine
       "sym": "P2",
       "value": 0,
       "revenue": 10,
-      "desc": "Remove Small Station. Allows the owning company to place a plain yellow track tile directly on an undeveloped small station hex location or upgrade a small station tile of one colour to a plain track tile of the next colour. This closes the company and counts as the company’s normal track laying step. All other normal track laying restrictions apply. Once acquired, the private company pays its revenue to the owning company until the power is exercised and the company is closed.",
+      "desc": "MAJOR/MINOR, Phase 2. Remove Small Station. Allows the owning company to place a plain yellow track tile directly on an undeveloped small station hex location or upgrade a small station tile of one colour to a plain track tile of the next colour. This closes the company and counts as the company’s normal track laying step. All other normal track laying restrictions apply. Once acquired, the private company pays its revenue to the owning company until the power is exercised and the company is closed.",
       "abilities": [
       ]
     },
@@ -534,7 +549,7 @@ module Engine
       "sym": "P3",
       "value": 0,
       "revenue": 0,
-      "desc": "Permanent 2-Train. 2P-train is a permanent 2-train. It cannot be sold to another company. It does not count against train limit. It does not count as a train for the purpose of mandatory train ownership and purchase. A company may not own more than one 2P train. Dividends can be separated from other trains and may be split, paid in full, or retained. If a company runs a 2P-train and pays a dividend (split or full), but retains its dividend from other train operations this still counts as a normal dividend for stock price movement purposes. Vice-versa, if a company pays a dividend (split or full) with its other trains, but retains the dividend from the 2P, this also still counts as a normal dividend for stock price movement purposes. Does not close.",
+      "desc": "MAJOR, Phase 2. Permanent 2-Train. 2P-train is a permanent 2-train. It cannot be sold to another company. It does not count against train limit. It does not count as a train for the purpose of mandatory train ownership and purchase. A company may not own more than one 2P train. Dividends can be separated from other trains and may be split, paid in full, or retained. If a company runs a 2P-train and pays a dividend (split or full), but retains its dividend from other train operations this still counts as a normal dividend for stock price movement purposes. Vice-versa, if a company pays a dividend (split or full) with its other trains, but retains the dividend from the 2P, this also still counts as a normal dividend for stock price movement purposes. Does not close.",
       "abilities": [
       ]
     },
@@ -543,7 +558,7 @@ module Engine
       "sym": "P4",
       "value": 0,
       "revenue": 0,
-      "desc": "Permanent 2-Train. 2P-train is a permanent 2-train. It cannot be sold to another company. It does not count against train limit. It does not count as a train for the purpose of mandatory train ownership and purchase. A company may not own more than one 2P train. Dividends can be separated from other trains and may be split, paid in full, or retained. If a company runs a 2P-train and pays a dividend (split or full), but retains its dividend from other train operations this still counts as a normal dividend for stock price movement purposes. Vice-versa, if a company pays a dividend (split or full) with its other trains, but retains the dividend from the 2P, this also still counts as a normal dividend for stock price movement purposes. Does not close.",
+      "desc": "MAJOR, Phase 2. Permanent 2-Train. 2P-train is a permanent 2-train. It cannot be sold to another company. It does not count against train limit. It does not count as a train for the purpose of mandatory train ownership and purchase. A company may not own more than one 2P train. Dividends can be separated from other trains and may be split, paid in full, or retained. If a company runs a 2P-train and pays a dividend (split or full), but retains its dividend from other train operations this still counts as a normal dividend for stock price movement purposes. Vice-versa, if a company pays a dividend (split or full) with its other trains, but retains the dividend from the 2P, this also still counts as a normal dividend for stock price movement purposes. Does not close.",
       "abilities": [
       ]
     },
@@ -552,7 +567,7 @@ module Engine
       "sym": "P5",
       "value": 0,
       "revenue": 10,
-      "desc": "English Channel. The owning company may place an exchange station token on the map, free of charge, in a token space in the English Channel. The company does not need to be able to trace a route to the English Channel to use this property (i.e. any company can use this power to place a token in the English Channel). If no token spaces are available, but a space could be created by upgrading the English Channel track then this power may be used to place a token and upgrade the track simultaneously. This counts as the acquiring company’s tile lay action and incurs the usual costs for doing so. Alternatively, it can move an exchange station token to the available station token section on its company charter.",
+      "desc": "MAJOR, Phase 3. English Channel. The owning company may place an exchange station token on the map, free of charge, in a token space in the English Channel. The company does not need to be able to trace a route to the English Channel to use this property (i.e. any company can use this power to place a token in the English Channel). If no token spaces are available, but a space could be created by upgrading the English Channel track then this power may be used to place a token and upgrade the track simultaneously. This counts as the acquiring company’s tile lay action and incurs the usual costs for doing so. Alternatively, it can move an exchange station token to the available station token section on its company charter.",
       "abilities": [
       ]
     },
@@ -561,7 +576,7 @@ module Engine
       "sym": "P6",
       "value": 0,
       "revenue": 10,
-      "desc": "Mail Contract. After running trains, the owning company receives income into its treasury equal to one half of the base value of the start and end stations from one of the trains operated. Doubled values (for E trains or destination tokens) do not count. The company is not required to maximise the dividend from its run if it wishes to maximise its revenue from the mail contract by stopping at a large city and not running beyond it to include small stations. Does not close.",
+      "desc": "MAJOR, Phase 3. Mail Contract. After running trains, the owning company receives income into its treasury equal to one half of the base value of the start and end stations from one of the trains operated. Doubled values (for E trains or destination tokens) do not count. The company is not required to maximise the dividend from its run if it wishes to maximise its revenue from the mail contract by stopping at a large city and not running beyond it to include small stations. Does not close.",
       "abilities": [
       ]
     },
@@ -570,7 +585,7 @@ module Engine
       "sym": "P7",
       "value": 0,
       "revenue": 10,
-      "desc": "Mail Contract. After running trains, the owning company receives income into its treasury equal to one half of the base value of the start and end stations from one of the trains operated. Doubled values (for E trains or destination tokens) do not count. The company is not required to maximise the dividend from its run if it wishes to maximise its revenue from the mail contract by stopping at a large city and not running beyond it to include small stations. Does not close.",
+      "desc": "MAJOR, Phase 3. Mail Contract. After running trains, the owning company receives income into its treasury equal to one half of the base value of the start and end stations from one of the trains operated. Doubled values (for E trains or destination tokens) do not count. The company is not required to maximise the dividend from its run if it wishes to maximise its revenue from the mail contract by stopping at a large city and not running beyond it to include small stations. Does not close.",
       "abilities": [
       ]
     },
@@ -579,7 +594,7 @@ module Engine
       "sym": "P8",
       "value": 0,
       "revenue": 10,
-      "desc": "Mountain/Hill Discount. Either: The acquiring company receives a discount token that can be used to pay the full cost of a single track tile lay on a rough terrain, hill or mountain hex. This closes the company. Or: The acquiring company rejects the token and receives a £20 discount off the cost of all hill and mountain terrain (i.e. NOT off the cost of rough terrain). The private company does not close. Closes if free token taken when acquired. Otherwise, flips when acquired and does not close.",
+      "desc": "MAJOR/MINOR, Phase 3. Mountain/Hill Discount. Either: The acquiring company receives a discount token that can be used to pay the full cost of a single track tile lay on a rough terrain, hill or mountain hex. This closes the company. Or: The acquiring company rejects the token and receives a £20 discount off the cost of all hill and mountain terrain (i.e. NOT off the cost of rough terrain). The private company does not close. Closes if free token taken when acquired. Otherwise, flips when acquired and does not close.",
       "abilities": [
       ]
     },
@@ -588,7 +603,7 @@ module Engine
       "sym": "P9",
       "value": 0,
       "revenue": 10,
-      "desc": "Declare 2x Cash Holding. If held by a player, the holding player may declare double their actual cash holding at the end of a stock round to determine player turn order in the next stock round. If held by a company it pays revenue of £20 (green)/£40 (brown)/£60 (grey). Does not close.",
+      "desc": "MAJOR/MINOR, Phase 3. Declare 2x Cash Holding. If held by a player, the holding player may declare double their actual cash holding at the end of a stock round to determine player turn order in the next stock round. If held by a company it pays revenue of £20 (green)/£40 (brown)/£60 (grey). Does not close.",
       "abilities": [
       ]
     },
@@ -597,7 +612,7 @@ module Engine
       "sym": "P10",
       "value": 0,
       "revenue": 10,
-      "desc": "River/Estuary Discount. The acquiring company receives two discount tokens each of which can be used to pay the cost for one track lay over an estuary crossing. They can be used on the same or different tile lays. Use of the second token closes the company. In addition, until the company closes it provides a discount of £10 against the cost of all river terrain (excluding estuary crossings).",
+      "desc": "MAJOR/MINOR, Phase 3. River/Estuary Discount. The acquiring company receives two discount tokens each of which can be used to pay the cost for one track lay over an estuary crossing. They can be used on the same or different tile lays. Use of the second token closes the company. In addition, until the company closes it provides a discount of £10 against the cost of all river terrain (excluding estuary crossings).",
       "abilities": [
       ]
     },
@@ -606,7 +621,7 @@ module Engine
       "sym": "P11",
       "value": 0,
       "revenue": 10,
-      "desc": "Advanced Tile Lay. The owning company may lay one plain or small station track upgrade using the next colour of track to be available, before it is actually made available by phase progression. The normal rules for progression of track lay must be followed (i.e. grey upgrades brown upgrades green upgrades yellow) it is not possible to skip a colour using this private. All other normal track laying restrictions apply. This is in place of its normal track lay action. Once acquired, the private company pays its revenue to the owning company until the power is exercised and the company closes.",
+      "desc": "MAJOR/MINOR, Phase 2. Advanced Tile Lay. The owning company may lay one plain or small station track upgrade using the next colour of track to be available, before it is actually made available by phase progression. The normal rules for progression of track lay must be followed (i.e. grey upgrades brown upgrades green upgrades yellow) it is not possible to skip a colour using this private. All other normal track laying restrictions apply. This is in place of its normal track lay action. Once acquired, the private company pays its revenue to the owning company until the power is exercised and the company closes.",
       "abilities": [
       ]
     },
@@ -615,7 +630,7 @@ module Engine
       "sym": "P12",
       "value": 0,
       "revenue": 10,
-      "desc": "Extra Tile Lay. The owning company may lay an additional yellow tile (or two for major companies), or make one additional tile upgrade in its track laying step. The upgrade can be to a tile laid in its normal tile laying step. All other normal track laying restrictions apply. Once acquired, the private company pays its revenue to the owning company until the power is exercised and the company closes.",
+      "desc": "MAJOR/MINOR, Phase 3. Extra Tile Lay. The owning company may lay an additional yellow tile (or two for major companies), or make one additional tile upgrade in its track laying step. The upgrade can be to a tile laid in its normal tile laying step. All other normal track laying restrictions apply. Once acquired, the private company pays its revenue to the owning company until the power is exercised and the company closes.",
       "abilities": [
       ]
     },
@@ -624,7 +639,7 @@ module Engine
       "sym": "P13",
       "value": 0,
       "revenue": 10,
-      "desc": "Pullman. A “Pullman” carriage train that can be added to another train owned by the company. It converts the train into a + train. Does not count against train limit and does not count as a train for the purposes of train ownership. Cannot be sold to another company. Does not close.",
+      "desc": "MAJOR/MINOR, Phase 5. Pullman. A “Pullman” carriage train that can be added to another train owned by the company. It converts the train into a + train. Does not count against train limit and does not count as a train for the purposes of train ownership. Cannot be sold to another company. Does not close.",
       "abilities": [
       ]
     },
@@ -633,7 +648,7 @@ module Engine
       "sym": "P14",
       "value": 0,
       "revenue": 10,
-      "desc": "Pullman. A “Pullman” carriage train that can be added to another train owned by the company. It converts the train into a + train. Does not count against train limit and does not count as a train for the purposes of train ownership. Cannot be sold to another company. Does not close.",
+      "desc": "MAJOR/MINOR, Phase 5. Pullman. A “Pullman” carriage train that can be added to another train owned by the company. It converts the train into a + train. Does not count against train limit and does not count as a train for the purposes of train ownership. Cannot be sold to another company. Does not close.",
       "abilities": [
       ]
     },
@@ -642,7 +657,7 @@ module Engine
       "sym": "P15",
       "value": 0,
       "revenue": 0,
-      "desc": "£10x Phase. Pays revenue of £10 x phase number to the player, and pays treasury credits of £10 x phase number to the private company. This credit is retained on the private company charter. When acquired, the acquiring company receives this treasury money and this private company closes. If not acquired beforehand, this company closes at the start of Phase 7 and all treasury credits are returned to the bank.",
+      "desc": "MAJOR/MINOR, Phase 2. £10x Phase. Pays revenue of £10 x phase number to the player, and pays treasury credits of £10 x phase number to the private company. This credit is retained on the private company charter. When acquired, the acquiring company receives this treasury money and this private company closes. If not acquired beforehand, this company closes at the start of Phase 7 and all treasury credits are returned to the bank.",
       "abilities": [
       ]
     },
@@ -651,7 +666,7 @@ module Engine
       "sym": "P16",
       "value": 0,
       "revenue": 0,
-      "desc": "Tax Haven. As a stock round action, under the direction and funded by the owning player, the off-shore Tax Haven may purchase an available share certificate and place it onto P16’s charter. The certificate is not counted for determining directorship of a company. The share held in the tax haven does NOT count against the 60% share limit for purchasing shares. If at 60% (or more) in hand in a company, a player can still purchase an additional share in that company and place it in the tax haven. Similarly, if a player holds 50% of a company, plus has 10% of the same company in the tax haven, they can buy a further 10% share. A company with a share in the off-shore tax haven CAN be “all sold out” at the end of a stock round. Dividends paid to the share are also placed onto the off-shore tax haven charter. At the end of the game, the player receives the share certificate from the off-shore tax haven charter and includes it in their portfolio for determining final worth. The player also receives the cash from dividend income accumulated on the charter. Cannot be acquired. Does not count against the certificate limit.",
+      "desc": "CAN NOT BE AQUIRED. Tax Haven. As a stock round action, under the direction and funded by the owning player, the off-shore Tax Haven may purchase an available share certificate and place it onto P16’s charter. The certificate is not counted for determining directorship of a company. The share held in the tax haven does NOT count against the 60% share limit for purchasing shares. If at 60% (or more) in hand in a company, a player can still purchase an additional share in that company and place it in the tax haven. Similarly, if a player holds 50% of a company, plus has 10% of the same company in the tax haven, they can buy a further 10% share. A company with a share in the off-shore tax haven CAN be “all sold out” at the end of a stock round. Dividends paid to the share are also placed onto the off-shore tax haven charter. At the end of the game, the player receives the share certificate from the off-shore tax haven charter and includes it in their portfolio for determining final worth. The player also receives the cash from dividend income accumulated on the charter. Cannot be acquired. Does not count against the certificate limit.",
       "abilities": [
       ]
     },
@@ -660,7 +675,7 @@ module Engine
       "sym": "P17",
       "value": 0,
       "revenue": 10,
-      "desc": "Move Card. Allows the director of the owning company to select one concession, private company, or minor company from the relevant stack of certificates, excluding those items currently in the bidding boxes, and move it to the top or the bottom of the stack. Closes when the power is exercised.",
+      "desc": "MAJOR, Phase 2. Move Card. Allows the director of the owning company to select one concession, private company, or minor company from the relevant stack of certificates, excluding those items currently in the bidding boxes, and move it to the top or the bottom of the stack. Closes when the power is exercised.",
       "abilities": [
       ]
     },
@@ -669,394 +684,798 @@ module Engine
       "sym": "P18",
       "value": 0,
       "revenue": 10,
-      "desc": "Station Marker Swap. Allows the owning company to move a token from the exchange token area of its charter to the available token area, or vice versa. This company closes when its power is exercised.",
+      "desc": "MAJOR, Phase 5. Station Marker Swap. Allows the owning company to move a token from the exchange token area of its charter to the available token area, or vice versa. This company closes when its power is exercised.",
       "abilities": [
       ]
     },
     {
-      "name": "Concession: London and North West Railway",
+      "name": "CONCESSION: London and North West Railway",
       "sym": "C1",
       "value": 100,
       "revenue": 10,
       "desc": "Have a face value £100 and converts into the LNWR's 10% director certificate. LNWR may also put it's destination token into Manchester when converted.",
       "abilities": [
-      ]
+      ],
+      "color": "lnwrBlack",
+      "text_color": "white"
     },
     {
-      "name": "Concession: Great Western Railway",
+      "name": "CONCESSION: Great Western Railway",
       "sym": "C2",
       "value": 100,
       "revenue": 10,
       "desc": "Have a face value £100 and contribute £100 to the conversion into the GWR director’s certificate.",
       "abilities": [
-      ]
+      ],
+      "color": "gwrGreen",
+      "text_color": "white"
     },
     {
-      "name": "Concession: London, Brighton and South Coast Railway",
+      "name": "CONCESSION: London, Brighton and South Coast Railway",
       "sym": "C3",
       "value": 100,
       "revenue": 10,
       "desc": "Have a face value £100 and contribute £100 to the conversion into the LBSCR director’s certificate.",
       "abilities": [
-      ]
+      ],
+      "color": "lbscrYellow",
+      "text_color": "white"
     },
     {
-      "name": "Concession: South Eastern & Chatham Railway",
+      "name": "CONCESSION: South Eastern & Chatham Railway",
       "sym": "C4",
       "value": 100,
       "revenue": 10,
       "desc": "Have a face value £100 and contribute £100 to the conversion into the SECR director’s certificate.",
       "abilities": [
-      ]
+      ],
+      "color": "secrOrange",
+      "text_color": "white"
     },
     {
-      "name": "Concession: Caledonian Railway",
+      "name": "CONCESSION: Caledonian Railway",
       "sym": "C5",
       "value": 100,
       "revenue": 10,
       "desc": "Have a face value £100 and contribute £100 to the conversion into the CR director’s certificate.",
       "abilities": [
-      ]
+      ],
+      "color": "crBlue",
+      "text_color": "white"
     },
     {
-      "name": "Concession: Midland Railway",
+      "name": "CONCESSION: Midland Railway",
       "sym": "C6",
       "value": 100,
       "revenue": 10,
       "desc": "Have a face value £100 and contribute £100 to the conversion into the MR director’s certificate.",
       "abilities": [
-      ]
+      ],
+      "color": "mrRed",
+      "text_color": "white"
     },
     {
-      "name": "Concession: Lancashire & Yorkshire",
+      "name": "CONCESSION: Lancashire & Yorkshire",
       "sym": "C7",
       "value": 100,
       "revenue": 10,
       "desc": "Have a face value £100 and contribute £100 to the conversion into the L&YR director’s certificate.",
       "abilities": [
-      ]
+      ],
+      "color": "lyrPurple",
+      "text_color": "white"
     },
     {
-      "name": "Concession: North British Railway",
+      "name": "CONCESSION: North British Railway",
       "sym": "C8",
       "value": 100,
       "revenue": 10,
       "desc": "Have a face value £100 and contribute £100 to the conversion into the NBR director’s certificate.",
       "abilities": [
-      ]
+      ],
+      "color": "nbrBrown",
+      "text_color": "white"
     },
     {
-      "name": "Concession: South Wales Railway",
+      "name": "CONCESSION: South Wales Railway",
       "sym": "C9",
       "value": 100,
       "revenue": 10,
       "desc": "Have a face value £100 and contribute £100 to the conversion into the SWR director’s certificate.",
       "abilities": [
-      ]
+      ],
+      "color": "swrGray",
+      "text_color": "white"
     },
     {
-      "name": "Concession: North Eastern Railway",
+      "name": "CONCESSION: North Eastern Railway",
       "sym": "C10",
       "value": 100,
       "revenue": 10,
       "desc": "Have a face value £100 and contribute £100 to the conversion into the NER director’s certificate.",
       "abilities": [
-      ]
+      ],
+      "color": "nerGreen",
+      "text_color": "white"
+    },
+    {
+      "name": "MINOR: 1. Great North of Scotland Railway",
+      "sym": "M1",
+      "value": 100,
+      "revenue": 0,
+      "desc": "A 50% director’s certificate in the associated minor company. Starting location is H1.",
+      "abilities": [
+      ],
+      "color": "white",
+      "text_color": "black"
+    },
+    {
+      "name": "MINOR: 2. Lanarkshire & Dumbartonshire Railway",
+      "sym": "M2",
+      "value": 100,
+      "revenue": 0,
+      "desc": "A 50% director’s certificate in the associated minor company. Starting location is E4.",
+      "abilities": [
+      ],
+      "color": "white",
+      "text_color": "black"
+    },
+    {
+      "name": "MINOR: 3. Edinburgh & Dalkeith Railway",
+      "sym": "M3",
+      "value": 100,
+      "revenue": 0,
+      "desc": "A 50% director’s certificate in the associated minor company. Starting location is H5.",
+      "abilities": [
+      ],
+      "color": "white",
+      "text_color": "black"
+    },
+    {
+      "name": "MINOR: 4. Newcastle & North shields Railway",
+      "sym": "M4",
+      "value": 100,
+      "revenue": 0,
+      "desc": "A 50% director’s certificate in the associated minor company. Starting location is K10.",
+      "abilities": [
+      ],
+      "color": "white",
+      "text_color": "black"
+    },
+    {
+      "name": "MINOR: 5. Stockton and Darlington Railway",
+      "sym": "M5",
+      "value": 100,
+      "revenue": 0,
+      "desc": "A 50% director’s certificate in the associated minor company. Starting location is J15.",
+      "abilities": [
+      ],
+      "color": "white",
+      "text_color": "black"
+    },
+    {
+      "name": "MINOR: 6. Furness railway",
+      "sym": "M6",
+      "value": 100,
+      "revenue": 0,
+      "desc": "A 50% director’s certificate in the associated minor company. Starting location is G16.",
+      "abilities": [
+      ],
+      "color": "white",
+      "text_color": "black"
+    },
+    {
+      "name": "MINOR: 7. Warrington & Newton Railway",
+      "sym": "M7",
+      "value": 100,
+      "revenue": 0,
+      "desc": "A 50% director’s certificate in the associated minor company. Starting location is H23.",
+      "abilities": [
+      ],
+      "color": "white",
+      "text_color": "black"
+    },
+    {
+      "name": "MINOR: 8. Manchester Sheffield & Lincolnshire Railway",
+      "sym": "M8",
+      "value": 100,
+      "revenue": 0,
+      "desc": "A 50% director’s certificate in the associated minor company. Starting location is K24.",
+      "abilities": [
+      ],
+      "color": "white",
+      "text_color": "black"
+    },
+    {
+      "name": "MINOR: 9. East Lincolnshire Railway",
+      "sym": "M9",
+      "value": 100,
+      "revenue": 0,
+      "desc": "A 50% director’s certificate in the associated minor company. Starting location is N23.",
+      "abilities": [
+      ],
+      "color": "white",
+      "text_color": "black"
+    },
+    {
+      "name": "MINOR: 10. Grand Junction Railway",
+      "sym": "M10",
+      "value": 100,
+      "revenue": 0,
+      "desc": "A 50% director’s certificate in the associated minor company. Starting location is I30.",
+      "abilities": [
+      ],
+      "color": "white",
+      "text_color": "black"
+    },
+    {
+      "name": "MINOR: 11. Great Northern Railway",
+      "sym": "M11",
+      "value": 100,
+      "revenue": 0,
+      "desc": "A 50% director’s certificate in the associated minor company. Starting location is M30.",
+      "abilities": [
+      ],
+      "color": "white",
+      "text_color": "black"
+    },
+    {
+      "name": "MINOR: 12. Eastern Union Railway",
+      "sym": "M12",
+      "value": 100,
+      "revenue": 0,
+      "desc": "A 50% director’s certificate in the associated minor company. Starting location is P35.",
+      "abilities": [
+      ],
+      "color": "white",
+      "text_color": "black"
+    },
+    {
+      "name": "MINOR: 13. Headcorn & Maidstone Junction Light Railway",
+      "sym": "M13",
+      "value": 100,
+      "revenue": 0,
+      "desc": "A 50% director’s certificate in the associated minor company. Starting location is O40.",
+      "abilities": [
+      ],
+      "color": "white",
+      "text_color": "black"
+    },
+    {
+      "name": "MINOR: 14. Metropolitan Railway",
+      "sym": "M14",
+      "value": 100,
+      "revenue": 0,
+      "desc": "A 50% director’s certificate in the associated minor company. Starting location is M38.",
+      "abilities": [
+      ],
+      "color": "white",
+      "text_color": "black"
+    },
+    {
+      "name": "MINOR: 15. London Tilbury & Southend Railway",
+      "sym": "M15",
+      "value": 100,
+      "revenue": 0,
+      "desc": "A 50% director’s certificate in the associated minor company. Starting location is M38.",
+      "abilities": [
+      ],
+      "color": "white",
+      "text_color": "black"
+    },
+    {
+      "name": "MINOR: 16. Wycombe Railway",
+      "sym": "M16",
+      "value": 100,
+      "revenue": 0,
+      "desc": "A 50% director’s certificate in the associated minor company. Starting location is M38.",
+      "abilities": [
+      ],
+      "color": "white",
+      "text_color": "black"
+    },
+    {
+      "name": "MINOR: 17. London & Southampton Railway",
+      "sym": "M17",
+      "value": 100,
+      "revenue": 0,
+      "desc": "A 50% director’s certificate in the associated minor company. Starting location is J41.",
+      "abilities": [
+      ],
+      "color": "white",
+      "text_color": "black"
+    },
+    {
+      "name": "MINOR: 18. Somerset & Dorset Joint Railway",
+      "sym": "M18",
+      "value": 100,
+      "revenue": 0,
+      "desc": "A 50% director’s certificate in the associated minor company. Starting location is I42.",
+      "abilities": [
+      ],
+      "color": "white",
+      "text_color": "black"
+    },
+    {
+      "name": "MINOR: 19. Penarth Harbour & Dock Railway Company",
+      "sym": "M19",
+      "value": 100,
+      "revenue": 0,
+      "desc": "A 50% director’s certificate in the associated minor company. Starting location is F35.",
+      "abilities": [
+      ],
+      "color": "white",
+      "text_color": "black"
+    },
+    {
+      "name": "MINOR: 20. Monmouthshire Railway & Canal Company",
+      "sym": "M20",
+      "value": 100,
+      "revenue": 0,
+      "desc": "A 50% director’s certificate in the associated minor company. Starting location is F33.",
+      "abilities": [
+      ],
+      "color": "white",
+      "text_color": "black"
+    },
+    {
+      "name": "MINOR: 21. Taff Vale railway",
+      "sym": "M21",
+      "value": 100,
+      "revenue": 0,
+      "desc": "A 50% director’s certificate in the associated minor company. Starting location is E34.",
+      "abilities": [
+      ],
+      "color": "white",
+      "text_color": "black"
+    },
+    {
+      "name": "MINOR: 22. Exeter and Crediton Railway",
+      "sym": "M22",
+      "value": 100,
+      "revenue": 0,
+      "desc": "A 50% director’s certificate in the associated minor company. Starting location is D41.",
+      "abilities": [
+      ],
+      "color": "white",
+      "text_color": "black"
+    },
+    {
+      "name": "MINOR: 23. West Cornwall Railway",
+      "sym": "M23",
+      "value": 100,
+      "revenue": 0,
+      "desc": "A 50% director’s certificate in the associated minor company. Starting location is A42.",
+      "abilities": [
+      ],
+      "color": "white",
+      "text_color": "black"
+    },
+    {
+      "name": "MINOR: 24. The Swansea and Mumbles Railway",
+      "sym": "M24",
+      "value": 100,
+      "revenue": 0,
+      "desc": "A 50% director’s certificate in the associated minor company. Starting location is D35.",
+      "abilities": [
+      ],
+      "color": "white",
+      "text_color": "black"
     }
   ],
   "minors": [
+  ],
+  "corporations": [
     {
-      "sym": "M1",
+      "sym": "1",
       "name": "Great North of Scotland Railway",
       "logo": "1822/1",
       "tokens": [
         0
       ],
       "type": "minor",
+      "always_market_price": true,
+      "float_percent": 100,
+      "hide_shares": true,
+      "shares": [100],
+      "max_ownership_percent": 100,
       "coordinates": "H1",
       "color": "white",
       "text_color": "black"
     },
     {
-      "sym": "M2",
+      "sym": "2",
       "name": "Lanarkshire & Dumbartonshire Railway",
       "logo": "1822/2",
       "tokens": [
         0
       ],
       "type": "minor",
+      "always_market_price": true,
+      "float_percent": 100,
+      "hide_shares": true,
+      "shares": [100],
+      "max_ownership_percent": 100,
       "coordinates": "E4",
       "color": "white",
       "text_color": "black"
     },
     {
-      "sym": "M3",
+      "sym": "3",
       "name": "Edinburgh & Dalkeith Railway",
       "logo": "1822/3",
       "tokens": [
         0
       ],
       "type": "minor",
+      "always_market_price": true,
+      "float_percent": 100,
+      "hide_shares": true,
+      "shares": [100],
+      "max_ownership_percent": 100,
       "coordinates": "H5",
       "color": "white",
       "text_color": "black"
     },
     {
-      "sym": "M4",
+      "sym": "4",
       "name": "Newcastle & North shields Railway",
       "logo": "1822/4",
       "tokens": [
         0
       ],
       "type": "minor",
+      "always_market_price": true,
+      "float_percent": 100,
+      "hide_shares": true,
+      "shares": [100],
+      "max_ownership_percent": 100,
       "coordinates": "K10",
       "color": "white",
       "text_color": "black"
     },
     {
-      "sym": "M5",
+      "sym": "5",
       "name": "Stockton and Darlington Railway",
       "logo": "1822/5",
       "tokens": [
         0
       ],
       "type": "minor",
+      "always_market_price": true,
+      "float_percent": 100,
+      "hide_shares": true,
+      "shares": [100],
+      "max_ownership_percent": 100,
       "coordinates": "J15",
       "color": "white",
       "text_color": "black"
     },
     {
-      "sym": "M6",
+      "sym": "6",
       "name": "Furness railway",
       "logo": "1822/6",
       "tokens": [
         0
       ],
       "type": "minor",
+      "always_market_price": true,
+      "float_percent": 100,
+      "hide_shares": true,
+      "shares": [100],
+      "max_ownership_percent": 100,
       "coordinates": "G16",
       "color": "white",
       "text_color": "black"
     },
     {
-      "sym": "M7",
+      "sym": "7",
       "name": "Warrington & Newton Railway",
       "logo": "1822/7",
       "tokens": [
         0
       ],
       "type": "minor",
+      "always_market_price": true,
+      "float_percent": 100,
+      "hide_shares": true,
+      "shares": [100],
+      "max_ownership_percent": 100,
       "coordinates": "H23",
       "color": "white",
       "text_color": "black"
     },
     {
-      "sym": "M8",
+      "sym": "8",
       "name": "Manchester Sheffield & Lincolnshire Railway",
       "logo": "1822/8",
       "tokens": [
         0
       ],
       "type": "minor",
+      "always_market_price": true,
+      "float_percent": 100,
+      "hide_shares": true,
+      "shares": [100],
+      "max_ownership_percent": 100,
       "coordinates": "K24",
       "color": "white",
       "text_color": "black"
     },
     {
-      "sym": "M9",
+      "sym": "9",
       "name": "East Lincolnshire Railway",
       "logo": "1822/9",
       "tokens": [
         0
       ],
       "type": "minor",
+      "always_market_price": true,
+      "float_percent": 100,
+      "hide_shares": true,
+      "shares": [100],
+      "max_ownership_percent": 100,
       "coordinates": "N23",
       "color": "white",
       "text_color": "black"
     },
     {
-      "sym": "M10",
+      "sym": "10",
       "name": "Grand Junction Railway",
       "logo": "1822/10",
       "tokens": [
         0
       ],
       "type": "minor",
+      "always_market_price": true,
+      "float_percent": 100,
+      "hide_shares": true,
+      "shares": [100],
+      "max_ownership_percent": 100,
       "coordinates": "I30",
       "color": "white",
       "text_color": "black"
     },
     {
-      "sym": "M11",
+      "sym": "11",
       "name": "Great Northern Railway",
       "logo": "1822/11",
       "tokens": [
         0
       ],
       "type": "minor",
+      "always_market_price": true,
+      "float_percent": 100,
+      "hide_shares": true,
+      "shares": [100],
+      "max_ownership_percent": 100,
       "coordinates": "M30",
       "color": "white",
       "text_color": "black"
     },
     {
-      "sym": "M12",
+      "sym": "12",
       "name": "Eastern Union Railway",
       "logo": "1822/12",
       "tokens": [
         0
       ],
       "type": "minor",
+      "always_market_price": true,
+      "float_percent": 100,
+      "hide_shares": true,
+      "shares": [100],
+      "max_ownership_percent": 100,
       "coordinates": "P35",
       "color": "white",
       "text_color": "black"
     },
     {
-      "sym": "M13",
+      "sym": "13",
       "name": "Headcorn & Maidstone Junction Light Railway",
       "logo": "1822/13",
       "tokens": [
         0
       ],
       "type": "minor",
+      "always_market_price": true,
+      "float_percent": 100,
+      "hide_shares": true,
+      "shares": [100],
+      "max_ownership_percent": 100,
       "coordinates": "O40",
       "color": "white",
       "text_color": "black"
     },
     {
-      "sym": "M14",
+      "sym": "14",
       "name": "Metropolitan Railway",
       "logo": "1822/14",
       "tokens": [
         0
       ],
       "type": "minor",
+      "always_market_price": true,
+      "float_percent": 100,
+      "hide_shares": true,
+      "shares": [100],
+      "max_ownership_percent": 100,
       "coordinates": "R38",
       "color": "white",
       "text_color": "black"
     },
     {
-      "sym": "M15",
+      "sym": "15",
       "name": "London Tilbury & Southend Railway",
       "logo": "1822/15",
       "tokens": [
         0
       ],
       "type": "minor",
+      "always_market_price": true,
+      "float_percent": 100,
+      "hide_shares": true,
+      "shares": [100],
+      "max_ownership_percent": 100,
       "coordinates": "M38",
       "city": 4,
       "color": "white",
       "text_color": "black"
     },
     {
-      "sym": "M16",
+      "sym": "16",
       "name": "Wycombe Railway",
       "logo": "1822/16",
       "tokens": [
         0
       ],
       "type": "minor",
+      "always_market_price": true,
+      "float_percent": 100,
+      "hide_shares": true,
+      "shares": [100],
+      "max_ownership_percent": 100,
       "coordinates": "M38",
       "city": 2,
       "color": "white",
       "text_color": "black"
     },
     {
-      "sym": "M17",
+      "sym": "17",
       "name": "London & Southampton Railway",
       "logo": "1822/17",
       "tokens": [
         0
       ],
       "type": "minor",
+      "always_market_price": true,
+      "float_percent": 100,
+      "hide_shares": true,
+      "shares": [100],
+      "max_ownership_percent": 100,
       "coordinates": "J41",
       "color": "white",
       "text_color": "black"
     },
     {
-      "sym": "M18",
+      "sym": "18",
       "name": "Somerset & Dorset Joint Railway",
       "logo": "1822/18",
       "tokens": [
         0
       ],
       "type": "minor",
+      "always_market_price": true,
+      "float_percent": 100,
+      "hide_shares": true,
+      "shares": [100],
+      "max_ownership_percent": 100,
       "coordinates": "I42",
       "color": "white",
       "text_color": "black"
     },
     {
-      "sym": "M19",
+      "sym": "19",
       "name": "Penarth Harbour & Dock Railway Company",
       "logo": "1822/19",
       "tokens": [
         0
       ],
       "type": "minor",
+      "always_market_price": true,
+      "float_percent": 100,
+      "hide_shares": true,
+      "shares": [100],
+      "max_ownership_percent": 100,
       "coordinates": "F35",
       "color": "white",
       "text_color": "black"
     },
     {
-      "sym": "M20",
+      "sym": "20",
       "name": "Monmouthshire Railway & Canal Company",
       "logo": "1822/20",
       "tokens": [
         0
       ],
       "type": "minor",
+      "always_market_price": true,
+      "float_percent": 100,
+      "hide_shares": true,
+      "shares": [100],
+      "max_ownership_percent": 100,
       "coordinates": "F33",
       "color": "white",
       "text_color": "black"
     },
     {
-      "sym": "M21",
+      "sym": "21",
       "name": "Taff Vale railway",
       "logo": "1822/21",
       "tokens": [
         0
       ],
       "type": "minor",
+      "always_market_price": true,
+      "float_percent": 100,
+      "hide_shares": true,
+      "shares": [100],
+      "max_ownership_percent": 100,
       "coordinates": "E34",
       "color": "white",
       "text_color": "black"
     },
     {
-      "sym": "M22",
+      "sym": "22",
       "name": "Exeter and Crediton Railway",
       "logo": "1822/22",
       "tokens": [
         0
       ],
       "type": "minor",
+      "always_market_price": true,
+      "float_percent": 100,
+      "hide_shares": true,
+      "shares": [100],
+      "max_ownership_percent": 100,
       "coordinates": "D41",
       "color": "white",
       "text_color": "black"
     },
     {
-      "sym": "M23",
+      "sym": "23",
       "name": "West Cornwall Railway",
       "logo": "1822/23",
       "tokens": [
         0
       ],
       "type": "minor",
+      "always_market_price": true,
+      "float_percent": 100,
+      "hide_shares": true,
+      "shares": [100],
+      "max_ownership_percent": 100,
       "coordinates": "A42",
       "color": "white",
       "text_color": "black"
     },
     {
-      "sym": "M24",
+      "sym": "24",
       "name": "The Swansea and Mumbles Railway",
       "logo": "1822/24",
       "tokens": [
         0
       ],
       "type": "minor",
+      "always_market_price": true,
+      "float_percent": 100,
+      "hide_shares": true,
+      "shares": [100],
+      "max_ownership_percent": 100,
       "coordinates": "D35",
       "color": "white",
       "text_color": "black"
-    }
-  ],
-  "corporations": [
+    },
     {
       "sym": "LNWR",
       "name": "London and North West Railway",
@@ -1196,11 +1615,22 @@ module Engine
   ],
   "trains": [
     {
+      "name": "L",
+      "distance": 2,
+      "num": 22,
+      "price": 60,
+      "rusts_on": "3"
+    },
+    {
       "name": "2",
       "distance": 2,
       "num": 22,
       "price": 120,
-      "rusts_on": "4"
+      "rusts_on": "4",
+      "available_on": "1",
+      "discount": {
+        "L": 40
+      }
     },
     {
       "name": "3",
@@ -1556,10 +1986,10 @@ module Engine
       "city=revenue:yellow_10|green_20|brown_30|gray_40,slots:2;path=a:5,b:_0,terminal:1;icon=image:1822/SWR_DEST": [
         "C34"
       ],
-      "offboard=revenue:yellow_10|green_10|brown_20|gray_20,groups:Highlands;path=a:5,b:_0;border=edge:0": [
+      "city=revenue:yellow_10|green_10|brown_20|gray_20,slots:2,groups:Highlands;path=a:5,b:_0,terminal:1;border=edge:0": [
         "E2"
       ],
-      "city=revenue:yellow_10|green_10|brown_20|gray_20,slots:2,hide:1,groups:Highlands;path=a:0,b:_0,terminal:1;border=edge:3": [
+      "offboard=revenue:yellow_10|green_10|brown_20|gray_20,hide:1,groups:Highlands;path=a:0,b:_0,terminal:1;border=edge:3": [
         "E4"
       ],
       "city=revenue:yellow_40|green_50|brown_60|gray_70,slots:3,loc:1;path=a:0,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0": [
@@ -1614,6 +2044,18 @@ module Engine
     }
   },
   "phases": [
+    {
+      "name": "1",
+      "on": "",
+      "train_limit": {
+        "minor": 2,
+        "major": 4
+      },
+      "tiles": [
+        "yellow"
+      ],
+      "operating_rounds": 1
+    },
     {
       "name": "2",
       "on": "2",

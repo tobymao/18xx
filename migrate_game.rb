@@ -83,17 +83,12 @@ def repair(game, original_actions, actions, broken_action)
   elsif game.active_step.is_a?(Engine::Step::G1867::Merge) && broken_action['type'] != 'pass'
     add_pass.call
     return
+  elsif game.is_a?(Engine::Game::G18CO) && prev_action['type'] == 'pass'
+    # Buying power allowed a theoretical train purchase, but issuing shares during train
+    # buy is not allowed in 18CO, so sometimes there was an erroneous pass to end train buy
+    actions.delete(prev_action)
+    return
   elsif broken_action['type'] == 'pass'
-    if game.active_step.is_a?(Engine::Step::G18CO::MovingBidAuction)
-      # Added logic of skipping players with all committed cash removed need to pass
-      actions.delete(broken_action)
-      return
-    end
-    if game.is_a?(Engine::Game::G18CO) && game.active_step.is_a?(Engine::Step::CorporateBuyShares)
-      # Company buy step is now skipped as DSNG is closed and no companies are available
-      actions.delete(broken_action)
-      return
-    end
     if game.active_step.is_a?(Engine::Step::G1817::PostConversionLoans)
       actions.delete(broken_action)
       return

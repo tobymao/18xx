@@ -10,7 +10,7 @@ module Engine
 
         def actions(entity)
           actions = super
-          return actions if entity != current_entity || must_sell?(entity)
+          return actions if entity != current_entity
 
           unless bought?
             if can_merge_any?(entity)
@@ -26,10 +26,10 @@ module Engine
 
         def player_can_exchange?(entity)
           return false unless entity.player?
+          return unless (company = entity.companies.find { |c| c.id == 'M&H' })
 
-          company = entity.companies.find { |c| c.id == 'M&H' }
           step = @round.steps.find { |r| r.is_a?(Engine::Step::G1828::Exchange) }
-          company && step&.can_exchange?(company)
+          step&.can_exchange?(company)
         end
 
         def choice_available?(_entity)
@@ -66,14 +66,19 @@ module Engine
         end
 
         def can_merge_any?(entity)
-          @game.corporations.any? { |corporation| can_merge?(entity, corporation) }
+          @game.corporations.any? do |corporation|
+            next if corporation.system?
+
+            @game.corporations.any? { |candidate| @game.merge_candidate?(entity, corporation, candidate) }
+          end
         end
 
         def can_merge?(entity, corporation)
-          @game.merge_candidates(entity, corporation).any?
+          !@game.merge_candidates(entity, corporation).empty?
         end
 
         def can_gain?(entity, bundle, exchange: false)
+          return false unless bundle.buyable
           return true if exchange
 
           super

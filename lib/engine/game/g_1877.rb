@@ -38,25 +38,32 @@ module Engine
       SELL_AFTER = :any_time
 
       def size_corporation(corporation, size)
-        return unless size == 10
-        raise GameError, 'Can only convert 5 share corporation' unless corporation.total_shares == 5
+        if size == 10
+          original_shares = @_shares.values.select { |share| share.corporation == corporation }
 
-        original_shares = @_shares.values.select { |share| share.corporation == corporation }
+          corporation.share_holders.clear
+          shares = 5.times.map { |i| Share.new(corporation, percent: 10, index: i + 1) }
 
-        corporation.share_holders.clear
-        original_shares[0].percent = 20
-        shares = 8.times.map { |i| Share.new(corporation, percent: 10, index: i + 1) }
-        original_shares.each { |share| corporation.share_holders[share.owner] += share.percent }
+          original_shares.each do |share|
+            share.percent = share.president ? 20 : 10
+            corporation.share_holders[share.owner] += share.percent
+          end
 
-        shares.each do |share|
-          add_new_share(share)
+          shares.each do |share|
+            add_new_share(share)
+          end
         end
+
+        @log << "#{corporation.name} floats and transfers 60% to the market"
+        corporation.spend(corporation.cash, @bank)
+        @bank.spend(((corporation.par_price.price * corporation.total_shares) / 2).floor, corporation)
+
+        total = 0
+        shares = corporation.shares.take_while { |share| (total += share.percent) <= 60 }
+        @share_pool.transfer_shares(ShareBundle.new(shares), @share_pool)
       end
 
-      def float_corporation(corporation)
-        @log << "#{corporation.name} floats and transfers remaining shares to the market"
-        @bank.spend((corporation.par_price.price * corporation.total_shares) / 2, corporation)
-      end
+      def float_corporation(corporation); end
 
       private
 

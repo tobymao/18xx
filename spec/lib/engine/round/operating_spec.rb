@@ -860,10 +860,15 @@ module Engine
           expect(subject.actions_for(corporation)).to include('sell_shares')
 
           # Run route step
-          action = game.action_from_h('type' => 'run_routes',
-                                      'entity' => 'B&O',
-                                      'entity_type' => 'corporation',
-                                      'routes' => [{ 'train' => '2-0', 'connections' => [%w[H20 G19]] }])
+          action = Engine::Action::Base.action_from_h({
+                                                        'type' => 'run_routes',
+                                                        'entity' => 'B&O',
+                                                        'entity_type' => 'corporation',
+                                                        'routes' => [{
+                                                          'train' => '2-0',
+                                                          'connections' => [%w[H20 G19]],
+                                                        }],
+                                                      }, game)
           subject.process_action(action)
 
           expect(subject.actions_for(corporation)).to include('sell_shares')
@@ -947,10 +952,15 @@ module Engine
           expect(subject.actions_for(corporation)).to include('buy_shares')
 
           # Run route sstep
-          action = game.action_from_h('type' => 'run_routes',
-                                      'entity' => 'B&O',
-                                      'entity_type' => 'corporation',
-                                      'routes' => [{ 'train' => '2-0', 'connections' => [%w[H20 G19]] }])
+          action = Engine::Action::Base.action_from_h({
+                                                        'type' => 'run_routes',
+                                                        'entity' => 'B&O',
+                                                        'entity_type' => 'corporation',
+                                                        'routes' => [{
+                                                          'train' => '2-0',
+                                                          'connections' => [%w[H20 G19]],
+                                                        }],
+                                                      }, game)
           subject.process_action(action)
 
           expect(subject.actions_for(corporation)).to include('buy_shares')

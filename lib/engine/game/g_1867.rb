@@ -3,6 +3,7 @@
 require_relative '../config/game/g_1867'
 require_relative '../loan'
 require_relative 'base'
+require_relative 'company_price_up_to_face'
 require_relative 'interest_on_loans'
 require_relative 'stubs_are_restricted'
 
@@ -39,7 +40,7 @@ module Engine
       SELL_MOVEMENT = :left_block_pres
       ALL_COMPANIES_ASSIGNABLE = true
       SELL_AFTER = :operate
-      DEV_STAGE = :beta
+      DEV_STAGE = :production
       SELL_BUY_ORDER = :sell_buy
       EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
       GAME_END_CHECK = { bank: :current_or, custom: :one_more_full_or_set }.freeze
@@ -538,7 +539,7 @@ module Engine
         end
 
         # Set minors maximum share price
-        max_price = @stock_market.market.first.find { |stockprice| stockprice.types.include?(:max_price) }
+        max_price = @stock_market.market.first.find { |stockprice| stockprice&.types&.include?(:max_price) }
         @corporations.select { |c| c.type == :minor }.each { |c| c.max_share_price = max_price }
 
         # Move green and majors out of the normal list

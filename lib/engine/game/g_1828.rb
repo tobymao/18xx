@@ -267,23 +267,24 @@ module Engine
       end
 
       def merge_candidates(player, corporation)
-        return [] if !player || !corporation
         return [] if corporation.system?
 
-        @corporations.select do |candidate|
-          next if candidate == corporation ||
-                  candidate.system? ||
-                  !candidate.ipoed ||
-                  (corporation.owner != player && candidate.owner != player) ||
-                  candidate.operated? != corporation.operated? ||
-                  (!candidate.floated? && !corporation.floated?)
+        @corporations.select { |candidate| merge_candidate?(player, corporation, candidate) }
+      end
 
-          # account for another player having 5+ shares
-          @players.any? do |p|
-            num_shares = p.num_shares_of(candidate) + p.num_shares_of(corporation)
-            num_shares >= 6 ||
-              (num_shares == 5 && !sold_this_round?(p, candidate) && !sold_this_round?(p, corporation))
-          end
+      def merge_candidate?(player, corporation, candidate)
+        return false if candidate == corporation ||
+                        candidate.system? ||
+                        !candidate.ipoed ||
+                        (corporation.owner != player && candidate.owner != player) ||
+                        candidate.operated? != corporation.operated? ||
+                        (!candidate.floated? && !corporation.floated?)
+
+        # account for another player having 5+ shares
+        @players.any? do |p|
+          num_shares = p.num_shares_of(candidate) + p.num_shares_of(corporation)
+          num_shares >= 6 ||
+            (num_shares == 5 && !sold_this_round?(p, candidate) && !sold_this_round?(p, corporation))
         end
       end
 
@@ -388,10 +389,10 @@ module Engine
       def can_buy_coal_marker?(entity)
         return false unless entity.corporation?
 
-        connected_to_coalfields?(entity) &&
-          coal_marker_available? &&
+        coal_marker_available? &&
           !coal_marker?(entity) &&
-          buying_power(entity) >= COAL_MARKER_COST
+          buying_power(entity) >= COAL_MARKER_COST &&
+          connected_to_coalfields?(entity)
       end
 
       def buy_coal_marker(entity)
@@ -456,7 +457,17 @@ module Engine
             token = Engine::Token.new(c)
             c.tokens << token
             place_home_token(c)
-            token.swap!(corporation.tokens.find { |t| t.price.zero? && !t.used }, check_tokenable: false)
+
+            system_token = corporation.tokens.find do |t|
+              t.price.zero? && !t.used && !@round.pending_tokens.find { |p_t| p_t[:token] == t }
+            end
+            if (pending_token = @round.pending_tokens.find { |p_t| p_t[:entity] == c })
+              pending_token[:entity] = corporation
+              pending_token[:token] = system_token
+              pending_token[:hexes].first.tile.reservations.map! { |r| r == c ? corporation : r }
+            else
+              token.swap!(system_token, check_tokenable: false)
+            end
           end
         else
           super

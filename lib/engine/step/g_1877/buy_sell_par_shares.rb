@@ -7,13 +7,26 @@ module Engine
     module G1877
       class BuySellParShares < Step::G1817::BuySellParShares
         def corporate_actions(entity)
-          actions = super
-          actions << 'buy_train' if can_buy_train?(entity)
+          return [] if @winning_bid
+
+          if @corporate_action && @corporate_action.entity != entity
+            return ['buy_tokens'] if can_buy_tokens?(entity)
+
+            return []
+          end
+
+          actions = []
+          if @current_actions.none?
+            actions << 'take_loan' if @game.can_take_loan?(entity) && !@corporate_action.is_a?(Action::BuyShares)
+            actions << 'buy_shares' unless @game.redeemable_shares(entity).empty?
+            actions << 'buy_train' if can_buy_train?(entity)
+          end
+          actions << 'buy_tokens' if can_buy_tokens?(entity)
           actions
         end
 
         def room?(entity, _shell = nil)
-          entity.trains.size < @game.phase.train_limit(entity)
+          entity.trains.size < @game.train_limit(entity)
         end
 
         def can_buy_train?(entity)
@@ -25,7 +38,7 @@ module Engine
         end
 
         def buyable_train_variants(train, entity)
-          train.variants.values.select { |v| v['price'] <= entity.cash }
+          train.variants.values.select { |v| v[:price] <= entity.cash }
         end
 
         def buyable_trains(corporation)
@@ -62,9 +75,24 @@ module Engine
           @corporation_size = nil
           size_corporation(@game.phase.corporation_sizes.first) if @game.phase.corporation_sizes.one?
 
-          @game.share_pool.transfer_shares(ShareBundle.new(corporation.shares), @game.share_pool)
-
           par_corporation if available_subsidiaries(winner.entity).none?
+        end
+
+        def size_corporation(size)
+          @corporation_size = size
+          @game.size_corporation(@winning_bid.corporation, @corporation_size)
+        end
+
+        def par_corporation
+          winner = @winning_bid.entity
+          super
+
+          unpass!
+          winner.unpass!
+          @current_actions.clear
+          @corporate_action = nil
+          @round.pass_order.delete(winner)
+          @round.goto_entity!(winner)
         end
 
         def can_short?(entity, corporation)

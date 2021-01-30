@@ -131,8 +131,8 @@ module Engine
         {
           sym: :pay_per_trash,
           short_name: 'Pay Per Trash',
-          desc: '(alpha) Selling multiple shares before a corporation\'s first OR returns the amount'\
-                'listed in each movement down on the market, starting at the current share price.',
+          desc: '(alpha) Selling multiple shares before a corporation\'s first Operating Round returns the '\
+                'amount listed in each movement down on the market, starting at the current share price.',
         },
         {
           sym: :major_investors,
@@ -567,7 +567,8 @@ module Engine
         return [] unless entity.num_ipo_shares
 
         bundles_for_corporation(entity, entity)
-          .select { |bundle| bundle.shares.size == 1 && @share_pool.fit_in_bank?(bundle) }
+          .select { |bundle| @share_pool.fit_in_bank?(bundle) }
+          .map { |bundle| reduced_bundle_price_for_market_drop(bundle) }
       end
 
       def redeemable_shares(entity)
@@ -613,6 +614,10 @@ module Engine
         bundles.sort_by { |b| [b.presidents_share ? 1 : 0, b.percent, -b.shares.size] }.uniq(&:percent)
       end
 
+      def buying_power(entity)
+        entity.cash
+      end
+
       def purchasable_companies(entity = nil)
         @companies.select do |company|
           !company.closed? &&
@@ -620,6 +625,10 @@ module Engine
             (entity.nil? || entity != company.owner) &&
             !abilities(company, :no_buy)
         end
+      end
+
+      def unowned_purchasable_companies(_entity)
+        @companies.select { |company| !company.closed? && company.owner.nil? }
       end
 
       def entity_can_use_company?(entity, company)
@@ -631,6 +640,10 @@ module Engine
         return value unless drgr&.owner == player
 
         value - drgr.value
+      end
+
+      def train_limit(entity)
+        super + Array(abilities(entity, :train_limit)).sum(&:increase)
       end
     end
   end

@@ -557,6 +557,10 @@ module Engine
         lays
       end
 
+      def train_limit(entity)
+        super + Array(abilities(entity, :train_limit)).sum(&:increase)
+      end
+
       private
 
       def handle_no_mail(entity, trainless: true)

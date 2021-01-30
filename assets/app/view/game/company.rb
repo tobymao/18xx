@@ -50,10 +50,10 @@ module View
           render_company_on_card(@company)
         else
           header_style = {
-            background: 'yellow',
+            background: @company.color,
+            color: @company.text_color,
             border: '1px solid',
             borderRadius: '5px',
-            color: 'black',
             marginBottom: '0.5rem',
             fontSize: '90%',
           }

@@ -28,7 +28,7 @@ module Engine
       "5":210,
       "6":180
    },
-   "capitalization":"full",
+   "capitalization":"incremental",
    "layout":"flat",
    "mustSellInBlocks":false,
    "locationNames":{
@@ -506,15 +506,16 @@ module Engine
          "name":"3",
          "distance":3,
          "price":250,
-         "rusts_on":"6",
-         "num":12
+         "num":10
       },
       {
          "name":"4",
          "distance":4,
          "price":400,
-         "rusts_on":"8",
-         "num":8
+         "num":40,
+         "events": [
+           {"type": "signal_end_game"}
+         ]
       }
    ],
    "hexes":{
@@ -596,7 +597,7 @@ module Engine
          ],
          "operating_rounds":2,
          "corporation_sizes":[
-            5
+            5, 10
          ]
       },
       {

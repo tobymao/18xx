@@ -135,6 +135,7 @@ module Engine
         @last_node = node
       end
 
+      @halts = nil
       @routes.each { |r| r.clear_cache!(all: true) }
     end
 

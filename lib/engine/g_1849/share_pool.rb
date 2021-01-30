@@ -31,6 +31,10 @@ module Engine
         move_share(presidents_share, president)
       end
 
+      def handle_partial(bundle, from, to)
+        move_share(from.shares_of(bundle.corporation).find { |s| !s.last_cert }, to)
+      end
+
       def swap_double_cert(from, to, corporation)
         double = from.shares_of(corporation).find(&:last_cert)
         move_share(double, to)
