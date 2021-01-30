@@ -171,7 +171,7 @@ module View
 
         props = {
           style: {
-            border: '1px solid black',
+            border: '1px solid',
           },
         }
 
@@ -186,7 +186,8 @@ module View
           style: {
             margin: '0.5rem 0 0.5rem 0',
             textAlign: 'left',
-            border: '1px solid black',
+            border: '1px solid',
+            borderColor: color_for(:font),
             borderCollapse: 'collapse',
           },
         }
@@ -194,7 +195,7 @@ module View
         header_props = {
           style: {
             backgroundColor: color_for(:bg2),
-            border: '1px solid black',
+            border: '1px solid',
           },
         }
 
