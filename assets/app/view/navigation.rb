@@ -12,8 +12,8 @@ module View
     include Lib::Settings
     needs :app_route, default: nil, store: true
     needs :user, default: nil, store: true
-    needs :show_games_sub, default: false, store: true
-    needs :show_main_sub, default: false, store: true
+    needs :show_games_submenu, default: false, store: true
+    needs :show_main_submenu, default: false, store: true
 
     def render
       store(:connection, Lib::Connection.new(root), skip: true) unless @connection
@@ -28,6 +28,7 @@ module View
           padding: '0.5vmin 2vmin',
           backgroundColor: color_for(:bg),
           boxShadow: '0 2px 0 0 gainsboro',
+          zIndex: '10',
         },
       }
       nav_props = {
@@ -48,13 +49,18 @@ module View
       ])
     end
 
-    def render_games_menu
-      toggle_menu = lambda do
-        store(:show_games_sub, !@show_games_sub)
-        # change z-index to overlap any sticky elements (game-page nav)
-        `document.getElementById('header').style.zIndex = #{@show_games_sub ? 1000 : 0}`
+    def toggle_menu(event, games = false)
+      event.JS.stopPropagation
+      if games
+        store(:show_games_submenu, !@show_games_submenu, skip: false)
+      else
+        store(:show_main_submenu, !@show_main_submenu, skip: false)
       end
+      # change z-index to overlap any sticky elements (game-page nav)
+      `document.getElementById('header').style.zIndex = #{@show_games_submenu || @show_main_submenu ? 1000 : 10}`
+    end
 
+    def render_games_menu
       li_props = {
         style: {
           position: 'relative',
@@ -72,7 +78,7 @@ module View
           left: '0',
           backgroundColor: color_for(:bg),
         },
-      } if @show_games_sub
+      } if @show_games_submenu
       toggle_props = {
         attrs: {
           href: '#',
@@ -80,7 +86,7 @@ module View
           title: 'All Games',
         },
         on: {
-          click: toggle_menu,
+          click: ->(event) { toggle_menu(event, true) },
         },
       }
 
@@ -132,12 +138,6 @@ module View
     end
 
     def render_main_menu
-      toggle_menu = lambda do
-        store(:show_main_sub, !@show_main_sub)
-        # change z-index to overlap any sticky elements (game-page nav)
-        `document.getElementById('header').style.zIndex = #{@show_main_sub ? 1000 : 0}`
-      end
-
       menu_props = {
         style: {
           display: 'block',
@@ -149,7 +149,7 @@ module View
         class: {
           submenu: true,
         },
-      } if @show_main_sub
+      } if @show_main_submenu
 
       toggle_props = {
         attrs: {
@@ -162,7 +162,7 @@ module View
           fontSize: '1.5rem',
         },
         on: {
-          click: toggle_menu,
+          click: ->(event) { toggle_menu(event, false) },
         },
       }
       toggle_props[:style][:color] = 'red' unless @user
@@ -175,7 +175,7 @@ module View
               end
       links << menu_item('About', '/about')
 
-      h('nav#main_nav', [h('a.toggle', toggle_props, '☰'), h('ul.menu', *menu_props, links)])
+      h('nav#main_nav', [h('a.toggle', toggle_props, '☰'), h('ul.menu', menu_props, links)])
     end
 
     def menu_item(name, anchor)
