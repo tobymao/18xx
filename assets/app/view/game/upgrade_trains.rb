@@ -17,7 +17,6 @@ module View
         step = @game.active_step
         corporation = step.buying_entity
 
-        puts step.trains.size
         trains = step.trains.map do |train|
           train_props = {
             style: {
@@ -26,23 +25,25 @@ module View
               width: 'fit-content',
             },
           }
-          h('div.margined', [
-              h('span.margined', train_props, train.name),
-              h(:button, {
-                  on: {
-                    click: lambda {
-                      process_action(Engine::Action::DiscardTrain.new(corporation, train: train))
-                    },
-                  },
-                }, 'Upgrade'),
-              h(:button, {
-                  on: {
-                    click: lambda {
-                      process_action(Engine::Action::DiscardTrain.new(corporation, train: train))
-                    },
-                  },
-                }, 'Discard'),
-            ])
+          train_options = [h('span.margined', train_props, train.name)]
+
+          train_name, upgrade_price = step.upgrade_infos(train, corporation)
+          train_options << h(:button, {
+                               on: {
+                                 click: lambda {
+                                   process_action(Engine::Action::SwapTrain.new(corporation, train: train))
+                                 },
+                               },
+                             }, "Upgrade to #{train_name} (#{@game.format_currency(upgrade_price)})") unless train_name.nil?
+
+          train_options << h(:button, {
+                               on: {
+                                 click: lambda {
+                                   process_action(Engine::Action::DiscardTrain.new(corporation, train: train))
+                                 },
+                               },
+                             }, 'Discard')
+          h('div.margined', train_options)
         end
         children = []
 

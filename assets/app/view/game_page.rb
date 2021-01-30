@@ -256,7 +256,7 @@ module View
       return h(Game::GameEnd) if @game.finished
 
       if current_entity_actions.include?('discard_train') &&
-        current_entity_actions.include?('upgrade_train')
+        current_entity_actions.include?('swap_train')
         return h(Game::UpgradeTrains)
       end
       return h(Game::DiscardTrains) if current_entity_actions.include?('discard_train')

@@ -361,6 +361,10 @@ module Engine
 
         str
       end
+
+      def train_information
+        self.class::TRAINS
+      end
     end
   end
 end

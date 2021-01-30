@@ -80,50 +80,6 @@ module View
           h(:button, { on: { click: buy_click } }, 'Buy'),
         ])
       end
-
-      # def render_mergeable_entities
-      #   return unless @step.current_actions.include?('merge')
-      #   return unless @step.mergeable_entities
-
-      #   children = []
-
-      #   props = {
-      #     style: {
-      #       margin: '0.5rem 1rem 0 0',
-      #     },
-      #   }
-      #   children << h(:div, props, @step.mergeable_type(@mergeable_entity))
-
-      #   hidden_corps = false
-      #   @show_other_players = true if @step.show_other_players
-      #   @step.mergeable_entities.each do |target|
-      #     if @show_other_players || target.owner == @mergeable_entity.owner || !target.owner
-      #       children << h(Corporation, corporation: target, selected_corporation: @selected_corporation)
-      #     else
-      #       hidden_corps = true
-      #     end
-      #   end
-
-      #   button_props = {
-      #     style: {
-      #       display: 'grid',
-      #       gridColumn: '1/4',
-      #       width: 'max-content',
-      #     },
-      #   }
-
-      #   if hidden_corps
-      #     children << h('button',
-      #                   { on: { click: -> { store(:show_other_players, true) } }, **button_props },
-      #                   'Show corporations from other players')
-      #   elsif @show_other_players
-      #     children << h('button',
-      #                   { on: { click: -> { store(:show_other_players, false) } }, **button_props },
-      #                   'Hide corporations from other players')
-      #   end
-
-      #   children
-      # end
     end
   end
 end
