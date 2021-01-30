@@ -73,8 +73,8 @@ module Engine
                                             'minors_cannot_start' => ['Minors cannot start'],
                                             'minors_nationalized' => ['Minors are nationalized'],
                                             'nationalize_companies' =>
-                                            ['Nationalize Companies',
-                                             'All companies close paying their owner their value'],
+                                            ['Nationalize Private Companies',
+                                             'Private companies close, paying their owner their value'],
                                             'train_trade_allowed' =>
                                             ['Train trade in allowed',
                                              'Trains can be traded in for 50% towards Phase 8 trains'],
