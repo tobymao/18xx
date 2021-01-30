@@ -96,6 +96,21 @@ module Engine
             routes: [],
           }
         end
+
+        def chart(entity)
+          curr_price = entity.share_price.price
+          [
+            ['Revenue', 'Price Change'],
+            [@game.format_currency(0), '1 to the left'],
+            ["#{@game.format_currency(1)} - #{@game.format_currency(curr_price - 1)}", 'none'],
+            ["#{@game.format_currency(curr_price)} - #{@game.format_currency(2 * curr_price - 1)}", '1 to the right'],
+            ["#{@game.format_currency(2 * curr_price)} - #{@game.format_currency(3 * curr_price - 1)}",
+             '2 to the right'],
+            ["#{@game.format_currency(3 * curr_price)} - #{@game.format_currency(4 * curr_price - 1)}",
+             '3 to the right'],
+            ["#{@game.format_currency(4 * curr_price)} or more", '4 to the right'],
+          ]
+        end
       end
     end
   end
