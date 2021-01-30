@@ -65,6 +65,11 @@ module Engine
 
       def float_corporation(corporation); end
 
+      def buy_train(operator, train, price = nil)
+        super
+        train.buyable = false
+      end
+
       private
 
       def init_round
