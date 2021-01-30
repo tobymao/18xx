@@ -299,77 +299,77 @@ module Engine
       }]
     },
     {
-      "name": "Champlain & St. Lawrence",
-      "sym": "C&SL",
+      "name": "Tsarskoye Selo Railway",
+      "sym": "TSR",
       "value": 30,
       "revenue": 10,
       "discount": 10,
       "desc": "No special abilities."
     },
     {
-      "name": "Niagara Falls Bridge",
-      "sym": "NFB",
+      "name": "Black Sea Shipping Company",
+      "sym": "BSS",
       "value": 45,
       "revenue": 15,
       "discount": 15,
-      "desc": "When owned by a corporation, they gain $10 extra revenue for each of their routes that include Buffalo",
+      "desc": "When owned by a corporation, they gain $10 extra revenue for each of their routes that include Odessa",
       "abilities": [
         {
         "type": "hex_bonus",
         "owner_type": "corporation",
         "hexes": [
-          "F18"
+          "D20"
         ],
         "amount": 10
       }]
     },
     {
-      "name": "Montreal Bridge",
-      "sym": "MB",
+      "name": "Moskow - Yaroslavl Railway",
+      "sym": "MYR",
       "value": 60,
       "revenue": 20,
       "discount": 20,
-      "desc": "When owned by a corporation, they gain $10 extra revenue for each of their routes that include Montreal",
+      "desc": "When owned by a corporation, they gain $10 extra revenue for each of their routes that include Moskow",
       "abilities": [
         {
         "type": "hex_bonus",
         "owner_type": "corporation",
         "hexes": [
-          "L12"
+          "H8"
         ],
         "amount": 10
       }]
     },
     {
-      "name": "Quebec Bridge",
-      "sym": "QB",
+      "name": "Moskow - Ryazan Railway",
+      "sym": "MRR",
       "value": 75,
       "revenue": 25,
       "discount": 25,
-      "desc": "When owned by a corporation, they gain $10 extra revenue for each of their routes that include Quebec",
+      "desc": "When owned by a corporation, they gain $10 extra revenue for each of their routes that include Moskow",
       "abilities": [
         {
         "type": "hex_bonus",
         "owner_type": "corporation",
         "hexes": [
-          "O7"
+          "H8"
         ],
         "amount": 10
       }]
     },
     {
-      "name": "St. Clair Tunnel",
-      "sym": "SCT",
+      "name": "Warsaw - Vienna Railway",
+      "sym": "MVR",
       "value": 90,
       "revenue": 30,
       "discount": 30,
-      "desc": "When owned by a corporation, they gain $10 extra revenue for each of their routes that include Detroit",
+      "desc": "When owned by a corporation, they gain $10 extra revenue for each of their routes that include Poland",
       "abilities": [
         {
         "type": "hex_bonus",
         "owner_type": "corporation",
         "hexes": [
-          "A19", "A17"
+          "A9", "A11", "A13", "A15"
         ],
         "amount": 10
       }]
@@ -377,10 +377,65 @@ module Engine
   ],
   "corporations": [
     {
-      "sym": "CNR",
-      "name": "Canadian Northern Railway",
-      "logo": "1867/CNR",
-      "simple_logo": "1867/CNR.alt",
+      "sym": "NW",
+      "name": "North Western Railway",
+      "logo": "1861/NW",
+      "float_percent": 20,
+      "always_market_price": true,
+      "tokens": [
+        0,
+        20,
+        40
+      ],
+      "type": "major",
+      "color": "navy"
+    },
+    {
+      "sym": "SW",
+      "name": "Southwestern Railway",
+      "logo": "1861/SW",
+      "float_percent": 20,
+      "always_market_price": true,
+      "tokens": [
+        0,
+        20,
+        40
+      ],
+      "type": "major",
+      "color": "orange"
+    },
+    {
+      "sym": "SE",
+      "name": "Southeastern Railway",
+      "logo": "1861/SE",
+      "float_percent": 20,
+      "always_market_price": true,
+      "tokens": [
+        0,
+        20,
+        40
+      ],
+      "type": "major",
+      "color": "purple"
+    },
+    {
+      "sym": "MVR",
+      "name": "Moskow, Vindava & Rybinsk Railway",
+      "logo": "1861/MVR",
+      "float_percent": 20,
+      "always_market_price": true,
+      "tokens": [
+        0,
+        20,
+        40
+      ],
+      "type": "major",
+      "color": "olive"
+    },
+    {
+      "sym": "MK",
+      "name": "Moskow & Kazan Railway",
+      "logo": "1861/MK",
       "float_percent": 20,
       "always_market_price": true,
       "tokens": [
@@ -392,10 +447,9 @@ module Engine
       "color": "green"
     },
     {
-      "sym": "CPR",
-      "name": "Canadian Pacific Railway",
-      "logo": "1867/CPR",
-      "simple_logo": "1867/CPR.alt",
+      "sym": "GR",
+      "name": "Grand Russian Railway",
+      "logo": "1861/GR",
       "float_percent": 20,
       "always_market_price": true,
       "tokens": [
@@ -407,10 +461,9 @@ module Engine
       "color": "red"
     },
     {
-      "sym": "C&O",
-      "name": "Chesapeake and Ohio Railway",
-      "logo": "1867/CO",
-      "simple_logo": "1867/CO.alt",
+      "sym": "MKN",
+      "name": "Moskow, Kursk & Nizhnii Novgorod",
+      "logo": "1861/MKN",
       "float_percent": 20,
       "always_market_price": true,
       "tokens": [
@@ -422,40 +475,9 @@ module Engine
       "color": "blue"
     },
     {
-      "sym": "GTR",
-      "name": "Grand Trunk Railway",
-      "logo": "1867/GTR",
-      "simple_logo": "1867/GTR.alt",
-      "float_percent": 20,
-      "always_market_price": true,
-      "tokens": [
-        0,
-        20,
-        40
-      ],
-      "type": "major",
-      "color": "orange"
-    },
-    {
-      "sym": "GWR",
-      "name": "Great Western Railway",
-      "logo": "1867/GWR",
-      "simple_logo": "1867/GWR.alt",
-      "float_percent": 20,
-      "always_market_price": true,
-      "tokens": [
-        0,
-        20,
-        40
-      ],
-      "type": "major",
-      "color": "darkBlue"
-    },
-    {
-      "sym": "ICR",
-      "name": "Intercolonial Railway",
-      "logo": "1867/ICR",
-      "simple_logo": "1867/ICR.alt",
+      "sym": "MKR",
+      "name": "Moskow, Kiev & Voronezh Railway",
+      "logo": "1861/MKR",
       "float_percent": 20,
       "always_market_price": true,
       "tokens": [
@@ -467,39 +489,9 @@ module Engine
       "color": "brown"
     },
     {
-      "sym": "NTR",
-      "name": "National Transcontinental Railway",
-      "logo": "1867/NTR",
-      "simple_logo": "1867/NTR.alt",
-      "float_percent": 20,
-      "always_market_price": true,
-      "tokens": [
-        0,
-        20,
-        40
-      ],
-      "type": "major",
-      "color": "green"
-    },
-    {
-      "sym": "NYC",
-      "name": "New York Central Railroad",
-      "logo": "1867/NYC",
-      "simple_logo": "1867/NYC.alt",
-      "float_percent": 20,
-      "always_market_price": true,
-      "tokens": [
-        0,
-        20,
-        40
-      ],
-      "type": "major",
-      "color": "purple"
-    },
-    {
-      "sym": "BBG",
-      "name": "Buffalo, Brantford, and Goderich",
-      "logo": "1867/BBG",
+      "sym": "RO",
+      "name": "Riga-Orel Railway",
+      "logo": "1861/RO",
       "float_percent": 100,
       "always_market_price": true,
       "tokens": [
@@ -508,26 +500,12 @@ module Engine
       "type": "minor",
       "shares": [100],
       "max_ownership_percent": 100,
-      "color": "gray"
-    },
-    {
-      "sym": "BO",
-      "name": "Brockville and Ottawa",
-      "logo": "1867/BO",
-      "float_percent": 100,
-      "always_market_price": true,
-      "tokens": [
-        0
-      ],
-      "shares": [100],
-      "max_ownership_percent": 100,
-      "type": "minor",
       "color": "teal"
     },
     {
-      "sym": "CS",
-      "name": "Canada Southern",
-      "logo": "1867/CS",
+      "sym": "KB",
+      "name": "Kiev-Brest Railway",
+      "logo": "1861/KB",
       "float_percent": 100,
       "always_market_price": true,
       "tokens": [
@@ -539,9 +517,9 @@ module Engine
       "color": "lightBlue"
     },
     {
-      "sym": "CV",
-      "name": "Credit Valley Railway",
-      "logo": "1867/CV",
+      "sym": "OK",
+      "name": "Odessa-Kiev Railway",
+      "logo": "1861/OK",
       "float_percent": 100,
       "always_market_price": true,
       "tokens": [
@@ -553,9 +531,9 @@ module Engine
       "color": "lightishBlue"
     },
     {
-      "sym": "KP",
-      "name": "Kingston and Pembroke",
-      "logo": "1867/KP",
+      "sym": "KK",
+      "name": "Kiev-Kursk Railway",
+      "logo": "1861/KK",
       "float_percent": 100,
       "always_market_price": true,
       "tokens": [
@@ -567,9 +545,9 @@ module Engine
       "color": "lightishBlue"
     },
     {
-      "sym": "LPS",
-      "name": "London and Port Stanley",
-      "logo": "1867/LPS",
+      "sym": "SPW",
+      "name": "St. Petersburg Warsaw",
+      "logo": "1861/SPW",
       "float_percent": 100,
       "always_market_price": true,
       "tokens": [
@@ -578,12 +556,40 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "type": "minor",
-      "color": "gray"
+      "color": "blue"
     },
     {
-      "sym": "OP",
-      "name": "Ottawa and Prescott",
-      "logo": "1867/OP",
+      "sym": "MB",
+      "name": "Moskow-Brest Railway",
+      "logo": "1861/KP",
+      "float_percent": 100,
+      "always_market_price": true,
+      "tokens": [
+        0
+      ],
+      "shares": [100],
+      "max_ownership_percent": 100,
+      "type": "minor",
+      "color": "blue"
+    },
+    {
+      "sym": "KR",
+      "name": "Kharkiv-Rostov Railway",
+      "logo": "1861/KR",
+      "float_percent": 100,
+      "always_market_price": true,
+      "tokens": [
+        0
+      ],
+      "shares": [100],
+      "max_ownership_percent": 100,
+      "type": "minor",
+      "color": "purple"
+    },
+    {
+      "sym": "N",
+      "name": "Nikolaev Railway",
+      "logo": "1861/N",
       "float_percent": 100,
       "always_market_price": true,
       "tokens": [
@@ -595,9 +601,65 @@ module Engine
       "color": "magenta"
     },
     {
-      "sym": "SLA",
-      "name": "St. Lawrence and Atlantic",
-      "logo": "1867/SLA",
+      "sym": "Y",
+      "name": "Yuzovka Railway",
+      "logo": "1861/Y",
+      "float_percent": 100,
+      "always_market_price": true,
+      "tokens": [
+        0
+      ],
+      "shares": [100],
+      "max_ownership_percent": 100,
+      "type": "minor",
+      "color": "red"
+    },
+    {
+      "sym": "MKu",
+      "name": "Moskow-Kursk Railway",
+      "logo": "1861/MKu",
+      "float_percent": 100,
+      "always_market_price": true,
+      "tokens": [
+        0
+      ],
+      "shares": [100],
+      "max_ownership_percent": 100,
+      "type": "minor",
+      "color": "orange"
+    },
+    {
+      "sym": "MNN",
+      "name": "Moskow-Nizhnii Novgorod",
+      "logo": "1861/MNN",
+      "float_percent": 100,
+      "always_market_price": true,
+      "tokens": [
+        0
+      ],
+      "shares": [100],
+      "max_ownership_percent": 100,
+      "type": "minor",
+      "color": "red"
+    },
+    {
+      "sym": "MV",
+      "name": "Moskow-Voronezh Railway",
+      "logo": "1861/MV",
+      "float_percent": 100,
+      "always_market_price": true,
+      "tokens": [
+        0
+      ],
+      "shares": [100],
+      "max_ownership_percent": 100,
+      "type": "minor",
+      "color": "red"
+    },
+    {
+      "sym": "V",
+      "name": "Vladikavkaz Railway",
+      "logo": "1861/V",
       "float_percent": 100,
       "always_market_price": true,
       "tokens": [
@@ -609,9 +671,9 @@ module Engine
       "color": "gray"
     },
     {
-      "sym": "TGB",
-      "name": "Toronto, Grey, and Bruce",
-      "logo": "1867/TGB",
+      "sym": "TR",
+      "name": "Tsaritsyn-Riga Railway",
+      "logo": "1861/TR",
       "float_percent": 100,
       "always_market_price": true,
       "tokens": [
@@ -620,12 +682,12 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "type": "minor",
-      "color": "darkBlue"
+      "color": "gray"
     },
     {
-      "sym": "TN",
-      "name": "Toronto and Nipissing",
-      "logo": "1867/TN",
+      "sym": "SV",
+      "name": "Samara-Vyazma Railway",
+      "logo": "1861/SV",
       "float_percent": 100,
       "always_market_price": true,
       "tokens": [
@@ -634,12 +696,12 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "type": "minor",
-      "color": "brown"
+      "color": "gray"
     },
     {
-      "sym": "AE",
-      "name": "Algoma Eastern Railway",
-      "logo": "1867/AE",
+      "sym": "E",
+      "name": "Ekaterinin Railway",
+      "logo": "1861/E",
       "float_percent": 100,
       "always_market_price": true,
       "tokens": [
@@ -648,82 +710,12 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "type": "minor",
-      "color": "orange"
+      "color": "gray"
     },
     {
-      "sym": "CA",
-      "name": "Canada Atlantic Railway",
-      "logo": "1867/CA",
-      "float_percent": 100,
-      "always_market_price": true,
-      "tokens": [
-        0
-      ],
-      "shares": [100],
-      "max_ownership_percent": 100,
-      "type": "minor",
-      "color": "purple"
-    },
-    {
-      "sym": "NO",
-      "name": "New York and Ottawa",
-      "logo": "1867/NO",
-      "float_percent": 100,
-      "always_market_price": true,
-      "tokens": [
-        0
-      ],
-      "shares": [100],
-      "max_ownership_percent": 100,
-      "type": "minor",
-      "color": "orange"
-    },
-    {
-      "sym": "PM",
-      "name": "Pere Marquette Railway",
-      "logo": "1867/PM",
-      "float_percent": 100,
-      "always_market_price": true,
-      "tokens": [
-        0
-      ],
-      "shares": [100],
-      "max_ownership_percent": 100,
-      "type": "minor",
-      "color": "lightBlue"
-    },
-    {
-      "sym": "QLS",
-      "name": "Quebec and Lake St. John",
-      "logo": "1867/QLS",
-      "float_percent": 100,
-      "always_market_price": true,
-      "tokens": [
-        0
-      ],
-      "shares": [100],
-      "max_ownership_percent": 100,
-      "type": "minor",
-      "color": "blue"
-    },
-    {
-      "sym": "THB",
-      "name": "Toronto, Hamilton and Buffalo",
-      "logo": "1867/THB",
-      "float_percent": 100,
-      "always_market_price": true,
-      "tokens": [
-        0
-      ],
-      "shares": [100],
-      "max_ownership_percent": 100,
-      "type": "minor",
-      "color": "orange"
-    },
-    {
-      "sym": "CN",
-      "name": "Canadian National",
-      "logo": "1867/CN",
+      "sym": "RSR",
+      "name": "Russian State Railway",
+      "logo": "1861/RSR",
       "tokens": [
         0,
         0,

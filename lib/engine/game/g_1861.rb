@@ -7,7 +7,6 @@ module Engine
   module Game
     class G1861 < G1867
       DEV_STAGE = :prealpha
-
       load_from_json(Config::Game::G1861::JSON)
 
       STATUS_TEXT = Base::STATUS_TEXT.merge(
@@ -15,6 +14,7 @@ module Engine
                                 'After the minors and majors operates the national runs trains, '\
                                 'withholds and buys as many trains as possible'],
       ).freeze
+      GREEN_CORPORATIONS = %w[MB Y V TR SV E].freeze
 
       def self.title
         '1861'

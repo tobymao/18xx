@@ -15,6 +15,7 @@ module Engine
                       brown: '#7b352a',
                       gray: '#7c7b8c',
                       green: '#3c7b5c',
+                      olive: '#808000',
                       lightBlue: '#4cb5d2',
                       lightishBlue: '#0097df',
                       teal: '#009595',
@@ -23,6 +24,7 @@ module Engine
                       purple: '#772282',
                       red: '#ef4223',
                       white: '#fff36b',
+                      navy: '#000080',
                       yellow: '#ffdea8')
 
       load_from_json(Config::Game::G1867::JSON)
@@ -513,12 +515,12 @@ module Engine
         @hidden_company = company_by_id('3')
 
         # CN corporation only exists to hold tokens
-        @national = corporation_by_id('CN')
+        @national = @corporations.find { |c| c.type == :national }
         @national.ipoed = true
         @national.shares.clear
         @national.shares_by_corporation[@national].clear
 
-        @national_reservations = NATIONAL_RESERVATIONS.dup
+        @national_reservations = self.class::NATIONAL_RESERVATIONS.dup
         @corporations.delete(@national)
 
         @green_tokens = []
@@ -544,7 +546,7 @@ module Engine
 
         # Move green and majors out of the normal list
         @corporations, @future_corporations = @corporations.partition do |corporation|
-          corporation.type == :minor && !GREEN_CORPORATIONS.include?(corporation.id)
+          corporation.type == :minor && !self.class::GREEN_CORPORATIONS.include?(corporation.id)
         end
       end
 
