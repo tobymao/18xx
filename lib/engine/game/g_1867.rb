@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../config/game/g_1867'
+require_relative '../g_1867/stock_market'
 require_relative '../loan'
 require_relative 'base'
 require_relative 'company_price_up_to_face'
@@ -107,6 +108,11 @@ module Engine
 
       def interest_rate
         5 # constant
+      end
+
+      def init_stock_market
+        Engine::G1867::StockMarket.new(self.class::MARKET, self.class::CERT_LIMIT_TYPES,
+                                       multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
       end
 
       def init_corporations(stock_market)
@@ -537,10 +543,6 @@ module Engine
             hex.tile.cities.first.exchange_token(@national.tokens.first)
           end
         end
-
-        # Set minors maximum share price
-        max_price = @stock_market.market.first.find { |stockprice| stockprice&.types&.include?(:max_price) }
-        @corporations.select { |c| c.type == :minor }.each { |c| c.max_share_price = max_price }
 
         # Move green and majors out of the normal list
         @corporations, @future_corporations = @corporations.partition do |corporation|

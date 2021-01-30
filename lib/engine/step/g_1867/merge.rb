@@ -133,10 +133,13 @@ module Engine
           target = action.corporation
           initiator = action.entity.owner
           # PAR price is average of lowest and highest priced
-          # rounded down between 100-200
+          # rounded down between 100-200 in either convert or par_3 areas
           min = @merging.map { |c| c.share_price.price }.min
           max = @merging.map { |c| c.share_price.price }.max
-          merged_par = @game.find_share_price([200, [100, (max + min)].max].min)
+          new_price = [200, [100, (max + min)].max].min
+          merged_par = @game.stock_market.share_prices_with_types(%i[convert_range par_2]).find do |sp|
+            sp.price <= new_price
+          end
 
           # Players who owned shares are eligable to buy shares unlike merger
           owners = @merging.map(&:owner)

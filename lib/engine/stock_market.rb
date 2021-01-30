@@ -117,15 +117,17 @@ module Engine
       return if share_price == corporation.share_price
       return if !force && !share_price.normal_movement?
 
-      if corporation.max_share_price == corporation.share_price
-        r, c = corporation.share_price.coordinates
-        return if row > r || column > c
-      end
-
       corporation.share_price.corporations.delete(corporation)
       corporation.share_price = share_price
       @max_reached = true if share_price.end_game_trigger?
       share_price.corporations << corporation
+    end
+
+    def share_prices_with_types(types)
+      # Find prices which types includes one of the types passed in
+      @market.flat_map { |m| m.select { |sp| sp && (types & sp&.types).any? } }
+      .sort_by(&:price)
+      .reverse
     end
 
     private
