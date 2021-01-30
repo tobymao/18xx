@@ -36,11 +36,9 @@ module View
           h(GameInfo, game: @game, layout: 'upcoming_trains'),
         ].compact)
 
-        neutral_note = h(:div, 'Note: N in Tokens column represents a neutral token.')
-
         children << top_line
+        children << @game.token_note if @game.respond_to?(:token_note)
         children << render_table
-        children << neutral_note if @game.respond_to?(:neutral_tokens)
         children << render_spreadsheet_controls
 
         h('div#spreadsheet', {
@@ -366,9 +364,7 @@ module View
           h('td.padded_number', @game.format_currency(corporation.cash)),
           h('td.left', order_props, operating_order_text),
           h(:td, corporation.trains.map(&:name).join(', ')),
-          h('td.left', "#{corporation.tokens.map { |t| t.used || t.corporation != corporation ? 0 : 1 }.sum}"\
-          "/#{corporation.tokens.map { |t| t.corporation != corporation ? 0 : 1 }.sum}"\
-          "#{'+N' if @game.respond_to?(:neutral_tokens) && @game.neutral_tokens(corporation).positive?}"),
+          h(:td, @game.token_string(corporation)),
           *extra,
           render_companies(corporation),
           h(:th, name_props, corporation.name),

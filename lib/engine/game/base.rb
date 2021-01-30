@@ -2168,6 +2168,10 @@ module Engine
         []
       end
 
+      def token_string(corporation)
+        "#{corporation.tokens.map { |t| t.used ? 0 : 1 }.sum}/#{corporation.tokens.size}"
+      end
+
       # minors to show on player cards
       def player_card_minors(_player)
         []

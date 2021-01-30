@@ -205,8 +205,15 @@ module Engine
         @sc_company = nil
       end
 
-      def neutral_tokens(corporation)
-        corporation.tokens.map { |t| t.type == :neutral && t.corporation != corporation ? 1 : 0 }.sum
+      def token_string(corporation)
+        # All neutral tokens belong to CN, so it will count them normally.
+        "#{corporation.tokens.map { |t| t.used || t.corporation != corporation ? 0 : 1 }.sum}"\
+        "/#{corporation.tokens.map { |t| t.corporation != corporation ? 0 : 1 }.sum}"\
+        "#{', N' if corporation.tokens.any? { |t| t.corporation != corporation }}"
+      end
+
+      def token_note
+        'Note: N in Tokens column represents a neutral token.'
       end
     end
   end
