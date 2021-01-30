@@ -324,12 +324,12 @@ module Engine
       }]
     },
     {
-      "name": "Moskow - Yaroslavl Railway",
+      "name": "Moscow - Yaroslavl Railway",
       "sym": "MYR",
       "value": 60,
       "revenue": 20,
       "discount": 20,
-      "desc": "When owned by a corporation, they gain $10 extra revenue for each of their routes that include Moskow",
+      "desc": "When owned by a corporation, they gain $10 extra revenue for each of their routes that include Moscow",
       "abilities": [
         {
         "type": "hex_bonus",
@@ -341,12 +341,12 @@ module Engine
       }]
     },
     {
-      "name": "Moskow - Ryazan Railway",
+      "name": "Moscow - Ryazan Railway",
       "sym": "MRR",
       "value": 75,
       "revenue": 25,
       "discount": 25,
-      "desc": "When owned by a corporation, they gain $10 extra revenue for each of their routes that include Moskow",
+      "desc": "When owned by a corporation, they gain $10 extra revenue for each of their routes that include Moscow",
       "abilities": [
         {
         "type": "hex_bonus",
@@ -420,7 +420,7 @@ module Engine
     },
     {
       "sym": "MVR",
-      "name": "Moskow, Vindava & Rybinsk Railway",
+      "name": "Moscow, Vindava & Rybinsk Railway",
       "logo": "1861/MVR",
       "float_percent": 20,
       "always_market_price": true,
@@ -434,7 +434,7 @@ module Engine
     },
     {
       "sym": "MK",
-      "name": "Moskow & Kazan Railway",
+      "name": "Moscow & Kazan Railway",
       "logo": "1861/MK",
       "float_percent": 20,
       "always_market_price": true,
@@ -462,7 +462,7 @@ module Engine
     },
     {
       "sym": "MKN",
-      "name": "Moskow, Kursk & Nizhnii Novgorod",
+      "name": "Moscow, Kursk & Nizhnii Novgorod",
       "logo": "1861/MKN",
       "float_percent": 20,
       "always_market_price": true,
@@ -476,7 +476,7 @@ module Engine
     },
     {
       "sym": "MKR",
-      "name": "Moskow, Kiev & Voronezh Railway",
+      "name": "Moscow, Kiev & Voronezh Railway",
       "logo": "1861/MKR",
       "float_percent": 20,
       "always_market_price": true,
@@ -560,7 +560,7 @@ module Engine
     },
     {
       "sym": "MB",
-      "name": "Moskow-Brest Railway",
+      "name": "Moscow-Brest Railway",
       "logo": "1861/KP",
       "float_percent": 100,
       "always_market_price": true,
@@ -616,7 +616,7 @@ module Engine
     },
     {
       "sym": "MKu",
-      "name": "Moskow-Kursk Railway",
+      "name": "Moscow-Kursk Railway",
       "logo": "1861/MKu",
       "float_percent": 100,
       "always_market_price": true,
@@ -630,7 +630,7 @@ module Engine
     },
     {
       "sym": "MNN",
-      "name": "Moskow-Nizhnii Novgorod",
+      "name": "Moscow-Nizhnii Novgorod",
       "logo": "1861/MNN",
       "float_percent": 100,
       "always_market_price": true,
@@ -644,7 +644,7 @@ module Engine
     },
     {
       "sym": "MV",
-      "name": "Moskow-Voronezh Railway",
+      "name": "Moscow-Voronezh Railway",
       "logo": "1861/MV",
       "float_percent": 100,
       "always_market_price": true,
