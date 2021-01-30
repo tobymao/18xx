@@ -83,6 +83,11 @@ module View
       search_games = lambda do |event|
         if event.JS['type'] == 'click' || event.JS['keyCode'] == 13
           val = Native(@inputs['search']).elm.value
+          if val.match(/^[^&|:*!]+$/)
+            # no tsquery => attach :* to all terms and put & in-between
+            val = val.gsub(/(.+)\b$/, '\1:*').gsub(/\b\s+\b/, ':* & ')
+            Native(@inputs['search']).elm.value = val
+          end
           @search_param = val.empty? ? '' : "&s=#{`encodeURIComponent(#{val})`}"
           params = "/?games=#{@type}&status=#{@status}#{@search_param}"
           get_games(params)
