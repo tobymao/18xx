@@ -8,7 +8,7 @@ module Engine
     include Ownable
 
     attr_accessor :obsolete, :operated, :events, :variants, :obsolete_on, :rusted, :rusts_on, :index
-    attr_reader :available_on, :name, :distance, :discount, :multiplier, :sym, :variant, :local
+    attr_reader :available_on, :name, :distance, :discount, :multiplier, :sym, :variant
     attr_writer :buyable
 
     def initialize(name:, distance:, price:, index: 0, **opts)
@@ -27,18 +27,7 @@ module Engine
       @obsolete = false
       @operated = false
       @events = (opts[:events] || []).select { |e| @index == (e[:when] || 0) }
-      init_local
       init_variants(opts[:variants])
-    end
-
-    def init_local
-      @local = false
-      if @distance.is_a?(Numeric)
-        @local = @distance == 1
-      else
-        distance_city = @distance.find { |n| n['nodes'].include?('city') }
-        @local = distance_city['visit'] == 1 if distance_city
-      end
     end
 
     def init_variants(variants)
@@ -90,7 +79,14 @@ module Engine
     end
 
     def local?
-      @local
+      return @local if defined?(@local)
+
+      @local = if @distance.is_a?(Numeric)
+                 @distance == 1
+               else
+                 distance_city = @distance.find { |n| n['nodes'].include?('city') }
+                 distance_city['visit'] == 1 if distance_city
+               end
     end
 
     def inspect

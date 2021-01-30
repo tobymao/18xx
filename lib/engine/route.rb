@@ -126,9 +126,9 @@ module Engine
         connection_data.pop if @train.local? && connection_data.size == 2
       elsif @last_node == node
         @last_node = nil
-        connection_data.clear if @train.local? && !connection_data.empty?
+        connection_data.clear
       elsif @last_node
-        connection_data.clear if @train.local? && !connection_data.empty?
+        connection_data.clear
         if (connection = select(@last_node, node)[0])
           a, b = connection.nodes
           a, b = b, a if @last_node == a
@@ -136,9 +136,7 @@ module Engine
         end
       else
         @last_node = node
-        if @train.local? && connection_data.empty?
-          connection_data << { left: node, right: node, connection: Connection.new }
-        end
+        add_node_connection(node) if @train.local? && @connection_data.empty?
       end
 
       @halts = nil
@@ -230,7 +228,7 @@ module Engine
       @revenue ||=
         begin
           visited = visited_stops
-          if connection_data.any? && visited.size < 2 && !@train.local?
+          if !connection_data.empty? && visited.size < 2 && !@train.local?
             raise GameError, 'Route must have at least 2 stops'
           end
           unless (token = visited.find { |stop| @game.city_tokened_by?(stop, corporation) })
@@ -276,6 +274,10 @@ module Engine
 
     private
 
+    def add_node_connection(node)
+      @connection_data << { left: node, right: node, connection: Connection.new }
+    end
+
     def find_connections(connections_a, connections_b, other_paths)
       connections_a = connections_a.select { |a| (a.paths & other_paths).empty? }
       connections_b = connections_b.select { |b| (b.paths & other_paths).empty? }
@@ -303,7 +305,7 @@ module Engine
         city_node = @game.hex_by_id(@connection_hexes[0][1]).tile.nodes.find do |n|
           @game.city_tokened_by?(n, corporation)
         end
-        return @connection_data << { left: city_node, right: city_node, connection: Connection.new }
+        return add_node_connection(city_node)
       end
 
       possibilities = @connection_hexes.map do |hex_ids|

@@ -73,26 +73,21 @@ module Engine
         company.owner != @bank
       end
 
-      # TODO: Make include with 1817
       def format_currency(val)
-        # On dividends per share can be a float
-        # But don't show decimal points on all
-        return format('$%.1<val>f', val: val) if val.is_a?(Float) && (val % 1 != 0)
+        return super unless val.is_a?(Float) && (val % 1 != 0)
 
-        self.class::CURRENCY_FORMAT_STR % val
+        format('£%.1<val>f', val: val)
       end
 
       def train_help(runnable_trains)
-        help = []
+        return [] unless (l_trains = runnable_trains.select { |t| t.name == 'L' })
 
-        l_trains = runnable_trains.select { |t| t.name == 'L' }
-        if l_trains.any?
-          corporation = l_trains.first.owner
-          help << "L (local) trains run in a city which has a #{corporation.name} token."
-          help << 'They can additionally run to a single small station, but are not required to do so. '\
-                  'They can thus be considered 1 (+1) trains.'
-          help << 'Only one L train may operate on each station token.'
-        end
+        corporation = l_trains.first.owner
+        help = []
+        help << "L (local) trains run in a city which has a #{corporation.name} token."
+        help << 'They can additionally run to a single small station, but are not required to do so. '\
+                'They can thus be considered 1 (+1) trains.'
+        help << 'Only one L train may operate on each station token.'
 
         help
       end
