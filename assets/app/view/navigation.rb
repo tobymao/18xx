@@ -4,6 +4,7 @@ require 'game_manager'
 require 'lib/connection'
 require 'lib/settings'
 require 'view/create_game'
+require 'view/link'
 require 'view/logo'
 
 module View
@@ -137,6 +138,7 @@ module View
           click: ->(event) { store_route(event, params) },
         },
       }
+
       h(:li, attrs, [h(:a, a_props, label)])
     end
 
@@ -181,8 +183,26 @@ module View
       h('nav#main_nav', [h('a.toggle', toggle_props, '☰'), h('ul.menu', menu_props, links)])
     end
 
-    def menu_item(name, anchor)
-      h(:li, [h(:a, { attrs: { href: anchor } }, name)])
+    def menu_item(text, page)
+      show_page = lambda do
+        store(:app_route, page)
+        # without timeout element might not exist
+        `setTimeout(function(){
+          document.getElementById('app').scrollIntoView();
+        }, 100);`
+      end
+
+      props = {
+        attrs: {
+          href: "/#{page}",
+          onclick: 'return false',
+        },
+        on: {
+          click: show_page,
+        },
+      }
+
+      h(:li, [h(:a, props, text)])
     end
   end
 end
