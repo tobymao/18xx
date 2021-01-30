@@ -11,9 +11,10 @@ module View
     include GameManager
     include Lib::Settings
     needs :app_route, default: nil, store: true
-    needs :user, default: nil, store: true
+    needs :autoscroll, default: false, store: true
     needs :show_games_submenu, default: false, store: true
     needs :show_main_submenu, default: false, store: true
+    needs :user, default: nil, store: true
 
     def render
       store(:connection, Lib::Connection.new(root), skip: true) unless @connection
@@ -118,6 +119,7 @@ module View
     def store_route(event, params = nil)
       event.JS.stopPropagation
       get_games(params) if params
+      store(:autoscroll, true, skip: true)
       store(:app_route, "/#{params}")
     end
 

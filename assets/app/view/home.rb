@@ -13,8 +13,9 @@ module View
     include GameManager
     include Lib::Settings
 
-    needs :user
+    needs :autoscroll, default: true, store: true
     needs :refreshing, default: nil, store: true
+    needs :user
 
     def render
       type = Lib::Params['games'] || (@user ? 'personal' : 'all')
@@ -48,11 +49,18 @@ module View
         render_row(children, "#{status.capitalize} Games", @games, :all, status)
       end
 
+      # without timeout element might not exist
+      `setTimeout(function(){
+        document.getElementById('games_list').scrollIntoView();
+        window.scrollBy(0, -55);
+      }, 100);` if @autoscroll == true && @app_route != '/'
+      store(:autoscroll, false, skip: true)
+
+      game_refresh
+
       `document.title = #{(acting ? '* ' : '') + '18xx.Games'}`
       change_favicon(acting)
       change_tab_color(acting)
-
-      game_refresh
 
       destroy = lambda do
         `clearTimeout(#{@refreshing})`
