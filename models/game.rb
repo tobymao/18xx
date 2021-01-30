@@ -99,7 +99,7 @@ class Game < Base
     opts = {
       games: opts['games'] || (user ? 'personal' : 'all'),
       page: opts['p']&.to_i || 0,
-      status: opts['status'] || (user ? 'active' : 'new'),
+      status: opts['status'] || 'active',
       search_string: opts['s'] || nil,
     }
     opts[:user_id] = user.id if user

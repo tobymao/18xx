@@ -18,11 +18,11 @@ module View
 
     def render
       type = Lib::Params['games'] || (@user ? 'personal' : 'all')
-      status = Lib::Params['status'] || (@user ? 'active' : 'new')
+      status = Lib::Params['status'] || 'active'
 
       children = [
         render_header,
-        h(Welcome, show_intro: false), # personal_games.size < 2), # TODO: change condition
+        h(Welcome, show_intro: !@user),
         h(Chat, user: @user, connection: @connection),
       ]
 
