@@ -45,7 +45,7 @@ module View
 
         render_row(children, 'Hotseat Games', hs_games, :hs)
       else
-        render_row(children, "#{status&.capitalize} Games", @games, :all, status)
+        render_row(children, "#{status.capitalize} Games", @games, :all, status)
       end
 
       `document.title = #{(acting ? '* ' : '') + '18xx.Games'}`

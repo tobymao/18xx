@@ -32,13 +32,11 @@ module UserManager
   def logout
     @connection.safe_post('/user/logout')
     invalidate_user
-    store(:app_route, '/')
   end
 
   def delete_user
     @connection.safe_post('/user/delete')
     invalidate_user
-    store(:app_route, '/')
   end
 
   def forgot(params)
@@ -67,5 +65,7 @@ module UserManager
 
   def invalidate_user
     store(:user, nil, skip: true)
+    store(:games, [], skip: true)
+    store(:app_route, '/')
   end
 end
