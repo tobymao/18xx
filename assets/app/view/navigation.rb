@@ -115,14 +115,15 @@ module View
       h('nav#games_nav', [h('ul.menu', links)])
     end
 
+    def store_route(event, params = nil)
+      event.JS.stopPropagation
+      get_games(params) if params
+      store(:app_route, "/#{params}")
+    end
+
     def games_link(label, title, type, status, attrs = {})
       params = "?games=#{type}"
       params += "&status=#{status}" if status
-
-      store_route = lambda do
-        get_games(params)
-        store(:app_route, "/#{params}")
-      end
 
       a_props = {
         attrs: {
@@ -131,7 +132,7 @@ module View
           title: title,
         },
         on: {
-          click: store_route,
+          click: ->(event) { store_route(event, params) },
         },
       }
       h(:li, attrs, [h(:a, a_props, label)])
