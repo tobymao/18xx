@@ -367,7 +367,7 @@ module Engine
         data['companies'].map! do |company|
           company.transform_keys!(&:to_sym)
           company[:abilities]&.each { |ability| ability.transform_keys!(&:to_sym) }
-          company[:color] = const_get(:COLORS)[company[:color]] if const_defined?(:COLORS)
+          company[:color] = const_get(:COLORS)[company[:color]&.to_sym] if const_defined?(:COLORS)
           company
         end
 
@@ -375,7 +375,7 @@ module Engine
 
         data['minors'].map! do |minor|
           minor.transform_keys!(&:to_sym)
-          minor[:color] = const_get(:COLORS)[minor[:color]] if const_defined?(:COLORS)
+          minor[:color] = const_get(:COLORS)[minor[:color]&.to_sym] if const_defined?(:COLORS)
           minor[:abilities]&.each { |ability| ability.transform_keys!(&:to_sym) }
           minor
         end
@@ -383,7 +383,7 @@ module Engine
         data['corporations'].map! do |corporation|
           corporation.transform_keys!(&:to_sym)
           corporation[:abilities]&.each { |ability| ability.transform_keys!(&:to_sym) }
-          corporation[:color] = const_get(:COLORS)[corporation[:color]] if const_defined?(:COLORS)
+          corporation[:color] = const_get(:COLORS)[corporation[:color]&.to_sym] if const_defined?(:COLORS)
           corporation
         end
 
