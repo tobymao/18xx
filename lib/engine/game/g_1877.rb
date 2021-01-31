@@ -30,10 +30,13 @@ module Engine
       load_from_json(Config::Game::G1877::JSON)
 
       GAME_DESIGNER = 'Scott Petersen & Toby Mao'
+      GAME_RULES_URL = 'https://github.com/tobymao/18xx/wiki/1877'
       GAME_PUBLISHER = :all_aboard_games
       GAME_LOCATION = 'Venezuela'
 
-      DEV_STAGE = :prealpha
+      OPTIONAL_RULES = [].freeze
+
+      DEV_STAGE = :alpha
 
       SELL_AFTER = :any_time
 
