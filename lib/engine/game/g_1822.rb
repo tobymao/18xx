@@ -74,7 +74,7 @@ module Engine
       end
 
       def format_currency(val)
-        return super unless val.is_a?(Float) && (val % 1 != 0)
+        return super if (val % 1).zero?
 
         format('£%.1<val>f', val: val)
       end
