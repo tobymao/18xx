@@ -7,8 +7,14 @@ module View
     include Lib::Settings
 
     needs :user, default: nil, store: true
+    needs :app_route, default: nil, store: true
 
     def render
+      show_home = lambda do
+        store(:app_route, '/')
+        `document.getElementById('app').scrollIntoView();`
+      end
+
       h1_props = {
         style: {
           margin: '0',
@@ -17,11 +23,18 @@ module View
         },
       }
       a_props = {
-        attrs: { href: '/', title: '18xx.Games' },
+        attrs: {
+          href: '/',
+          title: '18xx.Games - Main Line',
+          onclick: 'return false',
+        },
         style: {
           color: 'currentColor',
           fontWeight: 'bold',
           textDecoration: 'none',
+        },
+        on: {
+          click: show_home,
         },
       }
       logo_color = setting_for(:red_logo) ? 'red' : 'yellow'
