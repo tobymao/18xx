@@ -34,7 +34,9 @@ module View
                                    process_action(Engine::Action::SwapTrain.new(corporation, train: train))
                                  },
                                },
-                             }, "Upgrade to #{train_name} (#{@game.format_currency(upgrade_price)})") unless train_name.nil?
+                             },
+                             "Upgrade to #{train_name}
+                             (#{@game.format_currency(upgrade_price)})") unless train_name.nil?
 
           train_options << h(:button, {
                                on: {
