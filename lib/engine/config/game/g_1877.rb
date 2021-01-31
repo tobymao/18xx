@@ -508,7 +508,7 @@ module Engine
          "name":"3",
          "distance":3,
          "price":250,
-         "num":12
+         "num":10
       },
       {
          "name":"4",
@@ -624,8 +624,7 @@ module Engine
          ],
          "operating_rounds":2,
          "corporation_sizes":[
-            5,
-            10
+            5
          ]
       },
       {
@@ -639,7 +638,7 @@ module Engine
          ],
          "operating_rounds":2,
          "corporation_sizes":[
-            10
+            5
          ]
       }
    ]
