@@ -137,10 +137,7 @@ module Engine
 
         def get_all_par_prices(corp)
           types = corp.type == :major ? %i[par_2 par] : %i[par_1 par]
-          @game.stock_market
-          .market.flat_map { |m| m.select { |sp| types.include?(sp&.type) } }
-          .sort_by(&:price)
-          .reverse
+          @game.stock_market.share_prices_with_types(types)
         end
 
         def get_par_prices(entity, corp)
