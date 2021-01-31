@@ -18,7 +18,6 @@ module View
     LIMIT = 12
 
     def render
-      @limit = @type == :personal ? 12 : LIMIT
       h('div#games_list', { key: @header, style: { minHeight: '70rem' } }, [
         render_header(@header),
         *render_row,
@@ -31,10 +30,10 @@ module View
       params = "games=#{@type}#{@type != :hs ? "&status=#{@status}" : ''}"
       params += "&s=#{`encodeURIComponent(#{@search_string})`}" if @search_string
 
-      @offset = @type == :hs ? (p * @limit) : 0
+      @offset = @type == :hs ? (p * LIMIT) : 0
       pagination = []
       pagination << render_more('<', "?#{params}&p=#{p - 1}") if p.positive?
-      pagination << render_more('>', "?#{params}&p=#{p + 1}") if @game_row_games.size > @offset + @limit
+      pagination << render_more('>', "?#{params}&p=#{p + 1}") if @game_row_games.size > @offset + LIMIT
 
       props = {
         style: {
@@ -158,7 +157,7 @@ D = round/turn/rules',
 
     def render_row
       if @game_row_games.any?
-        @game_row_games.slice(@offset, @limit).map { |game| h(GameCard, gdata: game, user: @user) }
+        @game_row_games.slice(@offset, LIMIT).map { |game| h(GameCard, gdata: game, user: @user) }
       else
         [h(:div, 'No games to display')]
       end

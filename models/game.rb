@@ -9,7 +9,6 @@ class Game < Base
   many_to_many :players, class: :User, right_key: :user_id, join_table: :game_users
 
   QUERY_LIMIT = 13
-  PERSONAL_QUERY_LIMIT = 13
 
   USER_GAMES_IDS = <<~SQL
     SELECT game_id AS id
@@ -20,27 +19,30 @@ class Game < Base
   FILTERED_GAMES = <<~SQL
     SELECT *
     FROM games
-    WHERE status = :status
-    AND tsv @@ to_tsquery(:search_string)
+    WHERE tsv @@ to_tsquery(:search_string)
+  SQL
+
+  LIMIT_OFFSET = <<~SQL
+    LIMIT #{QUERY_LIMIT}
+    OFFSET :page * #{QUERY_LIMIT - 1}
   SQL
 
   ALL_GAMES_SEARCH_QUERY = <<~SQL
     SELECT *
     FROM (#{FILTERED_GAMES}) filtered_games
-    WHERE NOT COALESCE((settings->>'unlisted')::boolean, false)
+    WHERE status = :status
+      AND NOT COALESCE((settings->>'unlisted')::boolean, false)
     ORDER BY updated_at DESC
-    LIMIT #{QUERY_LIMIT}
-    OFFSET :page * #{QUERY_LIMIT - 1}
+    #{LIMIT_OFFSET}
   SQL
 
   ALL_GAMES_QUERY = <<~SQL
     SELECT *
     FROM games
     WHERE status = :status
-    AND NOT COALESCE((settings->>'unlisted')::boolean, false)
+      AND NOT COALESCE((settings->>'unlisted')::boolean, false)
     ORDER BY updated_at DESC
-    LIMIT #{QUERY_LIMIT}
-    OFFSET :page * #{QUERY_LIMIT - 1}
+    #{LIMIT_OFFSET}
   SQL
 
   OTHER_GAMES_SEARCH_QUERY = <<~SQL
@@ -51,10 +53,10 @@ class Game < Base
     LEFT JOIN user_games ug
       ON g.id = ug.id
     WHERE ug.id IS NULL
+      AND g.status = :status
       AND NOT COALESCE((settings->>'unlisted')::boolean, false)
     ORDER BY updated_at DESC
-    LIMIT #{QUERY_LIMIT}
-    OFFSET :page * #{QUERY_LIMIT - 1}
+    #{LIMIT_OFFSET}
   SQL
 
   OTHER_GAMES_QUERY = <<~SQL
@@ -67,8 +69,7 @@ class Game < Base
       AND g.status = :status
       AND NOT COALESCE((settings->>'unlisted')::boolean, false)
     ORDER BY updated_at DESC
-    LIMIT #{QUERY_LIMIT}
-    OFFSET :page * #{QUERY_LIMIT - 1}
+    #{LIMIT_OFFSET}
   SQL
 
   PERSONAL_GAMES_SEARCH_QUERY = <<~SQL
@@ -78,9 +79,9 @@ class Game < Base
     FROM filtered_games g
     INNER JOIN user_games ug
       ON g.id = ug.id
+    WHERE g.status = :status
     ORDER BY g.acting && '{:user_id}' DESC, g.updated_at DESC
-    LIMIT #{PERSONAL_QUERY_LIMIT}
-    OFFSET :page * #{PERSONAL_QUERY_LIMIT - 1}
+    #{LIMIT_OFFSET}
   SQL
 
   PERSONAL_GAMES_QUERY = <<~SQL
@@ -91,8 +92,7 @@ class Game < Base
       ON g.id = ug.id
     WHERE g.status = :status
     ORDER BY g.acting && '{:user_id}' DESC, g.updated_at DESC
-    LIMIT #{PERSONAL_QUERY_LIMIT}
-    OFFSET :page * #{PERSONAL_QUERY_LIMIT - 1}
+    #{LIMIT_OFFSET}
   SQL
 
   def self.home_games(user, **opts)
