@@ -57,7 +57,7 @@ module Engine
             unless @game.can_par?(@corporation, @entity)
               raise GameError, "#{@entity.name} cannot par #{@corporation.name}"
             end
-            unless cash_to_par?(@entity)
+            unless cash_to_par?(@entity, @corporation)
               raise GameError, "#{@entity.name} does not have enough cash to par #{@corporation.name}"
             end
 
