@@ -114,26 +114,35 @@ module Engine
       "sym": "HOLIDAY",
       "name": "Holiday (SR)",
       "value": 3,
-      "desc": "Choose a family, its reputation mark goes one tick to the right."
+      "desc": "Choose a family, its reputation mark goes one tick to the right.",
+      "abilities": [{
+        "type": "no_buy",
+        "owner_type": "player"
+      }]
     },
     {
       "sym": "MIDAS",
       "name": "Midas (SR)",
       "value": 2,
-      "desc": "When turn order is appointed, seize the Priority (Squirrel 1)."
+      "desc": "When turn order is appointed, seize the Priority (Squirrel 1).",
+      "abilities": [{
+        "type": "no_buy",
+        "owner_type": "player"
+      }]
     },
     {
       "sym": "TOO_MUCH_RESPONSIBILITY",
       "name": "Too much responsibility (SR)",
       "value": 1,
       "desc": "Get 3$N.",
-      "abilities": [
-          {
-              "type": "description",
-              "description": "Get 3$N",
-              "when": "any"
-          }
-      ]
+      "abilities": [{
+        "type": "no_buy",
+        "owner_type": "player"
+      },{
+        "type": "description",
+        "description": "Get 3$N",
+        "when": "any"
+      }]
     },
     {
       "sym": "LEPRECHAUN_POT_OF_GOLD",
@@ -149,13 +158,21 @@ module Engine
       "sym": "IT_S_ALL_GREEK_TO_ME",
       "name": "It’s all greek to me (SR)",
       "value": 2,
-      "desc": "After your action in a SR, do another one."
+      "desc": "After your action in a SR, do another one.",
+      "abilities": [{
+        "type": "no_buy",
+        "owner_type": "player"
+      }]
     },
     {
       "sym": "WHATSUP",
       "name": "Whatsup (SR)",
       "value": 3,
-      "desc": "During SR, a family can buy the first available squirrel, deactivated. Reputation moves one tick."
+      "desc": "During SR, a family can buy the first available squirrel, deactivated. Reputation moves one tick.",
+      "abilities": [{
+        "type": "no_buy",
+        "owner_type": "player"
+      }]
     },
     {
       "sym": "RABBITS",
@@ -477,7 +494,12 @@ module Engine
       "operating_rounds": 3
     }
   ],
-  "certLimit": {},
+  "certLimit": {
+    "2": { "5": 10, "7": 12 },
+    "3": { "5": 7, "7": 9 },
+    "4": { "5": 5, "7": 7 },
+    "5": { "5": 6, "7": 6 }
+  },
   "startingCash": {},
   "locationNames": {},
   "corporations": [

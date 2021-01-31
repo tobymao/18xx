@@ -83,13 +83,8 @@ module Engine
         @round.company_sellers[company] = owner
 
         entity.companies << company
-        entity.spend(price, owner.nil? ? @game.bank : owner)
+        pay(entity, owner, price, company)
 
-        @game.company_bought(company, entity)
-
-        @log << "#{entity.name} buys #{company.name} from "\
-                "#{owner.nil? ? 'the market' : owner.name} for "\
-                "#{@game.format_currency(price)}"
         log_later.each { |l| @log << l }
       end
 
@@ -103,6 +98,16 @@ module Engine
 
       def setup
         @blocks = @opts[:blocks] || false
+      end
+
+      def pay(entity, owner, price, company)
+        entity.spend(price, owner.nil? ? @game.bank : owner)
+
+        @game.company_bought(company, entity)
+
+        @log << "#{entity.name} buys #{company.name} from "\
+                "#{owner.nil? ? 'the market' : owner.name} for "\
+                "#{@game.format_currency(price)}"
       end
     end
   end

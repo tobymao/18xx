@@ -257,13 +257,6 @@ module Engine
 
       SMALL_MAP = %i[map_a map_b map_c].freeze
 
-      CERT_LIMIT = {
-        2 => { 5 => 10, 7 => 12 },
-        3 => { 5 => 7, 7 => 9 },
-        4 => { 5 => 5, 7 => 7 },
-        5 => { 5 => 6, 7 => 6 },
-      }.freeze
-
       CERT_LIMIT_INCLUDES_PRIVATES = false
 
       STOCKMARKET_COLORS = {
@@ -492,6 +485,13 @@ module Engine
 
       MARKET_SHARE_LIMIT = 80 # percent
 
+      ZOO_TICKET_VALUE = {
+        1 => { 0 => 4, 1 => 5, 2 => 6 },
+        2 => { 0 => 7, 1 => 8, 2 => 9 },
+        3 => { 0 => 10, 1 => 12, 2 => 15, 3 => 18 },
+        4 => { 0 => 20 },
+      }.freeze
+
       attr_reader :available_companies, :future_companies
 
       def setup
@@ -500,7 +500,7 @@ module Engine
         @available_companies = []
         @future_companies = []
 
-        draw_size = players.size == 5 ? 6 : 4
+        draw_size = @players.size == 5 ? 6 : 4
         @companies_for_isr = @companies.first(draw_size)
         @companies_for_monday = @companies[draw_size..draw_size + 4]
         @companies_for_tuesday = @companies[draw_size + 4..draw_size + 8]
@@ -546,6 +546,42 @@ module Engine
         '18ZOO'
       end
 
+      def purchasable_companies(entity = nil)
+        entity ||= @round.current_operator
+        return [] unless entity && (entity.corporation? || entity.player?)
+
+        if entity.player?
+          # player can buy no more than 3 companies
+          return [] if entity.companies.count { |c| !c.name.start_with?('ZOOTicket') } >= 3
+
+          # player can buy only companies not already owned
+          return @companies.select { |company| company.owner == @bank && !abilities(company, :no_buy) }
+        end
+
+        # corporation can buy ZOOTicket only from owner, and other companies from any player
+        companies_for_corporation = @companies.select do |company|
+          company.owner&.player? && !abilities(company, :no_buy) &&
+            (entity.owner == company.owner || !company.name.start_with?('ZOOTicket'))
+        end
+        # corporations can buy no more than 3 companies
+        return companies_for_corporation.select { |c| c.name.start_with?('ZOOTicket') } if entity.companies.count >= 3
+
+        companies_for_corporation
+      end
+
+      def player_value(player)
+        player.cash + player.shares.select { |s| s.corporation.ipoed }.sum(&:price) +
+          player.companies.select { |company| company.name.start_with?('ZOOTicket') }.sum(&:value)
+      end
+
+      def end_game!
+        return if @finished
+
+        update_zoo_tickets_value(4, 0)
+
+        super
+      end
+
       def unowned_purchasable_companies(_entity)
         @available_companies + @future_companies
       end
@@ -554,6 +590,57 @@ module Engine
 
       def init_round
         Round::Draft.new(self, [Step::G18ZOO::SimpleDraft], reverse_order: true)
+      end
+
+      def init_companies(players)
+        companies = super.sort_by { rand }
+
+        # Assign ZOOTickets to each player
+        num_ticket_zoo = players.size == 5 ? 2 : 3
+        players.each do |player|
+          (1..num_ticket_zoo).each do |i|
+            ticket = Company.new(sym: "ZOOTicket #{i} - #{player.id}",
+                                 name: "ZOOTicket #{i}",
+                                 value: 4,
+                                 desc: 'Can be sold to gain money.')
+            ticket.owner = player
+            player.companies << ticket
+            companies << ticket
+          end
+
+          @log << "#{player.name} got #{num_ticket_zoo} ZOOTickets"
+        end
+
+        companies.each do |company|
+          company.min_price = 0
+          company.max_price = company.value
+        end
+
+        companies
+      end
+
+      def holiday
+        @holiday ||= company_by_id('HOLIDAY')
+      end
+
+      def midas
+        @midas ||= company_by_id('MIDAS')
+      end
+
+      def too_much_responsibility
+        @too_much_responsibility ||= company_by_id('TOO_MUCH_RESPONSIBILITY')
+      end
+
+      def leprechaun_pot_of_gold
+        @leprechaun_pot_of_gold ||= company_by_id('LEPRECHAUN_POT_OF_GOLD')
+      end
+
+      def it_s_all_greek_to_me
+        @it_s_all_greek_to_me ||= company_by_id('IT_S_ALL_GREEK_TO_ME')
+      end
+
+      def whatsup
+        @whatsup ||= company_by_id('WHATSUP')
       end
 
       def num_trains(train)
@@ -592,8 +679,18 @@ module Engine
         @turn == 3
       end
 
+      def reorder_players(_order = nil)
+        return if @round.is_a?(Engine::Round::Draft)
+
+        current_order = @players.dup
+        @players.sort_by! { |p| [-p.cash, current_order.index(p)] }
+        @log << "Priority order: #{@players.reject(&:bankrupt).map(&:name).join(', ')}"
+      end
+
       def new_stock_round
         result = super
+
+        update_zoo_tickets_value(@turn, 0)
 
         add_cousins if @turn == 3
 
@@ -606,14 +703,25 @@ module Engine
         result
       end
 
+      def stock_round
+        Round::Stock.new(self, [
+          Step::DiscardTrain,
+          Step::Exchange,
+          Step::SpecialTrack,
+          Step::G18ZOO::BuySellParShares,
+        ])
+      end
+
       def new_operating_round(round_num = 1)
         @operating_rounds = 3 if @turn == 3 # Last round has 3 ORs
+        update_zoo_tickets_value(@turn, round_num)
 
         super
       end
 
       def operating_round(round_num)
         Round::Operating.new(self, [
+          Step::G18ZOO::BuyCompany,
           Step::Track,
           Step::Token,
         ], round_num: round_num)
@@ -652,6 +760,15 @@ module Engine
 
         @log << "Powers #{to_future.map { |c| "\"#{c.name}\"" }.join(', ')} added to the future deck"
         @future_companies.concat(to_future)
+      end
+
+      def update_zoo_tickets_value(turn, round_num = 1)
+        new_value = ZOO_TICKET_VALUE[turn][round_num]
+        @companies.select { |c| c.name.start_with?('ZOOTicket') }.each do |company|
+          company.value = new_value
+          company.min_price = 0
+          company.max_price = company.value - 1
+        end
       end
     end
   end
