@@ -136,7 +136,7 @@ module Engine
         end
       else
         @last_node = node
-        add_node_connection(node) if @train.local? && @connection_data.empty?
+        add_single_node_connection(node) if @train.local? && @connection_data.empty?
       end
 
       @halts = nil
@@ -274,7 +274,7 @@ module Engine
 
     private
 
-    def add_node_connection(node)
+    def add_single_node_connection(node)
       @connection_data << { left: node, right: node, connection: Connection.new }
     end
 
@@ -305,7 +305,7 @@ module Engine
         city_node = @game.hex_by_id(@connection_hexes[0][1]).tile.nodes.find do |n|
           @game.city_tokened_by?(n, corporation)
         end
-        return add_node_connection(city_node)
+        return add_single_node_connection(city_node)
       end
 
       possibilities = @connection_hexes.map do |hex_ids|

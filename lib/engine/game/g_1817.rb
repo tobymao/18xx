@@ -183,9 +183,9 @@ module Engine
       def format_currency(val)
         # On dividends per share can be a float
         # But don't show decimal points on all
-        return format('$%.1<val>f', val: val) if val.is_a?(Float) && (val % 1 != 0)
+        return super unless val.is_a?(Float) && (val % 1 != 0)
 
-        self.class::CURRENCY_FORMAT_STR % val
+        format('$%.1<val>f', val: val)
       end
 
       def maximum_loans(entity)

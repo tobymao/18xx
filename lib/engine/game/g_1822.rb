@@ -51,7 +51,7 @@ module Engine
       attr_accessor :bidding_token_per_player
 
       def can_run_route?(entity)
-        entity.trains.any? { |t| t.name == 'L' } ? true : super
+        entity.trains.any? { |t| t.name == 'L' } || super
       end
 
       def check_overlap(routes)
@@ -83,13 +83,10 @@ module Engine
         return [] unless (l_trains = runnable_trains.select { |t| t.name == 'L' })
 
         corporation = l_trains.first.owner
-        help = []
-        help << "L (local) trains run in a city which has a #{corporation.name} token."
-        help << 'They can additionally run to a single small station, but are not required to do so. '\
-                'They can thus be considered 1 (+1) trains.'
-        help << 'Only one L train may operate on each station token.'
-
-        help
+        ["L (local) trains run in a city which has a #{corporation.name} token.",
+         'They can additionally run to a single small station, but are not required to do so. '\
+         'They can thus be considered 1 (+1) trains.',
+         'Only one L train may operate on each station token.']
       end
 
       def init_round
