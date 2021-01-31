@@ -71,6 +71,8 @@ module Engine
 
           action = Action::Par.new(entity, corporation: corporation, share_price: share_price)
           process_par(action)
+          remainder = price - share_price.price * 2
+          entity.spend(remainder, @game.bank) if remainder.positive?
 
           @corporation_size = nil
           size_corporation(@game.phase.corporation_sizes.first) if @game.phase.corporation_sizes.one?
