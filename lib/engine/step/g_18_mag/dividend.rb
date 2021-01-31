@@ -130,13 +130,13 @@ module Engine
 
           if revenue.zero?
             { share_direction: :left, share_times: 1 }
-          elsif revenue <= 20
+          elsif revenue <= (@game.multiplayer? ? 20 : 10)
             {}
-          elsif revenue <= 50
+          elsif revenue <= (@game.multiplayer? ? 50 : 40)
             { share_direction: :right, share_times: 1 }
-          elsif revenue <= 100
+          elsif revenue <= (@game.multiplayer? ? 100 : 80)
             { share_direction: :right, share_times: 2 }
-          elsif revenue <= 200
+          elsif revenue <= (@game.multiplayer? ? 200 : 120)
             { share_direction: :right, share_times: 3 }
           else
             { share_direction: :right, share_times: 4 }
@@ -171,15 +171,27 @@ module Engine
         end
 
         def chart
-          [
-            ['Per Share Dividend', 'Share Price Change'],
-            ['0 Ft', '1 space to the left'],
-            ['1 - 2 Ft', 'none'],
-            ['3 - 5 Ft', '1 space to the right'],
-            ['6 - 10 Ft', '2 spaces to the right'],
-            ['11 - 20 Ft', '3 spaces to the right'],
-            ['more than 20 Ft', '4 spaces to the right'],
-          ]
+          if @game.muliplayer?
+            [
+              ['Per Share Dividend', 'Share Price Change'],
+              ['0 Ft', '1 space to the left'],
+              ['1 - 2 Ft', 'none'],
+              ['3 - 5 Ft', '1 space to the right'],
+              ['6 - 10 Ft', '2 spaces to the right'],
+              ['11 - 20 Ft', '3 spaces to the right'],
+              ['more than 20 Ft', '4 spaces to the right'],
+            ]
+          else
+            [
+              ['Per Share Dividend', 'Share Price Change'],
+              ['0 Ft', '1 space to the left'],
+              ['1 Ft', 'none'],
+              ['2 - 4 Ft', '1 space to the right'],
+              ['5 - 8 Ft', '2 spaces to the right'],
+              ['9 - 12 Ft', '3 spaces to the right'],
+              ['more than 12 Ft', '4 spaces to the right'],
+            ]
+          end
         end
       end
     end
