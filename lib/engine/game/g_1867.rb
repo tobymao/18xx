@@ -241,6 +241,8 @@ module Engine
         end
       end
 
+      def nationalization_transfer_assets(corporation); end
+
       def nationalize!(corporation)
         return if !corporation.floated? || !@corporations.include?(corporation)
 
@@ -255,6 +257,7 @@ module Engine
         stock_market.move_left(corporation)
 
         nationalization_loan_movement(corporation)
+        nationalization_transfer_assets(corporation)
         log_share_price(corporation, price)
 
         # Payout players for shares
@@ -295,6 +298,9 @@ module Engine
 
           new_token = @national.next_token
           next unless new_token
+
+          # Remove national token reservations if any
+          city.tile.cities.each { |c| c.remove_reservation!(@national) }
 
           if @national_reservations.include?(city.hex.id)
             @national_reservations.delete(city.hex.id)
@@ -634,7 +640,7 @@ module Engine
               @phase.phases.any? { |phase| ability.when == phase[:name] }
           end
 
-          if company != @hidden_company
+          if company != @hidden_company && company.owner != @national
             @bank.spend(company.value, company.owner)
             @log << "#{company.name} nationalized from #{company.owner.name} for #{format_currency(company.value)}"
           end

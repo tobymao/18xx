@@ -15,10 +15,9 @@ module Engine
         end
 
         def start_operating
-          super
           # RSR places home token when starting to operate
-          entity = @entities[@entity_index]
-          @game.place_home_token(entity) if entity.type == :national
+          @game.place_rsr_home_token if @entities[@entity_index].type == :national
+          super
         end
       end
     end

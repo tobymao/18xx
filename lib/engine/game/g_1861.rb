@@ -22,6 +22,7 @@ module Engine
       HEX_UPGRADES_FOR_O = %w[201 202 207 208 622 623 801 640].freeze
       BONUS_CAPITALS = %w[H8].freeze
       BONUS_REVENUE = 'Q3'
+      NATIONAL_RESERVATIONS = %w[E1 H8].freeze
 
       def self.title
         '1861'
@@ -56,10 +57,37 @@ module Engine
         end
       end
 
+      def place_rsr_home_token
+        # RSR on first run places their home token...
+        # unless RSR already has a token due to SPW nationalization,
+        # in which case the reservation on the other city is removed
+        nationalize!(corporation_by_id('SPW'))
+        tile = hex_by_id('E1').tile
+        return unless @national_reservations.include?(tile.hex.id)
+        return if tile.cities.any? { |c| c.tokened_by?(@national) }
+
+        return unless (new_token = @national.next_token)
+
+        @log << "#{@national.name} places a token on #{tile.hex.location_name}"
+        @national_reservations.delete(tile.hex.id)
+        # St Petersburg slot is the 2nd one
+        tile.cities.last.place_token(@national, new_token, check_tokenable: false)
+      end
+
       def nationalization_loan_movement(corporation)
         corporation.loans.each do
           stock_market.move_left(corporation)
         end
+      end
+
+      def nationalization_transfer_assets(corporation)
+        receiving = []
+        companies = transfer(:companies, corporation, @national).map(&:name)
+        receiving << "companies (#{companies.join(', ')})" unless companies.empty?
+
+        trains = transfer(:trains, corporation, @national).map(&:name)
+        receiving << "trains (#{trains})" unless trains.empty?
+        @log << "#{@national.id} received #{receiving} from #{corporation.id}" unless receiving.empty?
       end
 
       def maximum_loans(entity)
@@ -95,7 +123,7 @@ module Engine
           Step::G1867::RedeemShares,
           Step::G1861::Track,
           Step::G1861::Token,
-          Step::Route,
+          Step::G1861::Route,
           Step::G1861::Dividend,
           # The blocking buy company needs to be before loan operations
           [Step::G1861::BuyCompany, blocks: true],
