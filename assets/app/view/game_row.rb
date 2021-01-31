@@ -120,14 +120,37 @@ module View
       @inputs = {}
       h(:div, props, [
         @inputs['search'] = h('input.no_margin', input_props),
-        h('button.small', { style: { width: '2.5rem', margin: '0' }, on: { click: search_games } }, '🔍'),
-        h('a.button_link.small',
-          {
+        h('button.small', {
             attrs: {
-              href: 'https://github.com/tobymao/18xx/wiki',
-              title: 'ts_vector explanation', # TODO: short overview + wiki page
+              title: 'Search',
             },
-            style: { width: '2.5rem', textAlign: 'center', margin: '0' },
+            style: {
+              width: '2.5rem',
+              margin: '0',
+            },
+            on: { click: search_games },
+          },
+          '🔍'),
+        h('a.button_link.small', {
+            attrs: {
+              href: 'https://github.com/tobymao/18xx/wiki/FAQ#search',
+              title: 'Click to open help!
+
+text:* = trailing wildcard
+& = and
+| = or
+! = not
+() = group
+text:ABCD = limit to …
+A = game title
+B = users
+C = description
+D = round/turn/rules',
+            },
+            style: {
+              width: '2.5rem',
+              margin: '0',
+            },
           },
           '?'),
       ])
