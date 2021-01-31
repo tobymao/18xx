@@ -50,6 +50,8 @@ module Engine
 
       HEX_WITH_O_LABEL = %w[J12].freeze
       HEX_UPGRADES_FOR_O = %w[201 202 203 207 208 621 622 623 801 X8].freeze
+      BONUS_CAPITALS = %w[F16 L12 O7].freeze
+      BONUS_REVENUE = 'D2'
 
       CERT_LIMIT_CHANGE_ON_BANKRUPTCY = true
 
@@ -336,9 +338,9 @@ module Engine
         end
 
         # Quebec, Montreal and Toronto
-        capitals = stops.find { |stop| %w[F16 L12 O7].include?(stop.hex.name) }
+        capitals = stops.find { |stop| self.class::BONUS_CAPITALS.include?(stop.hex.name) }
         # Timmins
-        timmins = stops.find { |stop| stop.hex.name == 'D2' }
+        timmins = stops.find { |stop| stop.hex.name == self.class::BONUS_REVENUE }
 
         revenue += 40 * (route.train.multiplier || 1) if capitals && timmins
 
@@ -366,9 +368,9 @@ module Engine
 
       def upgrades_to?(from, to, special = false)
         # O labelled tile upgrades to Ys until Grey
-        return super unless HEX_WITH_O_LABEL.include?(from.hex.name)
+        return super unless self.class::HEX_WITH_O_LABEL.include?(from.hex.name)
 
-        return false unless HEX_UPGRADES_FOR_O.include?(to.name)
+        return false unless self.class::HEX_UPGRADES_FOR_O.include?(to.name)
 
         super(from, to, true)
       end
@@ -513,22 +515,7 @@ module Engine
         @final_operating_rounds || super
       end
 
-      def setup
-        @interest = {}
-        setup_company_price_up_to_face
-
-        # Hide the special 3 company
-        @hidden_company = company_by_id('3')
-
-        # CN corporation only exists to hold tokens
-        @national = @corporations.find { |c| c.type == :national }
-        @national.ipoed = true
-        @national.shares.clear
-        @national.shares_by_corporation[@national].clear
-
-        @national_reservations = self.class::NATIONAL_RESERVATIONS.dup
-        @corporations.delete(@national)
-
+      def add_neutral_tokens
         @green_tokens = []
         logo = '/logos/1867/neutral.svg'
         @hexes.each do |hex|
@@ -545,6 +532,24 @@ module Engine
             hex.tile.cities.first.exchange_token(@national.tokens.first)
           end
         end
+      end
+
+      def setup
+        @interest = {}
+        setup_company_price_up_to_face
+
+        # Hide the special 3 company
+        @hidden_company = company_by_id('3')
+
+        # CN corporation only exists to hold tokens
+        @national = @corporations.find { |c| c.type == :national }
+        @national.ipoed = true
+        @national.shares.clear
+        @national.shares_by_corporation[@national].clear
+
+        @national_reservations = self.class::NATIONAL_RESERVATIONS.dup
+        @corporations.delete(@national)
+        add_neutral_tokens
 
         # Move green and majors out of the normal list
         @corporations, @future_corporations = @corporations.partition do |corporation|

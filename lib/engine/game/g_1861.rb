@@ -14,7 +14,14 @@ module Engine
                                 'After the minors and majors operates the national runs trains, '\
                                 'withholds and buys as many trains as possible'],
       ).freeze
+      GAME_LOCATION = 'Russia'
       GREEN_CORPORATIONS = %w[MB Y V TR SV E].freeze
+
+      # This is Kh in 1861
+      HEX_WITH_O_LABEL = %w[G15].freeze
+      HEX_UPGRADES_FOR_O = %w[201 202 207 208 622 623 801 640].freeze
+      BONUS_CAPITALS = %w[H8].freeze
+      BONUS_REVENUE = 'Q3'
 
       def self.title
         '1861'
@@ -38,6 +45,11 @@ module Engine
       def operating_order
         minors, majors = @corporations.select(&:floated?).sort.partition { |c| c.type == :minor }
         minors + majors + [@national]
+      end
+
+      def add_neutral_tokens
+        # 1861 doesn't have neutral tokens
+        @green_tokens = []
       end
 
       def operating_round(round_num)

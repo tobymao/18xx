@@ -13,6 +13,13 @@ module Engine
 
           @game.phase.name.to_i < NATIONAL_START_PHASE || @game.phase.name.to_i >= NATIONAL_END_PHASE
         end
+
+        def start_operating
+          super
+          # RSR places home token when starting to operate
+          entity = @entities[@entity_index]
+          @game.place_home_token(entity) if entity.type == :national
+        end
       end
     end
   end
