@@ -814,7 +814,7 @@ module Engine
       "sym": "M2",
       "value": 100,
       "revenue": 0,
-      "desc": "A 50% director’s certificate in the associated minor company. Starting location is E4.",
+      "desc": "A 50% director’s certificate in the associated minor company. Starting location is E2.",
       "abilities": [
       ],
       "color": "white",
@@ -1096,7 +1096,7 @@ module Engine
       "hide_shares": true,
       "shares": [100],
       "max_ownership_percent": 100,
-      "coordinates": "E4",
+      "coordinates": "E2",
       "color": "white",
       "text_color": "black"
     },
@@ -1616,7 +1616,18 @@ module Engine
   "trains": [
     {
       "name": "L",
-      "distance": 2,
+      "distance": [
+        {
+          "nodes": ["city"],
+          "pay": 1,
+          "visit": 1
+        },
+        {
+          "nodes": ["town"],
+          "pay": 1,
+          "visit": 1
+        }
+      ],
       "num": 22,
       "price": 60,
       "rusts_on": "3"

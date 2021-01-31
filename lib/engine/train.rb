@@ -78,6 +78,17 @@ module Engine
       @buyable && !@obsolete
     end
 
+    def local?
+      return @local if defined?(@local)
+
+      @local = if @distance.is_a?(Numeric)
+                 @distance == 1
+               else
+                 distance_city = @distance.find { |n| n['nodes'].include?('city') }
+                 distance_city['visit'] == 1 if distance_city
+               end
+    end
+
     def inspect
       "<Train: #{id}>"
     end
