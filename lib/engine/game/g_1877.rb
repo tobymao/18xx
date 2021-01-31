@@ -35,6 +35,8 @@ module Engine
       GAME_PUBLISHER = :all_aboard_games
       GAME_LOCATION = 'Venezuela'
 
+      DISCARDED_TRAINS = :remove
+
       OPTIONAL_RULES = [].freeze
 
       DEV_STAGE = :alpha

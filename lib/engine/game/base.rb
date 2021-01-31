@@ -222,7 +222,7 @@ module Engine
       # operating_round // 1889 places on first operating round
       HOME_TOKEN_TIMING = :operate
 
-      DISCARDED_TRAINS = :discard # discarded or removed?
+      DISCARDED_TRAINS = :discard # discard or remove
       DISCARDED_TRAIN_DISCOUNT = 0 # percent
       CLOSED_CORP_TRAINS_REMOVED = true
       CLOSED_CORP_RESERVATIONS_REMOVED = true
