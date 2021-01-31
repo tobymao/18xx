@@ -37,6 +37,7 @@ module View
         ].compact)
 
         children << top_line
+        children << @game.token_note if @game.respond_to?(:token_note)
         children << render_table
         children << render_spreadsheet_controls
 
@@ -363,7 +364,7 @@ module View
           h('td.padded_number', @game.format_currency(corporation.cash)),
           h('td.left', order_props, operating_order_text),
           h(:td, corporation.trains.map(&:name).join(', ')),
-          h(:td, "#{corporation.tokens.map { |t| t.used ? 0 : 1 }.sum}/#{corporation.tokens.size}"),
+          h(:td, @game.token_string(corporation)),
           *extra,
           render_companies(corporation),
           h(:th, name_props, corporation.name),
