@@ -28,8 +28,32 @@ module Engine
       end
 
       def unstarted_corporation_summary
-        summary, _corps = super
-        [summary, [@national]]
+        unipoed = @corporations.reject(&:ipoed)
+        minor = unipoed.select { |c| c.type == :minor }
+        major = unipoed.select { |c| c.type == :major }
+        ["#{major.size} major", minor + [@national]]
+      end
+
+      def init_loans
+        @loan_value = 50
+        # 16 minors * 2, 8 majors * 5
+        # The national can take an infinite (100)
+        172.times.map { |id| Loan.new(id, @loan_value) }
+      end
+
+      def home_token_locations(corporation)
+        # Can only place home token in cities that have no other tokens.
+        open_locations = hexes.select do |hex|
+          hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) && city.tokens.none? }
+        end
+
+        # @todo: this may need optimizing when changing connections for loading.
+        unconnected = open_locations.select { |hex| hex.connections.none? }
+        if unconnected.none?
+          []
+        else
+          unconnected
+        end
       end
 
       def nationalization_loan_movement(corporation)
@@ -50,6 +74,15 @@ module Engine
       def add_neutral_tokens
         # 1861 doesn't have neutral tokens
         @green_tokens = []
+      end
+
+      def stock_round
+        Round::G1867::Stock.new(self, [
+          Step::G1867::MajorTrainless,
+          Step::DiscardTrain,
+          Step::HomeToken,
+          Step::G1861::BuySellParShares,
+        ])
       end
 
       def operating_round(round_num)
