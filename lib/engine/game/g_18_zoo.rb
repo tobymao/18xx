@@ -502,9 +502,9 @@ module Engine
 
         draw_size = players.size == 5 ? 6 : 4
         @companies_for_isr = @companies.first(draw_size)
-        @companies_for_monday = @companies.drop(draw_size + 4).first(4)
-        @companies_for_tuesday = @companies.drop(draw_size + 8).first(4)
-        @companies_for_wednesday = @companies.drop(draw_size + 12).first(4)
+        @companies_for_monday = @companies[draw_size..draw_size + 4]
+        @companies_for_tuesday = @companies[draw_size + 4..draw_size + 8]
+        @companies_for_wednesday = @companies[draw_size + 8..draw_size + 12]
 
         @available_companies.concat(@companies_for_isr)
 
@@ -515,7 +515,7 @@ module Engine
           @future_companies.concat(@companies_for_monday)
         end
 
-        reserve_shares(false)
+        @corporations.each { |c| c.shares.last.buyable = false }
       end
 
       def init_optional_rules(optional_rules)
@@ -601,7 +601,7 @@ module Engine
         update_current_and_future(@companies_for_tuesday, @companies_for_wednesday, 2)
         update_current_and_future(@companies_for_wednesday, nil, 3)
 
-        @available_companies.select { |c| c.owner.nil? }.each { |c| c.owner = @bank }
+        @available_companies.each { |c| c.owner = @bank unless c.owner }
 
         result
       end
@@ -640,25 +640,15 @@ module Engine
         end
       end
 
-      # Override this, and add elements (paragraphs of text) here to display it on Info page.
-      def timeline
-        @timeline.append("Game ends after OR #{@last_or}")
-        @timeline.append("Next set of Operating Rounds will have #{OR_SETS[@turn - 1]} ORs")
-      end
-
       def add_cousins
         @log << 'Cousins join families.'
 
-        reserve_shares(true)
-      end
-
-      def reserve_shares(purchasable)
-        @corporations.each { |c| c.shares.last.buyable = purchasable }
+        @corporations.each { |c| c.shares.last.buyable = true }
       end
 
       def update_current_and_future(to_current, to_future, turn)
         @available_companies.concat(to_current) if @turn == turn
-        return unless !@all_private_visible && to_future && @turn == turn
+        return if @all_private_visible || !to_future || @turn != turn
 
         @log << "Powers #{to_future.map { |c| "\"#{c.name}\"" }.join(', ')} added to the future deck"
         @future_companies.concat(to_future)
