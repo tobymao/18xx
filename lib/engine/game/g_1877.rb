@@ -41,6 +41,17 @@ module Engine
 
       SELL_AFTER = :any_time
 
+      EVENTS_TEXT = Base::EVENTS_TEXT.merge('signal_end_game' => ['Signal End Game',
+                                                                  'Game Ends 3 ORs after purchase/export'\
+                                                                  ' of first 4 train']).freeze
+      def event_signal_end_game!
+        # If we're in round 1, we have another set of ORs with 2 ORs
+        # If we're in round 2, we have another set of ORs with 3 ORs
+        @final_operating_rounds = @round.round_num == 2 ? 3 : 2
+
+        @log << "First 4 train bought/exported, ending game at the end of #{@turn + 1}.#{@final_operating_rounds}"
+      end
+
       def size_corporation(corporation, size)
         if size == 10
           original_shares = @_shares.values.select { |share| share.corporation == corporation }
