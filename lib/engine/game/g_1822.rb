@@ -50,15 +50,50 @@ module Engine
 
       attr_accessor :bidding_token_per_player
 
+      def can_run_route?(entity)
+        entity.trains.any? { |t| t.name == 'L' } || super
+      end
+
+      def check_overlap(routes)
+        super
+
+        # Check local train not use the same token more then one time
+        local_token_hex = []
+        routes.each do |route|
+          local_token_hex << route.head[:left].hex.id if route.train.local? && !route.connections.empty?
+        end
+
+        local_token_hex.group_by(&:itself).each do |k, v|
+          raise GameError, "Local train can only use the token on #{k[0]} once." if v.size > 1
+        end
+      end
+
       def entity_can_use_company?(_entity, company)
         # Setting bidding companies owner to bank, make sure the abilities dont show for theese
         company.owner != @bank
+      end
+
+      def format_currency(val)
+        return super if (val % 1).zero?
+
+        format('£%.1<val>f', val: val)
+      end
+
+      def train_help(runnable_trains)
+        return [] unless (l_trains = runnable_trains.select { |t| t.name == 'L' })
+
+        corporation = l_trains.first.owner
+        ["L (local) trains run in a city which has a #{corporation.name} token.",
+         'They can additionally run to a single small station, but are not required to do so. '\
+         'They can thus be considered 1 (+1) trains.',
+         'Only one L train may operate on each station token.']
       end
 
       def init_round
         stock_round
       end
 
+      # TODO: Make include with 1861, 1867
       def operating_order
         minors, majors = @corporations.select(&:floated?).sort.partition { |c| c.type == :minor }
         minors + majors
@@ -72,7 +107,7 @@ module Engine
           Step::Track,
           Step::Token,
           Step::Route,
-          Step::Dividend,
+          Step::G1822::Dividend,
           Step::DiscardTrain,
           Step::BuyTrain,
         ], round_num: round_num)
