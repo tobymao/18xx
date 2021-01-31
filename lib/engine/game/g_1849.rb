@@ -120,6 +120,10 @@ module Engine
                     :max_value_reached,
                     :old_operating_order, :moved_this_turn
 
+      def ipo_name(_entity = nil)
+        'Treasury'
+      end
+
       def sms_hexes
         SMS_HEXES
       end
