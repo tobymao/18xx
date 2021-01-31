@@ -636,9 +636,9 @@ module Engine
       "color": "red"
     },
     {
-      "sym": "MKu",
+      "sym": "M-K",
       "name": "Moscow-Kursk Railway",
-      "logo": "1861/MKu",
+      "logo": "1861/M-K",
       "float_percent": 100,
       "always_market_price": true,
       "tokens": [
