@@ -145,7 +145,11 @@ class Api
       end
 
       r.get do
-        { games: Game.home_games(user, **r.params).map(&:to_h) }
+        games_h = Game.home_games(user, **r.params).map(&:to_h)
+      rescue Sequel::DatabaseError => e
+        e.message.match(/^PG::SyntaxError/) ? halt(400, 'Syntax error in your search query') : halt(500, e.message)
+      else
+        { games: games_h }
       end
 
       # POST '/api/game[/*]'

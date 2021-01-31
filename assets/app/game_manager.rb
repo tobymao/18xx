@@ -54,7 +54,7 @@ module GameManager
     params ||= `window.location.search`
 
     @connection.get("/game#{params}") do |data|
-      store(:games, data[:games]) unless data[:error]
+      (error = data[:error]) ? store(:flash_opts, error) : store(:games, data[:games])
     end
   end
 
