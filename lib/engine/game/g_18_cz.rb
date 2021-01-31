@@ -125,7 +125,7 @@ module Engine
           Step::G18CZ::Token,
           Step::Route,
           Step::G18CZ::Dividend,
-          Step::G18CZ::UpgradeTrain,
+          Step::G18CZ::UpgradeOrDiscardTrain,
           Step::G18CZ::BuyCorporation,
           Step::DiscardTrain,
           Step::G18CZ::BuyTrain,
@@ -360,10 +360,6 @@ module Engine
                                                        end
 
         str
-      end
-
-      def train_information
-        self.class::TRAINS
       end
     end
   end

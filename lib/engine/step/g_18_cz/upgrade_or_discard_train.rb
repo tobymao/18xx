@@ -5,13 +5,13 @@ require_relative '../base'
 module Engine
   module Step
     module G18CZ
-      class UpgradeTrain < Base
-        ACTIONS = %w[swap_train discard_train].freeze
-
+      class UpgradeOrDiscardTrain < Base
         def actions(entity)
           return [] unless entity == buying_entity
 
-          ACTIONS
+          actions = %w[swap_train discard_train]
+          actions << 'pass' if entity.trains.size <= @game.train_limit(entity)
+          actions
         end
 
         def active_entities
@@ -59,21 +59,30 @@ module Engine
           train = action.train
           entity = action.entity
 
-          variants = @game.train_information.find { |item| item[:name] == train.name }[:variants]
+          old_train_name = train.name
+          variant_name, price = upgrade_infos(train, entity)
 
-          raise GameError, "Train #{train.name} cannot be upgraded" if variants.nil?
+          raise GameError, "Train #{train.name} cannot be upgraded" if variant_name.nil?
 
-          # train.variant = variants[0]
+          entity.spend(price, @game.bank)
+          train.variant = variant_name
 
-          puts train if entity.type == 'medium'
+          trains.delete(train)
+          @log << "#{action.entity.name} upgrades #{old_train_name}
+          to #{train.name} for #{@game.format_currency(price)}"
         end
 
-        def upgrade_infos(train, _corporation)
-          variants = @game.train_information.find { |item| item[:name] == train.name }[:variants]
-          return nil, nil if variants.nil?
+        def process_pass(action)
+          trains.clear
+          super
+        end
 
-          variant_index = 0
-          [variants[variant_index][:name], [(variants[variant_index][:price] - train.price), 0].max]
+        def upgrade_infos(train, corporation)
+          variant = train.variants.values.find { |item| @game.train_of_size?(item, corporation.type) }
+          return nil, nil if variant.nil?
+
+          upgrade_price = [(variant[:price] - train.price), 0].max
+          [variant[:name], upgrade_price]
         end
       end
     end

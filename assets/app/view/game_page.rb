@@ -257,7 +257,7 @@ module View
 
       if current_entity_actions.include?('discard_train') &&
         current_entity_actions.include?('swap_train')
-        return h(Game::UpgradeTrains)
+        return h(Game::UpgradeOrDiscardTrains)
       end
       return h(Game::DiscardTrains) if current_entity_actions.include?('discard_train')
 

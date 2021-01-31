@@ -4,7 +4,7 @@ require 'view/game/actionable'
 
 module View
   module Game
-    class UpgradeTrains < Snabberb::Component
+    class UpgradeOrDiscardTrains < Snabberb::Component
       include Actionable
 
       def render
