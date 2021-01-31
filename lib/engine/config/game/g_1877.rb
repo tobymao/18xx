@@ -19,14 +19,16 @@ module Engine
       "3":16,
       "4":13,
       "5":11,
-      "6":9
+      "6":9,
+      "7":9
    },
    "startingCash":{
       "2":420,
       "3":315,
       "4":252,
       "5":210,
-      "6":180
+      "6":180,
+      "7":142
    },
    "capitalization":"incremental",
    "layout":"flat",
@@ -65,7 +67,7 @@ module Engine
       "X1":{
          "count":"unlimited",
          "color":"green",
-         "code":"city=revenue:50;city=revenue:60;path=a:1,b:_0;path=a:_1,b:5;label=C"
+         "code":"city=revenue:50;city=revenue:50;path=a:1,b:_0;path=a:_1,b:5;label=C"
       },
       "X2":{
          "count":"unlimited",
