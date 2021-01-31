@@ -55,6 +55,8 @@ module Engine
       end
 
       def size_corporation(corporation, size)
+        corporation.second_share = nil
+
         if size == 10
           original_shares = @_shares.values.select { |share| share.corporation == corporation }
 

@@ -75,7 +75,7 @@ module Engine
           entity.spend(remainder, @game.bank) if remainder.positive?
 
           @corporation_size = nil
-          size_corporation(@game.phase.corporation_sizes.first) if @game.phase.corporation_sizes.one?
+          size_corporation(@game.phase.corporation_sizes[0])
 
           par_corporation if available_subsidiaries(winner.entity).none?
         end
