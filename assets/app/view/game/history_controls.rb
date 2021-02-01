@@ -17,7 +17,7 @@ module View
 
         divs = [h(:h3, { style: { margin: '0', justifySelf: 'left' } }, 'History')]
         cursor = Lib::Params['action']&.to_i
-        style_extra = { padding: '0 0.5rem', width: '2rem' }
+        style_extra = { padding: '0 0.5rem', width: '100%' }
 
         unless cursor&.zero?
           divs << history_link('|<', 'Start', 0, style_extra, true)
@@ -55,8 +55,9 @@ module View
         props = {
           style: {
             display: 'grid',
-            grid: '1fr / 4.2rem repeat(6, 2.5rem)',
+            grid: '1fr / 4.2rem repeat(6, minmax(2rem, 2.5rem))',
             justifyItems: 'center',
+            gap: '0 0.5rem',
           },
         }
 
