@@ -147,7 +147,9 @@ module View
           title: title,
           children: text,
           style: {
+            textAlign: 'center',
             textDecoration: 'none',
+            width: '2.4rem',
             **style_extra,
           },
         }
