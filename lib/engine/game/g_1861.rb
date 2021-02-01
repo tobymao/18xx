@@ -6,7 +6,7 @@ require_relative 'g_1867'
 module Engine
   module Game
     class G1861 < G1867
-      DEV_STAGE = :prealpha
+      DEV_STAGE = :alpha
       load_from_json(Config::Game::G1861::JSON)
 
       STATUS_TEXT = Base::STATUS_TEXT.merge(
@@ -135,6 +135,24 @@ module Engine
       end
 
       def or_round_finished; end
+
+      def event_signal_end_game!
+        if @round.round_num == 1
+          # If first round
+          # Finish this OR, skip the stock round, then two more ORs
+          @final_operating_rounds = 2
+          @skip_to_new_or_round = true
+          @log << "First 8 train bought/exported, ending game at the end of #{@turn + 1}.#{@final_operating_rounds},"\
+          ' skipping the next OR and SR'
+        else
+          # Else finish this OR, do the stock round then 3 more ORs
+          @final_operating_rounds = 3
+          @log << "First 8 train bought/exported, ending game at the end of #{@turn + 1}.#{@final_operating_rounds}"
+        end
+
+        # Hit the game end check now to set the correct turn
+        game_end_check
+      end
     end
   end
 end

@@ -320,7 +320,7 @@ module Engine
       "value": 45,
       "revenue": 15,
       "discount": 15,
-      "desc": "When owned by a corporation, they gain $10 extra revenue for each of their routes that include Odessa",
+      "desc": "When owned by a corporation, they gain 10₽ extra revenue for each of their routes that include Odessa",
       "abilities": [
         {
         "type": "hex_bonus",
@@ -337,7 +337,7 @@ module Engine
       "value": 60,
       "revenue": 20,
       "discount": 20,
-      "desc": "When owned by a corporation, they gain $10 extra revenue for each of their routes that include Moscow",
+      "desc": "When owned by a corporation, they gain 10₽ extra revenue for each of their routes that include Moscow",
       "abilities": [
         {
         "type": "hex_bonus",
@@ -354,7 +354,7 @@ module Engine
       "value": 75,
       "revenue": 25,
       "discount": 25,
-      "desc": "When owned by a corporation, they gain $10 extra revenue for each of their routes that include Moscow",
+      "desc": "When owned by a corporation, they gain 10₽ extra revenue for each of their routes that include Moscow",
       "abilities": [
         {
         "type": "hex_bonus",
@@ -371,7 +371,7 @@ module Engine
       "value": 90,
       "revenue": 30,
       "discount": 30,
-      "desc": "When owned by a corporation, they gain $10 extra revenue for each of their routes that include Poland",
+      "desc": "When owned by a corporation, they gain 10₽ extra revenue for each of their routes that include Poland",
       "abilities": [
         {
         "type": "hex_bonus",

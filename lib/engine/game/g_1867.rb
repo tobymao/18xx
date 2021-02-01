@@ -463,7 +463,10 @@ module Engine
       end
 
       def new_or!
-        if @round.round_num < @operating_rounds
+        if @skip_to_new_or_round
+          @turn += 1
+          new_operating_round
+        elsif @round.round_num < @operating_rounds
           new_operating_round(@round.round_num + 1)
         else
           @turn += 1
