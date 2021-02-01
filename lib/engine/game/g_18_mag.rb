@@ -95,6 +95,13 @@ module Engine
         'G&C' => 'Sells plus-train conversion',
       }.freeze
 
+      CORPORATE_POWERS_2P = {
+        'SIK' => 'Earns for each terrain symbol',
+        'SKEV' => 'Earns for tokens and 2nd tile lay',
+        'LdStEG' => 'Sells all trains',
+        'RABA' => 'Sells offboard bonus / +train conversion',
+      }.freeze
+
       MINORS_2P = %w[
         1
         2
@@ -646,8 +653,10 @@ module Engine
       def status_str(entity)
         if entity.minor? && @terrain_tokens[entity.name]&.positive?
           "Terrain Tokens: #{@terrain_tokens[entity.name]}"
-        elsif entity.corporation?
+        elsif entity.corporation? && multiplayer?
           CORPORATE_POWERS[entity.name]
+        elsif entity.corporation?
+          CORPORATE_POWERS_2P[entity.name]
         end
       end
 
