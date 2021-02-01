@@ -47,11 +47,10 @@ module Engine
                                                                   'Game Ends 3 ORs after purchase/export'\
                                                                   ' of first 4 train']).freeze
       def event_signal_end_game!
-        # If we're in round 1, we have another set of ORs with 2 ORs
-        # If we're in round 2, we have another set of ORs with 3 ORs
-        @final_operating_rounds = @round.round_num == 2 ? 3 : 2
-
-        @log << "First 4 train bought/exported, ending game at the end of #{@turn + 1}.#{@final_operating_rounds}"
+        @final_operating_rounds = 2
+        game_end_check
+        @final_turn -= 1 if @round.stock?
+        @log << "First 4 train bought/exported, ending game at the end of #{@final_turn}.#{@final_operating_rounds}"
       end
 
       def size_corporation(corporation, size)

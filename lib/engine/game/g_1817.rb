@@ -667,7 +667,7 @@ module Engine
         # If we're in round 1, we have another set of ORs with 2 ORs
         # If we're in round 2, we have another set of ORs with 3 ORs
         @final_operating_rounds = @round.round_num == 2 ? 3 : 2
-
+        game_end_check
         @log << "First 8 train bought/exported, ending game at the end of #{@turn + 1}.#{@final_operating_rounds}"
       end
     end

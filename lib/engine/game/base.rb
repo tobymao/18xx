@@ -1953,7 +1953,7 @@ module Engine
         %i[immediate current_round current_or full_or one_more_full_or_set].each do |after|
           triggers.keys.each do |reason|
             if game_end_check_values[reason] == after
-              (@turn == (@final_turn ||= @turn + 1)) if after == :one_more_full_or_set
+              @final_turn ||= @turn + 1 if after == :one_more_full_or_set
               return [reason, after]
             end
           end
