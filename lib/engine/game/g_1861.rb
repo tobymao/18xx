@@ -32,7 +32,7 @@ module Engine
         unipoed = @corporations.reject(&:ipoed)
         minor = unipoed.select { |c| c.type == :minor }
         major = unipoed.select { |c| c.type == :major }
-        ["#{major.size} major", minor + [@national]]
+        ["#{major.size} major", [@national] + minor]
       end
 
       def init_loans
