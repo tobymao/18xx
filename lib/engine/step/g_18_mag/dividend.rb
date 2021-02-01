@@ -171,7 +171,7 @@ module Engine
         end
 
         def chart
-          if @game.muliplayer?
+          if @game.multiplayer?
             [
               ['Per Share Dividend', 'Share Price Change'],
               ['0 Ft', '1 space to the left'],
