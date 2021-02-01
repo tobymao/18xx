@@ -502,7 +502,7 @@ module Engine
          "distance":2,
          "price":100,
          "obsolete_on":"4",
-         "num":4
+         "num":3
       },
       {
          "name":"3",
