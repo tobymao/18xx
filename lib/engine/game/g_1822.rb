@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../config/game/g_1822'
+require_relative '../g_1822/depot'
 require_relative 'base'
 require_relative 'stubs_are_restricted'
 
@@ -35,6 +36,10 @@ module Engine
       HOME_TOKEN_TIMING = :operating_round
       MUST_BUY_TRAIN = :always
       NEXT_SR_PLAYER_ORDER = :most_cash
+
+      STATUS_TEXT = Base::STATUS_TEXT.merge(
+        'can_buy_trains' => ['Can buy trains', 'Can buy trains from other corporations']
+      ).freeze
 
       BIDDING_TOKENS = {
         "3": 6,
@@ -80,7 +85,7 @@ module Engine
       end
 
       def train_help(runnable_trains)
-        return [] unless (l_trains = runnable_trains.select { |t| t.name == 'L' })
+        return [] if (l_trains = runnable_trains.select { |t| t.name == 'L' }).empty?
 
         corporation = l_trains.first.owner
         ["L (local) trains run in a city which has a #{corporation.name} token.",
@@ -91,6 +96,17 @@ module Engine
 
       def init_round
         stock_round
+      end
+
+      # This is need to handle the upgrade from L -> 2 train.
+      def init_train_handler
+        trains = self.class::TRAINS.flat_map do |train|
+          (train[:num] || num_trains(train)).times.map do |index|
+            Train.new(**train, index: index)
+          end
+        end
+
+        Engine::G1822::Depot.new(trains, self)
       end
 
       # TODO: Make include with 1861, 1867
@@ -109,7 +125,7 @@ module Engine
           Step::Route,
           Step::G1822::Dividend,
           Step::DiscardTrain,
-          Step::BuyTrain,
+          Step::G1822::BuyTrain,
         ], round_num: round_num)
       end
 

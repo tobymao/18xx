@@ -1630,18 +1630,16 @@ module Engine
       ],
       "num": 22,
       "price": 60,
-      "rusts_on": "3"
-    },
-    {
-      "name": "2",
-      "distance": 2,
-      "num": 22,
-      "price": 120,
-      "rusts_on": "4",
-      "available_on": "1",
-      "discount": {
-        "L": 40
-      }
+      "rusts_on": "3",
+      "variants": [
+        {
+          "name": "2",
+          "distance": 2,
+          "price": 120,
+          "rusts_on": "4",
+          "available_on": "1"
+        }
+      ]
     },
     {
       "name": "3",
@@ -2090,6 +2088,9 @@ module Engine
         "yellow",
         "green"
       ],
+      "status": [
+        "can_buy_trains"
+      ],
       "operating_rounds": 2
     },
     {
@@ -2102,6 +2103,9 @@ module Engine
       "tiles": [
         "yellow",
         "green"
+      ],
+      "status": [
+        "can_buy_trains"
       ],
       "operating_rounds": 2
     },
@@ -2117,6 +2121,9 @@ module Engine
         "green",
         "brown"
       ],
+      "status": [
+        "can_buy_trains"
+      ],
       "operating_rounds": 2
     },
     {
@@ -2130,6 +2137,9 @@ module Engine
         "yellow",
         "green",
         "brown"
+      ],
+      "status": [
+        "can_buy_trains"
       ],
       "operating_rounds": 2
     },
@@ -2145,6 +2155,9 @@ module Engine
         "green",
         "brown",
         "gray"
+      ],
+      "status": [
+        "can_buy_trains"
       ],
       "operating_rounds": 2
     }
