@@ -17,7 +17,7 @@ module View
 
         divs = [h(:h3, { style: { margin: '0', justifySelf: 'left' } }, 'History')]
         cursor = Lib::Params['action']&.to_i
-        style_extra = { padding: '0 0.5rem', width: '100%' }
+        style_extra = { padding: '0.2rem 0.5rem', width: '100%' }
 
         unless cursor&.zero?
           divs << history_link('|<', 'Start', 0, style_extra, true)
