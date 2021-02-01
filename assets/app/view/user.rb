@@ -65,7 +65,7 @@ module View
           render_button('Save Changes') { submit },
           render_button('Reset to Defaults') { reset_settings },
         ]),
-        h('div#settings__logout', [
+        h('div#settings__logout', { style: { margin: '0.5rem 0' } }, [
           render_button('Logout') { logout },
         ]),
         h(:div, [
@@ -143,7 +143,9 @@ module View
         render_input(
           'User Name:',
           id: :name,
-          attrs: { value: @user&.dig('name') || '' }
+          attrs: { value: @user&.dig('name') || '' },
+          container_style: { margin: '0' },
+          input_style: { width: '11rem' },
         ),
       ])
     end
@@ -151,7 +153,7 @@ module View
     def render_notifications(checked = true)
       h('div#settings__notifications', [
         render_input(
-          'Allow Turn and Message Notifications',
+          'Turn and Message Notifications',
           id: :notifications,
           type: :checkbox,
           attrs: { checked: checked },
@@ -162,7 +164,7 @@ module View
     def render_simple_logos(checked = true)
       h('div#settings__simple_logos', [
         render_input(
-          'Prefer Alternative (Simplified) Logos',
+          'Simple Corporation Logos',
           id: :simple_logos,
           type: :checkbox,
           attrs: { checked: checked },
@@ -176,7 +178,7 @@ module View
 
     def render_logo_color(red_logo)
       render_input(
-        'Alternative Red Logo',
+        'Red 18xx.games Logo',
         id: :red_logo,
         type: :checkbox,
         attrs: { checked: red_logo },
@@ -253,7 +255,7 @@ module View
       }
 
       h('div#routes', [
-        h(:h3, 'Trains & Routes'),
+        h(:h3, 'Routes, Trains & Players'),
         h(:div, grid_props, [
           h(:div, ''),
           h(:div, header_props, 'Color'),

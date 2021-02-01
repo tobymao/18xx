@@ -173,21 +173,9 @@ nav#game_menu {
   height: 1.8rem;
   width: 2.7rem;
 }
-
-#profile-settings > #settings__notifications {
-  height: 2rem;
-}
-
-#settings__colors .input-container label {
+#settings__colors label, #settings__simple_logos label  {
     display: inline-block;
     width: 11.5rem;
-}
-
-#settings__tiles > label {
-  margin-right: 0.5rem;
-}
-#settings__tiles__buttons {
-  display: inline-flex;
 }
 #settings__tiles__buttons > .input-container {
   margin: 0;
