@@ -201,10 +201,10 @@ module View
             h(:th, render_sort_link('Market', :share_price)),
             h(:th, render_sort_link('Cash', :cash)),
             h(:th, render_sort_link('Order', :order)),
-            h(:th, 'Trains'),
-            h(:th, 'Tokens'),
+            h(:th, render_sort_link('Trains', :trains)),
+            h(:th, render_sort_link('Tokens', :tokens)),
             *extra,
-            h(:th, 'Companies'),
+            h(:th, render_sort_link('Companies', :companies)),
             h(:th, ''),
             *or_history_titles,
           ]),
@@ -293,6 +293,12 @@ module View
             @game.buying_power(corporation, full: true)
           when :interest
             @game.interest_owed(corporation)
+          when :trains
+            corporation.floated? ? corporation.trains.size : -1
+          when :tokens
+            @game.count_available_tokens(corporation)
+          when :companies
+            corporation.companies.size
           else
             @game.player_by_id(@spreadsheet_sort_by)&.num_shares_of(corporation)
           end

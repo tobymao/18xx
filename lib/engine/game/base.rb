@@ -2200,8 +2200,12 @@ module Engine
         []
       end
 
+      def count_available_tokens(corporation)
+        corporation.tokens.map { |t| t.used ? 0 : 1 }.sum
+      end
+
       def token_string(corporation)
-        "#{corporation.tokens.map { |t| t.used ? 0 : 1 }.sum}/#{corporation.tokens.size}"
+        "#{count_available_tokens(corporation)}/#{corporation.tokens.size}"
       end
 
       # minors to show on player cards
