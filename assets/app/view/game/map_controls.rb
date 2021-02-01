@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require '../lib/settings'
-require '../lib/storage'
+require 'lib/settings'
+require 'lib/storage'
 
 module View
   module Game
@@ -12,7 +12,6 @@ module View
       needs :show_starting_map, default: false, store: true
       needs :historical_routes, default: [], store: true
       needs :game, default: nil, store: true
-      needs :map_zoom, default: nil, store: true
       needs :show_player_colors, default: nil, store: true
 
       def render
@@ -22,7 +21,6 @@ module View
           hex_coord_controls,
           starting_map_controls,
           route_controls,
-          map_zoom_controls,
         ].compact
 
         h(:div, children)
@@ -134,21 +132,6 @@ module View
           on: { **on },
         }
         h(:select, input_props, children)
-      end
-
-      def map_zoom_controls
-        on_click = lambda do |z|
-          lambda do
-            store(:map_zoom, z)
-            Lib::Storage['map_zoom'] = z
-          end
-        end
-
-        h('div.inline-block', [
-          render_button('Zoom out', on_click.call(@map_zoom / 1.1)),
-          render_button('Default zoom', on_click.call(1)),
-          render_button('Zoom in', on_click.call(@map_zoom * 1.1)),
-        ])
       end
 
       def render_button(text, action)

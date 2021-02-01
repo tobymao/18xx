@@ -65,7 +65,7 @@ module View
         end
         @hexes.compact!
 
-        children = [render_map]
+        children = [render_map, h(MapZoom, map_zoom: map_zoom)]
 
         if current_entity && @tile_selector
           left = (@tile_selector.x + map_x) * @scale
@@ -156,7 +156,7 @@ module View
       end
 
       def render_controls
-        h(MapControls, show_location_names: show_location_names, show_coords: show_coords, map_zoom: map_zoom)
+        h(MapControls, show_location_names: show_location_names, show_coords: show_coords)
       end
 
       def render_map
