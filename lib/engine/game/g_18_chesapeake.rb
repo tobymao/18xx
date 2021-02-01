@@ -95,6 +95,12 @@ module Engine
         end
       end
 
+      def status_str(corp)
+        return unless two_player?
+
+        "#{corp.presidents_percent}% President's Share"
+      end
+
       def timeline
         @timeline = [
           'At the end of each set of ORs the next available non-permanent (2,3 or 4) train will be exported

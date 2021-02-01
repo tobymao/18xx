@@ -56,6 +56,12 @@ module Engine
         @green_nashville_tile ||= @tiles.find { |t| t.name == 'TN2' }
       end
 
+      def status_str(corp)
+        return unless corp.id == 'IC'
+
+        "#{corp.presidents_percent}% President's Share"
+      end
+
       def operating_round(round_num)
         # For OR 1, set company buy price to face value only
         @companies.each do |company|
