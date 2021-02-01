@@ -147,13 +147,11 @@ module View
           title: title,
           children: text,
           style: {
-            textAlign: 'center',
-            textDecoration: 'none',
-            width: '2.4rem',
+            margin: '0',
             **style_extra,
           },
         }
-        props['class'] = '.button_link' if as_button
+        props[:class] = '.button_link' if as_button
 
         h(Link, props)
       end

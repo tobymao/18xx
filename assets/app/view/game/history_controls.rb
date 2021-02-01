@@ -15,11 +15,12 @@ module View
       def render
         return h(:div) if @num_actions.zero?
 
-        divs = [h(:h3, { style: { margin: '0' } }, 'History')]
+        divs = [h(:h3, { style: { margin: '0', justifySelf: 'left' } }, 'History')]
         cursor = Lib::Params['action']&.to_i
+        style_extra = { padding: '0 0.5rem', width: '2rem' }
 
         unless cursor&.zero?
-          divs << history_link('|<', 'Start', 0)
+          divs << history_link('|<', 'Start', 0, style_extra, true)
 
           last_round =
             if cursor == @game.raw_actions.size
@@ -27,7 +28,8 @@ module View
             else
               @game.round_history[-1]
             end
-          divs << history_link('<<', 'Previous Round', last_round, { gridColumnStart: '3' }) if last_round
+          divs << history_link('<<', 'Previous Round', last_round,
+                               { gridColumnStart: '3', **style_extra }, true) if last_round
 
           prev_action =
             if @game.exception
@@ -37,22 +39,23 @@ module View
             else
               @num_actions - 1
             end
-          divs << history_link('<', 'Previous Action', prev_action, { gridColumnStart: '4' })
+          divs << history_link('<', 'Previous Action', prev_action, { gridColumnStart: '4', **style_extra }, true)
         end
 
         if cursor && !@game.exception
           divs << history_link('>', 'Next Action', cursor + 1 < @num_actions ? cursor + 1 : nil,
-                               { gridColumnStart: '5' })
+                               { gridColumnStart: '5', **style_extra }, true)
           store(:round_history, @game.round_history, skip: true) unless @round_history
           next_round = @round_history[@game.round_history.size]
-          divs << history_link('>>', 'Next Round', next_round, { gridColumnStart: '6' }) if next_round
-          divs << history_link('>|', 'Current', nil, { gridColumnStart: '7' })
+          divs << history_link('>>', 'Next Round', next_round,
+                               { gridColumnStart: '6', **style_extra }, true) if next_round
+          divs << history_link('>|', 'Current', nil, { gridColumnStart: '7', **style_extra }, true)
         end
 
         props = {
           style: {
             display: 'grid',
-            grid: '1fr / 4rem repeat(6, 2.5rem)',
+            grid: '1fr / 4.2rem repeat(6, 2.5rem)',
             justifyItems: 'center',
           },
         }
