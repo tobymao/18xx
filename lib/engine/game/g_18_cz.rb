@@ -81,7 +81,7 @@ module Engine
         '5+5j' => :medium,
         '3Ed' => :large,
         '3Ee' => :large,
-        '4EF' => :large,
+        '4Ef' => :large,
         '4Eg' => :large,
         '5E' => :large,
         '6E' => :large,

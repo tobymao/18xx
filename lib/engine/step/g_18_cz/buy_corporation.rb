@@ -40,6 +40,9 @@ module Engine
           end
           receiving = []
 
+          companies = @game.transfer(:companies, corporation, entity).map(&:name)
+          receiving << "companies (#{companies.join(', ')})" if companies.any?
+
           trains = @game.transfer(:trains, corporation, entity)
           receiving << "trains (#{trains.map(&:name)})" if trains.any?
 
@@ -76,6 +79,14 @@ module Engine
 
         def show_other_players
           false
+        end
+
+        def transfer_companies(source, destination)
+          return unless source.companies.any?
+
+          transferred = @game.transfer(:companies, source, destination)
+
+          @game.log << "#{destination.name} takes #{transferred.map(&:name).join(', ')} from #{source.name}"
         end
       end
     end
