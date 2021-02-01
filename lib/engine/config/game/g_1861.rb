@@ -12,7 +12,7 @@ module Engine
 {
   "filename": "1861",
   "modulename": "1861",
-  "currencyFormatStr": "$%d",
+  "currencyFormatStr": "%d₽",
   "bankCash": 15000,
   "certLimit": {
     "3": 21,
@@ -30,35 +30,43 @@ module Engine
   "layout": "flat",
   "mustSellInBlocks": false,
   "locationNames": {
-    "D2": "Timmins ($80 if includes T/M/Q)",
-    "D8": "Sudbury",
-    "F8": "North Bay",
-    "E13": "Barrie",
-    "E15": "Guelph",
-    "E17": "Hamilton",
-    "D16": "Berlin",
-    "C17": "London",
-    "G15": "Peterborough",
-    "I15": "Kingston",
-    "J12": "Ottawa",
-    "M9": "Trois-Rivières",
-    "O7": "Quebec",
-    "N12": "Sherbrooke",
-    "C15": "Goderich",
-    "B18": "Sarnia",
-    "H14": "Belleville",
-    "H10": "Pembroke",
-    "K13": "Cornwall",
-    "L10": "St. Jerome",
-    "M13": "Granby",
-    "L12": "Montreal",
-    "F16": "Toronto",
-    "A7": "Sault Ste. Marie",
-    "F18": "Buffalo",
-    "M15": "New England",
-    "O13": "Maine",
-    "P8": "Maritime Provinces",
-    "A19": "Detroit"
+    "A9": "Poland",
+    "B4": "Riga",
+    "B8": "Vilna",
+    "B18": "Romania",
+    "C5": "Dünaberg",
+    "C9": "Minsk",
+    "D14": "Kiev",
+    "D20": "Odessa",
+    "E1": "St. Petersburg",
+    "E9": "Smolensk",
+    "E11": "Gomel",
+    "E13": "Chernigov",
+    "F18": "Ekaterinoslav",
+    "G5": "Tver",
+    "G13": "Kursk",
+    "G15": "Kharkov",
+    "G19": "Alexandrovsk",
+    "H8": "Moscow",
+    "H10": "Tula",
+    "H18": "Yuzovka",
+    "I5": "Yaroslav",
+    "I13": "Voronezh",
+    "I17": "Lugansk",
+    "I19": "Rostov",
+    "J20": "Caucasus",
+    "K7": "Nizhnii Novgorod",
+    "K11": "Penza",
+    "K17": "Tsaritsyn",
+    "L12": "Saratov",
+    "M7": "Kazan",
+    "M9": "Simbirsk",
+    "M19": "Astrakhan",
+    "N10": "Samara",
+    "P0": "Perm",
+    "P8": "Ufa",
+    "Q3": "Ekaterinburg (₽80 if includes M)",
+    "Q11": "Central Asia"
   },
   "tiles": {
     "3": 2,
@@ -116,7 +124,7 @@ module Engine
     "635": {
       "count": 1,
       "color": "green",
-      "code": "city=revenue:40,loc:0.5;city=revenue:40,loc:2.5;city=revenue:40,loc:4.5;path=a:0,b:_0;path=a:_0,b:1;path=a:4,b:_2;path=a:_2,b:5;path=a:2,b:_1;path=a:_1,b:3;label=K"
+      "code": "city=revenue:40,loc:0.5;city=revenue:40,loc:2.5;city=revenue:40,loc:4.5;path=a:0,b:_0;path=a:_0,b:1;path=a:4,b:_2;path=a:_2,b:5;path=a:2,b:_1;path=a:_1,b:3;label=K;upgrade=cost:20,terrain:water"
     },
     "636": {
       "count": 1,
@@ -294,7 +302,7 @@ module Engine
         {
         "type": "blocks_hexes",
         "hexes": [
-          "M13"
+          "E3", "H6", "I9", "J10"
         ]
       }]
     },
@@ -498,6 +506,7 @@ module Engine
         0
       ],
       "type": "minor",
+      "coordinates": "B4",
       "shares": [100],
       "max_ownership_percent": 100,
       "color": "teal"
@@ -514,6 +523,8 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "type": "minor",
+      "coordinates": "D14",
+      "city": 1,
       "color": "lightBlue"
     },
     {
@@ -528,6 +539,7 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "type": "minor",
+      "coordinates": "D20",
       "color": "lightishBlue"
     },
     {
@@ -542,6 +554,8 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "type": "minor",
+      "coordinates": "D14",
+      "city": 2,
       "color": "lightishBlue"
     },
     {
@@ -556,6 +570,8 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "type": "minor",
+      "coordinates": "E1",
+      "city": 0,
       "color": "blue"
     },
     {
@@ -570,6 +586,7 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "type": "minor",
+      "coordinates": "E9",
       "color": "blue"
     },
     {
@@ -584,6 +601,7 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "type": "minor",
+      "coordinates": "G15",
       "color": "purple"
     },
     {
@@ -598,6 +616,8 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "type": "minor",
+      "coordinates": "H8",
+      "city": 1,
       "color": "magenta"
     },
     {
@@ -612,12 +632,13 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "type": "minor",
+      "coordinates": "H18",
       "color": "red"
     },
     {
-      "sym": "MKu",
+      "sym": "M-K",
       "name": "Moscow-Kursk Railway",
-      "logo": "1861/MKu",
+      "logo": "1861/M-K",
       "float_percent": 100,
       "always_market_price": true,
       "tokens": [
@@ -626,6 +647,8 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "type": "minor",
+      "coordinates": "H8",
+      "city": 0,
       "color": "orange"
     },
     {
@@ -640,6 +663,8 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "type": "minor",
+      "coordinates": "H8",
+      "city": 2,
       "color": "red"
     },
     {
@@ -654,6 +679,7 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "type": "minor",
+      "coordinates": "I13",
       "color": "red"
     },
     {
@@ -668,6 +694,7 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "type": "minor",
+      "coordinates": "I19",
       "color": "gray"
     },
     {
@@ -682,6 +709,7 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "type": "minor",
+      "coordinates": "K17",
       "color": "gray"
     },
     {
@@ -696,6 +724,7 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "type": "minor",
+      "coordinates": "N10",
       "color": "gray"
     },
     {
@@ -710,6 +739,7 @@ module Engine
       "shares": [100],
       "max_ownership_percent": 100,
       "type": "minor",
+      "coordinates": "Q3",
       "color": "gray"
     },
     {
@@ -729,6 +759,8 @@ module Engine
       "shares": [100],
       "hide_shares": true,
       "type": "national",
+      "coordinates": "E1",
+      "city": 1,
       "color": "red"
     }
   ],
@@ -868,7 +900,7 @@ module Engine
         }
       ],
       "price": 1000,
-      "num": 6,
+      "num": 20,
       "events": [
         {"type": "signal_end_game"},
         {"type": "minors_nationalized"},
@@ -942,181 +974,146 @@ module Engine
   "hexes": {
     "white": {
       "": [
-        "B6",
-        "B8",
-        "C5",
-        "C7",
-        "C19",
-        "D4",
-        "D6",
-        "D14",
-        "E3",
-        "E5",
-        "E7",
-        "E9",
-        "F2",
-        "F4",
-        "F6",
-        "F10",
-        "F12",
-        "F14",
-        "G3",
-        "G5",
-        "G7",
-        "G9",
-        "G11",
-        "G13",
-        "H4",
-        "H6",
-        "H8",
-        "H12",
-        "I5",
-        "I7",
-        "I9",
-        "I11",
-        "I13",
-        "J6",
-        "J8",
-        "J10",
-        "J14",
-        "K5",
-        "K7",
-        "K9",
-        "L6",
-        "L8",
-        "M5",
-        "M7",
-        "N6",
-        "O11"
+        "B6","B10", "B12", "B14", "B16",
+        "C3", "C13", "C15",
+        "D6", "D8", "D16", "D18",
+        "E3", "E5", "E7", "E17",
+        "F6", "F8", "F10", "F12", "F14", "F20",
+        "G3", "G9", "G11", "G17",
+        "H2", "H4", "H6", "H12", "H14", "H16", "H20",
+        "I3", "I7", "I9", "I11",
+        "J2", "J4", "J8", "J10", "J12", "J14",
+        "K3", "K5", "K9", "K13", "K15", "K19",
+        "L2", "L4", "L8", "L10", "L14", "L18", "L20",
+        "M3", "M5",
+        "N2", "N4", "N8", "N12","N20",
+        "O1", "O3", "O7", "O9", "O11",
+        "P6", "P10", "P12"
       ],
-      "border=edge:5,type:impassable":[
-        "D18"
+      "town=revenue:0": [
+        "B8", "C9", "E11", "E13", "G19", "G13", "H10", "I17", "K11"
       ],
-      "border=edge:0,type:impassable;border=edge:5,type:impassable":[
-        "C9"
+      "town=revenue:0;upgrade=cost:20,terrain:water": [
+        "I5"
       ],
-      "border=edge:2,type:impassable;border=edge:1,type:impassable;border=edge:0,type:impassable;border=edge:5,type:impassable":[
-        "D10"
-      ],
-      "border=edge:2,type:impassable;border=edge:1,type:impassable":[
-        "E11"
-      ],
-      "border=edge:0,type:impassable;border=edge:3,type:impassable;border=edge:4,type:impassable":[
-        "C11"
-      ],
-      "border=edge:3,type:impassable;border=edge:4,type:impassable":[
-        "D12"
-      ],
-      "border=edge:3,type:impassable":[
-        "C13"
-      ],
-      "upgrade=cost:20,terrain:water": [
-        "K11"
-      ],
-      "border=edge:0,type:water,cost:80;border=edge:5,type:water,cost:80": [
-        "N8"
-      ],
-      "border=edge:2,type:water,cost:80;border=edge:3,type:water,cost:80": [
-        "N10",
-        "M11"
-      ],
-      "border=edge:2,type:water,cost:80": [
-        "O9"
-      ],
-      "city=revenue:0;border=edge:5,type:water,cost:80;border=edge:0,type:water,cost:80": [
+      "town=revenue:0;upgrade=cost:80,terrain:water": [
         "M9"
       ],
       "city=revenue:0": [
-        "D8",
-        "F8",
-        "E13",
-        "E15",
-        "C17",
-        "I15",
-        "N12"
+        "E9", "H18", "I13", "I19", "K17", "L12", "P8"
       ],
-      "city=revenue:0;stub=edge:1": [
-        "G15"
+      "city=revenue:0;upgrade=cost:20,terrain:water": [
+        "P2"
+      ],
+      "city=revenue:0;upgrade=cost:40,terrain:water": [
+        "F18", "M7"
       ],
       "city=revenue:0;label=Y": [
-        "E17",
-        "D16",
-        "O7"
+        "B4", "D20", "M19", "N10"
       ],
-      "city=revenue:0;label=Y;label=O;upgrade=cost:20,terrain:water": [
-        "J12"
+      "city=revenue:0;label=Kh": [
+        "G15"
       ],
-      "town=revenue:0;border=edge:5,type:water,cost:80;stub=edge:0": [
-        "L10"
+      "upgrade=cost:80,terrain:water": [
+        "C11", "D12", "M11"
       ],
-      "town=revenue:0;border=edge:0,type:impassable": [
-        "H14"
+      "upgrade=cost:40,terrain:water": [
+        "E15", "E19", "F16", "I15", "J16", "J18"
       ],
-      "town=revenue:0": [
-        "C15",
-        "B18",
-        "H10",
-        "M13"
-      ],
-      "town=revenue:0;stub=edge:4": [
-        "K13"
+      "upgrade=cost:20,terrain:water": [
+        "C17", "C19", "D10", "J6", "L6", "N6", "O5", "P4"
       ]
     },
     "gray": {
-      "city=revenue:40;path=a:0,b:_0;path=a:1,b:_0;path=a:4,b:_0;path=a:5,b:_0;border=edge:1;border=edge:4": [
-        "D2"
+      "path=a:4,b:5": [
+        "A5"
       ],
-      "path=a:0,b:4;border=edge:4": [
-        "C3"
+      "town=revenue:10;path=a:2,b:_0;path=a:5,b:_0;path=a:0,b:4": [
+        "C5"
       ],
-      "path=a:1,b:5;border=edge:1": [
-        "E1"
+      "path=a:4,b:3": [
+        "C21"
       ],
-      "path=a:0,b:5": [
-        "B16"
+      "path=a:3,b:2": [
+        "M21"
       ],
-      "path=a:2,b:3": [
-        "L14"
+      "path=a:0,b:1": [
+        "P0"
+      ],
+      "path=a:1,b:2": [
+        "Q7"
+      ],
+      "path=a:3,b:2;path=a:3,b:1": [
+        "Q5"
+      ],
+      "city=revenue:40;path=a:2,b:_0;path=a:1,b:_0;path=a:0,b:_0": [
+        "Q3"
       ]
     },
     "yellow": {
-      "city=revenue:40;city=revenue:40;city=revenue:40,loc:5;path=a:1,b:_0;path=a:3,b:_1;label=M;upgrade=cost:20,terrain:water": [
-        "L12"
+      "path=a:3,b:1": [
+        "C7", "D4"
       ],
-      "city=revenue:30;city=revenue:30;path=a:1,b:_0;path=a:4,b:_1;label=T": [
-        "F16"
+      "path=a:3,b:5": [
+        "F4", "G7"
+      ],
+      "path=a:0,b:4": [
+        "D2"
+      ],
+      "path=a:0,b:2": [
+        "F2"
+      ],
+      "town=revenue:10;path=a:2,b:_0;path=a:0,b:_0": [
+        "G5"
+      ],
+      "city=revenue:40;city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:2,b:_1;path=a:4,b:_2;label=M": [
+        "H8"
+      ],
+      "city=revenue:30;city=revenue:30;city=revenue:30;path=a:0,b:_0;path=a:2,b:_1;path=a:4,b:_2;label=K": [
+        "D14"
+      ],
+      "city=revenue:30;path=a:1,b:_0;path=a:5,b:_0;label=Y;upgrade=cost:20,terrain:water": [
+        "K7"
       ]
     },
+    "green": {
+      "city=revenue:40;city=revenue:40;path=a:1,b:_0;path=a:_1,b:5;label=S":[
+        "E1"
+     ]
+    },
     "red": {
-      "offboard=revenue:yellow_20|green_30|brown_40|gray_40;path=a:4,b:_0;path=a:5,b:_0": [
-        "A7"
+      "offboard=revenue:yellow_30|green_40|brown_50|gray_70,groups:Poland;path=a:5,b:_0;path=a:4,b:_0;border=edge:0": [
+        "A9"
       ],
-      "offboard=revenue:yellow_30|green_40|brown_50|gray_60;path=a:2,b:_0": [
-        "F18"
+      "offboard=revenue:yellow_30|green_40|brown_50|gray_70,hide:1,groups:Poland;path=a:5,b:_0;path=a:4,b:_0;border=edge:3;border=edge:0": [
+        "A11", "A13"
       ],
-      "offboard=revenue:yellow_30|green_40|brown_50|gray_60;path=a:3,b:_0": [
-        "M15"
+      "offboard=revenue:yellow_30|green_40|brown_50|gray_70,hide:1,groups:Poland;path=a:5,b:_0;path=a:4,b:_0;border=edge:3": [
+        "A15"
       ],
-      "offboard=revenue:yellow_20|green_30|brown_40|gray_40;path=a:2,b:_0;path=a:3,b:_0": [
-        "O13"
+      "offboard=revenue:yellow_10|green_20|brown_30|gray_30,groups:Romania;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;border=edge:0": [
+        "B18"
       ],
-      "offboard=revenue:yellow_30|green_30|brown_40|gray_40;path=a:2,b:_0;path=a:1,b:_0": [
-        "P8"
+      "offboard=revenue:yellow_10|green_20|brown_30|gray_30,hide:1,groups:Romania;path=a:4,b:_0;border=edge:3": [
+        "B20"
       ],
-      "offboard=revenue:yellow_30|green_40|brown_50|gray_70,hide:1,groups:Detroit;path=a:5,b:_0;border=edge:0": [
-        "A17"
+      "offboard=revenue:yellow_10|green_20|brown_40|gray_60,groups:Caucasus;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;border=edge:1;border=edge:5": [
+        "J20"
       ],
-      "offboard=revenue:yellow_30|green_40|brown_50|gray_70,groups:Detroit;path=a:4,b:_0;border=edge:3": [
-        "A19"
+      "offboard=revenue:yellow_10|green_20|brown_40|gray_60,hide:1,groups:Caucasus;path=a:3,b:_0;border=edge:4": [
+        "I21"
+      ],
+      "offboard=revenue:yellow_10|green_20|brown_40|gray_60,hide:1,groups:Caucasus;path=a:3,b:_0;path=a:4,b:_0;border=edge:2": [
+        "K21"
+      ],
+      "offboard=revenue:yellow_10|green_20|brown_30|gray_40,groups:CentralAsia;path=a:1,b:_0;path=a:2,b:_0;border=edge:0": [
+        "Q11"
+      ],
+      "offboard=revenue:yellow_10|green_20|brown_30|gray_40,hide:1,groups:CentralAsia;path=a:2,b:_0;border=edge:3": [
+        "Q13"
       ]
     },
     "blue": {
-      "offboard=revenue:10;path=a:3,b:_0;border=edge:2,type:impassable": [
-        "E19"
-      ],
-      "offboard=revenue:10;path=a:2,b:_0;path=a:4,b:_0;border=edge:3,type:impassable": [
-        "H16"
-      ]
     }
   },
   "phases": [
