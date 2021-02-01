@@ -10,12 +10,14 @@ module Engine
       CURRENCY_FORMAT_STR = '%d Ft'
       BANK_CASH = 100_000
       CERT_LIMIT = {
+        2 => 10,
         3 => 18,
         4 => 14,
         5 => 11,
         6 => 9,
       }.freeze
       STARTING_CASH = {
+        2 => 0,
         3 => 0,
         4 => 0,
         5 => 0,
@@ -93,6 +95,28 @@ module Engine
         'G&C' => 'Sells plus-train conversion',
       }.freeze
 
+      MINORS_2P = %w[
+        1
+        2
+        3
+        4
+        6
+        7
+        11
+        mine
+      ].freeze
+
+      CORPORATIONS_2P = %w[
+        SIK
+        SKEV
+        LdStEG
+        RABA
+      ].freeze
+
+      def multiplayer?
+        @multiplayer ||= @players.size >= 3
+      end
+
       def location_name(coord)
         @location_names ||= game_location_names
 
@@ -103,10 +127,12 @@ module Engine
         @sik = @corporations.find { |c| c.name == 'SIK' }
         @skev = @corporations.find { |c| c.name == 'SKEV' }
         @ldsteg = @corporations.find { |c| c.name == 'LdStEG' }
-        @mavag = @corporations.find { |c| c.name == 'MAVAG' }
         @raba = @corporations.find { |c| c.name == 'RABA' }
-        @snw = @corporations.find { |c| c.name == 'SNW' }
-        @gc = @corporations.find { |c| c.name == 'G&C' }
+        if multiplayer?
+          @mavag = @corporations.find { |c| c.name == 'MAVAG' }
+          @snw = @corporations.find { |c| c.name == 'SNW' }
+          @gc = @corporations.find { |c| c.name == 'G&C' }
+        end
 
         @terrain_tokens = TERRAIN_TOKENS.dup
 
@@ -120,11 +146,13 @@ module Engine
 
         # Place all mine tokens and mark them as non-blocking
         # route restrictions will be handled elsewhere
-        @mine.coordinates.each do |coord|
-          hex = hex_by_id(coord)
-          hex.tile.cities[0].place_token(@mine, @mine.next_token)
+        if multiplayer?
+          @mine.coordinates.each do |coord|
+            hex = hex_by_id(coord)
+            hex.tile.cities[0].place_token(@mine, @mine.next_token)
+          end
+          @mine.tokens.each { |t| t.type = :neutral }
         end
-        @mine.tokens.each { |t| t.type = :neutral }
 
         # IPO and float all corporations with semi-randomly chosen prices
         # They will start off in receivership with all shares in market
@@ -147,7 +175,7 @@ module Engine
           corp.owner = @share_pool
         end
 
-        @trains_left = %w[3 4 6]
+        @trains_left = multiplayer? ? %w[3 4 6] : %w[3 4]
         @phase_change = false
         @train_bought = false
         @ors_no_train = 0
@@ -162,7 +190,7 @@ module Engine
       end
 
       def init_tile_groups
-        [
+        groups = [
           %w[7],
           %w[8 9],
           %w[3],
@@ -201,12 +229,22 @@ module Engine
           %w[L17],
           %w[L34],
           %w[L35],
+        ]
+        # do it this way to avoid reordering
+        unless multiplayer?
+          groups.delete(%w[236])
+          groups.delete(%w[237 238])
+          groups.delete(%w[L34])
+        end
+        groups_3p = [
           %w[L38],
           %w[455],
           %w[X9],
           %w[L36],
           %w[L37],
         ]
+        groups.concat(groups_3p) if multiplayer?
+        groups
       end
 
       # set opposite correctly for two-sided tiles
@@ -252,7 +290,8 @@ module Engine
       end
 
       def new_auction_round
-        Round::Draft.new(self, [Step::G18Mag::SimpleDraft], rotating_order: true)
+        Round::Draft.new(self, [Step::G18Mag::SimpleDraft], rotating_order: multiplayer?,
+                                                            snake_order: !multiplayer?)
       end
 
       def operating_round(round_num)
@@ -345,10 +384,16 @@ module Engine
         @train_bought = true if train.owner == @depot # No idea if this is what Lonny wants
         cost = price || train.price
         if price != :free && train.owner == @depot
-          corp = %w[2 4].include?(train.name) ? @ldsteg : @mavag
-          operator.spend(cost / 2, @bank)
-          operator.spend(cost / 2, corp)
-          @log << "#{corp.name} earns #{format_currency(cost / 2)}"
+          if multiplayer?
+            corp = %w[2 4].include?(train.name) ? @ldsteg : @mavag
+            operator.spend(cost / 2, @bank)
+            operator.spend(cost / 2, corp)
+            @log << "#{corp.name} earns #{format_currency(cost / 2)}"
+          else
+            operator.spend(3 * cost / 4, @bank)
+            operator.spend(cost / 4, @ldsteg)
+            @log << "#{@ldsteg.name} earns #{format_currency(cost / 4)}"
+          end
         elsif price != :free
           operator.spend(cost, train.owner)
         end
@@ -437,7 +482,11 @@ module Engine
       end
 
       def gc_train?(route)
-        @round.rail_cars.include?('G&C') && route.visited_stops.sum(&:visit_cost) > route.train.distance
+        if multiplayer?
+          @round.rail_cars.include?('G&C') && route.visited_stops.sum(&:visit_cost) > route.train.distance
+        else
+          @round.rail_cars.include?('RABA') && route.visited_stops.sum(&:visit_cost) > route.train.distance
+        end
       end
 
       def other_gc_train?(route)
@@ -462,7 +511,12 @@ module Engine
       end
 
       def raba_train?(route)
-        @round.rail_cars.include?('RABA') && route.visited_stops.any?(&:offboard?)
+        if multiplayer?
+          @round.rail_cars.include?('RABA') && route.visited_stops.any?(&:offboard?)
+        else
+          @round.rail_cars.include?('RABA') && route.visited_stops.any?(&:offboard?) &&
+            route.routes.none? { |r| gc_train?(r) }
+        end
       end
 
       def other_raba_train?(route)
@@ -607,40 +661,60 @@ module Engine
       end
 
       def game_location_names
-        {
-          'B17' => 'Kassa',
-          'B23' => 'Moszkva',
-          'C6' => 'Bécs',
-          'C8' => 'Pozsony',
-          'C12' => 'Selmecbánya',
-          'C16' => 'Miskolc',
-          'D7' => 'Sopron',
-          'D9' => 'Györ',
-          'D19' => 'Szatmárnémeti & Nyíregyháza',
-          'E10' => 'Székesfehérvár',
-          'E12' => 'Buda & Pest',
-          'E14' => 'Szolnok',
-          'E18' => 'Debrecen',
-          'F13' => 'Kecskemét',
-          'F19' => 'Nagyvárad',
-          'F23' => 'Kolozsvár',
-          'G10' => 'Pécs & Mohács',
-          'G14' => 'Szeged & Szabadka',
-          'G16' => 'Arad',
-          'H1' => 'Trieszt',
-          'H5' => 'Zágráb',
-          'H17' => 'Temesvár',
-          'H23' => 'Nagyzeben',
-          'H27' => 'Brassó',
-          'I2' => 'Fiume',
-          'I14' => 'Újvidék & Pétrovárad',
-          'I26' => 'Isztambul',
-          'J15' => 'Belgrád',
-        }
+        if multiplayer?
+          {
+            'B17' => 'Kassa',
+            'B23' => 'Moszkva',
+            'C6' => 'Bécs',
+            'C8' => 'Pozsony',
+            'C12' => 'Selmecbánya',
+            'C16' => 'Miskolc',
+            'D7' => 'Sopron',
+            'D9' => 'Györ',
+            'D19' => 'Szatmárnémeti & Nyíregyháza',
+            'E10' => 'Székesfehérvár',
+            'E12' => 'Buda & Pest',
+            'E14' => 'Szolnok',
+            'E18' => 'Debrecen',
+            'F13' => 'Kecskemét',
+            'F19' => 'Nagyvárad',
+            'F23' => 'Kolozsvár',
+            'G10' => 'Pécs & Mohács',
+            'G14' => 'Szeged & Szabadka',
+            'G16' => 'Arad',
+            'H1' => 'Trieszt',
+            'H5' => 'Zágráb',
+            'H17' => 'Temesvár',
+            'H23' => 'Nagyzeben',
+            'H27' => 'Brassó',
+            'I2' => 'Fiume',
+            'I14' => 'Újvidék & Pétrovárad',
+            'I26' => 'Isztambul',
+            'J15' => 'Belgrád',
+          }
+        else
+          {
+            'A2' => 'Bécs',
+            'A12' => 'Miskolc',
+            'A18' => 'Galicia',
+            'B3' => 'Sopron',
+            'B5' => 'Györ',
+            'B15' => 'Nyíregyháza',
+            'C6' => 'Székesfehérvár',
+            'C8' => 'Buda & Pest',
+            'C10' => 'Szolnok',
+            'C14' => 'Debrecen',
+            'D9' => 'Kecskemét',
+            'E6' => 'Pécs & Mohács',
+            'E10' => 'Szeged',
+            'F3' => 'Trieszt',
+            'F11' => 'Belgrád',
+          }
+        end
       end
 
       def game_tiles
-        {
+        tiles = {
           '6' => 7,
           '7' => 4,
           '8' => 21,
@@ -722,9 +796,6 @@ module Engine
             'code' => 'city=revenue:40;city=revenue:40,loc:4.5;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_1;'\
               'path=a:5,b:_1;label=OO',
           },
-          '236' => 1,
-          '237' => 2,
-          '238' => 2,
           '39' => 2,
           '40' => 2,
           '41' => 2,
@@ -742,15 +813,10 @@ module Engine
           },
           '611' => 8,
           'L17' => {
-            'count' => 3,
+            'count' => multiplayer? ? 3 : 1,
             'color' => 'brown',
             'code' => 'city=revenue:60,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
               'path=a:5,b:_0;label=OO',
-          },
-          'L34' => {
-            'count' => 2,
-            'color' => 'brown',
-            'code' => 'city=revenue:50,slots:2;path=a:0,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=K',
           },
           'L35' => {
             'count' => 1,
@@ -758,18 +824,28 @@ module Engine
             'code' => 'city=revenue:60,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
               'path=a:4,b:_0;path=a:5,b:_0;label=B',
           },
+        }
+        tiles_3p = {
+          '236' => 1,
+          '237' => 2,
+          '238' => 2,
+          'L34' => {
+            'count' => 2,
+            'color' => 'brown',
+            'code' => 'city=revenue:50,slots:2;path=a:0,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=K',
+          },
           'L38' => {
             'count' => 1,
             'color' => 'gray',
             'code' => 'town=revenue:30;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
-              'path=a:5,b:_0',
+            'path=a:5,b:_0',
           },
           '455' => 2,
           'X9' => {
             'count' => 1,
             'color' => 'gray',
             'code' => 'city=revenue:70,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;'\
-              'path=a:5,b:_0;label=OO',
+            'path=a:5,b:_0;label=OO',
           },
           'L36' => {
             'count' => 1,
@@ -780,14 +856,17 @@ module Engine
             'count' => 1,
             'color' => 'gray',
             'code' => 'city=revenue:80,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
-              'path=a:4,b:_0;path=a:5,b:_0;label=B',
+            'path=a:4,b:_0;path=a:5,b:_0;label=B',
           },
         }
+        tiles.merge!(tiles_3p) if multiplayer?
+        tiles
       end
 
       def game_market
-        [
-          %w[
+        if multiplayer?
+          [
+            %w[
             55
             60p
             65p
@@ -817,12 +896,42 @@ module Engine
             360
             380
             400
-          ],
-        ]
+            ],
+          ]
+        else
+          [
+            %w[
+            55
+            60p
+            65p
+            70p
+            75p
+            80p
+            85
+            90
+            95
+            100
+            110
+            120
+            130
+            140
+            152
+            164
+            178
+            192
+            208
+            224
+            242
+            260
+            280
+            300
+            ],
+          ]
+        end
       end
 
       def game_minors
-        [
+        minor_list = [
           {
             sym: '1',
             name: 'Magyar Északi Vasút',
@@ -832,7 +941,7 @@ module Engine
               40,
               80,
             ],
-            coordinates: 'E12',
+            coordinates: multiplayer? ? 'E12' : 'C8',
             city: 1,
             color: 'black',
           },
@@ -845,7 +954,7 @@ module Engine
               40,
               80,
             ],
-            coordinates: 'D19',
+            coordinates: multiplayer? ? 'D19' : 'B15',
             city: 0,
             color: 'black',
           },
@@ -858,7 +967,7 @@ module Engine
               40,
               80,
             ],
-            coordinates: 'E10',
+            coordinates: multiplayer? ? 'E10' : 'C6',
             color: 'black',
           },
           {
@@ -870,8 +979,8 @@ module Engine
               40,
               80,
             ],
-            coordinates: 'G14',
-            city: 1,
+            coordinates: multiplayer? ? 'G14' : 'E10',
+            city: multiplayer? ? 1 : 0,
             color: 'black',
           },
           {
@@ -895,7 +1004,7 @@ module Engine
               40,
               80,
             ],
-            coordinates: 'B17',
+            coordinates: multiplayer? ? 'B17' : 'A12',
             color: 'black',
           },
           {
@@ -907,7 +1016,7 @@ module Engine
               40,
               80,
             ],
-            coordinates: 'G10',
+            coordinates: multiplayer? ? 'G10' : 'E6',
             city: 1,
             color: 'black',
           },
@@ -958,7 +1067,7 @@ module Engine
               40,
               80,
             ],
-            coordinates: 'D7',
+            coordinates: multiplayer? ? 'D7' : 'B3',
             color: 'black',
           },
           {
@@ -1010,10 +1119,12 @@ module Engine
             ],
           },
         ]
+        minor_list.select! { |m| MINORS_2P.include?(m[:sym]) } unless multiplayer?
+        minor_list
       end
 
       def game_corporations
-        [
+        corps = [
           {
             sym: 'RABA',
             name: 'Magyar Waggon-és Gépgyár Rt.',
@@ -1101,10 +1212,12 @@ module Engine
             color: 'purple',
           },
         ]
+        corps.select! { |c| CORPORATIONS_2P.include?(c[:sym]) } unless multiplayer?
+        corps
       end
 
       def game_trains
-        [
+        train_list = [
           {
             name: '2',
             distance: 2,
@@ -1139,10 +1252,12 @@ module Engine
             ],
           },
         ]
+        train_list.reject! { |t| t[:name] == '6' } unless multiplayer?
+        train_list
       end
 
       def game_hexes
-        {
+        hexes_multiplayer = {
           white: {
             [
               'E12',
@@ -1322,53 +1437,181 @@ module Engine
             ] => 'city=revenue:yellow_30|brown_50,visit_cost:0;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0',
           },
         }
+        hexes_2player = {
+          white: {
+            %w[
+              C8
+            ] => 'city=revenue:20,loc:0.5;city=revenue:20,loc:3.5;path=a:0,b:_0;path=a:3,b:_1;label=B',
+            %w[
+              E6
+            ] => 'city=revenue:0;city=revenue:0;label=OO',
+            %w[
+              A12
+              B3
+              B15
+              C6
+              C14
+              D9
+              E10
+            ] => 'city=revenue:0',
+            %w[
+              C10
+            ] => 'city=revenue:0;upgrade=cost:10,terrain:water',
+            %w[
+              B5
+            ] => 'city=revenue:0;upgrade=cost:20,terrain:water',
+            %w[
+              B9
+              C2
+              D13
+              F9
+            ] => 'town=revenue:0',
+            %w[
+              B13
+              E2
+            ] => 'town=revenue:0;upgrade=cost:10,terrain:water',
+            %w[
+              A16
+            ] => 'town=revenue:0;upgrade=cost:20,terrain:water|mountain',
+            %w[
+              A14
+              D11
+              E4
+              F5
+            ] => 'upgrade=cost:10,terrain:water',
+            %w[
+              B7
+              D7
+              E8
+            ] => 'upgrade=cost:20,terrain:water',
+            %w[
+              B17
+            ] => 'upgrade=cost:20,terrain:water|mountain',
+            %w[
+              A10
+            ] => 'upgrade=cost:20,terrain:mountain',
+            %w[
+              F7
+            ] => 'upgrade=cost:30,terrain:water',
+            %w[
+              D5
+            ] => 'partition=a:1,b:4,type:water',
+            %w[
+              B11
+              C4
+              C12
+              D1
+              D3
+              E12
+            ] => '',
+          },
+          red: {
+            %w[
+              A2
+            ] => 'offboard=revenue:yellow_30|green_40|brown_50;path=a:4,b:_0;path=a:5,b:_0',
+            %w[
+              A18
+            ] => 'offboard=revenue:yellow_30|green_40|brown_50;path=a:0,b:_0;path=a:1,b:_0',
+            %w[
+              F3
+            ] => 'offboard=revenue:yellow_20|green_30|brown_40;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
+            %w[
+              F11
+            ] => 'offboard=revenue:yellow_10|green_20|brown_30;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0',
+          },
+          gray: {
+            %w[
+              A4
+            ] => 'town=revenue:10;path=a:1,b:_0;path=a:5,b:_0',
+            %w[
+              a11
+            ] => 'town=revenue:10;path=a:0,b:_0;path=a:5,b:_0',
+          },
+        }
+        multiplayer? ? hexes_multiplayer : hexes_2player
       end
 
       def game_phases
-        [
-          {
-            name: 'Yellow',
-            train_limit: 2,
-            tiles: [
-              'yellow',
-            ],
-            operating_rounds: 1,
-          },
-          {
-            name: 'Green',
-            on: %w[3 4 6],
-            train_limit: 2,
-            tiles: %i[
-              yellow
-              green
-            ],
-            operating_rounds: 2,
-          },
-          {
-            name: 'Brown',
-            train_limit: 2,
-            tiles: %i[
-              yellow
-              green
-              brown
-            ],
-            operating_rounds: 2,
-          },
-          {
-            name: 'Gray',
-            train_limit: 2,
-            tiles: %i[
-              yellow
-              green
-              brown
-              gray
-            ],
-            operating_rounds: 3,
-            status: [
-              'end_game_triggered',
-            ],
-          },
-        ]
+        if multiplayer?
+          [
+            {
+              name: 'Yellow',
+              train_limit: 2,
+              tiles: [
+                'yellow',
+              ],
+              operating_rounds: 1,
+            },
+            {
+              name: 'Green',
+              on: %w[3 4 6],
+              train_limit: 2,
+              tiles: %i[
+                yellow
+                green
+              ],
+              operating_rounds: 2,
+            },
+            {
+              name: 'Brown',
+              train_limit: 2,
+              tiles: %i[
+                yellow
+                green
+                brown
+              ],
+              operating_rounds: 2,
+            },
+            {
+              name: 'Gray',
+              train_limit: 2,
+              tiles: %i[
+                yellow
+                green
+                brown
+                gray
+              ],
+              operating_rounds: 3,
+              status: [
+                'end_game_triggered',
+              ],
+            },
+          ]
+        else
+          [
+            {
+              name: 'Yellow',
+              train_limit: 2,
+              tiles: [
+                'yellow',
+              ],
+              operating_rounds: 1,
+            },
+            {
+              name: 'Green',
+              on: %w[3 4 6],
+              train_limit: 2,
+              tiles: %i[
+                yellow
+                green
+              ],
+              operating_rounds: 2,
+            },
+            {
+              name: 'Brown',
+              train_limit: 2,
+              tiles: %i[
+                yellow
+                green
+                brown
+              ],
+              operating_rounds: 3,
+              status: [
+                'end_game_triggered',
+              ],
+            },
+          ]
+        end
       end
     end
   end

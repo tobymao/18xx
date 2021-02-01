@@ -8,6 +8,7 @@ module Engine
       class SimpleDraft < Base
         ACTIONS = %w[bid].freeze
         MAX_NUM_MINORS = {
+          2 => 3,
           3 => 4,
           4 => 3,
           5 => 2,
@@ -15,6 +16,7 @@ module Engine
         }.freeze
 
         MAX_NUM_SHARES = {
+          2 => 1,
           3 => 2,
           4 => 1,
           5 => 2,
@@ -22,6 +24,7 @@ module Engine
         }.freeze
 
         LEFTOVER_NUM_MINORS = {
+          2 => 1,
           3 => 1,
           4 => 1,
           5 => 3,
@@ -29,6 +32,7 @@ module Engine
         }.freeze
 
         LEFTOVER_NUM_SHARES = {
+          2 => 2,
           3 => 1,
           4 => 3,
           5 => 4,
