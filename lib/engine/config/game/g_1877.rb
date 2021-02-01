@@ -513,7 +513,7 @@ module Engine
       {
          "name":"4",
          "distance":4,
-         "price":400,
+         "price":300,
          "num":40,
          "events": [
            {"type": "signal_end_game"}
