@@ -205,9 +205,13 @@ module Engine
         @sc_company = nil
       end
 
+      def count_available_tokens(corporation)
+        corporation.tokens.map { |t| t.used || t.corporation != corporation ? 0 : 1 }.sum
+      end
+
       def token_string(corporation)
         # All neutral tokens belong to CN, so it will count them normally.
-        "#{corporation.tokens.map { |t| t.used || t.corporation != corporation ? 0 : 1 }.sum}"\
+        "#{count_available_tokens(corporation)}"\
         "/#{corporation.tokens.map { |t| t.corporation != corporation ? 0 : 1 }.sum}"\
         "#{', N' if corporation.tokens.any? { |t| t.corporation != corporation }}"
       end
