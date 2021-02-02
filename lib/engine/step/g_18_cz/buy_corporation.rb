@@ -57,7 +57,6 @@ module Engine
 
           @log << "#{entity.name} buys #{corporation.name}
           for #{@game.format_currency(price)} per share receiving #{receiving.join(', ')}"
-          # TODO: make trains upgradable
 
           corporation.close!
         end
@@ -87,6 +86,12 @@ module Engine
           transferred = @game.transfer(:companies, source, destination)
 
           @game.log << "#{destination.name} takes #{transferred.map(&:name).join(', ')} from #{source.name}"
+        end
+
+        def price_range(_corporation, corporation_to_boy)
+          max_price = (corporation_to_boy.share_price.price * 1.5).ceil
+          min_price = (corporation_to_boy.share_price.price * 0.5).ceil
+          [min_price, max_price]
         end
       end
     end

@@ -18,7 +18,7 @@ module View
         hidden_corps = false
         @show_other_players = true if @step.show_other_players
         @game.corporations.select { |item| @step.can_buy?(@corporation, item) }.each do |target|
-          if @show_other_players || target.owner == @corporation.owner || !target.owner
+          if @show_other_players || target.owner == @corporation.owner
             children << h(Corporation, corporation: target, selected_corporation: @selected_corporation)
             children << render_input if target == @selected_corporation
           else
@@ -40,8 +40,7 @@ module View
       end
 
       def render_input
-        max_price = (@selected_corporation.share_price.price * 1.5).ceil
-        min_price = (@selected_corporation.share_price.price * 0.5).ceil
+        min_price, max_price = @step.price_range(@corporation, @selected_corporation)
         input = h(:input, style: { marginRight: '1rem' }, props: {
                     value: @selected_corporation.share_price.price,
                     type: 'number',
