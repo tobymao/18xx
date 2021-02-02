@@ -21,6 +21,19 @@ module Engine
           ' Choose which tokens to remove.'\
           ' After merging an additional token will be available on the charter.'
         end
+
+        def available_hex(entity, hex)
+          return false unless entity == surviving
+
+          # 1867 only has the surviving corp, so see if tokens are used
+          surviving_tokens = entity.tokens.select { |t| t.used && t.city.hex == hex }
+          # Force user to clear up the NY tile first, then choose the others
+          if surviving_tokens.size > 1
+            [hex]
+          else
+            super
+          end
+        end
       end
     end
   end

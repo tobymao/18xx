@@ -175,6 +175,7 @@ module Engine
               @game.share_pool.buy_shares(owner, share.to_bundle, exchange: :free)
             end
 
+            remove_duplicate_tokens(target, @merging)
             move_tokens(corporation, target)
 
             receiving = move_assets(corporation, target)
@@ -183,7 +184,6 @@ module Engine
             @round.entities.delete(corporation)
           end
 
-          remove_duplicate_tokens(target, @merging)
           if tokens_above_limits?(target, @merging)
             @game.log << "#{target.name} will be above token limit and must decide which tokens to remove"
             @round.corporations_removing_tokens = [target] + @merging
