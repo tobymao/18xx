@@ -24,7 +24,7 @@ module Engine
           pass! unless can_buy_train?(action.entity)
 
           # Special case when we are in phase 1, and first 2 train is bought or upgraded
-          return unless @game.phase.name.to_i == 1 && action.train.name == '2'
+          return if @game.phase.name.to_i > 1 || action.train.name != '2'
 
           # Clone the train that is bought, the phase change logic checks the train.sym. This is still the
           # base train's sym and not the variant's sym. Cant change in buying_train! since other games relay on

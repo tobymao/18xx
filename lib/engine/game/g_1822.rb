@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require_relative '../config/game/g_1822'
-require_relative '../g_1822/depot'
 require_relative 'base'
 require_relative 'stubs_are_restricted'
 
@@ -51,6 +50,8 @@ module Engine
 
       BIDDING_TOKENS_PER_ACTION = 3
 
+      UPGRADE_COST_L_TO_2 = 80
+
       include StubsAreRestricted
 
       attr_accessor :bidding_token_per_player
@@ -71,6 +72,15 @@ module Engine
         local_token_hex.group_by(&:itself).each do |k, v|
           raise GameError, "Local train can only use the token on #{k[0]} once." if v.size > 1
         end
+      end
+
+      def discountable_trains_for(corporation)
+        discount_info = super
+
+        corporation.trains.select { |t| t.name == 'L' }.each do |train|
+          discount_info << [train, train, '2', UPGRADE_COST_L_TO_2]
+        end
+        discount_info
       end
 
       def entity_can_use_company?(_entity, company)
@@ -96,17 +106,6 @@ module Engine
 
       def init_round
         stock_round
-      end
-
-      # This is need to handle the upgrade from L -> 2 train.
-      def init_train_handler
-        trains = self.class::TRAINS.flat_map do |train|
-          (train[:num] || num_trains(train)).times.map do |index|
-            Train.new(**train, index: index)
-          end
-        end
-
-        Engine::G1822::Depot.new(trains, self)
       end
 
       # TODO: Make include with 1861, 1867

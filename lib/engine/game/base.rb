@@ -1519,6 +1519,10 @@ module Engine
         end
       end
 
+      def discountable_trains_for(_corporation)
+        []
+      end
+
       def remove_train(train)
         return unless (owner = train.owner)
         return @depot.remove_train(train) if train.from_depot?
