@@ -21,7 +21,6 @@ module View
     BUTTON_STYLE = {
       margin: '0',
       padding: '0.2rem 0',
-      textAlign: 'center',
       width: '3.5rem',
     }.freeze
 
