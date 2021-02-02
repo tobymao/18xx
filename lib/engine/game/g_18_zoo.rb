@@ -548,7 +548,7 @@ module Engine
 
       def purchasable_companies(entity = nil)
         entity ||= @round.current_operator
-        return [] unless entity && (entity.corporation? || entity.player?)
+        return [] if !entity || !(entity.corporation? || entity.player?)
 
         if entity.player?
           # player can buy no more than 3 companies

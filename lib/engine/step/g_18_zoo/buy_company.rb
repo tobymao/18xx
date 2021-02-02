@@ -36,7 +36,7 @@ module Engine
         end
 
         def pay(entity, owner, price, company)
-          entity.spend(price, owner.nil? ? @game.bank : owner) if price.positive?
+          entity.spend(price, owner || @game.bank) if price.positive?
           @game.company_bought(company, entity)
 
           @log << "#{owner&.name} earns #{@game.format_currency(price)}"

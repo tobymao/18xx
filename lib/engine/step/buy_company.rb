@@ -101,7 +101,7 @@ module Engine
       end
 
       def pay(entity, owner, price, company)
-        entity.spend(price, owner.nil? ? @game.bank : owner)
+        entity.spend(price, owner || @game.bank)
 
         @game.company_bought(company, entity)
 
