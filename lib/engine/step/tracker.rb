@@ -131,21 +131,8 @@ module Engine
 
         pay_tile_cost!(entity, tile, rotation, hex, spender, cost, extra_cost)
 
-        cities = tile.cities
-        if old_tile.paths.empty? &&
-            !tile.paths.empty? &&
-            cities.size > 1 &&
-            cities.flat_map(&:tokens).any?
-          token = cities.flat_map(&:tokens).find(&:itself)
-          @round.pending_tokens << {
-            entity: entity,
-            hexes: [action.hex],
-            token: token,
-          }
-          @log << "#{entity.name} must choose city for token"
+        update_token!(action, entity, tile, old_tile)
 
-          token.remove!
-        end
         return if terrain.empty?
 
         @game.all_companies_with_ability(:tile_income) do |company, ability|
@@ -176,6 +163,24 @@ module Engine
           " lays tile ##{tile.name}"\
           " with rotation #{rotation} on #{hex.name}"\
           "#{tile.location_name.to_s.empty? ? '' : " (#{tile.location_name})"}"
+      end
+
+      def update_token!(action, entity, tile, old_tile)
+        cities = tile.cities
+        if old_tile.paths.empty? &&
+            !tile.paths.empty? &&
+            cities.size > 1 &&
+            cities.flat_map(&:tokens).any?
+          token = cities.flat_map(&:tokens).find(&:itself)
+          @round.pending_tokens << {
+            entity: entity,
+            hexes: [action.hex],
+            token: token,
+          }
+          @log << "#{entity.name} must choose city for token"
+
+          token.remove!
+        end
       end
 
       def border_cost(tile, entity)

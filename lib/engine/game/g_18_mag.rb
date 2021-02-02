@@ -303,8 +303,6 @@ module Engine
 
       def operating_round(round_num)
         Round::Operating.new(self, [
-          Step::Exchange,
-          Step::HomeToken,
           Step::G18Mag::Track,
           Step::G18Mag::Token,
           Step::G18Mag::DiscardTrain,
