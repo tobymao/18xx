@@ -133,7 +133,7 @@ module Engine
           # So set them as closed and removed so that they do not appear
           # Affected: Coal Railway C4 (SPB), Regional Railway BH and SB, and possibly UG
           corporations.each do |c|
-            if (%w[SB BH].include?(c.name) || (two_player? && c.name == 'UG'))
+            if %w[SB BH].include?(c.name) || (two_player? && c.name == 'UG')
               c.close!
               c.removed = true
             end
