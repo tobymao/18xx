@@ -24,6 +24,11 @@ module Engine
 
           buy_cheapest(entity) while must_buy_train?(entity) || entity.cash > @depot.min_depot_train.price
         end
+
+        def buyable_trains(entity)
+          trains = super
+          trains.reject { |t| t.owner.corporation? && t.owner.type == :national }
+        end
       end
     end
   end
