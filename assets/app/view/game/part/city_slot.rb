@@ -49,7 +49,8 @@ module View
           children = []
           color = 'white'
           radius = @radius
-          if (owner = @token&.corporation&.owner) && Lib::Storage['show_player_colors']
+          if (owner = @token&.corporation&.owner) && Lib::Storage['show_player_colors'] &&
+              @game.players.include?(owner)
             color = player_colors(@game.players)[owner]
             radius -= 4
           end
