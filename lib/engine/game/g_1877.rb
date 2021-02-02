@@ -6,7 +6,6 @@ require_relative 'g_1817'
 module Engine
   module Game
     class G1877 < G1817
-
       load_from_json(Config::Game::G1877::JSON)
 
       GAME_DESIGNER = 'Scott Petersen & Toby Mao'

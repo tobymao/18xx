@@ -125,7 +125,7 @@ module Engine
       {
          "float_percent":20,
          "sym":"BPC",
-         "name":"Ferroviario Barquisimento y Puerto Caballo",
+         "name":"Ferroviario de Barquisimento y Puerto Caballo",
          "logo":"1877/BPC",
          "shares":[
             40,
@@ -143,7 +143,7 @@ module Engine
       {
          "float_percent":20,
          "sym":"BSC",
-         "name":"Ferroviario Barinas y San Cristobál",
+         "name":"Ferroviario de Barinas y San Cristobál",
          "logo":"1877/BSC",
          "shares":[
             40,
@@ -199,7 +199,7 @@ module Engine
       {
          "float_percent":20,
          "sym":"E&M",
-         "name":"Ferroviario Encontrados y Machiques",
+         "name":"Ferroviario de Encontrados y Machiques",
          "logo":"1877/EM",
          "shares":[
             40,
@@ -217,7 +217,7 @@ module Engine
       {
          "float_percent":20,
          "sym":"FCC",
-         "name":"Ferroviario Caracas y Cúa",
+         "name":"Ferroviario de Caracas y Cúa",
          "logo":"1877/FCC",
          "shares":[
             40,
@@ -235,7 +235,7 @@ module Engine
       {
          "float_percent":20,
          "sym":"LESJ",
-         "name":"Ferroviario La Encrucijada y San Juan de Los Morros",
+         "name":"Ferroviario de La Encrucijada y San Juan de Los Morros",
          "logo":"1877/LESJ",
          "shares":[
             40,
@@ -254,7 +254,7 @@ module Engine
       {
          "float_percent":20,
          "sym":"M&M",
-         "name":"Ferroviario Machiques y Maracaibo",
+         "name":"Ferroviario de Machiques y Maracaibo",
          "logo":"1877/MM",
          "shares":[
             40,
@@ -272,7 +272,7 @@ module Engine
       {
          "float_percent":20,
          "sym":"PCB",
-         "name":"Ferroviario Puerto Cabello y Barquisimeto",
+         "name":"Ferroviario de Puerto Cabello y Barquisimeto",
          "logo":"1877/PCB",
          "shares":[
             40,
@@ -290,7 +290,7 @@ module Engine
       {
          "float_percent":20,
          "sym":"Sans",
-         "name":"Ferroviario San Juan de Los Morros y San Fernando de Apure",
+         "name":"Ferroviario de San Juan de Los Morros y San Fernando de Apure",
          "logo":"1877/SANS",
          "shares":[
             40,
@@ -309,7 +309,7 @@ module Engine
       {
          "float_percent":20,
          "sym":"SMB",
-         "name":"Ferroviario Sabana de Mendoza y Barquisimeto",
+         "name":"Ferroviario de Sabana de Mendoza y Barquisimeto",
          "logo":"1877/SMB",
          "shares":[
             40,
