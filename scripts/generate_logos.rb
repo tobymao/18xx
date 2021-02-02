@@ -28,7 +28,7 @@ def generate_logos(game_title, simple=false)
       puts "File #{filename} already exists"
     else
       svg = <<-SVG
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="#{corp.color}"/><text x="4" y="5" text-anchor="middle" font-weight="700" font-size="3" font-family="Lato" fill="#{corp.text_color}">#{corp.id.gsub('&', '&amp;')}</text></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="#{corp.color}"/><text x="4" y="5" text-anchor="middle" font-weight="700" font-size="3" font-family="Arial" fill="#{corp.text_color}">#{corp.id.gsub('&', '&amp;')}</text></svg>
       SVG
       File.write(filename, svg)
       puts "Generated #{filename}"
