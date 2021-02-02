@@ -51,7 +51,7 @@ module Engine
       "J1":"Trinidad & Tobago",
       "G4":"Zaraza"
    },
-  "tiles":{
+   "tiles":{
       "5":"unlimited",
       "7":"unlimited",
       "8":"unlimited",
@@ -124,50 +124,124 @@ module Engine
    "corporations":[
       {
          "float_percent":20,
-         "sym":"A&S",
-         "name":"Alton & Southern Railway",
-         "logo":"1817/AS",
+         "sym":"BPC",
+         "name":"Ferroviario Barquisimento y Puerto Caballo",
+         "logo":"1877/BPC",
          "shares":[
-           40,
-           20,
-           20,
-           20
+            40,
+            20,
+            20,
+            20
          ],
          "max_ownership_percent":60,
          "tokens":[
             0
          ],
          "always_market_price":true,
-         "color":"pink"
+         "color":"dodgerblue"
       },
       {
          "float_percent":20,
-         "sym":"A&A",
-         "name":"Arcade and Attica",
-         "logo":"1817/AA",
+         "sym":"BSC",
+         "name":"Ferroviario Barinas y San Cristobál",
+         "logo":"1877/BSC",
          "shares":[
-             40,
-             20,
-             20,
-             20
+            40,
+            20,
+            20,
+            20
          ],
          "max_ownership_percent":60,
          "tokens":[
             0
          ],
          "always_market_price":true,
-         "color":"gold"
+         "text_color":"black",
+         "color":"lightgreen"
       },
       {
          "float_percent":20,
-         "sym":"Belt",
-         "name":"Belt Railway of Chicago",
-         "logo":"1817/Belt",
+         "sym":"Cap",
+         "name":"Capital Line",
+         "logo":"1877/CAP",
          "shares":[
-             40,
-             20,
-             20,
-             20
+            40,
+            20,
+            20,
+            20
+         ],
+         "max_ownership_percent":60,
+         "tokens":[
+            0
+         ],
+         "always_market_price":true,
+         "text_color":"black",
+         "color":"#FFD700"
+      },
+      {
+         "float_percent":20,
+         "sym":"CLG",
+         "name":"Ferroviario de Caracas y La Guaira",
+         "logo":"1877/CLG",
+         "shares":[
+            40,
+            20,
+            20,
+            20
+         ],
+         "max_ownership_percent":60,
+         "tokens":[
+            0
+         ],
+         "always_market_price":true,
+         "color":"deeppink"
+      },
+      {
+         "float_percent":20,
+         "sym":"E&M",
+         "name":"Ferroviario Encontrados y Machiques",
+         "logo":"1877/EM",
+         "shares":[
+            40,
+            20,
+            20,
+            20
+         ],
+         "max_ownership_percent":60,
+         "tokens":[
+            0
+         ],
+         "always_market_price":true,
+         "color":"darkmagenta"
+      },
+      {
+         "float_percent":20,
+         "sym":"FCC",
+         "name":"Ferroviario Caracas y Cúa",
+         "logo":"1877/FCC",
+         "shares":[
+            40,
+            20,
+            20,
+            20
+         ],
+         "max_ownership_percent":60,
+         "tokens":[
+            0
+         ],
+         "always_market_price":true,
+         "color":"red"
+      },
+      {
+         "float_percent":20,
+         "sym":"LESJ",
+         "name":"Ferroviario La Encrucijada y San Juan de Los Morros",
+         "logo":"1877/LESJ",
+         "shares":[
+            40,
+            20,
+            20,
+            20
          ],
          "max_ownership_percent":60,
          "tokens":[
@@ -179,14 +253,88 @@ module Engine
       },
       {
          "float_percent":20,
-         "sym":"Bess",
-         "name":"Bessemer and Lake Erie Railroad",
-         "logo":"1817/Bess",
+         "sym":"M&M",
+         "name":"Ferroviario Machiques y Maracaibo",
+         "logo":"1877/MM",
          "shares":[
-             40,
-             20,
-             20,
-             20
+            40,
+            20,
+            20,
+            20
+         ],
+         "max_ownership_percent":60,
+         "tokens":[
+            0
+         ],
+         "always_market_price":true,
+         "color":"saddlebrown"
+      },
+      {
+         "float_percent":20,
+         "sym":"PCB",
+         "name":"Ferroviario Puerto Cabello y Barquisimeto",
+         "logo":"1877/PCB",
+         "shares":[
+            40,
+            20,
+            20,
+            20
+         ],
+         "max_ownership_percent":60,
+         "tokens":[
+            0
+         ],
+         "always_market_price":true,
+         "color":"darkgreen"
+      },
+      {
+         "float_percent":20,
+         "sym":"Sans",
+         "name":"Ferroviario San Juan de Los Morros y San Fernando de Apure",
+         "logo":"1877/SANS",
+         "shares":[
+            40,
+            20,
+            20,
+            20
+         ],
+         "max_ownership_percent":60,
+         "tokens":[
+            0
+         ],
+         "always_market_price":true,
+         "text_color":"black",
+         "color":"aqua"
+      },
+      {
+         "float_percent":20,
+         "sym":"SMB",
+         "name":"Ferroviario Sabana de Mendoza y Barquisimeto",
+         "logo":"1877/SMB",
+         "shares":[
+            40,
+            20,
+            20,
+            20
+         ],
+         "max_ownership_percent":60,
+         "tokens":[
+            0
+         ],
+         "always_market_price":true,
+         "color":"silver",
+         "text_color":"black"
+      },
+      {
+         "float_percent":20,
+         "sym":"TCM",
+         "name":"Tucucas Copper Mining Railway",
+         "logo":"1877/TCM",
+         "shares":[
+            40,
+            20,
+            20,
+            20
          ],
          "max_ownership_percent":60,
          "tokens":[
@@ -194,299 +342,6 @@ module Engine
          ],
          "always_market_price":true,
          "color":"black"
-      },
-      {
-         "float_percent":20,
-         "sym":"B&A",
-         "name":"Boston and Albany Railroad",
-         "logo":"1817/BA",
-         "shares":[
-             40,
-             20,
-             20,
-             20
-         ],
-         "max_ownership_percent":60,
-         "tokens":[
-            0
-         ],
-         "always_market_price":true,
-         "color":"red"
-      },
-      {
-         "float_percent":20,
-         "sym":"DL&W",
-         "name":"Delaware, Lackawanna and Western Railroad",
-         "logo":"1817/DLW",
-         "shares":[
-             40,
-             20,
-             20,
-             20
-         ],
-         "max_ownership_percent":60,
-         "tokens":[
-            0
-         ],
-         "always_market_price":true,
-         "color":"brown"
-      },
-      {
-         "float_percent":20,
-         "sym":"J",
-         "name":"Elgin, Joliet and Eastern Railway",
-         "logo":"1817/J",
-         "shares":[
-             40,
-             20,
-             20,
-             20
-         ],
-         "max_ownership_percent":60,
-         "tokens":[
-            0
-         ],
-         "always_market_price":true,
-         "text_color":"black",
-         "color":"green"
-      },
-      {
-         "float_percent":20,
-         "sym":"GT",
-         "name":"Grand Trunk Western Railroad",
-         "logo":"1817/GT",
-         "shares":[
-             40,
-             20,
-             20,
-             20
-         ],
-         "max_ownership_percent":60,
-         "tokens":[
-            0
-         ],
-         "always_market_price":true,
-         "color":"violet"
-      },
-      {
-         "float_percent":20,
-         "sym":"H",
-         "name":"Housatonic Railroad",
-         "logo":"1817/H",
-         "shares":[
-             40,
-             20,
-             20,
-             20
-         ],
-         "max_ownership_percent":60,
-         "tokens":[
-            0
-         ],
-         "always_market_price":true,
-         "text_color":"black",
-         "color":"lightBlue"
-      },
-      {
-         "float_percent":20,
-         "sym":"ME",
-         "name":"Morristown and Erie Railway",
-         "logo":"1817/ME",
-         "shares":[
-             40,
-             20,
-             20,
-             20
-         ],
-         "max_ownership_percent":60,
-         "tokens":[
-            0
-         ],
-         "always_market_price":true,
-         "color":"yellow",
-         "text_color":"black"
-      },
-      {
-         "float_percent":20,
-         "sym":"NYOW",
-         "name":"New York, Ontario and Western Railway",
-         "logo":"1817/W",
-         "shares":[
-             40,
-             20,
-             20,
-             20
-         ],
-         "max_ownership_percent":60,
-         "tokens":[
-            0
-         ],
-         "always_market_price":true,
-         "color":"turquoise"
-      },
-      {
-         "float_percent":20,
-         "sym":"NYSW",
-         "name":"New York, Susquehanna and Western Railway",
-         "logo":"1817/S",
-         "shares":[
-             40,
-             20,
-             20,
-             20
-         ],
-         "max_ownership_percent":60,
-         "tokens":[
-            0
-         ],
-         "always_market_price":true,
-         "color":"white",
-         "text_color":"black"
-      },
-      {
-         "float_percent":20,
-         "sym":"PSNR",
-         "name":"Pittsburgh, Shawmut and Northern Railroad",
-         "logo":"1817/PSNR",
-         "shares":[
-             40,
-             20,
-             20,
-             20
-         ],
-         "max_ownership_percent":60,
-         "tokens":[
-            0
-         ],
-         "always_market_price":true,
-         "color":"brightGreen"
-      },
-      {
-         "float_percent":20,
-         "sym":"PLE",
-         "name":"Pittsburgh and Lake Erie Railroad",
-         "logo":"1817/PLE",
-         "shares":[
-             40,
-             20,
-             20,
-             20
-         ],
-         "max_ownership_percent":60,
-         "tokens":[
-            0
-         ],
-         "always_market_price":true,
-         "color":"lime"
-      },
-      {
-         "float_percent":20,
-         "sym":"PW",
-         "name":"Providence and Worcester Railroad",
-         "logo":"1817/PW",
-         "shares":[
-             40,
-             20,
-             20,
-             20
-         ],
-         "max_ownership_percent":60,
-         "tokens":[
-            0
-         ],
-         "always_market_price":true,
-         "text_color":"black",
-         "color":"lightBrown"
-      },
-      {
-         "float_percent":20,
-         "sym":"R",
-         "name":"Rutland Railroad",
-         "logo":"1817/R",
-         "shares":[
-             40,
-             20,
-             20,
-             20
-         ],
-         "max_ownership_percent":60,
-         "tokens":[
-            0
-         ],
-         "always_market_price":true,
-         "color":"blue"
-      },
-      {
-         "float_percent":20,
-         "sym":"SR",
-         "name":"Strasburg Railroad",
-         "logo":"1817/SR",
-         "shares":[
-             40,
-             20,
-             20,
-             20
-         ],
-         "max_ownership_percent":60,
-         "tokens":[
-            0
-         ],
-         "always_market_price":true,
-         "color":"natural"
-      },
-      {
-         "float_percent":20,
-         "sym":"UR",
-         "name":"Union Railroad",
-         "logo":"1817/UR",
-         "shares":[
-             40,
-             20,
-             20,
-             20
-         ],
-         "max_ownership_percent":60,
-         "tokens":[
-            0
-         ],
-         "always_market_price":true,
-         "color":"navy"
-      },
-      {
-         "float_percent":20,
-         "sym":"WT",
-         "name":"Warren & Trumbull Railroad",
-         "logo":"1817/WT",
-         "shares":[
-             40,
-             20,
-             20,
-             20
-         ],
-         "max_ownership_percent":60,
-         "tokens":[
-            0
-         ],
-         "always_market_price":true,
-         "color":"lavender"
-      },
-      {
-         "float_percent":20,
-         "sym":"WC",
-         "name":"West Chester Railroad",
-         "logo":"1817/WC",
-         "shares":[
-             40,
-             20,
-             20,
-             20
-         ],
-         "max_ownership_percent":60,
-         "tokens":[
-            0
-         ],
-         "always_market_price":true,
-         "color":"gray"
       }
    ],
    "trains":[
@@ -515,8 +370,10 @@ module Engine
          "distance":4,
          "price":300,
          "num":40,
-         "events": [
-           {"type": "signal_end_game"}
+         "events":[
+            {
+               "type":"signal_end_game"
+            }
          ]
       }
    ],
