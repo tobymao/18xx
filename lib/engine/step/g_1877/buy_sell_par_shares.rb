@@ -91,8 +91,7 @@ module Engine
 
           unpass!
           winner.unpass!
-          @current_actions.clear
-          @corporate_action = nil
+          setup
           @round.pass_order.delete(winner)
           @round.goto_entity!(winner)
         end
