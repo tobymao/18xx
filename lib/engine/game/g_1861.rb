@@ -19,7 +19,7 @@ module Engine
 
       # This is Kh in 1861
       HEX_WITH_O_LABEL = %w[G15].freeze
-      HEX_UPGRADES_FOR_O = %w[201 202 207 208 622 623 801 640].freeze
+      HEX_UPGRADES_FOR_O = %w[201 202 207 208 621 622 623 801 640].freeze
       BONUS_CAPITALS = %w[H8].freeze
       BONUS_REVENUE = 'Q3'
       NATIONAL_RESERVATIONS = %w[E1 H8].freeze
@@ -86,7 +86,10 @@ module Engine
 
         trains = transfer(:trains, corporation, @national).map(&:name)
         receiving << "trains (#{trains})" unless trains.empty?
-        @log << "#{@national.id} received #{receiving} from #{corporation.id}" unless receiving.empty?
+        receiving << 'and' unless receiving.empty?
+        receiving << format_currency(corporation.cash).to_s
+        corporation.spend(corporation.cash, @national) if corporation.cash.positive?
+        @log << "#{@national.id} received #{receiving} from #{corporation.id}"
       end
 
       def maximum_loans(entity)

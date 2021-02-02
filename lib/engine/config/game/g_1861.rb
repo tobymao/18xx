@@ -302,7 +302,7 @@ module Engine
         {
         "type": "blocks_hexes",
         "hexes": [
-          "E3", "H6", "I9", "J10"
+          "E3", "H6", "I5", "I9", "J10"
         ]
       }]
     },

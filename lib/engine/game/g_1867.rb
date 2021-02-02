@@ -139,6 +139,7 @@ module Engine
         # Number of loans interest is due on is set before taking loans in that OR
         @interest.clear
         @corporations.each { |c| calculate_corporation_interest(c) }
+        calculate_corporation_interest(@national)
       end
 
       def interest_owed_for_loans(loans)
