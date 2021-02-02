@@ -57,16 +57,12 @@ module View
         ]),
         render_tile_colors,
         render_route_colors,
-        h('div#settings__buttons', [
+        h('div#settings__buttons', { style: { marginTop: '1rem' } }, [
           render_button('Save Changes') { submit },
           render_button('Reset to Defaults') { reset_settings },
-        ]),
-        h('div#settings__logout', { style: { margin: '0.5rem 0' } }, [
-          render_button('Logout') { logout },
-        ]),
-        h(:div, [
-          render_button('Delete Account and All Data', style: { marginTop: '0' }) { delete },
-          render_input('Type DELETE to confirm', id: :confirm, type: :confirm),
+          render_button('Logout', { style: { display: 'block', margin: '1rem 0' } }) { logout },
+          render_button('Delete Account and All Data', { style: { margin: '0 0.5rem 0 0' } }) { delete },
+          render_input('Type DELETE to confirm', id: :confirm, type: :confirm, input_style: { width: '5rem' }),
         ]),
       ]
 
