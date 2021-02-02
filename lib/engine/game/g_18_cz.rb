@@ -24,6 +24,7 @@ module Engine
 
       SELL_BUY_ORDER = :sell_buy
       SELL_MOVEMENT = :left_block
+      MARKET_SHARE_LIMIT = 1000 # notionally unlimited shares in market
 
       MUST_BUY_TRAIN = :always
 
