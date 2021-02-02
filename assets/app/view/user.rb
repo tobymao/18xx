@@ -153,7 +153,7 @@ module View
     def render_notifications(checked = true)
       h('div#settings__notifications', [
         render_input(
-          'Turn and Message Notifications',
+          'Turn and Message Emails',
           id: :notifications,
           type: :checkbox,
           attrs: { checked: checked },
