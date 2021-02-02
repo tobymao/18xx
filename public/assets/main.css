@@ -174,7 +174,7 @@ nav#game_menu {
   height: 1.8rem;
   width: 2.7rem;
 }
-#settings__colors label, #settings__simple_logos label  {
+#settings__colors label, #settings__simple_logos label, #settings__notifications label  {
     display: inline-block;
     width: 11.5rem;
 }
