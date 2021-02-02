@@ -1598,7 +1598,7 @@ module Engine
             },
             {
               name: 'Green',
-              on: %w[3 4 6],
+              on: %w[3 4],
               train_limit: 2,
               tiles: %i[
                 yellow
