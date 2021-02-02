@@ -23,8 +23,8 @@ module Engine
         end
 
         def pass!
-          @game.nationalize!(current_entity) if current_entity.trains.none?
           super
+          @game.nationalize!(current_entity) if current_entity.trains.empty?
         end
 
         def discountable_trains_allowed?(_entity)
