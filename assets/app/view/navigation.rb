@@ -96,7 +96,7 @@ module View
                     [
                       games_link('New', 'Your New Games', 'personal', 'new'),
                       games_link('Finished', 'Your Finished Games', 'personal', 'finished'),
-                      games_link('Hotseat', 'Your Hotseat Games', 'hs', '',
+                      games_link('Hotseat', 'Your Hotseat Games', 'hs', 'all',
                                  { style: { borderBottom: '1px solid' } }),
                     ]
                   else
@@ -105,7 +105,7 @@ module View
       sub_links << games_link("#{'All ' if @user}Active", "#{"Others' " if @user}Active Games", 'all', 'active')
       sub_links << games_link('All New', "Others' New Games", 'all', 'new') if @user
       sub_links << games_link("#{'All ' if @user}Finished", "#{"Others' " if @user}Finished Games", 'all', 'finished')
-      sub_links << games_link('Hotseat', 'Your Hotseat Games', 'hs') unless @user
+      sub_links << games_link('Hotseat', 'Your Hotseat Games', 'hs', 'all') unless @user
       games_submenu = h('ul.submenu', submenu_props, sub_links)
       links = if @user
                 [games_link('Your Games', 'Your Active Games', 'personal', 'active'),
@@ -125,8 +125,7 @@ module View
     end
 
     def games_link(label, title, type, status, attrs = {})
-      params = "?games=#{type}"
-      params += "&status=#{status}" if status
+      params = "?games=#{type}&status=#{status}"
 
       a_props = {
         attrs: {

@@ -27,7 +27,7 @@ module View
     def render_header(header)
       p = Lib::Params['p']&.to_i || 0
       @search_string = Lib::Params['s']
-      params = "games=#{@type}#{@type != :hs ? "&status=#{@status}" : ''}"
+      params = "games=#{@type}&status=#{@status}"
       params += "&s=#{`encodeURIComponent(#{@search_string})`}" if @search_string
 
       @offset = @type == :hs ? (p * LIMIT) : 0

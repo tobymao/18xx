@@ -44,7 +44,7 @@ module View
           .sort_by { |gd| gd[:id] }
           .reverse
 
-        render_row(children, 'Hotseat Games', hs_games, :hs)
+        render_row(children, 'Hotseat Games', hs_games, :hs, 'all')
       else
         render_row(children, "#{status.capitalize} Games", @games, :all, status)
       end
