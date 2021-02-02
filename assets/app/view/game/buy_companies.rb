@@ -2,6 +2,7 @@
 
 require 'view/game/actionable'
 require 'view/game/company'
+require 'view/game/buy_value_input'
 
 module View
   module Game
@@ -65,43 +66,11 @@ module View
 
       def render_input
         max_price = max_purchase_price(@corporation, @selected_company)
-        input = h(:input, style: { marginRight: '1rem' }, props: {
-                    value: max_price,
-                    type: 'number',
-                    min: @selected_company.min_price,
-                    max: max_price,
-                    size: @corporation.cash.to_s.size,
-                  })
 
-        buy_click = lambda do
-          price = input.JS['elm'].JS['value'].to_i
-          buy = lambda do
-            process_action(Engine::Action::BuyCompany.new(
-              @corporation,
-              company: @selected_company,
-              price: price,
-            ))
-            store(:selected_company, nil, skip: true)
-          end
-
-          if !@selected_company.owner || @selected_company.owner == @corporation.owner
-            buy.call
-          else
-            check_consent(@selected_company.owner, buy)
-          end
-        end
-
-        props = {
-          style: {
-            textAlign: 'center',
-            margin: '1rem',
-          },
-        }
-
-        h(:div, props, [
-          input,
-          h(:button, { on: { click: buy_click } }, 'Buy'),
-        ])
+        h(BuyValueInput, value: max_price, min_value: @selected_company.min_price,
+                         max_value: max_price,
+                         size: @corporation.cash.to_s.size,
+                         selected_entity: @selected_company)
       end
 
       def max_purchase_price(corporation, company)
