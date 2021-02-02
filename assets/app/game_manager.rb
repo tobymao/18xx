@@ -61,7 +61,7 @@ module GameManager
   def get_game(id)
     @connection.safe_get("/game/#{id}") do |data|
       data[:loaded] = @game_data[:loaded] if @game_data
-      update_game(data)
+      update_games(data)
     end
   end
 
@@ -79,25 +79,25 @@ module GameManager
     end
 
     @connection.safe_post(url(game, '/delete'), game) do |data|
-      update_game(data)
+      update_games(data)
     end
   end
 
   def join_game(game)
     @connection.safe_post(url(game, '/join')) do |data|
-      update_game(data)
+      update_games(data)
     end
   end
 
   def leave_game(game)
     @connection.safe_post(url(game, '/leave')) do |data|
-      update_game(data)
+      update_games(data)
     end
   end
 
   def start_game(game)
     @connection.safe_post(url(game, '/start')) do |data|
-      update_game(data)
+      update_games(data)
     end
   end
 
@@ -146,7 +146,7 @@ module GameManager
 
   def kick(game, player)
     @connection.safe_post(url(game, '/kick'), player) do |data|
-      update_game(data)
+      update_games(data, false)
     end
   end
 
@@ -182,11 +182,11 @@ module GameManager
     end
   end
 
-  def update_game(game)
+  def update_games(game, remove = true)
     @games += [game] if @games.none? { |g| g['id'] == game['id'] }
-    @games.reject! { |g| g['id'] == game['id'] } if game['deleted']
+    @games.reject! { |g| g['id'] == game['id'] } if remove
     @games.map! { |g| g['id'] == game['id'] ? game : g }
     store(:game_data, game, skip: true) if @game_data&.dig('id') == game['id']
-    store(:games, @games.sort_by { |g| g['id'] }.reverse)
+    store(:games, @games)
   end
 end
