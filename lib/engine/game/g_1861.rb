@@ -61,7 +61,6 @@ module Engine
         # RSR on first run places their home token...
         # unless RSR already has a token due to SPW nationalization,
         # in which case the reservation on the other city is removed
-        nationalize!(corporation_by_id('SPW'))
         tile = hex_by_id('E1').tile
         return unless @national_reservations.include?(tile.hex.id)
         return if tile.cities.any? { |c| c.tokened_by?(@national) }
