@@ -10,9 +10,7 @@ module Engine
         BUY_ACTION = %w[special_buy].freeze
 
         def actions(entity)
-          if entity.company?
-            return can_exchange?(entity) ? EXCHANGE_ACTIONS : []
-          end
+          return can_exchange?(entity) ? EXCHANGE_ACTIONS : [] if entity.company?
 
           actions = super
           actions << 'special_buy' if !actions.empty? && buyable_items(entity)

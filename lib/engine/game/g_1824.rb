@@ -120,13 +120,6 @@ module Engine
       def init_corporations(stock_market)
         corporations = CORPORATIONS.dup
 
-        if option_cisleithania
-          # Remove Coal Railway C4 (SPB), Regional Railway BH and SB, and possibly UG
-          corporations.reject! do |c|
-            (%w[SB BH].include?(c[:sym]) || (two_player? && c[:sym] == 'UG'))
-          end
-        end
-
         corporations.map! do |corporation|
           Engine::G1824::Corporation.new(
             min_price: stock_market.par_prices.map(&:price).min,
@@ -135,16 +128,16 @@ module Engine
           )
         end
 
-        return corporations unless option_cisleithania
-
-        # Some corporations need to be removed, but they need to exists (for implementation reasons)
-        # So set them as closed and removed so that they do not appear
-        # Affected: Coal Railway C4 (SPB), Regional Railway BH and SB, and possibly UG
-        corporations.reject! do |c|
-          next unless %w[SPB SB BH].include?(c.id) || (two_player? && c.id == 'UG')
-
-          c.close!
-          c.removed = true
+        if option_cisleithania
+          # Some corporations need to be removed, but they need to exists (for implementation reasons)
+          # So set them as closed and removed so that they do not appear
+          # Affected: Coal Railway C4 (SPB), Regional Railway BH and SB, and possibly UG
+          corporations.each do |c|
+            if (%w[SB BH].include?(c.name) || (two_player? && c.name == 'UG'))
+              c.close!
+              c.removed = true
+            end
+          end
         end
 
         corporations
