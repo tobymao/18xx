@@ -170,8 +170,7 @@ module Engine
         if old_tile.paths.empty? &&
             !tile.paths.empty? &&
             cities.size > 1 &&
-            cities.flat_map(&:tokens).any?
-          token = cities.flat_map(&:tokens).find(&:itself)
+            (token = cities.flat_map(&:tokens).find(&:itself))
           @round.pending_tokens << {
             entity: entity,
             hexes: [action.hex],

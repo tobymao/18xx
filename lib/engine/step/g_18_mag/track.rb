@@ -111,8 +111,7 @@ module Engine
           if old_tile.paths.empty? &&
               !tile.paths.empty? &&
               cities.size > 1 &&
-              cities.flat_map(&:tokens).any?
-            token = cities.flat_map(&:tokens).find(&:itself)
+              (token = cities.flat_map(&:tokens).find(&:itself))
 
             # always move token to city with index 0
             token.move!(cities[0])
