@@ -21,8 +21,7 @@ module View
       props = {
         style: {
           display: 'flex',
-          marginBottom: '1rem',
-          paddingBottom: '1vmin',
+          padding: '0.75vmin 0',
           boxShadow: '0 2px 0 0 gainsboro',
           justifyContent: 'space-between',
         },
@@ -40,7 +39,7 @@ module View
           href: href,
         },
         style: {
-          margin: '0 1rem',
+          margin: '0 0.5rem',
         },
       }
       h(:a, props, name)

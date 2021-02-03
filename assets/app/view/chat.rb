@@ -65,6 +65,7 @@ module View
         },
         style: {
           verticalAlign: 'top',
+          marginBottom: '1rem',
         },
       }
 
