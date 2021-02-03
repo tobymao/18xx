@@ -32,7 +32,7 @@ class App < Snabberb::Component
         backgroundColor: @user&.dig(:settings, :bg) || 'inherit',
         color: @user&.dig(:settings, :font) || 'currentColor',
         minHeight: '98vh',
-        padding: '0.75vmin 2vmin 2vmin 2vmin',
+        padding: '0 2vmin 2vmin 2vmin',
         transition: 'background-color 1s ease',
       },
     }
