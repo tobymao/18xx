@@ -26,6 +26,7 @@ module Engine
                       red: '#ef4223',
                       white: '#fff36b',
                       navy: '#000080',
+                      cream: '#fffdd0',
                       yellow: '#ffdea8')
 
       load_from_json(Config::Game::G1867::JSON)
@@ -591,6 +592,13 @@ module Engine
         @corporations, removed = @corporations.partition do |corporation|
           corporation.owned_by_player? || corporation.type != :minor
         end
+
+        hexes.each do |hex|
+          hex.tile.cities.each do |city|
+            city.reservations.reject! { |reservation| removed.include?(reservation) }
+          end
+        end
+
         @log << 'Minors can no longer be started' if removed.any?
       end
 

@@ -761,7 +761,8 @@ module Engine
       "type": "national",
       "coordinates": "E1",
       "city": 1,
-      "color": "red"
+      "color": "cream",
+      "text_color": "black"
     }
   ],
   "trains": [

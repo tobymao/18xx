@@ -37,5 +37,3 @@ def generate_logos(game_title, simple=false)
 
   end
 end
-
-generate_logos('1877')
