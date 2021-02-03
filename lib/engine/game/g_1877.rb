@@ -16,7 +16,13 @@ module Engine
 
       DISCARDED_TRAINS = :remove
 
-      OPTIONAL_RULES = [].freeze
+      OPTIONAL_RULES = [
+        {
+          sym: :cross_train,
+          short_name: 'Cross Train Purchases',
+          desc: 'Allows corporations to purchase trains from others',
+        },
+      ].freeze
 
       DEV_STAGE = :alpha
 
@@ -64,7 +70,7 @@ module Engine
 
       def buy_train(operator, train, price = nil)
         super
-        train.buyable = false
+        train.buyable = false unless @optional_rules&.include?(:cross_train)
       end
 
       private
