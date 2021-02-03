@@ -131,7 +131,7 @@ module Engine
         def remove_l_trains(count)
           @game.log << "#{count} minors with no bids. If available up to #{count} L trains will be removed"
           while (train = @game.depot.upcoming.first).name == 'L' && count.positive?
-            @game.depot.remove_train(train)
+            @game.remove_train(train)
             count -= 1
           end
         end
@@ -140,7 +140,7 @@ module Engine
           # Remove the next train
           train = @game.depot.upcoming.first
           @game.log << "No bids on minor #{company.id}, it will close and a #{train.name} train is removed"
-          @game.depot.remove_train(train)
+          @game.remove_train(train)
           @game.phase.buying_train!(nil, train)
 
           ## Find the correct minor in the corporations and close it
