@@ -32,13 +32,17 @@ module Engine
       GAME_PUBLISHER = :all_aboard_games
       GAME_INFO_URL = 'https://google.com'
 
-      HOME_TOKEN_TIMING = :operating_round
+      HOME_TOKEN_TIMING = :operate
       MUST_BUY_TRAIN = :always
       NEXT_SR_PLAYER_ORDER = :most_cash
 
       STATUS_TEXT = Base::STATUS_TEXT.merge(
         'can_buy_trains' => ['Can buy trains', 'Can buy trains from other corporations']
       ).freeze
+
+      BIDDING_BOX_MINOR_COUNT = 4
+      BIDDING_BOX_CONCESSION_COUNT = 3
+      BIDDING_BOX_PRIVATE_COUNT = 3
 
       BIDDING_TOKENS = {
         "3": 6,
@@ -49,6 +53,12 @@ module Engine
       }.freeze
 
       BIDDING_TOKENS_PER_ACTION = 3
+
+      COMPANY_CONCESSION_PREFIX = 'C'
+      COMPANY_MINOR_PREFIX = 'M'
+      COMPANY_PRIVATE_PREFIX = 'P'
+
+      MINOR_START_PAR_PRICE = 50
 
       UPGRADE_COST_L_TO_2 = 80
 
@@ -78,7 +88,7 @@ module Engine
         discount_info = super
 
         corporation.trains.select { |t| t.name == 'L' }.each do |train|
-          discount_info << [train, train, '2', UPGRADE_COST_L_TO_2]
+          discount_info << [train, train, '2', self.class::UPGRADE_COST_L_TO_2]
         end
         discount_info
       end
@@ -118,6 +128,7 @@ module Engine
         Round::Operating.new(self, [
           Step::Bankrupt,
           Step::Exchange,
+          Step::G1822::FirstTurnHousekeeping,
           Step::BuyCompany,
           Step::Track,
           Step::Token,
@@ -148,15 +159,18 @@ module Engine
       end
 
       def bidbox_minors
-        @companies.select { |c| c.id[0] == 'M' && (!c.owner || c.owner == @bank) }.first(4)
+        @companies.select { |c| c.id[0] == self.class::COMPANY_MINOR_PREFIX && (!c.owner || c.owner == @bank) }
+                  .first(self.class::BIDDING_BOX_MINOR_COUNT)
       end
 
       def bidbox_concessions
-        @companies.select { |c| c.id[0] == 'C' && (!c.owner || c.owner == @bank) }.first(3)
+        @companies.select { |c| c.id[0] == self.class::COMPANY_CONCESSION_PREFIX && (!c.owner || c.owner == @bank) }
+                  .first(self.class::BIDDING_BOX_CONCESSION_COUNT)
       end
 
       def bidbox_privates
-        @companies.select { |c| c.id[0] == 'P' && (!c.owner || c.owner == @bank) }.first(3)
+        @companies.select { |c| c.id[0] == self.class::COMPANY_PRIVATE_PREFIX && (!c.owner || c.owner == @bank) }
+                  .first(self.class::BIDDING_BOX_PRIVATE_COUNT)
       end
 
       def init_bidding_token
@@ -184,9 +198,9 @@ module Engine
         # Randomize from preset seed to get same order
         @companies.sort_by! { rand }
 
-        minors = @companies.select { |c| c.id[0] == 'M' }
-        concessions = @companies.select { |c| c.id[0] == 'C' }
-        privates = @companies.select { |c| c.id[0] == 'P' }
+        minors = @companies.select { |c| c.id[0] == self.class::COMPANY_MINOR_PREFIX }
+        concessions = @companies.select { |c| c.id[0] == self.class::COMPANY_CONCESSION_PREFIX }
+        privates = @companies.select { |c| c.id[0] == self.class::COMPANY_PRIVATE_PREFIX }
 
         # Always set the P1, C1 and M24 in the first biddingbox
         m24 = minors.find { |c| c.id == 'M24' }
@@ -210,7 +224,7 @@ module Engine
         # Set the min bid on the Concessions and Minors
         @companies.each do |c|
           case c.id[0]
-          when 'C', 'M'
+          when self.class::COMPANY_CONCESSION_PREFIX, self.class::COMPANY_MINOR_PREFIX
             c.min_price = c.value
           else
             c.min_price = 0

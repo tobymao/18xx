@@ -1671,14 +1671,15 @@ module Engine
       "name": "7",
       "distance": 7,
       "num": 20,
-      "price": 750
-    },
-    {
-      "name": "E",
-      "distance": 99,
-      "num": 20,
-      "price": 1000,
-      "available_on": "7"
+      "price": 750,
+      "variants": [
+        {
+          "name": "E",
+          "distance": 99,
+          "num": 20,
+          "price": 1000
+        }
+      ]
     }
   ],
   "hexes": {
