@@ -89,32 +89,6 @@ module Engine
       ].compact.uniq(&:name) + @discarded.uniq(&:name)
     end
 
-    def discountable_trains_for(corporation)
-      discountable_trains = depot_trains.select(&:discount)
-
-      discounts = corporation.trains.flat_map do |train|
-        discountable_trains.flat_map do |discount_train|
-          discounted_price = discount_train.price(train)
-          next if discount_train.price == discounted_price
-
-          name = discount_train.name
-          discount_info = [[train, discount_train, name, discounted_price]]
-
-          # Add variants if any - they have same discount as base version
-          discount_train.variants.each do |_, v|
-            next if v[:name] == name
-
-            price = v[:price] - (discount_train.price - discounted_price)
-            discount_info << [train, discount_train, v[:name], price]
-          end
-
-          discount_info
-        end.compact
-      end
-      other_discounts = @game.discountable_trains_for(corporation)
-      discounts + other_discounts
-    end
-
     def available(corporation)
       depot_trains + other_trains(corporation)
     end

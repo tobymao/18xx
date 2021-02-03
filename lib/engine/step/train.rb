@@ -13,7 +13,7 @@ module Engine
         can_buy_normal = room?(entity) &&
           buying_power(entity) >= @depot.min_price(entity)
 
-        can_buy_normal || (discountable_trains_allowed?(entity) && @depot
+        can_buy_normal || (discountable_trains_allowed?(entity) && @game
           .discountable_trains_for(entity)
           .any? { |_, _, _, price| buying_power(entity) >= price })
       end

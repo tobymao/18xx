@@ -117,7 +117,7 @@ module View
           ])
         end
 
-        discountable_trains = @depot.discountable_trains_for(@corporation)
+        discountable_trains = @game.discountable_trains_for(@corporation)
 
         if discountable_trains.any? && step.discountable_trains_allowed?(@corporation)
           children << h(:h3, h3_props, 'Exchange Trains')
