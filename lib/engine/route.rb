@@ -301,11 +301,15 @@ module Engine
       @connection_data = []
       return @connection_data unless @connection_hexes
 
-      if @train.local? && @connection_hexes.one? && @connection_hexes[0].include?('local')
-        city_node = @game.hex_by_id(@connection_hexes[0][1]).tile.nodes.find do |n|
-          @game.city_tokened_by?(n, corporation)
+      if @connection_hexes.one? && @connection_hexes[0].include?('local')
+        if @train.local?
+          city_node = @game.hex_by_id(@connection_hexes[0][1]).tile.nodes.find do |n|
+            @game.city_tokened_by?(n, corporation)
+          end
+          return add_single_node_connection(city_node)
+        else
+          @connection_hexes.clear
         end
-        return add_single_node_connection(city_node)
       end
 
       possibilities = @connection_hexes.map do |hex_ids|

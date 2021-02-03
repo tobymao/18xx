@@ -36,6 +36,10 @@ module Engine
       MUST_BUY_TRAIN = :always
       NEXT_SR_PLAYER_ORDER = :most_cash
 
+      STATUS_TEXT = Base::STATUS_TEXT.merge(
+        'can_buy_trains' => ['Can buy trains', 'Can buy trains from other corporations']
+      ).freeze
+
       BIDDING_TOKENS = {
         "3": 6,
         "4": 5,
@@ -45,6 +49,8 @@ module Engine
       }.freeze
 
       BIDDING_TOKENS_PER_ACTION = 3
+
+      UPGRADE_COST_L_TO_2 = 80
 
       include StubsAreRestricted
 
@@ -68,6 +74,15 @@ module Engine
         end
       end
 
+      def discountable_trains_for(corporation)
+        discount_info = super
+
+        corporation.trains.select { |t| t.name == 'L' }.each do |train|
+          discount_info << [train, train, '2', UPGRADE_COST_L_TO_2]
+        end
+        discount_info
+      end
+
       def entity_can_use_company?(_entity, company)
         # Setting bidding companies owner to bank, make sure the abilities dont show for theese
         company.owner != @bank
@@ -80,7 +95,7 @@ module Engine
       end
 
       def train_help(runnable_trains)
-        return [] unless (l_trains = runnable_trains.select { |t| t.name == 'L' })
+        return [] if (l_trains = runnable_trains.select { |t| t.name == 'L' }).empty?
 
         corporation = l_trains.first.owner
         ["L (local) trains run in a city which has a #{corporation.name} token.",
@@ -109,7 +124,7 @@ module Engine
           Step::Route,
           Step::G1822::Dividend,
           Step::DiscardTrain,
-          Step::BuyTrain,
+          Step::G1822::BuyTrain,
         ], round_num: round_num)
       end
 
