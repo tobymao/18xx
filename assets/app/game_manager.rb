@@ -54,6 +54,13 @@ module GameManager
     end
   end
 
+  def get_game(id)
+    @connection.safe_get("/game/#{id}") do |data|
+      data[:loaded] = @game_data[:loaded] if @game_data
+      update_game(data)
+    end
+  end
+
   def create_game(params)
     @connection.safe_post('/game', params) do |data|
       store(:games, [data] + @games)
@@ -166,7 +173,7 @@ module GameManager
     @games += [game] if @games.none? { |g| g['id'] == game['id'] }
     @games.reject! { |g| g['id'] == game['id'] } if game['deleted']
     @games.map! { |g| g['id'] == game['id'] ? game : g }
-    store(:game, game, skip: true) if @game&.[]('id') == game['id']
+    store(:game_data, game, skip: true) if @game_data&.dig('id') == game['id']
     store(:games, @games.sort_by { |g| g['id'] }.reverse)
   end
 end
