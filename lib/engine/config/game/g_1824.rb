@@ -765,6 +765,10 @@ module Engine
       "num": 4,
       "price": 300,
       "rusts_on": "8",
+      "events": [
+        {"type": "close_mountain_railways"},
+        {"type": "sd_formation"}
+      ],
       "discount": {
         "3": 90
       }
@@ -792,10 +796,6 @@ module Engine
       "price": 360,
       "available_on": "4",
       "rusts_on": "5g",
-      "events": [
-        {"type": "close_mountain_railways"},
-        {"type": "sd_formation"}
-      ],
       "discount": {
         "2g": 120
       }

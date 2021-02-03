@@ -9,7 +9,7 @@ require_relative '../g_1824/minor'
 module Engine
   module Game
     class G1824 < Base
-      attr_accessor :two_train_bought
+      attr_accessor :two_train_bought, :forced_mountain_railway_exchange
 
       register_colors(
         gray70: '#B3B3B3',
@@ -242,6 +242,7 @@ module Engine
           Step::Bankrupt,
           Step::DiscardTrain,
           Step::HomeToken,
+          Step::G1824::ForcedMountainRailwayExchange,
           Step::Track,
           Step::Token,
           Step::Route,
@@ -315,6 +316,7 @@ module Engine
 
       def setup
         @two_train_bought = false
+        @forced_mountain_railway_exchange = []
 
         @companies.each do |c|
           c.owner = @bank
@@ -499,12 +501,9 @@ module Engine
       end
 
       def event_close_mountain_railways!
-        @log << '-- Exchange any remaining Mountain Railway'
-        @companies.select { |c| mountain_railway?(c).reject(&:closed?) }.each do |mountain_railway|
-          @log << '-- TODO Mountain railway should be exchanged if possible'
-          # TODO: Need interrupt stock exchange step here
-          mountain_railway.close!
-        end
+        @log << '-- Any remaining Mountain Railways are either exchanged or discarded'
+        # If this list contains any companies it will trigger an interrupt exchange/pass step
+        @forced_mountain_railway_exchange = @companies.select { |c| mountain_railway?(c) && !c.closed? }
       end
 
       def event_close_coal_railways!
@@ -512,6 +511,18 @@ module Engine
         @companies.select { |c| coal_railway?(c) }.reject(&:closed?).each do |coal_railway_company|
           exchange_coal_railway(coal_railway_company)
         end
+      end
+
+      def event_sd_formation!
+        @log << 'SD formation not yet implemented'
+      end
+
+      def event_ug_formation!
+        @log << 'UG formation not yet implemented'
+      end
+
+      def event_kk_formation!
+        @log << 'KK formation not yet implemented'
       end
 
       def exchange_coal_railway(company)
