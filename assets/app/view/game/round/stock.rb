@@ -56,6 +56,7 @@ module View
           end
 
           children.concat(render_buttons)
+          children << h(SpecialBuy) if @current_actions.include?('special_buy')
           children.concat(render_failed_merge) if @current_actions.include?('failed_merge')
           children.concat(render_corporations)
           children.concat(render_mergeable_entities) if @current_actions.include?('merge')

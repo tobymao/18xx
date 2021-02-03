@@ -93,7 +93,6 @@ module Engine
         end
 
         def remove_reservation(minor)
-          puts("Coordinates for #{minor.name} is #{minor.coordinates}")
           hex = @game.hex_by_id(minor.coordinates)
           tile = hex.tile
           cities = tile.cities

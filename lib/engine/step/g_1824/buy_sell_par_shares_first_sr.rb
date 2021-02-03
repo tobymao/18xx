@@ -24,13 +24,21 @@ module Engine
           super && @game.buyable?(bundle.corporation)
         end
 
-        def can_gain?(_entity, bundle)
+        def can_gain?(_entity, bundle, exchange: false)
+          return false if exchange
+
           super && @game.buyable?(bundle.corporation)
+        end
+
+        def can_exchange?(_entity)
+          false
         end
 
         def process_buy_company(action)
           entity = action.entity
           company = action.company
+          price = action.price
+          company.value = price
 
           super
 
@@ -38,7 +46,7 @@ module Engine
           return unless (minor = @game.minor_by_id(company.id))
           return buy_pre_staatsbahn(minor, entity, action) if @game.pre_staatsbahn?(minor)
 
-          buy_coal_railway(minor, entity, action.price)
+          buy_coal_railway(minor, entity, price)
         end
 
         private

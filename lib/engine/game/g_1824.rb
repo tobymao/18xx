@@ -120,20 +120,27 @@ module Engine
       def init_corporations(stock_market)
         corporations = CORPORATIONS.dup
 
-        if option_cisleithania
-          # Remove Coal Railway C4 (SPB), Regional Railway BH and SB, and possibly UG
-          corporations.reject! do |c|
-            (%w[SB BH].include?(c[:sym]) || (two_player? && c[:sym] == 'UG'))
-          end
-        end
-
-        corporations.map do |corporation|
+        corporations.map! do |corporation|
           Engine::G1824::Corporation.new(
             min_price: stock_market.par_prices.map(&:price).min,
             capitalization: self.class::CAPITALIZATION,
             **corporation.merge(corporation_opts),
           )
         end
+
+        if option_cisleithania
+          # Some corporations need to be removed, but they need to exists (for implementation reasons)
+          # So set them as closed and removed so that they do not appear
+          # Affected: Coal Railway C4 (SPB), Regional Railway BH and SB, and possibly UG
+          corporations.each do |c|
+            if %w[SB BH].include?(c.name) || (two_player? && c.name == 'UG')
+              c.close!
+              c.removed = true
+            end
+          end
+        end
+
+        corporations
       end
 
       def init_minors
@@ -234,15 +241,12 @@ module Engine
         Round::Operating.new(self, [
           Step::Bankrupt,
           Step::DiscardTrain,
-          Step::BuyCompany,
           Step::HomeToken,
-          Step::SpecialTrack,
           Step::Track,
           Step::Token,
           Step::Route,
           Step::G1824::Dividend,
           Step::G1824::BuyTrain,
-          [Step::BuyCompany, blocks: true],
         ], round_num: round_num)
       end
 
@@ -251,6 +255,13 @@ module Engine
         @log << 'Player order is reversed the first turn'
         Round::G1824::FirstStock.new(self, [
           Step::G1824::BuySellParSharesFirstSR,
+        ])
+      end
+
+      def stock_round
+        Round::Stock.new(self, [
+          Step::DiscardTrain,
+          Step::G1824::BuySellParExchangeShares,
         ])
       end
 
@@ -346,7 +357,7 @@ module Engine
       end
 
       def can_par?(corporation, parrer)
-        super && buyable?(corporation)
+        super && buyable?(corporation) && !reserved_regional(corporation)
       end
 
       def g_train?(train)
@@ -357,8 +368,18 @@ module Engine
         entity.company? && entity.sym.start_with?('B')
       end
 
+      def mountain_railway_exchangable?
+        @phase.status.include?('may_exchange_mountain_railways')
+      end
+
       def coal_railway?(entity)
-        entity.minor? && entity.type == :Coal
+        return entity.type == :Coal if entity.minor?
+
+        entity.company? && associated_regional_railway(entity)
+      end
+
+      def coal_railway_exchangable?
+        @phase.status.include?('may_exchange_coal_railways')
       end
 
       def pre_staatsbahn?(entity)
@@ -383,11 +404,16 @@ module Engine
       def buyable?(entity)
         return true unless entity.corporation?
 
-        entity.all_abilities.none? { |a| a.type == :no_buy } && !reserved_regional(entity)
+        entity.all_abilities.none? { |a| a.type == :no_buy }
       end
 
       def corporation_available?(entity)
         buyable?(entity)
+      end
+
+      def entity_can_use_company?(_entity, _company)
+        # Return false here so that Exchange abilities does not appear in GUI
+        false
       end
 
       def sorted_corporations
@@ -399,7 +425,8 @@ module Engine
       end
 
       def associated_regional_railway(coal_railway)
-        case coal_railway.name
+        key = coal_railway.minor? ? coal_railway.name : coal_railway.id
+        case key
         when 'EPP'
           regional_bk
         when 'EOD'
@@ -471,6 +498,85 @@ module Engine
         @corporations.reject(&:removed)
       end
 
+      def event_close_mountain_railways!
+        @log << '-- Exchange any remaining Mountain Railway'
+        @companies.select { |c| mountain_railway?(c).reject(&:closed?) }.each do |mountain_railway|
+          @log << '-- TODO Mountain railway should be exchanged if possible'
+          # TODO: Need interrupt stock exchange step here
+          mountain_railway.close!
+        end
+      end
+
+      def event_close_coal_railways!
+        @log << '-- Exchange any remaining Coal Railway'
+        @companies.select { |c| coal_railway?(c) }.reject(&:closed?).each do |coal_railway_company|
+          exchange_coal_railway(coal_railway_company)
+        end
+      end
+
+      def exchange_coal_railway(company)
+        player = company.owner
+        minor = minor_by_id(company.id)
+        regional = associated_regional_railway(company)
+
+        @log << "#{player.name} receives presidency of #{regional.name} in exchange for #{minor.name}"
+        company.close!
+
+        # Transfer Coal Railway cash and trains to Regional. Remove CR token.
+        if minor.cash.positive?
+          @log << "#{regional.name} recieves the #{minor.name} treasury of #{format_currency(minor.cash)}"
+          minor.spend(minor.cash, regional)
+        end
+        unless minor.trains.empty?
+          transferred = transfer(:trains, minor, regional)
+          @log << "#{regional.name} receives the trains: #{transferred.map(&:name).join(', ')}"
+        end
+        minor.tokens.first.remove!
+        minor.close!
+
+        # Handle Regional presidency, possibly transfering to another player in case they own more in the regional
+        presidency_share = regional.shares.find(&:president)
+        presidency_share.buyable = true
+        regional.floatable = true
+        @share_pool.transfer_shares(
+          presidency_share.to_bundle,
+          player,
+          allow_president_change: false,
+          price: 0
+        )
+
+        # Give presidency to majority owner (with minor owner priority if that player is one of them)
+        max_shares = @share_pool.presidency_check_shares(regional).values.max
+        majority_share_holders = @share_pool.presidency_check_shares(regional).select { |_, p| p == max_shares }.keys
+        if !majority_share_holders.find { |owner| owner == player }
+          # FIXME: Handle the case where multiple share the presidency criteria
+          new_president = majority_share_holders.first
+          @share_pool.change_president(presidency_share, player, new_president, player)
+          regional.owner = new_president
+          @log << "#{new_president.name} becomes president of #{regional.name} as majority owner"
+        else
+          regional.owner = player
+        end
+
+        float_corporation(regional) if regional.floated?
+      end
+
+      def float_corporation(corporation)
+        @log << "#{corporation.name} floats"
+
+        return if corporation.capitalization == :incremental
+
+        case corporation.name
+        when 'BK', 'MS', 'CL', 'SB'
+          floating_capital = corporation.par_price.price * 8
+        else
+          floating_capital = corporation.par_price.price * corporation.total_shares
+        end
+
+        @bank.spend(floating_capital, corporation)
+        @log << "#{corporation.name} receives floating capital of #{format_currency(floating_capital)}"
+      end
+
       private
 
       def mine_hex?(hex)
@@ -479,7 +585,7 @@ module Engine
 
       MOUNTAIN_RAILWAY_DEFINITION = {
         sym: 'B%1$d',
-        name: '%2$s (B%1$d)',
+        name: 'B%1$d %2$s',
         value: 120,
         revenue: 25,
         desc: 'Moutain railway (B%1$d). Cannot be sold but can be exchanged for a 10 percent share in a '\
@@ -489,6 +595,12 @@ module Engine
           {
             type: 'no_buy',
             owner_type: 'player',
+          },
+          {
+            'type': 'exchange',
+            'corporations': %w[BK MS CL SB BH],
+            'owner_type': 'player',
+            'from': %w[ipo market],
           },
         ],
       }.freeze
