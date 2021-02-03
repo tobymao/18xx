@@ -52,7 +52,7 @@ module Engine
           }
 
           remove_duplicate_tokens(entity, corporation)
-          tokens = move_tokens_to_surviving(entity, corporation, 100, false)
+          tokens = move_tokens_to_surviving(entity, corporation, { price_for_new_token: 100, check_tokenable: false })
           receiving << "and tokens (#{tokens.size}: hexes #{tokens.compact})"
 
           @log << "#{entity.name} buys #{corporation.name}

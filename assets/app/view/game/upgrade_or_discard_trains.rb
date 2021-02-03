@@ -54,7 +54,7 @@ module View
           h(:div, trains),
         ])
 
-        children << h(Map, game: @game) if @game.round.is_a?(Engine::Round::Operating)
+        children << h(Map, game: @game) if @game.round.operating?
 
         h(:div, [
           h(:div, { style: { marginBottom: '1rem', fontWeight: 'bold' } }, 'Keep, Discard or Upgrade Trains'),

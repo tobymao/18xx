@@ -25,7 +25,7 @@ module Engine
         end
 
         def active?
-          buying_entity && trains.any?
+          buying_entity && !trains.empty?
         end
 
         def current_entity
@@ -79,7 +79,7 @@ module Engine
 
         def upgrade_infos(train, corporation)
           variant = train.variants.values.find { |item| @game.train_of_size?(item, corporation.type) }
-          return nil, nil if variant.nil?
+          return nil, nil unless variant
 
           upgrade_price = [(variant[:price] - train.price), 0].max
           [variant[:name], upgrade_price]

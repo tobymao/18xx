@@ -26,7 +26,7 @@ module View
         buy_click = lambda do
           price = input.JS['elm'].JS['value'].to_i
           buy = lambda do
-            if @selected_entity.is_a?(Engine::Corporation)
+            if @selected_entity.corporation?
               process_action(Engine::Action::BuyCorporation.new(
                 @corporation,
                 corporation: @selected_entity,
