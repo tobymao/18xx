@@ -14,15 +14,15 @@ module Engine
       let(:max_players) { players.take(Engine.player_range(title).max) }
 
       it 'can be initialized with min players' do
-        title.new(min_players, id: 1)
+        Engine.game_by_title(title.title).new(min_players, id: 1)
       end
 
       it 'can be initialized with max players' do
-        title.new(max_players, id: 2)
+        Engine.game_by_title(title.title).new(max_players, id: 2)
       end
 
       it 'has consistent borders' do
-        game = title.new(max_players, id: 1)
+        game = Engine.game_by_title(title.title).new(max_players, id: 1)
         game.hexes.each do |hex|
           hex.tile.borders.each do |border|
             next unless border

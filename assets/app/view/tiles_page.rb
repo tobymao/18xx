@@ -73,7 +73,7 @@ module View
       elsif (game_titles = dest.split('+')).all? { |g| Engine::GAMES_BY_TITLE.keys.include?(g) }
 
         rendered = game_titles.flat_map do |g|
-          game_class = Engine::GAMES_BY_TITLE[g]
+          game_class = Engine.game_by_title(g)
           map_hexes_and_tile_manifest_for(game_class)
         end
 
@@ -99,7 +99,7 @@ module View
     end
 
     def render_individual_tile_from_game(game_title, hex_or_tile_id)
-      game_class = Engine::GAMES_BY_TITLE[game_title]
+      game_class = Engine.game_by_title(game_title)
       players = Engine.player_range(game_class).max.times.map { |n| "Player #{n + 1}" }
       game = game_class.new(players)
 

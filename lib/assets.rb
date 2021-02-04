@@ -5,6 +5,7 @@ require 'snabberb'
 require 'uglifier'
 require 'zlib'
 
+require_relative 'engine'
 require_relative 'js_context'
 
 class Assets
@@ -15,7 +16,9 @@ class Assets
     @build_path = 'build'
     @out_path = OUTPUT_BASE + '/assets'
     @root_path = '/assets'
-    @bundle_path = "#{@out_path}/main.js"
+
+    @main_path = "#{@out_path}/main.js"
+    @deps_path = "#{@out_path}/deps.js"
 
     @cache = cache
     @make_map = make_map
@@ -32,39 +35,76 @@ class Assets
     context.eval(Snabberb.html_script(script, **needs))
   end
 
-  def build
-    return [@bundle_path] if @precompiled
-
-    @build ||= [
-      compile_lib('opal'),
-      compile_lib('deps', 'assets'),
-      compile('engine', 'lib', 'engine'),
-      compile('app', 'assets/app', ''),
-    ]
+  def game_builds
+    @game_builds ||= Dir['lib/engine/game/*/game.rb'].map do |dir|
+      game = dir.split('/')[-2]
+      path = "#{@out_path}/#{game}.js"
+      build = {
+        'path' => path,
+        'files' => @precompiled ? [path] : [compile(nil, nil, nil, game: game)],
+      }
+      [game, build]
+    end.to_h
   end
 
-  def js_tags
-    build.map do |file|
-      file = file.gsub(@out_path, @root_path)
+  def game_paths
+    Dir["#{@out_path}/g_*.js"]
+  end
+
+  def builds
+    @builds ||= {
+      'deps' => {
+        'path' => @deps_path,
+        'files' => @precompiled ? [@deps_path] : [compile_lib('opal'), compile_lib('deps', 'assets')],
+      },
+      'main' => {
+        'path' => @main_path,
+        'files' => @precompiled ? [@main_path] : [compile('engine', 'lib', 'engine'), compile('app', 'assets/app', '')],
+      },
+      **game_builds,
+    }
+  end
+
+  def js_tags(title)
+    scripts = %w[deps main].map do |key|
+      file = builds[key]['path'].gsub(@out_path, @root_path)
       %(<script type="text/javascript" src="#{file}"></script>)
-    end.join
+    end
+    scripts.concat(game_js_tags(title)).compact.join
+  end
+
+  def game_js_tags(title)
+    return [] unless title
+
+    game = Engine::GAMES_BY_TITLE[title]
+    tags = game_js_tags(game::DEPENDS_ON)
+
+    key = game.fs_name
+    return [] unless builds.key?(key)
+
+    file = builds[key]['path'].gsub(@out_path, @root_path)
+    tags << %(<script type="text/javascript" src="#{file}"></script>)
+    tags.compact
   end
 
   def combine
     @combine ||=
       begin
         unless @precompiled
-          source = build.map { |file| File.read(file).to_s }.join
-          if @compress
-            time = Time.now
-            source = Uglifier.compile(source, harmony: true)
-            puts "Compressing - #{Time.now - time}"
-          end
-          File.write(@bundle_path, source)
-          Zlib::GzipWriter.open("#{@bundle_path}.gz") { |gz| gz.write(source) } if @gzip
-        end
+          builds.each do |_key, build|
+            source = build['files'].map { |file| File.read(file).to_s }.join
 
-        @bundle_path
+            if @compress
+              time = Time.now
+              source = Uglifier.compile(source, harmony: true)
+              puts "Compressing - #{Time.now - time}"
+            end
+
+            File.write(build['path'], source)
+            Zlib::GzipWriter.open("#{build['path']}.gz") { |gz| gz.write(source) } if @gzip
+          end
+        end
+        [@deps_path, @main_path, *game_paths]
       end
   end
 
@@ -80,9 +120,9 @@ class Assets
     path
   end
 
-  def compile(name, lib_path, ns = nil)
-    output = "#{@out_path}/#{name}.js"
-    metadata = lib_metadata(ns || name, lib_path)
+  def compile(name, lib_path, ns = nil, game: nil)
+    output = "#{@out_path}/#{name || game}.js"
+    metadata = lib_metadata(ns || name, lib_path, game: game)
 
     compilers = metadata.map do |file, opts|
       FileUtils.mkdir_p(opts[:build_path])
@@ -95,7 +135,7 @@ class Assets
     return output if compilers.empty?
 
     if @make_map
-      sm_path = "#{@build_path}/#{name}.json"
+      sm_path = "#{@build_path}/#{name || game}.json"
       sm_data = File.exist?(sm_path) ? JSON.parse(File.binread(sm_path)) : {}
     end
 
@@ -120,7 +160,7 @@ class Assets
 
     source_map = {
       version: 3,
-      file: "#{name}.js",
+      file: "#{name || game}.js",
       sections: [],
     }
 
@@ -143,22 +183,32 @@ class Assets
 
       File.read(opts[:js_path]).to_s
     end.join("\n")
-    source += "\nOpal.load('#{name}')"
+
+    opal_load = game ? "engine/game/#{game}" : name
+    source += "\nOpal.load('#{opal_load}')"
+
     source += to_data_uri_comment(source_map) if @make_map
     File.write(output, source)
     output
   end
 
-  def lib_metadata(ns, lib_path)
+  def lib_metadata(ns, lib_path, game: nil)
     metadata = {}
 
-    Dir["#{lib_path}/**/*.rb"].each do |file|
-      next unless file.start_with?("#{lib_path}/#{ns}")
+    dir_path = game ? "lib/engine/game/#{game}/**/*.rb" : "#{lib_path}/**/*.rb"
+    Dir[dir_path].each do |file|
+      if file.end_with?('/meta.rb')
+        next if game
+      elsif !game
+        next unless file.start_with?("#{lib_path}/#{ns}")
+        next if file =~ %r{^lib/engine/game/g_.*/}
+      end
 
       mtime = File.new(file).mtime
       path = file.split('/')[0..-2].join('/')
 
-      metadata[file.gsub("#{lib_path}/", '')] = {
+      prefix = game ? 'lib' : lib_path
+      metadata[file.gsub("#{prefix}/", '')] = {
         path: file,
         build_path: "#{@build_path}/#{path}",
         js_path: "#{@build_path}/#{file.gsub('.rb', '.js')}",
@@ -172,5 +222,29 @@ class Assets
   def to_data_uri_comment(source_map)
     map_json = JSON.dump(source_map)
     "//# sourceMappingURL=data:application/json;base64,#{Base64.encode64(map_json).delete("\n")}"
+  end
+
+  def games_to_bundle
+    @games_to_bundle ||= Dir.glob('lib/engine/*/game.rb').map { |f| f.split('/')[-2] }
+  end
+
+  def pin(pin_path)
+    @pin ||=
+      begin
+        time = Time.now
+
+        prealphas = Engine::GAMES_BY_TITLE.values
+                      .select { |g| g::DEV_STAGE == :prealpha }
+                      .map { |g| "public/assets/#{g.fs_name}.js" }
+
+        source = (combine - prealphas).map { |file| File.read(file).to_s }.join
+        source = Uglifier.compile(source, harmony: true)
+
+        File.write(pin_path.gsub('.gz', ''), source)
+
+        Zlib::GzipWriter.open(pin_path) { |gz| gz.write(source) }
+        FileUtils.rm(pin_path.gsub('.gz', ''))
+        puts "Building #{pin_path} - #{Time.now - time}"
+      end
   end
 end

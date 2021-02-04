@@ -10,7 +10,7 @@ module View
 
     def render
       game_title = @route.match(ROUTE_FORMAT)[1].gsub('%20', ' ')
-      game = Engine::GAMES_BY_TITLE[game_title]
+      game = Engine.game_by_title(game_title)
 
       return h(:p, "Bad game title: #{game_title}") unless game
 

@@ -19,7 +19,7 @@ end
 module Engine
   describe Round::Operating do
     let(:players) { %w[a b c] }
-    let(:game) { Game::G1889.new(players) }
+    let(:game) { Game::G1889::Game.new(players) }
     let(:hex_j3) { game.hex_by_id('J3') }
     let(:hex_j5) { game.hex_by_id('J5') }
     let(:hex_k4) { game.hex_by_id('K4') }
@@ -362,7 +362,7 @@ module Engine
           )
 
           expect(game.active_players).to eq([game.players[1]])
-          expect(subject.active_step).to be_a Engine::Step::G1889::SpecialTrack
+          expect(subject.active_step).to be_a Engine::Game::G1889::Step::SpecialTrack
 
           action = Action::LayTile.new(ehime, tile: game.tile_by_id('14-0'), hex: game.hex_by_id('C4'), rotation: 1)
           subject.process_action(action)
@@ -388,7 +388,7 @@ module Engine
           )
 
           expect(game.active_players).to eq([game.players[1]])
-          expect(subject.active_step).to be_a Engine::Step::G1889::SpecialTrack
+          expect(subject.active_step).to be_a Engine::Game::G1889::Step::SpecialTrack
 
           action = Action::BuyTrain.new(corporation, train: train, price: train.price)
           expect { subject.process_action(action) }.to raise_error(GameError)

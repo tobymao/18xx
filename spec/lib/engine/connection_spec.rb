@@ -6,7 +6,7 @@ require 'engine'
 
 module Engine
   describe Connection do
-    let(:game) { GAMES_BY_TITLE['1889'].new(%w[a b]) }
+    let(:game) { Engine.game_by_title('1889').new(%w[a b]) }
 
     describe '.connect!' do
       subject { game.hex_by_id('K8') }

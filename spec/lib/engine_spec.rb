@@ -3,7 +3,7 @@
 require 'engine'
 
 describe Engine do
-  context 'create games with GAMES_BY_TITLE' do
+  context 'create games with game_by_title' do
     {
       '1889' => (2..6),
       '18Chesapeake' => (3..6),
@@ -11,7 +11,7 @@ describe Engine do
       player_counts.each do |count|
         it "creates a new game of #{game_title} with #{count} players" do
           players = (1..count).map(&:to_s)
-          game = Engine::GAMES_BY_TITLE[game_title].new(players)
+          game = Engine.game_by_title(game_title).new(players)
 
           # the expectation here isn't very important, the main purpose of these
           # tests are for the previous line to execute without failing
