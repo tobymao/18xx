@@ -278,6 +278,8 @@ module View
       when Engine::Round::Operating
         if current_entity_actions.include?('merge')
           h(Game::Round::Merger, game: @game)
+        elsif current_entity_actions.include?('buy_shares')
+          h(Game::Round::Stock, game: @game)
         else
           h(Game::Round::Operating, game: @game)
         end
