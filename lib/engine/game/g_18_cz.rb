@@ -29,6 +29,7 @@ module Engine
       MUST_BUY_TRAIN = :always
 
       HOME_TOKEN_TIMING = :operate
+      LIMIT_TOKENS_AFTER_MERGER = 999
 
       STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
         par: :red,
@@ -81,7 +82,7 @@ module Engine
         '5+5j' => :medium,
         '3Ed' => :large,
         '3Ee' => :large,
-        '4EF' => :large,
+        '4Ef' => :large,
         '4Eg' => :large,
         '5E' => :large,
         '6E' => :large,
@@ -125,6 +126,8 @@ module Engine
           Step::G18CZ::Token,
           Step::Route,
           Step::G18CZ::Dividend,
+          Step::G18CZ::UpgradeOrDiscardTrain,
+          Step::G18CZ::BuyCorporation,
           Step::DiscardTrain,
           Step::G18CZ::BuyTrain,
           [Step::BuyCompany, { blocks: true }],

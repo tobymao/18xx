@@ -255,6 +255,10 @@ module View
     def render_action
       return h(Game::GameEnd) if @game.finished
 
+      if current_entity_actions.include?('discard_train') &&
+        current_entity_actions.include?('swap_train')
+        return h(Game::UpgradeOrDiscardTrains)
+      end
       return h(Game::DiscardTrains) if current_entity_actions.include?('discard_train')
 
       if current_entity_actions.include?('par') &&

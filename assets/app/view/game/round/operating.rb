@@ -11,6 +11,7 @@ require 'view/game/dividend'
 require 'view/game/issue_shares'
 require 'view/game/corporate_buy_shares'
 require 'view/game/map'
+require 'view/game/buy_corporation'
 require 'view/game/route_selector'
 require 'view/game/cash_crisis'
 
@@ -48,6 +49,8 @@ module View
             left << h(Choose)
           elsif @current_actions.include?('swap_train')
             left << h(SwapTrain)
+          elsif @current_actions.include?('buy_corporation')
+            left << h(BuyCorporation)
           end
           left << h(Loans, corporation: entity) if (%w[take_loan payoff_loan] & @current_actions).any?
 
