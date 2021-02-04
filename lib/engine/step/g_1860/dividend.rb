@@ -40,6 +40,7 @@ module Engine
           payout_shares(entity, revenue) if payout[:per_share].positive?
           change_share_price(entity, payout)
           @game.check_bank_broken!
+          @game.check_bankruptcy!(entity)
 
           pass!
         end
