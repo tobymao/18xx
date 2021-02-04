@@ -281,6 +281,7 @@ module Engine
       end
 
       def create_destinations(destinations)
+        @destinations = {}
         destinations.each do |corp, dest|
           dest_arr = Array(dest)
           end_a = dest_arr.first
@@ -294,6 +295,7 @@ module Engine
           dest_arr.each do |d|
             hex_by_id(d).original_tile.icons << Part::Icon.new("../logos/1856/#{corp}")
           end
+          @destinations[corp] = [end_b, end_a].freeze
         end
       end
 
@@ -307,6 +309,16 @@ module Engine
         return PRE_NATIONALIZATION_CERT_LIMIT[@players.size] unless @post_nationalization
 
         POST_NATIONALIZATION_CERT_LIMIT[num_corporations][@players.size]
+      end
+
+      def destination_check
+        @corporations.each do |corp|
+          # The capitalization method of unparred corporations is nil
+          next unless corp.capitalization == :escrow
+
+          reachable_hexes = @graph.ghost_train(corp, [hex_by_id(@destinations[corp.id].first)]).map { |h| h[0].id }
+          @log << "#{corp.name} destination check - hexes: #{reachable_hexes}"
+        end
       end
 
       #

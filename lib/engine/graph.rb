@@ -11,6 +11,7 @@ module Engine
       @connected_paths = {}
       @reachable_hexes = {}
       @tokenable_cities = {}
+      @ghost_train_reachable_hexes = {}
       @routes = {}
       @tokens = {}
     end
@@ -21,6 +22,7 @@ module Engine
       @connected_paths.clear
       @reachable_hexes.clear
       @tokenable_cities.clear
+      @ghost_train_reachable_hexes = {}
       @tokens.clear
       @routes.delete_if do |_, route|
         !route[:route_train_purchase]
@@ -84,19 +86,29 @@ module Engine
       @connected_paths[corporation]
     end
 
+    def ghost_train(corporation, start_hexes)
+      compute(corporation, start_hexes: start_hexes, ghost_train: true)
+      @ghost_train_reachable_hexes[corporation]
+    end
+
     def reachable_hexes(corporation)
       compute(corporation) unless @reachable_hexes[corporation]
       @reachable_hexes[corporation]
     end
 
-    def compute(corporation, routes_only: false)
+    # ghost_train is for 1856 destination checks
+    # in 1856 destination checks,
+    #  - corporation abilities are unused
+    #  - tokens are ignored
+    #  - the distance to test is unlimited
+    #  - connectivity needs to be hex to hex, typically the corp's home is one of the two
+    def compute(corporation, start_hexes: nil, ghost_train: false, routes_only: false)
       hexes = Hash.new { |h, k| h[k] = {} }
       nodes = {}
       paths = {}
-
-      @game.hexes.each do |hex|
+      (ghost_train ? start_hexes : @game.hexes).each do |hex|
         hex.tile.cities.each do |city|
-          next unless city.tokened_by?(corporation)
+          next unless ghost_train || city.tokened_by?(corporation)
 
           hex.neighbors.each { |e, _| hexes[hex][e] = true }
           nodes[city] = true
@@ -104,26 +116,28 @@ module Engine
       end
 
       tokens = nodes.dup
+      # Corporation specific abilities do not affect the ghost train
+      unless ghost_train
+        @game.abilities(corporation, :token) do |ability, c|
+          next unless c == corporation # Private company token ability uses round/special.rb.
+          next unless ability.teleport_price
 
-      @game.abilities(corporation, :token) do |ability, c|
-        next unless c == corporation # Private company token ability uses round/special.rb.
-        next unless ability.teleport_price
-
-        ability.hexes.each do |hex_id|
-          @game.hex_by_id(hex_id).tile.cities.each do |node|
-            nodes[node] = true
-            yield node if block_given?
+          ability.hexes.each do |hex_id|
+            @game.hex_by_id(hex_id).tile.cities.each do |node|
+              nodes[node] = true
+              yield node if block_given?
+            end
           end
         end
-      end
 
-      @game.abilities(corporation, :teleport) do |ability, _|
-        ability.hexes.each do |hex_id|
-          hex = @game.hex_by_id(hex_id)
-          hex.neighbors.each { |e, _| hexes[hex][e] = true }
-          hex.tile.cities.each do |node|
-            nodes[node] = true
-            yield node if ability.used? && block_given?
+        @game.abilities(corporation, :teleport) do |ability, _|
+          ability.hexes.each do |hex_id|
+            hex = @game.hex_by_id(hex_id)
+            hex.neighbors.each { |e, _| hexes[hex][e] = true }
+            hex.tile.cities.each do |node|
+              nodes[node] = true
+              yield node if ability.used? && block_given?
+            end
           end
         end
       end
@@ -136,7 +150,7 @@ module Engine
         visited = tokens.reject { |token, _| token == node }
         local_nodes = {}
 
-        node.walk(visited: visited, corporation: corporation) do |path|
+        node.walk(visited: visited, corporation: ghost_train ? nil : corporation) do |path|
           paths[path] = true
           path.nodes.each do |p_node|
             nodes[p_node] = true
@@ -176,12 +190,15 @@ module Engine
 
       hexes.default = nil
       hexes.transform_values!(&:keys)
-
-      @routes[corporation] = routes
-      @connected_hexes[corporation] = hexes
-      @connected_nodes[corporation] = nodes
-      @connected_paths[corporation] = paths
-      @reachable_hexes[corporation] = paths.map { |path, _| [path.hex, true] }.to_h
+      if ghost_train
+        @ghost_train_reachable_hexes[corporation] = paths.map { |path, _| [path.hex, true] }.to_h
+      else
+        @routes[corporation] = routes
+        @connected_hexes[corporation] = hexes
+        @connected_nodes[corporation] = nodes
+        @connected_paths[corporation] = paths
+        @reachable_hexes[corporation] = paths.map { |path, _| [path.hex, true] }.to_h
+      end
     end
   end
 end
