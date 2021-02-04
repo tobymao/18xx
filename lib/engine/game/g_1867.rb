@@ -17,6 +17,7 @@ module Engine
                       gray: '#7c7b8c',
                       green: '#3c7b5c',
                       olive: '#808000',
+                      lightGreen: '#009a54ff',
                       lightBlue: '#4cb5d2',
                       lightishBlue: '#0097df',
                       teal: '#009595',
