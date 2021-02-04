@@ -15,8 +15,8 @@ module Engine
    "currencyFormatStr":"L.%d",
    "bankCash":7760,
    "certLimit":{
-      "3":20,
-      "4":15,
+      "3":19,
+      "4":14,
       "5":12,
       "6":10
    },
