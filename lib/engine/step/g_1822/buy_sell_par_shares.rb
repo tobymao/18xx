@@ -12,6 +12,8 @@ module Engine
         attr_accessor :bidders, :bid_actions
 
         def actions(entity)
+          return super if entity != current_entity
+
           actions = super
           actions << 'bid'
           actions
