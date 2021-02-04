@@ -245,6 +245,7 @@ module View
     def render_round
       description = @game_data['mode'] == :hotseat ? '[HOTSEAT] ' : ''
       description += "#{@game.class.title}: "
+      description += "Phase #{@game.phase.name} - "
       name = @round.class.name.split(':').last
       description += @game.round_description(name)
       description += @game.finished ? ' - Game Over' : " - #{@round.description}"
