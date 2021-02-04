@@ -108,19 +108,9 @@ module View
     end
 
     def reset_settings
-      input_elm(:bg).value = default_for(:bg)
-      input_elm(:font).value = default_for(:font)
-      input_elm(:bg2).value = default_for(:bg2)
-      input_elm(:font2).value = default_for(:font2)
-      input_elm(:your_turn).value = default_for(:your_turn)
-      input_elm(:hotseat_game).value = default_for(:hotseat_game)
-      input_elm(:simple_logos).value = default_for(:simple_logos)
-      input_elm(:red_logo).checked = false
-
-      TILE_COLORS.each do |color, hex_color|
-        input_elm(color).value = hex_color
-      end
-
+      %i[simple_logos red_logo].each { |e| input_elm(e).checked = default_for(e) }
+      %i[bg font bg2 font2 your_turn hotseat_game].each { |e| input_elm(e).value = default_for(e) }
+      TILE_COLORS.each { |color, hex_color| input_elm(color).value = hex_color }
       ROUTE_COLORS.each_with_index do |hex_color, index|
         input_elm(route_prop_string(index, :color)).value = hex_color
         input_elm(route_prop_string(index, :dash)).value = '0'
