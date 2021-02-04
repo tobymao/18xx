@@ -41,12 +41,12 @@ module Engine
       "F5":"Calabozo",
       "F1":"Caracas",
       "A6":"Colombia",
-      "B5":"San Cristobal",
+      "B5":"Cúcuta",
       "H5":"El Pilar",
       "I4":"Guayana City",
       "L5":"Guyana",
       "B1":"Maracaibo",
-      "C4":"El Vigía",
+      "C6":"San Cristobal",
       "F3":"San Juan de Los Morros",
       "J1":"Trinidad & Tobago",
       "G4":"Zaraza"
@@ -407,14 +407,14 @@ module Engine
             "C4"
          ],
          "city=revenue:0;upgrade=cost:15,terrain:mountain":[
-            "D3",
-            "C4"
+            "D3"
          ],
          "city=revenue:0":[
             "E2",
             "H3",
             "F5",
             "B5",
+            "C6",
             "F3",
             "G4"
          ],
