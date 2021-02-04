@@ -124,7 +124,7 @@ module Engine
     "635": {
       "count": 1,
       "color": "green",
-      "code": "city=revenue:40,loc:0.5;city=revenue:40,loc:2.5;city=revenue:40,loc:4.5;path=a:0,b:_0;path=a:_0,b:1;path=a:4,b:_2;path=a:_2,b:5;path=a:2,b:_1;path=a:_1,b:3;label=K;upgrade=cost:20,terrain:water"
+      "code": "city=revenue:40,loc:0.5;city=revenue:40,loc:2.5;city=revenue:40,loc:4.5;path=a:0,b:_0;path=a:_0,b:1;path=a:4,b:_2;path=a:_2,b:5;path=a:2,b:_1;path=a:_1,b:3;label=K;upgrade=cost:40,terrain:water"
     },
     "636": {
       "count": 1,
@@ -761,7 +761,8 @@ module Engine
       "type": "national",
       "coordinates": "E1",
       "city": 1,
-      "color": "red"
+      "color": "cream",
+      "text_color": "black"
     }
   ],
   "trains": [
