@@ -224,10 +224,6 @@ class Assets
     "//# sourceMappingURL=data:application/json;base64,#{Base64.encode64(map_json).delete("\n")}"
   end
 
-  def games_to_bundle
-    @games_to_bundle ||= Dir.glob('lib/engine/*/game.rb').map { |f| f.split('/')[-2] }
-  end
-
   def pin(pin_path)
     @pin ||=
       begin
