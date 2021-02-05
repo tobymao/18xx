@@ -91,7 +91,6 @@ module View
           props = {
             style: {
               grid: '1fr / repeat(2, max-content)',
-              gap: '2rem',
               justifyContent: 'center',
               backgroundColor: color_for(:bg2),
               color: color_for(:font2),
@@ -500,7 +499,7 @@ module View
 
       def render_revenue_history
         last_run = @corporation.operating_history[@corporation.operating_history.keys.max].revenue
-        h(:div, { style: { display: 'inline' } }, [
+        h(:div, { style: { display: 'inline', marginLeft: '2rem' } }, [
           'Last Run: ',
           h('span.bold', @game.format_currency(last_run)),
         ])
