@@ -958,6 +958,7 @@ module Engine
         return if @finished
 
         @finished = true
+        store_player_info
         scores = result.map { |name, value| "#{name} (#{format_currency(value)})" }
         @log << "-- Game over: #{scores.join(', ')} --"
       end
