@@ -61,7 +61,7 @@ module Engine
           Step::SpecialTrack,
           Step::BuyCompany,
           Step::Track,
-          Step::Token,
+          Step::G18FL::Token,
           Step::Route,
           Step::G18FL::Dividend,
           Step::DiscardTrain,
@@ -78,7 +78,14 @@ module Engine
         raise GameError, '3E must visit at least two paying revenue centers' if route.train.variant['name'] == '3E' &&
            stops.count { |h| !h.town? } <= 1
 
-        revenue
+        hotels = stops.count { |h| h.tile.icons.any? { |i| i.name == route.corporation.id } }
+
+        revenue + hotels * hotel_value
+      end
+
+      def hotel_value
+        # TODO: update
+        10
       end
 
       # Event logic goes here
