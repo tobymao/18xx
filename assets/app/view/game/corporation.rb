@@ -229,8 +229,8 @@ module View
         }
 
         max_size = values.max_by(&:size).size
-        value_props[:style].merge!(fontSize: 'small') if max_size > 6
-        value_props[:style].merge!(fontSize: 'x-small') if max_size > 10
+        value_props[:style][:fontSize] = 'small' if max_size > 6
+        value_props[:style][:fontSize] = 'x-small' if max_size > 10
 
         key_props = {
           style: {
