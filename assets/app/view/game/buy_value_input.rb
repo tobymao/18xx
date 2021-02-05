@@ -43,7 +43,7 @@ module View
             end
           end
 
-          if @selected_entity.owner == @corporation.owner
+          if @selected_entity.owner == @corporation.owner || !@selected_entity.owner
             buy.call
           else
             check_consent(@selected_entity.owner, buy)
