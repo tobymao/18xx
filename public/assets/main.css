@@ -250,6 +250,9 @@ text.number {
 .small_font {
   font-size: 90%;
 }
+.xsmall_font {
+  font-size: 80%;
+}
 
 .tile {
    fill: none;

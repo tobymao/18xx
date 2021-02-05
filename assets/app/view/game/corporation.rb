@@ -104,8 +104,6 @@ module View
 
         status_props = {
           style: {
-            grid: '1fr / repeat(2, max-content)',
-            gap: '2rem',
             justifyContent: 'center',
             backgroundColor: color_for(:bg2),
             color: color_for(:font2),
@@ -115,7 +113,9 @@ module View
         if @corporation.trains.any? && !@corporation.floated?
           children << h(:div, status_props, @game.float_str(@corporation))
         end
-        children << h(:div, status_props, render_status) if @game.status_str(@corporation)
+        if @game.status_str(@corporation)
+          children << h('div.bold.xsmall_font', status_props, @game.status_str(@corporation))
+        end
 
         h('div.corp.card', { style: card_style, on: { click: select_corporation } }, children)
       end
@@ -503,12 +503,6 @@ module View
           'Last Run: ',
           h('span.bold', @game.format_currency(last_run)),
         ])
-      end
-
-      def render_status
-        [h(:div, { style: { display: 'inline', fontSize: 'small' } }, [
-          h('span.bold', @game.status_str(@corporation)),
-        ])]
       end
 
       def render_operating_order
