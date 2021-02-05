@@ -743,7 +743,8 @@ module Engine
          ],
          "coordinates":"N20",
          "always_market_price":true,
-         "color":"goldenrod"
+         "color":"goldenrod",
+         "text_color":"black"
       },
       {
          "float_percent":20,
