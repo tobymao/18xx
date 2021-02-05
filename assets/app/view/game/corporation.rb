@@ -156,7 +156,7 @@ module View
           style: {
             grid: '1fr / max-content auto minmax(4rem, max-content)',
             gap: '0 0.3rem',
-            padding: '0.2rem 0.2rem 0.2rem 0.4rem',
+            padding: '0.2rem 0.2rem 0.2rem 0.35rem',
             backgroundColor: color_for(:bg2),
             color: color_for(:font2),
           },
@@ -165,7 +165,6 @@ module View
           style: {
             fontSize: '1.5rem',
             fontWeight: 'bold',
-            justifySelf: 'start',
           },
         }
         holdings_props = {
@@ -217,7 +216,7 @@ module View
 
         segment_props = {
           style: {
-            grid: @corporation.system? ? '40px auto / 1fr' : '25px auto / 1fr',
+            grid: "#{@corporation.system? ? '2.5' : '1.5'}rem auto / 1fr",
           },
         }
 
@@ -232,14 +231,9 @@ module View
         value_props[:style][:fontSize] = 'small' if max_size > 6
         value_props[:style][:fontSize] = 'x-small' if max_size > 10
 
-        key_props = {
-          style: {
-            alignSelf: 'end',
-          },
-        }
         h(:div, segment_props, [
           h('div.right.nowrap', values.map { |v| h(:div, value_props, v) }),
-          h(:div, key_props, key),
+          h(:div, key),
         ])
       end
 
@@ -247,7 +241,6 @@ module View
         token_list_props = {
           style: {
             grid: '1fr / auto-flow',
-            justifySelf: 'right',
             gap: '0 0.2rem',
             width: '100%',
             overflow: 'auto',
@@ -255,13 +248,7 @@ module View
         }
         token_column_props = {
           style: {
-            grid: '25px auto / 1fr',
-            justifyItems: 'center',
-          },
-        }
-        token_text_props = {
-          style: {
-            alignSelf: 'end',
+            grid: '1fr auto / 1fr',
           },
         }
 
@@ -292,7 +279,7 @@ module View
           img_props[:style][:filter] = 'contrast(50%) grayscale(100%)' if used
           h(:div, token_column_props, [
             h(:img, img_props),
-            h(:div, token_text_props, text),
+            h(:div, text),
           ])
         end)
       end

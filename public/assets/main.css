@@ -332,7 +332,7 @@ text.number {
 .corp div, .player div {
   display: grid;
 }
-.corp__title *, .corp__holdings div {
+.corp__title *, .corp__holdings * {
   align-self: center;
   justify-self: center;
 }
