@@ -587,7 +587,7 @@ module Engine
       "max_ownership_percent": 100,
       "type": "minor",
       "coordinates": "E9",
-      "color": "blue",
+      "color": "navy",
       "reservation_color": "lightGreen"
     },
     {
@@ -634,7 +634,7 @@ module Engine
       "max_ownership_percent": 100,
       "type": "minor",
       "coordinates": "H18",
-      "color": "red",
+      "color": "coral",
       "reservation_color": "lightGreen"
     },
     {
@@ -682,7 +682,7 @@ module Engine
       "max_ownership_percent": 100,
       "type": "minor",
       "coordinates": "I13",
-      "color": "red"
+      "color": "rose"
     },
     {
       "sym": "V",
@@ -745,7 +745,7 @@ module Engine
       "max_ownership_percent": 100,
       "type": "minor",
       "coordinates": "Q3",
-      "color": "gray",
+      "color": "navy",
       "reservation_color": "lightGreen"
     },
     {

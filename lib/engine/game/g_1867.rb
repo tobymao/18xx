@@ -25,6 +25,8 @@ module Engine
                       magenta: '#d30869',
                       purple: '#772282',
                       red: '#ef4223',
+                      rose: '#b7274c',
+                      coral: '#f3716d',
                       white: '#fff36b',
                       navy: '#000080',
                       cream: '#fffdd0',
