@@ -268,6 +268,7 @@ module Engine
       ],
       "coordinates": "B15",
       "color": "deepskyblue",
+      "text_color": "black",
       "always_market_price": true
     },
     {
