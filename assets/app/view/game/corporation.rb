@@ -181,7 +181,7 @@ module View
           elsif @corporation.cash.positive?
             h(:div, holdings_props, [render_to_float, render_cash])
           else
-            h(:div, holdings_props, @game.float_str(@corporation))
+            h(:div, [render_to_float])
           end
 
         h('div.corp__holdings', holdings_row_props, [
@@ -196,7 +196,7 @@ module View
       end
 
       def render_to_float
-        render_header_segment(@game.float_str(@corporation))
+        h(:div, { style: { textAlign: 'center' } }, @game.float_str(@corporation))
       end
 
       def render_trains
