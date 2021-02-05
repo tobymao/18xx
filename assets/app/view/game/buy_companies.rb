@@ -21,6 +21,12 @@ module View
         ].compact)
       end
 
+      def owned_by_other_player?(player, company)
+        return false unless company&.owner # Bank owned, not a player
+
+        player != company&.owner
+      end
+
       def render_companies
         hidden_companies = false
         props = {
@@ -31,11 +37,11 @@ module View
         }
 
         companies = @game.purchasable_companies.sort_by do |company|
-          [company.owner == @corporation.owner ? 0 : 1, company.value]
+          [!owned_by_other_player?(@corporation.owner, company) ? 0 : 1, company.value]
         end
 
         companies_to_buy = companies.map do |company|
-          if company.owner != @corporation.owner && !@show_other_players
+          if owned_by_other_player?(@corporation.owner, company) && !@show_other_players
             hidden_companies = true
             next
           end
