@@ -40,6 +40,7 @@ module Engine
       MARKET_TEXT = Base::MARKET_TEXT.merge(max_price: 'Maximum price for a 5-share corporation').freeze
 
       STATUS_TEXT = Base::STATUS_TEXT.merge(
+        'hotels_doubled' => ['Hotel Bonus Doubled', 'Hotel bonus increases from $10 to $20'],
         'may_convert' => ['Corporations May Convert',
                           'At the start of a corporations Operating turn it
                            may choose to convert to a 10 share corporation'],
@@ -84,8 +85,7 @@ module Engine
       end
 
       def hotel_value
-        # TODO: update
-        10
+        @phase.status.include?('hotels_doubled') ? 20 : 10
       end
 
       # Event logic goes here
