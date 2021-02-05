@@ -579,10 +579,12 @@ module Engine
         super
       end
 
-      def action_processed(_action)
-        @corporations.each do |corporation|
-          make_bankrupt!(corporation) if corporation.share_price&.type == :close
-        end
+      def action_processed(_action); end
+
+      def check_bankruptcy!(entity)
+        return unless entity.corporation?
+
+        make_bankrupt!(entity) if entity.share_price&.type == :close
       end
 
       def sorted_corporations
@@ -628,6 +630,7 @@ module Engine
         num_shares -= 1 if corporation.share_price.type == :ignore_one_sale
         num_shares.times { @stock_market.move_left(corporation) } if selling_movement?(corporation)
         log_share_price(corporation, price)
+        check_bankruptcy!(corporation)
       end
 
       def close_other_companies!(company)
