@@ -123,9 +123,9 @@ module View
       def render_title
         title_row_props = {
           style: {
-            grid: '1fr / repeat(auto-fit, auto)',
-            gridAutoFlow: 'column',
-            padding: '0.2rem 0.4rem',
+            grid: '1fr / auto 1fr auto',
+            gap: '0 0.4rem',
+            padding: '0.2rem 0.35rem',
             background: @corporation.color,
             color: @corporation.text_color,
             height: '2.4rem',
@@ -137,25 +137,14 @@ module View
             height: '1.6rem',
             width: '1.6rem',
             padding: '1px',
-            alignSelf: 'center',
-            justifySelf: 'start',
             border: '2px solid currentColor',
             borderRadius: '0.5rem',
           },
         }
-        name_props = {
-          style: {
-            color: 'currentColor',
-            display: 'inline-block',
-          },
-        }
-        name_props[:style][:justifySelf] = 'start' unless @corporation.system?
-        children = [h(:img, logo_props),
-                    h('div.title', name_props, @corporation.full_name)]
+        children = [h(:img, logo_props), h('div.title', @corporation.full_name)]
 
         if @corporation.system?
           logo_props[:attrs][:src] = logo_for_user(@corporation.corporations.last)
-          logo_props[:style][:justifySelf] = 'end'
           children << h(:img, logo_props)
         end
 
