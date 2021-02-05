@@ -851,7 +851,8 @@ module Engine
                 100
             ],
             "coordinates": "K15",
-            "color": "powderBlue"
+            "color": "powderBlue",
+            "text_color": "black"
         },
         {
             "sym": "CPR",
@@ -876,7 +877,8 @@ module Engine
                 100
             ],
             "coordinates": "D4",
-            "color": "khaki"
+            "color": "khaki",
+            "text_color": "black"
         },
         {
             "sym": "ERIE",
@@ -901,7 +903,8 @@ module Engine
                 100
             ],
             "coordinates": "J6",
-            "color" : "yellowGreen"
+            "color" : "yellowGreen",
+            "text_color": "black"
         },
         {
             "sym": "MC",
@@ -914,7 +917,8 @@ module Engine
                 100
             ],
             "coordinates": "A7",
-            "color": "gray70"
+            "color": "gray70",
+            "text_color": "black"
         },
         {
             "sym": "MP",
@@ -927,7 +931,8 @@ module Engine
                 100
             ],
             "coordinates": "I3",
-            "color": "khakiDark"
+            "color": "khakiDark",
+            "text_color": "black"
         },
         {
             "sym": "NYC",
@@ -951,7 +956,8 @@ module Engine
                 100
             ],
             "coordinates": "F10",
-            "color": "thistle"
+            "color": "thistle",
+            "text_color": "black"
         },
         {
             "sym": "NYH",
@@ -965,6 +971,7 @@ module Engine
             "coordinates": "G23",
             "city": 1,
             "color": "tan",
+            "text_color": "black",
             "abilities": [
                 {
                     "type": "description",
@@ -983,7 +990,8 @@ module Engine
                 100
             ],
             "coordinates": "K19",
-            "color": "lightCoral"
+            "color": "lightCoral",
+            "text_color": "black"
         },
         {
             "sym": "OS&H",
@@ -1021,7 +1029,8 @@ module Engine
                 100
             ],
             "coordinates": "H6",
-            "color": "plum"
+            "color": "plum",
+            "text_color": "black"
         }
     ],
     "trains": [
