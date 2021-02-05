@@ -1205,6 +1205,7 @@ module Engine
               80,
             ],
             color: 'orange',
+            text_color: 'black',
           },
           {
             sym: 'MAVAG',
