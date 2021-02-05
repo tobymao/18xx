@@ -47,7 +47,7 @@ module View
 
         def render_part
           children = []
-          color = 'white'
+          color = @reservation&.corporation? && @reservation&.reservation_color || 'white'
           radius = @radius
           if (owner = @token&.corporation&.owner) && Lib::Storage['show_player_colors'] &&
               @game.players.include?(owner)

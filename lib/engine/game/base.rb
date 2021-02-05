@@ -388,6 +388,8 @@ module Engine
           corporation.transform_keys!(&:to_sym)
           corporation[:abilities]&.each { |ability| ability.transform_keys!(&:to_sym) }
           corporation[:color] = const_get(:COLORS)[corporation[:color]&.to_sym] if const_defined?(:COLORS)
+          corporation[:reservation_color] =
+            const_get(:COLORS)[corporation[:reservation_color]&.to_sym] if const_defined?(:COLORS)
           corporation
         end
 

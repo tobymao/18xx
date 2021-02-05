@@ -24,7 +24,7 @@ module Engine
 
     attr_accessor :ipoed, :par_via_exchange, :max_ownership_percent, :float_percent, :capitalization, :second_share
     attr_reader :companies, :min_price, :name, :full_name, :fraction_shares, :type, :id, :needs_token_to_par,
-                :presidents_share
+                :presidents_share, :reservation_color
     attr_writer :par_price, :share_price
 
     SHARES = ([20] + Array.new(8, 10)).freeze
@@ -60,6 +60,7 @@ module Engine
       @par_via_exchange = nil
       @type = opts[:type]&.to_sym
       @hide_shares = opts[:hide_shares] || false
+      @reservation_color = opts[:reservation_color]
 
       init_abilities(opts[:abilities])
       init_operator(opts)

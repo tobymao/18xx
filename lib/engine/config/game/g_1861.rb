@@ -577,7 +577,7 @@ module Engine
     {
       "sym": "MB",
       "name": "Moscow-Brest Railway",
-      "logo": "1861/KP",
+      "logo": "1861/MB",
       "float_percent": 100,
       "always_market_price": true,
       "tokens": [
@@ -587,7 +587,8 @@ module Engine
       "max_ownership_percent": 100,
       "type": "minor",
       "coordinates": "E9",
-      "color": "blue"
+      "color": "blue",
+      "reservation_color": "lightGreen"
     },
     {
       "sym": "KR",
@@ -633,7 +634,8 @@ module Engine
       "max_ownership_percent": 100,
       "type": "minor",
       "coordinates": "H18",
-      "color": "red"
+      "color": "red",
+      "reservation_color": "lightGreen"
     },
     {
       "sym": "M-K",
@@ -695,7 +697,8 @@ module Engine
       "max_ownership_percent": 100,
       "type": "minor",
       "coordinates": "I19",
-      "color": "gray"
+      "color": "gray",
+      "reservation_color": "lightGreen"
     },
     {
       "sym": "TR",
@@ -710,7 +713,8 @@ module Engine
       "max_ownership_percent": 100,
       "type": "minor",
       "coordinates": "K17",
-      "color": "gray"
+      "color": "gray",
+      "reservation_color": "lightGreen"
     },
     {
       "sym": "SV",
@@ -725,7 +729,8 @@ module Engine
       "max_ownership_percent": 100,
       "type": "minor",
       "coordinates": "N10",
-      "color": "gray"
+      "color": "gray",
+      "reservation_color": "lightGreen"
     },
     {
       "sym": "E",
@@ -740,7 +745,8 @@ module Engine
       "max_ownership_percent": 100,
       "type": "minor",
       "coordinates": "Q3",
-      "color": "gray"
+      "color": "gray",
+      "reservation_color": "lightGreen"
     },
     {
       "sym": "RSR",
