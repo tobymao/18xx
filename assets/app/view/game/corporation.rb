@@ -261,6 +261,7 @@ module View
             end
           [logo_for_user(token), token.used, token_text]
         end
+        tokens_body.sort_by! { |t| t[1] ? 1 : -1 }
 
         @corporation.assignments.each do |assignment, _active|
           img = @game.class::ASSIGNMENT_TOKENS[assignment]
