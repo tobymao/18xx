@@ -381,7 +381,7 @@ module Engine
       "70",
       "80",
       "90",
-      "100p",
+      "100px",
       "110",
       "120",
       "135",
@@ -404,7 +404,7 @@ module Engine
       "60",
       "70",
       "80",
-      "90p",
+      "90px",
       "100",
       "110",
       "120",
@@ -424,7 +424,7 @@ module Engine
       "50",
       "60",
       "70",
-      "80p",
+      "80px",
       "90",
       "100",
       "110",
@@ -442,7 +442,7 @@ module Engine
       "45y",
       "50",
       "60",
-      "70p",
+      "70px",
       "80",
       "90",
       "100",
@@ -458,7 +458,7 @@ module Engine
       "40y",
       "45y",
       "50",
-      "60p",
+      "60px",
       "70",
       "80",
       "90",
@@ -695,6 +695,12 @@ module Engine
       "revenue": 10,
       "desc": "Have a face value £100 and converts into the LNWR's 10% director certificate. LNWR may also put it's destination token into Manchester when converted.",
       "abilities": [
+        {
+          "type": "exchange",
+          "corporations": ["LNWR"],
+          "owner_type": "player",
+          "from": "par"
+        }
       ],
       "color": "lnwrBlack",
       "text_color": "white"
@@ -706,6 +712,12 @@ module Engine
       "revenue": 10,
       "desc": "Have a face value £100 and contribute £100 to the conversion into the GWR director’s certificate.",
       "abilities": [
+        {
+          "type": "exchange",
+          "corporations": ["GWR"],
+          "owner_type": "player",
+          "from": "par"
+        }
       ],
       "color": "gwrGreen",
       "text_color": "white"
@@ -717,6 +729,12 @@ module Engine
       "revenue": 10,
       "desc": "Have a face value £100 and contribute £100 to the conversion into the LBSCR director’s certificate.",
       "abilities": [
+        {
+          "type": "exchange",
+          "corporations": ["LBSCR"],
+          "owner_type": "player",
+          "from": "par"
+        }
       ],
       "color": "lbscrYellow",
       "text_color": "white"
@@ -728,6 +746,12 @@ module Engine
       "revenue": 10,
       "desc": "Have a face value £100 and contribute £100 to the conversion into the SECR director’s certificate.",
       "abilities": [
+        {
+          "type": "exchange",
+          "corporations": ["SECR"],
+          "owner_type": "player",
+          "from": "par"
+        }
       ],
       "color": "secrOrange",
       "text_color": "white"
@@ -739,6 +763,12 @@ module Engine
       "revenue": 10,
       "desc": "Have a face value £100 and contribute £100 to the conversion into the CR director’s certificate.",
       "abilities": [
+        {
+          "type": "exchange",
+          "corporations": ["CR"],
+          "owner_type": "player",
+          "from": "par"
+        }
       ],
       "color": "crBlue",
       "text_color": "white"
@@ -750,6 +780,12 @@ module Engine
       "revenue": 10,
       "desc": "Have a face value £100 and contribute £100 to the conversion into the MR director’s certificate.",
       "abilities": [
+        {
+          "type": "exchange",
+          "corporations": ["MR"],
+          "owner_type": "player",
+          "from": "par"
+        }
       ],
       "color": "mrRed",
       "text_color": "white"
@@ -761,6 +797,12 @@ module Engine
       "revenue": 10,
       "desc": "Have a face value £100 and contribute £100 to the conversion into the L&YR director’s certificate.",
       "abilities": [
+        {
+          "type": "exchange",
+          "corporations": ["L&YR"],
+          "owner_type": "player",
+          "from": "par"
+        }
       ],
       "color": "lyrPurple",
       "text_color": "white"
@@ -772,6 +814,12 @@ module Engine
       "revenue": 10,
       "desc": "Have a face value £100 and contribute £100 to the conversion into the NBR director’s certificate.",
       "abilities": [
+        {
+          "type": "exchange",
+          "corporations": ["NBR"],
+          "owner_type": "player",
+          "from": "par"
+        }
       ],
       "color": "nbrBrown",
       "text_color": "white"
@@ -783,6 +831,12 @@ module Engine
       "revenue": 10,
       "desc": "Have a face value £100 and contribute £100 to the conversion into the SWR director’s certificate.",
       "abilities": [
+        {
+          "type": "exchange",
+          "corporations": ["SWR"],
+          "owner_type": "player",
+          "from": "par"
+        }
       ],
       "color": "swrGray",
       "text_color": "white"
@@ -794,6 +848,12 @@ module Engine
       "revenue": 10,
       "desc": "Have a face value £100 and contribute £100 to the conversion into the NER director’s certificate.",
       "abilities": [
+        {
+          "type": "exchange",
+          "corporations": ["NER"],
+          "owner_type": "player",
+          "from": "par"
+        }
       ],
       "color": "nerGreen",
       "text_color": "white"
@@ -1481,10 +1541,12 @@ module Engine
       "name": "London and North West Railway",
       "logo": "1822/LNWR",
       "tokens": [
-        0
+        0,
+        100
       ],
       "type": "major",
-      "float_percent": 20,
+      "float_percent": 10,
+      "shares": [10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
       "always_market_price": true,
       "coordinates": "M38",
       "city": 3,
@@ -1495,7 +1557,8 @@ module Engine
       "name": "Great Western Railway",
       "logo": "1822/GWR",
       "tokens": [
-        0
+        0,
+        100
       ],
       "type": "major",
       "float_percent": 20,
@@ -1509,7 +1572,8 @@ module Engine
       "name": "London, Brighton and South Coast Railway",
       "logo": "1822/LBSCR",
       "tokens": [
-        0
+        0,
+        100
       ],
       "type": "major",
       "float_percent": 20,
@@ -1524,7 +1588,8 @@ module Engine
       "name": "South Eastern & Chatham Railway",
       "logo": "1822/SECR",
       "tokens": [
-        0
+        0,
+        100
       ],
       "type": "major",
       "float_percent": 20,
@@ -1538,7 +1603,8 @@ module Engine
       "name": "Caledonian Railway",
       "logo": "1822/CR",
       "tokens": [
-        0
+        0,
+        100
       ],
       "type": "major",
       "float_percent": 20,
@@ -1551,7 +1617,8 @@ module Engine
       "name": "Midland Railway",
       "logo": "1822/MR",
       "tokens": [
-        0
+        0,
+        100
       ],
       "type": "major",
       "float_percent": 20,
@@ -1564,7 +1631,8 @@ module Engine
       "name": "Lancashire & Yorkshire",
       "logo": "1822/LYR",
       "tokens": [
-        0
+        0,
+        100
       ],
       "type": "major",
       "float_percent": 20,
@@ -1577,7 +1645,8 @@ module Engine
       "name": "North British Railway",
       "logo": "1822/NBR",
       "tokens": [
-        0
+        0,
+        100
       ],
       "type": "major",
       "float_percent": 20,
@@ -1590,7 +1659,8 @@ module Engine
       "name": "South Wales Railway",
       "logo": "1822/SWR",
       "tokens": [
-        0
+        0,
+        100
       ],
       "type": "major",
       "float_percent": 20,
@@ -1604,7 +1674,8 @@ module Engine
       "name": "North Eastern Railway",
       "logo": "1822/NER",
       "tokens": [
-        0
+        0,
+        100
       ],
       "type": "major",
       "float_percent": 20,
@@ -2068,13 +2139,16 @@ module Engine
     },
     {
       "name": "2",
-      "on": "2",
+      "on": ["2", "3"],
       "train_limit": {
         "minor": 2,
         "major": 4
       },
       "tiles": [
         "yellow"
+      ],
+      "status": [
+        "can_convert_concessions"
       ],
       "operating_rounds": 2
     },
@@ -2090,7 +2164,8 @@ module Engine
         "green"
       ],
       "status": [
-        "can_buy_trains"
+        "can_buy_trains",
+        "can_convert_concessions"
       ],
       "operating_rounds": 2
     },
@@ -2106,7 +2181,8 @@ module Engine
         "green"
       ],
       "status": [
-        "can_buy_trains"
+        "can_buy_trains",
+        "can_convert_concessions"
       ],
       "operating_rounds": 2
     },
