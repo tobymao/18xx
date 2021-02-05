@@ -31,6 +31,9 @@ module Engine
       HOME_TOKEN_TIMING = :operate
       LIMIT_TOKENS_AFTER_MERGER = 999
 
+      EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false # if ebuying from depot, must buy cheapest train
+      EBUY_OTHER_VALUE = false # allow ebuying other corp trains for up to face
+
       STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
         par: :red,
         par_2: :green,
@@ -101,6 +104,7 @@ module Engine
         @corporations, @future_corporations = @corporations.partition { |corporation| corporation.type == :small }
 
         block_lay_for_purple_tiles
+        init_player_debts
       end
 
       def init_round
@@ -136,6 +140,10 @@ module Engine
 
       def init_stock_market
         StockMarket.new(self.class::MARKET, [], zigzag: true)
+      end
+
+      def init_player_debts
+        @player_debts = @players.map { |player| [player.id, { debt: 0, penalty_interest: 0 }] }.to_h
       end
 
       def new_operating_round
@@ -359,8 +367,36 @@ module Engine
         str += " + #{route.corporation.name} bonus" if route.stops.any? do |stop|
                                                          stop.tile.label.to_s == route.corporation.id
                                                        end
-
         str
+      end
+
+      def increase_debt(player, amount)
+        entity = @player_debts[player.id]
+        entity[:debt] += amount
+        entity[:penalty_interest] += amount
+      end
+
+      def reset_debt(player)
+        entity = @player_debts[player.id]
+        entity[:debt] = 0
+      end
+
+      def debt(player)
+        @player_debts[player.id][:debt]
+      end
+
+      def penalty_interest(player)
+        @player_debts[player.id][:penalty_interest]
+      end
+
+      def player_value(player)
+        player.value - debt(player) - penalty_interest(player)
+      end
+
+      def liquidity(player, emergency: false)
+        return player.cash if emergency
+
+        super
       end
     end
   end

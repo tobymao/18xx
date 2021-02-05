@@ -74,6 +74,7 @@ module View
         def render_buttons
           buttons = []
           buttons.concat(render_merge_button) if @current_actions.include?('merge')
+          buttons.concat(render_payoff_debt_button) if @current_actions.include?('payoff_all_debt')
 
           buttons.any? ? [h(:div, buttons)] : []
         end
@@ -99,6 +100,19 @@ module View
           end
 
           [h(:button, { on: { click: merge } }, @step.merge_action)]
+        end
+
+        def render_payoff_debt_button
+          return [] if !@game.respond_to?(:debt) || @game.debt(@current_entity).zero?
+
+          payoff_debt = lambda do
+            process_action(Engine::Action::PayoffAllDebt.new(
+              @current_entity
+            ))
+          end
+
+          [h(:button, { on: { click: payoff_debt } },
+             "Payoff all debt (#{@game.format_currency(@game.debt(@current_entity))})")]
         end
 
         def render_failed_merge

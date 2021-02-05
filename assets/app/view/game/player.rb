@@ -127,6 +127,21 @@ module View
             h('td.right', @game.format_currency(@game.bidding_power(@player))),
           ])
         end
+
+        if @game.respond_to?(:debt)
+          trs << h(:tr, [
+            h(:td, 'Debt'),
+            h('td.right', @game.format_currency(@game.debt(@player))),
+          ])
+        end
+
+        if @game.respond_to?(:penalty_interest)
+          trs << h(:tr, [
+            h(:td, 'Penalty Interest'),
+            h('td.right', @game.format_currency(@game.penalty_interest(@player))),
+          ])
+        end
+
         trs << h(:tr, [
           h(:td, 'Certs'),
           h('td.right', td_cert_props, @game.show_game_cert_limit? ? "#{num_certs}/#{cert_limit}" : num_certs.to_s),
