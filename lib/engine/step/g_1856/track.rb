@@ -39,7 +39,7 @@ module Engine
         def process_lay_tile(action)
           super
           # TODO: Replace 'true' with @loading check & implement auto action usage
-          @game.destination_check # if true
+          @game.destination_check! # if true
         end
       end
     end

@@ -312,7 +312,7 @@ module Engine
         POST_NATIONALIZATION_CERT_LIMIT[num_corporations][@players.size]
       end
 
-      def destination_check
+      def destination_check!
         @corporations.each do |corp|
           # The capitalization method of unparred corporations is nil
           next unless corp.capitalization == :escrow
