@@ -316,9 +316,26 @@ module Engine
           # The capitalization method of unparred corporations is nil
           next unless corp.capitalization == :escrow
 
-          reachable_hexes = @graph.ghost_train(corp, [hex_by_id(@destinations[corp.id].first)]).map { |h| h[0].id }
-          @log << "#{corp.name} destination check - hexes: #{reachable_hexes}"
+          destinated!(corp) if hexes_connected?(@destinations[corp.id].first, @destinations[corp.id].last)
         end
+      end
+
+      def hexes_connected?(start_hex_id, goal_hex_ids)
+        tokens = hex_by_id(start_hex_id).tile.cities.map { |city| [city, true] }.to_h
+
+        tokens.keys.each do |node|
+          visited = tokens.reject { |token, _| token == node }
+
+          node.walk(visited: visited, corporation: nil) do |path|
+            return true if goal_hex_ids.include?(path.hex.id)
+          end
+        end
+
+        false
+      end
+
+      def destinated!(corp)
+        @log << "-- #{corp.name} has destinated --"
       end
 
       #
