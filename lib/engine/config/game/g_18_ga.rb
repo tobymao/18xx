@@ -315,7 +315,8 @@ module Engine
             40
          ],
          "coordinates":"H4",
-         "color":"deepskyblue"
+         "color":"deepskyblue",
+         "text_color":"black"
       },
       {
          "float_percent":60,

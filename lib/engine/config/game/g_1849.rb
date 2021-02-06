@@ -693,7 +693,8 @@ module Engine
       "shares":[20, 10, 10, 10, 10, 10, 10, 20],
       "coordinates": "E1",
       "always_market_price": true,
-      "color": "goldenrod"
+      "color": "goldenrod",
+      "text_color": "black"
     },
     {
       "float_percent": 20,
@@ -741,7 +742,8 @@ module Engine
       "shares":[20, 10, 10, 10, 10, 10, 10, 20],
       "coordinates": "J6",
       "always_market_price": true,
-      "color": "pink"
+      "color": "pink",
+      "text_color": "black"
     }
   ],
   "trains": [

@@ -460,7 +460,8 @@ module Engine
         }
       ],
       "coordinates": "B9",
-      "color": "deepskyblue"
+      "color": "deepskyblue",
+      "text_color": "black"
     },
     {
       "float_percent": 60,
