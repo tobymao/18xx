@@ -239,6 +239,7 @@ module View
           },
         }
         token_column_props = {
+          attrs: {},
           style: {
             grid: '1fr auto / 1fr',
           },
@@ -261,6 +262,7 @@ module View
         end
 
         h(:div, token_list_props, tokens_body.map do |logo, used, text|
+          token_column_props[:attrs][:title] = "token #{used ? 'location: ' : 'cost: '}#{text}"
           img_props = {
             attrs: {
               src: logo,
