@@ -431,10 +431,10 @@ module Engine
          "offboard=revenue:yellow_20|green_30;path=a:4,b:_0":[
             "A6"
          ],
-         "offboard=revenue:yellow_20|green_30;path=a:2,b:_0":[
+         "offboard=revenue:yellow_20|green_30|brown_40;path=a:2,b:_0":[
             "L5"
          ],
-         "offboard=revenue:yellow_20|green_30;path=a:1,b:_0":[
+         "offboard=revenue:yellow_20|green_30|brown_40;path=a:1,b:_0":[
             "J1"
          ]
       },
