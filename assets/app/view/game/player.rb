@@ -127,7 +127,6 @@ module View
             h('td.right', @game.format_currency(@game.bidding_power(@player))),
           ])
         end
-
         trs << h(:tr, [
           h(:td, 'Certs'),
           h('td.right', td_cert_props, @game.show_game_cert_limit? ? "#{num_certs}/#{cert_limit}" : num_certs.to_s),
