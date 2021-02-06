@@ -154,14 +154,17 @@ module View
       def render_holdings
         holdings_row_props = {
           style: {
-            grid: '1fr / max-content auto minmax(4rem, max-content)',
-            gap: '0 0.3rem',
+            grid: '1fr / max-content minmax(max-content, 1fr) minmax(4rem, max-content)',
+            gap: '0 0.5rem',
             padding: '0.2rem 0.2rem 0.2rem 0.35rem',
             backgroundColor: color_for(:bg2),
             color: color_for(:font2),
           },
         }
         sym_props = {
+          attrs: {
+            title: 'Corporation Symbol',
+          },
           style: {
             fontSize: '1.5rem',
             fontWeight: 'bold',
@@ -171,7 +174,9 @@ module View
           style: {
             grid: '1fr / repeat(auto-fit, auto)',
             gridAutoFlow: 'column',
-            gap: '0 0.4rem',
+            gap: '0 0.5rem',
+            justifyContent: 'space-evenly',
+            justifySelf: 'normal',
           },
         }
 
@@ -214,27 +219,14 @@ module View
       def render_header_segment(values, key)
         values = [values] unless values.is_a?(Array)
 
-        segment_props = {
-          style: {
-            grid: "#{@corporation.system? ? '2.5' : '1.5'}rem auto / 1fr",
-          },
-        }
-
         value_props = {
-          style: {
-            maxWidth: '7.5rem',
-            fontWeight: 'bold',
+          attrs: {
+            title: key,
           },
         }
+        value_props[:style][:fontSize] = '80%' if values.max_by(&:size).size > 10
 
-        max_size = values.max_by(&:size).size
-        value_props[:style][:fontSize] = 'small' if max_size > 6
-        value_props[:style][:fontSize] = 'x-small' if max_size > 10
-
-        h(:div, segment_props, [
-          h('div.right.nowrap', values.map { |v| h(:div, value_props, v) }),
-          h(:div, key),
-        ])
+        h('div.bold', values.map { |v| h('div.nowrap', value_props, v) })
       end
 
       def render_tokens
@@ -278,6 +270,7 @@ module View
             },
           }
           img_props[:style][:filter] = 'contrast(50%) grayscale(100%)' if used
+
           h(:div, token_column_props, [
             h(:img, img_props),
             h(:div, text),
