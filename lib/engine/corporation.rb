@@ -52,6 +52,7 @@ module Engine
       @capitalization = opts[:capitalization] || :full
       @closed = false
       @float_percent = opts[:float_percent] || 60
+      @float_excludes_market = opts[:float_excludes_market] || false
       @floated = false
       @max_ownership_percent = opts[:max_ownership_percent] || 60
       @min_price = opts[:min_price]
@@ -163,11 +164,17 @@ module Engine
     end
 
     def floated?
-      @floated ||= percent_of(self) <= 100 - @float_percent
+      @floated ||= percent_of(self) <= 100 - @float_percent - (@float_excludes_market ? percent_in_market : 0)
     end
 
     def percent_to_float
-      @floated ? 0 : percent_of(self) - (100 - @float_percent)
+      return 0 if @floated
+
+      percent_of(self) - (100 - @float_percent - (@float_excludes_market ? percent_in_market : 0))
+    end
+
+    def percent_in_market
+      num_market_shares * share_percent
     end
 
     def unfloat!
