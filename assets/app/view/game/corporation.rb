@@ -201,7 +201,9 @@ module View
       end
 
       def render_to_float
-        h(:div, { style: { textAlign: 'center' } }, @game.float_str(@corporation))
+        props = { style: { textAlign: 'center' } }
+        props[:style][:maxWidth] = '3.5rem' if @corporation.cash.positive? && @corporation.tokens.size > 3
+        h(:div, props, @game.float_str(@corporation))
       end
 
       def render_trains
