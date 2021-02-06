@@ -13,6 +13,8 @@ module Engine
 
           actions << 'special_buy' if @game.debt(entity).positive?
 
+          actions << 'pass' unless actions.include?('pass') || actions.empty?
+
           actions
         end
 
