@@ -204,6 +204,10 @@ module Engine
         @nationalization = false
       end
 
+      def corporation_opts
+        { float_excludes_market: true }
+      end
+
       def share_prices
         repar_prices
       end
