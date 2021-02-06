@@ -142,8 +142,7 @@ module View
         when :map
           return process_action(Engine::Action::Assign.new(@entity, target: @hex)) if @actions.include?('assign')
 
-          # passing the entity to active_step yields EndGame as the active step for some reason, so we pass nil
-          step = @game.round.active_step(nil)
+          step = @game.round.active_step
           if @actions.include?('hex_token')
             return if step.available_tokens(@entity).empty?
 
