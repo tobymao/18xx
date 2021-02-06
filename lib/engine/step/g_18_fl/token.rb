@@ -18,7 +18,7 @@ module Engine
 
         def can_place_token?(entity)
           current_entity == entity &&
-            (tokens = available_tokens(entity)).any? &&
+            !(tokens = available_tokens(entity)).empty? &&
             min_token_price(tokens) <= buying_power(entity)
         end
 
