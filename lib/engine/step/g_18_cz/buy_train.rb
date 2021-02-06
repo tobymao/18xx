@@ -54,7 +54,7 @@ module Engine
 
           @game.increase_debt(entity, difference)
 
-          @log << "#{entity.name} takes a debt of #{difference}"
+          @log << "#{entity.name} takes a debt of #{@game.format_currency(difference)}"
 
           @game.bank.spend(difference, entity)
         end

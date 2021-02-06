@@ -74,7 +74,7 @@ module View
         def render_buttons
           buttons = []
           buttons.concat(render_merge_button) if @current_actions.include?('merge')
-          buttons.concat(render_payoff_debt_button) if @current_actions.include?('payoff_all_debt')
+          # buttons.concat(render_payoff_debt_button) if @current_actions.include?('payoff_all_debt')
 
           buttons.any? ? [h(:div, buttons)] : []
         end

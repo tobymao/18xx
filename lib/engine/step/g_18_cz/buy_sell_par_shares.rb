@@ -11,7 +11,7 @@ module Engine
 
           actions = super
 
-          actions << 'payoff_all_debt' if @game.debt(entity).positive?
+          actions << 'special_buy' if @game.debt(entity).positive?
 
           actions
         end
@@ -24,7 +24,7 @@ module Engine
           super && @game.debt(entity).zero?
         end
 
-        def process_payoff_all_debt(action)
+        def process_special_buy(action)
           player = action.entity
 
           debt = @game.debt(player)
@@ -37,6 +37,14 @@ module Engine
 
         def can_buy_any_from_ipo?(entity)
           super && @game.debt(entity).zero?
+        end
+
+        def buyable_items(entity)
+          [Item.new(description: 'Payoff all debt', cost: @game.debt(entity))]
+        end
+
+        def item_str(item)
+          "#{item.description} (#{@game.format_currency(item.cost)})"
         end
       end
     end
