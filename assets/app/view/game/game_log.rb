@@ -14,6 +14,7 @@ module View
       needs :follow_scroll, default: true, store: true
       needs :selected_action_id, default: nil, store: true
       needs :limit, default: nil
+      needs :scroll_pos, default: nil, store: true
 
       def render
         children = [render_log]
@@ -99,6 +100,10 @@ module View
           elm.scrollTop = elm.scrollHeight
         end
 
+        scroll_to_pos = lambda do |vnode|
+          Native(vnode)['elm'].scrollTop = @scroll_pos
+        end
+
         scroll_handler = lambda do |event|
           elm = Native(event).target
           bottom = elm.scrollHeight - elm.scrollTop <= elm.clientHeight + 5
@@ -109,7 +114,7 @@ module View
           key: 'log',
           hook: {
             postpatch: ->(_, vnode) { scroll_to_bottom.call(vnode) },
-            insert: ->(vnode) { scroll_to_bottom.call(vnode) },
+            insert: ->(vnode) { @scroll_pos ? scroll_to_pos.call(vnode) : scroll_to_bottom.call(vnode) },
             destroy: -> { store(:follow_scroll, true, skip: true) },
           },
           on: { scroll: scroll_handler },
