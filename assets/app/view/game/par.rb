@@ -13,9 +13,8 @@ module View
         entity = @game.current_entity
         return h(:div, 'Cannot Par') unless @game.can_par?(@corporation, entity)
 
-        prices = @game.round.active_step
-          .get_par_prices(entity, @corporation)
-          .sort_by(&:price)
+        step = @game.round.active_step
+        prices = step.get_par_prices(entity, @corporation).sort_by(&:price)
 
         par_buttons = prices.map do |share_price|
           par = lambda do
@@ -34,7 +33,9 @@ module View
             on: { click: par },
           }
 
-          purchasable_shares = [(entity.cash / share_price.price).to_i,
+          available_cash = entity.cash
+          available_cash = step.available_par_cash(entity, @corporation) if step.respond_to?(:available_par_cash)
+          purchasable_shares = [(available_cash / share_price.price).to_i,
                                 (@corporation.max_ownership_percent / 100) * @corporation.total_shares].min
           at_limit = purchasable_shares * @corporation.total_shares >= @corporation.max_ownership_percent
           flags = at_limit ? ' L' : ''

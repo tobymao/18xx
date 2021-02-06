@@ -36,8 +36,13 @@ module Engine
       MUST_BUY_TRAIN = :always
       NEXT_SR_PLAYER_ORDER = :most_cash
 
+      SELL_AFTER = :operate
+
+      SELL_BUY_ORDER = :sell_buy
+
       STATUS_TEXT = Base::STATUS_TEXT.merge(
-        'can_buy_trains' => ['Can buy trains', 'Can buy trains from other corporations']
+        'can_buy_trains' => ['Can buy trains', 'Can buy trains from other corporations'],
+        'can_convert_concessions' => ['Can convert concessions', 'Can float a major company by converting a concession']
       ).freeze
 
       BIDDING_BOX_MINOR_COUNT = 4
@@ -58,6 +63,8 @@ module Engine
       COMPANY_MINOR_PREFIX = 'M'
       COMPANY_PRIVATE_PREFIX = 'P'
 
+      MAJOR_TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
+
       MINOR_START_PAR_PRICE = 50
 
       UPGRADE_COST_L_TO_2 = 80
@@ -65,6 +72,12 @@ module Engine
       include StubsAreRestricted
 
       attr_accessor :bidding_token_per_player
+
+      def can_par?(corporation, parrer)
+        return false if corporation.type == :minor || !@phase.status.include?('can_convert_concessions')
+
+        super
+      end
 
       def can_run_route?(entity)
         entity.trains.any? { |t| t.name == 'L' } || super
@@ -93,15 +106,21 @@ module Engine
         discount_info
       end
 
-      def entity_can_use_company?(_entity, company)
-        # Setting bidding companies owner to bank, make sure the abilities dont show for theese
-        company.owner != @bank
+      def entity_can_use_company?(entity, company)
+        # TODO: [1822] First pass on company abilities, for now only players can use powers. Will change this later
+        entity.player? && entity == company.owner
       end
 
       def format_currency(val)
         return super if (val % 1).zero?
 
         format('£%.1<val>f', val: val)
+      end
+
+      def tile_lays(entity)
+        return self.class::MAJOR_TILE_LAYS if @phase.name.to_i >= 3 && entity.corporation? && entity.type == :major
+
+        super
       end
 
       def train_help(runnable_trains)
@@ -114,11 +133,22 @@ module Engine
          'Only one L train may operate on each station token.']
       end
 
+      def init_company_abilities
+        @companies.each do |company|
+          next unless (ability = abilities(company, :exchange))
+          next unless ability.from.include?(:par)
+
+          exchange_corporations(ability).first.par_via_exchange = company
+        end
+
+        super
+      end
+
       def init_round
         stock_round
       end
 
-      # TODO: Make include with 1861, 1867
+      # TODO: [1822] Make include with 1861, 1867
       def operating_order
         minors, majors = @corporations.select(&:floated?).sort.partition { |c| c.type == :minor }
         minors + majors
@@ -127,7 +157,6 @@ module Engine
       def operating_round(round_num)
         Round::Operating.new(self, [
           Step::Bankrupt,
-          Step::Exchange,
           Step::G1822::FirstTurnHousekeeping,
           Step::BuyCompany,
           Step::Track,
@@ -146,31 +175,33 @@ module Engine
       end
 
       def sorted_corporations
-        @corporations.select { |c| c.floated? && c.type == :major }
+        ipoed, others = @corporations.select { |c| c.type == :major }.partition(&:ipoed)
+        ipoed.sort + others
       end
 
       def stock_round
         Round::G1822::Stock.new(self, [
           Step::DiscardTrain,
-          Step::Exchange,
-          Step::SpecialTrack,
           Step::G1822::BuySellParShares,
         ])
       end
 
       def bidbox_minors
-        @companies.select { |c| c.id[0] == self.class::COMPANY_MINOR_PREFIX && (!c.owner || c.owner == @bank) }
-                  .first(self.class::BIDDING_BOX_MINOR_COUNT)
+        @companies.select do |c|
+          c.id[0] == self.class::COMPANY_MINOR_PREFIX && (!c.owner || c.owner == @bank) && !c.closed?
+        end.first(self.class::BIDDING_BOX_MINOR_COUNT)
       end
 
       def bidbox_concessions
-        @companies.select { |c| c.id[0] == self.class::COMPANY_CONCESSION_PREFIX && (!c.owner || c.owner == @bank) }
-                  .first(self.class::BIDDING_BOX_CONCESSION_COUNT)
+        @companies.select do |c|
+          c.id[0] == self.class::COMPANY_CONCESSION_PREFIX && (!c.owner || c.owner == @bank) && !c.closed?
+        end.first(self.class::BIDDING_BOX_CONCESSION_COUNT)
       end
 
       def bidbox_privates
-        @companies.select { |c| c.id[0] == self.class::COMPANY_PRIVATE_PREFIX && (!c.owner || c.owner == @bank) }
-                  .first(self.class::BIDDING_BOX_PRIVATE_COUNT)
+        @companies.select do |c|
+          c.id[0] == self.class::COMPANY_PRIVATE_PREFIX && (!c.owner || c.owner == @bank) && !c.closed?
+        end.first(self.class::BIDDING_BOX_PRIVATE_COUNT)
       end
 
       def init_bidding_token

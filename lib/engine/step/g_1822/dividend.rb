@@ -11,7 +11,7 @@ module Engine
         include HalfPay
 
         def actions(entity)
-          return [] if entity.type == :minor
+          return [] if entity.corporation? && entity.type == :minor
 
           super
         end
@@ -33,8 +33,12 @@ module Engine
         def share_price_change(entity, revenue = 0)
           return { share_direction: :left, share_times: 1 } unless revenue.positive?
 
-          if revenue >= entity.share_price.price || entity.type == :minor
-            { share_direction: :right, share_times: 1 }
+          price = entity.share_price.price
+          times = 0
+          times = 1 if revenue >= price || entity.type == :minor
+          times = 2 if revenue >= price * 2 && entity.type == :major
+          if times.positive?
+            { share_direction: :right, share_times: times }
           else
             {}
           end
