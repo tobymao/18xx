@@ -231,6 +231,11 @@ module Engine
       "min_players": 4,
       "abilities": [
         {
+           "type":"close",
+           "when": "bought_train",
+           "corporation":"FECR"
+        },
+        {
            "type":"shares",
            "shares":"FECR_1"
         }
