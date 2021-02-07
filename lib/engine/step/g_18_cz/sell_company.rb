@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 require_relative '../base'
-require_relative '../tracker'
-require_relative '../tokener'
 
 module Engine
   module Step
