@@ -377,6 +377,7 @@ module Engine
     {
       "sym": "EKB",
       "name": "1 Euskirchener Kreisbahn",
+      "type": "minor",
       "tokens": [
         0
       ],
@@ -388,6 +389,7 @@ module Engine
     {
       "sym": "KFBE",
       "name": "2 Köln-Frechen-Benzelrather E",
+      "type": "minor",
       "tokens": [
         0
       ],
@@ -399,6 +401,7 @@ module Engine
     {
       "sym": "KSZ",
       "name": "3 Kleinbagn Siegburg-Zündprf",
+      "type": "minor",
       "tokens": [
         0
       ],
@@ -410,6 +413,7 @@ module Engine
     {
       "sym": "KBE",
       "name": "4 Köln-Bonner Eisenbahn",
+      "type": "minor",
       "tokens": [
         0
       ],
@@ -421,6 +425,7 @@ module Engine
     {
        "sym": "BKB",
        "name": "5 Bergerheimer Kreisbahn",
+       "type": "minor",
        "tokens": [
          0
        ],
