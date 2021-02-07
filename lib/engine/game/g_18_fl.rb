@@ -24,11 +24,12 @@ module Engine
       GAME_PUBLISHER = nil
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18FL'
 
-      EBUY_PRES_SWAP = false # allow presidential swaps of other corps when ebuying
       EBUY_OTHER_VALUE = false # allow ebuying other corp trains for up to face
       HOME_TOKEN_TIMING = :operating_round
       SELL_BUY_ORDER = :sell_buy
       SELL_MOVEMENT = :left_block
+      SELL_AFTER = :operate
+      EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
       TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
 
       EVENTS_TEXT = Base::EVENTS_TEXT.merge(
