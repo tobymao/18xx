@@ -14,7 +14,7 @@ module View
       needs :follow_scroll, default: true, store: true
       needs :selected_action_id, default: nil, store: true
       needs :limit, default: nil
-      needs :scroll_pos, default: nil, store: true
+      needs :scroll_pos, default: nil
 
       def render
         children = [render_log]
