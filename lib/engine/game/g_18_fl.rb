@@ -29,6 +29,7 @@ module Engine
       HOME_TOKEN_TIMING = :operating_round
       SELL_BUY_ORDER = :sell_buy
       SELL_MOVEMENT = :left_block
+      SELL_AFTER = :operate
       TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
 
       EVENTS_TEXT = Base::EVENTS_TEXT.merge(
