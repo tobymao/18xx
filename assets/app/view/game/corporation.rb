@@ -222,6 +222,7 @@ module View
         values = [values] unless values.is_a?(Array)
 
         value_props = {
+          style: {},
           attrs: {
             title: key,
           },
