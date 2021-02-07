@@ -218,7 +218,7 @@ module Engine
           hex.tile.cities[0].place_token(minor, minor.next_token)
         end
 
-        # Place neutral tokens in Köln
+        # Use neutral tokens to make cities passable, but not blockable
         @neutral = Corporation.new(
           sym: 'N',
           name: 'Neutral',
@@ -226,9 +226,7 @@ module Engine
           tokens: [0, 0],
         )
         @neutral.owner = @bank
-
         @neutral.tokens.each { |token| token.type = :neutral }
-
         city_by_id('H5-0-0').place_token(@neutral, @neutral.next_token)
         city_by_id('J5-0-0').place_token(@neutral, @neutral.next_token)
       end
@@ -300,7 +298,8 @@ module Engine
             ['Q6'] => 'border=edge:0,type:impassable;border=edge:1,type:impassable;border=edge:2,type:impassable',
             ['S6'] => 'city=revenue:0;upgrade=cost:40;border=edge:3,type:impassable;label=BX',
             ['N5'] => 'stub=edge:4;border=edge:5,type:impassable;icon=image:1893/green_hex',
-            ['P5'] => 'town=revenue:0;border=edge:4,type:impassable;border=edge:5,type:impassable;icon=image:1893/green_hex',
+            ['P5'] => 'town=revenue:0;border=edge:4,type:impassable;border=edge:5,type:impassable;'\
+                      'icon=image:1893/green_hex',
           },
           yellow: {
             ['P7'] => 'city=revenue:20;path=a:1,b:_0;path=a:5,b:_0',
