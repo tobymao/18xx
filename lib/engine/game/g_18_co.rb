@@ -243,7 +243,7 @@ module Engine
         Round::Operating.new(self, [
         Step::Bankrupt,
         Step::G18CO::Takeover,
-        Step::DiscardTrain,
+        Step::G18CO::DiscardTrain,
         Step::G18CO::HomeToken,
         Step::G18CO::ReturnToken,
         Step::BuyCompany,
@@ -264,7 +264,7 @@ module Engine
       def stock_round
         Round::G18CO::Stock.new(self, [
         Step::G18CO::Takeover,
-        Step::DiscardTrain,
+        Step::G18CO::DiscardTrain,
         Step::G18CO::BuySellParShares,
         ])
       end
