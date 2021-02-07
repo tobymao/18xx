@@ -210,6 +210,13 @@ module Engine
         @bkb_reserved_share ||= agv.shares[2]
       end
 
+      def setup
+        @minors.each do |minor|
+          hex = hex_by_id(minor.coordinates)
+          hex.tile.cities[0].place_token(minor, minor.next_token)
+        end
+      end
+
       private
 
       def base_map

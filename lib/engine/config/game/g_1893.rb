@@ -386,8 +386,8 @@ module Engine
       "color": "green"
     },
     {
-      "sym": "EOD",
-      "name": "2 Eisenbahn Oderberg - Dombran",
+      "sym": "KFBE",
+      "name": "2 Köln-Frechen-Benzelrather E",
       "tokens": [
         0
       ],
