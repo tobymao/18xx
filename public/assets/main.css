@@ -250,6 +250,9 @@ text.number {
 .small_font {
   font-size: 90%;
 }
+.xsmall_font {
+  font-size: 80%;
+}
 
 .tile {
    fill: none;
@@ -329,7 +332,7 @@ text.number {
 .corp div, .player div {
   display: grid;
 }
-.corp__title div, .corp__holdings div {
+.corp__title *, .corp__holdings * {
   align-self: center;
   justify-self: center;
 }

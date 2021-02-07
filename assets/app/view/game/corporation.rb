@@ -91,7 +91,6 @@ module View
           props = {
             style: {
               grid: '1fr / repeat(2, max-content)',
-              gap: '2rem',
               justifyContent: 'center',
               backgroundColor: color_for(:bg2),
               color: color_for(:font2),
@@ -105,8 +104,6 @@ module View
 
         status_props = {
           style: {
-            grid: '1fr / repeat(2, max-content)',
-            gap: '2rem',
             justifyContent: 'center',
             backgroundColor: color_for(:bg2),
             color: color_for(:font2),
@@ -116,7 +113,9 @@ module View
         if @corporation.trains.any? && !@corporation.floated?
           children << h(:div, status_props, @game.float_str(@corporation))
         end
-        children << h(:div, status_props, render_status) if @game.status_str(@corporation)
+        if @game.status_str(@corporation)
+          children << h('div.bold.xsmall_font', status_props, @game.status_str(@corporation))
+        end
 
         h('div.corp.card', { style: card_style, on: { click: select_corporation } }, children)
       end
@@ -124,9 +123,9 @@ module View
       def render_title
         title_row_props = {
           style: {
-            grid: '1fr / repeat(auto-fit, auto)',
-            gridAutoFlow: 'column',
-            padding: '0.2rem 0.4rem',
+            grid: '1fr / auto 1fr auto',
+            gap: '0 0.4rem',
+            padding: '0.2rem 0.35rem',
             background: @corporation.color,
             color: @corporation.text_color,
             height: '2.4rem',
@@ -138,25 +137,14 @@ module View
             height: '1.6rem',
             width: '1.6rem',
             padding: '1px',
-            alignSelf: 'center',
-            justifySelf: 'start',
             border: '2px solid currentColor',
             borderRadius: '0.5rem',
           },
         }
-        name_props = {
-          style: {
-            color: 'currentColor',
-            display: 'inline-block',
-          },
-        }
-        name_props[:style][:justifySelf] = 'start' unless @corporation.system?
-        children = [h(:img, logo_props),
-                    h('div.title', name_props, @corporation.full_name)]
+        children = [h(:img, logo_props), h('div.title', @corporation.full_name)]
 
         if @corporation.system?
           logo_props[:attrs][:src] = logo_for_user(@corporation.corporations.last)
-          logo_props[:style][:justifySelf] = 'end'
           children << h(:img, logo_props)
         end
 
@@ -166,25 +154,29 @@ module View
       def render_holdings
         holdings_row_props = {
           style: {
-            grid: '1fr / max-content auto minmax(4rem, max-content)',
-            gap: '0 0.3rem',
-            padding: '0.2rem 0.2rem 0.2rem 0.4rem',
+            grid: '1fr / max-content minmax(max-content, 1fr) minmax(4rem, max-content)',
+            gap: '0 0.5rem',
+            padding: '0.2rem 0.2rem 0.2rem 0.35rem',
             backgroundColor: color_for(:bg2),
             color: color_for(:font2),
           },
         }
         sym_props = {
+          attrs: {
+            title: 'Corporation Symbol',
+          },
           style: {
             fontSize: '1.5rem',
             fontWeight: 'bold',
-            justifySelf: 'start',
           },
         }
         holdings_props = {
           style: {
             grid: '1fr / repeat(auto-fit, auto)',
             gridAutoFlow: 'column',
-            gap: '0 0.4rem',
+            gap: '0 0.5rem',
+            justifyContent: 'space-evenly',
+            justifySelf: 'normal',
           },
         }
 
@@ -194,7 +186,7 @@ module View
           elsif @corporation.cash.positive?
             h(:div, holdings_props, [render_to_float, render_cash])
           else
-            h(:div, holdings_props, @game.float_str(@corporation))
+            h(:div, [render_to_float])
           end
 
         h('div.corp__holdings', holdings_row_props, [
@@ -209,7 +201,9 @@ module View
       end
 
       def render_to_float
-        render_header_segment(@game.float_str(@corporation))
+        props = { style: { textAlign: 'center' } }
+        props[:style][:maxWidth] = '3.5rem' if @corporation.cash.positive? && @corporation.tokens.size > 3
+        h(:div, props, @game.float_str(@corporation))
       end
 
       def render_trains
@@ -227,53 +221,29 @@ module View
       def render_header_segment(values, key)
         values = [values] unless values.is_a?(Array)
 
-        segment_props = {
-          style: {
-            grid: @corporation.system? ? '40px auto / 1fr' : '25px auto / 1fr',
-          },
-        }
-
         value_props = {
-          style: {
-            maxWidth: '7.5rem',
-            fontWeight: 'bold',
+          attrs: {
+            title: key,
           },
         }
+        value_props[:style][:fontSize] = '80%' if values.max_by(&:size).size > 10
 
-        max_size = values.max_by(&:size).size
-        value_props[:style].merge!(fontSize: 'small') if max_size > 6
-        value_props[:style].merge!(fontSize: 'x-small') if max_size > 10
-
-        key_props = {
-          style: {
-            alignSelf: 'end',
-          },
-        }
-        h(:div, segment_props, [
-          h('div.right.nowrap', values.map { |v| h(:div, value_props, v) }),
-          h(:div, key_props, key),
-        ])
+        h('div.bold', values.map { |v| h('div.nowrap', value_props, v) })
       end
 
       def render_tokens
         token_list_props = {
           style: {
             grid: '1fr / auto-flow',
-            justifySelf: 'right',
             gap: '0 0.2rem',
             width: '100%',
             overflow: 'auto',
           },
         }
         token_column_props = {
+          attrs: {},
           style: {
-            grid: '25px auto / 1fr',
-            justifyItems: 'center',
-          },
-        }
-        token_text_props = {
-          style: {
-            alignSelf: 'end',
+            grid: '1fr auto / 1fr',
           },
         }
 
@@ -286,6 +256,7 @@ module View
             end
           [logo_for_user(token), token.used, token_text]
         end
+        tokens_body.sort_by! { |t| t[1] ? 1 : -1 }
 
         @corporation.assignments.each do |assignment, _active|
           img = @game.class::ASSIGNMENT_TOKENS[assignment]
@@ -293,6 +264,7 @@ module View
         end
 
         h(:div, token_list_props, tokens_body.map do |logo, used, text|
+          token_column_props[:attrs][:title] = "token #{used ? 'location: ' : 'cost: '}#{text}"
           img_props = {
             attrs: {
               src: logo,
@@ -302,9 +274,10 @@ module View
             },
           }
           img_props[:style][:filter] = 'contrast(50%) grayscale(100%)' if used
+
           h(:div, token_column_props, [
             h(:img, img_props),
-            h(:div, token_text_props, text),
+            h(:div, text),
           ])
         end)
       end
@@ -500,16 +473,10 @@ module View
 
       def render_revenue_history
         last_run = @corporation.operating_history[@corporation.operating_history.keys.max].revenue
-        h(:div, { style: { display: 'inline' } }, [
+        h(:div, { style: { display: 'inline', marginLeft: '2rem' } }, [
           'Last Run: ',
           h('span.bold', @game.format_currency(last_run)),
         ])
-      end
-
-      def render_status
-        [h(:div, { style: { display: 'inline', fontSize: 'small' } }, [
-          h('span.bold', @game.status_str(@corporation)),
-        ])]
       end
 
       def render_operating_order
