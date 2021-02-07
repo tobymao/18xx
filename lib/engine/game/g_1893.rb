@@ -119,7 +119,7 @@ module Engine
         end
       end
 
-      def init_corporations(stock_market)
+      def init_corporations(_stock_market)
         corporations = CORPORATIONS.dup
 
         corporations.map! do |corporation|

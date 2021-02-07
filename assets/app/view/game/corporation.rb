@@ -352,22 +352,24 @@ module View
         if !num_ipo_shares.empty? && @corporation.capitalization != @game.class::CAPITALIZATION
           num_ipo_shares = '* ' + num_ipo_shares
         end
-        double_cert = @corporation.shares_of(@corporation).any?(&:double_cert)
-        double_cert_reserved = @corporation.reserved_shares.any?(&:double_cert)
+        dc = @corporation.shares_of(@corporation).any?(&:double_cert)
+        dc_reserved = @corporation.reserved_shares.any?(&:double_cert)
+        double_cert = dc && !dc_reserved
 
         pool_rows = []
         if !num_ipo_shares.empty? || double_cert || @corporation.capitalization != :full
           pool_rows << h('tr.ipo', [
             h('td.left', @game.ipo_name(@corporation)),
-            h('td.right', shares_props, (double_cert && !double_cert_reserved ? 'd ' : '') + num_ipo_shares),
+            h('td.right', shares_props, (double_cert ? 'd ' : '') + num_ipo_shares),
             h('td.padded_number', share_price_str(@corporation.par_price)),
           ])
         end
 
         if @corporation.reserved_shares.any?
+          dc_txt = dc_reserved ? 'd ' : ''
           pool_rows << h('tr.reserved', [
             h('td.left', @game.ipo_reserved_name),
-            h('td.right', shares_props, (double_cert_reserved ? 'd ' : '') + share_number_str(@corporation.num_ipo_reserved_shares)),
+            h('td.right', shares_props, dc_txt + share_number_str(@corporation.num_ipo_reserved_shares)),
             h('td.padded_number', share_price_str(@corporation.par_price)),
           ])
         end

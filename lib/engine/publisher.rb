@@ -49,8 +49,8 @@ module Engine
       },
       marflow_games: {
         name: 'Marflow Games',
-        url: 'https://18xx-marflow-games.de/'
-      }
+        url: 'https://18xx-marflow-games.de/',
+      },
     }.freeze
   end
 end
