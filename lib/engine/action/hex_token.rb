@@ -10,8 +10,6 @@ module Engine
       def initialize(entity, hex:, token_type: nil)
         super(entity)
         @hex = hex
-        # token may be nil because when you upgrade someone's 00
-        # and place their token, you pretend to be them and you may not have a token
         @token = @entity.find_token_by_type(token_type&.to_sym)
       end
 
