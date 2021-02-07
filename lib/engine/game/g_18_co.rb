@@ -126,18 +126,18 @@ module Engine
         {
           sym: :priority_order_pass,
           short_name: 'Priority Order Pass',
-          desc: '(alpha) Priority is awarded in pass order in both Auction and Stock Rounds.',
+          desc: 'Priority is awarded in pass order in both Auction and Stock Rounds.',
         },
         {
           sym: :pay_per_trash,
           short_name: 'Pay Per Trash',
-          desc: '(alpha) Selling multiple shares before a corporation\'s first Operating Round returns the '\
+          desc: 'Selling multiple shares before a corporation\'s first Operating Round returns the '\
                 'amount listed in each movement down on the market, starting at the current share price.',
         },
         {
           sym: :major_investors,
           short_name: 'Major Investors',
-          desc: '(alpha) The Presidency cannot be transferred to another player during Corporate Share Buying.',
+          desc: 'The Presidency cannot be transferred to another player during Corporate Share Buying.',
         },
       ].freeze
 
