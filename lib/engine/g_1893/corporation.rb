@@ -8,8 +8,14 @@ module Engine
       attr_accessor :floatable
 
       def initialize(sym:, name:, **opts)
-        @floatable = true
         super
+        @floatable = true
+        return if sym != 'AGV' && sym != 'HGK'
+
+        shares[0].buyable = false
+        shares[1].buyable = false
+        shares[2].buyable = false
+        shares[2].double_cert = true
       end
 
       def floated?

@@ -164,6 +164,52 @@ module Engine
         'Corproation'
       end
 
+      def ipo_name(_entity = nil)
+        'Stock Market'
+      end
+
+      def ipo_reserved_name(_entity = nil)
+        'Reserved'
+      end
+
+      def agv
+        @agv_corporation ||= corporation_by_id('AGV')
+      end
+
+      def hgk
+        @hgk_corporation ||= corporation_by_id('HGK')
+      end
+
+      def hdsk_reserved_share
+        # 10% certificate in HGK
+        @hdsk_reserved_share ||= hgk.shares[1]
+      end
+
+      def ekb_reserved_share
+        # President's certificate in AGV
+        @ekb_reserved_share ||= agv.shares[0]
+      end
+
+      def kfbe_reserved_share
+        # 20% certificate in HGK
+        @kfbe_reserved_share ||= hgk.shares[2]
+      end
+
+      def ksz_reserved_share
+        # 10% certificate in AGV
+        @ksz_reserved_share ||= agv.shares[1]
+      end
+
+      def kbe_reserved_share
+        # President's certificate in HGK
+        @kbe_reserved_share ||= hgk.shares[0]
+      end
+
+      def bkb_reserved_share
+        # 20% certificate in AGV
+        @bkb_reserved_share ||= agv.shares[2]
+      end
+
       private
 
       def base_map
