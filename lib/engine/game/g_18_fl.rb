@@ -66,6 +66,7 @@ module Engine
           Step::SpecialTrack,
           Step::BuyCompany,
           Step::Track,
+          Step::G18FL::SpecialToken,
           Step::Token,
           Step::Route,
           Step::G18FL::Dividend,

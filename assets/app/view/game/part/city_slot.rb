@@ -115,6 +115,7 @@ module View
               action = Engine::Action::PlaceToken.new(
                 @selected_company || @game.current_entity,
                 city: @city,
+                tokener: @selected_company&.owned_by_player? ? @game.current_entity : nil,
                 slot: cheater || @slot_index,
                 token_type: next_tokens[0].type
               )
