@@ -33,6 +33,7 @@ module Engine
       SELL_BUY_ORDER = :sell_buy
 
       EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+        'remove_tile_block' => ['Remove tile block', 'Rhine may be passed. N5 P5 becomes possible to lay tiles in'],
         'agv_buyable' => ['AGV buyable', 'AGV shares can be bought in the stockmarket'],
         'agv_founded' => ['AGV founded', 'AGV is founded if not yet founded'],
         'hgk_buyable' => ['HGK buyable', 'HGK shares can be bought in the stockmarket'],
@@ -83,6 +84,7 @@ module Engine
       OPTION_TILES_USE_EXISTING_TRACK = %w[KV619-0 KV63-0].freeze
 
       MERGED_CORPORATIONS = %w[AGV HGK].freeze
+      TILE_BLOCK = %w[N5 P5].freeze
 
       def num_trains(train)
         return train[:num] unless train[:name] == '2'
@@ -215,6 +217,33 @@ module Engine
           hex = hex_by_id(minor.coordinates)
           hex.tile.cities[0].place_token(minor, minor.next_token)
         end
+
+        # Place neutral tokens in Köln
+        @neutral = Corporation.new(
+          sym: 'N',
+          name: 'Neutral',
+          logo: 'open_city',
+          tokens: [0, 0],
+        )
+        @neutral.owner = @bank
+
+        @neutral.tokens.each { |token| token.type = :neutral }
+
+        city_by_id('H5-0-0').place_token(@neutral, @neutral.next_token)
+        city_by_id('J5-0-0').place_token(@neutral, @neutral.next_token)
+      end
+
+      def upgrades_to?(from, to, special = false)
+        return super unless TILE_BLOCK.include?(from.hex.name)
+        return super if from.hex.tile.icons.empty?
+
+        raise GameError, "Cannot place a tile in #{from.hex.name} until green phase"
+      end
+
+      def event_remove_tile_block
+        @hexes
+          .select { |hex| TILE_BLOCK.include?(hex.name) }
+          .each { |hex| hex.tile.icons = [] }
       end
 
       private
@@ -270,10 +299,10 @@ module Engine
             ['O6'] => 'city=revenue:0;border=edge:1,type:impassable;border=edge:2,type:impassable',
             ['Q6'] => 'border=edge:0,type:impassable;border=edge:1,type:impassable;border=edge:2,type:impassable',
             ['S6'] => 'city=revenue:0;upgrade=cost:40;border=edge:3,type:impassable;label=BX',
+            ['N5'] => 'stub=edge:4;border=edge:5,type:impassable;icon=image:1893/green_hex',
+            ['P5'] => 'town=revenue:0;border=edge:4,type:impassable;border=edge:5,type:impassable;icon=image:1893/green_hex',
           },
           yellow: {
-            ['N5'] => 'stub=edge:4;border=edge:5,type:impassable',
-            ['P5'] => 'town=revenue:0;border=edge:4,type:impassable;border=edge:5,type:impassable',
             ['P7'] => 'city=revenue:20;path=a:1,b:_0;path=a:5,b:_0',
             optional_d7 => 'city=revenue:20;path=a:1,b:_0;path=a:4,b:_0;label=S',
             optional_e2 => 'city=revenue:20;path=a:0,b:_0;path=a:3,b:_0',

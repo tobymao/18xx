@@ -544,7 +544,10 @@ module Engine
       "rusts_on": "6",
       "discount": {
         "2": 40
-      }
+      },
+      "events": [
+        {"type": "remove_tile_block"}
+      ]
     },
     {
       "name": "4",
