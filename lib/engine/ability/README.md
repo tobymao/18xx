@@ -256,6 +256,10 @@ Modified station token placement
   effectively increasing the city's size by one. (See 18 Los Angeles's optional
   company "Dewey, Cheatham, and Howe" or the corporations which get removed in
   1846 2p Variant for examples). Default nil.
+- `bull`: Simlar to `cheater` except this token does not take a slot -
+  When `cheater` is used, when the city gets an extra city slot the 'cheater' token
+  goes into the newly opened slot. If `bull` is used, when the city gets an extra
+  token slot, the new token slot is open - the bull token does not consume it.
 - `special_only`: If true, this ability may only be used by explicitly
   activating the company to which it belongs (i.e., using the `SpecialTrack`
   step); if unset or false, `Engine::Step::Tokener#adjust_token_price_ability!`

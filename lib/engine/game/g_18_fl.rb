@@ -103,7 +103,6 @@ module Engine
 
         @corporations.each do |corp|
           corp.assignments.dup.each do |company, _|
-            puts 'axv', corp, company
             removals[company][:corporation] = corp.name
             corp.remove_assignment!(company)
           end

@@ -220,10 +220,10 @@ module Engine
           "owner_type": "player",
           "count": 1,
           "from_owner": true,
-          "cheater": 0,
+          "bull": true,
           "special_only": true,
           "price": 0,
-          "teleport_price": "0",
+          "teleport_price": 0,
           "hexes": [
             "B5", "B15", "B23", "G20", "F23", "J27", "K28"
           ]
