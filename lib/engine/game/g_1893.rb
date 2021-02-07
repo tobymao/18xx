@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
-require_relative '../config/game/g_1893'
 require_relative 'base'
+require_relative '../config/game/g_1893'
+require_relative '../g_1893/corporation'
 
 module Engine
   module Game
@@ -16,11 +17,11 @@ module Engine
 
       GAME_LOCATION = 'Cologne, Germany'
       GAME_RULES_URL = 'https://boardgamegeek.com/filepage/188242/1824-english-rules'
-      GAME_DESIGNER = 'Leonhard Orgler & Helmut Ohley'
-      GAME_PUBLISHER = :lonny_games
+      GAME_DESIGNER = 'Edwin Eckert'
+      GAME_PUBLISHER = :marflow_games
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1893'
 
-      GAME_END_CHECK = { bank: :full_or }.freeze
+      GAME_END_CHECK = { bankrupt: :immediate, bank: :full_or }.freeze
 
       # Move down one step for a whole block, not per share
       SELL_MOVEMENT = :down_block
@@ -47,6 +48,18 @@ module Engine
         'may_found_hgk' => ['May found HGK', 'HGK may be founded during the SR']
       ).freeze
 
+      MARKET_TEXT = {
+        par: 'Par values for non-merged corporations',
+        par_1: 'Par value for AGV',
+        par_2: 'Par value for HGK',
+      }.freeze
+
+      STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
+        par: :orange,
+        par_1: :red,
+        par_2: :green
+      ).freeze
+
       OPTIONAL_RULES = [
         {
           sym: :optional_2_train,
@@ -68,6 +81,8 @@ module Engine
       OPTION_TILES_USE_GREY_PHASE = %w[KV201-0 KV269-0 KV255-0 KV333-0 KV259-0].freeze
       OPTION_TILES_REMOVE_GREY_PHASE = %w[K269-0 K255-0].freeze
       OPTION_TILES_USE_EXISTING_TRACK = %w[KV619-0 KV63-0].freeze
+
+      MERGED_CORPORATIONS = %w[AGV HGK].freeze
 
       def num_trains(train)
         return train[:num] unless train[:name] == '2'
@@ -104,6 +119,24 @@ module Engine
         end
       end
 
+      def init_corporations(stock_market)
+        corporations = CORPORATIONS.dup
+
+        corporations.map! do |corporation|
+          Engine::G1893::Corporation.new(
+            **corporation.merge(corporation_opts),
+          )
+        end
+
+        corporations.each do |c|
+          next unless MERGED_CORPORATIONS.include?(c.id)
+
+          c.floatable = false
+        end
+
+        corporations
+      end
+
       def operating_round(round_num)
         Round::Operating.new(self, [
           Step::Bankrupt,
@@ -115,6 +148,20 @@ module Engine
           Step::Dividend,
           Step::BuyTrain,
         ], round_num: round_num)
+      end
+
+      def float_str(entity)
+        return super if !entity.corporation || entity.floatable
+        return super unless MERGED_CORPORATIONS.include?(entity.id)
+
+        'Floated via merge'
+      end
+
+      def status_str(entity)
+        return 'Minor' if entity.minor?
+        return 'Exchangable corporation' if !entity.floated? && MERGED_CORPORATIONS.include?(entity.id)
+
+        'Corproation'
       end
 
       private

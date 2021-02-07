@@ -189,6 +189,8 @@ module Engine
   },
   "market": [
     [
+      "",
+      "",
       "100",
       "110",
       "120",
@@ -205,11 +207,12 @@ module Engine
       "330"
     ],
     [
+      "",
       "80",
       "90",
       "100p",
       "110",
-      "120",
+      "120x",
       "135",
       "150",
       "165",
@@ -226,7 +229,7 @@ module Engine
       "90p",
       "100",
       "110",
-      "120",
+      "120z",
       "135",
       "150",
       "165",
@@ -478,6 +481,7 @@ module Engine
       ],
       "color": "gray70",
       "logo": "1893/RAG",
+      "text_color": "black",
       "coordinates": "D5",
       "abilities": [
         {
@@ -629,7 +633,7 @@ module Engine
       "status": [
         "rhine_impassible"
       ],
-      "operating_rounds": 1
+      "operating_rounds": 2
     },
     {
       "name": "3",
