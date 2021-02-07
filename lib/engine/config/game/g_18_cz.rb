@@ -1676,7 +1676,7 @@ module Engine
                   },
                   {
                       "name": "5g",
-                      "distance": 4,
+                      "distance": 5,
                       "price": 350,
                       "num": 4,
                       "variants": [
@@ -1726,7 +1726,7 @@ module Engine
                   },
                   {
                       "name": "5h",
-                      "distance": 4,
+                      "distance": 5,
                       "price": 350,
                       "num": 2,
                       "variants": [
@@ -1776,7 +1776,7 @@ module Engine
                   },
                   {
                       "name": "5i",
-                      "distance": 4,
+                      "distance": 5,
                       "price": 350,
                       "num": 2,
                       "variants": [
@@ -1826,7 +1826,7 @@ module Engine
                   },
                   {
                       "name": "5j",
-                      "distance": 4,
+                      "distance": 5,
                       "price": 350,
                       "num": 30,
                       "variants": [
