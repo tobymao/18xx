@@ -8,7 +8,7 @@ module Engine
       class DiscardTrain < DiscardTrain
         def process_discard_train(action)
           train = action.train
-          return super unless train.name == "2P"
+          return super unless train.name == '2P'
 
           @game.remove_train(train)
           @log << "#{action.entity.name} discards #{train.name} and it is removed from the game"
