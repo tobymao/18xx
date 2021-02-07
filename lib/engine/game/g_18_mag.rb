@@ -648,6 +648,55 @@ module Engine
         routes.sum(&:subsidy)
       end
 
+      # see if minor bought unused rail-cars
+      def all_railcars_used?(routes)
+        return true if @round.rail_cars.empty?
+
+        @round.rail_cars.each do |rc|
+          case rc
+          when 'RABA'
+            next if routes.any? { |r| r.visited_stops.any?(&:offboard?) }
+
+            unless multiplayer?
+              next if routes.any? { |r| r.visited_stops.sum(&:visit_cost) > r.train.distance }
+            end
+
+            return false
+          when 'SNW'
+            if routes.none? { |r| r.visited_stops.any? { |n| n.city? && n.tokens.any? { |t| t&.type == :neutral } } }
+              return false
+            end
+          when 'G&C'
+            return false if routes.none? { |r| r.visited_stops.sum(&:visit_cost) > r.train.distance }
+          end
+        end
+        true
+      end
+
+      def price_movement_chart
+        if multiplayer?
+          [
+            ['Per Share Dividend', 'Share Price Change'],
+            ['0 Ft', '1 space to the left'],
+            ['1 - 2 Ft', 'none'],
+            ['3 - 5 Ft', '1 space to the right'],
+            ['6 - 10 Ft', '2 spaces to the right'],
+            ['11 - 20 Ft', '3 spaces to the right'],
+            ['more than 20 Ft', '4 spaces to the right'],
+          ]
+        else
+          [
+            ['Per Share Dividend', 'Share Price Change'],
+            ['0 Ft', '1 space to the left'],
+            ['1 Ft', 'none'],
+            ['2 - 4 Ft', '1 space to the right'],
+            ['5 - 8 Ft', '2 spaces to the right'],
+            ['9 - 12 Ft', '3 spaces to the right'],
+            ['more than 12 Ft', '4 spaces to the right'],
+          ]
+        end
+      end
+
       def status_str(entity)
         if entity.minor? && @terrain_tokens[entity.name]&.positive?
           "Terrain Tokens: #{@terrain_tokens[entity.name]}"
@@ -671,7 +720,7 @@ module Engine
         if multiplayer?
           {
             'B17' => 'Kassa',
-            'B23' => 'Moszkva',
+            'B23' => 'Galicia',
             'C6' => 'Bécs',
             'C8' => 'Pozsony',
             'C12' => 'Selmecbánya',

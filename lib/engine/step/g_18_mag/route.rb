@@ -29,6 +29,12 @@ module Engine
           super unless entity.corporation?
         end
 
+        def process_run_routes(action)
+          raise GameError, 'Must use all purchased rail-car benefits' unless @game.all_railcars_used?(action.routes)
+
+          super
+        end
+
         def buyable_items(entity)
           return [] unless entity.minor?
           return [] unless entity.minor?
