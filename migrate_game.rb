@@ -89,6 +89,11 @@ def repair(game, original_actions, actions, broken_action)
     # 2P train should have been removed from the game, not put into the discard
     actions.delete(broken_action)
     return
+elsif game.is_a?(Engine::Game::G18CO) &&
+    (game.active_step.is_a?(Engine::Step::Token) || game.active_step.is_a?(Engine::Step::Route))
+    # Need to add a pass when the player has the GJGR private
+    add_pass.call
+return
   elsif broken_action['type'] == 'pass'
     if game.active_step.is_a?(Engine::Step::G1817::PostConversionLoans)
       actions.delete(broken_action)
