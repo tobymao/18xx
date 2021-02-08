@@ -141,6 +141,14 @@ module View
         case @role
         when :map
           return process_action(Engine::Action::Assign.new(@entity, target: @hex)) if @actions.include?('assign')
+
+          step = @game.round.active_step
+          if @actions.include?('hex_token')
+            return if step.available_tokens(@entity).empty?
+
+            next_token = step.available_tokens(@entity)[0].type
+            return process_action(Engine::Action::HexToken.new(@entity, hex: @hex, token_type: next_token))
+          end
           return unless @actions.include?('lay_tile')
 
           if @selected && (tile = @tile_selector&.tile)

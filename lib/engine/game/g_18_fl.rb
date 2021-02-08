@@ -41,6 +41,7 @@ module Engine
       MARKET_TEXT = Base::MARKET_TEXT.merge(max_price: 'Maximum price for a 5-share corporation').freeze
 
       STATUS_TEXT = Base::STATUS_TEXT.merge(
+        'hotels_doubled' => ['Hotel Bonus Doubled', 'Hotel bonus increases from $10 to $20'],
         'may_convert' => ['Corporations May Convert',
                           'At the start of a corporations Operating turn it
                            may choose to convert to a 10 share corporation'],
@@ -62,7 +63,7 @@ module Engine
           Step::SpecialTrack,
           Step::BuyCompany,
           Step::Track,
-          Step::Token,
+          Step::G18FL::Token,
           Step::Route,
           Step::G18FL::Dividend,
           Step::DiscardTrain,
@@ -79,7 +80,13 @@ module Engine
         raise GameError, '3E must visit at least two paying revenue centers' if route.train.variant['name'] == '3E' &&
            stops.count { |h| !h.town? } <= 1
 
-        revenue
+        hotels = stops.count { |h| h.tile.icons.any? { |i| i.name == route.corporation.id } }
+
+        revenue + hotels * hotel_value
+      end
+
+      def hotel_value
+        @phase.status.include?('hotels_doubled') ? 20 : 10
       end
 
       # Event logic goes here
