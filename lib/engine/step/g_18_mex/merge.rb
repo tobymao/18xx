@@ -23,7 +23,7 @@ module Engine
         end
 
         def merge_name
-          'Merge'
+          "Merge #{mergee.name} into #{merge_target.name}"
         end
 
         def mergeable_type(corporation)
@@ -33,7 +33,7 @@ module Engine
         def mergeable(_corporation)
           return [] unless merge_ongoing?
 
-          [@game.mergeable_candidates.first]
+          [mergee]
         end
 
         def override_entities
@@ -65,13 +65,17 @@ module Engine
         end
 
         def process_pass(_action)
-          @game.decline_merge(@game.mergeable_candidates.first)
+          @game.decline_merge(mergee)
         end
 
         private
 
         def merge_ongoing?
           @game.mergeable_candidates.any?
+        end
+
+        def mergee
+          @game.mergeable_candidates.first
         end
       end
     end

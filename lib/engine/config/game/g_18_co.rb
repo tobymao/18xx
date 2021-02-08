@@ -356,7 +356,7 @@ module Engine
 					"type": "tile_lay",
 					"free": true,
 					"owner_type": "corporation",
-					"when": ["special_track"],
+					"when": ["track", "special_track"],
 					"count": 1,
 					"special": true,
 					"tiles": [

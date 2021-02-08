@@ -643,7 +643,10 @@ module Engine
         "brown"
       ],
       "corporation_sizes": [10],
-      "operating_rounds": 3
+      "operating_rounds": 3,
+      "status":[
+        "hotels_doubled"
+      ]
     },
     {
       "name": "6",
@@ -656,7 +659,10 @@ module Engine
         "gray"
       ],
       "corporation_sizes": [10],
-      "operating_rounds": 3
+      "operating_rounds": 3,
+      "status":[
+        "hotels_doubled"
+      ]
     }
   ]
 }

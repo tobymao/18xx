@@ -21,6 +21,7 @@ module View
     needs :user
     needs :connected, default: false, store: true
     needs :before_process_pass, default: -> {}, store: true
+    needs :scroll_pos, default: nil, store: true
 
     def render_broken_game(e)
       inner = [h(:div, "We're sorry this game cannot be continued due to #{e}")]
@@ -215,6 +216,7 @@ module View
 
     def item(name, anchor = '')
       change_anchor = lambda do
+        store(:scroll_pos, `document.getElementById('chatlog').scrollTop`, skip: true) unless route_anchor
         store(:tile_selector, nil, skip: true)
         store(:app_route, "#{@app_route.split('#').first}#{anchor}")
       end
@@ -297,7 +299,7 @@ module View
 
       h('div.game', [
         render_round,
-        h(Game::GameLog, user: @user),
+        h(Game::GameLog, user: @user, scroll_pos: @scroll_pos),
         h(Game::HistoryAndUndo, num_actions: @num_actions),
         h(Game::EntityOrder, round: @round),
         h(Game::Abilities, user: @user, game: @game),
