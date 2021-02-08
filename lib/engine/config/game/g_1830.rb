@@ -46,7 +46,7 @@ module Engine
     "C15": "Kingston",
     "I15": "Baltimore",
     "K15": "Richmond",
-    "B16": "Ottowa",
+    "B16": "Ottawa",
     "F16": "Scranton",
     "H18": "Philadelphia & Trenton",
     "A19": "Montreal",
