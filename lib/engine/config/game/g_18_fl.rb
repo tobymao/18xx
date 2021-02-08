@@ -252,6 +252,7 @@ module Engine
       ],
       "coordinates": "B5",
       "color": "darkblue",
+      "type": "medium",
       "always_market_price": true
     },
     {
@@ -269,6 +270,7 @@ module Engine
       "coordinates": "B15",
       "color": "deepskyblue",
       "text_color": "black",
+      "type": "medium",
       "always_market_price": true
     },
     {
@@ -286,6 +288,7 @@ module Engine
       "coordinates": "B23",
       "city": 1,
       "color": "brightGreen",
+      "type": "medium",
       "always_market_price": true
     },
     {
@@ -303,6 +306,7 @@ module Engine
       "coordinates": "B23",
       "city": 0,
       "color": "orange",
+      "type": "medium",
       "always_market_price": true
     },
     {
@@ -319,6 +323,7 @@ module Engine
       ],
       "coordinates": "G20",
       "color": "purple",
+      "type": "medium",
       "always_market_price": true
     },
     {
@@ -335,6 +340,7 @@ module Engine
       ],
       "coordinates": "K28",
       "color": "red",
+      "type": "medium",
       "always_market_price": true
     }
   ],
@@ -584,7 +590,9 @@ module Engine
   "phases": [
     {
       "name": "2",
-      "train_limit": 4,
+      "train_limit": {
+        "medium": 2
+      },
       "tiles": [
         "yellow"
       ],
@@ -594,7 +602,10 @@ module Engine
     {
       "name": "3",
       "on": "3",
-      "train_limit": 4,
+      "train_limit": {
+        "medium": 2,
+        "large": 4
+      },
       "tiles": [
         "yellow",
         "green"
@@ -608,7 +619,10 @@ module Engine
     {
       "name": "4",
       "on": "4",
-      "train_limit": 3,
+      "train_limit": {
+        "medium": 1,
+        "large": 3
+      },
       "tiles": [
         "yellow",
         "green"
@@ -622,7 +636,9 @@ module Engine
     {
       "name": "5",
       "on": "5",
-      "train_limit": 2,
+      "train_limit": {
+        "large": 2
+      },
       "tiles": [
         "yellow",
         "green",
@@ -637,7 +653,9 @@ module Engine
     {
       "name": "6",
       "on": ["6", "3E"],
-      "train_limit": 2,
+      "train_limit": {
+        "large": 2
+      },
       "tiles": [
         "yellow",
         "green",
