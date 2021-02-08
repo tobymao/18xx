@@ -8,9 +8,6 @@ module View
     class Abilities < Snabberb::Component
       include Actionable
 
-      needs :game, store: true
-      needs :user, default: nil
-      needs :selected_company, default: nil, store: true
       needs :show_other_abilities, default: false, store: true
 
       ABILITIES = %i[tile_lay teleport assign_hexes assign_corporation token exchange sell_company].freeze
