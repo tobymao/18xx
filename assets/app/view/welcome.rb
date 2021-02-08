@@ -17,9 +17,9 @@ module View
 
     def render_notification
       message = <<~MESSAGE
-        <p>1849 now in beta 🚂🚂!</p>
+        <p>1860 now in production!</p>
+        <p>18Mag and 1849 now in beta 🚂🚂!</p>
         <p>1877: Venezuela cross train purchase variant now available</p>
-        <p>1861 and 18Mag 2 Player Variant available for alpha testing!</p>
 
         <p><a href='https://www.kickstarter.com/projects/all-aboardgames/1860-railways-on-the-isle-of-wight?ref=chtgcf'>1860 is now available on kickstarter</a>! It is the best 2-player 18xx and available to play here!<p>
         <p>Please file <a href='https://github.com/tobymao/18xx/issues'>issues and ideas</a> on
