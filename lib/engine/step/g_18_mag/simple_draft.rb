@@ -65,6 +65,10 @@ module Engine
 
         def auctioning; end
 
+        def auctioneer?
+          false
+        end
+
         def bids
           {}
         end
