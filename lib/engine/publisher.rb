@@ -43,6 +43,10 @@ module Engine
         name: 'Self-published',
         url: 'https://18xx.games',
       },
+      lookout: {
+        name: 'Lookout Games',
+        url: 'https://lookout-spiele.de/',
+      },
     }.freeze
   end
 end
