@@ -307,7 +307,8 @@ module Engine
             "4",
             "58"
           ],
-          "when": "track"
+          "when": "owning_corp_or_turn",
+          "count": 1
         }
       ]
     },
@@ -381,7 +382,7 @@ module Engine
       "sym": "BO",
       "value": 220,
       "revenue": 30,
-      "desc": "The owner of the BO private company immediately receives the President's certificate of the B&O without further payment. The BO private company may not be sold to any corporation, and does not exchange hands if the owning player loses the Presidency of the B&O. When the B&O purchases its first train the private company is closed down. Blocks I13 & I15 while owned by a player",
+      "desc": "The owner of the BO private company immediately receives the President's certificate of the B&O without further payment. The BO private company may not be sold to any corporation, and does not exchange hands if the owning player loses the Presidency of the B&O. When the B&O purchases its first train the private company is closed down. Blocks I13 & I15",
       "abilities": [
         {
           "type": "blocks_hexes",
@@ -393,7 +394,7 @@ module Engine
         },
 				{
 					"type": "close",
-					"when": "run_train",
+					"when": "bought_train",
 					"corporation": "B&O"
 				},
 				{
@@ -542,7 +543,10 @@ module Engine
       "name": "5",
       "distance": 5,
       "price": 450,
-      "num": 3
+      "num": 3,
+      "events":[
+        {"type": "close_companies"}
+      ]
     },
     {
       "name": "6",
@@ -739,24 +743,33 @@ module Engine
     },
     {
       "name": "3",
+      "on": "3",
       "train_limit": 4,
       "tiles": [
         "yellow",
         "green"
       ],
-      "operating_rounds": 2
+      "operating_rounds": 2,
+      "status":[
+        "can_buy_companies"
+      ]
     },
     {
       "name": "4",
+      "on": "4",
       "train_limit": 3,
       "tiles": [
         "yellow",
         "green"
       ],
-      "operating_rounds": 2
+      "operating_rounds": 2,
+      "status":[
+        "can_buy_companies"
+      ]
     },
     {
       "name": "5",
+      "on": "5",
       "train_limit": 2,
       "tiles": [
         "yellow",
@@ -767,6 +780,7 @@ module Engine
     },
     {
       "name": "6",
+      "on": "6",
       "train_limit": 2,
       "tiles": [
         "yellow",
@@ -777,6 +791,7 @@ module Engine
     },
     {
       "name": "D",
+      "on": "D",
       "train_limit": 2,
       "tiles": [
         "yellow",
