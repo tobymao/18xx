@@ -592,7 +592,7 @@ module Engine
       ]
     },
     "gray": {
-      "city=revenue:20;path=a:5,b:_0;path=a:0,b:_0": [
+      "city=revenue:20;path=a:5,b:_0;path=a:4,b:_0": [
         "D2"
       ],
       "city=revenue:30;path=a:5,b:_0;path=a:0,b:_0": [
