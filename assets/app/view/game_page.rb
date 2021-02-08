@@ -218,7 +218,8 @@ module View
       change_anchor = lambda do
         unless route_anchor
           elm = Native(`document.getElementById('chatlog')`)
-          store(:scroll_pos, elm.scrollTop < elm.scrollHeight - 220 ? elm.scrollTop : nil, skip: true)
+          # only store when scrolled up at least one line (20px)
+          store(:scroll_pos, elm.scrollTop < elm.scrollHeight - elm.offsetHeight - 20 ? elm.scrollTop : nil, skip: true)
         end
         store(:tile_selector, nil, skip: true)
         store(:app_route, "#{@app_route.split('#').first}#{anchor}")
