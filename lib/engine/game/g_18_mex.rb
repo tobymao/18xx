@@ -441,12 +441,13 @@ module Engine
           cities = tile.cities
           city = cities.find { |c| c.reserved_by?(major) } || cities.first
           city.remove_reservation!(major)
+          tile.reservations.delete(major)
           if ndm.tokens.find { |t| t.city == city }
             @log << "#{ndm.name} does not place token in #{city.hex.name} as it already has a token there"
           else
             @log << "#{ndm.name} places an exchange token in #{major.name}'s home location in #{city.hex.name}"
             ndm_replacement = exchange_tokens.first
-            city.place_token(ndm, ndm_replacement)
+            city.place_token(ndm, ndm_replacement, free: true)
             exchange_tokens.delete(ndm_replacement)
           end
         end
@@ -646,7 +647,7 @@ module Engine
         @log << "#{major.name}'s token in #{city.hex.name} is replaced with an #{ndm.name} token"
         ndm_replacement = exchange_tokens.first
         major_token.remove!
-        city.place_token(ndm, ndm_replacement, check_tokenable: false)
+        city.place_token(ndm, ndm_replacement, free: true, check_tokenable: false)
         exchange_tokens.delete(ndm_replacement)
       end
 
