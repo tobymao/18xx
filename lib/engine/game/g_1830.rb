@@ -19,7 +19,7 @@ module Engine
       GAME_RULES_URL = 'https://lookout-spiele.de/upload/en_1830re.html_Rules_1830-RE_EN.pdf'
       GAME_PUBLISHER = :lookout
       GAME_DESIGNER = 'Francis Tresham'
-
+      TRACK_RESTRICTION = :permissive
       SELL_BUY_ORDER = :sell_buy_sell
       load_from_json(Config::Game::G1830::JSON)
 
