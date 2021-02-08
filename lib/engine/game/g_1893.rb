@@ -2,7 +2,6 @@
 
 require_relative 'base'
 require_relative '../config/game/g_1893'
-require_relative '../g_1893/corporation'
 
 module Engine
   module Game
@@ -121,24 +120,6 @@ module Engine
         end
       end
 
-      def init_corporations(_stock_market)
-        corporations = CORPORATIONS.dup
-
-        corporations.map! do |corporation|
-          Engine::G1893::Corporation.new(
-            **corporation.merge(corporation_opts),
-          )
-        end
-
-        corporations.each do |c|
-          next unless MERGED_CORPORATIONS.include?(c.id)
-
-          c.floatable = false
-        end
-
-        corporations
-      end
-
       def operating_round(round_num)
         Round::Operating.new(self, [
           Step::Bankrupt,
@@ -213,6 +194,11 @@ module Engine
       end
 
       def setup
+        agv.floatable = false
+        hgk.floatable = false
+        [hdsk_reserved_share, ekb_reserved_share, kfbe_reserved_share, ksz_reserved_share,
+         kbe_reserved_share, bkb_reserved_share].each { |s| s.buyable = false }
+
         @minors.each do |minor|
           hex = hex_by_id(minor.coordinates)
           hex.tile.cities[0].place_token(minor, minor.next_token)
