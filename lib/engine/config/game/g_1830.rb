@@ -369,8 +369,15 @@ module Engine
       "sym": "CA",
       "value": 160,
       "revenue": 25,
-      "desc": "The initial purchaser of the CA immediately receives a 10% share of PRR stock without further payment. This action does not close the CA. The PRR corporation will not be running at this point, but the stock may be retained or sold subject to the ordinary rules of the game.",
+      "desc": "The initial purchaser of the CA immediately receives a 10% share of PRR stock without further payment. This action does not close the CA. The PRR corporation will not be running at this point, but the stock may be retained or sold subject to the ordinary rules of the game. Blocks H18 while owned by a player",
       "abilities": [
+        {
+          "type": "blocks_hexes",
+          "owner_type": "player",
+          "hexes": [
+            "H18"
+          ]
+        },
         {
           "type": "shares",
           "shares": "PRR_1"

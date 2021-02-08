@@ -22,6 +22,23 @@ module Engine
 
       SELL_BUY_ORDER = :sell_buy_sell
       load_from_json(Config::Game::G1830::JSON)
+
+      def operating_round(round_num)
+        Round::Operating.new(self, [
+          Step::Bankrupt,
+          Step::Exchange,
+          Step::SpecialTrack,
+          Step::BuyCompany,
+          Step::HomeToken,
+          Step::Track,
+          Step::Token,
+          Step::Route,
+          Step::Dividend,
+          Step::DiscardTrain,
+          Step::BuyTrain,
+          [Step::BuyCompany, blocks: true],
+        ], round_num: round_num)
+      end
     end
   end
 end
