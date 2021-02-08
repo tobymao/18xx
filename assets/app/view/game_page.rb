@@ -216,7 +216,11 @@ module View
 
     def item(name, anchor = '')
       change_anchor = lambda do
-        store(:scroll_pos, `document.getElementById('chatlog').scrollTop`, skip: true) unless route_anchor
+        unless route_anchor
+          elm = Native(`document.getElementById('chatlog')`)
+          # only store when scrolled up at least one line (20px)
+          store(:scroll_pos, elm.scrollTop < elm.scrollHeight - elm.offsetHeight - 20 ? elm.scrollTop : nil, skip: true)
+        end
         store(:tile_selector, nil, skip: true)
         store(:app_route, "#{@app_route.split('#').first}#{anchor}")
       end
