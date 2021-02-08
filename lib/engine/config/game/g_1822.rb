@@ -41,6 +41,7 @@ module Engine
     "D41": "Exeter",
     "E2": "Highlands",
     "E6": "Glasgow",
+    "E28": "Mid Wales",
     "E32": "Merthyr Tydfil & Pontypool",
     "E40": "Taunton",
     "F3": "Stirling",
@@ -48,7 +49,6 @@ module Engine
     "F7": "Hamilton & Coatbridge",
     "F11": "Dumfries",
     "F23": "Holyhead",
-    "F29": "Mid Wales",
     "F35": "Cardiff",
     "G4": "Falkirk",
     "G12": "Carlisle",
@@ -119,9 +119,9 @@ module Engine
     "4": 6,
     "5": 6,
     "6": 8,
-    "7": 6,
-    "8": 24,
-    "9": 24,
+    "7": "unlimited",
+    "8": "unlimited",
+    "9": "unlimited",
     "55": 1,
     "56": 1,
     "57": 6,
@@ -150,17 +150,7 @@ module Engine
     "X20": {
       "count": 1,
       "color": "yellow",
-      "code": "city=revenue:20,slots:2;path=a:1,b:_0;path=a:4,b:_0;label=S"
-    },
-    "X21": {
-      "count": 3,
-      "color": "yellow",
-      "code": "city=revenue:20;path=a:0,b:_0;path=a:1,b:_0;label=T"
-    },
-    "X22": {
-      "count": 3,
-      "color": "yellow",
-      "code": "city=revenue:20;path=a:0,b:_0;path=a:2,b:_0;label=T"
+      "code": "city=revenue:40;city=revenue:40;city=revenue:40;city=revenue:40;city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:1,b:_1;path=a:2,b:_2;path=a:3,b:_3;path=a:4,b:_4;path=a:5,b:_5;upgrade=cost:20;label=London"
     },
     "405": {
       "count": 3,
@@ -186,6 +176,11 @@ module Engine
       "count": 1,
       "color": "green",
       "code": "city=revenue:0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0;upgrade=cost:100;label=EC"
+    },
+    "X21": {
+      "count": 1,
+      "color": "green",
+      "code": "city=revenue:60;city=revenue:60;city=revenue:60;city=revenue:60;city=revenue:60;city=revenue:60;path=a:0,b:_0;path=a:1,b:_1;path=a:2,b:_2;path=a:3,b:_3;path=a:4,b:_4;path=a:5,b:_5;upgrade=cost:20;label=London"
     },
     "145": {
       "count": 4,
@@ -231,6 +226,11 @@ module Engine
       "count": 3,
       "color": "brown",
       "code": "city=revenue:50,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0;label=T"
+    },
+    "X22": {
+      "count": 1,
+      "color": "brown",
+      "code": "city=revenue:80;city=revenue:80;city=revenue:80;city=revenue:80;city=revenue:80;city=revenue:80;path=a:0,b:_0;path=a:1,b:_1;path=a:2,b:_2;path=a:3,b:_3;path=a:4,b:_4;path=a:5,b:_5;upgrade=cost:20;label=London"
     },
     "169": {
       "count": 2,
@@ -281,6 +281,11 @@ module Engine
       "count": 4,
       "color": "gray",
       "code": "city=revenue:50,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0"
+    },
+    "X23": {
+      "count": 1,
+      "color": "gray",
+      "code": "city=revenue:100;city=revenue:100;city=revenue:100;city=revenue:100;city=revenue:100;city=revenue:100;path=a:0,b:_0;path=a:1,b:_1;path=a:2,b:_2;path=a:3,b:_3;path=a:4,b:_4;path=a:5,b:_5;label=London"
     }
   },
   "market": [
@@ -1352,7 +1357,7 @@ module Engine
       "name": "Metropolitan Railway",
       "logo": "1822/14",
       "tokens": [
-        0
+        20
       ],
       "type": "minor",
       "always_market_price": true,
@@ -2007,7 +2012,7 @@ module Engine
       "city=revenue:20,loc:center;town=revenue:10,loc:1;path=a:_0,b:_1;border=edge:0,type:impassable;label=S":[
         "D35"
       ],
-      "city=revenue:0;city=revenue:0;city=revenue:0;city=revenue:0;city=revenue:0;city=revenue:0;path=a:0,b:_0;path=a:1,b:_1;path=a:2,b:_2;path=a:3,b:_3;path=a:4,b:_4;path=a:5,b:_5;upgrade=cost:20;label=London": [
+      "city=revenue:20;city=revenue:20;city=revenue:20;city=revenue:20;city=revenue:20;city=revenue:20;path=a:0,b:_0;path=a:1,b:_1;path=a:2,b:_2;path=a:3,b:_3;path=a:4,b:_4;path=a:5,b:_5;upgrade=cost:20;label=London": [
         "M38"
       ],
       "city=revenue:0;label=T": [
@@ -2067,14 +2072,23 @@ module Engine
       "city=revenue:yellow_10|green_20|brown_30|gray_40,slots:2;path=a:5,b:_0,terminal:1;icon=image:1822/SWR_DEST": [
         "C34"
       ],
-      "city=revenue:yellow_10|green_10|brown_20|gray_20,slots:2,groups:Highlands;path=a:5,b:_0,terminal:1;border=edge:0": [
+      "city=revenue:yellow_10|green_10|brown_20|gray_20,slots:2;path=a:0,b:_0,terminal:1;path=a:5,b:_0,terminal:1": [
         "E2"
       ],
-      "offboard=revenue:yellow_10|green_10|brown_20|gray_20,hide:1,groups:Highlands;path=a:0,b:_0,terminal:1;border=edge:3": [
+      "path=a:0,b:3": [
         "E4"
       ],
       "city=revenue:yellow_40|green_50|brown_60|gray_70,slots:3,loc:1;path=a:0,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0": [
         "E6"
+      ],
+      "path=a:0,b:4,lanes:2": [
+        "E26"
+      ],
+      "city=revenue:yellow_10|green_20|brown_20|gray_30,slots:3;path=a:0,b:_0,lanes:2,terminal:1;path=a:3,b:_0,lanes:2,terminal:1;path=a:4,b:_0,lanes:2,terminal:1;path=a:5,b:_0,lanes:2,terminal:1": [
+        "E28"
+      ],
+      "path=a:3,b:5,lanes:2": [
+        "E30"
       ],
       "path=a:0,b:5": [
         "E32"
@@ -2085,16 +2099,12 @@ module Engine
       "city=revenue:yellow_20|green_20|brown_30|gray_40,slots:2;path=a:5,b:_0,terminal:1": [
         "F23"
       ],
-      "offboard=revenue:yellow_10|green_20|brown_20|gray_30,hide:1,groups:MidWales;path=a:4,b:_0;path=a:5,b:_0;border=edge:0": [
-        "F25"
-      ],
-      "offboard=revenue:yellow_10|green_20|brown_20|gray_30,groups:MidWales;path=a:4,b:_0;path=a:5,b:_0;border=edge:0;border=edge:3": [
+      "path=a:1,b:4,a_lane:2.0;path=a:1,b:5,a_lane:2.1": [
+        "F25",
         "F27"
       ],
-      "city=revenue:yellow_10|green_20|brown_20|gray_30,slots:3,hide:1,loc:1.5,groups:MidWales;path=a:4,b:_0,terminal:1;path=a:5,b:_0,terminal:1;border=edge:0;border=edge:3": [
-        "F29"
-      ],
-      "offboard=revenue:yellow_10|green_20|brown_20|gray_30,hide:1,groups:MidWales;path=a:4,b:_0;path=a:5,b:_0;border=edge:3": [
+      "path=a:2,b:4,a_lane:2.0;path=a:2,b:5,a_lane:2.1": [
+        "F29",
         "F31"
       ],
       "city=revenue:yellow_20|green_40|brown_30|gray_10,slots:2,loc:4;path=a:1,b:_0;path=a:2,b:_0,terminal:1;path=a:5,b:_0": [
