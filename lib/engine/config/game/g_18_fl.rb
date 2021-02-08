@@ -173,7 +173,7 @@ module Engine
           "hexes": [],
           "tiles": [],
           "closed_when_used_up": "true",
-          "when": "any"
+          "when": "track"
         }
       ]
     },

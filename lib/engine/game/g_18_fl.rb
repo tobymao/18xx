@@ -58,16 +58,16 @@ module Engine
       end
 
       def operating_round(round_num)
-        Round::Operating.new(self, [
+        Round::G18FL::Operating.new(self, [
           Step::Bankrupt,
           Step::G18FL::Assign,
           Step::Exchange,
           Step::G18FL::Convert,
           Step::SpecialTrack,
           Step::BuyCompany,
-          Step::Track,
+          Step::G18FL::Track,
           Step::G18FL::SpecialToken,
-          Step::Token,
+          Step::G18FL::Token,
           Step::Route,
           Step::G18FL::Dividend,
           Step::DiscardTrain,
@@ -78,6 +78,14 @@ module Engine
 
       def steamboat
         @steamboat ||= company_by_id('POSC')
+      end
+
+      def tile_company
+        @tile_company ||= company_by_id('TR')
+      end
+
+      def token_company
+        @token_company ||= company_by_id('POSC')
       end
 
       def revenue_for(route, stops)
