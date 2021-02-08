@@ -323,11 +323,10 @@ module Engine
                           },
                           {
                               "type":"tile_discount",
-                              "count": 1,
                               "when": "owning_corp_or_turn",
                               "owner_type":"corporation",
                               "discount": 10,
-                              "terrain": "river"
+                              "terrain": "water"
                           },
                           {
                             "type":"sell_company",
@@ -364,7 +363,7 @@ module Engine
                               "when": "owning_corp_or_turn",
                               "owner_type":"corporation",
                               "discount": 10,
-                              "terrain": "river"
+                              "terrain": "water"
                           },
                           {
                             "type":"sell_company",
@@ -401,7 +400,7 @@ module Engine
                               "when": "owning_corp_or_turn",
                               "owner_type":"corporation",
                               "discount": 10,
-                              "terrain": "river"
+                              "terrain": "water"
                           },
                           {
                             "type":"sell_company",
@@ -438,7 +437,7 @@ module Engine
                               "when": "owning_corp_or_turn",
                               "owner_type":"corporation",
                               "discount": 10,
-                              "terrain": "river"
+                              "terrain": "water"
                           },
                           {
                             "type":"sell_company",
@@ -475,7 +474,7 @@ module Engine
                               "when": "owning_corp_or_turn",
                               "owner_type":"corporation",
                               "discount": 10,
-                              "terrain": "river"
+                              "terrain": "water"
                           },
                           {
                             "type":"sell_company",
@@ -512,7 +511,7 @@ module Engine
                               "when": "owning_corp_or_turn",
                               "owner_type":"corporation",
                               "discount": 10,
-                              "terrain": "river"
+                              "terrain": "water"
                           },
                           {
                             "type":"sell_company",
@@ -555,7 +554,7 @@ module Engine
                               "when": "owning_corp_or_turn",
                               "owner_type":"corporation",
                               "discount": 10,
-                              "terrain": "river"
+                              "terrain": "water"
                           },
                           {
                               "type":"tile_discount",
@@ -606,7 +605,7 @@ module Engine
                               "when": "owning_corp_or_turn",
                               "owner_type":"corporation",
                               "discount": 10,
-                              "terrain": "river"
+                              "terrain": "water"
                           },
                           {
                               "type":"tile_discount",
@@ -657,7 +656,7 @@ module Engine
                               "when": "owning_corp_or_turn",
                               "owner_type":"corporation",
                               "discount": 10,
-                              "terrain": "river"
+                              "terrain": "water"
                           },
                           {
                               "type":"tile_discount",
@@ -708,7 +707,7 @@ module Engine
                               "when": "owning_corp_or_turn",
                               "owner_type":"corporation",
                               "discount": 10,
-                              "terrain": "river"
+                              "terrain": "water"
                           },
                           {
                               "type":"tile_discount",
@@ -759,7 +758,7 @@ module Engine
                               "when": "owning_corp_or_turn",
                               "owner_type":"corporation",
                               "discount": 10,
-                              "terrain": "river"
+                              "terrain": "water"
                           },
                           {
                               "type":"tile_discount",
@@ -810,7 +809,7 @@ module Engine
                               "when": "owning_corp_or_turn",
                               "owner_type":"corporation",
                               "discount": 10,
-                              "terrain": "river"
+                              "terrain": "water"
                           },
                           {
                               "type":"tile_discount",
@@ -863,7 +862,7 @@ module Engine
                               "when": "owning_corp_or_turn",
                               "owner_type":"corporation",
                               "discount": 10,
-                              "terrain": "river"
+                              "terrain": "water"
                           },
                           {
                               "type":"tile_discount",
@@ -924,7 +923,7 @@ module Engine
                               "when": "owning_corp_or_turn",
                               "owner_type":"corporation",
                               "discount": 10,
-                              "terrain": "river"
+                              "terrain": "water"
                           },
                           {
                               "type":"tile_discount",
@@ -985,7 +984,7 @@ module Engine
                               "when": "owning_corp_or_turn",
                               "owner_type":"corporation",
                               "discount": 10,
-                              "terrain": "river"
+                              "terrain": "water"
                           },
                           {
                               "type":"tile_discount",
@@ -1046,7 +1045,7 @@ module Engine
                               "when": "owning_corp_or_turn",
                               "owner_type":"corporation",
                               "discount": 10,
-                              "terrain": "river"
+                              "terrain": "water"
                           },
                           {
                               "type":"tile_discount",
@@ -1107,7 +1106,7 @@ module Engine
                               "when": "owning_corp_or_turn",
                               "owner_type":"corporation",
                               "discount": 10,
-                              "terrain": "river"
+                              "terrain": "water"
                           },
                           {
                               "type":"tile_discount",
@@ -1168,7 +1167,7 @@ module Engine
                               "when": "owning_corp_or_turn",
                               "owner_type":"corporation",
                               "discount": 10,
-                              "terrain": "river"
+                              "terrain": "water"
                           },
                           {
                               "type":"tile_discount",

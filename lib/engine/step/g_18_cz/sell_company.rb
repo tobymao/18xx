@@ -1,23 +1,16 @@
 # frozen_string_literal: true
 
-require_relative '../base'
+require_relative '../special_track'
 
 module Engine
   module Step
     module G18CZ
-      class SellCompany < Base
+      class SellCompany < SpecialTrack
         def actions(entity)
-          return ['sell_company'] if entity.company? && entity.owner == current_entity || entity == current_entity
+          actions = super
+          actions << 'sell_company' if entity.company? && entity.owner == current_entity || entity == current_entity
 
-          []
-        end
-
-        def description
-          'Sell Company'
-        end
-
-        def blocks?
-          false
+          actions
         end
 
         def process_sell_company(action)
