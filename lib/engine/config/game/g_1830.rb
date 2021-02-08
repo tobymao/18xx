@@ -640,8 +640,28 @@ module Engine
         "J14",
         "F22"
       ],
+      "town=revenue:0;border=edge:5,type:impassable": [
+        "E7"
+      ],
+      "border=edge:2,type:impassable": [
+        "F8"
+      ],
+      "border=edge:5,type:impassable": [
+        "C11"
+      ],
+      "border=edge:0,type:impassable": [
+        "C13"
+      ],
+      "border=edge:2,type:impassable;border=edge:3,type:impassable": [
+        "D12"
+      ],
+      "city=revenue:0;border=edge:5,type:impassable": [
+        "B16"
+      ],
+      "upgrade=cost:120,terrain:mountain;border=edge:2,type:impassable": [
+        "C17"
+      ],
       "town": [
-        "E7",
         "B20",
         "D4",
         "F10"
@@ -654,17 +674,13 @@ module Engine
         "B22",
         "C7",
         "C9",
-        "C11",
-        "C13",
         "C23",
         "D8",
-        "D12",
         "D16",
         "D20",
         "E3",
         "E13",
         "E15",
-        "F8",
         "F12",
         "F14",
         "F18",
@@ -686,7 +702,6 @@ module Engine
       ],
       "upgrade=cost:120,terrain:mountain": [
         "G15",
-        "C17",
         "C21",
         "D22",
         "E17",
@@ -697,7 +712,6 @@ module Engine
         "J12"
       ],
       "city": [
-        "B16",
         "E19",
         "H4",
         "B10",
