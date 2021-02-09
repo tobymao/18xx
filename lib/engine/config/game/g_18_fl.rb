@@ -220,7 +220,7 @@ module Engine
           "owner_type": "player",
           "count": 1,
           "from_owner": true,
-          "bull": true,
+          "extra_slot": true,
           "special_only": true,
           "price": 0,
           "teleport_price": 0,

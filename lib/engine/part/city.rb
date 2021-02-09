@@ -7,19 +7,19 @@ module Engine
   module Part
     class City < RevenueCenter
       attr_accessor :reservations
-      attr_reader :tokens, :bull_tokens
+      attr_reader :tokens, :extra_tokens
 
       def initialize(revenue, **opts)
         super
         @slots = (opts[:slots] || 1).to_i
         @tokens = Array.new(@slots)
         # Bull tokens are tokens in a city that don't go in a city slot
-        @bull_tokens = []
+        @extra_tokens = []
         @reservations = []
       end
 
       def total_slots
-        @tokens.size + @bull_tokens.size
+        @tokens.size + @extra_tokens.size
       end
 
       def slots
@@ -32,7 +32,7 @@ module Engine
 
       def remove_tokens!
         @tokens.map! { nil }
-        @bull_tokens = []
+        @extra_tokens = []
       end
 
       def blocks?(corporation)
@@ -45,7 +45,7 @@ module Engine
       end
 
       def tokened_by?(corporation)
-        @tokens.any? { |t| t&.corporation == corporation } || @bull_tokens.any? { |t| t&.corporation == corporation }
+        @tokens.any? { |t| t&.corporation == corporation } || @extra_tokens.any? { |t| t&.corporation == corporation }
       end
 
       def find_reservation(corporation)
@@ -78,12 +78,12 @@ module Engine
         true
       end
 
-      def tokenable?(corporation, free: false, tokens: corporation.tokens_by_type, cheater: false, bull: false)
+      def tokenable?(corporation, free: false, tokens: corporation.tokens_by_type, cheater: false, extra_slot: false)
         tokens = Array(tokens)
-        return false if !bull && tokens.empty?
+        return false if !extra_slot && tokens.empty?
 
         tokens.any? do |t|
-          next false unless bull || get_slot(t.corporation, cheater: cheater)
+          next false unless extra_slot || get_slot(t.corporation, cheater: cheater)
           next false if !free && t.price > corporation.cash
           next false if @tile.cities.any? { |c| c.tokened_by?(t.corporation) }
           next true if reserved_by?(corporation)
@@ -107,19 +107,21 @@ module Engine
         reservation || open_slot
       end
 
-      def place_token(corporation, token, free: false, check_tokenable: true, cheater: false, bull: false)
-        if check_tokenable && !tokenable?(corporation, free: free, tokens: token, cheater: cheater, bull: bull)
+      def place_token(corporation, token, free: false, check_tokenable: true, cheater: false, extra_slot: false)
+        if check_tokenable && !tokenable?(
+            corporation, free: free, tokens: token, cheater: cheater, extra_slot: extra_slot
+          )
           raise GameError, "#{corporation.name} cannot lay token on #{id} #{tile.hex&.id}"
         end
 
-        exchange_token(token, cheater: cheater, bull: bull)
+        exchange_token(token, cheater: cheater, extra_slot: extra_slot)
         tile.reservations.delete(corporation)
         remove_reservation!(corporation)
       end
 
-      def exchange_token(token, cheater: false, bull: false)
+      def exchange_token(token, cheater: false, extra_slot: false)
         token.place(self)
-        return @bull_tokens << token if bull
+        return @extra_tokens << token if extra_slot
 
         @tokens[get_slot(token.corporation, cheater: cheater)] = token
       end

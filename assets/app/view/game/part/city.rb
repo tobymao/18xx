@@ -270,7 +270,7 @@ module View
         end
 
         def render_part
-          slots = (0..@city.total_slots - 1).zip(@city.tokens + @city.bull_tokens).map do |slot_index, token|
+          slots = (0..@city.total_slots - 1).zip(@city.tokens + @city.extra_tokens).map do |slot_index, token|
             slot_rotation = (360 / @city.total_slots) * slot_index
 
             # use the rotation on the outer <g> to position the slot, then use

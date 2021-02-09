@@ -44,7 +44,9 @@ module Engine
         end
 
         free = !token.price.positive?
-        city.place_token(entity, token, free: free, cheater: special_ability&.cheater, bull: special_ability&.bull)
+        city.place_token(
+            entity, token, free: free, cheater: special_ability&.cheater, extra_slot: special_ability&.extra_slot
+          )
         unless free
           pay_token_cost(entity, token.price)
           price_log = " for #{@game.format_currency(token.price)}"

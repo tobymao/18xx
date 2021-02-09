@@ -96,7 +96,7 @@ module View
           return if (%w[remove_token place_token] & actions).empty?
           return if @token && !step.can_replace_token?(entity, @token) &&
                     !(cheater = @game.abilities(entity, :token)&.cheater) &&
-                    !@game.abilities(entity, :token)&.bull
+                    !@game.abilities(entity, :token)&.extra_slot
 
           event.JS.stopPropagation
 
