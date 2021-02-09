@@ -199,6 +199,10 @@ module View
           }
         end
 
+        def calculate_shift(lane)
+          (lane[1] * 2 - lane[0] + 1) * (@width.to_i + PARALLEL_SPACING[lane[0] - 2]) / 2.0
+        end
+
         def calculate_stop_x(ct_edge, tile)
           return 0 unless ct_edge
 
@@ -371,8 +375,7 @@ module View
           begin_lane, end_lane = lanes
 
           if begin_lane[0] > 1
-            begin_shift = (begin_lane[1] * 2 - begin_lane[0] + 1) *
-                          (@width.to_i + PARALLEL_SPACING[begin_lane[0] - 2]) / 2.0
+            begin_shift = calculate_shift(begin_lane)
             begin_delta_x = (begin_shift * Math.cos(begin_shift_edge * 60.0 * Math::PI / 180.0)).round(2)
             begin_delta_y = (begin_shift * Math.sin(begin_shift_edge * 60.0 * Math::PI / 180.0)).round(2)
 
@@ -382,8 +385,7 @@ module View
 
           return unless end_lane[0] > 1
 
-          end_shift = (end_lane[1] * 2 - end_lane[0] + 1) *
-                      (@width.to_i + PARALLEL_SPACING[end_lane[0] - 2]) / 2.0
+          end_shift = calculate_shift(end_lane)
           end_delta_x = (end_shift * Math.cos(end_shift_edge * 60.0 * Math::PI / 180.0)).round(2)
           end_delta_y = (end_shift * Math.sin(end_shift_edge * 60.0 * Math::PI / 180.0)).round(2)
 
@@ -420,12 +422,23 @@ module View
             "0 0 #{@arc_parameters[:sweep]} #{@end_x} #{@end_y}",
           ) if @need_arc
 
+          # Calculate the correct x position of the terminal pointer
           d_width = @width.to_i / 2
+          terminal_start_x = d_width
+          terminal_end_x = -d_width
+          begin_lane, = @path.lanes
+          if begin_lane[0] > 1
+            begin_shift = calculate_shift(begin_lane)
+            terminal_start_x += begin_shift
+            terminal_end_x += begin_shift
+          end
+          point_x = (terminal_start_x + terminal_end_x) / 2
 
           # terminal tapered track only supported for centered city/town
           props[:attrs].merge!(
             transform: "rotate(#{rotation})",
-            d: "M #{d_width} 60 L #{d_width} 87 L -#{d_width} 87 L -#{d_width} 60 L 0 25 Z",
+            d: "M #{terminal_start_x} 60 L #{terminal_start_x} 87 L #{terminal_end_x} 87 "\
+               "L #{terminal_end_x} 60 L #{point_x} 25 Z",
             fill: @color,
             stroke: 'none',
             'stroke-linecap': 'butt',
