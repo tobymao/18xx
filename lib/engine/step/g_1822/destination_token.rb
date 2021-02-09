@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-require_relative '../token'
+require_relative '../base'
 
 module Engine
   module Step
     module G1822
-      class DestinationToken < Token
+      class DestinationToken < Base
         ACTIONS = %w[hex_token].freeze
 
         def actions(entity)
