@@ -189,6 +189,8 @@ module Engine
   },
   "market": [
     [
+      "",
+      "",
       "100",
       "110",
       "120",
@@ -205,11 +207,12 @@ module Engine
       "330"
     ],
     [
+      "",
       "80",
       "90",
       "100p",
       "110",
-      "120",
+      "120x",
       "135",
       "150",
       "165",
@@ -226,7 +229,7 @@ module Engine
       "90p",
       "100",
       "110",
-      "120",
+      "120z",
       "135",
       "150",
       "165",
@@ -358,7 +361,7 @@ module Engine
     },
     {
       "sym":"BKB",
-      "name":"Bergheimer Kreisbhn",
+      "name":"Bergheimer Kreisbahn",
       "value":190,
       "revenue":0,
       "desc":"Buyer take control of minor with same name (BKB), and the price paid makes the minor's treasury. BKB minor and private are exchanged into a 20% certificate of AGV when AGV is formed. The private and minor cannot be sold.",
@@ -383,8 +386,8 @@ module Engine
       "color": "green"
     },
     {
-      "sym": "EOD",
-      "name": "2 Eisenbahn Oderberg - Dombran",
+      "sym": "KFBE",
+      "name": "2 Köln-Frechen-Benzelrather E",
       "tokens": [
         0
       ],
@@ -443,7 +446,7 @@ module Engine
       "abilities": [
         {
             "type": "no_buy",
-            "description": "Unavailable in SR until all but one private companies sold"
+            "description": "Unbuyable until all but one privates sold"
         }
       ]
     },
@@ -463,7 +466,7 @@ module Engine
       "abilities": [
         {
             "type": "no_buy",
-            "description": "Unavailable in SR until all but one private companies sold"
+            "description": "Unbuyable until all but one privates sold"
         }
       ]
     },
@@ -478,11 +481,12 @@ module Engine
       ],
       "color": "gray70",
       "logo": "1893/RAG",
+      "text_color": "black",
       "coordinates": "D5",
       "abilities": [
         {
             "type": "no_buy",
-            "description": "Unavailable in SR until all but one private companies sold"
+            "description": "Unbuyable until all but one privates sold"
         }
       ]
     },
@@ -494,6 +498,7 @@ module Engine
         100,
         100
       ],
+      "shares":[20, 10, 20, 10, 10, 10, 10, 10],
       "logo": "1893/AGV",
       "color": "green",
       "text_color": "black",
@@ -512,6 +517,7 @@ module Engine
         100,
         100
       ],
+      "shares":[20, 10, 20, 10, 10, 10, 10, 10],
       "logo": "1893/HGK",
       "color": "red",
       "abilities": [
@@ -538,7 +544,10 @@ module Engine
       "rusts_on": "6",
       "discount": {
         "2": 40
-      }
+      },
+      "events": [
+        {"type": "remove_tile_block"}
+      ]
     },
     {
       "name": "4",
@@ -629,7 +638,7 @@ module Engine
       "status": [
         "rhine_impassible"
       ],
-      "operating_rounds": 1
+      "operating_rounds": 2
     },
     {
       "name": "3",

@@ -23,7 +23,7 @@ module Engine
     include Spender
 
     attr_accessor :ipoed, :par_via_exchange, :max_ownership_percent, :float_percent, :capitalization, :second_share,
-                  :type
+                  :type, :floatable
     attr_reader :companies, :min_price, :name, :full_name, :fraction_shares, :id, :needs_token_to_par,
                 :presidents_share, :reservation_color
     attr_writer :par_price, :share_price
@@ -54,6 +54,7 @@ module Engine
       @closed = false
       @float_percent = opts[:float_percent] || 60
       @float_excludes_market = opts[:float_excludes_market] || false
+      @floatable = opts[:floatable] || true
       @floated = false
       @max_ownership_percent = opts[:max_ownership_percent] || 60
       @min_price = opts[:min_price]
@@ -165,6 +166,8 @@ module Engine
     end
 
     def floated?
+      return false unless @floatable
+
       @floated ||= percent_of(self) <= 100 - @float_percent - (@float_excludes_market ? percent_in_market : 0)
     end
 

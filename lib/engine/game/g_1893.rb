@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require_relative '../config/game/g_1893'
 require_relative 'base'
+require_relative '../config/game/g_1893'
 
 module Engine
   module Game
@@ -16,11 +16,11 @@ module Engine
 
       GAME_LOCATION = 'Cologne, Germany'
       GAME_RULES_URL = 'https://boardgamegeek.com/filepage/188242/1824-english-rules'
-      GAME_DESIGNER = 'Leonhard Orgler & Helmut Ohley'
-      GAME_PUBLISHER = :lonny_games
+      GAME_DESIGNER = 'Edwin Eckert'
+      GAME_PUBLISHER = :marflow_games
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1893'
 
-      GAME_END_CHECK = { bank: :full_or }.freeze
+      GAME_END_CHECK = { bankrupt: :immediate, bank: :full_or }.freeze
 
       # Move down one step for a whole block, not per share
       SELL_MOVEMENT = :down_block
@@ -32,6 +32,7 @@ module Engine
       SELL_BUY_ORDER = :sell_buy
 
       EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+        'remove_tile_block' => ['Remove tile block', 'Rhine may be passed. N5 P5 becomes possible to lay tiles in'],
         'agv_buyable' => ['AGV buyable', 'AGV shares can be bought in the stockmarket'],
         'agv_founded' => ['AGV founded', 'AGV is founded if not yet founded'],
         'hgk_buyable' => ['HGK buyable', 'HGK shares can be bought in the stockmarket'],
@@ -45,6 +46,18 @@ module Engine
         'rhine_impassible' => ['Rhine impassible', 'Cannot lay tile across the Rhine'],
         'may_found_agv' => ['May found AGV', 'AGV may be founded during the SR'],
         'may_found_hgk' => ['May found HGK', 'HGK may be founded during the SR']
+      ).freeze
+
+      MARKET_TEXT = {
+        par: 'Par values for non-merged corporations',
+        par_1: 'Par value for AGV',
+        par_2: 'Par value for HGK',
+      }.freeze
+
+      STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
+        par: :orange,
+        par_1: :red,
+        par_2: :green
       ).freeze
 
       OPTIONAL_RULES = [
@@ -68,6 +81,9 @@ module Engine
       OPTION_TILES_USE_GREY_PHASE = %w[KV201-0 KV269-0 KV255-0 KV333-0 KV259-0].freeze
       OPTION_TILES_REMOVE_GREY_PHASE = %w[K269-0 K255-0].freeze
       OPTION_TILES_USE_EXISTING_TRACK = %w[KV619-0 KV63-0].freeze
+
+      MERGED_CORPORATIONS = %w[AGV HGK].freeze
+      TILE_BLOCK = %w[N5 P5].freeze
 
       def num_trains(train)
         return train[:num] unless train[:name] == '2'
@@ -115,6 +131,103 @@ module Engine
           Step::Dividend,
           Step::BuyTrain,
         ], round_num: round_num)
+      end
+
+      def float_str(entity)
+        return super if !entity.corporation || entity.floatable
+        return super unless MERGED_CORPORATIONS.include?(entity.id)
+
+        'Floated via merge'
+      end
+
+      def status_str(entity)
+        return 'Minor' if entity.minor?
+        return 'Exchangable corporation' if !entity.floated? && MERGED_CORPORATIONS.include?(entity.id)
+
+        'Corproation'
+      end
+
+      def ipo_name(_entity = nil)
+        'Stock Market'
+      end
+
+      def ipo_reserved_name(_entity = nil)
+        'Reserved'
+      end
+
+      def agv
+        @agv_corporation ||= corporation_by_id('AGV')
+      end
+
+      def hgk
+        @hgk_corporation ||= corporation_by_id('HGK')
+      end
+
+      def hdsk_reserved_share
+        # 10% certificate in HGK
+        @hdsk_reserved_share ||= hgk.shares[1]
+      end
+
+      def ekb_reserved_share
+        # President's certificate in AGV
+        @ekb_reserved_share ||= agv.shares[0]
+      end
+
+      def kfbe_reserved_share
+        # 20% certificate in HGK
+        @kfbe_reserved_share ||= hgk.shares[2]
+      end
+
+      def ksz_reserved_share
+        # 10% certificate in AGV
+        @ksz_reserved_share ||= agv.shares[1]
+      end
+
+      def kbe_reserved_share
+        # President's certificate in HGK
+        @kbe_reserved_share ||= hgk.shares[0]
+      end
+
+      def bkb_reserved_share
+        # 20% certificate in AGV
+        @bkb_reserved_share ||= agv.shares[2]
+      end
+
+      def setup
+        agv.floatable = false
+        hgk.floatable = false
+        [hdsk_reserved_share, ekb_reserved_share, kfbe_reserved_share, ksz_reserved_share,
+         kbe_reserved_share, bkb_reserved_share].each { |s| s.buyable = false }
+
+        @minors.each do |minor|
+          hex = hex_by_id(minor.coordinates)
+          hex.tile.cities[0].place_token(minor, minor.next_token)
+        end
+
+        # Use neutral tokens to make cities passable, but not blockable
+        @neutral = Corporation.new(
+          sym: 'N',
+          name: 'Neutral',
+          logo: 'open_city',
+          tokens: [0, 0],
+        )
+        @neutral.owner = @bank
+        @neutral.tokens.each { |token| token.type = :neutral }
+        city_by_id('H5-0-0').place_token(@neutral, @neutral.next_token)
+        city_by_id('J5-0-0').place_token(@neutral, @neutral.next_token)
+      end
+
+      def upgrades_to?(from, to, special = false)
+        return super unless TILE_BLOCK.include?(from.hex.name)
+        return super if from.hex.tile.icons.empty?
+
+        raise GameError, "Cannot place a tile in #{from.hex.name} until green phase"
+      end
+
+      def event_remove_tile_block
+        @hexes
+          .select { |hex| TILE_BLOCK.include?(hex.name) }
+          .each { |hex| hex.tile.icons = [] }
       end
 
       private
@@ -170,10 +283,11 @@ module Engine
             ['O6'] => 'city=revenue:0;border=edge:1,type:impassable;border=edge:2,type:impassable',
             ['Q6'] => 'border=edge:0,type:impassable;border=edge:1,type:impassable;border=edge:2,type:impassable',
             ['S6'] => 'city=revenue:0;upgrade=cost:40;border=edge:3,type:impassable;label=BX',
+            ['N5'] => 'stub=edge:4;border=edge:5,type:impassable;icon=image:1893/green_hex',
+            ['P5'] => 'town=revenue:0;border=edge:4,type:impassable;border=edge:5,type:impassable;'\
+                      'icon=image:1893/green_hex',
           },
           yellow: {
-            ['N5'] => 'stub=edge:4;border=edge:5,type:impassable',
-            ['P5'] => 'town=revenue:0;border=edge:4,type:impassable;border=edge:5,type:impassable',
             ['P7'] => 'city=revenue:20;path=a:1,b:_0;path=a:5,b:_0',
             optional_d7 => 'city=revenue:20;path=a:1,b:_0;path=a:4,b:_0;label=S',
             optional_e2 => 'city=revenue:20;path=a:0,b:_0;path=a:3,b:_0',

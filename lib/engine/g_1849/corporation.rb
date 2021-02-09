@@ -14,6 +14,7 @@ module Engine
         @slot_open = true
         @next_to_par = false
         shares.last.last_cert = true
+        shares.last.double_cert = true
       end
     end
   end
