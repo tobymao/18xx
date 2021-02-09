@@ -800,11 +800,11 @@ module Engine
       "sym": "C7",
       "value": 100,
       "revenue": 10,
-      "desc": "Have a face value £100 and contribute £100 to the conversion into the L&YR director’s certificate.",
+      "desc": "Have a face value £100 and contribute £100 to the conversion into the LYR director’s certificate.",
       "abilities": [
         {
           "type": "exchange",
-          "corporations": ["L&YR"],
+          "corporations": ["LYR"],
           "owner_type": "player",
           "from": "par"
         }
@@ -1632,7 +1632,7 @@ module Engine
       "color": "mrRed"
     },
     {
-      "sym": "L&YR",
+      "sym": "LYR",
       "name": "Lancashire & Yorkshire",
       "logo": "1822/LYR",
       "tokens": [
@@ -1992,10 +1992,8 @@ module Engine
         "L33",
         "M30",
         "P35",
+        "P41",
         "R38"
-      ],
-      "city=revenue:0;icon=image:1822/SECR_DEST": [
-        "P41"
       ],
       "city=revenue:0;border=edge:1,type:impassable": [
         "I42"
@@ -2006,7 +2004,7 @@ module Engine
       "city=revenue:0;border=edge:5,type:impassable": [
         "G16"
       ],
-      "city=revenue:0;border=edge:2,type:impassable;border=edge:3,type:water,cost:40;icon=image:1822/CR_DEST": [
+      "city=revenue:0;border=edge:2,type:impassable;border=edge:3,type:water,cost:40": [
         "G12"
       ],
       "city=revenue:20,loc:center;town=revenue:10,loc:1;path=a:_0,b:_1;border=edge:0,type:impassable;label=S":[
@@ -2017,16 +2015,12 @@ module Engine
       ],
       "city=revenue:0;label=T": [
         "B43",
-        "K42"
-      ],
-      "city=revenue:0;icon=image:1822/LBSCR_DEST;label=T": [
+        "K42",
         "M42"
       ],
       "city=revenue:0;upgrade=cost:20,terrain:swamp": [
+        "L19",
         "Q30"
-      ],
-      "city=revenue:0;upgrade=cost:20,terrain:swamp;icon=image:1822/MR_DEST": [
-        "L19"
       ],
       "city=revenue:0;upgrade=cost:40,terrain:swamp": [
         "H23",
@@ -2049,13 +2043,13 @@ module Engine
       "city=revenue:30,slots:2;path=a:0,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=Y": [
         "G22"
       ],
-      "city=revenue:30,slots:2;path=a:0,b:_0;path=a:4,b:_0;path=a:5,b:_0;border=edge:2,type:impassable;border=edge:3,type:water,cost:40;upgrade=cost:20,terrain:swamp;icon=image:1822/GWR_DEST;label=Y": [
+      "city=revenue:30,slots:2;path=a:0,b:_0;path=a:4,b:_0;path=a:5,b:_0;border=edge:2,type:impassable;border=edge:3,type:water,cost:40;upgrade=cost:20,terrain:swamp;label=Y": [
         "G36"
       ],
-      "city=revenue:30,slots:2;path=a:1,b:_0;path=a:2,b:_0;path=a:5,b:_0;border=edge:3,type:water,cost:40;icon=image:1822/NER_DEST;label=Y": [
+      "city=revenue:30,slots:2;path=a:1,b:_0;path=a:2,b:_0;path=a:5,b:_0;border=edge:3,type:water,cost:40;label=Y": [
         "H5"
       ],
-      "city=revenue:40,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:4,b:_0;upgrade=cost:60,terrain:hill;icon=image:1822/LNWR_DEST;icon=image:1822/LYR_DEST;label=BM": [
+      "city=revenue:40,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:4,b:_0;upgrade=cost:60,terrain:hill;label=BM": [
         "I22"
       ],
       "city=revenue:40,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0;upgrade=cost:40,terrain:swamp;label=BM": [
@@ -2069,7 +2063,7 @@ module Engine
       "city=revenue:yellow_40|green_30|brown_30|gray_40,slots:2,loc:1.5;path=a:4,b:_0,terminal:1;path=a:5,b:_0,terminal:1": [
         "A42"
       ],
-      "city=revenue:yellow_10|green_20|brown_30|gray_40,slots:2;path=a:5,b:_0,terminal:1;icon=image:1822/SWR_DEST": [
+      "city=revenue:yellow_10|green_20|brown_30|gray_40,slots:2;path=a:5,b:_0,terminal:1": [
         "C34"
       ],
       "city=revenue:yellow_10|green_10|brown_20|gray_20,slots:2;path=a:0,b:_0,terminal:1;path=a:5,b:_0,terminal:1": [
@@ -2110,7 +2104,7 @@ module Engine
       "city=revenue:yellow_20|green_40|brown_30|gray_10,slots:2,loc:4;path=a:1,b:_0;path=a:2,b:_0,terminal:1;path=a:5,b:_0": [
         "F33"
       ],
-      "city=revenue:yellow_30|green_40|brown_50|gray_60,slots:2;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;icon=image:1822/NBR_DEST": [
+      "city=revenue:yellow_30|green_40|brown_50|gray_60,slots:2;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1": [
         "H1"
       ],
       "offboard=revenue:yellow_0|green_60|brown_90|gray_120;path=a:2,b:_0": [

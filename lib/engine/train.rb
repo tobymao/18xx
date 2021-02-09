@@ -52,6 +52,9 @@ module Engine
 
       @variant = @variants[new_variant]
       @variant.each { |k, v| instance_variable_set("@#{k}", v) }
+
+      # Remove the @local vaiable, this to get the local? method evaluate the new variant
+      remove_instance_variable(:@local) if defined?(@local)
     end
 
     def names_to_prices
