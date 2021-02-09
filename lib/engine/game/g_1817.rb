@@ -101,6 +101,11 @@ module Engine
         },
       ].freeze
 
+      MIN_LOAN = 5
+      MAX_LOAN = 70
+      LOANS_PER_INCREMENT = 5
+      LOAN_INTEREST_INCREMENTS = 5
+
       include InterestOnLoans
       attr_reader :loan_value, :owner_when_liquidated, :stock_prices_start_merger
 
@@ -142,8 +147,19 @@ module Engine
         @players.reject(&:bankrupt).one?
       end
 
+      def init_loans
+        @loan_value = 100
+        loan_increments = ((self.class::MAX_LOAN - self.class::MIN_LOAN) / self.class::LOAN_INTEREST_INCREMENTS + 1)
+        total_loans = loan_increments * self.class::LOANS_PER_INCREMENT
+        total_loans.times.map { |id| Loan.new(id, @loan_value) }
+      end
+
       def future_interest_rate
-        [[5, ((loans_taken + 4) / 5).to_i * 5].max, 70].min
+        interest = ((loans_taken + (self.class::LOANS_PER_INCREMENT - 1)) /
+                   self.class::LOANS_PER_INCREMENT).to_i *
+                   self.class::LOAN_INTEREST_INCREMENTS
+
+        [[self.class::MIN_LOAN, interest].max, self.class::MAX_LOAN].min
       end
 
       def interest_rate
@@ -165,19 +181,28 @@ module Engine
       def interest_change
         rate = future_interest_rate
         summary = []
-        unless rate == 5
-          loans = ((loans_taken - 1) % 5) + 1
+
+        unless rate == self.class::MIN_LOAN
+          loans = ((loans_taken - 1) % self.class::LOANS_PER_INCREMENT) + 1
           s = loans == 1 ? '' : 's'
           summary << ["Interest if #{loans} more loan#{s} repaid", rate - 5]
         end
+        loan_table = []
         if loans_taken.zero?
-          summary << ['Interest if 6 more loans taken', 10]
-        elsif rate != 70
-          loans = 5 - ((loans_taken + 4) % 5)
+          loan_table << [rate, self.class::LOANS_PER_INCREMENT]
+          summary << ["Interest if #{self.class::LOANS_PER_INCREMENT + 1} more loans taken", 10]
+        elsif rate != self.class::MAX_LOAN
+          loans = self.class::LOANS_PER_INCREMENT - ((loans_taken + (self.class::LOANS_PER_INCREMENT - 1)) %
+                  self.class::LOANS_PER_INCREMENT)
+          loan_table << [rate, loans - 1]
           s = loans == 1 ? '' : 's'
-          summary << ["Interest if #{loans} more loan#{s} taken", rate + 5]
+          summary << ["Interest if #{loans} more loan#{s} taken", rate + self.class::LOAN_INTEREST_INCREMENTS]
         end
-        summary
+
+        (rate + self.class::LOAN_INTEREST_INCREMENTS..self.class::MAX_LOAN).step(5) do |r|
+          loan_table << [r, self.class::LOANS_PER_INCREMENT]
+        end
+        [summary, loan_table]
       end
 
       def format_currency(val)
@@ -644,11 +669,6 @@ module Engine
             reorder_players
             new_stock_round
           end
-      end
-
-      def init_loans
-        @loan_value = 100
-        70.times.map { |id| Loan.new(id, @loan_value) }
       end
 
       def round_end
