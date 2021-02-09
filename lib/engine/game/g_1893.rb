@@ -15,7 +15,7 @@ module Engine
       AXES = { x: :number, y: :letter }.freeze
 
       GAME_LOCATION = 'Cologne, Germany'
-      GAME_RULES_URL = 'https://boardgamegeek.com/filepage/188242/1824-english-rules'
+      GAME_RULES_URL = 'https://boardgamegeek.com/filepage/188718/1893-cologne-rule-summary-version-10'
       GAME_DESIGNER = 'Edwin Eckert'
       GAME_PUBLISHER = :marflow_games
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1893'
@@ -120,6 +120,13 @@ module Engine
         end
       end
 
+      def init_round
+        @log << '-- First Stock Round --'
+        Round::Stock.new(self, [
+          Step::G1893::BuySellParSharesFirstSR,
+        ])
+      end
+
       def operating_round(round_num)
         Round::Operating.new(self, [
           Step::Bankrupt,
@@ -128,21 +135,21 @@ module Engine
           Step::Track,
           Step::Token,
           Step::Route,
-          Step::Dividend,
-          Step::BuyTrain,
+          Step::G1893::Dividend,
+          Step::G1893::BuyTrain,
         ], round_num: round_num)
       end
 
       def float_str(entity)
         return super if !entity.corporation || entity.floatable
-        return super unless MERGED_CORPORATIONS.include?(entity.id)
+        return super unless merged_corporation?(entity)
 
         'Floated via merge'
       end
 
       def status_str(entity)
         return 'Minor' if entity.minor?
-        return 'Exchangable corporation' if !entity.floated? && MERGED_CORPORATIONS.include?(entity.id)
+        return 'Exchangable corporation' if !entity.floated? && merged_corporation?(entity)
 
         'Corproation'
       end
@@ -193,11 +200,20 @@ module Engine
         @bkb_reserved_share ||= agv.shares[2]
       end
 
+      def merged_corporation?(corporation)
+        MERGED_CORPORATIONS.include?(corporation.id)
+      end
+
       def setup
         agv.floatable = false
         hgk.floatable = false
         [hdsk_reserved_share, ekb_reserved_share, kfbe_reserved_share, ksz_reserved_share,
          kbe_reserved_share, bkb_reserved_share].each { |s| s.buyable = false }
+
+        @companies.each do |c|
+          c.owner = @bank
+          @bank.companies << c
+        end
 
         @minors.each do |minor|
           hex = hex_by_id(minor.coordinates)
@@ -228,6 +244,24 @@ module Engine
         @hexes
           .select { |hex| TILE_BLOCK.include?(hex.name) }
           .each { |hex| hex.tile.icons = [] }
+      end
+
+      def buyable?(entity)
+        return true unless entity.corporation?
+
+        entity.all_abilities.none? { |a| a.type == :no_buy }
+      end
+
+      def remove_ability(corporation, ability_name)
+        abilities(corporation, ability_name) do |ability|
+          corporation.remove_ability(ability)
+        end
+      end
+
+      def must_buy_train?(entity)
+        return false if entity.minor?
+
+        super
       end
 
       private
