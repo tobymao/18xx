@@ -653,6 +653,7 @@ module Engine
       "sym": "AFG",
       "name": "Azienda Ferroviaria Garibaldi",
       "logo": "1849/AFG",
+      "simple_logo": "1849/AFG.alt",
       "token_fee": 40,
       "tokens": [
         0,
@@ -668,6 +669,7 @@ module Engine
       "sym": "ATA",
       "name": "Azienda Trasporti Archimede",
       "logo": "1849/ATA",
+      "simple_logo": "1849/ATA.alt",
       "token_fee": 30,
       "tokens": [
         0,
@@ -684,6 +686,7 @@ module Engine
       "sym": "CTL",
       "name": "Compagnia Trasporti Lilibeo",
       "logo": "1849/CTL",
+      "simple_logo": "1849/CTL.alt",
       "token_fee": 40,
       "tokens": [
         0,
@@ -701,6 +704,7 @@ module Engine
       "sym": "IFT",
       "name": "Impresa Ferroviaria Trinacria",
       "logo": "1849/IFT",
+      "simple_logo": "1849/IFT.alt",
       "token_fee": 90,
       "tokens": [
         0,
@@ -717,6 +721,7 @@ module Engine
       "sym": "RCS",
       "name": "Rete Centrale Sicula",
       "logo": "1849/RCS",
+      "simple_logo": "1849/RCS.alt",
       "token_fee": 130,
       "tokens": [
         0,
@@ -733,6 +738,7 @@ module Engine
       "sym": "SFA",
       "name": "Società Ferroviaria Akragas",
       "logo": "1849/SFA",
+      "simple_logo": "1849/SFA.alt",
       "token_fee": 40,
       "tokens": [
         0,
