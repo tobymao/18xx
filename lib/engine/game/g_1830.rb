@@ -15,7 +15,7 @@ module Engine
                       green: '#32763f',
                       brightGreen: '#6ec037')
       DEV_STAGE = :alpha
-      GAME_LOCATION = 'Northeastern, USA and Southeastern Canada'
+      GAME_LOCATION = 'Northeastern USA and Southeastern Canada'
       GAME_RULES_URL = 'https://lookout-spiele.de/upload/en_1830re.html_Rules_1830-RE_EN.pdf'
       GAME_PUBLISHER = :lookout
       GAME_DESIGNER = 'Francis Tresham'
