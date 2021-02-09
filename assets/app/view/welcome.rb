@@ -20,9 +20,6 @@ module View
         <p>1830 is now in alpha!</p>
         <p>1860 now in production!</p>
         <p>18Mag and 1849 now in beta 🚂🚂!</p>
-        <p>1877: Venezuela cross train purchase variant now available</p>
-
-        <p><a href='https://www.kickstarter.com/projects/all-aboardgames/1860-railways-on-the-isle-of-wight?ref=chtgcf'>1860 is now available on kickstarter</a>! It is the best 2-player 18xx and available to play here!<p>
         <p>Please file <a href='https://github.com/tobymao/18xx/issues'>issues and ideas</a> on
         <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>.<br>
         If you have any questions, check out the <a href="https://github.com/tobymao/18xx/wiki/FAQ">FAQ</a> and other
