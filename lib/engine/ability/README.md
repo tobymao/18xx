@@ -259,3 +259,8 @@ Modified station token placement
   step); if unset or false, `Engine::Step::Tokener#adjust_token_price_ability!`
   infers that the special ability ought to be used whenever a token is being
   placed in a location that the ability is allowed to use. Default false.
+
+
+## sell_company
+
+This company can be sold to bank for face value. This closes the company.

@@ -328,6 +328,10 @@ module Engine
                               "owner_type":"corporation",
                               "discount": 10,
                               "terrain": "river"
+                          },
+                          {
+                            "type":"sell_company",
+                            "when": "owning_corp_or_turn"
                           }
                       ]
                   },
@@ -361,6 +365,10 @@ module Engine
                               "owner_type":"corporation",
                               "discount": 10,
                               "terrain": "river"
+                          },
+                          {
+                            "type":"sell_company",
+                            "when": "owning_corp_or_turn"
                           }
                       ]
                   },
@@ -394,6 +402,10 @@ module Engine
                               "owner_type":"corporation",
                               "discount": 10,
                               "terrain": "river"
+                          },
+                          {
+                            "type":"sell_company",
+                            "when": "owning_corp_or_turn"
                           }
                       ]
                   },
@@ -427,6 +439,10 @@ module Engine
                               "owner_type":"corporation",
                               "discount": 10,
                               "terrain": "river"
+                          },
+                          {
+                            "type":"sell_company",
+                            "when": "owning_corp_or_turn"
                           }
                       ]
                   },
@@ -460,6 +476,10 @@ module Engine
                               "owner_type":"corporation",
                               "discount": 10,
                               "terrain": "river"
+                          },
+                          {
+                            "type":"sell_company",
+                            "when": "owning_corp_or_turn"
                           }
                       ]
                   },
@@ -493,6 +513,10 @@ module Engine
                               "owner_type":"corporation",
                               "discount": 10,
                               "terrain": "river"
+                          },
+                          {
+                            "type":"sell_company",
+                            "when": "owning_corp_or_turn"
                           }
                       ]
                   },
@@ -540,6 +564,10 @@ module Engine
                               "owner_type":"corporation",
                               "discount": 20,
                               "terrain": "hill"
+                          },
+                          {
+                            "type":"sell_company",
+                            "when": "owning_corp_or_turn"
                           }
                       ]
                   },
@@ -587,6 +615,10 @@ module Engine
                               "owner_type":"corporation",
                               "discount": 20,
                               "terrain": "hill"
+                          },
+                          {
+                            "type":"sell_company",
+                            "when": "owning_corp_or_turn"
                           }
                       ]
                   },
@@ -634,6 +666,10 @@ module Engine
                               "owner_type":"corporation",
                               "discount": 20,
                               "terrain": "hill"
+                          },
+                          {
+                            "type":"sell_company",
+                            "when": "owning_corp_or_turn"
                           }
                       ]
                   },
@@ -681,6 +717,10 @@ module Engine
                               "owner_type":"corporation",
                               "discount": 20,
                               "terrain": "hill"
+                          },
+                          {
+                            "type":"sell_company",
+                            "when": "owning_corp_or_turn"
                           }
                       ]
                   },
@@ -728,6 +768,10 @@ module Engine
                               "owner_type":"corporation",
                               "discount": 20,
                               "terrain": "hill"
+                          },
+                          {
+                            "type":"sell_company",
+                            "when": "owning_corp_or_turn"
                           }
                       ]
                   },
@@ -775,6 +819,10 @@ module Engine
                               "owner_type":"corporation",
                               "discount": 20,
                               "terrain": "hill"
+                          },
+                          {
+                            "type":"sell_company",
+                            "when": "owning_corp_or_turn"
                           }
                       ]
                   },
@@ -832,6 +880,10 @@ module Engine
                               "owner_type":"corporation",
                               "discount": 40,
                               "terrain": "mountain"
+                          },
+                          {
+                            "type":"sell_company",
+                            "when": "owning_corp_or_turn"
                           }
                       ]
                   },
@@ -889,6 +941,10 @@ module Engine
                               "owner_type":"corporation",
                               "discount": 40,
                               "terrain": "mountain"
+                          },
+                          {
+                            "type":"sell_company",
+                            "when": "owning_corp_or_turn"
                           }
                       ]
                   },
@@ -946,6 +1002,10 @@ module Engine
                               "owner_type":"corporation",
                               "discount": 40,
                               "terrain": "mountain"
+                          },
+                          {
+                            "type":"sell_company",
+                            "when": "owning_corp_or_turn"
                           }
                       ]
                   },
@@ -1003,6 +1063,10 @@ module Engine
                               "owner_type":"corporation",
                               "discount": 40,
                               "terrain": "mountain"
+                          },
+                          {
+                            "type":"sell_company",
+                            "when": "owning_corp_or_turn"
                           }
                       ]
                   },
@@ -1060,6 +1124,10 @@ module Engine
                               "owner_type":"corporation",
                               "discount": 40,
                               "terrain": "mountain"
+                          },
+                          {
+                            "type":"sell_company",
+                            "when": "owning_corp_or_turn"
                           }
                       ]
                   },
@@ -1117,6 +1185,10 @@ module Engine
                               "owner_type":"corporation",
                               "discount": 40,
                               "terrain": "mountain"
+                          },
+                          {
+                            "type":"sell_company",
+                            "when": "owning_corp_or_turn"
                           }
                       ]
                   }

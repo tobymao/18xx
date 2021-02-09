@@ -123,6 +123,7 @@ module Engine
       def operating_round(round_num)
         Round::Operating.new(self, [
           Step::G18CZ::HomeTrack,
+          Step::G18CZ::SellCompany,
           Step::HomeToken,
           Step::SpecialTrack,
           Step::BuyCompany,
