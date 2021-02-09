@@ -11,19 +11,19 @@ module Engine
         # we need to be able to support multiple destinating at once
         def auto_actions(entity)
           [
-            Engine::Action::Auto.new(
+            Engine::Action::DestinationConnection.new(
               entity,
-              details: @game.corporations.select { |c| @game.destinated?(c) }.compact.map(&:id).join('/')
+              corporations: @game.corporations.select { |c| @game.destination_connected?(c) }
             ),
           ]
         end
 
         def actions(_entity)
-          %w[auto]
+          %w[destination_connection]
         end
 
-        def process_auto(action)
-          action.details.split('/').map { |id| @game.corporation_by_id(id) }.each { |corp| @game.destinated!(corp) }
+        def process_destination_connection(action)
+          action.corporations.each { |corp| @game.destinated!(corp) }
           pass!
         end
       end

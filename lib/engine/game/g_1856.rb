@@ -312,7 +312,7 @@ module Engine
         POST_NATIONALIZATION_CERT_LIMIT[num_corporations][@players.size]
       end
 
-      def destinated?(corp)
+      def destination_connected?(corp)
         corp.capitalization == :escrow && hexes_connected?(*@destinations[corp.id])
       end
 
@@ -420,7 +420,7 @@ module Engine
 
       def release_escrow!(corporation)
         @log << "Releasing #{format_currency(corporation.escrow)} from escrow for #{corporation.name}"
-        @bank.spend(corporation.escrow, corporation)
+        @bank.spend(corporation.escrow, corporation) if corporation.escrow.positive?
         corporation.escrow = nil
         corporation.capitalization = :incremental
       end
