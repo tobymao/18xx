@@ -18,12 +18,8 @@ module Engine
         @reservations = []
       end
 
-      def total_slots
-        @tokens.size + @extra_tokens.size
-      end
-
-      def slots
-        @tokens.size
+      def slots(all: false)
+        @tokens.size + (all ? @extra_tokens.size : 0)
       end
 
       def normal_slots
