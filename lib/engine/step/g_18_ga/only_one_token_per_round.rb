@@ -31,7 +31,7 @@ module Engine
         end
 
         def round_state
-          { tokens_placed: [] }
+          super.merge({ tokens_placed: [] })
         end
       end
     end

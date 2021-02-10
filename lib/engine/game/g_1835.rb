@@ -45,6 +45,8 @@ module Engine
           Step::Bankrupt,
           Step::Exchange,
           Step::BuyCompany,
+          Step::SpecialTrack,
+          Step::SpecialToken,
           Step::Track,
           Step::Token,
           Step::Route,

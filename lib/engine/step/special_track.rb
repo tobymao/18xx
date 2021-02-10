@@ -14,7 +14,7 @@ module Engine
       ACTIONS_WITH_PASS = %w[lay_tile pass].freeze
 
       def actions(entity)
-        action = tile_lay_abilities(entity)
+        action = abilities(entity)
         return [] unless action
 
         action.blocks ? ACTIONS : ACTIONS_WITH_PASS
@@ -32,6 +32,14 @@ module Engine
         @company
       end
 
+      def round_state
+        super.merge(
+          {
+            teleported: nil,
+          }
+        )
+      end
+
       def process_lay_tile(action)
         if @company && (@company != action.entity) &&
            (ability = @game.abilities(@company, :tile_lay, time: 'track')) &&
@@ -39,7 +47,7 @@ module Engine
           raise GameError, "Cannot interrupt #{@company.name}'s tile lays"
         end
 
-        ability = tile_lay_abilities(action.entity)
+        ability = abilities(action.entity)
         spender = if !action.entity.owner
                     nil
                   elsif action.entity.owner.corporation?
@@ -47,17 +55,25 @@ module Engine
                   else
                     @game.current_entity
                   end
-        lay_tile(action, spender: spender)
-        check_connect(action, ability)
+        if ability.type == :teleport
+          lay_tile_action(action, spender: spender)
+        else
+          lay_tile(action, spender: spender)
+          check_connect(action, ability)
+        end
         ability.use!
 
-        ability.owner.close! unless ability.count.positive? || !ability.closed_when_used_up
-        @company = ability.count.positive? ? action.entity : nil if ability.must_lay_together
+        if ability.type == :tile_lay
+          ability.owner.close! unless ability.count.positive? || !ability.closed_when_used_up
+          @company = ability.count.positive? ? action.entity : nil if ability.must_lay_together
+        end
+
+        @round.teleported = ability.owner if ability.type == :teleport
       end
 
       def process_pass(action)
         entity = action.entity
-        ability = tile_lay_abilities(entity)
+        ability = abilities(entity)
         raise GameError, "Not #{entity.name}'s turn: #{action.to_h}" unless entity == @company
 
         entity.remove_ability(ability)
@@ -70,41 +86,49 @@ module Engine
       end
 
       def hex_neighbors(entity, hex)
-        return unless (ability = tile_lay_abilities(entity))
-        return if ability.hexes&.any? && !ability.hexes&.include?(hex.id)
-
+        return unless (ability = abilities(entity))
+        return if !ability.hexes&.empty? && !ability.hexes&.include?(hex.id)
         operator = entity.owner.corporation? ? entity.owner : @game.current_entity
-        return if ability.reachable && !@game.graph.connected_hexes(operator)[hex]
+        return if ability.type == :tile_lay && ability.reachable && !@game.graph.connected_hexes(operator)[hex]
 
         @game.hex_by_id(hex.id).neighbors.keys
       end
 
       def potential_tiles(entity, hex)
-        return [] unless (tile_ability = tile_lay_abilities(entity))
+        return [] unless (tile_ability = abilities(entity))
 
         tiles = tile_ability.tiles.map { |name| @game.tiles.find { |t| t.name == name } }
         tiles = @game.tiles.uniq(&:name) if tile_ability.tiles.empty?
 
+        special = tile_ability.special if tile_ability.type == :tile_lay
         tiles
           .compact
-          .select { |t| @game.phase.tiles.include?(t.color) && @game.upgrades_to?(hex.tile, t, tile_ability.special) }
+          .select { |t| @game.phase.tiles.include?(t.color) && @game.upgrades_to?(hex.tile, t, special) }
       end
 
-      def tile_lay_abilities(entity, **kwargs, &block)
+      def abilities(entity, **kwargs, &block)
         return unless entity&.company?
 
         if @round.respond_to?(:just_sold_company) && entity == @round.just_sold_company
           ability = @game.abilities(entity, :tile_lay, time: 'sold', **kwargs, &block)
+          return ability if ability
         end
 
-        ability ||
-          @game.abilities(
-            entity, :tile_lay, time: %w[special_track %current_step% owning_corp_or_turn], **kwargs, &block
-          )
+        %i[tile_lay teleport].each do |type|
+          ability = @game.abilities(entity,
+                                    type,
+                                    time: %w[special_track %current_step% owning_corp_or_turn],
+                                    **kwargs,
+                                    &block)
+          return ability if ability
+        end
+
+        nil
       end
 
       def check_connect(_action, ability)
         hex_ids = ability.hexes
+        return if ability.type == :teleport
         return unless ability.connect
         return if hex_ids.size < 2
         return if !ability.start_count || ability.start_count < 2 || ability.start_count == ability.count

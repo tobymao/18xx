@@ -16,9 +16,11 @@ module Engine
       end
 
       def round_state
-        {
-          pending_tokens: [],
-        }
+        super.merge(
+          {
+            pending_tokens: [],
+          }
+        )
       end
 
       def active?
@@ -68,7 +70,8 @@ module Engine
           token.corporation,
           action.city,
           token,
-          teleport: true,
+          connected: false,
+          extra: true,
         )
         @round.pending_tokens.shift
       end

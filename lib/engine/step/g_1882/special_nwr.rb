@@ -98,7 +98,8 @@ module Engine
             @entity.owner,
             action.city,
             available_tokens(@entity)[0],
-            teleport: ability(@entity).teleport_price,
+            connected: false,
+            extra: true
           )
           @destination = action.city.hex
 

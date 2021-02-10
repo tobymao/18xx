@@ -5,14 +5,22 @@ require_relative 'base'
 module Engine
   module Step
     module Tracker
+      def round_state
+        {
+          num_laid_track: 0,
+          upgraded_track: false,
+          laid_hexes: [],
+        }
+      end
+
       def setup
-        @upgraded = false
-        @laid_track = 0
-        @previous_laid_hexes = []
+        @round.num_laid_track = 0
+        @round.upgraded_track = false
+        @round.laid_hexes = []
       end
 
       def can_lay_tile?(entity)
-        return true if tile_lay_abilities(entity, time: type, passive_ok: false)
+        return true if abilities(entity, time: type, passive_ok: false)
 
         action = get_tile_lay(entity)
         return false unless action
@@ -21,32 +29,32 @@ module Engine
       end
 
       def get_tile_lay(entity)
-        action = @game.tile_lays(entity)[@laid_track]&.clone
+        action = @game.tile_lays(entity)[@round.num_laid_track]&.clone
         return unless action
 
-        action[:lay] = !@upgraded if action[:lay] == :not_if_upgraded
-        action[:upgrade] = !@upgraded if action[:upgrade] == :not_if_upgraded
+        action[:lay] = !@round.upgraded_track if action[:lay] == :not_if_upgraded
+        action[:upgrade] = !@round.upgraded_track if action[:upgrade] == :not_if_upgraded
         action[:cost] = action[:cost] || 0
         action[:cannot_reuse_same_hex] = action[:cannot_reuse_same_hex] || false
         action
       end
 
-      def lay_tile_action(action)
+      def lay_tile_action(action, entity: nil, spender: nil)
         tile = action.tile
         tile_lay = get_tile_lay(action.entity)
         raise GameError, 'Cannot lay an upgrade now' if tile.color != :yellow && !(tile_lay && tile_lay[:upgrade])
         raise GameError, 'Cannot lay a yellow now' if tile.color == :yellow && !(tile_lay && tile_lay[:lay])
-        if tile_lay[:cannot_reuse_same_hex] && @previous_laid_hexes.include?(action.hex)
+        if tile_lay[:cannot_reuse_same_hex] && @round.laid_hexes.include?(action.hex)
           raise GameError, "#{action.hex.id} cannot be layed as this hex was already layed on this turn"
         end
 
-        lay_tile(action, extra_cost: tile_lay[:cost])
-        @upgraded = true if action.tile.color != :yellow
-        @laid_track += 1
-        @previous_laid_hexes << action.hex
+        lay_tile(action, extra_cost: tile_lay[:cost], entity: entity, spender: spender)
+        @round.upgraded_track = true if action.tile.color != :yellow
+        @round.num_laid_track += 1
+        @round.laid_hexes << action.hex
       end
 
-      def tile_lay_abilities(entity, **kwargs, &block)
+      def abilities(entity, **kwargs, &block)
         kwargs[:time] = [type, 'owning_corp_or_turn'] unless kwargs[:time]
         @game.abilities(entity, :tile_lay, **kwargs, &block)
       end
@@ -86,31 +94,27 @@ module Engine
         discount = 0
         teleport = false
 
-        tile_lay_abilities(entity) do |ability|
+        abilities(entity) do |ability|
           next if ability.owner != entity
           next if !ability.hexes.empty? && (!ability.hexes.include?(hex.id) || !ability.tiles.include?(tile.name))
 
-          raise GameError, "Track laid must be connected to one of #{spender.id}'s stations" if ability.reachable &&
-            hex.name != spender.coordinates &&
-            !@game.loading &&
-            !@game.graph.reachable_hexes(spender)[hex]
+          if ability.type == :teleport
+            teleport = true
+            free = true if ability.free_tile_lay
+            if ability.cost
+              spender.spend(ability.cost, @game.bank) if ability.cost.positive?
+              @log << "#{spender.name} spends #{@game.format_currency(teleport.cost)} and teleports to #{hex.name}"
+            end
+          else
+            raise GameError, "Track laid must be connected to one of #{spender.id}'s stations" if ability.reachable &&
+              hex.name != spender.coordinates &&
+              !@game.loading &&
+              !@game.graph.reachable_hexes(spender)[hex]
 
-          free = ability.free
-          discount = ability.discount
-          extra_cost += ability.cost
-        end
-
-        @game.abilities(entity, :teleport) do |ability, _|
-          next if !ability.hexes.include?(hex.id) || !ability.tiles.include?(tile.name)
-
-          teleport = true
-          free = true if ability.free_tile_lay
-          if ability.cost
-            spender.spend(ability.cost, @game.bank) if ability.cost.positive?
-            @log << "#{spender.name} spends #{@game.format_currency(ability.cost)} and teleports to #{hex.name}"
+            free = ability.free
+            discount = ability.discount
+            extra_cost += ability.cost
           end
-
-          ability.use!
         end
 
         check_track_restrictions!(entity, old_tile, tile) unless teleport
@@ -171,12 +175,13 @@ module Engine
             !tile.paths.empty? &&
             cities.size > 1 &&
             (token = cities.flat_map(&:tokens).find(&:itself))
+          corporation = token.corporation
           @round.pending_tokens << {
-            entity: entity,
+            entity: corporation,
             hexes: [action.hex],
             token: token,
           }
-          @log << "#{entity.name} must choose city for token"
+          @log << "#{corporation.name} must choose city for token"
 
           token.remove!
         end

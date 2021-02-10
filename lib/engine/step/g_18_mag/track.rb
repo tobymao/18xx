@@ -17,9 +17,11 @@ module Engine
         end
 
         def round_state
-          {
-            terrain_token: nil,
-          }
+          super.merge(
+            {
+              terrain_token: nil,
+            }
+          )
         end
 
         def setup

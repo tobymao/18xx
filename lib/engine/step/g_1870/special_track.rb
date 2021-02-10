@@ -20,7 +20,7 @@ module Engine
 
           lay_tile(action, extra_cost: extra_cost, entity: action.entity, spender: owner)
 
-          ability = tile_lay_abilities(action.entity)
+          ability = abilities(action.entity)
           ability.use!
 
           if @game.river_corporations.include?(owner) && !owner.operated?

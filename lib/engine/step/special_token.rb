@@ -8,16 +8,28 @@ module Engine
     class SpecialToken < Base
       include Tokener
 
-      ACTIONS = %w[place_token].freeze
-
       def actions(entity)
         return [] unless ability(entity)
 
-        ACTIONS
+        actions = ['place_token']
+        actions << 'pass' if entity == @round.teleported
+        actions
+      end
+
+      def description
+        'Place teleport token'
       end
 
       def blocks?
-        false
+        @round.teleported
+      end
+
+      def blocking?
+        @round.teleported
+      end
+
+      def active_entities
+        @round.teleported ? [@round.teleported] : super
       end
 
       def process_place_token(action)
@@ -31,27 +43,55 @@ module Engine
           entity.owner,
           action.city,
           action.token,
-          teleport: ability(entity).teleport_price,
+          connected: false,
           special_ability: ability(entity),
         )
+
+        teleport_complete if @round.teleported
+      end
+
+      def process_pass(action)
+        @log << "#{action.entity.owner.name} (#{action.entity.sym}) declines to place token"
+        teleport_complete
+      end
+
+      def teleport_complete
+        ability = ability(@round.teleported)
+        @round.teleported.remove_ability(ability) if ability
+        @round.teleported = nil
       end
 
       def available_hex(entity, hex)
-        return if ability(entity).hexes.any? && !ability(entity).hexes.include?(hex.id)
+        return if !ability(entity).hexes.empty? && !ability(entity).hexes.include?(hex.id)
 
         @game.hex_by_id(hex.id).neighbors.keys
       end
 
       def available_tokens(entity)
-        return super unless ability(entity)&.extra
+        ability = ability(entity)
+        return super unless ability&.type == :token && ability.extra
 
         [Engine::Token.new(entity.owner)]
+      end
+
+      def min_token_price(tokens)
+        return 0 if @round.teleported
+
+        super
       end
 
       def ability(entity)
         return unless entity&.company?
 
-        @game.abilities(entity, :token)
+        @game.abilities(entity, :token) do |ability, _owner|
+          return ability
+        end
+
+        @game.abilities(entity, :teleport) do |ability, _owner|
+          next unless ability.used?
+
+          return ability
+        end
       end
     end
   end

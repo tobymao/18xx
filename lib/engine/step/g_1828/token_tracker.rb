@@ -14,9 +14,11 @@ module Engine
         end
 
         def round_state
-          round_state = super || {}
-          round_state[:tokens_placed] = []
-          round_state
+          super.merge(
+            {
+              tokens_placed: [],
+            }
+          )
         end
 
         def corporation_for(entity)

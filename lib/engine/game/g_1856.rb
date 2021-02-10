@@ -547,6 +547,7 @@ module Engine
           Step::G1856::Assign,
           Step::G1856::Loan,
           Step::SpecialTrack,
+          Step::SpecialToken,
           Step::BuyCompany,
           Step::HomeToken,
 

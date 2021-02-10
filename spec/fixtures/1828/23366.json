@@ -3409,13 +3409,6 @@
         "slot": 0
       },
       {
-        "type": "pass",
-        "entity": "GT-IC",
-        "entity_type": "system",
-        "id": 315,
-        "created_at": 1610952809
-      },
-      {
         "type": "run_routes",
         "entity": "GT-IC",
         "entity_type": "system",
