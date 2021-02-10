@@ -6,6 +6,7 @@ module Engine
   module Step
     module G1856
       class Escrow < Base
+        ACTIONS = %w[destination_connection].freeze
         # Since *any* corporation could destinated after a given corporation does a tile lay, we need
         # to check for *all* corporations, and since multiple corporations could destinate at once
         # we need to be able to support multiple destinating at once
@@ -19,7 +20,7 @@ module Engine
         end
 
         def actions(_entity)
-          %w[destination_connection]
+          ACTIONS
         end
 
         def process_destination_connection(action)
