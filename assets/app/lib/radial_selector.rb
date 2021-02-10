@@ -5,13 +5,16 @@ module Lib
     DROP_SHADOW_SIZE = 5
 
     # item -> [item,x,y]
-    def list_coordinates(list, distance, offset)
-      theta = 360.0 / list.size * Math::PI / 180
-      list.map.with_index do |x, index|
+    # angle = opening angle for tile fan
+    # rotate counterclockwise by rotation degrees
+    def list_coordinates(list, distance, offset, angle = 360, rotation = 0)
+      angle = angle * list.size / (list.size - 1) if angle < 360 && list.size > 1
+      theta = angle / list.size * Math::PI / 180
+      list.map.with_index do |item, index|
         [
-          x,
-          distance * Math.cos(index * theta) - offset,
-          distance * Math.sin(index * theta) - offset,
+          item,
+          distance * Math.cos(index * theta + rotation / 180 * Math::PI) - offset,
+          distance * Math.sin(index * theta + rotation / 180 * Math::PI) - offset,
         ]
       end
     end
