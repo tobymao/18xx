@@ -295,12 +295,12 @@ module Engine
       NEXT_SR_PLAYER_ORDER = :most_cash # TODO: check if a bug
 
       CORPORATIONS_BY_MAP = {
-        map_a: %i[GI PB PE LI TI],
-        map_b: %i[CR GI PB PE BB],
-        map_c: %i[CR LI TI BB EL],
-        map_d: %i[CR GI PB PE LI TI BB],
-        map_e: %i[CR GI PB PE TI BB EL],
-        map_f: %i[CR GI PE LI TI BB EL],
+        map_a: %w[GI PB PE LI TI],
+        map_b: %w[CR GI PB PE BB],
+        map_c: %w[CR LI TI BB EL],
+        map_d: %w[CR GI PB PE LI TI BB],
+        map_e: %w[CR GI PB PE TI BB EL],
+        map_f: %w[CR GI PE LI TI BB EL],
       }.freeze
 
       CORPORATION_COORDINATES_BY_MAP = {
@@ -642,15 +642,15 @@ module Engine
       end
 
       def apply_custom_ability(company)
-        if company.sym.to_sym == :TOO_MUCH_RESPONSIBILITY
+        if company.sym == 'TOO_MUCH_RESPONSIBILITY'
           bank.spend(3, company.owner, check_positive: false)
           @log << "#{company.owner.name} earns #{format_currency(3)} using \"#{company.name}\""
           company.close!
-        elsif company.sym.to_sym == :LEPRECHAUN_POT_OF_GOLD
+        elsif company.sym == 'LEPRECHAUN_POT_OF_GOLD'
           bank.spend(2, company.owner, check_positive: false)
           @log << "#{company.owner.name} earns #{format_currency(2)} using \"#{company.name}\""
-        elsif %i[RABBITS MOLES ANCIENT_MAPS HOLE ON_DIET SPARKLING_GOLD THAT_S_MINE WORK_IN_PROGRESS CORN TWO_BARRELS
-                 A_SQUEEZE BANDAGE WINGS A_SPOONFUL_OF_SUGAR].include?(company.sym.to_sym)
+        elsif %w[RABBITS MOLES ANCIENT_MAPS HOLE ON_DIET SPARKLING_GOLD THAT_S_MINE WORK_IN_PROGRESS CORN TWO_BARRELS
+                 A_SQUEEZE BANDAGE WINGS A_SPOONFUL_OF_SUGAR].include?(company.sym)
           raise GameError, 'Power logic not yet implemented' # TODO: remove from this list when implementing a power
         end
       end
@@ -706,7 +706,7 @@ module Engine
       end
 
       def init_corporations(stock_market)
-        corporations = self.class::CORPORATIONS.select { |c| CORPORATIONS_BY_MAP[@map].include?(c[:sym].to_sym) }
+        corporations = self.class::CORPORATIONS.select { |corporation| CORPORATIONS_BY_MAP[@map].include?(corporation[:sym]) }
                                                .map do |corporation|
           Corporation.new(
             min_price: stock_market.par_prices.map(&:price).min,
