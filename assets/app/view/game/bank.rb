@@ -8,6 +8,7 @@ module View
       include Lib::Settings
 
       needs :game
+      needs :show_loan_table, default: false, store: true
 
       def render
         title_props = {
@@ -28,6 +29,7 @@ module View
         }
 
         trs = []
+        interest_change = (@game.interest_change if @game.respond_to?(:interest_change))
         if @game.game_end_check_values.include?(:bank)
           trs << h(:tr, [
             h(:td, 'Cash'),
@@ -49,8 +51,34 @@ module View
             h(:td, 'Loans'),
             h('td.right', "#{@game.loans_taken}/#{@game.total_loans}"),
           ])
-          if @game.respond_to?(:interest_change)
-            @game.interest_change.each do |text, price_change|
+
+          if interest_change
+            toggle_loan_table = lambda do
+              store(:show_loan_table, !@show_loan_table)
+            end
+
+            props = {
+              attrs: { title: "#{@show_loan_table ? 'Hide' : 'Show'} loan table" },
+              style: { width: '7.3rem', margin: '0 0 0 0.5rem' },
+              on: { click: toggle_loan_table },
+            }
+            trs << h(:tr, [
+              h(:td, 'Loan Table'),
+              h('td.right', [h(:button, props, (@show_loan_table ? 'Hide' : 'Show').to_s)]),
+            ])
+
+            if @show_loan_table
+              total = 0
+              interest_change.last.each do |price, available|
+                total += available
+                trs << h(:tr, [
+                  h(:td, @game.format_currency(price)),
+                  h('td.right', "#{available} (#{total})"),
+                ])
+              end
+            end
+
+            interest_change.first.each do |text, price_change|
               trs << h(:tr, [
                 h(:td, text),
                 h('td.right', @game.format_currency(price_change)),
