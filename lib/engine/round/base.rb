@@ -16,6 +16,7 @@ module Engine
       DEFAULT_STEPS = [
         Step::EndGame,
         Step::Message,
+        Step::Program,
       ].freeze
 
       def initialize(game, steps, **opts)
