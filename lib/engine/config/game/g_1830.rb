@@ -419,7 +419,7 @@ module Engine
       "float_percent": 60,
       "sym": "PRR",
       "name": "Pennsylvania Railroad",
-      "logo": "1830/PRR",
+      "logo": "18_chesapeake/PRR",
       "simple_logo": "1830/PRR.alt",
       "tokens": [
         0,
@@ -464,7 +464,7 @@ module Engine
       "float_percent": 60,
       "sym": "B&O",
       "name": "Baltimore & Ohio Railroad",
-      "logo": "1830/BO",
+      "logo": "18_chesapeake/BO",
       "simple_logo": "1830/BO.alt",
       "tokens": [
         0,
@@ -478,7 +478,7 @@ module Engine
       "float_percent": 60,
       "sym": "C&O",
       "name": "Chesapeake & Ohio Railroad",
-      "logo": "1830/CO",
+      "logo": "18_chesapeake/CO",
       "simple_logo": "1830/CO.alt",
       "tokens": [
         0,
@@ -493,7 +493,7 @@ module Engine
       "float_percent": 60,
       "sym": "ERIE",
       "name": "Erie Railroad",
-      "logo": "1830/ERIE",
+      "logo": "1846/ERIE",
       "simple_logo": "1830/ERIE.alt",
       "tokens": [
         0,
