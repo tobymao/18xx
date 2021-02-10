@@ -21,6 +21,12 @@ module View
           y: -60,
         }.freeze
 
+        P_BOTTOM_RIGHT_CORNER = {
+          region_weights: [22, 23],
+          x: 30,
+          y: 60,
+        }.freeze
+
         P_BOTTOM_LEFT_CORNER = {
           region_weights: [19, 20],
           x: -30,
@@ -57,6 +63,7 @@ module View
             P_BOTTOM_LEFT_CORNER,
             P_RIGHT_CORNER,
             P_LEFT_CORNER,
+            P_BOTTOM_RIGHT_CORNER,
           ]
         end
 

@@ -1018,7 +1018,7 @@ module Engine
       "city=revenue:0;label=Y": [
         "B4", "D20", "M19", "N10"
       ],
-      "city=revenue:0;label=Kh": [
+      "city=revenue:0;label=Y;label=Kh": [
         "G15"
       ],
       "upgrade=cost:80,terrain:water": [

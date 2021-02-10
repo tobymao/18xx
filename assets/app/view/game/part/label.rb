@@ -7,6 +7,8 @@ module View
     module Part
       # letter label, like "Z", "H", "OO"
       class Label < Base
+        needs :label
+
         # left of center
         SINGLE_CITY_ONE_SLOT = {
           flat: {
@@ -20,15 +22,28 @@ module View
             y: 0,
           },
         }.freeze
+        # right of center
+        SINGLE_CITY_ONE_SLOT_RIGHT = {
+          flat: {
+            region_weights: { (RIGHT_MID + RIGHT_CORNER) => 1, RIGHT_CENTER => 0.5 },
+            x: 55,
+            y: 0,
+          },
+          pointy: {
+            region_weights: { [17, 18] => 1.0, [11, 16] => 0.25 },
+            x: 65,
+            y: 0,
+          },
+        }.freeze
 
         P_LEFT_CORNER = {
           flat: {
-            region_weights: { LEFT_CORNER => 1.0, LEFT_MID => 0.25 },
+            region_weights: { LEFT_CORNER => 1.0 },
             x: -71.25,
             y: 0,
           },
           pointy: {
-            region_weights: { LEFT_CORNER => 1.0, [6] => 0.25 },
+            region_weights: { LEFT_CORNER => 1.0 },
             x: -67,
             y: 0,
           },
@@ -36,12 +51,12 @@ module View
 
         P_RIGHT_CORNER = {
           flat: {
-            region_weights: { RIGHT_CORNER => 1.0, RIGHT_MID => 0.25 },
+            region_weights: { RIGHT_CORNER => 1.0 },
             x: 71.25,
             y: 0,
           },
           pointy: {
-            region_weights: { RIGHT_CORNER => 1.0, [10] => 0.25 },
+            region_weights: { RIGHT_CORNER => 1.0 },
             x: 67,
             y: 0,
           },
@@ -49,12 +64,12 @@ module View
 
         P_BOTTOM_LEFT_CORNER = {
           flat: {
-            region_weights: { BOTTOM_LEFT_CORNER => 1.0, [21] => 0.5 },
+            region_weights: { BOTTOM_LEFT_CORNER => 1.0 },
             x: -30,
             y: 65,
           },
           pointy: {
-            region_weights: { BOTTOM_LEFT_CORNER => 1.0, [21] => 0.5 },
+            region_weights: { BOTTOM_LEFT_CORNER => 1.0 },
             x: -30,
             y: 61,
           },
@@ -81,14 +96,14 @@ module View
           },
           # top left corner
           {
-            region_weights: { UPPER_LEFT_CORNER => 1.0, [2] => 0.5 },
-            x: -30,
+            region_weights: { UPPER_LEFT_CORNER => 1.0 },
+            x: -40,
             y: -65,
           },
           # top right corner
           {
-            region_weights: { UPPER_RIGHT_CORNER => 1.0, [2] => 0.5 },
-            x: 30,
+            region_weights: { UPPER_RIGHT_CORNER => 1.0 },
+            x: 40,
             y: -65,
           },
           P_LEFT_CORNER[:flat],
@@ -96,15 +111,21 @@ module View
           P_BOTTOM_LEFT_CORNER[:flat],
           # bottom right corner
           {
-            region_weights: { BOTTOM_RIGHT_CORNER => 1.0, [21] => 0.5 },
-            x: 30,
+            region_weights: { BOTTOM_RIGHT_CORNER => 1.0 },
+            x: 40,
             y: 65,
           },
           # edge 1
           {
-            region_weights: { [12, 13] => 1.0, [14] => 0.5 },
+            region_weights: { [12, 13] => 1.0 },
             x: -50,
             y: 25,
+          },
+          # bottom center
+          {
+            region_weights: { [21] => 1.0, [20, 22] => 0.5 },
+            x: 0,
+            y: 60,
           },
         ].freeze
 
@@ -160,7 +181,7 @@ module View
             if @tile.cities.one? && (@tile.cities.first.slots > 1)
               [P_LEFT_CORNER[layout]]
             else
-              [SINGLE_CITY_ONE_SLOT[layout]]
+              [SINGLE_CITY_ONE_SLOT[layout], SINGLE_CITY_ONE_SLOT_RIGHT[layout]]
             end
           elsif @tile.city_towns.size > 1 && layout == :flat
             MULTI_CITY_LOCATIONS
@@ -173,13 +194,9 @@ module View
           end
         end
 
-        def load_from_tile
-          @label = @tile.label.to_s
-        end
-
         def render_part
           h(:g, { attrs: { transform: "#{translate} #{rotation_for_layout}" } }, [
-            h('text.tile__text', { attrs: { transform: 'scale(1.5)' } }, @label),
+            h('text.tile__text', { attrs: { transform: 'scale(1.5)' } }, @label.to_s),
           ])
         end
       end
