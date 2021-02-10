@@ -24,13 +24,14 @@ module View
       SCALE = 0.3
       TILE_SIZE = 60
       SIZE = Hex::SIZE * SCALE
-      DISTANCE = Hex::SIZE
+      DISTANCE = Hex::SIZE * 0.95
       FULL_CIRCLE = 360
       MAX_TILES_PER_CIRCLE = 12
       MIN_ANGLE = FULL_CIRCLE / MAX_TILES_PER_CIRCLE
       IDEAL_TILES_PER_CIRCLE = 6
       MAX_ANGLE = FULL_CIRCLE / IDEAL_TILES_PER_CIRCLE
       ADDITIONAL_ANGLE = 20 # extend opening angle by x degrees
+      DISTANCE_SCALE = 1.6
 
       def render
         @distance ||= DISTANCE
@@ -81,6 +82,34 @@ module View
                      end
 
         [angle, rotation]
+      end
+
+      def coordinates_for(hexes)
+        n_hexes = hexes.size
+
+        if @angle < FULL_CIRCLE && @angle / (n_hexes - 1) < MIN_ANGLE
+          # prevent overflow: distribute into 2 fans (inner fan max: 5 in corner / 7 on sides), revise for 13+ upgrades
+          cutoff = [@angle / MIN_ANGLE, (n_hexes + 1) / 3].max
+          hexes1 = hexes[0..cutoff]
+          hexes2 = hexes[cutoff + 1..-1]
+          angle = (hexes2.size * MIN_ANGLE) / 2 + ADDITIONAL_ANGLE / DISTANCE_SCALE
+          rotation = @rotation + (@angle - angle) / 2
+
+          list_coordinates(hexes1, @distance, SIZE, @angle, @rotation).concat(
+            list_coordinates(hexes2, @distance * DISTANCE_SCALE, SIZE, angle, rotation)
+          )
+        else
+          if @angle == FULL_CIRCLE && n_hexes < IDEAL_TILES_PER_CIRCLE
+            angle = (n_hexes - 1) * MAX_ANGLE
+          elsif @angle < FULL_CIRCLE # center tile fan + orient to viewport center
+            angle = [(n_hexes - 1) * MAX_ANGLE, @angle].min
+            @rotation += (@angle - angle) / 2
+          else
+            angle = @angle
+          end
+
+          list_coordinates(hexes, @distance, SIZE, angle, @rotation)
+        end
       end
     end
   end
