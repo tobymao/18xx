@@ -21,6 +21,11 @@ module View
       TILE_SIZE = 60
       SIZE = Hex::SIZE * SCALE
       DISTANCE = Hex::SIZE
+      FULL_CIRCLE = 360
+      MAX_TILES_PER_CIRCLE = 12
+      MIN_ANGLE = FULL_CIRCLE / MAX_TILES_PER_CIRCLE
+      IDEAL_TILES_PER_CIRCLE = 6
+      MAX_ANGLE = FULL_CIRCLE / IDEAL_TILES_PER_CIRCLE
 
       def render
         @distance ||= DISTANCE
