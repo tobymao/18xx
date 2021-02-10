@@ -6,7 +6,6 @@ module Engine
   module Step
     module G18FL
       class Token < Token
-        include Tokener
         ACTIONS = %w[place_token hex_token pass].freeze
 
         def actions(entity)
@@ -17,17 +16,19 @@ module Engine
         end
 
         def can_place_token?(entity)
-          current_entity == entity &&
-            !(tokens = available_tokens(entity)).empty? &&
-            min_token_price(tokens) <= buying_power(entity)
+          !@game.round.laid_token[entity] && (
+            !@game.token_company.closed? ||
+            (current_entity == entity &&
+              !(tokens = available_tokens(entity)).empty? &&
+              min_token_price(tokens) <= buying_power(entity))
+          )
         end
 
-        def description
-          'Place a Token'
-        end
+        def process_place_token(action)
+          raise GameError, "#{action.entity.name} cannot lay token now" if @game.round.laid_token[action.entity]
 
-        def pass_description
-          'Skip (Token)'
+          super
+          @game.round.laid_token[action.entity] = true
         end
 
         def available_hex(entity, hex)

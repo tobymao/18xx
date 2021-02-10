@@ -31,7 +31,7 @@ module Engine
       SELL_AFTER = :operate
       EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
       TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
-
+      STEAMBOAT_HEXES = %w[B5 B23 G20 K28].freeze
       EVENTS_TEXT = Base::EVENTS_TEXT.merge(
         'hurricane' => ['Florida Keys Hurricane', 'Track and hotels in the Florida Keys (M24, M26) is removed'],
         'close_port' => ['Port Token Removed'],
@@ -47,6 +47,9 @@ module Engine
                            may choose to convert to a 10 share corporation'],
       ).freeze
 
+      ASSIGNMENT_TOKENS = {
+        'POSC' => '/icons/1846/sc_token.svg',
+      }.freeze
       def stock_round
         Round::Stock.new(self, [
           Step::DiscardTrain,
@@ -56,13 +59,15 @@ module Engine
       end
 
       def operating_round(round_num)
-        Round::Operating.new(self, [
+        Round::G18FL::Operating.new(self, [
           Step::Bankrupt,
+          Step::G18FL::Assign,
           Step::Exchange,
           Step::G18FL::Convert,
           Step::SpecialTrack,
           Step::BuyCompany,
-          Step::Track,
+          Step::G18FL::Track,
+          Step::G18FL::SpecialToken,
           Step::G18FL::Token,
           Step::Route,
           Step::G18FL::Dividend,
@@ -70,6 +75,18 @@ module Engine
           Step::G18FL::BuyTrain,
           [Step::BuyCompany, blocks: true],
         ], round_num: round_num)
+      end
+
+      def steamboat
+        @steamboat ||= company_by_id('POSC')
+      end
+
+      def tile_company
+        @tile_company ||= company_by_id('TR')
+      end
+
+      def token_company
+        @token_company ||= company_by_id('POSC')
       end
 
       def revenue_for(route, stops)
@@ -80,6 +97,10 @@ module Engine
         raise GameError, '3E must visit at least two paying revenue centers' if route.train.variant['name'] == '3E' &&
            stops.count { |h| !h.town? } <= 1
 
+        steam = steamboat.id
+        if route.corporation.assigned?(steam) && (port = stops.map(&:hex).find { |hex| hex.assigned?(steam) })
+          revenue += 20 * port.tile.icons.select { |icon| icon.name == 'port' }.size
+        end
         hotels = stops.count { |h| h.tile.icons.any? { |i| i.name == route.corporation.id } }
 
         revenue + hotels * hotel_value
@@ -92,6 +113,31 @@ module Engine
       # Event logic goes here
       def event_close_port!
         @log << 'Port closes'
+        removals = Hash.new { |h, k| h[k] = {} }
+
+        @corporations.each do |corp|
+          corp.assignments.dup.each do |company, _|
+            removals[company][:corporation] = corp.name
+            corp.remove_assignment!(company)
+          end
+        end
+
+        @hexes.each do |hex|
+          hex.assignments.dup.each do |company, _|
+            removals[company][:hex] = hex.name
+            hex.remove_assignment!(company)
+          end
+        end
+
+        self.class::STEAMBOAT_HEXES.each do |hex|
+          hex_by_id(hex).tile.icons.reject! { |icon| icon.name == 'port' }
+        end
+
+        removals.each do |company, removal|
+          hex = removal[:hex]
+          corp = removal[:corporation]
+          @log << "-- Event: #{corp}'s #{company_by_id(company).name} token removed from #{hex} --"
+        end
       end
 
       def event_hurricane!
