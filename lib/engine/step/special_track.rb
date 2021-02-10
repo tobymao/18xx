@@ -17,7 +17,7 @@ module Engine
         action = abilities(entity)
         return [] unless action
 
-        action.blocks ? ACTIONS : ACTIONS_WITH_PASS
+        action.type == :tile_lay && action.blocks ? ACTIONS : ACTIONS_WITH_PASS
       end
 
       def description
