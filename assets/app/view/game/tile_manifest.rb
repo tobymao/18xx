@@ -16,21 +16,28 @@ module View
           [t, remaining[t.name]&.any? ? nil : 'None Left']
         end
 
+        return [] if upgrade_tiles.empty?
+
+        m = Native(`document.getElementById('tile_manifest').getBoundingClientRect()`)
+        c = Native(`document.getElementById('tile_' + #{tile.name}).getBoundingClientRect()`)
+        ts_ds = [TileSelector::DROP_SHADOW_SIZE - 5, 0].max # ignore up to 5px of drop-shadow (< 2vmin padding of #app)
+        left_col = c.left - m.left < WIDTH
+        right_col = m.right - c.right < WIDTH + ts_ds
+        bottom_row = m.bottom - c.bottom < WIDTH + ts_ds
+        top_row = c.top - m.top < WIDTH
+
         # Move the position to the middle of the hex
         props = {
           style: {
             position: 'absolute',
             left: "#{WIDTH * shift + WIDTH / 2}px",
-            top: "#{(WIDTH / 2) - 1}px",
+            top: "#{WIDTH / 2 - 1}px",
           },
         }
 
-        selector = h(TileSelector,
-                     layout: @game.layout,
-                     tiles: upgrade_tiles,
-                     actions: [],
-                     unavailable_clickable: true,
-                     role: :tile_page)
+        selector = h(TileSelector, layout: @game.layout, tiles: upgrade_tiles, unavailable_clickable: true,
+                                   role: :tile_page, left_col: left_col, right_col: right_col,
+                                   bottom_row: bottom_row, top_row: top_row)
 
         parent_props = {
           style: {
