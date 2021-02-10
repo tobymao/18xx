@@ -111,12 +111,64 @@ module Engine
         @phase.status.include?('hotels_doubled') ? 20 : 10
       end
 
-      # TODO: implement
-      # How far is the city_or_town from one of the corporation's stations?
+      # How far is the start_hex from one of the corporation's stations?
       # This is by track, not as the crow flies.
-      # city_or_town is either a City or a Town Part
-      def distance_to_station(_corporation, _city_or_town)
-        5
+      # start_hex is either a City or a Town Part. Cannot be Jacksonville
+      #
+      # NOTE: 18FL does not have forks in plain track, only junctions
+      # Also because of this, we only need to return the hexes visited
+      #  and can use the exits on tiles, except....
+      # The disjoint cities in Jacksonville are a problem though
+      def distance_to_station(corporation, start_hex)
+        raise GameError, 'Cannot calculate token cost of Jax' if start_hex.id == 'H23'
+
+        goal_hexes = corporation.tokens.select(&:city).map { |t| [t.city.hex, t.city] }
+        # # If there is a goal token in non-connected (gray) jax, then we need special logic.
+        # special_jax = jax_token && hex_by_id('H23').tile.color != :gray
+        distance = 0
+        visited_hexes = []
+        start_hexes = [[start_hex, start_hex.tile.cities.first]]
+        until start_hexes.empty?
+          return distance unless (start_hexes & goal_hexes).empty?
+
+          distance += 1
+          # # Don't reject jax in special case because there are several ways to reach it.
+          hexes_to_visit = start_hexes
+          start_hexes = []
+          hexes_to_visit.each do |hex_c|
+            visited_hexes << hex_c
+            hex_c.first.neighbors.each do |e, neighbor|
+              # Ignore this neighbor if they don't connect to each other
+              next unless hex_c.first.tile.exits.include?(e) && neighbor.tile.exits.include?((e + 3) % 6)
+
+              neighbor_hc = [neighbor, neighbor_city((e + 3) % 6, neighbor)]
+              # Don't revisit hexes
+              return distance if goal_hexes.include?(neighbor_hc)
+              next if visited_hexes.include?(neighbor_hc) || hexes_to_visit.include?(neighbor_hc)
+
+              start_hexes << neighbor_hc unless neighbor_hc[1]&.blocks?(corporation)
+            end
+          end
+        end
+        # Didn't return early, couldn't find a station connected.
+        # This shouldn't happen? If this is called the spot is tokenable
+        # and if the spot is tokenable it is visible from an existing station?
+        raise GameError, 'Distance is uncalculable'
+      end
+
+      def neighbor_city(incoming_edge, hex)
+        return nil if hex.tile.cities.empty?
+
+        if hex.id == 'H23' && hex.tile.color == :gray
+          # This is hardcoded and specific to 18FL Jax
+          return hex.tile.cities[0] if [5, 6].include?(incoming_edge)
+          return hex.tile.cities[1] if [1, 2].include?(incoming_edge)
+
+          raise GameError, "Couldn't find connection to Jax"
+        end
+
+        # If it's not Jax, there's only one city
+        hex.tile.cities.first
       end
 
       # Event logic goes here

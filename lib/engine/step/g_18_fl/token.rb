@@ -43,7 +43,7 @@ module Engine
           raise GameError, "#{hex.id} is not a town" if hex.tile.towns.empty?
           raise GameError, "#{entity.name} already has a hotel in #{hex.tile.location_name}" if tokened(hex, entity)
 
-          cost = token.price * @game.distance_to_station(entity, hex.tile.towns.first)
+          cost = token.price * @game.distance_to_station(entity, hex)
           raise GameError, "#{entity.name} cannot afford "\
                 "#{@game.format_currency(cost)} cost to lay hotel" if entity.cash < cost
 
@@ -59,8 +59,8 @@ module Engine
           hex.tile.icons.any? { |i| i.name == entity.id }
         end
 
-        def adjust_token_price_ability!(entity, token, hex, city, _special_ability = nil)
-          cost = token.price * @game.distance_to_station(entity, city)
+        def adjust_token_price_ability!(entity, token, hex, _city, _special_ability = nil)
+          cost = token.price * @game.distance_to_station(entity, hex)
           raise GameError, "#{entity.name} cannot afford "\
               "#{@game.format_currency(cost)} to lay token in "\
               "#{hex.tile.location_name}" if cost > entity.cash
