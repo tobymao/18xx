@@ -26,7 +26,7 @@ module Lib
         bottom: "#{bottom}px",
         width: "#{size}px",
         height: "#{size}px",
-        filter: "drop-shadow(#{DROP_SHADOW_SIZE}px #{DROP_SHADOW_SIZE}px 2px #888)",
+        filter: "drop-shadow(#{DROP_SHADOW_SIZE}px #{DROP_SHADOW_SIZE}px 2px #555)",
         pointerEvents: 'auto',
       }
     end
