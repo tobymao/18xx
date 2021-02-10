@@ -58,6 +58,16 @@ module Engine
         def tokened(hex, entity)
           hex.tile.icons.any? { |i| i.name == entity.id }
         end
+
+        def adjust_token_price_ability!(entity, token, hex, city, _special_ability = nil)
+          cost = token.price * @game.distance_to_station(entity, city)
+          raise GameError, "#{entity.name} cannot afford "\
+              "#{@game.format_currency(cost)} to lay token in "\
+              "#{hex.tile.location_name}" if cost > entity.cash
+
+          token.price = cost
+          [token, nil]
+        end
       end
     end
   end

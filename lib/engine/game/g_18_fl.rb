@@ -116,7 +116,7 @@ module Engine
       # This is by track, not as the crow flies.
       # city_or_town is either a City or a Town Part
       def distance_to_station(_corporation, _city_or_town)
-        1
+        5
       end
 
       # Event logic goes here
