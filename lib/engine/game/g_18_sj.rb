@@ -351,7 +351,7 @@ module Engine
       def clean_up_after_dividend
         # Remove Gellivare Company tile lay ability if it has been used this OR
         abilities(gc, :tile_lay) do |ability|
-          company.remove_ability(ability)
+          gc.remove_ability(ability)
           @log << "#{gc.name} tile lay ability removed"
         end unless @special_tile_lays.empty?
         @special_tile_lays = []
