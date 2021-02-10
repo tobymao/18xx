@@ -169,7 +169,7 @@ module Engine
           "#{tile.location_name.to_s.empty? ? '' : " (#{tile.location_name})"}"
       end
 
-      def update_token!(action, entity, tile, old_tile)
+      def update_token!(action, _entity, tile, old_tile)
         cities = tile.cities
         if old_tile.paths.empty? &&
             !tile.paths.empty? &&
