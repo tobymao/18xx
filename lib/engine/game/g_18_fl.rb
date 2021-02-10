@@ -111,6 +111,14 @@ module Engine
         @phase.status.include?('hotels_doubled') ? 20 : 10
       end
 
+      # TODO: implement
+      # How far is the city_or_town from one of the corporation's stations?
+      # This is by track, not as the crow flies.
+      # city_or_town is either a City or a Town Part
+      def distance_to_station(_corporation, _city_or_town)
+        1
+      end
+
       # Event logic goes here
       def event_close_port!
         @log << 'Port closes'

@@ -43,7 +43,12 @@ module Engine
           raise GameError, "#{hex.id} is not a town" if hex.tile.towns.empty?
           raise GameError, "#{entity.name} already has a hotel in #{hex.tile.location_name}" if tokened(hex, entity)
 
-          @game.log << "#{entity.name} places a hotel on #{hex.name}"
+          cost = token.price * @game.distance_to_station(entity, hex.tile.towns.first)
+          raise GameError, "#{entity.name} cannot afford "\
+                "#{@game.format_currency(cost)} cost to lay hotel" if entity.cash < cost
+
+          @game.log << "#{entity.name} places a hotel on #{hex.name} for #{@game.format_currency(cost)}"
+          entity.spend(cost, @game.bank)
 
           entity.tokens.delete(token)
           hex.tile.icons << Part::Icon.new("../logos/18_fl/#{entity.id}")
