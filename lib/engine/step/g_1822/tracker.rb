@@ -8,7 +8,7 @@ module Engine
       module Tracker
         include Step::Tracker
 
-        def border_cost(tile, entity)
+        def remove_border_calculate_cost!(tile, entity)
           hex = tile.hex
           types = []
 

@@ -119,11 +119,11 @@ module Engine
         cost =
           if free
             # call for the side effect of deleting a completed border cost
-            border_cost(tile, entity)
+            remove_border_calculate_cost!(tile, entity)
 
             extra_cost
           else
-            border, border_types = border_cost(tile, entity)
+            border, border_types = remove_border_calculate_cost!(tile, entity)
             terrain += border_types if border.positive?
             base_cost = @game.upgrade_cost(old_tile, hex, entity) + border + extra_cost - discount
             @game.tile_cost_with_discount(tile, hex, entity, base_cost)
@@ -182,7 +182,7 @@ module Engine
         end
       end
 
-      def border_cost(tile, entity)
+      def remove_border_calculate_cost!(tile, entity)
         hex = tile.hex
         types = []
 
