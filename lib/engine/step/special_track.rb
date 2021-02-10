@@ -120,7 +120,7 @@ module Engine
                                     time: %w[special_track %current_step% owning_corp_or_turn],
                                     **kwargs,
                                     &block)
-          return ability if ability
+          return ability if ability && (ability.type != :teleport || !ability.used?)
         end
 
         nil

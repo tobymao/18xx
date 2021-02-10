@@ -9,7 +9,7 @@ module Engine
       include Tokener
 
       def actions(entity)
-        return [] unless ability(entity)
+        return [] if !ability(entity) || available_tokens(entity).empty?
 
         actions = ['place_token']
         actions << 'pass' if entity == @round.teleported
@@ -20,12 +20,20 @@ module Engine
         'Place teleport token'
       end
 
+      def pass_description
+        'Pass (Token)'
+      end
+
       def blocks?
-        @round.teleported
+        can_token_after_teleport?
       end
 
       def blocking?
-        @round.teleported
+        can_token_after_teleport?
+      end
+
+      def can_token_after_teleport?
+        @round.teleported && !available_tokens(@round.teleported).empty?
       end
 
       def active_entities
@@ -83,14 +91,12 @@ module Engine
       def ability(entity)
         return unless entity&.company?
 
-        @game.abilities(entity, :token) do |ability, _owner|
+        @game.abilities(entity, :token) do |ability, _company|
           return ability
         end
 
-        @game.abilities(entity, :teleport) do |ability, _owner|
-          next unless ability.used?
-
-          return ability
+        @game.abilities(entity, :teleport) do |ability, _company|
+          return ability if ability.used?
         end
       end
     end

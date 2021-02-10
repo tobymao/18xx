@@ -101,9 +101,10 @@ module Engine
           if ability.type == :teleport
             teleport = true
             free = true if ability.free_tile_lay
-            if ability.cost
-              spender.spend(ability.cost, @game.bank) if ability.cost.positive?
-              @log << "#{spender.name} spends #{@game.format_currency(teleport.cost)} and teleports to #{hex.name}"
+            if ability.cost&.positive?
+              spender.spend(ability.cost, @game.bank)
+              @log << "#{spender.name} (#{ability.owner.sym}) spends #{@game.format_currency(ability.cost)} "\
+                      "and teleports to #{hex.name} (#{hex.location_name})"
             end
           else
             raise GameError, "Track laid must be connected to one of #{spender.id}'s stations" if ability.reachable &&
