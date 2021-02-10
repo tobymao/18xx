@@ -428,7 +428,7 @@ module Engine
         100
       ],
       "coordinates": "H12",
-      "color": "#637f2a"
+      "color": "green"
     },
     {
       "float_percent": 60,
@@ -486,7 +486,8 @@ module Engine
         100
       ],
       "coordinates": "F6",
-      "color": "#0092c8"
+      "color": "#ADD8E6",
+      "text_color": "black"
     },
     {
       "float_percent": 60,
