@@ -49,13 +49,38 @@ module View
             unavailable: unavailable)
         end
 
-        hexes = list_coordinates(hexes, @distance, SIZE).map do |hex, left, bottom|
+        hexes = coordinates_for(tiles).map do |hex, left, bottom|
           h(:svg,
             { style: style(left * @zoom, bottom * @zoom, TILE_SIZE * @zoom) },
             [h(:g, { attrs: { transform: "scale(#{SCALE * @zoom})" } }, [hex])])
         end
 
         h(:div, hexes)
+      end
+
+      def calc_angle_rotation(left, right, top, bottom)
+        # calculate angle of tile fan(s)
+        angle = case [left, right, top, bottom].count(true)
+                when 0 # center
+                  rotation = 0
+                  FULL_CIRCLE
+                when 1 # side
+                  180
+                else # corner
+                  90
+                end
+        # rotate tile fan(s) in corners and on sides to center of viewport
+        rotation ||= if left && !bottom
+                       -90
+                     elsif !left && top
+                       -180
+                     elsif right && !top
+                       -270
+                     else
+                       0
+                     end
+
+        [angle, rotation]
       end
     end
   end
