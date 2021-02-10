@@ -83,6 +83,21 @@ module Engine
          "count":"unlimited",
          "color":"brown",
          "code":"city=revenue:60;path=a:0,b:_0;label=M"
+      },
+      "C1":{
+         "count":"unlimited",
+         "color":"yellow",
+         "code":"city=revenue:30;path=a:0,b:_0;path=a:3,b:_0;label=⛏"
+      },
+      "C2":{
+         "count":"unlimited",
+         "color":"green",
+         "code":"city=revenue:20;path=a:0,b:_0;path=a:3,b:_0;label=⛏"
+      },
+      "C3":{
+         "count":"unlimited",
+         "color":"brown",
+         "code":"city=revenue:10;path=a:0,b:_0;path=a:3,b:_0;label=⛏"
       }
    },
    "market":[
