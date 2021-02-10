@@ -706,7 +706,7 @@ module Engine
       end
 
       def init_corporations(stock_market)
-        corporations = self.class::CORPORATIONS.select { |corporation| CORPORATIONS_BY_MAP[@map].include?(corporation[:sym]) }
+        corporations = self.class::CORPORATIONS.select { |c| CORPORATIONS_BY_MAP[@map].include?(c[:sym]) }
                                                .map do |corporation|
           Corporation.new(
             min_price: stock_market.par_prices.map(&:price).min,
