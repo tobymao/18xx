@@ -68,7 +68,14 @@ module Engine
           @company = ability.count.positive? ? action.entity : nil if ability.must_lay_together
         end
 
-        @round.teleported = ability.owner if ability.type == :teleport
+        if ability.type == :teleport
+          company = ability.owner
+          if company.owner.tokens_by_type.empty?
+            company.remove_ability(ability)
+          else
+            @round.teleported = company
+          end
+        end
       end
 
       def process_pass(action)
