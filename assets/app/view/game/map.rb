@@ -99,7 +99,7 @@ module View
 
               return h(:div) if select_tiles.empty?
 
-              distance = (TileSelector::DISTANCE + (TileSelector::TILE_SIZE / 2)) * map_zoom
+              distance = TileSelector::DISTANCE * map_zoom
               width, height = map_size
               ts_ds = [TileSelector::DROP_SHADOW_SIZE - 5, 0].max # ignore up to 5px of ds (< 2vmin padding of #app)
               left_col = left < distance
