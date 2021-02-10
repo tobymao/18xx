@@ -100,9 +100,11 @@ module View
             list_coordinates(hexes2, @distance * DISTANCE_SCALE_OUTER_FAN, SIZE, angle, rotation)
           )
         else
+          @distance *= DISTANCE_SCALE if n_hexes <= 8
           angle = [(n_hexes - 1) * MAX_ANGLE, @angle].min
           @rotation += (@angle - angle) / 2 if @angle < FULL_CIRCLE # center tile fan + orient to viewport center
-          @distance *= DISTANCE_SCALE if n_hexes <= 8
+          # rotate tile fan to cover seams between adjacent hexes instead of hexes themselves
+          @rotation += 30 if @layout == :pointy && @angle == FULL_CIRCLE && @role != :tile_page
 
           list_coordinates(hexes, @distance, SIZE, angle, @rotation)
         end
