@@ -1774,17 +1774,10 @@ module Engine
 
         reservations = Hash.new { |k, v| k[v] = [] }
         reservation_corporations.each do |c|
-          if c.coordinates.is_a?(Array)
-            c.coordinates.each_with_index do |coord, idx|
-              reservations[coord] << {
-                entity: c,
-                city: c.city.is_a?(Array) ? c.city[idx] : c.city,
-              }
-            end
-          else
-            reservations[c.coordinates] << {
+          Array(c.coordinates).each_with_index do |coord, idx|
+            reservations[coord] << {
               entity: c,
-              city: c.city,
+              city: c.city.is_a?(Array) ? c.city[idx] : c.city,
             }
           end
         end
