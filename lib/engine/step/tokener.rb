@@ -66,7 +66,7 @@ module Engine
         end
 
         free = !token.price.positive?
-        if ability&.type == :token      
+        if ability&.type == :token
           cheater = ability.cheater
           extra_slot = ability.extra_slot
         end
