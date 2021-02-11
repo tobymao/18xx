@@ -241,14 +241,14 @@ module View
       }
 
       menu_items = [
-        item('Game'),
-        item('Entities', '#entities'),
-        item('Map', '#map'),
-        item('Market', '#market'),
-        item('Info', '#info'),
-        item('Tiles', '#tiles'),
-        item('Spreadsheet', '#spreadsheet'),
-        item('Tools', '#tools'),
+        item('Game', '', 'g'),
+        item('Entities', '#entities', 'e'),
+        item('Map', '#map', 'm'),
+        item('Market', '#market', 'a or k'),
+        item('Info', '#info', 'i'),
+        item('Tiles', '#tiles', 't'),
+        item('Spreadsheet', '#spreadsheet', 's'),
+        item('Tools', '#tools', 'o'),
       ]
 
       h('nav#game_menu', nav_props, [
@@ -256,7 +256,7 @@ module View
       ])
     end
 
-    def item(name, anchor = '')
+    def item(name, anchor, shortcut)
       change_anchor = lambda do
         unless route_anchor
           elm = Native(`document.getElementById('chatlog')`)
@@ -271,6 +271,7 @@ module View
         attrs: {
           href: anchor,
           onclick: 'return false',
+          title: "Shortcut: #{shortcut}",
         },
         style: { textDecoration: route_anchor == anchor[1..-1] ? 'underline' : 'none' },
         on: { click: change_anchor },
