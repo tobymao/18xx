@@ -419,7 +419,8 @@ module Engine
       "float_percent": 60,
       "sym": "PRR",
       "name": "Pennsylvania Railroad",
-      "logo": "1830/PRR",
+      "logo": "18_chesapeake/PRR",
+      "simple_logo": "1830/PRR.alt",
       "tokens": [
         0,
         40,
@@ -434,6 +435,7 @@ module Engine
       "sym": "NYC",
       "name": "New York Central Railroad",
       "logo": "1830/NYC",
+      "simple_logo": "1830/NYC.alt",
       "tokens": [
         0,
         40,
@@ -441,13 +443,14 @@ module Engine
         100
       ],
       "coordinates": "E19",
-      "color": "black"
+      "color": "#474548"
     },
     {
       "float_percent": 60,
       "sym": "CPR",
       "name": "Canadian Pacific Railroad",
       "logo": "1830/CPR",
+      "simple_logo": "1830/CPR.alt",
       "tokens": [
         0,
         40,
@@ -461,7 +464,8 @@ module Engine
       "float_percent": 60,
       "sym": "B&O",
       "name": "Baltimore & Ohio Railroad",
-      "logo": "1830/BO",
+      "logo": "18_chesapeake/BO",
+      "simple_logo": "1830/BO.alt",
       "tokens": [
         0,
         40,
@@ -474,28 +478,30 @@ module Engine
       "float_percent": 60,
       "sym": "C&O",
       "name": "Chesapeake & Ohio Railroad",
-      "logo": "1830/CO",
+      "logo": "18_chesapeake/CO",
+      "simple_logo": "1830/CO.alt",
       "tokens": [
         0,
         40,
         100
       ],
       "coordinates": "F6",
-      "color": "lightBlue",
+      "color": "#ADD8E6",
       "text_color": "black"
     },
     {
       "float_percent": 60,
       "sym": "ERIE",
       "name": "Erie Railroad",
-      "logo": "1830/ERIE",
+      "logo": "1846/ERIE",
+      "simple_logo": "1830/ERIE.alt",
       "tokens": [
         0,
         40,
         100
       ],
       "coordinates": "E11",
-      "color": "yellow",
+      "color": "#FFF500",
       "text_color": "black"
     },
     {
@@ -503,25 +509,27 @@ module Engine
       "sym": "NYNH",
       "name": "New York, New Haven & Hartford Railroad",
       "logo": "1830/NYNH",
+      "simple_logo": "1830/NYNH.alt",
       "tokens": [
         0,
         40
       ],
       "coordinates": "G19",
       "city": 0,
-      "color": "orange"
+      "color": "#d88e39"
     },
     {
       "float_percent": 60,
       "sym": "B&M",
       "name": "Boston & Maine Railroad",
       "logo": "1830/BM",
+      "simple_logo": "1830/BM.alt",
       "tokens": [
         0,
         40
       ],
       "coordinates": "E23",
-      "color": "brightGreen"
+      "color": "#95c054"
     }
   ],
   "trains": [
