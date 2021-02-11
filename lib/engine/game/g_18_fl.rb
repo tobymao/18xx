@@ -120,11 +120,10 @@ module Engine
       #  and can use the exits on tiles, except....
       # The disjoint cities in Jacksonville are a problem though
       def distance_to_station(corporation, start_hex)
-        raise GameError, 'Cannot calculate token cost of Jax' if start_hex.id == 'H23'
+        raise GameError, 'Cannot calculate token cost of Jax' if start_hex.id == 'B23'
 
         goal_hexes = corporation.tokens.select(&:city).map { |t| [t.city.hex, t.city] }
         # # If there is a goal token in non-connected (gray) jax, then we need special logic.
-        # special_jax = jax_token && hex_by_id('H23').tile.color != :gray
         distance = 0
         visited_hexes = []
         start_hexes = [[start_hex, start_hex.tile.cities.first]]
@@ -137,7 +136,7 @@ module Engine
           start_hexes = []
           hexes_to_visit.each do |hex_c|
             visited_hexes << hex_c
-            hex_c.first.neighbors.each do |e, neighbor|
+            valid_neighbors(hex_c).each do |e, neighbor|
               # Ignore this neighbor if they don't connect to each other
               next unless hex_c.first.tile.exits.include?(e) && neighbor.tile.exits.include?((e + 3) % 6)
 
@@ -156,12 +155,21 @@ module Engine
         raise GameError, 'Distance is uncalculable'
       end
 
+      def valid_neighbors(hex_c)
+        # Special logic for disjoint jax
+        return hex_c.first.neighbors unless hex_c.first.id == 'B23' && hex_c.first.tile.color != :gray
+
+        valid_edges = [5, 0] if hex_c.first.tile.cities[0] == hex_c.last
+        valid_edges = [1, 2] if hex_c.first.tile.cities[1] == hex_c.last
+        hex_c.first.neighbors.select { |edge, _| valid_edges.include?(edge) }
+      end
+
       def neighbor_city(incoming_edge, hex)
         return nil if hex.tile.cities.empty?
 
-        if hex.id == 'H23' && hex.tile.color == :gray
+        if hex.id == 'B23' && hex.tile.color != :gray
           # This is hardcoded and specific to 18FL Jax
-          return hex.tile.cities[0] if [5, 6].include?(incoming_edge)
+          return hex.tile.cities[0] if [5, 0].include?(incoming_edge)
           return hex.tile.cities[1] if [1, 2].include?(incoming_edge)
 
           raise GameError, "Couldn't find connection to Jax"
