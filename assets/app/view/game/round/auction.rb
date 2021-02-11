@@ -221,7 +221,7 @@ module View
               },
               on: { click: click },
             }
-            h('button', props, price)
+            h('button', props, @game.format_currency(price))
           end
 
           div_class = choice_buttons.size < 5 ? '.inline' : ''
