@@ -362,6 +362,10 @@ div.game.card em {
   text-decoration: underline;
 }
 
+div#game:focus {
+  outline: none; /* prevent default outline of some browsers */
+}
+
 #history {
   float: left;
 }
