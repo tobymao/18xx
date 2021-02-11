@@ -59,7 +59,7 @@ module Engine
           lay_tile_action(action, spender: spender)
         else
           lay_tile(action, spender: spender)
-          check_connect(action, ability) unless @game.loading
+          check_connect(action, ability)
         end
         ability.use!
 
@@ -137,13 +137,13 @@ module Engine
       end
 
       def check_connect(_action, ability)
-        hex_ids = ability.hexes
+        return if @game.loading
         return if ability.type == :teleport
         return unless ability.connect
-        return if hex_ids.size < 2
+        return if ability.hexes.size < 2
         return if !ability.start_count || ability.start_count < 2 || ability.start_count == ability.count
 
-        paths = hex_ids.flat_map do |hex_id|
+        paths = ability.hexes.flat_map do |hex_id|
           @game.hex_by_id(hex_id).tile.paths
         end.uniq
 
