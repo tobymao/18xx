@@ -59,7 +59,7 @@ module Engine
           lay_tile_action(action, spender: spender)
         else
           lay_tile(action, spender: spender)
-          check_connect(action, ability)
+          check_connect(action, ability) unless @game.loading
         end
         ability.use!
 
@@ -123,11 +123,13 @@ module Engine
         end
 
         %i[tile_lay teleport].each do |type|
-          ability = @game.abilities(entity,
-                                    type,
-                                    time: %w[special_track %current_step% owning_corp_or_turn],
-                                    **kwargs,
-                                    &block)
+          ability = @game.abilities(
+                            entity,
+                            type,
+                            time: %w[special_track %current_step% owning_corp_or_turn],
+                            **kwargs,
+                            &block
+                          )
           return ability if ability && (ability.type != :teleport || !ability.used?)
         end
 

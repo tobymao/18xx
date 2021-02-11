@@ -98,6 +98,8 @@ module Engine
         @game.abilities(entity, :teleport) do |ability, _company|
           return ability if ability.used?
         end
+
+        nil
       end
     end
   end
