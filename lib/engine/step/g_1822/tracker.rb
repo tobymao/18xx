@@ -25,7 +25,7 @@ module Engine
             end
 
             types << border.type
-            cost - border_cost_discount(entity, border)
+            cost - border_cost_discount(entity, border, hex)
           end
           [total_cost, types]
         end
