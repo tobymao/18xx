@@ -63,6 +63,19 @@ module Engine
       COMPANY_MINOR_PREFIX = 'M'
       COMPANY_PRIVATE_PREFIX = 'P'
 
+      DESTINATIONS = {
+        'LNWR' => 'I22',
+        'GWR' => 'G36',
+        'LBSCR' => 'M42',
+        'SECR' => 'P41',
+        'CR' => 'G12',
+        'MR' => 'L19',
+        'LYR' => 'I22',
+        'NBR' => 'H1',
+        'SWR' => 'C34',
+        'NER' => 'H5',
+      }.freeze
+
       MAJOR_TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
 
       MINOR_START_PAR_PRICE = 50
@@ -177,12 +190,27 @@ module Engine
           Step::G1822::FirstTurnHousekeeping,
           Step::BuyCompany,
           Step::G1822::Track,
-          Step::Token,
+          Step::G1822::DestinationToken,
+          Step::G1822::Token,
           Step::Route,
           Step::G1822::Dividend,
           Step::DiscardTrain,
           Step::G1822::BuyTrain,
         ], round_num: round_num)
+      end
+
+      def place_home_token(corporation)
+        return if corporation.tokens.first&.used
+
+        super
+
+        # Special for LNWR, it gets its destination token. But wont get the bonus until home
+        # and destination is connected
+        return unless corporation.id == 'LNWR'
+
+        hex = hex_by_id(self.class::DESTINATIONS[corporation.id])
+        token = corporation.find_token_by_type(:destination)
+        place_destination_token(corporation, hex, token)
       end
 
       def setup
@@ -200,6 +228,9 @@ module Engine
 
         # Setup the fist bidboxes
         setup_bidboxes
+
+        # Setup all the destination tokens, icons and abilities
+        setup_destinations
       end
 
       def sorted_corporations
@@ -260,6 +291,19 @@ module Engine
         self.class::BIDDING_TOKENS[@players.size.to_s]
       end
 
+      def place_destination_token(entity, hex, token)
+        city = hex.tile.cities.first
+        city.place_token(entity, token, free: true, check_tokenable: false, cheater: 0)
+        hex.tile.icons.reject! { |icon| icon.name == "#{entity.id}_destination" }
+
+        ability = entity.all_abilities.find { |a| a.type == :destination }
+        entity.remove_ability(ability)
+
+        @graph.clear
+
+        @log << "#{entity.name} places its destination token on #{hex.name}"
+      end
+
       def setup_bidboxes
         # Set the owner to bank for the companies up for auction this stockround
         bidbox_minors.each do |minor|
@@ -312,7 +356,21 @@ module Engine
           else
             c.min_price = 0
           end
-          c.max_price = 1000
+          c.max_price = 10_000
+        end
+      end
+
+      def setup_destinations
+        self.class::DESTINATIONS.each do |corp, destination|
+          ability = Ability::Base.new(
+            type: 'destination',
+            description: "Connect to #{destination} for your destination token."
+          )
+          corporation = corporation_by_id(corp)
+          corporation.add_ability(ability)
+          corporation.tokens << Engine::Token.new(corporation, logo: "/logos/1822/#{corp}_DEST.svg",
+                                                               type: :destination)
+          hex_by_id(destination).tile.icons << Part::Icon.new("../icons/1822/#{corp}_DEST", "#{corp}_destination")
         end
       end
     end

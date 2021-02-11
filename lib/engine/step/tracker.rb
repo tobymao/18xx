@@ -119,11 +119,11 @@ module Engine
         cost =
           if free
             # call for the side effect of deleting a completed border cost
-            border_cost(tile, entity)
+            remove_border_calculate_cost!(tile, entity)
 
             extra_cost
           else
-            border, border_types = border_cost(tile, entity)
+            border, border_types = remove_border_calculate_cost!(tile, entity)
             terrain += border_types if border.positive?
             base_cost = @game.upgrade_cost(old_tile, hex, entity) + border + extra_cost - discount
             @game.tile_cost_with_discount(tile, hex, entity, base_cost)
@@ -182,7 +182,7 @@ module Engine
         end
       end
 
-      def border_cost(tile, entity)
+      def remove_border_calculate_cost!(tile, entity)
         hex = tile.hex
         types = []
 
@@ -197,23 +197,24 @@ module Engine
           tile.borders.delete(border)
           neighbor.tile.borders.map! { |nb| nb.edge == hex.invert(edge) ? nil : nb }.compact!
 
-          ability = entity.all_abilities.find do |a|
-            (a.type == :tile_discount) &&
-             a.terrain &&
-             (border.type == a.terrain) &&
-             (!a.hexes || a.hexes.include?(hex.name))
-          end
-          discount = ability&.discount || 0
-
-          if discount.positive?
-            @log << "#{entity.name} receives a discount of "\
-            "#{@game.format_currency(discount)} from "\
-            "#{ability.owner.name}"
-          end
-
-          cost - discount
+          cost - border_cost_discount(entity, border)
         end
         [total_cost, types]
+      end
+
+      def border_cost_discount(entity, border)
+        ability = entity.all_abilities.find do |a|
+          (a.type == :tile_discount) &&
+            a.terrain &&
+            (border.type == a.terrain) &&
+            (!a.hexes || a.hexes.include?(hex.name))
+        end
+        discount = ability&.discount || 0
+
+        @log << "#{entity.name} receives a discount of #{@game.format_currency(discount)} from "\
+          "#{ability.owner.name}" if discount.positive?
+
+        discount
       end
 
       def check_track_restrictions!(entity, old_tile, new_tile)
