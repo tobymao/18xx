@@ -1735,7 +1735,10 @@ module Engine
       "name": "5",
       "distance": 5,
       "num": 5,
-      "price": 500
+      "price": 500,
+      "events":[
+        {"type": "close_concessions"}
+      ]
     },
     {
       "name": "6",
@@ -2203,7 +2206,10 @@ module Engine
         "brown"
       ],
       "status": [
-        "can_buy_trains"
+        "can_buy_trains",
+        "can_acquire_minor_bidbox",
+        "can_par",
+        "minors_green_upgrade"
       ],
       "operating_rounds": 2
     },
@@ -2220,7 +2226,11 @@ module Engine
         "brown"
       ],
       "status": [
-        "can_buy_trains"
+        "can_buy_trains",
+        "can_acquire_minor_bidbox",
+        "can_par",
+        "full_capitalisation",
+        "minors_green_upgrade"
       ],
       "operating_rounds": 2
     },
@@ -2238,7 +2248,11 @@ module Engine
         "gray"
       ],
       "status": [
-        "can_buy_trains"
+        "can_buy_trains",
+        "can_acquire_minor_bidbox",
+        "can_par",
+        "full_capitalisation",
+        "minors_green_upgrade"
       ],
       "operating_rounds": 2
     }
