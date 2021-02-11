@@ -11,7 +11,7 @@ module Engine
         end
 
         def can_sell_any_companies?(entity)
-          sellable_companies(entity).any?
+          !sellable_companies(entity).empty?
         end
 
         def sellable_companies(entity)

@@ -38,9 +38,10 @@ module Engine
         end
 
         def get_par_prices(_entity, _corp)
-          super
-            .reject { |p| p.price == 9 && !@game.phase.tiles.include?(:green) }
-            .reject { |p| p.price == 12 && !@game.phase.tiles.include?(:brown) }
+          super.reject do |p|
+            (p.price == 9 && !@game.phase.tiles.include?(:green)) ||
+            (p.price == 12 && !@game.phase.tiles.include?(:brown))
+          end
         end
 
         def can_buy?(entity, bundle)
