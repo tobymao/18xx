@@ -9,8 +9,7 @@ module Engine
       class BuyCert < Base
         attr_reader :companies
 
-        AUCTION_ACTIONS = %w[bid].freeze
-        MIN_BID_RAISE = 5
+        ACTIONS = %w[bid].freeze
         BID_CHOICES = [0, 5, 10].freeze
 
         def bid_choices
@@ -65,7 +64,7 @@ module Engine
           return [] unless entity == current_entity
 
           # NO PASSING
-          AUCTION_ACTIONS
+          ACTIONS
         end
 
         def process_bid(action)
@@ -89,7 +88,7 @@ module Engine
 
         def active_entities
           return super if !@bids || @bids.empty?
-          return [@bids.find { |_e, b| b.nil? }.first] if in_auction?
+          return [@bids.find { |_, bid| !bid }.first] if in_auction?
 
           [@bids.max { |a, b| a[1] <=> b[1] }.first]
         end
@@ -129,7 +128,7 @@ module Engine
         end
 
         def in_auction?
-          @bids.find { |_e, b| b.nil? }
+          @bids.any? { |_, bid| !bid }
         end
 
         def setup_auction
@@ -140,9 +139,9 @@ module Engine
         end
 
         def resolve_auction
-          return if @bids.any? { |_e, b| b.nil? }
+          return if in_auction?
 
-          winner = @bids.max_by { |_k, v| v }
+          winner = @bids.max_by { |_, bid| bid }
           @log << "-- #{winner.first.name} wins auction with #{@game.format_currency(winner.last)} --"
           @bids.each do |player, bid|
             if bid.positive?
@@ -161,7 +160,7 @@ module Engine
           player.spend(price, @game.bank) if price.positive?
           @log << "#{player.name} buys #{company.name} for #{@game.format_currency(price)}"
           grant_priority(player) if company == @first_comp
-          @bids.reject! { |e, _b| e == player }
+          @bids.reject! { |bidder, _| bidder == player }
           @companies.delete(company)
         end
 
