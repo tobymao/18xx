@@ -99,6 +99,7 @@ module Engine
         # We can modify COMPANY_VALUES and OR_SETS if we want to support the shorter variant
         @last_or = COMPANY_VALUES.size
         @recently_floated = []
+        @entity_used_ability_to_track = false
 
         # Only small companies are available until later phases
         @corporations, @future_corporations = @corporations.partition { |corporation| corporation.type == :small }
@@ -123,9 +124,8 @@ module Engine
       def operating_round(round_num)
         Round::Operating.new(self, [
           Step::G18CZ::HomeTrack,
-          Step::G18CZ::SellCompany,
+          Step::G18CZ::SellCompanyAndSpecialTrack,
           Step::HomeToken,
-          Step::SpecialTrack,
           Step::BuyCompany,
           Step::Track,
           Step::G18CZ::Token,
@@ -230,6 +230,7 @@ module Engine
       end
 
       def tile_lays(entity)
+        return [] if @entity_used_ability_to_track
         return super unless @recently_floated.include?(entity)
 
         [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }]
@@ -246,8 +247,12 @@ module Engine
 
       def block_lay_for_purple_tiles
         @tiles.each do |tile|
-          tile.blocks_lay = true if tile.name.end_with?('p')
+          tile.blocks_lay = true if purple_tile?(tile)
         end
+      end
+
+      def purple_tile?(tile)
+        tile.name.end_with?('p')
       end
 
       def must_buy_train?(entity)
@@ -398,6 +403,32 @@ module Engine
         return player.cash if emergency
 
         super
+      end
+
+      def ability_blocking_step
+        @round.steps.find do |step|
+          # currently, abilities only care about Tracker, the is_a? check could
+          # be expanded to a list of possible classes/modules when needed
+          step.is_a?(Step::Track) && !step.passed? && step.blocks?
+        end
+      end
+
+      def next_turn!
+        super
+        @entity_used_ability_to_track = false
+      end
+
+      def skip_default_track
+        @entity_used_ability_to_track = true
+      end
+
+      def ability_usable?(ability)
+        case ability
+        when Ability::TileLay
+          ability.count&.positive?
+        else
+          true
+        end
       end
     end
   end
