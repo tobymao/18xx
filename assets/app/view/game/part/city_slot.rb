@@ -69,7 +69,7 @@ module View
         def reservation
           text = @reservation.id
 
-          non_home = @reservation.corporation? && (@reservation.coordinates != @city.hex.coordinates)
+          non_home = @reservation.corporation? && !Array(@reservation.coordinates).include?(@city.hex.coordinates)
           color = non_home ? '#808080' : 'black'
 
           attrs = {
