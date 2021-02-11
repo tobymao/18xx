@@ -13,6 +13,11 @@ module View
         return [] if @tile_selector.role != :tile_page || @tile_selector.hex&.tile&.name != tile.name
 
         upgrade_tiles = @game.all_potential_upgrades(@tile_selector.hex.tile, tile_manifest: true).map do |t|
+          Engine::Tile::ALL_EDGES.select do |r|
+            break if @tile_selector.hex.tile.paths.all? { |path| t.paths.any? { |p| path <= p } }
+
+            t.rotate!(r)
+          end
           [t, remaining[t.name]&.any? ? nil : 'None Left']
         end
 
