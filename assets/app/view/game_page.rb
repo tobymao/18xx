@@ -135,9 +135,16 @@ module View
       render_title
 
       props = {
+        attrs: {
+          autofocus: true, # does not work on all browsers
+          tabindex: -1, # necessary to be focusable so keyup works; -1 == not accessible by tabbing
+        },
         key: 'game_page',
         hook: {
           destroy: destroy,
+        },
+        on: {
+          keyup: ->(event) { hotkey_check(event) },
         },
       }
 
@@ -147,7 +154,42 @@ module View
       ]
       children.unshift(render_broken_game(@game.exception)) if @game.exception
 
-      h(:div, props, children)
+      h('div#game', props, children)
+    end
+
+    def change_anchor(anchor)
+      unless route_anchor
+        elm = Native(`document.getElementById('chatlog')`)
+        # only store when scrolled up at least one line (20px)
+        store(:scroll_pos, elm.scrollTop < elm.scrollHeight - elm.offsetHeight - 20 ? elm.scrollTop : nil, skip: true)
+      end
+      store(:tile_selector, nil, skip: true)
+      store(:app_route, "#{@app_route.split('#').first}#{anchor}")
+    end
+
+    def hotkey_check(event)
+      active = Native(`document.activeElement`)
+      return unless active.id == 'game' || active.localName == 'body'
+
+      event = Native(event)
+      case event['keyCode']
+      when 71 # g
+        change_anchor('')
+      when 69 # e
+        change_anchor('#entities')
+      when 77 # m
+        change_anchor('#map')
+      when 75 # k
+        change_anchor('#market')
+      when 73 # i
+        change_anchor('#info')
+      when 84 # t
+        change_anchor('#tiles')
+      when 83 # s
+        change_anchor('#spreadsheet')
+      when 79 # o
+        change_anchor('#tools')
+      end
     end
 
     def game_path
