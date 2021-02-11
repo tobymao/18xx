@@ -29,6 +29,10 @@ module Engine
       def self.print_name
         'Buy Shares'
       end
+
+      def disable?(game)
+        !game.round.stock?
+      end
     end
   end
 end
