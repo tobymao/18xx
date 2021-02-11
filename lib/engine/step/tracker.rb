@@ -197,12 +197,12 @@ module Engine
           tile.borders.delete(border)
           neighbor.tile.borders.map! { |nb| nb.edge == hex.invert(edge) ? nil : nb }.compact!
 
-          cost - border_cost_discount(entity, border)
+          cost - border_cost_discount(entity, border, hex)
         end
         [total_cost, types]
       end
 
-      def border_cost_discount(entity, border)
+      def border_cost_discount(entity, border, hex)
         ability = entity.all_abilities.find do |a|
           (a.type == :tile_discount) &&
             a.terrain &&
