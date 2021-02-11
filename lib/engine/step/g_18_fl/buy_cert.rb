@@ -11,6 +11,11 @@ module Engine
 
         AUCTION_ACTIONS = %w[bid].freeze
         MIN_BID_RAISE = 5
+        BID_CHOICES = [0, 5, 10].freeze
+
+        def bid_choices
+          BID_CHOICES
+        end
 
         def setup
           @companies = @game.companies.sort
@@ -58,6 +63,7 @@ module Engine
         def actions(entity)
           return [] if finished?
           return [] unless entity == current_entity
+
           # NO PASSING
           AUCTION_ACTIONS
         end
@@ -82,7 +88,7 @@ module Engine
 
         def active_entities
           return super if !@bids || @bids.empty?
-          return [@bids.find { |e, b| b.nil? }.first] if in_auction?
+          return [@bids.find { |_e, b| b.nil? }.first] if in_auction?
 
           [@bids.max { |a, b| a[1] <=> b[1] }.first]
         end
@@ -95,7 +101,7 @@ module Engine
           0
         end
 
-        def max_player_bid(entity)
+        def max_player_bid(_entity)
           10
         end
 
@@ -111,7 +117,7 @@ module Engine
           true
         end
 
-        def committed_cash(player, _show_hidden = false)
+        def committed_cash(_player, _show_hidden = false)
           0
         end
 
@@ -122,19 +128,18 @@ module Engine
         end
 
         def in_auction?
-          @bids.find { |e, b| b.nil? }
+          @bids.find { |_e, b| b.nil? }
         end
 
         def setup_auction
           @bids.clear
           @first_player = current_entity
-          size = entities.size
 
           refresh_bids
         end
 
         def resolve_auction
-          return if @bids.any? { |e, b| b.nil? }
+          return if @bids.any? { |_e, b| b.nil? }
 
           winner = @bids.max_by { |_k, v| v }
           @log << "-- #{winner.first.name} wins auction with #{@game.format_currency(winner.last)} --"

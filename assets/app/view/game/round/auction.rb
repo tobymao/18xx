@@ -182,20 +182,53 @@ module View
         def render_turn_bid
           return if !@current_actions.include?('bid') || @step.auctioning != :turn
 
-          input = h(:input, style: { margin: '1rem 0px', marginRight: '1rem' }, props: {
-                      value: @step.min_player_bid,
-                      step: @step.min_increment,
-                      min: @step.min_player_bid,
-                      max: @step.max_player_bid(@current_entity),
-                      type: 'number',
-                      size: @current_entity.cash.to_s.size,
-                    })
+          if @step.respond_to?(:bid_choices)
+            choice_bid_input(@step, @current_entity)
+          else
+            number_bid_input(@step, @current_entity)
+          end
+        end
 
-          h(:div,
-            [
-              input,
-              h(:button, { on: { click: -> { create_turn_bid(input) } } }, 'Place Bid'),
-            ])
+        def number_bid_input(_step, _current_entity)
+          input =
+            h(:input, style: { margin: '1rem 0px', marginRight: '1rem' }, props: {
+                value: @step.min_player_bid,
+                step: @step.min_increment,
+                min: @step.min_player_bid,
+                max: @step.max_player_bid(@current_entity),
+                type: 'number',
+                size: @current_entity.cash.to_s.size,
+              })
+          h(:div, [
+            input,
+            h(:button, { on: { click: -> { create_turn_bid(input) } } }, 'Place Bid'),
+          ])
+        end
+
+        def choice_bid_input(step, _current_entity)
+          choice_buttons = step.bid_choices.map do |price|
+            click = lambda do
+              hide!
+              process_action(Engine::Action::Bid.new(
+                @current_entity,
+                price: price,
+              ))
+            end
+
+            props = {
+              style: {
+                padding: '0.2rem 0.2rem',
+              },
+              on: { click: click },
+            }
+            h('button', props, price)
+          end
+
+          div_class = choice_buttons.size < 5 ? '.inline' : ''
+          h(:div, [
+            h("div#{div_class}", { style: { marginTop: '0.5rem' } }, 'Bid: '),
+            *choice_buttons,
+          ])
         end
 
         def render_minors
