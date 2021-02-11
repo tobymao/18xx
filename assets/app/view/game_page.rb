@@ -179,7 +179,7 @@ module View
         change_anchor('#entities')
       when 77 # m
         change_anchor('#map')
-      when 75 # k
+      when 65, 75 # a, k
         change_anchor('#market')
       when 73 # i
         change_anchor('#info')
@@ -189,6 +189,8 @@ module View
         change_anchor('#spreadsheet')
       when 79 # o
         change_anchor('#tools')
+      when 67 # c
+        `document.getElementById('chatbar').focus()`
       end
     end
 

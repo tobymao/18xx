@@ -33,6 +33,7 @@ module View
               process_action(Engine::Action::Message.new(sender, message: message))
             end
           end
+          `document.getElementById('game').focus()` if code && code == 27
         end
 
         if participant?
@@ -49,7 +50,10 @@ module View
                   margin: 'auto 0',
                 },
               }, [@user['name'] + ':']),
-            h(:input,
+            h('input#chatbar',
+              attrs: {
+                title: 'Shortcut: c | esc to leave',
+              },
               style: {
                 marginLeft: '0.5rem',
                 flex: '1',
