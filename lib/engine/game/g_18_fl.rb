@@ -24,7 +24,6 @@ module Engine
       GAME_PUBLISHER = nil
       GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18FL'
 
-      EBUY_OTHER_VALUE = false # allow ebuying other corp trains for up to face
       HOME_TOKEN_TIMING = :operating_round
       SELL_BUY_ORDER = :sell_buy
       SELL_MOVEMENT = :left_block
