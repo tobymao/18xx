@@ -312,13 +312,8 @@ module Engine
         POST_NATIONALIZATION_CERT_LIMIT[num_corporations][@players.size]
       end
 
-      def destination_check!
-        @corporations.each do |corp|
-          # The capitalization method of unparred corporations is nil
-          next unless corp.capitalization == :escrow
-
-          destinated!(corp) if hexes_connected?(*@destinations[corp.id])
-        end
+      def destination_connected?(corp)
+        corp.capitalization == :escrow && hexes_connected?(*@destinations[corp.id])
       end
 
       def hexes_connected?(start_hex_id, goal_hex_ids)
@@ -337,6 +332,7 @@ module Engine
 
       def destinated!(corp)
         @log << "-- #{corp.name} has destinated --"
+        release_escrow!(corp)
       end
 
       #
@@ -424,7 +420,7 @@ module Engine
 
       def release_escrow!(corporation)
         @log << "Releasing #{format_currency(corporation.escrow)} from escrow for #{corporation.name}"
-        corporation.cash += corporation.escrow
+        @bank.spend(corporation.escrow, corporation) if corporation.escrow.positive?
         corporation.escrow = nil
         corporation.capitalization = :incremental
       end
@@ -554,6 +550,7 @@ module Engine
           Step::G1856::NationalizationPayoff,
           Step::G1856::SpecialBuy,
           Step::G1856::Track,
+          Step::G1856::Escrow,
           Step::Token,
           Step::Route,
           # Interest - See Loan
