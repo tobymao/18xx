@@ -81,6 +81,7 @@ module Engine
 
             raise GameError, "Must bid at least #{min_player_bid}" if price < min_player_bid
 
+            @game.log << "#{player.name} places a bid"
             @bids[player] = price
             resolve_auction
           end
@@ -144,10 +145,12 @@ module Engine
           winner = @bids.max_by { |_k, v| v }
           @log << "-- #{winner.first.name} wins auction with #{@game.format_currency(winner.last)} --"
           @bids.each do |player, bid|
-            next unless bid.positive?
-
-            @log << "#{player.name} pays #{@game.format_currency(bid)} for their bid"
-            player.spend(bid, @game.bank)
+            if bid.positive?
+              @log << "#{player.name} pays #{@game.format_currency(bid)} for their bid"
+              player.spend(bid, @game.bank)
+            else
+              @log << "#{player.name} bid nothing"
+            end
           end
         end
 
@@ -158,8 +161,8 @@ module Engine
           player.spend(price, @game.bank) if price.positive?
           @log << "#{player.name} buys #{company.name} for #{@game.format_currency(price)}"
           grant_priority(player) if company == @first_comp
+          @bids.reject! { |e, _b| e == player }
           @companies.delete(company)
-          setup_auction
         end
 
         def grant_priority(player)
