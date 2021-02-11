@@ -802,6 +802,7 @@ module Engine
             "sym": "C&P",
             "name": "Cobourg & Peterborough Railway",
             "logo": "1828/CP",
+            "simple_logo": "1828/CP.alt",
             "tokens": [
                 0
             ],
@@ -814,6 +815,7 @@ module Engine
             "sym": "B&M",
             "name": "Boston & Maine",
             "logo": "1828/BM",
+            "simple_logo": "1828/BM.alt",
             "tokens": [
                 0,
                 100,
@@ -833,6 +835,7 @@ module Engine
             "sym": "B&O",
             "name": "Baltimore & Ohio",
             "logo": "1828/BO",
+            "simple_logo": "1828/BO.alt",
             "tokens": [
                 0,
                 100,
@@ -845,6 +848,7 @@ module Engine
             "sym": "C&O",
             "name": "Chesapeake & Ohio Railroad",
             "logo": "1828/CO",
+            "simple_logo": "1828/CO.alt",
             "tokens": [
                 0,
                 100,
@@ -858,6 +862,7 @@ module Engine
             "sym": "CPR",
             "name": "Canadian Pacific Railroad",
             "logo": "1828/CPR",
+            "simple_logo": "1828/CPR.alt",
             "tokens": [
                 0,
                 100,
@@ -871,6 +876,7 @@ module Engine
             "sym": "GT",
             "name": "Grand Trunk",
             "logo": "1828/GT",
+            "simple_logo": "1828/GT.alt",
             "tokens": [
                 0,
                 100,
@@ -884,6 +890,7 @@ module Engine
             "sym": "ERIE",
             "name": "Erie Railroad",
             "logo": "1828/ERIE",
+            "simple_logo": "1828/ERIE.alt",
             "tokens": [
                 0,
                 100,
@@ -896,6 +903,7 @@ module Engine
             "sym": "IC",
             "name": "Illinois Central",
             "logo": "1828/IC",
+            "simple_logo": "1828/IC.alt",
             "tokens": [
                 0,
                 100,
@@ -910,6 +918,7 @@ module Engine
             "sym": "MC",
             "name": "Michigan Central",
             "logo": "1828/MC",
+            "simple_logo": "1828/MC.alt",
             "tokens": [
                 0,
                 100,
@@ -924,6 +933,7 @@ module Engine
             "sym": "MP",
             "name": "Missouri Pacific Railroad",
             "logo": "1828/MP",
+            "simple_logo": "1828/MP.alt",
             "tokens": [
                 0,
                 100,
@@ -938,6 +948,7 @@ module Engine
             "sym": "NYC",
             "name": "New York Central Railroad",
             "logo": "1828/NYC",
+            "simple_logo": "1828/NYC.alt",
             "tokens": [
                 0,
                 100,
@@ -950,6 +961,7 @@ module Engine
             "sym": "NKP",
             "name": "New York, Chicago & St. Louis Railroad",
             "logo": "1828/NKP",
+            "simple_logo": "1828/NKP.alt",
             "tokens": [
                 0,
                 100,
@@ -963,6 +975,7 @@ module Engine
             "sym": "NYH",
             "name": "New York, New Haven & Hartford Railway",
             "logo": "1828/NYH",
+            "simple_logo": "1828/NYH.alt",
             "tokens": [
                 0,
                 100,
@@ -983,6 +996,7 @@ module Engine
             "sym": "NW",
             "name": "Norfolk & Western Railway",
             "logo": "1828/NW",
+            "simple_logo": "1828/NW.alt",
             "tokens": [
                 0,
                 100,
@@ -994,9 +1008,10 @@ module Engine
             "text_color": "black"
         },
         {
-            "sym": "OS&H",
+            "sym": "OSH",
             "name": "Ontario, Simcoe & Huron",
             "logo": "1828/OSH",
+            "simple_logo": "1828/OSH.alt",
             "tokens": [
                 0,
                 100,
@@ -1010,6 +1025,7 @@ module Engine
             "sym": "PRR",
             "name": "Pennsylvania Railroad",
             "logo": "1828/PRR",
+            "simple_logo": "1828/PRR.alt",
             "tokens": [
                 0,
                 100,
@@ -1023,6 +1039,7 @@ module Engine
             "sym": "WAB",
             "name": "Wabash Railroad",
             "logo": "1828/WAB",
+            "simple_logo": "1828/WAB.alt",
             "tokens": [
                 0,
                 100,
