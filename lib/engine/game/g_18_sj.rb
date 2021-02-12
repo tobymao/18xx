@@ -657,7 +657,15 @@ module Engine
 
         bonuses = route.stops.count { |s| ability.hexes.include?(s.hex.name) }
         if bonuses.positive?
-          bonus[:revenue] = ability.amount * bonuses
+          amount = case ability.count
+                   when 3
+                     50
+                   when 2
+                     30
+                   else
+                     20
+                   end
+          bonus[:revenue] = amount * bonuses
           bonus[:description] = 'GKB'
           bonus[:description] += "x#{bonuses}" if bonuses > 1
         end
