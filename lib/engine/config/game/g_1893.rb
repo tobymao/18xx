@@ -438,6 +438,8 @@ module Engine
   "corporations": [
     {
       "float_percent": 50,
+      "float_excludes_market": true,
+      "always_market_price": true,
       "name": "Dürener Eisenbahn",
       "sym": "DE",
       "tokens": [
@@ -459,6 +461,8 @@ module Engine
       "name": "Rhein-Sieg Eisenbahn",
       "sym": "RSE",
       "float_percent": 50,
+      "float_excludes_market": true,
+      "always_market_price": true,
       "tokens": [
         0,
         40,
@@ -479,6 +483,8 @@ module Engine
       "name": "Rheinbahn AG",
       "sym": "RAG",
       "float_percent": 50,
+      "float_excludes_market": true,
+      "always_market_price": true,
       "tokens": [
         0,
         40,
@@ -496,9 +502,32 @@ module Engine
       ]
     },
     {
+      "name": "Anleihen der Stadt Köln",
+      "sym": "AdSK",
+      "float_percent": 101,
+      "always_market_price": true,
+      "max_ownership_percent": 100,
+      "floatable": false,
+      "tokens": [
+      ],
+      "shares":[0, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
+      "logo": "1893/AdSK",
+      "color": "gray",
+      "text_color": "white",
+      "abilities": [
+        {
+            "type": "no_buy",
+            "description": "Unbuyable until all but one privates sold"
+        }
+      ]
+    },
+    {
       "name": "AG für Verkehrswesen",
       "sym": "AGV",
       "float_percent": 50,
+      "float_excludes_market": true,
+      "always_market_price": true,
+      "floatable": false,
       "tokens": [
         100,
         100
@@ -518,6 +547,9 @@ module Engine
       "name": "Häfen und Güterverkehr Köln AG",
       "sym": "HGK",
       "float_percent": 50,
+      "float_excludes_market": true,
+      "always_market_price": true,
+      "floatable": false,
       "tokens": [
         100,
         100
