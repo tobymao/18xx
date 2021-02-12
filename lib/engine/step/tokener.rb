@@ -56,14 +56,14 @@ module Engine
 
         raise GameError, 'Token already placed this turn' if !extra && @round.tokened
 
-        raise GameError, 'Token is already used' if token.used
-
         token, ability = adjust_token_price_ability!(entity, token, hex, city, special_ability: special_ability)
         tokener = entity.name
         if ability
           tokener += " (#{ability.owner.sym})" if ability.owner != entity
           entity.remove_ability(ability)
         end
+
+        raise GameError, 'Token is already used' if token.used
 
         free = !token.price.positive?
         if ability&.type == :token

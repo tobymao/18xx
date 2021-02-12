@@ -9,7 +9,7 @@ module Engine
       class SpecialToken < SpecialToken
         def actions(entity)
           return [] if already_tokened_this_round?(entity)
-          return ACTIONS if ability(entity) &&
+          return ['place_token'] if ability(entity) &&
             remaining_token_ability?(entity) &&
             @game.round.active_step.respond_to?(:process_place_token)
 

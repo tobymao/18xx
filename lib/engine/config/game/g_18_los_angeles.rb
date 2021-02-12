@@ -352,6 +352,7 @@ module Engine
           "when": "owning_corp_or_turn",
           "owner_type":"corporation",
           "count": 1,
+          "extra": true,
           "from_owner": true,
           "cheater": 0,
           "special_only": true,
@@ -379,6 +380,7 @@ module Engine
           "price": 0,
           "teleport_price": 0,
           "count": 1,
+          "extra": true,
           "special_only": true,
           "neutral": true,
           "hexes": [
