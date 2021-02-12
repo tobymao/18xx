@@ -144,7 +144,7 @@ module View
           destroy: destroy,
         },
         on: {
-          keyup: ->(event) { hotkey_check(event) },
+          keydown: ->(event) { hotkey_check(event) },
         },
       }
 
@@ -200,6 +200,10 @@ module View
       when '-', '0', '+'
         map = `document.getElementById('map')`
         `document.getElementById('zoom'+#{key}).click()` if map
+      when 'Home', 'End', 'PageUp', 'PageDown', 'ArrowLeft', 'ArrowRight'
+        history = `document.getElementById('history')`
+        `document.getElementById('hist_'+#{key}).click()` if history
+        event.preventDefault
       end
     end
 
