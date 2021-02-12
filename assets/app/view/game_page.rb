@@ -177,25 +177,29 @@ module View
       active = Native(`document.activeElement`)
       return unless active.id == 'game' || active.localName == 'body'
 
-      case event['keyCode']
-      when 71 # g
+      key = event['key']
+      case key
+      when 'g'
         change_anchor('')
-      when 69 # e
+      when 'e'
         change_anchor('#entities')
-      when 77 # m
+      when 'm'
         change_anchor('#map')
-      when 65, 75 # a, k
+      when 'a', 'k'
         change_anchor('#market')
-      when 73 # i
+      when 'i'
         change_anchor('#info')
-      when 84 # t
+      when 't'
         change_anchor('#tiles')
-      when 83 # s
+      when 's'
         change_anchor('#spreadsheet')
-      when 79 # o
+      when 'o'
         change_anchor('#tools')
-      when 67 # c
+      when 'c'
         `document.getElementById('chatbar').focus()`
+      when '-', '0', '+'
+        map = `document.getElementById('map')`
+        `document.getElementById('zoom'+#{key}).click()` if map
       end
     end
 
