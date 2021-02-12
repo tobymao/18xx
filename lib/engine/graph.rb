@@ -89,6 +89,65 @@ module Engine
       @reachable_hexes[corporation]
     end
 
+    # How far is the start_hex from one of the corporation's stations?
+    # This is by track, not as the crow flies.
+    # start_hex is either a City or a Town Part
+    #
+    # This implementation assumes:
+    #  - Lawson Track
+    #  - No double dits
+    #  - OO tiles should work? NY tile works
+    def distance_to_station(corporation, start_hex)
+      goal_hexes = corporation.tokens.select(&:city).map { |t| [t.city.hex, t.city] }
+      distance = 0
+      visited_hexes = []
+      start_hexes = [[start_hex, start_hex.tile.cities.first]]
+      until start_hexes.empty?
+        return distance unless (start_hexes & goal_hexes).empty?
+
+        distance += 1
+        hexes_to_visit = start_hexes
+        start_hexes = []
+        hexes_to_visit.each do |hex_c|
+          visited_hexes << hex_c
+          valid_neighbors(hex_c).each do |e, neighbor|
+            # Ignore this neighbor if they don't connect to each other
+            next unless hex_c.first.tile.exits.include?(e) && neighbor.tile.exits.include?((e + 3) % 6)
+
+            neighbor_cities((e + 3) % 6, neighbor).each do |city|
+              neighbor_hc = [neighbor, city]
+              # Don't revisit hexes
+              return distance if goal_hexes.include?(neighbor_hc)
+              next if visited_hexes.include?(neighbor_hc) || hexes_to_visit.include?(neighbor_hc)
+
+              start_hexes << neighbor_hc unless neighbor_hc[1]&.blocks?(corporation)
+            end
+          end
+        end
+      end
+      # Didn't return early, couldn't find a station connected.
+      # This shouldn't happen? If this is called the spot is tokenable
+      # and if the spot is tokenable it is visible from an existing station?
+      raise GameError, 'Distance is uncalculable'
+    end
+
+    # Which of the hex-city neighbors are reachable directly?
+    def valid_neighbors(hex_c)
+      return hex_c.first.neighbors unless hex_c.first.tile.cities.count > 1
+
+      valid_edges = hex_c.last.exits
+      hex_c.first.neighbors.select { |edge, _| valid_edges.include?(edge) }
+    end
+
+    # What cities in this hex can we reach from this incoming edge?
+    def neighbor_cities(incoming_edge, hex)
+      return [nil] if hex.tile.cities.empty?
+
+      # This might break if multiple cities connect to a hex (LOOKING AT YOU 21MOON)
+      reachable_cities = hex.tile.cities.select { |c| c.exits.include?(incoming_edge) }
+      reachable_cities.empty? ? [nil] : reachable_cities
+    end
+
     def compute(corporation, routes_only: false)
       hexes = Hash.new { |h, k| h[k] = {} }
       nodes = {}
