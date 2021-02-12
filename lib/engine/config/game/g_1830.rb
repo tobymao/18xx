@@ -287,7 +287,7 @@ module Engine
       "sym": "CS",
       "value": 40,
       "revenue": 10,
-      "desc": "A corporation owning the CS may lay a tile on the CS's hex even if this hex is not connected to the corporations's railhead. This free tile placement is in addition to the corporation's normal tile placement. Blocks B20 while owned by a player.",
+      "desc": "A corporation owning the CS may lay a tile on the CS's hex even if this hex is not connected to the corporation's track. This free tile placement is in addition to the corporation's normal tile placement. Blocks B20 while owned by a player.",
       "abilities": [
         {
           "type": "blocks_hexes",
@@ -317,7 +317,7 @@ module Engine
       "sym": "DH",
       "value": 70,
       "revenue": 15,
-      "desc": "A corporation owning the Delaware & Hudson may establish a railhead on the DH hex by laying a station tile and a token. The station does not have to be connected to the remainder of the corporation's route. The tile laid is the owning corporation's one tile placement for the turn. Blocks F16 while owned by a player.",
+      "desc": "A corporation owning the DH may place a tile and station token in the DH hex F16 for only the $120 cost of the mountain. The station does not have to be connected to the remainder of the corporation's route. The tile laid is the owning corporation's one tile placement for the turn. Blocks F16 while owned by a player.",
       "abilities": [
         {
           "type": "blocks_hexes",
