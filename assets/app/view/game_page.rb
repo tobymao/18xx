@@ -202,8 +202,7 @@ module View
         map = `document.getElementById('map')`
         `document.getElementById('zoom'+#{key}).click()` if map
       when 'Home', 'End', 'PageUp', 'PageDown', 'ArrowLeft', 'ArrowRight'
-        history = `document.getElementById('history')`
-        `document.getElementById('hist_'+#{key}).click()` if history
+        Native(`document.getElementById('hist_'+#{key})`)&.click()
         event.preventDefault
       end
     end
