@@ -271,7 +271,7 @@ module Engine
       "sym": "SV",
       "value": 20,
       "revenue": 5,
-      "desc": "No special abilities. Blocks G15 while owned by a player",
+      "desc": "No special abilities. Blocks G15 while owned by a player.",
       "abilities": [
         {
           "type": "blocks_hexes",
@@ -287,7 +287,7 @@ module Engine
       "sym": "CS",
       "value": 40,
       "revenue": 10,
-      "desc": "A corporation owning the CS may lay a tile on the CS's hex even if this hex is not connected to the corporations's railhead. This free tile placement is in addition to the corporation's normal tile placement. Blocks B20 while owned by a player",
+      "desc": "A corporation owning the CS may lay a tile on the CS's hex even if this hex is not connected to the corporations's railhead. This free tile placement is in addition to the corporation's normal tile placement. Blocks B20 while owned by a player.",
       "abilities": [
         {
           "type": "blocks_hexes",
@@ -317,7 +317,7 @@ module Engine
       "sym": "DH",
       "value": 70,
       "revenue": 15,
-      "desc": "A corporation owning the Delaware & Hudson may establish a railhead on the DH hex by laying a station tile and a token. The station does not have to be connected to the remainder of the corporation's route. The tile laid is the owning corporation's one tile placement for the turn. Blocks F16 while owned by a player",
+      "desc": "A corporation owning the Delaware & Hudson may establish a railhead on the DH hex by laying a station tile and a token. The station does not have to be connected to the remainder of the corporation's route. The tile laid is the owning corporation's one tile placement for the turn. Blocks F16 while owned by a player.",
       "abilities": [
         {
           "type": "blocks_hexes",
@@ -343,7 +343,7 @@ module Engine
       "sym": "MH",
       "value": 110,
       "revenue": 20,
-      "desc": "A player owning the MH may exchange it for a 10% share of the NYC if he does not already hold 60% of the NYC and there is NYC stock available in the Bank or the Pool. The exchange may be made during the player's turn of a stock round or between the turns of other players or corporations in either stock or operating rounds. This action closes the MH. Blocks D18 while owned by a player",
+      "desc": "A player owning the MH may exchange it for a 10% share of the NYC if they do not already hold 60% of the NYC and there is NYC stock available in the Bank or the Pool. The exchange may be made during the player's turn of a stock round or between the turns of other players or corporations in either stock or operating rounds. This action closes the MH. Blocks D18 while owned by a player.",
       "abilities": [
         {
           "type": "blocks_hexes",
@@ -369,7 +369,7 @@ module Engine
       "sym": "CA",
       "value": 160,
       "revenue": 25,
-      "desc": "The initial purchaser of the CA immediately receives a 10% share of PRR stock without further payment. This action does not close the CA. The PRR corporation will not be running at this point, but the stock may be retained or sold subject to the ordinary rules of the game. Blocks H18 while owned by a player",
+      "desc": "The initial purchaser of the CA immediately receives a 10% share of PRR stock without further payment. This action does not close the CA. The PRR corporation will not be running at this point, but the stock may be retained or sold subject to the ordinary rules of the game. Blocks H18 while owned by a player.",
       "abilities": [
         {
           "type": "blocks_hexes",
@@ -389,7 +389,7 @@ module Engine
       "sym": "BO",
       "value": 220,
       "revenue": 30,
-      "desc": "The owner of the BO private company immediately receives the President's certificate of the B&O without further payment. The BO private company may not be sold to any corporation, and does not exchange hands if the owning player loses the Presidency of the B&O. When the B&O purchases its first train the private company is closed down. Blocks I13 & I15",
+      "desc": "The owner of the BO private company immediately receives the President's certificate of the B&O without further payment. The BO private company may not be sold to any corporation, and does not exchange hands if the owning player loses the Presidency of the B&O. When the B&O purchases its first train the private company is closed. Blocks I13 & I15 while owned by a player.",
       "abilities": [
         {
           "type": "blocks_hexes",
