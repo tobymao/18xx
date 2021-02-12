@@ -47,7 +47,7 @@ module Engine
 
         def hex_neighbors(entity, hex)
           return unless (abilities = tile_lay_abilities(entity))
-          return if abilities.all? { |ability| ability.hexes&.any? && !ability.hexes&.include?(hex.id) }
+          return if abilities.all? { |ability| !ability.hexes&.none? && !ability.hexes&.include?(hex.id) }
 
           operator = entity.owner.corporation? ? entity.owner : @game.current_entity
           return if abilities.all? { |ability| ability.reachable && !@game.graph.connected_hexes(operator)[hex] }
@@ -59,14 +59,12 @@ module Engine
           return [] unless (abilities = tile_lay_abilities(entity))
 
           abilities_for_hex = abilities.select do |ability|
-            ability.hexes&.none? || ability.hexes&.include?(hex.coordinates)
+            ability.hexes&.empty? || ability.hexes&.include?(hex.coordinates)
           end
 
           all_possible_tiles = abilities_for_hex.flat_map(&:tiles)
 
-          tiles = all_possible_tiles.map { |name| @game.tiles.find { |t| t.name == name } }
-
-          tiles
+          all_possible_tiles.map { |name| @game.tiles.find { |t| t.name == name } }
             .compact
             .select { |t| @game.phase.tiles.include?(t.color) && @game.upgrades_to?(hex.tile, t, false) }
         end
