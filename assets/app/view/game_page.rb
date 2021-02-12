@@ -259,16 +259,6 @@ module View
     end
 
     def item(name, anchor, shortcut)
-      change_anchor = lambda do
-        unless route_anchor
-          elm = Native(`document.getElementById('chatlog')`)
-          # only store when scrolled up at least one line (20px)
-          store(:scroll_pos, elm.scrollTop < elm.scrollHeight - elm.offsetHeight - 20 ? elm.scrollTop : nil, skip: true)
-        end
-        store(:tile_selector, nil, skip: true)
-        store(:app_route, "#{@app_route.split('#').first}#{anchor}")
-      end
-
       a_props = {
         attrs: {
           href: anchor,
@@ -276,7 +266,7 @@ module View
           title: "Shortcut: #{shortcut}",
         },
         style: { textDecoration: route_anchor == anchor[1..-1] ? 'underline' : 'none' },
-        on: { click: change_anchor },
+        on: { click: ->(_event) { change_anchor(anchor) } },
       }
       li_props = {
         style: {
