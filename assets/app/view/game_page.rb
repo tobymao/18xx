@@ -168,10 +168,15 @@ module View
     end
 
     def hotkey_check(event)
+      # 'search for text when you start typing' feature of browser prevents execution
+      # only execute when no modifier is pressed to not interfere with OS shortcuts
+      event = Native(event)
+      return if event.getModifierState('Alt') || event.getModifierState('AltGraph') || event.getModifierState('Meta') ||
+        event.getModifierState('Control') || event.getModifierState('OS') || event.getModifierState('Shift')
+
       active = Native(`document.activeElement`)
       return unless active.id == 'game' || active.localName == 'body'
 
-      event = Native(event)
       case event['keyCode']
       when 71 # g
         change_anchor('')
