@@ -197,6 +197,7 @@ module View
         change_anchor('#tools')
       when 'c'
         `document.getElementById('chatbar').focus()`
+        event.preventDefault
       when '-', '0', '+'
         map = `document.getElementById('map')`
         `document.getElementById('zoom'+#{key}).click()` if map
