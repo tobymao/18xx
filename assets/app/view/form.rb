@@ -27,13 +27,8 @@ module View
     end
 
     def render_form(name, inputs, description = nil)
-      enter = lambda do |event|
-        code = event.JS['keyCode']
-        submit if code && code == 13
-      end
-
       props = {
-        on: { keyup: enter },
+        on: { keyup: ->(event) { submit if Native(event)['key'] == 'Enter' } },
       }
       h2_props = { style: { margin: '1rem 0 0.5rem 0' } }
 
