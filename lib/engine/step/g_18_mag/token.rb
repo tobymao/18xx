@@ -33,7 +33,7 @@ module Engine
         def process_place_token(action)
           entity = action.entity
 
-          place_token(entity, action.city, action.token)
+          place_token(entity, action.city, action.token, connected: !entity.corporation?)
           pass!
         end
 
