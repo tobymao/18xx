@@ -113,15 +113,13 @@ module Engine
 
       # How far is the start_hex from one of the corporation's stations?
       # This is by track, not as the crow flies.
-      # start_hex is either a City or a Town Part. Cannot be Jacksonville
+      # start_hex is either a City or a Town Part
       #
-      # NOTE: 18FL does not have forks in plain track, only junctions
-      # Also because of this, we only need to return the hexes visited
-      #  and can use the exits on tiles, except....
-      # The disjoint cities in Jacksonville are a problem though
+      # This implementation assumes:
+      #  - Lawson Track
+      #  - No double dits
+      #  - OO tiles should work? NY tile works
       def distance_to_station(corporation, start_hex)
-        raise GameError, 'Cannot calculate token cost of Jax' if start_hex.id == 'B23'
-
         goal_hexes = corporation.tokens.select(&:city).map { |t| [t.city.hex, t.city] }
         # # If there is a goal token in non-connected (gray) jax, then we need special logic.
         distance = 0
@@ -139,13 +137,14 @@ module Engine
             valid_neighbors(hex_c).each do |e, neighbor|
               # Ignore this neighbor if they don't connect to each other
               next unless hex_c.first.tile.exits.include?(e) && neighbor.tile.exits.include?((e + 3) % 6)
+              neighbor_cities((e + 3) % 6, neighbor).each do |city|
+                neighbor_hc = [neighbor, city]
+                # Don't revisit hexes
+                return distance if goal_hexes.include?(neighbor_hc)
+                next if visited_hexes.include?(neighbor_hc) || hexes_to_visit.include?(neighbor_hc)
 
-              neighbor_hc = [neighbor, neighbor_city((e + 3) % 6, neighbor)]
-              # Don't revisit hexes
-              return distance if goal_hexes.include?(neighbor_hc)
-              next if visited_hexes.include?(neighbor_hc) || hexes_to_visit.include?(neighbor_hc)
-
-              start_hexes << neighbor_hc unless neighbor_hc[1]&.blocks?(corporation)
+                start_hexes << neighbor_hc unless neighbor_hc[1]&.blocks?(corporation)
+              end
             end
           end
         end
@@ -157,26 +156,17 @@ module Engine
 
       def valid_neighbors(hex_c)
         # Special logic for disjoint jax
-        return hex_c.first.neighbors unless hex_c.first.id == 'B23' && hex_c.first.tile.color != :gray
+        return hex_c.first.neighbors unless hex_c.first.tile.cities.count > 1
 
-        valid_edges = [5, 0] if hex_c.first.tile.cities[0] == hex_c.last
-        valid_edges = [1, 2] if hex_c.first.tile.cities[1] == hex_c.last
+        valid_edges = hex_c.last.exits
         hex_c.first.neighbors.select { |edge, _| valid_edges.include?(edge) }
       end
 
-      def neighbor_city(incoming_edge, hex)
-        return nil if hex.tile.cities.empty?
+      def neighbor_cities(incoming_edge, hex)
+        return [nil] if hex.tile.cities.empty?
 
-        if hex.id == 'B23' && hex.tile.color != :gray
-          # This is hardcoded and specific to 18FL Jax
-          return hex.tile.cities[0] if [5, 0].include?(incoming_edge)
-          return hex.tile.cities[1] if [1, 2].include?(incoming_edge)
-
-          raise GameError, "Couldn't find connection to Jax"
-        end
-
-        # If it's not Jax, there's only one city
-        hex.tile.cities.first
+        # This may break if multiple cities connect to a hex (LOOKING AT YOU 21MOON)
+        return hex.tile.cities.select { |c| c.exits.include?(incoming_edge) }
       end
 
       # Event logic goes here
