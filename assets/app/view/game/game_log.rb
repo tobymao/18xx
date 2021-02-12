@@ -53,7 +53,7 @@ module View
               }, [@user['name'] + ':']),
             h('input#chatbar',
               attrs: {
-                title: 'Shortcut: c | esc to leave',
+                title: 'hotkey: c – esc to leave',
               },
               style: {
                 marginLeft: '0.5rem',

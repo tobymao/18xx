@@ -144,7 +144,7 @@ module View
         props = {
           href: route,
           click: click,
-          title: "#{title}, shortcut: #{hotkey}",
+          title: "#{title} – hotkey: #{hotkey}",
           children: text,
           style: {
             margin: '0',

@@ -271,12 +271,12 @@ module View
       ])
     end
 
-    def item(name, anchor, shortcut)
+    def item(name, anchor, hotkey)
       a_props = {
         attrs: {
           href: anchor,
           onclick: 'return false',
-          title: "Shortcut: #{shortcut}",
+          title: "hotkey: #{hotkey}",
         },
         style: { textDecoration: route_anchor == anchor[1..-1] ? 'underline' : 'none' },
         on: { click: ->(_event) { change_anchor(anchor) } },
