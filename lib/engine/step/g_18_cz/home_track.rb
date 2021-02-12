@@ -23,9 +23,11 @@ module Engine
         end
 
         def round_state
-          {
-            pending_tracks: [],
-          }
+          super.merge(
+            {
+              pending_tracks: [],
+            }
+          )
         end
 
         def active?

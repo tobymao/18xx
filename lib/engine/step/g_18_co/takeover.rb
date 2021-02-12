@@ -17,9 +17,11 @@ module Engine
         end
 
         def round_state
-          {
-            pending_takeover: nil,
-          }
+          super.merge(
+            {
+              pending_takeover: nil,
+            }
+          )
         end
 
         def active?

@@ -7,9 +7,11 @@ module Engine
     module G1828
       class DiscardTrain < DiscardTrain
         def round_state
-          state = super || {}
-          state[:ignore_train_limit] = false
-          state
+          super.merge(
+            {
+              ignore_train_limit: false,
+            }
+          )
         end
 
         def crowded_corps

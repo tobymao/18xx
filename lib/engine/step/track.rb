@@ -48,7 +48,7 @@ module Engine
         color = hex.tile.color
         return nil if color == :white && !tile_lay[:lay]
         return nil if color != :white && !tile_lay[:upgrade]
-        return nil if color != :white && tile_lay[:cannot_reuse_same_hex] && @previous_laid_hexes.include?(hex)
+        return nil if color != :white && tile_lay[:cannot_reuse_same_hex] && @round.laid_hexes.include?(hex)
 
         connected
       end
