@@ -233,7 +233,9 @@ module Engine
         return [] if @entity_used_ability_to_track
         return super unless @recently_floated.include?(entity)
 
-        [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }]
+        floated_tile_lay = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }]
+        floated_tile_lay.unshift({ lay: true, upgrade: true }) if entity.type == :large
+        floated_tile_lay
       end
 
       def corporation_size(entity)

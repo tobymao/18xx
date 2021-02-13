@@ -52,7 +52,7 @@ module Engine
           operator = entity.owner.corporation? ? entity.owner : @game.current_entity
           return if abilities.all? { |ability| ability.reachable && !@game.graph.connected_hexes(operator)[hex] }
 
-          @game.hex_by_id(hex.id).neighbors.keys
+          @game.graph.connected_hexes(operator)[hex]
         end
 
         def potential_tiles(entity, hex)
