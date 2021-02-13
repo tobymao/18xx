@@ -11,10 +11,11 @@ module View
       def render_content
         children = [
           h(:h2, 'Programmed Actions'),
-          h(:p, 'Programmed actions allows you to preprogram your moves ahead of time.'),
-          h(:p, 'On asynchronous games this can shorten a game considerably.'),
-          h(:p, 'Please note, these are not to be considered secret from other players and when activated are logged'),
-          h(:p, 'This is presently under development, more actions will be available soon.'),
+          h(:p, 'Programmed actions allow you to preprogram your moves ahead of time. '\
+                'On asynchronous games this can shorten a game considerably.'),
+          h(:p, 'Please note, these are not secret from other players. '\
+                'Enabling and disabling programmed actions are logged.'),
+          h(:p, 'This feature is presently under development. More actions will be available soon.'),
         ]
 
         if !(available = @game.available_programmed_actions).empty?
@@ -27,7 +28,7 @@ module View
           enabled = @game.programmed_actions[sender]
           children.concat(render_disable(enabled)) if enabled
         else
-          children << h(:p, 'No programmed actions are presently available for this game')
+          children << h(:p, 'No programmed actions are presently available for this game.')
         end
 
         props = {
@@ -56,8 +57,8 @@ module View
       def render_buy_shares
         children = [h(:h3, 'Program buy shares till float')]
         children << h(:div,
-                      'Warning! At present this does not take into account what other players do'\
-                      ', we suggest not enabling after the first stock round.')
+                      'Warning! At present this does not take into account other players’ actions.'\
+                      'We suggest not enabling after the first stock round.')
 
         # @todo: later this will support buying to a certain percentage
         floatable = @game.corporations.select { |corp| corp.ipoed && !corp.floated? }
@@ -67,8 +68,8 @@ module View
           values = floatable.map do |entity|
             h(:option, { attrs: { value: entity.name } }, entity.full_name)
           end
-          children << render_input('Corporation:', id: 'corporation', el: 'select', on: { input2: :limit_range },
-                                                   children: values)
+          children << render_input('Corporation', id: 'corporation', el: 'select', on: { input2: :limit_range },
+                                                  children: values)
           children << render_button('Enable Buy Shares') { enable_buy_shares }
         end
 
