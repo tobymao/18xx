@@ -79,20 +79,6 @@ module View
             elsif @tile_selector.hex.tile != @tile_selector.tile
               h(TileConfirmation)
             else
-              # Selecting column A can cause tiles to go off the edge of the map
-              distance = (TileSelector::DISTANCE + (TileSelector::TILE_SIZE / 2)) * map_zoom
-
-              width, height = map_size
-              left = distance if (left - distance).negative?
-              if (left + distance + TileSelector::DROP_SHADOW_SIZE) >= width
-                left = width - TileSelector::DROP_SHADOW_SIZE - distance
-              end
-
-              top = distance if (top - distance).negative?
-              if (top + distance + TileSelector::DROP_SHADOW_SIZE) >= height
-                top = height - TileSelector::DROP_SHADOW_SIZE - distance
-              end
-
               tiles = step.upgradeable_tiles(current_entity, @tile_selector.hex)
               all_upgrades = @game.all_potential_upgrades(@tile_selector.hex.tile)
 
@@ -111,7 +97,18 @@ module View
               # Add tiles that aren't part of all_upgrades (Mitsubishi ferry)
               select_tiles.append(*tiles.map { |t| [t, nil] })
 
-              h(TileSelector, layout: @layout, tiles: select_tiles, actions: actions, zoom: map_zoom)
+              return h(:div) if select_tiles.empty?
+
+              distance = TileSelector::DISTANCE * map_zoom
+              width, height = map_size
+              ts_ds = [TileSelector::DROP_SHADOW_SIZE - 5, 0].max # ignore up to 5px of ds (< 2vmin padding of #app)
+              left_col = left < distance
+              right_col = width - left < distance + ts_ds
+              top_row = top < distance
+              bottom_row = height - top < distance + ts_ds
+
+              h(TileSelector, layout: @layout, tiles: select_tiles, actions: actions, zoom: map_zoom, top_row: top_row,
+                              left_col: left_col, right_col: right_col, bottom_row: bottom_row)
             end
 
           # Move the position to the middle of the hex
