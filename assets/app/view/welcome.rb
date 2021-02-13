@@ -20,11 +20,10 @@ module View
         <p>1830 is now in alpha!</p>
         <p>1860 now in production!</p>
         <p>18Mag and 1849 now in beta 🚂🚂!</p>
-        <p>Please file <a href='https://github.com/tobymao/18xx/issues'>issues and ideas</a> on
-        <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>.<br>
-        If you have any questions, check out the <a href="https://github.com/tobymao/18xx/wiki/FAQ">FAQ</a> and other
-        resources in our <a href='https://github.com/tobymao/18xx/wiki'>Wiki!</a>
-        </p>
+        <p>Please submit problem reports and make suggestions for improvements on 
+        <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>.</p>
+        <p>The <a href='https://github.com/tobymao/18xx/wiki'>18xx.games Wiki</a> has rules, maps,
+        and other information about all the games, along with an FAQ.</p>
 
         <p>Support our publishers: #{Lib::Publisher.link_list.join}.</p>
         <p>You can support this project on <a href='https://www.patreon.com/18xxgames'>Patreon</a>.</p>
