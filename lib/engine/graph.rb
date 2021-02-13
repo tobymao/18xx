@@ -91,7 +91,7 @@ module Engine
 
     # How far is the start_hex from one of the corporation's stations?
     # This is by track, not as the crow flies.
-    # start_cy is either a City or nil (plain track or town)
+    # start is either a city or hex (plain track or town)
     #
     # This implementation assumes:
     #  - Lawson Track
@@ -101,9 +101,9 @@ module Engine
       goal_hexes = corporation.tokens.select(&:city).map { |t| [t.city.hex, t.city] }
       distance = 0
       visited_hexes = []
-      start_hexes = if start.respond_to?(&:city?) && start.city?
+      start_hexes = if start.is_a?(Engine::Part::City)
                       [[start.hex, start]]
-                    else # hex
+                    else # Hex
                       [[start, start.tile.cities.first]]
                     end
       until start_hexes.empty?
