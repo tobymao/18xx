@@ -150,10 +150,9 @@ module View
       )
     end
 
-
     def render_alternate_spreadsheet(checked = false)
       render_input(
-        'rr18xx style spreadsheet',
+        'rr18xx Style OR History',
         id: :alternate_spreadsheet,
         type: :checkbox,
         attrs: { checked: checked },

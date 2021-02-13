@@ -16,6 +16,7 @@ module View
       include Actionable
 
       needs :game
+      needs :user, default: nil, store: true
 
       def render
         @spreadsheet_sort_by = Lib::Storage['spreadsheet_sort_by']
@@ -121,35 +122,81 @@ module View
           []
         else
           or_history(@game.all_corporations).map do |x|
-            if hist[x]
-              props = {
-                style: {
-                  opacity: case hist[x].dividend.kind
-                           when 'withhold'
-                             '0.5'
-                           when 'half'
-                             '0.75'
-                           else
-                             '1.0'
-                           end,
-                  textDecorationLine: hist[x].dividend.kind == 'half' ? 'underline' : '',
-                  textDecorationStyle: hist[x].dividend.kind == 'half' ? 'dotted' : '',
-                  padding: '0 0.15rem',
-                },
-              }
-
-              if hist[x]&.dividend&.id&.positive?
-                link_h = history_link(hist[x].revenue.abs.to_s,
-                                      "Go to run #{x} of #{corporation.name}",
-                                      hist[x].dividend.id - 1)
-                h(:td, props, [link_h])
-              else
-                h(:td, props, hist[x].revenue.abs.to_s)
-              end
+            if @user&.dig('settings', 'alternate_spreadsheet')
+              alternate_or_history(hist, corporation, x)
             else
-              h(:td, '')
+              standard_or_history(hist, corporation, x)
             end
           end
+        end
+      end
+
+      def alternate_or_history(hist, corporation, x)
+        if hist[x]
+          revenue_text = case hist[x].dividend.kind
+                         when 'withhold'
+                           "[#{hist[x].revenue.abs}]"
+                         when 'half'
+                           "|#{hist[x].revenue.abs}|"
+                         else
+                           hist[x].revenue.abs.to_s
+                         end
+
+          props = {
+            style: {
+              opacity: case hist[x].dividend.kind
+                       when 'withhold'
+                         '0.5'
+                       when 'half'
+                         '0.75'
+                       else
+                         '1.0'
+                       end,
+              padding: '0 0.15rem',
+            },
+          }
+
+          if hist[x]&.dividend&.id&.positive?
+            link_h = history_link(revenue_text,
+                                  "Go to run #{x} of #{corporation.name}",
+                                  hist[x].dividend.id - 1)
+            h(:td, props, [link_h])
+          else
+            h(:td, props, revenue_text)
+          end
+        else
+          h(:td, '')
+        end
+      end
+
+      def standard_or_history(hist, corporation, x)
+        if hist[x]
+          props = {
+            style: {
+              opacity: case hist[x].dividend.kind
+                       when 'withhold'
+                         '0.5'
+                       when 'half'
+                         '0.75'
+                       else
+                         '1.0'
+                       end,
+              textDecorationLine: hist[x].dividend.kind == 'half' ? 'underline' : '',
+              textDecorationStyle: hist[x].dividend.kind == 'half' ? 'dotted' : '',
+              padding: '0 0.15rem',
+            },
+          }
+
+          if hist[x]&.dividend&.id&.positive?
+            link_h = history_link(hist[x].revenue.abs.to_s,
+                                  "Go to run #{x} of #{corporation.name}",
+                                  hist[x].dividend.id - 1)
+            h(:td, props, [link_h])
+          else
+            h(:td, props, hist[x].revenue.abs.to_s)
+          end
+        else
+          h(:td, '')
         end
       end
 
