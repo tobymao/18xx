@@ -227,9 +227,6 @@ nav .submenu a {
   }
 }
 
-#profile-settings > div {
-  margin: 0.2rem 0;
-}
 #profile-settings > div * {
   vertical-align: middle;
 }
