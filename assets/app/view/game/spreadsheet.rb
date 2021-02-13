@@ -122,36 +122,24 @@ module View
           []
         else
           or_history(@game.all_corporations).map do |x|
-            if @user&.dig('settings', 'alternate_spreadsheet')
-              alternate_or_history(hist, corporation, x)
-            else
-              standard_or_history(hist, corporation, x)
-            end
+            render_or_history_row(hist, corporation, x)
           end
         end
       end
 
-      def alternate_or_history(hist, corporation, x)
+      def render_or_history_row(hist, corporation, x)
         if hist[x]
-          revenue_text = case hist[x].dividend.kind
-                         when 'withhold'
-                           "[#{hist[x].revenue.abs}]"
-                         when 'half'
-                           "|#{hist[x].revenue.abs}|"
-                         else
-                           hist[x].revenue.abs.to_s
-                         end
-
+          revenue_text, opacity = case hist[x].dividend.kind
+                                  when 'withhold'
+                                    ["[#{hist[x].revenue.abs}]", '0.5']
+                                  when 'half'
+                                    ["|#{hist[x].revenue.abs}|", '0.75']
+                                  else
+                                    [hist[x].revenue.abs.to_s, '1.0']
+                                  end
           props = {
             style: {
-              opacity: case hist[x].dividend.kind
-                       when 'withhold'
-                         '0.5'
-                       when 'half'
-                         '0.75'
-                       else
-                         '1.0'
-                       end,
+              opacity: opacity,
               padding: '0 0.15rem',
             },
           }
@@ -163,37 +151,6 @@ module View
             h(:td, props, [link_h])
           else
             h(:td, props, revenue_text)
-          end
-        else
-          h(:td, '')
-        end
-      end
-
-      def standard_or_history(hist, corporation, x)
-        if hist[x]
-          props = {
-            style: {
-              opacity: case hist[x].dividend.kind
-                       when 'withhold'
-                         '0.5'
-                       when 'half'
-                         '0.75'
-                       else
-                         '1.0'
-                       end,
-              textDecorationLine: hist[x].dividend.kind == 'half' ? 'underline' : '',
-              textDecorationStyle: hist[x].dividend.kind == 'half' ? 'dotted' : '',
-              padding: '0 0.15rem',
-            },
-          }
-
-          if hist[x]&.dividend&.id&.positive?
-            link_h = history_link(hist[x].revenue.abs.to_s,
-                                  "Go to run #{x} of #{corporation.name}",
-                                  hist[x].dividend.id - 1)
-            h(:td, props, [link_h])
-          else
-            h(:td, props, hist[x].revenue.abs.to_s)
           end
         else
           h(:td, '')
