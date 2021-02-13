@@ -70,7 +70,13 @@ module Engine
         end
 
         def tile_lay_abilities(entity, **kwargs, &block)
-          abilities = super
+          abilities = @game.abilities(
+            entity,
+            'tile_lay',
+            time: %w[special_track %current_step% owning_corp_or_turn],
+            **kwargs,
+            &block
+          )
 
           return nil if abilities.nil?
           return abilities if abilities.is_a?(Array)

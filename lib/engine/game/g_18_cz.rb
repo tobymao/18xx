@@ -126,7 +126,6 @@ module Engine
           Step::G18CZ::HomeTrack,
           Step::G18CZ::SellCompanyAndSpecialTrack,
           Step::HomeToken,
-          Step::SpecialTrack,
           Step::G18CZ::BuyCompany,
           Step::Track,
           Step::G18CZ::Token,
