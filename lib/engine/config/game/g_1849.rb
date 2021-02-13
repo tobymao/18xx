@@ -639,7 +639,7 @@ module Engine
       "abilities": [
         {
           "type": "shares",
-          "shares": "random_president"
+          "shares": "first_president"
         },
         {
           "type": "no_buy"

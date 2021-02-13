@@ -1889,8 +1889,9 @@ module Engine
           real_shares = []
           ability.shares.each do |share|
             case share
-            when 'random_president'
-              corporation = @corporations[rand % @corporations.size]
+            when 'random_president', 'first_president'
+              idx = share == 'first_president' ? 0 : rand % @corporations.size
+              corporation = @corporations[idx]
               share = corporation.shares[0]
               real_shares << share
               company.desc = "Purchasing player takes a president's share (20%) of #{corporation.name} \
