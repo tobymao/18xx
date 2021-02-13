@@ -17,9 +17,9 @@ module View
 
     def render_notification
       message = <<~MESSAGE
+        <p>1828.Games is now in beta.</p>
         <p>1830 is now in alpha!</p>
         <p>1860 now in production!</p>
-        <p>18Mag and 1849 now in beta 🚂🚂!</p>
         <p>Please submit problem reports and make suggestions for improvements on
         <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>.</p>
         <p>The <a href='https://github.com/tobymao/18xx/wiki'>18xx.games Wiki</a> has rules, maps,
