@@ -560,6 +560,11 @@ module Engine
         @log << "-- #{msg}"
       end
 
+      def available_programmed_actions
+        # By default assume normal 1830esk buy shares
+        [Action::ProgramBuyShares]
+      end
+
       def self.filtered_actions(actions)
         active_undos = []
         filtered_actions = Array.new(actions.size)

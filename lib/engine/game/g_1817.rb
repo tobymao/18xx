@@ -109,6 +109,10 @@ module Engine
       include InterestOnLoans
       attr_reader :loan_value, :owner_when_liquidated, :stock_prices_start_merger
 
+      def available_programmed_actions
+        []
+      end
+
       def timeline
         @timeline = [
           'At the end of each OR the next available train will be exported

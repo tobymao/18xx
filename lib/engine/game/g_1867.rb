@@ -110,6 +110,10 @@ module Engine
 
       attr_reader :loan_value, :trainless_major
 
+      def available_programmed_actions
+        []
+      end
+
       def ipo_name(_entity = nil)
         'Treasury'
       end

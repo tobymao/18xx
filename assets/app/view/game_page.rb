@@ -97,6 +97,8 @@ module View
           h(Game::Spreadsheet, game: @game)
         when 'tools'
           h(Game::Tools, game: @game, game_data: @game_data, user: @user)
+        when 'async'
+          h(Game::Async, game: @game, game_data: @game_data, user: @user)
         end
 
       @connection = nil if @game_data[:mode] == :hotseat || cursor
@@ -269,6 +271,8 @@ module View
         item('S|preadsheet', '#spreadsheet'),
         item('To|ols', '#tools'),
       ]
+
+      menu_items << item('Async', '#async') if @game_data[:mode] != :hotseat && !cursor
 
       h('nav#game_menu', nav_props, [
         h('ul.no_margin.no_padding', { style: { width: 'max-content' } }, menu_items),

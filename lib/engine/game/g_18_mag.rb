@@ -130,6 +130,10 @@ module Engine
         @location_names[coord]
       end
 
+      def available_programmed_actions
+        []
+      end
+
       def setup
         @sik = @corporations.find { |c| c.name == 'SIK' }
         @skev = @corporations.find { |c| c.name == 'SKEV' }
