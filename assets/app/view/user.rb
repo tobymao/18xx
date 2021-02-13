@@ -45,6 +45,7 @@ module View
         h('div#settings__options', [
           render_notifications(setting_for(:notifications)),
           render_simple_logos(setting_for(:simple_logos)),
+          render_alternate_spreadsheet(setting_for(:alternate_spreadsheet)),
           render_logo_color(setting_for(:red_logo)),
         ]),
         h('div#settings__colors', { style: { maxWidth: '38rem' } }, [
@@ -108,7 +109,7 @@ module View
     end
 
     def reset_settings
-      %i[simple_logos red_logo].each { |e| input_elm(e).checked = default_for(e) }
+      %i[simple_logos red_logo alternate_spreadsheet].each { |e| input_elm(e).checked = default_for(e) }
       %i[bg font bg2 font2 your_turn hotseat_game].each { |e| input_elm(e).value = default_for(e) }
       TILE_COLORS.each { |color, hex_color| input_elm(color).value = hex_color }
       ROUTE_COLORS.each_with_index do |hex_color, index|
@@ -144,6 +145,16 @@ module View
       render_input(
         'Simple Corporation Logos',
         id: :simple_logos,
+        type: :checkbox,
+        attrs: { checked: checked },
+      )
+    end
+
+
+    def render_alternate_spreadsheet(checked = false)
+      render_input(
+        'rr18xx style spreadsheet',
+        id: :alternate_spreadsheet,
         type: :checkbox,
         attrs: { checked: checked },
       )

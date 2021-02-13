@@ -21,6 +21,7 @@ module Lib
     SETTINGS = {
       notifications: true,
       simple_logos: false,
+      alternate_spreadsheet: false,
       red_logo: false,
       bg: DARK ? '#000000' : '#ffffff',
       bg2: DARK ? '#dcdcdc' : '#d3d3d3',
