@@ -35,6 +35,12 @@ module Engine
 
           old_paths.all? { |path| new_paths.any? { |p| path <= p } }
         end
+
+        def process_lay_tile(action)
+          super
+          # TODO: Replace 'true' with @loading check & implement auto action usage
+          # @game.destination_check! # if true
+        end
       end
     end
   end

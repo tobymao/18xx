@@ -159,9 +159,6 @@ nav#game_menu {
   font-weight: bold;
 }
 
-#profile-settings > div {
-  margin: 0.2rem 0;
-}
 #profile-settings > div * {
   vertical-align: middle;
 }
@@ -172,11 +169,14 @@ nav#game_menu {
   height: 1.8rem;
   width: 2.7rem;
 }
-#settings__colors label, #settings__simple_logos label, #settings__notifications label  {
+#settings__options .input-container {
+  display: block;
+}
+#settings__colors label, #settings__options label  {
     display: inline-block;
     width: 11.5rem;
 }
-#settings__tiles__buttons > .input-container {
+#settings__tiles .input-container {
   margin: 0;
 }
 #settings__tiles input[type=color] {
@@ -250,6 +250,9 @@ text.number {
 .small_font {
   font-size: 90%;
 }
+.xsmall_font {
+  font-size: 80%;
+}
 
 .tile {
    fill: none;
@@ -259,7 +262,7 @@ text.number {
 .tile__block {
   display: inline-block;
   padding: 0.1em;
-  margin: 10px 1px 10px 0;
+  margin: 0 1px 0 0;
   outline-style: solid;
   outline-width: thin;
 }
@@ -329,7 +332,7 @@ text.number {
 .corp div, .player div {
   display: grid;
 }
-.corp__title div, .corp__holdings div {
+.corp__title *, .corp__holdings * {
   align-self: center;
   justify-self: center;
 }

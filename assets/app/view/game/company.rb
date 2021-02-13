@@ -94,6 +94,7 @@ module View
           if selected?
             props[:style][:backgroundColor] = 'lightblue'
             props[:style][:color] = 'black'
+            props[:style][:border] = '1px solid'
           end
           props[:style][:display] = @display
 

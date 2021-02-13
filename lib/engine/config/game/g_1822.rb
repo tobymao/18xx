@@ -41,6 +41,7 @@ module Engine
     "D41": "Exeter",
     "E2": "Highlands",
     "E6": "Glasgow",
+    "E28": "Mid Wales",
     "E32": "Merthyr Tydfil & Pontypool",
     "E40": "Taunton",
     "F3": "Stirling",
@@ -48,7 +49,6 @@ module Engine
     "F7": "Hamilton & Coatbridge",
     "F11": "Dumfries",
     "F23": "Holyhead",
-    "F29": "Mid Wales",
     "F35": "Cardiff",
     "G4": "Falkirk",
     "G12": "Carlisle",
@@ -119,9 +119,9 @@ module Engine
     "4": 6,
     "5": 6,
     "6": 8,
-    "7": 6,
-    "8": 24,
-    "9": 24,
+    "7": "unlimited",
+    "8": "unlimited",
+    "9": "unlimited",
     "55": 1,
     "56": 1,
     "57": 6,
@@ -150,17 +150,7 @@ module Engine
     "X20": {
       "count": 1,
       "color": "yellow",
-      "code": "city=revenue:20,slots:2;path=a:1,b:_0;path=a:4,b:_0;label=S"
-    },
-    "X21": {
-      "count": 3,
-      "color": "yellow",
-      "code": "city=revenue:20;path=a:0,b:_0;path=a:1,b:_0;label=T"
-    },
-    "X22": {
-      "count": 3,
-      "color": "yellow",
-      "code": "city=revenue:20;path=a:0,b:_0;path=a:2,b:_0;label=T"
+      "code": "city=revenue:40;city=revenue:40;city=revenue:40;city=revenue:40;city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:1,b:_1;path=a:2,b:_2;path=a:3,b:_3;path=a:4,b:_4;path=a:5,b:_5;upgrade=cost:20;label=London"
     },
     "405": {
       "count": 3,
@@ -186,6 +176,11 @@ module Engine
       "count": 1,
       "color": "green",
       "code": "city=revenue:0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0;upgrade=cost:100;label=EC"
+    },
+    "X21": {
+      "count": 1,
+      "color": "green",
+      "code": "city=revenue:60;city=revenue:60;city=revenue:60;city=revenue:60;city=revenue:60;city=revenue:60;path=a:0,b:_0;path=a:1,b:_1;path=a:2,b:_2;path=a:3,b:_3;path=a:4,b:_4;path=a:5,b:_5;upgrade=cost:20;label=London"
     },
     "145": {
       "count": 4,
@@ -231,6 +226,11 @@ module Engine
       "count": 3,
       "color": "brown",
       "code": "city=revenue:50,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0;label=T"
+    },
+    "X22": {
+      "count": 1,
+      "color": "brown",
+      "code": "city=revenue:80;city=revenue:80;city=revenue:80;city=revenue:80;city=revenue:80;city=revenue:80;path=a:0,b:_0;path=a:1,b:_1;path=a:2,b:_2;path=a:3,b:_3;path=a:4,b:_4;path=a:5,b:_5;upgrade=cost:20;label=London"
     },
     "169": {
       "count": 2,
@@ -281,6 +281,11 @@ module Engine
       "count": 4,
       "color": "gray",
       "code": "city=revenue:50,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0"
+    },
+    "X23": {
+      "count": 1,
+      "color": "gray",
+      "code": "city=revenue:100;city=revenue:100;city=revenue:100;city=revenue:100;city=revenue:100;city=revenue:100;path=a:0,b:_0;path=a:1,b:_1;path=a:2,b:_2;path=a:3,b:_3;path=a:4,b:_4;path=a:5,b:_5;label=London"
     }
   },
   "market": [
@@ -381,7 +386,7 @@ module Engine
       "70",
       "80",
       "90",
-      "100p",
+      "100px",
       "110",
       "120",
       "135",
@@ -404,7 +409,7 @@ module Engine
       "60",
       "70",
       "80",
-      "90p",
+      "90px",
       "100",
       "110",
       "120",
@@ -424,7 +429,7 @@ module Engine
       "50",
       "60",
       "70",
-      "80p",
+      "80px",
       "90",
       "100",
       "110",
@@ -442,7 +447,7 @@ module Engine
       "45y",
       "50",
       "60",
-      "70p",
+      "70px",
       "80",
       "90",
       "100",
@@ -458,7 +463,7 @@ module Engine
       "40y",
       "45y",
       "50",
-      "60p",
+      "60px",
       "70",
       "80",
       "90",
@@ -695,6 +700,12 @@ module Engine
       "revenue": 10,
       "desc": "Have a face value £100 and converts into the LNWR's 10% director certificate. LNWR may also put it's destination token into Manchester when converted.",
       "abilities": [
+        {
+          "type": "exchange",
+          "corporations": ["LNWR"],
+          "owner_type": "player",
+          "from": "par"
+        }
       ],
       "color": "lnwrBlack",
       "text_color": "white"
@@ -706,6 +717,12 @@ module Engine
       "revenue": 10,
       "desc": "Have a face value £100 and contribute £100 to the conversion into the GWR director’s certificate.",
       "abilities": [
+        {
+          "type": "exchange",
+          "corporations": ["GWR"],
+          "owner_type": "player",
+          "from": "par"
+        }
       ],
       "color": "gwrGreen",
       "text_color": "white"
@@ -717,6 +734,12 @@ module Engine
       "revenue": 10,
       "desc": "Have a face value £100 and contribute £100 to the conversion into the LBSCR director’s certificate.",
       "abilities": [
+        {
+          "type": "exchange",
+          "corporations": ["LBSCR"],
+          "owner_type": "player",
+          "from": "par"
+        }
       ],
       "color": "lbscrYellow",
       "text_color": "white"
@@ -728,6 +751,12 @@ module Engine
       "revenue": 10,
       "desc": "Have a face value £100 and contribute £100 to the conversion into the SECR director’s certificate.",
       "abilities": [
+        {
+          "type": "exchange",
+          "corporations": ["SECR"],
+          "owner_type": "player",
+          "from": "par"
+        }
       ],
       "color": "secrOrange",
       "text_color": "white"
@@ -739,6 +768,12 @@ module Engine
       "revenue": 10,
       "desc": "Have a face value £100 and contribute £100 to the conversion into the CR director’s certificate.",
       "abilities": [
+        {
+          "type": "exchange",
+          "corporations": ["CR"],
+          "owner_type": "player",
+          "from": "par"
+        }
       ],
       "color": "crBlue",
       "text_color": "white"
@@ -750,6 +785,12 @@ module Engine
       "revenue": 10,
       "desc": "Have a face value £100 and contribute £100 to the conversion into the MR director’s certificate.",
       "abilities": [
+        {
+          "type": "exchange",
+          "corporations": ["MR"],
+          "owner_type": "player",
+          "from": "par"
+        }
       ],
       "color": "mrRed",
       "text_color": "white"
@@ -759,8 +800,14 @@ module Engine
       "sym": "C7",
       "value": 100,
       "revenue": 10,
-      "desc": "Have a face value £100 and contribute £100 to the conversion into the L&YR director’s certificate.",
+      "desc": "Have a face value £100 and contribute £100 to the conversion into the LYR director’s certificate.",
       "abilities": [
+        {
+          "type": "exchange",
+          "corporations": ["LYR"],
+          "owner_type": "player",
+          "from": "par"
+        }
       ],
       "color": "lyrPurple",
       "text_color": "white"
@@ -772,6 +819,12 @@ module Engine
       "revenue": 10,
       "desc": "Have a face value £100 and contribute £100 to the conversion into the NBR director’s certificate.",
       "abilities": [
+        {
+          "type": "exchange",
+          "corporations": ["NBR"],
+          "owner_type": "player",
+          "from": "par"
+        }
       ],
       "color": "nbrBrown",
       "text_color": "white"
@@ -783,6 +836,12 @@ module Engine
       "revenue": 10,
       "desc": "Have a face value £100 and contribute £100 to the conversion into the SWR director’s certificate.",
       "abilities": [
+        {
+          "type": "exchange",
+          "corporations": ["SWR"],
+          "owner_type": "player",
+          "from": "par"
+        }
       ],
       "color": "swrGray",
       "text_color": "white"
@@ -794,6 +853,12 @@ module Engine
       "revenue": 10,
       "desc": "Have a face value £100 and contribute £100 to the conversion into the NER director’s certificate.",
       "abilities": [
+        {
+          "type": "exchange",
+          "corporations": ["NER"],
+          "owner_type": "player",
+          "from": "par"
+        }
       ],
       "color": "nerGreen",
       "text_color": "white"
@@ -1292,7 +1357,7 @@ module Engine
       "name": "Metropolitan Railway",
       "logo": "1822/14",
       "tokens": [
-        0
+        20
       ],
       "type": "minor",
       "always_market_price": true,
@@ -1481,10 +1546,12 @@ module Engine
       "name": "London and North West Railway",
       "logo": "1822/LNWR",
       "tokens": [
-        0
+        0,
+        100
       ],
       "type": "major",
-      "float_percent": 20,
+      "float_percent": 10,
+      "shares": [10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
       "always_market_price": true,
       "coordinates": "M38",
       "city": 3,
@@ -1495,7 +1562,8 @@ module Engine
       "name": "Great Western Railway",
       "logo": "1822/GWR",
       "tokens": [
-        0
+        0,
+        100
       ],
       "type": "major",
       "float_percent": 20,
@@ -1509,7 +1577,8 @@ module Engine
       "name": "London, Brighton and South Coast Railway",
       "logo": "1822/LBSCR",
       "tokens": [
-        0
+        0,
+        100
       ],
       "type": "major",
       "float_percent": 20,
@@ -1524,7 +1593,8 @@ module Engine
       "name": "South Eastern & Chatham Railway",
       "logo": "1822/SECR",
       "tokens": [
-        0
+        0,
+        100
       ],
       "type": "major",
       "float_percent": 20,
@@ -1538,7 +1608,8 @@ module Engine
       "name": "Caledonian Railway",
       "logo": "1822/CR",
       "tokens": [
-        0
+        0,
+        100
       ],
       "type": "major",
       "float_percent": 20,
@@ -1551,7 +1622,8 @@ module Engine
       "name": "Midland Railway",
       "logo": "1822/MR",
       "tokens": [
-        0
+        0,
+        100
       ],
       "type": "major",
       "float_percent": 20,
@@ -1560,11 +1632,12 @@ module Engine
       "color": "mrRed"
     },
     {
-      "sym": "L&YR",
+      "sym": "LYR",
       "name": "Lancashire & Yorkshire",
       "logo": "1822/LYR",
       "tokens": [
-        0
+        0,
+        100
       ],
       "type": "major",
       "float_percent": 20,
@@ -1577,7 +1650,8 @@ module Engine
       "name": "North British Railway",
       "logo": "1822/NBR",
       "tokens": [
-        0
+        0,
+        100
       ],
       "type": "major",
       "float_percent": 20,
@@ -1590,7 +1664,8 @@ module Engine
       "name": "South Wales Railway",
       "logo": "1822/SWR",
       "tokens": [
-        0
+        0,
+        100
       ],
       "type": "major",
       "float_percent": 20,
@@ -1604,7 +1679,8 @@ module Engine
       "name": "North Eastern Railway",
       "logo": "1822/NER",
       "tokens": [
-        0
+        0,
+        100
       ],
       "type": "major",
       "float_percent": 20,
@@ -1659,7 +1735,10 @@ module Engine
       "name": "5",
       "distance": 5,
       "num": 5,
-      "price": 500
+      "price": 500,
+      "events":[
+        {"type": "close_concessions"}
+      ]
     },
     {
       "name": "6",
@@ -1916,10 +1995,8 @@ module Engine
         "L33",
         "M30",
         "P35",
+        "P41",
         "R38"
-      ],
-      "city=revenue:0;icon=image:1822/SECR_DEST": [
-        "P41"
       ],
       "city=revenue:0;border=edge:1,type:impassable": [
         "I42"
@@ -1930,27 +2007,23 @@ module Engine
       "city=revenue:0;border=edge:5,type:impassable": [
         "G16"
       ],
-      "city=revenue:0;border=edge:2,type:impassable;border=edge:3,type:water,cost:40;icon=image:1822/CR_DEST": [
+      "city=revenue:0;border=edge:2,type:impassable;border=edge:3,type:water,cost:40": [
         "G12"
       ],
       "city=revenue:20,loc:center;town=revenue:10,loc:1;path=a:_0,b:_1;border=edge:0,type:impassable;label=S":[
         "D35"
       ],
-      "city=revenue:0;city=revenue:0;city=revenue:0;city=revenue:0;city=revenue:0;city=revenue:0;path=a:0,b:_0;path=a:1,b:_1;path=a:2,b:_2;path=a:3,b:_3;path=a:4,b:_4;path=a:5,b:_5;upgrade=cost:20;label=London": [
+      "city=revenue:20;city=revenue:20;city=revenue:20;city=revenue:20;city=revenue:20;city=revenue:20;path=a:0,b:_0;path=a:1,b:_1;path=a:2,b:_2;path=a:3,b:_3;path=a:4,b:_4;path=a:5,b:_5;upgrade=cost:20;label=London": [
         "M38"
       ],
       "city=revenue:0;label=T": [
         "B43",
-        "K42"
-      ],
-      "city=revenue:0;icon=image:1822/LBSCR_DEST;label=T": [
+        "K42",
         "M42"
       ],
       "city=revenue:0;upgrade=cost:20,terrain:swamp": [
+        "L19",
         "Q30"
-      ],
-      "city=revenue:0;upgrade=cost:20,terrain:swamp;icon=image:1822/MR_DEST": [
-        "L19"
       ],
       "city=revenue:0;upgrade=cost:40,terrain:swamp": [
         "H23",
@@ -1973,13 +2046,13 @@ module Engine
       "city=revenue:30,slots:2;path=a:0,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=Y": [
         "G22"
       ],
-      "city=revenue:30,slots:2;path=a:0,b:_0;path=a:4,b:_0;path=a:5,b:_0;border=edge:2,type:impassable;border=edge:3,type:water,cost:40;upgrade=cost:20,terrain:swamp;icon=image:1822/GWR_DEST;label=Y": [
+      "city=revenue:30,slots:2;path=a:0,b:_0;path=a:4,b:_0;path=a:5,b:_0;border=edge:2,type:impassable;border=edge:3,type:water,cost:40;upgrade=cost:20,terrain:swamp;label=Y": [
         "G36"
       ],
-      "city=revenue:30,slots:2;path=a:1,b:_0;path=a:2,b:_0;path=a:5,b:_0;border=edge:3,type:water,cost:40;icon=image:1822/NER_DEST;label=Y": [
+      "city=revenue:30,slots:2;path=a:1,b:_0;path=a:2,b:_0;path=a:5,b:_0;border=edge:3,type:water,cost:40;label=Y": [
         "H5"
       ],
-      "city=revenue:40,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:4,b:_0;upgrade=cost:60,terrain:hill;icon=image:1822/LNWR_DEST;icon=image:1822/LYR_DEST;label=BM": [
+      "city=revenue:40,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:4,b:_0;upgrade=cost:60,terrain:hill;label=BM": [
         "I22"
       ],
       "city=revenue:40,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0;upgrade=cost:40,terrain:swamp;label=BM": [
@@ -1993,17 +2066,26 @@ module Engine
       "city=revenue:yellow_40|green_30|brown_30|gray_40,slots:2,loc:1.5;path=a:4,b:_0,terminal:1;path=a:5,b:_0,terminal:1": [
         "A42"
       ],
-      "city=revenue:yellow_10|green_20|brown_30|gray_40,slots:2;path=a:5,b:_0,terminal:1;icon=image:1822/SWR_DEST": [
+      "city=revenue:yellow_10|green_20|brown_30|gray_40,slots:2;path=a:5,b:_0,terminal:1": [
         "C34"
       ],
-      "city=revenue:yellow_10|green_10|brown_20|gray_20,slots:2,groups:Highlands;path=a:5,b:_0,terminal:1;border=edge:0": [
+      "city=revenue:yellow_10|green_10|brown_20|gray_20,slots:2;path=a:0,b:_0,terminal:1;path=a:5,b:_0,terminal:1": [
         "E2"
       ],
-      "offboard=revenue:yellow_10|green_10|brown_20|gray_20,hide:1,groups:Highlands;path=a:0,b:_0,terminal:1;border=edge:3": [
+      "path=a:0,b:3": [
         "E4"
       ],
       "city=revenue:yellow_40|green_50|brown_60|gray_70,slots:3,loc:1;path=a:0,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0": [
         "E6"
+      ],
+      "path=a:0,b:4,lanes:2": [
+        "E26"
+      ],
+      "city=revenue:yellow_10|green_20|brown_20|gray_30,slots:3;path=a:0,b:_0,lanes:2,terminal:1;path=a:3,b:_0,lanes:2,terminal:1;path=a:4,b:_0,lanes:2,terminal:1;path=a:5,b:_0,lanes:2,terminal:1": [
+        "E28"
+      ],
+      "path=a:3,b:5,lanes:2": [
+        "E30"
       ],
       "path=a:0,b:5": [
         "E32"
@@ -2014,22 +2096,18 @@ module Engine
       "city=revenue:yellow_20|green_20|brown_30|gray_40,slots:2;path=a:5,b:_0,terminal:1": [
         "F23"
       ],
-      "offboard=revenue:yellow_10|green_20|brown_20|gray_30,hide:1,groups:MidWales;path=a:4,b:_0;path=a:5,b:_0;border=edge:0": [
-        "F25"
-      ],
-      "offboard=revenue:yellow_10|green_20|brown_20|gray_30,groups:MidWales;path=a:4,b:_0;path=a:5,b:_0;border=edge:0;border=edge:3": [
+      "path=a:1,b:4,a_lane:2.0;path=a:1,b:5,a_lane:2.1": [
+        "F25",
         "F27"
       ],
-      "city=revenue:yellow_10|green_20|brown_20|gray_30,slots:3,hide:1,loc:1.5,groups:MidWales;path=a:4,b:_0,terminal:1;path=a:5,b:_0,terminal:1;border=edge:0;border=edge:3": [
-        "F29"
-      ],
-      "offboard=revenue:yellow_10|green_20|brown_20|gray_30,hide:1,groups:MidWales;path=a:4,b:_0;path=a:5,b:_0;border=edge:3": [
+      "path=a:2,b:4,a_lane:2.0;path=a:2,b:5,a_lane:2.1": [
+        "F29",
         "F31"
       ],
       "city=revenue:yellow_20|green_40|brown_30|gray_10,slots:2,loc:4;path=a:1,b:_0;path=a:2,b:_0,terminal:1;path=a:5,b:_0": [
         "F33"
       ],
-      "city=revenue:yellow_30|green_40|brown_50|gray_60,slots:2;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;icon=image:1822/NBR_DEST": [
+      "city=revenue:yellow_30|green_40|brown_50|gray_60,slots:2;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1": [
         "H1"
       ],
       "offboard=revenue:yellow_0|green_60|brown_90|gray_120;path=a:2,b:_0": [
@@ -2068,13 +2146,16 @@ module Engine
     },
     {
       "name": "2",
-      "on": "2",
+      "on": ["2", "3"],
       "train_limit": {
         "minor": 2,
         "major": 4
       },
       "tiles": [
         "yellow"
+      ],
+      "status": [
+        "can_convert_concessions"
       ],
       "operating_rounds": 2
     },
@@ -2090,7 +2171,8 @@ module Engine
         "green"
       ],
       "status": [
-        "can_buy_trains"
+        "can_buy_trains",
+        "can_convert_concessions"
       ],
       "operating_rounds": 2
     },
@@ -2106,7 +2188,8 @@ module Engine
         "green"
       ],
       "status": [
-        "can_buy_trains"
+        "can_buy_trains",
+        "can_convert_concessions"
       ],
       "operating_rounds": 2
     },
@@ -2123,7 +2206,10 @@ module Engine
         "brown"
       ],
       "status": [
-        "can_buy_trains"
+        "can_buy_trains",
+        "can_acquire_minor_bidbox",
+        "can_par",
+        "minors_green_upgrade"
       ],
       "operating_rounds": 2
     },
@@ -2140,7 +2226,11 @@ module Engine
         "brown"
       ],
       "status": [
-        "can_buy_trains"
+        "can_buy_trains",
+        "can_acquire_minor_bidbox",
+        "can_par",
+        "full_capitalisation",
+        "minors_green_upgrade"
       ],
       "operating_rounds": 2
     },
@@ -2158,7 +2248,11 @@ module Engine
         "gray"
       ],
       "status": [
-        "can_buy_trains"
+        "can_buy_trains",
+        "can_acquire_minor_bidbox",
+        "can_par",
+        "full_capitalisation",
+        "minors_green_upgrade"
       ],
       "operating_rounds": 2
     }

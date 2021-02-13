@@ -31,6 +31,9 @@ module Engine
       HOME_TOKEN_TIMING = :operate
       LIMIT_TOKENS_AFTER_MERGER = 999
 
+      EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false # if ebuying from depot, must buy cheapest train
+      EBUY_OTHER_VALUE = false # allow ebuying other corp trains for up to face
+
       STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
         par: :red,
         par_2: :green,
@@ -96,11 +99,13 @@ module Engine
         # We can modify COMPANY_VALUES and OR_SETS if we want to support the shorter variant
         @last_or = COMPANY_VALUES.size
         @recently_floated = []
+        @entity_used_ability_to_track = false
 
         # Only small companies are available until later phases
         @corporations, @future_corporations = @corporations.partition { |corporation| corporation.type == :small }
 
         block_lay_for_purple_tiles
+        init_player_debts
       end
 
       def init_round
@@ -119,9 +124,10 @@ module Engine
       def operating_round(round_num)
         Round::Operating.new(self, [
           Step::G18CZ::HomeTrack,
+          Step::G18CZ::SellCompanyAndSpecialTrack,
           Step::HomeToken,
           Step::SpecialTrack,
-          Step::BuyCompany,
+          Step::G18CZ::BuyCompany,
           Step::Track,
           Step::G18CZ::Token,
           Step::Route,
@@ -136,6 +142,10 @@ module Engine
 
       def init_stock_market
         StockMarket.new(self.class::MARKET, [], zigzag: true)
+      end
+
+      def init_player_debts
+        @player_debts = @players.map { |player| [player.id, { debt: 0, penalty_interest: 0 }] }.to_h
       end
 
       def new_operating_round
@@ -221,6 +231,7 @@ module Engine
       end
 
       def tile_lays(entity)
+        return [] if @entity_used_ability_to_track
         return super unless @recently_floated.include?(entity)
 
         [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }]
@@ -237,8 +248,12 @@ module Engine
 
       def block_lay_for_purple_tiles
         @tiles.each do |tile|
-          tile.blocks_lay = true if tile.name.end_with?('p')
+          tile.blocks_lay = true if purple_tile?(tile)
         end
+      end
+
+      def purple_tile?(tile)
+        tile.name.end_with?('p')
       end
 
       def must_buy_train?(entity)
@@ -359,8 +374,62 @@ module Engine
         str += " + #{route.corporation.name} bonus" if route.stops.any? do |stop|
                                                          stop.tile.label.to_s == route.corporation.id
                                                        end
-
         str
+      end
+
+      def increase_debt(player, amount)
+        entity = @player_debts[player.id]
+        entity[:debt] += amount
+        entity[:penalty_interest] += amount
+      end
+
+      def reset_debt(player)
+        entity = @player_debts[player.id]
+        entity[:debt] = 0
+      end
+
+      def debt(player)
+        @player_debts[player.id][:debt]
+      end
+
+      def penalty_interest(player)
+        @player_debts[player.id][:penalty_interest]
+      end
+
+      def player_value(player)
+        player.value - debt(player) - penalty_interest(player)
+      end
+
+      def liquidity(player, emergency: false)
+        return player.cash if emergency
+
+        super
+      end
+
+      def ability_blocking_step
+        @round.steps.find do |step|
+          # currently, abilities only care about Tracker, the is_a? check could
+          # be expanded to a list of possible classes/modules when needed
+          step.is_a?(Step::Track) && !step.passed? && step.blocks?
+        end
+      end
+
+      def next_turn!
+        super
+        @entity_used_ability_to_track = false
+      end
+
+      def skip_default_track
+        @entity_used_ability_to_track = true
+      end
+
+      def ability_usable?(ability)
+        case ability
+        when Ability::TileLay
+          ability.count&.positive?
+        else
+          true
+        end
       end
     end
   end

@@ -119,7 +119,9 @@ module Engine
         def can_sell?(entity, bundle)
           return unless bundle
 
+          corporation = bundle.corporation
           can_sell_order? &&
+            !(@game.class::MUST_SELL_IN_BLOCKS && @round.players_sold[entity][corporation] == :now) &&
             @game.share_pool.fit_in_bank?(bundle) &&
             can_dump?(entity, bundle)
         end

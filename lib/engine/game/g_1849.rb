@@ -21,7 +21,7 @@ module Engine
       load_from_json(Config::Game::G1849::JSON)
       AXES = { x: :number, y: :letter }.freeze
 
-      DEV_STAGE = :alpha
+      DEV_STAGE = :beta
 
       GAME_LOCATION = 'Sicily'
       GAME_RULES_URL = 'https://boardgamegeek.com/filepage/206628/1849-rules'
@@ -115,10 +115,24 @@ module Engine
       PORT_HEXES = %w[a12 A5 L14 N8].freeze
       SMS_HEXES = %w[B14 C1 C5 H12 J6 M9 M13].freeze
 
+      OPTIONAL_RULES = [
+        {
+          sym: :delay_ift,
+          short_name: 'Delay IFT',
+          desc: 'IFT may not be one of the first three corporations (recommended for newer players)',
+        },
+      ].freeze
+
+      IFT_BUFFER = 3
+
       attr_accessor :swap_choice_player, :swap_location, :swap_other_player, :swap_corporation,
                     :loan_choice_player, :player_debts,
                     :max_value_reached,
                     :old_operating_order, :moved_this_turn
+
+      def option_delay_ift?
+        @optional_rules&.include?(:delay_ift)
+      end
 
       def ipo_name(_entity = nil)
         'Treasury'
@@ -154,7 +168,6 @@ module Engine
       end
 
       def setup
-        @corporations.sort_by! { rand }
         setup_companies
         afg # init afg helper
         remove_corp if @players.size == 3
@@ -165,20 +178,16 @@ module Engine
       end
 
       def setup_companies
-        # RSA to close on train buy
         rsa = company_by_id('RSA')
         rsa_share = rsa.all_abilities[0].shares.first
+
+        # RSA closes on train buy
         rsa.add_ability(Ability::Close.new(
           type: :close,
           when: 'bought_train',
           corporation: rsa_share.corporation.name,
         ))
 
-        # RSA corp to be first
-        index = @corporations.index { |corp| corp.id == rsa_share.corporation.id }
-        @corporations[0], @corporations[index] = @corporations[index], @corporations[0]
-
-        # min_price == 1
         companies.each { |c| c.min_price = 1 }
       end
 
@@ -238,13 +247,24 @@ module Engine
       def init_corporations(stock_market)
         min_price = stock_market.par_prices.map(&:price).min
 
-        self.class::CORPORATIONS.map do |corporation|
+        corporations = self.class::CORPORATIONS.map do |corporation|
           Engine::G1849::Corporation.new(
             min_price: min_price,
             capitalization: self.class::CAPITALIZATION,
             **corporation.merge(corporation_opts),
           )
         end
+
+        corporations.sort_by! { rand }
+        if option_delay_ift?
+          ift_idx = corporations.index { |corp| corp.id == 'IFT' }
+          if ift_idx && ift_idx < IFT_BUFFER
+            # Not the algorithm in the rules but it produces the same distribution
+            corporations[ift_idx], corporations[IFT_BUFFER] = corporations[IFT_BUFFER], corporations[ift_idx]
+          end
+        end
+
+        corporations
       end
 
       def init_share_pool

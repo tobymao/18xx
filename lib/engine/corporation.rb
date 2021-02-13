@@ -22,9 +22,10 @@ module Engine
     include ShareHolder
     include Spender
 
-    attr_accessor :ipoed, :par_via_exchange, :max_ownership_percent, :float_percent, :capitalization, :second_share
-    attr_reader :companies, :min_price, :name, :full_name, :fraction_shares, :type, :id, :needs_token_to_par,
-                :presidents_share
+    attr_accessor :ipoed, :par_via_exchange, :max_ownership_percent, :float_percent, :capitalization, :second_share,
+                  :type, :floatable
+    attr_reader :companies, :min_price, :name, :full_name, :fraction_shares, :id, :needs_token_to_par,
+                :presidents_share, :reservation_color
     attr_writer :par_price, :share_price
 
     SHARES = ([20] + Array.new(8, 10)).freeze
@@ -52,6 +53,8 @@ module Engine
       @capitalization = opts[:capitalization] || :full
       @closed = false
       @float_percent = opts[:float_percent] || 60
+      @float_excludes_market = opts[:float_excludes_market] || false
+      @floatable = opts[:floatable] || true
       @floated = false
       @max_ownership_percent = opts[:max_ownership_percent] || 60
       @min_price = opts[:min_price]
@@ -60,6 +63,7 @@ module Engine
       @par_via_exchange = nil
       @type = opts[:type]&.to_sym
       @hide_shares = opts[:hide_shares] || false
+      @reservation_color = opts[:reservation_color]
 
       init_abilities(opts[:abilities])
       init_operator(opts)
@@ -162,11 +166,19 @@ module Engine
     end
 
     def floated?
-      @floated ||= percent_of(self) <= 100 - @float_percent
+      return false unless @floatable
+
+      @floated ||= percent_of(self) <= 100 - @float_percent - (@float_excludes_market ? percent_in_market : 0)
     end
 
     def percent_to_float
-      @floated ? 0 : percent_of(self) - (100 - @float_percent)
+      return 0 if @floated
+
+      percent_of(self) - (100 - @float_percent - (@float_excludes_market ? percent_in_market : 0))
+    end
+
+    def percent_in_market
+      num_market_shares * share_percent
     end
 
     def unfloat!

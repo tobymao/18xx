@@ -15,11 +15,11 @@ module Engine
         end
 
         def get_tile_lay(entity)
-          action = @game.tile_lays(entity)[@laid_track]&.clone
+          action = @game.tile_lays(entity)[@round.num_laid_track]&.clone
           return unless action
 
-          action[:lay] = !@upgraded && !@laid_city if action[:lay] == :not_if_upgraded_or_city
-          action[:upgrade] = !@upgraded if action[:upgrade] == :not_if_upgraded
+          action[:lay] = !@round.upgraded_track && !@laid_city if action[:lay] == :not_if_upgraded_or_city
+          action[:upgrade] = !@round.upgraded_track if action[:upgrade] == :not_if_upgraded
           action[:cost] = action[:cost] || 0
           action[:cannot_reuse_same_hex] = action[:cannot_reuse_same_hex] || false
           action
@@ -30,17 +30,25 @@ module Engine
           tile_lay = get_tile_lay(action.entity)
           raise GameError, 'Cannot lay an upgrade now' if tile.color != :yellow && !tile_lay[:upgrade]
           raise GameError, 'Cannot lay an yellow now' if tile.color == :yellow && !tile_lay[:lay]
-          raise GameError, 'Cannot lay a city tile now' if tile.cities.any? && @laid_track.positive?
-          if tile_lay[:cannot_reuse_same_hex] && @previous_laid_hexes.include?(action.hex)
+          raise GameError, 'Cannot lay a city tile now' if tile.cities.any? && @round.num_laid_track.positive?
+          if tile_lay[:cannot_reuse_same_hex] && @round.laid_hexes.include?(action.hex)
             raise GameError, "#{action.hex.id} cannot be layed as this hex was already layed on this turn"
           end
 
           @saved_revenues = revenues(action.hex.tile, action.entity)
           lay_tile(action, extra_cost: tile_lay[:cost])
-          @upgraded = true if action.tile.color != :yellow
+          @round.upgraded_track = true if action.tile.color != :yellow
           @laid_city = true if action.tile.cities.any?
-          @laid_track += 1
-          @previous_laid_hexes << action.hex
+          @round.num_laid_track += 1
+          @round.laid_hexes << action.hex
+        end
+
+        def pay_tile_cost!(entity, tile, rotation, hex, spender, cost, _extra_cost)
+          if @game.insolvent?(spender) && cost.positive?
+            raise GameError, "#{spender.id} cannot pay for a tile when insolvent"
+          end
+
+          super
         end
 
         # this must be called before graphs are updated with new tile

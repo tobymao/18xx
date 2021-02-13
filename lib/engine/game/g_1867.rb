@@ -17,6 +17,7 @@ module Engine
                       gray: '#7c7b8c',
                       green: '#3c7b5c',
                       olive: '#808000',
+                      lightGreen: '#009a54ff',
                       lightBlue: '#4cb5d2',
                       lightishBlue: '#0097df',
                       teal: '#009595',
@@ -24,6 +25,8 @@ module Engine
                       magenta: '#d30869',
                       purple: '#772282',
                       red: '#ef4223',
+                      rose: '#b7274c',
+                      coral: '#f3716d',
                       white: '#fff36b',
                       navy: '#000080',
                       cream: '#fffdd0',
@@ -465,10 +468,7 @@ module Engine
       end
 
       def new_or!
-        if @skip_to_new_or_round
-          @turn += 1
-          new_operating_round
-        elsif @round.round_num < @operating_rounds
+        if @round.round_num < @operating_rounds
           new_operating_round(@round.round_num + 1)
         else
           @turn += 1
@@ -645,18 +645,16 @@ module Engine
         @log << '-- Event: Private companies are nationalized --'
 
         @companies.each do |company|
+          next if company.owner == @national
+          next if company == @hidden_company
           next if company.closed?
 
-          if (ability = abilities(company, :close))
-            next if ability.when == 'never' ||
-              @phase.phases.any? { |phase| ability.when == phase[:name] }
-          end
+          @bank.spend(company.value, company.owner)
 
-          if company != @hidden_company && company.owner != @national
-            @bank.spend(company.value, company.owner)
-            @log << "#{company.name} nationalized from #{company.owner.name} for #{format_currency(company.value)}"
-          end
-          company.close!
+          @log << "#{company.name} nationalized from #{company.owner.name} for #{format_currency(company.value)}"
+          company.owner.companies.delete(company)
+          company.owner = @national
+          @national.companies << company
         end
       end
     end

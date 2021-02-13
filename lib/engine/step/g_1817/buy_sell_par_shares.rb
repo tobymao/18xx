@@ -267,7 +267,7 @@ module Engine
           tokens = @game.tokens_needed(entity)
           token_cost = tokens * TOKEN_COST
           entity.spend(token_cost, @game.bank)
-          @log << "#{entity.name} buys #{tokens} tokens for #{@game.format_currency(token_cost)}"
+          @log << "#{entity.name} buys #{tokens} token#{'s' if tokens > 1} for #{@game.format_currency(token_cost)}"
           tokens.times.each do |_i|
             entity.tokens << Engine::Token.new(entity)
           end
@@ -332,8 +332,8 @@ module Engine
           tokens = @game.tokens_needed(corporation)
           if tokens.positive?
             token_cost = tokens * TOKEN_COST
-            @log << "#{corporation.name} must buy #{tokens} tokens for #{@game.format_currency(token_cost)}"\
-            ' before end of stock round'
+            @log << "#{corporation.name} must buy #{tokens} token#{'s' if tokens > 1} for "\
+                    "#{@game.format_currency(token_cost)} before end of stock round"
           end
 
           @auctioning = nil

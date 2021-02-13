@@ -157,7 +157,8 @@ module Engine
   "companies": [
     {
       "name": "Talahassee Railroad",
-      "value": 20,
+      "value": 0,
+      "discount": -20,
       "revenue": 5,
       "desc": "The winner of this private gets Priority Deal in the first Stock Round. This may be closed to grant a corporation an additional yellow tile lay. Terrain costs must be paid for normally",
       "sym": "TR",
@@ -171,51 +172,58 @@ module Engine
           "reachable": true,
           "hexes": [],
           "tiles": [],
-          "when": "sold"
+          "closed_when_used_up": "true",
+          "when": "track"
         }
       ]
     },
     {
       "name": "Peninsular and Occidental Steamship Company",
-      "value": 30,
-      "revenue": 5,
+      "value": 0,
+      "discount": -30,
+      "revenue": 10,
       "desc": "Closing this private grants the operating Corporation a port token to place on a port city. The port token increases the value of that city by $20 for that corporation only",
       "sym": "POSC",
       "abilities": [
         {
           "type": "assign_hexes",
-          "when": "owning_corp_or_turn",
+          "when": "any",
           "hexes": [
             "B5", "B23", "G20", "K28"
           ],
-          "count_per_or": 1,
-          "owner_type": "corporation"
+          "count": 1,
+          "owner_type": "player"
         },
         {
           "type": "assign_corporation",
-          "when": "sold",
+          "when": "any",
           "count": 1,
-          "owner_type": "corporation"
+          "owner_type": "player"
         }
       ]
     },
     {
       "name": "Terminal Company",
-      "value": 70,
+      "value": 0,
+      "discount": -70,
       "revenue": 15,
       "desc": "Allows a Corporation to place an extra token on a city tile of yellow or higher. This is an additional token and free. This token does not use a token slot in the city. This token can be disconnected",
       "sym": "TC",
       "min_players": 3,
       "abilities": [
         {
+          "when": "any",
+
+          "extra": "true",
+
           "type": "token",
-          "when": "owning_corp_or_turn",
-          "owner_type":"corporation",
+          "owner_type": "player",
           "count": 1,
           "from_owner": true,
-          "cheater": 0,
+          "extra_slot": true,
           "special_only": true,
-          "discount": 0,
+          "price": 0,
+          "teleport_price": 0,
           "hexes": [
             "B5", "B15", "B23", "G20", "F23", "J27", "K28"
           ]
@@ -224,12 +232,18 @@ module Engine
     },
     {
       "name": "Florida East Coast Canal and Transportation Company",
-      "value": 110,
+      "value": 0,
+      "discount": -110,
       "revenue": 20,
       "desc": "This Company comes with a single share of the Florida East Coast Railway",
       "sym": "FECCTC",
       "min_players": 4,
       "abilities": [
+        {
+           "type":"close",
+           "when": "bought_train",
+           "corporation":"FECR"
+        },
         {
            "type":"shares",
            "shares":"FECR_1"
@@ -252,6 +266,7 @@ module Engine
       ],
       "coordinates": "B5",
       "color": "darkblue",
+      "type": "medium",
       "always_market_price": true
     },
     {
@@ -268,6 +283,8 @@ module Engine
       ],
       "coordinates": "B15",
       "color": "deepskyblue",
+      "text_color": "black",
+      "type": "medium",
       "always_market_price": true
     },
     {
@@ -285,6 +302,7 @@ module Engine
       "coordinates": "B23",
       "city": 1,
       "color": "brightGreen",
+      "type": "medium",
       "always_market_price": true
     },
     {
@@ -302,6 +320,7 @@ module Engine
       "coordinates": "B23",
       "city": 0,
       "color": "orange",
+      "type": "medium",
       "always_market_price": true
     },
     {
@@ -318,6 +337,7 @@ module Engine
       ],
       "coordinates": "G20",
       "color": "purple",
+      "type": "medium",
       "always_market_price": true
     },
     {
@@ -334,6 +354,7 @@ module Engine
       ],
       "coordinates": "K28",
       "color": "red",
+      "type": "medium",
       "always_market_price": true
     }
   ],
@@ -541,19 +562,19 @@ module Engine
       ]
     },
     "yellow": {
-      "city=revenue:20;path=a:1,b:_0;path=a:4,b:_0;label=K": [
+      "city=revenue:20;path=a:1,b:_0;path=a:4,b:_0;label=K;icon=image:port,sticky:1": [
         "B5"
       ],
       "city=revenue:20;path=a:1,b:_0;path=a:4,b:_0;path=a:6,b:_0;label=K": [
         "B15"
       ],
-      "city=revenue:30;city=revenue:30;path=a:5,b:_0;path=a:6,b:_0;path=a:1,b:_1;path=a:2,b:_1;label=Jax": [
+      "city=revenue:30;city=revenue:30;path=a:5,b:_0;path=a:6,b:_0;path=a:1,b:_1;path=a:2,b:_1;label=Jax;icon=image:port,sticky:1": [
         "B23"
       ],
-      "city=revenue:30;path=a:5,b:_0;path=a:3,b:_0;label=T": [
+      "city=revenue:30;path=a:5,b:_0;path=a:3,b:_0;label=T;icon=image:port,sticky:1": [
         "G20"
       ],
-      "city=revenue:30;path=a:6,b:_0;path=a:2,b:_0;label=T": [
+      "city=revenue:30;path=a:6,b:_0;path=a:2,b:_0;label=T;icon=image:port,sticky:1": [
         "K28"
       ]
     },
@@ -583,7 +604,9 @@ module Engine
   "phases": [
     {
       "name": "2",
-      "train_limit": 4,
+      "train_limit": {
+        "medium": 2
+      },
       "tiles": [
         "yellow"
       ],
@@ -593,7 +616,10 @@ module Engine
     {
       "name": "3",
       "on": "3",
-      "train_limit": 4,
+      "train_limit": {
+        "medium": 2,
+        "large": 4
+      },
       "tiles": [
         "yellow",
         "green"
@@ -607,7 +633,10 @@ module Engine
     {
       "name": "4",
       "on": "4",
-      "train_limit": 3,
+      "train_limit": {
+        "medium": 1,
+        "large": 3
+      },
       "tiles": [
         "yellow",
         "green"
@@ -621,19 +650,26 @@ module Engine
     {
       "name": "5",
       "on": "5",
-      "train_limit": 2,
+      "train_limit": {
+        "large": 2
+      },
       "tiles": [
         "yellow",
         "green",
         "brown"
       ],
       "corporation_sizes": [10],
-      "operating_rounds": 3
+      "operating_rounds": 3,
+      "status":[
+        "hotels_doubled"
+      ]
     },
     {
       "name": "6",
       "on": ["6", "3E"],
-      "train_limit": 2,
+      "train_limit": {
+        "large": 2
+      },
       "tiles": [
         "yellow",
         "green",
@@ -641,7 +677,10 @@ module Engine
         "gray"
       ],
       "corporation_sizes": [10],
-      "operating_rounds": 3
+      "operating_rounds": 3,
+      "status":[
+        "hotels_doubled"
+      ]
     }
   ]
 }

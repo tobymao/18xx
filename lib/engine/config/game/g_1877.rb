@@ -41,12 +41,12 @@ module Engine
       "F5":"Calabozo",
       "F1":"Caracas",
       "A6":"Colombia",
-      "B5":"Cúcuta",
+      "B5":"San Cristobal",
       "H5":"El Pilar",
       "I4":"Guayana City",
       "L5":"Guyana",
       "B1":"Maracaibo",
-      "C6":"San Cristobal",
+      "C4":"El Vigía",
       "F3":"San Juan de Los Morros",
       "J1":"Trinidad & Tobago",
       "G4":"Zaraza"
@@ -94,15 +94,15 @@ module Engine
          "40",
          "45",
          "50p",
-         "55s",
+         "55p",
          "60p",
          "65p",
-         "70s",
+         "70p",
          "80p",
          "90p",
          "100p",
          "110p",
-         "120s",
+         "120p",
          "135p",
          "150p",
          "165p",
@@ -380,6 +380,7 @@ module Engine
    "hexes":{
       "white":{
          "":[
+            "C6",
             "D5",
             "E4",
             "E6",
@@ -403,18 +404,17 @@ module Engine
             "J3"
          ],
          "upgrade=cost:15,terrain:mountain":[
-            "I2",
-            "C4"
+            "I2"
          ],
          "city=revenue:0;upgrade=cost:15,terrain:mountain":[
-            "D3"
+            "D3",
+            "C4"
          ],
          "city=revenue:0":[
             "E2",
             "H3",
             "F5",
             "B5",
-            "C6",
             "F3",
             "G4"
          ],
@@ -431,10 +431,10 @@ module Engine
          "offboard=revenue:yellow_20|green_30;path=a:4,b:_0":[
             "A6"
          ],
-         "offboard=revenue:yellow_20|green_30;path=a:2,b:_0":[
+         "offboard=revenue:yellow_20|green_30|brown_40;path=a:2,b:_0":[
             "L5"
          ],
-         "offboard=revenue:yellow_20|green_30;path=a:1,b:_0":[
+         "offboard=revenue:yellow_20|green_30|brown_40;path=a:1,b:_0":[
             "J1"
          ]
       },

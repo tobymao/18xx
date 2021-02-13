@@ -776,14 +776,14 @@ module Engine
             "name": "Ontario, Simcoe & Huron",
             "value": 250,
             "revenue": 40,
-            "desc": "Purchaser receives 30% of Ontario, Simcoe & Huron (OS&H) and sets par price. May not be sold to a corporation. Closes when OS&H acquires a train.",
-            "sym": "OS&H",
+            "desc": "Purchaser receives 30% of Ontario, Simcoe & Huron (OSH) and sets par price. May not be sold to a corporation. Closes when OSH acquires a train.",
+            "sym": "OSH",
             "abilities": [
                 {
                     "type": "shares",
                     "shares": [
-                        "OS&H_0",
-                        "OS&H_1"
+                        "OSH_0",
+                        "OSH_1"
                     ]
                 },
                 {
@@ -792,7 +792,7 @@ module Engine
                 {
                     "type": "close",
                     "when": "bought_train",
-                    "corporation": "OS&H"
+                    "corporation": "OSH"
                 }
             ]
         }
@@ -802,6 +802,7 @@ module Engine
             "sym": "C&P",
             "name": "Cobourg & Peterborough Railway",
             "logo": "1828/CP",
+            "simple_logo": "1828/CP.alt",
             "tokens": [
                 0
             ],
@@ -814,6 +815,7 @@ module Engine
             "sym": "B&M",
             "name": "Boston & Maine",
             "logo": "1828/BM",
+            "simple_logo": "1828/BM.alt",
             "tokens": [
                 0,
                 100,
@@ -833,6 +835,7 @@ module Engine
             "sym": "B&O",
             "name": "Baltimore & Ohio",
             "logo": "1828/BO",
+            "simple_logo": "1828/BO.alt",
             "tokens": [
                 0,
                 100,
@@ -845,18 +848,21 @@ module Engine
             "sym": "C&O",
             "name": "Chesapeake & Ohio Railroad",
             "logo": "1828/CO",
+            "simple_logo": "1828/CO.alt",
             "tokens": [
                 0,
                 100,
                 100
             ],
             "coordinates": "K15",
-            "color": "powderBlue"
+            "color": "powderBlue",
+            "text_color": "black"
         },
         {
             "sym": "CPR",
             "name": "Canadian Pacific Railroad",
             "logo": "1828/CPR",
+            "simple_logo": "1828/CPR.alt",
             "tokens": [
                 0,
                 100,
@@ -870,18 +876,21 @@ module Engine
             "sym": "GT",
             "name": "Grand Trunk",
             "logo": "1828/GT",
+            "simple_logo": "1828/GT.alt",
             "tokens": [
                 0,
                 100,
                 100
             ],
             "coordinates": "D4",
-            "color": "khaki"
+            "color": "khaki",
+            "text_color": "black"
         },
         {
             "sym": "ERIE",
             "name": "Erie Railroad",
             "logo": "1828/ERIE",
+            "simple_logo": "1828/ERIE.alt",
             "tokens": [
                 0,
                 100,
@@ -894,6 +903,7 @@ module Engine
             "sym": "IC",
             "name": "Illinois Central",
             "logo": "1828/IC",
+            "simple_logo": "1828/IC.alt",
             "tokens": [
                 0,
                 100,
@@ -901,12 +911,14 @@ module Engine
                 100
             ],
             "coordinates": "J6",
-            "color" : "yellowGreen"
+            "color" : "yellowGreen",
+            "text_color": "black"
         },
         {
             "sym": "MC",
             "name": "Michigan Central",
             "logo": "1828/MC",
+            "simple_logo": "1828/MC.alt",
             "tokens": [
                 0,
                 100,
@@ -914,12 +926,14 @@ module Engine
                 100
             ],
             "coordinates": "A7",
-            "color": "gray70"
+            "color": "gray70",
+            "text_color": "black"
         },
         {
             "sym": "MP",
             "name": "Missouri Pacific Railroad",
             "logo": "1828/MP",
+            "simple_logo": "1828/MP.alt",
             "tokens": [
                 0,
                 100,
@@ -927,12 +941,14 @@ module Engine
                 100
             ],
             "coordinates": "I3",
-            "color": "khakiDark"
+            "color": "khakiDark",
+            "text_color": "black"
         },
         {
             "sym": "NYC",
             "name": "New York Central Railroad",
             "logo": "1828/NYC",
+            "simple_logo": "1828/NYC.alt",
             "tokens": [
                 0,
                 100,
@@ -945,18 +961,21 @@ module Engine
             "sym": "NKP",
             "name": "New York, Chicago & St. Louis Railroad",
             "logo": "1828/NKP",
+            "simple_logo": "1828/NKP.alt",
             "tokens": [
                 0,
                 100,
                 100
             ],
             "coordinates": "F10",
-            "color": "thistle"
+            "color": "thistle",
+            "text_color": "black"
         },
         {
             "sym": "NYH",
             "name": "New York, New Haven & Hartford Railway",
             "logo": "1828/NYH",
+            "simple_logo": "1828/NYH.alt",
             "tokens": [
                 0,
                 100,
@@ -965,6 +984,7 @@ module Engine
             "coordinates": "G23",
             "city": 1,
             "color": "tan",
+            "text_color": "black",
             "abilities": [
                 {
                     "type": "description",
@@ -976,6 +996,7 @@ module Engine
             "sym": "NW",
             "name": "Norfolk & Western Railway",
             "logo": "1828/NW",
+            "simple_logo": "1828/NW.alt",
             "tokens": [
                 0,
                 100,
@@ -983,12 +1004,14 @@ module Engine
                 100
             ],
             "coordinates": "K19",
-            "color": "lightCoral"
+            "color": "lightCoral",
+            "text_color": "black"
         },
         {
-            "sym": "OS&H",
+            "sym": "OSH",
             "name": "Ontario, Simcoe & Huron",
             "logo": "1828/OSH",
+            "simple_logo": "1828/OSH.alt",
             "tokens": [
                 0,
                 100,
@@ -1002,6 +1025,7 @@ module Engine
             "sym": "PRR",
             "name": "Pennsylvania Railroad",
             "logo": "1828/PRR",
+            "simple_logo": "1828/PRR.alt",
             "tokens": [
                 0,
                 100,
@@ -1015,13 +1039,15 @@ module Engine
             "sym": "WAB",
             "name": "Wabash Railroad",
             "logo": "1828/WAB",
+            "simple_logo": "1828/WAB.alt",
             "tokens": [
                 0,
                 100,
                 100
             ],
             "coordinates": "H6",
-            "color": "plum"
+            "color": "plum",
+            "text_color": "black"
         }
     ],
     "trains": [

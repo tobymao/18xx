@@ -21,6 +21,7 @@ module View
     needs :user
     needs :connected, default: false, store: true
     needs :before_process_pass, default: -> {}, store: true
+    needs :scroll_pos, default: nil, store: true
 
     def render_broken_game(e)
       inner = [h(:div, "We're sorry this game cannot be continued due to #{e}")]
@@ -186,10 +187,10 @@ module View
           overflow: 'auto',
           position: 'sticky',
           margin: '0 -2vmin 2vmin -2vmin',
-          top: '3px',
+          top: '0',
           borderBottom: "1px solid #{color_for(:font2)}",
           borderTop: "1px solid #{color_for(:font2)}",
-          boxShadow: "0 -3px 0 0 #{color_for(@game.phase.current[:tiles].last)}",
+          boxShadow: "0 5px 0 0 #{color_for(@game.phase.current[:tiles].last)}, 0 6px 0 0 #{color_for(:bg)}",
           backgroundColor: bg_color,
           color: active_player ? contrast_on(bg_color) : color_for(:font2),
           fontSize: 'large',
@@ -215,6 +216,11 @@ module View
 
     def item(name, anchor = '')
       change_anchor = lambda do
+        unless route_anchor
+          elm = Native(`document.getElementById('chatlog')`)
+          # only store when scrolled up at least one line (20px)
+          store(:scroll_pos, elm.scrollTop < elm.scrollHeight - elm.offsetHeight - 20 ? elm.scrollTop : nil, skip: true)
+        end
         store(:tile_selector, nil, skip: true)
         store(:app_route, "#{@app_route.split('#').first}#{anchor}")
       end
@@ -245,6 +251,7 @@ module View
     def render_round
       description = @game_data['mode'] == :hotseat ? '[HOTSEAT] ' : ''
       description += "#{@game.class.title}: "
+      description += "Phase #{@game.phase.name} - "
       name = @round.class.name.split(':').last
       description += @game.round_description(name)
       description += @game.finished ? ' - Game Over' : " - #{@round.description}"
@@ -278,7 +285,7 @@ module View
       when Engine::Round::Operating
         if current_entity_actions.include?('merge')
           h(Game::Round::Merger, game: @game)
-        elsif current_entity_actions.include?('buy_shares')
+        elsif current_entity_actions.include?('buy_shares') && @game.current_entity&.player?
           h(Game::Round::Stock, game: @game)
         else
           h(Game::Round::Operating, game: @game)
@@ -297,7 +304,7 @@ module View
 
       h('div.game', [
         render_round,
-        h(Game::GameLog, user: @user),
+        h(Game::GameLog, user: @user, scroll_pos: @scroll_pos),
         h(Game::HistoryAndUndo, num_actions: @num_actions),
         h(Game::EntityOrder, round: @round),
         h(Game::Abilities, user: @user, game: @game),

@@ -24,6 +24,8 @@ module Engine
       }.freeze
       GAME_DESIGNER = 'Mark Voyer & Brennan Sheremeto'
       EVENTS_TEXT = G1817::EVENTS_TEXT.merge('nieuw_zeeland_available' => ['Nieuw Zealand opens for new IPOs'])
+      MAX_LOAN = 65
+      LOANS_PER_INCREMENT = 3
 
       def self.title
         '1817WO'
@@ -41,16 +43,6 @@ module Engine
         # Remove the 1867-style green token from the New Zealand hex
         @log << 'Corporations can now be IPOed in Nieuw Zeeland'
         @green_token.remove!
-      end
-
-      # Not genericifying 1817's loan logic just so it can be kept simpler, at least for now
-      def init_loans
-        @loan_value = 100
-        39.times.map { |id| Loan.new(id, @loan_value) }
-      end
-
-      def future_interest_rate
-        [[5, ((loans_taken + 2) / 3).to_i * 5].max, 65].min
       end
 
       def interest_owed(entity)
@@ -179,24 +171,6 @@ module Engine
           Step::HomeToken,
           Step::G1817WO::BuySellParShares,
         ])
-      end
-
-      def interest_change
-        rate = future_interest_rate
-        summary = []
-        unless rate == 5
-          loans = ((loans_taken - 1) % 3) + 1
-          s = loans == 1 ? '' : 's'
-          summary << ["Interest if #{loans} more loan#{s} repaid", rate - 5]
-        end
-        if loans_taken.zero?
-          summary << ['Interest if 4 more loans taken', 10]
-        elsif rate != 65
-          loans = 3 - ((loans_taken + 2) % 3) # Is this right?
-          s = loans == 1 ? '' : 's'
-          summary << ["Interest if #{loans} more loan#{s} taken", rate + 5]
-        end
-        summary
       end
     end
   end

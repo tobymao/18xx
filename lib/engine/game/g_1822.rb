@@ -30,14 +30,31 @@ module Engine
       GAME_RULES_URL = 'http://google.com'
       GAME_DESIGNER = 'Simon Cutforth'
       GAME_PUBLISHER = :all_aboard_games
-      GAME_INFO_URL = 'https://google.com'
+      GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1822'
 
       HOME_TOKEN_TIMING = :operate
       MUST_BUY_TRAIN = :always
       NEXT_SR_PLAYER_ORDER = :most_cash
 
+      SELL_AFTER = :operate
+
+      SELL_BUY_ORDER = :sell_buy
+
+      EVENTS_TEXT = {
+        'close_concessions' =>
+          ['Concessions close', 'All concessions close without compensation, major companies now float at 50%'],
+      }.freeze
+
       STATUS_TEXT = Base::STATUS_TEXT.merge(
-        'can_buy_trains' => ['Can buy trains', 'Can buy trains from other corporations']
+        'can_buy_trains' => ['Buy trains', 'Can buy trains from other corporations'],
+        'can_convert_concessions' => ['Convert concessions',
+                                      'Can float a major company by converting a concession'],
+        'can_acquire_minor_bidbox' => ['Acquire a minor from bidbox',
+                                       'Can acquire a minor from bidbox for £200, must have connection '\
+                                       'to start location'],
+        'can_par' => ['Majors 50% float', 'Majors companies require 50% sold to float'],
+        'full_capitalisation' => ['Full capitalisation', 'Majors receives full capitalisation '\
+                                  '(the remaining five shares are placed in the bank)'],
       ).freeze
 
       BIDDING_BOX_MINOR_COUNT = 4
@@ -45,11 +62,11 @@ module Engine
       BIDDING_BOX_PRIVATE_COUNT = 3
 
       BIDDING_TOKENS = {
-        "3": 6,
-        "4": 5,
-        "5": 4,
-        "6": 3,
-        "7": 3,
+        '3': 6,
+        '4': 5,
+        '5': 4,
+        '6': 3,
+        '7': 3,
       }.freeze
 
       BIDDING_TOKENS_PER_ACTION = 3
@@ -58,13 +75,75 @@ module Engine
       COMPANY_MINOR_PREFIX = 'M'
       COMPANY_PRIVATE_PREFIX = 'P'
 
+      DESTINATIONS = {
+        'LNWR' => 'I22',
+        'GWR' => 'G36',
+        'LBSCR' => 'M42',
+        'SECR' => 'P41',
+        'CR' => 'G12',
+        'MR' => 'L19',
+        'LYR' => 'I22',
+        'NBR' => 'H1',
+        'SWR' => 'C34',
+        'NER' => 'H5',
+      }.freeze
+
+      EXCHANGE_TOKENS = {
+        'LNWR' => 4,
+        'GWR' => 3,
+        'LBSCR' => 3,
+        'SECR' => 3,
+        'CR' => 3,
+        'MR' => 3,
+        'LYR' => 3,
+        'NBR' => 3,
+        'SWR' => 3,
+        'NER' => 3,
+      }.freeze
+
+      LIMIT_TOKENS_AFTER_MERGER = 9
+
+      MAJOR_TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
+
       MINOR_START_PAR_PRICE = 50
+      MINOR_BIDBOX_PRICE = 200
+      MINOR_GREEN_UPGRADE = %w[yellow green].freeze
+
+      TOKEN_PRICE = 100
+
+      UPGRADABLE_S_YELLOW_CITY_TILE = '57'
+      UPGRADABLE_S_YELLOW_CITY_TILE_ROTATIONS = [2, 5].freeze
+      UPGRADABLE_S_HEX_NAME = 'D35'
+      UPGRADABLE_T_YELLOW_CITY_TILES = %w[5 6].freeze
+      UPGRADABLE_T_HEX_NAMES = %w[B43 K42 M42].freeze
 
       UPGRADE_COST_L_TO_2 = 80
 
       include StubsAreRestricted
 
       attr_accessor :bidding_token_per_player
+
+      def all_potential_upgrades(tile, tile_manifest: false)
+        upgrades = super
+        return upgrades unless tile_manifest
+
+        upgrades |= [@green_s_tile] if self.class::UPGRADABLE_S_YELLOW_CITY_TILE == tile.name
+        upgrades |= [@green_t_tile] if self.class::UPGRADABLE_T_YELLOW_CITY_TILES.include?(tile.name)
+        upgrades |= [@sharp_city, @gentle_city] if self.class::UPGRADABLE_T_HEX_NAMES.include?(tile.hex.name)
+
+        upgrades
+      end
+
+      def can_hold_above_limit?(_entity)
+        true
+      end
+
+      def can_par?(corporation, parrer)
+        return false if corporation.type == :minor ||
+          !(@phase.status.include?('can_convert_concessions') || @phase.status.include?('can_par'))
+
+        super
+      end
 
       def can_run_route?(entity)
         entity.trains.any? { |t| t.name == 'L' } || super
@@ -93,15 +172,30 @@ module Engine
         discount_info
       end
 
-      def entity_can_use_company?(_entity, company)
-        # Setting bidding companies owner to bank, make sure the abilities dont show for theese
-        company.owner != @bank
+      def entity_can_use_company?(entity, company)
+        # TODO: [1822] First pass on company abilities, for now only players can use powers. Will change this later
+        entity.player? && entity == company.owner
+      end
+
+      def event_close_concessions!
+        @log << '-- Event: Concessions close --'
+        @companies.select { |c| c.id[0] == self.class::COMPANY_CONCESSION_PREFIX && !c.closed? }.each(&:close!)
+        @corporations.select { |c| !c.floated? && c.type == :major }.each do |corporation|
+          corporation.par_via_exchange = nil
+          corporation.float_percent = 50
+        end
       end
 
       def format_currency(val)
         return super if (val % 1).zero?
 
         format('£%.1<val>f', val: val)
+      end
+
+      def tile_lays(entity)
+        return self.class::MAJOR_TILE_LAYS if @phase.name.to_i >= 3 && entity.corporation? && entity.type == :major
+
+        super
       end
 
       def train_help(runnable_trains)
@@ -114,11 +208,22 @@ module Engine
          'Only one L train may operate on each station token.']
       end
 
+      def init_company_abilities
+        @companies.each do |company|
+          next unless (ability = abilities(company, :exchange))
+          next unless ability.from.include?(:par)
+
+          exchange_corporations(ability).first.par_via_exchange = company
+        end
+
+        super
+      end
+
       def init_round
         stock_round
       end
 
-      # TODO: Make include with 1861, 1867
+      # TODO: [1822] Make include with 1861, 1867
       def operating_order
         minors, majors = @corporations.select(&:floated?).sort.partition { |c| c.type == :minor }
         minors + majors
@@ -127,54 +232,142 @@ module Engine
       def operating_round(round_num)
         Round::Operating.new(self, [
           Step::Bankrupt,
-          Step::Exchange,
           Step::G1822::FirstTurnHousekeeping,
           Step::BuyCompany,
-          Step::Track,
-          Step::Token,
+          Step::G1822::Track,
+          Step::G1822::DestinationToken,
+          Step::G1822::Token,
           Step::Route,
           Step::G1822::Dividend,
           Step::DiscardTrain,
           Step::G1822::BuyTrain,
+          Step::G1822::MinorAcquisition,
         ], round_num: round_num)
       end
 
+      def place_home_token(corporation)
+        return if corporation.tokens.first&.used
+
+        super
+
+        # Special for LNWR, it gets its destination token. But wont get the bonus until home
+        # and destination is connected
+        return unless corporation.id == 'LNWR'
+
+        hex = hex_by_id(self.class::DESTINATIONS[corporation.id])
+        token = corporation.find_token_by_type(:destination)
+        place_destination_token(corporation, hex, token)
+      end
+
       def setup
+        # Setup the bidding token per player
         @bidding_token_per_player = init_bidding_token
+
+        # Init all the special upgrades
+        @sharp_city ||= @tiles.find { |t| t.name == '5' }
+        @gentle_city ||= @tiles.find { |t| t.name == '6' }
+        @green_s_tile ||= @tiles.find { |t| t.name == 'X3' }
+        @green_t_tile ||= @tiles.find { |t| t.name == '405' }
+
+        # Randomize and setup the companies
         setup_companies
+
+        # Setup the fist bidboxes
         setup_bidboxes
+
+        # Setup exchange token abilities for all corporations
+        setup_exchange_tokens
+
+        # Setup all the destination tokens, icons and abilities
+        setup_destinations
       end
 
       def sorted_corporations
-        @corporations.select { |c| c.floated? && c.type == :major }
+        ipoed, others = @corporations.select { |c| c.type == :major }.partition(&:ipoed)
+        ipoed.sort + others
       end
 
       def stock_round
         Round::G1822::Stock.new(self, [
           Step::DiscardTrain,
-          Step::Exchange,
-          Step::SpecialTrack,
           Step::G1822::BuySellParShares,
         ])
       end
 
+      def upgrades_to?(from, to, special = false)
+        # Check the S hex and potential upgrades
+        if self.class::UPGRADABLE_S_HEX_NAME == from.hex.name && from.color == :white
+          return self.class::UPGRADABLE_S_YELLOW_CITY_TILE == to.name
+        end
+
+        if self.class::UPGRADABLE_S_HEX_NAME == from.hex.name &&
+          self.class::UPGRADABLE_S_YELLOW_CITY_TILE == from.name
+          return to.name == 'X3'
+        end
+
+        # Check the T hexes and potential upgrades
+        if self.class::UPGRADABLE_T_HEX_NAMES.include?(from.hex.name) && from.color == :white
+          return self.class::UPGRADABLE_T_YELLOW_CITY_TILES.include?(to.name)
+        end
+
+        if self.class::UPGRADABLE_T_HEX_NAMES.include?(from.hex.name) &&
+          self.class::UPGRADABLE_T_YELLOW_CITY_TILES.include?(from.name)
+          return to.name == '405'
+        end
+
+        super
+      end
+
       def bidbox_minors
-        @companies.select { |c| c.id[0] == self.class::COMPANY_MINOR_PREFIX && (!c.owner || c.owner == @bank) }
-                  .first(self.class::BIDDING_BOX_MINOR_COUNT)
+        @companies.select do |c|
+          c.id[0] == self.class::COMPANY_MINOR_PREFIX && (!c.owner || c.owner == @bank) && !c.closed?
+        end.first(self.class::BIDDING_BOX_MINOR_COUNT)
       end
 
       def bidbox_concessions
-        @companies.select { |c| c.id[0] == self.class::COMPANY_CONCESSION_PREFIX && (!c.owner || c.owner == @bank) }
-                  .first(self.class::BIDDING_BOX_CONCESSION_COUNT)
+        @companies.select do |c|
+          c.id[0] == self.class::COMPANY_CONCESSION_PREFIX && (!c.owner || c.owner == @bank) && !c.closed?
+        end.first(self.class::BIDDING_BOX_CONCESSION_COUNT)
       end
 
       def bidbox_privates
-        @companies.select { |c| c.id[0] == self.class::COMPANY_PRIVATE_PREFIX && (!c.owner || c.owner == @bank) }
-                  .first(self.class::BIDDING_BOX_PRIVATE_COUNT)
+        @companies.select do |c|
+          c.id[0] == self.class::COMPANY_PRIVATE_PREFIX && (!c.owner || c.owner == @bank) && !c.closed?
+        end.first(self.class::BIDDING_BOX_PRIVATE_COUNT)
+      end
+
+      def exchange_tokens(entity)
+        ability = entity.all_abilities.find { |a| a.type == :exchange_token }
+        return 0 unless ability
+
+        ability.count
+      end
+
+      def find_corporation(company)
+        corporation_id = company.id[1..-1]
+        corporation_by_id(corporation_id)
       end
 
       def init_bidding_token
         self.class::BIDDING_TOKENS[@players.size.to_s]
+      end
+
+      def move_exchange_token(entity)
+        remove_exchange_token(entity)
+        entity.tokens << Engine::Token.new(entity, price: self.class::TOKEN_PRICE)
+      end
+
+      def place_destination_token(entity, hex, token)
+        city = hex.tile.cities.first
+        city.place_token(entity, token, free: true, check_tokenable: false, cheater: 0)
+        hex.tile.icons.reject! { |icon| icon.name == "#{entity.id}_destination" }
+
+        ability = entity.all_abilities.find { |a| a.type == :destination }
+        entity.remove_ability(ability)
+
+        @graph.clear
+
+        @log << "#{entity.name} places its destination token on #{hex.name}"
       end
 
       def setup_bidboxes
@@ -190,6 +383,12 @@ module Engine
         bidbox_privates.each do |company|
           company.owner = @bank
         end
+      end
+
+      def remove_exchange_token(entity)
+        ability = entity.all_abilities.find { |a| a.type == :exchange_token }
+        ability.use!
+        ability.description = "Exchange tokens: #{ability.count}"
       end
 
       private
@@ -229,7 +428,38 @@ module Engine
           else
             c.min_price = 0
           end
-          c.max_price = 1000
+          c.max_price = 10_000
+        end
+      end
+
+      def setup_destinations
+        self.class::DESTINATIONS.each do |corp, destination|
+          description = if corp == 'LNWR'
+                          "Gets destination token at #{destination} when floated."
+                        else
+                          "Connect to #{destination} for your destination token."
+                        end
+          ability = Ability::Base.new(
+            type: 'destination',
+            description: description
+          )
+          corporation = corporation_by_id(corp)
+          corporation.add_ability(ability)
+          corporation.tokens << Engine::Token.new(corporation, logo: "/logos/1822/#{corp}_DEST.svg",
+                                                               type: :destination)
+          hex_by_id(destination).tile.icons << Part::Icon.new("../icons/1822/#{corp}_DEST", "#{corp}_destination")
+        end
+      end
+
+      def setup_exchange_tokens
+        self.class::EXCHANGE_TOKENS.each do |corp, token_count|
+          ability = Ability::Base.new(
+            type: 'exchange_token',
+            description: "Exchange tokens: #{token_count}",
+            count: token_count
+          )
+          corporation = corporation_by_id(corp)
+          corporation.add_ability(ability)
         end
       end
     end

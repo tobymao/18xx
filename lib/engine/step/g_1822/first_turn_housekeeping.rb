@@ -41,6 +41,10 @@ module Engine
         def must_buy_train?(_entity)
           false
         end
+
+        def skip!
+          pass!
+        end
       end
     end
   end

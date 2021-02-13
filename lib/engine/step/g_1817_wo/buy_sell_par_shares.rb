@@ -34,7 +34,7 @@ module Engine
           tokens = @game.tokens_needed(entity)
           token_cost = tokens * TOKEN_COST
           entity.spend(token_cost, @game.bank)
-          @log << "#{entity.name} buys #{tokens} tokens for #{@game.format_currency(token_cost)}"
+          @log << "#{entity.name} buys #{tokens} token#{'s' if tokens > 1} for #{@game.format_currency(token_cost)}"
           tokens.times.each do |_i|
             entity.tokens << Engine::Token.new(entity)
           end

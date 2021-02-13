@@ -98,7 +98,7 @@ module Engine
         'GT' => 'L13',
         'GW' => 'J15',
         'LPS' => 'F15',
-        'TGB' => 'O2', # [['N1', 'O2']] # Canadaian West, but it's a 2 hex offboard
+        'TGB' => [%w[O2 N1]], # Canadian West, but it's a 2 hex offboard
         'THB' => 'H15',
         'WGB' => 'H5',
         'WR' => 'L15',
@@ -277,23 +277,26 @@ module Engine
         @available_bridge_tokens = 2
         @available_tunnel_tokens = 2
 
-        create_destinations(DESTINATIONS)
+        create_destinations(ALTERNATE_DESTINATIONS)
       end
 
       def create_destinations(destinations)
+        @destinations = {}
         destinations.each do |corp, dest|
           dest_arr = Array(dest)
-          end_a = dest_arr.first
-          end_b = dest_arr.size > 1 ? dest_arr.last : corporation_by_id(corp).coordinates
+          d_goals = Array(dest_arr.first)
+          d_start = dest_arr.size > 1 ? dest_arr.last : corporation_by_id(corp).coordinates
           ability = Ability::Base.new(
               type: 'destination',
-              description: "Connect #{hex_by_id(end_a).tile.location_name} to"\
-                " #{hex_by_id(end_b).tile.location_name}"
+              description: "Connect #{hex_by_id(d_start).tile.location_name} to"\
+                " #{hex_by_id(d_goals.first).tile.location_name}"
             )
           corporation_by_id(corp).add_ability(ability)
           dest_arr.each do |d|
-            hex_by_id(d).original_tile.icons << Part::Icon.new("../logos/1856/#{corp}")
+            # Array(d).first allows us to treat 'E5' or %[O2 N3] identically
+            hex_by_id(Array(d).first).original_tile.icons << Part::Icon.new("../logos/1856/#{corp}")
           end
+          @destinations[corp] = [d_start, d_goals].freeze
         end
       end
 
@@ -307,6 +310,29 @@ module Engine
         return PRE_NATIONALIZATION_CERT_LIMIT[@players.size] unless @post_nationalization
 
         POST_NATIONALIZATION_CERT_LIMIT[num_corporations][@players.size]
+      end
+
+      def destination_connected?(corp)
+        corp.capitalization == :escrow && hexes_connected?(*@destinations[corp.id])
+      end
+
+      def hexes_connected?(start_hex_id, goal_hex_ids)
+        tokens = hex_by_id(start_hex_id).tile.cities.map { |city| [city, true] }.to_h
+
+        tokens.keys.each do |node|
+          visited = tokens.reject { |token, _| token == node }
+
+          node.walk(visited: visited, corporation: nil) do |path|
+            return true if goal_hex_ids.include?(path.hex.id)
+          end
+        end
+
+        false
+      end
+
+      def destinated!(corp)
+        @log << "-- #{corp.name} has destinated --"
+        release_escrow!(corp)
       end
 
       #
@@ -394,7 +420,7 @@ module Engine
 
       def release_escrow!(corporation)
         @log << "Releasing #{format_currency(corporation.escrow)} from escrow for #{corporation.name}"
-        corporation.cash += corporation.escrow
+        @bank.spend(corporation.escrow, corporation) if corporation.escrow.positive?
         corporation.escrow = nil
         corporation.capitalization = :incremental
       end
@@ -517,6 +543,7 @@ module Engine
           Step::G1856::Assign,
           Step::G1856::Loan,
           Step::SpecialTrack,
+          Step::SpecialToken,
           Step::BuyCompany,
           Step::HomeToken,
 
@@ -524,6 +551,7 @@ module Engine
           Step::G1856::NationalizationPayoff,
           Step::G1856::SpecialBuy,
           Step::G1856::Track,
+          Step::G1856::Escrow,
           Step::Token,
           Step::Route,
           # Interest - See Loan

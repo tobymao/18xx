@@ -1262,17 +1262,17 @@
       "hex": "D2",
       "tile": "57-5",
       "type": "lay_tile",
-      "entity": "PRR",
+      "entity": "C&OC",
       "rotation": 1,
-      "entity_type": "corporation"
+      "entity_type": "company"
     },
     {
       "id": 152,
       "city": "57-5-0",
       "slot": 0,
       "type": "place_token",
-      "entity": "PRR",
-      "entity_type": "corporation"
+      "entity": "C&OC",
+      "entity_type": "company"
     },
     {
       "id": 153,

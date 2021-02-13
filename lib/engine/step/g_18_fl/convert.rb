@@ -21,7 +21,10 @@ module Engine
         end
 
         def can_convert?(entity)
-          entity.corporation? && @game.phase.status.include?('may_convert') && entity.total_shares == 5
+          entity.corporation? &&
+            entity.operated? &&
+            @game.phase.status.include?('may_convert') &&
+            entity.total_shares == 5
         end
 
         def process_convert(action)

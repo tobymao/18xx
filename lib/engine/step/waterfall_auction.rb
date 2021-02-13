@@ -38,7 +38,6 @@ module Engine
         if auctioning
           add_bid(action)
         else
-          @round.last_to_act = action.entity
           placement_bid(action)
           @round.next_entity_index!
         end
@@ -144,7 +143,8 @@ module Engine
             "#{@game.format_currency(value)} to #{@game.format_currency(new_value)}"
 
           if new_value <= 0
-            # It's now free so the current player is forced to take it.
+            # It's now free so the next player is forced to take it.
+            @round.next_entity_index!
             buy_company(current_entity, @cheapest, 0)
             resolve_bids
           end
@@ -158,6 +158,7 @@ module Engine
 
       def placement_bid(bid)
         if may_purchase?(bid.company)
+          @round.last_to_act = bid.entity
           @auction_triggerer = bid.entity
           accept_bid(bid)
           resolve_bids

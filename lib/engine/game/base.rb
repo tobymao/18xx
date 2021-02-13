@@ -81,7 +81,7 @@ module Engine
                   :phase, :players, :operating_rounds, :round, :share_pool, :stock_market, :tile_groups,
                   :tiles, :turn, :total_loans, :undo_possible, :redo_possible, :round_history, :all_tiles,
                   :optional_rules, :exception, :last_processed_action, :broken_action,
-                  :turn_start_action_id, :last_turn_start_action_id
+                  :turn_start_action_id, :last_turn_start_action_id, :programmed_actions
 
       # Game end check is described as a dictionary
       # with reason => after
@@ -370,6 +370,8 @@ module Engine
           corporation.transform_keys!(&:to_sym)
           corporation[:abilities]&.each { |ability| ability.transform_keys!(&:to_sym) }
           corporation[:color] = const_get(:COLORS)[corporation[:color]&.to_sym] if const_defined?(:COLORS)
+          corporation[:reservation_color] =
+            const_get(:COLORS)[corporation[:reservation_color]&.to_sym] if const_defined?(:COLORS)
           corporation
         end
 
@@ -412,7 +414,6 @@ module Engine
         @raw_actions = []
         @turn_start_action_id = 0
         @last_turn_start_action_id = 0
-
         @exception = nil
         @names = if names.is_a?(Hash)
                    names.freeze
@@ -421,6 +422,7 @@ module Engine
                  end
 
         @players = @names.map { |player_id, name| Player.new(player_id, name) }
+        @programmed_actions = {}
 
         @optional_rules = init_optional_rules(optional_rules)
 
@@ -938,6 +940,7 @@ module Engine
         return if @finished
 
         @finished = true
+        store_player_info
         scores = result.map { |name, value| "#{name} (#{format_currency(value)})" }
         @log << "-- Game over: #{scores.join(', ')} --"
       end
@@ -1753,10 +1756,12 @@ module Engine
 
         reservations = Hash.new { |k, v| k[v] = [] }
         reservation_corporations.each do |c|
-          reservations[c.coordinates] << {
-            entity: c,
-            city: c.city,
-          }
+          Array(c.coordinates).each_with_index do |coord, idx|
+            reservations[coord] << {
+              entity: c,
+              city: c.city.is_a?(Array) ? c.city[idx] : c.city,
+            }
+          end
         end
 
         (corporations + companies).each do |c|
@@ -1866,8 +1871,9 @@ module Engine
           real_shares = []
           ability.shares.each do |share|
             case share
-            when 'random_president'
-              corporation = @corporations[rand % @corporations.size]
+            when 'random_president', 'first_president'
+              idx = share == 'first_president' ? 0 : rand % @corporations.size
+              corporation = @corporations[idx]
               share = corporation.shares[0]
               real_shares << share
               company.desc = "Purchasing player takes a president's share (20%) of #{corporation.name} \

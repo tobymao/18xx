@@ -1,16 +1,16 @@
 # frozen_string_literal: true
 
 require 'lib/truncate'
+require 'view/game/actionable'
 
 module View
   module Game
     class Abilities < Snabberb::Component
-      needs :game
-      needs :user, default: nil
-      needs :selected_company, default: nil, store: true
+      include Actionable
+
       needs :show_other_abilities, default: false, store: true
 
-      ABILITIES = %i[tile_lay teleport assign_hexes assign_corporation token exchange].freeze
+      ABILITIES = %i[tile_lay teleport assign_hexes assign_corporation token exchange sell_company].freeze
 
       def render
         companies = @game.companies.select do |company|
@@ -73,6 +73,7 @@ module View
         actions = actions_for(@selected_company)
 
         views = []
+        views << render_sell_company_button if actions.include?('sell_company')
         views << h(Exchange) if actions.include?('buy_shares')
         views << h(Map, game: @game) if !@game.round.is_a?(Engine::Round::Operating) &&
           (actions & %w[lay_tile place_token]).any?
@@ -84,6 +85,18 @@ module View
 
       def actions_for(company)
         @game.round.actions_for(company)
+      end
+
+      def render_sell_company_button
+        sell = lambda do
+          process_action(Engine::Action::SellCompany.new(
+            @game.current_entity,
+            company: @selected_company,
+            price: @selected_company.value
+          ))
+        end
+
+        h(:button, { on: { click: sell } }, "Sell company (#{@game.format_currency(@selected_company.value)})")
       end
     end
   end

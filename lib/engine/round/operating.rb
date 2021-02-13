@@ -67,9 +67,6 @@ module Engine
       def start_operating
         entity = @entities[@entity_index]
         @current_operator = entity
-        if (ability = teleported?(entity))
-          entity.remove_ability(ability)
-        end
         entity.trains.each { |train| train.operated = false }
         @log << "#{entity.owner.name} operates #{entity.name}" unless finished?
         @game.place_home_token(entity) if @home_token_timing == :operate
@@ -86,10 +83,6 @@ module Engine
         @entities.pop while @entities.last&.corporation? &&
           @entities.last.share_price&.liquidation? &&
           @entities.size > index
-      end
-
-      def teleported?(entity)
-        Array(@game.abilities(entity, :teleport)).find(&:used?)
       end
 
       def operating?

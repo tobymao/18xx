@@ -577,7 +577,7 @@ module Engine
     {
       "sym": "MB",
       "name": "Moscow-Brest Railway",
-      "logo": "1861/KP",
+      "logo": "1861/MB",
       "float_percent": 100,
       "always_market_price": true,
       "tokens": [
@@ -587,7 +587,8 @@ module Engine
       "max_ownership_percent": 100,
       "type": "minor",
       "coordinates": "E9",
-      "color": "blue"
+      "color": "navy",
+      "reservation_color": "lightGreen"
     },
     {
       "sym": "KR",
@@ -633,7 +634,8 @@ module Engine
       "max_ownership_percent": 100,
       "type": "minor",
       "coordinates": "H18",
-      "color": "red"
+      "color": "coral",
+      "reservation_color": "lightGreen"
     },
     {
       "sym": "M-K",
@@ -680,7 +682,7 @@ module Engine
       "max_ownership_percent": 100,
       "type": "minor",
       "coordinates": "I13",
-      "color": "red"
+      "color": "rose"
     },
     {
       "sym": "V",
@@ -695,7 +697,8 @@ module Engine
       "max_ownership_percent": 100,
       "type": "minor",
       "coordinates": "I19",
-      "color": "gray"
+      "color": "gray",
+      "reservation_color": "lightGreen"
     },
     {
       "sym": "TR",
@@ -710,7 +713,8 @@ module Engine
       "max_ownership_percent": 100,
       "type": "minor",
       "coordinates": "K17",
-      "color": "gray"
+      "color": "gray",
+      "reservation_color": "lightGreen"
     },
     {
       "sym": "SV",
@@ -725,7 +729,8 @@ module Engine
       "max_ownership_percent": 100,
       "type": "minor",
       "coordinates": "N10",
-      "color": "gray"
+      "color": "gray",
+      "reservation_color": "lightGreen"
     },
     {
       "sym": "E",
@@ -740,7 +745,8 @@ module Engine
       "max_ownership_percent": 100,
       "type": "minor",
       "coordinates": "Q3",
-      "color": "gray"
+      "color": "navy",
+      "reservation_color": "lightGreen"
     },
     {
       "sym": "RSR",
@@ -905,17 +911,8 @@ module Engine
       "events": [
         {"type": "signal_end_game"},
         {"type": "minors_nationalized"},
-        {"type": "trainless_nationalization"},
-        {"type": "train_trade_allowed"}
-      ],
-      "discount": {
-        "5": 275,
-        "6": 325,
-        "7": 400,
-        "8": 500,
-        "2+2": 300,
-        "5+5E": 750
-      }
+        {"type": "trainless_nationalization"}
+      ]
     },
     {
       "name": "2+2",
@@ -934,15 +931,7 @@ module Engine
       "multiplier":2,
       "price": 600,
       "num": 20,
-      "available_on": "8",
-      "discount": {
-        "5": 275,
-        "6": 325,
-        "7": 400,
-        "8": 500,
-        "2+2": 300,
-        "5+5E": 750
-      }
+      "available_on": "8"
     },
     {
       "name": "5+5E",
@@ -961,15 +950,7 @@ module Engine
       "multiplier": 2,
       "price": 1500,
       "num": 20,
-      "available_on": "8",
-      "discount": {
-        "5": 275,
-        "6": 325,
-        "7": 400,
-        "8": 500,
-        "2+2": 300,
-        "5+5E": 750
-      }
+      "available_on": "8"
     }
   ],
   "hexes": {
@@ -1012,7 +993,7 @@ module Engine
       "city=revenue:0;label=Y": [
         "B4", "D20", "M19", "N10"
       ],
-      "city=revenue:0;label=Kh": [
+      "city=revenue:0;label=Y;label=Kh": [
         "G15"
       ],
       "upgrade=cost:80,terrain:water": [

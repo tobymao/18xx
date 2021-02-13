@@ -12,7 +12,7 @@ module Engine
         include AutomaticLoan
         include UpgradeTrackMaxExits
 
-        def lay_tile(action, extra_cost: 0, entity: nil)
+        def lay_tile(action, extra_cost: 0, entity: nil, spender: nil)
           super
           @game.place_639_token(action.hex.tile) if action.tile.name == '639'
         end

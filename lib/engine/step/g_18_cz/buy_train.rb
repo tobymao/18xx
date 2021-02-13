@@ -6,6 +6,13 @@ module Engine
   module Step
     module G18CZ
       class BuyTrain < BuyTrain
+        def buyable_trains(entity)
+          trains = super
+          trains = trains.select { |train| train.owner == @game.depot } if must_buy_train?(entity)
+
+          trains
+        end
+
         def buyable_train_variants(train, entity)
           trains = super
 
@@ -33,6 +40,23 @@ module Engine
 
         def room_for_only_one?(entity)
           @game.train_limit(entity) - entity.trains.size == 1
+        end
+
+        def can_sell?(_entity, _bundle)
+          false
+        end
+
+        def try_take_player_loan(entity, cost)
+          return unless cost.positive?
+          return unless cost > entity.cash
+
+          difference = cost - entity.cash
+
+          @game.increase_debt(entity, difference)
+
+          @log << "#{entity.name} takes a debt of #{@game.format_currency(difference)}"
+
+          @game.bank.spend(difference, entity)
         end
       end
     end

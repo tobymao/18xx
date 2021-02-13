@@ -64,6 +64,8 @@ module Engine
           raise GameError, 'Cannot buy for more than cost' if price > train.price
           raise GameError, 'Cannot contribute funds when affordable trains exist' if cheapest.price <= entity.cash
 
+          try_take_player_loan(entity.owner, remaining)
+
           player = entity.owner
           player.spend(remaining, entity)
           @log << "#{player.name} contributes #{@game.format_currency(remaining)}"

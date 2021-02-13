@@ -28,6 +28,10 @@ module Engine
         '1861'
       end
 
+      def all_corporations
+        corporations + [@national]
+      end
+
       def unstarted_corporation_summary
         unipoed = @corporations.reject(&:ipoed)
         minor = unipoed.select { |c| c.type == :minor }
@@ -141,10 +145,10 @@ module Engine
       def event_signal_end_game!
         if @round.round_num == 1
           # If first round
-          # Finish this OR, skip the stock round, then two more ORs
-          @final_operating_rounds = 2
-          @skip_to_new_or_round = true
-          @log << "First 8 train bought/exported, ending game at the end of #{@turn + 1}.#{@final_operating_rounds},"\
+          # The current OR now has 3 rounds and finishes
+          @operating_rounds = @final_operating_rounds = 3
+          @final_turn = @turn
+          @log << "First 8 train bought/exported, ending game at the end of #{@turn}.#{@final_operating_rounds},"\
           ' skipping the next OR and SR'
         else
           # Else finish this OR, do the stock round then 3 more ORs

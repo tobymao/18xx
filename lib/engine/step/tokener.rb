@@ -6,9 +6,20 @@ require_relative '../token'
 module Engine
   module Step
     module Tokener
+      def round_state
+        {
+          tokened: false,
+        }
+      end
+
+      def setup
+        @round.tokened = false
+      end
+
       def can_place_token?(entity)
         current_entity == entity &&
-          (tokens = available_tokens(entity)).any? &&
+          !@round.tokened &&
+          !(tokens = available_tokens(entity)).empty? &&
           min_token_price(tokens) <= buying_power(entity) &&
           @game.graph.can_token?(entity)
       end
@@ -22,29 +33,44 @@ module Engine
         false
       end
 
-      def place_token(entity, city, token, teleport: false, special_ability: nil)
+      def place_token(entity, city, token, connected: true, extra: false, special_ability: nil)
         hex = city.hex
-        if !@game.loading && !teleport && !@game.graph.connected_nodes(entity)[city]
+        extra ||= special_ability.extra if special_ability&.type == :token
+
+        if !@game.loading && connected && !@game.graph.connected_nodes(entity)[city]
           city_string = hex.tile.cities.size > 1 ? " city #{city.index}" : ''
           raise GameError, "Cannot place token on #{hex.name}#{city_string} because it is not connected"
         end
 
-        if special_ability&.city && (special_ability.city != city.index)
+        if special_ability&.type == :token && special_ability.city && special_ability.city != city.index
           raise GameError, "#{special_ability.owner.name} can only place token on #{hex.name} city "\
                            "#{special_ability.city}, not on city #{city.index}"
         end
 
-        raise GameError, 'Token is already used' if token.used
+        if special_ability&.type == :teleport &&
+           !special_ability.hexes.empty? &&
+           !special_ability.hexes.include?(hex.id)
+          raise GameError, "#{special_ability.owner.name} cannot place token in "\
+                           "#{hex.name} (#{hex.location_name}) with teleport"
+        end
 
-        token, ability = adjust_token_price_ability!(entity, token, hex, city, special_ability)
+        raise GameError, 'Token already placed this turn' if !extra && @round.tokened
+
+        token, ability = adjust_token_price_ability!(entity, token, hex, city, special_ability: special_ability)
         tokener = entity.name
         if ability
-          tokener = "#{entity.name} (#{ability.owner.sym})" if ability.owner != entity
+          tokener += " (#{ability.owner.sym})" if ability.owner != entity
           entity.remove_ability(ability)
         end
 
+        raise GameError, 'Token is already used' if token.used
+
         free = !token.price.positive?
-        city.place_token(entity, token, free: free, cheater: special_ability&.cheater)
+        if ability&.type == :token
+          cheater = ability.cheater
+          extra_slot = ability.extra_slot
+        end
+        city.place_token(entity, token, free: free, cheater: cheater, extra_slot: extra_slot)
         unless free
           pay_token_cost(entity, token.price)
           price_log = " for #{@game.format_currency(token.price)}"
@@ -59,6 +85,7 @@ module Engine
           @log << "#{tokener} places a token on #{hex.name} (#{hex.location_name})#{price_log}"
         end
 
+        @round.tokened = true unless extra
         @game.graph.clear
       end
 
@@ -68,8 +95,6 @@ module Engine
 
       def min_token_price(tokens)
         token = tokens.first
-        return 0 if @round.teleported?(token.corporation)
-
         prices = tokens.map(&:price)
 
         @game.abilities(token.corporation, :token) do |ability, _|
@@ -80,12 +105,13 @@ module Engine
         prices.compact.min
       end
 
-      def adjust_token_price_ability!(entity, token, hex, city, special_ability = nil)
-        if (teleport = @round.teleported?(entity))
+      def adjust_token_price_ability!(entity, token, hex, city, special_ability: nil)
+        if special_ability&.type == :teleport
           token.price = 0
-          return [token, teleport]
+          return [token, special_ability]
         end
 
+        # TODO: special_ability token here
         @game.abilities(entity, :token) do |ability, _|
           next if ability.special_only && ability != special_ability
           next if ability.hexes.any? && !ability.hexes.include?(hex.id)

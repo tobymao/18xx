@@ -21,7 +21,7 @@ module Engine
             pending_entity,
             city,
             token,
-            teleport: true,
+            connected: false,
           )
           @round.pending_tokens.shift
 

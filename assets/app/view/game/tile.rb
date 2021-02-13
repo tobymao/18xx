@@ -58,9 +58,8 @@ module View
         borders = render_tile_part(Part::Borders) if @tile.borders.any?(&:type)
         # OO tiles have different rules...
         rendered_loc_name = render_tile_part(Part::LocationName) if @tile.location_name && @tile.cities.size > 1
-
         children << render_tile_part(Part::Revenue) if render_revenue
-        children << render_tile_part(Part::Label) if @tile.label
+        @tile.labels.each { |x| children << render_tile_part(Part::Label, label: x) }
 
         children << render_tile_part(Part::Upgrades) unless @tile.upgrades.empty?
         children << render_tile_part(Part::Blocker)

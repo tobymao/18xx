@@ -117,6 +117,8 @@ module Engine
 
       def try_take_loan(entity, price); end
 
+      def try_take_player_loan(entity, price); end
+
       def inspect
         "<#{self.class.name}>"
       end

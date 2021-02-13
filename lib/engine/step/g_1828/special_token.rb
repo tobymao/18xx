@@ -16,7 +16,7 @@ module Engine
         end
 
         def description
-          "Place token for #{@company.owner.name}"
+          blocking_for_sold_company? ? "Place token for #{@company.owner.name}" : super
         end
 
         def blocking?
@@ -24,19 +24,21 @@ module Engine
         end
 
         def pass_description
-          'Pass (Token)'
+          blocking_for_sold_company? ? 'Pass (Token)' : super
         end
 
         def active_entities
-          @company ? [@company] : super
+          blocking_for_sold_company? ? [@company] : super
         end
 
         def process_place_token(entity)
-          @company = nil
+          @company = nil if blocking_for_sold_company?
           super
         end
 
         def process_pass(action)
+          return super unless blocking_for_sold_company?
+
           entity = action.entity
           ability = @game.abilities(@company, :token, time: 'sold')
           raise GameError, "Not #{entity.name}'s turn: #{action.to_h}" unless entity == @company
@@ -52,6 +54,7 @@ module Engine
         end
 
         def blocking_for_sold_company?
+          return true if @company
           return false unless (company = @round.just_sold_company)
 
           if (ability = @game.abilities(company, :token, time: 'sold'))
