@@ -43,6 +43,14 @@ module Engine
           @round.laid_hexes << action.hex
         end
 
+        def pay_tile_cost!(entity, tile, rotation, hex, spender, cost, _extra_cost)
+          if @game.insolvent?(spender) && cost.positive?
+            raise GameError, "#{spender.id} cannot pay for a tile when insolvent"
+          end
+
+          super
+        end
+
         # this must be called before graphs are updated with new tile
         def revenues(tile, entity)
           return [] if @game.loading || tile.color == :white || !entity.operator?
