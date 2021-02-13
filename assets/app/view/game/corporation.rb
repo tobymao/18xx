@@ -128,7 +128,7 @@ module View
         if @corporation.trains.any? && !@corporation.floated?
           children << h(:div, status_props, @game.float_str(@corporation))
         end
-        children << h('div.xsmall_font', status_props, @game.status_str(@corporation)) if @game.status_str(@corporation)
+        children << h(:div, status_props, @game.status_str(@corporation)) if @game.status_str(@corporation)
         if @game.status_array(@corporation)
           children << h(:div, status_array_props,
                         @game.status_array(@corporation).map { |text, klass| h("div.#{klass}", item_props, text) })

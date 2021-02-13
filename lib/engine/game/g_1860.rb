@@ -530,8 +530,8 @@ module Engine
                     "Par #{prices.join(', ')}"
                   end
 
-        status = [[layer_str, 'xsmall_font']]
-        status << [par_str, 'xsmall_font'] if par_str
+        status = [[layer_str]]
+        status << [par_str] if par_str
         status << %w[Insolvent bold] if insolvent?(corp)
         status << %w[Receivership bold] if corp.receivership?
         status << %w[Bankrupt bold] if bankrupt?(corp)
