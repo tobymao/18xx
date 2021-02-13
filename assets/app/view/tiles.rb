@@ -84,7 +84,7 @@ module View
     )
       props = {
         style: {
-          width: "#{2 * WIDTH * scale}px",
+          width: "#{2 * (WIDTH * scale + 2)}px",
           height: "#{HEIGHT * scale}px",
         },
       }
