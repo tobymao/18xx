@@ -96,7 +96,7 @@ module Engine
         # TODO: Decrease minimum bid if all passed
         def min_bid(entity)
           return unless entity
-          return starting_bid(entity) unless @bids[entity].any?
+          return starting_bid(entity) if @bids[entity].empty?
 
           high_bid = highest_bid(entity)
           (high_bid.price || entity.min_bid) + min_increment
@@ -204,7 +204,7 @@ module Engine
           target = @auctioning
 
           return unless @active_bidders.one?
-          return unless @bids[@auctioning].any?
+          return if @bids[@auctioning].empty?
 
           winner = @bids[@auctioning].first
           win_bid(winner, target)
