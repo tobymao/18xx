@@ -97,11 +97,15 @@ module Engine
     #  - Lawson Track
     #  - No double dits
     #  - OO tiles should work? NY tile works
-    def distance_to_station(corporation, start_city)
+    def distance_to_station(corporation, start)
       goal_hexes = corporation.tokens.select(&:city).map { |t| [t.city.hex, t.city] }
       distance = 0
       visited_hexes = []
-      start_hexes = [[start_city.hex, start_city]]
+      start_hexes = if start.respond_to?(&:city?) && start.city?
+                      [[start.hex, start]]
+                    else # hex
+                      [[start, start.tile.cities.first]]
+                    end
       until start_hexes.empty?
         return distance unless (start_hexes & goal_hexes).empty?
 

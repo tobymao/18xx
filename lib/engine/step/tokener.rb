@@ -14,7 +14,9 @@ module Engine
       end
 
       # This is called to see if the cost of a PlaceToken action should be overriden
-      def token_cost_override(_entity, _city, _slot, _token)
+      # Avoid throwing an error here; it will get logged to browser console not browser window!
+      # _city_hex is a city, or a hex. Depends on if it's for a PlaceToken or HexToken action.
+      def token_cost_override(_entity, _city_hex, _slot, _token)
         nil
       end
 
