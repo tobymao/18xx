@@ -91,17 +91,17 @@ module Engine
 
     # How far is the start_hex from one of the corporation's stations?
     # This is by track, not as the crow flies.
-    # start_hex is either a City or a Town Part
+    # start_cy is either a City or nil (plain track or town)
     #
     # This implementation assumes:
     #  - Lawson Track
     #  - No double dits
     #  - OO tiles should work? NY tile works
-    def distance_to_station(corporation, start_hex)
+    def distance_to_station(corporation, start_city)
       goal_hexes = corporation.tokens.select(&:city).map { |t| [t.city.hex, t.city] }
       distance = 0
       visited_hexes = []
-      start_hexes = [[start_hex, start_hex.tile.cities.first]]
+      start_hexes = [[start_city.hex, start_city]]
       until start_hexes.empty?
         return distance unless (start_hexes & goal_hexes).empty?
 

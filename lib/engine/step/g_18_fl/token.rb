@@ -27,6 +27,7 @@ module Engine
         def process_place_token(action)
           raise GameError, "#{action.entity.name} cannot lay token now" if @game.round.laid_token[action.entity]
 
+          action.token.price = action.cost if action.cost
           super
           @game.round.laid_token[action.entity] = true
         end
@@ -55,18 +56,17 @@ module Engine
           pass!
         end
 
-        def tokened(hex, entity)
-          hex.tile.icons.any? { |i| i.name == entity.id }
-        end
-
-        def adjust_token_price_ability!(entity, token, hex, _city, _special_ability = nil)
-          cost = token.price * @game.graph.distance_to_station(entity, hex)
+        def token_cost_override(entity, city, _slot, token, _tokener)
+          cost = token.price * @game.graph.distance_to_station(entity, city)
           raise GameError, "#{entity.name} cannot afford "\
               "#{@game.format_currency(cost)} to lay token in "\
               "#{hex.tile.location_name}" if cost > entity.cash
 
-          token.price = cost
-          [token, nil]
+          cost
+        end
+
+        def tokened(hex, entity)
+          hex.tile.icons.any? { |i| i.name == entity.id }
         end
       end
     end
