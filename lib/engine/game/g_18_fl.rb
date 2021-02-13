@@ -58,6 +58,12 @@ module Engine
         ])
       end
 
+      def new_auction_round
+        Round::Auction.new(self, [
+          Step::G18FL::BuyCert,
+        ])
+      end
+
       def operating_round(round_num)
         Round::G18FL::Operating.new(self, [
           Step::Bankrupt,
