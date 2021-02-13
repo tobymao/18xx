@@ -101,7 +101,7 @@ module Engine
       end
 
       # create "dummy" companies based on minors and railways
-      def init_companies
+      def init_companies(_players)
         mine_comps = game_minors.map do |gm|
           description = "Mine in #{gm[:coordinates]}. Machine revenue: "\
             "#{gm[:extended][:machine_revenue].join('/')}. Switcher revenue: "\
