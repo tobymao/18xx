@@ -1,22 +1,22 @@
 # frozen_string_literal: true
 
-require_relative '../base'
+require_relative '../buy_company'
 
 module Engine
   module Step
     module G18CZ
-      class BuyCompany < Base
+      class BuyCompany < BuyCompany
         def process_buy_company(action)
           entity = action.entity
           company = action.company
-          owner = company.owner
 
           case entity.type
           when :medium
-            raise GameError,
-                  "Cannot buy #{company.name} from #{owner.name}" unless company.sym.include?('M') || company.sym.include?('S')
+            unless company.sym.include?('M') || company.sym.include?('S')
+              raise GameError, "#{entity.name} can only buy #{entity.type} companies or smaller"
+            end
           when :small
-            raise GameError, "Cannot buy #{company.name} from #{owner.name}" unless company.sym.include?('S')
+            raise GameError, "#{entity.name} can only buy #{entity.type} companies" unless company.sym.include?('S')
           end
 
           super
