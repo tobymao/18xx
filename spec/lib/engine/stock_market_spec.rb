@@ -9,7 +9,7 @@ require 'engine/stock_market'
 
 module Engine
   describe StockMarket do
-    let(:subject) { StockMarket.new(Game::G1889::Game::MARKET, []) }
+    let(:subject) { StockMarket.new(Game::G1889::MARKET, []) }
     let(:corporation) { Corporation.new(sym: 'a', name: 'a', tokens: [0]) }
     let(:corporation_2) { Corporation.new(sym: 'b', name: 'b', tokens: [0]) }
 

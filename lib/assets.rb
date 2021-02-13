@@ -65,18 +65,18 @@ class Assets
     }
   end
 
-  def js_tags(title)
+  def js_tags(titles)
     scripts = %w[deps main].map do |key|
       file = builds[key]['path'].gsub(@out_path, @root_path)
       %(<script type="text/javascript" src="#{file}"></script>)
     end
-    scripts.concat(game_js_tags(title)).compact.join
+    scripts.concat(titles.flat_map { |title| game_js_tags(title) }.uniq).compact.join
   end
 
   def game_js_tags(title)
     return [] unless title
 
-    game = Engine::GAMES_BY_TITLE[title]
+    game = Engine::GAME_META_BY_TITLE[title]
     tags = game_js_tags(game::DEPENDS_ON)
 
     key = game.fs_name
@@ -229,7 +229,7 @@ class Assets
       begin
         time = Time.now
 
-        prealphas = Engine::GAMES_BY_TITLE.values
+        prealphas = Engine::GAME_META_BY_TITLE.values
                       .select { |g| g::DEV_STAGE == :prealpha }
                       .map { |g| "public/assets/#{g.fs_name}.js" }
 

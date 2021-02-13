@@ -105,26 +105,25 @@ class Api < Roda
     end
 
     r.on ROUTES_WITH_GAME_TITLES do
-      render(title: request.path.split('/')[2])
+      render(titles: request.path.split('/')[2].split('+'))
     end
 
     r.on 'game', Integer do |id|
       halt(404, 'Game not found') unless (game = Game[id])
 
       pin = game.settings['pin']
-      render(title: game.title, pin: pin, game_data: pin ? game.to_h(include_actions: true) : game.to_h)
+      render(titles: [game.title], pin: pin, game_data: pin ? game.to_h(include_actions: true) : game.to_h)
     end
   end
 
   def render_with_games
     render(
       pin: request.params['pin'],
-      title: request.params['title'],
       games: Game.home_games(user, **request.params).map(&:to_h),
     )
   end
 
-  def render(title: nil, **needs)
+  def render(titles: nil, **needs)
     needs[:user] = user&.to_h(for_user: true)
 
     return render_pin(**needs) if needs[:pin]
@@ -133,7 +132,7 @@ class Api < Roda
       'Index',
       'App',
       'app',
-      javascript_include_tags: ASSETS.js_tags(title),
+      javascript_include_tags: ASSETS.js_tags(titles || []),
       app_route: request.path,
       **needs,
     )

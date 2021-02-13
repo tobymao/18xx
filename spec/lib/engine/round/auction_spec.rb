@@ -14,7 +14,7 @@ module Engine
   describe Round::Auction do
     context '#1889' do
       let(:game) do
-        game = Game::G1889::Game.new(%w[a b c])
+        game = Game::G1889.new(%w[a b c])
         game.companies.slice!(3..-1)
         game
       end

@@ -12,7 +12,7 @@ require 'engine/round/operating'
 module Engine
   describe Round::Stock do
     let(:players) { %w[a b c d e f] }
-    let(:game) { Game::G1889::Game.new(players) }
+    let(:game) { Game::G1889.new(players) }
     let(:market) { game.stock_market }
     let(:corp_0) { game.corporations[0] }
     let(:corp_1) { game.corporations[1] }

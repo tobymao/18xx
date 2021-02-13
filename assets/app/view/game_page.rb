@@ -9,15 +9,12 @@ require_tree './game'
 
 module View
   class GamePage < Snabberb::Component
+    include GameManager
     include Lib::Color
     include Lib::Settings
 
-    needs :game_data, store: true
-    needs :game, default: nil, store: true
-    needs :connection
     needs :selected_company, default: nil, store: true
     needs :tile_selector, default: nil, store: true
-    needs :app_route, store: true
     needs :user
     needs :connected, default: false, store: true
     needs :before_process_pass, default: -> {}, store: true
@@ -70,14 +67,21 @@ module View
          (!cursor && @game.raw_actions.size == @num_actions) ||
          (cursor == @game.raw_actions.size))
 
-      @game = Engine::Game.load(@game_data, at_action: cursor)
-      store(:game, @game, skip: true)
+      load_game_with_class = lambda do
+        @game = Engine::Game.load(@game_data, at_action: cursor)
+        store(:game, @game, skip: true)
+      end
+
+      title = @game_data['title']
+      load_game_class(title, load_game_with_class)
+      load_game_with_class.call if @game_classes_loaded[title]
     end
 
     def render
       @pin = @game_data.dig('settings', 'pin')
 
       load_game
+      return h('div.padded', 'Loading game...') unless @game
 
       page =
         case route_anchor
@@ -151,7 +155,7 @@ module View
     end
 
     def game_path
-      GameManager.url(@game_data)
+      url(@game_data)
     end
 
     private

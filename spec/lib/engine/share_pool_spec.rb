@@ -11,7 +11,7 @@ require 'engine/player'
 
 module Engine
   describe SharePool do
-    let(:game) { Game::G1889::Game.new(%w[a b c]) }
+    let(:game) { Game::G1889.new(%w[a b c]) }
     let(:player_1) { game.player_by_id('a') }
     let(:player_2) { game.player_by_id('b') }
     let(:player_3) { game.player_by_id('c') }

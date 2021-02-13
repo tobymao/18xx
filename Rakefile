@@ -126,3 +126,20 @@ task 'migrate_json', [:json] do |_task, args|
   require_relative 'migrate_game'
   migrate_json(args[:json])
 end
+
+desc "Move a game's files so it can be bundled in a separate JS file"
+task 'move_game', [:game] do |_task, args|
+  game = args[:game]
+
+  game_file = "lib/engine/game/#{game}.rb"
+  next puts "Game file not found: #{game_file}" unless File.exist?(game_file)
+
+  game_dir = "lib/engine/game/#{game}"
+  next puts "Game already moved: #{game_dir}/" if Dir.exist?(game_dir) && Dir["#{game_dir}/**/*.rb"].any?
+
+  require_relative 'lib/engine'
+  require_relative 'scripts/move_game'
+
+  mover = Mover.new(game)
+  mover.move!
+end

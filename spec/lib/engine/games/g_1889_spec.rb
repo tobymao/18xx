@@ -7,7 +7,7 @@ require 'engine/part/city'
 require 'json'
 
 module Engine
-  describe Game::G1889::Game do
+  describe Game::G1889 do
     let(:players) { %w[a b] }
 
     let(:actions) do
@@ -21,7 +21,7 @@ module Engine
 
     context 'on init with actions' do
       let(:players) { %w[a b c] }
-      subject(:subject_with_actions) { described_class.new(players, actions: actions) }
+      subject(:subject_with_actions) { Game::G1889.new(players, actions: actions) }
       it 'should process constructor actions' do
         expect(subject_with_actions.raw_actions.size).to be 4
         expect(subject_with_actions.current_entity.name).to be players[1]
@@ -108,7 +108,7 @@ module Engine
       end
     end
 
-    subject { described_class.new(players) }
+    subject { Game::G1889.new(players) }
 
     context 'on init' do
       it 'starts with correct cash' do

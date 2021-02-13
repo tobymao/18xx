@@ -2,9 +2,12 @@
 
 require 'lib/params'
 require 'view/tiles'
+require_relative '../game_class_loader'
 
 module View
   class TilesPage < Tiles
+    include GameClassLoader
+
     needs :route
 
     ROUTE_FORMAT = %r{/tiles/([^/?]*)(?:/([^?]+))?}.freeze
@@ -70,10 +73,11 @@ module View
         h('div#tiles', rendered)
 
       # everything for one or more games
-      elsif (game_titles = dest.split('+')).all? { |g| Engine::GAMES_BY_TITLE.keys.include?(g) }
+      elsif (game_titles = dest.split('+')).all? { |g| Engine::GAME_META_BY_TITLE.keys.include?(g) }
 
-        rendered = game_titles.flat_map do |g|
-          game_class = Engine.game_by_title(g)
+        rendered = game_titles.flat_map do |title|
+          next [] unless (game_class = load_game_class(title))
+
           map_hexes_and_tile_manifest_for(game_class)
         end
 
@@ -99,7 +103,9 @@ module View
     end
 
     def render_individual_tile_from_game(game_title, hex_or_tile_id)
-      game_class = Engine.game_by_title(game_title)
+      game_class = load_game_class(game_title)
+      return [] unless game_class
+
       players = Engine.player_range(game_class).max.times.map { |n| "Player #{n + 1}" }
       game = game_class.new(players)
 
