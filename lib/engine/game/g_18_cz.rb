@@ -147,7 +147,7 @@ module Engine
         @player_debts = @players.map { |player| [player.id, { debt: 0, penalty_interest: 0 }] }.to_h
       end
 
-      def new_operating_round
+      def new_operating_round(round_num = 1)
         @or += 1
         @companies.each do |company|
           company.value = COMPANY_VALUES[@or - 1]
