@@ -10,7 +10,7 @@ module Engine
         include Tracker
 
         def process_lay_tile(action)
-          ability = tile_lay_abilities(action.entity)
+          ability = abilities(action.entity)
           lay_tile(action, spender: action.entity.owner)
           check_connect(action, ability)
           ability.use!

@@ -22,6 +22,10 @@ module Engine
       end
 
       def or_set_finished; end
+
+      def timeline
+        []
+      end
     end
   end
 end

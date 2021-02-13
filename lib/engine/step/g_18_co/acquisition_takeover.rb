@@ -7,10 +7,12 @@ module Engine
     module G18CO
       class AcquisitionTakeover < Takeover
         def round_state
-          {
-            pending_takeover: nil,
-            pending_acquisition: nil,
-          }
+          super.merge(
+            {
+              pending_takeover: nil,
+              pending_acquisition: nil,
+            }
+          )
         end
 
         def takeover_in_progress

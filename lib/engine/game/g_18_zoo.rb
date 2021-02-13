@@ -295,12 +295,12 @@ module Engine
       NEXT_SR_PLAYER_ORDER = :most_cash # TODO: check if a bug
 
       CORPORATIONS_BY_MAP = {
-        map_a: %i[GI PB PE LI TI],
-        map_b: %i[CR GI PB PE BB],
-        map_c: %i[CR LI TI BB EL],
-        map_d: %i[CR GI PB PE LI TI BB],
-        map_e: %i[CR GI PB PE TI BB EL],
-        map_f: %i[CR GI PE LI TI BB EL],
+        map_a: %w[GI PB PE LI TI],
+        map_b: %w[CR GI PB PE BB],
+        map_c: %w[CR LI TI BB EL],
+        map_d: %w[CR GI PB PE LI TI BB],
+        map_e: %w[CR GI PB PE TI BB EL],
+        map_f: %w[CR GI PE LI TI BB EL],
       }.freeze
 
       CORPORATION_COORDINATES_BY_MAP = {
@@ -473,7 +473,7 @@ module Engine
         },
       }.freeze
 
-      HOME_TOKEN_TIMING = :float
+      # HOME_TOKEN_TIMING = :float # TODO enable again after adding Step::G18ZOO::HomeToken
 
       MUST_BUY_TRAIN = :always
 
@@ -502,9 +502,9 @@ module Engine
 
         draw_size = @players.size == 5 ? 6 : 4
         @companies_for_isr = @companies.first(draw_size)
-        @companies_for_monday = @companies[draw_size..draw_size + 4]
-        @companies_for_tuesday = @companies[draw_size + 4..draw_size + 8]
-        @companies_for_wednesday = @companies[draw_size + 8..draw_size + 12]
+        @companies_for_monday = @companies[draw_size..draw_size + 3]
+        @companies_for_tuesday = @companies[draw_size + 4..draw_size + 7]
+        @companies_for_wednesday = @companies[draw_size + 8..draw_size + 11]
 
         @available_companies.concat(@companies_for_isr)
 
@@ -586,6 +586,81 @@ module Engine
         @available_companies + @future_companies
       end
 
+      def after_par(corporation)
+        bonus_after_par(corporation, 5, 2) if corporation.par_price.price == 9
+        bonus_after_par(corporation, 10, 4) if corporation.par_price.price == 12
+
+        return unless @near_families
+
+        corporations_order = @corporations.sort_by(&:full_name).cycle(2).to_a
+        if @corporations.count(&:ipoed) == 1
+          # Take the first corporation not ipoed after the one just parred
+          next_corporation = corporations_order.drop_while { |c| c.id != corporation.id }
+                                               .find { |c| !c.ipoed }
+          # Take the first corporation not ipoed before the one just parred
+          previous_corporation = corporations_order.reverse
+                                                   .drop_while { |c| c.id != corporation.id }
+                                                   .find { |c| !c.ipoed }
+          @near_families_purchasable = [{ direction: 'next', id: next_corporation.id },
+                                        { direction: 'reverse', id: previous_corporation.id }]
+          @log << "Near family rule: #{previous_corporation.full_name} and #{next_corporation.full_name} are available."
+        else
+          if @corporations.count(&:ipoed) == 2
+            @near_families_direction = @near_families_purchasable.find { |c| c[:id] == corporation.id }[:direction]
+          end
+          corporations = @near_families_direction == 'reverse' ? corporations_order.reverse : corporations_order
+          following_corporation = corporations.drop_while { |c| c.id != corporation.id }
+                                              .find { |c| !c.ipoed }
+          @near_families_purchasable = [{ id: following_corporation.id }]
+
+          @log << "Near family rule: #{following_corporation.full_name} is now available." unless following_corporation
+        end
+      end
+
+      def holiday
+        @holiday ||= company_by_id('HOLIDAY')
+      end
+
+      def midas
+        @midas ||= company_by_id('MIDAS')
+      end
+
+      def too_much_responsibility
+        @too_much_responsibility ||= company_by_id('TOO_MUCH_RESPONSIBILITY')
+      end
+
+      def leprechaun_pot_of_gold
+        @leprechaun_pot_of_gold ||= company_by_id('LEPRECHAUN_POT_OF_GOLD')
+      end
+
+      def it_s_all_greek_to_me
+        @it_s_all_greek_to_me ||= company_by_id('IT_S_ALL_GREEK_TO_ME')
+      end
+
+      def whatsup
+        @whatsup ||= company_by_id('WHATSUP')
+      end
+
+      def apply_custom_ability(company)
+        if company.sym == 'TOO_MUCH_RESPONSIBILITY'
+          bank.spend(3, company.owner, check_positive: false)
+          @log << "#{company.owner.name} earns #{format_currency(3)} using \"#{company.name}\""
+          company.close!
+        elsif company.sym == 'LEPRECHAUN_POT_OF_GOLD'
+          bank.spend(2, company.owner, check_positive: false)
+          @log << "#{company.owner.name} earns #{format_currency(2)} using \"#{company.name}\""
+        elsif %w[RABBITS MOLES ANCIENT_MAPS HOLE ON_DIET SPARKLING_GOLD THAT_S_MINE WORK_IN_PROGRESS CORN TWO_BARRELS
+                 A_SQUEEZE BANDAGE WINGS A_SPOONFUL_OF_SUGAR].include?(company.sym)
+          raise GameError, 'Power logic not yet implemented' # TODO: remove from this list when implementing a power
+        end
+      end
+
+      def corporation_available?(entity)
+        return true unless @near_families
+
+        entity.ipoed || @near_families_purchasable.any? { |f| f[:id] == entity.id }
+      end
+
       private
 
       def init_round
@@ -619,30 +694,6 @@ module Engine
         companies
       end
 
-      def holiday
-        @holiday ||= company_by_id('HOLIDAY')
-      end
-
-      def midas
-        @midas ||= company_by_id('MIDAS')
-      end
-
-      def too_much_responsibility
-        @too_much_responsibility ||= company_by_id('TOO_MUCH_RESPONSIBILITY')
-      end
-
-      def leprechaun_pot_of_gold
-        @leprechaun_pot_of_gold ||= company_by_id('LEPRECHAUN_POT_OF_GOLD')
-      end
-
-      def it_s_all_greek_to_me
-        @it_s_all_greek_to_me ||= company_by_id('IT_S_ALL_GREEK_TO_ME')
-      end
-
-      def whatsup
-        @whatsup ||= company_by_id('WHATSUP')
-      end
-
       def num_trains(train)
         num_players = @players.size
 
@@ -655,8 +706,8 @@ module Engine
       end
 
       def init_corporations(stock_market)
-        self.class::CORPORATIONS.select { |corporation| CORPORATIONS_BY_MAP[@map].include?(corporation[:sym]) }
-                                .map do |corporation|
+        corporations = self.class::CORPORATIONS.select { |c| CORPORATIONS_BY_MAP[@map].include?(c[:sym]) }
+                                               .map do |corporation|
           Corporation.new(
             min_price: stock_market.par_prices.map(&:price).min,
             capitalization: self.class::CAPITALIZATION,
@@ -664,6 +715,8 @@ module Engine
             **corporation.merge(corporation_opts),
           )
         end
+        @near_families_purchasable = corporations.map { |c| { id: c.id } }
+        corporations
       end
 
       def init_starting_cash(players, bank)
@@ -699,6 +752,12 @@ module Engine
         update_current_and_future(@companies_for_wednesday, nil, 3)
 
         @available_companies.each { |c| c.owner = @bank unless c.owner }
+
+        if leprechaun_pot_of_gold.owner&.player?
+          bank.spend(2, leprechaun_pot_of_gold.owner, check_positive: false)
+          @log << "#{leprechaun_pot_of_gold.owner.name} earns #{format_currency(2)} using
+            '#{leprechaun_pot_of_gold.name}'"
+        end
 
         result
       end
@@ -769,6 +828,17 @@ module Engine
           company.min_price = 0
           company.max_price = company.value - 1
         end
+      end
+
+      def bonus_after_par(corporation, money, _additional_tracks)
+        bank.spend(money, corporation)
+        @log << "#{corporation.name} earns #{format_currency(money)} as treasury bonus"
+        # TODO: enable again after adding Step::G18ZOO::AdditionalTracksAfterPar
+        # @round.additional_tracks = additional_tracks
+      end
+
+      def event_new_train!
+        # @new_train_brought = true # TODO: enable again after adding Step::G18ZOO::BuyTrain
       end
     end
   end

@@ -19,9 +19,11 @@ module Engine
         end
 
         def round_state
-          state = super || {}
-          state[:last_tile_lay] = nil
-          state
+          super.merge(
+            {
+              last_tile_lay: nil,
+            }
+          )
         end
 
         def get_tile_lay(entity)

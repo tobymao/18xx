@@ -776,14 +776,14 @@ module Engine
             "name": "Ontario, Simcoe & Huron",
             "value": 250,
             "revenue": 40,
-            "desc": "Purchaser receives 30% of Ontario, Simcoe & Huron (OS&H) and sets par price. May not be sold to a corporation. Closes when OS&H acquires a train.",
-            "sym": "OS&H",
+            "desc": "Purchaser receives 30% of Ontario, Simcoe & Huron (OSH) and sets par price. May not be sold to a corporation. Closes when OSH acquires a train.",
+            "sym": "OSH",
             "abilities": [
                 {
                     "type": "shares",
                     "shares": [
-                        "OS&H_0",
-                        "OS&H_1"
+                        "OSH_0",
+                        "OSH_1"
                     ]
                 },
                 {
@@ -792,7 +792,7 @@ module Engine
                 {
                     "type": "close",
                     "when": "bought_train",
-                    "corporation": "OS&H"
+                    "corporation": "OSH"
                 }
             ]
         }

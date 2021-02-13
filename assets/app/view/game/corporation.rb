@@ -54,6 +54,7 @@ module View
         if selected?
           card_style[:backgroundColor] = 'lightblue'
           card_style[:color] = 'black'
+          card_style[:border] = '1px solid'
         end
 
         children = [render_title, render_holdings]

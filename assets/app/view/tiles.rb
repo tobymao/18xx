@@ -51,7 +51,7 @@ module View
         hex.x = 0
         hex.y = 0
 
-        h('div.tile__block', props, [
+        h("div#tile_#{name}.tile__block", props, [
             *extra_children,
             h(:div, { style: { textAlign: 'center', fontSize: '12px' } }, text),
             h(:svg, { style: { width: '100%', height: '100%' } }, [
@@ -125,7 +125,7 @@ module View
         hex_b.x = 0
         hex_b.y = 0
 
-        h('div.tile__block', props, [
+        h("div#tile_#{name}.tile__block", props, [
             *extra_children_a,
             *extra_children_b,
             h(:div, { style: { textAlign: 'center', fontSize: '12px' } }, text),

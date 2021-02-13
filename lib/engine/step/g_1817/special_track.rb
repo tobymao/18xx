@@ -23,17 +23,17 @@ module Engine
             lay_tile(action, extra_cost: tile_lay[:cost] - 15, entity: owner, spender: owner)
             tile.hex.assign!('mine')
             @game.log << "#{owner.name} adds mine to #{tile.hex.name}"
-            ability = tile_lay_abilities(action.entity)
+            ability = abilities(action.entity)
             ability.use!
             action.entity.close! if ability.count.zero?
           end
-          step.laid_track = step.laid_track + 1
+          @round.num_laid_track = @round.num_laid_track + 1
         end
 
         def hex_neighbors(entity, hex)
           return super if entity.company? && entity.id == @game.class::PITTSBURGH_PRIVATE_NAME
 
-          hexes = tile_lay_abilities(entity)&.hexes
+          hexes = abilities(entity)&.hexes
           return if hexes&.any? && !hexes&.include?(hex.id)
 
           # When actually laying track entity will be the corp.

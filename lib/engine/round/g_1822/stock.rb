@@ -54,7 +54,8 @@ module Engine
           # train will be exported, additionally the minor is also removed from the game.
           # This will procced the whole game
           remove_l_trains(remove_l_count) if remove_l_count.positive? && @game.depot.upcoming.first.name == 'L'
-          remove_minor_and_train(remove_minor) if remove_minor
+          remove_minor_and_first_train(remove_minor) if remove_minor
+          remove_first_train if !remove_minor && @game.bidbox_minors.size.zero?
 
           super
         end
@@ -70,18 +71,13 @@ module Engine
           @log << "#{player.name} wins the bid #{company.name} for #{@game.format_currency(price)}"
         end
 
-        def find_minor(company)
-          minor_id = company.id[1..-1]
-          @game.corporations.find { |m| m.id == minor_id }
-        end
-
         def float_minor(bid)
           player = bid.entity
           company = bid.company
           price = bid.price
 
           # Find the correct minor in the corporations
-          minor = find_minor(company)
+          minor = @game.find_corporation(company)
 
           # Get the correct par price according to phase
           current_phase = @game.phase.name.to_i
@@ -120,7 +116,7 @@ module Engine
 
           # If there is a difference between the treasury and the money the company get from the IPO
           treasury_par_difference = treasury - (par_price * 2)
-          @log << "#{minor.name} recives an additional #{@game.format_currency(treasury_par_difference)} "\
+          @log << "#{minor.name} receives an additional #{@game.format_currency(treasury_par_difference)} "\
                   'from the bid' if treasury_par_difference != 0
         end
 
@@ -136,19 +132,29 @@ module Engine
           end
         end
 
-        def remove_minor_and_train(company)
-          # Remove the next train
-          train = @game.depot.upcoming.first
+        def remove_minor_and_first_train(company)
+          train = remove_train
           @game.log << "No bids on minor #{company.id}, it will close and a #{train.name} train is removed"
-          @game.remove_train(train)
-          @game.phase.buying_train!(nil, train)
 
           ## Find the correct minor in the corporations and close it
-          minor = find_minor(company)
+          minor = @game.find_corporation(company)
           @game.close_corporation(minor)
 
           # Remove the proxy company for the minor
           @game.companies.delete(company)
+        end
+
+        def remove_first_train
+          train = remove_train
+          @game.log << "No minor in first bidbox and with this no bids, a #{train.name} train is removed"
+        end
+
+        def remove_train
+          # Remove the next train
+          train = @game.depot.upcoming.first
+          @game.remove_train(train)
+          @game.phase.buying_train!(nil, train)
+          train
         end
 
         def sold_out?(corporation)
