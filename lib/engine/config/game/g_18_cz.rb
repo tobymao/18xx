@@ -1281,7 +1281,7 @@ module Engine
                             "type": "tile_lay",
                             "when": "track",
                             "owner_type": "corporation",
-                            "discount": 20,
+                            "discount": 40,
                             "hexes": [
                                 "D11",
                                 "D15",
@@ -1380,7 +1380,7 @@ module Engine
                             "type": "tile_lay",
                             "when": "track",
                             "owner_type": "corporation",
-                            "discount": 20,
+                            "discount": 40,
                             "hexes": [
                                 "D11",
                                 "D15",
@@ -1479,7 +1479,7 @@ module Engine
                             "type": "tile_lay",
                             "when": "track",
                             "owner_type": "corporation",
-                            "discount": 20,
+                            "discount": 40,
                             "hexes": [
                                 "D11",
                                 "D15",
@@ -1578,7 +1578,7 @@ module Engine
                             "type": "tile_lay",
                             "when": "track",
                             "owner_type": "corporation",
-                            "discount": 20,
+                            "discount": 40,
                             "hexes": [
                                 "D11",
                                 "D15",
@@ -1677,7 +1677,7 @@ module Engine
                             "type": "tile_lay",
                             "when": "track",
                             "owner_type": "corporation",
-                            "discount": 20,
+                            "discount": 40,
                             "hexes": [
                                 "D11",
                                 "D15",
@@ -1776,7 +1776,7 @@ module Engine
                             "type": "tile_lay",
                             "when": "track",
                             "owner_type": "corporation",
-                            "discount": 20,
+                            "discount": 40,
                             "hexes": [
                                 "D11",
                                 "D15",
