@@ -21,7 +21,7 @@ module Engine
 
     context 'on init with actions' do
       let(:players) { %w[a b c] }
-      subject(:subject_with_actions) { Game::G1889.new(players, actions: actions) }
+      subject(:subject_with_actions) { Game::G1889::Game.new(players, actions: actions) }
       it 'should process constructor actions' do
         expect(subject_with_actions.raw_actions.size).to be 4
         expect(subject_with_actions.current_entity.name).to be players[1]
@@ -108,7 +108,7 @@ module Engine
       end
     end
 
-    subject { Game::G1889.new(players) }
+    subject { Game::G1889::Game.new(players) }
 
     context 'on init' do
       it 'starts with correct cash' do
