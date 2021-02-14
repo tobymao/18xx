@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../buy_sell_par_shares'
+require_relative 'par_and_buy_actions'
 
 module Engine
   module Step
@@ -60,6 +61,8 @@ module Engine
 
           buy_minor(minor, entity, price)
         end
+
+        include ParAndBuy
 
         private
 

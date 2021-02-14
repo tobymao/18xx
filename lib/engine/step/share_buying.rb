@@ -5,10 +5,14 @@ require_relative 'base'
 module Engine
   module Step
     module ShareBuying
-      def buy_shares(entity, shares, exchange: nil, swap: nil)
+      def buy_shares(entity, shares, exchange: nil, swap: nil, allow_president_change: true)
         raise GameError, "Cannot buy a share of #{shares&.corporation&.name}" if !can_buy?(entity, shares) && !swap
 
-        @game.share_pool.buy_shares(entity, shares, exchange: exchange, swap: swap)
+        @game.share_pool.buy_shares(entity,
+                                    shares,
+                                    exchange: exchange,
+                                    swap: swap,
+                                    allow_president_change: allow_president_change)
         corporation = shares.corporation
         @game.place_home_token(corporation) if @game.class::HOME_TOKEN_TIMING == :float && corporation.floated?
       end
