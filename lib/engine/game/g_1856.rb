@@ -491,7 +491,7 @@ module Engine
 
       def event_no_more_escrow_corps!
         @log << 'New corporations will be started as incremental cap corporations'
-        @corporations.select { |c| !c.capitalization }.each { |c| remove_dest_icons(c) }
+        @corporations.reject(&:capitalization).each { |c| remove_dest_icons(c) }
       end
 
       def event_no_more_incremental_corps!
@@ -657,9 +657,9 @@ module Engine
       def national_bought_permanent
         return if @national_ever_owned_permanent
 
-        national_ever_owned_permanent = true
-        @game.log << "-- #{national.name} now owns a permanent train, may no longer borrow a train when trainless --"
-        national.remove_ability(:description)
+        @national_ever_owned_permanent = true
+        @log << "-- #{national.name} now owns a permanent train, may no longer borrow a train when trainless --"
+        national.remove_ability(national.all_abilities.select { |a| a.type == :description }.first)
       end
 
       def merge_major(major)
@@ -667,7 +667,6 @@ module Engine
         @log << "-- #{major.name} merges into #{national.name} --"
         # Trains are transferred
         major.trains.dup.each do |t|
-          puts 'mgilzinger 1: ', t, t.rusts_on
           national_bought_permanent unless t.rusts_on
           buy_train(national, t, :free)
         end
@@ -824,6 +823,8 @@ module Engine
         national_share_index = 1
         players_in_order.each do |i|
           player = @players[i]
+          next unless @pre_national_percent_by_player[player]
+
           player_national_shares = (@pre_national_percent_by_player[player] / 20).to_i
           # We will distribute shares from the national starting with the second, skipping the presidency
           next unless player_national_shares.positive?
