@@ -132,7 +132,7 @@ module View
           '🔍'),
         h('a.button_link.small', {
             attrs: {
-              href: 'https://github.com/tobymao/18xx/wiki/FAQ#search',
+              href: 'https://github.com/tobymao/18xx/wiki/Power-User-Features#search',
               title: 'Click to open help!
 
 text:* = trailing wildcard
