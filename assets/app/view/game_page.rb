@@ -175,7 +175,7 @@ module View
         event.getModifierState('Control') || event.getModifierState('OS') || event.getModifierState('Shift')
 
       active = Native(`document.activeElement`)
-      return unless active.id == 'game' || active.localName == 'body'
+      return if active.id != 'game' && active.localName != 'body'
 
       key = event['key']
       case key
@@ -228,13 +228,14 @@ module View
     end
 
     def menu
-      bg_color =  if @game_data['mode'] == :hotseat
-                    color_for(:hotseat_game)
-                  elsif active_player
-                    color_for(:your_turn)
-                  else
-                    color_for(:bg2)
-                  end
+      bg_color =
+        if @game_data['mode'] == :hotseat
+          color_for(:hotseat_game)
+        elsif active_player
+          color_for(:your_turn)
+        else
+          color_for(:bg2)
+        end
       nav_props = {
         attrs: {
           role: 'navigation',
@@ -256,14 +257,14 @@ module View
       }
 
       menu_items = [
-        item('Game', '', 'g'),
-        item('Entities', '#entities', 'e'),
-        item('Map', '#map', 'm'),
-        item('Market', '#market', 'a or k'),
-        item('Info', '#info', 'i'),
-        item('Tiles', '#tiles', 't'),
-        item('Spreadsheet', '#spreadsheet', 's'),
-        item('Tools', '#tools', 'o'),
+        item('(G)ame', ''),
+        item('(E)ntities', '#entities'),
+        item('(M)ap', '#map'),
+        item('M(a)r(k)et', '#market'),
+        item('(I)nfo', '#info'),
+        item('(T)iles', '#tiles'),
+        item('(S)preadsheet', '#spreadsheet'),
+        item('T(o)ols', '#tools'),
       ]
 
       h('nav#game_menu', nav_props, [
@@ -271,12 +272,11 @@ module View
       ])
     end
 
-    def item(name, anchor, hotkey)
+    def item(name, anchor)
       a_props = {
         attrs: {
           href: anchor,
           onclick: 'return false',
-          title: "hotkey: #{hotkey}",
         },
         style: { textDecoration: route_anchor == anchor[1..-1] ? 'underline' : 'none' },
         on: { click: ->(_event) { change_anchor(anchor) } },
