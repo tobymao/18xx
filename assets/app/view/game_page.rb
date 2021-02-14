@@ -263,7 +263,7 @@ module View
         item('G|ame', ''),
         item('E|ntities', '#entities'),
         item('M|ap', '#map'),
-        item('Ma|rk|et', '#market'),
+        item('Mark|et', '#market'),
         item('I|nfo', '#info'),
         item('T|iles', '#tiles'),
         item('S|preadsheet', '#spreadsheet'),
