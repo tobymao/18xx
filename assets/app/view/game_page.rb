@@ -70,7 +70,7 @@ module View
          (!cursor && @game.raw_actions.size == @num_actions) ||
          (cursor == @game.raw_actions.size))
 
-      @game = Engine::Game.load(@game_data, at_action: cursor)
+      @game = Engine::Game.load(@game_data, at_action: cursor, user: @user&.dig('id'))
       store(:game, @game, skip: true)
     end
 
