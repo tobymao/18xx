@@ -10,8 +10,8 @@ module Engine
 
       register_colors(tan: '#d6a06c')
 
-      CURRENCY_FORMAT_STR = '%d M'
       BANK_CASH = 100_000
+      CURRENCY_FORMAT_STR = '%d M'
       CERT_LIMIT = {
         2 => 99,
         3 => 99,
