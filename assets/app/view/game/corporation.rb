@@ -110,12 +110,29 @@ module View
             color: color_for(:font2),
           },
         }
+        status_array_props = {
+          style: {
+            display: 'inline-block',
+            width: '100%',
+            textAlign: 'center',
+            backgroundColor: color_for(:bg2),
+            color: color_for(:font2),
+          },
+        }
+        item_props = {
+          style: {
+            display: 'inline-block',
+            padding: '0 0.5rem',
+          },
+        }
 
         if @corporation.trains.any? && !@corporation.floated?
           children << h(:div, status_props, @game.float_str(@corporation))
         end
-        if @game.status_str(@corporation)
-          children << h('div.bold.xsmall_font', status_props, @game.status_str(@corporation))
+        children << h(:div, status_props, @game.status_str(@corporation)) if @game.status_str(@corporation)
+        if @game.status_array(@corporation)
+          children << h(:div, status_array_props,
+                        @game.status_array(@corporation).map { |text, klass| h("div.#{klass}", item_props, text) })
         end
 
         h('div.corp.card', { style: card_style, on: { click: select_corporation } }, children)
