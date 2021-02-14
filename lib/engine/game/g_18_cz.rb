@@ -16,6 +16,8 @@ module Engine
 
       load_from_json(Config::Game::G18CZ::JSON)
 
+      DEV_STAGE = :alpha
+
       GAME_LOCATION = 'Czech Republic'
       GAME_RULES_URL = 'https://www.lonny.at/app/download/9940504884/rules_English.pdf'
       GAME_DESIGNER = 'Leonhard Orgler'

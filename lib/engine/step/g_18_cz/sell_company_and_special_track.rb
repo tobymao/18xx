@@ -70,6 +70,8 @@ module Engine
         end
 
         def abilities(entity, **kwargs, &block)
+          return unless entity&.company?
+
           abilities = @game.abilities(
             entity,
             'tile_lay',
