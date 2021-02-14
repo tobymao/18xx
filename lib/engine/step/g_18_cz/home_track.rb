@@ -65,7 +65,7 @@ module Engine
             action.entity,
             action.hex.tile.cities[0],
             action.entity.find_token_by_type,
-            teleport: true,
+            connected: false,
           )
         end
 
@@ -91,6 +91,10 @@ module Engine
 
           new_exits.all? { |edge| hex.neighbors[edge] } &&
             old_paths.all? { |path| new_paths.any? { |p| path <= p } }
+        end
+
+        def upgraded_track(action)
+          @round.upgraded_track = true if action.tile.color != :yellow && action.tile.color != :red
         end
       end
     end

@@ -64,7 +64,7 @@ module Engine
 
           raise GameError, "Train #{train.name} cannot be upgraded" if variant_name.nil?
 
-          entity.spend(price, @game.bank)
+          entity.spend(price, @game.bank) if price.positive?
           train.variant = variant_name
 
           trains.delete(train)
