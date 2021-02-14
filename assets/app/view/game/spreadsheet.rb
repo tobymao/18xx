@@ -291,7 +291,7 @@ module View
             corporation.share_price&.price || 0
           when :loans
             corporation.loans.size
-          when :short
+          when :shorts
             @game.available_shorts(corporation)
           when :buying_power
             @game.buying_power(corporation, full: true)
