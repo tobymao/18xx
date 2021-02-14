@@ -48,6 +48,12 @@ module Engine
           pass!
         end
 
+        def holder_for_corporation(entity)
+          # Incremental corps DON'T get paid from IPO shares. 
+          @game.share_pool
+        end
+  
+
         def log_run_payout(entity, kind, revenue, action, payout)
           if (@round.interest_penalty[entity] || 0).positive?
             @log << "#{entity.name} deducts #{@game.format_currency(@round.interest_penalty[entity])}"\
