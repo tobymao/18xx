@@ -273,6 +273,9 @@ module Engine
         # false: 2-share true presidency has been awarded
         @false_national_president = nil
 
+        # CGR flags
+        @national_ever_owned_permanent = false
+
         # 1 of each right is reserved w/ the private when it gets bought in. This leaves 2 extra to sell.
         @available_bridge_tokens = 2
         @available_tunnel_tokens = 2
@@ -641,11 +644,21 @@ module Engine
         end
       end
 
+      def national_bought_permanent
+        return if @national_ever_owned_permanent
+
+        national_ever_owned_permanent = true
+        @game.log << "-- #{national.name} now owns a permanent train, may no longer borrow a train when trainless --"
+        national.remove_ability(:description)
+      end
+
       def merge_major(major)
         @national_formed = true
         @log << "-- #{major.name} merges into #{national.name} --"
         # Trains are transferred
         major.trains.dup.each do |t|
+          puts 'mgilzinger 1: ', t, t.rusts_on
+          national_bought_permanent unless t.rusts_on
           buy_train(national, t, :free)
         end
         # Leftover cash is transferred
@@ -985,9 +998,7 @@ module Engine
       end
 
       def train_limit(entity)
-        return 3 if entity.id == 'CGR'
-
-        super
+        super + Array(abilities(entity, :train_limit)).sum(&:increase)
       end
     end
   end

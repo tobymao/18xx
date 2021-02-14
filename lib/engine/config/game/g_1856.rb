@@ -527,8 +527,13 @@ module Engine
             "face_value": true
          },
          {
-            "type": "description",
+            "type": "train_limit",
+            "increase": 99,
             "description": "3 train limit"
+         },
+         {
+           "type": "description",
+           "description": "May borrow a train when trainless*"
          }
       ]
     }
