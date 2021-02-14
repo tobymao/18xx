@@ -8,7 +8,7 @@ module Engine
       class SellCompanyAndSpecialTrack < SpecialTrack
         def actions(entity)
           actions = []
-          abilities = tile_lay_abilities(entity)
+          abilities = abilities(entity)
           actions << 'lay_tile' if abilities
           actions << 'sell_company' if entity.company? && entity.owner == current_entity || entity == current_entity
 
@@ -46,17 +46,17 @@ module Engine
         end
 
         def hex_neighbors(entity, hex)
-          return unless (abilities = tile_lay_abilities(entity))
+          return unless (abilities = abilities(entity))
           return if abilities.all? { |ability| !ability.hexes&.none? && !ability.hexes&.include?(hex.id) }
 
           operator = entity.owner.corporation? ? entity.owner : @game.current_entity
           return if abilities.all? { |ability| ability.reachable && !@game.graph.connected_hexes(operator)[hex] }
 
-          @game.hex_by_id(hex.id).neighbors.keys
+          @game.graph.connected_hexes(operator)[hex]
         end
 
         def potential_tiles(entity, hex)
-          return [] unless (abilities = tile_lay_abilities(entity))
+          return [] unless (abilities = abilities(entity))
 
           abilities_for_hex = abilities.select do |ability|
             ability.hexes&.empty? || ability.hexes&.include?(hex.coordinates)
@@ -69,8 +69,14 @@ module Engine
             .select { |t| @game.phase.tiles.include?(t.color) && @game.upgrades_to?(hex.tile, t, false) }
         end
 
-        def tile_lay_abilities(entity, **kwargs, &block)
-          abilities = super
+        def abilities(entity, **kwargs, &block)
+          abilities = @game.abilities(
+            entity,
+            'tile_lay',
+            time: %w[special_track %current_step% owning_corp_or_turn],
+            **kwargs,
+            &block
+          )
 
           return nil if abilities.nil?
           return abilities if abilities.is_a?(Array)

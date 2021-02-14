@@ -29,7 +29,7 @@ module Engine
       nil
     end
 
-    def buy_shares(entity, shares, exchange: nil, exchange_price: nil, swap: nil)
+    def buy_shares(entity, shares, exchange: nil, exchange_price: nil, swap: nil, allow_president_change: true)
       bundle = shares.is_a?(ShareBundle) ? shares : ShareBundle.new(shares)
       if @allow_president_sale && bundle.presidents_share && bundle.owner == self
         bundle = ShareBundle.new(bundle.shares, bundle.corporation.share_percent)
@@ -103,11 +103,12 @@ module Engine
           receiver: receiver,
           price: price,
           swap: swap,
-          swap_to_entity: swap ? self : nil
+          swap_to_entity: swap ? self : nil,
+          allow_president_change: allow_president_change
         )
       end
 
-      @game.float_corporation(corporation) unless floated == corporation.floated?
+      @game.float_corporation(corporation) if corporation.floatable && floated != corporation.floated?
     end
 
     def sell_shares(bundle, allow_president_change: true, swap: nil)

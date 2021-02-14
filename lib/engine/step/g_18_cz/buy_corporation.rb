@@ -59,6 +59,7 @@ module Engine
           for #{@game.format_currency(price)} per share receiving #{receiving.join(', ')}"
 
           corporation.close!
+          @game.corporations.delete(corporation)
         end
 
         def pass_description

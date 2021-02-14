@@ -29,7 +29,7 @@ module Engine
 
       load_from_json(Config::Game::G1828::JSON)
 
-      DEV_STAGE = :alpha
+      DEV_STAGE = :beta
 
       GAME_LOCATION = 'North East, USA'
       GAME_RULES_URL = 'https://kanga.nu/~claw/1828/1828-Rules.pdf'

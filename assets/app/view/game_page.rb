@@ -139,9 +139,16 @@ module View
       render_title
 
       props = {
+        attrs: {
+          autofocus: true, # does not work on all browsers
+          tabindex: -1, # necessary to be focusable so keyup works; -1 == not accessible by tabbing
+        },
         key: 'game_page',
         hook: {
           destroy: destroy,
+        },
+        on: {
+          keydown: ->(event) { hotkey_check(event) },
         },
       }
 
@@ -151,7 +158,60 @@ module View
       ]
       children.unshift(render_broken_game(@game.exception)) if @game.exception
 
-      h(:div, props, children)
+      h('div#game', props, children)
+    end
+
+    def change_anchor(anchor)
+      unless route_anchor
+        elm = Native(`document.getElementById('chatlog')`)
+        # only store when scrolled up at least one line (20px)
+        store(:scroll_pos, elm.scrollTop < elm.scrollHeight - elm.offsetHeight - 20 ? elm.scrollTop : nil, skip: true)
+      end
+      store(:tile_selector, nil, skip: true)
+      base = @app_route.split('#').first
+      new_route = base + anchor
+      new_route = base if @app_route == new_route
+      store(:app_route, new_route)
+    end
+
+    def hotkey_check(event)
+      # 'search for text when you start typing' feature of browser prevents execution
+      # only execute when no modifier is pressed to not interfere with OS shortcuts
+      event = Native(event)
+      return if event.getModifierState('Alt') || event.getModifierState('AltGraph') || event.getModifierState('Meta') ||
+        event.getModifierState('Control') || event.getModifierState('OS') || event.getModifierState('Shift')
+
+      active = Native(`document.activeElement`)
+      return if active.id != 'game' && active.localName != 'body'
+
+      key = event['key']
+      case key
+      when 'g'
+        change_anchor('')
+      when 'e'
+        change_anchor('#entities')
+      when 'm'
+        change_anchor('#map')
+      when 'a', 'k'
+        change_anchor('#market')
+      when 'i'
+        change_anchor('#info')
+      when 't'
+        change_anchor('#tiles')
+      when 's'
+        change_anchor('#spreadsheet')
+      when 'o'
+        change_anchor('#tools')
+      when 'c'
+        `document.getElementById('chatbar').focus()`
+        event.preventDefault
+      when '-', '0', '+'
+        map = `document.getElementById('map')`
+        `document.getElementById('zoom'+#{key}).click()` if map
+      when 'Home', 'End', 'PageUp', 'PageDown', 'ArrowLeft', 'ArrowRight'
+        Native(`document.getElementById('hist_'+#{key})`)&.click()
+        event.preventDefault
+      end
     end
 
     def game_path
@@ -175,13 +235,14 @@ module View
     end
 
     def menu
-      bg_color =  if @game_data['mode'] == :hotseat
-                    color_for(:hotseat_game)
-                  elsif active_player
-                    color_for(:your_turn)
-                  else
-                    color_for(:bg2)
-                  end
+      bg_color =
+        if @game_data['mode'] == :hotseat
+          color_for(:hotseat_game)
+        elsif active_player
+          color_for(:your_turn)
+        else
+          color_for(:bg2)
+        end
       nav_props = {
         attrs: {
           role: 'navigation',
@@ -203,14 +264,14 @@ module View
       }
 
       menu_items = [
-        item('Game'),
-        item('Entities', '#entities'),
-        item('Map', '#map'),
-        item('Market', '#market'),
-        item('Info', '#info'),
-        item('Tiles', '#tiles'),
-        item('Spreadsheet', '#spreadsheet'),
-        item('Tools', '#tools'),
+        item('G|ame', ''),
+        item('E|ntities', '#entities'),
+        item('M|ap', '#map'),
+        item('Mark|et', '#market'),
+        item('I|nfo', '#info'),
+        item('T|iles', '#tiles'),
+        item('S|preadsheet', '#spreadsheet'),
+        item('To|ols', '#tools'),
       ]
 
       h('nav#game_menu', nav_props, [
@@ -218,15 +279,15 @@ module View
       ])
     end
 
-    def item(name, anchor = '')
-      change_anchor = lambda do
-        unless route_anchor
-          elm = Native(`document.getElementById('chatlog')`)
-          # only store when scrolled up at least one line (20px)
-          store(:scroll_pos, elm.scrollTop < elm.scrollHeight - elm.offsetHeight - 20 ? elm.scrollTop : nil, skip: true)
+    def item(name, anchor)
+      name = name.split(/(\|)/).each_slice(2).flat_map do |text, pipe|
+        if pipe
+          head = text[0..-2]
+          tail = text[-1]
+          [h(:span, head), h(:span, { style: { textDecoration: 'underline' } }, tail)]
+        else
+          h(:span, text)
         end
-        store(:tile_selector, nil, skip: true)
-        store(:app_route, "#{@app_route.split('#').first}#{anchor}")
       end
 
       a_props = {
@@ -235,7 +296,7 @@ module View
           onclick: 'return false',
         },
         style: { textDecoration: route_anchor == anchor[1..-1] ? 'underline' : 'none' },
-        on: { click: change_anchor },
+        on: { click: ->(_event) { change_anchor(anchor) } },
       }
       li_props = {
         style: {

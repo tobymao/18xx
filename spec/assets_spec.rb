@@ -131,7 +131,7 @@ describe 'Assets' do
       }
 
       expect(render(app_route: '/game/1', **needs)).to include('Takamatsu E-Railroad')
-      expect(render(app_route: '/game/1#entities', **needs)).to include('Entities', 'Player 1', 'Awa Railroad')
+      expect(render(app_route: '/game/1#entities', **needs)).to include('entities', 'Player 1', 'Awa Railroad')
       expect(render(app_route: '/game/1#map', **needs)).to include('Kotohira')
       expect(render(app_route: '/game/1#market', **needs)).to include('The Bank', 'Cash', 'Par value')
       expect(render(app_route: '/game/1#info', **needs)).to include('Upcoming')

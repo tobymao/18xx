@@ -126,7 +126,6 @@ module Engine
           Step::G18CZ::HomeTrack,
           Step::G18CZ::SellCompanyAndSpecialTrack,
           Step::HomeToken,
-          Step::SpecialTrack,
           Step::G18CZ::BuyCompany,
           Step::Track,
           Step::G18CZ::Token,
@@ -148,7 +147,7 @@ module Engine
         @player_debts = @players.map { |player| [player.id, { debt: 0, penalty_interest: 0 }] }.to_h
       end
 
-      def new_operating_round
+      def new_operating_round(round_num = 1)
         @or += 1
         @companies.each do |company|
           company.value = COMPANY_VALUES[@or - 1]
@@ -234,7 +233,9 @@ module Engine
         return [] if @entity_used_ability_to_track
         return super unless @recently_floated.include?(entity)
 
-        [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }]
+        floated_tile_lay = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }]
+        floated_tile_lay.unshift({ lay: true, upgrade: true }) if entity.type == :large
+        floated_tile_lay
       end
 
       def corporation_size(entity)

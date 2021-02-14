@@ -49,9 +49,13 @@ module Engine
         end
 
         lay_tile(action, extra_cost: tile_lay[:cost], entity: entity, spender: spender)
-        @round.upgraded_track = true if action.tile.color != :yellow
+        upgraded_track(action)
         @round.num_laid_track += 1
         @round.laid_hexes << action.hex
+      end
+
+      def upgraded_track(action)
+        @round.upgraded_track = true if action.tile.color != :yellow
       end
 
       def abilities(entity, **kwargs, &block)

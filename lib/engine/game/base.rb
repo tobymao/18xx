@@ -2209,6 +2209,8 @@ module Engine
 
       def status_str(_corporation); end
 
+      def status_array(_corporation); end
+
       # Override this, and add elements (paragraphs of text) here to display it on Info page.
       def timeline
         []
