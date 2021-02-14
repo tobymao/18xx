@@ -367,7 +367,7 @@ module Engine
     },
     {
       "name": "Warsaw - Vienna Railway",
-      "sym": "MVR",
+      "sym": "WVR",
       "value": 90,
       "revenue": 30,
       "discount": 30,
