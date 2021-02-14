@@ -131,7 +131,7 @@ module View
         store(:selected_action_id, nil, skip: true)
       end
 
-      def history_link(text, title, hotkey, action_id = nil, style_extra = {}, as_button = false)
+      def history_link(text, title, action_id = nil, style_extra = {}, as_button = false, hotkey = '')
         route = Lib::Params.add(@app_route, 'action', action_id)
 
         click = lambda do
