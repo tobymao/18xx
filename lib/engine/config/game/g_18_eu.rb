@@ -513,8 +513,7 @@ module Engine
             {
                "nodes":[
                   "city",
-                  "offboard",
-                  "town"
+                  "offboard"
                ],
                "pay":2,
                "visit":2
@@ -537,8 +536,7 @@ module Engine
             {
                "nodes":[
                   "city",
-                  "offboard",
-                  "town"
+                  "offboard"
                ],
                "pay":3,
                "visit":3
@@ -567,8 +565,7 @@ module Engine
             {
                "nodes":[
                   "city",
-                  "offboard",
-                  "town"
+                  "offboard"
                ],
                "pay":4,
                "visit":4
@@ -590,8 +587,7 @@ module Engine
             {
                "nodes":[
                   "city",
-                  "offboard",
-                  "town"
+                  "offboard"
                ],
                "pay":5,
                "visit":5
@@ -618,8 +614,7 @@ module Engine
             {
                "nodes":[
                   "city",
-                  "offboard",
-                  "town"
+                  "offboard"
                ],
                "pay":6,
                "visit":6
@@ -641,8 +636,7 @@ module Engine
             {
                "nodes":[
                   "city",
-                  "offboard",
-                  "town"
+                  "offboard"
                ],
                "pay":8,
                "visit":8
