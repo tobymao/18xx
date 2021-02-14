@@ -672,10 +672,10 @@ module Engine
          ]
       },
       "blue":{
-         "offboard=revenue:10;path=a:0,b:_0":[
+         "offboard=revenue:10;path=a:0,b:_0;icon=image:port;":[
             "D1"
          ],
-         "offboard=revenue:10;path=a:3,b:_0":[
+         "offboard=revenue:10;path=a:3,b:_0;icon=image:port;":[
             "B21",
             "E22",
             "I20"
