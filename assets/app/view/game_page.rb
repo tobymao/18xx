@@ -135,9 +135,16 @@ module View
       render_title
 
       props = {
+        attrs: {
+          autofocus: true, # does not work on all browsers
+          tabindex: -1, # necessary to be focusable so keyup works; -1 == not accessible by tabbing
+        },
         key: 'game_page',
         hook: {
           destroy: destroy,
+        },
+        on: {
+          keydown: ->(event) { hotkey_check(event) },
         },
       }
 
@@ -147,7 +154,57 @@ module View
       ]
       children.unshift(render_broken_game(@game.exception)) if @game.exception
 
-      h(:div, props, children)
+      h('div#game', props, children)
+    end
+
+    def change_anchor(anchor)
+      unless route_anchor
+        elm = Native(`document.getElementById('chatlog')`)
+        # only store when scrolled up at least one line (20px)
+        store(:scroll_pos, elm.scrollTop < elm.scrollHeight - elm.offsetHeight - 20 ? elm.scrollTop : nil, skip: true)
+      end
+      store(:tile_selector, nil, skip: true)
+      store(:app_route, "#{@app_route.split('#').first}#{anchor}")
+    end
+
+    def hotkey_check(event)
+      # 'search for text when you start typing' feature of browser prevents execution
+      # only execute when no modifier is pressed to not interfere with OS shortcuts
+      event = Native(event)
+      return if event.getModifierState('Alt') || event.getModifierState('AltGraph') || event.getModifierState('Meta') ||
+        event.getModifierState('Control') || event.getModifierState('OS') || event.getModifierState('Shift')
+
+      active = Native(`document.activeElement`)
+      return unless active.id == 'game' || active.localName == 'body'
+
+      key = event['key']
+      case key
+      when 'g'
+        change_anchor('')
+      when 'e'
+        change_anchor('#entities')
+      when 'm'
+        change_anchor('#map')
+      when 'a', 'k'
+        change_anchor('#market')
+      when 'i'
+        change_anchor('#info')
+      when 't'
+        change_anchor('#tiles')
+      when 's'
+        change_anchor('#spreadsheet')
+      when 'o'
+        change_anchor('#tools')
+      when 'c'
+        `document.getElementById('chatbar').focus()`
+        event.preventDefault
+      when '-', '0', '+'
+        map = `document.getElementById('map')`
+        `document.getElementById('zoom'+#{key}).click()` if map
+      when 'Home', 'End', 'PageUp', 'PageDown', 'ArrowLeft', 'ArrowRight'
+        Native(`document.getElementById('hist_'+#{key})`)&.click()
+        event.preventDefault
+      end
     end
 
     def game_path
@@ -199,14 +256,14 @@ module View
       }
 
       menu_items = [
-        item('Game'),
-        item('Entities', '#entities'),
-        item('Map', '#map'),
-        item('Market', '#market'),
-        item('Info', '#info'),
-        item('Tiles', '#tiles'),
-        item('Spreadsheet', '#spreadsheet'),
-        item('Tools', '#tools'),
+        item('Game', '', 'g'),
+        item('Entities', '#entities', 'e'),
+        item('Map', '#map', 'm'),
+        item('Market', '#market', 'a or k'),
+        item('Info', '#info', 'i'),
+        item('Tiles', '#tiles', 't'),
+        item('Spreadsheet', '#spreadsheet', 's'),
+        item('Tools', '#tools', 'o'),
       ]
 
       h('nav#game_menu', nav_props, [
@@ -214,24 +271,15 @@ module View
       ])
     end
 
-    def item(name, anchor = '')
-      change_anchor = lambda do
-        unless route_anchor
-          elm = Native(`document.getElementById('chatlog')`)
-          # only store when scrolled up at least one line (20px)
-          store(:scroll_pos, elm.scrollTop < elm.scrollHeight - elm.offsetHeight - 20 ? elm.scrollTop : nil, skip: true)
-        end
-        store(:tile_selector, nil, skip: true)
-        store(:app_route, "#{@app_route.split('#').first}#{anchor}")
-      end
-
+    def item(name, anchor, hotkey)
       a_props = {
         attrs: {
           href: anchor,
           onclick: 'return false',
+          title: "hotkey: #{hotkey}",
         },
         style: { textDecoration: route_anchor == anchor[1..-1] ? 'underline' : 'none' },
-        on: { click: change_anchor },
+        on: { click: ->(_event) { change_anchor(anchor) } },
       }
       li_props = {
         style: {
