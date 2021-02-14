@@ -147,7 +147,7 @@ module View
             link_h = history_link(revenue_text,
                                   "Go to run #{x} of #{corporation.name}",
                                   hist[x].dividend.id - 1,
-                                  { 'text-decoration' => 'none' })
+                                  { textDecoration: 'none' })
             h(:td, props, [link_h])
           else
             h(:td, props, revenue_text)
