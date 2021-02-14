@@ -146,7 +146,7 @@ module Engine
       def train_limit(entity)
         return super unless entity.minor?
 
-        @game.phase.to_i > 3 ? 2 : 1
+        @phase.name.to_i > 3 ? 1 : 2
       end
 
       def tile_lays(entity)
