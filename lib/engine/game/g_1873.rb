@@ -5,7 +5,7 @@ require_relative 'base'
 module Engine
   module Game
     class G1873 < Base
-      attr_reader :tile_groups, :unused_tiles, :sik, :skev, :ldsteg, :mavag, :raba, :snw, :gc, :terrain_tokens
+      attr_reader :mine_12, :corporation_info, :minor_info
       attr_accessor :premium, :premium_order
 
       register_colors(tan: '#d6a06c')
@@ -84,6 +84,8 @@ module Engine
 
         @minor_info = load_minor_extended
         @corporation_info = load_corporation_extended
+
+        @mine_12 = @minors.find { |m| m.id == '12' }
       end
 
       def load_minor_extended
@@ -112,7 +114,7 @@ module Engine
                       desc: description)
         end
         corp_comps = game_corporations.map do |gc|
-          next unless gc[:extended][:type] == 'railway'
+          next unless gc[:extended][:type] == :railway
 
           description = "Railway in #{gc[:coordinates].join(', ')}. "\
             "Total concession tile cost: #{format_currency(gc[:extended][:concession_cost])}"
@@ -128,7 +130,7 @@ module Engine
         mine_comps = @companies.select { |c| mine_ids.include?(c.id) }
 
         corp_ids = @corporations.select do |corp|
-          @corporation_info[corp][:type] == 'railway' && @corporation_info[corp][:concession_phase] == 1
+          @corporation_info[corp][:type] == :railway && @corporation_info[corp][:concession_phase] == 1
         end.map(&:id)
         corp_comps = @companies.select { |c| corp_ids.include?(c.id) }
 
@@ -178,18 +180,41 @@ module Engine
       end
 
       def all_corporations
-        minors + corporations
+        @minors + @corporations
+      end
+
+      # mines that can be used to form a public mining company
+      def open_private_mines
+        @minors.select { |m| @players.include?(m.owner) }
+      end
+
+      # mines that can be merged into a public mining company
+      def buyable_private_mines
+        @minors.select { |m| !m.owner || @players.include?(m.owner) }
+      end
+
+      def corporation_available?(entity)
+        return false unless entity.corporation?
+
+        entity.ipoed || can_par?(entity, @round.active_step.current_entity)
       end
 
       def can_par?(corporation, player)
         return false if corporation.ipoed
 
         # see if player has corresponding concession (private)
-        if @corporation_info[corporation][:type] == 'railway'
+        if @corporation_info[corporation][:type] == :railway
           player.companies.any? { |c| c.id == corporation.id }
+        elsif !@corporation_info[corporation][:vor_harzer]
+          @turn > 1
         else
-          @corporation_info[corporation][:vor_harzer] || @turn > 1
+          num_vh = @minors.count { |m| m.owner == player && @minor_info[m][:vor_harzer] }
+          num_vh > 1 && (@turn > 1 || @mine_12.owner == player)
         end
+      end
+
+      def form_button_text(_entity)
+        'Form Public Mining Company'
       end
 
       # FIXME: public mines
@@ -229,6 +254,18 @@ module Engine
         end
       end
 
+      def mine?(entity)
+        entity.minor?
+      end
+
+      def public_mine?(entity)
+        entity.corporation? && @corporation_info[entity][:type] == :mine
+      end
+
+      def railway?(entity)
+        entity.corporation? && @corporation_info[entity][:type] == :railway
+      end
+
       def init_round
         new_premium_round
       end
@@ -254,6 +291,13 @@ module Engine
       def new_auction_round
         Round::Auction.new(self, [
           Step::G1873::BuyConcessionOr,
+        ])
+      end
+
+      def stock_round
+        Round::Stock.new(self, [
+          Step::G1873::Form,
+          Step::G1873::BuySellParShares,
         ])
       end
 
@@ -505,6 +549,7 @@ module Engine
               vor_harzer: true,
               machine_revenue: [40, 50, 60, 70, 80],
               switcher_revenue: [30, 40, 50, 60],
+              connected: false,
               open: true,
             },
           },
@@ -520,6 +565,7 @@ module Engine
               vor_harzer: false,
               machine_revenue: [40, 60, 80, 100, 120],
               switcher_revenue: [20, 30, 40, 50],
+              connected: false,
               open: true,
             },
           },
@@ -535,6 +581,7 @@ module Engine
               vor_harzer: false,
               machine_revenue: [40, 60, 80, 100, 120],
               switcher_revenue: [20, 30, 40, 50],
+              connected: false,
               open: true,
             },
           },
@@ -550,6 +597,7 @@ module Engine
               vor_harzer: true,
               machine_revenue: [40, 60, 80, 100, 120],
               switcher_revenue: [20, 30, 40, 50],
+              connected: false,
               open: true,
             },
           },
@@ -565,6 +613,7 @@ module Engine
               vor_harzer: true,
               machine_revenue: [50, 60, 70, 80, 90],
               switcher_revenue: [40, 50, 60, 70],
+              connected: false,
               open: true,
             },
           },
@@ -580,6 +629,7 @@ module Engine
               vor_harzer: true,
               machine_revenue: [50, 70, 90, 110, 130],
               switcher_revenue: [30, 40, 50, 60],
+              connected: false,
               open: true,
             },
           },
@@ -595,6 +645,7 @@ module Engine
               vor_harzer: false,
               machine_revenue: [50, 80, 110, 140, 170],
               switcher_revenue: [20, 30, 40, 50],
+              connected: false,
               open: true,
             },
           },
@@ -610,6 +661,7 @@ module Engine
               vor_harzer: false,
               machine_revenue: [60, 80, 100, 120, 140],
               switcher_revenue: [40, 50, 60, 70],
+              connected: false,
               open: true,
             },
           },
@@ -625,6 +677,7 @@ module Engine
               vor_harzer: false,
               machine_revenue: [60, 90, 120, 150, 180],
               switcher_revenue: [30, 40, 50, 60],
+              connected: false,
               open: true,
             },
           },
@@ -640,6 +693,7 @@ module Engine
               vor_harzer: true,
               machine_revenue: [60, 90, 120, 150, 180],
               switcher_revenue: [30, 40, 50, 60],
+              connected: false,
               open: true,
             },
           },
@@ -655,6 +709,7 @@ module Engine
               vor_harzer: true,
               machine_revenue: [70, 90, 110, 130, 150],
               switcher_revenue: [50, 60, 70, 80],
+              connected: false,
               open: true,
             },
           },
@@ -670,6 +725,7 @@ module Engine
               vor_harzer: true,
               machine_revenue: [70, 90, 110, 130, 150],
               switcher_revenue: [50, 60, 70, 80],
+              connected: false,
               open: true,
             },
           },
@@ -685,6 +741,7 @@ module Engine
               vor_harzer: false,
               machine_revenue: [70, 100, 130, 160, 190],
               switcher_revenue: [40, 50, 60, 70],
+              connected: false,
               open: true,
             },
           },
@@ -700,6 +757,7 @@ module Engine
               vor_harzer: true,
               machine_revenue: [90, 110, 130, 150, 170],
               switcher_revenue: [70, 80, 90, 100],
+              connected: false,
               open: true,
             },
           },
@@ -712,9 +770,10 @@ module Engine
             color: 'black',
             extended: {
               value: 300,
-              vor_harzer: true,
+              vor_harzer: false,
               machine_revenue: [90, 120, 150, 180, 210],
               switcher_revenue: [60, 70, 80, 90],
+              connected: true,
               open: true,
             },
           },
@@ -745,7 +804,7 @@ module Engine
             color: '#FF0000',
             text_color: 'black',
             extended: {
-              type: 'railway',
+              type: :railway,
               concession_phase: 1,
               concession_routes: [%w[B19 B17 C16 D15]],
               concession_cost: 0,
@@ -773,7 +832,7 @@ module Engine
             color: '#326199',
             text_color: 'white',
             extended: {
-              type: 'railway',
+              type: :railway,
               concession_phase: 1,
               concession_routes: [%w[G20 H19 G17 I18]],
               concession_cost: 150,
@@ -801,7 +860,7 @@ module Engine
             color: '#A2A024',
             text_color: 'black',
             extended: {
-              type: 'railway',
+              type: :railway,
               concession_phase: 3,
               concession_routes: [%w[B9 C8 D7 E6 F5 G6], %w[G6 H7 H9 I8 J7]],
               concession_cost: 500,
@@ -827,7 +886,7 @@ module Engine
             color: '#FFFF00',
             text_color: 'black',
             extended: {
-              type: 'railway',
+              type: :railway,
               concession_phase: 3,
               concession_routes: [%w[E4 F3 G2 H1 I2]],
               concession_cost: 300,
@@ -853,7 +912,7 @@ module Engine
             color: '#2E270D',
             text_color: 'white',
             extended: {
-              type: 'railway',
+              type: :railway,
               concession_phase: 3,
               concession_routes: [%w[G4 H3 I4]],
               concession_cost: 100,
@@ -879,7 +938,7 @@ module Engine
             color: '#2E270D',
             text_color: 'white',
             extended: {
-              type: 'railway',
+              type: :railway,
               concession_phase: 4,
               concession_routes: [%w[B9 C10 C12 C14 D15]],
               concession_cost: 0,
@@ -905,7 +964,7 @@ module Engine
             color: '#FF740E',
             text_color: 'black',
             extended: {
-              type: 'railway',
+              type: :railway,
               concession_phase: 4,
               concession_routes: [],
               concession_cost: 0,
@@ -924,7 +983,7 @@ module Engine
             color: '#C0C0C0',
             text_color: 'black',
             extended: {
-              type: 'external',
+              type: :external,
             },
           },
           {
@@ -938,7 +997,7 @@ module Engine
             color: '#950822',
             text_color: 'white',
             extended: {
-              type: 'mine',
+              type: :mine,
               vor_harzer: false,
             },
           },
@@ -953,7 +1012,7 @@ module Engine
             color: '#772500',
             text_color: 'white',
             extended: {
-              type: 'mine',
+              type: :mine,
               vor_harzer: true,
             },
           },
@@ -968,7 +1027,7 @@ module Engine
             color: '#16CE91',
             text_color: 'white',
             extended: {
-              type: 'mine',
+              type: :mine,
               vor_harzer: false,
             },
           },
@@ -983,7 +1042,7 @@ module Engine
             color: '#F7848D',
             text_color: 'black',
             extended: {
-              type: 'mine',
+              type: :mine,
               vor_harzer: false,
             },
           },
@@ -998,7 +1057,7 @@ module Engine
             color: '#448A28',
             text_color: 'black',
             extended: {
-              type: 'mine',
+              type: :mine,
               vor_harzer: false,
             },
           },

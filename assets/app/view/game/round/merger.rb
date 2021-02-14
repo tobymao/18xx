@@ -160,10 +160,17 @@ module View
             if @selected_corporation
               merge_corporation = @selected_corporation
               do_merge = lambda do
-                process_action(Engine::Action::Merge.new(
-                  corporation,
-                  corporation: merge_corporation,
-                ))
+                if merge_corporation.corporation?
+                  process_action(Engine::Action::Merge.new(
+                   corporation,
+                   corporation: merge_corporation,
+                  ))
+                else
+                  process_action(Engine::Action::Merge.new(
+                   corporation,
+                   minor: merge_corporation,
+                  ))
+                end
               end
 
               if @step.show_other_players ||
