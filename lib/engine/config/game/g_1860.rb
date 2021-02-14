@@ -24,8 +24,8 @@ module Engine
     "3": 670,
     "4": 500
   },
-  "capitalization": "full",
   "mustSellInBlocks": true,
+  "capitalization": "full",
   "layout": "flat",
   "locationNames": {
     "A5": "Norton Green",
