@@ -91,7 +91,7 @@ end
 desc 'Precompile assets for production'
 task :precompile do
   require_relative 'lib/assets'
-  assets = Assets.new(cache: false, make_map: false, compress: true, gzip: true)
+  assets = Assets.new(cache: false, compress: true, gzip: true)
   assets.combine
 
   # Copy to the pin directory

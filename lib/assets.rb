@@ -12,23 +12,24 @@ class Assets
   OUTPUT_BASE = 'public'
   PIN_DIR = '/pinned/'
 
-  def initialize(make_map: true, compress: false, gzip: false, cache: true, precompiled: false)
+  def initialize(compress: false, gzip: false, cache: true, precompiled: false)
     @build_path = 'build'
     @out_path = OUTPUT_BASE + '/assets'
     @root_path = '/assets'
 
     @main_path = "#{@out_path}/main.js"
     @deps_path = "#{@out_path}/deps.js"
+    @server_path = "#{@out_path}/server.js"
 
     @cache = cache
-    @make_map = make_map
     @compress = compress
     @gzip = gzip
     @precompiled = precompiled
   end
 
   def context
-    @context ||= JsContext.new(combine)
+    combine
+    @context ||= JsContext.new(@server_path)
   end
 
   def html(script, **needs)
@@ -52,17 +53,45 @@ class Assets
   end
 
   def builds
-    @builds ||= {
-      'deps' => {
-        'path' => @deps_path,
-        'files' => @precompiled ? [@deps_path] : [compile_lib('opal'), compile_lib('deps', 'assets')],
-      },
-      'main' => {
-        'path' => @main_path,
-        'files' => @precompiled ? [@main_path] : [compile('engine', 'lib', 'engine'), compile('app', 'assets/app', '')],
-      },
-      **game_builds,
-    }
+    @builds ||=
+      if @precompiled
+        {
+          'deps' => {
+            'path' => @deps_path,
+            'files' => [@deps_path],
+          },
+          'main' => {
+            'path' => @main_path,
+            'files' => [@main_path],
+          },
+          'server' => {
+            'path' => @server_path,
+            'files' => [@server_path],
+          },
+          **game_builds,
+        }
+      else
+        opal = compile_lib('opal')
+        deps = compile_lib('deps', 'assets')
+        engine = compile('engine', 'lib', 'engine')
+        app = compile('app', 'assets/app', '')
+        game_files = game_builds.values.flat_map { |g| g['files'] }
+        {
+          'deps' => {
+            'path' => @deps_path,
+            'files' => [opal, deps],
+          },
+          'main' => {
+            'path' => @main_path,
+            'files' => [engine, app],
+          },
+          'server' => {
+            'path' => @server_path,
+            'files' => [opal, deps, engine, app, *game_files],
+          },
+          **game_builds,
+        }
+      end
   end
 
   def js_tags(titles)
@@ -134,11 +163,6 @@ class Assets
 
     return output if compilers.empty?
 
-    if @make_map
-      sm_path = "#{@build_path}/#{name || game}.json"
-      sm_data = File.exist?(sm_path) ? JSON.parse(File.binread(sm_path)) : {}
-    end
-
     compilers.each do |compiler|
       file = compiler.file
       raise "#{file} not found put in deps." unless (opts = metadata[file])
@@ -146,48 +170,15 @@ class Assets
       time = Time.now
       File.write(opts[:js_path], compiler.compile)
       puts "Compiling #{file} - #{Time.now - time}"
-      next unless @make_map
-
-      source_map = compiler.source_map
-      code = source_map.generated_code + "\n"
-      sm_data[file] = {
-        'lines' => code.count("\n"),
-        'map' => source_map.to_h,
-      }
     end
 
-    File.write(sm_path, JSON.dump(sm_data)) if @make_map
-
-    source_map = {
-      version: 3,
-      file: "#{name || game}.js",
-      sections: [],
-    }
-
-    offset_line = 0
-
-    source = metadata.map do |file, opts|
-      if @make_map
-        sm = sm_data[file]
-
-        source_map[:sections] << {
-          offset: {
-            line: offset_line,
-            column: 0,
-          },
-          map: sm['map'],
-        }
-
-        offset_line += sm['lines']
-      end
-
+    source = metadata.map do |_file, opts|
       File.read(opts[:js_path]).to_s
     end.join("\n")
 
     opal_load = game ? "engine/game/#{game}" : name
     source += "\nOpal.load('#{opal_load}')"
 
-    source += to_data_uri_comment(source_map) if @make_map
     File.write(output, source)
     output
   end
@@ -217,11 +208,6 @@ class Assets
     end
 
     metadata
-  end
-
-  def to_data_uri_comment(source_map)
-    map_json = JSON.dump(source_map)
-    "//# sourceMappingURL=data:application/json;base64,#{Base64.encode64(map_json).delete("\n")}"
   end
 
   def pin(pin_path)
