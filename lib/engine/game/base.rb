@@ -646,11 +646,7 @@ module Engine
 
       def process_single_action(action)
         if action.user
-          @log << if action.user == 'programmed'
-                    "• Action(#{action.type}) via #{action.entity.player.name} programmed action"
-                  else
-                    "• Action(#{action.type}) via Master Mode by: #{player_by_id(action.user)&.name || 'Owner'}"
-                  end
+          @log << "• Action(#{action.type}) via Master Mode by: #{player_by_id(action.user)&.name || 'Owner'}"
         end
 
         preprocess_action(action)

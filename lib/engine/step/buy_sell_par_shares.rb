@@ -281,9 +281,7 @@ module Engine
         end
         share = corporation.ipo_shares.first
         if can_buy?(entity, share.to_bundle)
-          action = Action::BuyShares.new(entity, shares: share)
-          action.user = 'programmed'
-          [action]
+          [Action::BuyShares.new(entity, shares: share)]
         else
           [Action::ProgramDisable.new(entity, reason: "Cannot buy #{corporation.name}")]
         end
