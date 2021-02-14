@@ -18,13 +18,13 @@ module Engine
       end
 
       def process_program_enable(action)
-        @log << "#{action.entity.name} enabling programmed action #{action.class.print_name}"
+        @game.player_log(action.entity, "Enabled programmed action #{action.class.print_name}")
         @game.programmed_actions[action.entity] = action
       end
 
       def process_program_disable(action)
         # @todo: This should only log to the player
-        @log << "#{action.entity.name} programming disabled due to '#{action.reason}'" if action.reason
+        @game.player_log(action.entity, "Disabled programmed action due to '#{action.reason}'") if action.reason
         @game.programmed_actions.delete(action.entity)
       end
 
