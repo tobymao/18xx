@@ -25,8 +25,8 @@ module Engine
     "4": 500
   },
   "capitalization": "full",
-  "layout": "flat",
   "mustSellInBlocks": true,
+  "layout": "flat",
   "locationNames": {
     "A5": "Norton Green",
     "A7": "Totland",
