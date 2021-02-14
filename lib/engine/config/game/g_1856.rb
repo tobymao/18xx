@@ -264,7 +264,7 @@ module Engine
       "name": "Flos Tramway",
       "sym": "FT",
       "value": 20,
-      "revenue": 5,
+      "revenue": 50,
       "desc": "No special abilities.",
       "abilities": [
         {
@@ -280,7 +280,7 @@ module Engine
       "name": "Waterloo & Saugeen Railway Co.",
       "sym": "WSRC",
       "value": 40,
-      "revenue": 10,
+      "revenue": 100,
       "desc": "The public company that owns this private company may place a free station marker and green #59 tile on the Kitchener hex (I12). This action closes the private company.",
       "abilities":[
          {
@@ -306,7 +306,7 @@ module Engine
       "name": "The Canada Company",
       "sym": "TCC",
       "value": 50,
-      "revenue": 10,
+      "revenue": 100,
       "desc": "During its operating turn, the public company owning this private company may place a track tile in the hex occupied by this private company (H11). This track lay is in addition to the public company's normal track lay. This action does not close the private company.",
       "abilities":[
          {
@@ -337,7 +337,7 @@ module Engine
       "name": "Great Lakes Shipping Company",
       "sym": "GLSC",
       "value": 70,
-      "revenue": 15,
+      "revenue": 150,
       "desc": "At any time during its operating turn, the owning public company may place the port token in any one city adjacent to Lake Erie, Lake Huron or Georgian Bay. Placement of this token closes the Great Lakes Shipping Company.",
       "abilities": [{
         "type": "assign_hexes",
@@ -367,14 +367,14 @@ module Engine
       "name": "Niagara Falls Suspension Bridge Company",
       "sym": "NFSBC",
       "value": 100,
-      "revenue": 20,
+      "revenue": 200,
       "desc": "The public company that owns this private company may add a $10 bonus when running to Buffalo (P17/P19). Other public companies may purchase the right for $50."
     },
     {
       "name": "St. Clair Frontier Tunnel Company",
       "sym": "SCFTC",
       "value": 100,
-      "revenue": 20,
+      "revenue": 200,
       "desc": "The public company that owns this private company may add a $10 Port Huron bonus when running to Sarnia (B13). Other public companies may purchase the right for $50."
     }
   ],
