@@ -164,7 +164,10 @@ module View
         store(:scroll_pos, elm.scrollTop < elm.scrollHeight - elm.offsetHeight - 20 ? elm.scrollTop : nil, skip: true)
       end
       store(:tile_selector, nil, skip: true)
-      store(:app_route, "#{@app_route.split('#').first}#{anchor}")
+      base = @app_route.split('#').first
+      new_route = base + anchor
+      new_route = base if @app_route == new_route
+      store(:app_route, new_route)
     end
 
     def hotkey_check(event)
@@ -257,14 +260,14 @@ module View
       }
 
       menu_items = [
-        item('(G)ame', ''),
-        item('(E)ntities', '#entities'),
-        item('(M)ap', '#map'),
-        item('M(a)r(k)et', '#market'),
-        item('(I)nfo', '#info'),
-        item('(T)iles', '#tiles'),
-        item('(S)preadsheet', '#spreadsheet'),
-        item('T(o)ols', '#tools'),
+        item('G|ame', ''),
+        item('E|ntities', '#entities'),
+        item('M|ap', '#map'),
+        item('Ma|rk|et', '#market'),
+        item('I|nfo', '#info'),
+        item('T|iles', '#tiles'),
+        item('S|preadsheet', '#spreadsheet'),
+        item('To|ols', '#tools'),
       ]
 
       h('nav#game_menu', nav_props, [
@@ -273,6 +276,15 @@ module View
     end
 
     def item(name, anchor)
+      name = name.split(/(\|)/).each_slice(2).flat_map do |text, pipe|
+        if pipe
+          head, tail = text[0..-2], text[-1]
+          [h(:span, head), h(:u, tail)]
+        else
+          h(:span, text)
+        end
+      end
+
       a_props = {
         attrs: {
           href: anchor,
