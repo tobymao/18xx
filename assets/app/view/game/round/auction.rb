@@ -243,23 +243,45 @@ module View
 
           @step.available.select(&:minor?).map do |minor|
             children = [h(Corporation, corporation: minor)]
-            children << render_minor_choose_input(minor) if @selected_corporation == minor
+            children << render_minor_input(minor) if @selected_corporation == minor
             h(:div, props, children)
           end
         end
 
-        def render_minor_choose_input(minor)
-          choose = lambda do
-            hide!
-            process_action(Engine::Action::Bid.new(@current_entity,
-                                                   minor: minor,
-                                                   price: 0))
-            store(:selected_corporation, nil, skip: true)
-          end
+        def render_minor_input(minor)
+          minor_actions = []
 
-          minor_actions = [h(:button, { on: { click: choose } }, 'Choose')]
+          minor_actions.concat(render_minor_choose(minor))
+          minor_actions.concat(render_minor_place_bid(minor))
 
           h(:div, { style: { textAlign: 'center', margin: '1rem' } }, minor_actions)
+        end
+
+        def render_minor_choose(minor)
+          return [] unless @step.may_choose?(minor)
+
+          [h(:button, { on: { click: -> { choose_minor(minor) } } }, 'Choose')]
+        end
+
+        def render_minor_place_bid(minor)
+          return [] unless @step.auctioneer?
+          return [] unless @step.min_bid(minor) <= @step.max_place_bid(@current_entity, minor)
+
+          input = h(:input, style: { marginRight: '1rem' }, props: {
+                      value: @step.min_bid(minor),
+                      step: @step.min_increment,
+                      min: @step.min_bid(minor),
+                      max: @step.max_bid(@current_entity, minor),
+                      type: 'number',
+                      size: @current_entity.cash.to_s.size,
+                    })
+
+          [
+            input,
+            h(:button,
+              { on: { click: -> { create_minor_bid(minor, input) } } },
+              'Place Bid'),
+          ]
         end
 
         def render_corporations
@@ -309,12 +331,33 @@ module View
           @block_show || @hidden
         end
 
-        def create_bid(company, input)
+        def choose_minor(minor)
+          hide!
+          process_action(Engine::Action::Bid.new(
+            @current_entity,
+            minor: minor,
+            price: 0
+          ))
+          store(:selected_corporation, nil, skip: true)
+        end
+
+        def create_minor_bid(target, input)
           hide!
           price = input.JS['elm'].JS['value'].to_i
           process_action(Engine::Action::Bid.new(
             @current_entity,
-            company: company,
+            minor: target,
+            price: price,
+          ))
+          store(:selected_corporation, nil, skip: true)
+        end
+
+        def create_bid(target, input)
+          hide!
+          price = input.JS['elm'].JS['value'].to_i
+          process_action(Engine::Action::Bid.new(
+            @current_entity,
+            company: target,
             price: price,
           ))
           store(:selected_company, nil, skip: true)
