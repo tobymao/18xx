@@ -455,9 +455,9 @@ module Engine
       "color": "green"
     },
     {
-      "sym": "GR",
+      "sym": "GRR",
       "name": "Grand Russian Railway",
-      "logo": "1861/GR",
+      "logo": "1861/GRR",
       "float_percent": 20,
       "always_market_price": true,
       "tokens": [
@@ -483,9 +483,9 @@ module Engine
       "color": "blue"
     },
     {
-      "sym": "MKR",
+      "sym": "MKV",
       "name": "Moscow, Kiev & Voronezh Railway",
-      "logo": "1861/MKR",
+      "logo": "1861/MKV",
       "float_percent": 20,
       "always_market_price": true,
       "tokens": [
