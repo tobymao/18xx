@@ -335,7 +335,16 @@ module Engine
 
       def destinated!(corp)
         @log << "-- #{corp.name} has destinated --"
+        remove_dest_icons(corp)
         release_escrow!(corp)
+      end
+
+      def remove_dest_icons(corp)
+        return unless @destinations[corp.id]
+
+        @destinations[corp.id].each do |dest|
+          Array(dest).each { |id| hex_by_id(id).tile.icons.reject! { |i| i.name == corp.id } }
+        end
       end
 
       #
@@ -482,6 +491,7 @@ module Engine
 
       def event_no_more_escrow_corps!
         @log << 'New corporations will be started as incremental cap corporations'
+        @corporations.select { |c| !c.capitalization }.each { |c| remove_dest_icons(c) }
       end
 
       def event_no_more_incremental_corps!
