@@ -16,7 +16,6 @@ module View
       include Actionable
 
       needs :game
-      needs :user, default: nil, store: true
 
       def render
         @spreadsheet_sort_by = Lib::Storage['spreadsheet_sort_by']
@@ -133,7 +132,7 @@ module View
                                   when 'withhold'
                                     ["[#{hist[x].revenue.abs}]", '0.5']
                                   when 'half'
-                                    ["|#{hist[x].revenue.abs}|", '0.75']
+                                    ["¦#{hist[x].revenue.abs}¦", '0.75']
                                   else
                                     [hist[x].revenue.abs.to_s, '1.0']
                                   end
@@ -147,7 +146,8 @@ module View
           if hist[x]&.dividend&.id&.positive?
             link_h = history_link(revenue_text,
                                   "Go to run #{x} of #{corporation.name}",
-                                  hist[x].dividend.id - 1)
+                                  hist[x].dividend.id - 1,
+                                  { 'text-decoration' => 'none' })
             h(:td, props, [link_h])
           else
             h(:td, props, revenue_text)
