@@ -278,8 +278,9 @@ module View
     def item(name, anchor)
       name = name.split(/(\|)/).each_slice(2).flat_map do |text, pipe|
         if pipe
-          head, tail = text[0..-2], text[-1]
-          [h(:span, head), h(:u, tail)]
+          head = text[0..-2]
+          tail = text[-1]
+          [h(:span, head), h(:span, { style: { textDecoration: 'underline' } }, tail)]
         else
           h(:span, text)
         end
