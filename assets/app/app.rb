@@ -99,7 +99,6 @@ class App < Snabberb::Component
     elsif @game_data['status'] == 'new'
       return h(View::InviteGame, user: @user, game: @game_data)
     elsif !@game_data['loaded'] && !@game_data['loading']
-      enter_game(id: match[2], mode: match[1] == 'game' ? :muti : :hotseat, pin: @pin)
       enter_game(@game_data)
     end
 
