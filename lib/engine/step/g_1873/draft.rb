@@ -46,7 +46,7 @@ module Engine
         end
 
         def finished?
-          @companies.empty? || entities.all?(&:passed?) & @game.premium.zero?
+          @companies.empty? || (entities.all?(&:passed?) && @game.premium.zero?)
         end
 
         def actions(entity)
