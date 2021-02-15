@@ -861,7 +861,7 @@ module Engine
             "yellow"
          ],
          "status": [
-
+            "minor_limit_two"
 			],
 			"operating_rounds": 2
       },
@@ -874,7 +874,7 @@ module Engine
             "green"
          ],
          "status": [
-
+            "minor_limit_two"
 			],
 			"operating_rounds": 2
       },
@@ -887,7 +887,7 @@ module Engine
             "green"
          ],
          "status": [
-
+            "minor_limit_one"
 			],
 			"operating_rounds": 2
       },
@@ -901,7 +901,8 @@ module Engine
             "brown"
          ],
          "status": [
-
+            "minor_limit_one",
+            "normal_formation"
 			],
 			"operating_rounds": 2
       },
@@ -915,7 +916,7 @@ module Engine
             "brown"
          ],
          "status": [
-
+            "normal_formation"
 			],
 			"operating_rounds": 2
       },
@@ -930,7 +931,7 @@ module Engine
             "gray"
          ],
          "status": [
-
+            "normal_formation"
 			],
 			"operating_rounds": 2
       }
