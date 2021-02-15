@@ -26,7 +26,7 @@ module Engine
     "layout": "pointy",
     "mustSellInBlocks": false,
     "locationNames": {
-        "A3": "Copper County",
+        "A3": "Copper Country",
         "A5": "Marquette",
         "B14": "Barrie",
         "A7": "Mackinaw City",
