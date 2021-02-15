@@ -9,11 +9,7 @@ module Engine
         def corporate_actions(entity)
           return [] if @winning_bid
 
-          if @corporate_action && @corporate_action.entity != entity
-            return ['buy_tokens'] if can_buy_tokens?(entity)
-
-            return []
-          end
+          return [] if @corporate_action && @corporate_action.entity != entity
 
           actions = []
           if @current_actions.none?
@@ -21,7 +17,6 @@ module Engine
             actions << 'buy_shares' unless @game.redeemable_shares(entity).empty?
             actions << 'buy_train' if can_buy_train?(entity)
           end
-          actions << 'buy_tokens' if can_buy_tokens?(entity)
           actions
         end
 
