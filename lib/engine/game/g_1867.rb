@@ -96,7 +96,7 @@ module Engine
                                             par: 'Major/Minor Corporation Par',
                                             convert_range: 'Price range to convert minor to major',
                                             max_price: 'Maximum price for a minor').freeze
-      STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(par_1: :orange, par_2: :green).freeze
+      STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(par_1: :orange, par_2: :green, convert_range: :blue).freeze
       CORPORATION_SIZES = { 2 => :small, 5 => :medium, 10 => :large }.freeze
       # A token is reserved for Montreal is reserved for nationalization
       NATIONAL_RESERVATIONS = ['L12'].freeze
