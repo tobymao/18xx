@@ -13,6 +13,12 @@ module Engine
           times = 4 if entity.type == :large
           { share_direction: :right, share_times: times }
         end
+
+        def corporation_dividends(entity, per_share)
+          # pays out shares in marked and in IPO
+          dividends_for_entity(entity, entity,
+                               per_share) + dividends_for_entity(entity, @game.share_pool, per_share)
+        end
       end
     end
   end
