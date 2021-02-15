@@ -54,7 +54,7 @@ module Engine
 
           @log << "#{entity.name} removes token from #{hex.name} (#{hex.location_name})"
           token.destroy!
-          @game.place_blocking_token(hex, city_index: hex.tile.cities.index(city))
+          @game.place_blocking_token(hex, city: city)
 
           hexes.delete(hex)
           @round.corporation_removing_tokens = nil if hexes.empty?
