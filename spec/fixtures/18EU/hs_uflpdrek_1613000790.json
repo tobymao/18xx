@@ -1,5 +1,5 @@
 {
-  "status": "active",
+  "status": "finished",
   "actions": [
     {
       "type": "bid",
@@ -2449,6 +2449,13 @@
       "entity_type": "player",
       "id": 234,
       "created_at": 1613403227
+    },
+    {
+      "type": "end_game",
+      "entity": "Player 1",
+      "entity_type": "player",
+      "id": 235,
+      "created_at": 1613404057
     }
   ],
   "id": "hs_wmxytzdm_1613000790",
@@ -2476,11 +2483,15 @@
   },
   "created_at": "2021-02-14",
   "loaded": true,
-  "result": {},
+  "result": {
+    "Player 3": 360,
+    "Player 1": 330,
+    "Player 2": 290
+  },
   "turn": 2,
   "round": "Stock Round",
   "acting": [
     "Player 1"
   ],
-  "updated_at": 1613403227
+  "updated_at": 1613404057
 }

@@ -91,7 +91,7 @@ module Engine
       def add_optional_train(type)
         modified_trains = @depot.trains.select { |t| t.name == type }
         new_train = modified_trains.first.clone
-        new_train.index = copy_this_train.length
+        new_train.index = modified_trains.length
         @depot.add_train(new_train)
       end
 
