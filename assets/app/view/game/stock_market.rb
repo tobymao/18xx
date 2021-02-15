@@ -72,38 +72,24 @@ module View
         }
       end
 
+      CROSSHATCH_TYPES = %i[par_overlap convert_range].freeze
+      BORDER_TYPES = %i[max_price].freeze
+
       def cell_style(box_style, types)
-        color = @game.class::STOCKMARKET_COLORS[types&.first]
+        normal_types = types.reject { |t| BORDER_TYPES.include?(t) }
+        color = @game.class::STOCKMARKET_COLORS[normal_types&.first]
         color_to_use = color ? COLOR_MAP[color] : color_for(:bg2)
 
-        style = if types.include?(:par_overlap) && types.size > 1
+        style = if !(normal_types & CROSSHATCH_TYPES).empty? && normal_types.size > 1
+                  secondary = @game.class::STOCKMARKET_COLORS[(normal_types & CROSSHATCH_TYPES).first]
+                  secondary_color = secondary ? COLOR_MAP[secondary] : color_for(:bg2)
                   box_style.merge(background: "repeating-linear-gradient(45deg, #{color_to_use}, #{color_to_use} 10px,
-                    #{COLOR_MAP[:blue]} 10px, #{COLOR_MAP[:blue]} 20px)")
+                    #{secondary_color} 10px, #{secondary_color} 20px)")
                 else
                   box_style.merge(backgroundColor: color_to_use)
                 end
 
-        if types.include?(:convert_range)
-          # This only works on 1D at present
-
-          style[:borderTopColor] = style[:borderBottomColor] = COLOR_MAP[:blue]
-          style[:borderTopWidth] = style[:borderBottomWidth] = "#{BORDER * 2}px"
-          unless @previous_convert_range
-            style[:borderLeftColor] = style[:borderTopColor]
-            style[:borderLeftWidth] = style[:borderTopWidth]
-          end
-
-          if types.first == :convert_range
-            # If it's first, we're in the key
-            style[:borderRightColor] = style[:borderTopColor]
-            style[:borderRightWidth] = style[:borderTopWidth]
-          end
-          @previous_convert_range = true
-        else
-          @previous_convert_range = false
-        end
-
-        if types.include?(:max_price)
+        unless (types & BORDER_TYPES).empty?
           style[:borderRightWidth] = "#{BORDER * 4}px"
           style[:borderRightColor] = COLOR_MAP[:purple]
         end
