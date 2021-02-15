@@ -130,26 +130,27 @@ module View
         [h(:button, { on: { click: short } }, 'Short Share')]
       end
 
-      # Allow privates to be exchanged for shares
+      # Allow privates or minors to be exchanged for shares if they have the ability
       def render_exchanges
         children = []
+        source_entities = [*@game.companies, *@game.minors]
 
-        @game.companies.each do |company|
-          @game.abilities(company, :exchange) do |ability|
+        source_entities.each do |entity|
+          @game.abilities(entity, :exchange) do |ability|
             next unless @game.exchange_corporations(ability).include?(@corporation)
-            next unless company.owner == @current_entity
+            next unless entity.owner == @current_entity
 
             if ability.from.include?(:ipo)
               president_share, other_ipo_shares = @ipo_shares.partition(&:president)
               children.concat(render_share_exchange(other_ipo_shares,
-                                                    company,
+                                                    entity,
                                                     source: @game.ipo_name(@corporation)))
               children.concat(render_share_exchange(president_share,
-                                                    company,
+                                                    entity,
                                                     source: 'Presidency'))
             end
 
-            children.concat(render_share_exchange(@pool_shares, company)) if ability.from.include?(:market)
+            children.concat(render_share_exchange(@pool_shares, entity)) if ability.from.include?(:market)
           end
         end
 
@@ -157,19 +158,20 @@ module View
       end
 
       # Put up one exchange button for each exchangable percentage share type in market.
-      def render_share_exchange(shares, company, source: 'Market')
+      def render_share_exchange(shares, entity, source: 'Market')
         return [] unless @step.respond_to?(:can_gain?)
 
         shares.map do |share|
-          next unless @step.can_gain?(company.owner, share, exchange: true)
+          next unless @step.can_gain?(entity.owner, share, exchange: true)
           next if share.president && !@game.exchange_for_partial_presidency?
 
+          name = entity.company? ? entity.sym : entity.name
           h(Button::BuyShare,
             share: share,
-            entity: company,
+            entity: entity,
             partial_percent: @game.exchange_partial_percent(share),
             percentages_available: shares.size,
-            prefix: "Exchange #{company.sym} for ",
+            prefix: "Exchange #{name} for ",
             source: source)
         end
       end

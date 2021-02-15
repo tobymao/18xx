@@ -64,7 +64,9 @@ module Engine
       def process_place_token(action)
         # the action is faked and doesn't represent the actual token laid
         hex = action.city.hex
-        raise GameError, "Cannot place token on #{hex.name}" unless available_hex(action.entity, hex)
+        unless available_hex(action.entity, hex)
+          raise GameError, "Cannot place token on #{hex.name} as the hex is not available"
+        end
 
         place_token(
           token.corporation,

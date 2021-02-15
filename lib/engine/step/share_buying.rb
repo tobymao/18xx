@@ -14,7 +14,10 @@ module Engine
                                     swap: swap,
                                     allow_president_change: allow_president_change)
         corporation = shares.corporation
-        @game.place_home_token(corporation) if @game.class::HOME_TOKEN_TIMING == :float && corporation.floated?
+        if (@game.class::HOME_TOKEN_TIMING == :float && corporation.floated?) ||
+            (@game.class::HOME_TOKEN_TIMING == :par && corporation.ipoed)
+          @game.place_home_token(corporation)
+        end
       end
 
       # Returns if a share can be gained by an entity respecting the cert limit
