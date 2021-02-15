@@ -66,7 +66,12 @@ module Engine
             raise GameError, "Choose a corporation to merge with #{corporation.name}"
           end
 
-          @game.stock_market.set_par(target, corporation.share_price)
+          # After conversion it is the new price
+          new_price = @game.stock_market.share_prices_with_types(%i[par par_2]).find do |sp|
+            sp.price <= corporation.share_price.price
+          end
+
+          @game.stock_market.set_par(target, new_price)
           owner = corporation.owner
 
           @converting = nil
@@ -137,7 +142,7 @@ module Engine
           min = @merging.map { |c| c.share_price.price }.min
           max = @merging.map { |c| c.share_price.price }.max
           new_price = [200, [100, (max + min)].max].min
-          merged_par = @game.stock_market.share_prices_with_types(%i[convert_range par_2]).find do |sp|
+          merged_par = @game.stock_market.share_prices_with_types(%i[par par_2]).find do |sp|
             sp.price <= new_price
           end
 
