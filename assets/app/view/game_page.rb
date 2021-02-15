@@ -188,7 +188,7 @@ module View
         change_anchor('#entities')
       when 'm'
         change_anchor('#map')
-      when 'a', 'k'
+      when 'k'
         change_anchor('#market')
       when 'i'
         change_anchor('#info')
