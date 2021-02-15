@@ -40,6 +40,9 @@ module Engine
           end
           receiving = []
 
+          receiving << @game.format_currency(corporation.cash)
+          corporation.spend(corporation.cash, entity) if corporation.cash.positive?
+
           companies = @game.transfer(:companies, corporation, entity).map(&:name)
           receiving << "companies (#{companies.join(', ')})" if companies.any?
 

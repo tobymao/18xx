@@ -32,7 +32,8 @@ module Engine
 
           return if tokens_in_same_hex(entity, acquired_corps)
 
-          move_tokens_to_surviving(entity, acquired_corps, price_for_new_token: @game.new_token_price, check_tokenable: false)
+          move_tokens_to_surviving(entity, acquired_corps, price_for_new_token: @game.new_token_price,
+                                                           check_tokenable: false)
           @round.corporations_removing_tokens = nil
         end
       end
