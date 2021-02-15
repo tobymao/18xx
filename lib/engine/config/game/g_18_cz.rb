@@ -189,7 +189,7 @@ module Engine
                 "14p": {
                     "count": 1,
                     "color": "green",
-                    "code": "city=revenue:20,slots:2;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:5,b:_0;frame=color:purple"
+                    "code": "city=revenue:30,slots:2;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:5,b:_0;frame=color:purple"
                 },
                 "887p": {
                     "count": 4,
