@@ -659,7 +659,7 @@ module Engine
 
         @national_ever_owned_permanent = true
         @log << "-- #{national.name} now owns a permanent train, may no longer borrow a train when trainless --"
-        national.remove_ability(national.all_abilities.select { |a| a.type == :description }.first)
+        national.remove_ability(national.all_abilities.select { |a| a.type == :train_borrow }.first)
       end
 
       def merge_major(major)

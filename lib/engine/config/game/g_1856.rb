@@ -532,7 +532,10 @@ module Engine
             "description": "3 train limit"
          },
          {
-           "type": "description",
+           "type": "train_borrow",
+           "train_types": ["5", "5'", "6", "8", "D"],
+           "from_depot": true,
+           "from_market": true,
            "description": "May borrow a train when trainless*"
          }
       ]

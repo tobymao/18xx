@@ -223,6 +223,15 @@ Modify train buy in some way.
 - `face_value`: If true, any inter corporation train buy must be at
   face value. Default false.
 
+## train_borrow
+
+May borrow a train from the Depot for running trains
+
+- `train_types`: Array of train types that are eligible for borrowing
+- `when`: `:any` Can borrow anytime, `:trainless` Can borrow when trainless
+- `from_depot`: Can borrow from depot
+- `from_market`: Can borrow from market
+
 ## train_discount
 
 Discount the train buy cost. The `count` attribute specify how many times the discount can be used.
