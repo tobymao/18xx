@@ -60,7 +60,7 @@ module Engine
         raise GameError, 'Used token above limit' if used.size > @game.class::LIMIT_TOKENS_AFTER_MERGER
 
         surviving.tokens.clear
-        surviving_tokens = used + unused
+        surviving_tokens = used + unused.sort_by(&:price)
 
         # Dump unused tokens above limit
         surviving.tokens.concat(surviving_tokens.slice(0, @game.class::LIMIT_TOKENS_AFTER_MERGER))
