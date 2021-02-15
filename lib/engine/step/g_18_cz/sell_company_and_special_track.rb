@@ -72,10 +72,13 @@ module Engine
         def abilities(entity, **kwargs, &block)
           return unless entity&.company?
 
+          time = %w[special_track owning_corp_or_turn]
+          time << '%current_step%' if @round.num_laid_track.zero?
+
           abilities = @game.abilities(
             entity,
             :tile_lay,
-            time: %w[special_track %current_step% owning_corp_or_turn],
+            time: time,
             **kwargs,
             &block
           )
