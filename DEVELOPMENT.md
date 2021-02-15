@@ -97,6 +97,15 @@ Compose documentation:
 - https://docs.docker.com/compose/
 - https://docs.docker.com/compose/compose-file/
 
+#### Can I use [Podman](https://podman.io/) instead of Docker?
+
+Yes.
+
+```
+make CONTAINER_ENGINE=podman …
+```
+
+
 #### Before filing a pull request
 
 Run `docker-compose exec rack rake` while a docker instance is running to run rubocop (to ensure your changes meet the project's code style guidelines) as well as the test suite.
