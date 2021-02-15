@@ -520,6 +520,12 @@ module Engine
             },
             {
                "nodes":[
+                  "offboard"
+               ],
+               "pay":2
+            },
+            {
+               "nodes":[
                   "town"
                ],
                "pay":99,
@@ -540,6 +546,12 @@ module Engine
                ],
                "pay":3,
                "visit":3
+            },
+            {
+               "nodes":[
+                  "offboard"
+               ],
+               "pay":2
             },
             {
                "nodes":[
@@ -572,6 +584,12 @@ module Engine
             },
             {
                "nodes":[
+                  "offboard"
+               ],
+               "pay":2
+            },
+            {
+               "nodes":[
                   "town"
                ],
                "pay":99,
@@ -591,6 +609,12 @@ module Engine
                ],
                "pay":5,
                "visit":5
+            },
+            {
+               "nodes":[
+                  "offboard"
+               ],
+               "pay":2
             },
             {
                "nodes":[
@@ -621,6 +645,12 @@ module Engine
             },
             {
                "nodes":[
+                  "offboard"
+               ],
+               "pay":2
+            },
+            {
+               "nodes":[
                   "town"
                ],
                "pay":99,
@@ -640,6 +670,12 @@ module Engine
                ],
                "pay":8,
                "visit":8
+            },
+            {
+               "nodes":[
+                  "offboard"
+               ],
+               "pay":2
             },
             {
                "nodes":[
@@ -672,10 +708,10 @@ module Engine
          ]
       },
       "blue":{
-         "offboard=revenue:10;path=a:0,b:_0;icon=image:port;":[
+         "offboard=revenue:10,visit_cost:0,route:optional;path=a:0,b:_0;icon=image:port;":[
             "D1"
          ],
-         "offboard=revenue:10;path=a:3,b:_0;icon=image:port;":[
+         "offboard=revenue:10,visit_cost:0,route:optional;path=a:3,b:_0;icon=image:port;":[
             "B21",
             "E22",
             "I20"
@@ -825,7 +861,7 @@ module Engine
             "yellow"
          ],
          "status": [
-
+            "minor_limit_two"
 			],
 			"operating_rounds": 2
       },
@@ -838,7 +874,7 @@ module Engine
             "green"
          ],
          "status": [
-
+            "minor_limit_two"
 			],
 			"operating_rounds": 2
       },
@@ -851,7 +887,7 @@ module Engine
             "green"
          ],
          "status": [
-
+            "minor_limit_one"
 			],
 			"operating_rounds": 2
       },
@@ -865,7 +901,8 @@ module Engine
             "brown"
          ],
          "status": [
-
+            "minor_limit_one",
+            "normal_formation"
 			],
 			"operating_rounds": 2
       },
@@ -879,7 +916,7 @@ module Engine
             "brown"
          ],
          "status": [
-
+            "normal_formation"
 			],
 			"operating_rounds": 2
       },
@@ -894,7 +931,7 @@ module Engine
             "gray"
          ],
          "status": [
-
+            "normal_formation"
 			],
 			"operating_rounds": 2
       }

@@ -28,11 +28,28 @@ module Engine
       TILE_LAYS = [{ lay: true, upgrade: true }].freeze
 
       EVENTS_TEXT = Base::EVENTS_TEXT.merge(
-          'minor_exchane' => [
+          'minor_exchange' => [
             'Minor Exchange',
             'Conduct the Minor Company Final Exchange Round immediately prior to the next Stock Round.',
           ],
         ).freeze
+
+      STATUS_TEXT = Base::STATUS_TEXT.merge(
+        'minor_limit_two' => [
+          'Minor Train Limit: 2',
+          'Minor companies are limited to owning 2 trains.',
+        ],
+        'minor_limit_one' => [
+          'Minor Train Limit: 1',
+          'Minor companies are limited to owning 1 train.',
+        ],
+        'normal_formation' => [
+          'Full Capitalization',
+          'Corporations may be formed without exchanging a minor, selecting any open city. '\
+          'The five remaining shares are placed in the bank pool, with the par price paid '\
+          'to the corporation.',
+        ]
+      ).freeze
 
       OPTIONAL_RULES = [
         {
@@ -74,7 +91,7 @@ module Engine
       def add_optional_train(type)
         modified_trains = @depot.trains.select { |t| t.name == type }
         new_train = modified_trains.first.clone
-        new_train.index = copy_this_train.length
+        new_train.index = modified_trains.length
         @depot.add_train(new_train)
       end
 
