@@ -143,9 +143,9 @@ module View
         hook: {
           destroy: destroy,
         },
-        on: {
-          keydown: ->(event) { hotkey_check(event) },
-        },
+        # on: {
+        #   keydown: ->(event) { hotkey_check(event) },
+        # },
       }
 
       children = [
