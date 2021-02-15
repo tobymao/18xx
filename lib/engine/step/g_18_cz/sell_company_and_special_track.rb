@@ -74,7 +74,7 @@ module Engine
 
           abilities = @game.abilities(
             entity,
-            'tile_lay',
+            :tile_lay,
             time: %w[special_track %current_step% owning_corp_or_turn],
             **kwargs,
             &block
