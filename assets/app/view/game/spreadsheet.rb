@@ -205,8 +205,8 @@ module View
             *@game.players.map do |p|
               h('th.name.nowrap.right', p == @game.priority_deal_player ? pd_props : '', render_sort_link(p.name, p.id))
             end,
-            h(:th, @game.ipo_name),
-            h(:th, 'Market'),
+            h(:th, render_sort_link(@game.ipo_name, :ipo_shares)),
+            h(:th, render_sort_link('Market', :market_shares)),
             h(:th, render_sort_link(@game.ipo_name, :par_price)),
             h(:th, render_sort_link('Market', :share_price)),
             h(:th, render_sort_link('Cash', :cash)),
@@ -289,16 +289,24 @@ module View
 
         result.sort_by! do |operating_order, corporation|
           case @spreadsheet_sort_by
-          when :cash
-            corporation.cash
           when :id
             corporation.id
-          when :order
-            operating_order
-          when :par_price
-            corporation.par_price&.price || 0
+          when :ipo_shares
+            num_shares_of(corporation, corporation)
+          when :market_shares
+            num_shares_of(@game.share_pool, corporation)
           when :share_price
             [corporation.share_price&.price || 0, -operating_order]
+          when :par_price
+            corporation.par_price&.price || 0
+          when :cash
+            corporation.cash
+          when :order
+            operating_order
+          when :trains
+            corporation.floated? ? corporation.trains.size : -1
+          when :tokens
+            @game.count_available_tokens(corporation)
           when :loans
             corporation.loans.size
           when :shorts
@@ -307,10 +315,6 @@ module View
             @game.buying_power(corporation, full: true)
           when :interest
             @game.interest_owed(corporation) if @game.total_loans.positive?
-          when :trains
-            corporation.floated? ? corporation.trains.size : -1
-          when :tokens
-            @game.count_available_tokens(corporation)
           when :companies
             corporation.companies.size
           else
