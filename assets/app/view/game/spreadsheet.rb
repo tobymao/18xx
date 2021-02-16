@@ -24,22 +24,28 @@ module View
         @hide_not_floated = Lib::Storage['spreadsheet_hide_not_floated']
 
         children = []
+        children << render_table
+        children << render_spreadsheet_controls
 
-        top_line_props = {
+        extra_cards_props = {
+          hook: {
+            insert: lambda { |vnode|
+              last_td = Native(`document.querySelector('#player_details > tr > td:last-child').getBoundingClientRect()`)
+              p_details = Native(`document.getElementById('player_details').getBoundingClientRect()`)
+              controls = Native(`document.getElementById('spreadsheet_controls').getBoundingClientRect()`)
+              Native(vnode)['elm'].style.left = "calc(#{last_td.right.to_i}px + 1rem)"
+              Native(vnode)['elm'].style.top = "-#{controls.bottom.to_i - p_details.top.to_i}px"
+            },
+          },
           style: {
-            display: 'grid',
-            grid: 'auto / repeat(auto-fill, minmax(20rem, 1fr))',
-            gap: '3rem 1.2rem',
+            position: 'relative',
+            maxWidth: 'max-content',
           },
         }
-        top_line = h(:div, top_line_props, [
+        children << h('div#extra_cards', extra_cards_props, [
           h(Bank, game: @game),
           h(GameInfo, game: @game, layout: 'upcoming_trains'),
         ].compact)
-
-        children << top_line
-        children << render_table
-        children << render_spreadsheet_controls
 
         h('div#spreadsheet', {
             style: {
@@ -67,7 +73,7 @@ module View
               h(:td, { attrs: { colspan: @halfpaid ? 6 : 3 } }, "[withheld]#{' ¦half-paid¦' if @halfpaid}"),
             ]),
           ]),
-          h(:tbody, [
+          h('tbody#player_details', [
             render_player_cash,
             render_player_value,
             render_player_liquidity,
@@ -78,7 +84,7 @@ module View
           h(:thead, [
             h(:tr, { style: { height: '1rem' } }, ''),
           ]),
-          h(:tbody, [*render_player_history]),
+          h('tbody#player_history', [*render_player_history]),
         ])
         # TODO: consider adding OR information (could do both corporation OR revenue and player change in value)
         # TODO: consider adding train availability
@@ -286,7 +292,7 @@ module View
       end
 
       def render_spreadsheet_controls
-        h(:div, [
+        h('div#spreadsheet_controls', { style: { maxWidth: 'max-content' } }, [
           h(:button, {
               style: { minWidth: '9.5rem' },
               on: { click: -> { toggle_delta_value } },
