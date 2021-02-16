@@ -1,4 +1,6 @@
 .DEFAULT_GOAL := dev_up_b
+CONTAINER_COMPOSE ?= $(CONTAINER_ENGINE)-compose
+CONTAINER_ENGINE ?= docker
 
 clean:
 	sudo rm -rfv build/ public/assets/app.js public/assets/deps.js public/assets/engine.js public/assets/main.js public/assets/main.js.gz public/assets/opal.js
@@ -8,7 +10,7 @@ cleandeps:
 
 # ensure ./db/data exists and is not owned by root
 data_dir:
-	./scripts/data_dir.sh
+	./scripts/data_dir.sh $(CONTAINER_ENGINE)
 
 # ensure the required environment variables exist when running with prod config
 ensure_prod_env:
@@ -24,30 +26,30 @@ prod_link : clean_link
 
 # dev config, run locally
 dev_build : dev_link data_dir
-	docker-compose build
+	$(CONTAINER_COMPOSE) build
 dev_up : dev_link data_dir
-	docker-compose up
+	$(CONTAINER_COMPOSE) up
 dev_up_b : dev_link data_dir
-	docker-compose up --build
+	$(CONTAINER_COMPOSE) up --build
 
 # prod config, run locally
 prod_build : prod_link data_dir ensure_prod_env
-	docker-compose build
+	$(CONTAINER_COMPOSE) build
 prod_up : prod_link data_dir ensure_prod_env
-	docker-compose up
+	$(CONTAINER_COMPOSE) up
 prod_up_b : prod_link data_dir ensure_prod_env
-	docker-compose up --build
+	$(CONTAINER_COMPOSE) up --build
 prod_up_b_d : prod_link data_dir ensure_prod_env
-	docker-compose up --build --detach
+	$(CONTAINER_COMPOSE) up --build --detach
 prod_rack_up_b_d : prod_link data_dir ensure_prod_env
-	docker-compose up --build --no-deps --detach rack && \
-		docker-compose up --build --no-deps --detach queue && \
+	$(CONTAINER_COMPOSE) up --build --no-deps --detach rack && \
+		$(CONTAINER_COMPOSE) up --build --no-deps --detach queue && \
 		sleep 20 && \
-		docker-compose up --build --no-deps --detach rack_backup
+		$(CONTAINER_COMPOSE) up --build --no-deps --detach rack_backup
 
 # remotely deploy latest master in prod
 prod_deploy :
-	docker-compose run rack rake precompile && \
+	$(CONTAINER_COMPOSE) run rack rake precompile && \
 		scp public/assets/main.js \
 		public/assets/main.js.gz \
 		public/assets/version.json \
