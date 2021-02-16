@@ -98,8 +98,10 @@ module View
           end
           props[:style][:display] = @display
 
+          header_text = @game.respond_to?(:company_header) ? @game.company_header(@company) : 'PRIVATE COMPANY'
+
           children = [
-            h(:div, { style: header_style }, 'PRIVATE COMPANY'),
+            h(:div, { style: header_style }, header_text),
             h(:div, @company.name),
             h(:div, { style: description_style }, @company.desc),
             h(:div, { style: value_style }, "Value: #{@game.format_currency(@company.value)}"),

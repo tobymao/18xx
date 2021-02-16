@@ -174,43 +174,55 @@ module View
       store(:app_route, new_route)
     end
 
+    def button_click(id)
+      Native(`document.getElementById(#{id})`)&.click()
+    end
+
     def hotkey_check(event)
       # 'search for text when you start typing' feature of browser prevents execution
       # only execute when no modifier is pressed to not interfere with OS shortcuts
       event = Native(event)
       return if event.getModifierState('Alt') || event.getModifierState('AltGraph') || event.getModifierState('Meta') ||
-        event.getModifierState('Control') || event.getModifierState('OS') || event.getModifierState('Shift')
+        event.getModifierState('OS') || event.getModifierState('Shift')
 
       active = Native(`document.activeElement`)
       return if active.id != 'game' && active.localName != 'body'
 
       key = event['key']
-      case key
-      when 'g'
-        change_anchor('')
-      when 'e'
-        change_anchor('#entities')
-      when 'm'
-        change_anchor('#map')
-      when 'a', 'k'
-        change_anchor('#market')
-      when 'i'
-        change_anchor('#info')
-      when 't'
-        change_anchor('#tiles')
-      when 's'
-        change_anchor('#spreadsheet')
-      when 'o'
-        change_anchor('#tools')
-      when 'c'
-        `document.getElementById('chatbar').focus()`
-        event.preventDefault
-      when '-', '0', '+'
-        map = `document.getElementById('map')`
-        `document.getElementById('zoom'+#{key}).click()` if map
-      when 'Home', 'End', 'PageUp', 'PageDown', 'ArrowLeft', 'ArrowRight'
-        Native(`document.getElementById('hist_'+#{key})`)&.click()
-        event.preventDefault
+      if event.getModifierState('Control')
+        case key
+        when 'y'
+          button_click('redo')
+        when 'z'
+          button_click('undo')
+        end
+      else
+        case key
+        when 'g'
+          change_anchor('')
+        when 'e'
+          change_anchor('#entities')
+        when 'm'
+          change_anchor('#map')
+        when 'k'
+          change_anchor('#market')
+        when 'i'
+          change_anchor('#info')
+        when 't'
+          change_anchor('#tiles')
+        when 's'
+          change_anchor('#spreadsheet')
+        when 'o'
+          change_anchor('#tools')
+        when 'c'
+          Native(`document.getElementById('chatbar')`)&.focus()
+          event.preventDefault
+        when '-', '0', '+'
+          button_click('zoom' + key)
+        when 'Home', 'End', 'PageUp', 'PageDown', 'ArrowLeft', 'ArrowRight'
+          button_click('hist_' + key)
+          event.preventDefault
+        end
       end
     end
 

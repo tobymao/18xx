@@ -7,7 +7,7 @@ x-rack: &rack
     RACK_ENV: development
     RUBYOPTS: --jit
   volumes:
-    - .:/18xx
+    - .:/18xx:z
     - /18xx/vendor
 
 services:

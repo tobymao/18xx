@@ -240,7 +240,6 @@ module Engine
       def remove_unparred_corporations!
         @corporations.reject(&:ipoed).reject(&:closed?).each do |corporation|
           place_home_blocking_token(corporation)
-          place_second_home_blocking_token(corporation) if corporation.name == 'ERIE'
           @log << "Removing #{corporation.name}"
           @corporations.delete(corporation)
         end
@@ -474,10 +473,11 @@ module Engine
         end
       end
 
-      def place_blocking_token(hex, city_index: 0)
+      def place_blocking_token(hex, city: nil)
         @log << "Placing a blocking token on #{hex.name} (#{hex.location_name})"
         token = Token.new(@blocking_corporation)
-        hex.tile.cities[city_index].place_token(@blocking_corporation, token, check_tokenable: false)
+        city ||= hex.tile.cities[0]
+        city.place_token(@blocking_corporation, token, check_tokenable: false)
       end
 
       def exchange_for_partial_presidency?
@@ -550,14 +550,18 @@ module Engine
         @log << "Removing #{to_remove.name} train"
       end
 
-      def place_home_blocking_token(corporation, city_index: 0)
-        hex = hex_by_id(corporation.coordinates)
-        hex.tile.cities[city_index].remove_reservation!(corporation)
-        place_blocking_token(hex, city_index: city_index)
-      end
+      def place_home_blocking_token(corporation)
+        cities = []
 
-      def place_second_home_blocking_token(corporation)
-        place_home_blocking_token(corporation, city_index: 1)
+        hex = hex_by_id(corporation.coordinates)
+        if hex.tile.reserved_by?(corporation)
+          cities.concat(hex.tile.cities)
+        else
+          cities << hex.tile.cities.find { |city| city.reserved_by?(corporation) }
+          cities.first.remove_reservation!(corporation)
+        end
+
+        cities.each { |city| place_blocking_token(hex, city: city) }
       end
 
       def init_system(stock_market, system)

@@ -30,9 +30,9 @@ module View
         }
 
         h('div#map_zoom.inline-block', props, [
-          render_button('-', "Zoom to #{(@map_zoom / 0.011).round} % – hotkey -", on_click.call(@map_zoom / 1.1)),
-          render_button('0', 'Reset zoom to 100 % – hotkey 0', on_click.call(1)),
-          render_button('+', "Zoom to #{(@map_zoom * 110).round} % – hotkey +", on_click.call(@map_zoom * 1.1)),
+          render_button('-', "Zoom to #{(@map_zoom / 0.011).round} % – hotkey: -", on_click.call(@map_zoom / 1.1)),
+          render_button('0', 'Reset zoom to 100 % – hotkey: 0', on_click.call(1)),
+          render_button('+', "Zoom to #{(@map_zoom * 110).round} % – hotkey: +", on_click.call(@map_zoom * 1.1)),
         ])
       end
 

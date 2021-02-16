@@ -6,6 +6,7 @@ module Engine
   module Game
     class G1873 < Base
       attr_reader :tile_groups, :unused_tiles, :sik, :skev, :ldsteg, :mavag, :raba, :snw, :gc, :terrain_tokens
+      attr_accessor :premium, :premium_order
 
       register_colors(tan: '#d6a06c')
 
@@ -23,7 +24,7 @@ module Engine
         4 => 1050,
         5 => 840,
       }.freeze
-      CAPITALIZATION = :full
+      CAPITALIZATION = :incremental
       MUST_SELL_IN_BLOCKS = false
       LAYOUT = :pointy
       COMPANIES = [].freeze
@@ -64,6 +65,8 @@ module Engine
         'end_game_triggered' => ['End Game', 'After next SR, final three ORs are played'],
       ).freeze
 
+      RAILWAY_MIN_BID = 100
+
       def self.title
         'Harzbahn 1873'
       end
@@ -74,27 +77,185 @@ module Engine
         @location_names[coord]
       end
 
-      def setup; end
+      def setup
+        @premium = nil
+        @premium_order = nil
+        @premium_auction = true
 
-      def float_minor(minor)
-        minor.float!
+        @minor_info = load_minor_extended
+        @corporation_info = load_corporation_extended
+      end
+
+      def load_minor_extended
+        game_minors.map do |gm|
+          minor = @minors.find { |m| m.name == gm[:sym] }
+          [minor, gm[:extended]]
+        end.to_h
+      end
+
+      def load_corporation_extended
+        game_corporations.map do |cm|
+          corp = @corporations.find { |m| m.name == cm[:sym] }
+          [corp, cm[:extended]]
+        end.to_h
+      end
+
+      # create "dummy" companies based on minors and railways
+      def init_companies(_players)
+        mine_comps = game_minors.map do |gm|
+          description = "Mine in #{gm[:coordinates]}. Machine revenue: "\
+            "#{gm[:extended][:machine_revenue].join('/')}. Switcher revenue: "\
+            "#{gm[:extended][:switcher_revenue].join('/')}"
+
+          Company.new(sym: gm[:sym], name: gm[:name], value: gm[:extended][:value],
+                      revenue: gm[:extended][:machine_revenue].last + gm[:extended][:switcher_revenue].last,
+                      desc: description)
+        end
+        corp_comps = game_corporations.map do |gc|
+          next unless gc[:extended][:type] == 'railway'
+
+          description = "Railway in #{gc[:coordinates].join(', ')}. "\
+            "Total concession tile cost: #{format_currency(gc[:extended][:concession_cost])}"
+
+          Company.new(sym: gc[:sym], name: gc[:name], value: RAILWAY_MIN_BID,
+                      desc: description)
+        end.compact
+        mine_comps + corp_comps
+      end
+
+      def start_companies
+        mine_ids = @minors.map(&:id)
+        mine_comps = @companies.select { |c| mine_ids.include?(c.id) }
+
+        corp_ids = @corporations.select do |corp|
+          @corporation_info[corp][:type] == 'railway' && @corporation_info[corp][:concession_phase] == 1
+        end.map(&:id)
+        corp_comps = @companies.select { |c| corp_ids.include?(c.id) }
+
+        mine_comps + corp_comps
+      end
+
+      def company_header(company)
+        if get_mine(company)
+          'INDEPENDENT MINE'
+        elsif @corporations.any? { |c| c.id == company.id && @corporation_info[c][:concession_pending] }
+          'CONCESSION'
+        else
+          'PURCHASE OPTION'
+        end
+      end
+
+      def get_mine(company)
+        @minors.find { |m| m.id == company.id }
+      end
+
+      def close_mine(minor)
+        @log << "#{minor.name} is closed"
+        @minor_info[minor][:open] = false
+
+        # flip token to closed side
+        open_name = "#{minor.id}_open"
+        closed_image = "1873/#{minor.id}_closed"
+        @hexes.each do |hex|
+          if (icon = hex.tile.icons.find { |i| i.name == open_name })
+            hex.tile.icons[hex.tile.icons.find_index(icon)] = Part::Icon.new(closed_image, sticky: true)
+          end
+        end
+      end
+
+      def open_mine(minor)
+        @log << "#{minor.name} is opened"
+        @minor_info[minor][:open] = true
+
+        # flip token to open side
+        closed_name = "#{minor.id}_closed"
+        open_image = "1873/#{minor.id}_open"
+        @hexes.each do |hex|
+          if (icon = hex.tile.icons.find { |i| i.name == closed_name })
+            hex.tile.icons[hex.tile.icons.find_index(icon)] = Part::Icon.new(open_image, sticky: true)
+          end
+        end
       end
 
       def all_corporations
         minors + corporations
       end
 
-      # FIXME
-      # def init_round
-      #  new_premium_round
-      # end
+      def can_par?(corporation, player)
+        return false if corporation.ipoed
+
+        # see if player has corresponding concession (private)
+        if @corporation_info[corporation][:type] == 'railway'
+          player.companies.any? { |c| c.id == corporation.id }
+        else
+          @corporation_info[corporation][:vor_harzer] || @turn > 1
+        end
+      end
+
+      # FIXME: public mines
+      def float_corporation(corporation)
+        @log << "#{corporation.name} floats"
+
+        num_ipo_shares = corporation.ipo_shares.size
+        added_cash = num_ipo_shares * corporation.share_price.price
+
+        return unless added_cash.positive?
+
+        corporation.ipo_shares.each do |share|
+          @share_pool.transfer_shares(
+              share.to_bundle,
+              share_pool,
+              spender: share_pool,
+              receiver: @bank,
+              price: 0
+            )
+        end
+
+        @bank.spend(added_cash, corporation)
+        @log << "#{num_ipo_shares} IPO shares of #{corporation.name} transfered to market"
+        @log << "#{corporation.name} receives #{format_currency(added_cash)}"
+      end
+
+      def place_home_token(corporation)
+        corporation.coordinates.each do |coord|
+          hex = hex_by_id(coord)
+          tile = hex&.tile
+          cities = tile.cities
+          city = cities.find { |c| c.reserved_by?(corporation) } || cities.first
+          token = corporation.find_token_by_type
+
+          @log << "#{corporation.name} places a token on #{hex.name}"
+          city.place_token(corporation, token)
+        end
+      end
+
+      def init_round
+        new_premium_round
+      end
+
+      def new_premium_round
+        Round::Auction.new(self, [
+          Step::G1873::Premium,
+        ])
+      end
+
+      def reorder_players_start
+        @players = @premium_order
+        @log << "#{@players.first.name} has priority deal"
+      end
+
+      def new_start_auction_round
+        Round::Auction.new(self, [
+          Step::G1873::Draft,
+        ])
+      end
 
       # FIXME
-      def new_premium_round; end
-
-      # FIXME
-      # def new_auction_round
-      # end
+      def new_auction_round
+        Round::Auction.new(self, [
+          Step::G1873::BuyConcessionOr,
+        ])
+      end
 
       # FIXME
       def operating_round(round_num)
@@ -111,7 +272,14 @@ module Engine
         @round =
           case @round
           when Round::Auction
-            new_stock_round
+            if @premium_auction
+              @premium_auction = false
+              init_round_finished
+              reorder_players_start
+              new_start_auction_round
+            else
+              new_stock_round
+            end
           when Round::Stock
             @operating_rounds = @phase.operating_rounds
             reorder_players
@@ -129,10 +297,9 @@ module Engine
               new_auction_round
             end
           when init_round.class
-            @operating_rounds = @phase.operating_rounds
             init_round_finished
             reorder_players_start
-            new_auction_round
+            new_start_auction_round
           end
       end
 
@@ -167,9 +334,6 @@ module Engine
       def must_buy_train?(_entity)
         false
       end
-
-      # FIXME
-      def place_home_token(_corp); end
 
       def price_movement_chart
         [
@@ -341,6 +505,7 @@ module Engine
               vor_harzer: true,
               machine_revenue: [40, 50, 60, 70, 80],
               switcher_revenue: [30, 40, 50, 60],
+              open: true,
             },
           },
           {
@@ -355,6 +520,7 @@ module Engine
               vor_harzer: false,
               machine_revenue: [40, 60, 80, 100, 120],
               switcher_revenue: [20, 30, 40, 50],
+              open: true,
             },
           },
           {
@@ -369,6 +535,7 @@ module Engine
               vor_harzer: false,
               machine_revenue: [40, 60, 80, 100, 120],
               switcher_revenue: [20, 30, 40, 50],
+              open: true,
             },
           },
           {
@@ -383,6 +550,7 @@ module Engine
               vor_harzer: true,
               machine_revenue: [40, 60, 80, 100, 120],
               switcher_revenue: [20, 30, 40, 50],
+              open: true,
             },
           },
           {
@@ -397,6 +565,7 @@ module Engine
               vor_harzer: true,
               machine_revenue: [50, 60, 70, 80, 90],
               switcher_revenue: [40, 50, 60, 70],
+              open: true,
             },
           },
           {
@@ -411,6 +580,7 @@ module Engine
               vor_harzer: true,
               machine_revenue: [50, 70, 90, 110, 130],
               switcher_revenue: [30, 40, 50, 60],
+              open: true,
             },
           },
           {
@@ -425,6 +595,7 @@ module Engine
               vor_harzer: false,
               machine_revenue: [50, 80, 110, 140, 170],
               switcher_revenue: [20, 30, 40, 50],
+              open: true,
             },
           },
           {
@@ -439,6 +610,7 @@ module Engine
               vor_harzer: false,
               machine_revenue: [60, 80, 100, 120, 140],
               switcher_revenue: [40, 50, 60, 70],
+              open: true,
             },
           },
           {
@@ -453,6 +625,7 @@ module Engine
               vor_harzer: false,
               machine_revenue: [60, 90, 120, 150, 180],
               switcher_revenue: [30, 40, 50, 60],
+              open: true,
             },
           },
           {
@@ -467,6 +640,7 @@ module Engine
               vor_harzer: true,
               machine_revenue: [60, 90, 120, 150, 180],
               switcher_revenue: [30, 40, 50, 60],
+              open: true,
             },
           },
           {
@@ -481,6 +655,7 @@ module Engine
               vor_harzer: true,
               machine_revenue: [70, 90, 110, 130, 150],
               switcher_revenue: [50, 60, 70, 80],
+              open: true,
             },
           },
           {
@@ -495,6 +670,7 @@ module Engine
               vor_harzer: true,
               machine_revenue: [70, 90, 110, 130, 150],
               switcher_revenue: [50, 60, 70, 80],
+              open: true,
             },
           },
           {
@@ -509,6 +685,7 @@ module Engine
               vor_harzer: false,
               machine_revenue: [70, 100, 130, 160, 190],
               switcher_revenue: [40, 50, 60, 70],
+              open: true,
             },
           },
           {
@@ -523,6 +700,7 @@ module Engine
               vor_harzer: true,
               machine_revenue: [90, 110, 130, 150, 170],
               switcher_revenue: [70, 80, 90, 100],
+              open: true,
             },
           },
           {
@@ -537,6 +715,7 @@ module Engine
               vor_harzer: true,
               machine_revenue: [90, 120, 150, 180, 210],
               switcher_revenue: [60, 70, 80, 90],
+              open: true,
             },
           },
         ]
@@ -549,6 +728,7 @@ module Engine
             name: 'Halberstadt-Blankenburger Eisenbahn',
             logo: '1873/HBE',
             float_percent: 60,
+            shares: [20, 20, 20, 20, 20],
             max_ownership_percent: 100,
             coordinates: %w[B19 D15],
             city: 0,
@@ -566,9 +746,10 @@ module Engine
             text_color: 'black',
             extended: {
               type: 'railway',
-              concession_phase: '1',
+              concession_phase: 1,
               concession_routes: [%w[B19 B17 C16 D15]],
               concession_cost: 0,
+              concession_pending: true,
               extra_tokens: 4,
             },
           },
@@ -577,6 +758,7 @@ module Engine
             name: 'Gernrode-Harzgeroder Eisenbahn',
             logo: '1873/GHE',
             float_percent: 60,
+            shares: [20, 20, 20, 20, 20],
             max_ownership_percent: 100,
             coordinates: %w[G20 I18],
             city: 0,
@@ -592,9 +774,10 @@ module Engine
             text_color: 'white',
             extended: {
               type: 'railway',
-              concession_phase: '1',
+              concession_phase: 1,
               concession_routes: [%w[G20 H19 G17 I18]],
               concession_cost: 150,
+              concession_pending: true,
               extra_tokens: 3,
             },
           },
@@ -603,6 +786,7 @@ module Engine
             name: 'Nordhausen-Wernigeroder Eisenbahn',
             logo: '1873/NWE',
             float_percent: 60,
+            shares: [20, 20, 20, 20, 20],
             max_ownership_percent: 100,
             coordinates: %w[J7 B9 G6],
             city: 0,
@@ -618,9 +802,10 @@ module Engine
             text_color: 'black',
             extended: {
               type: 'railway',
-              concession_phase: '3',
+              concession_phase: 3,
               concession_routes: [%w[B9 C8 D7 E6 F5 G6], %w[G6 H7 H9 I8 J7]],
               concession_cost: 500,
+              concession_pending: true,
               extra_tokens: 3,
             },
           },
@@ -629,6 +814,7 @@ module Engine
             name: 'Südharzeisenbahn',
             logo: '1873/SHE',
             float_percent: 60,
+            shares: [20, 20, 20, 20, 20],
             max_ownership_percent: 100,
             coordinates: %w[I2 E4],
             city: 0,
@@ -642,9 +828,10 @@ module Engine
             text_color: 'black',
             extended: {
               type: 'railway',
-              concession_phase: '3',
+              concession_phase: 3,
               concession_routes: [%w[E4 F3 G2 H1 I2]],
               concession_cost: 300,
+              concession_pending: true,
               extra_tokens: 2,
             },
           },
@@ -653,6 +840,7 @@ module Engine
             name: 'Kleinbahn Ellrich-Zorge',
             logo: '1873/KEZ',
             float_percent: 60,
+            shares: [20, 20, 20, 20, 20],
             max_ownership_percent: 100,
             coordinates: %w[I4 G4],
             city: 0,
@@ -666,9 +854,10 @@ module Engine
             text_color: 'white',
             extended: {
               type: 'railway',
-              concession_phase: '3',
+              concession_phase: 3,
               concession_routes: [%w[G4 H3 I4]],
               concession_cost: 100,
+              concession_pending: true,
               extra_tokens: 2,
             },
           },
@@ -677,6 +866,7 @@ module Engine
             name: 'Wernigerode-Blankenburger Eisenbahn',
             logo: '1873/WBE',
             float_percent: 60,
+            shares: [20, 20, 20, 20, 20],
             max_ownership_percent: 100,
             coordinates: %w[B9 D15],
             city: 0,
@@ -690,9 +880,10 @@ module Engine
             text_color: 'white',
             extended: {
               type: 'railway',
-              concession_phase: '4',
+              concession_phase: 4,
               concession_routes: [%w[B9 C10 C12 C14 D15]],
               concession_cost: 0,
+              concession_pending: true,
               extra_tokens: 2,
             },
           },
@@ -701,6 +892,7 @@ module Engine
             name: 'Quedlinburger Lokalbahn',
             logo: '1873/QLB',
             float_percent: 60,
+            shares: [20, 20, 20, 20, 20],
             max_ownership_percent: 100,
             coordinates: ['E20'],
             city: 0,
@@ -714,9 +906,10 @@ module Engine
             text_color: 'black',
             extended: {
               type: 'railway',
-              concession_phase: '4',
+              concession_phase: 4,
               concession_routes: [],
               concession_cost: 0,
+              concession_pending: false,
               extra_tokens: 2,
             },
           },
@@ -725,6 +918,7 @@ module Engine
             name: 'Magdeburg-Halberstädter Eisenbahn',
             logo: '1873/MHE',
             float_percent: 60,
+            shares: [10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
             tokens: [],
             max_ownership_percent: 100,
             color: '#C0C0C0',
@@ -738,6 +932,7 @@ module Engine
             name: 'Union',
             logo: '1873/U',
             float_percent: 100,
+            shares: [50, 50],
             tokens: [],
             max_ownership_percent: 100,
             color: '#950822',
@@ -752,9 +947,10 @@ module Engine
             name: 'Harzer Werke',
             logo: '1873/HW',
             float_percent: 100,
+            shares: [50, 50],
             tokens: [],
             max_ownership_percent: 100,
-            color: '#950822',
+            color: '#772500',
             text_color: 'white',
             extended: {
               type: 'mine',
@@ -766,6 +962,7 @@ module Engine
             name: 'Concordia',
             logo: '1873/CO',
             float_percent: 100,
+            shares: [50, 50],
             tokens: [],
             max_ownership_percent: 100,
             color: '#16CE91',
@@ -780,6 +977,7 @@ module Engine
             name: 'Schachtbau',
             logo: '1873/SN',
             float_percent: 100,
+            shares: [50, 50],
             tokens: [],
             max_ownership_percent: 100,
             color: '#F7848D',
@@ -794,6 +992,7 @@ module Engine
             name: 'Montania',
             logo: '1873/MO',
             float_percent: 100,
+            shares: [50, 50],
             tokens: [],
             max_ownership_percent: 100,
             color: '#448A28',
@@ -1035,7 +1234,8 @@ module Engine
               'frame=color:red;label=HQG',
             %w[
               C16
-            ] => 'city=revenue:30;path=a:0,b:_0,track:narrow;path=a:2,b:_0;path=a:3,b:_0,track:narrow',
+            ] => 'city=revenue:30;path=a:0,b:_0,track:narrow;path=a:2,b:_0,track:narrow;'\
+              'path=a:3,b:_0,track:narrow',
             %w[
               E20
             ] => 'city=revenue:60;path=a:1,b:_0,track:narrow;path=a:0,b:_0;path=a:3,b:_0;'\

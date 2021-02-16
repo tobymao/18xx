@@ -540,6 +540,10 @@ module Engine
         active_players.map(&:id)
       end
 
+      def player_log(_entity, msg)
+        @log << "-- #{msg}"
+      end
+
       def self.filtered_actions(actions)
         active_undos = []
         filtered_actions = Array.new(actions.size)
@@ -1944,6 +1948,16 @@ module Engine
             reorder_players
             new_stock_round
           end
+        check_programmed_actions
+      end
+
+      def check_programmed_actions
+        @programmed_actions.reject! do |entity, action|
+          if action&.disable?(self)
+            player_log(entity, 'Programmed action removed due to round change')
+            true
+          end
+        end
       end
 
       def game_end_check_values

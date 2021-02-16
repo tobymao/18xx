@@ -288,10 +288,10 @@ module View
           when :par_price
             corporation.par_price&.price || 0
           when :share_price
-            corporation.share_price&.price || 0
+            [corporation.share_price&.price || 0, -operating_order]
           when :loans
             corporation.loans.size
-          when :short
+          when :shorts
             @game.available_shorts(corporation)
           when :buying_power
             @game.buying_power(corporation, full: true)

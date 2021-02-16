@@ -42,9 +42,14 @@ module Engine
       SELL_MOVEMENT = :down_per_10
       POOL_SHARE_DROP = :one
 
-      MARKET_TEXT = Base::MARKET_TEXT.merge(phase_limited: 'Can only enter during phase 16').freeze
+      MARKET_TEXT = Base::MARKET_TEXT.merge(phase_limited: 'Can only enter during phase 16',
+                                            par: 'Yellow phase par',
+                                            par_1: 'Green phase par',
+                                            par_2: 'Brown phase par').freeze
       STOCKMARKET_COLORS = {
         par: :yellow,
+        par_1: :green,
+        par_2: :brown,
         endgame: :orange,
         close: :purple,
         phase_limited: :blue,

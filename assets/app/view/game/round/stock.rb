@@ -149,7 +149,6 @@ module View
           inputs = [
             corporation.ipoed ? h(BuySellShares, corporation: corporation) : render_pre_ipo(corporation),
             render_loan(corporation),
-            render_buy_tokens(corporation),
           ]
           inputs << h(IssueShares, entity: corporation) if @step.actions(corporation).include?('buy_shares')
           inputs << h(BuyTrains, corporation: corporation) if @step.actions(corporation).include?('buy_train')
@@ -196,18 +195,6 @@ module View
           end
 
           h(:button, { on: { click: take_loan } }, 'Take Loan')
-        end
-
-        def render_buy_tokens(corporation)
-          return unless @step.actions(corporation).include?('buy_tokens')
-
-          buy_tokens = lambda do
-            process_action(Engine::Action::BuyTokens.new(
-              corporation
-            ))
-          end
-
-          h(:button, { on: { click: buy_tokens } }, 'Buy Tokens')
         end
 
         def render_mergeable_entities
