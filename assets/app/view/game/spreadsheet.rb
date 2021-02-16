@@ -37,7 +37,6 @@ module View
         ].compact)
 
         children << top_line
-        children << @game.token_note if @game.respond_to?(:token_note)
         children << render_table
         children << render_spreadsheet_controls
 
@@ -60,7 +59,10 @@ module View
           h(:thead, render_title),
           h(:tbody, render_corporations),
           h(:thead, [
-            h(:tr, { style: { height: '1rem' } }, ''),
+            h(:tr, { style: { height: '1rem' } }, [
+              h(:td, { attrs: { colspan: @game.players.size + 8 } }, ''),
+              h(:td, { attrs: { colspan: 2 } }, @game.respond_to?(:token_note) ? @game.token_note : ''),
+            ]),
           ]),
           h(:tbody, [
             render_player_cash,
