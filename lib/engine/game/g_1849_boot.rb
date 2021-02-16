@@ -19,6 +19,8 @@ module Engine
       NEW_PORT_HEXES = %w[B16 G5 J20 L16].freeze
       NEW_SMS_HEXES = %w[B14 G7 H8 J18 L12 L18 L20 N20 O9 P2].freeze
 
+      OPTIONAL_RULES = [].freeze
+
       EVENTS_TEXT = Base::EVENTS_TEXT.merge(
         'green_par': ['144 Par Available',
                       'Corporations may now par at 144 (in addition to 67 and 100)'],
