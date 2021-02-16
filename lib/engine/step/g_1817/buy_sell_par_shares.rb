@@ -78,27 +78,18 @@ module Engine
         def corporate_actions(entity)
           return [] if @winning_bid
 
-          if @corporate_action && @corporate_action.entity != entity
-            return ['buy_tokens'] if can_buy_tokens?(entity)
-
-            return []
-          end
+          return [] if @corporate_action && @corporate_action.entity != entity
 
           actions = []
           if @current_actions.none?
             actions << 'take_loan' if @game.can_take_loan?(entity) && !@corporate_action.is_a?(Action::BuyShares)
             actions << 'buy_shares' unless @game.redeemable_shares(entity).empty?
           end
-          actions << 'buy_tokens' if can_buy_tokens?(entity)
           actions
         end
 
         def any_corporate_actions?(entity)
           @game.corporations.any? { |corp| corp.owner == entity && !corporate_actions(corp).empty? }
-        end
-
-        def can_buy_tokens?(entity)
-          entity.corporation? && !entity.operated? && @game.tokens_needed(entity).positive?
         end
 
         def active_entities
@@ -158,8 +149,10 @@ module Engine
 
           if @auctioning
             'Pass (Bid)'
-          elsif @game.corporations.any? { |corp| corp.owner == current_entity && @round.tokens_needed?(corp) }
-            'Pass (May liquidate corporation)'
+          elsif !(corporations = @game.corporations.select do |corp|
+                    corp.owner == current_entity && @round.tokens_needed?(corp)
+                  end).empty?
+            "Pass (May liquidate #{corporations.map(&:id).join(',')})"
           else
             super
           end
@@ -259,18 +252,29 @@ module Engine
           end
         end
 
-        def process_buy_tokens(action)
-          # Buying tokens is not an 'action' and so can be done with player actions
-          entity = action.entity
-          raise GameError, 'Cannot buy tokens' unless can_buy_tokens?(entity)
-
-          tokens = @game.tokens_needed(entity)
-          token_cost = tokens * TOKEN_COST
-          entity.spend(token_cost, @game.bank)
-          @log << "#{entity.name} buys #{tokens} token#{'s' if tokens > 1} for #{@game.format_currency(token_cost)}"
+        def add_tokens(entity, tokens)
           tokens.times.each do |_i|
             entity.tokens << Engine::Token.new(entity)
           end
+        end
+
+        def try_buy_tokens(entity)
+          return if entity.operated?
+
+          # Buying tokens is not an 'action' and so can be done with player actions
+          tokens = @game.tokens_needed(entity)
+          return unless tokens.positive?
+
+          token_cost = tokens * TOKEN_COST
+          if token_cost > entity.cash
+            @log << "#{entity.name} cannot afford tokens #{tokens} token#{'s' if tokens > 1} for "\
+            "#{@game.format_currency(token_cost)}, must take loans before end of stock round"
+            return
+          end
+
+          entity.spend(token_cost, @game.bank)
+          @log << "#{entity.name} buys #{tokens} token#{'s' if tokens > 1} for #{@game.format_currency(token_cost)}"
+          add_tokens(entity, tokens)
         end
 
         def process_choose(action)
@@ -319,6 +323,7 @@ module Engine
           @corporate_action = action
           @round.last_to_act = action.entity.player
           @game.take_loan(action.entity, action.loan)
+          try_buy_tokens(action.entity)
         end
 
         def par_corporation
@@ -329,12 +334,7 @@ module Engine
           @log << "#{corporation.name} starts with #{@game.format_currency(corporation.cash)} and #{@corporation_size}"\
           ' shares'
 
-          tokens = @game.tokens_needed(corporation)
-          if tokens.positive?
-            token_cost = tokens * TOKEN_COST
-            @log << "#{corporation.name} must buy #{tokens} token#{'s' if tokens > 1} for "\
-                    "#{@game.format_currency(token_cost)} before end of stock round"
-          end
+          try_buy_tokens(corporation)
 
           @auctioning = nil
           @winning_bid = nil

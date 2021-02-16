@@ -26,18 +26,8 @@ module Engine
           super.reject { |size| size == 2 }
         end
 
-        def process_buy_tokens(action)
-          # Buying tokens is not an 'action' and so can be done with player actions
-          entity = action.entity
-          raise GameError, 'Cannot buy tokens' unless can_buy_tokens?(entity)
-
-          tokens = @game.tokens_needed(entity)
-          token_cost = tokens * TOKEN_COST
-          entity.spend(token_cost, @game.bank)
-          @log << "#{entity.name} buys #{tokens} token#{'s' if tokens > 1} for #{@game.format_currency(token_cost)}"
-          tokens.times.each do |_i|
-            entity.tokens << Engine::Token.new(entity)
-          end
+        def add_tokens(entity, tokens)
+          super
           @game.place_second_token(entity) if @game.corp_has_new_zealand?(entity)
         end
       end
