@@ -50,8 +50,6 @@ prod_rack_up_b_d : prod_link data_dir ensure_prod_env
 # remotely deploy latest master in prod
 prod_deploy :
 	$(CONTAINER_COMPOSE) run rack rake precompile && \
-		scp public/assets/main.js \
-		public/assets/main.js.gz \
-		public/assets/version.json \
-		deploy@18xx:~/18xx/public/assets/ && \
+		rsync --checksum public/assets deploy@18xx:~/18xx/public/assets && \
+		rsync --checksum public/pinned deploy@18xx:~/18xx/public/pinned && \
 		ssh -l deploy 18xx "source ~/.profile && cd ~/18xx/ && git pull && make prod_rack_up_b_d"
