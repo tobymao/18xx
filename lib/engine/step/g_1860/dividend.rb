@@ -27,7 +27,7 @@ module Engine
 
           entity.operating_history[[@game.turn, @round.round_num]] = OperatingInfo.new(
             routes,
-            (action.id ? action : @game.actions.last),
+            action,
             revenue
           )
 
