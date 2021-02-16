@@ -383,12 +383,12 @@ module View
       end
 
       def render_companies(entity)
-        h(:td, entity.companies.map(&:sym).join(', '))
+        h('td.padded_number', entity.companies.map(&:sym).join(', '))
       end
 
       def render_player_companies
         h(:tr, zebra_props, [
-          h(:th, 'Companies'),
+          h('th.left', 'Companies'),
           *@game.players.map { |p| render_companies(p) },
         ])
       end
