@@ -335,7 +335,15 @@ module Engine
             0
          ],
          "color":"black",
-         "text_color":"white"
+         "text_color":"white",
+         "abilities": [
+            {
+               "type": "exchange",
+               "corporations": ["BNR", "DR", "FS", "RBSR", "RPR", "AIRS", "SNCF", "GSR"],
+               "owner_type": "player",
+               "from": "ipo"
+            }
+         ]
       },
       {
          "sym":"2",
@@ -346,7 +354,15 @@ module Engine
             0
          ],
          "color":"black",
-         "text_color":"white"
+         "text_color":"white",
+         "abilities": [
+            {
+               "type": "exchange",
+               "corporations": ["BNR", "DR", "FS", "RBSR", "RPR", "AIRS", "SNCF", "GSR"],
+               "owner_type": "player",
+               "from": "ipo"
+            }
+         ]
       },
       {
          "sym":"3",
@@ -358,7 +374,15 @@ module Engine
             0
          ],
          "color":"black",
-         "text_color":"white"
+         "text_color":"white",
+         "abilities": [
+            {
+               "type": "exchange",
+               "corporations": ["BNR", "DR", "FS", "RBSR", "RPR", "AIRS", "SNCF", "GSR"],
+               "owner_type": "player",
+               "from": "ipo"
+            }
+         ]
       },
       {
          "sym":"4",
@@ -370,7 +394,15 @@ module Engine
             0
          ],
          "color":"black",
-         "text_color":"white"
+         "text_color":"white",
+         "abilities": [
+            {
+               "type": "exchange",
+               "corporations": ["BNR", "DR", "FS", "RBSR", "RPR", "AIRS", "SNCF", "GSR"],
+               "owner_type": "player",
+               "from": "ipo"
+            }
+         ]
       },
       {
          "sym":"5",
@@ -382,7 +414,15 @@ module Engine
             0
          ],
          "color":"black",
-         "text_color":"white"
+         "text_color":"white",
+         "abilities": [
+            {
+               "type": "exchange",
+               "corporations": ["BNR", "DR", "FS", "RBSR", "RPR", "AIRS", "SNCF", "GSR"],
+               "owner_type": "player",
+               "from": "ipo"
+            }
+         ]
       },
       {
          "sym":"6",
@@ -394,7 +434,15 @@ module Engine
             0
          ],
          "color":"black",
-         "text_color":"white"
+         "text_color":"white",
+         "abilities": [
+            {
+               "type": "exchange",
+               "corporations": ["BNR", "DR", "FS", "RBSR", "RPR", "AIRS", "SNCF", "GSR"],
+               "owner_type": "player",
+               "from": "ipo"
+            }
+         ]
       },
       {
          "sym":"7",
@@ -406,7 +454,15 @@ module Engine
             0
          ],
          "color":"black",
-         "text_color":"white"
+         "text_color":"white",
+         "abilities": [
+            {
+               "type": "exchange",
+               "corporations": ["BNR", "DR", "FS", "RBSR", "RPR", "AIRS", "SNCF", "GSR"],
+               "owner_type": "player",
+               "from": "ipo"
+            }
+         ]
       },
       {
          "sym":"8",
@@ -418,7 +474,15 @@ module Engine
             0
          ],
          "color":"black",
-         "text_color":"white"
+         "text_color":"white",
+         "abilities": [
+            {
+               "type": "exchange",
+               "corporations": ["BNR", "DR", "FS", "RBSR", "RPR", "AIRS", "SNCF", "GSR"],
+               "owner_type": "player",
+               "from": "ipo"
+            }
+         ]
       },
       {
          "sym":"9",
@@ -430,7 +494,15 @@ module Engine
             0
          ],
          "color":"black",
-         "text_color":"white"
+         "text_color":"white",
+         "abilities": [
+            {
+               "type": "exchange",
+               "corporations": ["BNR", "DR", "FS", "RBSR", "RPR", "AIRS", "SNCF", "GSR"],
+               "owner_type": "player",
+               "from": "ipo"
+            }
+         ]
       },
       {
          "sym":"10",
@@ -442,7 +514,15 @@ module Engine
             0
          ],
          "color":"black",
-         "text_color":"white"
+         "text_color":"white",
+         "abilities": [
+            {
+               "type": "exchange",
+               "corporations": ["BNR", "DR", "FS", "RBSR", "RPR", "AIRS", "SNCF", "GSR"],
+               "owner_type": "player",
+               "from": "ipo"
+            }
+         ]
       },
       {
          "sym":"11",
@@ -454,7 +534,15 @@ module Engine
             0
          ],
          "color":"black",
-         "text_color":"white"
+         "text_color":"white",
+         "abilities": [
+            {
+               "type": "exchange",
+               "corporations": ["BNR", "DR", "FS", "RBSR", "RPR", "AIRS", "SNCF", "GSR"],
+               "owner_type": "player",
+               "from": "ipo"
+            }
+         ]
       },
       {
          "sym":"12",
@@ -466,7 +554,15 @@ module Engine
             0
          ],
          "color":"black",
-         "text_color":"white"
+         "text_color":"white",
+         "abilities": [
+            {
+               "type": "exchange",
+               "corporations": ["BNR", "DR", "FS", "RBSR", "RPR", "AIRS", "SNCF", "GSR"],
+               "owner_type": "player",
+               "from": "ipo"
+            }
+         ]
       },
       {
          "sym":"13",
@@ -478,7 +574,15 @@ module Engine
             0
          ],
          "color":"black",
-         "text_color":"white"
+         "text_color":"white",
+         "abilities": [
+            {
+               "type": "exchange",
+               "corporations": ["BNR", "DR", "FS", "RBSR", "RPR", "AIRS", "SNCF", "GSR"],
+               "owner_type": "player",
+               "from": "ipo"
+            }
+         ]
       },
       {
          "sym":"14",
@@ -490,7 +594,15 @@ module Engine
             0
          ],
          "color":"black",
-         "text_color":"white"
+         "text_color":"white",
+         "abilities": [
+            {
+               "type": "exchange",
+               "corporations": ["BNR", "DR", "FS", "RBSR", "RPR", "AIRS", "SNCF", "GSR"],
+               "owner_type": "player",
+               "from": "ipo"
+            }
+         ]
       },
       {
          "sym":"15",
@@ -502,7 +614,15 @@ module Engine
             0
          ],
          "color":"black",
-         "text_color":"white"
+         "text_color":"white",
+         "abilities": [
+            {
+               "type": "exchange",
+               "corporations": ["BNR", "DR", "FS", "RBSR", "RPR", "AIRS", "SNCF", "GSR"],
+               "owner_type": "player",
+               "from": "ipo"
+            }
+         ]
       }
    ],
    "trains":[

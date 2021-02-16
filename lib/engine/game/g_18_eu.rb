@@ -18,7 +18,7 @@ module Engine
 
       SELL_BUY_ORDER = :sell_buy
       SELL_AFTER = :operate
-      HOME_TOKEN_TIMING = :float
+      HOME_TOKEN_TIMING = :par
 
       MIN_BID_INCREMENT = 5
       MUST_BID_INCREMENT_MULTIPLE = true
@@ -103,10 +103,13 @@ module Engine
         Round::Auction.new(self, [Step::G18EU::ModifiedDutchAuction])
       end
 
+      def exchange_for_partial_presidency?
+        false
+      end
+
       def operating_round(round_num)
         Round::Operating.new(self, [
           Step::G18EU::Bankrupt,
-          Step::HomeToken,
           Step::Track,
           Step::Token,
           Step::Route,
@@ -120,6 +123,7 @@ module Engine
       def stock_round
         Round::Stock.new(self, [
           Step::G18EU::DiscardTrain,
+          Step::G18EU::HomeToken,
           Step::G18EU::BuySellParShares,
         ])
       end
@@ -244,6 +248,44 @@ module Engine
         bundle.share_price = new_price / bundle.num_shares
 
         bundle
+      end
+
+      def owns_any_minor?(entity)
+        @minors.find { |minor| minor.owner == entity }
+      end
+
+      def can_par?(corporation, entity)
+        return super if @phase.status.include?('normal_formation')
+        return false unless owns_any_minor?(entity)
+
+        super
+      end
+
+      def all_free_hexes(corporation)
+        hexes.select do |hex|
+          hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
+        end
+      end
+
+      # The player will swap one of their minors tokens for the major home token
+      # This gets the list of cities where their minors have tokens
+      def all_minor_cities(corporation)
+        @minors.map do |minor|
+          next unless minor.owner == corporation.owner
+
+          # only need to use first since minors have one token
+          minor.tokens.first.city
+        end.compact
+      end
+
+      def all_minor_hexes(corporation)
+        all_minor_cities(corporation).map(&:hex)
+      end
+
+      def home_token_locations(corporation)
+        return all_free_hexes(corporation) if @minors.empty?
+
+        all_minor_hexes(corporation)
       end
     end
   end
