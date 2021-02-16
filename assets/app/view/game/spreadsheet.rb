@@ -302,11 +302,11 @@ module View
           when :loans
             corporation.loans.size
           when :shorts
-            @game.available_shorts(corporation)
+            @game.available_shorts(corporation) if @game.respond_to?(:available_shorts)
           when :buying_power
             @game.buying_power(corporation, full: true)
           when :interest
-            @game.interest_owed(corporation)
+            @game.interest_owed(corporation) if @game.total_loans.positive?
           when :trains
             corporation.floated? ? corporation.trains.size : -1
           when :tokens
