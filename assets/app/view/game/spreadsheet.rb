@@ -50,7 +50,7 @@ module View
       def render_table
         h(:table, {
             style: {
-              margin: '1rem 0 1.5rem 0',
+              margin: '1rem 0 0.5rem 0',
               borderCollapse: 'collapse',
               textAlign: 'center',
               whiteSpace: 'nowrap',
@@ -255,7 +255,11 @@ module View
       end
 
       def render_spreadsheet_controls
-        h(:button, { on: { click: -> { toggle_delta_value } } }, "Show #{@delta_value ? 'Total' : 'Delta'} Value")
+        h(:button, {
+            style: { minWidth: '9.5rem' },
+            on: { click: -> { toggle_delta_value } },
+          },
+          "Show #{@delta_value ? 'Total' : 'Delta'} Values")
       end
 
       def render_corporations
