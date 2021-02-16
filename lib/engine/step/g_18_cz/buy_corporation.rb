@@ -47,12 +47,15 @@ module Engine
           receiving << "companies (#{companies.join(', ')})" if companies.any?
 
           trains = @game.transfer(:trains, corporation, entity)
-          receiving << "trains (#{trains.map(&:name)})" if trains.any?
 
-          @round.bought_trains << {
-            entity: entity,
-            trains: trains,
-          }
+          unless trains.empty?
+            receiving << "trains (#{trains.map(&:name)})"
+
+            @round.bought_trains << {
+              entity: entity,
+              trains: trains,
+            }
+          end
 
           remove_duplicate_tokens(entity, corporation)
           if tokens_in_same_hex(entity, corporation)
