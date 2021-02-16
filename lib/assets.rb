@@ -130,7 +130,9 @@ class Assets
             end
 
             File.write(build['path'], source)
-            Zlib::GzipWriter.open("#{build['path']}.gz") { |gz| gz.write(source) } if @gzip
+            if @gzip && build['path'] != @server_path
+              Zlib::GzipWriter.open("#{build['path']}.gz") { |gz| gz.write(source) }
+            end
           end
         end
         [@deps_path, @main_path, *game_paths]
@@ -228,5 +230,29 @@ class Assets
         FileUtils.rm(pin_path.gsub('.gz', ''))
         puts "Building #{pin_path} - #{Time.now - time}"
       end
+  end
+
+  def clean_intermediate_output_files
+    return if @precompiled
+
+    if @gzip
+      builds.each do |_, build|
+        file = build['path']
+        next if file == @server_path
+
+        if File.exists?(file)
+          puts "Deleting #{file}..."
+          File.delete(file)
+        end
+      end
+    end
+
+    files = builds.flat_map { |_, build| build['files'] }.uniq
+    files.each do |file|
+      if File.exists?(file)
+        puts "Deleting #{file}..."
+        File.delete(file)
+      end
+    end
   end
 end

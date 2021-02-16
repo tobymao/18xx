@@ -3,7 +3,7 @@ CONTAINER_COMPOSE ?= $(CONTAINER_ENGINE)-compose
 CONTAINER_ENGINE ?= docker
 
 clean:
-	sudo rm -rfv build/ public/assets/*.js public/assets/*.js.gz
+	sudo rm -rfv build/ public/assets/*.js public/assets/*.js.gz public/assets/version.json
 
 cleandeps:
 	sudo rm -rfv public/assets/deps.js
@@ -48,8 +48,8 @@ prod_rack_up_b_d : prod_link data_dir ensure_prod_env
 		$(CONTAINER_COMPOSE) up --build --no-deps --detach rack_backup
 
 # remotely deploy latest master in prod
-prod_deploy :
+prod_deploy : clean
 	$(CONTAINER_COMPOSE) run rack rake precompile && \
-		rsync --verbose --recursive --checksum public/assets --exclude-from public/assets/.rsync_exclude  deploy@18xx:~/18xx/public/assets && \
-		rsync --verbose --recursive --checksum public/pinned --exclude .keep deploy@18xx:~/18xx/public/pinned && \
+		rsync --verbose --checksum public/assets/*.js public/assets/*.js.gz public/assets/version.json deploy@18xx:~/18xx/public/assets/ && \
+		rsync --verbose --checksum public/pinned/$(git rev-parse --short HEAD).js.gz deploy@18xx:~/18xx/public/pinned/ && \
 		ssh -l deploy 18xx "source ~/.profile && cd ~/18xx/ && git pull && make prod_rack_up_b_d"
