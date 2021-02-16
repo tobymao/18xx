@@ -217,7 +217,7 @@ module Engine
       end
 
       def token_note
-        'Note: N in Tokens column represents a neutral token.'
+        'N = neutral token'
       end
     end
   end
