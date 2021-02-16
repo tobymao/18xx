@@ -388,7 +388,7 @@ module Engine
       end
 
       def get_or_revenue(info)
-        info.dividend.kind == 'withhold' ? 0 : info.revenue
+        !info.dividend.is_a?(Action::Dividend) || info.dividend.kind == 'withhold' ? 0 : info.revenue
       end
 
       # OR has just finished, find two lowest revenues and nationalize the corporations
