@@ -63,7 +63,7 @@ module View
               h(:td, { attrs: { colspan: @game.players.size + 8 } }, ''),
               h(:td, { attrs: { colspan: 2 } }, @game.respond_to?(:token_note) ? @game.token_note : ''),
               h(:td, { attrs: { colspan: 1 + @extra_size } }, ''),
-              h(:td, { attrs: { colspan: @halfpaid ? 6 : 3 } }, "[ ] withheld#{', ¦ ¦ half-paid' if @halfpaid}"),
+              h(:td, { attrs: { colspan: @halfpaid ? 6 : 3 } }, "[withheld]#{', ¦half-paid¦' if @halfpaid}"),
             ]),
           ]),
           h(:tbody, [
