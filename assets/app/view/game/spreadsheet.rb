@@ -63,7 +63,7 @@ module View
               h(:td, { attrs: { colspan: @game.players.size + 8 } }, ''),
               h(:td, { attrs: { colspan: 2 } }, @game.respond_to?(:token_note) ? @game.token_note : ''),
               h(:td, { attrs: { colspan: 1 + @extra_size } }, ''),
-              h(:td, { attrs: { colspan: @halfpaid ? 6 : 3 } }, "[withheld]#{', ¦half-paid¦' if @halfpaid}"),
+              h(:td, { attrs: { colspan: @halfpaid ? 6 : 3 } }, "[withheld]#{' ¦half-paid¦' if @halfpaid}"),
             ]),
           ]),
           h(:tbody, [
@@ -88,7 +88,9 @@ module View
       end
 
       def render_history_titles(corporations)
-        or_history(corporations).map { |turn, round| h(:th, @game.or_description_short(turn, round)) }
+        or_history(corporations).map do |turn, round|
+          h(:th, render_sort_link(@game.or_description_short(turn, round), [turn, round]))
+        end
       end
 
       def render_player_history
@@ -205,8 +207,8 @@ module View
             *@game.players.map do |p|
               h('th.name.nowrap.right', p == @game.priority_deal_player ? pd_props : '', render_sort_link(p.name, p.id))
             end,
-            h(:th, @game.ipo_name),
-            h(:th, 'Market'),
+            h(:th, render_sort_link(@game.ipo_name, :ipo_shares)),
+            h(:th, render_sort_link('Market', :market_shares)),
             h(:th, render_sort_link(@game.ipo_name, :par_price)),
             h(:th, render_sort_link('Market', :share_price)),
             h(:th, render_sort_link('Cash', :cash)),
@@ -288,33 +290,41 @@ module View
         end
 
         result.sort_by! do |operating_order, corporation|
-          case @spreadsheet_sort_by
-          when :cash
-            corporation.cash
-          when :id
-            corporation.id
-          when :order
-            operating_order
-          when :par_price
-            corporation.par_price&.price || 0
-          when :share_price
-            [corporation.share_price&.price || 0, -operating_order]
-          when :loans
-            corporation.loans.size
-          when :shorts
-            @game.available_shorts(corporation) if @game.respond_to?(:available_shorts)
-          when :buying_power
-            @game.buying_power(corporation, full: true)
-          when :interest
-            @game.interest_owed(corporation) if @game.total_loans.positive?
-          when :trains
-            corporation.floated? ? corporation.trains.size : -1
-          when :tokens
-            @game.count_available_tokens(corporation)
-          when :companies
-            corporation.companies.size
+          if @spreadsheet_sort_by.is_a?(Array)
+            corporation.operating_history[@spreadsheet_sort_by]&.revenue || -1
           else
-            @game.player_by_id(@spreadsheet_sort_by)&.num_shares_of(corporation)
+            case @spreadsheet_sort_by
+            when :id
+              corporation.id
+            when :ipo_shares
+              num_shares_of(corporation, corporation)
+            when :market_shares
+              num_shares_of(@game.share_pool, corporation)
+            when :share_price
+              [corporation.share_price&.price || 0, -operating_order]
+            when :par_price
+              corporation.par_price&.price || 0
+            when :cash
+              corporation.cash
+            when :order
+              operating_order
+            when :trains
+              corporation.floated? ? corporation.trains.size : -1
+            when :tokens
+              @game.count_available_tokens(corporation)
+            when :loans
+              corporation.loans.size
+            when :shorts
+              @game.available_shorts(corporation) if @game.respond_to?(:available_shorts)
+            when :buying_power
+              @game.buying_power(corporation, full: true)
+            when :interest
+              @game.interest_owed(corporation) if @game.total_loans.positive?
+            when :companies
+              corporation.companies.size
+            else
+              @game.player_by_id(@spreadsheet_sort_by)&.num_shares_of(corporation)
+            end
           end
         end
 
