@@ -202,9 +202,9 @@ module Engine
                     "code": "city=revenue:30,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;frame=color:purple"
                 },
                 "888p": {
-                    "count": 4,
+                    "count": 2,
                     "color": "green",
-                    "code": "town=revenue:20;path=a:1,b:_0;path=a:3,b:_0;path=a:0,b:_0;path=a:2,b:_0;frame=color:purple"
+                    "code": "town=revenue:20;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:5,b:_0;frame=color:purple"
                 },
                 "889p": {
                     "count": 2,
