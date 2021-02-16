@@ -130,14 +130,15 @@ module View
 
       def render_or_history_row(hist, corporation, x)
         if hist[x]
-          revenue_text, opacity = case hist[x].dividend.kind
-                                  when 'withhold'
-                                    ["[#{hist[x].revenue.abs}]", '0.5']
-                                  when 'half'
-                                    ["¦#{hist[x].revenue.abs}¦", '0.75']
-                                  else
-                                    [hist[x].revenue.abs.to_s, '1.0']
-                                  end
+          revenue_text, opacity =
+            case (hist[x].dividend.is_a?(Engine::Action::Dividend) ? hist[x].dividend.kind : 'withhold')
+            when 'withhold'
+              ["[#{hist[x].revenue.abs}]", '0.5']
+            when 'half'
+              ["¦#{hist[x].revenue.abs}¦", '0.75']
+            else
+              [hist[x].revenue.abs.to_s, '1.0']
+            end
           props = {
             style: {
               opacity: opacity,
