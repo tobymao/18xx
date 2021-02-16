@@ -370,12 +370,12 @@ div#game:focus {
   float: left;
 }
 
-#undo {
+#undo_redo {
   float: right;
 }
 
 @media only screen and (max-width: 420px) {
-  #undo {
+  #undo_redo {
     float: left;
   }
 }
