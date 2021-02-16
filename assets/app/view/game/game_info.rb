@@ -180,8 +180,8 @@ module View
 
         return unless trs.any?
 
-        h('div.bank.card', [
-          h('div.title.nowrap', title_props, [h(:em, 'Upcoming Trains')]),
+        h('div#upcoming_trains.card', [
+          h('div.title', title_props, [h(:em, 'Upcoming Trains')]),
           h(:div, body_props, [
             h(:table, trs),
           ]),
