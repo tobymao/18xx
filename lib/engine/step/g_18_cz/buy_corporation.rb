@@ -69,8 +69,8 @@ module Engine
           @log << "#{entity.name} buys #{corporation.name}
           for #{@game.format_currency(price)} per share receiving #{receiving.join(', ')}"
 
+          @game.close_corporation(corporation)
           corporation.close!
-          @game.corporations.delete(corporation)
         end
 
         def pass_description
