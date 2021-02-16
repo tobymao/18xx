@@ -42,11 +42,11 @@ module GameClassLoader
 
     src = "/assets/#{game_meta.fs_name}.js"
 
-    `var script = document.createElement('script');
-     script.type = 'text/javascript';
-     script.src = #{src};
-     script.onload = #{onload};
-     document.body.appendChild(script);`
+    %x{var script = document.createElement('script')
+     script.type = 'text/javascript'
+     script.src = #{src}
+     script.onload = #{onload}
+     document.body.appendChild(script)}
 
     nil
   end
