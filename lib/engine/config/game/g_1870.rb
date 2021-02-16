@@ -570,7 +570,7 @@ module Engine
         }
       ],
       "coordinates": "B11",
-      "color": "green"
+      "color": "lightseagreen"
     },
     {
       "float_percent": 60,
@@ -591,7 +591,7 @@ module Engine
         }
       ],
       "coordinates": "K16",
-      "color": "slategrey"
+      "color": "yellowgreen"
     },
     {
       "float_percent": 60,
@@ -633,7 +633,7 @@ module Engine
         }
       ],
       "coordinates": "J3",
-      "color": "purple"
+      "color": "mediumaquamarine"
     },
     {
       "float_percent": 60,
