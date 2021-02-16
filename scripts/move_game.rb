@@ -482,7 +482,11 @@ class Mover
     old_file = @files_new_to_old[file]
 
     const_name = old_file.sub('.rb', '').split('/').slice(1..-1).map do |x|
-      x.split('_').map(&:capitalize).join
+      if x == @game_class.fs_name
+        @module_name
+      else
+        x.split('_').map(&:capitalize).join
+      end
     end.join('::')
     Engine.const_get(const_name)
   end
