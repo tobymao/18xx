@@ -62,6 +62,8 @@ module View
             h(:tr, { style: { height: '1rem' } }, [
               h(:td, { attrs: { colspan: @game.players.size + 8 } }, ''),
               h(:td, { attrs: { colspan: 2 } }, @game.respond_to?(:token_note) ? @game.token_note : ''),
+              h(:td, { attrs: { colspan: 1 + @extra_size } }, ''),
+              h(:td, { attrs: { colspan: @halfpaid ? 6 : 3 } }, "[ ] withheld#{', ¦ ¦ half-paid' if @halfpaid}"),
             ]),
           ]),
           h(:tbody, [
@@ -134,6 +136,7 @@ module View
                                   when 'withhold'
                                     ["[#{hist[x].revenue.abs}]", '0.5']
                                   when 'half'
+                                    @halfpaid = true
                                     ["¦#{hist[x].revenue.abs}¦", '0.75']
                                   else
                                     [hist[x].revenue.abs.to_s, '1.0']
@@ -186,6 +189,7 @@ module View
           extra << h(:th, render_sort_link('Buying Power', :buying_power))
           extra << h(:th, render_sort_link('Interest Due', :interest))
         end
+        @extra_size = extra.size
         [
           h(:tr, [
             h(:th, ''),
