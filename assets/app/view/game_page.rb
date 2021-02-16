@@ -22,6 +22,7 @@ module View
     needs :connected, default: false, store: true
     needs :before_process_pass, default: -> {}, store: true
     needs :scroll_pos, default: nil, store: true
+    needs :last_active_players_id, default: [], store: true
 
     def render_broken_game(e)
       inner = [h(:div, "We're sorry this game cannot be continued due to #{e}")]
@@ -234,12 +235,21 @@ module View
       `document.title = #{title}`
       change_favicon(active_player)
       change_tab_color(active_player)
+      play_turn_sound(active_player) if active_player_changed?
     end
 
     def active_player
       @game_data[:mode] != :hotseat &&
         !cursor &&
         @game.active_players_id.include?(@user&.dig('id'))
+    end
+
+    def active_player_changed?
+      if @game_data[:mode] != :hotseat &&
+         !cursor &&
+         @game.active_players_id.sort != @last_active_players_id.sort
+        store(:last_active_players_id, @game.active_players_id)
+      end
     end
 
     def menu
@@ -284,7 +294,19 @@ module View
 
       h('nav#game_menu', nav_props, [
         h('ul.no_margin.no_padding', { style: { width: 'max-content' } }, menu_items),
-      ])
+        h('audio#your_turn', {
+            attrs: {
+              preload: 'auto',
+              src: '/sounds/horn.opus',
+            },
+          }),
+        h('audio#other_turn', {
+            attrs: {
+              preload: 'auto',
+              src: '/sounds/train.opus',
+            },
+          }),
+        ])
     end
 
     def item(name, anchor)

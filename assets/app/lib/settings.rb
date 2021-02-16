@@ -22,6 +22,8 @@ module Lib
       notifications: true,
       simple_logos: false,
       red_logo: false,
+      your_turn_sound: true,
+      other_turn_sound: true,
       bg: DARK ? '#000000' : '#ffffff',
       bg2: DARK ? '#dcdcdc' : '#d3d3d3',
       font: DARK ? '#ffffff' : '#000000',
@@ -67,6 +69,19 @@ module Lib
       `document.getElementById('theme_color').content = #{color}`
       `document.getElementById('theme_apple').content = #{color}`
       `document.getElementById('theme_ms').content = #{color}`
+    end
+
+    def play_turn_sound(active)
+      if active && setting_for(:your_turn_sound)
+        audio_id = 'your_turn'
+      elsif setting_for(:other_turn_sound)
+        audio_id = 'other_turn'
+      else
+        return
+      end
+
+      audio = `document`.JS.getElementById(audio_id)
+      audio.JS.play if audio && `typeof #{audio}.play` == 'function'
     end
 
     def player_colors(players)

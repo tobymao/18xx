@@ -63,6 +63,11 @@ module View
 
         <p>This website will always be open-source and free to play. If you'd like support this project, you can become a patron on
         <a href='https://www.patreon.com/18xxgames'>Patreon</a>.</p>
+
+        <H2>Attribution</H2>
+        <p>
+        <a href="https://freesound.org/people/digifishmusic/sounds/43361/">Horn sound</a> by <a href="https://freesound.org/people/digifishmusic/">digifishmusic</a> and <a href="https://freesound.org/people/LG/sounds/26971/">train sound</a> by <a href="https://freesound.org/people/LG/">LG</a> are provided under the <a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a> license.
+        </p>
       MESSAGE
 
       children = [h(:div, props: { innerHTML: message })]

@@ -46,6 +46,8 @@ module View
           render_notifications(setting_for(:notifications)),
           render_simple_logos(setting_for(:simple_logos)),
           render_logo_color(setting_for(:red_logo)),
+          render_your_turn_sound(setting_for(:your_turn_sound)),
+          render_other_turn_sound(setting_for(:other_turn_sound)),
         ]),
         h('div#settings__colors', { style: { maxWidth: '38rem' } }, [
           render_color('Main Background', :bg, color_for(:bg)),
@@ -153,6 +155,24 @@ module View
       render_input(
         'Red 18xx.games Logo',
         id: :red_logo,
+        type: :checkbox,
+        attrs: { checked: checked },
+      )
+    end
+
+    def render_your_turn_sound(checked = true)
+      render_input(
+        'Play a sound when it is your turn',
+        id: :your_turn_sound,
+        type: :checkbox,
+        attrs: { checked: checked },
+      )
+    end
+
+    def render_other_turn_sound(checked = true)
+      render_input(
+        'Play a sound when it is any player’s turn',
+        id: :other_turn_sound,
         type: :checkbox,
         attrs: { checked: checked },
       )
