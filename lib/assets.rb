@@ -240,7 +240,7 @@ class Assets
         file = build['path']
         next if file == @server_path
 
-        if File.exists?(file)
+        if File.exist?(file)
           puts "Deleting #{file}..."
           File.delete(file)
         end
@@ -249,7 +249,7 @@ class Assets
 
     files = builds.flat_map { |_, build| build['files'] }.uniq
     files.each do |file|
-      if File.exists?(file)
+      if File.exist?(file)
         puts "Deleting #{file}..."
         File.delete(file)
       end
