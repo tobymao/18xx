@@ -4,7 +4,7 @@ require 'game_manager'
 require 'view/game_row'
 
 module View
-  class InviteGame < Snabberb::Component
+  class GameCardPage < Snabberb::Component
     include GameManager
 
     needs :user
@@ -13,8 +13,9 @@ module View
     def render
       game_refresh
 
-      children = [h(:h2, 'This game has not started yet')]
-      if @user
+      children = [h(:h2, 'This game has not started yet')] if @game_data['status'] == 'new'
+
+      if @user || @game_data['status'] == 'archived'
         children << h(:div, [h(GameCard, gdata: @game_data, user: @user)])
       else
         children << h(:h3, 'You need to login before joining a game:')
@@ -27,7 +28,7 @@ module View
       end
 
       props = {
-        key: 'invite_page',
+        key: 'game_card_page',
         hook: {
           destroy: destroy,
         },
