@@ -40,6 +40,9 @@ module Engine
           end
           receiving = []
 
+          receiving << @game.format_currency(corporation.cash)
+          corporation.spend(corporation.cash, entity) if corporation.cash.positive?
+
           companies = @game.transfer(:companies, corporation, entity).map(&:name)
           receiving << "companies (#{companies.join(', ')})" if companies.any?
 
@@ -52,8 +55,16 @@ module Engine
           }
 
           remove_duplicate_tokens(entity, corporation)
-          tokens = move_tokens_to_surviving(entity, corporation, price_for_new_token: 100, check_tokenable: false)
-          receiving << "and tokens (#{tokens.size}: hexes #{tokens.compact})"
+          if tokens_in_same_hex(entity, corporation)
+            @round.corporations_removing_tokens = [entity, corporation]
+          else
+            move_tokens_to_surviving(entity, corporation, price_for_new_token: @game.new_token_price,
+                                                          check_tokenable: false)
+          end
+          receiving <<
+              "and tokens (#{corporation.tokens.size}: hexes #{corporation.tokens.map do |token|
+                                                                 token.city&.hex&.id
+                                                               end.compact.uniq})"
 
           @log << "#{entity.name} buys #{corporation.name}
           for #{@game.format_currency(price)} per share receiving #{receiving.join(', ')}"
@@ -93,6 +104,25 @@ module Engine
           max_price = (corporation_to_boy.share_price.price * 1.5).ceil
           min_price = (corporation_to_boy.share_price.price * 0.5).ceil
           [min_price, max_price]
+        end
+
+        def tokens_in_same_hex(surviving, others)
+          (surviving.tokens.map { |t| t.city&.hex } & others_tokens(others).map { |t| t.city&.hex }).any?
+        end
+
+        def remove_duplicate_tokens(surviving, others)
+          # If there are 2 station markers on the same city the
+          # surviving company must remove one and place it on its charter.
+          # In the case of NY tiles this is ambigious and must be solved by the user
+
+          others = others_tokens(others).map(&:city).compact
+          surviving.tokens.each do |token|
+            city = token.city
+            if others.include?(city)
+              token.remove!
+              token.price = @game.new_token_price
+            end
+          end
         end
       end
     end

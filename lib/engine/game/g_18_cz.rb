@@ -128,6 +128,7 @@ module Engine
           Step::G18CZ::HomeTrack,
           Step::G18CZ::SellCompanyAndSpecialTrack,
           Step::HomeToken,
+          Step::G18CZ::ReduceTokens,
           Step::G18CZ::BuyCompany,
           Step::Track,
           Step::G18CZ::Token,
@@ -433,6 +434,10 @@ module Engine
         else
           true
         end
+      end
+
+      def new_token_price
+        100
       end
     end
   end
