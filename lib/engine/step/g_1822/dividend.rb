@@ -12,8 +12,7 @@ module Engine
           return [] if !entity.corporation? || (entity.corporation? && entity.type != :major)
 
           @extra_train_choice ||= ''
-          actions = []
-          actions.concat(super)
+          actions = super.dup
           actions << 'choose' if @extra_train_choice.empty? && find_extra_train(entity) && entity.trains.size > 1
           actions
         end
@@ -28,7 +27,7 @@ module Engine
         end
 
         def choices
-          choices = Hash.new { |h, k| h[k] = [] }
+          choices = {}
           choices['payout'] = 'Pay out'
           choices['half'] = 'Half Pay'
           choices['withhold'] = 'Withhold'

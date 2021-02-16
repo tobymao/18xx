@@ -13,9 +13,7 @@ module View
       def render
         @corporation = @game.current_entity
 
-        h(:div, [
-          *render_companies,
-        ].compact)
+        h(:div, render_companies.compact)
       end
 
       def owned_by_other_player?(player, company)

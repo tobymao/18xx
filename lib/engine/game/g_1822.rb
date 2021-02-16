@@ -101,7 +101,7 @@ module Engine
         'NER' => 3,
       }.freeze
 
-      # Theese trains doesnt count against train limit, they also doesnt count as a train
+      # These trains don't count against train limit, they also don't count as a train
       # against the mandatory train ownership. They cant the bought by another corporation.
       EXTRA_TRAINS = %w[2P P+ LP].freeze
       EXTRA_TRAIN_PULLMAN = 'P+'
@@ -226,10 +226,11 @@ module Engine
       end
 
       def compute_other_paths(routes, route)
-        routes
-          .reject { |r| r == route }
-          .select { |r| train_type(route.train) == train_type(r.train) }
-          .flat_map(&:paths)
+        routes.flat_map do |r|
+          next if r == route || train_type(route.train) != train_type(r.train)
+
+          r.paths
+        end
       end
 
       def crowded_corps
@@ -322,7 +323,7 @@ module Engine
 
       def must_buy_train?(entity)
         !entity.rusted_self &&
-          entity.trains.reject { |t| extra_train?(t) }.empty? &&
+          entity.trains.none? { |t| !extra_train?(t) } &&
           !depot.depot_trains.empty?
       end
 
@@ -377,7 +378,9 @@ module Engine
                     super
                   else
                     entity = route.train.owner
-                    stops.select(&:city?).sum do |stop|
+                    stops.sum do |stop|
+                      next 0 unless stop.city?
+
                       stop.tokened_by?(entity) ? stop.route_revenue(route.phase, route.train) : 0
                     end
                   end
