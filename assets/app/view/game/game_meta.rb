@@ -63,9 +63,33 @@ module View
       end
 
       def render_more_info
-        return [] unless @game.class::GAME_INFO_URL
+        return [] unless @game.class::GAME_WIKI_URL || @game.class::GAME_BGG_ID
 
-        [h(:p, [h(:a, { attrs: { href: @game.class::GAME_INFO_URL, target: '_blank' } }, 'More info')])]
+        p_inner = ['More info ']
+        p_inner.push(
+          'in the ',
+          h(:a, {
+              attrs: {
+                href: @game.class::GAME_WIKI_URL,
+                target: '_blank',
+              },
+            }, '18xx.Games wiki'),
+        ) if @game.class::GAME_WIKI_URL
+        p_inner.push(' and ') \
+          if @game.class::GAME_WIKI_URL && @game.class::GAME_BGG_ID
+        p_inner.push(
+          'at ',
+          h(:a, {
+              attrs: {
+                href: 'https://boardgamegeek.com/boardgame/' +
+                  `encodeURIComponent(#{@game.class::GAME_BGG_ID})`,
+                target: '_blank',
+              },
+            }, 'BoardGameGeek'),
+        ) if @game.class::GAME_BGG_ID
+        p_inner.push('.')
+
+        [h(:p, p_inner)]
       end
     end
   end

@@ -10,7 +10,7 @@ module Engine
 
       GAME_DESIGNER = 'Scott Petersen & Toby Mao'
       GAME_RULES_URL = 'https://github.com/tobymao/18xx/wiki/1877'
-      GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1877'
+      GAME_WIKI_URL = 'https://github.com/tobymao/18xx/wiki/1877'
       GAME_PUBLISHER = :all_aboard_games
       GAME_LOCATION = 'Venezuela'
 

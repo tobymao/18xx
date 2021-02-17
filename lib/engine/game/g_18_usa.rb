@@ -15,13 +15,14 @@ module Engine
 
       GAME_LOCATION = 'United States'
       SEED_MONEY = 200
-      GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18USA'
+      GAME_WIKI_URL = 'https://github.com/tobymao/18xx/wiki/18USA'
       GAME_RULES_URL = {
         '18USA' => 'https://boardgamegeek.com/filepage/145024/18usa-rules',
         '1817 Rules' => 'https://drive.google.com/file/d/0B1SWz2pNe2eAbnI4NVhpQXV4V0k/view',
       }.freeze
       # Alphabetized. Not sure what official ordering is
       GAME_DESIGNER = 'Edward Reece, Mark Hendrickson, and Shawn Fox'
+      GAME_BGG_ID = 219_717
 
       OFFBOARD_VALUES = [[20, 30, 40, 50], [20, 30, 40, 60], [20, 30, 50, 60], [20, 30, 50, 60], [20, 30, 60, 90],
                          [20, 40, 50, 80], [30, 40, 40, 50], [30, 40, 50, 60], [30, 50, 60, 80], [30, 50, 60, 80],

@@ -13,7 +13,8 @@ module Engine
       GAME_RULES_URL = 'http://ohley.de/english/1848/1848-rules.pdf'
       GAME_DESIGNER = 'Leonhard Orgler and Helmut Ohley'
       GAME_PUBLISHER = :oo_games
-      GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1848'
+      GAME_WIKI_URL = 'https://github.com/tobymao/18xx/wiki/1848'
+      GAME_BGG_ID = 32_424
 
       # Two tiles can be laid at a time, with max one upgrade
       TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded }].freeze

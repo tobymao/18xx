@@ -27,7 +27,8 @@ module Engine
       GAME_RULES_URL = 'https://boardgamegeek.com/filepage/206628/1849-rules'
       GAME_DESIGNER = 'Federico Vellani'
       GAME_PUBLISHER = :all_aboard_games
-      GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1849'
+      GAME_WIKI_URL = 'https://github.com/tobymao/18xx/wiki/1849'
+      GAME_BGG_ID = 3097
 
       CAPITALIZATION = :incremental
 

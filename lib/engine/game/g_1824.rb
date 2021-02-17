@@ -23,7 +23,8 @@ module Engine
       GAME_RULES_URL = 'https://boardgamegeek.com/filepage/188242/1824-english-rules'
       GAME_DESIGNER = 'Leonhard Orgler & Helmut Ohley'
       GAME_PUBLISHER = :lonny_games
-      GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1824'
+      GAME_WIKI_URL = 'https://github.com/tobymao/18xx/wiki/1824'
+      GAME_BGG_ID = 277_030
 
       GAME_END_CHECK = { bank: :full_or }.freeze
 

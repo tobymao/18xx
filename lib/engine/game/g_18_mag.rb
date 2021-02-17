@@ -32,7 +32,8 @@ module Engine
       GAME_RULES_URL = 'https://www.lonny.at/games/18magyarorsz%C3%A1g/'
       GAME_DESIGNER = 'Leonhard "Lonny" Orgler'
       GAME_PUBLISHER = :lonny_games
-      GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18Mag'
+      GAME_WIKI_URL = 'https://github.com/tobymao/18xx/wiki/18Mag'
+      GAME_BGG_ID = 325_191
 
       DEV_STAGE = :beta
 

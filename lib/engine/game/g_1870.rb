@@ -21,7 +21,8 @@ module Engine
       GAME_LOCATION = 'Mississippi, USA'
       GAME_RULES_URL = 'http://www.hexagonia.com/rules/MFG_1870.pdf'
       GAME_DESIGNER = 'Bill Dixon'
-      GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1870'
+      GAME_WIKI_URL = 'https://github.com/tobymao/18xx/wiki/1870'
+      GAME_BGG_ID = 424
 
       EBUY_PRES_SWAP = false
       EBUY_OTHER_VALUE = false

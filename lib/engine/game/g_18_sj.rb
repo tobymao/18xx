@@ -28,7 +28,8 @@ module Engine
       GAME_RULES_URL = 'https://drive.google.com/file/d/1WgvqSp5HWhrnCAhAlLiTIe5oXfYtnVt9/view?usp=drivesdk'
       GAME_DESIGNER = 'Örjan Wennman'
       GAME_PUBLISHER = :self_published
-      GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18SJ'
+      GAME_WIKI_URL = 'https://github.com/tobymao/18xx/wiki/18SJ'
+      GAME_BGG_ID = 328_237
 
       # Stock market 350 triggers end of game in same OR, but bank full OR set
       GAME_END_CHECK = { bankrupt: :immediate, stock_market: :current_or, bank: :full_or }.freeze

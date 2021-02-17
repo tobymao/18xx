@@ -17,7 +17,8 @@ module Engine
       GAME_RULES_URL = 'https://boardgamegeek.com/filepage/209791'
       GAME_DESIGNER = 'Mark Derrick'
       GAME_PUBLISHER = :all_aboard_games
-      GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18MS'
+      GAME_WIKI_URL = 'https://github.com/tobymao/18xx/wiki/18MS'
+      GAME_BGG_ID = 313_129
 
       # Game will end after 10 ORs (or 11 in case of optional rule) - checked in end_now? below
       GAME_END_CHECK = {}.freeze

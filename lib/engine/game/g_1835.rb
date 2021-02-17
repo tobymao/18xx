@@ -30,7 +30,8 @@ module Engine
       GAME_LOCATION = 'Germany'
       GAME_RULES_URL = 'http://google.com'
       GAME_DESIGNER = 'Michael Meier-Bachl, Francis Tresham'
-      GAME_INFO_URL = 'https://google.com'
+      GAME_WIKI_URL = nil
+      GAME_BGG_ID = 422
 
       HOME_TOKEN_TIMING = :operating_round
 

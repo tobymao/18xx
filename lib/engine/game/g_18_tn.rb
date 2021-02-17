@@ -17,7 +17,8 @@ module Engine
       GAME_DESIGNER = 'Mark Derrick'
       GAME_PUBLISHER = :golden_spike
       GAME_END_CHECK = { bankrupt: :immediate, stock_market: :current_or, bank: :current_or }.freeze
-      GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18TN'
+      GAME_WIKI_URL = 'https://github.com/tobymao/18xx/wiki/18TN'
+      GAME_BGG_ID = 25_344
 
       STATUS_TEXT = Base::STATUS_TEXT.merge(
         'can_buy_companies_operation_round_one' =>

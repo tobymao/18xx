@@ -12,7 +12,7 @@ module Engine
         DEPENDS_ON = '1846'
 
         GAME_DESIGNER = 'Anthony Fryer'
-        GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18LosAngeles'
+        GAME_WIKI_URL = 'https://github.com/tobymao/18xx/wiki/18LosAngeles'
         GAME_PUBLISHER = %i[traxx sea_horse].freeze
         GAME_RULES_URL = {
           '18 Los Angeles Rules' =>
@@ -20,6 +20,7 @@ module Engine
           '1846 Rules' =>
                 'https://s3-us-west-2.amazonaws.com/gmtwebsiteassets/1846/1846-RULES-GMT.pdf',
         }.freeze
+        GAME_BGG_ID = 306_257
         GAME_TITLE = '18 Los Angeles'
 
         PLAYER_RANGE = [2, 5].freeze

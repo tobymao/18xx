@@ -12,7 +12,7 @@ module Engine
         DEPENDS_ON = '1846'
 
         GAME_DESIGNER = 'Thomas Lehmann'
-        GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1846'
+        GAME_WIKI_URL = 'https://github.com/tobymao/18xx/wiki/1846'
         GAME_LOCATION = 'Midwest, USA'
         GAME_PUBLISHER = %i[gmt_games golden_spike].freeze
         GAME_RULES_URL = {

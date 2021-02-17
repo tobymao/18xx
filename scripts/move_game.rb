@@ -17,11 +17,12 @@ class Mover
   METADATA_CONSTANTS = %i[
     GAME_DESIGNER
     GAME_IMPLEMENTER
-    GAME_INFO_URL
+    GAME_WIKI_URL
     GAME_LOCATION
     GAME_PUBLISHER
     GAME_RULES_URL
     GAME_TITLE
+    GAME_BGG_ID
   ].freeze
 
   attr_reader :name, :module_name, :old_game_file, :game_class, :game_config_json

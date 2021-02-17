@@ -30,7 +30,8 @@ module Engine
       GAME_RULES_URL = 'http://google.com'
       GAME_DESIGNER = 'Simon Cutforth'
       GAME_PUBLISHER = :all_aboard_games
-      GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1822'
+      GAME_WIKI_URL = 'https://github.com/tobymao/18xx/wiki/1822'
+      GAME_BGG_ID = 193_867
 
       HOME_TOKEN_TIMING = :operate
       MUST_BUY_TRAIN = :always

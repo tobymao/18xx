@@ -33,7 +33,8 @@ module Engine
       GAME_RULES_URL = 'https://docs.google.com/viewer?a=v&pid=sites&srcid=YWxsLWFib2FyZGdhbWVzLmNvbXxhYWdsbGN8Z3g6MThhODUwM2Q3MWUyMmI2Nw'
       GAME_DESIGNER = 'Klaus Kiermeier'
       GAME_PUBLISHER = :all_aboard_games
-      GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/Harzbahn-1873'
+      GAME_WIKI_URL = 'https://github.com/tobymao/18xx/wiki/Harzbahn-1873'
+      GAME_BGG_ID = 28_944
 
       # DEV_STAGE = :alpha
 

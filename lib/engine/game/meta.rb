@@ -11,11 +11,12 @@ module Engine
       # real game metadata
       GAME_DESIGNER = nil
       GAME_IMPLEMENTER = nil
-      GAME_INFO_URL = nil
+      GAME_WIKI_URL = nil
       GAME_LOCATION = nil
       GAME_PUBLISHER = nil
       GAME_RULES_URL = nil
       GAME_TITLE = nil
+      GAME_BGG_ID = nil
 
       # rules data that needs to be known to the engine without loading in the
       # full game class

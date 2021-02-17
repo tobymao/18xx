@@ -35,7 +35,8 @@ module Engine
       GAME_RULES_URL = 'https://drive.google.com/file/d/0B1SWz2pNe2eAbnI4NVhpQXV4V0k/view'
       GAME_DESIGNER = 'Craig Bartell, Tim Flowers'
       GAME_PUBLISHER = :all_aboard_games
-      GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1817'
+      GAME_WIKI_URL = 'https://github.com/tobymao/18xx/wiki/1817'
+      GAME_BGG_ID = 63_170
       TRAIN_STATION_PRIVATE_NAME = 'TS'
       PITTSBURGH_PRIVATE_NAME = 'PSM'
       PITTSBURGH_PRIVATE_HEX = 'F13'

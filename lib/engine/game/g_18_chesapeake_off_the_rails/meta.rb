@@ -12,10 +12,11 @@ module Engine
         DEPENDS_ON = '18Chesapeake'
 
         GAME_DESIGNER = 'Scott Petersen'
-        GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18Chesapeake'
+        GAME_WIKI_URL = 'https://github.com/tobymao/18xx/wiki/18Chesapeake'
         GAME_PUBLISHER = :all_aboard_games
         GAME_RULES_URL = 'https://www.dropbox.com/s/ivm4jsopnzabhru/18ChesOTR_Rules.png?dl=0'
         GAME_TITLE = '18Chesapeake: Off the Rails'
+        GAME_BGG_ID = 328_829
 
         PLAYER_RANGE = [2, 6].freeze
       end

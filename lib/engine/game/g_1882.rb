@@ -24,7 +24,8 @@ module Engine
       GAME_RULES_URL = 'https://boardgamegeek.com/filepage/206629/1882-rules'
       GAME_DESIGNER = 'Marc Voyer'
       GAME_PUBLISHER = :all_aboard_games
-      GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1882'
+      GAME_WIKI_URL = 'https://github.com/tobymao/18xx/wiki/1882'
+      GAME_BGG_ID = 282_435
 
       MUST_BID_INCREMENT_MULTIPLE = true
       SELL_BUY_ORDER = :sell_buy_sell

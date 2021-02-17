@@ -22,7 +22,8 @@ module Engine
       GAME_RULES_URL = 'http://google.com'
       GAME_DESIGNER = 'David Hecht'
       GAME_PUBLISHER = nil
-      GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18FL'
+      GAME_WIKI_URL = 'https://github.com/tobymao/18xx/wiki/18FL'
+      GAME_BGG_ID = 21_436
 
       HOME_TOKEN_TIMING = :operating_round
       SELL_BUY_ORDER = :sell_buy

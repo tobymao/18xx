@@ -55,7 +55,8 @@ module Engine
       GAME_LOCATION = 'Ontario, Canada'
       GAME_RULES_URL = 'http://google.com'
       GAME_DESIGNER = 'Bill Dixon'
-      GAME_INFO_URL = 'https://google.com'
+      GAME_WIKI_URL = nil
+      GAME_BGG_ID = 423
 
       HOME_TOKEN_TIMING = :operating_round
 

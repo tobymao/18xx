@@ -19,7 +19,8 @@ module Engine
       GAME_RULES_URL = 'https://boardgamegeek.com/filepage/188718/1893-cologne-rule-summary-version-10'
       GAME_DESIGNER = 'Edwin Eckert'
       GAME_PUBLISHER = :marflow_games
-      GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1893'
+      GAME_WIKI_URL = 'https://github.com/tobymao/18xx/wiki/1893'
+      GAME_BGG_ID = 162_677
 
       GAME_END_CHECK = { bankrupt: :immediate, bank: :full_or }.freeze
 
