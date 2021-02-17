@@ -144,7 +144,7 @@ module Engine
     end
 
     context '2p 18Chesapeake' do
-      let(:game) { Game::G18Chesapeake.new(%w[a b]) }
+      let(:game) { Game::G18Chesapeake::Game.new(%w[a b]) }
       it '30% presidency, remove share from share pool, allow dumping' do
         bo = game.corporation_by_id('B&O')
         cv = game.abilities(game.cornelius, :shares).shares.first.corporation

@@ -404,7 +404,7 @@ module Engine
     end
 
     context '#18chesapeake' do
-      let(:game) { Game::G18Chesapeake.new(players) }
+      let(:game) { Game::G18Chesapeake::Game.new(players) }
       let(:corporation) { game.corporation_by_id('N&W') }
       let(:corporation2) { game.corporation_by_id('PRR') }
       subject { move_to_or! }
