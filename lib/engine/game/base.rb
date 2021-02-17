@@ -318,7 +318,7 @@ module Engine
         const_set(:COLORS, colors)
       end
 
-      def self.load_from_meta(meta_module)
+      def self.include_meta(meta_module)
         include meta_module
 
         meta_module.constants.each do |const|
@@ -2091,7 +2091,7 @@ module Engine
         when :first_to_pass
           @players = @round.pass_order if @round.pass_order.any?
         when :most_cash
-          current_order = @players.dup
+          current_order = @players.dup.reverse
           @players.sort_by! { |p| [p.cash, current_order.index(p)] }.reverse!
         when :least_cash
           current_order = @players.dup

@@ -195,7 +195,7 @@ module View
     end
 
     def visible_games
-      (Lib::Params['all'] ? Engine::GAMES : Engine::VISIBLE_GAMES).sort
+      (Lib::Params['all'] ? Engine::GAME_METAS : Engine::VISIBLE_GAMES).sort
     end
 
     def selected_game
