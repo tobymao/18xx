@@ -111,6 +111,30 @@ module View
         end
       end
 
+      def operated?(corporation)
+        return unless @game.round.operating?
+
+        order = @game.round.entities.index(corporation)
+        idx = @game.round.entities.index(@game.round.current_entity)
+        order < idx if order && idx
+      end
+
+      def token_props(corporation)
+        props = {
+          attrs: {
+            src: logo_for_user(corporation),
+            title: corporation.name,
+            width: "#{TOKEN_SIZES[@game.corporation_size(corporation)]}px",
+          },
+          style: { marginTop: "#{VERTICAL_TOKEN_PAD}px" },
+        }
+        if operated?(corporation)
+          props[:attrs][:title] = "#{corporation.name} has operated"
+          props[:style][:opacity] = '0.4'
+        end
+        props
+      end
+
       def grid_1d
         token_height = @game.stock_market.market.first.map do |p|
           p.corporations.sum { |c| TOKEN_SIZES[@game.corporation_size(c)] + VERTICAL_TOKEN_PAD }
@@ -119,16 +143,7 @@ module View
         height = "#{box_height - 2 * PAD - 2 * BORDER}px"
 
         row = @game.stock_market.market.first.map do |price|
-          tokens = price.corporations.map do |corporation|
-            props = {
-              attrs: {
-                src: logo_for_user(corporation),
-                width: "#{TOKEN_SIZES[@game.corporation_size(corporation)]}px",
-              },
-              style: { marginTop: "#{VERTICAL_TOKEN_PAD}px" },
-            }
-            h(:img, props)
-          end
+          tokens = price.corporations.map { |corporation| h(:img, token_props(corporation)) }
 
           box_style = box_style_1d
           box_style[:height] = height
@@ -158,16 +173,7 @@ module View
         row1 = [h(:div, style: cell_style(half_box_style, @game.stock_market.market.first.first.types))]
 
         @game.stock_market.market.first.each_with_index do |price, idx|
-          tokens = price.corporations.map do |corporation|
-            props = {
-              attrs: {
-                src: logo_for_user(corporation),
-                width: "#{TOKEN_SIZES[@game.corporation_size(corporation)]}px",
-              },
-              style: { marginTop: "#{VERTICAL_TOKEN_PAD}px" },
-            }
-            h(:img, props)
-          end
+          tokens = price.corporations.map { |corporation| h(:img, token_props(corporation)) }
 
           element = h(:div, { style: cell_style(box_style, price.types) }, [
                       h(:div, { style: PRICE_STYLE_1D }, price.price),
@@ -196,13 +202,22 @@ module View
 
               tokens = corporations.map.with_index do |corporation, index|
                 props = {
-                  attrs: { src: logo_for_user(corporation), width: "#{TOKEN_SIZE}px" },
+                  attrs: {
+                    src: logo_for_user(corporation),
+                    title: corporation.name,
+                    width: "#{TOKEN_SIZE}px",
+                  },
                   style: {
                     position: 'absolute',
                     left: num > 1 ? "#{LEFT_TOKEN_POS + ((num - index - 1) * spacing)}px" : "#{MID_TOKEN_POS}px",
                     zIndex: num - index,
                   },
                 }
+                if operated?(corporation)
+                  props[:attrs][:title] = "#{corporation.name} has operated"
+                  props[:style][:opacity] = '0.4'
+                end
+
                 h(:img, props)
               end
 
