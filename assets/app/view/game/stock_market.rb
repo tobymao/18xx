@@ -140,6 +140,7 @@ module View
           props[:attrs][:title] = "#{corporation.name} has operated"
           props[:style][:opacity] = '0.4'
         end
+
         props
       end
 
