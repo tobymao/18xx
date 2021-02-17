@@ -131,7 +131,15 @@ class Assets
 
             File.write(build['path'], source)
             if @gzip && build['path'] != @server_path
-              Zlib::GzipWriter.open("#{build['path']}.gz") { |gz| gz.write(source) }
+              Zlib::GzipWriter.open("#{build['path']}.gz") do |gz|
+                # two gzipped files with identical contents look different to
+                # tools like rsync if their mtimes are different; we don't want
+                # rsync to deploy "new" versions of deps.js.gz, etc if they
+                # haven't changed
+                gz.mtime = 0
+
+                gz.write(source)
+              end
             end
           end
         end

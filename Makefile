@@ -51,5 +51,4 @@ prod_rack_up_b_d : prod_link data_dir ensure_prod_env
 prod_deploy : clean
 	$(CONTAINER_COMPOSE) run rack rake precompile && \
 		rsync --verbose --checksum public/assets/*.js public/assets/*.js.gz public/assets/version.json deploy@18xx:~/18xx/public/assets/ && \
-		rsync --verbose --checksum public/pinned/$(git rev-parse --short HEAD).js.gz deploy@18xx:~/18xx/public/pinned/ && \
 		ssh -l deploy 18xx "source ~/.profile && cd ~/18xx/ && git pull && make prod_rack_up_b_d"
