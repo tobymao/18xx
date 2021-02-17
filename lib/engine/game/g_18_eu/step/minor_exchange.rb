@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-require_relative '../share_buying'
+require_relative '../../../step/share_buying'
 
 module Engine
-  module Step
+  module Game
     module G18EU
       module MinorExchange
-        include ShareBuying
+        include Engine::Step::ShareBuying
 
         def merge_minor!(minor, corporation)
           minor.tokens.first.remove!
