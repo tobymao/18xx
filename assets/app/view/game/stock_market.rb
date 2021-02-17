@@ -119,7 +119,7 @@ module View
         order < idx if order && idx
       end
 
-      def token_props(corporation)
+      def token_props(corporation, index = nil, num = nil, spacing = nil)
         props = {
           attrs: {
             src: logo_for_user(corporation),
@@ -128,6 +128,14 @@ module View
           },
           style: { marginTop: "#{VERTICAL_TOKEN_PAD}px" },
         }
+        if index
+          props[:attrs][:width] = "#{TOKEN_SIZE}px"
+          props[:style] = {
+            position: 'absolute',
+            left: num > 1 ? "#{LEFT_TOKEN_POS + ((num - index - 1) * spacing)}px" : "#{MID_TOKEN_POS}px",
+            zIndex: num - index,
+          }
+        end
         if operated?(corporation)
           props[:attrs][:title] = "#{corporation.name} has operated"
           props[:style][:opacity] = '0.4'
@@ -199,27 +207,7 @@ module View
               corporations = price.corporations
               num = corporations.size
               spacing = num > 1 ? (RIGHT_TOKEN_POS - LEFT_TOKEN_POS) / (num - 1) : 0
-
-              tokens = corporations.map.with_index do |corporation, index|
-                props = {
-                  attrs: {
-                    src: logo_for_user(corporation),
-                    title: corporation.name,
-                    width: "#{TOKEN_SIZE}px",
-                  },
-                  style: {
-                    position: 'absolute',
-                    left: num > 1 ? "#{LEFT_TOKEN_POS + ((num - index - 1) * spacing)}px" : "#{MID_TOKEN_POS}px",
-                    zIndex: num - index,
-                  },
-                }
-                if operated?(corporation)
-                  props[:attrs][:title] = "#{corporation.name} has operated"
-                  props[:style][:opacity] = '0.4'
-                end
-
-                h(:img, props)
-              end
+              tokens = corporations.map.with_index { |corp, index| h(:img, token_props(corp, index, num, spacing)) }
 
               h(:div, { style: cell_style(@box_style_2d, price.types) }, [
                 h(:div, { style: { fontSize: '80%' } }, price.price),
