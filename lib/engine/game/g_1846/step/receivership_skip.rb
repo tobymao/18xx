@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Engine
-  module Step
+  module Game
     module G1846
       module ReceivershipSkip
         def actions(entity)
