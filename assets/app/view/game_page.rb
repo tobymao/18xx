@@ -219,7 +219,7 @@ module View
           event.preventDefault
         when '-', '0', '+'
           button_click('zoom' + key)
-        when 'Home', 'End', 'PageUp', 'PageDown', 'ArrowLeft', 'ArrowRight'
+        when 'Home', 'End', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'
           button_click('hist_' + key)
           event.preventDefault
         end
