@@ -439,6 +439,12 @@ module Engine
       def new_token_price
         100
       end
+
+      def route_trains(entity)
+        runnable = super
+
+        runnable.select { |item| train_of_size?(item, entity.type) }
+      end
     end
   end
 end
