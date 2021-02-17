@@ -87,7 +87,7 @@ module View
                    end
       end
 
-      game = Engine::GAMES_BY_TITLE[@gdata['title']]
+      game = Engine::GAME_META_BY_TITLE[@gdata['title']]
       @min_p, _max_p = Engine.player_range(game)
 
       can_start = owner? && new? && players.size >= @min_p
@@ -166,7 +166,7 @@ module View
       selected_rules = @gdata.dig('settings', 'optional_rules') || []
       return if selected_rules.empty?
 
-      rendered_rules = Engine::GAMES_BY_TITLE[@gdata['title']]::OPTIONAL_RULES
+      rendered_rules = Engine::GAME_META_BY_TITLE[@gdata['title']]::OPTIONAL_RULES
         .select { |r| selected_rules.include?(r[:sym]) }
         .map { |r| r[:short_name] }
         .sort

@@ -101,7 +101,7 @@ module Engine
 
       EXPECTED_TILE_UPGRADES.each do |game_title, upgrades|
         it "correctly upgrades tiles for #{game_title}" do
-          game = Engine::GAMES_BY_TITLE[game_title].new(%w[p1 p2 p3])
+          game = Engine.game_by_title(game_title).new(%w[p1 p2 p3])
 
           aggregate_failures 'tile upgrades' do
             upgrades.keys.each do |t|
@@ -216,7 +216,7 @@ module Engine
           'O11' => [{ yellow: 30, brown: 30 }],
         },
       }.each do |game_title, specs|
-        game = Engine::GAMES_BY_TITLE[game_title].new(%w[p1 p2 p3])
+        game = Engine.game_by_title(game_title).new(%w[p1 p2 p3])
         describe game_title do
           specs.each do |hex, expected_revenue|
             tile = game.hex_by_id(hex).tile

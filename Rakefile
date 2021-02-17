@@ -91,7 +91,8 @@ end
 desc 'Precompile assets for production'
 task :precompile do
   require_relative 'lib/assets'
-  bundle = Assets.new(cache: false, make_map: false, compress: true, gzip: true).combine
+  assets = Assets.new(cache: false, compress: true, gzip: true)
+  assets.combine
 
   # Copy to the pin directory
   git_rev = `git rev-parse --short HEAD`.strip
@@ -101,7 +102,9 @@ task :precompile do
     url: "https://github.com/tobymao/18xx/commit/#{git_rev}",
   ))
   FileUtils.mkdir_p(pin_dir)
-  FileUtils.cp("#{bundle}.gz", "#{pin_dir}/#{git_rev}.js.gz")
+  assets.pin("#{pin_dir}#{git_rev}.js.gz")
+
+  assets.clean_intermediate_output_files
 end
 
 desc 'Profile loading data'
@@ -124,4 +127,21 @@ task 'migrate_json', [:json] do |_task, args|
   require_relative 'lib/engine'
   require_relative 'migrate_game'
   migrate_json(args[:json])
+end
+
+desc "Move a game's files so it can be bundled in a separate JS file"
+task 'move_game', [:game] do |_task, args|
+  game = args[:game]
+
+  game_file = "lib/engine/game/#{game}.rb"
+  next puts "Game file not found: #{game_file}" unless File.exist?(game_file)
+
+  game_dir = "lib/engine/game/#{game}"
+  next puts "Game already moved: #{game_dir}/" if Dir.exist?(game_dir) && Dir["#{game_dir}/**/*.rb"].any?
+
+  require_relative 'lib/engine'
+  require_relative 'scripts/move_game'
+
+  mover = Mover.new(game)
+  mover.move!
 end

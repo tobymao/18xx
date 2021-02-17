@@ -1,8 +1,11 @@
 # frozen_string_literal: true
 
 require 'lib/storage'
+require_relative 'game_class_loader'
 
 module GameManager
+  include GameClassLoader
+
   def self.included(base)
     base.needs :game, default: nil, store: true
     base.needs :game_data, default: nil, store: true
@@ -10,6 +13,7 @@ module GameManager
     base.needs :app_route, default: nil, store: true
     base.needs :connection, default: nil, store: true
     base.needs :flash_opts, default: {}, store: true
+    base.needs :game_classes_loaded, default: {}, store: true
   end
 
   def create_hotseat(**opts)
@@ -108,6 +112,10 @@ module GameManager
         return store(:app_route, '/')
       end
 
+      title = game_data['title']
+      load_game_class(title, -> { enter_game(game) })
+      return unless @game_classes_loaded[title]
+
       if game[:pin]
         game_data[:settings] ||= {}
         game_data[:settings][:pin] = game[:pin]
@@ -117,6 +125,10 @@ module GameManager
       store(:game_data, game_data.merge(loaded: true), skip: true)
       store(:app_route, hs_url(game, game_data)) unless @app_route.include?(hs_url(game, game_data))
       return
+    elsif game
+      title = game['title']
+      load_game_class(title, -> { enter_game(game) })
+      return unless @game_classes_loaded[title]
     end
 
     game_url = url(game)

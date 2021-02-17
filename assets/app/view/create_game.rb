@@ -186,7 +186,7 @@ module View
     def params
       params = super
 
-      game = Engine::GAMES_BY_TITLE[params['title']]
+      game = Engine::GAME_META_BY_TITLE[params['title']]
       params[:optional_rules] = game::OPTIONAL_RULES
                                   .map { |o_r| o_r[:sym] }
                                   .select { |rule| params.delete(rule) }
@@ -195,12 +195,12 @@ module View
     end
 
     def visible_games
-      (Lib::Params['all'] ? Engine::GAMES : Engine::VISIBLE_GAMES).sort
+      (Lib::Params['all'] ? Engine::GAME_METAS : Engine::VISIBLE_GAMES).sort
     end
 
     def selected_game
       title = Native(@inputs[:title]).elm&.value || visible_games.first.title
-      Engine::GAMES_BY_TITLE[title]
+      Engine::GAME_META_BY_TITLE[title]
     end
 
     def update_inputs
