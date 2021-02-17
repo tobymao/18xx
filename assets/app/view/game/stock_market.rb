@@ -138,7 +138,8 @@ module View
         end
         if operated?(corporation)
           props[:attrs][:title] = "#{corporation.name} has operated"
-          props[:style][:opacity] = '0.4'
+          props[:style][:opacity] = '0.6'
+          props[:style][:clipPath] = 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)'
         end
 
         props
