@@ -6,9 +6,7 @@ module Engine
   module Step
     module G1873
       class Form < Base
-        attr_reader :auctioning, :last_president, :buyer
-
-        MERGE_ACTION = %w[merge]
+        MERGE_ACTION = %w[merge].freeze
 
         def actions(entity)
           return [] unless entity == owner
@@ -29,7 +27,7 @@ module Engine
         end
 
         def skip!
-          puts "Form::skip!"
+          puts 'Form::skip!'
           super
         end
 
@@ -79,12 +77,8 @@ module Engine
           @log << "#{buyer.id} acquires #{mine.full_name} "\
             "(face value #{@game.format_currency(@game.minor_info[mine][:value])})"
 
-          if target_mines.empty?
-            target_mines << mine
-          else
-            target_mines << mine
-            finalize_formation
-          end
+          target_mines << mine
+          finalize_formation unless target_mines.one?
         end
 
         def finalize_formation
@@ -97,17 +91,24 @@ module Engine
                receiver: buyer,
                price: 0
              )
-            president_text = idx.zero? ? " and becomes president of #{buyer.id}" : ""
+            president_text = idx.zero? ? " and becomes president of #{buyer.id}" : ''
             @log << "#{target_mines[idx].owner.name} receives a share of #{buyer.id}#{president_text}"
           end
 
           # share price is average of mine values
           average = (target_mines.sum { |m| @game.minor_info[m][:value] } / 2).to_i
-          price = @game.stock_market.market.first.select { |p| p.price <= average }.max_by { |p| p.price }
+          price = @game.stock_market.market.first.select { |p| p.price <= average }.max_by(&:price)
           @game.stock_market.set_par(buyer, price)
           @log << "#{buyer.id} share price is set to #{@game.format_currency(price.price)}"
 
-          target_mines.each { |m| m.owner = buyer }
+          # new corp gets formerly independent mines and their cash
+          # machines and switchers stay with mines
+          target_mines.each do |m|
+            m.owner = buyer
+            m.spend(m.cash, buyer) if m.cash.positive?
+          end
+
+          buyer.ipoed = true
 
           @round.pending_forms.pop
         end

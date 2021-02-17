@@ -164,12 +164,12 @@ module View
                   process_action(Engine::Action::Merge.new(
                    corporation,
                    corporation: merge_corporation,
-                  ))
+                 ))
                 else
                   process_action(Engine::Action::Merge.new(
                    corporation,
                    minor: merge_corporation,
-                  ))
+                 ))
                 end
               end
 

@@ -4,6 +4,7 @@ require 'lib/color'
 require 'lib/settings'
 require 'view/game/actionable'
 require 'view/game/companies'
+require 'view/game/alternate_corporations'
 
 module View
   module Game
@@ -11,6 +12,7 @@ module View
       include Actionable
       include Lib::Color
       include Lib::Settings
+      include AlternateCorporations
 
       needs :user, default: nil, store: true
       needs :corporation
@@ -22,6 +24,11 @@ module View
       needs :interactive, default: true
 
       def render
+        # use alternate view of corporation if needed
+        if @game.respond_to?(:corporation_view) && (view = @game.corporation_view(@corporation))
+          return send("render_#{view}")
+        end
+
         select_corporation = lambda do
           if @selectable
             selected_corporation = selected? ? nil : @corporation
@@ -63,7 +70,9 @@ module View
           children << render_shares unless @corporation.hide_shares?
           children << render_reserved if @corporation.reserved_shares.any?
           children << render_owned_other_shares if @corporation.corporate_shares.any?
-          children << h(Companies, owner: @corporation, game: @game) if @corporation.companies.any?
+          if @game.respond_to?(:corporate_card_minors) && !(ms = @game.corporate_card_minors(@corporation)).empty?
+            children << render_minors(ms)
+          end
         end
 
         abilities_to_display = @corporation.all_abilities.select do |ability|
@@ -580,6 +589,33 @@ module View
           h('div.bold', 'Ability'),
           *attribute_lines,
         ])
+      end
+
+      def render_minors(minors)
+        minor_logos = minors.map do |minor|
+          logo_props = {
+            attrs: {
+              src: minor.logo,
+            },
+            style: {
+              paddingRight: '1px',
+              paddingLeft: '1px',
+              height: '20px',
+            },
+          }
+          h(:img, logo_props)
+        end
+        inner_props = {
+          style: {
+            display: 'inline-block',
+          },
+        }
+        outer_props = {
+          style: {
+            textAlign: 'center',
+          },
+        }
+        h('div', outer_props, [h('div', inner_props, minor_logos)])
       end
 
       def selected?
