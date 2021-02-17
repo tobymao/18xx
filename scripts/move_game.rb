@@ -362,7 +362,7 @@ class Mover
       elsif (match = line.match(CLASS_NAME_RE))
         parent = match.captures[1]
         parent_class = parent == 'Base' ? 'Game::Base' : "#{parent}::Game"
-        "module #{module_name} \n class Game < #{parent_class} \n load_from_meta(#{module_name}::Meta)\n"
+        "module #{module_name} \n class Game < #{parent_class} \n include_meta(#{module_name}::Meta)\n"
 
       elsif (match = line.match(INCLUDE_RE))
         update_include_line(match.captures.first, game_file)

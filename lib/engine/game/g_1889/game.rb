@@ -8,7 +8,7 @@ module Engine
   module Game
     module G1889
       class Game < Game::Base
-        load_from_meta(G1889::Meta)
+        include_meta(G1889::Meta)
 
         register_colors(black: '#37383a',
                         orange: '#f48221',

@@ -318,7 +318,7 @@ module Engine
         const_set(:COLORS, colors)
       end
 
-      def self.load_from_meta(meta_module)
+      def self.include_meta(meta_module)
         include meta_module
 
         meta_module.constants.each do |const|
