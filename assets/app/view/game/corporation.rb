@@ -70,6 +70,7 @@ module View
           children << render_shares unless @corporation.hide_shares?
           children << render_reserved if @corporation.reserved_shares.any?
           children << render_owned_other_shares if @corporation.corporate_shares.any?
+          children << h(Companies, owner: @corporation, game: @game) if @corporation.companies.any?
           if @game.respond_to?(:corporate_card_minors) && !(ms = @game.corporate_card_minors(@corporation)).empty?
             children << render_minors(ms)
           end
