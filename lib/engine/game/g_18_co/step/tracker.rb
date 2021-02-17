@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Engine
-  module Step
+  module Game
     module G18CO
       module Tracker
         # Remove the upgrade icon when the town is converted to a city
