@@ -169,6 +169,12 @@ nav#game_menu {
   height: 1.8rem;
   width: 2.7rem;
 }
+::-webkit-color-swatch {
+    background-color: inherit !important; /* fix iOS/macOS black color inputs */
+}
+::-webkit-color-swatch-wrapper {
+    border: 1px solid gainsboro;
+}
 #settings__options .input-container {
   display: block;
 }
