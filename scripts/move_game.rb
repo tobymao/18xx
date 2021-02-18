@@ -462,7 +462,7 @@ class Mover
     if new_module_name.empty?
       begin
         new_module_name = [Engine.const_get(included_module).name]
-      rescue StandardError => e
+      rescue StandardError
         raise StandardError, "could not find matching module for #{included_module}"
       end
     end
