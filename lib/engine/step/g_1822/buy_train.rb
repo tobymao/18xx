@@ -34,6 +34,10 @@ module Engine
           @game.phase.buying_train!(action.entity, train_check)
         end
 
+        def room?(entity, _shell = nil)
+          entity.trains.reject { |t| @game.extra_train?(t) }.size < @game.train_limit(entity)
+        end
+
         private
 
         def upgrade_train_action(action)

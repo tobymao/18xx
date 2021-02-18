@@ -12,7 +12,7 @@ module Engine
           # We will remove a town from the white S tile, this meaning we will not follow the normal path upgrade rules
           if hex.name == @game.class::UPGRADABLE_S_HEX_NAME &&
             tile.name == @game.class::UPGRADABLE_S_YELLOW_CITY_TILE &&
-            @game.class::UPGRADABLE_S_YELLOW_CITY_TILE_ROTATIONS.include?(tile.rotation)
+            @game.class::UPGRADABLE_S_YELLOW_ROTATIONS.include?(tile.rotation)
             return true
           end
 

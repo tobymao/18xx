@@ -1754,11 +1754,52 @@ module Engine
       "variants": [
         {
           "name": "E",
-          "distance": 99,
-          "num": 20,
-          "price": 1000
+          "distance": [
+            {
+              "nodes": ["city"],
+              "pay": 99,
+              "visit": 99,
+              "multiplier": 2
+            },
+            {
+              "nodes": ["town"],
+              "pay": 0,
+              "visit": 99
+            }
+          ],
+          "price": 1000,
+          "available_on": "7"
         }
       ]
+    },
+    {
+      "name": "2P",
+      "distance": 2,
+      "num": 2,
+      "price": 0
+    },
+    {
+      "name": "5P",
+      "distance": 5,
+      "num": 1,
+      "price": 0
+    },
+    {
+      "name": "P+",
+      "distance": [
+        {
+          "nodes": ["city"],
+          "pay": 99,
+          "visit": 99
+        },
+        {
+          "nodes": ["town"],
+          "pay": 99,
+          "visit": 99
+        }
+      ],
+      "num": 2,
+      "price": 0
     }
   ],
   "hexes": {

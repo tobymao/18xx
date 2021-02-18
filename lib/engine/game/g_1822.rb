@@ -102,6 +102,12 @@ module Engine
         'NER' => 3,
       }.freeze
 
+      # These trains don't count against train limit, they also don't count as a train
+      # against the mandatory train ownership. They cant the bought by another corporation.
+      EXTRA_TRAINS = %w[2P P+ LP].freeze
+      EXTRA_TRAIN_PULLMAN = 'P+'
+      EXTRA_TRAIN_PERMANENTS = %w[2P LP].freeze
+
       LIMIT_TOKENS_AFTER_MERGER = 9
 
       MAJOR_TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
@@ -110,10 +116,35 @@ module Engine
       MINOR_BIDBOX_PRICE = 200
       MINOR_GREEN_UPGRADE = %w[yellow green].freeze
 
+      PRIVATE_COMPANIES_ACQUISITION = {
+        'P1' => { acquire: %i[major], phase: 5 },
+        'P2' => { acquire: %i[major minor], phase: 2 },
+        'P3' => { acquire: %i[major], phase: 2 },
+        'P4' => { acquire: %i[major], phase: 2 },
+        'P5' => { acquire: %i[major], phase: 3 },
+        'P6' => { acquire: %i[major], phase: 3 },
+        'P7' => { acquire: %i[major], phase: 3 },
+        'P8' => { acquire: %i[major minor], phase: 3 },
+        'P9' => { acquire: %i[major minor], phase: 3 },
+        'P10' => { acquire: %i[major minor], phase: 3 },
+        'P11' => { acquire: %i[major minor], phase: 2 },
+        'P12' => { acquire: %i[major minor], phase: 3 },
+        'P13' => { acquire: %i[major minor], phase: 5 },
+        'P14' => { acquire: %i[major minor], phase: 5 },
+        'P15' => { acquire: %i[major minor], phase: 2 },
+        'P16' => { acquire: %i[none], phase: 0 },
+        'P17' => { acquire: %i[major], phase: 2 },
+        'P18' => { acquire: %i[major], phase: 5 },
+      }.freeze
+
+      PRIVATE_MAIL_CONTRACTS = %w[P6 P7].freeze
+      PRIVATE_REMOVE_REVENUE = %w[P6 P7].freeze
+      PRIVATE_TRAINS = %w[P1 P3 P4 P13 P14].freeze
+
       TOKEN_PRICE = 100
 
       UPGRADABLE_S_YELLOW_CITY_TILE = '57'
-      UPGRADABLE_S_YELLOW_CITY_TILE_ROTATIONS = [2, 5].freeze
+      UPGRADABLE_S_YELLOW_ROTATIONS = [2, 5].freeze
       UPGRADABLE_S_HEX_NAME = 'D35'
       UPGRADABLE_T_YELLOW_CITY_TILES = %w[5 6].freeze
       UPGRADABLE_T_HEX_NAMES = %w[B43 K42 M42].freeze
@@ -151,16 +182,62 @@ module Engine
       end
 
       def check_overlap(routes)
-        super
+        # Tracks by e-train and normal trains
+        tracks_by_type = Hash.new { |h, k| h[k] = [] }
 
         # Check local train not use the same token more then one time
         local_token_hex = []
+
         routes.each do |route|
           local_token_hex << route.head[:left].hex.id if route.train.local? && !route.connections.empty?
+
+          route.paths.each do |path|
+            a = path.a
+            b = path.b
+
+            tracks = tracks_by_type[train_type(route.train)]
+            tracks << [path.hex, a.num, path.lanes[0][1]] if a.edge?
+            tracks << [path.hex, b.num, path.lanes[1][1]] if b.edge?
+
+            if b.edge? && a.town? && (nedge = a.tile.preferred_city_town_edges[a]) && nedge != b.num
+              tracks << [path.hex, a, path.lanes[0][1]]
+            end
+            if a.edge? && b.town? && (nedge = b.tile.preferred_city_town_edges[b]) && nedge != a.num
+              tracks << [path.hex, b, path.lanes[1][1]]
+            end
+          end
+        end
+
+        tracks_by_type.each do |_type, tracks|
+          tracks.group_by(&:itself).each do |k, v|
+            raise GameError, "Route cannot reuse track on #{k[0].id}" if v.size > 1
+          end
         end
 
         local_token_hex.group_by(&:itself).each do |k, v|
           raise GameError, "Local train can only use the token on #{k[0]} once." if v.size > 1
+        end
+      end
+
+      def company_bought(company, entity)
+        # On acquired abilities
+        # Will add more here when they are implemented
+        on_acquired_train(company, entity) if self.class::PRIVATE_TRAINS.include?(company.id)
+        on_aqcuired_remove_revenue(company) if self.class::PRIVATE_REMOVE_REVENUE.include?(company.id)
+      end
+
+      def compute_other_paths(routes, route)
+        routes.flat_map do |r|
+          next if r == route || train_type(route.train) != train_type(r.train)
+
+          r.paths
+        end
+      end
+
+      def crowded_corps
+        @crowded_corps ||= corporations.select do |c|
+          trains = c.trains.count { |t| !extra_train?(t) }
+          trains > train_limit(c)
         end
       end
 
@@ -200,13 +277,34 @@ module Engine
       end
 
       def train_help(runnable_trains)
-        return [] if (l_trains = runnable_trains.select { |t| t.name == 'L' }).empty?
+        return [] if runnable_trains.empty?
 
-        corporation = l_trains.first.owner
-        ["L (local) trains run in a city which has a #{corporation.name} token.",
-         'They can additionally run to a single small station, but are not required to do so. '\
-         'They can thus be considered 1 (+1) trains.',
-         'Only one L train may operate on each station token.']
+        entity = runnable_trains.first.owner
+
+        # L - trains
+        l_trains = !runnable_trains.select { |t| t.name == 'L' }.empty?
+
+        # Destination bonues
+        destination_token = nil
+        destination_token = entity.tokens.find { |t| t.used && t.type == :destination } if entity.type == :major
+
+        # Mail contract
+        mail_contracts = entity.companies.any? { |c| self.class::PRIVATE_MAIL_CONTRACTS.include?(c.id) }
+
+        help = []
+        help << "L (local) trains run in a city which has a #{entity.name} token. "\
+                'They can additionally run to a single small station, but are not required to do so. '\
+                'They can thus be considered 1 (+1) trains. '\
+                'Only one L train may operate on each station token.' if l_trains
+
+        help << 'When a train runs between its home station token and its destination station token it doubles the '\
+                'value of its destination station. This only applies to one train per operating '\
+                'turn.' if destination_token
+
+        help << 'Mail contract(s) gives a subsidy equal to one half of the base value of the start and end stations '\
+                'from one of the trains operated. Doubled values (for E trains or destination tokens) '\
+                'do not count.' if mail_contracts
+        help
       end
 
       def init_company_abilities
@@ -224,6 +322,12 @@ module Engine
         stock_round
       end
 
+      def must_buy_train?(entity)
+        !entity.rusted_self &&
+          entity.trains.none? { |t| !extra_train?(t) } &&
+          !depot.depot_trains.empty?
+      end
+
       # TODO: [1822] Make include with 1861, 1867
       def operating_order
         minors, majors = @corporations.select(&:floated?).sort.partition { |c| c.type == :minor }
@@ -234,15 +338,16 @@ module Engine
         Round::Operating.new(self, [
           Step::Bankrupt,
           Step::G1822::FirstTurnHousekeeping,
-          Step::BuyCompany,
+          Step::AcquireCompany,
+          Step::DiscardTrain,
           Step::G1822::Track,
           Step::G1822::DestinationToken,
           Step::G1822::Token,
           Step::Route,
           Step::G1822::Dividend,
-          Step::DiscardTrain,
           Step::G1822::BuyTrain,
           Step::G1822::MinorAcquisition,
+          Step::DiscardTrain,
         ], round_num: round_num)
       end
 
@@ -258,6 +363,53 @@ module Engine
         hex = hex_by_id(self.class::DESTINATIONS[corporation.id])
         token = corporation.find_token_by_type(:destination)
         place_destination_token(corporation, hex, token)
+      end
+
+      def purchasable_companies(entity = nil)
+        return [] unless entity
+
+        @companies.select do |company|
+          company.owner&.player? && entity != company.owner && !company.closed? && !abilities(company, :no_buy) &&
+            acquire_private_company?(entity, company)
+        end
+      end
+
+      def revenue_for(route, stops)
+        revenue = if train_type(route.train) == :normal
+                    super
+                  else
+                    entity = route.train.owner
+                    stops.sum do |stop|
+                      next 0 unless stop.city?
+
+                      stop.tokened_by?(entity) ? stop.route_revenue(route.phase, route.train) : 0
+                    end
+                  end
+        destination_bonus = destination_bonus(route.routes)
+        revenue += destination_bonus[:revenue] if destination_bonus && destination_bonus[:route] == route
+        revenue
+      end
+
+      def revenue_str(route)
+        str = super
+
+        destination_bonus = destination_bonus(route.routes)
+        if destination_bonus && destination_bonus[:route] == route
+          str += " (#{format_currency(destination_bonus[:revenue])})"
+        end
+
+        str
+      end
+
+      def routes_subsidy(routes)
+        return 0 if routes.empty?
+
+        mail_bonus = mail_contract_bonus(routes.first.train.owner, routes)
+        return 0 if mail_bonus.empty?
+
+        mail_bonus.sum do |v|
+          v[:subsidy]
+        end
       end
 
       def setup
@@ -319,6 +471,13 @@ module Engine
         super
       end
 
+      def acquire_private_company?(entity, company)
+        company_acquisition = self.class::PRIVATE_COMPANIES_ACQUISITION[company.id]
+        return false unless company_acquisition
+
+        @phase.name.to_i >= company_acquisition[:phase] && company_acquisition[:acquire].include?(entity.type)
+      end
+
       def bidbox_minors
         @companies.select do |c|
           c.id[0] == self.class::COMPANY_MINOR_PREFIX && (!c.owner || c.owner == @bank) && !c.closed?
@@ -337,11 +496,57 @@ module Engine
         end.first(self.class::BIDDING_BOX_PRIVATE_COUNT)
       end
 
+      def can_gain_extra_train?(entity, train)
+        if train.name == self.class::EXTRA_TRAIN_PULLMAN
+          return false if entity.trains.any? { |t| t.name == self.class::EXTRA_TRAIN_PULLMAN }
+        elsif self.class::EXTRA_TRAIN_PERMANENTS.include?(train.name)
+          return false if entity.trains.any? { |t| self.class::EXTRA_TRAIN_PERMANENTS.include?(t.name) }
+        end
+        true
+      end
+
+      def calculate_destination_bonus(route)
+        entity = route.train.owner
+        # Only majors can have a destination token
+        return nil unless entity.type == :major
+
+        # Check if the corporation have placed its destination token
+        destination_token = entity.tokens.find { |t| t.used && t.type == :destination }
+        return nil unless destination_token
+
+        # First token is always the hometoken
+        home_token = entity.tokens.first
+        token_count = 0
+        route.visited_stops.each do |stop|
+          next unless stop.city?
+
+          token_count += 1 if stop.tokens.any? { |t| t == home_token || t == destination_token }
+        end
+
+        # Both hometoken and destination token must be in the route to get the destination bonus
+        return nil unless token_count == 2
+
+        { route: route, revenue: destination_token.city.route_revenue(route.phase, route.train) }
+      end
+
+      def destination_bonus(routes)
+        return nil if routes.empty?
+
+        # If multiple routes gets destination bonus, get the biggest one. If we got E trains
+        # this is bigger then normal train.
+        destination_bonus = routes.map { |r| calculate_destination_bonus(r) }.compact
+        destination_bonus.sort_by { |v| v[:revenue] }.reverse&.first
+      end
+
       def exchange_tokens(entity)
         ability = entity.all_abilities.find { |a| a.type == :exchange_token }
         return 0 unless ability
 
         ability.count
+      end
+
+      def extra_train?(train)
+        self.class::EXTRA_TRAINS.include?(train.name)
       end
 
       def find_corporation(company)
@@ -353,9 +558,43 @@ module Engine
         self.class::BIDDING_TOKENS[@players.size.to_s]
       end
 
+      def mail_contract_bonus(entity, routes)
+        mail_contracts = entity.companies.count { |c| self.class::PRIVATE_MAIL_CONTRACTS.include?(c.id) }
+        return [] unless mail_contracts.positive?
+
+        mail_bonuses = routes.map do |r|
+          stops = r.visited_stops
+          next if stops.size < 2
+
+          first = stops.first.route_base_revenue(r.phase, r.train) / 2
+          last = stops.last.route_base_revenue(r.phase, r.train) / 2
+          { route: r, subsidy: first + last }
+        end.compact
+        mail_bonuses.sort_by { |v| v[:subsidy] }.reverse.take(mail_contracts)
+      end
+
       def move_exchange_token(entity)
         remove_exchange_token(entity)
         entity.tokens << Engine::Token.new(entity, price: self.class::TOKEN_PRICE)
+      end
+
+      def on_aqcuired_remove_revenue(company)
+        company.revenue = 0
+      end
+
+      def on_acquired_train(company, entity)
+        train = @company_trains[company.id]
+
+        unless can_gain_extra_train?(entity, train)
+          raise GameError, "Cannot gain an extra #{train.name}, already have one"
+        end
+
+        buy_train(entity, train, :free)
+        @log << "#{entity.name} gains a #{train.name} train"
+
+        # Company closes after it is flipped into a train
+        company.close!
+        @log << "#{company.name} closes"
       end
 
       def place_destination_token(entity, hex, token)
@@ -392,7 +631,18 @@ module Engine
         ability.description = "Exchange tokens: #{ability.count}"
       end
 
+      def train_type(train)
+        train.name == 'E' ? :etrain : :normal
+      end
+
       private
+
+      def find_and_remove_train_by_id(train_id, buyable: true)
+        train = train_by_id(train_id)
+        @depot.remove_train(train)
+        train.buyable = buyable
+        train
+      end
 
       def setup_companies
         # Randomize from preset seed to get same order
@@ -431,6 +681,14 @@ module Engine
           end
           c.max_price = 10_000
         end
+
+        # Setup company abilities
+        @company_trains = {}
+        @company_trains['P3'] = find_and_remove_train_by_id('2P-0', buyable: false)
+        @company_trains['P4'] = find_and_remove_train_by_id('2P-1', buyable: false)
+        @company_trains['P1'] = find_and_remove_train_by_id('5P-0')
+        @company_trains['P13'] = find_and_remove_train_by_id('P+-0', buyable: false)
+        @company_trains['P14'] = find_and_remove_train_by_id('P+-1', buyable: false)
       end
 
       def setup_destinations
