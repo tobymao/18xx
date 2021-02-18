@@ -80,6 +80,8 @@ module Engine
           end
         end
 
+        raise GameError, "#{tile.name} cannot be placed" unless potential_tiles(entity, hex).include?(tile)
+
         tile.rotate!(rotation)
 
         unless @game.upgrades_to?(old_tile, tile, entity.company?)
