@@ -4,7 +4,7 @@ require_relative 'part/path'
 
 module Engine
   class Graph
-    def initialize(game)
+    def initialize(game, **opts)
       @game = game
       @connected_hexes = {}
       @connected_nodes = {}
@@ -13,6 +13,9 @@ module Engine
       @tokenable_cities = {}
       @routes = {}
       @tokens = {}
+      @home_as_token = opts[:home_as_token] || false
+      @no_blocking = opts[:no_blocking] || false
+      @skip_track = opts[:skip_track]
     end
 
     def clear
@@ -96,7 +99,7 @@ module Engine
 
       @game.hexes.each do |hex|
         hex.tile.cities.each do |city|
-          next unless city.tokened_by?(corporation)
+          next unless city.tokened_by?(corporation) || @home_as_token && corporation.coordinates == hex.id
 
           hex.neighbors.each { |e, _| hexes[hex][e] = true }
           nodes[city] = true
@@ -138,7 +141,9 @@ module Engine
         visited = tokens.reject { |token, _| token == node }
         local_nodes = {}
 
-        node.walk(visited: visited, corporation: corporation) do |path|
+        walk_corporation = @no_blocking ? nil : corporation
+
+        node.walk(visited: visited, corporation: walk_corporation, skip_track: @skip_track) do |path|
           paths[path] = true
           path.nodes.each do |p_node|
             nodes[p_node] = true
