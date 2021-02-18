@@ -11,19 +11,6 @@ module Engine
         BLOCKED_RIGHT_PRICES = [218, 240, 276].freeze
         BLOCKED_UP_PRICES = [230].freeze
 
-        def initialize(market, unlimited_types, multiple_buy_types: [])
-          super
-          @disabled_par_prices = @par_prices
-          @par_prices = []
-        end
-
-        def enable_par_price(price)
-          return unless (par = @disabled_par_prices.find { |p| p.price == price })
-
-          @par_prices << par
-          @disabled_par_prices.delete(par)
-        end
-
         def move(corp, row, column, force: false)
           super
           return if corp.reached_max_value || !corp.share_price.end_game_trigger?
