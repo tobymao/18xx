@@ -137,11 +137,11 @@ module View
           revenue_text, opacity =
             case (hist[x].dividend.is_a?(Engine::Action::Dividend) ? hist[x].dividend.kind : 'withhold')
             when 'withhold'
-              ["[#{hist[x].revenue.abs}]", '0.5']
+              ["[#{hist[x].revenue}]", '0.5']
             when 'half'
-              ["¦#{hist[x].revenue.abs}¦", '0.75']
+              ["¦#{hist[x].revenue}¦", '0.75']
             else
-              [hist[x].revenue.abs.to_s, '1.0']
+              [hist[x].revenue.to_s, '1.0']
             end
 
           props = {
