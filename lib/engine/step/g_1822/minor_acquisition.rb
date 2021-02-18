@@ -84,20 +84,34 @@ module Engine
 
           receiving = []
           if token_choice == 'replace'
-            minor_city = @game.hex_by_id(@selected_minor.coordinates).tile.cities[@selected_minor.city || 0]
-            minor_city.reservations.delete(@selected_minor)
-
-            if minor_city.tokened_by?(entity)
-              @game.move_exchange_token(entity)
-              receiving << "one token from exchange to available since #{entity.id} cant have 2 tokens "\
-                           'in the same city'
-            else
+            if @selected_minor.id == @game.class::MINOR_14_ID
               @game.remove_exchange_token(entity)
               token = Engine::Token.new(entity)
               entity.tokens << token
-              minor_city.place_token(entity, token, check_tokenable: false)
-              @game.graph.clear
-              receiving << "a token on hex #{@selected_minor.coordinates}"
+              entity.add_ability(@game.london_extra_token_ability)
+
+              @round.pending_tokens << {
+                entity: entity,
+                hexes: [@game.hex_by_id(@game.class::LONDON_HEX)],
+                token: token,
+              }
+              receiving << "a token on hex #{@game.class::LONDON_HEX}"
+            else
+              minor_city = @game.hex_by_id(@selected_minor.coordinates).tile.cities[@selected_minor.city || 0]
+              minor_city.reservations.delete(@selected_minor)
+
+              if minor_city.tokened_by?(entity)
+                @game.move_exchange_token(entity)
+                receiving << "one token from exchange to available since #{entity.id} cant have 2 tokens "\
+                           'in the same city'
+              else
+                @game.remove_exchange_token(entity)
+                token = Engine::Token.new(entity)
+                entity.tokens << token
+                minor_city.place_token(entity, token, check_tokenable: false)
+                @game.graph.clear
+                receiving << "a token on hex #{@selected_minor.coordinates}"
+              end
             end
           elsif token_choice == 'exchange'
             @game.move_exchange_token(entity)
@@ -183,13 +197,32 @@ module Engine
           minor = action.corporation
 
           unless @game.loading
-            if !minor.owner || minor.owner == @bank
-              # Trying to acquire a bidbox minor. Trace route to its hometokenplace
-              minor_city = @game.hex_by_id(minor.coordinates).tile.cities[minor.city || 0]
-              found_connected_city = @game.graph.connected_nodes(entity)[minor_city]
+            if (!minor.owner || minor.owner == @bank) && minor.id == @game.class::MINOR_14_ID
+              # Trying to acquire minor 14 from the bank. You still have to have connection to london.
+              # You have a option to place a "cheater" token in one of the cities you have connection to.
+              # A small note, if a corporation already have a token in london it need a clear path to another node
+              # in london. This means you cant just acquire to get an exchange token if you dont have a valid
+              # path to another node in london.
+              # Try all 6 cities in london to see if there is atleast one connection
+              found_connected_city = false
+              connected_nodes = @game.graph.connected_nodes(entity)
+              @game.hex_by_id(@game.class::LONDON_HEX).tile.cities.each do |c|
+                found_connected_city = connected_nodes[c]
+                if found_connected_city && c.tokened_by?(entity)
+                  found_connected_city = false
+                elsif found_connected_city
+                  break
+                end
+              end
             else
-              # Minors only have one token, check if its connected
-              found_connected_city = @game.graph.connected_nodes(entity)[minor.tokens.first.city]
+              minor_city = if !minor.owner || minor.owner == @bank
+                             # Trying to acquire a bidbox minor. Trace route to its hometokenplace
+                             @game.hex_by_id(minor.coordinates).tile.cities[minor.city || 0]
+                           else
+                             # Minors only have one token, check if its connected
+                             minor.tokens.first.city
+                           end
+              found_connected_city = @game.graph.connected_nodes(entity)[minor_city]
             end
             raise GameError, "Cannot acquire minor #{minor.id} "\
                              "because it is not connected to #{entity.id}" unless found_connected_city

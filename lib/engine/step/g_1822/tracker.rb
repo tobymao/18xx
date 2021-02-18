@@ -8,6 +8,13 @@ module Engine
       module Tracker
         include Step::Tracker
 
+        def can_lay_tile?(entity)
+          # Special case for minor 14, the first OR its hometoken placement counts as tile lay
+          return false if entity.corporation? && entity.id == @game.class::MINOR_14_ID && !entity.operated?
+
+          super
+        end
+
         def legal_tile_rotation?(entity, hex, tile)
           # We will remove a town from the white S tile, this meaning we will not follow the normal path upgrade rules
           if hex.name == @game.class::UPGRADABLE_S_HEX_NAME &&
@@ -53,6 +60,16 @@ module Engine
             cost - border_cost_discount(entity, border, hex)
           end
           [total_cost, types]
+        end
+
+        def upgraded_track(action)
+          # London yellow tile counts as an upgrade
+          unless action.tile.color != :yellow ||
+            (action.tile.color == :yellow && action.hex.name == @game.class::LONDON_HEX)
+            return
+          end
+
+          @round.upgraded_track = true
         end
       end
     end

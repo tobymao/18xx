@@ -110,11 +110,20 @@ module Engine
 
       LIMIT_TOKENS_AFTER_MERGER = 9
 
+      LONDON_HEX = 'M38'
+      ENGLISH_CHANNEL_HEX = 'P43'
+      FRANCE_HEX = 'Q44'
+      FRANCE_HEX_BROWN_TILE = 'offboard=revenue:yellow_0|green_60|brown_90|gray_120,visit_cost:0;path=a:2,b:_0,lanes:2'
+
       MAJOR_TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
+
+      MERTHYR_TYDFIL_PONTYPOOL_HEX = 'F33'
 
       MINOR_START_PAR_PRICE = 50
       MINOR_BIDBOX_PRICE = 200
       MINOR_GREEN_UPGRADE = %w[yellow green].freeze
+
+      MINOR_14_ID = '14'
 
       PRIVATE_COMPANIES_ACQUISITION = {
         'P1' => { acquire: %i[major], phase: 5 },
@@ -181,12 +190,27 @@ module Engine
         entity.trains.any? { |t| t.name == 'L' } || super
       end
 
+      def check_distance(route, visits)
+        # Must visit both hex tiles to be a valid visit. If you are tokened out from france then you cant visit the
+        # EC tile either.
+        english_channel_visit = english_channel_visit(visits)
+        raise GameError, 'Must connect english channel to france' if english_channel_visit == 1
+
+        # Special case when a train just runs english channel to france, this only counts as one visit
+        raise GameError, 'Route must have at least 2 stops' if english_channel_visit == 2 && visits.size == 2
+
+        super
+      end
+
       def check_overlap(routes)
         # Tracks by e-train and normal trains
         tracks_by_type = Hash.new { |h, k| h[k] = [] }
 
         # Check local train not use the same token more then one time
         local_token_hex = []
+
+        # Merthyr Tydfil and Pontypool
+        merthyr_tydfil_pontypool = {}
 
         routes.each do |route|
           local_token_hex << route.head[:left].hex.id if route.train.local? && !route.connections.empty?
@@ -205,6 +229,11 @@ module Engine
             if a.edge? && b.town? && (nedge = b.tile.preferred_city_town_edges[b]) && nedge != a.num
               tracks << [path.hex, b, path.lanes[1][1]]
             end
+
+            if path.hex.id == self.class::MERTHYR_TYDFIL_PONTYPOOL_HEX
+              merthyr_tydfil_pontypool[a.num] = true if a.edge?
+              merthyr_tydfil_pontypool[b.num] = true if b.edge?
+            end
           end
         end
 
@@ -215,8 +244,13 @@ module Engine
         end
 
         local_token_hex.group_by(&:itself).each do |k, v|
-          raise GameError, "Local train can only use the token on #{k[0]} once." if v.size > 1
+          raise GameError, "Local train can only use the token on #{k[0]} once" if v.size > 1
         end
+
+        # Check Merthyr Tydfil and Pontypool, only one of the 2 tracks may be used
+        return unless merthyr_tydfil_pontypool[1] && merthyr_tydfil_pontypool[2]
+
+        raise GameError, 'May only use one of the tracks connecting Merthyr Tydfil and Pontypool'
       end
 
       def company_bought(company, entity)
@@ -268,6 +302,10 @@ module Engine
         return super if (val % 1).zero?
 
         format('£%.1<val>f', val: val)
+      end
+
+      def home_token_locations(corporation)
+        [hex_by_id(self.class::LONDON_HEX)] if corporation.id == self.class::MINOR_14_ID
       end
 
       def tile_lays(entity)
@@ -337,6 +375,7 @@ module Engine
       def operating_round(round_num)
         Round::Operating.new(self, [
           Step::Bankrupt,
+          Step::G1822::PendingToken,
           Step::G1822::FirstTurnHousekeeping,
           Step::AcquireCompany,
           Step::DiscardTrain,
@@ -347,6 +386,7 @@ module Engine
           Step::G1822::Dividend,
           Step::G1822::BuyTrain,
           Step::G1822::MinorAcquisition,
+          Step::G1822::PendingToken,
           Step::DiscardTrain,
         ], round_num: round_num)
       end
@@ -375,14 +415,25 @@ module Engine
       end
 
       def revenue_for(route, stops)
+        raise GameError, 'Route visits same hex twice' if route.hexes.size != route.hexes.uniq.size
+
         revenue = if train_type(route.train) == :normal
                     super
                   else
                     entity = route.train.owner
+                    france_stop = stops.find { |s| s.offboard? && s.hex.name == self.class::FRANCE_HEX }
                     stops.sum do |stop|
                       next 0 unless stop.city?
 
-                      stop.tokened_by?(entity) ? stop.route_revenue(route.phase, route.train) : 0
+                      tokened = stop.tokened_by?(entity)
+                      # If we got a token in English channel, calculate the revenue from the france offboard
+                      if tokened && stop.hex.name == self.class::ENGLISH_CHANNEL_HEX
+                        france_stop ? france_stop.route_revenue(route.phase, route.train) : 0
+                      elsif tokened
+                        stop.route_revenue(route.phase, route.train)
+                      else
+                        0
+                      end
                     end
                   end
         destination_bonus = destination_bonus(route.routes)
@@ -421,6 +472,9 @@ module Engine
         @gentle_city ||= @tiles.find { |t| t.name == '6' }
         @green_s_tile ||= @tiles.find { |t| t.name == 'X3' }
         @green_t_tile ||= @tiles.find { |t| t.name == '405' }
+
+        # Initialize the extra city which minor 14 might add
+        @london_extra_city_index = nil
 
         # Randomize and setup the companies
         setup_companies
@@ -476,6 +530,25 @@ module Engine
         return false unless company_acquisition
 
         @phase.name.to_i >= company_acquisition[:phase] && company_acquisition[:acquire].include?(entity.type)
+      end
+
+      def after_place_pending_token(city)
+        return unless city.hex.name == self.class::LONDON_HEX
+
+        # Save the extra token city index in london. We need this if we acquire the minor 14 and chooses to remove
+        # the token from london. The city where the 14's home token used to be is now open for other companies to
+        # token. If we do an upgrade to london, make sure this city still is open.
+        @london_extra_city_index = city.tile.cities.index { |c| c == city }
+      end
+
+      def after_lay_tile(hex, tile)
+        # If we upgraded lodon, check if we need to add the extra slot from minor 14
+        upgrade_london(hex) if hex.name == self.class::LONDON_HEX
+
+        # If we upgraded the english channel to brown, upgrade france as well since we got 2 lanes to france.
+        return unless hex.name == self.class::ENGLISH_CHANNEL_HEX && tile.color == :brown
+
+        upgrade_france_to_brown
       end
 
       def bidbox_minors
@@ -538,6 +611,10 @@ module Engine
         destination_bonus.sort_by { |v| v[:revenue] }.reverse&.first
       end
 
+      def english_channel_visit(visits)
+        visits.count { |v| v.hex.name == self.class::ENGLISH_CHANNEL_HEX || v.hex.name == self.class::FRANCE_HEX }
+      end
+
       def exchange_tokens(entity)
         ability = entity.all_abilities.find { |a| a.type == :exchange_token }
         return 0 unless ability
@@ -556,6 +633,10 @@ module Engine
 
       def init_bidding_token
         self.class::BIDDING_TOKENS[@players.size.to_s]
+      end
+
+      def london_extra_token_ability
+        Engine::Ability::Token.new(type: 'token', hexes: [], price: 20, cheater: 1)
       end
 
       def mail_contract_bonus(entity, routes)
@@ -635,6 +716,21 @@ module Engine
         train.name == 'E' ? :etrain : :normal
       end
 
+      def upgrade_france_to_brown
+        france_tile = Engine::Tile.from_code(self.class::FRANCE_HEX, :gray, self.class::FRANCE_HEX_BROWN_TILE)
+        france_tile.location_name = 'France'
+        hex_by_id(self.class::FRANCE_HEX).tile = france_tile
+      end
+
+      def upgrade_london(hex)
+        return unless @london_extra_city_index
+
+        extra_city = hex.tile.cities[@london_extra_city_index]
+        return unless extra_city.tokens.one?
+
+        extra_city.tokens[extra_city.normal_slots] = nil
+      end
+
       private
 
       def find_and_remove_train_by_id(train_id, buyable: true)
@@ -689,6 +785,9 @@ module Engine
         @company_trains['P1'] = find_and_remove_train_by_id('5P-0')
         @company_trains['P13'] = find_and_remove_train_by_id('P+-0', buyable: false)
         @company_trains['P14'] = find_and_remove_train_by_id('P+-1', buyable: false)
+
+        # Setup the minor 14 ability
+        corporation_by_id(self.class::MINOR_14_ID).add_ability(london_extra_token_ability)
       end
 
       def setup_destinations

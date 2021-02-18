@@ -20,9 +20,18 @@ module Engine
               raise GameError, "Cannot place token on #{city.hex.name}, that hex is reserved for destination token. "\
                                'Please undo this move and place your destination token'
             end
+
+            if city.tokened_by?(entity)
+              hex = city.hex
+              city_string = city.hex.tile.cities.size > 1 ? " city #{city.index}" : ''
+              raise GameError, "Cannot place token on #{hex.name}#{city_string} because #{entity.id} cant have 2 "\
+                             'tokens in the same city'
+            end
           end
 
-          super
+          check_tokenable = city.hex.name != @game.class::LONDON_HEX
+          place_token(entity, action.city, action.token, check_tokenable: check_tokenable)
+          pass!
         end
       end
     end
