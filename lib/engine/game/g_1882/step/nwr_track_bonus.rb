@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Engine
-  module Step
+  module Game
     module G1882
       module NwrTrackBonus
         def tile_nwr?(tile)

@@ -102,7 +102,7 @@ module Engine
       end
 
       context '#1882' do
-        let(:game) { Game::G1882.new(players) }
+        let(:game) { Game::G1882::Game.new(players) }
         let(:corp_0) { game.corporation_by_id('QLL') }
         let(:corp_0) { game.corporation_by_id('CPR') }
 
