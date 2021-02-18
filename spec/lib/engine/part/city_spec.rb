@@ -1,10 +1,6 @@
 # frozen_string_literal: true
 
 require './spec/spec_helper'
-require 'engine'
-require 'engine/corporation'
-require 'engine/part/city'
-require 'engine/token'
 
 module Engine
   module Part

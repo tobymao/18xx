@@ -2,14 +2,6 @@
 
 require './spec/spec_helper'
 
-require 'engine/action/bid'
-require 'engine/game/g_1889'
-require 'engine/player'
-require 'engine/round/auction'
-require 'engine/step/waterfall_auction'
-require 'engine/game/g_1828'
-require 'engine/game/g_1828/step/waterfall_auction'
-
 module Engine
   describe Round::Auction do
     context '#1889' do
