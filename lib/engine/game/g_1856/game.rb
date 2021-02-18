@@ -563,24 +563,23 @@ module Engine
               },
               { type: 'description', description: '3 train limit' },
 
-              
               {
-              type: 'train_buy',
-              description: 'Inter train buy/sell at face value',
-              face_value: true
+                type: 'train_buy',
+                description: 'Inter train buy/sell at face value',
+                face_value: true,
               },
               {
-                  type: 'train_limit',
-                  increase: 99,
-                  description: '3 train limit'
+                type: 'train_limit',
+                increase: 99,
+                description: '3 train limit',
               },
               {
                 type: 'train_borrow',
                 train_types: %w[5 5' 6 8 D],
                 from_depot: true,
                 from_market: true,
-                description: 'May borrow a train when trainless*'
-              }
+                description: 'May borrow a train when trainless*',
+              },
             ],
             reservation_color: nil,
           },
@@ -923,7 +922,7 @@ module Engine
           # true: 1-share false presidency has been awarded
           # false: 2-share true presidency has been awarded
           @false_national_president = nil
-          
+
           # CGR flags
           @national_ever_owned_permanent = false
 
@@ -989,15 +988,15 @@ module Engine
           remove_dest_icons(corp)
           release_escrow!(corp)
         end
-  
+
         def remove_dest_icons(corp)
           return unless @destinations[corp.id]
-  
+
           @destinations[corp.id].each do |dest|
             Array(dest).each { |id| hex_by_id(id).tile.icons.reject! { |i| i.name == corp.id } }
           end
         end
-  
+
         #
         # Get the currently possible upgrades for a tile
         # from: Tile - Tile to upgrade from
@@ -1307,12 +1306,12 @@ module Engine
 
         def national_bought_permanent
           return if @national_ever_owned_permanent
-  
+
           @national_ever_owned_permanent = true
           @log << "-- #{national.name} now owns a permanent train, may no longer borrow a train when trainless --"
           national.remove_ability(national.all_abilities.select { |a| a.type == :train_borrow }.first)
         end
-  
+
         def merge_major(major)
           @national_formed = true
           @log << "-- #{major.name} merges into #{national.name} --"
@@ -1659,7 +1658,6 @@ module Engine
           nationalizables.delete(major)
           post_corp_nationalization
         end
-
 
         def train_limit(entity)
           super + Array(abilities(entity, :train_limit)).sum(&:increase)
