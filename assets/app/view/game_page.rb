@@ -168,6 +168,8 @@ module View
         store(:scroll_pos, elm.scrollTop < elm.scrollHeight - elm.offsetHeight - 20 ? elm.scrollTop : nil, skip: true)
       end
       store(:tile_selector, nil, skip: true)
+      # reset scroll to always show top of new tab
+      `window.scroll(0, document.getElementById('header').getBoundingClientRect().height + 1)`
       base = @app_route.split('#').first
       new_route = base + anchor
       new_route = base if @app_route == new_route
