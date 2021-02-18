@@ -58,7 +58,8 @@ module Engine
           end
 
           remove_duplicate_tokens(entity, corporation)
-          if tokens_in_same_hex(entity, corporation)
+          tokens_to_clear = tokens_in_same_hex(entity, corporation)
+          if tokens_to_clear
             @round.corporations_removing_tokens = [entity, corporation]
           else
             move_tokens_to_surviving(entity, corporation, price_for_new_token: @game.new_token_price,
@@ -71,6 +72,8 @@ module Engine
 
           @log << "#{entity.name} buys #{corporation.name}
           for #{@game.format_currency(price)} per share receiving #{receiving.join(', ')}"
+
+          return if tokens_to_clear
 
           @game.close_corporation(corporation)
           corporation.close!

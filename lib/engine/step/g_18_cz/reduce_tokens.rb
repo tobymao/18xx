@@ -6,6 +6,10 @@ module Engine
   module Step
     module G18CZ
       class ReduceTokens < ReduceTokens
+        def description
+          'Choose tokens to remove in hexes with multiple tokens'
+        end
+
         def available_hex(entity, hex)
           return false unless entity == surviving
 
@@ -34,6 +38,9 @@ module Engine
 
           move_tokens_to_surviving(entity, acquired_corps, price_for_new_token: @game.new_token_price,
                                                            check_tokenable: false)
+
+          @game.close_corporation(acquired_corps.first)
+          acquired_corps.first.close!
           @round.corporations_removing_tokens = nil
         end
       end
