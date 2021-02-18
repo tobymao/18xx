@@ -27,7 +27,7 @@ module Engine
 
           entity.operating_history[[@game.turn, @round.round_num]] = OperatingInfo.new(
             routes,
-            action,
+            (@game.insolvent?(entity) ? @game.actions.last : action),
             revenue
           )
 
