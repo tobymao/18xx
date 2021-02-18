@@ -70,16 +70,20 @@ module View
         if current_entity && @tile_selector
           left = (@tile_selector.x + map_x) * @scale
           top = (@tile_selector.y + map_y) * @scale
+          tiles = step.upgradeable_tiles(current_entity, @tile_selector.hex)
           selector =
             if @tile_selector.is_a?(Lib::TokenSelector)
               # 1882
               h(TokenSelector, zoom: map_zoom)
             elsif @tile_selector.role != :map
               # Tile selector not for the map
+            elsif @tile_selector.hex.tile != @tile_selector.tile && !tiles.include?(@tile_selector.tile)
+              # Resets tile_confirmation when the tiles have changed (through abilities etc...)
+              store(:tile_selector, nil)
+              nil
             elsif @tile_selector.hex.tile != @tile_selector.tile
               h(TileConfirmation)
             else
-              tiles = step.upgradeable_tiles(current_entity, @tile_selector.hex)
               all_upgrades = @game.all_potential_upgrades(@tile_selector.hex.tile)
 
               select_tiles = all_upgrades.map do |tile|
@@ -120,7 +124,7 @@ module View
             },
           }
           # This needs to be before the map, so that the relative positioning works
-          children.unshift(h(:div, props, [selector]))
+          children.unshift(h(:div, props, [selector])) if selector
         end
 
         props = {
