@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative 'meta'
 require_relative '../base'
 
 module Engine
@@ -1483,10 +1484,12 @@ module Engine
               ] => 'city=revenue:yellow_30|brown_50,visit_cost:0;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0',
               [
                 'E26',
-              ] => 'city=revenue:yellow_30|brown_50,visit_cost:0;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:5,b:_0',
+              ] => 'city=revenue:yellow_30|brown_50,visit_cost:0;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
+                'path=a:5,b:_0',
               [
                 'I20',
-              ] => 'city=revenue:yellow_30|brown_50,visit_cost:0;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0',
+              ] => 'city=revenue:yellow_30|brown_50,visit_cost:0;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
+                'path=a:3,b:_0',
             },
           }
           hexes_2player = {
