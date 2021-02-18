@@ -95,7 +95,6 @@ module View
 
       def render_player_history
         # OR history should exist in all
-        zebra_row = true
         last_values = nil
         @game.players.first.history.map do |h|
           values = @game.players.map do |p|
@@ -105,7 +104,6 @@ module View
 
           delta_v = (last_values || Array.new(values.size, 0)).map(&:-@).zip(values).map(&:sum) if @delta_value
           last_values = values
-          zebra_row = !zebra_row
           row_content = values.map.with_index do |v, i|
             disp_value = @delta_value ? delta_v[i] : v
             h('td.padded_number',
@@ -113,7 +111,7 @@ module View
               @game.format_currency(disp_value))
           end
 
-          h(:tr, zebra_props(zebra_row), [
+          h(:tr, tr_default_props, [
             h('th.left', h.round),
             *row_content,
           ])
@@ -134,7 +132,7 @@ module View
 
       def render_or_history_row(hist, corporation, x)
         if hist[x]
-          revenue_text, opacity =
+          revenue_text, alpha =
             case (hist[x].dividend.is_a?(Engine::Action::Dividend) ? hist[x].dividend.kind : 'withhold')
             when 'withhold'
               ["[#{hist[x].revenue}]", '0.5']
@@ -146,7 +144,7 @@ module View
 
           props = {
             style: {
-              opacity: opacity,
+              color: convert_hex_to_rgba(color_for(:font2), alpha),
               padding: '0 0.15rem',
             },
           }
@@ -166,8 +164,8 @@ module View
       end
 
       def render_title
-        th_props = lambda do |cols, alt_bg = false, border_right = true|
-          props = zebra_props(alt_bg)
+        th_props = lambda do |cols, border_right = true|
+          props = tr_default_props
           props[:attrs] = { colspan: cols }
           props[:style][:padding] = '0.3rem'
           props[:style][:borderRight] = "1px solid #{color_for(:font2)}" if border_right
@@ -197,11 +195,11 @@ module View
           h(:tr, [
             h(:th, ''),
             h(:th, th_props[@game.players.size], 'Players'),
-            h(:th, th_props[2, true], 'Bank'),
+            h(:th, th_props[2], 'Bank'),
             h(:th, th_props[2], 'Prices'),
-            h(:th, th_props[5 + extra.size, true, false], 'Corporation'),
+            h(:th, th_props[5 + extra.size, false], 'Corporation'),
             h(:th, ''),
-            h(:th, th_props[or_history_titles.size, false, false], 'OR History'),
+            h(:th, th_props[or_history_titles.size, false], 'OR History'),
           ]),
           h(:tr, [
             h(:th, { style: { paddingBottom: '0.3rem' } }, render_sort_link('SYM', :id)),
@@ -272,8 +270,8 @@ module View
       def render_corporations
         current_round = @game.turn_round_num
 
-        sorted_corporations.map.with_index do |corp_array, index|
-          render_corporation(corp_array[1], corp_array[0], current_round, index)
+        sorted_corporations.map do |corp_array|
+          render_corporation(corp_array[1], corp_array[0], current_round)
         end
       end
 
@@ -333,7 +331,7 @@ module View
         result
       end
 
-      def render_corporation(corporation, operating_order, current_round, index)
+      def render_corporation(corporation, operating_order, current_round)
         border_style = "1px solid #{color_for(:font2)}"
 
         name_props =
@@ -344,7 +342,7 @@ module View
             },
           }
 
-        tr_props = zebra_props(index.odd?)
+        tr_props = tr_default_props
         market_props = { style: { borderRight: border_style } }
         if !corporation.floated?
           tr_props[:style][:opacity] = '0.6'
@@ -408,35 +406,35 @@ module View
       end
 
       def render_player_companies
-        h(:tr, zebra_props, [
+        h(:tr, tr_default_props, [
           h('th.left', 'Companies'),
           *@game.players.map { |p| render_companies(p) },
         ])
       end
 
       def render_player_cash
-        h(:tr, zebra_props, [
+        h(:tr, tr_default_props, [
           h('th.left', 'Cash'),
           *@game.players.map { |p| h('td.padded_number', @game.format_currency(p.cash)) },
         ])
       end
 
       def render_player_value
-        h(:tr, zebra_props(true), [
+        h(:tr, tr_default_props, [
           h('th.left', 'Value'),
           *@game.players.map { |p| h('td.padded_number', @game.format_currency(@game.player_value(p))) },
         ])
       end
 
       def render_player_liquidity
-        h(:tr, zebra_props, [
+        h(:tr, tr_default_props, [
           h('th.left', 'Liquidity'),
           *@game.players.map { |p| h('td.padded_number', @game.format_currency(@game.liquidity(p))) },
         ])
       end
 
       def render_player_shares
-        h(:tr, zebra_props(true), [
+        h(:tr, tr_default_props, [
           h('th.left', 'Shares'),
           *@game.players.map do |p|
             h('td.padded_number', @game.all_corporations.sum { |c| c.minor? ? 0 : num_shares_of(p, c) })
@@ -447,7 +445,7 @@ module View
       def render_player_certs
         cert_limit = @game.cert_limit
         props = { style: { color: 'red' } }
-        h(:tr, zebra_props(true), [
+        h(:tr, tr_default_props, [
           h('th.left', 'Certs' + (@game.show_game_cert_limit? ? "/#{cert_limit}" : '')),
           *@game.players.map { |player| render_player_cert_count(player, cert_limit, props) },
         ])
@@ -458,11 +456,10 @@ module View
         h('td.padded_number', num_certs > cert_limit ? props : '', num_certs)
       end
 
-      def zebra_props(alt_bg = false)
-        factor = Native(`window.matchMedia('(prefers-color-scheme: dark)').matches`) ? 0.9 : 0.5
+      def tr_default_props
         {
           style: {
-            backgroundColor: alt_bg ? convert_hex_to_rgba(color_for(:bg2), factor) : color_for(:bg2),
+            backgroundColor: color_for(:bg2),
             color: color_for(:font2),
           },
         }
