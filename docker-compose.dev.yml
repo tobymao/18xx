@@ -6,6 +6,9 @@ x-rack: &rack
     DATABASE_URL: postgres://root:password@db:5432/18xx_development
     RACK_ENV: development
     RUBYOPTS: --jit
+  build:
+    args:
+      RACK_ENV: development
   volumes:
     - .:/18xx:z
     - /18xx/vendor
