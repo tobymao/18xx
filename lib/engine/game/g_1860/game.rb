@@ -136,14 +136,16 @@ module Engine
             'count' => 2,
             'color' => 'green',
             'code' =>
-            'halt=symbol:£,loc:0;town=revenue:10,loc:center;path=a:0,b:_0;path=a:2,b:_1;path=a:3,b:_1;path=a:_0,b:_1',
+            'halt=symbol:£,loc:0;town=revenue:10,loc:center;path=a:0,b:_0;path=a:2,b:_1;path=a:3,b:_1;'\
+              'path=a:_0,b:_1',
           },
           '755' =>
           {
             'count' => 2,
             'color' => 'green',
             'code' =>
-            'halt=symbol:£,loc:0;town=revenue:10,loc:center;path=a:0,b:_0;path=a:4,b:_1;path=a:3,b:_1;path=a:_0,b:_1',
+            'halt=symbol:£,loc:0;town=revenue:10,loc:center;path=a:0,b:_0;path=a:4,b:_1;path=a:3,b:_1;'\
+              'path=a:_0,b:_1',
           },
           '756' =>
           {
@@ -178,7 +180,8 @@ module Engine
             'count' => 1,
             'color' => 'green',
             'code' =>
-            'city=revenue:20,loc:center;halt=symbol:£,loc:3;path=a:0,b:_0;path=a:4,b:_0;path=a:5,b:_0;path=a:3,b:_1;path=a:_0,b:_1;label=M',
+            'city=revenue:20,loc:center;halt=symbol:£,loc:3;path=a:0,b:_0;path=a:4,b:_0;path=a:5,b:_0;'\
+              'path=a:3,b:_1;path=a:_0,b:_1;label=M',
           },
           '762' =>
           {
@@ -192,7 +195,8 @@ module Engine
             'count' => 1,
             'color' => 'green',
             'code' =>
-            'city=revenue:50,loc:2.5;city=revenue:30,loc:5.5;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:0,b:_1;label=N',
+            'city=revenue:50,loc:2.5;city=revenue:30,loc:5.5;path=a:1,b:_0;path=a:2,b:_0;'\
+              'path=a:3,b:_0;path=a:4,b:_0;path=a:0,b:_1;label=N',
           },
           '764' =>
           {
@@ -238,7 +242,8 @@ module Engine
             'count' => 2,
             'color' => 'brown',
             'code' =>
-            'city=revenue:30,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=B',
+            'city=revenue:30,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
+              'path=a:4,b:_0;label=B',
           },
           '771' =>
           {
@@ -257,7 +262,8 @@ module Engine
             'count' => 1,
             'color' => 'brown',
             'code' =>
-            'city=revenue:60,slots:2,loc:2.5;city=revenue:20,loc:5.5;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:0,b:_1;path=a:5,b:_1;path=a:_0,b:_1;label=N',
+            'city=revenue:60,slots:2,loc:2.5;city=revenue:20,loc:5.5;path=a:1,b:_0;path=a:2,b:_0;'\
+              'path=a:3,b:_0;path=a:4,b:_0;path=a:0,b:_1;path=a:5,b:_1;path=a:_0,b:_1;label=N',
           },
           '774' =>
           {
@@ -271,7 +277,8 @@ module Engine
             'count' => 1,
             'color' => 'brown',
             'code' =>
-            'city=revenue:20,slots:2,loc:center;town=revenue:10,loc:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_1;path=a:4,b:_0;path=a:5,b:_0;path=a:_0,b:_1;label=M',
+            'city=revenue:20,slots:2,loc:center;town=revenue:10,loc:3;path=a:0,b:_0;path=a:1,b:_0;'\
+              'path=a:2,b:_0;path=a:3,b:_1;path=a:4,b:_0;path=a:5,b:_0;path=a:_0,b:_1;label=M',
           },
           '776' =>
           {
@@ -311,28 +318,32 @@ module Engine
             'count' => 1,
             'color' => 'brown',
             'code' =>
-            'town=revenue:20,loc:center;halt=symbol:£,loc:0;path=a:0,b:_1;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;path=a:_0,b:_1',
+            'town=revenue:20,loc:center;halt=symbol:£,loc:0;path=a:0,b:_1;path=a:2,b:_0;path=a:3,b:_0;'\
+              'path=a:4,b:_0;path=a:5,b:_0;path=a:_0,b:_1',
           },
           '783' =>
           {
             'count' => 1,
             'color' => 'brown',
             'code' =>
-            'town=revenue:20,loc:center;halt=symbol:£,loc:0;path=a:0,b:_1;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0;path=a:_0,b:_1',
+            'town=revenue:20,loc:center;halt=symbol:£,loc:0;path=a:0,b:_1;path=a:1,b:_0;path=a:2,b:_0;'\
+              'path=a:3,b:_0;path=a:5,b:_0;path=a:_0,b:_1',
           },
           '784' =>
           {
             'count' => 1,
             'color' => 'brown',
             'code' =>
-            'town=revenue:20,loc:center;halt=symbol:£,loc:0;path=a:0,b:_1;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;path=a:_0,b:_1',
+            'town=revenue:20,loc:center;halt=symbol:£,loc:0;path=a:0,b:_1;path=a:1,b:_0;path=a:3,b:_0;'\
+              'path=a:4,b:_0;path=a:5,b:_0;path=a:_0,b:_1',
           },
           '785' =>
           {
             'count' => 1,
             'color' => 'brown',
             'code' =>
-            'town=revenue:20,loc:center;halt=symbol:£,loc:0;path=a:0,b:_1;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:_0,b:_1',
+            'town=revenue:20,loc:center;halt=symbol:£,loc:0;path=a:0,b:_1;path=a:1,b:_0;path=a:2,b:_0;'\
+              'path=a:3,b:_0;path=a:4,b:_0;path=a:_0,b:_1',
           },
           '786' =>
           {
@@ -345,21 +356,24 @@ module Engine
             'count' => 1,
             'color' => 'yellow',
             'code' =>
-            'city=revenue:20,loc:3;town=revenue:10,loc:center;halt=symbol:£,loc:0;path=a:0,b:_2;path=a:_2,b:_1;path=a:_0,b:_1;label=C',
+            'city=revenue:20,loc:3;town=revenue:10,loc:center;halt=symbol:£,loc:0;path=a:0,b:_2;'\
+              'path=a:_2,b:_1;path=a:_0,b:_1;label=C',
           },
           '788' =>
           {
             'count' => 1,
             'color' => 'green',
             'code' =>
-            'city=revenue:30,loc:3;town=revenue:10,loc:center;halt=symbol:£,loc:0;path=a:0,b:_2;path=a:1,b:_2;path=a:_2,b:_1;path=a:_0,b:_1;label=C',
+            'city=revenue:30,loc:3;town=revenue:10,loc:center;halt=symbol:£,loc:0;path=a:0,b:_2;'\
+              'path=a:1,b:_2;path=a:_2,b:_1;path=a:_0,b:_1;label=C',
           },
           '789' =>
           {
             'count' => 1,
             'color' => 'brown',
             'code' =>
-            'city=revenue:60,loc:3;town=revenue:20,loc:center;halt=symbol:£,loc:0;path=a:0,b:_2;path=a:1,b:_2;path=a:_2,b:_1;path=a:_0,b:_1;label=C',
+            'city=revenue:60,loc:3;town=revenue:20,loc:center;halt=symbol:£,loc:0;path=a:0,b:_2;'\
+              'path=a:1,b:_2;path=a:_2,b:_1;path=a:_0,b:_1;label=C',
           },
         }.freeze
 
@@ -748,13 +762,12 @@ module Engine
         HEXES = {
           white: {
             ['G1'] => 'town=revenue:0;border=edge:1,type:impassable',
-            ['G3'] =>
-                   'town=revenue:0;border=edge:1,type:impassable;border=edge:2,type:impassable',
+            ['G3'] => 'town=revenue:0;border=edge:1,type:impassable;border=edge:2,type:impassable',
             %w[H8 G11 F6 D6 E5 C5 F10] => 'town=revenue:0',
             %w[A5 F4] => 'town=revenue:0;border=edge:4,type:impassable',
             ['I5'] => 'town=revenue:0;border=edge:0,type:impassable',
-            ['F2'] =>
-                   'city=revenue:0,loc:3;town=revenue:0,loc:1;town=revenue:0,loc:0;label=C;border=edge:4,type:impassable;border=edge:5,type:impassable',
+            ['F2'] => 'city=revenue:0,loc:3;town=revenue:0,loc:1;town=revenue:0,loc:0;label=C;'\
+              'border=edge:4,type:impassable;border=edge:5,type:impassable',
             %w[H2 D4] => 'upgrade=cost:60,terrain:water',
             %w[E3 E11 K7 D8] => '',
             ['B4'] => 'city=revenue:0;border=edge:1,type:impassable',
@@ -1055,10 +1068,8 @@ module Engine
         def player_value(player)
           player.cash +
             player.shares.select { |s| s.corporation.ipoed & s.corporation.trains.any? }.sum(&:price) +
-            player.shares.select do |s|
-              s.corporation.ipoed & s.corporation.trains.none?
-            end.sum { |s| (s.price / 2).to_i } +
-            player.companies.sum(&:value)
+            player.shares.select { |s| s.corporation.ipoed & s.corporation.trains.none? }
+            .sum { |s| (s.price / 2).to_i } + player.companies.sum(&:value)
         end
 
         def liquidity(player)
@@ -1066,10 +1077,8 @@ module Engine
 
           player.cash +
             player.shares.select { |s| s.corporation.ipoed & s.corporation.trains.any? }.sum(&:price) +
-            player.shares.select do |s|
-              s.corporation.ipoed & s.corporation.trains.none?
-            end.sum { |s| (s.price / 2).to_i } +
-            company_value
+            player.shares.select { |s| s.corporation.ipoed & s.corporation.trains.none? }
+            .sum { |s| (s.price / 2).to_i } + company_value
         end
 
         def operating_order

@@ -8,7 +8,7 @@ module Engine
     module G1860
       module Step
         class Track < Engine::Step::Base
-          # TODO: include one of: ["Engine::Step::G1860::Tracker", "Engine::Step::Tracker"]
+          include Engine::Game::G1860::Tracker
           ACTIONS = %w[lay_tile pass].freeze
 
           def actions(entity)
