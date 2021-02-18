@@ -459,7 +459,13 @@ class Mover
     const = const_from_file(file)
     new_module_name = const.ancestors.select { |a| a.name =~ /\b#{included_module}\b/ }.map(&:name)
 
-    raise StandardError, "could not find matching module for #{included_module}" if new_module_name.empty?
+    if new_module_name.empty?
+      begin
+        new_module_name = [Engine.const_get(included_module).name]
+      rescue StandardError
+        raise StandardError, "could not find matching module for #{included_module}"
+      end
+    end
 
     unless new_module_name.one?
       puts "    WARNING: found more than one possible module for #{included_module}: #{new_module_name.pretty_inspect}"
