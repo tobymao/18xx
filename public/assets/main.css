@@ -111,6 +111,9 @@ th, td {
   background-color: #CCCCCC;
   color: black;
 }
+#spreadsheet tbody > tr:hover {
+  filter: drop-shadow(1px 0px 2px #555);
+}
 
 @media (prefers-color-scheme: dark) {
   body {

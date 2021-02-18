@@ -77,7 +77,7 @@ module View
           h(:thead, [
             h(:tr, { style: { height: '1rem' } }, ''),
           ]),
-          *render_player_history,
+          h(:tbody, [*render_player_history]),
         ])
         # TODO: consider adding OR information (could do both corporation OR revenue and player change in value)
         # TODO: consider adding train availability
@@ -180,7 +180,7 @@ module View
 
         pd_props = {
           style: {
-            background: 'salmon',
+            backgroundColor: 'salmon',
             color: 'black',
           },
         }
@@ -339,7 +339,7 @@ module View
         name_props =
           {
             style: {
-              background: corporation.color,
+              backgroundColor: corporation.color,
               color: corporation.text_color,
             },
           }
