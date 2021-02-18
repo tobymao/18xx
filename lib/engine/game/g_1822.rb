@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../config/game/g_1822'
+require_relative '../step/g_1822/track'
 require_relative 'base'
 require_relative 'stubs_are_restricted'
 
