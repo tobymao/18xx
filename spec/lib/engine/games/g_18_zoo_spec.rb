@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require './spec/spec_helper'
-require 'engine/game/g_18_zoo'
 
 module Engine
   describe Game::G18ZOO do

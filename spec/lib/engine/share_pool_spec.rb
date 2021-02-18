@@ -2,13 +2,6 @@
 
 require './spec/spec_helper'
 
-require 'engine'
-require 'engine/game/g_1846'
-require 'engine/game/g_1889'
-require 'engine/share_pool'
-require 'engine/share_price'
-require 'engine/player'
-
 module Engine
   describe SharePool do
     let(:game) { Game::G1889::Game.new(%w[a b c]) }

@@ -2,13 +2,6 @@
 
 require './spec/spec_helper'
 
-require 'engine/game/g_1882'
-require 'engine/game/g_1889'
-require 'engine/game/g_18_chesapeake'
-require 'engine/game/g_1828'
-require 'engine/phase'
-require 'engine/round/operating'
-
 module Engine
   describe Round::Stock do
     let(:players) { %w[a b c d e f] }

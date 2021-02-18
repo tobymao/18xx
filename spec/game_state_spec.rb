@@ -2,7 +2,6 @@
 
 require 'find'
 
-require 'engine'
 require 'spec_helper'
 
 def game_at_action(game_file, action_id = nil)
