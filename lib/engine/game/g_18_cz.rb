@@ -329,6 +329,7 @@ module Engine
 
       def upgrades_to?(from, to, special = false)
         return true if from.color == :white && to.color == :red
+        return true if purple_tile?(to) && from.towns.size == 2 && !to.towns.empty? && to.color == :green
 
         super
       end
