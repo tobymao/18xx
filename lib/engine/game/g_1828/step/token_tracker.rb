@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Engine
-  module Step
+  module Game
     module G1828
       module TokenTracker
         def process_place_token(action)

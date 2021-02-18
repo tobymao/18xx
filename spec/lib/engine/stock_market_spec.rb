@@ -6,6 +6,7 @@ require 'engine/corporation'
 require 'engine/game/g_1889'
 require 'engine/game/g_1828'
 require 'engine/stock_market'
+require 'engine/game/g_1828/stock_market'
 
 module Engine
   describe StockMarket do
@@ -95,7 +96,7 @@ module Engine
     end
 
     context '#1828' do
-      let(:subject) { G1828::StockMarket.new(Game::G1828::MARKET, []) }
+      let(:subject) { Game::G1828::StockMarket.new(Game::G1828::Game::MARKET, []) }
 
       it 'moves right if at ceiling' do
         current_price = subject.market[0][0]

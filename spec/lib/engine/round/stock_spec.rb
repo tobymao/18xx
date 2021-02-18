@@ -204,7 +204,7 @@ module Engine
     end
 
     context '#1828' do
-      let(:game) { Game::G1828.new(%w[a b c]) }
+      let(:game) { Game::G1828::Game.new(%w[a b c]) }
 
       before :each do
         player_0.cash = 10_000
