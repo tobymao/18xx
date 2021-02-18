@@ -121,6 +121,7 @@ class Assets
       begin
         builds.each do |key, build|
           next if @precompiled
+
           source = build['files'].map { |file| File.read(file).to_s }.join
           source = compress(key, source) if @compress
           File.write(build['path'], source)
