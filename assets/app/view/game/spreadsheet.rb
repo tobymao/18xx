@@ -20,7 +20,8 @@ module View
       def render
         @spreadsheet_sort_by = Lib::Storage['spreadsheet_sort_by']
         @spreadsheet_sort_order = Lib::Storage['spreadsheet_sort_order']
-        @delta_value = Lib::Storage['delta_value']
+        @delta_value = Lib::Storage['spreadsheet_delta_value']
+        @hide_not_floated = Lib::Storage['spreadsheet_hide_not_floated']
 
         children = []
 
@@ -197,7 +198,7 @@ module View
             h(:th, th_props[@game.players.size], 'Players'),
             h(:th, th_props[2], 'Bank'),
             h(:th, th_props[2], 'Prices'),
-            h(:th, th_props[5 + extra.size, false], 'Corporation'),
+            h(:th, th_props[5 + extra.size, false], ['Corporation ', render_toggle_not_floated_link]),
             h(:th, ''),
             h(:th, th_props[or_history_titles.size, false], 'OR History'),
           ]),
@@ -255,16 +256,43 @@ module View
       end
 
       def toggle_delta_value
-        Lib::Storage['delta_value'] = !@delta_value
+        Lib::Storage['spreadsheet_delta_value'] = !@delta_value
         update
       end
 
+      def render_toggle_not_floated_link
+        toggle = lambda do
+          Lib::Storage['spreadsheet_hide_not_floated'] = !@hide_not_floated
+          update
+        end
+
+        h('span.small_font', [
+          '(',
+          h(:a,
+            {
+              attrs: {
+                onclick: 'return false',
+                title: @hide_not_floated ? 'Show all corporations' : 'Hide not floated corporations',
+              },
+              on: { click: toggle },
+              style: {
+                cursor: 'pointer',
+                textDecoration: 'underline',
+              },
+            },
+            @hide_not_floated ? 'floated' : 'all'),
+          ')',
+         ])
+      end
+
       def render_spreadsheet_controls
-        h(:button, {
-            style: { minWidth: '9.5rem' },
-            on: { click: -> { toggle_delta_value } },
-          },
-          "Show #{@delta_value ? 'Total' : 'Delta'} Values")
+        h(:div, [
+          h(:button, {
+              style: { minWidth: '9.5rem' },
+              on: { click: -> { toggle_delta_value } },
+            },
+            "Show #{@delta_value ? 'Total' : 'Delta'} Values"),
+        ])
       end
 
       def render_corporations
@@ -346,6 +374,7 @@ module View
         market_props = { style: { borderRight: border_style } }
         if !corporation.floated?
           tr_props[:style][:opacity] = '0.6'
+          tr_props[:style][:display] = 'none' if @hide_not_floated
         elsif corporation.share_price&.highlight? &&
           (color = StockMarket::COLOR_MAP[@game.class::STOCKMARKET_COLORS[corporation.share_price.type]])
           market_props[:style][:backgroundColor] = color
@@ -462,6 +491,7 @@ module View
             backgroundColor: color_for(:bg2),
             color: color_for(:font2),
           },
+          class: {},
         }
       end
 
