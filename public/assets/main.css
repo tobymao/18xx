@@ -170,7 +170,7 @@ nav#game_menu {
   width: 2.7rem;
 }
 ::-webkit-color-swatch {
-    background-color: inherit !important; /* fix iOS/macOS black color inputs */
+    background-color: inherit; /* fix iOS/macOS black color inputs */
 }
 ::-webkit-color-swatch-wrapper {
     border: 1px solid gainsboro;
