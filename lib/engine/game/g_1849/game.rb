@@ -647,8 +647,6 @@ module Engine
           remove_corp if @players.size == 3
           @corporations[0].next_to_par = true
 
-          @available_par_groups = %i[par]
-
           @player_debts = Hash.new { |h, k| h[k] = 0 }
           @moved_this_turn = []
         end
@@ -709,8 +707,15 @@ module Engine
         end
 
         def init_stock_market
-          G1849::StockMarket.new(self.class::MARKET, self.class::CERT_LIMIT_TYPES,
-                                 multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
+          sm = G1849::StockMarket.new(self.class::MARKET, self.class::CERT_LIMIT_TYPES,
+                                      multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
+
+          sm.game = self
+
+          sm.enable_par_price(68)
+          sm.enable_par_price(100)
+
+          sm
         end
 
         def init_corporations(stock_market)
@@ -788,13 +793,6 @@ module Engine
 
         def afg
           @afg ||= @corporations.find { |corp| corp.id == 'AFG' }
-        end
-
-        def new_auction_round
-          Engine::Round::Auction.new(self, [
-            G1849::Step::CompanyPendingPar,
-            Engine::Step::WaterfallAuction,
-          ])
         end
 
         def stock_round
@@ -1060,13 +1058,13 @@ module Engine
 
         def event_green_par!
           @log << "-- Event: #{EVENTS_TEXT[:green_par][1]} --"
-          @available_par_groups << :par_1
+          stock_market.enable_par_price(144)
           update_cache(:share_prices)
         end
 
         def event_brown_par!
           @log << "-- Event: #{EVENTS_TEXT[:brown_par][1]} --"
-          @available_par_groups << :par_2
+          stock_market.enable_par_price(216)
           update_cache(:share_prices)
         end
 
@@ -1102,10 +1100,6 @@ module Engine
 
         def player_value(player)
           player.value - @player_debts[player]
-        end
-
-        def par_prices
-          @stock_market.share_prices_with_types(@available_par_groups)
         end
       end
     end
