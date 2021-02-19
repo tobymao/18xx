@@ -57,10 +57,7 @@ module View
         companies.map do |company|
           props = {
             on: {
-              click: lambda do
-                store(:tile_selector, nil, skip: true)
-                store(:selected_company, @selected_company == company ? nil : company)
-              end,
+              click: -> { store(:selected_company, @selected_company == company ? nil : company) },
             },
           }
           props[:class] = { active: true } if @selected_company == company
