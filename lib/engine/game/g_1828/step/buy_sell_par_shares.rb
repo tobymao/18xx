@@ -85,6 +85,10 @@ module Engine
             super
           end
 
+          def get_par_prices(entity, _corp)
+            @game.par_prices.select { |p| p.price * 2 <= entity.cash }
+          end
+
           def stock_action(action)
             @current_actions << action
           end

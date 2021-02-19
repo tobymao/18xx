@@ -6,19 +6,6 @@ module Engine
   module Game
     module G1828
       class StockMarket < Engine::StockMarket
-        def initialize(market, unlimited_types, multiple_buy_types: [])
-          super
-          @disabled_par_prices = @par_prices
-          @par_prices = []
-        end
-
-        def enable_par_price(price)
-          return unless (par = @disabled_par_prices.find { |p| p.price == price })
-
-          @par_prices << par
-          @disabled_par_prices.delete(par)
-        end
-
         def move_up(corporation)
           return move_right(corporation) if top_row?(corporation)
 
