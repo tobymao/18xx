@@ -65,6 +65,12 @@ module Engine
         lay_tile_action(action)
         pass! if !can_lay_tile?(action.entity) && @tokened
       end
+
+      def available_hex(entity, hex)
+        return super if can_lay_tile?(entity)
+
+        @game.graph.reachable_hexes(entity)[hex]
+      end
     end
   end
 end
