@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-require_relative '../tracker'
+require_relative '../../../step/tracker'
 
 module Engine
-  module Step
+  module Game
     module G1860
       module Tracker
-        include Step::Tracker
+        include Engine::Step::Tracker
 
         def setup
           @laid_city = false
@@ -44,9 +44,8 @@ module Engine
         end
 
         def pay_tile_cost!(entity, tile, rotation, hex, spender, cost, _extra_cost)
-          if @game.insolvent?(spender) && cost.positive?
-            raise GameError, "#{spender.id} cannot pay for a tile when insolvent"
-          end
+          raise GameError,
+                "#{spender.id} cannot pay for a tile when insolvent" if @game.insolvent?(spender) && cost.positive?
 
           super
         end
@@ -68,9 +67,8 @@ module Engine
           changed_city = false
           if old_tile.color != :white
             # add requirement that paths/nodes be reachable with train
-            unless reachable_hex?(entity, new_tile.hex, tr_distance)
-              raise GameError, 'Tile must be reachable with train'
-            end
+            raise GameError, 'Tile must be reachable with train' unless reachable_hex?(entity, new_tile.hex,
+                                                                                       tr_distance)
 
             # check to see revenues reachable from old graph have changed
             new_revenues = new_tile.nodes.select { |n| reachable_node?(entity, n, tr_distance) }
