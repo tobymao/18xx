@@ -2301,7 +2301,7 @@ module Engine
                         },
                         {
                             "name": "3Ed",
-                            "rusts_on": "5E",
+                            "rusts_on": "6E",
                             "distance": [
                                 {
                                     "nodes": [
@@ -2358,7 +2358,7 @@ module Engine
                         },
                         {
                             "name": "3Ee",
-                            "rusts_on": "5E",
+                            "rusts_on": "6E",
                             "distance": [
                                 {
                                     "nodes": [
@@ -2409,6 +2409,7 @@ module Engine
                         },
                         {
                             "name": "4Ef",
+                            "rusts_on": "8E",
                             "distance": [
                                 {
                                     "nodes": [
@@ -2459,6 +2460,7 @@ module Engine
                         },
                         {
                             "name": "4Eg",
+                            "rusts_on": "8E",
                             "distance": [
                                 {
                                     "nodes": [
