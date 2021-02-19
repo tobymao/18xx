@@ -72,7 +72,6 @@ module Engine
         old_tile = hex.tile
 
         @game.companies.each do |company|
-          break if @game.loading
           next if company.closed?
           next unless (ability = @game.abilities(company, :blocks_hexes))
 
@@ -98,13 +97,11 @@ module Engine
         free = false
         discount = 0
         teleport = false
-        ability_found = false
 
         abilities(entity) do |ability|
           next if ability.owner != entity
           next if !ability.hexes.empty? && (!ability.hexes.include?(hex.id) || !ability.tiles.include?(tile.name))
 
-          ability_found = true
           if ability.type == :teleport
             teleport = true
             free = true if ability.free_tile_lay
@@ -123,10 +120,6 @@ module Engine
             discount = ability.discount
             extra_cost += ability.cost
           end
-        end
-
-        if entity.company? && !ability_found
-          raise GameError, "#{entity.name} does not have an ability that allows them to lay this tile"
         end
 
         check_track_restrictions!(entity, old_tile, tile) unless teleport
