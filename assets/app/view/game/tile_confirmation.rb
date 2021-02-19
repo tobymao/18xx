@@ -10,6 +10,7 @@ module View
       include Lib::Settings
 
       needs :tile_selector, store: true
+      needs :zoom, default: 1
 
       def render
         button_style = {
@@ -46,7 +47,7 @@ module View
             gridGap: '5px',
             position: 'absolute',
             left: '-38px',
-            top: '-75px',
+            top: "#{-68 * @zoom}px",
           },
         }
 
