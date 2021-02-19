@@ -40,10 +40,6 @@ module Engine
             @moved_any = false
           end
 
-          def get_par_prices(entity, _corp)
-            @game.par_prices.select { |p| p.price * 2 <= entity.cash }
-          end
-
           def can_buy?(entity, bundle)
             super && @game.last_cert_last?(bundle)
           end

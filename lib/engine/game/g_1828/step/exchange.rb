@@ -90,8 +90,8 @@ module Engine
             @corporation
           end
 
-          def get_par_prices(entity, _corporation)
-            @game.par_prices.select { |p| p.price <= entity.cash }
+          def get_par_prices(_entity, _corporation)
+            @game.stock_market.par_prices.select { |p| p.price <= @entity.cash }
           end
 
           def cash_to_par?(entity, corporation)
