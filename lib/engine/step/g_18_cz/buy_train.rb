@@ -8,9 +8,7 @@ module Engine
       class BuyTrain < BuyTrain
         def buyable_trains(entity)
           trains = super
-          trains = trains.select { |train| train.owner == @game.depot } if must_buy_train?(entity)
-
-          trains
+          trains.select { |item| item.owner == @game.depot || train_available?(entity, item) }
         end
 
         def buyable_train_variants(train, entity)
@@ -57,6 +55,15 @@ module Engine
           @log << "#{entity.name} takes a debt of #{@game.format_currency(difference)}"
 
           @game.bank.spend(difference, entity)
+        end
+
+        def train_available?(entity, train)
+          return true if @game.train_of_size?(train, entity.type) || @game.train_of_size?(train, :small)
+          return false if entity.type == :small
+
+          return true if @game.train_of_size?(train, :medium)
+
+          false
         end
       end
     end
