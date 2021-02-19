@@ -159,7 +159,8 @@ module View
     end
 
     def render_color(label, id, hex_color, attrs: {})
-      render_input(label, id: id, type: :color, attrs: { value: hex_color, **attrs })
+      render_input(label, id: id, type: :color, attrs: { value: hex_color, **attrs }, on: { input: -> { submit } },
+                          input_style: { backgroundColor: hex_color })
     end
 
     def render_tile_colors

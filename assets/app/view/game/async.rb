@@ -13,8 +13,7 @@ module View
           h(:h2, 'Programmed Actions'),
           h(:p, 'Programmed actions allow you to preprogram your moves ahead of time. '\
                 'On asynchronous games this can shorten a game considerably.'),
-          h(:p, 'Please note, these are not secret from other players. '\
-                'Enabling and disabling programmed actions are logged.'),
+          h(:p, 'Please note, these are not secret from other players.'),
           h(:p, 'This feature is presently under development. More actions will be available soon.'),
         ]
 
@@ -28,7 +27,7 @@ module View
           enabled = @game.programmed_actions[sender]
           children.concat(render_disable(enabled)) if enabled
         else
-          children << h(:p, 'No programmed actions are presently available for this game.')
+          children << h('div.bold', 'No programmed actions are presently available for this game.')
         end
 
         props = {
@@ -63,7 +62,7 @@ module View
         # @todo: later this will support buying to a certain percentage
         floatable = @game.corporations.select { |corp| corp.ipoed && !corp.floated? }
         if floatable.empty?
-          children << h('div.bold', 'No corporations are ipoed but not floated, cannot program!')
+          children << h('div.bold', 'No corporations are ipoed and not floated, cannot program!')
         else
           values = floatable.map do |entity|
             h(:option, { attrs: { value: entity.name } }, entity.full_name)

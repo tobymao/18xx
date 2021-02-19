@@ -29,6 +29,7 @@ require_relative '../tile'
 require_relative '../train'
 require_relative '../player_info'
 require_relative '../game_log'
+require_relative 'meta'
 
 module Engine
   module Game
@@ -69,28 +70,20 @@ module Engine
 
       actions = actions.take(at_action) if at_action
 
-      Engine::GAMES_BY_TITLE[title].new(
+      Engine.game_by_title(title).new(
         names, id: id, actions: actions, pin: pin, optional_rules: optional_rules, user: user, **kwargs
       )
     end
 
     class Base
+      include Game::Meta
+
       attr_reader :raw_actions, :actions, :bank, :cert_limit, :cities, :companies, :corporations,
                   :depot, :finished, :graph, :hexes, :id, :loading, :loans, :log, :minors,
                   :phase, :players, :operating_rounds, :round, :share_pool, :stock_market, :tile_groups,
                   :tiles, :turn, :total_loans, :undo_possible, :redo_possible, :round_history, :all_tiles,
                   :optional_rules, :exception, :last_processed_action, :broken_action,
                   :turn_start_action_id, :last_turn_start_action_id, :programmed_actions
-
-      DEV_STAGES = %i[production beta alpha prealpha].freeze
-      DEV_STAGE = :prealpha
-
-      GAME_LOCATION = nil
-      GAME_RULES_URL = nil
-      GAME_DESIGNER = nil
-      GAME_PUBLISHER = nil
-      GAME_IMPLEMENTER = nil
-      GAME_INFO_URL = nil
 
       # Game end check is described as a dictionary
       # with reason => after
@@ -108,8 +101,6 @@ module Engine
       #                         end after the next complete OR set
       GAME_END_CHECK = { bankrupt: :immediate, bank: :full_or }.freeze
 
-      OPTIONAL_RULES = [].freeze
-
       BANKRUPTCY_ALLOWED = true
 
       BANK_CASH = 12_000
@@ -125,14 +116,6 @@ module Engine
       AXES = nil
 
       TRAINS = [].freeze
-
-      CERT_LIMIT = {
-        2 => 28,
-        3 => 20,
-        4 => 16,
-        5 => 13,
-        6 => 11,
-      }.freeze
 
       CERT_LIMIT_TYPES = %i[multiple_buy unlimited no_cert_limit].freeze
       # Does the cert limit decrease when a player becomes bankrupt?
@@ -204,6 +187,8 @@ module Engine
       COMPANIES = [].freeze
 
       CORPORATIONS = [].freeze
+
+      MINORS = [].freeze
 
       PHASES = [].freeze
 
@@ -327,21 +312,20 @@ module Engine
       # use to modify tiles based on optional rules
       def optional_tiles; end
 
-      def self.title
-        name.split('::').last.slice(1..-1)
-      end
-
-      def self.<=>(other)
-        [DEV_STAGES.index(self::DEV_STAGE), title.sub(/18\s+/, '18').downcase] <=>
-          [DEV_STAGES.index(other::DEV_STAGE), other.title.sub(/18\s+/, '18').downcase]
-      end
-
       def self.register_colors(colors)
         colors.default_proc = proc do |_, key|
           key
         end
 
         const_set(:COLORS, colors)
+      end
+
+      def self.include_meta(meta_module)
+        include meta_module
+
+        meta_module.constants.each do |const|
+          const_set(const, meta_module.const_get(const))
+        end
       end
 
       def self.load_from_json(*jsons)
@@ -405,7 +389,7 @@ module Engine
 
         const_set(:CURRENCY_FORMAT_STR, data['currencyFormatStr'])
         const_set(:BANK_CASH, data['bankCash'])
-        const_set(:CERT_LIMIT, data['certLimit'])
+        const_set(:CERT_LIMIT, data['certLimit']) if data['certLimit']
         const_set(:STARTING_CASH, data['startingCash'])
         const_set(:CAPITALIZATION, data['capitalization'].to_sym) if data['capitalization']
         const_set(:MUST_SELL_IN_BLOCKS, data['mustSellInBlocks'])
@@ -2115,7 +2099,7 @@ module Engine
         when :first_to_pass
           @players = @round.pass_order if @round.pass_order.any?
         when :most_cash
-          current_order = @players.dup
+          current_order = @players.dup.reverse
           @players.sort_by! { |p| [p.cash, current_order.index(p)] }.reverse!
         when :least_cash
           current_order = @players.dup

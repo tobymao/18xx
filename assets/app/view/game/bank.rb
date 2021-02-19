@@ -105,8 +105,8 @@ module View
 
         return if trs.empty?
 
-        h('div.bank.card', [
-          h('div.title.nowrap', title_props, [h(:em, 'The Bank')]),
+        h('div#bank.card', [
+          h('div.title', title_props, [h(:em, 'The Bank')]),
           h(:div, body_props, [
             h(:table, trs),
             h(GameInfo, game: @game, layout: 'discarded_trains'),

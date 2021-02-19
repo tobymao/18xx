@@ -7,7 +7,7 @@ require 'lib/connection'
 require 'lib/storage'
 require 'view/about'
 require 'view/create_game'
-require 'view/invite_game'
+require 'view/game_card_page'
 require 'view/home'
 require 'view/confirm'
 require 'view/flash'
@@ -96,10 +96,9 @@ class App < Snabberb::Component
       else
         enter_game(id: match[2], mode: match[1] == 'game' ? :muti : :hotseat, pin: @pin)
       end
-    elsif @game_data['status'] == 'new'
-      return h(View::InviteGame, user: @user, game: @game_data)
+    elsif %w[new archived].include?(@game_data['status'])
+      return h(View::GameCardPage, user: @user, game: @game_data)
     elsif !@game_data['loaded'] && !@game_data['loading']
-      enter_game(id: match[2], mode: match[1] == 'game' ? :muti : :hotseat, pin: @pin)
       enter_game(@game_data)
     end
 

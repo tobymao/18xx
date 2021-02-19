@@ -23,6 +23,7 @@ module View
           h(RenameHotseat),
           *render_tools,
           h(GameData, actions: @game.raw_actions.map(&:to_h)),
+          *help_links,
         ])
       end
 
@@ -65,6 +66,17 @@ module View
         children = [master_mode]
         children << end_game unless @game.finished
         children
+      end
+
+      def help_links
+        props = {
+          attrs: {
+            href: 'https://github.com/tobymao/18xx/wiki/Power-User-Features#hotkeys--shortcuts',
+            title: 'Open wiki: hotkeys & shortcuts',
+          },
+        }
+
+        [h(:h2, 'Help'), h(:a, props, 'Hotkeys & Shortcuts')]
       end
     end
   end

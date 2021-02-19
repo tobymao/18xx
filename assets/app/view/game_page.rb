@@ -9,15 +9,12 @@ require_tree './game'
 
 module View
   class GamePage < Snabberb::Component
+    include GameManager
     include Lib::Color
     include Lib::Settings
 
-    needs :game_data, store: true
-    needs :game, default: nil, store: true
-    needs :connection
     needs :selected_company, default: nil, store: true
     needs :tile_selector, default: nil, store: true
-    needs :app_route, store: true
     needs :user
     needs :connected, default: false, store: true
     needs :before_process_pass, default: -> {}, store: true
@@ -70,14 +67,21 @@ module View
          (!cursor && @game.raw_actions.size == @num_actions) ||
          (cursor == @game.raw_actions.size))
 
-      @game = Engine::Game.load(@game_data, at_action: cursor, user: @user&.dig('id'))
-      store(:game, @game, skip: true)
+      load_game_with_class = lambda do
+        @game = Engine::Game.load(@game_data, at_action: cursor, user: @user&.dig('id'))
+        store(:game, @game, skip: true)
+      end
+
+      title = @game_data['title']
+      load_game_class(title, load_game_with_class)
+      load_game_with_class.call if @game_classes_loaded[title]
     end
 
     def render
       @pin = @game_data.dig('settings', 'pin')
 
       load_game
+      return h('div.padded', 'Loading game...') unless @game
 
       page =
         case route_anchor
@@ -172,48 +176,60 @@ module View
       store(:app_route, new_route)
     end
 
+    def button_click(id)
+      Native(`document.getElementById(#{id})`)&.click()
+    end
+
     def hotkey_check(event)
       # 'search for text when you start typing' feature of browser prevents execution
       # only execute when no modifier is pressed to not interfere with OS shortcuts
       event = Native(event)
       return if event.getModifierState('Alt') || event.getModifierState('AltGraph') || event.getModifierState('Meta') ||
-        event.getModifierState('Control') || event.getModifierState('OS') || event.getModifierState('Shift')
+        event.getModifierState('OS') || event.getModifierState('Shift')
 
       active = Native(`document.activeElement`)
       return if active.id != 'game' && active.localName != 'body'
 
       key = event['key']
-      case key
-      when 'g'
-        change_anchor('')
-      when 'e'
-        change_anchor('#entities')
-      when 'm'
-        change_anchor('#map')
-      when 'a', 'k'
-        change_anchor('#market')
-      when 'i'
-        change_anchor('#info')
-      when 't'
-        change_anchor('#tiles')
-      when 's'
-        change_anchor('#spreadsheet')
-      when 'o'
-        change_anchor('#tools')
-      when 'c'
-        `document.getElementById('chatbar').focus()`
-        event.preventDefault
-      when '-', '0', '+'
-        map = `document.getElementById('map')`
-        `document.getElementById('zoom'+#{key}).click()` if map
-      when 'Home', 'End', 'PageUp', 'PageDown', 'ArrowLeft', 'ArrowRight'
-        Native(`document.getElementById('hist_'+#{key})`)&.click()
-        event.preventDefault
+      if event.getModifierState('Control')
+        case key
+        when 'y'
+          button_click('redo')
+        when 'z'
+          button_click('undo')
+        end
+      else
+        case key
+        when 'g'
+          change_anchor('')
+        when 'e'
+          change_anchor('#entities')
+        when 'm'
+          change_anchor('#map')
+        when 'k'
+          change_anchor('#market')
+        when 'i'
+          change_anchor('#info')
+        when 't'
+          change_anchor('#tiles')
+        when 's'
+          change_anchor('#spreadsheet')
+        when 'o'
+          change_anchor('#tools')
+        when 'c'
+          Native(`document.getElementById('chatbar')`)&.focus()
+          event.preventDefault
+        when '-', '0', '+'
+          button_click('zoom' + key)
+        when 'Home', 'End', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'
+          button_click('hist_' + key)
+          event.preventDefault
+        end
       end
     end
 
     def game_path
-      GameManager.url(@game_data)
+      url(@game_data)
     end
 
     private

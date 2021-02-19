@@ -12,6 +12,17 @@
 #   like ./db/data/.keep is checked into the repo, it will error out instead of
 #   initializing properly
 
+umask 0077
 mkdir -p db/data
 
-[ $(ls -l db/ | grep data | awk '{print $3}' | head -1) = 'root' ] && sudo chown -R $USER:$USER db/data || true
+if [[ $1 == 'podman' ]]; then
+  db_uid=1000
+  mapped_db_uid=$(($(grep "^$USER:" /etc/subuid | cut -d: -f2) - 1 + db_uid))
+  if [[ $(stat --format=%u db/data) -ne $mapped_db_uid ]]; then
+    sudo chown -R $mapped_db_uid:$mapped_db_uid db/data
+  fi
+else
+  if [[ $(stat --format=%U db/data) == 'root' ]]; then
+    sudo chown -R "$USER":"$USER" db/data
+  fi
+fi

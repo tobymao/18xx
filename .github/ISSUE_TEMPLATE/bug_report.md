@@ -2,10 +2,12 @@
 name: Bug Report
 about: Report a bug you encountered while playing a game
 title: ''
-labels: bug, needs triage
+labels: needs triage
 assignees: ''
 
 ---
+DO NOT PASTE THE GAME JSON! Please use [gist](https://gist.github.com/) instead.
+
 Please fill out the bug report title with the game name and description
 
 e.g. "[18Chesapeake] Incorrect revenue for route from Baltimore to DC"

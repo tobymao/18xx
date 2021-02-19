@@ -16,6 +16,8 @@ module Engine
 
       load_from_json(Config::Game::G18CZ::JSON)
 
+      DEV_STAGE = :alpha
+
       GAME_LOCATION = 'Czech Republic'
       GAME_RULES_URL = 'https://www.lonny.at/app/download/9940504884/rules_English.pdf'
       GAME_DESIGNER = 'Leonhard Orgler'
@@ -126,6 +128,7 @@ module Engine
           Step::G18CZ::HomeTrack,
           Step::G18CZ::SellCompanyAndSpecialTrack,
           Step::HomeToken,
+          Step::G18CZ::ReduceTokens,
           Step::G18CZ::BuyCompany,
           Step::Track,
           Step::G18CZ::Token,
@@ -326,6 +329,7 @@ module Engine
 
       def upgrades_to?(from, to, special = false)
         return true if from.color == :white && to.color == :red
+        return true if purple_tile?(to) && from.towns.size == 2 && !to.towns.empty? && to.color == :green
 
         super
       end
@@ -431,6 +435,16 @@ module Engine
         else
           true
         end
+      end
+
+      def new_token_price
+        100
+      end
+
+      def route_trains(entity)
+        runnable = super
+
+        runnable.select { |item| train_of_size?(item, entity.type) }
       end
     end
   end

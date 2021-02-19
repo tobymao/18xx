@@ -55,7 +55,7 @@ module Engine
           # This will procced the whole game
           remove_l_trains(remove_l_count) if remove_l_count.positive? && @game.depot.upcoming.first.name == 'L'
           remove_minor_and_first_train(remove_minor) if remove_minor
-          remove_first_train if !remove_minor && @game.bidbox_minors.size.zero?
+          remove_first_train if !remove_minor && @game.bidbox_minors.empty?
 
           super
         end

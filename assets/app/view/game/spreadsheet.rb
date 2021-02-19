@@ -37,7 +37,6 @@ module View
         ].compact)
 
         children << top_line
-        children << @game.token_note if @game.respond_to?(:token_note)
         children << render_table
         children << render_spreadsheet_controls
 
@@ -51,7 +50,7 @@ module View
       def render_table
         h(:table, {
             style: {
-              margin: '1rem 0 1.5rem 0',
+              margin: '1rem 0 0.5rem 0',
               borderCollapse: 'collapse',
               textAlign: 'center',
               whiteSpace: 'nowrap',
@@ -60,7 +59,12 @@ module View
           h(:thead, render_title),
           h(:tbody, render_corporations),
           h(:thead, [
-            h(:tr, { style: { height: '1rem' } }, ''),
+            h(:tr, { style: { height: '1rem' } }, [
+              h(:td, { attrs: { colspan: @game.players.size + 8 } }, ''),
+              h(:td, { attrs: { colspan: 2 } }, @game.respond_to?(:token_note) ? @game.token_note : ''),
+              h(:td, { attrs: { colspan: 1 + @extra_size } }, ''),
+              h(:td, { attrs: { colspan: @halfpaid ? 6 : 3 } }, "[withheld]#{' ¦half-paid¦' if @halfpaid}"),
+            ]),
           ]),
           h(:tbody, [
             render_player_cash,
@@ -84,7 +88,9 @@ module View
       end
 
       def render_history_titles(corporations)
-        or_history(corporations).map { |turn, round| h(:th, @game.or_description_short(turn, round)) }
+        or_history(corporations).map do |turn, round|
+          h(:th, render_sort_link(@game.or_description_short(turn, round), [turn, round]))
+        end
       end
 
       def render_player_history
@@ -128,14 +134,16 @@ module View
 
       def render_or_history_row(hist, corporation, x)
         if hist[x]
-          revenue_text, opacity = case hist[x].dividend.kind
-                                  when 'withhold'
-                                    ["[#{hist[x].revenue.abs}]", '0.5']
-                                  when 'half'
-                                    ["¦#{hist[x].revenue.abs}¦", '0.75']
-                                  else
-                                    [hist[x].revenue.abs.to_s, '1.0']
-                                  end
+          revenue_text, opacity =
+            case (hist[x].dividend.is_a?(Engine::Action::Dividend) ? hist[x].dividend.kind : 'withhold')
+            when 'withhold'
+              ["[#{hist[x].revenue.abs}]", '0.5']
+            when 'half'
+              ["¦#{hist[x].revenue.abs}¦", '0.75']
+            else
+              [hist[x].revenue.abs.to_s, '1.0']
+            end
+
           props = {
             style: {
               opacity: opacity,
@@ -184,6 +192,7 @@ module View
           extra << h(:th, render_sort_link('Buying Power', :buying_power))
           extra << h(:th, render_sort_link('Interest Due', :interest))
         end
+        @extra_size = extra.size
         [
           h(:tr, [
             h(:th, ''),
@@ -199,8 +208,8 @@ module View
             *@game.players.map do |p|
               h('th.name.nowrap.right', p == @game.priority_deal_player ? pd_props : '', render_sort_link(p.name, p.id))
             end,
-            h(:th, @game.ipo_name),
-            h(:th, 'Market'),
+            h(:th, render_sort_link(@game.ipo_name, :ipo_shares)),
+            h(:th, render_sort_link('Market', :market_shares)),
             h(:th, render_sort_link(@game.ipo_name, :par_price)),
             h(:th, render_sort_link('Market', :share_price)),
             h(:th, render_sort_link('Cash', :cash)),
@@ -253,7 +262,11 @@ module View
       end
 
       def render_spreadsheet_controls
-        h(:button, { on: { click: -> { toggle_delta_value } } }, "Show #{@delta_value ? 'Total' : 'Delta'} Value")
+        h(:button, {
+            style: { minWidth: '9.5rem' },
+            on: { click: -> { toggle_delta_value } },
+          },
+          "Show #{@delta_value ? 'Total' : 'Delta'} Values")
       end
 
       def render_corporations
@@ -278,33 +291,41 @@ module View
         end
 
         result.sort_by! do |operating_order, corporation|
-          case @spreadsheet_sort_by
-          when :cash
-            corporation.cash
-          when :id
-            corporation.id
-          when :order
-            operating_order
-          when :par_price
-            corporation.par_price&.price || 0
-          when :share_price
-            corporation.share_price&.price || 0
-          when :loans
-            corporation.loans.size
-          when :short
-            @game.available_shorts(corporation)
-          when :buying_power
-            @game.buying_power(corporation, full: true)
-          when :interest
-            @game.interest_owed(corporation)
-          when :trains
-            corporation.floated? ? corporation.trains.size : -1
-          when :tokens
-            @game.count_available_tokens(corporation)
-          when :companies
-            corporation.companies.size
+          if @spreadsheet_sort_by.is_a?(Array)
+            corporation.operating_history[@spreadsheet_sort_by]&.revenue || -1
           else
-            @game.player_by_id(@spreadsheet_sort_by)&.num_shares_of(corporation)
+            case @spreadsheet_sort_by
+            when :id
+              corporation.id
+            when :ipo_shares
+              num_shares_of(corporation, corporation)
+            when :market_shares
+              num_shares_of(@game.share_pool, corporation)
+            when :share_price
+              [corporation.share_price&.price || 0, -operating_order]
+            when :par_price
+              corporation.par_price&.price || 0
+            when :cash
+              corporation.cash
+            when :order
+              operating_order
+            when :trains
+              corporation.floated? ? corporation.trains.size : -1
+            when :tokens
+              @game.count_available_tokens(corporation)
+            when :loans
+              corporation.loans.size
+            when :shorts
+              @game.available_shorts(corporation) if @game.respond_to?(:available_shorts)
+            when :buying_power
+              @game.buying_power(corporation, full: true)
+            when :interest
+              @game.interest_owed(corporation) if @game.total_loans.positive?
+            when :companies
+              corporation.companies.size
+            else
+              @game.player_by_id(@spreadsheet_sort_by)&.num_shares_of(corporation)
+            end
           end
         end
 
@@ -383,12 +404,12 @@ module View
       end
 
       def render_companies(entity)
-        h(:td, entity.companies.map(&:sym).join(', '))
+        h('td.padded_number', entity.companies.map(&:sym).join(', '))
       end
 
       def render_player_companies
         h(:tr, zebra_props, [
-          h(:th, 'Companies'),
+          h('th.left', 'Companies'),
           *@game.players.map { |p| render_companies(p) },
         ])
       end

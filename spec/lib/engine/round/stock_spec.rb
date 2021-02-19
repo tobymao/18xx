@@ -2,17 +2,10 @@
 
 require './spec/spec_helper'
 
-require 'engine/game/g_1882'
-require 'engine/game/g_1889'
-require 'engine/game/g_18_chesapeake'
-require 'engine/game/g_1828'
-require 'engine/phase'
-require 'engine/round/operating'
-
 module Engine
   describe Round::Stock do
     let(:players) { %w[a b c d e f] }
-    let(:game) { Game::G1889.new(players) }
+    let(:game) { Game::G1889::Game.new(players) }
     let(:market) { game.stock_market }
     let(:corp_0) { game.corporations[0] }
     let(:corp_1) { game.corporations[1] }
@@ -109,7 +102,7 @@ module Engine
       end
 
       context '#1882' do
-        let(:game) { Game::G1882.new(players) }
+        let(:game) { Game::G1882::Game.new(players) }
         let(:corp_0) { game.corporation_by_id('QLL') }
         let(:corp_0) { game.corporation_by_id('CPR') }
 
@@ -144,7 +137,7 @@ module Engine
     end
 
     context '2p 18Chesapeake' do
-      let(:game) { Game::G18Chesapeake.new(%w[a b]) }
+      let(:game) { Game::G18Chesapeake::Game.new(%w[a b]) }
       it '30% presidency, remove share from share pool, allow dumping' do
         bo = game.corporation_by_id('B&O')
         cv = game.abilities(game.cornelius, :shares).shares.first.corporation
@@ -204,7 +197,7 @@ module Engine
     end
 
     context '#1828' do
-      let(:game) { Game::G1828.new(%w[a b c]) }
+      let(:game) { Game::G1828::Game.new(%w[a b c]) }
 
       before :each do
         player_0.cash = 10_000

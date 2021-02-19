@@ -64,7 +64,11 @@ class Api < Roda
   use Rack::Deflater unless PRODUCTION
 
   STANDARD_ROUTES = %w[
-    / about hotseat login map market new_game profile signup tiles tutorial forgot reset fixture
+    / about hotseat login new_game profile signup tutorial forgot reset
+  ].freeze
+
+  ROUTES_WITH_GAME_TITLES = %w[
+     map market tiles fixture
   ].freeze
 
   Dir['./routes/*'].sort.each { |file| require file }
@@ -100,19 +104,26 @@ class Api < Roda
       render_with_games
     end
 
+    r.on ROUTES_WITH_GAME_TITLES do
+      render(titles: request.path.split('/')[2].split('+'))
+    end
+
     r.on 'game', Integer do |id|
       halt(404, 'Game not found') unless (game = Game[id])
 
       pin = game.settings['pin']
-      render(pin: pin, game_data: pin ? game.to_h(include_actions: true) : game.to_h)
+      render(titles: [game.title], pin: pin, game_data: pin ? game.to_h(include_actions: true) : game.to_h)
     end
   end
 
   def render_with_games
-    render(pin: request.params['pin'], games: Game.home_games(user, **request.params).map(&:to_h))
+    render(
+      pin: request.params['pin'],
+      games: Game.home_games(user, **request.params).map(&:to_h),
+    )
   end
 
-  def render(**needs)
+  def render(titles: nil, **needs)
     needs[:user] = user&.to_h(for_user: true)
 
     return render_pin(**needs) if needs[:pin]
@@ -121,7 +132,7 @@ class Api < Roda
       'Index',
       'App',
       'app',
-      javascript_include_tags: ASSETS.js_tags,
+      javascript_include_tags: ASSETS.js_tags(titles || []),
       app_route: request.path,
       **needs,
     )

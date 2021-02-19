@@ -108,7 +108,7 @@ module Engine
           @log << "#{entity.id} acquired #{@selected_minor.id} receiving #{receiving.join(', ')}"
 
           # Remove the proxy company for the minor
-          company = @game.companies.find { |c| c.id == "M#{@selected_minor}" }
+          company = @game.companies.find { |c| c.id == "M#{@selected_minor.id}" }
           @game.companies.delete(company)
 
           # Close the minor, this also removes the minor token if the token choice of 'remove' is selected

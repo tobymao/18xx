@@ -2,11 +2,9 @@
 
 require './spec/spec_helper'
 
-require 'engine'
-
 module Engine
   describe Hex do
-    let(:game) { GAMES_BY_TITLE['1889'].new(%w[a b]) }
+    let(:game) { Engine.game_by_title('1889').new(%w[a b]) }
     subject { game.hex_by_id('H7') }
 
     describe '#neighbor_direction' do
@@ -179,7 +177,7 @@ module Engine
           },
         ].each do |spec|
           context "#{spec[:game]} #{spec[:desc]}" do
-            let(:game) { GAMES_BY_TITLE[spec[:game]].new(%w[a b c]) }
+            let(:game) { Engine.game_by_title(spec[:game]).new(%w[a b c]) }
             let(:hex) { game.hex_by_id(spec[:setup][:hex]) }
             let(:initial_tile) do
               tile_name, rotation = spec[:setup][:tile]
@@ -292,7 +290,7 @@ module Engine
             },
           ],
         }.each do |game_title, specs|
-          game_class = GAMES_BY_TITLE[game_title]
+          game_class = Engine.game_by_title(game_title)
           players = Engine.player_range(game_class).max.times.map { |n| "Player #{n + 1}" }
           game = game_class.new(players)
           specs.each do |spec|

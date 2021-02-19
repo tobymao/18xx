@@ -47,6 +47,25 @@ def repair(game, original_actions, actions, broken_action)
     # Move token is now place token.
     broken_action['type'] = 'place_token'
     return [broken_action]
+  elsif broken_action['type'] == 'buy_tokens'
+    # 1817 no longer needs buy tokens
+    actions.delete(broken_action)
+    return
+  elsif game.active_step.is_a?(Engine::Step::HomeToken) &&
+    game.is_a?(Engine::Game::G1817WO)
+    # Find the next place token by this corp
+    entity = game.active_step.current_entity
+    home_token = next_actions.find {|a| a['type']=='place_token' && a['entity']==entity.id}
+    raise "can't find home tokenage" unless home_token
+    home_token_h = home_token.to_h
+    actions.delete(home_token)
+    actions.insert(action_idx, home_token_h)
+    return
+  elsif broken_action['type'] == 'pass' &&
+    game.active_step.is_a?(Engine::Step::G1817::BuySellParShares) &&
+    broken_action['entity'] == prev_action['entity']
+    actions.delete(broken_action)
+    return
   elsif broken_action['type'] == 'place_token' && game.is_a?(Engine::Game::G1867)
     # Stub changed token numbering
     hex_id = broken_action['city'].split('-')[0]
@@ -89,11 +108,11 @@ def repair(game, original_actions, actions, broken_action)
     # 2P train should have been removed from the game, not put into the discard
     actions.delete(broken_action)
     return
-elsif game.is_a?(Engine::Game::G18CO) &&
+  elsif game.is_a?(Engine::Game::G18CO) &&
     (game.active_step.is_a?(Engine::Step::Token) || game.active_step.is_a?(Engine::Step::Route))
     # Need to add a pass when the player has the GJGR private
     add_pass.call
-return
+    return
   elsif broken_action['type'] == 'pass'
     if game.active_step.is_a?(Engine::Step::G1817::PostConversionLoans)
       actions.delete(broken_action)
@@ -244,6 +263,7 @@ def attempt_repair(actions, debug)
   repairs = []
   rewritten = false
   ever_repaired = false
+  iteration = 0
   loop do
     game = yield
     game.instance_variable_set(:@loading, true)
@@ -258,7 +278,10 @@ def attempt_repair(actions, debug)
         game.process_action(action).maybe_raise!
       rescue Exception => e
         puts e.backtrace if debug
-        puts "Break at #{e} #{action}"
+        iteration += 1
+        puts "Break at #{e} #{action} #{iteration}"
+        raise Exception, "Stuck in infinite loop?" if iteration > 100
+        
         ever_repaired = true
         inplace_actions = repair(game, actions, filtered_actions, action)
         repaired = true
@@ -278,6 +301,7 @@ def attempt_repair(actions, debug)
     end
 
     break unless repaired
+    
   end
   repairs = nil if rewritten
   return [actions, repairs] if ever_repaired
@@ -355,7 +379,7 @@ def migrate_db_actions(data, pin, dry_run=false, debug=false)
     end
     return actions || original_actions
   rescue Exception => e
-    $broken[data.id]=true
+    $broken[data.id]=e
     puts e.backtrace if debug
     puts 'Something went wrong', e
     if !dry_run

@@ -45,14 +45,16 @@ module Engine
         end
 
         def description
-          "Upgrade or discard bought trains #{buying_entity.name}"
+          "Upgrade or scrap bought trains #{buying_entity.name}"
         end
 
         def process_discard_train(action)
           train = action.train
-          @game.depot.reclaim_train(train)
+          @game.remove_train(train)
           trains.delete(train)
-          @log << "#{action.entity.name} discards #{train.name}"
+          @log << "#{action.entity.name} scraps #{train.name}"
+
+          @round.bought_trains.shift if trains.empty?
         end
 
         def process_swap_train(action)
@@ -70,11 +72,13 @@ module Engine
           trains.delete(train)
           @log << "#{action.entity.name} upgrades #{old_train_name}
           to #{train.name} for #{@game.format_currency(price)}"
+
+          @round.bought_trains.shift if trains.empty?
         end
 
-        def process_pass(action)
-          trains.clear
+        def pass!
           super
+          @round.bought_trains.shift
         end
 
         def upgrade_infos(train, corporation)

@@ -2,16 +2,9 @@
 
 require './spec/spec_helper'
 
-require 'engine'
-require 'engine/game/g_1846'
-require 'engine/game/g_1889'
-require 'engine/share_pool'
-require 'engine/share_price'
-require 'engine/player'
-
 module Engine
   describe SharePool do
-    let(:game) { Game::G1889.new(%w[a b c]) }
+    let(:game) { Game::G1889::Game.new(%w[a b c]) }
     let(:player_1) { game.player_by_id('a') }
     let(:player_2) { game.player_by_id('b') }
     let(:player_3) { game.player_by_id('c') }
@@ -190,7 +183,7 @@ module Engine
 
     describe '1846' do
       context 'receivership' do
-        let(:game) { Game::G1846.new(%w[a b c]) }
+        let(:game) { Game::G1846::Game.new(%w[a b c]) }
         let(:round) { game.round }
         let(:step) { game.round.active_step }
 

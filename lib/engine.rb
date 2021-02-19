@@ -8,19 +8,37 @@ else
 end
 
 module Engine
-  GAMES = Game.constants.map do |c|
-    klass = Game.const_get(c)
-    next if !klass.is_a?(Class) || klass == Game::Base
+  @games = {}
 
-    klass
-  end.compact
+  GAME_META_BY_TITLE = Game.constants.sort.map do |c|
+    const = Game.const_get(c)
+    game =
+      if const.constants.include?(:Meta)
+        const::Meta
+      elsif const.is_a?(Class) && const != Game::Base && const.ancestors.include?(Game::Base)
+        const
+      end
+    [game.title, game] if game
+  end.compact.to_h
 
-  # Games that are alpha or above
-  VISIBLE_GAMES = GAMES.select { |game| %i[alpha beta production].include?(game::DEV_STAGE) }
+  GAME_METAS = GAME_META_BY_TITLE.values
 
-  GAMES_BY_TITLE = GAMES.map { |game| [game.title, game] }.to_h
+  VISIBLE_GAMES = GAME_METAS.select { |game| %i[alpha beta production].include?(game::DEV_STAGE) }
+
+  def self.game_by_title(title)
+    @games[title] ||= Engine::Game.constants.map do |c|
+      const = Game.const_get(c)
+      game =
+        if const.constants.include?(:Game)
+          const::Game
+        elsif const.is_a?(Class) && const != Game::Base && const.ancestors.include?(Game::Base)
+          const
+        end
+      game if game&.title == title
+    end.compact.first
+  end
 
   def self.player_range(game)
-    game::CERT_LIMIT.keys.minmax
+    game::PLAYER_RANGE || game::CERT_LIMIT.keys.minmax
   end
 end
