@@ -111,7 +111,7 @@ th, td {
   background-color: #CCCCCC;
   color: black;
 }
-#spreadsheet tbody > tr:nth-child(2n) > *:not([style*="background"]) { /* zebra-style unless bg-color */
+#spreadsheet tbody > tr:nth-child(2n) {
   background-image: linear-gradient(rgba(255,255,255,0.4),rgba(255,255,255,0.4));
 }
 #spreadsheet tbody > tr:hover {
