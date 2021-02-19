@@ -16,6 +16,8 @@ module Engine
 
           return [] if trains.empty?
 
+          trains = trains.reject { |item| @game.variant_is_rusted?(item) }
+
           default_trains = trains.select { |item| @game.train_of_size?(item, :small) }
           return default_trains if entity.type == :small
 
@@ -65,6 +67,8 @@ module Engine
 
           false
         end
+
+        def check_for_cheapest_train(entity, train); end
       end
     end
   end
