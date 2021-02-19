@@ -7,7 +7,7 @@ module Engine
     module G18CZ
       class Dividend < Dividend
         def payout_per_share(entity, revenue)
-          (revenue / entity.total_shares).to_i
+          (revenue / entity.total_shares.to_f)
         end
 
         def share_price_change(entity, revenue = 0)
