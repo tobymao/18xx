@@ -15,8 +15,6 @@ gem 'sequel'
 gem 'sequel_pg'
 gem 'sequel-pg_advisory_lock'
 gem 'snabberb'
-gem 'tilt'
-gem 'uglifier'
 gem 'unicorn'
 gem 'unicorn-worker-killer'
 
