@@ -465,10 +465,14 @@ module Engine
       def connects_main_line?(hex)
         return unless (orientation = MAIN_LINE_ORIENTATION[hex.name])
 
-        edge1 = "#{hex.name}_#{orientation[0]}_0"
-        edge2 = "#{hex.name}_#{orientation[1]}_0"
-        edges = hex.tile.paths.flat_map(&:edges).map(&:id)
-        edges.include?(edge1) && edges.include?(edge2)
+        paths = hex.tile.paths
+        exits = [orientation[0], orientation[1]]
+        paths.any? { |path| (path.exits & exits).size == 2 } ||
+          (path_to_city(paths, orientation[0]) && path_to_city(paths, orientation[1]))
+      end
+
+      def path_to_city(paths, edge)
+        paths.find { |p| p.exits == [edge] }
       end
 
       def main_line_completed?(main_line_icon_name)
