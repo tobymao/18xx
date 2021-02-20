@@ -5,7 +5,7 @@ require_relative '../buy_sell_par_shares'
 module Engine
   module Step
     module G1824
-      class BuySellParSharesFirstSR < BuySellParShares
+      class BuySellParSharesFirstSr < BuySellParShares
         def actions(_entity)
           result = super
           result << 'buy_company' unless result.empty?

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../dividend'
+require_relative '../minor_half_pay'
 
 module Engine
   module Step
