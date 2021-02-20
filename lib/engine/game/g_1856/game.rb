@@ -337,7 +337,7 @@ module Engine
                     name: 'D',
                     distance: 999,
                     price: 1100,
-                    num: 6,
+                    num: 22,
                     available_on: '6',
                     discount: { '4' => 350, "4'" => 350, '5' => 350, "5'" => 350, '6' => 350 },
                   }].freeze
@@ -575,9 +575,7 @@ module Engine
               },
               {
                 type: 'train_borrow',
-                train_types: %w[5 5' 6 8 D],
-                from_depot: true,
-                from_market: true,
+                train_types: %w[8 D],
                 description: 'May borrow a train when trainless*',
               },
             ],
@@ -689,6 +687,7 @@ module Engine
         LAYOUT = :flat
 
         attr_reader :post_nationalization, :bankrupted
+        attr_accessor :borrowed_trains, :national_ever_owned_permanent
 
         # These plain city hexes upgrade to L tiles in brown
         LAKE_HEXES = %w[B19 C14 F17 O18 P9 N3 L13].freeze
@@ -929,6 +928,9 @@ module Engine
           # 1 of each right is reserved w/ the private when it gets bought in. This leaves 2 extra to sell.
           @available_bridge_tokens = 2
           @available_tunnel_tokens = 2
+
+          # Corp -> Borrowed Train
+          @borrowed_trains = {}
 
           create_destinations(ALTERNATE_DESTINATIONS)
         end
@@ -1216,11 +1218,12 @@ module Engine
             G1856::Step::Track,
             G1856::Step::Escrow,
             Engine::Step::Token,
+            Engine::Step::BorrowTrain,
             Engine::Step::Route,
             # Interest - See Loan
             G1856::Step::Dividend,
             Engine::Step::DiscardTrain,
-            Engine::Step::BuyTrain,
+            G1856::Step::BuyTrain,
             # Repay Loans - See Loan
             [Engine::Step::BuyCompany, blocks: true],
           ], round_num: round_num)
@@ -1657,6 +1660,14 @@ module Engine
           @log << "#{major.owner.name} pays off the #{format_currency(owed)} debt for #{major.name}"
           nationalizables.delete(major)
           post_corp_nationalization
+        end
+
+        def borrow_train(action)
+          entity = action.entity
+          train = action.train
+          buy_train(entity, train, :free)
+          @borrowed_trains[entity] = train
+          @log << "#{entity.name} borrows a #{train.name}"
         end
 
         def train_limit(entity)

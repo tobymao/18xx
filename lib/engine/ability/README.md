@@ -229,8 +229,6 @@ May borrow a train from the Depot for running trains
 
 - `train_types`: Array of train types that are eligible for borrowing
 - `when`: `:any` Can borrow anytime, `:trainless` Can borrow when trainless
-- `from_depot`: Can borrow from depot
-- `from_market`: Can borrow from market
 
 ## train_discount
 

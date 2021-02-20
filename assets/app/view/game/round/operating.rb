@@ -3,6 +3,7 @@
 require 'view/game/buy_companies'
 require 'view/game/special_buy'
 require 'view/game/buy_trains'
+require 'view/game/borrow_train'
 require 'view/game/convert'
 require 'view/game/company'
 require 'view/game/corporation'
@@ -37,6 +38,8 @@ module View
           if @current_actions.include?('buy_train')
             left << h(IssueShares) if @current_actions.include?('sell_shares')
             left << h(BuyTrains)
+          elsif @current_actions.include?('borrow_train')
+            left << h(BorrowTrain)
           elsif @current_actions.include?('sell_shares') && entity.player?
             left << h(CashCrisis)
           elsif @current_actions.include?('buy_shares') || @current_actions.include?('sell_shares')
