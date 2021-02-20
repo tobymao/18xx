@@ -271,7 +271,7 @@ module Engine
           Step::G18SJ::BuyTrainBeforeRunRoute,
           Step::G18SJ::Route,
           Step::G18SJ::Dividend,
-          Step::SpecialBuyTrain,
+          Step::G18SJ::SpecialBuyTrain,
           Step::G18SJ::BuyTrain,
           [Step::BuyCompany, blocks: true],
         ], round_num: round_num)
