@@ -26,21 +26,15 @@ module View
         h('div#spreadsheet', {
             style: {
               overflow: 'auto',
+              marginTop: '1rem',
             },
           },
-          [render_table, render_spreadsheet_controls, render_extra_cards])
+          [render_corporation_table, render_player_table, render_extra_cards])
       end
 
-      def render_table
-        h(:table, {
-            style: {
-              margin: '1rem 0 0.5rem 0',
-              borderCollapse: 'collapse',
-              textAlign: 'center',
-              whiteSpace: 'nowrap',
-            },
-          }, [
-          h(:thead, render_theads),
+      def render_corporation_table
+        h('table#corporation_table', table_props, [
+          h(:thead, render_titles),
           h(:tbody, render_corporations),
           h(:thead, [
             h(:tr, { style: { height: '1rem' } }, [
@@ -50,39 +44,35 @@ module View
               h(:td, { attrs: { colspan: @halfpaid ? 6 : 3 } }, "[withheld]#{' ¦half-paid¦' if @halfpaid}"),
             ]),
           ]),
-          h('tbody#player_details', [
-            render_player_cash,
-            render_player_value,
-            render_player_liquidity,
-            render_player_shares,
-            render_player_companies,
-            render_player_certs,
+        ])
+      end
+
+      def render_player_table
+        h('div#player_table', { style: { float: 'left', marginRight: '1rem' } }, [
+          h(:table, table_props, [
+            h(:thead),
+            h('tbody#player_details', [
+              render_player_cash,
+              render_player_value,
+              render_player_liquidity,
+              render_player_shares,
+              render_player_companies,
+              render_player_certs,
+            ]),
+            h(:thead, [
+              h(:th, { style: { minWidth: '5rem' } }, ''),
+              *@game.players.map do |p|
+                h('th.name.nowrap.right', p == @game.priority_deal_player ? pd_props : '', p.name)
+              end,
+            ]),
+            h('tbody#player_or_history', [*render_player_or_history]),
           ]),
-          h(:thead, [
-            h(:tr, { style: { height: '1rem' } }, ''),
-          ]),
-          h('tbody#player_history', [*render_player_history]),
+          render_spreadsheet_controls,
         ])
       end
 
       def render_extra_cards
-        props = {
-          hook: {
-            insert: lambda { |vnode|
-              last_td = Native(`document.querySelector('#player_details > tr > td:last-child').getBoundingClientRect()`)
-              p_details = Native(`document.getElementById('player_details').getBoundingClientRect()`)
-              controls = Native(`document.getElementById('spreadsheet_controls').getBoundingClientRect()`)
-              Native(vnode)['elm'].style.left = "calc(#{last_td.right.to_i}px + 1rem)"
-              Native(vnode)['elm'].style.top = "-#{controls.bottom.to_i - p_details.top.to_i}px"
-            },
-          },
-          style: {
-            position: 'relative',
-            maxWidth: 'max-content',
-          },
-        }
-
-        h('div#extra_cards', props, [
+        h('div#extra_cards', [
           h(Bank, game: @game),
           h(GameInfo, game: @game, layout: 'upcoming_trains'),
         ].compact)
@@ -98,7 +88,7 @@ module View
         end
       end
 
-      def render_player_history
+      def render_player_or_history
         # OR history should exist in all
         last_values = nil
         @game.players.first.history.map do |h|
@@ -168,7 +158,7 @@ module View
         end
       end
 
-      def render_theads
+      def render_titles
         th_props = lambda do |cols, border_right = true|
           props = tr_default_props
           props[:attrs] = { colspan: cols }
@@ -181,13 +171,6 @@ module View
 
         or_history_titles = render_history_titles(@game.all_corporations)
 
-        pd_props = {
-          style: {
-            backgroundColor: 'salmon',
-            color: 'black',
-          },
-        }
-
         extra = []
         extra << h(:th, render_sort_link('Loans', :loans)) if @game.total_loans&.nonzero?
         extra << h(:th, render_sort_link('Shorts', :shorts)) if @game.respond_to?(:available_shorts)
@@ -198,7 +181,7 @@ module View
         @extra_size = extra.size
         [
           h(:tr, [
-            h(:th, ''),
+            h(:th, { style: { minWidth: '5rem' } }, ''),
             h(:th, th_props[@game.players.size], 'Players'),
             h(:th, th_props[2], 'Bank'),
             h(:th, th_props[2], 'Prices'),
@@ -290,7 +273,7 @@ module View
       end
 
       def render_spreadsheet_controls
-        h('div#spreadsheet_controls', { style: { maxWidth: 'max-content' } }, [
+        h('div#spreadsheet_controls', [
           h(:button, {
               style: { minWidth: '9.5rem' },
               on: { click: -> { toggle_delta_value } },
@@ -496,7 +479,25 @@ module View
             backgroundColor: color_for(:bg2),
             color: color_for(:font2),
           },
-          class: {},
+        }
+      end
+
+      def table_props
+        {
+          style: {
+            borderCollapse: 'collapse',
+            textAlign: 'center',
+            whiteSpace: 'nowrap',
+          },
+        }
+      end
+
+      def pd_props
+        {
+          style: {
+            backgroundColor: 'salmon',
+            color: 'black',
+          },
         }
       end
 
