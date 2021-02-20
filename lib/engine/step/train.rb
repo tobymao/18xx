@@ -53,16 +53,10 @@ module Engine
 
         remaining = price - buying_power(entity)
         if remaining.positive? && president_may_contribute?(entity, action.shell)
-          cheapest = @depot.min_depot_train
-          cheapest_name = name_of_cheapest_variant(cheapest)
-          raise GameError, "Cannot purchase #{train.name} train: #{cheapest_name} train available" if
-            train.name != cheapest_name &&
-            @game.class::EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST &&
-            (!@game.class::EBUY_OTHER_VALUE || train.from_depot?)
+          check_for_cheapest_train(entity, train)
 
           raise GameError, 'Cannot contribute funds when exchanging' if exchange
           raise GameError, 'Cannot buy for more than cost' if price > train.price
-          raise GameError, 'Cannot contribute funds when affordable trains exist' if cheapest.price <= entity.cash
 
           try_take_player_loan(entity.owner, remaining)
 
@@ -196,6 +190,17 @@ module Engine
       def face_value_ability?(entity)
         @game.abilities(entity, :train_buy) { |ability| return ability.face_value }
         false
+      end
+
+      def check_for_cheapest_train(entity, train)
+        cheapest = @depot.min_depot_train
+        cheapest_name = name_of_cheapest_variant(cheapest)
+        raise GameError, "Cannot purchase #{train.name} train: #{cheapest_name} train available" if
+          train.name != cheapest_name &&
+          @game.class::EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST &&
+          (!@game.class::EBUY_OTHER_VALUE || train.from_depot?)
+
+        raise GameError, 'Cannot contribute funds when affordable trains exist' if cheapest.price <= entity.cash
       end
 
       def name_of_cheapest_variant(train)

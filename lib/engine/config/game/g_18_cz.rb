@@ -2200,19 +2200,19 @@ module Engine
                     "name": "2a",
                     "distance": 2,
                     "price": 70,
-                    "rusts_on": "4e",
+                    "rusts_on": ["4e", "4f", "5g", "5h", "5i", "5j"],
                     "num": 5
                 },
                 {
                     "name": "2b",
                     "distance": 2,
                     "price": 70,
-                    "rusts_on": "4e",
+                    "rusts_on": ["4e", "4f", "5g", "5h", "5i", "5j"],
                     "num": 4,
                     "variants": [
                         {
                             "name": "2+2b",
-                            "rusts_on": "4+4e",
+                            "rusts_on": ["4+4f", "4+4g", "5+5h", "5+5i", "5+5j"],
                             "distance": [
                                 {
                                     "nodes": [
@@ -2243,12 +2243,12 @@ module Engine
                     "name": "3c",
                     "distance": 3,
                     "price": 120,
-                    "rusts_on": "5g",
+                    "rusts_on": ["5g", "5h", "5i", "5j"],
                     "num": 4,
                     "variants": [
                         {
                             "name": "2+2c",
-                            "rusts_on": "4+4f",
+                            "rusts_on": ["4+4f", "4+4g", "5+5h", "5+5i", "5+5j"],
                             "distance": [
                                 {
                                     "nodes": [
@@ -2274,12 +2274,12 @@ module Engine
                     "name": "3d",
                     "distance": 3,
                     "price": 120,
-                    "rusts_on": "5g",
+                    "rusts_on": ["5g", "5h", "5i", "5j"],
                     "num": 4,
                     "variants": [
                         {
                             "name": "3+3d",
-                            "rusts_on": "5+5h",
+                            "rusts_on": ["5+5h", "5+5i", "5+5j"],
                             "distance": [
                                 {
                                     "nodes": [
@@ -2301,7 +2301,7 @@ module Engine
                         },
                         {
                             "name": "3Ed",
-                            "rusts_on": "6E",
+                            "rusts_on": ["6E", "8E"],
                             "distance": [
                                 {
                                     "nodes": [
@@ -2336,7 +2336,7 @@ module Engine
                     "variants": [
                         {
                             "name": "3+3e",
-                            "rusts_on": "5+5h",
+                            "rusts_on": ["5+5h", "5+5i", "5+5j"],
                             "distance": [
                                 {
                                     "nodes": [
@@ -2358,7 +2358,7 @@ module Engine
                         },
                         {
                             "name": "3Ee",
-                            "rusts_on": "6E",
+                            "rusts_on": ["6E", "8E"],
                             "distance": [
                                 {
                                     "nodes": [
@@ -2409,7 +2409,7 @@ module Engine
                         },
                         {
                             "name": "4Ef",
-                            "rusts_on": "8E",
+                            "rusts_on": ["8E"],
                             "distance": [
                                 {
                                     "nodes": [
@@ -2460,7 +2460,7 @@ module Engine
                         },
                         {
                             "name": "4Eg",
-                            "rusts_on": "8E",
+                            "rusts_on": ["8E"],
                             "distance": [
                                 {
                                     "nodes": [

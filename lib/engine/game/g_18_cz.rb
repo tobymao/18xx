@@ -95,6 +95,7 @@ module Engine
       }.freeze
 
       include StubsAreRestricted
+      attr_accessor :rusted_variants
 
       def setup
         @or = 0
@@ -102,6 +103,7 @@ module Engine
         @last_or = COMPANY_VALUES.size
         @recently_floated = []
         @entity_used_ability_to_track = false
+        @rusted_variants = []
 
         # Only small companies are available until later phases
         @corporations, @future_corporations = @corporations.partition { |corporation| corporation.type == :small }
@@ -278,6 +280,15 @@ module Engine
         TRAINS_FOR_CORPORATIONS[name] == size
       end
 
+      def variant_is_rusted?(item)
+        name = if item.is_a?(Hash)
+                 item[:name]
+               else
+                 item.name
+               end
+        @rusted_variants.include?(name)
+      end
+
       def home_token_locations(corporation)
         coordinates = COORDINATES_FOR_LARGE_CORPORATION[corporation.id]
         hexes.select { |hex| coordinates.include?(hex.coordinates) }
@@ -344,10 +355,11 @@ module Engine
 
         trains.each do |t|
           next if t.rusted
+          next if t.rusts_on.nil? || t.rusts_on.none?
 
           # entity is nil when a train is exported. Then all trains are rusting
-          train_symbol_to_compare = entity.nil? ? train.sym : train.name
-          should_rust = t.rusts_on == train_symbol_to_compare
+          train_symbol_to_compare = entity.nil? ? train.variants.values.map { |item| item[:name] } : [train.name]
+          should_rust = !(t.rusts_on & train_symbol_to_compare).empty?
           next unless should_rust
           next unless rust?(t)
 
@@ -356,9 +368,19 @@ module Engine
           entity.rusted_self = true if entity && entity == t.owner
           rust(t)
         end
+        return if rusted_trains.none?
 
+        all_varians = trains.flat_map do |item|
+          item.variants.values
+        end
+        all_rusted_variants = all_varians.select do |item|
+          item[:rusts_on]&.include?(train.name)
+        end
+        all_rusted_names = all_rusted_variants.map { |item| item[:name] }.uniq
+
+        @rusted_variants.concat(all_rusted_names)
         @log << "-- Event: #{rusted_trains.uniq.join(', ')} trains rust " \
-          "( #{owners.map { |c, t| "#{c} x#{t}" }.join(', ')}) --" if rusted_trains.any?
+          "( #{owners.map { |c, t| "#{c} x#{t}" }.join(', ')}) --"
       end
 
       def revenue_for(route, stops)
