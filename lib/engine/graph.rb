@@ -99,10 +99,21 @@ module Engine
 
       @game.hexes.each do |hex|
         hex.tile.cities.each do |city|
-          next unless city.tokened_by?(corporation) || @home_as_token && corporation.coordinates == hex.id
+          next unless city.tokened_by?(corporation)
 
           hex.neighbors.each { |e, _| hexes[hex][e] = true }
           nodes[city] = true
+        end
+      end
+
+      if @home_as_token
+        @game.hexes.each do |hex|
+          next unless Array(corporation.coordinates).include?(hex.id)
+
+          hex.tile.city_towns.each do |ct|
+            hex.neighbors.each { |e, _| hexes[hex][e] = true }
+            nodes[ct] = true
+          end
         end
       end
 
