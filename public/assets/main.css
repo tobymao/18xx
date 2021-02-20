@@ -111,6 +111,12 @@ th, td {
   background-color: #CCCCCC;
   color: black;
 }
+#spreadsheet tbody > tr:nth-child(2n) {
+  background-image: linear-gradient(rgba(255,255,255,0.4),rgba(255,255,255,0.4));
+}
+#spreadsheet tbody > tr:hover {
+  filter: drop-shadow(1px 0px 2px #555);
+}
 
 @media (prefers-color-scheme: dark) {
   body {
@@ -333,7 +339,8 @@ text.number {
 }
 
 .name {
-  max-width: 7rem;
+  min-width: 3rem;
+  max-width: 5rem;
 }
 
 .corp div, .player div {
