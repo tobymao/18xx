@@ -709,8 +709,10 @@ module Engine
         end
 
         def init_stock_market
-          G1849::StockMarket.new(self.class::MARKET, self.class::CERT_LIMIT_TYPES,
-                                 multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
+          sm = G1849::StockMarket.new(self.class::MARKET, self.class::CERT_LIMIT_TYPES,
+                                      multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
+          sm.game = self
+          sm
         end
 
         def init_corporations(stock_market)
