@@ -212,6 +212,10 @@ module Engine
       raise GameError, 'Route cannot pass through terminal' if ordered_paths[1..-2].any?(&:terminal?)
     end
 
+    def cost_str
+      @game.route_cost_str(self)
+    end
+
     def distance
       @game.route_distance(self)
     end

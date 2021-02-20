@@ -858,9 +858,18 @@ module Engine
           end
         end
 
+        def route_cost(route)
+          route.connections.sum { |conn| hex_edge_cost(conn, route.train) }
+        end
+
+        def route_cost_str(route)
+          cost = route_cost(route)
+          "#{cost}H"
+        end
+
         def check_distance(route, _visits)
           limit = route.train.distance
-          cost = route.connections.sum { |conn| hex_edge_cost(conn, route.train) }
+          cost = route_cost(route)
           raise GameError, "#{cost} is too many hex edges for #{route.train.name} train" if cost > limit
         end
 

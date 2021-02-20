@@ -136,7 +136,7 @@ module View
 
             td_props = { style: { paddingRight: '0.8rem' } }
 
-            children << h('td.right', td_props, route.distance)
+            children << h('td.right', td_props, route.cost_str)
             if route.halts
               render_halts = true
               children << h('td.right', td_props, halt_actions(route, revenue,
@@ -195,7 +195,7 @@ module View
             h(:thead, [
               h(:tr, [
                 h(:th, 'Train'),
-                h(:th, 'Stops'),
+                h(:th, 'Used'),
                 h(:th, 'Revenue'),
                 h(:th, th_route_props, 'Route'),
               ]),
