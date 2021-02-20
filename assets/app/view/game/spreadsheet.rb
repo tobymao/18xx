@@ -86,8 +86,6 @@ module View
           ]),
           h('tbody#player_history', [*render_player_history]),
         ])
-        # TODO: consider adding OR information (could do both corporation OR revenue and player change in value)
-        # TODO: consider adding train availability
       end
 
       def or_history(corporations)
