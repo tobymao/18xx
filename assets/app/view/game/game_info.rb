@@ -132,15 +132,21 @@ module View
       def rust_obsolete_schedule
         rust_schedule = {}
         obsolete_schedule = {}
-        @depot.trains.group_by(&:name).each do |name, trains|
+        @depot.trains.group_by(&:name).each do |_name, trains|
           first = trains.first
-          trains.first.variants.each do | name, trainVariant |
-            
-            rust_schedule[trainVariant["rusts_on"]] = Array(rust_schedule[trainVariant["rusts_on"]]).append(name) if !Array(rust_schedule[trainVariant["rusts_on"]]).include?(name)
-            obsolete_schedule[trainVariant["obsolete_on"]] = Array(obsolete_schedule[trainVariant["obsolete_on"]]).append(name) if !Array(obsolete_schedule[trainVariant["obsolete_on"]]).include?(name)
+          first.variants.each do |name, train_variant|
+            unless Array(rust_schedule[train_variant[:rusts_on]]).include?(name)
+              rust_schedule[train_variant[:rusts_on]] =
+                Array(rust_schedule[train_variant[:rusts_on]]).append(name)
+            end
+            unless Array(obsolete_schedule[train_variant[:obsolete_on]]).include?(name)
+              obsolete_schedule[train_variant[:obsolete_on]] =
+                Array(obsolete_schedule[train_variant[:obsolete_on]]).append(name)
+            end
           end
-        
         end
+        puts rust_schedule
+
         [rust_schedule, obsolete_schedule]
       end
 
@@ -233,15 +239,22 @@ module View
             h('td.right', names_to_prices.values.map { |p| @game.format_currency(p) }.join(', ')),
             h(:td, trains.size),
           ]
-          
+
           rusts = nil
-          names_to_prices.keys.each do | key |
-            if rust_schedule[key]
-              if(!rusts)
-                rusts = []
-              end
-              rusts << rust_schedule[key]&.join(', ') 
+          names_to_prices.keys.each do |key|
+            next unless rust_schedule[key] || rust_schedule.keys.any? { |item| item&.include?(key) }
+
+            rusts ||= []
+
+            rust = rust_schedule[key]
+            unless rust.nil?
+              rusts << rust_schedule[key]&.join(', ')
+              next
             end
+
+            # needed for 18CZ where a train can be rusted by multiple different trains
+            trains_to_rust = rust_schedule.select { |k, _v| k&.include?(key) }.values.flatten.join(', ')
+            rusts << "#{key} => #{trains_to_rust}"
           end
 
           upcoming_train_content << h(:td, obsolete_schedule[name]&.join(', ') || 'None') if show_obsolete_schedule
