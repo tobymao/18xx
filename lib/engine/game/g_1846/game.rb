@@ -762,11 +762,7 @@ module Engine
           return unless @players.size.between?(*Engine.player_range(self.class))
 
           remove_from_group!(self.class::ORANGE_GROUP, @companies) do |company|
-            if company == lake_shore_line
-              self.class::LSL_HEXES.each do |hex|
-                hex_by_id(hex).tile.icons.reject! { |icon| icon.name == self.class::LSL_ICON }
-              end
-            end
+            remove_lsl_icons if company == lake_shore_line
             company.close!
             @round.active_step.companies.delete(company)
           end
@@ -1032,7 +1028,7 @@ module Engine
             G1846::Step::Bankrupt,
             G1846::Step::Assign,
             Engine::Step::SpecialToken,
-            Engine::Step::SpecialTrack,
+            G1846::Step::SpecialTrack,
             G1846::Step::BuyCompany,
             G1846::Step::IssueShares,
             G1846::Step::TrackAndToken,
@@ -1053,9 +1049,7 @@ module Engine
 
           @minors.dup.each { |minor| close_corporation(minor) }
 
-          self.class::LSL_HEXES.each do |hex|
-            hex_by_id(hex).tile.icons.reject! { |icon| icon.name == self.class::LSL_ICON }
-          end
+          remove_lsl_icons
         end
 
         def event_remove_tokens!
@@ -1085,6 +1079,12 @@ module Engine
             hex = removal[:hex]
             corp = removal[:corporation]
             @log << "-- Event: #{corp}'s #{company_by_id(company).name} token removed from #{hex} --"
+          end
+        end
+
+        def remove_lsl_icons
+          self.class::LSL_HEXES.each do |hex|
+            hex_by_id(hex).tile.icons.reject! { |icon| icon.name == self.class::LSL_ICON }
           end
         end
 
