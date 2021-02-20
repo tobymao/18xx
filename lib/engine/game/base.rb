@@ -963,6 +963,10 @@ module Engine
         "#{entity.percent_to_float}% to float" if entity.corporation?
       end
 
+      def route_distance_str(route)
+        route_distance(route).to_s
+      end
+
       def route_distance(route)
         route.visited_stops.sum(&:visit_cost)
       end
