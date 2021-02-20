@@ -16,7 +16,7 @@ module Engine
         GAME_PUBLISHER = %i[traxx sea_horse].freeze
         GAME_RULES_URL = {
           '18 Los Angeles Rules' =>
-                          'https://drive.google.com/file/d/1I1G0ly8EpQyJ9hPCqItb2pZPERunKhwh/view',
+                          'https://drive.google.com/file/d/16di_KBlGYnmdAMvjl2ZiqvyeB7wTAJ_4/view?usp=sharing',
           '1846 Rules' =>
                 'https://s3-us-west-2.amazonaws.com/gmtwebsiteassets/1846/1846-RULES-GMT.pdf',
         }.freeze
