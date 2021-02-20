@@ -419,6 +419,7 @@ module Engine
                           type: 'tile_lay',
                           description: "Place a free track tile at B24 any time during the corporation's operations.",
                           owner_type: 'corporation',
+                          when: 'owning_corp_or_turn',
                           hexes: ['B24'],
                           tiles: %w[3 4 58],
                           free: true,
