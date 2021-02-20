@@ -468,6 +468,12 @@ module Engine
 
         runnable.select { |item| train_of_size?(item, entity.type) }
       end
+
+      def format_currency(val)
+        return format('K%0.1f', val) if (val - val.to_i).positive?
+
+        self.class::CURRENCY_FORMAT_STR % val
+      end
     end
   end
 end
