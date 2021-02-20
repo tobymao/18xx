@@ -339,7 +339,8 @@ text.number {
 }
 
 .name {
-  max-width: 7rem;
+  min-width: 3rem;
+  max-width: 5rem;
 }
 
 .corp div, .player div {
