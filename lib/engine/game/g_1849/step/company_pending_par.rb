@@ -7,8 +7,8 @@ module Engine
     module G1849
       module Step
         class CompanyPendingPar < Engine::Step::CompanyPendingPar
-          def get_par_prices(entity, _corp)
-            @game.par_prices.select { |p| p.price * 2 <= entity.cash }
+          def get_par_prices(_entity, _corp)
+            @game.par_prices
           end
         end
       end
