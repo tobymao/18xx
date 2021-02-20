@@ -106,7 +106,9 @@ p:last-child {
 
 th, td {
   padding: 0 0.3rem;
+  vertical-align: top;
 }
+
 #game_info tbody > tr:hover {
   background-color: #CCCCCC;
   color: black;

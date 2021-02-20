@@ -240,6 +240,7 @@ module View
             h(:td, trains.size),
           ]
 
+          show_rusts_inline = true
           rusts = nil
           names_to_prices.keys.each do |key|
             next unless rust_schedule[key] || rust_schedule.keys.any? { |item| item&.include?(key) }
@@ -255,10 +256,18 @@ module View
             # needed for 18CZ where a train can be rusted by multiple different trains
             trains_to_rust = rust_schedule.select { |k, _v| k&.include?(key) }.values.flatten.join(', ')
             rusts << "#{key} => #{trains_to_rust}"
+            show_rusts_inline = false
           end
 
           upcoming_train_content << h(:td, obsolete_schedule[name]&.join(', ') || 'None') if show_obsolete_schedule
-          upcoming_train_content << h(:td, rusts&.join(', ') || 'None')
+          upcoming_train_content << if show_rusts_inline
+                                      h(:td, rusts&.join(', ') || 'None')
+                                    else
+                                      h(:td,
+                                        rusts&.map do |value|
+                                          h(:div, { style: { paddingBottom: '0.1rem' } }, value)
+                                        end || 'None')
+                                    end
 
           upcoming_train_content << h(:td, discounts&.join(' ')) if show_upgrade
           upcoming_train_content << h(:td, train.available_on) if show_available
