@@ -117,9 +117,8 @@ module Engine
             return true if reachable_hex?(entity, hex, max_distance)
 
             path_distances = @game.path_distances(entity)
-            return false if hex.tile.paths.any? { |p| path_distances[p] }
 
-            # tile is currently not on network (it should be a neighbor to one that is)
+            # tile is currently not on the reachable network (it should be a neighbor to one that is)
             # We err on the side of caution, final determination needs to be based on actual tile placed
             neighbors.each do |edge|
               nhex = hex.neighbors[edge]
