@@ -28,7 +28,7 @@ module View
 
       # don't ask for a link for hotseat games
       action = @game.last_processed_action || 0
-      url = "#{%x{window.location.origin}}/game/#{@game_data['id']}?action=#{action - 1}"
+      url = "#{%x(window.location.origin)}/game/#{@game_data['id']}?action=#{action - 1}"
       game_link =
         if @game.id.is_a?(Integer)
           [
