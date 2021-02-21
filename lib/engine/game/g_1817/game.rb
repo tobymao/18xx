@@ -934,6 +934,10 @@ module Engine
           super
         end
 
+        def available_programmed_actions
+          []
+        end
+
         def option_short_squeeze?
           @optional_rules&.include?(:short_squeeze)
         end

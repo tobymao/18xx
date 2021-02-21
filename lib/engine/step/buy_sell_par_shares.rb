@@ -273,17 +273,24 @@ module Engine
 
       def activate_program_buy_shares(entity, program)
         # TODO: non-ipo? non-10% shares
-        corporation = program.corporation
-        # check if end condition met
-        if program.until_condition == 'float'
-          return [Action::ProgramDisable.new(entity, reason: "#{corporation.name} is floated")] if corporation.floated?
-          # TODO: until n shares
-        end
-        share = corporation.ipo_shares.first
-        if can_buy?(entity, share.to_bundle)
-          [Action::BuyShares.new(entity, shares: share)]
-        else
-          [Action::ProgramDisable.new(entity, reason: "Cannot buy #{corporation.name}")]
+        available_actions = actions(entity)
+        if available_actions.include?('buy_shares')
+          corporation = program.corporation
+          # check if end condition met
+          if program.until_condition == 'float'
+            return [Action::ProgramDisable.new(entity,
+                                               reason: "#{corporation.name} is floated")] if corporation.floated?
+            # TODO: until n shares
+          end
+          share = corporation.ipo_shares.first
+          if can_buy?(entity, share.to_bundle)
+            [Action::BuyShares.new(entity, shares: share)]
+          else
+            [Action::ProgramDisable.new(entity, reason: "Cannot buy #{corporation.name}")]
+          end
+        elsif bought? && available_actions.include?('pass')
+          # Buy-then-Sell games need the pass
+          [Action::Pass.new(entity)]
         end
       end
     end
