@@ -1880,6 +1880,7 @@ module Engine
             "corporations": [
                 {
                     "float_percent": 50,
+                    "float_excludes_market": true,
                     "sym": "SX",
                     "name": "Sächsische Eisenbahn",
                     "logo": "18_cz/SX",
@@ -1898,6 +1899,7 @@ module Engine
                 },
                 {
                     "float_percent": 50,
+                    "float_excludes_market": true,
                     "sym": "PR",
                     "name": "Preußische Eisenbahn",
                     "logo": "18_cz/PR",
@@ -1916,6 +1918,7 @@ module Engine
                 },
                 {
                     "float_percent": 50,
+                    "float_excludes_market": true,
                     "sym": "BY",
                     "name": "Bayrische Staatsbahn",
                     "logo": "18_cz/BY",
@@ -1934,6 +1937,7 @@ module Engine
                 },
                 {
                     "float_percent": 50,
+                    "float_excludes_market": true,
                     "sym": "kk",
                     "name": "kk Staatsbahn",
                     "logo": "18_cz/kk",
@@ -1952,6 +1956,7 @@ module Engine
                 },
                 {
                     "float_percent": 50,
+                    "float_excludes_market": true,
                     "sym": "Ug",
                     "name": "Ungarische Staatsbahn",
                     "logo": "18_cz/Ug",
@@ -1970,6 +1975,7 @@ module Engine
                 },
                 {
                     "float_percent": 50,
+                    "float_excludes_market": true,
                     "sym": "BN",
                     "name": "Böhmische Nordbahn",
                     "logo": "18_cz/BN",
@@ -1994,6 +2000,7 @@ module Engine
                 },
                 {
                     "float_percent": 50,
+                    "float_excludes_market": true,
                     "sym": "NWB",
                     "name": "Österreichische Nordwestbahn",
                     "logo": "18_cz/NWB",
@@ -2018,6 +2025,7 @@ module Engine
                 },
                 {
                     "float_percent": 50,
+                    "float_excludes_market": true,
                     "sym": "ATE",
                     "name": "Aussig-Teplitzer Eisenbahn",
                     "logo": "18_cz/ATE",
@@ -2041,6 +2049,7 @@ module Engine
                 },
                 {
                     "float_percent": 50,
+                    "float_excludes_market": true,
                     "sym": "BTE",
                     "name": "Buschtehrader Eisenbahn",
                     "logo": "18_cz/BTE",
@@ -2064,6 +2073,7 @@ module Engine
                 },
                 {
                     "float_percent": 50,
+                    "float_excludes_market": true,
                     "sym": "KFN",
                     "name": "Kaiser Ferdinands Nordbahn",
                     "logo": "18_cz/KFN",
