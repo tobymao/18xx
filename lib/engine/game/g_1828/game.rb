@@ -1409,10 +1409,24 @@ module Engine
           @companies.each { |company| company.min_price = 1 }
         end
 
+        def privates_to_remove
+          ok = false
+          until ok
+            to_remove = companies.find_all { |company| company.value == 250 }
+                                 .sort_by { rand }
+                                 .take(7 - @players.size)
+            if @optional_rules&.include?(:ensure_good_privates)
+              removed_syms = to_remove.map(&:sym)
+              ok = !%w[GT NW OSH].all? { |sym| removed_syms.include?(sym) }
+            else
+              ok = true
+            end
+          end
+          to_remove
+        end
+
         def remove_extra_private_companies
-          to_remove = companies.find_all { |company| company.value == 250 }
-                               .sort_by { rand }
-                               .take(7 - @players.size)
+          to_remove = privates_to_remove
           to_remove.each do |company|
             company.close!
             @round.steps.find { |step| step.is_a?(G1828::Step::WaterfallAuction) }.companies.delete(company)
