@@ -6,12 +6,16 @@ module Engine
   module Step
     module G18CZ
       class Draft < Base
-        attr_reader :companies, :choices
+        attr_reader :companies, :choices, :grouped_companies
 
         ACTIONS = %w[bid pass].freeze
 
         def setup
-          @companies = @game.companies.sort
+          @grouped_companies = @game.companies.sort.group_by(&:revenue)
+          @companies = []
+          @grouped_companies.each do |item|
+            @companies << item[1].shift
+          end
         end
 
         def available
@@ -64,6 +68,11 @@ module Engine
           player.spend(price, @game.bank)
 
           @companies.delete(company)
+
+          companies_of_type = @grouped_companies[company.revenue]
+
+          @companies << companies_of_type.shift unless companies_of_type.empty?
+          @companies.sort_by!(&:revenue)
 
           @log << "#{player.name} buys #{company.name} for #{@game.format_currency(price)}"
 
