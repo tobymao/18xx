@@ -73,7 +73,7 @@ module View
           else
             msg =
               if @game.active_players_id.include?(@user['id'])
-                if !@valid_actors.empty?
+                unless @valid_actors.empty?
                   "Only #{@valid_actors.map(&:name).join(' and ')} "\
                   'may perform that action. Turn on master mode under the Tools '\
                   'menu to act for others.'
