@@ -46,7 +46,7 @@ module View
 
       def valid_actor?(action)
         @valid_actors = @game.valid_actors(action)
-        @valid_actors.map(&:id).include?(@user['id'])
+        @valid_actors.any? { |actor| actor.id == @user['id'] }
       end
 
       def process_action(action)
