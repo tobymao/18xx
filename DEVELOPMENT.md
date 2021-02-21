@@ -13,8 +13,6 @@ If configuring the droplet from scratch, these are the requirements:
 - `docker-compose`
 - `make`
 - this repo (via `git clone`)
-- `esbuild` (`npm i -g esbuild` after settup a modern Node with something like
-  [nvm](https://github.com/nvm-sh/nvm))
 
 ### Docker
 
