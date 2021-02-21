@@ -146,7 +146,7 @@ class Assets
     builder = Opal::Builder.new
     append_paths.each { |ap| builder.append_paths(ap) }
     path = "#{@out_path}/#{name}.js"
-    if !@cache || !File.exist?(path)
+    if !@cache || !File.exist?(path) || path == @deps_path
       time = Time.now
       File.write(path, builder.build(name))
       puts "Compiling #{name} - #{Time.now - time}"
