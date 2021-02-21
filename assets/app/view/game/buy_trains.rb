@@ -53,7 +53,6 @@ module View
                               "#{@game.format_currency(share_funds_allowed)}.")
         end
 
-        must_take_loan = false
         step = @game.round.active_step
         must_take_loan = step.must_take_loan?(@corporation) if step.respond_to?(:must_take_loan?)
         if must_take_loan

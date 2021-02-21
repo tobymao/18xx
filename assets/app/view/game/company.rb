@@ -84,16 +84,14 @@ module View
             width: '100%',
           }
 
-          status_props = {
-            style: {
-              marginTop: '0.5rem',
-              clear: 'both',
-              display: 'inline-block',
-              justifyContent: 'center',
-              width: '100%',
-              backgroundColor: color_for(:bg2),
-              color: color_for(:font2),
-            },
+          status_style = {
+            marginTop: '0.5rem',
+            clear: 'both',
+            display: 'inline-block',
+            justifyContent: 'center',
+            width: '100%',
+            backgroundColor: color_for(:bg2),
+            color: color_for(:font2),
           }
 
           props = {
@@ -138,7 +136,9 @@ module View
           end
 
           children << h('div.nowrap', { style: bidders_style }, "Owner: #{@company.owner.name}") if @company.owner
-          children << h(:div, status_props, @game.company_status_str(@company)) if @game.company_status_str(@company)
+          if @game.company_status_str(@company)
+            children << h(:div, { style: status_style }, @game.company_status_str(@company))
+          end
 
           h('div.company.card', props, children)
         end
