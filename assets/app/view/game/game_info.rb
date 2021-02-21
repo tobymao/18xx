@@ -157,9 +157,9 @@ module View
             justifyItems: 'center',
           },
         }
-        info_props = {
+        table_props = {
           style: {
-            verticalAlign: 'top',
+            borderSpacing: '0.4rem 0.8rem',
           },
         }
 
@@ -167,14 +167,17 @@ module View
         trs = @game.depot.upcoming.group_by(&:name).map do |name, trains|
           train = trains.first
           names_to_prices = train.names_to_prices
-          summary = [h(:div,
-                       "#{trains.size} at " + names_to_prices.values.map { |p| @game.format_currency(p) }.join(', '))]
-          summary << h(:div, ' rusts ' + rust_schedule[name].join(',')) if rust_schedule[name]
-          summary << h(:div, ' obsoletes ' + obsolete_schedule[name].join(',')) if obsolete_schedule[name]
+          availability = [h(:div,
+                            "#{trains.size} at " +
+                            names_to_prices.values.map { |p| @game.format_currency(p) }.join(', '))]
+          events = []
+          events << h(:div, 'rusts ' + rust_schedule[name].join(',')) if rust_schedule[name]
+          events << h(:div, 'obsoletes ' + obsolete_schedule[name].join(',')) if obsolete_schedule[name]
 
           h(:tr, [
-            h(:td, info_props, names_to_prices.keys.join(', ')),
-            h('td.right', summary),
+            h(:td, names_to_prices.keys.join(', ')),
+            h('td.right', availability),
+            h('td.right', events),
 ])
         end
 
@@ -183,7 +186,7 @@ module View
         h('div#upcoming_trains.card', [
           h('div.title', title_props, [h(:em, 'Upcoming Trains')]),
           h(:div, body_props, [
-            h(:table, trs),
+            h(:table, table_props, trs),
           ]),
         ])
       end
