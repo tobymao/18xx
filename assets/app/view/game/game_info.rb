@@ -243,13 +243,12 @@ module View
           show_rusts_inline = true
           rusts = nil
           names_to_prices.keys.each do |key|
-            next unless rust_schedule[key] || rust_schedule.keys.any? { |item| item&.include?(key) }
+            next if !rust_schedule[key] && rust_schedule.keys.none? { |item| item&.include?(key) }
 
             rusts ||= []
 
-            rust = rust_schedule[key]
-            unless rust.nil?
-              rusts << rust_schedule[key]&.join(', ')
+            if (rust = rust_schedule[key])
+              rusts << rust.join(', ')
               next
             end
 
