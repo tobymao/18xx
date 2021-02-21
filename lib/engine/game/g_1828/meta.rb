@@ -17,6 +17,13 @@ module Engine
         GAME_TITLE = '1828.Games'
 
         PLAYER_RANGE = [3, 5].freeze
+        OPTIONAL_RULES = [
+          {
+            sym: :ensure_good_privates,
+            short_name: 'Ensure Good Unsaleable Privates',
+            desc: 'At least one of GT, NW, or OSH must be in the game (recommended for newer players)',
+          },
+        ].freeze
       end
     end
   end
