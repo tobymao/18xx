@@ -28,13 +28,13 @@ module View
 
       # don't ask for a link for hotseat games
       action = @game.last_processed_action || 0
-      url = "https://18xx.games/game/#{@game_data['id']}?action=#{action + 1}"
+      url = "#{%x(window.location.origin)}/game/#{@game_data['id']}?action=#{action - 1}"
       game_link =
         if @game.id.is_a?(Integer)
           [
             'this link (',
             h(:a, { attrs: { href: url } }, url),
-            ') and ',
+            ')',
           ]
         else
           []
@@ -45,7 +45,6 @@ module View
         h(:a, { attrs: { href: 'https://github.com/tobymao/18xx/issues/' } }, 'raise a bug report'),
         ' and include ',
         *game_link,
-        'the following JSON data',
       ])
       inner << h(Game::GameData,
                  actions: @game_data['actions'],
