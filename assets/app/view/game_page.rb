@@ -219,6 +219,8 @@ module View
           change_anchor('#spreadsheet')
         when 'o'
           change_anchor('#tools')
+        when 'a'
+          change_anchor('#async')
         when 'c'
           Native(`document.getElementById('chatbar')`)&.focus()
           event.preventDefault
@@ -291,7 +293,7 @@ module View
         item('To|ols', '#tools'),
       ]
 
-      menu_items << item('Async', '#async') if @game_data[:mode] != :hotseat && !cursor
+      menu_items << item('A|sync', '#async') if @game_data[:mode] != :hotseat && !cursor
 
       h('nav#game_menu', nav_props, [
         h('ul.no_margin.no_padding', { style: { width: 'max-content' } }, menu_items),
