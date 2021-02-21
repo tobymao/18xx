@@ -107,7 +107,7 @@ module Engine
       end
 
       if @home_as_token
-        home_hexes =  Array(corporation.coordinates).map { |h| @game.hex_by_id(h) }
+        home_hexes = Array(corporation.coordinates).map { |h| @game.hex_by_id(h) }
         home_hexes.each do |hex|
           hex.tile.city_towns.each do |ct|
             hex.neighbors.each { |e, _| hexes[hex][e] = true }
