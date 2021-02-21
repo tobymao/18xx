@@ -251,7 +251,7 @@ module Engine
                           free: true,
                           hexes: ['B8'],
                           tiles: %w[2 56],
-                          when: %w[special_track other_or],
+                          when: 'owning_corp_or_turn',
                           count: 1,
                         }],
           },

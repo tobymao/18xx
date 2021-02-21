@@ -1392,6 +1392,12 @@ module Engine
           super
         end
 
+        def purchasable_companies(entity = nil)
+          return [] if entity&.minor?
+
+          super
+        end
+
         private
 
         def setup_minors
