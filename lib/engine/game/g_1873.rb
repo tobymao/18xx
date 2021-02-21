@@ -180,7 +180,7 @@ module Engine
         @minors.find { |m| m.id == company.id }
       end
 
-      def close_mine(minor)
+      def close_mine!(minor)
         @log << "#{minor.name} is closed"
         @minor_info[minor][:open] = false
         minor.owner = nil
@@ -195,7 +195,7 @@ module Engine
         end
       end
 
-      def open_mine(minor)
+      def open_mine!(minor)
         @log << "#{minor.name} is opened"
         @minor_info[minor][:open] = true
 
@@ -302,10 +302,6 @@ module Engine
         name = "#{sym} Purchase Options"
         @companies[@companies.find_index(old_co)] = Company.new(sym: sym, name: name,
                                                                 value: RAILWAY_MIN_BID, desc: description)
-      end
-
-      def mine?(entity)
-        entity.minor?
       end
 
       def independent_mine?(entity)
@@ -507,7 +503,7 @@ module Engine
       end
 
       def mine_revenue(corp)
-        if mine?(corp)
+        if corp.minor?
           m_revs = @minor_info[corp][:machine_revenue]
           s_revs = @minor_info[corp][:switcher_revenue]
           m_rev = m_revs[machine_size(corp) - 1]
@@ -542,7 +538,7 @@ module Engine
       def status_str(corporation)
         return if corporation == @mhe
 
-        str = "Maint: #{format_currency(maintenance_costs(corporation))}"
+        str = "Maintenance: #{format_currency(maintenance_costs(corporation))}"
         str += ' (Closed)' if corporation.minor? && !@minor_info[corporation][:open]
         str
       end

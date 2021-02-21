@@ -103,7 +103,7 @@ module Engine
           @companies.each do |c|
             if (minor = @game.get_mine(c))
               @game.companies.delete(c)
-              @game.close_mine(minor)
+              @game.close_mine!(minor)
             end
           end
           @round.reset_entity_index!

@@ -36,7 +36,7 @@ module View
           render_mine_holdings,
           render_mine_machines(@corporation),
           render_mine_status,
-]
+        ]
 
         h('div.corp.card', { style: card_style, on: { click: select_mine } }, children)
       end

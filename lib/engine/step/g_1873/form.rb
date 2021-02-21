@@ -26,11 +26,6 @@ module Engine
           true
         end
 
-        def skip!
-          puts 'Form::skip!'
-          super
-        end
-
         def round_state
           super.merge(
             {
