@@ -542,7 +542,7 @@ module Engine
       end
 
       def after_lay_tile(hex, tile)
-        # If we upgraded lodon, check if we need to add the extra slot from minor 14
+        # If we upgraded london, check if we need to add the extra slot from minor 14
         upgrade_london(hex) if hex.name == self.class::LONDON_HEX
 
         # If we upgraded the english channel to brown, upgrade france as well since we got 2 lanes to france.

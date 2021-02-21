@@ -204,15 +204,9 @@ module Engine
               # in london. This means you cant just acquire to get an exchange token if you dont have a valid
               # path to another node in london.
               # Try all 6 cities in london to see if there is atleast one connection
-              found_connected_city = false
               connected_nodes = @game.graph.connected_nodes(entity)
-              @game.hex_by_id(@game.class::LONDON_HEX).tile.cities.each do |c|
-                found_connected_city = connected_nodes[c]
-                if found_connected_city && c.tokened_by?(entity)
-                  found_connected_city = false
-                elsif found_connected_city
-                  break
-                end
+              found_connected_city = @game.hex_by_id(@game.class::LONDON_HEX).tile.cities.any? do |c|
+                connected_nodes[c] && !c.tokened_by?(entity)
               end
             else
               minor_city = if !minor.owner || minor.owner == @bank
