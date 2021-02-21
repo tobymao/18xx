@@ -3,7 +3,7 @@
 require './spec/spec_helper'
 
 module Engine
-  describe Game::G18ZOO do
+  describe Game::G18ZOO::Game do
     def next_round!
       loop do
         game.send(:next_round!)
@@ -50,7 +50,7 @@ module Engine
           current_players = %w[a b c d e].first(num_players)
 
           context "#{num_players} Players, #{variant}" do
-            let(:game) { Game::G18ZOO.new(current_players, optional_rules: [variant.to_sym]) }
+            let(:game) { Game::G18ZOO::Game.new(current_players, optional_rules: [variant.to_sym]) }
             let(:player_1) { game.players.first }
 
             it "should start with #{expected_cash[variant][num_players]}$N" do
@@ -99,7 +99,7 @@ module Engine
         { name: 'Whatsup', id: 'hs_gpptfzdv_1612649034', sym: :WHATSUP, price: 3, choice: 'whatsup' },
       ].each do |power|
         describe power[:name] do
-          let(:game) { Game::G18ZOO.new(players, id: power[:id]) }
+          let(:game) { Game::G18ZOO::Game.new(players, id: power[:id]) }
           let(:current_power) { game.available_companies.find { |c| c.sym.to_sym == power[:sym] } }
           let(:player_1) { game.players.first }
           let!(:starting_money) { player_1.cash }
@@ -136,7 +136,7 @@ module Engine
       end
 
       describe 'Too much responsibility' do
-        let(:game) { Game::G18ZOO.new(players, id: 'hs_sazxgyzi_1612654581') }
+        let(:game) { Game::G18ZOO::Game.new(players, id: 'hs_sazxgyzi_1612654581') }
         let(:power) { game.available_companies.find { |c| c.sym.to_sym == :TOO_MUCH_RESPONSIBILITY } }
         let(:player_1) { game.players.first }
         let!(:starting_money) { player_1.cash }
@@ -177,7 +177,7 @@ module Engine
       end
 
       describe 'Leprechaun pot of gold' do
-        let(:game) { Game::G18ZOO.new(players, id: 'hs_qttengzm_1612655076') }
+        let(:game) { Game::G18ZOO::Game.new(players, id: 'hs_qttengzm_1612655076') }
         let(:power) { game.available_companies.find { |c| c.sym.to_sym == :LEPRECHAUN_POT_OF_GOLD } }
         let(:player_1) { game.players.first }
         let!(:starting_money) { player_1.cash }
@@ -236,7 +236,7 @@ module Engine
         { name: 'A spoonful of sugar', id: 'hs_rykjpksq_1612654725', sym: :A_SPOONFUL_OF_SUGAR },
       ].each do |power|
         describe power[:name] do
-          let(:game) { Game::G18ZOO.new(players, id: power[:id]) }
+          let(:game) { Game::G18ZOO::Game.new(players, id: power[:id]) }
           let(:current_power) { game.available_companies.find { |c| c.sym.to_sym == power[:sym] } }
           let(:player_1) { game.players.first }
           let!(:starting_money) { player_1.cash }
@@ -255,7 +255,7 @@ module Engine
       end
 
       describe 'addition to available' do
-        let(:game) { Game::G18ZOO.new(players) }
+        let(:game) { Game::G18ZOO::Game.new(players) }
 
         it 'should be added to available list (4 powers) on each SR' do
           expect(game.available_companies.size).to eq(4)
@@ -271,7 +271,7 @@ module Engine
 
     describe 'phases' do
       let(:players) { %w[a b c] }
-      let(:game) { Game::G18ZOO.new(players) }
+      let(:game) { Game::G18ZOO::Game.new(players) }
       let(:player_1) { game.players.first }
       let(:player_2) { game.players[1] }
       let(:player_3) { game.players[2] }
@@ -364,7 +364,7 @@ module Engine
 
     describe '"family near"' do
       let(:players) { %w[a b c] }
-      let(:game) { Game::G18ZOO.new(players) }
+      let(:game) { Game::G18ZOO::Game.new(players) }
       let(:player_1) { game.players.first }
       let(:player_2) { game.players[1] }
       let(:corporation) { game.corporations.first }

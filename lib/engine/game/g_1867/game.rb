@@ -961,6 +961,10 @@ module Engine
           end
         end
 
+        def available_programmed_actions
+          []
+        end
+
         def calculate_corporation_interest(corporation)
           @interest[corporation] = corporation.loans.size
         end

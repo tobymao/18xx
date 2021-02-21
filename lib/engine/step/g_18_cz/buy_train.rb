@@ -18,10 +18,14 @@ module Engine
 
           trains = trains.reject { |item| @game.variant_is_rusted?(item) }
 
-          default_trains = trains.select { |item| @game.train_of_size?(item, :small) }
+          default_trains = trains.select do |item|
+            @game.train_of_size?(item, :small) && (entity.type == :small || entity.cash >= item[:price])
+          end
           return default_trains if entity.type == :small
 
-          medium_trains = trains.select { |item| @game.train_of_size?(item, :medium) }
+          medium_trains = trains.select do |item|
+            @game.train_of_size?(item, :medium) && (entity.type == :medium || entity.cash >= item[:price])
+          end
           if entity.type == :medium
             return medium_trains if entity.trains.none? do |item|
               @game.train_of_size?(item, :medium)

@@ -33,7 +33,7 @@ require_relative 'meta'
 
 module Engine
   module Game
-    def self.load(data, at_action: nil, actions: nil, pin: nil, optional_rules: nil, **kwargs)
+    def self.load(data, at_action: nil, actions: nil, pin: nil, optional_rules: nil, user: nil, **kwargs)
       case data
       when String
         parsed_data = JSON.parse(File.exist?(data) ? File.read(data) : data)
@@ -42,6 +42,7 @@ module Engine
                     actions: actions,
                     pin: pin,
                     optional_rules: optional_rules,
+                    user: user,
                     **kwargs)
       when Hash
         title = data['title']
@@ -56,6 +57,7 @@ module Engine
                     actions: actions,
                     pin: pin,
                     optional_rules: optional_rules,
+                    user: user,
                     **kwargs)
       when ::Game
         title = data.title
@@ -69,7 +71,7 @@ module Engine
       actions = actions.take(at_action) if at_action
 
       Engine.game_by_title(title).new(
-        names, id: id, actions: actions, pin: pin, optional_rules: optional_rules, **kwargs
+        names, id: id, actions: actions, pin: pin, optional_rules: optional_rules, user: user, **kwargs
       )
     end
 
@@ -403,7 +405,7 @@ module Engine
         const_set(:LAYOUT, data['layout'].to_sym)
       end
 
-      def initialize(names, id: 0, actions: [], pin: nil, strict: false, optional_rules: [])
+      def initialize(names, id: 0, actions: [], pin: nil, strict: false, optional_rules: [], user: nil)
         @id = id
         @turn = 1
         @final_turn = nil
@@ -424,6 +426,7 @@ module Engine
                  end
 
         @players = @names.map { |player_id, name| Player.new(player_id, name) }
+        @user = user
         @programmed_actions = {}
 
         @optional_rules = init_optional_rules(optional_rules)
@@ -548,8 +551,13 @@ module Engine
         end
       end
 
-      def player_log(_entity, msg)
-        @log << "-- #{msg}"
+      def player_log(entity, msg)
+        @log << "-- #{msg}" if entity.id == @user
+      end
+
+      def available_programmed_actions
+        # By default assume normal 1830esk buy shares
+        [Action::ProgramBuyShares]
       end
 
       def self.filtered_actions(actions)
