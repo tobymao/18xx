@@ -39,7 +39,32 @@ module Engine
             entity.trains.reject { |t| @game.extra_train?(t) }.size < @game.train_limit(entity)
           end
 
-          private
+          def try_take_player_loan(entity, cost)
+            return unless cost.positive?
+            return unless cost > entity.cash
+
+            if sellable_shares?(entity)
+              raise GameError, "#{entity.name} still need to sell shares before a loan can be granted"
+            end
+
+            difference = cost - entity.cash
+            @game.take_player_loan(entity, difference)
+            @log << "#{entity.name} takes a loan of #{@game.format_currency(difference)} with "\
+                    "#{@game.format_currency(@game.player_loan_intrest(difference))} in intrest"
+            @game.bank.spend(difference, entity)
+          end
+
+          def must_take_loan?(entity)
+            # Must sell all shares before a loan can be granted
+            return false if sellable_shares?(entity.owner)
+
+            funds_required = @game.depot.min_depot_price - @game.total_emr_buying_power(entity.owner, entity)
+            funds_required.positive?
+          end
+
+          def sellable_shares?(player)
+            (@game.liquidity(player, emergency: true) - player.cash).positive?
+          end
 
           def upgrade_train_action(action)
             entity = action.entity

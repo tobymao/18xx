@@ -2233,6 +2233,8 @@ module Engine
         :small
       end
 
+      def company_status_str(_company); end
+
       def status_str(_corporation); end
 
       def status_array(_corporation); end

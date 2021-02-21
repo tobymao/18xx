@@ -29,6 +29,7 @@ module Engine
           def check_track_restrictions!(entity, old_tile, new_tile)
             return if @game.loading || !entity.operator?
             return if new_tile.hex.name == @game.class::ENGLISH_CHANNEL_HEX
+            return if new_tile.hex.name == @game.class::CARDIFF_HEX
 
             super
           end

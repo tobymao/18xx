@@ -58,6 +58,9 @@ module Engine
             remove_minor_and_first_train(remove_minor) if remove_minor
             remove_first_train if !remove_minor && @game.bidbox_minors.empty?
 
+            # Increase player loans with 50% intrest
+            @game.add_intrest_player_loans!
+
             super
           end
 

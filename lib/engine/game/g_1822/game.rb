@@ -23,6 +23,10 @@ module Engine
                         black: '#000',
                         white: '#ffffff')
 
+        GAME_END_CHECK = { bank: :full_or, stock_market: :current_or }.freeze
+
+        BANKRUPTCY_ALLOWED = false
+
         CURRENCY_FORMAT_STR = '£%d'
 
         BANK_CASH = 12_000
@@ -498,7 +502,11 @@ module Engine
             distance: 5,
             num: 5,
             price: 500,
-            events: [{ 'type' => 'close_concessions' }],
+            events: [
+              {
+                'type' => 'close_concessions',
+              },
+            ],
           },
           {
             name: '6',
@@ -528,7 +536,6 @@ module Engine
                   },
                 ],
                 price: 1000,
-                available_on: '7',
               },
             ],
           },
@@ -2004,6 +2011,7 @@ module Engine
 
         LIMIT_TOKENS_AFTER_MERGER = 9
 
+        CARDIFF_HEX = 'F35'
         LONDON_HEX = 'M38'
         ENGLISH_CHANNEL_HEX = 'P43'
         FRANCE_HEX = 'Q44'
@@ -2057,7 +2065,7 @@ module Engine
 
         include StubsAreRestricted
 
-        attr_accessor :bidding_token_per_player
+        attr_accessor :bidding_token_per_player, :player_debts
 
         def all_potential_upgrades(tile, tile_manifest: false)
           upgrades = super
@@ -2068,6 +2076,10 @@ module Engine
           upgrades |= [@sharp_city, @gentle_city] if self.class::UPGRADABLE_T_HEX_NAMES.include?(tile.hex.name)
 
           upgrades
+        end
+
+        def bank_sort(corporations)
+          corporations.reject { |c| c.type == :minor }.sort_by(&:name)
         end
 
         def can_hold_above_limit?(_entity)
@@ -2155,6 +2167,22 @@ module Engine
           on_aqcuired_remove_revenue(company) if self.class::PRIVATE_REMOVE_REVENUE.include?(company.id)
         end
 
+        def company_status_str(company)
+          bidbox_minors.each_with_index do |c, index|
+            return "Bid box #{index + 1}" if c == company
+          end
+
+          bidbox_concessions.each_with_index do |c, index|
+            return "Bid box #{index + 1}" if c == company
+          end
+
+          bidbox_privates.each_with_index do |c, index|
+            return "Bid box #{index + 1}" if c == company
+          end
+
+          ''
+        end
+
         def compute_other_paths(routes, route)
           routes.flat_map do |r|
             next if r == route || train_type(route.train) != train_type(r.train)
@@ -2201,6 +2229,15 @@ module Engine
 
         def home_token_locations(corporation)
           [hex_by_id(self.class::LONDON_HEX)] if corporation.id == self.class::MINOR_14_ID
+        end
+
+        def issuable_shares(entity)
+          return [] if !entity.corporation? || (entity.corporation? && entity.type != :major)
+          return [] if entity.num_ipo_shares.zero? || entity.operating_history.size < 2
+
+          bundles_for_corporation(entity, entity)
+            .select { |bundle| @share_pool.fit_in_bank?(bundle) }
+            .map { |bundle| reduced_bundle_price_for_market_drop(bundle) }
         end
 
         def tile_lays(entity)
@@ -2283,6 +2320,7 @@ module Engine
             G1822::Step::MinorAcquisition,
             G1822::Step::PendingToken,
             Engine::Step::DiscardTrain,
+            G1822::Step::IssueShares,
           ], round_num: round_num)
         end
 
@@ -2300,6 +2338,10 @@ module Engine
           place_destination_token(corporation, hex, token)
         end
 
+        def player_value(player)
+          player.value - @player_debts[player]
+        end
+
         def purchasable_companies(entity = nil)
           return [] unless entity
 
@@ -2307,6 +2349,12 @@ module Engine
             company.owner&.player? && entity != company.owner && !company.closed? && !abilities(company, :no_buy) &&
               acquire_private_company?(entity, company)
           end
+        end
+
+        def redeemable_shares(entity)
+          return [] if !entity.corporation? || (entity.corporation? && entity.type != :major)
+
+          bundles_for_corporation(@share_pool, entity).reject { |bundle| entity.cash < bundle.price }
         end
 
         def revenue_for(route, stops)
@@ -2371,6 +2419,9 @@ module Engine
           # Initialize the extra city which minor 14 might add
           @london_extra_city_index = nil
 
+          # Initialize the player depts, if player have to take an emergency loan
+          @player_debts = Hash.new { |h, k| h[k] = 0 }
+
           # Randomize and setup the companies
           setup_companies
 
@@ -2394,6 +2445,13 @@ module Engine
             Engine::Step::DiscardTrain,
             G1822::Step::BuySellParShares,
           ])
+        end
+
+        def unowned_purchasable_companies(_entity)
+          minors = bank_companies(self.class::COMPANY_MINOR_PREFIX)
+          concessions = bank_companies(self.class::COMPANY_CONCESSION_PREFIX)
+          privates = bank_companies(self.class::COMPANY_PRIVATE_PREFIX)
+          minors + concessions + privates
         end
 
         def upgrades_to?(from, to, special = false)
@@ -2427,6 +2485,18 @@ module Engine
           @phase.name.to_i >= company_acquisition[:phase] && company_acquisition[:acquire].include?(entity.type)
         end
 
+        def add_intrest_player_loans!
+          @player_debts.each do |player, loan|
+            next unless loan.positive?
+
+            intrest = player_loan_intrest(loan)
+            new_loan = loan + intrest
+            @player_debts[player] = new_loan
+            @log << "#{player.name} increases its loan by 50% (#{format_currency(intrest)}) to "\
+                    "#{format_currency(new_loan)}"
+          end
+        end
+
         def after_place_pending_token(city)
           return unless city.hex.name == self.class::LONDON_HEX
 
@@ -2446,22 +2516,22 @@ module Engine
           upgrade_france_to_brown
         end
 
-        def bidbox_minors
+        def bank_companies(prefix)
           @companies.select do |c|
-            c.id[0] == self.class::COMPANY_MINOR_PREFIX && (!c.owner || c.owner == @bank) && !c.closed?
-          end.first(self.class::BIDDING_BOX_MINOR_COUNT)
+            c.id[0] == prefix && (!c.owner || c.owner == @bank) && !c.closed?
+          end
+        end
+
+        def bidbox_minors
+          bank_companies(self.class::COMPANY_MINOR_PREFIX).first(self.class::BIDDING_BOX_MINOR_COUNT)
         end
 
         def bidbox_concessions
-          @companies.select do |c|
-            c.id[0] == self.class::COMPANY_CONCESSION_PREFIX && (!c.owner || c.owner == @bank) && !c.closed?
-          end.first(self.class::BIDDING_BOX_CONCESSION_COUNT)
+          bank_companies(self.class::COMPANY_CONCESSION_PREFIX).first(self.class::BIDDING_BOX_CONCESSION_COUNT)
         end
 
         def bidbox_privates
-          @companies.select do |c|
-            c.id[0] == self.class::COMPANY_PRIVATE_PREFIX && (!c.owner || c.owner == @bank) && !c.closed?
-          end.first(self.class::BIDDING_BOX_PRIVATE_COUNT)
+          bank_companies(self.class::COMPANY_PRIVATE_PREFIX).first(self.class::BIDDING_BOX_PRIVATE_COUNT)
         end
 
         def can_gain_extra_train?(entity, train)
@@ -2495,6 +2565,10 @@ module Engine
           return nil unless token_count == 2
 
           { route: route, revenue: destination_token.city.route_revenue(route.phase, route.train) }
+        end
+
+        def player_loan_intrest(loan)
+          (loan * 0.5).ceil
         end
 
         def destination_bonus(routes)
@@ -2573,6 +2647,10 @@ module Engine
           @log << "#{company.name} closes"
         end
 
+        def payoff_player_loan(player)
+          @player_debts[player] = 0
+        end
+
         def place_destination_token(entity, hex, token)
           city = hex.tile.cities.first
           city.place_token(entity, token, free: true, check_tokenable: false, cheater: 0)
@@ -2584,6 +2662,16 @@ module Engine
           @graph.clear
 
           @log << "#{entity.name} places its destination token on #{hex.name}"
+        end
+
+        def player_debt(player)
+          @player_debts[player] || 0
+        end
+
+        def reduced_bundle_price_for_market_drop(bundle)
+          directions = (1..bundle.num_shares).map { |_| :up }
+          bundle.share_price = @stock_market.find_share_price(bundle.corporation, directions).price
+          bundle
         end
 
         def setup_bidboxes
@@ -2605,6 +2693,12 @@ module Engine
           ability = entity.all_abilities.find { |a| a.type == :exchange_token }
           ability.use!
           ability.description = "Exchange tokens: #{ability.count}"
+        end
+
+        def take_player_loan(player, loan)
+          # Add intrest to the loan, must atleast pay 150% of the loaned value
+          loan += player_loan_intrest(loan)
+          @player_debts[player] += loan
         end
 
         def train_type(train)
