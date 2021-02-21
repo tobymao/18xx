@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'base'
+require_relative '../step/g_1873/buy_sell_par_shares'
 
 module Engine
   module Game
