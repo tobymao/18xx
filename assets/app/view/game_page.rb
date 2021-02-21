@@ -183,6 +183,7 @@ module View
       base = @app_route.split('#').first
       new_route = base + anchor
       new_route = base if @app_route == new_route
+      scroll_to_game_menu
       store(:app_route, new_route)
     end
 
@@ -273,9 +274,6 @@ module View
         attrs: {
           role: 'navigation',
           'aria-label': 'Game',
-        },
-        hooks: {
-          postpatch: scroll_to_game_menu,
         },
         style: {
           overflow: 'auto',
