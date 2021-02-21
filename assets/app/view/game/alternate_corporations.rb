@@ -208,9 +208,7 @@ module View
         props = { style: { borderCollapse: 'collapse' } }
 
         h('table.center', props, [
-          h(:tbody, [
-            *rows,
-          ]),
+          h(:tbody, rows),
         ])
       end
 

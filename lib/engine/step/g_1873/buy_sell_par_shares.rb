@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../base'
+require_relative '../buy_sell_par_shares'
 require_relative '../share_buying'
 require_relative '../../action/buy_shares'
 require_relative '../../action/par'
@@ -69,12 +69,11 @@ module Engine
           end
         end
 
-        def get_par_prices(entity, corp)
-          super if @game.railway?(corp)
-
+        def get_par_prices(entity, _corp)
           @game
             .stock_market
             .par_prices
+            .select { |p| p.price <= entity.cash }
         end
 
         def process_buy_shares(action)
