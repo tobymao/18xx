@@ -540,6 +540,14 @@ module Engine
         active_players.map(&:id)
       end
 
+      def valid_actors(action)
+        if (player = action.entity.player)
+          [player]
+        else
+          active_players
+        end
+      end
+
       def player_log(_entity, msg)
         @log << "-- #{msg}"
       end
