@@ -646,7 +646,7 @@ module Engine
             ['Total Dividend D', 'Share Price Change'],
             ['D=0 or withheld', '1 space to the left'],
             ['0 < D < share price', 'no movement'],
-            ['D >= current share price', '1 space to the right']
+            ['D >= current share price', '1 space to the right'],
           ]
         end
 
