@@ -181,10 +181,10 @@ module View
 
     def hotkey_check(event)
       # 'search for text when you start typing' feature of browser prevents execution
-      # only execute when no modifier is pressed to not interfere with OS shortcuts
+      # catch modifiers to not interfere with OS shortcuts
       event = Native(event)
       return if event.getModifierState('Alt') || event.getModifierState('AltGraph') || event.getModifierState('Meta') ||
-        event.getModifierState('OS') || event.getModifierState('Shift')
+        event.getModifierState('OS')
 
       active = Native(`document.activeElement`)
       return if active.id != 'game' && active.localName != 'body'
@@ -197,6 +197,8 @@ module View
         when 'z'
           button_click('undo')
         end
+      elsif event.getModifierState('Shift')
+        button_click('zoom+') if key == '+' # + on qwerty
       else
         case key
         when 'g'
@@ -218,7 +220,7 @@ module View
         when 'c'
           Native(`document.getElementById('chatbar')`)&.focus()
           event.preventDefault
-        when '-', '0', '+'
+        when '-', '0', '+' # + on qwertz
           button_click('zoom' + key)
         when 'Home', 'End', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'
           button_click('hist_' + key)
