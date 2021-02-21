@@ -10,6 +10,7 @@ if (typeof window === 'undefined') {
       }
     },
     requestAnimationFrame: function() {},
+    scroll: function() {},
     scrollTo: function() {},
     location: {
       pathname: '',

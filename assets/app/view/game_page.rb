@@ -20,6 +20,8 @@ module View
     needs :before_process_pass, default: -> {}, store: true
     needs :scroll_pos, default: nil, store: true
 
+    APP_PADDING_BOTTOM = '2vmin'
+
     def render_broken_game(e)
       inner = [h(:div, "We're sorry this game cannot be continued due to #{e}")]
 
@@ -147,9 +149,14 @@ module View
         key: 'game_page',
         hook: {
           destroy: destroy,
+          insert: -> { scroll_to_game_menu },
         },
         on: {
           keydown: ->(event) { hotkey_check(event) },
+        },
+        style: {
+          # ensure sufficient height for scroll_to_game_menu
+          minHeight: "calc(#{`window.innerHeight`}px - #{APP_PADDING_BOTTOM})",
         },
       }
 
@@ -162,6 +169,10 @@ module View
       h('div#game', props, children)
     end
 
+    def scroll_to_game_menu
+      `window.scroll(0, document.getElementById('header').offsetHeight)`
+    end
+
     def change_anchor(anchor)
       unless route_anchor
         elm = Native(`document.getElementById('chatlog')`)
@@ -169,8 +180,6 @@ module View
         store(:scroll_pos, elm.scrollTop < elm.scrollHeight - elm.offsetHeight - 20 ? elm.scrollTop : nil, skip: true)
       end
       store(:tile_selector, nil, skip: true)
-      # reset scroll to always show top of new tab
-      `window.scroll(0, document.getElementById('header').getBoundingClientRect().height + 1)`
       base = @app_route.split('#').first
       new_route = base + anchor
       new_route = base if @app_route == new_route
@@ -264,6 +273,9 @@ module View
         attrs: {
           role: 'navigation',
           'aria-label': 'Game',
+        },
+        hooks: {
+          postpatch: scroll_to_game_menu,
         },
         style: {
           overflow: 'auto',
