@@ -66,6 +66,7 @@ module Engine
             action.hex.tile.cities[0],
             action.entity.find_token_by_type,
             connected: false,
+            extra: true
           )
         end
 

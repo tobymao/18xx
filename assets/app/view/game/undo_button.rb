@@ -8,9 +8,19 @@ module View
       include Actionable
 
       def render
-        action = -> { process_action(Engine::Action::Undo.new(@game.current_entity)) }
-        h(:button,
-          { style: { marginTop: :inherit }, on: { click: action }, attrs: { disabled: !@game.undo_possible } },
+        h('button#undo',
+          {
+            attrs: {
+              disabled: !@game.undo_possible,
+              title: 'Undo – shortcut: ctrl+z',
+            },
+            on: {
+              click: -> { process_action(Engine::Action::Undo.new(@game.current_entity)) },
+            },
+            style: {
+              marginTop: 'inherit',
+            },
+          },
           'Undo')
       end
     end

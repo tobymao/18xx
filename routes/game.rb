@@ -168,7 +168,7 @@ class Api
               optional_rules: r['optional_rules'],
             },
             title: title,
-            round: Engine::GAMES_BY_TITLE[title].new([]).round&.name,
+            round: Engine.game_by_title(title).new([]).round&.name,
           }
 
           game = Game.create(params)

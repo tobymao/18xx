@@ -13,6 +13,8 @@ If configuring the droplet from scratch, these are the requirements:
 - `docker-compose`
 - `make`
 - this repo (via `git clone`)
+- `esbuild` (`npm i -g esbuild` after settup a modern Node with something like
+  [nvm](https://github.com/nvm-sh/nvm))
 
 ### Docker
 
@@ -96,6 +98,15 @@ Compose documentation:
 
 - https://docs.docker.com/compose/
 - https://docs.docker.com/compose/compose-file/
+
+#### Can I use [Podman](https://podman.io/) instead of Docker?
+
+Yes.
+
+```
+make CONTAINER_ENGINE=podman …
+```
+
 
 #### Before filing a pull request
 

@@ -9,15 +9,12 @@ require_tree './game'
 
 module View
   class GamePage < Snabberb::Component
+    include GameManager
     include Lib::Color
     include Lib::Settings
 
-    needs :game_data, store: true
-    needs :game, default: nil, store: true
-    needs :connection
     needs :selected_company, default: nil, store: true
     needs :tile_selector, default: nil, store: true
-    needs :app_route, store: true
     needs :user
     needs :connected, default: false, store: true
     needs :before_process_pass, default: -> {}, store: true
@@ -31,13 +28,13 @@ module View
 
       # don't ask for a link for hotseat games
       action = @game.last_processed_action || 0
-      url = "https://18xx.games/game/#{@game_data['id']}?action=#{action + 1}"
+      url = "#{%x(window.location.origin)}/game/#{@game_data['id']}?action=#{action - 1}"
       game_link =
         if @game.id.is_a?(Integer)
           [
             'this link (',
             h(:a, { attrs: { href: url } }, url),
-            ') and ',
+            ')',
           ]
         else
           []
@@ -48,7 +45,6 @@ module View
         h(:a, { attrs: { href: 'https://github.com/tobymao/18xx/issues/' } }, 'raise a bug report'),
         ' and include ',
         *game_link,
-        'the following JSON data',
       ])
       inner << h(Game::GameData,
                  actions: @game_data['actions'],
@@ -70,14 +66,21 @@ module View
          (!cursor && @game.raw_actions.size == @num_actions) ||
          (cursor == @game.raw_actions.size))
 
-      @game = Engine::Game.load(@game_data, at_action: cursor)
-      store(:game, @game, skip: true)
+      load_game_with_class = lambda do
+        @game = Engine::Game.load(@game_data, at_action: cursor, user: @user&.dig('id'))
+        store(:game, @game, skip: true)
+      end
+
+      title = @game_data['title']
+      load_game_class(title, load_game_with_class)
+      load_game_with_class.call if @game_classes_loaded[title]
     end
 
     def render
       @pin = @game_data.dig('settings', 'pin')
 
       load_game
+      return h('div.padded', 'Loading game...') unless @game
 
       page =
         case route_anchor
@@ -97,6 +100,8 @@ module View
           h(Game::Spreadsheet, game: @game)
         when 'tools'
           h(Game::Tools, game: @game, game_data: @game_data, user: @user)
+        when 'async'
+          h(Game::Async, game: @game, game_data: @game_data, user: @user)
         end
 
       @connection = nil if @game_data[:mode] == :hotseat || cursor
@@ -164,54 +169,72 @@ module View
         store(:scroll_pos, elm.scrollTop < elm.scrollHeight - elm.offsetHeight - 20 ? elm.scrollTop : nil, skip: true)
       end
       store(:tile_selector, nil, skip: true)
+      # reset scroll to always show top of new tab
+      `window.scroll(0, document.getElementById('header').getBoundingClientRect().height + 1)`
       base = @app_route.split('#').first
       new_route = base + anchor
       new_route = base if @app_route == new_route
       store(:app_route, new_route)
     end
 
+    def button_click(id)
+      Native(`document.getElementById(#{id})`)&.click()
+    end
+
     def hotkey_check(event)
       # 'search for text when you start typing' feature of browser prevents execution
-      # only execute when no modifier is pressed to not interfere with OS shortcuts
+      # catch modifiers to not interfere with OS shortcuts
       event = Native(event)
       return if event.getModifierState('Alt') || event.getModifierState('AltGraph') || event.getModifierState('Meta') ||
-        event.getModifierState('Control') || event.getModifierState('OS') || event.getModifierState('Shift')
+        event.getModifierState('OS')
 
       active = Native(`document.activeElement`)
       return if active.id != 'game' && active.localName != 'body'
 
       key = event['key']
-      case key
-      when 'g'
-        change_anchor('')
-      when 'e'
-        change_anchor('#entities')
-      when 'm'
-        change_anchor('#map')
-      when 'a', 'k'
-        change_anchor('#market')
-      when 'i'
-        change_anchor('#info')
-      when 't'
-        change_anchor('#tiles')
-      when 's'
-        change_anchor('#spreadsheet')
-      when 'o'
-        change_anchor('#tools')
-      when 'c'
-        `document.getElementById('chatbar').focus()`
-        event.preventDefault
-      when '-', '0', '+'
-        map = `document.getElementById('map')`
-        `document.getElementById('zoom'+#{key}).click()` if map
-      when 'Home', 'End', 'PageUp', 'PageDown', 'ArrowLeft', 'ArrowRight'
-        Native(`document.getElementById('hist_'+#{key})`)&.click()
-        event.preventDefault
+      if event.getModifierState('Control')
+        case key
+        when 'y'
+          button_click('redo')
+        when 'z'
+          button_click('undo')
+        end
+      elsif event.getModifierState('Shift')
+        button_click('zoom+') if key == '+' # + on qwerty
+      else
+        case key
+        when 'g'
+          change_anchor('')
+        when 'e'
+          change_anchor('#entities')
+        when 'm'
+          change_anchor('#map')
+        when 'k'
+          change_anchor('#market')
+        when 'i'
+          change_anchor('#info')
+        when 't'
+          change_anchor('#tiles')
+        when 's'
+          change_anchor('#spreadsheet')
+        when 'o'
+          change_anchor('#tools')
+        when 'a'
+          change_anchor('#async')
+        when 'c'
+          Native(`document.getElementById('chatbar')`)&.focus()
+          event.preventDefault
+        when '-', '0', '+' # + on qwertz
+          button_click('zoom' + key)
+        when 'Home', 'End', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'
+          button_click('hist_' + key)
+          event.preventDefault
+        end
       end
     end
 
     def game_path
-      GameManager.url(@game_data)
+      url(@game_data)
     end
 
     private
@@ -269,6 +292,8 @@ module View
         item('S|preadsheet', '#spreadsheet'),
         item('To|ols', '#tools'),
       ]
+
+      menu_items << item('A|sync', '#async') if @game_data[:mode] != :hotseat && !cursor
 
       h('nav#game_menu', nav_props, [
         h('ul.no_margin.no_padding', { style: { width: 'max-content' } }, menu_items),

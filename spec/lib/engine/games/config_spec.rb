@@ -2,27 +2,26 @@
 
 require './spec/spec_helper'
 
-require 'engine'
 require 'json'
 
 module Engine
   players = ('a'..'z')
 
-  Engine::GAMES.each do |title|
-    describe title.title do
-      let(:min_players) { players.take(Engine.player_range(title).min) }
-      let(:max_players) { players.take(Engine.player_range(title).max) }
+  Engine::GAME_METAS.each do |game_meta|
+    describe game_meta.title do
+      let(:min_players) { players.take(Engine.player_range(game_meta).min) }
+      let(:max_players) { players.take(Engine.player_range(game_meta).max) }
 
       it 'can be initialized with min players' do
-        title.new(min_players, id: 1)
+        Engine.game_by_title(game_meta.title).new(min_players, id: 1)
       end
 
       it 'can be initialized with max players' do
-        title.new(max_players, id: 2)
+        Engine.game_by_title(game_meta.title).new(max_players, id: 2)
       end
 
       it 'has consistent borders' do
-        game = title.new(max_players, id: 1)
+        game = Engine.game_by_title(game_meta.title).new(max_players, id: 1)
         game.hexes.each do |hex|
           hex.tile.borders.each do |border|
             next unless border

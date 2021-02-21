@@ -76,7 +76,7 @@ module View
             magnet_str = ''
             if partition.restrict
               magnet = ((partition.a + partition.b) / 2).to_i
-              magnet = (magnet + 3) % 6 if @restrict == 'inner'
+              magnet = (magnet + 3) % 6 if partition.restrict == 'inner'
               magnet = VERTICES[magnet].map { |x| x * 0.5 }
 
               magnet_control = [vertex_a, vertex_b, magnet].transpose.map { |a, b, m| m - (b - a) * 2 / 7 }

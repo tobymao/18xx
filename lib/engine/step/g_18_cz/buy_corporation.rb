@@ -40,26 +40,43 @@ module Engine
           end
           receiving = []
 
+          receiving << @game.format_currency(corporation.cash)
+          corporation.spend(corporation.cash, entity) if corporation.cash.positive?
+
           companies = @game.transfer(:companies, corporation, entity).map(&:name)
           receiving << "companies (#{companies.join(', ')})" if companies.any?
 
           trains = @game.transfer(:trains, corporation, entity)
-          receiving << "trains (#{trains.map(&:name)})" if trains.any?
 
-          @round.bought_trains << {
-            entity: entity,
-            trains: trains,
-          }
+          unless trains.empty?
+            receiving << "trains (#{trains.map(&:name)})"
+
+            @round.bought_trains << {
+              entity: entity,
+              trains: trains,
+            }
+          end
 
           remove_duplicate_tokens(entity, corporation)
-          tokens = move_tokens_to_surviving(entity, corporation, price_for_new_token: 100, check_tokenable: false)
-          receiving << "and tokens (#{tokens.size}: hexes #{tokens.compact})"
+          tokens_to_clear = tokens_in_same_hex(entity, corporation)
+          if tokens_to_clear
+            @round.corporations_removing_tokens = [entity, corporation]
+          else
+            move_tokens_to_surviving(entity, corporation, price_for_new_token: @game.new_token_price,
+                                                          check_tokenable: false)
+          end
+          receiving <<
+              "and tokens (#{corporation.tokens.size}: hexes #{corporation.tokens.map do |token|
+                                                                 token.city&.hex&.id
+                                                               end.compact.uniq})"
 
           @log << "#{entity.name} buys #{corporation.name}
           for #{@game.format_currency(price)} per share receiving #{receiving.join(', ')}"
 
+          return if tokens_to_clear
+
+          @game.close_corporation(corporation)
           corporation.close!
-          @game.corporations.delete(corporation)
         end
 
         def pass_description
@@ -93,6 +110,23 @@ module Engine
           max_price = (corporation_to_boy.share_price.price * 1.5).ceil
           min_price = (corporation_to_boy.share_price.price * 0.5).ceil
           [min_price, max_price]
+        end
+
+        def tokens_in_same_hex(surviving, others)
+          (surviving.tokens.map { |t| t.city&.hex } & others_tokens(others).map { |t| t.city&.hex }).any?
+        end
+
+        def remove_duplicate_tokens(surviving, others)
+          # If there are 2 station markers on the same city the
+          # surviving company must remove one and place it on its charter.
+
+          others = others_tokens(others).map(&:city).compact
+          surviving.tokens.each do |token|
+            # after acquisition, the larger corp forfeits their $40 token
+            token.price = @game.new_token_price
+            city = token.city
+            token.remove! if others.include?(city)
+          end
         end
       end
     end

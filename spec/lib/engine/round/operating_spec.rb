@@ -2,14 +2,6 @@
 
 require './spec/spec_helper'
 
-require 'engine'
-require 'engine/game/g_1846'
-require 'engine/game/g_1889'
-require 'engine/game/g_18_chesapeake'
-require 'engine/phase'
-require 'engine/round/operating'
-require 'engine/action/place_token'
-
 RSpec::Matchers.define :be_assigned_to do |expected|
   match do |actual|
     expected.assigned?(actual.id)
@@ -19,7 +11,7 @@ end
 module Engine
   describe Round::Operating do
     let(:players) { %w[a b c] }
-    let(:game) { Game::G1889.new(players) }
+    let(:game) { Game::G1889::Game.new(players) }
     let(:hex_j3) { game.hex_by_id('J3') }
     let(:hex_j5) { game.hex_by_id('J5') }
     let(:hex_k4) { game.hex_by_id('K4') }
@@ -362,7 +354,7 @@ module Engine
           )
 
           expect(game.active_players).to eq([game.players[1]])
-          expect(subject.active_step).to be_a Engine::Step::G1889::SpecialTrack
+          expect(subject.active_step).to be_a Engine::Game::G1889::Step::SpecialTrack
 
           action = Action::LayTile.new(ehime, tile: game.tile_by_id('14-0'), hex: game.hex_by_id('C4'), rotation: 1)
           subject.process_action(action)
@@ -388,7 +380,7 @@ module Engine
           )
 
           expect(game.active_players).to eq([game.players[1]])
-          expect(subject.active_step).to be_a Engine::Step::G1889::SpecialTrack
+          expect(subject.active_step).to be_a Engine::Game::G1889::Step::SpecialTrack
 
           action = Action::BuyTrain.new(corporation, train: train, price: train.price)
           expect { subject.process_action(action) }.to raise_error(GameError)
@@ -404,7 +396,7 @@ module Engine
     end
 
     context '#18chesapeake' do
-      let(:game) { Game::G18Chesapeake.new(players) }
+      let(:game) { Game::G18Chesapeake::Game.new(players) }
       let(:corporation) { game.corporation_by_id('N&W') }
       let(:corporation2) { game.corporation_by_id('PRR') }
       subject { move_to_or! }
@@ -619,7 +611,7 @@ module Engine
 
     context '1846' do
       let(:players) { %w[a b c d e] }
-      let(:game) { Game::G1846.new(players) }
+      let(:game) { Game::G1846::Game.new(players) }
       let(:corporation) { game.corporation_by_id('B&O') }
       let(:corporation_1) { game.corporation_by_id('PRR') }
       let(:big4) { game.minor_by_id('BIG4') }

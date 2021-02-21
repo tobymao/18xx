@@ -1,11 +1,10 @@
 # frozen_string_literal: true
 
 require './spec/spec_helper'
-require 'engine/player'
 
 module Engine
   describe Player do
-    let(:game) { Game::G1889.new(%w[a b c]) }
+    let(:game) { Game::G1889::Game.new(%w[a b c]) }
     let(:corporation) { game.corporations.first }
     let(:company) { game.companies.first }
     let(:share_pool) { game.share_pool }

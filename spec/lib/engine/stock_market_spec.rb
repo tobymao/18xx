@@ -2,14 +2,9 @@
 
 require './spec/spec_helper'
 
-require 'engine/corporation'
-require 'engine/game/g_1889'
-require 'engine/game/g_1828'
-require 'engine/stock_market'
-
 module Engine
   describe StockMarket do
-    let(:subject) { StockMarket.new(Game::G1889::MARKET, []) }
+    let(:subject) { StockMarket.new(Game::G1889::Game::MARKET, []) }
     let(:corporation) { Corporation.new(sym: 'a', name: 'a', tokens: [0]) }
     let(:corporation_2) { Corporation.new(sym: 'b', name: 'b', tokens: [0]) }
 
@@ -95,7 +90,7 @@ module Engine
     end
 
     context '#1828' do
-      let(:subject) { G1828::StockMarket.new(Game::G1828::MARKET, []) }
+      let(:subject) { Game::G1828::StockMarket.new(Game::G1828::Game::MARKET, []) }
 
       it 'moves right if at ceiling' do
         current_price = subject.market[0][0]

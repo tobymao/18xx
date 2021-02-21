@@ -514,14 +514,14 @@ module View
       def render_operating_order
         round = @game.round
         order =
-          if @game.round.operating?
-            @game.round.entities.index(@corporation)
+          if round.operating?
+            round.entities.index(@corporation)
           else
             @game.operating_order.index(@corporation)
           end
 
         if order
-          m = round.entities.index(round.current_entity) if @game.round.operating?
+          m = round.entities.index(round.current_entity) if round.operating?
           span_class = '.bold' if order && m && order >= m
           [h(:div, { style: { display: 'inline' } }, [
             'Order: ',

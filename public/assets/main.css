@@ -111,6 +111,12 @@ th, td {
   background-color: #CCCCCC;
   color: black;
 }
+#spreadsheet tbody > tr:nth-child(2n) {
+  background-image: linear-gradient(rgba(255,255,255,0.4),rgba(255,255,255,0.4));
+}
+#spreadsheet tbody > tr:hover {
+  filter: drop-shadow(1px 0px 2px #555);
+}
 
 @media (prefers-color-scheme: dark) {
   body {
@@ -168,6 +174,13 @@ nav#game_menu {
   padding: 0;
   height: 1.8rem;
   width: 2.7rem;
+}
+::-webkit-color-swatch {
+    background-color: inherit; /* fix iOS/macOS black color inputs */
+}
+::-webkit-color-swatch-wrapper {
+    border: 1px solid gainsboro;
+    padding: 0;
 }
 #settings__options .input-container {
   display: block;
@@ -326,7 +339,8 @@ text.number {
 }
 
 .name {
-  max-width: 7rem;
+  min-width: 3rem;
+  max-width: 5rem;
 }
 
 .corp div, .player div {
@@ -370,12 +384,12 @@ div#game:focus {
   float: left;
 }
 
-#undo {
+#undo_redo {
   float: right;
 }
 
 @media only screen and (max-width: 420px) {
-  #undo {
+  #undo_redo {
     float: left;
   }
 }

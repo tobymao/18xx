@@ -44,7 +44,7 @@ module View
                                    process_action(Engine::Action::DiscardTrain.new(corporation, train: train))
                                  },
                                },
-                             }, 'Discard')
+                             }, 'Scrap')
           h('div.margined', train_options)
         end
         children = []
@@ -57,7 +57,7 @@ module View
         children << h(Map, game: @game) if @game.round.operating?
 
         h(:div, [
-          h(:div, { style: { marginBottom: '1rem', fontWeight: 'bold' } }, 'Keep, Discard or Upgrade Trains'),
+          h(:div, { style: { marginBottom: '1rem', fontWeight: 'bold' } }, 'Keep, Scrap or Upgrade Trains'),
           *children,
         ])
       end

@@ -8,9 +8,19 @@ module View
       include Actionable
 
       def render
-        action = -> { process_action(Engine::Action::Redo.new(@game.current_entity)) }
-        h(:button,
-          { style: { marginTop: :inherit }, on: { click: action }, attrs: { disabled: !@game.redo_possible } },
+        h('button#redo',
+          {
+            attrs: {
+              disabled: !@game.redo_possible,
+              title: 'Redo – shortcut: ctrl+y',
+            },
+            on: {
+              click: -> { process_action(Engine::Action::Redo.new(@game.current_entity)) },
+            },
+            style: {
+              marginTop: 'inherit',
+            },
+          },
           'Redo')
       end
     end

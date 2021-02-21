@@ -2,10 +2,6 @@
 
 require './spec/spec_helper'
 
-require 'engine'
-require 'engine/corporation'
-require 'engine/share_price'
-
 module Engine
   describe Corporation do
     let(:corporation_1) { Engine::Corporation.new(sym: 'a', name: 'a', tokens: []) }
@@ -14,7 +10,7 @@ module Engine
     let(:corporation_4) { Engine::Corporation.new(sym: 'd', name: 'd', tokens: []) }
     let(:corporations) { [corporation_1, corporation_2, corporation_3, corporation_4] }
 
-    let(:market) { Engine::StockMarket.new(Engine::Game::G1889::MARKET, []) }
+    let(:market) { Engine::StockMarket.new(Engine::Game::G1889::Game::MARKET, []) }
     let(:share_price_100) { market.market[1][4] }
     let(:share_price_100_r) { market.market[2][5] }
     let(:share_price_110) { market.market[0][4] }

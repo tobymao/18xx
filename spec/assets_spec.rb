@@ -293,7 +293,7 @@ describe 'Assets' do
        [[889, 'cash_crisis', ['Player owes the bank $294 and must sell shares if possible.']]]],
       ['1817',
        16_281,
-       [[812,
+       [[809,
          'buy_sell_post_conversion',
          ['Merger Round 4.2 (of 2) - Buy/Sell Shares Post Conversion',
           'New York, Susquehanna and Western Railway']]]],

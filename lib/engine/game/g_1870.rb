@@ -65,6 +65,7 @@ module Engine
           Step::Bankrupt,
           Step::Exchange,
           Step::G1870::BuyCompany,
+          Step::G1870::Assign,
           Step::G1870::SpecialTrack,
           Step::G1870::Track,
           Step::Token,
@@ -119,6 +120,10 @@ module Engine
           corp = removal[:corporation]
           @log << "-- Event: #{corp}'s #{company_by_id(company).name} token removed from #{hex} --"
         end
+      end
+
+      def company_by_id(id)
+        return super('GSC') if id == 'GSCᶜ'
       end
 
       def river_company
