@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-require_relative '../auctioner'
+require_relative '../../../step/auctioner'
 
 module Engine
-  module Step
+  module Game
     module G1822
       module BidboxAuction
-        include Auctioner
+        include Engine::Step::Auctioner
 
         def min_bid(company)
           return unless company
