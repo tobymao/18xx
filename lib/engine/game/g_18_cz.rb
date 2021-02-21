@@ -203,7 +203,13 @@ module Engine
 
       def float_corporation(corporation)
         @recently_floated << corporation
-        super
+
+        @log << "#{corporation.name} floats"
+
+        return if corporation.capitalization == :incremental
+
+        @bank.spend(corporation.original_par_price.price * corporation.total_shares, corporation)
+        @log << "#{corporation.name} receives #{format_currency(corporation.cash)}"
       end
 
       def or_set_finished

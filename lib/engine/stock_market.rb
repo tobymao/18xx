@@ -40,6 +40,7 @@ module Engine
       share_price.corporations << corporation
       corporation.share_price = share_price
       corporation.par_price = share_price
+      corporation.original_par_price = share_price
     end
 
     def move_right(corporation)
