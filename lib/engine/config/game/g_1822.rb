@@ -98,6 +98,7 @@ module Engine
     "M26": "Lincoln",
     "M30": "Peterborough",
     "M36": "Hertford",
+    "M38": "London",
     "M42": "Brighton",
     "N21": "Hull",
     "N23": "Grimsby",
@@ -150,7 +151,7 @@ module Engine
     "X20": {
       "count": 1,
       "color": "yellow",
-      "code": "city=revenue:40;city=revenue:40;city=revenue:40;city=revenue:40;city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:1,b:_1;path=a:2,b:_2;path=a:3,b:_3;path=a:4,b:_4;path=a:5,b:_5;upgrade=cost:20;label=London"
+      "code": "city=revenue:40;city=revenue:40;city=revenue:40;city=revenue:40;city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:1,b:_1;path=a:2,b:_2;path=a:3,b:_3;path=a:4,b:_4;path=a:5,b:_5;upgrade=cost:20;label=L"
     },
     "405": {
       "count": 3,
@@ -180,7 +181,7 @@ module Engine
     "X21": {
       "count": 1,
       "color": "green",
-      "code": "city=revenue:60;city=revenue:60;city=revenue:60;city=revenue:60;city=revenue:60;city=revenue:60;path=a:0,b:_0;path=a:1,b:_1;path=a:2,b:_2;path=a:3,b:_3;path=a:4,b:_4;path=a:5,b:_5;upgrade=cost:20;label=London"
+      "code": "city=revenue:60;city=revenue:60;city=revenue:60;city=revenue:60;city=revenue:60;city=revenue:60;path=a:0,b:_0;path=a:1,b:_1;path=a:2,b:_2;path=a:3,b:_3;path=a:4,b:_4;path=a:5,b:_5;upgrade=cost:20;label=L"
     },
     "145": {
       "count": 4,
@@ -230,7 +231,7 @@ module Engine
     "X22": {
       "count": 1,
       "color": "brown",
-      "code": "city=revenue:80;city=revenue:80;city=revenue:80;city=revenue:80;city=revenue:80;city=revenue:80;path=a:0,b:_0;path=a:1,b:_1;path=a:2,b:_2;path=a:3,b:_3;path=a:4,b:_4;path=a:5,b:_5;upgrade=cost:20;label=London"
+      "code": "city=revenue:80;city=revenue:80;city=revenue:80;city=revenue:80;city=revenue:80;city=revenue:80;path=a:0,b:_0;path=a:1,b:_1;path=a:2,b:_2;path=a:3,b:_3;path=a:4,b:_4;path=a:5,b:_5;upgrade=cost:20;label=L"
     },
     "169": {
       "count": 2,
@@ -285,7 +286,7 @@ module Engine
     "X23": {
       "count": 1,
       "color": "gray",
-      "code": "city=revenue:100;city=revenue:100;city=revenue:100;city=revenue:100;city=revenue:100;city=revenue:100;path=a:0,b:_0;path=a:1,b:_1;path=a:2,b:_2;path=a:3,b:_3;path=a:4,b:_4;path=a:5,b:_5;label=London"
+      "code": "city=revenue:100;city=revenue:100;city=revenue:100;city=revenue:100;city=revenue:100;city=revenue:100;path=a:0,b:_0;path=a:1,b:_1;path=a:2,b:_2;path=a:3,b:_3;path=a:4,b:_4;path=a:5,b:_5;label=L"
     }
   },
   "market": [
@@ -1365,7 +1366,6 @@ module Engine
       "hide_shares": true,
       "shares": [100],
       "max_ownership_percent": 100,
-      "coordinates": "R38",
       "color": "white",
       "text_color": "black"
     },
@@ -1756,7 +1756,7 @@ module Engine
           "name": "E",
           "distance": [
             {
-              "nodes": ["city"],
+              "nodes": ["city", "offboard"],
               "pay": 99,
               "visit": 99,
               "multiplier": 2
@@ -2036,8 +2036,7 @@ module Engine
         "L33",
         "M30",
         "P35",
-        "P41",
-        "R38"
+        "P41"
       ],
       "city=revenue:0;border=edge:1,type:impassable": [
         "I42"
@@ -2054,7 +2053,7 @@ module Engine
       "city=revenue:20,loc:center;town=revenue:10,loc:1;path=a:_0,b:_1;border=edge:0,type:impassable;label=S":[
         "D35"
       ],
-      "city=revenue:20;city=revenue:20;city=revenue:20;city=revenue:20;city=revenue:20;city=revenue:20;path=a:0,b:_0;path=a:1,b:_1;path=a:2,b:_2;path=a:3,b:_3;path=a:4,b:_4;path=a:5,b:_5;upgrade=cost:20;label=London": [
+      "city=revenue:20;city=revenue:20;city=revenue:20;city=revenue:20;city=revenue:20;city=revenue:20;path=a:0,b:_0;path=a:1,b:_1;path=a:2,b:_2;path=a:3,b:_3;path=a:4,b:_4;path=a:5,b:_5;upgrade=cost:20;label=L": [
         "M38"
       ],
       "city=revenue:0;label=T": [
@@ -2151,7 +2150,7 @@ module Engine
       "city=revenue:yellow_30|green_40|brown_50|gray_60,slots:2;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1": [
         "H1"
       ],
-      "offboard=revenue:yellow_0|green_60|brown_90|gray_120;path=a:2,b:_0": [
+      "offboard=revenue:yellow_0|green_60|brown_90|gray_120,visit_cost:0;path=a:2,b:_0": [
         "Q44"
       ]
     },
