@@ -174,7 +174,7 @@ module View
           events << h('div.left', "rusts #{rust_schedule[name].join(', ')}") if rust_schedule[name]
           events << h('div.left', "obsoletes #{obsolete_schedule[name].join(', ')}") if obsolete_schedule[name]
           tds = [h(:td, names_to_prices.keys.join(', ')),
-                 h(:td, names_to_prices.values.map { |p| @game.format_currency(p) }.join(', ')),
+                 h("td#{price_str_class}", names_to_prices.values.map { |p| @game.format_currency(p) }.join(', ')),
                  h('td.right', "×#{trains.size}")]
           tds << h('td.right', events) if events.size.positive?
 
@@ -225,7 +225,7 @@ module View
 
           upcoming_train_content = [
             h(:td, names_to_prices.keys.join(', ')),
-            h('td.right', names_to_prices.values.map { |p| @game.format_currency(p) }.join(', ')),
+            h("td#{price_str_class}", names_to_prices.values.map { |p| @game.format_currency(p) }.join(', ')),
             h('td.center', trains.size),
           ]
 
@@ -309,6 +309,13 @@ module View
           ]),
           *event_text,
         ]
+      end
+
+      def price_str_class
+        max_size = @game.depot.upcoming.group_by(&:name).map do |_name, trains|
+          trains.first.names_to_prices.keys.size
+        end.max
+        max_size == 1 ? '.right' : ''
       end
 
       def discarded_trains
