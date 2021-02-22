@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative 'meta'
 require_relative '../base'
 require_relative 'step/buy_sell_par_shares'
 
