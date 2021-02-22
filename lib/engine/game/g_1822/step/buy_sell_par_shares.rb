@@ -154,9 +154,9 @@ module Engine
             entity = action.entity
 
             player_debt = @game.player_debt(entity)
+            entity.check_cash(player_debt)
             @log << "#{entity.name} pays off its loan of #{@game.format_currency(player_debt)}"
 
-            entity.spend(player_debt, @game.bank)
             @game.payoff_player_loan(entity)
           end
 

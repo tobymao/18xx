@@ -513,6 +513,11 @@ module Engine
             distance: 6,
             num: 3,
             price: 600,
+            events: [
+              {
+                'type' => 'full_capitalisation',
+              },
+            ],
           },
           {
             name: '7',
@@ -1945,6 +1950,8 @@ module Engine
         EVENTS_TEXT = {
           'close_concessions' =>
             ['Concessions close', 'All concessions close without compensation, major companies now float at 50%'],
+          'full_capitalisation' =>
+            ['Full capitalisation', 'Major companies now receives full capitalisation when floated'],
         }.freeze
 
         STATUS_TEXT = Base::STATUS_TEXT.merge(
@@ -2221,6 +2228,22 @@ module Engine
           end
         end
 
+        def event_full_capitalisation!
+          @log << '-- Event: Major companies now receives full capitalisation when floated --'
+          @corporations.select { |c| !c.floated? && c.type == :major }.each do |corporation|
+            corporation.capitalization = :full
+          end
+        end
+
+        def float_corporation(corporation)
+          super
+          return if !@phase.status.include?('full_capitalisation') || corporation.type != :major
+
+          bundle = ShareBundle.new(corporation.shares_of(corporation))
+          @share_pool.transfer_shares(bundle, @share_pool)
+          @log << "#{corporation.name}'s remaining shares are transferred to the Market"
+        end
+
         def format_currency(val)
           return super if (val % 1).zero?
 
@@ -2306,20 +2329,19 @@ module Engine
 
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
-            Engine::Step::Bankrupt,
             G1822::Step::PendingToken,
             G1822::Step::FirstTurnHousekeeping,
             Engine::Step::AcquireCompany,
-            Engine::Step::DiscardTrain,
+            G1822::Step::DiscardTrain,
             G1822::Step::Track,
             G1822::Step::DestinationToken,
             G1822::Step::Token,
-            Engine::Step::Route,
+            G1822::Step::Route,
             G1822::Step::Dividend,
             G1822::Step::BuyTrain,
             G1822::Step::MinorAcquisition,
             G1822::Step::PendingToken,
-            Engine::Step::DiscardTrain,
+            G1822::Step::DiscardTrain,
             G1822::Step::IssueShares,
           ], round_num: round_num)
         end
@@ -2404,6 +2426,10 @@ module Engine
           mail_bonus.sum do |v|
             v[:subsidy]
           end
+        end
+
+        def route_trains(entity)
+          entity.runnable_trains.reject { |t| pullman_train?(t) }
         end
 
         def setup
@@ -2648,6 +2674,9 @@ module Engine
         end
 
         def payoff_player_loan(player)
+          # Remove the loan money from the player. The money from loans is outside money, doesnt count towards
+          # the normal bank money.
+          player.cash -= @player_debts[player]
           @player_debts[player] = 0
         end
 
@@ -2666,6 +2695,10 @@ module Engine
 
         def player_debt(player)
           @player_debts[player] || 0
+        end
+
+        def pullman_train?(train)
+          train.name == self.class::EXTRA_TRAIN_PULLMAN
         end
 
         def reduced_bundle_price_for_market_drop(bundle)
@@ -2696,9 +2729,11 @@ module Engine
         end
 
         def take_player_loan(player, loan)
+          # Give the player the money. The money for loans is outside money, doesnt count towards the normal bank money.
+          player.cash += loan
+
           # Add intrest to the loan, must atleast pay 150% of the loaned value
-          loan += player_loan_intrest(loan)
-          @player_debts[player] += loan
+          @player_debts[player] += player_loan_intrest(loan)
         end
 
         def train_type(train)
