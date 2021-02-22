@@ -303,7 +303,7 @@ module Engine
                     "value": 25,
                     "revenue": 5,
                     "sym": "S1",
-                    "desc": "May either ignore the cost to build a river tile or lay a special purple-edged tile on yellow towns/cities",
+                    "desc": "May either ignore the cost to build a river tile or lay a purple-edged green upgrade to town/city hexes",
                     "abilities": [
                         {
                             "type": "tile_lay",
@@ -375,7 +375,7 @@ module Engine
                     "value": 30,
                     "revenue": 5,
                     "sym": "S2",
-                    "desc": "May either ignore the cost to build a river tile or lay a special purple-edged tile on yellow towns/cities",
+                    "desc": "May either ignore the cost to build a river tile or lay a purple-edged green upgrade to town/city hexes",
                     "abilities": [
                         {
                             "type": "tile_lay",
@@ -447,7 +447,7 @@ module Engine
                     "value": 35,
                     "revenue": 5,
                     "sym": "S3",
-                    "desc": "May either ignore the cost to build a river tile or lay a special purple-edged tile on yellow towns/cities",
+                    "desc": "May either ignore the cost to build a river tile or lay a purple-edged green upgrade to town/city hexes",
                     "abilities": [
                         {
                             "type": "tile_lay",
@@ -519,7 +519,7 @@ module Engine
                     "value": 40,
                     "revenue": 5,
                     "sym": "S4",
-                    "desc": "May either ignore the cost to build a river tile or lay a special purple-edged tile on yellow towns/cities",
+                    "desc": "May either ignore the cost to build a river tile or lay a purple-edged green upgrade to town/city hexes",
                     "abilities": [
                         {
                             "type": "tile_lay",
@@ -591,7 +591,7 @@ module Engine
                     "value": 45,
                     "revenue": 5,
                     "sym": "S5",
-                    "desc": "May either ignore the cost to build a river tile or lay a special purple-edged tile on yellow towns/cities",
+                    "desc": "May either ignore the cost to build a river tile or lay a purple-edged green upgrade to town/city hexes",
                     "abilities": [
                         {
                             "type": "tile_lay",
@@ -663,7 +663,7 @@ module Engine
                     "value": 50,
                     "revenue": 5,
                     "sym": "S6",
-                    "desc": "May either ignore the cost to build a river tile or lay a special purple-edged tile on yellow towns/cities",
+                    "desc": "May either ignore the cost to build a river tile or lay a purple-edged green upgrade to town/city hexes",
                     "abilities": [
                         {
                             "type": "tile_lay",
@@ -735,7 +735,7 @@ module Engine
                     "value": 40,
                     "revenue": 10,
                     "sym": "M1",
-                    "desc": "May either ignore the cost to build a river or hill tile or lay a special purple-edged tile on yellow or green towns/cities",
+                    "desc": "May either ignore the cost to build a river or hill tile or lay a purple-edged green or brown upgrade to town/city hexes",
                     "abilities": [
                         {
                             "type": "tile_lay",
@@ -826,7 +826,7 @@ module Engine
                     "value": 45,
                     "revenue": 10,
                     "sym": "M2",
-                    "desc": "May either ignore the cost to build a river or hill tile or lay a special purple-edged tile on yellow or green towns/cities",
+                    "desc": "May either ignore the cost to build a river or hill tile or lay a purple-edged green or brown upgrade to town/city hexes",
                     "abilities": [
                         {
                             "type": "tile_lay",
@@ -917,7 +917,7 @@ module Engine
                     "value": 50,
                     "revenue": 10,
                     "sym": "M3",
-                    "desc": "May either ignore the cost to build a river or hill tile or lay a special purple-edged tile on yellow or green towns/cities",
+                    "desc": "May either ignore the cost to build a river or hill tile or lay a purple-edged green or brown upgrade to town/city hexes",
                     "abilities": [
                         {
                             "type": "tile_lay",
@@ -1008,7 +1008,7 @@ module Engine
                     "value": 55,
                     "revenue": 10,
                     "sym": "M4",
-                    "desc": "May either ignore the cost to build a river or hill tile or lay a special purple-edged tile on yellow or green towns/cities",
+                    "desc": "May either ignore the cost to build a river or hill tile or lay a purple-edged green or brown upgrade to town/city hexes",
                     "abilities": [
                         {
                             "type": "tile_lay",
@@ -1099,7 +1099,7 @@ module Engine
                     "value": 60,
                     "revenue": 10,
                     "sym": "M5",
-                    "desc": "May either ignore the cost to build a river or hill tile or lay a special purple-edged tile on yellow or green towns/cities",
+                    "desc": "May either ignore the cost to build a river or hill tile or lay a purple-edged green or brown upgrade to town/city hexes",
                     "abilities": [
                         {
                             "type": "tile_lay",
@@ -1190,7 +1190,7 @@ module Engine
                     "value": 65,
                     "revenue": 10,
                     "sym": "M6",
-                    "desc": "May either ignore the cost to build a river or hill tile or lay a special purple-edged tile on yellow or green towns/cities",
+                    "desc": "May either ignore the cost to build a river or hill tile or lay a purple-edged green or brown upgrade to town/city hexes",
                     "abilities": [
                         {
                             "type": "tile_lay",
@@ -1281,7 +1281,7 @@ module Engine
                     "value": 55,
                     "revenue": 20,
                     "sym": "L1",
-                    "desc": "May either ignore the cost to build a river, hill or mountain tile or lay a special purple-edged tile on yellow, green or brown towns/cities",
+                    "desc": "May either ignore the cost to build a river, hill or mountain tile or lay a purple-edged green, brown, or gray upgrade to town/city hexes",
                     "abilities": [
                         {
                             "type": "tile_lay",
@@ -1381,7 +1381,7 @@ module Engine
                     "value": 60,
                     "revenue": 20,
                     "sym": "L2",
-                    "desc": "May either ignore the cost to build a river, hill or mountain tile or lay a special purple-edged tile on yellow, green or brown towns/cities",
+                    "desc": "May either ignore the cost to build a river, hill or mountain tile or lay a purple-edged green, brown, or gray upgrade to town/city hexes",
                     "abilities": [
                         {
                             "type": "tile_lay",
@@ -1481,7 +1481,7 @@ module Engine
                     "value": 65,
                     "revenue": 20,
                     "sym": "L3",
-                    "desc": "May either ignore the cost to build a river, hill or mountain tile or lay a special purple-edged tile on yellow, green or brown towns/cities",
+                    "desc": "May either ignore the cost to build a river, hill or mountain tile or lay a purple-edged green, brown, or gray upgrade to town/city hexes",
                     "abilities": [
                         {
                             "type": "tile_lay",
@@ -1581,7 +1581,7 @@ module Engine
                     "value": 70,
                     "revenue": 20,
                     "sym": "L4",
-                    "desc": "May either ignore the cost to build a river, hill or mountain tile or lay a special purple-edged tile on yellow, green or brown towns/cities",
+                    "desc": "May either ignore the cost to build a river, hill or mountain tile or lay a purple-edged green, brown, or gray upgrade to town/city hexes",
                     "abilities": [
                         {
                             "type": "tile_lay",
@@ -1681,7 +1681,7 @@ module Engine
                     "value": 75,
                     "revenue": 20,
                     "sym": "L5",
-                    "desc": "May either ignore the cost to build a river, hill or mountain tile or lay a special purple-edged tile on yellow, green or brown towns/cities",
+                    "desc": "May either ignore the cost to build a river, hill or mountain tile or lay a purple-edged green, brown, or gray upgrade to town/city hexes",
                     "abilities": [
                         {
                             "type": "tile_lay",
@@ -1781,7 +1781,7 @@ module Engine
                     "value": 80,
                     "revenue": 20,
                     "sym": "L6",
-                    "desc": "May either ignore the cost to build a river, hill or mountain tile or lay a special purple-edged tile on yellow, green or brown towns/cities",
+                    "desc": "May either ignore the cost to build a river, hill or mountain tile or lay a purple-edged green, brown, or gray upgrade to town/city hexes",
                     "abilities": [
                         {
                             "type": "tile_lay",
