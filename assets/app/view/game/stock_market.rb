@@ -303,41 +303,24 @@ module View
         if @game.respond_to?(:price_movement_chart)
           header, *chart = @game.price_movement_chart
 
-          props = {
-            style: {
-              border: '1px solid',
-            },
-          }
-
           rows = chart.map do |r|
-            h(:tr, props, [
-              h('td.right', props, r[0]),
-              h(:td, props, r[1]),
+            h(:tr, [
+              h(:td, r[0]),
+              h(:td, r[1]),
             ])
           end
 
           table_props = {
             style: {
-              margin: '0.5rem 0 0.5rem 0',
-              textAlign: 'left',
-              border: '1px solid',
-              borderColor: color_for(:font),
-              borderCollapse: 'collapse',
-            },
-          }
-
-          header_props = {
-            style: {
-              backgroundColor: color_for(:bg2),
-              border: '1px solid',
+              margin: '1rem 0',
             },
           }
 
           children << h(:table, table_props, [
             h(:thead, [
-              h(:tr, props, [
-                h('th.no_padding', header_props, header[0]),
-                h(:th, header_props, header[1]),
+              h(:tr, [
+                h(:th, header[0]),
+                h(:th, header[1]),
               ]),
             ]),
             h(:tbody, rows),

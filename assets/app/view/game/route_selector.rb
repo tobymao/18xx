@@ -186,7 +186,6 @@ module View
         instructions += ' Click button under Revenue to pick number of halts.' if render_halts
 
         h(:div, div_props, [
-          dividend_chart,
           h(:h3, { style: { margin: '0.5rem 0 0.2rem' } }, 'Select Routes'),
           h('div.small_font', description),
           h('div.small_font', instructions),
@@ -203,6 +202,7 @@ module View
             h(:tbody, trains),
           ]),
           actions(render_halts),
+          dividend_chart,
         ].compact)
       end
 
@@ -278,41 +278,24 @@ module View
 
         header, *chart = step.chart(@game.round.current_entity)
 
-        props = {
-          style: {
-            border: '1px solid',
-          },
-        }
-
         rows = chart.map do |r|
-          h(:tr, props, [
-            h('td.right', props, r[0]),
-            h(:td, props, r[1]),
+          h(:tr, [
+            h('td.right.padded_number', r[0]),
+            h(:td, r[1]),
           ])
         end
 
         table_props = {
           style: {
-            margin: '0.5rem 0 0 0',
-            textAlign: 'left',
-            border: '1px solid',
-            borderColor: color_for(:font),
-            borderCollapse: 'collapse',
-          },
-        }
-
-        header_props = {
-          style: {
-            backgroundColor: color_for(:bg2),
-            border: '1px solid',
+            margin: '0.5rem 0',
           },
         }
 
         h(:table, table_props, [
           h(:thead, [
-            h(:tr, props, [
-              h('th.right', header_props, header[0]),
-              h(:th, header_props, header[1]),
+            h(:tr, [
+              h(:th, header[0]),
+              h(:th, header[1]),
             ]),
           ]),
           h(:tbody, rows),
