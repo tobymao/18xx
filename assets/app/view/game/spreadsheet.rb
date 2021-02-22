@@ -64,7 +64,7 @@ module View
             h(:thead, [
               h(:th, { style: { minWidth: '5rem' } }, ''),
               *@game.players.map do |p|
-                h('th.name.nowrap.right', p == @game.priority_deal_player ? pd_props : '', p.name)
+                h('th.name.nowrap', p == @game.priority_deal_player ? pd_props : '', p.name)
               end,
             ]),
             h('tbody#player_or_history', [*render_player_or_history]),
@@ -74,7 +74,7 @@ module View
       end
 
       def render_extra_cards
-        h('div#extra_cards', [
+        h('div#extra_cards', { style: { marginBottom: '1rem' } }, [
           h(Bank, game: @game),
           h(GameInfo, game: @game, layout: 'upcoming_trains'),
         ].compact)
@@ -194,7 +194,7 @@ module View
           h(:tr, [
             h(:th, { style: { paddingBottom: '0.3rem' } }, render_sort_link('SYM', :id)),
             *@game.players.map do |p|
-              h('th.name.nowrap.right', p == @game.priority_deal_player ? pd_props : '', render_sort_link(p.name, p.id))
+              h('th.name.nowrap', p == @game.priority_deal_player ? pd_props : '', render_sort_link(p.name, p.id))
             end,
             h(:th, render_sort_link(@game.ipo_name, :ipo_shares)),
             h(:th, render_sort_link('Market', :market_shares)),
@@ -275,7 +275,7 @@ module View
       end
 
       def render_spreadsheet_controls
-        h('div#spreadsheet_controls', [
+        h('div#spreadsheet_controls', { style: { marginBottom: '1rem' } }, [
           h(:button, {
               style: { minWidth: '9.5rem' },
               on: { click: -> { toggle_delta_value } },
