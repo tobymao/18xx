@@ -325,7 +325,7 @@ module View
             when :order
               operating_order
             when :trains
-              corporation.floated? ? corporation.trains.size : -1
+              corporation.floated? ? [corporation.trains.size, corporation.trains.max_by(&:name).to_s] : [-1, '']
             when :tokens
               @game.count_available_tokens(corporation)
             when :loans
