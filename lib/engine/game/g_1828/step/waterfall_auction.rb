@@ -19,8 +19,8 @@ module Engine
             super
           end
 
-          def tiered_auction?
-            true
+          def tiered_auction_companies
+            @companies.group_by(&:value).values
           end
 
           protected

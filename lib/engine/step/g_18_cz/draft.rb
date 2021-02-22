@@ -11,11 +11,7 @@ module Engine
         ACTIONS = %w[bid pass].freeze
 
         def setup
-          @grouped_companies = @game.companies.sort.group_by(&:revenue)
-          @companies = []
-          @grouped_companies.each do |item|
-            @companies << item[1].shift
-          end
+          @companies = @game.companies.sort
         end
 
         def available
@@ -38,6 +34,10 @@ module Engine
 
         def players_visible?
           true
+        end
+
+        def tiered_auction_companies
+          @companies.group_by(&:revenue).values
         end
 
         def name
@@ -69,14 +69,9 @@ module Engine
 
           @companies.delete(company)
 
-          companies_of_type = @grouped_companies[company.revenue]
-
-          @companies << companies_of_type.shift unless companies_of_type.empty?
-          @companies.sort_by!(&:revenue)
-
           @log << "#{player.name} buys #{company.name} for #{@game.format_currency(price)}"
 
-          action.entity.unpass!
+          entities.each(&:unpass!)
           @round.next_entity_index!
           action_finalized
         end
@@ -95,6 +90,7 @@ module Engine
             @log << "#{c.name} is removed from the game"
             @game.companies.delete(c)
           end
+
           @round.reset_entity_index!
         end
 
