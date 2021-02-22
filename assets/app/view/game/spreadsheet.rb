@@ -116,14 +116,8 @@ module View
       end
 
       def render_history(corporation)
-        hist = corporation.operating_history
-        if hist.empty?
-          # This is a company that hasn't floated yet
-          []
-        else
-          or_history(@game.all_corporations).map do |x|
-            render_or_history_row(hist, corporation, x)
-          end
+        or_history(@game.all_corporations).map do |x|
+          render_or_history_row(corporation.operating_history, corporation, x)
         end
       end
 
