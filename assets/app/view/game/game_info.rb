@@ -93,7 +93,7 @@ module View
         end
 
         if status_text.any?
-          status_text = [h(:table, [
+          status_text = [h(:table, { style: { marginTop: '0.3rem' } }, [
             h(:thead, [
               h(:tr, [
                 h(:th, 'Status'),
@@ -247,14 +247,14 @@ module View
             show_rusts_inline = false
           end
 
-          upcoming_train_content << h(:td, obsolete_schedule[name]&.join(', ') || 'None') if show_obsolete_schedule
+          upcoming_train_content << h(:td, obsolete_schedule[name]&.join(', ') || '') if show_obsolete_schedule
           upcoming_train_content << if show_rusts_inline
-                                      h(:td, rusts&.join(', ') || 'None')
+                                      h(:td, rusts&.join(', ') || '')
                                     else
                                       h(:td,
                                         rusts&.map do |value|
                                           h(:div, { style: { paddingBottom: '0.1rem' } }, value)
-                                        end || 'None')
+                                        end || '')
                                     end
 
           upcoming_train_content << h(:td, discounts&.join(' ')) if show_upgrade
@@ -270,7 +270,7 @@ module View
           end
 
         if event_text.any?
-          event_text = [h(:table, [
+          event_text = [h(:table, { style: { marginTop: '0.3rem' } }, [
             h(:thead, [
               h(:tr, [
                 h(:th, 'Event'),
