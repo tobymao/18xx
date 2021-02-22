@@ -33,15 +33,17 @@ module View
       end
 
       def render_corporation_table
-        h('table#corporation_table', table_props, [
-          h(:thead, render_titles),
-          h(:tbody, render_corporations),
-          h(:thead, [
-            h(:tr, { style: { height: '1rem' } }, [
-              h(:td, { attrs: { colspan: @game.players.size + 8 } }, ''),
-              h(:td, { attrs: { colspan: 2 } }, @game.respond_to?(:token_note) ? @game.token_note : ''),
-              h(:td, { attrs: { colspan: 1 + @extra_size } }, ''),
-              h(:td, { attrs: { colspan: @halfpaid ? 6 : 3 } }, "[withheld]#{' ¦half-paid¦' if @halfpaid}"),
+        h('div#corporation_table', [
+          h(:table, table_props, [
+            h(:thead, render_titles),
+            h(:tbody, render_corporations),
+            h(:tfoot, [
+              h(:tr, { style: { height: '1rem' } }, [
+                h(:td, { attrs: { colspan: @game.players.size + 8 } }, ''),
+                h(:td, { attrs: { colspan: 2 } }, @game.respond_to?(:token_note) ? @game.token_note : ''),
+                h(:td, { attrs: { colspan: 1 + @extra_size } }, ''),
+                h(:td, { attrs: { colspan: @halfpaid ? 6 : 3 } }, "[withheld]#{' ¦half-paid¦' if @halfpaid}"),
+              ]),
             ]),
           ]),
         ])
@@ -62,7 +64,7 @@ module View
             h(:thead, [
               h(:th, { style: { minWidth: '5rem' } }, ''),
               *@game.players.map do |p|
-                h('th.name.nowrap.right', p == @game.priority_deal_player ? pd_props : '', p.name)
+                h('th.name.nowrap', p == @game.priority_deal_player ? pd_props : '', p.name)
               end,
             ]),
             h('tbody#player_or_history', [*render_player_or_history]),
@@ -72,7 +74,7 @@ module View
       end
 
       def render_extra_cards
-        h('div#extra_cards', [
+        h('div#extra_cards', { style: { marginBottom: '1rem' } }, [
           h(Bank, game: @game),
           h(GameInfo, game: @game, layout: 'upcoming_trains'),
         ].compact)
@@ -192,7 +194,7 @@ module View
           h(:tr, [
             h(:th, { style: { paddingBottom: '0.3rem' } }, render_sort_link('SYM', :id)),
             *@game.players.map do |p|
-              h('th.name.nowrap.right', p == @game.priority_deal_player ? pd_props : '', render_sort_link(p.name, p.id))
+              h('th.name.nowrap', p == @game.priority_deal_player ? pd_props : '', render_sort_link(p.name, p.id))
             end,
             h(:th, render_sort_link(@game.ipo_name, :ipo_shares)),
             h(:th, render_sort_link('Market', :market_shares)),
@@ -273,7 +275,7 @@ module View
       end
 
       def render_spreadsheet_controls
-        h('div#spreadsheet_controls', [
+        h('div#spreadsheet_controls', { style: { marginBottom: '1rem' } }, [
           h(:button, {
               style: { minWidth: '9.5rem' },
               on: { click: -> { toggle_delta_value } },

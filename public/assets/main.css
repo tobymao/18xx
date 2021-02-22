@@ -109,14 +109,14 @@ th, td {
   vertical-align: top;
 }
 
-#game_info tbody > tr:hover {
-  background-color: #CCCCCC;
+#game_info tbody > tr:hover, #bank.card tr:hover, #upcoming_trains.card tr:hover {
+  background-color: gainsboro;
   color: black;
 }
-#spreadsheet tbody > tr:nth-child(2n) {
+#spreadsheet > div:not(#extra_cards) tbody > tr:nth-child(2n) {
   background-image: linear-gradient(rgba(255,255,255,0.4),rgba(255,255,255,0.4));
 }
-#spreadsheet tbody > tr:hover {
+#spreadsheet > div:not(#extra_cards) tbody > tr:hover {
   filter: drop-shadow(1px 0px 2px #555);
 }
 
@@ -158,6 +158,9 @@ nav#game_menu {
 }
 .top {
   vertical-align: top;
+}
+.middle {
+  vertical-align: middle;
 }
 
 .italic {
@@ -316,7 +319,7 @@ text.number {
   margin: 0 0.5rem 0.5rem 0;
 }
 #entities .card {
-  margin: 0 0 0.5rem 0;
+  margin: 0.5rem 0 0 0;
   width: 100%;
   max-width: 20rem;
 }
