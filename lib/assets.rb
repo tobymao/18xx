@@ -236,7 +236,7 @@ class Assets
       file.write(source)
       file.rewind
       now = Time.now
-      source = `esbuild #{file.path} --minify --log-level=error`
+      source = `esbuild #{file.path} --minify --log-level=error --target=es2019`
       puts "Compressing #{key} - #{Time.now - now}"
     end
 
