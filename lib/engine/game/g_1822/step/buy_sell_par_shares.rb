@@ -13,12 +13,18 @@ module Engine
           attr_accessor :bidders, :bid_actions
 
           def actions(entity)
-            return super if entity != current_entity
+            return [] unless entity == current_entity
+            return ['sell_shares'] if must_sell?(entity)
 
-            # You can either sell/buy shares or you can use your bidding tokens
-            actions = (@current_actions.empty? || @bid_actions.zero? ? super : [])
-            actions << 'bid' if @current_actions.empty? || @bid_actions.positive?
-            actions << 'pass' unless actions.include?('pass')
+            # You can either buy shares or you can use your bidding tokens, you can always sell shares
+            player_debt = @game.player_debt(entity)
+            actions = []
+            actions << 'buy_shares' if @bid_actions.zero? && can_buy_any?(entity) && player_debt.zero?
+            actions << 'par' if @bid_actions.zero? && can_ipo_any?(entity) && player_debt.zero?
+            actions << 'sell_shares' if can_sell_any?(entity)
+            actions << 'bid' if player_debt.zero?
+            actions << 'payoff_player_debt' if player_debt.positive? && entity.cash >= player_debt
+            actions << 'pass' unless actions.empty?
             actions
           end
 
@@ -87,7 +93,6 @@ module Engine
 
           def pass_description
             return 'Pass (Bids)' if @bid_actions.positive?
-            return 'Pass (Share)' unless @current_actions.empty?
 
             'Pass'
           end
@@ -143,6 +148,16 @@ module Engine
 
             log_pass(action.entity)
             pass!
+          end
+
+          def process_payoff_player_debt(action)
+            entity = action.entity
+
+            player_debt = @game.player_debt(entity)
+            @log << "#{entity.name} pays off its loan of #{@game.format_currency(player_debt)}"
+
+            entity.spend(player_debt, @game.bank)
+            @game.payoff_player_loan(entity)
           end
 
           def setup

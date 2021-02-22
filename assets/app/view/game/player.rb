@@ -104,7 +104,7 @@ module View
 
           trs.concat([
              h(:tr, [
-               h(:td, 'Bidding tokens'),
+               h(:td, 'Bid tokens'),
                h('td.right', "#{@game.active_step.bidding_tokens(@player)} / #{@game.bidding_token_per_player}"),
              ]),
            ]) if @game.active_step.respond_to?(:bidding_tokens)
@@ -120,6 +120,13 @@ module View
             h('td.right', @game.format_currency(@game.liquidity(@player))),
           ]),
         ])
+
+        if @game.respond_to?(:player_debt)
+          trs << h(:tr, [
+            h(:td, 'Loan'),
+            h('td.right', @game.format_currency(@game.player_debt(@player))),
+          ]) if @game.player_debt(@player).positive?
+        end
 
         if @game.respond_to?(:bidding_power)
           trs << h(:tr, [
