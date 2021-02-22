@@ -143,13 +143,16 @@ module View
 
       props = {
         attrs: {
-          autofocus: true, # does not work on all browsers
           tabindex: -1, # necessary to be focusable so keyup works; -1 == not accessible by tabbing
         },
         key: 'game_page',
         hook: {
           destroy: destroy,
-          insert: -> { scroll_to_game_menu },
+          insert: lambda {
+            scroll_to_game_menu
+            `document.getElementById('game').focus()`
+          },
+          postpatch: -> { `document.getElementById('game').focus()` },
         },
         on: {
           keydown: ->(event) { hotkey_check(event) },
@@ -195,11 +198,9 @@ module View
       # 'search for text when you start typing' feature of browser prevents execution
       # catch modifiers to not interfere with OS shortcuts
       event = Native(event)
-      return if event.getModifierState('Alt') || event.getModifierState('AltGraph') || event.getModifierState('Meta') ||
-        event.getModifierState('OS')
-
       active = Native(`document.activeElement`)
-      return if active.id != 'game' && active.localName != 'body'
+      return if active.localName == 'input' || event.getModifierState('Alt') || event.getModifierState('AltGraph') ||
+                event.getModifierState('Meta') || event.getModifierState('OS')
 
       key = event['key']
       if event.getModifierState('Control')
