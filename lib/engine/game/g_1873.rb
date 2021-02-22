@@ -1,16 +1,17 @@
 # frozen_string_literal: true
 
 require_relative 'base'
+require_relative '../step/g_1873/buy_sell_par_shares'
 
 module Engine
   module Game
     class G1873 < Base
-      attr_reader :tile_groups, :unused_tiles, :sik, :skev, :ldsteg, :mavag, :raba, :snw, :gc, :terrain_tokens
+      attr_reader :mine_12, :corporation_info, :minor_info, :mhe
       attr_accessor :premium, :premium_order
 
       register_colors(tan: '#d6a06c')
 
-      CURRENCY_FORMAT_STR = '%d M'
+      CURRENCY_FORMAT_STR = '%dM'
       BANK_CASH = 100_000
       CERT_LIMIT = {
         2 => 99,
@@ -66,6 +67,8 @@ module Engine
       ).freeze
 
       RAILWAY_MIN_BID = 100
+      MIN_BID_INCREMENT = 10
+      MHE_START_PRICE = 120
 
       def self.title
         'Harzbahn 1873'
@@ -84,6 +87,24 @@ module Engine
 
         @minor_info = load_minor_extended
         @corporation_info = load_corporation_extended
+
+        @mine_12 = @minors.find { |m| m.id == '12' }
+        @mhe = @corporations.find { |c| c.id == 'MHE' }
+
+        # float the MHE and move all shares into market
+        @stock_market.set_par(@mhe, @stock_market.par_prices.find { |p| p.price == MHE_START_PRICE })
+        @mhe.ipoed = true
+
+        @mhe.ipo_shares.each do |share|
+          @share_pool.transfer_shares(
+            share.to_bundle,
+            share_pool,
+            spender: share_pool,
+            receiver: @bank,
+            price: 0
+          )
+        end
+        @mhe.owner = @share_pool
       end
 
       def load_minor_extended
@@ -112,13 +133,15 @@ module Engine
                       desc: description)
         end
         corp_comps = game_corporations.map do |gc|
-          next unless gc[:extended][:type] == 'railway'
-
-          description = "Railway in #{gc[:coordinates].join(', ')}. "\
-            "Total concession tile cost: #{format_currency(gc[:extended][:concession_cost])}"
-
-          Company.new(sym: gc[:sym], name: gc[:name], value: RAILWAY_MIN_BID,
-                      desc: description)
+          if gc[:extended][:type] == :railway
+            description = "Concession for Railway #{gc[:name]} in #{gc[:coordinates].join(', ')}. "\
+             "Total concession tile cost: #{format_currency(gc[:extended][:concession_cost])}"
+            name = "#{gc[:sym]} Concession"
+          else
+            description = "Purchase Option for Public Mining Company #{gc[:name]}"
+            name = "#{gc[:sym]} Purchase Option"
+          end
+          Company.new(sym: gc[:sym], name: name, value: RAILWAY_MIN_BID, desc: description)
         end.compact
         mine_comps + corp_comps
       end
@@ -128,11 +151,20 @@ module Engine
         mine_comps = @companies.select { |c| mine_ids.include?(c.id) }
 
         corp_ids = @corporations.select do |corp|
-          @corporation_info[corp][:type] == 'railway' && @corporation_info[corp][:concession_phase] == 1
+          @corporation_info[corp][:type] == :railway && @corporation_info[corp][:concession_phase] == '1'
         end.map(&:id)
         corp_comps = @companies.select { |c| corp_ids.include?(c.id) }
 
         mine_comps + corp_comps
+      end
+
+      def auction_companies
+        corp_ids = @corporations.select do |corp|
+          next if corp == @mhe
+
+          corp.receivership? || (railway?(corp) && @phase.available?(@corporation_info[corp][:concession_phase]))
+        end.map(&:id)
+        @companies.select { |c| corp_ids.include?(c.id) }
       end
 
       def company_header(company)
@@ -149,9 +181,10 @@ module Engine
         @minors.find { |m| m.id == company.id }
       end
 
-      def close_mine(minor)
+      def close_mine!(minor)
         @log << "#{minor.name} is closed"
         @minor_info[minor][:open] = false
+        minor.owner = nil
 
         # flip token to closed side
         open_name = "#{minor.id}_open"
@@ -163,7 +196,7 @@ module Engine
         end
       end
 
-      def open_mine(minor)
+      def open_mine!(minor)
         @log << "#{minor.name} is opened"
         @minor_info[minor][:open] = true
 
@@ -178,26 +211,53 @@ module Engine
       end
 
       def all_corporations
-        minors + corporations
+        @minors + @corporations
+      end
+
+      # mines that can be used to form a public mining company
+      def open_private_mines
+        @minors.select { |m| @players.include?(m.owner) && @minor_info[m][:open] }
+      end
+
+      # mines that can be merged into a public mining company
+      def buyable_private_mines
+        @minors.select { |m| !m.owner || @players.include?(m.owner) }
+      end
+
+      def corporation_available?(entity)
+        return false unless entity.corporation?
+
+        entity.ipoed || can_par?(entity, @round.active_step.current_entity)
       end
 
       def can_par?(corporation, player)
         return false if corporation.ipoed
 
         # see if player has corresponding concession (private)
-        if @corporation_info[corporation][:type] == 'railway'
+        if @corporation_info[corporation][:type] == :railway
           player.companies.any? { |c| c.id == corporation.id }
+        elsif !@corporation_info[corporation][:vor_harzer]
+          @turn > 1
         else
-          @corporation_info[corporation][:vor_harzer] || @turn > 1
+          num_vh = @minors.count { |m| m.owner == player && @minor_info[m][:vor_harzer] }
+          num_vh > 1 && (@turn > 1 || @mine_12.owner == player)
         end
+      end
+
+      def form_button_text(_entity)
+        'Form Public Mining Company'
       end
 
       # FIXME: public mines
       def float_corporation(corporation)
+        return if corporation == @mhe
+
         @log << "#{corporation.name} floats"
 
         num_ipo_shares = corporation.ipo_shares.size
         added_cash = num_ipo_shares * corporation.share_price.price
+
+        replace_company(corporation)
 
         return unless added_cash.positive?
 
@@ -217,6 +277,10 @@ module Engine
       end
 
       def place_home_token(corporation)
+        return if corporation.tokens.first&.used
+        return if public_mine?(corporation)
+        return if corporation == @mhe
+
         corporation.coordinates.each do |coord|
           hex = hex_by_id(coord)
           tile = hex&.tile
@@ -229,31 +293,71 @@ module Engine
         end
       end
 
+      # replace railway dummy concession company with a dummy purchase option company
+      def replace_company(corporation)
+        return unless railway?(corporation)
+
+        old_co = @companies.find { |c| c.id == corporation.id }
+        description = "Purchase Option for Railway #{corporation_info[corporation][:name]}"
+        sym = corporation_info[corporation][:sym]
+        name = "#{sym} Purchase Options"
+        @companies[@companies.find_index(old_co)] = Company.new(sym: sym, name: name,
+                                                                value: RAILWAY_MIN_BID, desc: description)
+      end
+
+      def independent_mine?(entity)
+        entity.minor? && @corporations.none? { |c| c == entity.owner }
+      end
+
+      def public_mine?(entity)
+        entity.corporation? && @corporation_info[entity][:type] == :mine
+      end
+
+      def railway?(entity)
+        entity.corporation? && @corporation_info[entity][:type] == :railway
+      end
+
       def init_round
         new_premium_round
       end
 
       def new_premium_round
-        Round::Auction.new(self, [
+        @log << '-- Start Auction Round --'
+        Round::G1873::Auction.new(self, [
           Step::G1873::Premium,
         ])
       end
 
+      # reorder based on premium passing order
       def reorder_players_start
         @players = @premium_order
         @log << "#{@players.first.name} has priority deal"
       end
 
+      # reorder based on cash
+      def reorder_players
+        @players.sort_by!(&:cash).reverse!
+        @log << "#{@players.first.name} has priority deal"
+      end
+
       def new_start_auction_round
-        Round::Auction.new(self, [
+        Round::G1873::Auction.new(self, [
           Step::G1873::Draft,
         ])
       end
 
       # FIXME
       def new_auction_round
-        Round::Auction.new(self, [
-          Step::G1873::BuyConcessionOr,
+        @log << "-- #{round_description('Auction')} --"
+        Round::G1873::Auction.new(self, [
+          Step::G1873::ConcessionAuction,
+        ])
+      end
+
+      def stock_round
+        Round::Stock.new(self, [
+          Step::G1873::Form,
+          Step::G1873::BuySellParShares,
         ])
       end
 
@@ -261,10 +365,10 @@ module Engine
       def operating_round(round_num)
         Round::Operating.new(self, [
           Step::Track,
-          Step::Token,
-          Step::Route,
-          Step::Dividend,
-          Step::BuyTrain,
+          # Step::Token,
+          # Step::Route,
+          # Step::Dividend,
+          # Step::BuyTrain,
         ], round_num: round_num)
       end
 
@@ -282,10 +386,10 @@ module Engine
             end
           when Round::Stock
             @operating_rounds = @phase.operating_rounds
+            stock_round_finished
             reorder_players
             new_operating_round
           when Round::Operating
-            no_train_advance!
             if @round.round_num < @operating_rounds && !@phase_change
               or_round_finished
               new_operating_round(@round.round_num + 1)
@@ -301,6 +405,16 @@ module Engine
             reorder_players_start
             new_start_auction_round
           end
+      end
+
+      def stock_round_finished
+        @players.each do |p|
+          p.companies.each do |c|
+            c.owner = nil
+            p.companies.delete(c)
+            @log << "#{p.name} forfeits #{c.name}"
+          end
+        end
       end
 
       # FIXME
@@ -335,6 +449,74 @@ module Engine
         false
       end
 
+      def sellable_bundles(player, corporation)
+        return [] unless @round.active_step&.respond_to?(:can_sell?)
+
+        bundles = bundles_for_corporation(player, corporation)
+        if !corporation.operated? && corporation != @mhe
+          sale_price = @stock_market.find_share_price(corporation, :left)
+          bundles.each { |b| b.share_price = sale_price.price }
+        end
+        bundles.select { |bundle| @round.active_step.can_sell?(player, bundle) }
+      end
+
+      # rubocop:disable Lint/UnusedMethodArgument
+      def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
+        corporation = bundle.corporation
+        price = corporation.share_price.price
+
+        @share_pool.sell_shares(bundle, allow_president_change: pres_change_ok?(corporation), swap: swap)
+        if corporation == @mhe
+          bundle.num_shares.times do
+            @stock_market.move_down(corporation)
+          end unless @mhe.trains.any? { |t| t.name != '5T' }
+        elsif corporation.operated?
+          bundle.num_shares.times { @stock_market.move_down(corporation) }
+        end
+        log_share_price(corporation, price)
+      end
+      # rubocop:enable Lint/UnusedMethodArgument
+
+      def pres_change_ok?(corporation)
+        return false if corporation == @mhe
+
+        public_mine?(corporation) || corporation.operated?
+      end
+
+      def get_machine(mine)
+        mine.trains.find { |t| t.name.include? 'M' }
+      end
+
+      def get_switcher(mine)
+        mine.trains.find { |t| t.name.include? 'S' }
+      end
+
+      def machine_size(mine)
+        get_machine(mine)&.distance || 1
+      end
+
+      def switcher_size(mine)
+        get_switcher(mine)&.distance
+      end
+
+      def maintenance_costs(_corp)
+        0
+      end
+
+      def mine_revenue(corp)
+        if corp.minor?
+          m_revs = @minor_info[corp][:machine_revenue]
+          s_revs = @minor_info[corp][:switcher_revenue]
+          m_rev = m_revs[machine_size(corp) - 1]
+          s_rev = switcher_size(corp) ? s_revs[switcher_size(corp) - 1] : 0
+          @minor_info[corp][:connected] ? m_rev + s_rev : m_revs.first
+        elsif public_mine?(corp)
+          corporate_card_minors(corp).sum { |m| mine_revenue(m) } || 0
+        else
+          0
+        end
+      end
+
       def price_movement_chart
         [
           ['Dividend', 'Share Price Change'],
@@ -346,8 +528,28 @@ module Engine
         ]
       end
 
+      def corporation_view(corporation)
+        if corporation.minor?
+          'independent_mine'
+        elsif public_mine?(corporation)
+          'public_mine'
+        end
+      end
+
+      def status_str(corporation)
+        return if corporation == @mhe
+
+        str = "Maintenance: #{format_currency(maintenance_costs(corporation))}"
+        str += ' (Closed)' if corporation.minor? && !@minor_info[corporation][:open]
+        str
+      end
+
+      def corporate_card_minors(corporation)
+        @minors.select { |m| m.owner == corporation }
+      end
+
       def player_card_minors(player)
-        minors.select { |m| m.owner == player }
+        @minors.select { |m| m.owner == player }
       end
 
       def player_sort(entities)
@@ -505,6 +707,7 @@ module Engine
               vor_harzer: true,
               machine_revenue: [40, 50, 60, 70, 80],
               switcher_revenue: [30, 40, 50, 60],
+              connected: false,
               open: true,
             },
           },
@@ -520,6 +723,7 @@ module Engine
               vor_harzer: false,
               machine_revenue: [40, 60, 80, 100, 120],
               switcher_revenue: [20, 30, 40, 50],
+              connected: false,
               open: true,
             },
           },
@@ -535,6 +739,7 @@ module Engine
               vor_harzer: false,
               machine_revenue: [40, 60, 80, 100, 120],
               switcher_revenue: [20, 30, 40, 50],
+              connected: false,
               open: true,
             },
           },
@@ -550,6 +755,7 @@ module Engine
               vor_harzer: true,
               machine_revenue: [40, 60, 80, 100, 120],
               switcher_revenue: [20, 30, 40, 50],
+              connected: false,
               open: true,
             },
           },
@@ -565,6 +771,7 @@ module Engine
               vor_harzer: true,
               machine_revenue: [50, 60, 70, 80, 90],
               switcher_revenue: [40, 50, 60, 70],
+              connected: false,
               open: true,
             },
           },
@@ -580,6 +787,7 @@ module Engine
               vor_harzer: true,
               machine_revenue: [50, 70, 90, 110, 130],
               switcher_revenue: [30, 40, 50, 60],
+              connected: false,
               open: true,
             },
           },
@@ -595,6 +803,7 @@ module Engine
               vor_harzer: false,
               machine_revenue: [50, 80, 110, 140, 170],
               switcher_revenue: [20, 30, 40, 50],
+              connected: false,
               open: true,
             },
           },
@@ -610,6 +819,7 @@ module Engine
               vor_harzer: false,
               machine_revenue: [60, 80, 100, 120, 140],
               switcher_revenue: [40, 50, 60, 70],
+              connected: false,
               open: true,
             },
           },
@@ -625,6 +835,7 @@ module Engine
               vor_harzer: false,
               machine_revenue: [60, 90, 120, 150, 180],
               switcher_revenue: [30, 40, 50, 60],
+              connected: false,
               open: true,
             },
           },
@@ -640,6 +851,7 @@ module Engine
               vor_harzer: true,
               machine_revenue: [60, 90, 120, 150, 180],
               switcher_revenue: [30, 40, 50, 60],
+              connected: false,
               open: true,
             },
           },
@@ -655,6 +867,7 @@ module Engine
               vor_harzer: true,
               machine_revenue: [70, 90, 110, 130, 150],
               switcher_revenue: [50, 60, 70, 80],
+              connected: false,
               open: true,
             },
           },
@@ -670,6 +883,7 @@ module Engine
               vor_harzer: true,
               machine_revenue: [70, 90, 110, 130, 150],
               switcher_revenue: [50, 60, 70, 80],
+              connected: false,
               open: true,
             },
           },
@@ -685,6 +899,7 @@ module Engine
               vor_harzer: false,
               machine_revenue: [70, 100, 130, 160, 190],
               switcher_revenue: [40, 50, 60, 70],
+              connected: false,
               open: true,
             },
           },
@@ -700,6 +915,7 @@ module Engine
               vor_harzer: true,
               machine_revenue: [90, 110, 130, 150, 170],
               switcher_revenue: [70, 80, 90, 100],
+              connected: false,
               open: true,
             },
           },
@@ -712,9 +928,10 @@ module Engine
             color: 'black',
             extended: {
               value: 300,
-              vor_harzer: true,
+              vor_harzer: false,
               machine_revenue: [90, 120, 150, 180, 210],
               switcher_revenue: [60, 70, 80, 90],
+              connected: true,
               open: true,
             },
           },
@@ -745,8 +962,8 @@ module Engine
             color: '#FF0000',
             text_color: 'black',
             extended: {
-              type: 'railway',
-              concession_phase: 1,
+              type: :railway,
+              concession_phase: '1',
               concession_routes: [%w[B19 B17 C16 D15]],
               concession_cost: 0,
               concession_pending: true,
@@ -773,8 +990,8 @@ module Engine
             color: '#326199',
             text_color: 'white',
             extended: {
-              type: 'railway',
-              concession_phase: 1,
+              type: :railway,
+              concession_phase: '1',
               concession_routes: [%w[G20 H19 G17 I18]],
               concession_cost: 150,
               concession_pending: true,
@@ -801,8 +1018,8 @@ module Engine
             color: '#A2A024',
             text_color: 'black',
             extended: {
-              type: 'railway',
-              concession_phase: 3,
+              type: :railway,
+              concession_phase: '3',
               concession_routes: [%w[B9 C8 D7 E6 F5 G6], %w[G6 H7 H9 I8 J7]],
               concession_cost: 500,
               concession_pending: true,
@@ -827,8 +1044,8 @@ module Engine
             color: '#FFFF00',
             text_color: 'black',
             extended: {
-              type: 'railway',
-              concession_phase: 3,
+              type: :railway,
+              concession_phase: '3',
               concession_routes: [%w[E4 F3 G2 H1 I2]],
               concession_cost: 300,
               concession_pending: true,
@@ -853,8 +1070,8 @@ module Engine
             color: '#2E270D',
             text_color: 'white',
             extended: {
-              type: 'railway',
-              concession_phase: 3,
+              type: :railway,
+              concession_phase: '3',
               concession_routes: [%w[G4 H3 I4]],
               concession_cost: 100,
               concession_pending: true,
@@ -879,8 +1096,8 @@ module Engine
             color: '#2E270D',
             text_color: 'white',
             extended: {
-              type: 'railway',
-              concession_phase: 4,
+              type: :railway,
+              concession_phase: '4',
               concession_routes: [%w[B9 C10 C12 C14 D15]],
               concession_cost: 0,
               concession_pending: true,
@@ -905,8 +1122,8 @@ module Engine
             color: '#FF740E',
             text_color: 'black',
             extended: {
-              type: 'railway',
-              concession_phase: 4,
+              type: :railway,
+              concession_phase: '4',
               concession_routes: [],
               concession_cost: 0,
               concession_pending: false,
@@ -917,14 +1134,14 @@ module Engine
             sym: 'MHE',
             name: 'Magdeburg-Halberstädter Eisenbahn',
             logo: '1873/MHE',
-            float_percent: 60,
+            float_percent: 0,
             shares: [10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
             tokens: [],
             max_ownership_percent: 100,
             color: '#C0C0C0',
             text_color: 'black',
             extended: {
-              type: 'external',
+              type: :external,
             },
           },
           {
@@ -938,8 +1155,9 @@ module Engine
             color: '#950822',
             text_color: 'white',
             extended: {
-              type: 'mine',
+              type: :mine,
               vor_harzer: false,
+              slots: 2,
             },
           },
           {
@@ -953,8 +1171,9 @@ module Engine
             color: '#772500',
             text_color: 'white',
             extended: {
-              type: 'mine',
+              type: :mine,
               vor_harzer: true,
+              slots: 2,
             },
           },
           {
@@ -968,8 +1187,9 @@ module Engine
             color: '#16CE91',
             text_color: 'white',
             extended: {
-              type: 'mine',
+              type: :mine,
               vor_harzer: false,
+              slots: 2,
             },
           },
           {
@@ -983,8 +1203,9 @@ module Engine
             color: '#F7848D',
             text_color: 'black',
             extended: {
-              type: 'mine',
+              type: :mine,
               vor_harzer: false,
+              slots: 2,
             },
           },
           {
@@ -998,8 +1219,9 @@ module Engine
             color: '#448A28',
             text_color: 'black',
             extended: {
-              type: 'mine',
+              type: :mine,
               vor_harzer: false,
+              slots: 2,
             },
           },
         ]
@@ -1204,34 +1426,34 @@ module Engine
             %w[
               D9
             ] => 'city=revenue:30;path=a:5,b:_0,track:narrow;upgrade=cost:50,terrain:mountain;'\
-              'border=edge:4,type:impassible;frame=color:red;'\
+              'border=edge:4,type:impassible;frame=color:purple;'\
               'icon=image:1873/10_open,sticky:1',
             %w[
               D15
             ] => 'city=revenue:40,slots:2;path=a:1,b:_0,track:narrow;path=a:3,b:_0,track:narrow;'\
-              'path=a:5,b:_0,track:narrow;label=B;frame=color:red;'\
+              'path=a:5,b:_0,track:narrow;label=B;frame=color:purple;'\
               'icon=image:1873/12_open,sticky:1',
             %w[
               E4
             ] => 'city=revenue:30;path=a:0,b:_0,track:narrow;upgrade=cost:50,terrain:mountain;'\
-              'border=edge:3,type:impassible;frame=color:red;'\
+              'border=edge:3,type:impassible;frame=color:purple;'\
               'icon=image:1873/2_open,sticky:1',
             %w[
               F11
             ] => 'city=revenue:30;path=a:5,b:_0,track:narrow;upgrade=cost:50,terrain:mountain;'\
-              'frame=color:red;'\
+              'frame=color:purple;'\
               'icon=image:1873/SM_open,sticky:1',
             %w[
               G4
             ] => 'city=revenue:30;path=a:0,b:_0,track:narrow;upgrade=cost:50,terrain:mountain;'\
-              'border=edge:1,type:impassible;border=edge:3,type:impassible;frame=color:red;'\
+              'border=edge:1,type:impassible;border=edge:3,type:impassible;frame=color:purple;'\
               'icon=image:1873/14_open,sticky:1',
           },
           green: {
             %w[
               B19
             ] => 'city=revenue:60;path=a:1,b:_0,track:narrow;path=a:2,b:_0;path=a:5,b:_0;'\
-              'frame=color:red;label=HQG',
+              'frame=color:purple;label=HQG',
             %w[
               C16
             ] => 'city=revenue:30;path=a:0,b:_0,track:narrow;path=a:2,b:_0,track:narrow;'\
@@ -1239,7 +1461,7 @@ module Engine
             %w[
               E20
             ] => 'city=revenue:60;path=a:1,b:_0,track:narrow;path=a:0,b:_0;path=a:3,b:_0;'\
-              'frame=color:red;label=HQG',
+              'frame=color:purple;label=HQG',
             %w[
               F5
             ] => 'city=revenue:20;city=revenue:20;path=a:1,b:_0,track:narrow;path=a:4,b:_0,track:narrow;'\
@@ -1253,31 +1475,31 @@ module Engine
             %w[
               G6
             ] => 'city=revenue:40;path=a:2,b:_0,track:narrow;'\
-              'path=a:5,b:_0,track:narrow;frame=color:red',
+              'path=a:5,b:_0,track:narrow;frame=color:purple',
             %w[
               G20
             ] => 'city=revenue:60;path=a:0,b:_0,track:narrow;path=a:2,b:_0;path=a:5,b:_0;'\
-              'frame=color:red;label=HQG',
+              'frame=color:purple;label=HQG',
             %w[
               H13
             ] => 'city=revenue:40;path=a:2,b:_0,track:narrow;path=a:5,b:_0,track:narrow;'\
-              'upgrade=cost:50,terrain:mountain;frame=color:red',
+              'upgrade=cost:50,terrain:mountain;frame=color:purple',
             %w[
               H17
             ] => 'city=revenue:30;path=a:0,b:_0,track:narrow;path=a:4,b:_0,track:narrow;'\
-              'path=a:5,b:_0,track:narrow;upgrade=cost:100,terrain:mountain;frame=color:red',
+              'path=a:5,b:_0,track:narrow;upgrade=cost:100,terrain:mountain;frame=color:purple',
           },
           gray: {
             %w[
               B9
             ] => 'city=slots:2,revenue:yellow_60|green_80|brown_120|gray_150;'\
               'path=a:1,b:_0;path=a:4,b:_0;path=a:0,b:_0,track:narrow;path=a:5,b:_0,track:narrow;'\
-              'frame=color:red',
+              'frame=color:purple',
             %w[
               B13
             ] => 'city=slots:2,revenue:yellow_30|green_70|brown_60|gray_60;'\
               'path=a:4,b:_0,track:narrow;path=a:5,b:_0,track:narrow;'\
-              'frame=color:red',
+              'frame=color:purple',
             %w[
               C4
             ] => 'city=revenue:yellow_50|green_80|brown_120|gray_150;path=a:5,b:_0,track:narrow',
@@ -1293,7 +1515,7 @@ module Engine
             %w[
               F15
             ] => 'city=revenue:yellow_30|green_40|brown_60|gray_70;'\
-              'path=a:3,b:_0,track:narrow;path=a:4,b:_0;frame=color:red;'\
+              'path=a:3,b:_0,track:narrow;path=a:4,b:_0;frame=color:purple;'\
               'icon=image:1873/15_open,sticky:1',
             %w[
               H9
@@ -1303,20 +1525,20 @@ module Engine
             %w[
               I2
             ] => 'city=revenue:yellow_40|green_50|brown_80|gray_120;path=a:1,b:_0;'\
-              'path=a:2,b:_0,track:narrow;path=a:4,b:_0;frame=color:red',
+              'path=a:2,b:_0,track:narrow;path=a:4,b:_0;frame=color:purple',
             %w[
               I4
             ] => 'city=revenue:yellow_40|green_50|brown_80|gray_120;path=a:1,b:_0;'\
-              'path=a:2,b:_0,track:narrow;path=a:5,b:_0;frame=color:red',
+              'path=a:2,b:_0,track:narrow;path=a:5,b:_0;frame=color:purple',
             %w[
               I18
             ] => 'city=revenue:yellow_30|green_40|brown_60|gray_70;'\
-              'path=a:2,b:_0,track:narrow;frame=color:red;'\
+              'path=a:2,b:_0,track:narrow;frame=color:purple;'\
               'icon=image:1873/13_open,sticky:1',
             %w[
               J7
             ] => 'city=revenue:yellow_60|green_80|brown_120|gray_180;path=a:1,b:_0;'\
-              'path=a:3,b:_0,track:narrow;path=a:4,b:_0;frame=color:red',
+              'path=a:3,b:_0,track:narrow;path=a:4,b:_0;frame=color:purple',
             # implicit tiles
             %w[
               C20

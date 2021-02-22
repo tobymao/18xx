@@ -173,6 +173,8 @@ module View
             children << h(Par, corporation: corporation) if @current_actions.include?('par')
           when :bid
             children << h(Bid, entity: @current_entity, corporation: corporation) if @current_actions.include?('bid')
+          when :form
+            children << h(FormCorporation, corporation: corporation) if @current_actions.include?('par')
           when String
             children << h(:div, type)
           end
