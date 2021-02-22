@@ -33,15 +33,17 @@ module View
       end
 
       def render_corporation_table
-        h('table#corporation_table', table_props, [
-          h(:thead, render_titles),
-          h(:tbody, render_corporations),
-          h(:thead, [
-            h(:tr, { style: { height: '1rem' } }, [
-              h(:td, { attrs: { colspan: @game.players.size + 8 } }, ''),
-              h(:td, { attrs: { colspan: 2 } }, @game.respond_to?(:token_note) ? @game.token_note : ''),
-              h(:td, { attrs: { colspan: 1 + @extra_size } }, ''),
-              h(:td, { attrs: { colspan: @halfpaid ? 6 : 3 } }, "[withheld]#{' ¦half-paid¦' if @halfpaid}"),
+        h('div#corporation_table', [
+          h(:table, table_props, [
+            h(:thead, render_titles),
+            h(:tbody, render_corporations),
+            h(:tfoot, [
+              h(:tr, { style: { height: '1rem' } }, [
+                h(:td, { attrs: { colspan: @game.players.size + 8 } }, ''),
+                h(:td, { attrs: { colspan: 2 } }, @game.respond_to?(:token_note) ? @game.token_note : ''),
+                h(:td, { attrs: { colspan: 1 + @extra_size } }, ''),
+                h(:td, { attrs: { colspan: @halfpaid ? 6 : 3 } }, "[withheld]#{' ¦half-paid¦' if @halfpaid}"),
+              ]),
             ]),
           ]),
         ])

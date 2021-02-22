@@ -113,7 +113,7 @@ th, td {
   background-color: #CCCCCC;
   color: black;
 }
-#spreadsheet tbody > tr:nth-child(2n) {
+#spreadsheet > div:not(#extra_cards) tbody > tr:nth-child(2n) {
   background-image: linear-gradient(rgba(255,255,255,0.4),rgba(255,255,255,0.4));
 }
 #spreadsheet tbody > tr:hover {
@@ -158,6 +158,9 @@ nav#game_menu {
 }
 .top {
   vertical-align: top;
+}
+.middle {
+  vertical-align: middle;
 }
 
 .italic {
