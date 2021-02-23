@@ -7,7 +7,7 @@
       "entity_type": "player",
       "id": 1,
       "created_at": 1613616679,
-      "company": "L6",
+      "company": "S1",
       "price": 80
     },
     {
@@ -16,7 +16,7 @@
       "entity_type": "player",
       "id": 2,
       "created_at": 1613616681,
-      "company": "L5",
+      "company": "S2",
       "price": 75
     },
     {
@@ -25,7 +25,7 @@
       "entity_type": "player",
       "id": 3,
       "created_at": 1613616683,
-      "company": "L4",
+      "company": "S3",
       "price": 70
     },
     {
@@ -34,7 +34,7 @@
       "entity_type": "player",
       "id": 4,
       "created_at": 1613616684,
-      "company": "M6",
+      "company": "S4",
       "price": 65
     },
     {
@@ -43,7 +43,7 @@
       "entity_type": "player",
       "id": 5,
       "created_at": 1613616685,
-      "company": "L3",
+      "company": "S5",
       "price": 65
     },
     {
@@ -52,7 +52,7 @@
       "entity_type": "player",
       "id": 6,
       "created_at": 1613616687,
-      "company": "M5",
+      "company": "S6",
       "price": 60
     },
     {
@@ -61,7 +61,7 @@
       "entity_type": "player",
       "id": 7,
       "created_at": 1613616688,
-      "company": "L2",
+      "company": "M1",
       "price": 60
     },
     {
@@ -70,7 +70,7 @@
       "entity_type": "player",
       "id": 8,
       "created_at": 1613616689,
-      "company": "M4",
+      "company": "M2",
       "price": 55
     },
     {
@@ -79,7 +79,7 @@
       "entity_type": "player",
       "id": 9,
       "created_at": 1613616691,
-      "company": "L1",
+      "company": "M3",
       "price": 55
     },
     {
@@ -88,7 +88,7 @@
       "entity_type": "player",
       "id": 10,
       "created_at": 1613616692,
-      "company": "S6",
+      "company": "M4",
       "price": 50
     },
     {
@@ -97,7 +97,7 @@
       "entity_type": "player",
       "id": 11,
       "created_at": 1613616694,
-      "company": "M3",
+      "company": "M5",
       "price": 50
     },
     {
@@ -106,7 +106,7 @@
       "entity_type": "player",
       "id": 12,
       "created_at": 1613616695,
-      "company": "S5",
+      "company": "M6",
       "price": 45
     },
     {
@@ -115,7 +115,7 @@
       "entity_type": "player",
       "id": 13,
       "created_at": 1613616696,
-      "company": "M2",
+      "company": "L1",
       "price": 45
     },
     {
@@ -124,7 +124,7 @@
       "entity_type": "player",
       "id": 14,
       "created_at": 1613616698,
-      "company": "S4",
+      "company": "L2",
       "price": 40
     },
     {
@@ -133,7 +133,7 @@
       "entity_type": "player",
       "id": 15,
       "created_at": 1613616699,
-      "company": "M1",
+      "company": "L3",
       "price": 40
     },
     {
@@ -142,7 +142,7 @@
       "entity_type": "player",
       "id": 16,
       "created_at": 1613616700,
-      "company": "S3",
+      "company": "L4",
       "price": 35
     },
     {
@@ -151,7 +151,7 @@
       "entity_type": "player",
       "id": 17,
       "created_at": 1613616701,
-      "company": "S2",
+      "company": "L5",
       "price": 30
     },
     {
@@ -160,7 +160,7 @@
       "entity_type": "player",
       "id": 18,
       "created_at": 1613616703,
-      "company": "S1",
+      "company": "L6",
       "price": 25
     },
     {
@@ -783,7 +783,7 @@
       "entity_type": "corporation",
       "id": 82,
       "created_at": 1613617260,
-      "company": "S5",
+      "company": "S6",
       "price": 55
     },
     {
@@ -876,7 +876,7 @@
       "entity_type": "corporation",
       "id": 93,
       "created_at": 1613617366,
-      "company": "M1",
+      "company": "M3",
       "price": 55
     },
     {
@@ -1062,7 +1062,7 @@
       "entity_type": "corporation",
       "id": 115,
       "created_at": 1613617490,
-      "company": "S4",
+      "company": "S5",
       "price": 55
     },
     {
@@ -1071,7 +1071,7 @@
       "entity_type": "corporation",
       "id": 116,
       "created_at": 1613617494,
-      "company": "M3",
+      "company": "M2",
       "price": 55
     },
     {
@@ -1119,7 +1119,7 @@
       "entity_type": "corporation",
       "id": 122,
       "created_at": 1613620044,
-      "company": "M2",
+      "company": "M1",
       "price": 55
     },
     {
@@ -1652,7 +1652,7 @@
     },
     {
       "type": "lay_tile",
-      "entity": "M1",
+      "entity": "M3",
       "entity_type": "company",
       "id": 180,
       "created_at": 1613620515,
@@ -1891,7 +1891,7 @@
     },
     {
       "type": "lay_tile",
-      "entity": "S5",
+      "entity": "S6",
       "entity_type": "company",
       "id": 203,
       "created_at": 1613621079,
@@ -3047,7 +3047,7 @@
       "entity_type": "corporation",
       "id": 304,
       "created_at": 1613722075,
-      "company": "M1",
+      "company": "M3",
       "price": 70
     },
     {
@@ -3146,7 +3146,7 @@
       "entity_type": "corporation",
       "id": 312,
       "created_at": 1613722100,
-      "company": "S4",
+      "company": "S5",
       "price": 70
     },
     {
@@ -3155,7 +3155,7 @@
       "entity_type": "corporation",
       "id": 313,
       "created_at": 1613722102,
-      "company": "M3",
+      "company": "M2",
       "price": 70
     },
     {
@@ -3248,7 +3248,7 @@
       "entity_type": "corporation",
       "id": 322,
       "created_at": 1613722116,
-      "company": "S5",
+      "company": "S6",
       "price": 70
     },
     {
@@ -3257,7 +3257,7 @@
       "entity_type": "corporation",
       "id": 323,
       "created_at": 1613722117,
-      "company": "M2",
+      "company": "M1",
       "price": 70
     },
     {
@@ -5999,12 +5999,12 @@
       "entity_type": "corporation",
       "id": 578,
       "created_at": 1613746581,
-      "company": "M4",
+      "company": "M5",
       "price": 110
     },
     {
       "type": "lay_tile",
-      "entity": "M4",
+      "entity": "M5",
       "entity_type": "company",
       "id": 579,
       "created_at": 1613746586,
@@ -6028,7 +6028,7 @@
       "entity_type": "corporation",
       "id": 581,
       "created_at": 1613746599,
-      "company": "M4",
+      "company": "M5",
       "price": 110
     },
     {
@@ -7770,7 +7770,7 @@
       "entity_type": "corporation",
       "id": 698,
       "created_at": 1613747015,
-      "company": "S6",
+      "company": "S4",
       "price": 40
     },
     {
@@ -7779,7 +7779,7 @@
       "entity_type": "corporation",
       "id": 699,
       "created_at": 1613747018,
-      "company": "S6",
+      "company": "S4",
       "price": 110
     },
     {
@@ -7788,7 +7788,7 @@
       "entity_type": "corporation",
       "id": 700,
       "created_at": 1613747022,
-      "company": "M6",
+      "company": "M4",
       "price": 1
     },
     {
@@ -7797,7 +7797,7 @@
       "entity_type": "corporation",
       "id": 701,
       "created_at": 1613747025,
-      "company": "M6",
+      "company": "M4",
       "price": 110
     },
     {
@@ -7806,7 +7806,7 @@
       "entity_type": "corporation",
       "id": 702,
       "created_at": 1613747030,
-      "company": "L1",
+      "company": "L3",
       "price": 1
     },
     {
@@ -7815,7 +7815,7 @@
       "entity_type": "corporation",
       "id": 703,
       "created_at": 1613747033,
-      "company": "L1",
+      "company": "L3",
       "price": 110
     },
     {

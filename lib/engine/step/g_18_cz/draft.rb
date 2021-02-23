@@ -6,7 +6,7 @@ module Engine
   module Step
     module G18CZ
       class Draft < Base
-        attr_reader :companies, :choices
+        attr_reader :companies, :choices, :grouped_companies
 
         ACTIONS = %w[bid pass].freeze
 
@@ -34,6 +34,10 @@ module Engine
 
         def players_visible?
           true
+        end
+
+        def tiered_auction_companies
+          @companies.group_by(&:revenue).values
         end
 
         def name
@@ -67,7 +71,7 @@ module Engine
 
           @log << "#{player.name} buys #{company.name} for #{@game.format_currency(price)}"
 
-          action.entity.unpass!
+          entities.each(&:unpass!)
           @round.next_entity_index!
           action_finalized
         end
@@ -86,6 +90,7 @@ module Engine
             @log << "#{c.name} is removed from the game"
             @game.companies.delete(c)
           end
+
           @round.reset_entity_index!
         end
 
