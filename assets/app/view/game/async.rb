@@ -71,11 +71,10 @@ module View
                       'This will pass converting/merging or offering your corporations automatically.'\
                       ' It will not pass otherwise still allowing you to buy shares, bid etc')
 
-        # Allow player to select what corps will be skipped
-        # Allow if it applies in merger/acquisition/offer
         rounds = @game.merge_rounds
 
         player = sender
+        # Which corps can be passed, by default assume all
         passable = @game.merge_corporations.select { |corp| corp.owner == player }
         if passable.empty?
           children << h('div.bold', 'No mergable corporations are owned by you, cannot program!')
@@ -100,6 +99,7 @@ module View
             h(:ul, { style: { 'list-style': 'none' } }, subchildren),
           ])
 
+          # Which rounds does it apply to, by default assume all
           subchildren = rounds.map do |round|
             h(:li, [
               # Use the long name to ensure no clash with corp ids
