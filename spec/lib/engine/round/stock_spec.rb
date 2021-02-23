@@ -80,7 +80,7 @@ module Engine
         expect(subject.active_step.can_buy?(player_0, corp_0.shares[0])).to eq(false)
       end
 
-      it 'can buy orange over 60%' do
+      it 'can buy gray over 60%' do
         player_0.cash = 10_000
         market.set_par(corp_0, market.market[8][0])
         6.times { game.share_pool.buy_shares(player_0, corp_0.shares[0]) }
@@ -94,7 +94,7 @@ module Engine
         expect(subject.active_step.must_sell?(player_0)).to eq(true)
       end
 
-      it 'needn\'t sell orange when over 60%' do
+      it 'needn\'t sell gray when over 60%' do
         player_0.cash = 10_000
         market.set_par(corp_0, market.market[8][0])
         7.times { game.share_pool.buy_shares(player_0, corp_0.shares[0]) }
@@ -203,14 +203,14 @@ module Engine
         player_0.cash = 10_000
         player_1.cash = 10_000
 
-        market.set_par(corp_0, market.par_prices[0])
+        market.set_par(corp_0, game.par_prices[0])
         5.times { game.share_pool.buy_shares(player_0, corp_0.shares.first) }
 
-        market.set_par(corp_1, market.par_prices[0])
+        market.set_par(corp_1, game.par_prices[0])
         5.times { game.share_pool.buy_shares(player_1, corp_1.shares.first) }
       end
 
-      it 'director can buy two shares from ipo in orange' do
+      it 'director can buy two shares from ipo in gray' do
         market.move(corp_0, 12, 0, force: true)
         expect(corp_0.share_price.type).to eq(:unlimited)
 
@@ -228,7 +228,7 @@ module Engine
         expect(subject.current_entity).not_to be(player_1)
       end
 
-      it 'cannot buy stocks from second company after buying one orange' do
+      it 'cannot buy stocks from second company after buying one gray' do
         market.move(corp_0, 12, 0, force: true)
         expect(corp_0.share_price.type).to eq(:unlimited)
 
@@ -237,36 +237,47 @@ module Engine
         expect(subject.active_step.can_buy?(player_0, corp_1.shares.first)).to be_falsey
       end
 
-      it 'corporation share price goes up if in orange at end of stock round' do
+      it 'corporation share price goes up if in gray at end of stock round' do
         market.move(corp_0, 12, 0, force: true)
         expect(corp_0.share_price.type).to eq(:unlimited)
+
+        # Sell out corp
+        4.times { game.share_pool.buy_shares(player_1, corp_0.shares.first) }
+        expect(player_1.num_shares_of(corp_0)).to be(4)
+        expect(corp_0.shares.none?).to be_truthy
 
         r, c = corp_0.share_price.coordinates
         subject.finish_round
-        expect(corp_0.share_price).to eq(game.stock_market.market[r - 1][c])
+        expect(corp_0.share_price).to eq(game.stock_market.market[r - 2][c])
       end
 
       it 'corporation share price goes up if 80% owned by director at end of stock round' do
-        share_price = corp_1.share_price
+        share_price = corp_0.share_price
         subject.finish_round
         expect(corp_0.share_price).to eq(share_price)
 
+        # Owner to 80%
         2.times { game.share_pool.buy_shares(player_0, corp_0.shares.first) }
         expect(player_0.num_shares_of(corp_0)).to be(8)
 
+        # Sell out corp
+        2.times { game.share_pool.buy_shares(player_1, corp_0.shares.first) }
+        expect(corp_0.shares.none?).to be_truthy
+
+        r, c = corp_0.share_price.coordinates
         subject.finish_round
-        r, c = share_price.coordinates
-        share_price = game.stock_market.market[r - 1][c]
-        expect(corp_0.share_price).to eq(share_price)
+        expect(corp_0.share_price).to eq(game.stock_market.market[r - 2][c])
       end
 
-      it 'corporation share price goes up 3 times if in orange, 80% owned by director, and sold out' do
+      it 'corporation share price goes up 3 times if in gray, 80% owned by director, and sold out' do
         market.move(corp_0, 12, 0, force: true)
         expect(corp_0.share_price.type).to eq(:unlimited)
 
+        # Owner to 80%
         2.times { game.share_pool.buy_shares(player_0, corp_0.shares.first) }
         expect(player_0.num_shares_of(corp_0)).to be(8)
 
+        # Sell out corp
         2.times { game.share_pool.buy_shares(player_1, corp_0.shares.first) }
         expect(corp_0.shares.none?).to be_truthy
 
