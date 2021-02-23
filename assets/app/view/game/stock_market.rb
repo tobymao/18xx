@@ -266,7 +266,13 @@ module View
         }
 
         children << h(:div, props, [h(Bank, game: @game)].compact)
-        children.concat(grid)
+        grid_props = {
+          style: {
+            width: '100%',
+            overflow: 'auto',
+          },
+        }
+        children << h(:div, grid_props, grid)
 
         if @explain_colors
           type_text = @game.class::MARKET_TEXT
@@ -344,14 +350,7 @@ module View
           ])
         end
 
-        props = {
-          style: {
-            width: '100%',
-            overflow: 'auto',
-          },
-        }
-
-        h(:div, props, children)
+        h(:div, children)
       end
     end
   end
