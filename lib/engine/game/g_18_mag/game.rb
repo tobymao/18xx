@@ -405,7 +405,6 @@ module Engine
           remove_train(train)
           train.owner = operator
           operator.trains << train
-          operator.rusted_self = false
           @crowded_corps = nil
         end
 

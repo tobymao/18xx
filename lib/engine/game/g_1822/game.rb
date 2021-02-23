@@ -2316,9 +2316,8 @@ module Engine
         end
 
         def must_buy_train?(entity)
-          !entity.rusted_self &&
-            entity.trains.none? { |t| !extra_train?(t) } &&
-            !depot.depot_trains.empty?
+          entity.trains.none? { |t| !extra_train?(t) } &&
+          !depot.depot_trains.empty?
         end
 
         # TODO: [1822] Make include with 1861, 1867

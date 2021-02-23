@@ -944,8 +944,7 @@ module Engine
       end
 
       def must_buy_train?(entity)
-        !entity.rusted_self &&
-          entity.trains.empty? &&
+        entity.trains.empty? &&
           !depot.depot_trains.empty? &&
           (self.class::MUST_BUY_TRAIN == :always ||
            (self.class::MUST_BUY_TRAIN == :route && @graph.route_info(entity)&.dig(:route_train_purchase)))
@@ -1511,7 +1510,6 @@ module Engine
         remove_train(train)
         train.owner = operator
         operator.trains << train
-        operator.rusted_self = false
         @crowded_corps = nil
 
         close_companies_on_train!(operator)
@@ -1624,7 +1622,7 @@ module Engine
         ability.hexes.include?(hex.id)
       end
 
-      def rust_trains!(train, entity)
+      def rust_trains!(train, _entity)
         obsolete_trains = []
         rusted_trains = []
         owners = Hash.new(0)
@@ -1645,9 +1643,10 @@ module Engine
 
           rusted_trains << t.name
           owners[t.owner.name] += 1
-          entity.rusted_self = true if entity && entity == t.owner
           rust(t)
         end
+
+        @crowded_corps = nil
 
         @log << "-- Event: #{obsolete_trains.uniq.join(', ')} trains are obsolete --" if obsolete_trains.any?
         @log << "-- Event: #{rusted_trains.uniq.join(', ')} trains rust " \
