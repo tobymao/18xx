@@ -2,7 +2,6 @@
 
 require './spec/spec_helper'
 
-require 'engine'
 require 'json'
 
 module Engine

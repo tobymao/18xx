@@ -16,6 +16,7 @@ module View
             padding: '0.4rem',
             backgroundColor: color_for(:bg2),
             color: color_for(:font2),
+            fontStyle: 'italic',
           },
         }
         body_props = {
@@ -59,11 +60,11 @@ module View
 
             props = {
               attrs: { title: "#{@show_loan_table ? 'Hide' : 'Show'} loan table" },
-              style: { width: '7.3rem', margin: '0 0 0 0.5rem' },
+              style: { width: '4rem', margin: '0' },
               on: { click: toggle_loan_table },
             }
             trs << h(:tr, [
-              h(:td, 'Loan Table'),
+              h('td.middle', 'Loan Table'),
               h('td.right', [h(:button, props, (@show_loan_table ? 'Hide' : 'Show').to_s)]),
             ])
 
@@ -106,7 +107,7 @@ module View
         return if trs.empty?
 
         h('div#bank.card', [
-          h('div.title', title_props, [h(:em, 'The Bank')]),
+          h('div.title', title_props, 'The Bank'),
           h(:div, body_props, [
             h(:table, trs),
             h(GameInfo, game: @game, layout: 'discarded_trains'),

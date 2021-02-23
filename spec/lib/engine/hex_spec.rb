@@ -2,8 +2,6 @@
 
 require './spec/spec_helper'
 
-require 'engine'
-
 module Engine
   describe Hex do
     let(:game) { Engine.game_by_title('1889').new(%w[a b]) }

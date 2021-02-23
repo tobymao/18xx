@@ -73,6 +73,8 @@ module Engine
           @log << "#{action.entity.name} upgrades #{old_train_name}
           to #{train.name} for #{@game.format_currency(price)}"
 
+          @game.rust_trains!(train, entity)
+
           @round.bought_trains.shift if trains.empty?
         end
 

@@ -8,9 +8,7 @@ module Engine
       class BuyTrain < BuyTrain
         def buyable_trains(entity)
           trains = super
-          trains = trains.select { |train| train.owner == @game.depot } if must_buy_train?(entity)
-
-          trains
+          trains.select { |item| item.owner == @game.depot || train_available?(entity, item) }
         end
 
         def buyable_train_variants(train, entity)
@@ -18,10 +16,16 @@ module Engine
 
           return [] if trains.empty?
 
-          default_trains = trains.select { |item| @game.train_of_size?(item, :small) }
+          trains = trains.reject { |item| @game.variant_is_rusted?(item) }
+
+          default_trains = trains.select do |item|
+            @game.train_of_size?(item, :small) && (entity.type == :small || entity.cash >= item[:price])
+          end
           return default_trains if entity.type == :small
 
-          medium_trains = trains.select { |item| @game.train_of_size?(item, :medium) }
+          medium_trains = trains.select do |item|
+            @game.train_of_size?(item, :medium) && (entity.type == :medium || entity.cash >= item[:price])
+          end
           if entity.type == :medium
             return medium_trains if entity.trains.none? do |item|
               @game.train_of_size?(item, :medium)
@@ -58,6 +62,17 @@ module Engine
 
           @game.bank.spend(difference, entity)
         end
+
+        def train_available?(entity, train)
+          return true if @game.train_of_size?(train, entity.type) || @game.train_of_size?(train, :small)
+          return false if entity.type == :small
+
+          return true if @game.train_of_size?(train, :medium)
+
+          false
+        end
+
+        def check_for_cheapest_train(entity, train); end
       end
     end
   end

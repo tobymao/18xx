@@ -58,7 +58,8 @@ module Engine
           end
 
           remove_duplicate_tokens(entity, corporation)
-          if tokens_in_same_hex(entity, corporation)
+          tokens_to_clear = tokens_in_same_hex(entity, corporation)
+          if tokens_to_clear
             @round.corporations_removing_tokens = [entity, corporation]
           else
             move_tokens_to_surviving(entity, corporation, price_for_new_token: @game.new_token_price,
@@ -71,6 +72,8 @@ module Engine
 
           @log << "#{entity.name} buys #{corporation.name}
           for #{@game.format_currency(price)} per share receiving #{receiving.join(', ')}"
+
+          return if tokens_to_clear
 
           @game.close_corporation(corporation)
           corporation.close!
@@ -116,15 +119,13 @@ module Engine
         def remove_duplicate_tokens(surviving, others)
           # If there are 2 station markers on the same city the
           # surviving company must remove one and place it on its charter.
-          # In the case of NY tiles this is ambigious and must be solved by the user
 
           others = others_tokens(others).map(&:city).compact
           surviving.tokens.each do |token|
+            # after acquisition, the larger corp forfeits their $40 token
+            token.price = @game.new_token_price
             city = token.city
-            if others.include?(city)
-              token.remove!
-              token.price = @game.new_token_price
-            end
+            token.remove! if others.include?(city)
           end
         end
       end

@@ -2,13 +2,6 @@
 
 require './spec/spec_helper'
 
-require 'engine/game/g_1882'
-require 'engine/game/g_1889'
-require 'engine/game/g_18_chesapeake'
-require 'engine/game/g_1828'
-require 'engine/phase'
-require 'engine/round/operating'
-
 module Engine
   describe Round::Stock do
     let(:players) { %w[a b c d e f] }
@@ -109,7 +102,7 @@ module Engine
       end
 
       context '#1882' do
-        let(:game) { Game::G1882.new(players) }
+        let(:game) { Game::G1882::Game.new(players) }
         let(:corp_0) { game.corporation_by_id('QLL') }
         let(:corp_0) { game.corporation_by_id('CPR') }
 
@@ -204,7 +197,7 @@ module Engine
     end
 
     context '#1828' do
-      let(:game) { Game::G1828.new(%w[a b c]) }
+      let(:game) { Game::G1828::Game.new(%w[a b c]) }
 
       before :each do
         player_0.cash = 10_000

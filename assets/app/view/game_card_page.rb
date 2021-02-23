@@ -13,7 +13,8 @@ module View
     def render
       game_refresh
 
-      children = [h(:h2, 'This game has not started yet')] if @game_data['status'] == 'new'
+      children = []
+      children << h(:h2, 'This game has not started yet') if @game_data['status'] == 'new'
 
       if @user || @game_data['status'] == 'archived'
         children << h(:div, [h(GameCard, gdata: @game_data, user: @user)])

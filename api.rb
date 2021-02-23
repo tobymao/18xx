@@ -44,6 +44,7 @@ class Api < Roda
 
   error do |e|
     LOGGER.error e.backtrace
+    LOGGER.error e.message
     { error: e.message }
   end
 

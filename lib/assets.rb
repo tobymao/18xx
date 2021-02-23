@@ -2,7 +2,7 @@
 
 require 'opal'
 require 'snabberb'
-require 'uglifier'
+require 'tempfile'
 require 'zlib'
 
 require_relative 'engine'
@@ -119,31 +119,25 @@ class Assets
   def combine
     @combine ||=
       begin
-        unless @precompiled
-          builds.each do |_key, build|
-            source = build['files'].map { |file| File.read(file).to_s }.join
+        builds.each do |key, build|
+          next if @precompiled
 
-            if @compress
-              time = Time.now
-              source = Uglifier.compile(source, harmony: true)
-              puts "Compressing - #{Time.now - time}"
-            end
+          source = build['files'].map { |file| File.read(file).to_s }.join
+          source = compress(key, source) if @compress
+          File.write(build['path'], source)
 
-            File.write(build['path'], source)
+          next if !@gzip || build['path'] == @server_path
 
-            next if !@gzip || build['path'] == @server_path
-
-            Zlib::GzipWriter.open("#{build['path']}.gz") do |gz|
-              # two gzipped files with identical contents look different to
-              # tools like rsync if their mtimes are different; we don't want
-              # rsync to deploy "new" versions of deps.js.gz, etc if they
-              # haven't changed
-              gz.mtime = 0
-
-              gz.write(source)
-            end
+          Zlib::GzipWriter.open("#{build['path']}.gz") do |gz|
+            # two gzipped files with identical contents look different to
+            # tools like rsync if their mtimes are different; we don't want
+            # rsync to deploy "new" versions of deps.js.gz, etc if they
+            # haven't changed
+            gz.mtime = 0
+            gz.write(source)
           end
         end
+
         [@deps_path, @main_path, *game_paths]
       end
   end
@@ -152,7 +146,7 @@ class Assets
     builder = Opal::Builder.new
     append_paths.each { |ap| builder.append_paths(ap) }
     path = "#{@out_path}/#{name}.js"
-    if !@cache || !File.exist?(path)
+    if !@cache || !File.exist?(path) || path == @deps_path
       time = Time.now
       File.write(path, builder.build(name))
       puts "Compiling #{name} - #{Time.now - time}"
@@ -224,21 +218,29 @@ class Assets
   def pin(pin_path)
     @pin ||=
       begin
-        time = Time.now
-
-        prealphas = Engine::GAME_META_BY_TITLE.values
-                      .select { |g| g::DEV_STAGE == :prealpha }
-                      .map { |g| "public/assets/#{g.fs_name}.js" }
+        prealphas = Engine::GAME_META_BY_TITLE
+          .values
+          .select { |g| g::DEV_STAGE == :prealpha }
+          .map { |g| "public/assets/#{g.fs_name}.js" }
 
         source = (combine - prealphas).map { |file| File.read(file).to_s }.join
-        source = Uglifier.compile(source, harmony: true)
-
+        source = compress('pin', source)
         File.write(pin_path.gsub('.gz', ''), source)
-
         Zlib::GzipWriter.open(pin_path) { |gz| gz.write(source) }
         FileUtils.rm(pin_path.gsub('.gz', ''))
-        puts "Building #{pin_path} - #{Time.now - time}"
       end
+  end
+
+  def compress(key, source)
+    Tempfile.create([key, '.js']) do |file|
+      file.write(source)
+      file.rewind
+      now = Time.now
+      source = `esbuild #{file.path} --minify --log-level=error --target=es2019`
+      puts "Compressing #{key} - #{Time.now - now}"
+    end
+
+    source
   end
 
   def clean_intermediate_output_files
@@ -249,19 +251,13 @@ class Assets
         file = build['path']
         next if file == @server_path
 
-        if File.exist?(file)
-          puts "Deleting #{file}..."
-          File.delete(file)
-        end
+        File.delete(file) if File.exist?(file)
       end
     end
 
-    files = builds.flat_map { |_, build| build['files'] }.uniq
-    files.each do |file|
-      if File.exist?(file)
-        puts "Deleting #{file}..."
-        File.delete(file)
-      end
-    end
+    builds
+      .flat_map { |_, build| build['files'] }
+      .uniq
+      .each { |file| File.delete(file) if File.exist?(file) }
   end
 end

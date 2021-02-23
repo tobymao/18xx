@@ -106,10 +106,18 @@ p:last-child {
 
 th, td {
   padding: 0 0.3rem;
+  vertical-align: top;
 }
-#game_info tbody > tr:hover {
-  background-color: #CCCCCC;
+
+#game_info tbody > tr:hover, #bank.card tr:hover, #upcoming_trains.card tr:hover {
+  background-color: gainsboro;
   color: black;
+}
+#spreadsheet > div:not(#extra_cards) tbody > tr:nth-child(2n) {
+  background-image: linear-gradient(rgba(255,255,255,0.4),rgba(255,255,255,0.4));
+}
+#spreadsheet > div:not(#extra_cards) tbody > tr:hover {
+  filter: drop-shadow(1px 0px 2px #555);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -151,6 +159,9 @@ nav#game_menu {
 .top {
   vertical-align: top;
 }
+.middle {
+  vertical-align: middle;
+}
 
 .italic {
   font-style: italic;
@@ -170,10 +181,11 @@ nav#game_menu {
   width: 2.7rem;
 }
 ::-webkit-color-swatch {
-    background-color: inherit !important; /* fix iOS/macOS black color inputs */
+    background-color: inherit; /* fix iOS/macOS black color inputs */
 }
 ::-webkit-color-swatch-wrapper {
     border: 1px solid gainsboro;
+    padding: 0;
 }
 #settings__options .input-container {
   display: block;
@@ -307,7 +319,7 @@ text.number {
   margin: 0 0.5rem 0.5rem 0;
 }
 #entities .card {
-  margin: 0 0 0.5rem 0;
+  margin: 0.5rem 0 0 0;
   width: 100%;
   max-width: 20rem;
 }
@@ -332,7 +344,8 @@ text.number {
 }
 
 .name {
-  max-width: 7rem;
+  min-width: 3rem;
+  max-width: 5rem;
 }
 
 .corp div, .player div {

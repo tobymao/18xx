@@ -23,7 +23,7 @@ module Engine
     include Spender
 
     attr_accessor :ipoed, :par_via_exchange, :max_ownership_percent, :float_percent, :capitalization, :second_share,
-                  :type, :floatable
+                  :type, :floatable, :original_par_price
     attr_reader :companies, :min_price, :name, :full_name, :fraction_shares, :id, :needs_token_to_par,
                 :presidents_share, :reservation_color
     attr_writer :par_price, :share_price
@@ -46,6 +46,7 @@ module Engine
 
       @share_price = nil
       @par_price = nil
+      @original_par_price = nil
       @ipoed = false
       @companies = []
 
