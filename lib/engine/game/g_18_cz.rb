@@ -269,7 +269,6 @@ module Engine
       end
 
       def must_buy_train?(entity)
-        !entity.rusted_self &&
         !depot.depot_trains.empty? &&
         (entity.trains.empty? ||
           (entity.type == :medium && entity.trains.none? { |item| train_of_size?(item, :medium) }) ||
@@ -373,7 +372,6 @@ module Engine
 
           rusted_trains << t.name
           owners[t.owner.name] += 1
-          entity.rusted_self = true if entity && entity == t.owner
           rust(t)
         end
         return if rusted_trains.none?
