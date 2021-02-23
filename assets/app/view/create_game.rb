@@ -21,7 +21,7 @@ module View
       ]
 
       if @mode == :multi
-        inputs << render_input('Private game', id: 'unlisted', type: :checkbox)
+        inputs << render_input('Invite only game', id: 'unlisted', type: :checkbox)
       elsif @mode == :hotseat
         @num_players.times do |index|
           num = index + 1
