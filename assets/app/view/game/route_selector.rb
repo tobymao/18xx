@@ -136,13 +136,13 @@ module View
 
             td_props = { style: { paddingRight: '0.8rem' } }
 
-            children << h('td.right', td_props, route.distance_str)
+            children << h('td.right.middle', td_props, route.distance_str)
             if route.halts
               render_halts = true
-              children << h('td.right', td_props, halt_actions(route, revenue,
-                                                               @game.format_currency(route.subsidy)))
+              children << h('td.right.middle', td_props,
+                            halt_actions(route, revenue, @game.format_currency(route.subsidy)))
             else
-              children << h('td.right', td_props, revenue)
+              children << h('td.right.middle', td_props, revenue)
             end
             children << h(:td, route.revenue_str)
           elsif !selected
@@ -159,7 +159,7 @@ module View
             },
           }
           [
-            h(:tr, [h(:td, [h(:div, { style: style, on: { click: onclick } }, train.name)]), *children]),
+            h(:tr, [h('td.middle', [h(:div, { style: style, on: { click: onclick } }, train.name)]), *children]),
             invalid ? h(:tr, [h(:td, invalid_props, invalid)]) : '',
           ]
         end
