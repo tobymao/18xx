@@ -26,7 +26,6 @@ module Engine
         @game.send("event_#{event['type']}!")
       end
       train.events.clear
-
     end
 
     def current
