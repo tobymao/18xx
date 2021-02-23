@@ -2511,14 +2511,14 @@ module Engine
           @phase.name.to_i >= company_acquisition[:phase] && company_acquisition[:acquire].include?(entity.type)
         end
 
-        def add_intrest_player_loans!
+        def add_interest_player_loans!
           @player_debts.each do |player, loan|
             next unless loan.positive?
 
-            intrest = player_loan_intrest(loan)
-            new_loan = loan + intrest
+            interest = player_loan_interest(loan)
+            new_loan = loan + interest
             @player_debts[player] = new_loan
-            @log << "#{player.name} increases its loan by 50% (#{format_currency(intrest)}) to "\
+            @log << "#{player.name} increases its loan by 50% (#{format_currency(interest)}) to "\
                     "#{format_currency(new_loan)}"
           end
         end
@@ -2593,7 +2593,7 @@ module Engine
           { route: route, revenue: destination_token.city.route_revenue(route.phase, route.train) }
         end
 
-        def player_loan_intrest(loan)
+        def player_loan_interest(loan)
           (loan * 0.5).ceil
         end
 
@@ -2732,8 +2732,8 @@ module Engine
           # Give the player the money. The money for loans is outside money, doesnt count towards the normal bank money.
           player.cash += loan
 
-          # Add intrest to the loan, must atleast pay 150% of the loaned value
-          @player_debts[player] += player_loan_intrest(loan)
+          # Add interest to the loan, must atleast pay 150% of the loaned value
+          @player_debts[player] += player_loan_interest(loan)
         end
 
         def train_type(train)

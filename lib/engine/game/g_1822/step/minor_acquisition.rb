@@ -203,7 +203,7 @@ module Engine
                 # You have a option to place a "cheater" token in one of the cities you have connection to.
                 # A small note, if a corporation already have a token in london and no clear path to another node.
                 # They can still choose to acquire and still gets both options of place or exchange. We dont want
-                # to an extra check of conencted_nodes. This is very costly.
+                # to an extra check of connected_nodes. This is very costly.
                 # Try all 6 cities in london to see if there is atleast one connection
                 connected_nodes = @game.graph.connected_nodes(entity)
                 found_connected_city = @game.hex_by_id(@game.class::LONDON_HEX).tile.cities.any? do |c|
