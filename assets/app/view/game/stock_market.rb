@@ -291,19 +291,20 @@ module View
 
             line_props = {
               style: {
-                display: 'grid',
+                display: 'inline-grid',
                 grid: '1fr / auto 1fr',
                 gap: '0.5rem',
                 alignItems: 'center',
-                marginTop: '1rem',
+                margin: '1rem 1rem 0 0',
               },
             }
 
             h(:div, line_props, [
               h(:div, { style: cell_style(@box_style_2d, [type]) }, []),
-              h(:div, { style: { maxWidth: '30rem' } }, text),
+              h(:div, { style: { maxWidth: '24rem' } }, text),
             ])
           end
+          legend_items.reverse! unless @game.stock_market.one_d?
 
           children << h('div#legend', legend_items)
         end
