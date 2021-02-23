@@ -145,8 +145,6 @@ module View
             end
           end
         end
-        puts rust_schedule
-
         [rust_schedule, obsolete_schedule]
       end
 
@@ -232,7 +230,7 @@ module View
           show_rusts_inline = true
           rusts = nil
           names_to_prices.keys.each do |key|
-            next if !rust_schedule[key] && rust_schedule.keys.none? { |item| item&.include?(key) }
+            next if !rust_schedule[key] && rust_schedule.keys.none? { |item| item&.is_a?(Array) && item&.include?(key) }
 
             rusts ||= []
 
