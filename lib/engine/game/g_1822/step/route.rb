@@ -69,7 +69,7 @@ module Engine
           def process_run_routes(action)
             super
 
-            detach_pullman if defined?(@pullman_train) && @pullman_train
+            detach_pullman if @pullman_train
           end
 
           def train_city_distance(train)
