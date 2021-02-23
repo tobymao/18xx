@@ -11,7 +11,7 @@ module Engine
         ACTIONS = %w[bid pass].freeze
 
         def setup
-          @companies = @game.companies.sort
+          @companies = @game.companies.sort_by { |item| [item.revenue, item.value] }
         end
 
         def available
