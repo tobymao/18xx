@@ -301,7 +301,7 @@ module View
 
             children << h(:div, line_props, [
               h(:div, { style: cell_style(@box_style_2d, [type]) }, []),
-              h(:div, text),
+              h(:div, { style: { maxWidth: '30rem' } }, text),
             ])
           end
         end
