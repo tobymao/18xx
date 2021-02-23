@@ -3,6 +3,7 @@
 require_relative '../../../step/base'
 require_relative '../../../token'
 require_relative '../../../step/token_merger'
+require_relative '../../../step/programmer_merger_pass'
 
 module Engine
   module Game
@@ -10,6 +11,7 @@ module Engine
       module Step
         class Merge < Engine::Step::Base
           include Engine::Step::TokenMerger
+          include Engine::Step::ProgrammerMergerPass
           LIMIT_OWNED_BY_ONE_ENTITY = 6
           LIMIT_MERGE = 10
 
@@ -32,6 +34,10 @@ module Engine
             return 'Finish Merge' if @merge_major
 
             'Merge'
+          end
+
+          def merger_auto_pass_entity
+            current_entity unless @converting || @merge_major
           end
 
           def pass_description

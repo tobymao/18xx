@@ -17,15 +17,20 @@ module View
           h(:p, 'This feature is presently under development. More actions will be available soon.'),
         ]
 
+        types = {
+          Engine::Action::ProgramBuyShares => ->(settings) { render_buy_shares(settings) },
+          Engine::Action::ProgramMergerPass => ->(settings) { render_merger_pass(settings) },
+        }.freeze
+
         if !(available = @game.available_programmed_actions).empty?
+          enabled = @game.programmed_actions[sender]
           available.each do |type|
-            case type
-            when Engine::Action::ProgramBuyShares.class
-              children.concat(render_buy_shares)
+            method = types[type]
+            if method
+              settings = enabled if enabled.is_a?(type)
+              children.concat(method.call(settings))
             end
           end
-          enabled = @game.programmed_actions[sender]
-          children.concat(render_disable(enabled)) if enabled
         else
           children << h('div.bold', 'No programmed actions are presently available for this game.')
         end
@@ -43,20 +48,104 @@ module View
         @game.player_by_id(@user['id']) if @user
       end
 
-      def enable_buy_shares
+      def enable_merger_pass(form, passable, rounds)
+        settings = params(form)
+
+        selected_corps = passable.select { |corp| settings[corp.name] }
+        selected_rounds = rounds.select { |round| settings[round.round_name] }.map(&:short_name)
+        process_action(
+          Engine::Action::ProgramMergerPass.new(
+            sender,
+            corporations: selected_corps,
+            rounds: selected_rounds
+          )
+        )
+      end
+
+      def render_merger_pass(settings)
+        form = {}
+        text = 'Program Pass in Mergers'
+        text += ' (Enabled)' if settings
+        children = [h(:h3, text)]
+        children << h(:div,
+                      'This will pass converting/merging or offering your corporations automatically.'\
+                      ' It will not pass otherwise still allowing you to buy shares, bid etc')
+
+        # Allow player to select what corps will be skipped
+        # Allow if it applies in merger/acquisition/offer
+        rounds = @game.merge_rounds
+
+        player = sender
+        passable = @game.merge_corporations.select { |corp| corp.owner == player }
+        if passable.empty?
+          children << h('div.bold', 'No mergable corporations are owned by you, cannot program!')
+        else
+
+          subchildren = passable.map do |entity|
+            h(:li, [
+              render_input(entity.name,
+                           id: entity.name,
+                           type: 'checkbox',
+                           inputs: form,
+                           attrs: {
+                             name: 'mode_options',
+                             checked: !settings || settings&.corporations&.include?(entity),
+                           },
+                           input_style: { float: 'left', margin: '5px' },),
+            ])
+          end
+
+          children << h(:div, [
+            h(:p, 'Pass on Corporations:'),
+            h(:ul, { style: { 'list-style': 'none' } }, subchildren),
+          ])
+
+          subchildren = rounds.map do |round|
+            h(:li, [
+              # Use the long name to ensure no clash with corp ids
+              render_input(round.round_name,
+                           id: round.round_name,
+                           type: 'checkbox',
+                           inputs: form,
+                           attrs: {
+                             name: 'mode_options',
+                             checked: !settings || settings&.rounds&.include?(round.short_name),
+                           },
+                           input_style: { float: 'left', margin: '5px' },),
+            ])
+          end
+
+          children << h(:div, [
+            h(:p, 'Pass in Rounds:'),
+            h(:ul, { style: { 'list-style': 'none' } }, subchildren),
+          ])
+
+          subchildren = [render_button(settings ? 'Save' : 'Enable') { enable_merger_pass(form, passable, rounds) }]
+          subchildren << render_disable(settings) if settings
+          children << h(:div, subchildren)
+
+        end
+
+        children
+      end
+
+      def enable_buy_shares(form)
         process_action(
           Engine::Action::ProgramBuyShares.new(
             sender,
-            corporation: @game.corporation_by_id(params['corporation']),
+            corporation: @game.corporation_by_id(params(form)['corporation']),
             until_condition: 'float'
           )
         )
       end
 
-      def render_buy_shares
-        children = [h(:h3, 'Program buy shares till float')]
+      def render_buy_shares(settings)
+        form = {}
+        text = 'Program buy shares till float'
+        text += ' (Enabled)' if settings
+        children = [h(:h3, text)]
         children << h(:div,
-                      'Warning! At present this does not take into account other players’ actions.'\
+                      'Warning! At present this does not take into account other players’ actions. '\
                       'We suggest not enabling after the first stock round.')
 
         # @todo: later this will support buying to a certain percentage
@@ -65,13 +154,18 @@ module View
           children << h('div.bold', 'No corporations are ipoed and not floated, cannot program!')
         else
           values = floatable.map do |entity|
-            h(:option, { attrs: { value: entity.name } }, entity.full_name)
+            attrs = { value: entity.name }
+            attrs[:selected] = true if settings&.corporation == entity
+            h(:option, { attrs: attrs }, entity.name)
           end
           children << render_input('Corporation', id: 'corporation', el: 'select', on: { input2: :limit_range },
-                                                  children: values)
-          children << render_button('Enable Buy Shares') { enable_buy_shares }
-        end
+                                                  children: values, inputs: form)
 
+          subchildren = [render_button(settings ? 'Save' : 'Enable') { enable_buy_shares(form) }]
+          subchildren << render_disable(settings) if settings
+          children << h(:div, subchildren)
+
+        end
         children
       end
 
@@ -84,10 +178,8 @@ module View
         )
       end
 
-      def render_disable(enabled)
-        children = [h(:h3, "Disable program '#{enabled.class.print_name}'")]
-        children << render_button("Disable '#{enabled.class.print_name}'") { disable }
-        children
+      def render_disable
+        render_button('Disable') { disable }
       end
     end
   end
