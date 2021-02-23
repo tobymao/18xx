@@ -152,7 +152,11 @@ module View
             scroll_to_game_menu
             `document.getElementById('game').focus()`
           },
-          postpatch: -> { `document.getElementById('game').focus()` },
+          postpatch: lambda {
+            unless %w[input textarea].include?(Native(`document.activeElement`).localName)
+              `document.getElementById('game').focus()`
+            end
+          },
         },
         on: {
           keydown: ->(event) { hotkey_check(event) },
@@ -199,8 +203,8 @@ module View
       # catch modifiers to not interfere with OS shortcuts
       event = Native(event)
       active = Native(`document.activeElement`)
-      return if active.localName == 'input' || event.getModifierState('Alt') || event.getModifierState('AltGraph') ||
-                event.getModifierState('Meta') || event.getModifierState('OS')
+      return if %w[input textarea].include?(active.localName) || event.getModifierState('Alt') ||
+                event.getModifierState('AltGraph') || event.getModifierState('Meta') || event.getModifierState('OS')
 
       key = event['key']
       if event.getModifierState('Control')
