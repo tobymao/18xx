@@ -63,8 +63,8 @@ module Engine
             train = entity.trains.find { |t| @game.extra_train?(t) }
             return nil unless train
 
-            route = routes.find { |r| r.train == train }
-            route&.revenue&.positive? ? train : nil
+            revenue = routes.find { |r| r.train == train }&.revenue || 0
+            revenue.positive? && revenue != @game.routes_revenue(routes) ? train : nil
           end
 
           def half(entity, revenue, subsidy)
