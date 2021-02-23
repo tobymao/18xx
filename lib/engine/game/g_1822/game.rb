@@ -2332,7 +2332,7 @@ module Engine
             G1822::Step::PendingToken,
             G1822::Step::FirstTurnHousekeeping,
             Engine::Step::AcquireCompany,
-            G1822::Step::DiscardTrain,
+            Engine::Step::DiscardTrain,
             G1822::Step::Track,
             G1822::Step::DestinationToken,
             G1822::Step::Token,
@@ -2341,7 +2341,7 @@ module Engine
             G1822::Step::BuyTrain,
             G1822::Step::MinorAcquisition,
             G1822::Step::PendingToken,
-            G1822::Step::DiscardTrain,
+            Engine::Step::DiscardTrain,
             G1822::Step::IssueShares,
           ], round_num: round_num)
         end
