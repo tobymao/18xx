@@ -33,7 +33,7 @@ module Engine
           end
 
           def pass_description
-            if @current_actions.empty?
+            if @round.current_actions.empty?
               'Pass (Certificates)'
             else
               'Done (Certificates)'

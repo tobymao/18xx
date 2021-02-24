@@ -30,7 +30,7 @@ module Engine
       end
 
       def log_pass(entity)
-        return @log << "#{entity.name} passes" if @current_actions.empty?
+        return @log << "#{entity.name} passes" if @round.current_actions.empty?
         return if bought? && sold?
 
         action = bought? ? 'to sell' : 'to buy'
@@ -53,7 +53,7 @@ module Engine
       end
 
       def pass_description
-        if @current_actions.empty?
+        if @round.current_actions.empty?
           'Pass (Share)'
         else
           'Done (Share)'
@@ -61,9 +61,11 @@ module Engine
       end
 
       def round_state
-        # What the player has sold/shorted since the start of the round
         {
+          # What the player has sold/shorted since the start of the round
           players_sold: Hash.new { |h, k| h[k] = {} },
+          # Actions taken by the player on this turn
+          current_actions: [],
           # What the player did last turn
           players_history: Hash.new { |h, k| h[k] = Hash.new { |h2, k2| h2[k2] = [] } },
         }
@@ -79,7 +81,7 @@ module Engine
 
         @round.players_history[current_entity].clear
 
-        @current_actions = []
+        @round.current_actions = []
       end
 
       # Returns if a share can be bought via a normal buy actions
@@ -120,8 +122,8 @@ module Engine
       def can_sell_order?
         case @game.class::SELL_BUY_ORDER
         when :sell_buy_or_buy_sell
-          !(@current_actions.uniq(&:class).size == 2 &&
-            self.class::PURCHASE_ACTIONS.include?(@current_actions.last.class))
+          !(@round.current_actions.uniq(&:class).size == 2 &&
+            self.class::PURCHASE_ACTIONS.include?(@round.current_actions.last.class))
         when :sell_buy
           !bought?
         when :sell_buy_sell
@@ -139,7 +141,7 @@ module Engine
 
       def track_action(action, corporation, player_action = true)
         @round.last_to_act = action.entity.player
-        @current_actions << action if player_action
+        @round.current_actions << action if player_action
         @round.players_history[action.entity.player][corporation] << action
       end
 
@@ -168,7 +170,7 @@ module Engine
 
       def pass!
         super
-        if @current_actions.any?
+        if @round.current_actions.any?
           @round.pass_order.delete(current_entity)
           current_entity.unpass!
         else
@@ -179,8 +181,8 @@ module Engine
 
       def can_buy_multiple?(_entity, corporation)
         corporation.buy_multiple? &&
-         @current_actions.none? { |x| x.is_a?(Action::Par) } &&
-         @current_actions.none? { |x| x.is_a?(Action::BuyShares) && x.bundle.corporation != corporation }
+         @round.current_actions.none? { |x| x.is_a?(Action::Par) } &&
+         @round.current_actions.none? { |x| x.is_a?(Action::BuyShares) && x.bundle.corporation != corporation }
       end
 
       def can_sell_any?(entity)
@@ -257,11 +259,11 @@ module Engine
       end
 
       def bought?
-        @current_actions.any? { |x| self.class::PURCHASE_ACTIONS.include?(x.class) }
+        @round.current_actions.any? { |x| self.class::PURCHASE_ACTIONS.include?(x.class) }
       end
 
       def sold?
-        @current_actions.any? { |x| x.instance_of?(Action::SellShares) }
+        @round.current_actions.any? { |x| x.instance_of?(Action::SellShares) }
       end
 
       def process_buy_company(action)
@@ -277,7 +279,7 @@ module Engine
 
         entity.companies << company
         entity.spend(price, owner.nil? ? @game.bank : owner)
-        @current_actions << action
+        @round.current_actions << action
         @log << "#{owner ? '-- ' : ''}#{entity.name} buys #{company.name} from "\
                 "#{owner ? owner.name : 'the market'} for #{@game.format_currency(price)}"
       end
