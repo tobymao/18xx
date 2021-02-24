@@ -232,7 +232,7 @@ module Engine
         def company_header(company)
           if get_mine(company)
             'INDEPENDENT MINE'
-          elsif @corporations.any? { |c| c.id == company.id && @corporation_info[c][:concession_pending] }
+          elsif @corporations.any? { |c| c.id == company.id && concession_pending?(c) }
             'CONCESSION'
           else
             'PURCHASE OPTION'
@@ -310,7 +310,6 @@ module Engine
           'Form Public Mining Company'
         end
 
-        # FIXME: public mines
         def float_corporation(corporation)
           return if corporation == @mhe
 
@@ -319,7 +318,7 @@ module Engine
           num_ipo_shares = corporation.ipo_shares.size
           added_cash = num_ipo_shares * corporation.share_price.price
 
-          replace_company(corporation)
+          replace_company!(corporation)
 
           return unless added_cash.positive?
 
@@ -356,7 +355,7 @@ module Engine
         end
 
         # replace railway dummy concession company with a dummy purchase option company
-        def replace_company(corporation)
+        def replace_company!(corporation)
           return unless railway?(corporation)
 
           old_co = @companies.find { |c| c.id == corporation.id }
@@ -385,8 +384,14 @@ module Engine
             @corporation_info[entity][:concession_pending]
         end
 
+        def concession_incomplete?(entity)
+          entity.corporation? &&
+            @corporation_info[entity][:type] == :railway &&
+            @corporation_info[entity][:concession_incomplete]
+        end
+
         def concession_route_done?(entity)
-          return true unless concession_pending?(entity)
+          return true unless concession_incomplete?(entity)
 
           concession_hexes(entity).all? do |h|
             info = CONCESSION_TILES[h]
@@ -399,10 +404,24 @@ module Engine
         end
 
         def concession_complete!(entity)
+          return unless concession_incomplete?(entity)
+
+          @corporation_info[entity][:concession_incomplete] = false
+          @log << "#{entity.name} has a complete concession route"
+        end
+
+        def concession_unpend!(entity)
           return unless concession_pending?(entity)
 
           @corporation_info[entity][:concession_pending] = false
-          @log << "#{entity.name} has a complete concession route"
+          @log << "#{entity.name} has completed its concession requirements"
+        end
+
+        def advance_concession_phase!(entity)
+          return unless concession_pending?(entity) && !(info = @corporation_info[entity])[:advanced]
+
+          info[:concession_phase] = (info[:concession_phase].to_i - 1).to_s
+          info[:advanced] = true
         end
 
         def connected_mine?(entity)
@@ -566,7 +585,9 @@ module Engine
         # If it was a different tile that was reserved, put the reserved
         # tile back into the tile list
         def free_tile_reservation!(hex, tile)
-          return unless @reserved_tiles[hex]
+          return if @reserved_tiles[hex.id].empty?
+
+          puts 'found a reservation to free'
 
           ch = concession_hex(hex)
           return unless (ch[:exits] & tile.exits).size != ch[:exits].size
@@ -1150,7 +1171,9 @@ module Engine
                 concession_routes: [%w[B19 B17 C16 D15]],
                 concession_cost: 0,
                 concession_pending: true,
+                concession_incomplete: true,
                 extra_tokens: 4,
+                advanced: true,
               },
             },
             {
@@ -1178,7 +1201,9 @@ module Engine
                 concession_routes: [%w[G20 H19 G17 I18]],
                 concession_cost: 150,
                 concession_pending: true,
+                concession_incomplete: true,
                 extra_tokens: 3,
+                advanced: true,
               },
             },
             {
@@ -1206,7 +1231,9 @@ module Engine
                 concession_routes: [%w[B9 C8 D7 E6 F5 G6], %w[G6 H7 H9 I8 J7]],
                 concession_cost: 500,
                 concession_pending: true,
+                concession_incomplete: true,
                 extra_tokens: 3,
+                advanced: false,
               },
             },
             {
@@ -1232,7 +1259,9 @@ module Engine
                 concession_routes: [%w[E4 F3 G2 H1 I2]],
                 concession_cost: 300,
                 concession_pending: true,
+                concession_incomplete: true,
                 extra_tokens: 2,
+                advanced: false,
               },
             },
             {
@@ -1258,7 +1287,9 @@ module Engine
                 concession_routes: [%w[G4 H3 I4]],
                 concession_cost: 100,
                 concession_pending: true,
+                concession_incomplete: true,
                 extra_tokens: 2,
+                advanced: false,
               },
             },
             {
@@ -1284,7 +1315,9 @@ module Engine
                 concession_routes: [%w[B9 C10 C12 C14 D15]],
                 concession_cost: 0,
                 concession_pending: true,
+                concession_incomplete: true,
                 extra_tokens: 2,
+                advanced: false,
               },
             },
             {
@@ -1310,7 +1343,9 @@ module Engine
                 concession_routes: [],
                 concession_cost: 0,
                 concession_pending: false,
+                concession_incomplete: true,
                 extra_tokens: 2,
+                advanced: true,
               },
             },
             {

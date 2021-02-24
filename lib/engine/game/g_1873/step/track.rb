@@ -31,7 +31,7 @@ module Engine
             # deal with case where concession route happened to be completed
             # before railroad even got to it's first OR
             entity = action.entity
-            if @game.concession_pending?(entity) && @game.concession_route_done?(entity)
+            if @game.concession_incomplete?(entity) && @game.concession_route_done?(entity)
               @game.concession_complete!(entity)
               pay_full_concession_cost!(entity)
             end
@@ -44,7 +44,7 @@ module Engine
 
             # deal with case where concession route happened to be completed
             # before railroad even got to it's first OR
-            if @game.concession_pending?(entity) && @game.concession_route_done?(entity)
+            if @game.concession_incomplete?(entity) && @game.concession_route_done?(entity)
               @game.concession_complete!(entity)
               pay_full_concession_cost!(entity)
             end
@@ -55,7 +55,7 @@ module Engine
             @game.mine_graph.clear if entity.corporation?
 
             # check to see if concession is complete
-            if @game.concession_pending?(entity) && @game.concession_route_done?(entity)
+            if @game.concession_incomplete?(entity) && @game.concession_route_done?(entity)
               @game.concession_complete!(entity)
               @round.num_laid_track = 2 # prevent any more tiles this turn
             end
@@ -75,7 +75,7 @@ module Engine
           def can_lay_tile?(entity)
             return true if abilities(entity, time: type, passive_ok: false)
             return false if entity.minor? && @round.num_laid_track.positive?
-            return false if !@game.concession_pending?(entity) && @round.non_double_tile
+            return false if !@game.concession_incomplete?(entity) && @round.non_double_tile
 
             action = get_tile_lay(entity)
             return false unless action
@@ -85,7 +85,7 @@ module Engine
           end
 
           def get_tile_lay(entity)
-            return @game.tile_lays(entity)[0]&.clone if @game.concession_pending?(entity)
+            return @game.tile_lays(entity)[0]&.clone if @game.concession_incomplete?(entity)
 
             action = @game.tile_lays(entity)[@round.num_laid_track]&.clone
             return unless action
@@ -110,7 +110,7 @@ module Engine
           end
 
           def potential_tiles(entity, hex)
-            return super unless (pending = @game.concession_pending?(entity))
+            return super unless @game.concession_incomplete?(entity)
 
             if !@game.concession_hex(hex)
               # can only lay in concession hexes
@@ -141,6 +141,9 @@ module Engine
             end
           end
 
+          # yes, I'm hijacking this a little but I need a way to see if a tile needs to be
+          # reserved and the owner reimbursed for working on another company's concession route
+          # and the concession company having to pay for previously laid tiles
           def pay_tile_cost!(entity, tile, rotation, hex, spender, cost, _extra_cost)
             reimburse = false
             ch = @game.concession_hex(tile.hex)
@@ -159,6 +162,8 @@ module Engine
               @log << "#{entity.owner} must pay for previously reimbused tile cost"\
                 "of #{@game.format_cureency(ch[:cost])}"
             end
+
+            @game.advance_concession_phase!(ch[:entity]) if reimburse
 
             super
 
