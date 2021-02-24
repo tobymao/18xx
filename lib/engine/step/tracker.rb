@@ -70,6 +70,7 @@ module Engine
         hex = action.hex
         rotation = action.rotation
         old_tile = hex.tile
+        graph = @game.graph_for_entity(entity)
 
         @game.companies.each do |company|
           break if @game.loading
@@ -94,7 +95,7 @@ module Engine
 
         hex.lay(tile)
 
-        @game.graph.clear
+        graph.clear
         free = false
         discount = 0
         teleport = false
@@ -117,7 +118,7 @@ module Engine
             raise GameError, "Track laid must be connected to one of #{spender.id}'s stations" if ability.reachable &&
               hex.name != spender.coordinates &&
               !@game.loading &&
-              !@game.graph.reachable_hexes(spender)[hex]
+              !graph.reachable_hexes(spender)[hex]
 
             free = ability.free
             discount = ability.discount
@@ -237,12 +238,14 @@ module Engine
       def check_track_restrictions!(entity, old_tile, new_tile)
         return if @game.loading || !entity.operator?
 
+        graph = @game.graph_for_entity(entity)
+
         old_paths = old_tile.paths
         changed_city = false
         used_new_track = old_paths.empty?
 
         new_tile.paths.each do |np|
-          next unless @game.graph.connected_paths(entity)[np]
+          next unless graph.connected_paths(entity)[np]
 
           op = old_paths.find { |path| np <= path }
           used_new_track = true unless op
@@ -316,7 +319,7 @@ module Engine
       end
 
       def hex_neighbors(entity, hex)
-        @game.graph.connected_hexes(entity)[hex]
+        @game.graph_for_entity(entity).connected_hexes(entity)[hex]
       end
     end
   end
