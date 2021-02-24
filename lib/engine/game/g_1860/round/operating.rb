@@ -22,6 +22,7 @@ module Engine
               end
             end
 
+            @game.check_bankruptcy!(entity)
             super
           end
 
