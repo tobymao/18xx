@@ -305,7 +305,7 @@ module View
 
           rows = chart.map do |r|
             h(:tr, [
-              h(:td, r[0]),
+              h('td.padded_number', r[0]),
               h(:td, r[1]),
             ])
           end
