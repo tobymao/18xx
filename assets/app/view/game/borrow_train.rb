@@ -10,7 +10,7 @@ module View
       def render
         step = @game.round.active_step
         @corporation ||= step.current_entity
-        @ability = @game.abilities(@selected_company, :train_borrow)
+        @ability = @game.abilities(@selected_company, :borrow_train)
 
         @depot = @game.depot
 

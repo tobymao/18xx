@@ -347,7 +347,7 @@ module Engine
             name: 'Flos Tramway',
             sym: 'FT',
             value: 20,
-            revenue: 50,
+            revenue: 5,
             desc: 'No special abilities.',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['L3'] }],
             color: nil,
@@ -356,7 +356,7 @@ module Engine
             name: 'Waterloo & Saugeen Railway Co.',
             sym: 'WSRC',
             value: 40,
-            revenue: 100,
+            revenue: 10,
             desc: 'The public company that owns this private company may place a free station marker and '\
             'green #59 tile on the Kitchener hex (I12). This action closes the private company.',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['I12'] },
@@ -372,7 +372,7 @@ module Engine
             name: 'The Canada Company',
             sym: 'TCC',
             value: 50,
-            revenue: 100,
+            revenue: 10,
             desc: "During its operating turn, the public company owning this private company may place a '\
             'track tile in the hex occupied by this private company (H11). This track lay is in addition to '\
             'the public company's normal track lay. This action does not close the private company.",
@@ -392,7 +392,7 @@ module Engine
             name: 'Great Lakes Shipping Company',
             sym: 'GLSC',
             value: 70,
-            revenue: 150,
+            revenue: 15,
             desc: 'At any time during its operating turn, the owning public company may place the port token in '\
             'any one city adjacent to Lake Erie, Lake Huron or Georgian Bay. '\
             'Placement of this token closes the Great Lakes Shipping Company.',
@@ -429,7 +429,7 @@ module Engine
             name: 'Niagara Falls Suspension Bridge Company',
             sym: 'NFSBC',
             value: 100,
-            revenue: 200,
+            revenue: 20,
             desc: 'The public company that owns this private company may add a $10 bonus when running '\
             'to Buffalo (P17/P19). Other public companies may purchase the right for $50.',
             color: nil,
@@ -438,7 +438,7 @@ module Engine
             name: 'St. Clair Frontier Tunnel Company',
             sym: 'SCFTC',
             value: 100,
-            revenue: 200,
+            revenue: 20,
             desc: 'The public company that owns this private company may add a $10 Port Huron bonus when running '\
             'to Sarnia (B13). Other public companies may purchase the right for $50.',
             color: nil,
@@ -574,7 +574,7 @@ module Engine
                 description: '3 train limit',
               },
               {
-                type: 'train_borrow',
+                type: 'borrow_train',
                 train_types: %w[8 D],
                 description: 'May borrow a train when trainless*',
               },
@@ -824,6 +824,14 @@ module Engine
 
         def national_token_limit
           10
+        end
+
+        def ultimate_train_price
+          1100
+        end
+
+        def ultimate_train_trade_in
+          750
         end
 
         def interest_owed_for_loans(loans)
@@ -1218,7 +1226,7 @@ module Engine
             G1856::Step::Track,
             G1856::Step::Escrow,
             Engine::Step::Token,
-            Engine::Step::BorrowTrain,
+            G1856::Step::BorrowTrain,
             Engine::Step::Route,
             # Interest - See Loan
             G1856::Step::Dividend,
@@ -1312,7 +1320,7 @@ module Engine
 
           @national_ever_owned_permanent = true
           @log << "-- #{national.name} now owns a permanent train, may no longer borrow a train when trainless --"
-          national.remove_ability(national.all_abilities.select { |a| a.type == :train_borrow }.first)
+          national.remove_ability(national.all_abilities.select { |a| a.type == :borrow_train }.first)
         end
 
         def merge_major(major)

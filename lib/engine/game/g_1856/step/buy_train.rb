@@ -13,7 +13,7 @@ module Engine
             cash = entity.cash
             # Can't use empty because the national may have a permanent train borrowed :(
             has_tradeable_train = entity.trains.any?(&:rusts_on)
-            cash > 1100 || (has_tradeable_train && cash > 750)
+            cash > @game.ultimate_train_price || (has_tradeable_train && cash > @game.ultimate_train_trade_in)
           end
 
           def process_buy_train(action)
