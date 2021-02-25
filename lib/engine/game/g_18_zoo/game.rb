@@ -146,7 +146,7 @@ module Engine
                          'multiplier' => 1,
                        }],
             price: 12,
-            rusts_on: '4J',
+            obsolete_on: '4J',
             num: 1,
           },
           {
@@ -188,7 +188,7 @@ module Engine
             ],
             price: 47,
             num: 99,
-            events: [{ 'type' => 'new_train' }],
+            events: [{ 'type' => 'new_train' }, { 'type' => 'rust_own_3s_4s' }],
           },
           {
             name: '2J',
@@ -728,9 +728,7 @@ module Engine
           [0, 0],
         ].freeze
 
-        STOCKMARKET_OWNER_GAIN = [
-          [0, 0, 0, 1, 2, 2, 2, 2, 3],
-        ].freeze
+        STOCKMARKET_OWNER_GAIN = [0, 0, 0, 1, 2, 2, 2, 2, 3].freeze
 
         SELL_AFTER = :any_time
 
@@ -748,37 +746,37 @@ module Engine
         }.freeze
 
         CORPORATION_COORDINATES_BY_MAP = {
-          map_a: { GI: 'J9', PB: 'M10', PE: 'J17', LI: 'D15', TI: 'G14' },
-          map_b: { CR: 'G3', GI: 'J10', PB: 'M11', PE: 'J18', BB: 'H6' },
-          map_c: { CR: 'H3', LI: 'E16', TI: 'H15', BB: 'I6', EL: 'D5' },
-          map_d: { CR: 'G3', GI: 'J10', PB: 'M11', PE: 'J18', LI: 'D16', TI: 'G15', BB: 'H6' },
-          map_e: { CR: 'G3', GI: 'J10', PB: 'M11', PE: 'J18', TI: 'G15', BB: 'H6', EL: 'C5' },
-          map_f: { CR: 'H3', GI: 'K10', PE: 'K18', LI: 'E16', TI: 'H15', BB: 'I6', EL: 'D5' },
+          map_a: { 'GI' => 'J9', 'PB' => 'M10', 'PE' => 'J17', 'LI' => 'D15', 'TI' => 'G14' },
+          map_b: { 'CR' => 'G3', 'GI' => 'J10', 'PB' => 'M11', 'PE' => 'J18', 'BB' => 'H6' },
+          map_c: { 'CR' => 'H3', 'LI' => 'E16', 'TI' => 'H15', 'BB' => 'I6', 'EL' => 'D5' },
+          map_d: { 'CR' => 'G3', 'GI' => 'J10', 'PB' => 'M11', 'PE' => 'J18', 'LI' => 'D16', 'TI' => 'G15', 'BB' => 'H6' },
+          map_e: { 'CR' => 'G3', 'GI' => 'J10', 'PB' => 'M11', 'PE' => 'J18', 'TI' => 'G15', 'BB' => 'H6', 'EL' => 'C5' },
+          map_f: { 'CR' => 'H3', 'GI' => 'K10', 'PE' => 'K18', 'LI' => 'E16', 'TI' => 'H15', 'BB' => 'I6', 'EL' => 'D5' },
         }.freeze
 
         LOCATION_NAMES_BY_MAP = {
           map_a: {
-            "B11": 'O',
-            "B13": 'O',
-            "E18": 'O',
-            "G10": 'O',
-            "H9": 'O',
-            "H11": 'O',
-            "I2": 'O',
-            "K14": 'O',
-            "M12": 'O',
-            "M14": 'O',
-            "D11": 'MM',
-            "E10": 'MM',
-            "F17": 'MM',
-            "G18": 'MM',
-            "J3": 'MM',
-            "K18": 'MM',
-            "M16": 'MM',
-            "C12": 'M',
-            "H15": 'M',
-            "I14": 'M',
-            "D17": 'M',
+            'B11': 'O',
+            'B13': 'O',
+            'E18': 'O',
+            'G10': 'O',
+            'H9': 'O',
+            'H11': 'O',
+            'I2': 'O',
+            'K14': 'O',
+            'M12': 'O',
+            'M14': 'O',
+            'D11': 'MM',
+            'E10': 'MM',
+            'F17': 'MM',
+            'G18': 'MM',
+            'J3': 'MM',
+            'K18': 'MM',
+            'M16': 'MM',
+            'C12': 'M',
+            'H15': 'M',
+            'I14': 'M',
+            'D17': 'M',
           },
           map_b: {
             "F2": 'O',
@@ -917,12 +915,15 @@ module Engine
           },
         }.freeze
 
-        # HOME_TOKEN_TIMING = :float # TODO enable again after adding G18ZOO::Step::HomeToken
+        HOME_TOKEN_TIMING = :float
 
         MUST_BUY_TRAIN = :always
 
         # A yellow/upgrade and a yellow
-        TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded }].freeze
+        TILE_LAYS = [
+          { lay: true, upgrade: true, cannot_reuse_same_hex: true },
+          { lay: true, upgrade: :not_if_upgraded, cannot_reuse_same_hex: true },
+        ].freeze
 
         MARKET_TEXT = Base::MARKET_TEXT.merge(par_2: 'Can only enter during phase green',
                                               par_3: 'Can only enter during phase brown').freeze
@@ -1022,13 +1023,34 @@ module Engine
           super
         end
 
+        def tile_lays(_entity)
+          return super if @round.is_a?(Engine::Round::Operating)
+
+          return [{ lay: true, upgrade: true }] unless @round.available_tracks.empty?
+
+          @round.bonus_tracks.times.map { |_| { lay: true } } if @round.bonus_tracks > 0
+        end
+
+        def upgrades_to?(from, to, special = nil)
+          return super if @round.is_a?(Engine::Round::Operating)
+
+          return @round.available_tracks.include?(to.name) &&
+            Engine::Tile::COLORS.index(to.color) > Engine::Tile::COLORS.index(from.color) &&
+            from.paths_are_subset_of?(to.paths) if @round.available_tracks.any?
+
+          super
+        end
+
         def unowned_purchasable_companies(_entity)
           @available_companies + @future_companies
         end
 
         def after_par(corporation)
-          bonus_after_par(corporation, 5, 2) if corporation.par_price.price == 9
-          bonus_after_par(corporation, 10, 4) if corporation.par_price.price == 12
+          @round.floated_corporation = corporation
+          @round.available_tracks = %w[5 6 57]
+
+          bonus_after_par(corporation, 5, 2, %w[14 15]) if corporation.par_price.price == 9
+          bonus_after_par(corporation, 10, 4, %w[14 15 611]) if corporation.par_price.price == 12
 
           return unless @near_families
 
@@ -1052,12 +1074,21 @@ module Engine
             corporations = @near_families_direction == 'reverse' ? corporations_order.reverse : corporations_order
             following_corporation = corporations.drop_while { |c| c.id != corporation.id }
                                                 .find { |c| !c.ipoed }
-            @near_families_purchasable = [{ id: following_corporation.id }]
+            if following_corporation
+              @near_families_purchasable = [{ id: following_corporation.id }]
 
-            unless following_corporation
               @log << "Near family rule: #{following_corporation.full_name} is now available."
             end
           end
+        end
+
+        def entity_can_use_company?(entity, company)
+          return entity == company.owner if entity.player?
+
+          return entity == company.owner ||
+            (entity.owned_by_player? && entity.player == company.owner) if entity.corporation?
+
+          false
         end
 
         def holiday
@@ -1211,6 +1242,9 @@ module Engine
             Engine::Step::Exchange,
             Engine::Step::SpecialTrack,
             G18ZOO::Step::BuySellParShares,
+            G18ZOO::Step::HomeTrack,
+            G18ZOO::Step::BonusTracks,
+            G18ZOO::Step::FreeActionsOnSr,
           ])
         end
 
@@ -1223,9 +1257,15 @@ module Engine
 
         def operating_round(round_num)
           Round::Operating.new(self, [
+            Engine::Step::SpecialTrack,
             G18ZOO::Step::BuyCompany,
             Engine::Step::Track,
             Engine::Step::Token,
+            G18ZOO::Step::Route,
+            G18ZOO::Step::Dividend,
+            Engine::Step::DiscardTrain,
+            G18ZOO::Step::BuyTrain,
+            [G18ZOO::Step::BuyCompany, blocks: true],
           ], round_num: round_num)
         end
 
@@ -1273,15 +1313,22 @@ module Engine
           end
         end
 
-        def bonus_after_par(corporation, money, _additional_tracks)
+        def bonus_after_par(corporation, money, additional_tracks, available_tracks)
           bank.spend(money, corporation)
           @log << "#{corporation.name} earns #{format_currency(money)} as treasury bonus"
-          # TODO: enable again after adding G18ZOO::Step::AdditionalTracksAfterPar
-          # @round.additional_tracks = additional_tracks
+
+          @round.available_tracks.concat(available_tracks)
+
+          @round.bonus_tracks = additional_tracks
         end
 
         def event_new_train!
-          # @new_train_brought = true # TODO: enable again after adding G18ZOO::Step::BuyTrain
+          @round.new_train_brought = true
+        end
+
+        def event_rust_own_3s_4s!
+          @log << "3S long and 4S owned by current player are rusted!"
+          # TODO remove the 3S long and 4S owned by current player
         end
       end
     end
