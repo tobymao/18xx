@@ -962,7 +962,15 @@ module Engine
         end
 
         def available_programmed_actions
-          []
+          [Action::ProgramMergerPass]
+        end
+
+        def merge_rounds
+          [G1867::Round::Merger]
+        end
+
+        def merge_corporations
+          @corporations.select { |c| c.floated? && c.type == :minor }
         end
 
         def calculate_corporation_interest(corporation)

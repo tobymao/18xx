@@ -667,6 +667,7 @@ module Engine
           else
             store_player_info
             next_round!
+            check_programmed_actions
 
             # Finalize round setup (for things that need round correctly set like place_home_token)
             @round.at_start = true
@@ -1967,7 +1968,6 @@ module Engine
             reorder_players
             new_stock_round
           end
-        check_programmed_actions
       end
 
       def check_programmed_actions

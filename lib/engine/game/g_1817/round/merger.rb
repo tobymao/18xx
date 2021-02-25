@@ -7,7 +7,7 @@ module Engine
     module G1817
       module Round
         class Merger < Engine::Round::Merger
-          def name
+          def self.round_name
             'Merger and Conversion Round'
           end
 
@@ -16,10 +16,7 @@ module Engine
           end
 
           def select_entities
-            @game
-              .corporations
-              .select { |c| c.floated? && c.share_price.normal_movement? && !c.share_price.acquisition? }
-              .sort
+            @game.merge_corporations.sort
           end
 
           def setup

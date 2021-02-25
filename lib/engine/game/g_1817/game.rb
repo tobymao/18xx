@@ -935,7 +935,15 @@ module Engine
         end
 
         def available_programmed_actions
-          []
+          [Action::ProgramMergerPass]
+        end
+
+        def merge_rounds
+          [G1817::Round::Merger, G1817::Round::Acquisition]
+        end
+
+        def merge_corporations
+          @corporations.select { |c| c.floated? && c.share_price.normal_movement? && !c.share_price.acquisition? }
         end
 
         def option_short_squeeze?
