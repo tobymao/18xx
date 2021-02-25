@@ -163,7 +163,7 @@ module View
           },
           # edge 5
           {
-            region_weights: { [17] => 1.0, [18, 23] => 0.25 },
+            region_weights: { [23] => 1.0, [17] => 0.25 },
             x: 50,
             y: 37,
           },
