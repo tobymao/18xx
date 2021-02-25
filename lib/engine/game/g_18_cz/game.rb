@@ -138,56 +138,64 @@ module Engine
             'count' => 1,
             'color' => 'green',
             'code' =>
-            'city=revenue:40;city=revenue:40;city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:2,b:_1;path=a:3,b:_2;path=a:4,b:_3;label=P',
+            'city=revenue:40;city=revenue:40;city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:2,b:_1;' \
+                  'path=a:3,b:_2;path=a:4,b:_3;label=P',
           },
           '8892' =>
           {
             'count' => 1,
             'color' => 'brown',
             'code' =>
-            'city=revenue:60,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=P',
+            'city=revenue:60,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;' \
+                  'path=a:5,b:_0;label=P',
           },
           '8893' =>
           {
             'count' => 1,
             'color' => 'gray',
             'code' =>
-            'city=revenue:80,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=P',
+            'city=revenue:80,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;' \
+                  'path=a:5,b:_0;label=P',
           },
           '8894' =>
           {
             'count' => 1,
             'color' => 'red',
             'code' =>
-            'city=revenue:yellow_20|green_30|brown_40|gray_50;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;icon=image:18_cz/50;label=Ug',
+            'city=revenue:yellow_20|green_30|brown_40|gray_50;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;' \
+                  'icon=image:18_cz/50;label=Ug',
           },
           '8895' =>
           {
             'count' => 1,
             'color' => 'red',
             'code' =>
-            'city=revenue:yellow_20|green_30|brown_40|gray_50;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;icon=image:18_cz/50;label=kk',
+            'city=revenue:yellow_20|green_30|brown_40|gray_50;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;' \
+                  'icon=image:18_cz/50;label=kk',
           },
           '8896' =>
           {
             'count' => 1,
             'color' => 'red',
             'code' =>
-            'city=revenue:yellow_20|green_30|brown_40|gray_50;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;icon=image:18_cz/50;label=SX',
+            'city=revenue:yellow_20|green_30|brown_40|gray_50;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;' \
+                  'icon=image:18_cz/50;label=SX',
           },
           '8897' =>
           {
             'count' => 1,
             'color' => 'red',
             'code' =>
-            'city=revenue:yellow_20|green_30|brown_40|gray_50;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;icon=image:18_cz/50;label=PR',
+            'city=revenue:yellow_20|green_30|brown_40|gray_50;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;' \
+                  'icon=image:18_cz/50;label=PR',
           },
           '8898' =>
           {
             'count' => 1,
             'color' => 'red',
             'code' =>
-            'city=revenue:yellow_20|green_30|brown_40|gray_50;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;icon=image:18_cz/50;label=BY',
+            'city=revenue:yellow_20|green_30|brown_40|gray_50;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;' \
+                  'icon=image:18_cz/50;label=BY',
           },
           '8866p' =>
           {
@@ -236,49 +244,56 @@ module Engine
             'count' => 1,
             'color' => 'brown',
             'code' =>
-            'city=revenue:40,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;frame=color:purple',
+            'city=revenue:40,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;' \
+                  'frame=color:purple',
           },
           '216p' =>
           {
             'count' => 1,
             'color' => 'brown',
             'code' =>
-            'city=revenue:50,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=Y;frame=color:purple',
+            'city=revenue:50,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=Y;' \
+                  'frame=color:purple',
           },
           '8894p' =>
           {
             'count' => 1,
             'color' => 'brown',
             'code' =>
-            'city=revenue:60,slots:2;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=OO;frame=color:purple',
+            'city=revenue:60,slots:2;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=OO;' \
+                  'frame=color:purple',
           },
           '8895p' =>
           {
             'count' => 1,
             'color' => 'brown',
             'code' =>
-            'city=revenue:60,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=OO;frame=color:purple',
+            'city=revenue:60,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=OO;' \
+                  'frame=color:purple',
           },
           '8896p' =>
           {
             'count' => 1,
             'color' => 'brown',
             'code' =>
-            'city=revenue:60,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=OO;frame=color:purple',
+            'city=revenue:60,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=OO;' \
+                  'frame=color:purple',
           },
           '8857p' =>
           {
             'count' => 1,
             'color' => 'gray',
             'code' =>
-            'city=revenue:70,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=Y;frame=color:purple',
+            'city=revenue:70,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;' \
+                  'path=a:5,b:_0;label=Y;frame=color:purple',
           },
           '595p' =>
           {
             'count' => 2,
             'color' => 'gray',
             'code' =>
-            'city=revenue:60,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;frame=color:purple',
+            'city=revenue:60,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;' \
+                  'path=a:5,b:_0;frame=color:purple',
           },
         }.freeze
 
@@ -634,7 +649,8 @@ module Engine
             value: 25,
             revenue: 5,
             sym: 'S1',
-            desc: 'May either ignore the cost to build a river tile or lay a purple-edged green upgrade to town/city hexes',
+            desc: 'May either ignore the cost to build a river tile or ' \
+                   'lay a purple-edged green upgrade to town/city hexes',
             abilities: [
             {
               type: 'tile_lay',
@@ -694,7 +710,8 @@ module Engine
             value: 30,
             revenue: 5,
             sym: 'S2',
-            desc: 'May either ignore the cost to build a river tile or lay a purple-edged green upgrade to town/city hexes',
+            desc: 'May either ignore the cost to build a river tile or ' \
+                   'lay a purple-edged green upgrade to town/city hexes',
             abilities: [
               {
                 type: 'tile_lay',
@@ -754,7 +771,8 @@ module Engine
             value: 35,
             revenue: 5,
             sym: 'S3',
-            desc: 'May either ignore the cost to build a river tile or lay a purple-edged green upgrade to town/city hexes',
+            desc: 'May either ignore the cost to build a river tile or ' \
+                   'lay a purple-edged green upgrade to town/city hexes',
             abilities: [
               {
                 type: 'tile_lay',
@@ -814,7 +832,8 @@ module Engine
             value: 40,
             revenue: 5,
             sym: 'S4',
-            desc: 'May either ignore the cost to build a river tile or lay a purple-edged green upgrade to town/city hexes',
+            desc: 'May either ignore the cost to build a river tile or ' \
+                   'lay a purple-edged green upgrade to town/city hexes',
             abilities: [
               {
                 type: 'tile_lay',
@@ -874,7 +893,8 @@ module Engine
             value: 45,
             revenue: 5,
             sym: 'S5',
-            desc: 'May either ignore the cost to build a river tile or lay a purple-edged green upgrade to town/city hexes',
+            desc: 'May either ignore the cost to build a river tile or ' \
+                   'lay a purple-edged green upgrade to town/city hexes',
             abilities: [
               {
                 type: 'tile_lay',
@@ -934,7 +954,8 @@ module Engine
             value: 50,
             revenue: 5,
             sym: 'S6',
-            desc: 'May either ignore the cost to build a river tile or lay a purple-edged green upgrade to town/city hexes',
+            desc: 'May either ignore the cost to build a river tile or ' \
+                   'lay a purple-edged green upgrade to town/city hexes',
             abilities: [
               {
                 type: 'tile_lay',
@@ -994,7 +1015,8 @@ module Engine
             value: 40,
             revenue: 10,
             sym: 'M1',
-            desc: 'May either ignore the cost to build a river or hill tile or lay a purple-edged green or brown upgrade to town/city hexes',
+            desc: 'May either ignore the cost to build a river or hill tile or ' \
+                  'lay a purple-edged green or brown upgrade to town/city hexes',
             abilities: [
               {
                 type: 'tile_lay',
@@ -1077,7 +1099,8 @@ module Engine
             value: 45,
             revenue: 10,
             sym: 'M2',
-            desc: 'May either ignore the cost to build a river or hill tile or lay a purple-edged green or brown upgrade to town/city hexes',
+            desc: 'May either ignore the cost to build a river or hill tile or ' \
+                  'lay a purple-edged green or brown upgrade to town/city hexes',
             abilities: [
               {
                 type: 'tile_lay',
@@ -1160,7 +1183,8 @@ module Engine
             value: 50,
             revenue: 10,
             sym: 'M3',
-            desc: 'May either ignore the cost to build a river or hill tile or lay a purple-edged green or brown upgrade to town/city hexes',
+            desc: 'May either ignore the cost to build a river or hill tile or ' \
+                  'lay a purple-edged green or brown upgrade to town/city hexes',
             abilities: [
               {
                 type: 'tile_lay',
@@ -1243,7 +1267,8 @@ module Engine
             value: 55,
             revenue: 10,
             sym: 'M4',
-            desc: 'May either ignore the cost to build a river or hill tile or lay a purple-edged green or brown upgrade to town/city hexes',
+            desc: 'May either ignore the cost to build a river or hill tile or ' \
+                  'lay a purple-edged green or brown upgrade to town/city hexes',
             abilities: [
               {
                 type: 'tile_lay',
@@ -1326,7 +1351,8 @@ module Engine
             value: 60,
             revenue: 10,
             sym: 'M5',
-            desc: 'May either ignore the cost to build a river or hill tile or lay a purple-edged green or brown upgrade to town/city hexes',
+            desc: 'May either ignore the cost to build a river or hill tile or ' \
+                  'lay a purple-edged green or brown upgrade to town/city hexes',
             abilities: [
               {
                 type: 'tile_lay',
@@ -1409,7 +1435,8 @@ module Engine
             value: 65,
             revenue: 10,
             sym: 'M6',
-            desc: 'May either ignore the cost to build a river or hill tile or lay a purple-edged green or brown upgrade to town/city hexes',
+            desc: 'May either ignore the cost to build a river or hill tile or ' \
+                  'lay a purple-edged green or brown upgrade to town/city hexes',
             abilities: [
               {
                 type: 'tile_lay',
@@ -1492,7 +1519,8 @@ module Engine
             value: 55,
             revenue: 20,
             sym: 'L1',
-            desc: 'May either ignore the cost to build a river, hill or mountain tile or lay a purple-edged green, brown, or gray upgrade to town/city hexes',
+            desc: 'May either ignore the cost to build a river, hill or mountain tile or '\
+                  'lay a purple-edged green, brown, or gray upgrade to town/city hexes',
             abilities: [
               {
                 type: 'tile_lay',
@@ -1584,7 +1612,8 @@ module Engine
             value: 60,
             revenue: 20,
             sym: 'L2',
-            desc: 'May either ignore the cost to build a river, hill or mountain tile or lay a purple-edged green, brown, or gray upgrade to town/city hexes',
+            desc: 'May either ignore the cost to build a river, hill or mountain tile or '\
+                  'lay a purple-edged green, brown, or gray upgrade to town/city hexes',
             abilities: [
               {
                 type: 'tile_lay',
@@ -1676,7 +1705,8 @@ module Engine
             value: 65,
             revenue: 20,
             sym: 'L3',
-            desc: 'May either ignore the cost to build a river, hill or mountain tile or lay a purple-edged green, brown, or gray upgrade to town/city hexes',
+            desc: 'May either ignore the cost to build a river, hill or mountain tile or '\
+                  'lay a purple-edged green, brown, or gray upgrade to town/city hexes',
             abilities: [
               {
                 type: 'tile_lay',
@@ -1768,7 +1798,8 @@ module Engine
             value: 70,
             revenue: 20,
             sym: 'L4',
-            desc: 'May either ignore the cost to build a river, hill or mountain tile or lay a purple-edged green, brown, or gray upgrade to town/city hexes',
+            desc: 'May either ignore the cost to build a river, hill or mountain tile or '\
+                  'lay a purple-edged green, brown, or gray upgrade to town/city hexes',
             abilities: [
               {
                 type: 'tile_lay',
@@ -1860,7 +1891,8 @@ module Engine
             value: 75,
             revenue: 20,
             sym: 'L5',
-            desc: 'May either ignore the cost to build a river, hill or mountain tile or lay a purple-edged green, brown, or gray upgrade to town/city hexes',
+            desc: 'May either ignore the cost to build a river, hill or mountain tile or '\
+                  'lay a purple-edged green, brown, or gray upgrade to town/city hexes',
             abilities: [
               {
                 type: 'tile_lay',
@@ -1952,7 +1984,8 @@ module Engine
             value: 80,
             revenue: 20,
             sym: 'L6',
-            desc: 'May either ignore the cost to build a river, hill or mountain tile or lay a purple-edged green, brown, or gray upgrade to town/city hexes',
+            desc: 'May either ignore the cost to build a river, hill or mountain tile or '\
+                  'lay a purple-edged green, brown, or gray upgrade to town/city hexes',
             abilities: [
               {
                 type: 'tile_lay',
@@ -2341,12 +2374,14 @@ module Engine
             %w[A8 B5] =>
             'label=SX;border=edge:0,type:offboard;border=edge:5,type:offboard;border=edge:4,type:offboard',
             ['B19'] =>
-            'label=PR;border=edge:0,type:offboard;border=edge:5,type:offboard;border=edge:4,type:offboard;border=edge:1,type:offboard',
+            'label=PR;border=edge:0,type:offboard;border=edge:5,type:offboard;border=edge:4,type:offboard;' \
+            'border=edge:1,type:offboard',
             ['A22'] => 'label=PR;border=edge:0,type:offboard;border=edge:5,type:offboard',
             ['H5'] =>
             'label=BY;border=edge:2,type:offboard;border=edge:3,type:offboard;border=edge:4,type:offboard',
             ['F3'] =>
-            'label=BY;border=edge:2,type:offboard;border=edge:3,type:offboard;border=edge:4,type:offboard;border=edge:5,type:offboard',
+            'label=BY;border=edge:2,type:offboard;border=edge:3,type:offboard;border=edge:4,type:offboard;' \
+            'border=edge:5,type:offboard',
             ['I18'] =>
             'label=kk;border=edge:2,type:offboard;border=edge:3,type:offboard;border=edge:4,type:offboard',
             ['J15'] => 'label=kk;border=edge:1,type:offboard;border=edge:2,type:offboard',
