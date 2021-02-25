@@ -183,8 +183,7 @@ module View
               [SINGLE_CITY_ONE_SLOT[layout], SINGLE_CITY_ONE_SLOT_RIGHT[layout]]
             end
           elsif @tile.city_towns.size > 1 && layout == :flat
-            # MULTI_CITY_LOCATIONS
-            [P_BOTTOM_LEFT_CORNER[layout]]
+            MULTI_CITY_LOCATIONS
           elsif @tile.city_towns.size > 1
             POINTY_MULTI_CITY_LOCATIONS
           elsif layout == :flat
