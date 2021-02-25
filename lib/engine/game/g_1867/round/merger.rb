@@ -7,7 +7,7 @@ module Engine
     module G1867
       module Round
         class Merger < Engine::Round::Merger
-          def name
+          def self.round_name
             'Merger Round'
           end
 
@@ -16,10 +16,7 @@ module Engine
           end
 
           def select_entities
-            @game
-              .corporations
-              .select { |c| c.floated? && c.type == :minor }
-              .sort
+            @game.merge_corporations.sort
           end
 
           def setup

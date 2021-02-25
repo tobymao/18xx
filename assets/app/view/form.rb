@@ -18,8 +18,8 @@ module View
       raise NotImplementedError
     end
 
-    def params
-      @inputs.map do |key, input|
+    def params(inputs = nil)
+      (inputs || @inputs).map do |key, input|
         input = Native(input)
         elm = input['elm']
         [key, elm['type'] == 'checkbox' ? elm['checked'] : elm['value']]
@@ -42,7 +42,7 @@ module View
     end
 
     # rubocop:disable Layout/LineLength
-    def render_input(label, id:, placeholder: '', el: 'input', type: 'text', attrs: {}, on: {}, container_style: {}, label_style: {}, input_style: {}, children: [])
+    def render_input(label, id:, placeholder: '', el: 'input', type: 'text', attrs: {}, on: {}, container_style: {}, label_style: {}, input_style: {}, children: [], inputs: nil)
       # rubocop:enable Layout/LineLength
       label_props = {
         style: {
@@ -62,7 +62,9 @@ module View
       }
       input_props[:attrs][:placeholder] = placeholder if placeholder != ''
       input = h(el, input_props, children)
-      @inputs[id] = input
+      inputs ||= @inputs
+
+      inputs[id] = input
       h(
         'div.input-container',
         { style: { **container_style } },

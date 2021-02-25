@@ -3,6 +3,7 @@
 require_relative '../../../step/base'
 require_relative '../../../token'
 require_relative '../../../step/token_merger'
+require_relative '../../../step/programmer_merger_pass'
 
 module Engine
   module Game
@@ -10,6 +11,7 @@ module Engine
       module Step
         class Conversion < Engine::Step::Base
           include Engine::Step::TokenMerger
+          include Engine::Step::ProgrammerMergerPass
 
           def actions(entity)
             return [] if !entity.corporation? || entity != current_entity
@@ -27,6 +29,11 @@ module Engine
 
           def description
             'Convert or Merge Corporation'
+          end
+
+          def merger_auto_pass_entity
+            # Buying and selling shares are done by other steps
+            current_entity
           end
 
           def process_convert(action)

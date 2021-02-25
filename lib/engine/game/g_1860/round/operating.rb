@@ -32,6 +32,8 @@ module Engine
 
           def after_operating(entity)
             return unless entity.corporation?
+
+            @game.check_bankruptcy!(entity)
             return if @game.bankrupt?(entity)
 
             if entity.trains.empty? && @game.legal_route?(entity)
