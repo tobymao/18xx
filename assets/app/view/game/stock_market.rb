@@ -304,6 +304,8 @@ module View
               h(:div, { style: { maxWidth: '24rem' } }, text),
             ])
           end
+
+          legend_items.compact!
           legend_items.reverse! unless @game.stock_market.one_d?
 
           children << h('div#legend', legend_items)
