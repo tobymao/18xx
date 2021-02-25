@@ -51,7 +51,7 @@ module Engine
         def actions(entity)
           return [] if finished?
 
-          unless @companies.find { |c| current_entity.cash < min_bid(c) }.nil?
+          unless @companies.any? { |c| current_entity.cash >= min_bid(c) }
             @log << "#{current_entity.name} has no valid actions and passes"
             return []
           end
