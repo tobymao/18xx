@@ -282,8 +282,6 @@ module View
           .uniq.map { |p| [p, colors[p]] }.to_h
 
           legend_items = types_in_market.map do |type, color|
-            next unless type_text.include?(type)
-
             text = type_text[type]
 
             style = @box_style_2d.merge(backgroundColor: COLOR_MAP[color])
@@ -304,8 +302,6 @@ module View
               h(:div, { style: { maxWidth: '24rem' } }, text),
             ])
           end
-
-          legend_items.compact!
           legend_items.reverse! unless @game.stock_market.one_d?
 
           children << h('div#legend', legend_items)
