@@ -266,7 +266,13 @@ module View
         }
 
         children << h(:div, props, [h(Bank, game: @game)].compact)
-        children.concat(grid)
+        grid_props = {
+          style: {
+            width: '100%',
+            overflow: 'auto',
+          },
+        }
+        children << h(:div, grid_props, grid)
 
         if @explain_colors
           type_text = @game.class::MARKET_TEXT
@@ -275,29 +281,32 @@ module View
           types_in_market = @game.stock_market.market.flatten.compact.flat_map(&:types)
           .uniq.map { |p| [p, colors[p]] }.to_h
 
-          type_text.each do |type, text|
-            next unless types_in_market.include?(type)
+          legend_items = types_in_market.map do |type, color|
+            next unless type_text.include?(type)
 
-            color = types_in_market[type]
+            text = type_text[type]
 
             style = @box_style_2d.merge(backgroundColor: COLOR_MAP[color])
             style[:borderColor] = color_for(:font) if color == :black
 
             line_props = {
               style: {
-                display: 'grid',
+                display: 'inline-grid',
                 grid: '1fr / auto 1fr',
                 gap: '0.5rem',
                 alignItems: 'center',
-                marginTop: '1rem',
+                margin: '1rem 1rem 0 0',
               },
             }
 
-            children << h(:div, line_props, [
+            h(:div, line_props, [
               h(:div, { style: cell_style(@box_style_2d, [type]) }, []),
-              h(:div, text),
+              h(:div, { style: { maxWidth: '24rem' } }, text),
             ])
           end
+          legend_items.reverse! unless @game.stock_market.one_d?
+
+          children << h('div#legend', legend_items)
         end
 
         if @game.respond_to?(:price_movement_chart)
@@ -344,14 +353,7 @@ module View
           ])
         end
 
-        props = {
-          style: {
-            width: '100%',
-            overflow: 'auto',
-          },
-        }
-
-        h(:div, props, children)
+        h(:div, children)
       end
     end
   end
