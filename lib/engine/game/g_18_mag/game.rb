@@ -675,23 +675,23 @@ module Engine
         def price_movement_chart
           if multiplayer?
             [
-              ['Per Share Dividend', 'Share Price Change'],
-              ['0 Ft', '1 space to the left'],
-              ['1 - 2 Ft', 'none'],
-              ['3 - 5 Ft', '1 space to the right'],
-              ['6 - 10 Ft', '2 spaces to the right'],
-              ['11 - 20 Ft', '3 spaces to the right'],
-              ['more than 20 Ft', '4 spaces to the right'],
+              ['Dividend Per Share', 'Price Change'],
+              ['   0 Ft', '1 ←'],
+              ['≥  1 Ft', 'none'],
+              ['≥  3 Ft', '1 →'],
+              ['≥  6 Ft', '2 →'],
+              ['≥ 11 Ft', '3 →'],
+              ['≥ 21 Ft', '4 →'],
             ]
           else
             [
-              ['Per Share Dividend', 'Share Price Change'],
-              ['0 Ft', '1 space to the left'],
-              ['1 Ft', 'none'],
-              ['2 - 4 Ft', '1 space to the right'],
-              ['5 - 8 Ft', '2 spaces to the right'],
-              ['9 - 12 Ft', '3 spaces to the right'],
-              ['more than 12 Ft', '4 spaces to the right'],
+              ['Dividend Per Share', 'Price Change'],
+              ['   0 Ft', '1 ←'],
+              ['   1 Ft', 'none'],
+              ['≥  2 Ft', '1 →'],
+              ['≥  5 Ft', '2 →'],
+              ['≥  9 Ft', '3 →'],
+              ['≥ 13 Ft', '4 →'],
             ]
           end
         end

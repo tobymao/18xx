@@ -512,11 +512,11 @@ module Engine
         def price_movement_chart
           [
             ['Dividend', 'Share Price Change'],
-            ['0', '1 space to the left'],
-            ['> 0 and < stock value', 'none'],
-            ['>= stock value and < 2x stock value', '1 space to the right'],
-            ['>= 2x stock value and < 3x stock value', '2 spaces to the right'],
-            ['>= 3x stock value', '3 spaces to the right'],
+            ['0', '1 ←'],
+            ['> 0', 'none'],
+            ['≥ stock value', '1 →'],
+            ['≥ 2× stock value', '2 →'],
+            ['≥ 3× stock value', '3 →'],
           ]
         end
 
