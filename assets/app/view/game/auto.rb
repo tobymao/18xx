@@ -2,7 +2,10 @@
 
 module View
   module Game
-    class Async < Form
+    class Auto < Form
+      # Note, from the UI point of view this is called 'Auto', but in terms of code base it
+      # is known as 'programmed' actions this is so it doesn't clash with 'auto' actions which
+      # are where the codebase generates actions for players (which programmed actions relies upon)
       include Actionable
 
       needs :game, store: true
@@ -10,8 +13,8 @@ module View
 
       def render_content
         children = [
-          h(:h2, 'Programmed Actions'),
-          h(:p, 'Programmed actions allow you to preprogram your moves ahead of time. '\
+          h(:h2, 'Auto Actions'),
+          h(:p, 'Auto actions allow you to preprogram your moves ahead of time. '\
                 'On asynchronous games this can shorten a game considerably.'),
           h(:p, 'Please note, these are not secret from other players.'),
           h(:p, 'This feature is presently under development. More actions will be available soon.'),
@@ -32,7 +35,7 @@ module View
             end
           end
         else
-          children << h('div.bold', 'No programmed actions are presently available for this game.')
+          children << h('div.bold', 'No auto actions are presently available for this game.')
         end
 
         props = {
@@ -64,7 +67,7 @@ module View
 
       def render_merger_pass(settings)
         form = {}
-        text = 'Program Pass in Mergers'
+        text = 'Auto Pass in Mergers'
         text += ' (Enabled)' if settings
         children = [h(:h3, text)]
         children << h(:div,
@@ -76,7 +79,9 @@ module View
         player = sender
         # Which corps can be passed, by default assume all
         passable = @game.merge_corporations.select { |corp| corp.owner == player }
-        if passable.empty?
+        if @game.round.stock?
+          children << h('div.bold', 'Cannot program while in a stock round')
+        elsif passable.empty?
           children << h('div.bold', 'No mergable corporations are owned by you, cannot program!')
         else
 
@@ -141,7 +146,7 @@ module View
 
       def render_buy_shares(settings)
         form = {}
-        text = 'Program buy shares till float'
+        text = 'Auto Buy shares till float'
         text += ' (Enabled)' if settings
         children = [h(:h3, text)]
         children << h(:div,
