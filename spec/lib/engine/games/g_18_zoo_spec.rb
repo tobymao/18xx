@@ -146,8 +146,25 @@ module Engine
               expect do
                 game.round.process_action(Engine::Action::Choose.new(game.current_entity, choice: power[:choice]))
               end.to raise_error(Engine::GameError, 'Power not yet implemented')
-            end
+            end unless power[:sym] == :MIDAS
           end
+        end
+      end
+
+      describe "Midas" do
+        let(:game) { Engine::Game::G18ZOO::Game.new(players, id: 'hs_mqzfamvd_1612649245') }
+        let(:power) { game.available_companies.find { |c| c.sym.to_sym == :MIDAS } }
+        let(:player_1) { game.players.first }
+
+        it 'should give priority when power is used' do
+          next_sr!
+
+          game.round.process_action(Engine::Action::BuyCompany.new(game.current_entity, price: power.value,
+                                                                   company: power))
+          game.round.process_action(Engine::Action::Choose.new(game.current_entity, choice: 'midas'))
+          next_sr!
+
+          expect(game.round.current_entity).to be(player_1)
         end
       end
 

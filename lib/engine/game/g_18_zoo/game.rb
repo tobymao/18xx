@@ -1113,6 +1113,10 @@ module Engine
           @midas ||= company_by_id('MIDAS')
         end
 
+        def midas_active?
+          midas.all_abilities.any? { |ability| ability.is_a?(Engine::Ability::Close) }
+        end
+
         def too_much_responsibility
           @too_much_responsibility ||= company_by_id('TOO_MUCH_RESPONSIBILITY')
         end
@@ -1224,8 +1228,8 @@ module Engine
           return if @round.is_a?(Engine::Round::Draft)
 
           current_order = @players.dup
-          @players.sort_by! { |p| [-p.cash, current_order.index(p)] }
-          @log << "Priority order: #{@players.reject(&:bankrupt).map(&:name).join(', ')}"
+          @players.sort_by! { |p| [ midas_active? && p == midas.owner ? -1 : 0, -p.cash, current_order.index(p)] }
+          @log << "Priority order: #{@players.map(&:name).join(', ')}"
         end
 
         def new_stock_round
@@ -1265,6 +1269,10 @@ module Engine
         def new_operating_round(round_num = 1)
           @operating_rounds = 3 if @turn == 3 # Last round has 3 ORs
           update_zoo_tickets_value(@turn, round_num)
+
+          if midas_active?
+            midas.close!
+          end
 
           super
         end

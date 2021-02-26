@@ -11,10 +11,10 @@ module Engine
         def choices
           entity = current_entity
           @choices = {}
-          @choices[:midas] = true if company_midas?(entity)
-          @choices[:holiday] = true if company_holiday?(entity)
-          @choices[:greek_to_me] = true if company_greek?(entity)
-          @choices[:whatsup] = true if company_whatsup?(entity)
+          @choices[:midas] = 'Midas' if company_midas?(entity)
+          @choices[:holiday] = 'Holiday' if company_holiday?(entity)
+          @choices[:greek_to_me] = 'It’s all greek to me' if company_greek?(entity)
+          @choices[:whatsup] = 'Whatsup' if company_whatsup?(entity)
           @choices
         end
 
@@ -23,7 +23,8 @@ module Engine
         end
 
         def company_midas?(entity)
-          entity&.companies&.include?(@game.midas)
+          entity&.companies&.include?(@game.midas) &&
+            @game.midas.all_abilities.none? { |ability| ability.is_a?(Engine::Ability::Close) }
         end
 
         def company_holiday?(entity)
@@ -38,8 +39,15 @@ module Engine
           entity&.companies&.include?(@game.it_s_all_greek_to_me)
         end
 
-        def process_choose(_action)
-          raise GameError, 'Power not yet implemented'
+        def process_choose(action)
+          raise GameError, 'Power not yet implemented' if action.choice == 'holiday'
+          raise GameError, 'Power not yet implemented' if action.choice == 'greek_to_me'
+          raise GameError, 'Power not yet implemented' if action.choice == 'whatsup'
+
+          if action.choice == 'midas'
+            @game.midas.add_ability(Engine::Ability::Close.new(type: 'close'))
+            @log << "#{current_entity.name} uses \"Midas\", will get the Priority for the next SR"
+          end
         end
       end
     end
