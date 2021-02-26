@@ -12,33 +12,19 @@ module Engine
 
   GAME_META_BY_TITLE = Game.constants.sort.map do |c|
     const = Game.const_get(c)
-    game =
-      if const.constants.include?(:Meta)
-        const::Meta
-      elsif const.is_a?(Class) && const != Game::Base && const.ancestors.include?(Game::Base)
-        const
-      end
-    [game.title, game] if game
+    game_meta = const::Meta if const.constants.include?(:Meta)
+    [game_meta.title, game_meta] if game_meta
   end.compact.to_h
 
   GAME_METAS = GAME_META_BY_TITLE.values
 
-  VISIBLE_GAMES = GAME_METAS.select { |game| %i[alpha beta production].include?(game::DEV_STAGE) }
+  VISIBLE_GAMES = GAME_METAS.select { |g_m| %i[alpha beta production].include?(g_m::DEV_STAGE) }
 
   def self.game_by_title(title)
     @games[title] ||= Engine::Game.constants.map do |c|
       const = Game.const_get(c)
-      game =
-        if const.constants.include?(:Game)
-          const::Game
-        elsif const.is_a?(Class) && const != Game::Base && const.ancestors.include?(Game::Base)
-          const
-        end
+      game = const::Game if const.constants.include?(:Game)
       game if game&.title == title
     end.compact.first
-  end
-
-  def self.player_range(game)
-    game::PLAYER_RANGE || game::CERT_LIMIT.keys.minmax
   end
 end

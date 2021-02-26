@@ -759,7 +759,7 @@ module Engine
           @turn = setup_turn
 
           # When creating a game the game will not have enough to start
-          return unless @players.size.between?(*Engine.player_range(self.class))
+          return unless @players.size.between?(*self.class::PLAYER_RANGE)
 
           remove_from_group!(self.class::ORANGE_GROUP, @companies) do |company|
             remove_lsl_icons if company == lake_shore_line

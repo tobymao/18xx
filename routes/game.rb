@@ -128,9 +128,7 @@ class Api
           # POST '/api/game/<game_id>/start
           r.is 'start' do
             engine = Engine::Game.load(game, actions: [])
-            unless game.players.size.between?(*Engine.player_range(engine.class))
-              halt(400, 'Player count not supported')
-            end
+            halt(400, 'Player count not supported') unless game.players.size.between?(*engine.class::PLAYER_RANGE)
 
             acting = set_game_state(game, engine, users)
             publish_turn(acting.map(&:id), game, r.base_url, 'Your turn', false)

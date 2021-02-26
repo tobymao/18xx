@@ -88,7 +88,7 @@ module View
       end
 
       game = Engine::GAME_META_BY_TITLE[@gdata['title']]
-      @min_p, _max_p = Engine.player_range(game)
+      @min_p, _max_p = game::PLAYER_RANGE
 
       can_start = owner? && new? && players.size >= @min_p
       buttons << render_button('Start', -> { start_game(@gdata) }) if can_start
