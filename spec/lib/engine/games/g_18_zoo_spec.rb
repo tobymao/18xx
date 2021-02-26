@@ -136,17 +136,17 @@ module Engine
 
             it 'should add a choice for Player 1' do
               expect(game.round.active_step.actions(game.current_entity)).to include 'choose'
-            end
+            end unless power[:sym] == :HOLIDAY
 
             it "should have '#{power[:choice]}' as choice for Player 1" do
               expect(game.round.active_step.choices).to include power[:choice].to_sym
-            end
+            end unless power[:sym] == :HOLIDAY
 
             it 'should fail when power is used' do
               expect do
                 game.round.process_action(Engine::Action::Choose.new(game.current_entity, choice: power[:choice]))
               end.to raise_error(Engine::GameError, 'Power not yet implemented')
-            end unless power[:sym] == :MIDAS
+            end if power[:sym] != :MIDAS && power[:sym] != :HOLIDAY
           end
         end
       end
@@ -165,6 +165,71 @@ module Engine
           next_sr!
 
           expect(game.round.current_entity).to be(player_1)
+        end
+      end
+
+      describe "Holiday" do
+        let(:game) { Engine::Game::G18ZOO::Game.new(players, id: 'hs_mqzfamvd_1612649245') }
+        let(:current_power) { game.available_companies.find { |c| c.sym.to_sym == :HOLIDAY } }
+        let(:player_1) { game.players.first }
+        let(:player_2) { game.players[1] }
+        let(:corporation) { game.corporations.first }
+        let(:share_price) { game.stock_market.par_prices.find { |par_price| par_price.price == 5 } }
+
+        it "should not have any holiday choice for Player 1 before par" do
+          first_player_buy_power_on_isr(current_power)
+          next_sr!
+
+          expect(game.round.active_step.choices).to be_empty
+        end
+
+        it 'should give holiday choice after par from current player' do
+          first_player_buy_power_on_isr(current_power)
+          next_sr!
+
+          game.round.process_action(Action::Par.new(player_1, corporation: corporation, share_price: share_price))
+          game.round.process_action(Action::Pass.new(corporation))
+          game.round.process_action(Action::Pass.new(player_1))
+
+          2.times { |_| game.round.process_action(Engine::Action::Pass.new(game.current_entity)) }
+
+          expect(game.round.active_step.choices).to include "holiday:#{corporation.name}"
+
+          game.round.process_action(Engine::Action::Choose.new(game.current_entity, choice: "holiday:#{corporation.name}"))
+          expect(corporation.share_price.price).to eq(6)
+        end
+
+        it 'should give holiday choice after par from another player' do
+          first_player_buy_power_on_isr(current_power)
+          next_sr!
+
+          game.round.process_action(Action::Pass.new(player_1))
+          game.round.process_action(Action::Par.new(player_2, corporation: corporation, share_price: share_price))
+          game.round.process_action(Action::Pass.new(corporation))
+          game.round.process_action(Action::Pass.new(player_2))
+
+          game.round.process_action(Engine::Action::Pass.new(game.current_entity))
+
+          expect(game.round.active_step.choices).to include "holiday:#{corporation.name}"
+
+          game.round.process_action(Engine::Action::Choose.new(game.current_entity, choice: "holiday:#{corporation.name}"))
+          expect(corporation.share_price.price).to eq(6)
+        end
+
+        it 'should give holiday choice for each ipoed' do
+          expected = []
+          first_player_buy_power_on_isr(current_power)
+          next_sr!
+
+          game.corporations.each do |corporation|
+            game.round.process_action(Action::Par.new(game.current_entity, corporation: corporation, share_price: share_price))
+            game.round.process_action(Action::Pass.new(corporation))
+            game.round.process_action(Action::Pass.new(game.current_entity))
+            expected << "holiday:#{corporation.name}"
+          end
+          game.round.process_action(Engine::Action::Pass.new(game.current_entity))
+
+          expected.each { |corporation| expect(game.round.active_step.choices).to include corporation }
         end
       end
 
