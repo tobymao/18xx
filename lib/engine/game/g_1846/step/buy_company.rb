@@ -37,7 +37,9 @@ module Engine
             train = minor.trains[0]
             train.buyable = true
             @game.buy_train(entity, train, :free)
-            minor.tokens[0].swap!(Engine::Token.new(entity))
+            token = Engine::Token.new(entity)
+            entity.tokens << token
+            minor.tokens[0].swap!(token)
             @log << "#{entity.name} receives #{@game.format_currency(cash)}"\
               ", a 2 train, and a token on #{minor.coordinates}"
             @game.minors.delete(minor)
