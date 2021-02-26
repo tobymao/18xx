@@ -121,6 +121,7 @@ module Engine
           # check if this is correct or should be a corporation
           if ability.extra
             token = Engine::Token.new(entity)
+            entity.tokens << token
           elsif ability.neutral
             neutral_corp = Corporation.new(
               sym: 'N',
