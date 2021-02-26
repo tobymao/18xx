@@ -25,6 +25,15 @@ module Engine
             @game.moved_this_turn << action.bundle.corporation
             @moved_any = true
           end
+
+          def can_sell?(entity, bundle)
+            # Corporation must complete its first operating round before its shares can be sold
+            corporation = bundle.corporation
+            return false unless corporation.operated?
+            return false if @round.current_operator == corporation && corporation.operating_history.size < 2
+
+            super
+          end
         end
       end
     end
