@@ -66,7 +66,6 @@ module Engine
         end
 
         try_take_loan(entity, price)
-        @game.queue_log! { @game.phase.buying_train!(entity, train) }
 
         if exchange
           verb = "exchanges a #{exchange.name} for"
@@ -80,9 +79,8 @@ module Engine
         @log << "#{entity.name} #{verb} a #{train.name} train for "\
           "#{@game.format_currency(price)} from #{source}"
 
-        @game.flush_log!
-
         @game.buy_train(entity, train, price)
+        @game.phase.buying_train!(entity, train)
         pass! unless can_buy_train?(entity)
       end
 

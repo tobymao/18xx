@@ -4,6 +4,7 @@ require_relative '../../../step/base'
 require_relative '../../../token'
 require_relative '../../../step/passable_auction'
 require_relative '../../../step/token_merger'
+require_relative '../../../step/programmer_merger_pass'
 
 module Engine
   module Game
@@ -12,6 +13,7 @@ module Engine
         class Acquire < Engine::Step::Base
           include Engine::Step::PassableAuction
           include Engine::Step::TokenMerger
+          include Engine::Step::ProgrammerMergerPass
 
           attr_reader :auctioning, :last_president, :buyer
 
@@ -46,6 +48,10 @@ module Engine
             elsif @buyer
               'Pass (Repay Loan)'
             end
+          end
+
+          def merger_auto_pass_entity
+            @offer
           end
 
           def can_take_loan?(entity)

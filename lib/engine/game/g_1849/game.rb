@@ -643,10 +643,10 @@ module Engine
 
         def price_movement_chart
           [
-            ['Total Dividend D', 'Share Price Change'],
-            ['D=0 or withheld', '1 space to the left'],
-            ['0 < D < share price', 'no movement'],
-            ['D >= current share price', '1 space to the right'],
+            ['Dividend', 'Share Price Change'],
+            ['0 or withheld', '1 ←'],
+            ['< share price', 'none'],
+            ['≥ share price', '1 →'],
           ]
         end
 

@@ -226,7 +226,8 @@ module View
       end
 
       children = [h(:div, [h(:strong, 'Id: '), @gdata['id'].to_s])]
-      children << h(:div, [h(:i, 'Private game')]) if @gdata['status'] == 'new' && @gdata.dig('settings', 'unlisted')
+      children << h(:div, [h(:i, 'Invite only game')]) if @gdata['status'] == 'new' && @gdata.dig('settings',
+                                                                                                  'unlisted')
       children << h(:div, [h(:strong, 'Description: '), @gdata['description']]) unless @gdata['description'].empty?
 
       optional = render_optional_rules

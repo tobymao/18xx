@@ -102,8 +102,8 @@ module View
           h(Game::Spreadsheet, game: @game)
         when 'tools'
           h(Game::Tools, game: @game, game_data: @game_data, user: @user)
-        when 'async'
-          h(Game::Async, game: @game, game_data: @game_data, user: @user)
+        when 'auto'
+          h(Game::Auto, game: @game, game_data: @game_data, user: @user)
         end
 
       @connection = nil if @game_data[:mode] == :hotseat || cursor
@@ -152,7 +152,11 @@ module View
             scroll_to_game_menu
             `document.getElementById('game').focus()`
           },
-          postpatch: -> { `document.getElementById('game').focus()` },
+          postpatch: lambda {
+            unless %w[input textarea].include?(Native(`document.activeElement`).localName)
+              `document.getElementById('game').focus()`
+            end
+          },
         },
         on: {
           keydown: ->(event) { hotkey_check(event) },
@@ -199,8 +203,8 @@ module View
       # catch modifiers to not interfere with OS shortcuts
       event = Native(event)
       active = Native(`document.activeElement`)
-      return if active.localName == 'input' || event.getModifierState('Alt') || event.getModifierState('AltGraph') ||
-                event.getModifierState('Meta') || event.getModifierState('OS')
+      return if %w[input textarea].include?(active.localName) || event.getModifierState('Alt') ||
+                event.getModifierState('AltGraph') || event.getModifierState('Meta') || event.getModifierState('OS')
 
       key = event['key']
       if event.getModifierState('Control')
@@ -304,7 +308,7 @@ module View
         item('To|ols', '#tools'),
       ]
 
-      menu_items << item('A|sync', '#async') if @game_data[:mode] != :hotseat && !cursor
+      menu_items << item('A|uto', '#auto') if @game_data[:mode] != :hotseat && !cursor
 
       h('nav#game_menu', nav_props, [
         h('ul.no_margin.no_padding', { style: { width: 'max-content' } }, menu_items),

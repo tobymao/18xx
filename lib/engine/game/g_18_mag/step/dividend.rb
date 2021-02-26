@@ -167,8 +167,8 @@ module Engine
           end
 
           def help_str(max)
-            "Select per share amount to distribute to shareholders, between #{@game.format_currency(0)}"\
-            " and #{@game.format_currency(max)}"
+            "Select dividend per share to distribute to shareholders, between #{@game.format_currency(0)}"\
+            " and #{@game.format_currency(max)}."
           end
 
           def chart

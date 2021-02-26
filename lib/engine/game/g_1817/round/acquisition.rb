@@ -13,7 +13,7 @@ module Engine
             'AR'
           end
 
-          def name
+          def self.round_name
             'Acquisition Round'
           end
 
