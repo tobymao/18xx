@@ -1186,6 +1186,11 @@ module Engine
           end
         end
 
+        def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
+          super
+          close_market_shorts
+        end
+
         def migrate_shares(corporation, other)
           # Migrate shares from a 5 & 5 corporation merger
           new_shares = convert(corporation)
