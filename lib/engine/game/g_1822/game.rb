@@ -594,13 +594,24 @@ module Engine
             sym: 'P2',
             value: 0,
             revenue: 10,
-            desc: 'MAJOR/MINOR, Phase 2. Remove Small Station. Allows the owning company to place a plain yellow '\
-                  'track tile directly on an undeveloped small station hex location or upgrade a small station tile '\
-                  'of one colour to a plain track tile of the next colour. This closes the company and counts as the '\
-                  'company’s normal track laying step. All other normal track laying restrictions apply. Once '\
-                  'acquired, the private company pays its revenue to the owning company until the power is exercised '\
-                  'and the company is closed.',
-            abilities: [],
+            desc: 'MAJOR/MINOR, Phase 2. Remove Small Station. NO LAY TRACK CHECK. Make sure the laid track is '\
+                  'valid. Allows the owning company to place a plain yellow track tile directly on an undeveloped '\
+                  'small station hex location or upgrade a small station tile of one colour to a plain track tile '\
+                  'of the next colour. This closes the company and counts as the company’s normal track laying '\
+                  'step. All other normal track laying restrictions apply. Once acquired, the private company pays '\
+                  'its revenue to the owning company until the power is exercised and the company is closed.',
+            abilities: [
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                when: 'track',
+                count: 1,
+                reachable: true,
+                closed_when_used_up: true,
+                hexes: [],
+                tiles: %w[7 8 9 80 81 82 83 544 545 546 60 169],
+              },
+            ],
             color: nil,
           },
           {
@@ -717,7 +728,24 @@ module Engine
                   'be used on the same or different tile lays. Use of the second token closes the company. In '\
                   'addition, until the company closes it provides a discount of £10 against the cost of all river '\
                   'terrain (excluding estuary crossings).',
-            abilities: [],
+            abilities: [
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                when: 'track',
+                count: 2,
+                reachable: true,
+                closed_when_used_up: true,
+                hexes: [],
+                tiles: [],
+              },
+              {
+                type: 'tile_discount',
+                owner_type: 'corporation',
+                discount: 10,
+                terrain: 'swamp',
+              },
+            ],
             color: nil,
           },
           {
@@ -732,7 +760,18 @@ module Engine
                   'using this private. All other normal track laying restrictions apply. This is in place of its '\
                   'normal track lay action. Once acquired, the private company pays its revenue to the owning '\
                   'company until the power is exercised and the company closes.',
-            abilities: [],
+            abilities: [
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                when: 'track',
+                count: 1,
+                reachable: true,
+                closed_when_used_up: true,
+                hexes: [],
+                tiles: %w[80 81 82 83 544 545 546 60 169 141 142 143 144 145 146 147 X17],
+              },
+            ],
             color: nil,
           },
           {
@@ -745,7 +784,18 @@ module Engine
                   'upgrade can be to a tile laid in its normal tile laying step. All other normal track laying '\
                   'restrictions apply. Once acquired, the private company pays its revenue to the owning company '\
                   'until the power is exercised and the company closes.',
-            abilities: [],
+            abilities: [
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                when: 'track',
+                count: 2,
+                reachable: true,
+                closed_when_used_up: true,
+                hexes: [],
+                tiles: [],
+              },
+            ],
             color: nil,
           },
           {
@@ -2025,6 +2075,13 @@ module Engine
         FRANCE_HEX_BROWN_TILE = 'offboard=revenue:yellow_0|green_60|brown_90|gray_120,visit_cost:0;'\
                                 'path=a:2,b:_0,lanes:2'
 
+        COMPANY_MTONR = 'P2'
+        COMPANY_EGR = 'P8'
+        COMPANY_GSWR = 'P10'
+        COMPANY_GSWR_DISCOUNT = 40
+        COMPANY_BER = 'P11'
+        COMPANY_LSR = 'P12'
+
         MAJOR_TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
 
         MERTHYR_TYDFIL_PONTYPOOL_HEX = 'F33'
@@ -2057,10 +2114,13 @@ module Engine
         }.freeze
 
         PRIVATE_MAIL_CONTRACTS = %w[P6 P7].freeze
-        PRIVATE_REMOVE_REVENUE = %w[P6 P7].freeze
+        PRIVATE_REMOVE_REVENUE = %w[P5 P6 P7 P8 P10 P17 P18].freeze
         PRIVATE_TRAINS = %w[P1 P3 P4 P13 P14].freeze
 
         TOKEN_PRICE = 100
+
+        TRACK_PLAIN = %w[7 8 9 80 81 82 83 544 545 546 60 169].freeze
+        TRACK_TOWN = %w[3 4 58 141 142 143 144 145 146 147 X17].freeze
 
         UPGRADABLE_S_YELLOW_CITY_TILE = '57'
         UPGRADABLE_S_YELLOW_ROTATIONS = [2, 5].freeze
@@ -2215,8 +2275,7 @@ module Engine
         end
 
         def entity_can_use_company?(entity, company)
-          # TODO: [1822] First pass on company abilities, for now only players can use powers. Will change this later
-          entity.player? && entity == company.owner
+          entity == company.owner
         end
 
         def event_close_concessions!
@@ -2264,7 +2323,10 @@ module Engine
         end
 
         def tile_lays(entity)
-          return self.class::MAJOR_TILE_LAYS if @phase.name.to_i >= 3 && entity.corporation? && entity.type == :major
+          operator = entity.company? ? entity.owner : entity
+          if @phase.name.to_i >= 3 && operator.corporation? && operator.type == :major
+            return self.class::MAJOR_TILE_LAYS
+          end
 
           super
         end
@@ -2332,6 +2394,8 @@ module Engine
             G1822::Step::FirstTurnHousekeeping,
             Engine::Step::AcquireCompany,
             Engine::Step::DiscardTrain,
+            G1822::Step::SpecialChoose,
+            G1822::Step::SpecialTrack,
             G1822::Step::Track,
             G1822::Step::DestinationToken,
             G1822::Step::Token,
@@ -2479,6 +2543,22 @@ module Engine
           minors + concessions + privates
         end
 
+        def upgrade_cost(tile, hex, entity)
+          abilities = entity.all_abilities.select do |a|
+            a.type == :tile_discount && (!a.hexes || a.hexes.include?(hex.name))
+          end
+
+          tile.upgrades.sum do |upgrade|
+            total_cost = upgrade.cost
+            abilities.each do |ability|
+              discount = ability && upgrade.terrains.uniq == [ability.terrain] ? ability.discount : 0
+              log_cost_discount(entity, ability, discount)
+              total_cost -= discount
+            end
+            total_cost
+          end
+        end
+
         def upgrades_to?(from, to, special = false)
           # Check the S hex and potential upgrades
           if self.class::UPGRADABLE_S_HEX_NAME == from.hex.name && from.color == :white
@@ -2498,6 +2578,11 @@ module Engine
           if self.class::UPGRADABLE_T_HEX_NAMES.include?(from.hex.name) &&
             self.class::UPGRADABLE_T_YELLOW_CITY_TILES.include?(from.name)
             return to.name == '405'
+          end
+
+          # Special case for Middleton Railway where we remove a town from a tile
+          if self.class::TRACK_TOWN.include?(from.name) && self.class::TRACK_PLAIN.include?(to.name)
+            return Engine::Tile::COLORS.index(to.color) == (Engine::Tile::COLORS.index(from.color) + 1)
           end
 
           super
@@ -2539,6 +2624,20 @@ module Engine
           return unless hex.name == self.class::ENGLISH_CHANNEL_HEX && tile.color == :brown
 
           upgrade_france_to_brown
+        end
+
+        def after_track_pass(entity)
+          return unless entity.type == :major
+
+          # Special case of when we only used up one of the 2 track lays of private Leicester & Swannington Railway
+          company = entity.companies.find { |c| c.id == self.class::COMPANY_LSR }
+          return unless company
+
+          count = company.all_abilities.find { |a| a.type == :tile_lay }&.count
+          return if !count || count == 2
+
+          @log << "#{company.name} closes"
+          company.close!
         end
 
         def bank_companies(prefix)
@@ -2594,6 +2693,45 @@ module Engine
 
         def player_loan_interest(loan)
           (loan * 0.5).ceil
+        end
+
+        def company_ability_extra_track?(company)
+          company.id == self.class::COMPANY_LSR
+        end
+
+        def company_choices(company)
+          if company.id != self.class::COMPANY_EGR ||
+            (company.id == self.class::COMPANY_EGR && !company.all_abilities.empty?)
+            return {}
+          end
+
+          choices = {}
+          choices['token'] = 'Receive a discount token that can be used to pay the full cost of a single '\
+                             'track tile lay on a rough terrain, hill or mountain hex.'
+          choices['discount'] = 'Receive a £20 continuous discount off the cost of all hill and mountain terrain '\
+                                '(i.e. NOT off the cost of rough terrain).'
+          choices
+        end
+
+        def company_made_choice(company, choice)
+          if company.id != self.class::COMPANY_EGR ||
+            (company.id == self.class::COMPANY_EGR && !company.all_abilities.empty?)
+            return
+          end
+
+          company.desc = company_choices(company)[choice]
+          if choice == 'token'
+            # Give the company a free tile lay.
+            ability = Engine::Ability::TileLay.new(type: 'tile_lay', tiles: [], hexes: [], owner_type: 'corporation',
+                                                   count: 1, closed_when_used_up: true, reachable: true, free: true,
+                                                   special: false, when: 'track')
+            company.add_ability(ability)
+          else
+            %w[mountain hill].each do |terrain|
+              ability = Engine::Ability::TileDiscount.new(type: 'tile_discount', discount: 20, terrain: terrain)
+              company.add_ability(ability)
+            end
+          end
         end
 
         def destination_bonus(routes)

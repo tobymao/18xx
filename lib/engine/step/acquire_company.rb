@@ -36,10 +36,16 @@ module Engine
         company.owner = entity
         entity.companies << company
 
+        @round.acquired_companies << company
+
         @log << "#{entity.name} acquires #{company.name} from #{owner.name}"
         @game.company_bought(company, entity)
 
         pass! if @game.purchasable_companies(entity).empty?
+      end
+
+      def round_state
+        { acquired_companies: [] }
       end
     end
   end
