@@ -56,6 +56,11 @@ module Engine
           def actions(entity)
             return [] if finished?
 
+            unless @companies.any? { |c| current_entity.cash >= min_bid(c) }
+              @log << "#{current_entity.name} has no valid actions and passes"
+              return []
+            end
+
             entity == current_entity ? ACTIONS : []
           end
 
