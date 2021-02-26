@@ -55,9 +55,12 @@ module Engine
 
           if action.choice.start_with? 'holiday:'
             corporation = @game.corporation_by_id(action.choice.split(':')[1])
+            current_value = corporation.share_price.price
             @game.stock_market.move_right(corporation)
+            new_value = corporation.share_price.price
+            @log << "#{current_entity.name} uses \"Holiday\" for #{corporation.name}, moving from #{current_value} to #{new_value}"
 
-            @log << "#{current_entity.name} uses \"Holiday\" for #{corporation.name}, will get the Priority for the next SR"
+            @game.holiday.close!
           end
         end
       end

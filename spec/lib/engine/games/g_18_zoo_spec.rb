@@ -162,9 +162,12 @@ module Engine
           game.round.process_action(Engine::Action::BuyCompany.new(game.current_entity, price: power.value,
                                                                    company: power))
           game.round.process_action(Engine::Action::Choose.new(game.current_entity, choice: 'midas'))
+          expect(power.closed?).to be_falsy
+
           next_sr!
 
           expect(game.round.current_entity).to be(player_1)
+          expect(power.closed?).to be_truthy
         end
       end
 
@@ -196,7 +199,8 @@ module Engine
           expect(game.round.active_step.choices).to include "holiday:#{corporation.name}"
 
           game.round.process_action(Engine::Action::Choose.new(game.current_entity, choice: "holiday:#{corporation.name}"))
-          expect(corporation.share_price.price).to eq(6)
+          expect(corporation.shares[0].price).to eq(6)
+          expect(current_power.closed?).to be_truthy
         end
 
         it 'should give holiday choice after par from another player' do
@@ -213,7 +217,8 @@ module Engine
           expect(game.round.active_step.choices).to include "holiday:#{corporation.name}"
 
           game.round.process_action(Engine::Action::Choose.new(game.current_entity, choice: "holiday:#{corporation.name}"))
-          expect(corporation.share_price.price).to eq(6)
+          expect(corporation.shares[0].price).to eq(6)
+          expect(current_power.closed?).to be_truthy
         end
 
         it 'should give holiday choice for each ipoed' do
