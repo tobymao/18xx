@@ -291,7 +291,7 @@ module Engine
           ],
         }.each do |game_title, specs|
           game_class = Engine.game_by_title(game_title)
-          players = Engine.player_range(game_class).max.times.map { |n| "Player #{n + 1}" }
+          players = game_class::PLAYER_RANGE.max.times.map { |n| "Player #{n + 1}" }
           game = game_class.new(players)
           specs.each do |spec|
             context "hex #{spec[:hex]} in #{game_title}" do

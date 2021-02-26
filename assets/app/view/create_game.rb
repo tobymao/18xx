@@ -56,7 +56,7 @@ module View
       @max_p = {}
 
       game_options = visible_games.map do |game|
-        @min_p[game.title], @max_p[game.title] = Engine.player_range(game)
+        @min_p[game.title], @max_p[game.title] = game::PLAYER_RANGE
 
         title = game.title
         title += " (#{game::GAME_LOCATION})" if game::GAME_LOCATION

@@ -22,7 +22,7 @@ module View
                  ])
       end
 
-      players = Engine.player_range(game).max.times.map { |n| "Player #{n + 1}" }
+      players = game::PLAYER_RANGE.max.times.map { |n| "Player #{n + 1}" }
       h(Game::Map, game: game.new(players), opacity: 1.0)
     end
   end

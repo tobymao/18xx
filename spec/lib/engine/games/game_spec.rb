@@ -28,6 +28,46 @@ module Engine
     end
   end
 
+  AUTO_FIXTURES = [
+    '1861/29683.json', # token pass
+    '1830/29133.json', # buy till float
+    '1817NA/25363.json', # pass in merger
+  ].freeze
+
+  AUTO_FIXTURES.each do |fixture_name|
+    fixture = FIXTURES_DIR + '/' + fixture_name
+    game_title = File.basename(File.dirname(fixture))
+    filename = File.basename(fixture)
+    game_id = filename.split('.json').first
+    describe game_title do
+      context game_id do
+        it 'should generate the same auto actions' do
+          data = JSON.parse(File.read(fixture))
+          rungame = Engine::Game.load(data, strict: true).maybe_raise!
+
+          actions = rungame.class.filtered_actions(data['actions']).first
+          # Find all the auto_actions
+          actions.compact.each do |action|
+            next unless action['auto_actions']
+
+            # Run game as per the spec
+            spec_game = Game.load(data, at_action: action['id'])
+
+            # Process game to previous action
+            auto_game = Game.load(data, at_action: action['id'] - 1)
+            # Add the action but without the auto actions
+            clone = action.dup
+            clone.delete('auto_actions')
+            auto_game.process_action(action, add_auto_actions: true)
+
+            expect(spec_game.result).to eq(auto_game.result)
+            expect(spec_game.actions.last.to_h).to eq(auto_game.actions.last.to_h)
+          end
+        end
+      end
+    end
+  end
+
   describe 'Autoactions' do
     it '1867 should provide pass when token lay is impossible' do
       fixture = 'spec/fixtures/1867/21268.json'
