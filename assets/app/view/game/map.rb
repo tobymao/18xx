@@ -38,7 +38,8 @@ module View
         step = @game.round.active_step(@selected_company)
         current_entity = @selected_company || step&.current_entity
         actions = step&.actions(current_entity) || []
-        # move the selected hex to the back so it renders highest in z space
+        # move the hexes laid this turn and selected hex to the back so they render highest in z space
+        @game.round.laid_hexes.each {|hex| @hexes << @hexes.delete(hex) } if @game.round.operating?
         selected_hex = @tile_selector&.hex
         @hexes << @hexes.delete(selected_hex) if @hexes.include?(selected_hex)
 

@@ -6,6 +6,7 @@ module Engine
   module Round
     class Operating < Base
       attr_reader :current_operator, :current_operator_acted
+      attr_accessor :laid_hexes      
 
       def self.short_name
         'OR'
@@ -21,6 +22,7 @@ module Engine
 
       def setup
         @current_operator = nil
+        @laid_hexes = []
         @home_token_timing = @game.class::HOME_TOKEN_TIMING
         @game.payout_companies
         @entities.each { |c| @game.place_home_token(c) } if @home_token_timing == :operating_round
@@ -70,6 +72,7 @@ module Engine
         entity = @entities[@entity_index]
         @current_operator = entity
         @current_operator_acted = false
+        @laid_hexes = []
         entity.trains.each { |train| train.operated = false }
         @log << "#{entity.owner.name} operates #{entity.name}" unless finished?
         @game.place_home_token(entity) if @home_token_timing == :operate
