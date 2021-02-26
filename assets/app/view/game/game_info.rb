@@ -31,6 +31,7 @@ module View
       def render_body
         children = upcoming_trains
         children.concat(discarded_trains) if @depot.discarded.any?
+        children.concat(process_bar)
         children.concat(phases)
         children.concat(timeline) if timeline
         children << h(GameMeta, game: @game)
@@ -342,6 +343,103 @@ module View
         else
           [h(:h3, 'Trains in Bank Pool'), table]
         end
+      end
+
+      def process_bar
+        style_props = {
+          style: {
+            padding: '5px',
+            backgroundColor: color_for(:bg2),
+            color: color_for(:font2),
+            height: '75px',
+            border: 'solid 1px rgba(0,0,0,0.2)',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+          },
+        }
+
+        sr_props = {
+          style: {
+            padding: '5px',
+            backgroundColor: '#aaba61',
+            color: color_for(:font2),
+            height: '75px',
+            border: 'solid 1px rgba(0,0,0,0.2)',
+            display: 'flex',
+            alignItems: 'flex-end',
+          },
+        }
+
+        export_props = {
+          style: {
+            padding: '5px 1px',
+            backgroundColor: '#728228',
+            color: color_for(:font2),
+            height: '75px',
+            border: 'solid 1px rgba(0,0,0,0.2)',
+            display: 'flex',
+            justifyContent: 'center',
+            flexDirection: 'column',
+          },
+        }
+
+        round_token =
+          h('div.center', [
+            h(:svg, { style: { width: '35px', height: '35px' } }, [
+              h(:circle, {
+                  attrs: {
+                    cx: 20,
+                    cy: 20,
+                    r: 10,
+                    stroke: 'black',
+                    fill: 'brown',
+                  },
+                }),
+            ]),
+        ])
+
+        train_export = h(:div, [
+          h(:img, {
+              attrs: {
+                src: '/icons/train_export.svg',
+                width: '15px',
+              },
+            }),
+        ])
+
+        [h(:div, { style: { display: 'flex' } }, [
+          h(:div, sr_props, 'PRE'),
+          h(:div, sr_props, 'SR'),
+          h(:div, style_props, [h('div.center', '40'), round_token, h(:div, 'OR 1.1')]),
+          h(:div, export_props, [train_export]),
+          h(:div, sr_props, 'SR'),
+          h(:div, style_props, [h('div.center', '45'), h(:div, 'OR 2.1')]),
+          h(:div, export_props, [train_export]),
+          h(:div, sr_props, 'SR'),
+          h(:div, style_props, [h('div.center', '50'), h(:div, 'OR 3.1')]),
+          h(:div, export_props, [train_export]),
+          h(:div, sr_props, 'SR'),
+          h(:div, style_props, [h('div.center', '55'), h(:div, 'OR 4.1')]),
+          h(:div, export_props, [train_export]),
+          h(:div, sr_props, 'SR'),
+          h(:div, style_props, [h('div.center', '60'), h(:div, 'OR 5.1')]),
+          h(:div, style_props, [h('div.center', '65'), h(:div, 'OR 5.2')]),
+          h(:div, export_props, [train_export]),
+          h(:div, sr_props, 'SR'),
+          h(:div, style_props, [h('div.center', '70'), h(:div, 'OR 6.2')]),
+          h(:div, style_props, [h('div.center', '75'), h(:div, 'OR 6.2')]),
+          h(:div, export_props, [train_export]),
+          h(:div, sr_props, 'SR'),
+          h(:div, style_props, [h('div.center', '80'), h(:div, 'OR 7.1')]),
+          h(:div, style_props, [h('div.center', '90'), h(:div, 'OR 7.2')]),
+          h(:div, export_props, [train_export]),
+          h(:div, sr_props, 'SR'),
+          h(:div, style_props, [h('div.center', '100'), h(:div, 'OR 8.1')]),
+          h(:div, style_props, [h('div.center', '110'), h(:div, 'OR 8.2')]),
+          h(:div, style_props, [h('div.center', '120'), h(:div, 'OR 8.3')]),
+          h(:div, style_props, [h('div.center', 'END')]),
+        ])]
       end
     end
   end
