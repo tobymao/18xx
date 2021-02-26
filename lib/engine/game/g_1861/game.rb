@@ -534,7 +534,7 @@ module Engine
             always_market_price: true,
             tokens: [0, 20, 40],
             type: 'major',
-            color: '#3c7b5c',
+            color: '#7b352a',
             reservation_color: nil,
           },
           {
@@ -567,7 +567,7 @@ module Engine
             always_market_price: true,
             tokens: [0, 20, 40],
             type: 'major',
-            color: '#7b352a',
+            color: '#3c7b5c',
             reservation_color: nil,
           },
           {
