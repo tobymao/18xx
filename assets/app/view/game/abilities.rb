@@ -19,7 +19,7 @@ module View
             company.owner &&
             @game.entity_can_use_company?(@game.current_entity, company)
         end
-        return h(:div) if companies.empty? || @game.round.current_entity.company?
+        return h(:div) if companies.empty? || @game.round.current_entity&.company?
 
         current, others = companies.partition { |company| @game.current_entity.player == company.player }
 
