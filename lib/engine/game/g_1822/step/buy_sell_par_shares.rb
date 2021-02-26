@@ -13,6 +13,7 @@ module Engine
           attr_accessor :bidders, :bid_actions
 
           def actions(entity)
+            return ['ability_choose'] unless ability_choices(entity).empty?
             return [] unless entity == current_entity
             return ['sell_shares'] if must_sell?(entity)
 
@@ -26,6 +27,18 @@ module Engine
             actions << 'payoff_player_debt' if player_debt.positive? && entity.cash >= player_debt
             actions << 'pass' unless actions.empty?
             actions
+          end
+
+          def ability_choices(entity)
+            return {} unless entity.company?
+
+            choices = @game.company_choices(entity, :stock_round)
+            if !choices.empty? && entity.id == @game.class::COMPANY_OSTH
+              if @bid_actions.positive? || !can_buy_any?(entity.owner) || @game.player_debt(entity.owner).positive?
+                return {}
+              end
+            end
+            choices
           end
 
           def available_cash(entity)
@@ -105,6 +118,24 @@ module Engine
           def process_buy_shares(action)
             super
             log_pass(action.entity)
+            pass!
+          end
+
+          def process_ability_choose(action)
+            unless action.entity.id == @game.class::COMPANY_OSTH
+              return @game.company_made_choice(action.entity, action.choice, :stock_round)
+            end
+
+            bundle = @game.company_tax_haven_bundle(action.choice)
+            entity = action.entity.owner
+            if available_cash(entity) < bundle.price || @round.players_sold[entity][bundle.corporation]
+              raise GameError, "Can't buy a share of #{bundle&.corporation&.name}"
+            end
+
+            @game.company_made_choice(action.entity, action.choice, :stock_round)
+            @round.last_to_act = entity
+            @current_actions << action
+            log_pass(entity)
             pass!
           end
 
