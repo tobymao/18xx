@@ -204,13 +204,13 @@ class Api
   end
 
   def publish_turn(user_ids, game, url, type, force)
-    game_id = game.id
+    return if game.settings['pin']
 
     MessageBus.publish(
       '/turn',
       user_ids: user_ids,
-      game_id: game_id,
-      game_url: "#{url}/game/#{game_id}",
+      game_id: game.id,
+      game_url: "#{url}/game/#{game.id}",
       type: type,
       force: force,
     )
