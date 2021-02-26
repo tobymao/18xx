@@ -78,6 +78,19 @@ module Engine
             it "should contains #{expected_future_companies[num_players]} future companies for isr" do
               expect(game.future_companies.size).to eq(expected_future_companies[num_players])
             end
+
+            it 'should have only valid corporation coordinates' do
+              game.class::CORPORATION_COORDINATES_BY_MAP[variant.to_sym].each do |id, coordinate|
+                expect(game.hexes.map(&:coordinates)).to include(coordinate.to_s)
+              end
+            end
+
+            it 'should have only valid location names' do
+              game.class::LOCATION_NAMES_BY_MAP[variant.to_sym].each do |coordinate, name|
+                expect(game.hexes.map(&:coordinates)).to include(coordinate.to_s)
+              end
+              # LOCATION_NAMES_BY_MAP
+            end
           end
         end
       end
