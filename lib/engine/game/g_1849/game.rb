@@ -595,7 +595,7 @@ module Engine
 
         AFG_HEXES = %w[C1 H8 M9 M11 B14].freeze
         PORT_HEXES = %w[a12 A5 L14 N8].freeze
-        SMS_HEXES = %w[B14 C1 C5 H12 J6 M9 M13].freeze
+        SMS_HEXES = %w[B14 C1 C5 E1 H12 J6 M9 M13].freeze
 
         IFT_BUFFER = 3
 
