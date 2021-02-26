@@ -37,11 +37,16 @@ module Engine
             train = minor.trains[0]
             train.buyable = true
             @game.buy_train(entity, train, :free)
-            token = Engine::Token.new(entity)
-            entity.tokens << token
-            minor.tokens[0].swap!(token)
+            gained_token = !minor.tokens.first.city.tokened_by?(entity)
+            if gained_token
+              token = Engine::Token.new(entity)
+              minor.tokens.first.swap!(token)
+              entity.tokens << token
+            else
+              minor.tokens.first.remove!
+            end
             @log << "#{entity.name} receives #{@game.format_currency(cash)}"\
-              ", a 2 train, and a token on #{minor.coordinates}"
+              ", a 2 train" + (gained_token ? ", and a token on #{minor.coordinates}" : '')
             @game.minors.delete(minor)
             @game.graph.clear
           end
