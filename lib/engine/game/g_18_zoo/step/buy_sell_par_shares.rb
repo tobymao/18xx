@@ -58,7 +58,7 @@ module Engine
           end
 
           def log_pass(entity)
-            super # TODO add log logic to handle sell / par / buy / sell company / use power
+            super # TODO: add log logic to handle sell / par / buy / sell company / use power
           end
 
           private

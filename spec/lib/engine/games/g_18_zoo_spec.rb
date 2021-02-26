@@ -13,6 +13,10 @@ module Engine
       game.round
     end
 
+    def next_or!
+      next_round! { game.round.is_a?(Round::Operating) }
+    end
+
     def next_sr!
       next_round! { game.round.is_a?(Round::Stock) }
     end
@@ -80,16 +84,15 @@ module Engine
             end
 
             it 'should have only valid corporation coordinates' do
-              game.class::CORPORATION_COORDINATES_BY_MAP[variant.to_sym].each do |id, coordinate|
+              game.class::CORPORATION_COORDINATES_BY_MAP[variant.to_sym].each do |_id, coordinate|
                 expect(game.hexes.map(&:coordinates)).to include(coordinate.to_s)
               end
             end
 
             it 'should have only valid location names' do
-              game.class::LOCATION_NAMES_BY_MAP[variant.to_sym].each do |coordinate, name|
+              game.class::LOCATION_NAMES_BY_MAP[variant.to_sym].each do |coordinate, _name|
                 expect(game.hexes.map(&:coordinates)).to include(coordinate.to_s)
               end
-              # LOCATION_NAMES_BY_MAP
             end
           end
         end
@@ -297,105 +300,125 @@ module Engine
         next_sr!
       end
 
-      # describe 'certificate limit' do
-      #   let(:share_price) { stock_market.par_prices.find { |par_price| par_price.price == 5 } }
-      #
-      #   it 'can\'t buy over 80%' do
-      #     player_1.cash = 10_000
-      #     stock_market.set_par(corporation, stock_market.par_prices.find { |price| price.price == 5 })
-      #     3.times { game.share_pool.buy_shares(player_1, corporation.shares[0]) }
-      #
-      #     expect(game.active_step.can_buy?(player_1, corporation.shares[0])).to be_falsy
-      #   end
-      #
-      #   it 'should be able to get 100% buying from market' do
-      #     player_1.cash = 10_000
-      #     stock_market.set_par(corporation, stock_market.par_prices.find { |price| price.price == 5 })
-      #     3.times { game.share_pool.buy_shares(player_1, corporation.shares[0]) }
-      #
-      #     player_2.cash = 10_000
-      #     game.share_pool.buy_shares(player_2, corporation.shares[0])
-      #     game.share_pool.sell_shares(ShareBundle.new(player_2.shares))
-      #
-      #     share = game.share_pool.shares_of(corporation)[0]
-      #     expect(game.active_step.can_buy?(player_1, share)).to be_truthy
-      #     game.share_pool.buy_shares(player_1, share)
-      #
-      #     expect(game.active_step.can_buy?(player_1, game.share_pool.shares_of(corporation)[1])).to be_falsy
-      #   end
-      #
-      #   it 'can buy 120% only on third sr' do
-      #     next_sr!
-      #     next_sr!
-      #
-      #     player_1.cash = 10_000
-      #     stock_market.set_par(corporation, stock_market.par_prices.find { |price| price.price == 5 })
-      #     3.times { game.share_pool.buy_shares(player_1, corporation.shares[0]) }
-      #
-      #     player_2.cash = 10_000
-      #     2.times do
-      #       game.share_pool.buy_shares(player_2, corporation.shares[0])
-      #       game.share_pool.sell_shares(ShareBundle.new(player_2.shares))
-      #
-      #       share = game.share_pool.shares_of(corporation)[0]
-      #       expect(game.active_step.can_buy?(player_1, share)).to be_truthy
-      #       game.share_pool.buy_shares(player_1, share)
-      #     end
-      #
-      #     expect(player_1.shares_of(corporation).size).to eq(5)
-      #   end
-      # end
+      describe 'certificate limit' do
+        let(:share_price) { stock_market.par_prices.find { |par_price| par_price.price == 5 } }
 
-      # [
-      #   { phase: :yellow, price: 5, expected_par_prices: [5, 6, 7], gain: 0, trains: [] },
-      #   { phase: :yellow, price: 6, expected_par_prices: [5, 6, 7], gain: 0, trains: [] },
-      #   { phase: :yellow, price: 7, expected_par_prices: [5, 6, 7], gain: 0, trains: [] },
-      #   { phase: :green, price: 9, expected_par_prices: [5, 6, 7, 9], gain: 5, trains: ['3S'] },
-      #   { phase: :brown, price: 12, expected_par_prices: [5, 6, 7, 9, 12], gain: 10, trains: %w[3S 4S 5S] },
-      # ].each do |data|
-      #   describe (data[:phase]).to_s do
-      #     let(:share_price) { stock_market.par_prices.find { |par_price| par_price.price == data[:price] } }
-      #
-      #     it "should have only #{data[:expected_par_prices]} as valid par value" do
-      #       data[:trains].each { |train| phase.buying_train!(corporation, game.trains.find { |t| t.name == train }) }
-      #
-      #       expect(par_prices).to eq(data[:expected_par_prices])
-      #     end
-      #
-      #     it "should gain #{data[:gain] || 'nothing'} when par #{data[:price]}" do
-      #       game.round.process_action(Action::Par.new(player_1, corporation: corporation, share_price: share_price))
-      #
-      #       expect(corporation.cash).to eq(data[:price] * 2 + data[:gain])
-      #     end
-      #   end
-      # end
+        it 'can\'t buy over 80%' do
+          player_1.cash = 10_000
+          stock_market.set_par(corporation, stock_market.par_prices.find { |price| price.price == 5 })
+          3.times { game.share_pool.buy_shares(player_1, corporation.shares[0]) }
+
+          expect(game.active_step.can_buy?(player_1, corporation.shares[0])).to be_falsy
+        end
+
+        it 'should be able to get 100% buying from market' do
+          player_1.cash = 10_000
+          stock_market.set_par(corporation, stock_market.par_prices.find { |price| price.price == 5 })
+          3.times { game.share_pool.buy_shares(player_1, corporation.shares[0]) }
+
+          player_2.cash = 10_000
+          game.share_pool.buy_shares(player_2, corporation.shares[0])
+          game.share_pool.sell_shares(ShareBundle.new(player_2.shares))
+
+          share = game.share_pool.shares_of(corporation)[0]
+          expect(game.active_step.can_buy?(player_1, share)).to be_truthy
+          game.share_pool.buy_shares(player_1, share)
+
+          expect(game.active_step.can_buy?(player_1, game.share_pool.shares_of(corporation)[1])).to be_falsy
+        end
+
+        it 'can buy 120% only on third sr' do
+          next_sr!
+          next_sr!
+
+          player_1.cash = 10_000
+          stock_market.set_par(corporation, stock_market.par_prices.find { |price| price.price == 5 })
+          3.times { game.share_pool.buy_shares(player_1, corporation.shares[0]) }
+
+          player_2.cash = 10_000
+          2.times do
+            game.share_pool.buy_shares(player_2, corporation.shares[0])
+            game.share_pool.sell_shares(ShareBundle.new(player_2.shares))
+
+            share = game.share_pool.shares_of(corporation)[0]
+            expect(game.active_step.can_buy?(player_1, share)).to be_truthy
+            game.share_pool.buy_shares(player_1, share)
+          end
+
+          expect(player_1.shares_of(corporation).size).to eq(5)
+        end
+      end
+
+      [
+        { phase: :yellow, price: 5, expected_par_prices: [5, 6, 7], gain: 0, trains: [] },
+        { phase: :yellow, price: 6, expected_par_prices: [5, 6, 7], gain: 0, trains: [] },
+        { phase: :yellow, price: 7, expected_par_prices: [5, 6, 7], gain: 0, trains: [] },
+        { phase: :green, price: 9, expected_par_prices: [5, 6, 7, 9], gain: 5, trains: ['3S'] },
+        { phase: :brown, price: 12, expected_par_prices: [5, 6, 7, 9, 12], gain: 10, trains: %w[3S 4S 5S] },
+      ].each do |data|
+        describe (data[:phase]).to_s do
+          let(:share_price) { stock_market.par_prices.find { |par_price| par_price.price == data[:price] } }
+
+          it "should have only #{data[:expected_par_prices]} as valid par value" do
+            next_or!
+            data[:trains].each { |train| phase.buying_train!(corporation, game.trains.find { |t| t.name == train }) }
+            next_sr!
+
+            expect(par_prices).to eq(data[:expected_par_prices])
+          end
+
+          it "should gain #{data[:gain] || 'nothing'} when par #{data[:price]}" do
+            game.round.process_action(Action::Par.new(player_1, corporation: corporation, share_price: share_price))
+
+            expect(corporation.cash).to eq(data[:price] * 2 + data[:gain])
+          end
+        end
+      end
 
       describe 'home track' do
         [
-          { phase: 'yellow', share: 5, trains: [], track_for_invalid: [
-            { lay: nil, tiles: %w[5-0 5-1 6-0 6-1 57-0 57-1] },
-            { lay: '57-0', tiles: [] },
-          ], track_for_valid: [
-            { color: nil, tiles: %w[57-0], },
-          ] },
-          { phase: 'green', share: 9, trains: %w[3S], track_for_invalid: [
-            { lay: nil, tiles: %w[5-0 5-1 6-0 6-1 57-0 57-1 14-0 14-1 15-0 15-1] },
-            { lay: '57-0', tiles: %w[14-0 14-1 15-0 15-1] },
-            { lay: '14-0', tiles: [] },
-          ], track_for_valid: [
-            { color: nil, lay: nil, tiles: %w[14-0 57-0], },
-            { color: 'yellow', lay: '57-0', tiles: %w[14-0], },
-          ] },
-          { phase: 'brown', share: 12, trains: %w[3S 4S 5S], track_for_invalid: [
-            { lay: nil, tiles: %w[5-0 5-1 6-0 6-1 57-0 57-1 14-0 14-1 15-0 15-1 611-0 611-1 611-2] },
-            { lay: '57-0', tiles: %w[14-0 14-1 15-0 15-1 611-0 611-1 611-2] },
-            { lay: '14-0', tiles: %w[611-0 611-1 611-2] },
-            { lay: '611-0', tiles: [] },
-          ], track_for_valid: [
-            { color: nil, lay: nil, tiles: %w[14-0 57-0 611-0], },
-            { color: 'yellow', lay: '57-0', tiles: %w[14-0 611-0], },
-            { color: 'green', lay: '14-0', tiles: %w[611-0], },
-          ] },
+          {
+            phase: 'yellow',
+            share: 5,
+            trains: [],
+            track_for_invalid: [
+              { lay: nil, tiles: %w[5-0 5-1 6-0 6-1 57-0 57-1] },
+              { lay: '57-0', tiles: [] },
+            ],
+            track_for_valid: [
+              { color: nil, tiles: %w[57-0] },
+            ],
+          },
+          {
+            phase: 'green',
+            share: 9,
+            trains: %w[3S],
+            track_for_invalid: [
+              { lay: nil, tiles: %w[5-0 5-1 6-0 6-1 57-0 57-1 14-0 14-1 15-0 15-1] },
+              { lay: '57-0', tiles: %w[14-0 14-1 15-0 15-1] },
+              { lay: '14-0', tiles: [] },
+            ],
+            track_for_valid: [
+              { color: nil, lay: nil, tiles: %w[14-0 57-0] },
+              { color: 'yellow', lay: '57-0', tiles: %w[14-0] },
+            ],
+          },
+          {
+            phase: 'brown',
+            share: 12,
+            trains: %w[3S 4S 5S],
+            track_for_invalid: [
+              { lay: nil, tiles: %w[5-0 5-1 6-0 6-1 57-0 57-1 14-0 14-1 15-0 15-1 611-0 611-1 611-2] },
+              { lay: '57-0', tiles: %w[14-0 14-1 15-0 15-1 611-0 611-1 611-2] },
+              { lay: '14-0', tiles: %w[611-0 611-1 611-2] },
+              { lay: '611-0', tiles: [] },
+            ],
+            track_for_valid: [
+              { color: nil, lay: nil, tiles: %w[14-0 57-0 611-0] },
+              { color: 'yellow', lay: '57-0', tiles: %w[14-0 611-0] },
+              { color: 'green', lay: '14-0', tiles: %w[611-0] },
+            ],
+          },
         ].each do |item|
           describe "when on #{item[:phase]} phase" do
             let(:share_price) { game.stock_market.par_prices.find { |par_price| par_price.price == item[:share] } }
@@ -406,22 +429,19 @@ module Engine
 
             item[:track_for_invalid].each do |track_for_invalid|
               # TODO: fix later
-              # it "should auto-skip when tile is #{track_for_invalid[:lay] ? track_for_invalid[:lay] : "empty"} and no valid track is available" do
-              #   track_for_invalid[:tiles].each { |tile| game.all_tiles.delete(game.all_tiles.find { |t| t.id == tile }) }
-              #   game.hex_by_id(corporation.coordinates).lay(game.tile_by_id(track_for_invalid[:lay])) if track_for_invalid[:lay]
-              #
-              #   game.round.process_action(Action::Par.new(player_1, corporation: corporation, share_price: share_price))
-              #
-              #   expect(game.round.active_step).to be_instance_of(Engine::Game::G18ZOO::Step::FreeActionsOnSr)
+              # it "should auto-skip when tile is..." do
               # end
             end
 
             item[:track_for_valid].each do |track_for_valid|
-              describe "when hex tile is #{track_for_valid[:color] ? track_for_valid[:color] : 'empty'}" do
+              describe "when hex tile is #{track_for_valid[:color] || 'empty'}" do
                 before do
-                  game.hex_by_id(corporation.coordinates).lay(game.tile_by_id(track_for_valid[:lay])) if track_for_valid[:lay]
+                  if track_for_valid[:lay]
+                    game.hex_by_id(corporation.coordinates).lay(game.tile_by_id(track_for_valid[:lay]))
+                  end
 
-                  game.round.process_action(Action::Par.new(player_1, corporation: corporation, share_price: share_price))
+                  game.round.process_action(Action::Par.new(player_1, corporation: corporation,
+                                                                      share_price: share_price))
 
                   expect(game.round.active_step).to be_instance_of(Engine::Game::G18ZOO::Step::HomeTrack)
                 end
@@ -435,19 +455,19 @@ module Engine
                 #   expect(game.round.active_step).to be_instance_of(Engine::Game::G18ZOO::Step::FreeActionsOnSr)
                 # end
 
-                # TODO: fix later
-                # track_for_valid[:tiles].each do |tile|
-                #   it "could put the track #{tile}" do
-                #     expect(game.round.active_step.actions(game.current_entity)).to include 'lay_tile'
-                #
-                #     game.round.process_action(Action::LayTile.new(corporation,
-                #                                                   tile: game.tile_by_id(tile),
-                #                                                   hex: game.hex_by_id(corporation.coordinates),
-                #                                                   rotation: 0))
-                #
-                #     expect(game.round.active_step).to be_instance_of(Engine::Game::G18ZOO::Step::FreeActionsOnSr)
-                #   end
-                # end
+                track_for_valid[:tiles].each do |tile|
+                  # TODO: fix later
+                  #   it "could put the track #{tile}" do
+                  #     expect(game.round.active_step.actions(game.current_entity)).to include 'lay_tile'
+                  #
+                  #     game.round.process_action(Action::LayTile.new(corporation,
+                  #                                                   tile: game.tile_by_id(tile),
+                  #                                                   hex: game.hex_by_id(corporation.coordinates),
+                  #                                                   rotation: 0))
+                  #
+                  #     expect(game.round.active_step).to be_instance_of(Engine::Game::G18ZOO::Step::FreeActionsOnSr)
+                  #   end
+                end
               end
             end
           end
@@ -455,167 +475,168 @@ module Engine
       end
     end
 
-    # TODO: add tests for this feature later
-    # TODO: fix later
-    # describe 'sell company' do
-    #   let(:players) { %w[a b c] }
-    #   let(:game) { Game::G18ZOO.new(players) }
-    #   let(:player_1) { game.players.first }
-    #   let(:companies) { player_1.companies.select { |c| c.name.start_with?('ZOOTicket') } }
-    #   let(:company) { companies.first }
-    #   let(:corporation) { game.corporations.first }
-    #   let(:share_price) { game.stock_market.par_prices.find { |par_price| par_price.price == 5 } }
-    #
-    #   before do
-    #     next_sr!
-    #   end
-    #
-    #   describe 'player could sell a TicketZOO to gain the current value' do
-    #     it 'should gain the current value' do
-    #       starting_money = player_1.cash
-    #
-    #       game.round.process_action(Action::SellCompany.new(player_1, company: company, price: 4))
-    #
-    #       expect(player_1.cash).to eq(starting_money + 4)
-    #     end
-    #
-    #     it 'before any action in SR' do
-    #       expect(game.round.active_step).to be_instance_of(Engine::Step::G18ZOO::BuySellParShares)
-    #       expect(game.round.active_step.actions(game.current_entity)).to include 'sell_company'
-    #
-    #       game.round.process_action(Action::SellCompany.new(player_1, company: company, price: 4))
-    #
-    #       expect(game.round.active_step).to be_instance_of(Engine::Step::G18ZOO::BuySellParShares)
-    #     end
-    #
-    #     it 'after selling a share' do
-    #       game.stock_market.set_par(corporation, game.stock_market.par_prices.find { |price| price.price == 5 })
-    #       2.times { game.share_pool.buy_shares(player_1, corporation.shares[0]) }
-    #
-    #       expect(game.round.active_step).to be_instance_of(Engine::Step::G18ZOO::BuySellParShares)
-    #       game.round.process_action(Action::SellShares.new(player_1, shares: player_1.shares[1]))
-    #
-    #       expect(game.round.active_step.actions(game.current_entity)).to include 'sell_company'
-    #
-    #       game.round.process_action(Action::SellCompany.new(player_1, company: company, price: 4))
-    #
-    #       expect(game.round.active_step).to be_instance_of(Engine::Step::G18ZOO::BuySellParShares)
-    #     end
-    #
-    #     it 'after buying a company' do
-    #       game.round.process_action(Action::BuyCompany.new(player_1, company: game.available_companies.first, price: game.available_companies.first.max_price))
-    #
-    #       expect(game.round.active_step).to be_instance_of(Engine::Step::G18ZOO::BuySellParShares)
-    #       expect(game.round.active_step.actions(game.current_entity)).to include 'sell_company'
-    #
-    #       game.round.process_action(Action::SellCompany.new(player_1, company: company, price: 4))
-    #
-    #       expect(game.round.active_step).to be_instance_of(Engine::Step::G18ZOO::BuySellParShares)
-    #     end
-    #
-    #     it 'after buying a share' do
-    #       game.stock_market.set_par(corporation, game.stock_market.par_prices.find { |price| price.price == 5 })
-    #       game.share_pool.buy_shares(player_1, corporation.shares[0])
-    #
-    #       expect(game.round.active_step).to be_instance_of(Engine::Step::G18ZOO::BuySellParShares)
-    #       game.round.process_action(Action::BuyShares.new(player_1, shares: corporation.shares[0]))
-    #
-    #       expect(game.round.active_step.actions(game.current_entity)).to include 'sell_company'
-    #
-    #       game.round.process_action(Action::SellCompany.new(player_1, company: company, price: 4))
-    #
-    #       expect(game.round.active_step).to be_instance_of(Engine::Step::G18ZOO::BuySellParShares)
-    #     end
-    #
-    #     # TODO add after updating Step::G18ZOO::ChoosePower with any real power
-    #     # it 'after using a power' do
-    #     # end
-    #
-    #     it 'after the par and lay of home track' do
-    #       game.round.process_action(Action::Par.new(player_1, corporation: corporation, share_price: share_price))
-    #       game.round.process_action(Action::Pass.new(corporation))
-    #       expect(game.round.active_step).to be_instance_of(Engine::Game::G18ZOO::Step::FreeActionsOnSr)
-    #
-    #       expect(game.round.active_step.actions(game.current_entity)).to include 'sell_company'
-    #
-    #       game.round.process_action(Action::SellCompany.new(player_1, company: company, price: 4))
-    #
-    #       expect(game.round.active_step).to be_instance_of(Engine::Game::G18ZOO::Step::FreeActionsOnSr)
-    #     end
-    #
-    #     # TODO add after adding Step::G18ZOO::AdditionalTracksAfterPar
-    #     # it 'after the par and lay of home track and additional track' do
-    #     # end
-    #   end
-    #
-    #   it 'player turn should end after par if no ticket zoo are available' do
-    #     companies.each { |company| game.round.process_action(Action::SellCompany.new(player_1, company: company, price: 4)) }
-    #     expect(game.round.active_step.actions(game.current_entity)).to_not include 'sell_company'
-    #
-    #     game.round.process_action(Action::Par.new(player_1, corporation: corporation, share_price: share_price))
-    #     game.round.process_action(Action::Pass.new(corporation))
-    #
-    #     expect(game.round.active_step).to be_instance_of(Engine::Step::G18ZOO::BuySellParShares)
-    #     expect(game.round.current_entity).to_not be(player_1)
-    #   end
-    #
-    #   #   it 'selling a company is not an action' do
-    #   #
-    #   #   end
-    #   #
-    #   #   it 'corporation can buy a TicketZOO to gain at least 1' do
-    #   #
-    #   #   end
-    #   #
-    #   #   it 'corporation can buy a TicketZOO to gain at most the ticket zoo value' do
-    #   #
-    #   #   end
-    # end
+    describe 'sell company' do
+      let(:players) { %w[a b c] }
+      let(:game) { Engine::Game::G18ZOO::Game.new(players) }
+      let(:player_1) { game.players.first }
+      let(:companies) { player_1.companies.select { |c| c.name.start_with?('ZOOTicket') } }
+      let(:company) { companies.first }
+      let(:corporation) { game.corporations.first }
+      let(:share_price) { game.stock_market.par_prices.find { |par_price| par_price.price == 5 } }
 
-    # describe '"family near"' do
-    #   let(:players) { %w[a b c] }
-    #   let(:game) { Engine::Game::G18ZOO::Game.new(players) }
-    #   let(:player_1) { game.players.first }
-    #   let(:player_2) { game.players[1] }
-    #   let(:corporation) { game.corporations.first }
-    #   let(:second_corporation) { game.corporations[1] }
-    #   let(:last_corporation) { game.corporations.last }
-    #   let(:share_price) { game.stock_market.par_prices.find { |par_price| par_price.price == 5 } }
-    #
-    #   before do
-    #     next_sr!
-    #   end
-    #
-    #   it 'each corporation is available at the beginning' do
-    #     game.corporations.each { |corporation| expect(game.corporation_available?(corporation)).to be_truthy }
-    #   end
-    #
-    #   it 'only previous corporation and following corporation are available after first par' do
-    #     game.round.process_action(Action::Par.new(player_1, corporation: corporation, share_price: share_price))
-    #
-    #     [1, 4].each { |index| expect(game.corporation_available?(game.corporations[index])).to be_truthy }
-    #     [2, 3].each { |index| expect(game.corporation_available?(game.corporations[index])).to be_falsy }
-    #   end
-    #
-    #   it 'only following corporation is available after first par and following par ' do
-    #     game.round.process_action(Action::Par.new(player_1, corporation: corporation, share_price: share_price))
-    #     game.round.process_action(Engine::Action::Pass.new(corporation))
-    #     game.round.process_action(Engine::Action::Pass.new(player_1))
-    #     game.round.process_action(Action::Par.new(player_2, corporation: second_corporation, share_price: share_price))
-    #
-    #     [2].each { |index| expect(game.corporation_available?(game.corporations[index])).to be_truthy }
-    #     [3, 4].each { |index| expect(game.corporation_available?(game.corporations[index])).to be_falsy }
-    #   end
-    #
-    #   it 'only previous corporation is available after first par and previous par' do
-    #     game.round.process_action(Action::Par.new(player_1, corporation: corporation, share_price: share_price))
-    #     game.round.process_action(Engine::Action::Pass.new(corporation))
-    #     game.round.process_action(Engine::Action::Pass.new(player_1))
-    #     game.round.process_action(Action::Par.new(player_2, corporation: last_corporation, share_price: share_price))
-    #
-    #     [3].each { |index| expect(game.corporation_available?(game.corporations[index])).to be_truthy }
-    #     [1, 2].each { |index| expect(game.corporation_available?(game.corporations[index])).to be_falsy }
-    #   end
-    # end
+      before do
+        next_sr!
+      end
+
+      describe 'player could sell a TicketZOO to gain the current value' do
+        it 'should gain the current value' do
+          starting_money = player_1.cash
+
+          game.round.process_action(Action::SellCompany.new(player_1, company: company, price: 4))
+
+          expect(player_1.cash).to eq(starting_money + 4)
+        end
+
+        it 'before any action in SR' do
+          expect(game.round.active_step).to be_instance_of(Engine::Game::G18ZOO::Step::BuySellParShares)
+          expect(game.round.active_step.actions(game.current_entity)).to include 'sell_company'
+
+          game.round.process_action(Action::SellCompany.new(player_1, company: company, price: 4))
+
+          expect(game.round.active_step).to be_instance_of(Engine::Game::G18ZOO::Step::BuySellParShares)
+        end
+
+        it 'after selling a share' do
+          game.stock_market.set_par(corporation, game.stock_market.par_prices.find { |price| price.price == 5 })
+          2.times { game.share_pool.buy_shares(player_1, corporation.shares[0]) }
+
+          expect(game.round.active_step).to be_instance_of(Engine::Game::G18ZOO::Step::BuySellParShares)
+          game.round.process_action(Action::SellShares.new(player_1, shares: player_1.shares[1]))
+
+          expect(game.round.active_step.actions(game.current_entity)).to include 'sell_company'
+
+          game.round.process_action(Action::SellCompany.new(player_1, company: company, price: 4))
+
+          expect(game.round.active_step).to be_instance_of(Engine::Game::G18ZOO::Step::BuySellParShares)
+        end
+        it 'after buying a company' do
+          game.round.process_action(Action::BuyCompany.new(player_1, company: game.available_companies.first,
+                                                                     price: game.available_companies.first.max_price))
+
+          expect(game.round.active_step).to be_instance_of(Engine::Game::G18ZOO::Step::BuySellParShares)
+          expect(game.round.active_step.actions(game.current_entity)).to include 'sell_company'
+
+          game.round.process_action(Action::SellCompany.new(player_1, company: company, price: 4))
+
+          expect(game.round.active_step).to be_instance_of(Engine::Game::G18ZOO::Step::BuySellParShares)
+        end
+
+        it 'after buying a share' do
+          game.stock_market.set_par(corporation, game.stock_market.par_prices.find { |price| price.price == 5 })
+          game.share_pool.buy_shares(player_1, corporation.shares[0])
+
+          expect(game.round.active_step).to be_instance_of(Engine::Game::G18ZOO::Step::BuySellParShares)
+          game.round.process_action(Action::BuyShares.new(player_1, shares: corporation.shares[0]))
+
+          expect(game.round.active_step.actions(game.current_entity)).to include 'sell_company'
+
+          game.round.process_action(Action::SellCompany.new(player_1, company: company, price: 4))
+
+          expect(game.round.active_step).to be_instance_of(Engine::Game::G18ZOO::Step::BuySellParShares)
+        end
+
+        # TODO: add after updating Step::G18ZOO::ChoosePower with any real power
+        # it 'after using a power' do
+        # end
+
+        it 'after the par and lay of home track' do
+          game.round.process_action(Action::Par.new(player_1, corporation: corporation, share_price: share_price))
+          game.round.process_action(Action::Pass.new(corporation))
+          expect(game.round.active_step).to be_instance_of(Engine::Game::G18ZOO::Step::FreeActionsOnSr)
+
+          expect(game.round.active_step.actions(game.current_entity)).to include 'sell_company'
+
+          game.round.process_action(Action::SellCompany.new(player_1, company: company, price: 4))
+
+          expect(game.round.active_step).to be_instance_of(Engine::Game::G18ZOO::Step::FreeActionsOnSr)
+        end
+
+        # TODO: add later
+        # it 'after the par and lay of home track and additional track' do
+        # end
+      end
+
+      it 'player turn should end after par if no ticket zoo are available' do
+        companies.each do |company|
+          game.round.process_action(Action::SellCompany.new(player_1, company: company, price: 4))
+        end
+        expect(game.round.active_step.actions(game.current_entity)).to_not include 'sell_company'
+
+        game.round.process_action(Action::Par.new(player_1, corporation: corporation, share_price: share_price))
+        game.round.process_action(Action::Pass.new(corporation))
+
+        expect(game.round.active_step).to be_instance_of(Engine::Game::G18ZOO::Step::BuySellParShares)
+        expect(game.round.current_entity).to_not be(player_1)
+      end
+
+      # TODO: add later
+      #   it 'selling a company is not an action' do
+      #   end
+
+      # TODO: add later
+      #   it 'corporation can buy a TicketZOO to gain at least 1' do
+      #   end
+
+      # TODO: add later
+      #   it 'corporation can buy a TicketZOO to gain at most the ticket zoo value' do
+      #
+      #   end
+    end
+
+    describe '"family near"' do
+      let(:players) { %w[a b c] }
+      let(:game) { Engine::Game::G18ZOO::Game.new(players) }
+      let(:player_1) { game.players.first }
+      let(:player_2) { game.players[1] }
+      let(:corporation) { game.corporations.first }
+      let(:second_corporation) { game.corporations[1] }
+      let(:last_corporation) { game.corporations.last }
+      let(:share_price) { game.stock_market.par_prices.find { |par_price| par_price.price == 5 } }
+
+      before do
+        next_sr!
+      end
+
+      it 'each corporation is available at the beginning' do
+        game.corporations.each { |corporation| expect(game.corporation_available?(corporation)).to be_truthy }
+      end
+
+      it 'only previous corporation and following corporation are available after first par' do
+        game.round.process_action(Action::Par.new(player_1, corporation: corporation, share_price: share_price))
+
+        [1, 4].each { |index| expect(game.corporation_available?(game.corporations[index])).to be_truthy }
+        [2, 3].each { |index| expect(game.corporation_available?(game.corporations[index])).to be_falsy }
+      end
+
+      it 'only following corporation is available after first par and following par ' do
+        game.round.process_action(Action::Par.new(player_1, corporation: corporation, share_price: share_price))
+        game.round.process_action(Engine::Action::Pass.new(corporation))
+        game.round.process_action(Engine::Action::Pass.new(player_1))
+        game.round.process_action(Action::Par.new(player_2, corporation: second_corporation, share_price: share_price))
+
+        [2].each { |index| expect(game.corporation_available?(game.corporations[index])).to be_truthy }
+        [3, 4].each { |index| expect(game.corporation_available?(game.corporations[index])).to be_falsy }
+      end
+
+      it 'only previous corporation is available after first par and previous par' do
+        game.round.process_action(Action::Par.new(player_1, corporation: corporation, share_price: share_price))
+        game.round.process_action(Engine::Action::Pass.new(corporation))
+        game.round.process_action(Engine::Action::Pass.new(player_1))
+        game.round.process_action(Action::Par.new(player_2, corporation: last_corporation, share_price: share_price))
+
+        [3].each { |index| expect(game.corporation_available?(game.corporations[index])).to be_truthy }
+        [1, 2].each { |index| expect(game.corporation_available?(game.corporations[index])).to be_falsy }
+      end
+    end
   end
 end

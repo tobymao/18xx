@@ -17,7 +17,7 @@ module Engine
             super.merge(
               {
                 pending_tokens: [],
-                bonus_tracks: 0
+                bonus_tracks: 0,
               }
             )
           end
@@ -27,7 +27,7 @@ module Engine
           end
 
           def active?
-            current_entity && @round.bonus_tracks > 0
+            current_entity && @round.bonus_tracks.positive?
           end
 
           def current_entity

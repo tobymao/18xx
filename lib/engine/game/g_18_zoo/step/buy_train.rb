@@ -5,7 +5,6 @@ module Engine
     module G18ZOO
       module Step
         class BuyTrain < Engine::Step::BuyTrain
-
           def round_state
             super.merge(
               {

@@ -749,9 +749,33 @@ module Engine
           map_a: { 'GI' => 'J9', 'PB' => 'M10', 'PE' => 'J17', 'LI' => 'D15', 'TI' => 'G14' },
           map_b: { 'CR' => 'G3', 'GI' => 'J10', 'PB' => 'M11', 'PE' => 'J18', 'BB' => 'H6' },
           map_c: { 'CR' => 'H3', 'LI' => 'E16', 'TI' => 'H15', 'BB' => 'I6', 'EL' => 'D5' },
-          map_d: { 'CR' => 'G3', 'GI' => 'J10', 'PB' => 'M11', 'PE' => 'J18', 'LI' => 'D16', 'TI' => 'G15', 'BB' => 'H6' },
-          map_e: { 'CR' => 'G3', 'GI' => 'J10', 'PB' => 'M11', 'PE' => 'J18', 'TI' => 'G15', 'BB' => 'H6', 'EL' => 'C5' },
-          map_f: { 'CR' => 'H3', 'GI' => 'K10', 'PE' => 'K18', 'LI' => 'E16', 'TI' => 'H15', 'BB' => 'I6', 'EL' => 'D5' },
+          map_d: {
+            'CR' => 'G3',
+            'GI' => 'J10',
+            'PB' => 'M11',
+            'PE' => 'J18',
+            'LI' => 'D16',
+            'TI' => 'G15',
+            'BB' => 'H6',
+          },
+          map_e: {
+            'CR' => 'G3',
+            'GI' => 'J10',
+            'PB' => 'M11',
+            'PE' => 'J18',
+            'TI' => 'G15',
+            'BB' => 'H6',
+            'EL' => 'C5',
+          },
+          map_f: {
+            'CR' => 'H3',
+            'GI' => 'K10',
+            'PE' => 'K18',
+            'LI' => 'E16',
+            'TI' => 'H15',
+            'BB' => 'I6',
+            'EL' => 'D5',
+          },
         }.freeze
 
         LOCATION_NAMES_BY_MAP = {
@@ -1018,7 +1042,7 @@ module Engine
 
           return [{ lay: true, upgrade: true }] unless @round.available_tracks.empty?
 
-          @round.bonus_tracks.times.map { |_| { lay: true } } if @round.bonus_tracks > 0
+          @round.bonus_tracks.times.map { |_| { lay: true } } if @round.bonus_tracks.positive?
         end
 
         def upgrades_to?(from, to, special = nil)
@@ -1317,8 +1341,8 @@ module Engine
         end
 
         def event_rust_own_3s_4s!
-          @log << "3S long and 4S owned by current player are rusted!"
-          # TODO remove the 3S long and 4S owned by current player
+          @log << '3S long and 4S owned by current player are rusted!'
+          # TODO: remove the 3S long and 4S owned by current player
         end
       end
     end

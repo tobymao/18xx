@@ -35,7 +35,7 @@ module Engine
             texts = []
             texts << 'selling companies' if actions.include?('sell_company')
             texts << 'using any power' if actions.include?('choose')
-            @log << "#{entity.name} passes #{texts.join(" and ")}"
+            @log << "#{entity.name} passes #{texts.join(' and ')}"
           end
 
           def process_pass(action)

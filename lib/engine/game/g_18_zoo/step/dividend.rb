@@ -81,7 +81,7 @@ module Engine
           end
 
           def bonus_payout_for_president(share_price)
-            return 0 if share_price.coordinates[0] > 0
+            return 0 if share_price.coordinates[0].positive?
 
             G18ZOO::Game::STOCKMARKET_OWNER_GAIN[share_price.coordinates[1]] || 0
           end
