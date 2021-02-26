@@ -162,11 +162,7 @@ module Engine
         end
 
         def graph_for_entity(entity)
-          if entity.minor?
-            @mine_graph
-          else
-            @graph
-          end
+          entity.minor? ? @mine_graph : @graph
         end
 
         def load_minor_extended

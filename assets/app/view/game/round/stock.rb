@@ -83,7 +83,15 @@ module View
           merge = lambda do
             if @selected_corporation
               do_merge = lambda do
-                merge_action(@mergeable_entity, @selected_corporation)
+                to_merge = if @selected_corporation.corporation?
+                             { corporation: @selected_corporation }
+                           else
+                             { minor: @selected_corporation }
+                           end
+                process_action(Engine::Action::Merge.new(
+                  @mergeable_entity,
+                  **to_merge
+                ))
               end
 
               if @mergeable_entity.owner == @selected_corporation.owner
@@ -97,20 +105,6 @@ module View
           end
 
           [h(:button, { on: { click: merge } }, @step.merge_action)]
-        end
-
-        def merge_action(merge_entity, selected)
-          if selected.corporation?
-            process_action(Engine::Action::Merge.new(
-              merge_entity,
-              corporation: selected,
-            ))
-          else
-            process_action(Engine::Action::Merge.new(
-              merge_entity,
-              minor: selected,
-            ))
-          end
         end
 
         def render_payoff_player_debt_button

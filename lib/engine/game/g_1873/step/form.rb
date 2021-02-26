@@ -10,7 +10,7 @@ module Engine
           MERGE_ACTION = %w[merge].freeze
 
           def actions(entity)
-            return [] unless entity == owner || entity == buyer
+            return [] if entity != owner && entity != buyer
 
             MERGE_ACTION
           end
