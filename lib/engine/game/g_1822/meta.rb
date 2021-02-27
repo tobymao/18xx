@@ -14,7 +14,7 @@ module Engine
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1822'
         GAME_LOCATION = 'Great Britain'
         GAME_PUBLISHER = :all_aboard_games
-        GAME_RULES_URL = 'http://google.com'
+        GAME_RULES_URL = 'https://docs.google.com/document/d/1yUap9cNais_Tapv6ZjudbvukmKPgRUhY32BOaqcH8Hw/edit'
 
         PLAYER_RANGE = [3, 7].freeze
       end
