@@ -1129,6 +1129,10 @@ module Engine
           @it_s_all_greek_to_me ||= company_by_id('IT_S_ALL_GREEK_TO_ME')
         end
 
+        def it_s_all_greek_to_me_active?
+          it_s_all_greek_to_me.all_abilities.any? { |ability| ability.is_a?(Engine::Ability::Close) }
+        end
+
         def whatsup
           @whatsup ||= company_by_id('WHATSUP')
         end
@@ -1156,7 +1160,7 @@ module Engine
         private
 
         def init_round
-          Round::Draft.new(self, [G18ZOO::Step::SimpleDraft], reverse_order: true)
+          Engine::Round::Draft.new(self, [G18ZOO::Step::SimpleDraft], reverse_order: true)
         end
 
         def init_companies(players)
@@ -1255,7 +1259,7 @@ module Engine
         end
 
         def stock_round
-          Round::Stock.new(self, [
+          Engine::Game::G18ZOO::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
             Engine::Step::Exchange,
             Engine::Step::SpecialTrack,
@@ -1278,7 +1282,7 @@ module Engine
         end
 
         def operating_round(round_num)
-          Round::Operating.new(self, [
+          Engine::Round::Operating.new(self, [
             Engine::Step::SpecialTrack,
             G18ZOO::Step::BuyCompany,
             Engine::Step::Track,

@@ -14,11 +14,11 @@ module Engine
     end
 
     def next_or!
-      next_round! { game.round.is_a?(Round::Operating) }
+      next_round! { game.round.is_a?(Engine::Round::Operating) }
     end
 
     def next_sr!
-      next_round! { game.round.is_a?(Round::Stock) }
+      next_round! { game.round.is_a?(Engine::Round::Stock) }
     end
 
     def first_player_buy_power_on_isr(company)
@@ -136,17 +136,17 @@ module Engine
 
             it 'should add a choice for Player 1' do
               expect(game.round.active_step.actions(game.current_entity)).to include 'choose'
-            end unless power[:sym] == :HOLIDAY
+            end if power[:sym] != :HOLIDAY && power[:sym] != :IT_S_ALL_GREEK_TO_ME
 
             it "should have '#{power[:choice]}' as choice for Player 1" do
               expect(game.round.active_step.choices).to include power[:choice].to_sym
-            end unless power[:sym] == :HOLIDAY
+            end if power[:sym] != :HOLIDAY && power[:sym] != :IT_S_ALL_GREEK_TO_ME
 
             it 'should fail when power is used' do
               expect do
                 game.round.process_action(Engine::Action::Choose.new(game.current_entity, choice: power[:choice]))
               end.to raise_error(Engine::GameError, 'Power not yet implemented')
-            end if power[:sym] != :MIDAS && power[:sym] != :HOLIDAY
+            end if power[:sym] != :MIDAS && power[:sym] != :HOLIDAY && power[:sym] != :IT_S_ALL_GREEK_TO_ME
           end
         end
       end
@@ -156,9 +156,12 @@ module Engine
         let(:power) { game.available_companies.find { |c| c.sym.to_sym == :MIDAS } }
         let(:player_1) { game.players.first }
 
-        it 'should give priority when power is used' do
+        before do
+          first_player_buy_power_on_isr(power)
           next_sr!
+        end
 
+        it 'should give priority when power is used' do
           game.round.process_action(Engine::Action::BuyCompany.new(game.current_entity, price: power.value,
                                                                    company: power))
           game.round.process_action(Engine::Action::Choose.new(game.current_entity, choice: 'midas'))
@@ -179,17 +182,16 @@ module Engine
         let(:corporation) { game.corporations.first }
         let(:share_price) { game.stock_market.par_prices.find { |par_price| par_price.price == 5 } }
 
-        it "should not have any holiday choice for Player 1 before par" do
+        before do
           first_player_buy_power_on_isr(current_power)
           next_sr!
+        end
 
+        it "should not have any holiday choice for Player 1 before par" do
           expect(game.round.active_step.choices).to be_empty
         end
 
         it 'should give holiday choice after par from current player' do
-          first_player_buy_power_on_isr(current_power)
-          next_sr!
-
           game.round.process_action(Action::Par.new(player_1, corporation: corporation, share_price: share_price))
           game.round.process_action(Action::Pass.new(corporation))
           game.round.process_action(Action::Pass.new(player_1))
@@ -204,9 +206,6 @@ module Engine
         end
 
         it 'should give holiday choice after par from another player' do
-          first_player_buy_power_on_isr(current_power)
-          next_sr!
-
           game.round.process_action(Action::Pass.new(player_1))
           game.round.process_action(Action::Par.new(player_2, corporation: corporation, share_price: share_price))
           game.round.process_action(Action::Pass.new(corporation))
@@ -223,8 +222,6 @@ module Engine
 
         it 'should give holiday choice for each ipoed' do
           expected = []
-          first_player_buy_power_on_isr(current_power)
-          next_sr!
 
           game.corporations.each do |corporation|
             game.round.process_action(Action::Par.new(game.current_entity, corporation: corporation, share_price: share_price))
@@ -319,6 +316,83 @@ module Engine
             next_sr!
             expect(player_1.cash).to eq(starting_money - 2 + 2 + 2 + 2)
           end
+        end
+      end
+
+      describe "It’s all greek to me" do
+        let(:game) { Engine::Game::G18ZOO::Game.new(players, id: 'hs_yylreptp_1612654521') }
+        let(:current_power) { game.available_companies.find { |c| c.sym.to_sym == :IT_S_ALL_GREEK_TO_ME } }
+        let(:player_1) { game.players.first }
+        let(:corporation) { game.corporations.first }
+        let(:share_price) { game.stock_market.par_prices.find { |par_price| par_price.price == 5 } }
+
+        before do
+          first_player_buy_power_on_isr(current_power)
+          next_sr!
+        end
+
+        it 'should have no choice if no action' do
+          expect(game.round.active_step.choices).to be_empty
+        end
+
+        it 'should have no choice after only selling a company' do
+          company = player_1.companies.select { |c| c.name.start_with?('ZOOTicket') }.first
+          game.round.process_action(Action::SellCompany.new(player_1, company: company, price: 4))
+
+          expect(game.round.active_step.choices).to be_empty
+        end
+
+        it 'should have no choice after only using a power' do
+          game.round.process_action(Action::BuyCompany.new(player_1, company: game.leprechaun_pot_of_gold,
+                                                           price: game.leprechaun_pot_of_gold.max_price))
+          3.times { |_| game.round.process_action(Engine::Action::Pass.new(game.current_entity)) }
+
+          expect(game.round.current_entity).to be(player_1)
+          expect(game.round.active_step.choices).to be_empty
+        end
+
+        it 'should have a choice after selling a share' do
+          game.stock_market.set_par(corporation, share_price)
+          2.times { game.share_pool.buy_shares(player_1, corporation.shares[0]) }
+          game.round.process_action(Action::SellShares.new(player_1, shares: player_1.shares[1]))
+
+          expect(game.round.active_step.choices).to include :greek_to_me
+        end
+
+        it 'should have a choice after buying a company' do
+          game.round.process_action(Action::BuyCompany.new(player_1, company: game.holiday,
+                                                           price: game.holiday.max_price))
+
+          expect(game.round.active_step.choices).to include :greek_to_me
+        end
+
+        it 'should have a choice after buying a share' do
+          game.stock_market.set_par(corporation, share_price)
+          game.share_pool.buy_shares(player_1, corporation.shares[0])
+          game.round.process_action(Action::BuyShares.new(player_1, shares: corporation.shares[0]))
+
+          expect(game.round.active_step.choices).to include :greek_to_me
+        end
+
+        it 'should have a choice after par' do
+          game.round.process_action(Action::Par.new(player_1, corporation: corporation, share_price: share_price))
+          game.round.process_action(Action::Pass.new(corporation))
+
+          expect(game.round.active_step.choices).to include :greek_to_me
+        end
+
+        it 'should have a choice after buying a company' do
+          game.round.process_action(Action::BuyCompany.new(player_1, company: game.holiday,
+                                                           price: game.holiday.max_price))
+          expect(game.round.active_step).to be_instance_of(Engine::Game::G18ZOO::Step::BuySellParShares)
+          expect(game.round.current_entity).to be(player_1)
+
+          game.round.process_action(Engine::Action::Choose.new(game.current_entity, choice: 'greek_to_me'))
+          game.round.process_action(Engine::Action::Pass.new(game.current_entity))
+
+          expect(current_power.closed?).to be_truthy
+          expect(game.round.current_entity).to be(player_1)
+          expect(game.round.active_step.choices).to_not include :greek_to_me
         end
       end
 

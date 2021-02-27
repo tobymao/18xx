@@ -41,13 +41,12 @@ module Engine
         end
 
         def company_greek?(entity)
-          entity&.companies&.include?(@game.it_s_all_greek_to_me)
+          entity&.companies&.include?(@game.it_s_all_greek_to_me) &&
+            (@round.floated_corporation || bought? || sold?) &&
+            @game.it_s_all_greek_to_me.all_abilities.none? { |ability| ability.is_a?(Engine::Ability::Close) }
         end
 
         def process_choose(action)
-          raise GameError, 'Power not yet implemented' if action.choice == 'greek_to_me'
-          raise GameError, 'Power not yet implemented' if action.choice == 'whatsup'
-
           if action.choice == 'midas'
             @game.midas.add_ability(Engine::Ability::Close.new(type: 'close'))
             @log << "#{current_entity.name} uses \"Midas\", will get the Priority for the next SR"
@@ -61,6 +60,15 @@ module Engine
             @log << "#{current_entity.name} uses \"Holiday\" for #{corporation.name}, moving from #{current_value} to #{new_value}"
 
             @game.holiday.close!
+          end
+
+          if action.choice == 'whatsup'
+            raise GameError, 'Power not yet implemented'
+          end
+
+          if action.choice == 'greek_to_me'
+            @game.it_s_all_greek_to_me.add_ability(Engine::Ability::Close.new(type: 'close'))
+            @log << "#{current_entity.name} uses \"It’s all greek to me\", will get an additional round after passing this round"
           end
         end
       end
