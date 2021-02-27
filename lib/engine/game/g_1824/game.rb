@@ -1254,7 +1254,7 @@ module Engine
 
           # Transfer Coal Railway cash and trains to Regional. Remove CR token.
           if minor.cash.positive?
-            @log << "#{regional.name} recieves the #{minor.name} treasury of #{format_currency(minor.cash)}"
+            @log << "#{regional.name} receives the #{minor.name} treasury of #{format_currency(minor.cash)}"
             minor.spend(minor.cash, regional)
           end
           unless minor.trains.empty?
