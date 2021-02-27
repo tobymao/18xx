@@ -777,7 +777,7 @@ module Engine
         end
 
         def gray_phase?
-          @phase.tiles.include?('gray')
+          @phase.tiles.include?(:gray)
         end
 
         def revenue_for(route, stops)
@@ -976,7 +976,7 @@ module Engine
         end
 
         def destination_connected?(corp)
-          corp.capitalization == :escrow && hexes_connected?(*@destinations[corp.id])
+          corp.capitalization == 'escrow' && hexes_connected?(*@destinations[corp.id])
         end
 
         def hexes_connected?(start_hex_id, goal_hex_ids)
