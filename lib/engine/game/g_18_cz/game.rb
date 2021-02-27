@@ -2855,6 +2855,37 @@ module Engine
 
           self.class::CURRENCY_FORMAT_STR % val
         end
+
+        def show_process_bar?
+          true
+        end
+
+        def process_information
+          [
+            { type: :PRE },
+            { type: :SR },
+            { type: :OR, value: '40', name: '1.1' },
+            { type: :SR },
+            { type: :OR, value: '45', name: '2.1' },
+            { type: :SR },
+            { type: :OR, value: '50', name: '3.1' },
+            { type: :SR },
+            { type: :OR, value: '55', name: '4.1' },
+            { type: :SR },
+            { type: :OR, value: '60', name: '5.1' },
+            { type: :OR, value: '65', name: '5.2' },
+            { type: :SR },
+            { type: :OR, value: '70', name: '6.1' },
+            { type: :OR, value: '75', name: '6.2' },
+            { type: :SR },
+            { type: :OR, value: '80', name: '7.1' },
+            { type: :OR, value: '90', name: '7.2' },
+            { type: :SR },
+            { type: :OR, value: '100', name: '8.1' },
+            { type: :OR, value: '110', name: '8.2' },
+            { type: :OR, value: '120', name: '8.3' },
+          ]
+        end
       end
     end
   end
