@@ -2,8 +2,6 @@
 
 require './spec/spec_helper'
 
-require 'engine/game/g_1889'
-require 'engine/part/city'
 require 'json'
 
 module Engine

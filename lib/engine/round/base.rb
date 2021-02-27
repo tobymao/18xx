@@ -161,6 +161,10 @@ module Engine
         false
       end
 
+      def merger?
+        false
+      end
+
       private
 
       def skip_steps

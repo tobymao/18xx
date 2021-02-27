@@ -77,7 +77,7 @@ module View
             elsif @tile_selector.role != :map
               # Tile selector not for the map
             elsif @tile_selector.hex.tile != @tile_selector.tile
-              h(TileConfirmation)
+              h(TileConfirmation, zoom: map_zoom)
             else
               tiles = step.upgradeable_tiles(current_entity, @tile_selector.hex)
               all_upgrades = @game.all_potential_upgrades(@tile_selector.hex.tile)

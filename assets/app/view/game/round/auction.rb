@@ -103,12 +103,12 @@ module View
 
           @selected_company = @step.auctioning if @step.auctioning
 
-          companies = @step.available.select(&:company?)
-          if @step.respond_to?(:tiered_auction?) && @step.tiered_auction?
-            companies.group_by(&:value).values.map do |tier|
+          if @step.respond_to?(:tiered_auction_companies)
+            @step.tiered_auction_companies.map do |tier|
               h(:div, { style: { display: 'table' } }, tier.map { |company| render_company(company) })
             end
           else
+            companies = @step.available.select(&:company?)
             companies.map { |company| render_company(company) }
           end
         end

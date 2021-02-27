@@ -2,12 +2,6 @@
 
 require './spec/spec_helper'
 
-require 'engine/corporation'
-require 'engine/game/g_1889'
-require 'engine/game/g_1828'
-require 'engine/stock_market'
-require 'engine/game/g_1828/stock_market'
-
 module Engine
   describe StockMarket do
     let(:subject) { StockMarket.new(Game::G1889::Game::MARKET, []) }

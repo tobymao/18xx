@@ -74,6 +74,7 @@ module View
         def render_buttons
           buttons = []
           buttons.concat(render_merge_button) if @current_actions.include?('merge')
+          buttons.concat(render_payoff_player_debt_button) if @current_actions.include?('payoff_player_debt')
 
           buttons.any? ? [h(:div, buttons)] : []
         end
@@ -82,9 +83,14 @@ module View
           merge = lambda do
             if @selected_corporation
               do_merge = lambda do
+                to_merge = if @selected_corporation.corporation?
+                             { corporation: @selected_corporation }
+                           else
+                             { minor: @selected_corporation }
+                           end
                 process_action(Engine::Action::Merge.new(
                   @mergeable_entity,
-                  corporation: @selected_corporation,
+                  **to_merge
                 ))
               end
 
@@ -99,6 +105,13 @@ module View
           end
 
           [h(:button, { on: { click: merge } }, @step.merge_action)]
+        end
+
+        def render_payoff_player_debt_button
+          payoffloan = lambda do
+            process_action(Engine::Action::PayoffPlayerDebt.new(@current_entity))
+          end
+          [h(:button, { on: { click: payoffloan } }, 'Payoff Loan')]
         end
 
         def render_failed_merge
@@ -165,6 +178,8 @@ module View
             children << h(Par, corporation: corporation) if @current_actions.include?('par')
           when :bid
             children << h(Bid, entity: @current_entity, corporation: corporation) if @current_actions.include?('bid')
+          when :form
+            children << h(FormCorporation, corporation: corporation) if @current_actions.include?('par')
           when String
             children << h(:div, type)
           end

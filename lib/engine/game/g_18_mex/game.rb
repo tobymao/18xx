@@ -1090,6 +1090,17 @@ module Engine
           super + Array(abilities(entity, :train_limit)).sum(&:increase)
         end
 
+        def action_processed(action)
+          case action
+          when Action::LayTile
+            return unless action.hex.id == 'F5'
+            return if p2_company.closed? || action.entity == p2_company
+
+            p2_company.remove_ability(p2_company.all_abilities.first)
+            @log << "#{p2_company.name} loses the ability to lay F5"
+          end
+        end
+
         private
 
         def handle_no_mail(entity, trainless: true)

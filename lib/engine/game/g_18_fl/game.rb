@@ -2,6 +2,14 @@
 
 require_relative 'meta'
 require_relative '../base'
+require_relative 'round/operating'
+
+if RUBY_ENGINE == 'opal'
+  require_tree 'engine/game/g_18_fl/step'
+else
+  require 'require_all'
+  require_rel 'step'
+end
 
 module Engine
   module Game
@@ -561,7 +569,7 @@ module Engine
           'POSC' => '/icons/1846/sc_token.svg',
         }.freeze
         def stock_round
-          Round::Stock.new(self, [
+          Engine::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
             Engine::Step::HomeToken,
             G18FL::Step::BuySellParShares,
@@ -569,7 +577,7 @@ module Engine
         end
 
         def new_auction_round
-          Round::Auction.new(self, [
+          Engine::Round::Auction.new(self, [
             G18FL::Step::BuyCert,
           ])
         end

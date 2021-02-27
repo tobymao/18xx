@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require './spec/spec_helper'
-require 'engine/part/revenue_center'
 
 module Engine
   module Part

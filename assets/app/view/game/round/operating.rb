@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'view/game/acquire_companies'
 require 'view/game/buy_companies'
 require 'view/game/special_buy'
 require 'view/game/buy_trains'
@@ -85,8 +86,12 @@ module View
               display: 'flex',
             },
           }
-          right = [h(Map, game: @game)]
+
+          aquire_company_action = @current_actions.include?('acquire_company')
+          right = []
+          right << h(Map, game: @game) unless aquire_company_action
           right << h(:div, div_props, [h(BuyCompanies, limit_width: true)]) if @current_actions.include?('buy_company')
+          right << h(:div, div_props, [h(AcquireCompanies)]) if aquire_company_action
 
           left_props = {
             style: {

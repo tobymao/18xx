@@ -1,11 +1,15 @@
 # frozen_string_literal: true
 
+require 'lib/color'
+require 'lib/settings'
 require 'view/game/actionable'
 
 module View
   module Game
     class Company < Snabberb::Component
       include Actionable
+      include Lib::Color
+      include Lib::Settings
 
       needs :company
       needs :bids, default: nil
@@ -122,6 +126,18 @@ module View
           end
 
           children << h('div.nowrap', { style: bidders_style }, "Owner: #{@company.owner.name}") if @company.owner
+          if @game.company_status_str(@company)
+            status_style = {
+              marginTop: '0.5rem',
+              clear: 'both',
+              display: 'inline-block',
+              justifyContent: 'center',
+              width: '100%',
+              backgroundColor: color_for(:bg2),
+              color: color_for(:font2),
+            }
+            children << h(:div, { style: status_style }, @game.company_status_str(@company))
+          end
 
           h('div.company.card', props, children)
         end

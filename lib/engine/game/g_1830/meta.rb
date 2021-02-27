@@ -8,7 +8,7 @@ module Engine
       module Meta
         include Game::Meta
 
-        DEV_STAGE = :alpha
+        DEV_STAGE = :beta
 
         GAME_DESIGNER = 'Francis Tresham'
         GAME_LOCATION = 'Northeastern USA and Southeastern Canada'

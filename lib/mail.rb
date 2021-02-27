@@ -21,7 +21,7 @@ module Mail
       'isTransactional' => true,
     )
 
-    Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) do |http|
+    Net::HTTP.start(uri.hostname, uri.port, open_timeout: 5, use_ssl: true) do |http|
       http.request(req).body
     end
   end

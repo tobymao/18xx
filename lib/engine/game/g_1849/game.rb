@@ -595,7 +595,7 @@ module Engine
 
         AFG_HEXES = %w[C1 H8 M9 M11 B14].freeze
         PORT_HEXES = %w[a12 A5 L14 N8].freeze
-        SMS_HEXES = %w[B14 C1 C5 H12 J6 M9 M13].freeze
+        SMS_HEXES = %w[B14 C1 C5 E1 H12 J6 M9 M13].freeze
 
         IFT_BUFFER = 3
 
@@ -641,11 +641,22 @@ module Engine
           nil
         end
 
+        def price_movement_chart
+          [
+            ['Dividend', 'Share Price Change'],
+            ['0 or withheld', '1 ←'],
+            ['< share price', 'none'],
+            ['≥ share price', '1 →'],
+          ]
+        end
+
         def setup
           setup_companies
           afg # init afg helper
           remove_corp if @players.size == 3
           @corporations[0].next_to_par = true
+
+          @available_par_groups = %i[par]
 
           @player_debts = Hash.new { |h, k| h[k] = 0 }
           @moved_this_turn = []
@@ -709,12 +720,7 @@ module Engine
         def init_stock_market
           sm = G1849::StockMarket.new(self.class::MARKET, self.class::CERT_LIMIT_TYPES,
                                       multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
-
           sm.game = self
-
-          sm.enable_par_price(68)
-          sm.enable_par_price(100)
-
           sm
         end
 
@@ -795,6 +801,13 @@ module Engine
           @afg ||= @corporations.find { |corp| corp.id == 'AFG' }
         end
 
+        def new_auction_round
+          Engine::Round::Auction.new(self, [
+            G1849::Step::CompanyPendingPar,
+            Engine::Step::WaterfallAuction,
+          ])
+        end
+
         def stock_round
           G1849::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
@@ -854,10 +867,18 @@ module Engine
           end
         end
 
+        def route_distance(route)
+          route.connections.sum { |conn| hex_edge_cost(conn, route.train) }
+        end
+
+        def route_distance_str(route)
+          "#{route_distance(route)}H"
+        end
+
         def check_distance(route, _visits)
           limit = route.train.distance
-          cost = route.connections.sum { |conn| hex_edge_cost(conn, route.train) }
-          raise GameError, "#{cost} is too many hex edges for #{route.train.name} train" if cost > limit
+          distance = route_distance(route)
+          raise GameError, "#{distance} is too many hex edges for #{route.train.name} train" if distance > limit
         end
 
         def check_other(route)
@@ -1058,13 +1079,13 @@ module Engine
 
         def event_green_par!
           @log << "-- Event: #{EVENTS_TEXT[:green_par][1]} --"
-          stock_market.enable_par_price(144)
+          @available_par_groups << :par_1
           update_cache(:share_prices)
         end
 
         def event_brown_par!
           @log << "-- Event: #{EVENTS_TEXT[:brown_par][1]} --"
-          stock_market.enable_par_price(216)
+          @available_par_groups << :par_2
           update_cache(:share_prices)
         end
 
@@ -1100,6 +1121,10 @@ module Engine
 
         def player_value(player)
           player.value - @player_debts[player]
+        end
+
+        def par_prices
+          @stock_market.share_prices_with_types(@available_par_groups)
         end
       end
     end

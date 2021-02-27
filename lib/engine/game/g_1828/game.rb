@@ -419,6 +419,7 @@ module Engine
                           type: 'tile_lay',
                           description: "Place a free track tile at B24 any time during the corporation's operations.",
                           owner_type: 'corporation',
+                          when: 'owning_corp_or_turn',
                           hexes: ['B24'],
                           tiles: %w[3 4 58],
                           free: true,
@@ -965,7 +966,7 @@ module Engine
 
         def new_auction_round
           Engine::Round::Auction.new(self, [
-            Engine::Step::CompanyPendingPar,
+            G1828::Step::CompanyPendingPar,
             G1828::Step::WaterfallAuction,
           ])
         end
@@ -1004,6 +1005,8 @@ module Engine
           setup_minors
           setup_company_min_price
 
+          @available_par_groups = %i[par]
+
           @log << "-- Setting game up for #{@players.size} players --"
           remove_extra_private_companies
           remove_extra_trains
@@ -1016,13 +1019,8 @@ module Engine
         end
 
         def init_stock_market
-          sm = G1828::StockMarket.new(self.class::MARKET, [],
-                                      multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
-          sm.enable_par_price(67)
-          sm.enable_par_price(71)
-          sm.enable_par_price(79)
-
-          sm
+          G1828::StockMarket.new(self.class::MARKET, [],
+                                 multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
         end
 
         def init_tiles
@@ -1076,20 +1074,19 @@ module Engine
 
         def event_green_par!
           @log << "-- Event: #{EVENTS_TEXT['green_par'][1]} --"
-          stock_market.enable_par_price(86)
-          stock_market.enable_par_price(94)
+          @available_par_groups << :par_1
           update_cache(:share_prices)
         end
 
         def event_blue_par!
           @log << "-- Event: #{EVENTS_TEXT['blue_par'][1]} --"
-          stock_market.enable_par_price(105)
+          @available_par_groups << :par_2
           update_cache(:share_prices)
         end
 
         def event_brown_par!
           @log << "-- Event: #{EVENTS_TEXT['brown_par'][1]} --"
-          stock_market.enable_par_price(120)
+          @available_par_groups << :par_3
           update_cache(:share_prices)
         end
 
@@ -1140,6 +1137,10 @@ module Engine
           return false if from.hex.id == VA_TUNNEL_HEX && to.name != '4'
 
           super
+        end
+
+        def par_prices
+          @stock_market.share_prices_with_types(@available_par_groups)
         end
 
         def merge_candidates(player, corporation)
@@ -1408,10 +1409,24 @@ module Engine
           @companies.each { |company| company.min_price = 1 }
         end
 
+        def privates_to_remove
+          ok = false
+          until ok
+            to_remove = companies.find_all { |company| company.value == 250 }
+                                 .sort_by { rand }
+                                 .take(7 - @players.size)
+            if @optional_rules&.include?(:ensure_good_privates)
+              removed_syms = to_remove.map(&:sym)
+              ok = !%w[GT NW OSH].all? { |sym| removed_syms.include?(sym) }
+            else
+              ok = true
+            end
+          end
+          to_remove
+        end
+
         def remove_extra_private_companies
-          to_remove = companies.find_all { |company| company.value == 250 }
-                               .sort_by { rand }
-                               .take(7 - @players.size)
+          to_remove = privates_to_remove
           to_remove.each do |company|
             company.close!
             @round.steps.find { |step| step.is_a?(G1828::Step::WaterfallAuction) }.companies.delete(company)

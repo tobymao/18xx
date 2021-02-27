@@ -20,6 +20,8 @@ module View
     needs :before_process_pass, default: -> {}, store: true
     needs :scroll_pos, default: nil, store: true
 
+    APP_PADDING_BOTTOM = '2vmin'
+
     def render_broken_game(e)
       inner = [h(:div, "We're sorry this game cannot be continued due to #{e}")]
 
@@ -28,13 +30,13 @@ module View
 
       # don't ask for a link for hotseat games
       action = @game.last_processed_action || 0
-      url = "https://18xx.games/game/#{@game_data['id']}?action=#{action + 1}"
+      url = "#{%x(window.location.origin)}/game/#{@game_data['id']}?action=#{action - 1}"
       game_link =
         if @game.id.is_a?(Integer)
           [
             'this link (',
             h(:a, { attrs: { href: url } }, url),
-            ') and ',
+            ')',
           ]
         else
           []
@@ -45,7 +47,6 @@ module View
         h(:a, { attrs: { href: 'https://github.com/tobymao/18xx/issues/' } }, 'raise a bug report'),
         ' and include ',
         *game_link,
-        'the following JSON data',
       ])
       inner << h(Game::GameData,
                  actions: @game_data['actions'],
@@ -68,7 +69,7 @@ module View
          (cursor == @game.raw_actions.size))
 
       load_game_with_class = lambda do
-        @game = Engine::Game.load(@game_data, at_action: cursor)
+        @game = Engine::Game.load(@game_data, at_action: cursor, user: @user&.dig('id'))
         store(:game, @game, skip: true)
       end
 
@@ -101,6 +102,8 @@ module View
           h(Game::Spreadsheet, game: @game)
         when 'tools'
           h(Game::Tools, game: @game, game_data: @game_data, user: @user)
+        when 'auto'
+          h(Game::Auto, game: @game, game_data: @game_data, user: @user)
         end
 
       @connection = nil if @game_data[:mode] == :hotseat || cursor
@@ -140,15 +143,27 @@ module View
 
       props = {
         attrs: {
-          autofocus: true, # does not work on all browsers
           tabindex: -1, # necessary to be focusable so keyup works; -1 == not accessible by tabbing
         },
         key: 'game_page',
         hook: {
           destroy: destroy,
+          insert: lambda {
+            scroll_to_game_menu
+            `document.getElementById('game').focus()`
+          },
+          postpatch: lambda {
+            unless %w[input textarea].include?(Native(`document.activeElement`).localName)
+              `document.getElementById('game').focus()`
+            end
+          },
         },
         on: {
           keydown: ->(event) { hotkey_check(event) },
+        },
+        style: {
+          # ensure sufficient height for scroll_to_game_menu
+          minHeight: "calc(#{`window.innerHeight`}px - #{APP_PADDING_BOTTOM})",
         },
       }
 
@@ -161,6 +176,10 @@ module View
       h('div#game', props, children)
     end
 
+    def scroll_to_game_menu
+      `window.scroll(0, document.getElementById('header').offsetHeight)`
+    end
+
     def change_anchor(anchor)
       unless route_anchor
         elm = Native(`document.getElementById('chatlog')`)
@@ -171,6 +190,7 @@ module View
       base = @app_route.split('#').first
       new_route = base + anchor
       new_route = base if @app_route == new_route
+      scroll_to_game_menu
       store(:app_route, new_route)
     end
 
@@ -180,13 +200,11 @@ module View
 
     def hotkey_check(event)
       # 'search for text when you start typing' feature of browser prevents execution
-      # only execute when no modifier is pressed to not interfere with OS shortcuts
+      # catch modifiers to not interfere with OS shortcuts
       event = Native(event)
-      return if event.getModifierState('Alt') || event.getModifierState('AltGraph') || event.getModifierState('Meta') ||
-        event.getModifierState('OS') || event.getModifierState('Shift')
-
       active = Native(`document.activeElement`)
-      return if active.id != 'game' && active.localName != 'body'
+      return if %w[input textarea].include?(active.localName) || event.getModifierState('Alt') ||
+                event.getModifierState('AltGraph') || event.getModifierState('Meta') || event.getModifierState('OS')
 
       key = event['key']
       if event.getModifierState('Control')
@@ -196,6 +214,8 @@ module View
         when 'z'
           button_click('undo')
         end
+      elsif event.getModifierState('Shift')
+        button_click('zoom+') if key == '+' # + on qwerty
       else
         case key
         when 'g'
@@ -214,10 +234,12 @@ module View
           change_anchor('#spreadsheet')
         when 'o'
           change_anchor('#tools')
+        when 'a'
+          change_anchor('#async')
         when 'c'
           Native(`document.getElementById('chatbar')`)&.focus()
           event.preventDefault
-        when '-', '0', '+'
+        when '-', '0', '+' # + on qwertz
           button_click('zoom' + key)
         when 'Home', 'End', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'
           button_click('hist_' + key)
@@ -285,6 +307,8 @@ module View
         item('S|preadsheet', '#spreadsheet'),
         item('To|ols', '#tools'),
       ]
+
+      menu_items << item('A|uto', '#auto') if @game_data[:mode] != :hotseat && !cursor
 
       h('nav#game_menu', nav_props, [
         h('ul.no_margin.no_padding', { style: { width: 'max-content' } }, menu_items),

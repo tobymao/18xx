@@ -88,7 +88,7 @@ module View
       end
 
       game = Engine::GAME_META_BY_TITLE[@gdata['title']]
-      @min_p, _max_p = Engine.player_range(game)
+      @min_p, _max_p = game::PLAYER_RANGE
 
       can_start = owner? && new? && players.size >= @min_p
       buttons << render_button('Start', -> { start_game(@gdata) }) if can_start
@@ -226,7 +226,8 @@ module View
       end
 
       children = [h(:div, [h(:strong, 'Id: '), @gdata['id'].to_s])]
-      children << h(:div, [h(:i, 'Private game')]) if @gdata['status'] == 'new' && @gdata.dig('settings', 'unlisted')
+      children << h(:div, [h(:i, 'Invite only game')]) if @gdata['status'] == 'new' && @gdata.dig('settings',
+                                                                                                  'unlisted')
       children << h(:div, [h(:strong, 'Description: '), @gdata['description']]) unless @gdata['description'].empty?
 
       optional = render_optional_rules

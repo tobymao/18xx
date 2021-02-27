@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'engine'
+require './spec/spec_helper'
 
 describe Engine do
   context 'create games with game_by_title' do

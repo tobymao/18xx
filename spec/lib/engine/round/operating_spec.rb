@@ -2,14 +2,6 @@
 
 require './spec/spec_helper'
 
-require 'engine'
-require 'engine/game/g_1846'
-require 'engine/game/g_1889'
-require 'engine/game/g_18_chesapeake'
-require 'engine/phase'
-require 'engine/round/operating'
-require 'engine/action/place_token'
-
 RSpec::Matchers.define :be_assigned_to do |expected|
   match do |actual|
     expected.assigned?(actual.id)

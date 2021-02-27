@@ -138,6 +138,7 @@ describe 'Assets' do
       expect(render(app_route: '/game/1#tiles', **needs)).to include('492')
       expect(render(app_route: '/game/1#spreadsheet', **needs)).to include('Value')
       expect(render(app_route: '/game/1#tools', **needs)).to include('Clone this')
+      expect(render(app_route: '/game/1#auto', **needs)).to include('Auto Actions')
     end
 
     TEST_CASES = [
@@ -297,6 +298,9 @@ describe 'Assets' do
          'buy_sell_post_conversion',
          ['Merger Round 4.2 (of 2) - Buy/Sell Shares Post Conversion',
           'New York, Susquehanna and Western Railway']]]],
+      ['1817NA',
+       27_066,
+       [[nil, 'endgame', '1817NA: Phase 7 - Operating Round 5.2 (of 2) - Game Over - Bankruptcy']]],
       ['18Chesapeake',
        1905,
        [[151, 'blocking_special_track', ['Lay Track for Columbia - Philadelphia Railroad']]]],
@@ -361,7 +365,7 @@ describe 'Assets' do
          ['1860: Phase 9 - Operating Round 8.4 (Nationalization) - Game Over - Nationalization complete']]]],
     ].freeze
 
-    def render_game_at_action(data, action_count, string)
+    def render_game_at_action(data, action_count, string, suffix = '')
       data['actions'] = data['actions'].take(action_count) if action_count
       data[:loaded] = true
       needs = {
@@ -369,7 +373,7 @@ describe 'Assets' do
         user: data['user'].merge(settings: { consent: true }),
       }
 
-      html = render(app_route: "/game/#{needs[:game_data]['id']}", **needs)
+      html = render(app_route: "/game/#{needs[:game_data]['id']}#{suffix}", **needs)
       strings = Array(string)
       strings.each do |str|
         if str =~ /^!!/
@@ -392,6 +396,34 @@ describe 'Assets' do
         describe "#{game} #{game_id}" do
           it "renders #{step} #{action}" do
             render_game_at_action(data.dup, action, string)
+          end
+        end
+      end
+    end
+
+    AUTO_ACTIONS_TEST_CASES = [
+      ['1889',
+       314,
+       [[7, 'buy_to_float', [
+        'Auto Buy shares till float',
+        'KO',
+       ]]],
+       ['1817',
+        15_528,
+        [[141, 'merger', [
+          'Auto Pass in Mergers',
+          'A&S',
+          'Merger and Conversion Round',
+        ]]]]],
+].freeze
+
+    AUTO_ACTIONS_TEST_CASES.each do |game, game_id, actions|
+      data = JSON.parse(File.read("spec/fixtures/#{game}/#{game_id}.json"))
+      actions.each do |action_config|
+        action, step, string = action_config
+        describe "#{game} #{game_id}" do
+          it "renders auto #{step} #{action}" do
+            render_game_at_action(data.dup, action, string, '#auto')
           end
         end
       end

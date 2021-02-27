@@ -2,10 +2,6 @@
 
 require './spec/spec_helper'
 
-require 'engine'
-require 'engine/corporation'
-require 'engine/share_price'
-
 module Engine
   describe Corporation do
     let(:corporation_1) { Engine::Corporation.new(sym: 'a', name: 'a', tokens: []) }
