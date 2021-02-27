@@ -2099,6 +2099,7 @@ module Engine
 
         LIMIT_TOKENS_AFTER_MERGER = 9
 
+        SWANSEA_HEX = 'D35'
         CARDIFF_HEX = 'F35'
         LONDON_HEX = 'M38'
         ENGLISH_CHANNEL_HEX = 'P43'
@@ -2290,11 +2291,11 @@ module Engine
             return "(#{format_currency(@highland_railway.cash)})"
           end
 
-          if company.id == self.class::COMPANY_MGNR && company.owner.player? && @midland_great_northern_choice
+          if company.id == self.class::COMPANY_MGNR && company.owner&.player? && @midland_great_northern_choice
             return '(Double)'
           end
 
-          if company.id == self.class::COMPANY_OSTH && company.owner.player? && @tax_haven.value.positive?
+          if company.id == self.class::COMPANY_OSTH && company.owner&.player? && @tax_haven.value.positive?
             company.value = @tax_haven.value
             share = @tax_haven.shares.first
             return "(#{share.corporation.name})"
@@ -2565,7 +2566,9 @@ module Engine
         end
 
         def revenue_for(route, stops)
-          raise GameError, 'Route visits same hex twice' if route.hexes.size != route.hexes.uniq.size
+          if route.hexes.size != route.hexes.uniq.size && route.hexes.none? { |h| h.name == self.class::SWANSEA_HEX }
+            raise GameError, 'Route visits same hex twice'
+          end
 
           revenue = if train_type(route.train) == :normal
                       super
