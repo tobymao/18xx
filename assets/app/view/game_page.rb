@@ -235,7 +235,7 @@ module View
         when 'o'
           change_anchor('#tools')
         when 'a'
-          change_anchor('#async')
+          change_anchor('#auto')
         when 'c'
           Native(`document.getElementById('chatbar')`)&.focus()
           event.preventDefault
