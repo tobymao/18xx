@@ -16,7 +16,7 @@ module Engine
                         secrOrange: '#ff7f2a',
                         crBlue: '#5555ff',
                         mrRed: '#ff2a2a',
-                        lyrPurple: '#2d0047',
+                        lyrPurple: '#5a2ca0',
                         nbrBrown: '#a05a2c',
                         swrGray: '#999999',
                         nerGreen: '#aade87',
@@ -543,6 +543,11 @@ module Engine
                 price: 1000,
               },
             ],
+            events: [
+              {
+                'type' => 'highland_railway',
+              },
+            ],
           },
           {
             name: '2P',
@@ -577,7 +582,7 @@ module Engine
 
         COMPANIES = [
           {
-            name: 'Butterley Engineering Company',
+            name: 'BEC',
             sym: 'P1',
             value: 0,
             revenue: 5,
@@ -590,7 +595,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'Middleton Railway',
+            name: 'MtonR',
             sym: 'P2',
             value: 0,
             revenue: 10,
@@ -615,7 +620,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'Shrewsbury and Hereford Railway',
+            name: 'S&HR',
             sym: 'P3',
             value: 0,
             revenue: 0,
@@ -632,7 +637,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'South Devon Railway',
+            name: 'SDR',
             sym: 'P4',
             value: 0,
             revenue: 0,
@@ -649,7 +654,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'London, Chatham and Dover Railway',
+            name: 'LC&DR',
             sym: 'P5',
             value: 0,
             revenue: 10,
@@ -661,11 +666,26 @@ module Engine
                   'token and upgrade the track simultaneously. This counts as the acquiring company’s tile lay '\
                   'action and incurs the usual costs for doing so. Alternatively, it can move an exchange station '\
                   'token to the available station token section on its company charter.',
-            abilities: [],
+            abilities: [
+              {
+                type: 'teleport',
+                owner_type: 'corporation',
+                hexes: ['P43'],
+                tiles: %w[X9 X15],
+              },
+              {
+                type: 'token',
+                owner_type: 'corporation',
+                hexes: ['P43'],
+                price: 0,
+                teleport_price: 0,
+                count: 1,
+              },
+            ],
             color: nil,
           },
           {
-            name: 'Leeds & Selby Railway',
+            name: 'L&SR',
             sym: 'P6',
             value: 0,
             revenue: 10,
@@ -679,7 +699,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'Shrewsbury and Birmingham Railway',
+            name: 'S&BR',
             sym: 'P7',
             value: 0,
             revenue: 10,
@@ -693,7 +713,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'Edinburgh and Glasgow Railway',
+            name: 'E&GR',
             sym: 'P8',
             value: 0,
             revenue: 10,
@@ -707,7 +727,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'Midland and Great Northern Joint Railway',
+            name: 'M&GNR',
             sym: 'P9',
             value: 0,
             revenue: 10,
@@ -719,7 +739,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'Glasgow and South- Western Railway',
+            name: 'G&SWR',
             sym: 'P10',
             value: 0,
             revenue: 10,
@@ -749,7 +769,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'Bristol & Exeter Railway',
+            name: 'B&ER',
             sym: 'P11',
             value: 0,
             revenue: 10,
@@ -775,7 +795,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'Leicester & Swannington Railway',
+            name: 'L&SR',
             sym: 'P12',
             value: 0,
             revenue: 10,
@@ -799,7 +819,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'York, Newcastle and Berwick Railway',
+            name: 'YN&BR',
             sym: 'P13',
             value: 0,
             revenue: 10,
@@ -811,7 +831,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'Kilmarnock and Troon Railway',
+            name: 'K&TR',
             sym: 'P14',
             value: 0,
             revenue: 10,
@@ -823,7 +843,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'Highland Railway',
+            name: 'HR',
             sym: 'P15',
             value: 0,
             revenue: 0,
@@ -836,7 +856,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'Off-Shore Tax Haven',
+            name: 'Tax Haven',
             sym: 'P16',
             value: 0,
             revenue: 0,
@@ -857,7 +877,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'Lancashire Union Railway',
+            name: 'LUR',
             sym: 'P17',
             value: 0,
             revenue: 10,
@@ -869,7 +889,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'Cromford Union and High Peak Railway',
+            name: 'C&HPR',
             sym: 'P18',
             value: 0,
             revenue: 10,
@@ -880,7 +900,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'CONCESSION: London and North West Railway',
+            name: 'CONCESSION: LNWR',
             sym: 'C1',
             value: 100,
             revenue: 10,
@@ -898,7 +918,7 @@ module Engine
             text_color: 'white',
           },
           {
-            name: 'CONCESSION: Great Western Railway',
+            name: 'CONCESSION: GWR',
             sym: 'C2',
             value: 100,
             revenue: 10,
@@ -915,7 +935,7 @@ module Engine
             text_color: 'white',
           },
           {
-            name: 'CONCESSION: London, Brighton and South Coast Railway',
+            name: 'CONCESSION: LBSCR',
             sym: 'C3',
             value: 100,
             revenue: 10,
@@ -933,7 +953,7 @@ module Engine
             text_color: 'white',
           },
           {
-            name: 'CONCESSION: South Eastern & Chatham Railway',
+            name: 'CONCESSION: SECR',
             sym: 'C4',
             value: 100,
             revenue: 10,
@@ -951,7 +971,7 @@ module Engine
             text_color: 'white',
           },
           {
-            name: 'CONCESSION: Caledonian Railway',
+            name: 'CONCESSION: CR',
             sym: 'C5',
             value: 100,
             revenue: 10,
@@ -968,7 +988,7 @@ module Engine
             text_color: 'white',
           },
           {
-            name: 'CONCESSION: Midland Railway',
+            name: 'CONCESSION: MR',
             sym: 'C6',
             value: 100,
             revenue: 10,
@@ -985,7 +1005,7 @@ module Engine
             text_color: 'white',
           },
           {
-            name: 'CONCESSION: Lancashire & Yorkshire',
+            name: 'CONCESSION: LYR',
             sym: 'C7',
             value: 100,
             revenue: 10,
@@ -998,11 +1018,11 @@ module Engine
                 from: 'par',
               },
             ],
-            color: '#2d0047',
+            color: '#5a2ca0',
             text_color: 'white',
           },
           {
-            name: 'CONCESSION: North British Railway',
+            name: 'CONCESSION: NBR',
             sym: 'C8',
             value: 100,
             revenue: 10,
@@ -1019,7 +1039,7 @@ module Engine
             text_color: 'white',
           },
           {
-            name: 'CONCESSION: South Wales Railway',
+            name: 'CONCESSION: SWR',
             sym: 'C9',
             value: 100,
             revenue: 10,
@@ -1036,7 +1056,7 @@ module Engine
             text_color: 'white',
           },
           {
-            name: 'CONCESSION: North Eastern Railway',
+            name: 'CONCESSION: NER',
             sym: 'C10',
             value: 100,
             revenue: 10,
@@ -1731,6 +1751,15 @@ module Engine
             always_market_price: true,
             coordinates: 'M38',
             city: 5,
+            abilities: [
+              {
+                type: 'token',
+                description: 'Token in English Channel for free',
+                hexes: ['P43'],
+                count: 1,
+                price: 0,
+              },
+            ],
             color: '#ff7f2a',
             reservation_color: nil,
           },
@@ -1767,7 +1796,7 @@ module Engine
             float_percent: 20,
             always_market_price: true,
             coordinates: 'G22',
-            color: '#2d0047',
+            color: '#5a2ca0',
             reservation_color: nil,
           },
           {
@@ -2002,6 +2031,8 @@ module Engine
             ['Concessions close', 'All concessions close without compensation, major companies now float at 50%'],
           'full_capitalisation' =>
             ['Full capitalisation', 'Major companies now receives full capitalisation when floated'],
+          'highland_railway' =>
+            ['Highland Railway', 'Highland Railway closes if not acquired by a major company'],
         }.freeze
 
         STATUS_TEXT = Base::STATUS_TEXT.merge(
@@ -2068,6 +2099,7 @@ module Engine
 
         LIMIT_TOKENS_AFTER_MERGER = 9
 
+        SWANSEA_HEX = 'D35'
         CARDIFF_HEX = 'F35'
         LONDON_HEX = 'M38'
         ENGLISH_CHANNEL_HEX = 'P43'
@@ -2076,11 +2108,18 @@ module Engine
                                 'path=a:2,b:_0,lanes:2'
 
         COMPANY_MTONR = 'P2'
+        COMPANY_LCDR = 'P5'
         COMPANY_EGR = 'P8'
+        COMPANY_MGNR = 'P9'
+        COMPANY_MGNR_REVENUE = [0, 0, 0, 20, 20, 40, 40, 60].freeze
         COMPANY_GSWR = 'P10'
         COMPANY_GSWR_DISCOUNT = 40
         COMPANY_BER = 'P11'
         COMPANY_LSR = 'P12'
+        COMPANY_HR = 'P15'
+        COMPANY_OSTH = 'P16'
+        COMPANY_LUR = 'P17'
+        COMPANY_CHPR = 'P18'
 
         MAJOR_TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
 
@@ -2229,9 +2268,10 @@ module Engine
 
         def company_bought(company, entity)
           # On acquired abilities
-          # Will add more here when they are implemented
           on_acquired_train(company, entity) if self.class::PRIVATE_TRAINS.include?(company.id)
           on_aqcuired_remove_revenue(company) if self.class::PRIVATE_REMOVE_REVENUE.include?(company.id)
+          on_aqcuired_highland_railway(company) if self.class::COMPANY_HR == company.id
+          on_aqcuired_midland_great_northern(company) if self.class::COMPANY_MGNR == company.id
         end
 
         def company_status_str(company)
@@ -2247,7 +2287,21 @@ module Engine
             return "Bid box #{index + 1}" if c == company
           end
 
-          ''
+          if company.id == self.class::COMPANY_HR && company.owner&.player? && @highland_railway
+            return "(#{format_currency(@highland_railway.cash)})"
+          end
+
+          if company.id == self.class::COMPANY_MGNR && company.owner&.player? && @midland_great_northern_choice
+            return '(Double)'
+          end
+
+          if company.id == self.class::COMPANY_OSTH && company.owner&.player? && @tax_haven.value.positive?
+            company.value = @tax_haven.value
+            share = @tax_haven.shares.first
+            return "(#{share.corporation.name})"
+          end
+
+          nil
         end
 
         def compute_other_paths(routes, route)
@@ -2274,6 +2328,16 @@ module Engine
           discount_info
         end
 
+        def end_game!
+          company = company_by_id(self.class::COMPANY_OSTH)
+          if company && @tax_haven.value.positive?
+            # Make sure tax havens value is correct
+            company.value = @tax_haven.value
+          end
+
+          super
+        end
+
         def entity_can_use_company?(entity, company)
           entity == company.owner
         end
@@ -2292,6 +2356,16 @@ module Engine
           @corporations.select { |c| !c.floated? && c.type == :major }.each do |corporation|
             corporation.capitalization = :full
           end
+        end
+
+        def event_highland_railway!
+          company = @companies.find { |c| c.id == self.class::COMPANY_HR }
+          return if company.closed? || !@highland_railway
+
+          @log << '-- Event: Highland Railway now closes and its money returned to the bank --'
+          @highland_railway.spend(@highland_railway.cash, @bank)
+          @highland_railway = nil
+          company.close!
         end
 
         def float_corporation(corporation)
@@ -2320,6 +2394,15 @@ module Engine
           bundles_for_corporation(entity, entity)
             .select { |bundle| @share_pool.fit_in_bank?(bundle) }
             .map { |bundle| reduced_bundle_price_for_market_drop(bundle) }
+        end
+
+        def num_certs(entity)
+          certs = super
+
+          # Tax haven does not count towards cert limit
+          company = entity.companies.find { |c| c.id == self.class::COMPANY_OSTH }
+          certs -= 1 if company
+          certs
         end
 
         def tile_lays(entity)
@@ -2396,6 +2479,7 @@ module Engine
             Engine::Step::DiscardTrain,
             G1822::Step::SpecialChoose,
             G1822::Step::SpecialTrack,
+            G1822::Step::SpecialToken,
             G1822::Step::Track,
             G1822::Step::DestinationToken,
             G1822::Step::Token,
@@ -2407,6 +2491,26 @@ module Engine
             Engine::Step::DiscardTrain,
             G1822::Step::IssueShares,
           ], round_num: round_num)
+        end
+
+        def payout_companies
+          # Set the correct revenue of Highland Railway and Midland & Great Northern
+          @companies.each do |c|
+            next unless c.owner
+
+            if c.id == self.class::COMPANY_HR
+              revenue = @phase.name.to_i * 10
+              c.revenue = revenue
+              @bank.spend(revenue, @highland_railway)
+              @log << "#{c.name} collects #{format_currency(revenue)}"
+            end
+
+            if c.id == self.class::COMPANY_MGNR && c.owner.corporation?
+              c.revenue = self.class::COMPANY_MGNR_REVENUE[@phase.name.to_i]
+            end
+          end
+
+          super
         end
 
         def place_home_token(corporation)
@@ -2442,8 +2546,29 @@ module Engine
           bundles_for_corporation(@share_pool, entity).reject { |bundle| entity.cash < bundle.price }
         end
 
+        def reorder_players(_order = nil)
+          current_order = @players.dup.reverse
+          @players.sort_by! do |p|
+            cash = p.cash
+            cash *= 2 if @midland_great_northern_choice == p
+            [cash, current_order.index(p)]
+          end.reverse!
+
+          player_order = @players.map do |p|
+            double = ' doubled' if @midland_great_northern_choice == p
+            "#{p.name} (#{format_currency(p.cash)}#{double})"
+          end.join(', ')
+
+          @log << "-- New player order: #{player_order}"
+
+          # Reset the choice for Midland & Great Northern Joint Railway
+          @midland_great_northern_choice = nil
+        end
+
         def revenue_for(route, stops)
-          raise GameError, 'Route visits same hex twice' if route.hexes.size != route.hexes.uniq.size
+          if route.hexes.size != route.hexes.uniq.size && route.hexes.none? { |h| h.name == self.class::SWANSEA_HEX }
+            raise GameError, 'Route visits same hex twice'
+          end
 
           revenue = if train_type(route.train) == :normal
                       super
@@ -2510,6 +2635,15 @@ module Engine
 
           # Initialize the player depts, if player have to take an emergency loan
           @player_debts = Hash.new { |h, k| h[k] = 0 }
+
+          # Initialize a dummy player for Highland Railway to hold the cash it generates
+          @highland_railway = Engine::Player.new(-1, 'Highland Railway')
+
+          # Initialize a dummy player for Tax haven to hold the share and the cash it generates
+          @tax_haven = Engine::Player.new(-1, 'Tax Haven')
+
+          # Initialize the stock round choice for Midland & Great Northern Joint Railway
+          @midland_great_northern_choice = nil
 
           # Randomize and setup the companies
           setup_companies
@@ -2593,6 +2727,18 @@ module Engine
           return false unless company_acquisition
 
           @phase.name.to_i >= company_acquisition[:phase] && company_acquisition[:acquire].include?(entity.type)
+        end
+
+        def add_exchange_token(entity)
+          ability = entity.all_abilities.find { |a| a.type == :exchange_token }
+          count = ability ? ability.count + 1 : 1
+          new_ability = Ability::Base.new(
+            type: 'exchange_token',
+            description: "Exchange tokens: #{count}",
+            count: count
+          )
+          entity.remove_ability(ability) if ability
+          entity.add_ability(new_ability)
         end
 
         def add_interest_player_loans!
@@ -2699,11 +2845,40 @@ module Engine
           company.id == self.class::COMPANY_LSR
         end
 
-        def company_choices(company)
-          if company.id != self.class::COMPANY_EGR ||
-            (company.id == self.class::COMPANY_EGR && !company.all_abilities.empty?)
-            return {}
+        def company_choices(company, time)
+          case company.id
+          when self.class::COMPANY_CHPR
+            company_choices_chpr(company, time)
+          when self.class::COMPANY_EGR
+            company_choices_egr(company, time)
+          when self.class::COMPANY_LCDR
+            company_choices_lcdr(company, time)
+          when self.class::COMPANY_LUR
+            company_choices_lur(company, time)
+          when self.class::COMPANY_MGNR
+            company_choices_mgnr(company, time)
+          when self.class::COMPANY_OSTH
+            company_choices_osth(company, time)
+          else
+            {}
           end
+        end
+
+        def company_choices_chpr(company, time)
+          return {} if time != :token || !company.owner&.corporation?
+
+          choices = {}
+          exchange_token_count = exchange_tokens(company.owner)
+          choices['exchange'] = 'Move an exchange token to the available section' if exchange_token_count.positive?
+          if !company.owner.tokens_by_type.empty? &&
+            exchange_token_count < self.class::EXCHANGE_TOKENS[company.owner.id]
+            choices['available'] = 'Move an available token to the exchange section'
+          end
+          choices
+        end
+
+        def company_choices_egr(company, time)
+          return {} if !company.all_abilities.empty? || time != :special_choose
 
           choices = {}
           choices['token'] = 'Receive a discount token that can be used to pay the full cost of a single '\
@@ -2713,13 +2888,100 @@ module Engine
           choices
         end
 
-        def company_made_choice(company, choice)
-          if company.id != self.class::COMPANY_EGR ||
-            (company.id == self.class::COMPANY_EGR && !company.all_abilities.empty?)
-            return
-          end
+        def company_choices_lcdr(company, time)
+          return {} if time != :token || !company.owner&.corporation?
 
-          company.desc = company_choices(company)[choice]
+          choices = {}
+          choices['exchange'] = 'Move an exchange station token to the available station token section'
+          choices
+        end
+
+        def company_choices_lur(company, time)
+          return {} if time != :issue || !company.owner&.corporation?
+
+          exclude_minors = bidbox_minors
+          exclude_concessions = bidbox_concessions
+          exclude_privates = bidbox_privates
+
+          minors_choices = company_choices_lur_companies(self.class::COMPANY_MINOR_PREFIX, exclude_minors)
+          concessions_choices = company_choices_lur_companies(self.class::COMPANY_CONCESSION_PREFIX,
+                                                              exclude_concessions)
+          privates_choices = company_choices_lur_companies(self.class::COMPANY_PRIVATE_PREFIX, exclude_privates)
+
+          choices = {}
+          choices.merge!(minors_choices)
+          choices.merge!(concessions_choices)
+          choices.merge!(privates_choices)
+          choices.compact
+        end
+
+        def company_choices_lur_companies(prefix, exclude_companies)
+          choices = {}
+          companies = bank_companies(prefix).reject do |company|
+            exclude_companies.any? { |c| c == company }
+          end
+          companies.each do |company|
+            choices["#{company.id}_top"] = "#{company.id}-Top"
+            choices["#{company.id}_bottom"] = "#{company.id}-Bottom"
+          end
+          choices
+        end
+
+        def company_choices_mgnr(company, time)
+          return {} if @midland_great_northern_choice || !company.owner&.player? || time != :stock_round
+
+          choices = {}
+          choices['double'] = 'Double your actual cash holding at the end of a stock round when '\
+                                'determining player turn order.'
+          choices
+        end
+
+        def company_choices_osth(company, time)
+          return {} if @tax_haven.value.positive? || !company.owner&.player? || time != :stock_round
+
+          choices = {}
+          @corporations.select { |c| c.floated? && c.type == :major }.each do |corporation|
+            choices["#{corporation.id}_ipo"] = "#{corporation.id} IPO" if corporation.num_ipo_shares.positive?
+            if @share_pool.num_shares_of(corporation).positive?
+              choices["#{corporation.id}_market"] = "#{corporation.id} Market"
+            end
+          end
+          choices
+        end
+
+        def company_made_choice(company, choice, time)
+          case company.id
+          when self.class::COMPANY_EGR
+            company_made_choice_egr(company, choice, time)
+          when self.class::COMPANY_MGNR
+            company_made_choice_mgnr(company)
+          when self.class::COMPANY_LCDR
+            company_made_choice_lcdr(company)
+          when self.class::COMPANY_LUR
+            company_made_choice_lur(company, choice)
+          when self.class::COMPANY_CHPR
+            company_made_choice_chpr(company, choice)
+          when self.class::COMPANY_OSTH
+            company_made_choice_osth(company, choice)
+          end
+        end
+
+        def company_made_choice_chpr(company, choice)
+          if choice == 'exchange'
+            move_exchange_token(company.owner)
+            @log << "#{company.owner.name} moves an exchange token into to the available station token section"
+          else
+            corporation = company.owner
+            corporation.find_token_by_type.destroy!
+            add_exchange_token(corporation)
+            @log << "#{company.owner.name} moves an available token into to the exchange station token section"
+          end
+          @log << "#{company.name} closes"
+          company.close!
+        end
+
+        def company_made_choice_egr(company, choice, time)
+          company.desc = company_choices(company, time)[choice]
           if choice == 'token'
             # Give the company a free tile lay.
             ability = Engine::Ability::TileLay.new(type: 'tile_lay', tiles: [], hexes: [], owner_type: 'corporation',
@@ -2732,6 +2994,71 @@ module Engine
               company.add_ability(ability)
             end
           end
+        end
+
+        def company_made_choice_lcdr(company)
+          move_exchange_token(company.owner)
+          @log << "#{company.owner.name} moves an exchange token into to the available station token section"
+          @log << "#{company.name} closes"
+          company.close!
+        end
+
+        def company_made_choice_lur(company, choice)
+          choice_array = choice.split('_')
+          selected_company = company_by_id(choice_array[0])
+          top = choice_array[1] == 'top'
+
+          @companies.delete(selected_company)
+          if top
+            last_bid_box_company = if selected_company.id[0] == self.class::COMPANY_MINOR_PREFIX
+                                     bidbox_minors&.last
+                                   elsif selected_company.id[0] == self.class::COMPANY_CONCESSION_PREFIX
+                                     bidbox_concessions&.last
+                                   else
+                                     bidbox_privates&.last
+                                   end
+            index = @companies.index { |c| c == last_bid_box_company }
+            @companies.insert(index + 1, selected_company)
+          else
+            @companies << selected_company
+          end
+
+          @log << "#{company.owner.name} moves #{selected_company.name} to the #{top ? 'top' : 'bottom'}"
+          @log << "#{company.name} closes"
+          company.close!
+        end
+
+        def company_made_choice_mgnr(company)
+          @midland_great_northern_choice = company.owner
+          @log << "#{company.owner.name} chooses to double actual cash holding at the end of a stock round when "\
+                    'determining player turn order in the next stock round.'
+        end
+
+        def company_made_choice_osth(company, choice)
+          spender = company.owner
+          bundle = company_tax_haven_bundle(choice)
+          corporation = bundle.corporation
+          @share_pool.transfer_shares(bundle, @tax_haven, spender: spender, receiver: corporation,
+                                                          price: bundle.price, allow_president_change: false)
+          @log << "#{spender.name} spends #{format_currency(bundle.price)} and tax haven gains a share of "\
+                  "#{corporation.name}."
+        end
+
+        def company_tax_haven_bundle(choice)
+          choice_array = choice.split('_')
+          corporation = corporation_by_id(choice_array[0])
+          share = choice_array[1] == 'ipo' ? corporation.ipo_shares.first : @share_pool.shares_of(corporation).first
+          ShareBundle.new(share)
+        end
+
+        def company_tax_haven_payout(entity, per_share)
+          return unless @tax_haven.value.positive?
+
+          amount = @tax_haven.num_shares_of(entity) * per_share
+          return unless amount.positive?
+
+          @bank.spend(amount, @tax_haven)
+          @log << "#{entity.name} pays out #{format_currency(amount)} to tax haven"
         end
 
         def destination_bonus(routes)
@@ -2789,6 +3116,19 @@ module Engine
         def move_exchange_token(entity)
           remove_exchange_token(entity)
           entity.tokens << Engine::Token.new(entity, price: self.class::TOKEN_PRICE)
+        end
+
+        def on_aqcuired_highland_railway(company)
+          @log << "#{company.owner.name} gains #{format_currency(@highland_railway.cash)}"
+          @highland_railway.spend(@highland_railway.cash, company.owner)
+          @highland_railway = nil
+
+          @log << "#{company.name} closes"
+          company.close!
+        end
+
+        def on_aqcuired_midland_great_northern(company)
+          company.revenue = self.class::COMPANY_MGNR_REVENUE[@phase.name.to_i]
         end
 
         def on_aqcuired_remove_revenue(company)
@@ -2857,6 +3197,16 @@ module Engine
           bidbox_privates.each do |company|
             company.owner = @bank
           end
+
+          # Reset the choice for Midland & Great Northern Joint Railway
+          @midland_great_northern_choice = nil
+        end
+
+        def stock_round_finished
+          # Increase player loans with 50% interest
+          add_interest_player_loans!
+
+          # TODO: 1822 Restock the minor bid boxes
         end
 
         def remove_exchange_token(entity)
@@ -2954,9 +3304,9 @@ module Engine
         def setup_destinations
           self.class::DESTINATIONS.each do |corp, destination|
             description = if corp == 'LNWR'
-                            "Gets destination token at #{destination} when floated."
+                            "Gets destination token at #{destination} when floated"
                           else
-                            "Connect to #{destination} for your destination token."
+                            "Connect to #{destination} for your destination token"
                           end
             ability = Ability::Base.new(
               type: 'destination',
