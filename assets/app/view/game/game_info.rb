@@ -346,41 +346,41 @@ module View
       end
 
       def process_bar
-        style_props = {
-          style: {
-            padding: '5px',
-            backgroundColor: color_for(:bg2),
-            color: color_for(:font2),
-            height: '75px',
-            border: 'solid 1px rgba(0,0,0,0.2)',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-          },
-        }
-
-        sr_props = {
-          style: {
-            padding: '5px',
-            backgroundColor: '#aaba61',
-            color: color_for(:font2),
-            height: '75px',
-            border: 'solid 1px rgba(0,0,0,0.2)',
-            display: 'flex',
-            alignItems: 'flex-end',
-          },
-        }
-
         export_props = {
           style: {
             padding: '5px 1px',
-            backgroundColor: '#728228',
+            backgroundColor: color_for(:yellow),
             color: color_for(:font2),
-            height: '75px',
+            height: '50px',
             border: 'solid 1px rgba(0,0,0,0.2)',
             display: 'flex',
             justifyContent: 'center',
             flexDirection: 'column',
+            boxSizing: 'border-box',
+          },
+        }
+
+        # current_round_or_props = {
+        #   style: {
+        #     padding: '5px',
+        #     backgroundColor: color_for(:bg2),
+        #     color: color_for(:font2),
+        #     height: '50px',
+        #     border: 'solid 1px rgba(0,0,0,0.2)',
+
+        #     display: 'flex',
+        #     flexDirection: 'column',
+        #     justifyContent: 'space-between',
+        #   },
+        # }
+
+        current_round_props = {
+          style: {
+            backgroundImage: 'linear-gradient(-45deg, ' \
+            "#{color_for(:brown)} 25%, transparent 25%, transparent 50%, #{color_for(:brown)} 50%," \
+            "#{color_for(:brown)} 75%, transparent 75%, transparent)",
+            backgroundSize: '16px 16px',
+            fontWeight: 'bold',
           },
         }
 
@@ -409,37 +409,82 @@ module View
         ])
 
         [h(:div, { style: { display: 'flex' } }, [
-          h(:div, sr_props, 'PRE'),
-          h(:div, sr_props, 'SR'),
-          h(:div, style_props, [h('div.center', '40'), round_token, h(:div, 'OR 1.1')]),
+          h(:div, cell_props(:SR), 'PRE'),
+          h(:div, cell_props(:SR), 'SR'),
+          h(:div, cell_props(:OR), [h('div.center', '40'), h(:div, 'OR 1.1')]),
           h(:div, export_props, [train_export]),
-          h(:div, sr_props, 'SR'),
-          h(:div, style_props, [h('div.center', '45'), h(:div, 'OR 2.1')]),
+          h(:div, cell_props(:SR, true), 'SR'),
+          h(:div, cell_props(:OR), [h('div.center', '45'), h(:div, 'OR 2.1')]),
           h(:div, export_props, [train_export]),
-          h(:div, sr_props, 'SR'),
-          h(:div, style_props, [h('div.center', '50'), h(:div, 'OR 3.1')]),
+          h(:div, cell_props(:SR), 'SR'),
+          h(:div, cell_props(:OR), [h('div.center', '50'), h(:div, 'OR 3.1')]),
           h(:div, export_props, [train_export]),
-          h(:div, sr_props, 'SR'),
-          h(:div, style_props, [h('div.center', '55'), h(:div, 'OR 4.1')]),
+          h(:div, cell_props(:SR), 'SR'),
+          h(:div, cell_props(:OR), [h('div.center', '55'), h(:div, 'OR 4.1')]),
           h(:div, export_props, [train_export]),
-          h(:div, sr_props, 'SR'),
-          h(:div, style_props, [h('div.center', '60'), h(:div, 'OR 5.1')]),
-          h(:div, style_props, [h('div.center', '65'), h(:div, 'OR 5.2')]),
+          h(:div, cell_props(:SR), 'SR'),
+          h(:div, cell_props(:OR), [h('div.center', '60'), h(:div, 'OR 5.1')]),
+          h(:div, cell_props(:OR), [h('div.center', '65'), h(:div, 'OR 5.2')]),
           h(:div, export_props, [train_export]),
-          h(:div, sr_props, 'SR'),
-          h(:div, style_props, [h('div.center', '70'), h(:div, 'OR 6.2')]),
-          h(:div, style_props, [h('div.center', '75'), h(:div, 'OR 6.2')]),
+          h(:div, cell_props(:SR), 'SR'),
+          h(:div, cell_props(:OR), [h('div.center', '70'), h(:div, 'OR 6.2')]),
+          h(:div, cell_props(:OR), [h('div.center', '75'), h(:div, 'OR 6.2')]),
           h(:div, export_props, [train_export]),
-          h(:div, sr_props, 'SR'),
-          h(:div, style_props, [h('div.center', '80'), h(:div, 'OR 7.1')]),
-          h(:div, style_props, [h('div.center', '90'), h(:div, 'OR 7.2')]),
+          h(:div, cell_props(:SR), 'SR'),
+          h(:div, cell_props(:OR), [h('div.center', '80'), h(:div, 'OR 7.1')]),
+          h(:div, cell_props(:OR), [h('div.center', '90'), h(:div, 'OR 7.2')]),
           h(:div, export_props, [train_export]),
-          h(:div, sr_props, 'SR'),
-          h(:div, style_props, [h('div.center', '100'), h(:div, 'OR 8.1')]),
-          h(:div, style_props, [h('div.center', '110'), h(:div, 'OR 8.2')]),
-          h(:div, style_props, [h('div.center', '120'), h(:div, 'OR 8.3')]),
-          h(:div, style_props, [h('div.center', 'END')]),
+          h(:div, cell_props(:SR), 'SR'),
+          h(:div, cell_props(:OR), [h('div.center', '100'), h(:div, 'OR 8.1')]),
+          h(:div, cell_props(:OR), [h('div.center', '110'), h(:div, 'OR 8.2')]),
+          h(:div, cell_props(:OR), [h('div.center', '120'), h(:div, 'OR 8.3')]),
+          h(:div, cell_props(:OR), [h('div.center', 'END')]),
         ])]
+      end
+
+      def cell_props(type, active)
+        style_props = {
+          style: {
+            padding: '5px',
+            backgroundColor: color_for(:bg2),
+            color: color_for(:font2),
+            height: '50px',
+            border: 'solid 1px rgba(0,0,0,0.2)',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            boxSizing: 'border-box',
+          },
+        }
+
+        sr_props = {
+          style: {
+            padding: '5px',
+            backgroundColor: color_for(:green),
+            color: color_for(:font2),
+            height: '50px',
+            border: 'solid 1px rgba(0,0,0,0.2)',
+            display: 'flex',
+            alignItems: 'flex-end',
+            boxSizing: 'border-box',
+          },
+        }
+
+        current_round_style_props = {
+          backgroundImage: 'linear-gradient(-45deg, ' \
+          "#{color_for(:brown)} 25%, transparent 25%, transparent 50%, #{color_for(:brown)} 50%," \
+          "#{color_for(:brown)} 75%, transparent 75%, transparent)",
+          backgroundSize: '16px 16px',
+          fontWeight: 'bold',
+          border: "3px solid #{color_for(:brown)}",
+        }
+
+        props = sr_props if type == :SR
+        props = style_props if type == :OR
+
+        props[:style] = props[:style].merge(current_round_style_props) if active
+
+        props
       end
     end
   end
