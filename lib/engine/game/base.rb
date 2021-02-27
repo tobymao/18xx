@@ -887,6 +887,7 @@ module Engine
 
         @finished = true
         store_player_info
+        @round_counter += 1
         scores = result.map { |name, value| "#{name} (#{format_currency(value)})" }
         @log << "-- Game over: #{scores.join(', ')} --"
       end

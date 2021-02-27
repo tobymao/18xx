@@ -346,20 +346,6 @@ module View
       end
 
       def process_bar
-        export_props = {
-          style: {
-            padding: '5px 1px',
-            backgroundColor: color_for(:yellow),
-            color: color_for(:font2),
-            height: '50px',
-            border: 'solid 1px rgba(0,0,0,0.2)',
-            display: 'flex',
-            justifyContent: 'center',
-            flexDirection: 'column',
-            boxSizing: 'border-box',
-          },
-        }
-
         train_export = h(:div, [
           h(:img, {
               attrs: {
@@ -369,69 +355,38 @@ module View
             }),
         ])
 
-        children = @game.process_information.map do |item|
-          h(:div, cell_props(item[:type]), [h('div.center', item[:value]), h(:div, "#{item[:type]} #{item[:name]}")])
+        children = @game.process_information.map.with_index do |item, index|
+          cells = []
+          # the space is nut just a space but a &nbsp in unicode;
+          cells << h('div.game_process_cell', cell_props(item[:type], @game.round_counter == index),
+                     [h('div.center', item[:value] || ' '), h('div.nowrap', "#{item[:type]} #{item[:name]}")])
+          cells << h('div.game_process_cell', cell_props(:Export), [train_export]) if item[:exportAfter]
+          cells
         end
-        [h(:div, { style: { display: 'flex' } }, children)]
-        # [h(:div, { style: { display: 'flex' } }, [
-        #   h(:div, cell_props(:SR), 'PRE'),
-        #   h(:div, cell_props(:SR), 'SR'),
-        #   h(:div, cell_props(:OR), [h('div.center', '40'), h(:div, 'OR 1.1')]),
-        #   h(:div, export_props, [train_export]),
-        #   h(:div, cell_props(:SR, true), 'SR'),
-        #   h(:div, cell_props(:OR), [h('div.center', '45'), h(:div, 'OR 2.1')]),
-        #   h(:div, export_props, [train_export]),
-        #   h(:div, cell_props(:SR), 'SR'),
-        #   h(:div, cell_props(:OR), [h('div.center', '50'), h(:div, 'OR 3.1')]),
-        #   h(:div, export_props, [train_export]),
-        #   h(:div, cell_props(:SR), 'SR'),
-        #   h(:div, cell_props(:OR), [h('div.center', '55'), h(:div, 'OR 4.1')]),
-        #   h(:div, export_props, [train_export]),
-        #   h(:div, cell_props(:SR), 'SR'),
-        #   h(:div, cell_props(:OR), [h('div.center', '60'), h(:div, 'OR 5.1')]),
-        #   h(:div, cell_props(:OR), [h('div.center', '65'), h(:div, 'OR 5.2')]),
-        #   h(:div, export_props, [train_export]),
-        #   h(:div, cell_props(:SR), 'SR'),
-        #   h(:div, cell_props(:OR), [h('div.center', '70'), h(:div, 'OR 6.2')]),
-        #   h(:div, cell_props(:OR), [h('div.center', '75'), h(:div, 'OR 6.2')]),
-        #   h(:div, export_props, [train_export]),
-        #   h(:div, cell_props(:SR), 'SR'),
-        #   h(:div, cell_props(:OR), [h('div.center', '80'), h(:div, 'OR 7.1')]),
-        #   h(:div, cell_props(:OR), [h('div.center', '90'), h(:div, 'OR 7.2')]),
-        #   h(:div, export_props, [train_export]),
-        #   h(:div, cell_props(:SR), 'SR'),
-        #   h(:div, cell_props(:OR), [h('div.center', '100'), h(:div, 'OR 8.1')]),
-        #   h(:div, cell_props(:OR), [h('div.center', '110'), h(:div, 'OR 8.2')]),
-        #   h(:div, cell_props(:OR), [h('div.center', '120'), h(:div, 'OR 8.3')]),
-        #   h(:div, cell_props(:OR), [h('div.center', 'END')]),
-        # ])]
+        [h(:h3, 'Game Process'), h(:div, { style: { display: 'flex', overflowX: 'auto' } }, children.flatten)]
       end
 
       def cell_props(type, active)
         style_props = {
           style: {
-            padding: '5px',
             backgroundColor: color_for(:bg2),
             color: color_for(:font2),
-            height: '50px',
-            border: 'solid 1px rgba(0,0,0,0.2)',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-            boxSizing: 'border-box',
           },
         }
 
         sr_props = {
           style: {
-            padding: '5px',
             backgroundColor: color_for(:green),
             color: color_for(:font2),
-            height: '50px',
-            border: 'solid 1px rgba(0,0,0,0.2)',
-            display: 'flex',
-            alignItems: 'flex-end',
-            boxSizing: 'border-box',
+          },
+        }
+
+        export_props = {
+          style: {
+            padding: '5px 1px',
+            backgroundColor: color_for(:yellow),
+            color: color_for(:font2),
+            justifyContent: 'center',
           },
         }
 
@@ -445,7 +400,8 @@ module View
         }
 
         props = sr_props if type == :SR || type == :PRE
-        props = style_props if type == :OR
+        props = style_props if type == :OR || type == :End
+        props = export_props if type == :Export
 
         props[:style] = props[:style].merge(current_round_style_props) if active
 
