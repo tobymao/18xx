@@ -9,11 +9,11 @@ module Engine
         class Token < Engine::Step::Token
           def actions(entity)
             actions = super.dup
-            actions << 'ability_choose' unless ability_choices(entity).empty?
+            actions << 'choose_ability' unless choices_ability(entity).empty?
             actions
           end
 
-          def ability_choices(entity)
+          def choices_ability(entity)
             return {} unless entity.company?
 
             @game.company_choices(entity, :token)
@@ -29,7 +29,7 @@ module Engine
             super
           end
 
-          def process_ability_choose(action)
+          def process_choose_ability(action)
             @game.company_made_choice(action.entity, action.choice, :token)
           end
 

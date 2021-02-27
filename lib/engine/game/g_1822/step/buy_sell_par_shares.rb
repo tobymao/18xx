@@ -13,7 +13,7 @@ module Engine
           attr_accessor :bidders, :bid_actions
 
           def actions(entity)
-            return ['ability_choose'] unless ability_choices(entity).empty?
+            return ['choose_ability'] unless choices_ability(entity).empty?
             return [] unless entity == current_entity
             return ['sell_shares'] if must_sell?(entity)
 
@@ -29,7 +29,7 @@ module Engine
             actions
           end
 
-          def ability_choices(entity)
+          def choices_ability(entity)
             return {} unless entity.company?
 
             choices = @game.company_choices(entity, :stock_round)
@@ -121,7 +121,7 @@ module Engine
             pass!
           end
 
-          def process_ability_choose(action)
+          def process_choose_ability(action)
             unless action.entity.id == @game.class::COMPANY_OSTH
               return @game.company_made_choice(action.entity, action.choice, :stock_round)
             end

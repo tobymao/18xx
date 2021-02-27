@@ -4,7 +4,7 @@ require_relative 'choose'
 
 module Engine
   module Action
-    class AbilityChoose < Choose
+    class ChooseAbility < Choose
     end
   end
 end
