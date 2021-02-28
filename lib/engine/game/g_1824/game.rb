@@ -1289,6 +1289,7 @@ module Engine
           end
 
           float_corporation(regional) if regional.floated?
+          regional
         end
 
         def float_corporation(corporation)

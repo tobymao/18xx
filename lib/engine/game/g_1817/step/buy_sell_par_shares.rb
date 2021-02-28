@@ -190,8 +190,7 @@ module Engine
             @round.players_sold[entity][corporation] = :short
             @game.short(entity, corporation)
 
-            @round.last_to_act = entity
-            @current_actions << action
+            track_action(action, corporation)
           end
 
           def process_bid(action)
@@ -248,7 +247,7 @@ module Engine
               @game.unshort(entity, bundle.shares[0]) if unshort
             else
               buy_shares(entity, bundle)
-              @round.last_to_act = action.entity.player
+              track_action(action, corporation, false)
               @corporate_action = action
             end
           end
@@ -322,7 +321,7 @@ module Engine
             end
 
             @corporate_action = action
-            @round.last_to_act = action.entity.player
+            track_action(action, action.entity, false)
             @game.take_loan(action.entity, action.loan)
             try_buy_tokens(action.entity)
           end

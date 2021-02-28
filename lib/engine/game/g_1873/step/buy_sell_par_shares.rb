@@ -81,8 +81,7 @@ module Engine
             corporation = action.bundle.corporation
             buy_shares(action.entity, action.bundle, swap: action.swap,
                                                      allow_president_change: @game.pres_change_ok?(corporation))
-            @round.last_to_act = action.entity
-            @current_actions << action
+            track_action(action, corporation)
           end
 
           def process_par(action)
@@ -97,8 +96,7 @@ module Engine
 
             form_public_mine(entity, corporation)
 
-            @round.last_to_act = entity
-            @current_actions << action
+            track_action(action, corporation)
           end
 
           def form_public_mine(entity, corporation)
