@@ -2675,6 +2675,30 @@ module Engine
           ])
         end
 
+        def timeline
+          timeline = []
+
+          bid_minors = bidbox_minors
+          minors = bank_companies(self.class::COMPANY_MINOR_PREFIX).map do |company|
+            "#{company.id}#{'*' if bid_minors.any? { |c| c == company }}"
+          end
+          timeline << "Minors: #{minors.join(', ')}" unless minors.empty?
+
+          bid_concessions = bidbox_concessions
+          concessions = bank_companies(self.class::COMPANY_CONCESSION_PREFIX).map do |company|
+            "#{company.name}#{'*' if bid_concessions.any? { |c| c == company }}"
+          end
+          timeline << "Concessions: #{concessions.join(', ')}" unless concessions.empty?
+
+          bid_privates = bidbox_privates
+          privates = bank_companies(self.class::COMPANY_PRIVATE_PREFIX).map do |company|
+            "#{company.id}-#{company.name}#{'*' if bid_privates.any? { |c| c == company }}"
+          end
+          timeline << "Privates: #{privates.join(', ')}" unless privates.empty?
+
+          timeline
+        end
+
         def unowned_purchasable_companies(_entity)
           minors = bank_companies(self.class::COMPANY_MINOR_PREFIX)
           concessions = bank_companies(self.class::COMPANY_CONCESSION_PREFIX)
