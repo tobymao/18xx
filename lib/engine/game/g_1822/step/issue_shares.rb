@@ -37,6 +37,13 @@ module Engine
             @game.sell_shares_and_change_price(action.bundle)
             pass!
           end
+
+          def skip!
+            if !@acted && current_entity && current_entity.corporation? && current_entity.type == :major
+              log_skip(current_entity)
+            end
+            pass!
+          end
         end
       end
     end

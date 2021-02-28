@@ -2188,6 +2188,10 @@ module Engine
           corporations.reject { |c| c.type == :minor }.sort_by(&:name)
         end
 
+        def buying_power(entity, **)
+          entity.cash
+        end
+
         def can_hold_above_limit?(_entity)
           true
         end
@@ -3220,7 +3224,7 @@ module Engine
           player.cash += loan
 
           # Add interest to the loan, must atleast pay 150% of the loaned value
-          @player_debts[player] += player_loan_interest(loan)
+          @player_debts[player] += loan + player_loan_interest(loan)
         end
 
         def train_type(train)
