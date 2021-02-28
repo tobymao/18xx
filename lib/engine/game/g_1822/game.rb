@@ -2122,6 +2122,61 @@ module Engine
         COMPANY_LUR = 'P17'
         COMPANY_CHPR = 'P18'
 
+        COMPANY_SHORT_NAMES = {
+          'P1' => 'P1-BEC',
+          'P2' => 'P2-MtonR',
+          'P3' => 'P3-S&HR',
+          'P4' => 'P4-SDR',
+          'P5' => 'P5-LC&DR',
+          'P6' => 'P6-L&SR',
+          'P7' => 'P7-S&BR',
+          'P8' => 'P8-E&GR',
+          'P9' => 'P9-M&GNR',
+          'P10' => 'P10-G&SWR',
+          'P11' => 'P11-B&ER',
+          'P12' => 'P12-L&SR',
+          'P13' => 'P13-YN&BR',
+          'P14' => 'P14-K&TR',
+          'P15' => 'P15-HR',
+          'P16' => 'P16-Tax Haven',
+          'P17' => 'P17-LUR',
+          'P18' => 'P18-C&HPR',
+          'C1' => 'LNWR',
+          'C2' => 'GWR',
+          'C3' => 'LBSCR',
+          'C4' => 'SECR',
+          'C5' => 'CR',
+          'C6' => 'MR',
+          'C7' => 'LYR',
+          'C8' => 'NBR',
+          'C9' => 'SWR',
+          'C10' => 'NER',
+          'M1' => '1',
+          'M2' => '2',
+          'M3' => '3',
+          'M4' => '4',
+          'M5' => '5',
+          'M6' => '6',
+          'M7' => '7',
+          'M8' => '8',
+          'M9' => '9',
+          'M10' => '10',
+          'M11' => '11',
+          'M12' => '12',
+          'M13' => '13',
+          'M14' => '14',
+          'M15' => '15',
+          'M16' => '16',
+          'M17' => '17',
+          'M18' => '18',
+          'M19' => '19',
+          'M20' => '20',
+          'M21' => '21',
+          'M22' => '22',
+          'M23' => '23',
+          'M24' => '24',
+        }.freeze
+
         MAJOR_TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
 
         MERTHYR_TYDFIL_PONTYPOOL_HEX = 'F33'
@@ -2678,25 +2733,22 @@ module Engine
         def timeline
           timeline = []
 
-          bid_minors = bidbox_minors
-          minors = bank_companies(self.class::COMPANY_MINOR_PREFIX).map do |company|
-            "#{company.id}#{'*' if bid_minors.any? { |c| c == company }}"
-          end
+          minors = timeline_companies(self.class::COMPANY_MINOR_PREFIX, bidbox_minors)
           timeline << "Minors: #{minors.join(', ')}" unless minors.empty?
 
-          bid_concessions = bidbox_concessions
-          concessions = bank_companies(self.class::COMPANY_CONCESSION_PREFIX).map do |company|
-            "#{company.name}#{'*' if bid_concessions.any? { |c| c == company }}"
-          end
+          concessions = timeline_companies(self.class::COMPANY_CONCESSION_PREFIX, bidbox_concessions)
           timeline << "Concessions: #{concessions.join(', ')}" unless concessions.empty?
 
-          bid_privates = bidbox_privates
-          privates = bank_companies(self.class::COMPANY_PRIVATE_PREFIX).map do |company|
-            "#{company.id}-#{company.name}#{'*' if bid_privates.any? { |c| c == company }}"
-          end
+          privates = timeline_companies(self.class::COMPANY_PRIVATE_PREFIX, bidbox_privates)
           timeline << "Privates: #{privates.join(', ')}" unless privates.empty?
 
           timeline
+        end
+
+        def timeline_companies(prefix, bidbox_companies)
+          bank_companies(prefix).map do |company|
+            "#{self.class::COMPANY_SHORT_NAMES[company.id]}#{'*' if bidbox_companies.any? { |c| c == company }}"
+          end
         end
 
         def unowned_purchasable_companies(_entity)
