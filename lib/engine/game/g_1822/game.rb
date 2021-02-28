@@ -3104,6 +3104,8 @@ module Engine
         end
 
         def exchange_tokens(entity)
+          return 0 unless entity.corporation?
+
           ability = entity.all_abilities.find { |a| a.type == :exchange_token }
           return 0 unless ability
 
