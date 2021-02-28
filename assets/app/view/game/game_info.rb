@@ -358,26 +358,38 @@ module View
         children = @game.process_information.map.with_index do |item, index|
           cells = []
           # the space is nut just a space but a &nbsp in unicode;
-          cells << h('div.game_process_cell', cell_props(item[:type], @game.round_counter == index),
+          cells << h(:div, cell_props(item[:type], @game.round_counter == index),
                      [h('div.center', item[:value] || ' '), h('div.nowrap', "#{item[:type]} #{item[:name]}")])
-          cells << h('div.game_process_cell', cell_props(:Export), [train_export]) if item[:exportAfter]
+          cells << h(:div, cell_props(:Export), [train_export]) if item[:exportAfter]
           cells
         end
         [h(:h3, 'Game Process'), h(:div, { style: { display: 'flex', overflowX: 'auto' } }, children.flatten)]
       end
 
       def cell_props(type, active)
-        style_props = {
+        base_style = {
+          height: '55px',
+          border: 'solid 1px rgba(0,0,0,0.2)',
+          display: 'flex',
+          flexDirection: 'column',
+          boxSizing: 'border-box',
+        }
+
+        default_props = {
           style: {
+            padding: '5px',
             backgroundColor: color_for(:bg2),
             color: color_for(:font2),
+            justifyContent: 'space-between',
           },
         }
 
         sr_props = {
           style: {
+            padding: '5px',
             backgroundColor: color_for(:green),
-            color: color_for(:font2),
+            color: contrast_on(color_for(:green)),
+            justifyContent: 'space-between',
           },
         }
 
@@ -385,25 +397,24 @@ module View
           style: {
             padding: '5px 1px',
             backgroundColor: color_for(:yellow),
-            color: color_for(:font2),
+            color: contrast_on(color_for(:yellow)),
             justifyContent: 'center',
           },
         }
 
-        current_round_style_props = {
-          backgroundImage: 'linear-gradient(-45deg, ' \
-          "#{color_for(:brown)} 25%, transparent 25%, transparent 50%, #{color_for(:brown)} 50%," \
-          "#{color_for(:brown)} 75%, transparent 75%, transparent)",
-          backgroundSize: '16px 16px',
+        current_round_style = {
           fontWeight: 'bold',
-          border: "3px solid #{color_for(:brown)}",
+          border: "4px solid #{color_for(:red)}",
         }
 
-        props = sr_props if type == :SR || type == :PRE
-        props = style_props if type == :OR || type == :End
-        props = export_props if type == :Export
+        props = case type
+                when :SR, :PRE then sr_props
+                when :Export then export_props
+                else default_props
+                end
 
-        props[:style] = props[:style].merge(current_round_style_props) if active
+        props[:style] = props[:style].merge(base_style)
+        props[:style] = props[:style].merge(current_round_style) if active
 
         props
       end
