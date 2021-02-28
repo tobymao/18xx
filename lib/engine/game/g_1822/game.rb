@@ -2019,6 +2019,7 @@ module Engine
         SELL_MOVEMENT = :down_share
 
         HOME_TOKEN_TIMING = :operate
+        MUST_BID_INCREMENT_MULTIPLE = true
         MUST_BUY_TRAIN = :always
         NEXT_SR_PLAYER_ORDER = :most_cash
 
@@ -3237,7 +3238,7 @@ module Engine
           return unless @london_extra_city_index
 
           extra_city = hex.tile.cities[@london_extra_city_index]
-          return unless extra_city.tokens.one?
+          return unless extra_city.tokens.size == 1
 
           extra_city.tokens[extra_city.normal_slots] = nil
         end
