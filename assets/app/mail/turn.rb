@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_tree 'engine'
 require_relative '../view/game/game_log'
 require_relative '../view/game/players'
 require_relative '../view/game/spreadsheet'

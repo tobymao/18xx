@@ -29,10 +29,11 @@ require_relative '../tile'
 require_relative '../train'
 require_relative '../player_info'
 require_relative '../game_log'
+require_relative 'meta'
 
 module Engine
   module Game
-    def self.load(data, at_action: nil, actions: nil, pin: nil, optional_rules: nil, **kwargs)
+    def self.load(data, at_action: nil, actions: nil, pin: nil, optional_rules: nil, user: nil, **kwargs)
       case data
       when String
         parsed_data = JSON.parse(File.exist?(data) ? File.read(data) : data)
@@ -41,6 +42,7 @@ module Engine
                     actions: actions,
                     pin: pin,
                     optional_rules: optional_rules,
+                    user: user,
                     **kwargs)
       when Hash
         title = data['title']
@@ -55,6 +57,7 @@ module Engine
                     actions: actions,
                     pin: pin,
                     optional_rules: optional_rules,
+                    user: user,
                     **kwargs)
       when ::Game
         title = data.title
@@ -67,28 +70,20 @@ module Engine
 
       actions = actions.take(at_action) if at_action
 
-      Engine::GAMES_BY_TITLE[title].new(
-        names, id: id, actions: actions, pin: pin, optional_rules: optional_rules, **kwargs
+      Engine.game_by_title(title).new(
+        names, id: id, actions: actions, pin: pin, optional_rules: optional_rules, user: user, **kwargs
       )
     end
 
     class Base
+      include Game::Meta
+
       attr_reader :raw_actions, :actions, :bank, :cert_limit, :cities, :companies, :corporations,
                   :depot, :finished, :graph, :hexes, :id, :loading, :loans, :log, :minors,
                   :phase, :players, :operating_rounds, :round, :share_pool, :stock_market, :tile_groups,
                   :tiles, :turn, :total_loans, :undo_possible, :redo_possible, :round_history, :all_tiles,
                   :optional_rules, :exception, :last_processed_action, :broken_action,
-                  :turn_start_action_id, :last_turn_start_action_id
-
-      DEV_STAGES = %i[production beta alpha prealpha].freeze
-      DEV_STAGE = :prealpha
-
-      GAME_LOCATION = nil
-      GAME_RULES_URL = nil
-      GAME_DESIGNER = nil
-      GAME_PUBLISHER = nil
-      GAME_IMPLEMENTER = nil
-      GAME_INFO_URL = nil
+                  :turn_start_action_id, :last_turn_start_action_id, :programmed_actions
 
       # Game end check is described as a dictionary
       # with reason => after
@@ -106,8 +101,6 @@ module Engine
       #                         end after the next complete OR set
       GAME_END_CHECK = { bankrupt: :immediate, bank: :full_or }.freeze
 
-      OPTIONAL_RULES = [].freeze
-
       BANKRUPTCY_ALLOWED = true
 
       BANK_CASH = 12_000
@@ -123,14 +116,6 @@ module Engine
       AXES = nil
 
       TRAINS = [].freeze
-
-      CERT_LIMIT = {
-        2 => 28,
-        3 => 20,
-        4 => 16,
-        5 => 13,
-        6 => 11,
-      }.freeze
 
       CERT_LIMIT_TYPES = %i[multiple_buy unlimited no_cert_limit].freeze
       # Does the cert limit decrease when a player becomes bankrupt?
@@ -202,6 +187,8 @@ module Engine
       COMPANIES = [].freeze
 
       CORPORATIONS = [].freeze
+
+      MINORS = [].freeze
 
       PHASES = [].freeze
 
@@ -325,15 +312,6 @@ module Engine
       # use to modify tiles based on optional rules
       def optional_tiles; end
 
-      def self.title
-        name.split('::').last.slice(1..-1)
-      end
-
-      def self.<=>(other)
-        [DEV_STAGES.index(self::DEV_STAGE), title.sub(/18\s+/, '18').downcase] <=>
-          [DEV_STAGES.index(other::DEV_STAGE), other.title.sub(/18\s+/, '18').downcase]
-      end
-
       def self.register_colors(colors)
         colors.default_proc = proc do |_, key|
           key
@@ -342,84 +320,15 @@ module Engine
         const_set(:COLORS, colors)
       end
 
-      def self.load_from_json(*jsons)
-        data = Array(jsons).reverse.reduce({}) do |memo, json|
-          memo.merge!(JSON.parse(json))
+      def self.include_meta(meta_module)
+        include meta_module
+
+        meta_module.constants.each do |const|
+          const_set(const, meta_module.const_get(const))
         end
-
-        # Make sure player objects have numeric keys
-        data['bankCash'].transform_keys!(&:to_i) if data['bankCash'].is_a?(Hash)
-        data['certLimit'].transform_keys!(&:to_i) if data['certLimit'].is_a?(Hash)
-        data['startingCash'].transform_keys!(&:to_i) if data['startingCash'].is_a?(Hash)
-
-        data['phases'].map! do |phase|
-          phase.transform_keys!(&:to_sym)
-          phase[:tiles]&.map!(&:to_sym)
-          phase[:events]&.transform_keys!(&:to_sym)
-          phase[:train_limit].transform_keys!(&:to_sym) if phase[:train_limit].is_a?(Hash)
-          phase
-        end
-
-        data['trains'].map! do |train|
-          train.transform_keys!(&:to_sym)
-          train[:variants]&.each { |variant| variant.transform_keys!(&:to_sym) }
-          train
-        end
-
-        data['companies'] ||= []
-
-        data['companies'].map! do |company|
-          company.transform_keys!(&:to_sym)
-          company[:abilities]&.each { |ability| ability.transform_keys!(&:to_sym) }
-          company[:color] = const_get(:COLORS)[company[:color]&.to_sym] if const_defined?(:COLORS)
-          company
-        end
-
-        data['minors'] ||= []
-
-        data['minors'].map! do |minor|
-          minor.transform_keys!(&:to_sym)
-          minor[:color] = const_get(:COLORS)[minor[:color]&.to_sym] if const_defined?(:COLORS)
-          minor[:abilities]&.each { |ability| ability.transform_keys!(&:to_sym) }
-          minor
-        end
-
-        data['corporations'].map! do |corporation|
-          corporation.transform_keys!(&:to_sym)
-          corporation[:abilities]&.each { |ability| ability.transform_keys!(&:to_sym) }
-          corporation[:color] = const_get(:COLORS)[corporation[:color]&.to_sym] if const_defined?(:COLORS)
-          corporation[:reservation_color] =
-            const_get(:COLORS)[corporation[:reservation_color]&.to_sym] if const_defined?(:COLORS)
-          corporation
-        end
-
-        data['hexes'].transform_keys!(&:to_sym)
-        data['hexes'].transform_values!(&:invert)
-
-        hex_ids = data['hexes'].values.map(&:keys).flatten
-
-        dup_hexes = hex_ids.group_by(&:itself).select { |_, v| v.size > 1 }.keys
-        raise GameError, "Found multiple definitions in #{self} for hexes #{dup_hexes}" if dup_hexes.any?
-
-        const_set(:CURRENCY_FORMAT_STR, data['currencyFormatStr'])
-        const_set(:BANK_CASH, data['bankCash'])
-        const_set(:CERT_LIMIT, data['certLimit'])
-        const_set(:STARTING_CASH, data['startingCash'])
-        const_set(:CAPITALIZATION, data['capitalization'].to_sym) if data['capitalization']
-        const_set(:MUST_SELL_IN_BLOCKS, data['mustSellInBlocks'])
-        const_set(:TILES, data['tiles'])
-        const_set(:LOCATION_NAMES, data['locationNames'])
-        const_set(:MARKET, data['market'])
-        const_set(:PHASES, data['phases'])
-        const_set(:TRAINS, data['trains'])
-        const_set(:COMPANIES, data['companies'])
-        const_set(:CORPORATIONS, data['corporations'])
-        const_set(:MINORS, data['minors'])
-        const_set(:HEXES, data['hexes'])
-        const_set(:LAYOUT, data['layout'].to_sym)
       end
 
-      def initialize(names, id: 0, actions: [], pin: nil, strict: false, optional_rules: [])
+      def initialize(names, id: 0, actions: [], pin: nil, strict: false, optional_rules: [], user: nil)
         @id = id
         @turn = 1
         @final_turn = nil
@@ -432,7 +341,6 @@ module Engine
         @raw_actions = []
         @turn_start_action_id = 0
         @last_turn_start_action_id = 0
-
         @exception = nil
         @names = if names.is_a?(Hash)
                    names.freeze
@@ -441,6 +349,8 @@ module Engine
                  end
 
         @players = @names.map { |player_id, name| Player.new(player_id, name) }
+        @user = user
+        @programmed_actions = {}
 
         @optional_rules = init_optional_rules(optional_rules)
 
@@ -481,7 +391,7 @@ module Engine
         init_starting_cash(@players, @bank)
         @share_pool = init_share_pool
         @hexes = init_hexes(@companies, @corporations)
-        @graph = Graph.new(self)
+        @graph = init_graph
 
         # call here to set up ids for all cities before any tiles from @tiles
         # can be placed onto the map
@@ -554,6 +464,23 @@ module Engine
 
       def active_players_id
         active_players.map(&:id)
+      end
+
+      def valid_actors(action)
+        if (player = action.entity.player)
+          [player]
+        else
+          active_players
+        end
+      end
+
+      def player_log(entity, msg)
+        @log << "-- #{msg}" if entity.id == @user
+      end
+
+      def available_programmed_actions
+        # By default assume normal 1830esk buy shares
+        [Action::ProgramBuyShares]
       end
 
       def self.filtered_actions(actions)
@@ -663,6 +590,7 @@ module Engine
           else
             store_player_info
             next_round!
+            check_programmed_actions
 
             # Finalize round setup (for things that need round correctly set like place_home_token)
             @round.at_start = true
@@ -940,8 +868,7 @@ module Engine
       end
 
       def must_buy_train?(entity)
-        !entity.rusted_self &&
-          entity.trains.empty? &&
+        entity.trains.empty? &&
           !depot.depot_trains.empty? &&
           (self.class::MUST_BUY_TRAIN == :always ||
            (self.class::MUST_BUY_TRAIN == :route && @graph.route_info(entity)&.dig(:route_train_purchase)))
@@ -973,6 +900,10 @@ module Engine
 
       def float_str(entity)
         "#{entity.percent_to_float}% to float" if entity.corporation?
+      end
+
+      def route_distance_str(route)
+        route_distance(route).to_s
       end
 
       def route_distance(route)
@@ -1204,6 +1135,10 @@ module Engine
 
         @log << "#{corporation.name} places a token on #{hex.name}"
         city.place_token(corporation, token)
+      end
+
+      def graph_for_entity(_entity)
+        @graph
       end
 
       def upgrade_cost(tile, hex, entity)
@@ -1503,7 +1438,6 @@ module Engine
         remove_train(train)
         train.owner = operator
         operator.trains << train
-        operator.rusted_self = false
         @crowded_corps = nil
 
         close_companies_on_train!(operator)
@@ -1616,7 +1550,7 @@ module Engine
         ability.hexes.include?(hex.id)
       end
 
-      def rust_trains!(train, entity)
+      def rust_trains!(train, _entity)
         obsolete_trains = []
         rusted_trains = []
         owners = Hash.new(0)
@@ -1637,9 +1571,10 @@ module Engine
 
           rusted_trains << t.name
           owners[t.owner.name] += 1
-          entity.rusted_self = true if entity && entity == t.owner
           rust(t)
         end
+
+        @crowded_corps = nil
 
         @log << "-- Event: #{obsolete_trains.uniq.join(', ')} trains are obsolete --" if obsolete_trains.any?
         @log << "-- Event: #{rusted_trains.uniq.join(', ')} trains rust " \
@@ -1647,6 +1582,10 @@ module Engine
       end
 
       private
+
+      def init_graph
+        Graph.new(self)
+      end
 
       def init_bank
         cash = self.class::BANK_CASH
@@ -1774,10 +1713,12 @@ module Engine
 
         reservations = Hash.new { |k, v| k[v] = [] }
         reservation_corporations.each do |c|
-          reservations[c.coordinates] << {
-            entity: c,
-            city: c.city,
-          }
+          Array(c.coordinates).each_with_index do |coord, idx|
+            reservations[coord] << {
+              entity: c,
+              city: c.city.is_a?(Array) ? c.city[idx] : c.city,
+            }
+          end
         end
 
         (corporations + companies).each do |c|
@@ -1887,8 +1828,9 @@ module Engine
           real_shares = []
           ability.shares.each do |share|
             case share
-            when 'random_president'
-              corporation = @corporations[rand % @corporations.size]
+            when 'random_president', 'first_president'
+              idx = share == 'first_president' ? 0 : rand % @corporations.size
+              corporation = @corporations[idx]
               share = corporation.shares[0]
               real_shares << share
               company.desc = "Purchasing player takes a president's share (20%) of #{corporation.name} \
@@ -1957,6 +1899,15 @@ module Engine
             reorder_players
             new_stock_round
           end
+      end
+
+      def check_programmed_actions
+        @programmed_actions.reject! do |entity, action|
+          if action&.disable?(self)
+            player_log(entity, 'Programmed action removed due to round change')
+            true
+          end
+        end
       end
 
       def game_end_check_values
@@ -2090,7 +2041,7 @@ module Engine
         when :first_to_pass
           @players = @round.pass_order if @round.pass_order.any?
         when :most_cash
-          current_order = @players.dup
+          current_order = @players.dup.reverse
           @players.sort_by! { |p| [p.cash, current_order.index(p)] }.reverse!
         when :least_cash
           current_order = @players.dup
@@ -2220,7 +2171,11 @@ module Engine
         :small
       end
 
+      def company_status_str(_company); end
+
       def status_str(_corporation); end
+
+      def status_array(_corporation); end
 
       # Override this, and add elements (paragraphs of text) here to display it on Info page.
       def timeline

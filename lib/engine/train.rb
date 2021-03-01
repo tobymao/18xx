@@ -7,8 +7,8 @@ module Engine
   class Train
     include Ownable
 
-    attr_accessor :obsolete, :operated, :events, :variants, :obsolete_on, :rusted, :rusts_on, :index
-    attr_reader :available_on, :name, :distance, :discount, :multiplier, :sym, :variant
+    attr_accessor :obsolete, :operated, :events, :variants, :obsolete_on, :rusted, :rusts_on, :index, :name, :distance
+    attr_reader :available_on, :discount, :multiplier, :sym, :variant
     attr_writer :buyable
 
     def initialize(name:, distance:, price:, index: 0, **opts)
@@ -52,6 +52,9 @@ module Engine
 
       @variant = @variants[new_variant]
       @variant.each { |k, v| instance_variable_set("@#{k}", v) }
+
+      # Remove the @local vaiable, this to get the local? method evaluate the new variant
+      remove_instance_variable(:@local) if defined?(@local)
     end
 
     def names_to_prices

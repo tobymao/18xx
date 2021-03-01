@@ -61,7 +61,7 @@ module Engine
       def selection_bid(bid)
         add_bid(bid)
         @auction_triggerer = bid.entity
-        auction_entity(bid.company || bid.corporation)
+        auction_entity(bid_target(bid))
       end
 
       def add_bid(bid)

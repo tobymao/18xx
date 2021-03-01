@@ -1,11 +1,15 @@
 # frozen_string_literal: true
 
+require 'lib/color'
+require 'lib/settings'
 require 'view/game/actionable'
 
 module View
   module Game
     class Company < Snabberb::Component
       include Actionable
+      include Lib::Color
+      include Lib::Settings
 
       needs :company
       needs :bids, default: nil
@@ -94,11 +98,14 @@ module View
           if selected?
             props[:style][:backgroundColor] = 'lightblue'
             props[:style][:color] = 'black'
+            props[:style][:border] = '1px solid'
           end
           props[:style][:display] = @display
 
+          header_text = @game.respond_to?(:company_header) ? @game.company_header(@company) : 'PRIVATE COMPANY'
+
           children = [
-            h(:div, { style: header_style }, 'PRIVATE COMPANY'),
+            h(:div, { style: header_style }, header_text),
             h(:div, @company.name),
             h(:div, { style: description_style }, @company.desc),
             h(:div, { style: value_style }, "Value: #{@game.format_currency(@company.value)}"),
@@ -119,6 +126,18 @@ module View
           end
 
           children << h('div.nowrap', { style: bidders_style }, "Owner: #{@company.owner.name}") if @company.owner
+          if @game.company_status_str(@company)
+            status_style = {
+              marginTop: '0.5rem',
+              clear: 'both',
+              display: 'inline-block',
+              justifyContent: 'center',
+              width: '100%',
+              backgroundColor: color_for(:bg2),
+              color: color_for(:font2),
+            }
+            children << h(:div, { style: status_style }, @game.company_status_str(@company))
+          end
 
           h('div.company.card', props, children)
         end
@@ -155,6 +174,7 @@ module View
         if (uses = company.ability_uses)
           extra << " (#{uses[0]}/#{uses[1]})"
         end
+        extra << " #{@game.company_status_str(@company)}" if @game.company_status_str(@company)
         [h('div.nowrap', name_props, company.name + extra.join(',')),
          @company.owner&.player? ? h('div.right', @game.format_currency(company.value)) : '',
          h('div.padded_number', @game.format_currency(company.revenue)),

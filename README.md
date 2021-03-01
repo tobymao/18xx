@@ -2,7 +2,7 @@
 
 ## About
 
-[18xx.games](https://18xx.games) is a free, open-source website for playing [18xx](https://boardgamegeek.com/boardgamefamily/19/series-18xx) games. All games are published with permission from their respective designers and/or publishers.
+[18xx.games](https://18xx.games) is a free, open-source website for playing [18xx](https://boardgamegeek.com/boardgamefamily/19/series-18xx) games. All titles are published on 18xx.Games with permission from their respective designers and/or publishers. If you intend to use any title for your own use or on a different website, please contact the applicable designer and/or publisher for any necessary permissions.
 
 ## Contributors
 

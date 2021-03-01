@@ -2,6 +2,7 @@
 
 require_relative 'base'
 require_relative 'share_buying'
+require_relative 'programmer'
 require_relative '../action/buy_company'
 require_relative '../action/buy_shares'
 require_relative '../action/par'
@@ -10,6 +11,7 @@ module Engine
   module Step
     class BuySellParShares < Base
       include ShareBuying
+      include Programmer
 
       PURCHASE_ACTIONS = [Action::BuyCompany, Action::BuyShares, Action::Par].freeze
 
@@ -88,6 +90,7 @@ module Engine
 
       def must_sell?(entity)
         return false if @game.can_hold_above_limit?(entity)
+        return false unless can_sell_any?(entity)
 
         @game.num_certs(entity) > @game.cert_limit ||
           !@game.corporations.all? { |corp| corp.holding_ok?(entity) }
@@ -263,6 +266,33 @@ module Engine
         @current_actions << action
         @log << "#{owner ? '-- ' : ''}#{entity.name} buys #{company.name} from "\
                 "#{owner ? owner.name : 'the market'} for #{@game.format_currency(price)}"
+      end
+
+      def auto_actions(entity)
+        programmed_auto_actions(entity)
+      end
+
+      def activate_program_buy_shares(entity, program)
+        # TODO: non-ipo? non-10% shares
+        available_actions = actions(entity)
+        if available_actions.include?('buy_shares')
+          corporation = program.corporation
+          # check if end condition met
+          if program.until_condition == 'float'
+            return [Action::ProgramDisable.new(entity,
+                                               reason: "#{corporation.name} is floated")] if corporation.floated?
+            # TODO: until n shares
+          end
+          share = corporation.ipo_shares.first
+          if can_buy?(entity, share.to_bundle)
+            [Action::BuyShares.new(entity, shares: share)]
+          else
+            [Action::ProgramDisable.new(entity, reason: "Cannot buy #{corporation.name}")]
+          end
+        elsif bought? && available_actions.include?('pass')
+          # Buy-then-Sell games need the pass
+          [Action::Pass.new(entity)]
+        end
       end
     end
   end

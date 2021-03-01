@@ -36,13 +36,15 @@ module Engine
         on.keys.select { |p| on[p] == 1 }
       end
 
-      def walk(visited: nil, on: nil, corporation: nil, visited_paths: {})
+      def walk(visited: nil, on: nil, corporation: nil, visited_paths: {}, skip_track: nil)
         return if visited&.[](self)
 
         visited = visited&.dup || {}
         visited[self] = true
 
         paths.each do |node_path|
+          next if node_path.track == skip_track
+
           node_path.walk(visited: visited_paths, on: on) do |path, vp|
             yield path
             path.nodes.each do |next_node|
@@ -55,6 +57,7 @@ module Engine
                 on: on,
                 corporation: corporation,
                 visited_paths: visited_paths.merge(vp),
+                skip_track: skip_track,
               ) { |p| yield p }
             end
           end

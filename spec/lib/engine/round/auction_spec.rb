@@ -2,19 +2,11 @@
 
 require './spec/spec_helper'
 
-require 'engine/action/bid'
-require 'engine/game/g_1889'
-require 'engine/player'
-require 'engine/round/auction'
-require 'engine/step/waterfall_auction'
-require 'engine/game/g_1828'
-require 'engine/step/g_1828/waterfall_auction'
-
 module Engine
   describe Round::Auction do
     context '#1889' do
       let(:game) do
-        game = Game::G1889.new(%w[a b c])
+        game = Game::G1889::Game.new(%w[a b c])
         game.companies.slice!(3..-1)
         game
       end
@@ -119,7 +111,7 @@ module Engine
 
     context '#1828' do
       let(:players) { %w[a b c] }
-      let(:game) { Game::G1828.new(players) }
+      let(:game) { Game::G1828::Game.new(players) }
       let(:player_1) { game.player_by_id('a') }
       let(:player_2) { game.player_by_id('b') }
       let(:player_3) { game.player_by_id('c') }
@@ -129,7 +121,7 @@ module Engine
       let(:mh) { game.companies[5] }
       let(:ca) { game.companies[7] }
 
-      subject { Round::Auction.new(game, [Step::G1828::WaterfallAuction]) }
+      subject { Round::Auction.new(game, [Game::G1828::Step::WaterfallAuction]) }
 
       it 'shouldnt let SVN be purchased without a bid on StCT' do
         expect(subject.active_step.may_purchase?(svn)).to be false

@@ -69,7 +69,7 @@ module View
         def reservation
           text = @reservation.id
 
-          non_home = @reservation.corporation? && (@reservation.coordinates != @city.hex.coordinates)
+          non_home = @reservation.corporation? && !Array(@reservation.coordinates).include?(@city.hex.coordinates)
           color = non_home ? '#808080' : 'black'
 
           attrs = {
@@ -95,7 +95,8 @@ module View
           actions = step.actions(entity)
           return if (%w[remove_token place_token] & actions).empty?
           return if @token && !step.can_replace_token?(entity, @token) &&
-                    !(cheater = @game.abilities(entity, :token)&.cheater)
+                    !(cheater = @game.abilities(entity, :token)&.cheater) &&
+                    !@game.abilities(entity, :token)&.extra_slot
 
           event.JS.stopPropagation
 
@@ -115,6 +116,7 @@ module View
               action = Engine::Action::PlaceToken.new(
                 @selected_company || @game.current_entity,
                 city: @city,
+                tokener: @selected_company&.owned_by_player? ? @game.current_entity : nil,
                 slot: cheater || @slot_index,
                 token_type: next_tokens[0].type
               )

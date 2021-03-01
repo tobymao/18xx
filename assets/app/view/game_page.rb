@@ -9,19 +9,18 @@ require_tree './game'
 
 module View
   class GamePage < Snabberb::Component
+    include GameManager
     include Lib::Color
     include Lib::Settings
 
-    needs :game_data, store: true
-    needs :game, default: nil, store: true
-    needs :connection
     needs :selected_company, default: nil, store: true
     needs :tile_selector, default: nil, store: true
-    needs :app_route, store: true
     needs :user
     needs :connected, default: false, store: true
     needs :before_process_pass, default: -> {}, store: true
     needs :scroll_pos, default: nil, store: true
+
+    APP_PADDING_BOTTOM = '2vmin'
 
     def render_broken_game(e)
       inner = [h(:div, "We're sorry this game cannot be continued due to #{e}")]
@@ -31,13 +30,13 @@ module View
 
       # don't ask for a link for hotseat games
       action = @game.last_processed_action || 0
-      url = "https://18xx.games/game/#{@game_data['id']}?action=#{action + 1}"
+      url = "#{%x(window.location.origin)}/game/#{@game_data['id']}?action=#{action - 1}"
       game_link =
         if @game.id.is_a?(Integer)
           [
             'this link (',
             h(:a, { attrs: { href: url } }, url),
-            ') and ',
+            ')',
           ]
         else
           []
@@ -48,7 +47,6 @@ module View
         h(:a, { attrs: { href: 'https://github.com/tobymao/18xx/issues/' } }, 'raise a bug report'),
         ' and include ',
         *game_link,
-        'the following JSON data',
       ])
       inner << h(Game::GameData,
                  actions: @game_data['actions'],
@@ -70,14 +68,21 @@ module View
          (!cursor && @game.raw_actions.size == @num_actions) ||
          (cursor == @game.raw_actions.size))
 
-      @game = Engine::Game.load(@game_data, at_action: cursor)
-      store(:game, @game, skip: true)
+      load_game_with_class = lambda do
+        @game = Engine::Game.load(@game_data, at_action: cursor, user: @user&.dig('id'))
+        store(:game, @game, skip: true)
+      end
+
+      title = @game_data['title']
+      load_game_class(title, load_game_with_class)
+      load_game_with_class.call if @game_classes_loaded[title]
     end
 
     def render
       @pin = @game_data.dig('settings', 'pin')
 
       load_game
+      return h('div.padded', 'Loading game...') unless @game
 
       page =
         case route_anchor
@@ -97,6 +102,8 @@ module View
           h(Game::Spreadsheet, game: @game)
         when 'tools'
           h(Game::Tools, game: @game, game_data: @game_data, user: @user)
+        when 'auto'
+          h(Game::Auto, game: @game, game_data: @game_data, user: @user)
         end
 
       @connection = nil if @game_data[:mode] == :hotseat || cursor
@@ -135,9 +142,28 @@ module View
       render_title
 
       props = {
+        attrs: {
+          tabindex: -1, # necessary to be focusable so keyup works; -1 == not accessible by tabbing
+        },
         key: 'game_page',
         hook: {
           destroy: destroy,
+          insert: lambda {
+            scroll_to_game_menu
+            `document.getElementById('game').focus()`
+          },
+          postpatch: lambda {
+            unless %w[input textarea].include?(Native(`document.activeElement`).localName)
+              `document.getElementById('game').focus()`
+            end
+          },
+        },
+        on: {
+          keydown: ->(event) { hotkey_check(event) },
+        },
+        style: {
+          # ensure sufficient height for scroll_to_game_menu
+          minHeight: "calc(#{`window.innerHeight`}px - #{APP_PADDING_BOTTOM})",
         },
       }
 
@@ -147,11 +173,83 @@ module View
       ]
       children.unshift(render_broken_game(@game.exception)) if @game.exception
 
-      h(:div, props, children)
+      h('div#game', props, children)
+    end
+
+    def scroll_to_game_menu
+      `window.scroll(0, document.getElementById('header').offsetHeight)`
+    end
+
+    def change_anchor(anchor)
+      unless route_anchor
+        elm = Native(`document.getElementById('chatlog')`)
+        # only store when scrolled up at least one line (20px)
+        store(:scroll_pos, elm.scrollTop < elm.scrollHeight - elm.offsetHeight - 20 ? elm.scrollTop : nil, skip: true)
+      end
+      store(:tile_selector, nil, skip: true)
+      base = @app_route.split('#').first
+      new_route = base + anchor
+      new_route = base if @app_route == new_route
+      scroll_to_game_menu
+      store(:app_route, new_route)
+    end
+
+    def button_click(id)
+      Native(`document.getElementById(#{id})`)&.click()
+    end
+
+    def hotkey_check(event)
+      # 'search for text when you start typing' feature of browser prevents execution
+      # catch modifiers to not interfere with OS shortcuts
+      event = Native(event)
+      active = Native(`document.activeElement`)
+      return if %w[input textarea].include?(active.localName) || event.getModifierState('Alt') ||
+                event.getModifierState('AltGraph') || event.getModifierState('Meta') || event.getModifierState('OS')
+
+      key = event['key']
+      if event.getModifierState('Control')
+        case key
+        when 'y'
+          button_click('redo')
+        when 'z'
+          button_click('undo')
+        end
+      elsif event.getModifierState('Shift')
+        button_click('zoom+') if key == '+' # + on qwerty
+      else
+        case key
+        when 'g'
+          change_anchor('')
+        when 'e'
+          change_anchor('#entities')
+        when 'm'
+          change_anchor('#map')
+        when 'k'
+          change_anchor('#market')
+        when 'i'
+          change_anchor('#info')
+        when 't'
+          change_anchor('#tiles')
+        when 's'
+          change_anchor('#spreadsheet')
+        when 'o'
+          change_anchor('#tools')
+        when 'a'
+          change_anchor('#auto')
+        when 'c'
+          Native(`document.getElementById('chatbar')`)&.focus()
+          event.preventDefault
+        when '-', '0', '+' # + on qwertz
+          button_click('zoom' + key)
+        when 'Home', 'End', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'
+          button_click('hist_' + key)
+          event.preventDefault
+        end
+      end
     end
 
     def game_path
-      GameManager.url(@game_data)
+      url(@game_data)
     end
 
     private
@@ -171,13 +269,14 @@ module View
     end
 
     def menu
-      bg_color =  if @game_data['mode'] == :hotseat
-                    color_for(:hotseat_game)
-                  elsif active_player
-                    color_for(:your_turn)
-                  else
-                    color_for(:bg2)
-                  end
+      bg_color =
+        if @game_data['mode'] == :hotseat
+          color_for(:hotseat_game)
+        elsif active_player
+          color_for(:your_turn)
+        else
+          color_for(:bg2)
+        end
       nav_props = {
         attrs: {
           role: 'navigation',
@@ -199,30 +298,33 @@ module View
       }
 
       menu_items = [
-        item('Game'),
-        item('Entities', '#entities'),
-        item('Map', '#map'),
-        item('Market', '#market'),
-        item('Info', '#info'),
-        item('Tiles', '#tiles'),
-        item('Spreadsheet', '#spreadsheet'),
-        item('Tools', '#tools'),
+        item('G|ame', ''),
+        item('E|ntities', '#entities'),
+        item('M|ap', '#map'),
+        item('Mark|et', '#market'),
+        item('I|nfo', '#info'),
+        item('T|iles', '#tiles'),
+        item('S|preadsheet', '#spreadsheet'),
+        item('To|ols', '#tools'),
       ]
+
+      enabled = @game.programmed_actions[@game.player_by_id(@user['id'])] if @user
+      menu_items << item("A|uto#{' ✅' if enabled}", '#auto') if @game_data[:mode] != :hotseat && !cursor
 
       h('nav#game_menu', nav_props, [
         h('ul.no_margin.no_padding', { style: { width: 'max-content' } }, menu_items),
       ])
     end
 
-    def item(name, anchor = '')
-      change_anchor = lambda do
-        unless route_anchor
-          elm = Native(`document.getElementById('chatlog')`)
-          # only store when scrolled up at least one line (20px)
-          store(:scroll_pos, elm.scrollTop < elm.scrollHeight - elm.offsetHeight - 20 ? elm.scrollTop : nil, skip: true)
+    def item(name, anchor)
+      name = name.split(/(\|)/).each_slice(2).flat_map do |text, pipe|
+        if pipe
+          head = text[0..-2]
+          tail = text[-1]
+          [h(:span, head), h(:span, { style: { textDecoration: 'underline' } }, tail)]
+        else
+          h(:span, text)
         end
-        store(:tile_selector, nil, skip: true)
-        store(:app_route, "#{@app_route.split('#').first}#{anchor}")
       end
 
       a_props = {
@@ -231,7 +333,7 @@ module View
           onclick: 'return false',
         },
         style: { textDecoration: route_anchor == anchor[1..-1] ? 'underline' : 'none' },
-        on: { click: change_anchor },
+        on: { click: ->(_event) { change_anchor(anchor) } },
       }
       li_props = {
         style: {

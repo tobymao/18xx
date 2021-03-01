@@ -51,7 +51,7 @@ module View
         hex.x = 0
         hex.y = 0
 
-        h('div.tile__block', props, [
+        h("div#tile_#{name}.tile__block", props, [
             *extra_children,
             h(:div, { style: { textAlign: 'center', fontSize: '12px' } }, text),
             h(:svg, { style: { width: '100%', height: '100%' } }, [
@@ -84,7 +84,7 @@ module View
     )
       props = {
         style: {
-          width: "#{2 * WIDTH * scale}px",
+          width: "#{2 * (WIDTH * scale + 2)}px",
           height: "#{HEIGHT * scale}px",
         },
       }
@@ -129,7 +129,7 @@ module View
             *extra_children_a,
             *extra_children_b,
             h(:div, { style: { textAlign: 'center', fontSize: '12px' } }, text),
-            h(:svg, { style: { width: '50%', height: '100%' } }, [
+            h("svg#tile_#{name_a}", { style: { width: '50%', height: '100%' } }, [
               h(:g, { attrs: { transform: "scale(#{scale * 0.4})" } }, [
                 h(
                   Game::Hex,
@@ -140,7 +140,7 @@ module View
                 ),
               ]),
             ]),
-            h(:svg, { style: { width: '50%', height: '100%' } }, [
+            h("svg#tile_#{name_b}", { style: { width: '50%', height: '100%' } }, [
               h(:g, { attrs: { transform: "scale(#{scale * 0.4})" } }, [
                 h(
                   Game::Hex,

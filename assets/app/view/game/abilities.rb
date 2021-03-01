@@ -14,12 +14,12 @@ module View
 
       def render
         companies = @game.companies.select do |company|
-          !company.closed? &&
+          company.owner &&
+            !company.closed? &&
             actions_for(company).any? &&
-            company.owner &&
             @game.entity_can_use_company?(@game.current_entity, company)
         end
-        return h(:div) if companies.empty? || @game.round.current_entity.company?
+        return h(:div) if companies.empty? || @game.round.current_entity&.company?
 
         current, others = companies.partition { |company| @game.current_entity.player == company.player }
 
@@ -57,7 +57,10 @@ module View
         companies.map do |company|
           props = {
             on: {
-              click: -> { store(:selected_company, @selected_company == company ? nil : company) },
+              click: lambda do
+                store(:tile_selector, nil, skip: true)
+                store(:selected_company, @selected_company == company ? nil : company)
+              end,
             },
           }
           props[:class] = { active: true } if @selected_company == company
@@ -74,6 +77,7 @@ module View
 
         views = []
         views << render_sell_company_button if actions.include?('sell_company')
+        views << render_ability_choice_buttons if actions.include?('choose_ability')
         views << h(Exchange) if actions.include?('buy_shares')
         views << h(Map, game: @game) if !@game.round.is_a?(Engine::Round::Operating) &&
           (actions & %w[lay_tile place_token]).any?
@@ -97,6 +101,27 @@ module View
         end
 
         h(:button, { on: { click: sell } }, "Sell company (#{@game.format_currency(@selected_company.value)})")
+      end
+
+      def render_ability_choice_buttons
+        ability_choice_buttons = @game.round.active_step.choices_ability(@selected_company).map do |choice, label|
+          label ||= choice
+          click = lambda do
+            process_action(Engine::Action::ChooseAbility.new(
+              @selected_company,
+              choice: choice,
+            ))
+          end
+
+          props = {
+            style: {
+              padding: '0.2rem 0.2rem',
+            },
+            on: { click: click },
+          }
+          h('button', props, label)
+        end
+        h(:div, [*ability_choice_buttons])
       end
     end
   end

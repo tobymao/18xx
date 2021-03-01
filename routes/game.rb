@@ -128,9 +128,7 @@ class Api
           # POST '/api/game/<game_id>/start
           r.is 'start' do
             engine = Engine::Game.load(game, actions: [])
-            unless game.players.size.between?(*Engine.player_range(engine.class))
-              halt(400, 'Player count not supported')
-            end
+            halt(400, 'Player count not supported') unless game.players.size.between?(*engine.class::PLAYER_RANGE)
 
             acting = set_game_state(game, engine, users)
             publish_turn(acting.map(&:id), game, r.base_url, 'Your turn', false)
@@ -168,7 +166,7 @@ class Api
               optional_rules: r['optional_rules'],
             },
             title: title,
-            round: Engine::GAMES_BY_TITLE[title].new([]).round&.name,
+            round: Engine.game_by_title(title).new([]).round&.name,
           }
 
           game = Game.create(params)
@@ -204,13 +202,13 @@ class Api
   end
 
   def publish_turn(user_ids, game, url, type, force)
-    game_id = game.id
+    return if game.settings['pin']
 
     MessageBus.publish(
       '/turn',
       user_ids: user_ids,
-      game_id: game_id,
-      game_url: "#{url}/game/#{game_id}",
+      game_id: game.id,
+      game_url: "#{url}/game/#{game.id}",
       type: type,
       force: force,
     )

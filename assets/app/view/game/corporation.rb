@@ -4,6 +4,7 @@ require 'lib/color'
 require 'lib/settings'
 require 'view/game/actionable'
 require 'view/game/companies'
+require 'view/game/alternate_corporations'
 
 module View
   module Game
@@ -11,6 +12,7 @@ module View
       include Actionable
       include Lib::Color
       include Lib::Settings
+      include AlternateCorporations
 
       needs :user, default: nil, store: true
       needs :corporation
@@ -22,6 +24,11 @@ module View
       needs :interactive, default: true
 
       def render
+        # use alternate view of corporation if needed
+        if @game.respond_to?(:corporation_view) && (view = @game.corporation_view(@corporation))
+          return send("render_#{view}")
+        end
+
         select_corporation = lambda do
           if @selectable
             selected_corporation = selected? ? nil : @corporation
@@ -54,6 +61,7 @@ module View
         if selected?
           card_style[:backgroundColor] = 'lightblue'
           card_style[:color] = 'black'
+          card_style[:border] = '1px solid'
         end
 
         children = [render_title, render_holdings]
@@ -63,6 +71,9 @@ module View
           children << render_reserved if @corporation.reserved_shares.any?
           children << render_owned_other_shares if @corporation.corporate_shares.any?
           children << h(Companies, owner: @corporation, game: @game) if @corporation.companies.any?
+          if @game.respond_to?(:corporate_card_minors) && !(ms = @game.corporate_card_minors(@corporation)).empty?
+            children << render_minors(ms)
+          end
         end
 
         abilities_to_display = @corporation.all_abilities.select do |ability|
@@ -109,12 +120,29 @@ module View
             color: color_for(:font2),
           },
         }
+        status_array_props = {
+          style: {
+            display: 'inline-block',
+            width: '100%',
+            textAlign: 'center',
+            backgroundColor: color_for(:bg2),
+            color: color_for(:font2),
+          },
+        }
+        item_props = {
+          style: {
+            display: 'inline-block',
+            padding: '0 0.5rem',
+          },
+        }
 
         if @corporation.trains.any? && !@corporation.floated?
           children << h(:div, status_props, @game.float_str(@corporation))
         end
-        if @game.status_str(@corporation)
-          children << h('div.bold.xsmall_font', status_props, @game.status_str(@corporation))
+        children << h(:div, status_props, @game.status_str(@corporation)) if @game.status_str(@corporation)
+        if @game.status_array(@corporation)
+          children << h(:div, status_array_props,
+                        @game.status_array(@corporation).map { |text, klass| h("div.#{klass}", item_props, text) })
         end
 
         h('div.corp.card', { style: card_style, on: { click: select_corporation } }, children)
@@ -366,10 +394,10 @@ module View
         end
 
         if @corporation.reserved_shares.any?
-          dc_txt = dc_reserved ? 'd ' : ''
+          flags = (dc_reserved ? 'd ' : '') + 'R'
           pool_rows << h('tr.reserved', [
             h('td.left', @game.ipo_reserved_name),
-            h('td.right', shares_props, dc_txt + share_number_str(@corporation.num_ipo_reserved_shares)),
+            h('td.right', shares_props, flags + ' ' + share_number_str(@corporation.num_ipo_reserved_shares)),
             h('td.padded_number', share_price_str(@corporation.par_price)),
           ])
         end
@@ -486,14 +514,14 @@ module View
       def render_operating_order
         round = @game.round
         order =
-          if @game.round.operating?
-            @game.round.entities.index(@corporation)
+          if round.operating?
+            round.entities.index(@corporation)
           else
             @game.operating_order.index(@corporation)
           end
 
         if order
-          m = round.entities.index(round.current_entity) if @game.round.operating?
+          m = round.entities.index(round.current_entity) if round.operating?
           span_class = '.bold' if order && m && order >= m
           [h(:div, { style: { display: 'inline' } }, [
             'Order: ',
@@ -562,6 +590,33 @@ module View
           h('div.bold', 'Ability'),
           *attribute_lines,
         ])
+      end
+
+      def render_minors(minors)
+        minor_logos = minors.map do |minor|
+          logo_props = {
+            attrs: {
+              src: minor.logo,
+            },
+            style: {
+              paddingRight: '1px',
+              paddingLeft: '1px',
+              height: '20px',
+            },
+          }
+          h(:img, logo_props)
+        end
+        inner_props = {
+          style: {
+            display: 'inline-block',
+          },
+        }
+        outer_props = {
+          style: {
+            textAlign: 'center',
+          },
+        }
+        h('div', outer_props, [h('div', inner_props, minor_logos)])
       end
 
       def selected?

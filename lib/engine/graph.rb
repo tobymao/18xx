@@ -4,7 +4,7 @@ require_relative 'part/path'
 
 module Engine
   class Graph
-    def initialize(game)
+    def initialize(game, **opts)
       @game = game
       @connected_hexes = {}
       @connected_nodes = {}
@@ -13,6 +13,9 @@ module Engine
       @tokenable_cities = {}
       @routes = {}
       @tokens = {}
+      @home_as_token = opts[:home_as_token] || false
+      @no_blocking = opts[:no_blocking] || false
+      @skip_track = opts[:skip_track]
     end
 
     def clear
@@ -103,10 +106,20 @@ module Engine
         end
       end
 
+      if @home_as_token
+        home_hexes = Array(corporation.coordinates).map { |h| @game.hex_by_id(h) }
+        home_hexes.each do |hex|
+          hex.tile.city_towns.each do |ct|
+            hex.neighbors.each { |e, _| hexes[hex][e] = true }
+            nodes[ct] = true
+          end
+        end
+      end
+
       tokens = nodes.dup
 
       @game.abilities(corporation, :token) do |ability, c|
-        next unless c == corporation # Private company token ability uses round/special.rb.
+        next unless c == corporation # token ability must be activated
         next unless ability.teleport_price
 
         ability.hexes.each do |hex_id|
@@ -117,7 +130,9 @@ module Engine
         end
       end
 
-      @game.abilities(corporation, :teleport) do |ability, _|
+      @game.abilities(corporation, :teleport) do |ability, owner|
+        next unless owner == corporation # teleport ability must be activated
+
         ability.hexes.each do |hex_id|
           hex = @game.hex_by_id(hex_id)
           hex.neighbors.each { |e, _| hexes[hex][e] = true }
@@ -136,7 +151,9 @@ module Engine
         visited = tokens.reject { |token, _| token == node }
         local_nodes = {}
 
-        node.walk(visited: visited, corporation: corporation) do |path|
+        walk_corporation = @no_blocking ? nil : corporation
+
+        node.walk(visited: visited, corporation: walk_corporation, skip_track: @skip_track) do |path|
           paths[path] = true
           path.nodes.each do |p_node|
             nodes[p_node] = true

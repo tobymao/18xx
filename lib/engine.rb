@@ -8,19 +8,23 @@ else
 end
 
 module Engine
-  GAMES = Game.constants.map do |c|
-    klass = Game.const_get(c)
-    next if !klass.is_a?(Class) || klass == Game::Base
+  @games = {}
 
-    klass
-  end.compact
+  GAME_META_BY_TITLE = Game.constants.sort.map do |c|
+    const = Game.const_get(c)
+    game_meta = const::Meta if const.constants.include?(:Meta)
+    [game_meta.title, game_meta] if game_meta
+  end.compact.to_h
 
-  # Games that are alpha or above
-  VISIBLE_GAMES = GAMES.select { |game| %i[alpha beta production].include?(game::DEV_STAGE) }
+  GAME_METAS = GAME_META_BY_TITLE.values
 
-  GAMES_BY_TITLE = GAMES.map { |game| [game.title, game] }.to_h
+  VISIBLE_GAMES = GAME_METAS.select { |g_m| %i[alpha beta production].include?(g_m::DEV_STAGE) }
 
-  def self.player_range(game)
-    game::CERT_LIMIT.keys.minmax
+  def self.game_by_title(title)
+    @games[title] ||= Engine::Game.constants.map do |c|
+      const = Game.const_get(c)
+      game = const::Game if const.constants.include?(:Game)
+      game if game&.title == title
+    end.compact.first
   end
 end

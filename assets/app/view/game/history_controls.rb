@@ -20,7 +20,7 @@ module View
         style_extra = { padding: '0.2rem 0.5rem', width: '100%' }
 
         unless cursor&.zero?
-          divs << history_link('|<', 'Start', 0, style_extra, true)
+          divs << history_link('|<', 'Start', 0, style_extra, true, 'Home')
 
           last_round =
             if cursor == @game.raw_actions.size
@@ -29,7 +29,7 @@ module View
               @game.round_history[-1]
             end
           divs << history_link('<<', 'Previous Round', last_round,
-                               { gridColumnStart: '3', **style_extra }, true) if last_round
+                               { gridColumnStart: '3', **style_extra }, true, 'ArrowUp') if last_round
 
           prev_action =
             if @game.exception
@@ -39,17 +39,18 @@ module View
             else
               @num_actions - 1
             end
-          divs << history_link('<', 'Previous Action', prev_action, { gridColumnStart: '4', **style_extra }, true)
+          divs << history_link('<', 'Previous Action', prev_action,
+                               { gridColumnStart: '4', **style_extra }, true, 'ArrowLeft')
         end
 
         if cursor && !@game.exception
           divs << history_link('>', 'Next Action', cursor + 1 < @num_actions ? cursor + 1 : nil,
-                               { gridColumnStart: '5', **style_extra }, true)
+                               { gridColumnStart: '5', **style_extra }, true, 'ArrowRight')
           store(:round_history, @game.round_history, skip: true) unless @round_history
           next_round = @round_history[@game.round_history.size]
           divs << history_link('>>', 'Next Round', next_round,
-                               { gridColumnStart: '6', **style_extra }, true) if next_round
-          divs << history_link('>|', 'Current', nil, { gridColumnStart: '7', **style_extra }, true)
+                               { gridColumnStart: '6', **style_extra }, true, 'ArrowDown') if next_round
+          divs << history_link('>|', 'Current Action', nil, { gridColumnStart: '7', **style_extra }, true, 'End')
         end
 
         props = {

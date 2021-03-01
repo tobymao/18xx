@@ -21,7 +21,7 @@ module View
       ]
 
       if @mode == :multi
-        inputs << render_input('Private game', id: 'unlisted', type: :checkbox)
+        inputs << render_input('Invite only game', id: 'unlisted', type: :checkbox)
       elsif @mode == :hotseat
         @num_players.times do |index|
           num = index + 1
@@ -56,7 +56,7 @@ module View
       @max_p = {}
 
       game_options = visible_games.map do |game|
-        @min_p[game.title], @max_p[game.title] = Engine.player_range(game)
+        @min_p[game.title], @max_p[game.title] = game::PLAYER_RANGE
 
         title = game.title
         title += " (#{game::GAME_LOCATION})" if game::GAME_LOCATION
@@ -186,7 +186,7 @@ module View
     def params
       params = super
 
-      game = Engine::GAMES_BY_TITLE[params['title']]
+      game = Engine::GAME_META_BY_TITLE[params['title']]
       params[:optional_rules] = game::OPTIONAL_RULES
                                   .map { |o_r| o_r[:sym] }
                                   .select { |rule| params.delete(rule) }
@@ -195,12 +195,12 @@ module View
     end
 
     def visible_games
-      (Lib::Params['all'] ? Engine::GAMES : Engine::VISIBLE_GAMES).sort
+      (Lib::Params['all'] ? Engine::GAME_METAS : Engine::VISIBLE_GAMES).sort
     end
 
     def selected_game
       title = Native(@inputs[:title]).elm&.value || visible_games.first.title
-      Engine::GAMES_BY_TITLE[title]
+      Engine::GAME_META_BY_TITLE[title]
     end
 
     def update_inputs

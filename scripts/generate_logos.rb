@@ -7,8 +7,8 @@ Sequel.extension :pg_json_ops
 DB.extension :pg_array, :pg_advisory_lock, :pg_json, :pg_enum
 
 def generate_logos(game_title, simple=false)
-  game_class = Engine::GAMES_BY_TITLE[game_title]
-  players = Engine.player_range(game_class).max.times.map { |n| "Player #{n + 1}" }
+  game_class = Engine.game_by_title(game_title)
+  players = game_class::PLAYER_RANGE.max.times.map { |n| "Player #{n + 1}" }
   game = game_class.new(players)
 
   # Regenerate to avoid corps that are hidden

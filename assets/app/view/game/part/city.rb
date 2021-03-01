@@ -217,10 +217,10 @@ module View
         def preferred_render_locations
           if @edge
             weights = EDGE_CITY_REGIONS[@edge]
-            weights += EXTRA_SLOT_REGIONS[@edge] unless @city.slots == 1
+            weights += EXTRA_SLOT_REGIONS[@edge] unless @city.slots(all: true) == 1
             distance = 50
             # move in if city is on a "half" edge and has more that one slot
-            distance -= 8 if @edge.to_i != @edge && @city.slots > 1
+            distance -= 8 if @edge.to_i != @edge && @city.slots(all: true) > 1
 
             # If there's a border on this edge, move the city slightly
             # towards the center to ensure track is visible.
@@ -242,7 +242,7 @@ module View
           end
 
           region_weights =
-            case @city.slots
+            case @city.slots(all: true)
             when 1
               CENTER
             when (2..4)
@@ -270,13 +270,13 @@ module View
         end
 
         def render_part
-          slots = (0..(@city.slots - 1)).zip(@city.tokens).map do |slot_index, token|
-            slot_rotation = (360 / @city.slots) * slot_index
+          slots = (0..@city.slots(all: true) - 1).zip(@city.tokens + @city.extra_tokens).map do |slot_index, token|
+            slot_rotation = (360 / @city.slots(all: true)) * slot_index
 
             # use the rotation on the outer <g> to position the slot, then use
             # -rotation on the Slot so its contents are rendered without
             # rotation
-            x, y = CITY_SLOT_POSITION[@city.slots]
+            x, y = CITY_SLOT_POSITION[@city.slots(all: true)]
             revert_angle = render_location[:angle] + slot_rotation
             revert_angle -= angle_for_layout unless @edge
             h(:g, { attrs: { transform: "rotate(#{slot_rotation})" } }, [
@@ -318,7 +318,7 @@ module View
 
           regions = []
 
-          displacement = REVENUE_DISPLACEMENT[layout][@city.slots]
+          displacement = REVENUE_DISPLACEMENT[layout][@city.slots(all: true)]
 
           rotation = 0
 
@@ -326,11 +326,11 @@ module View
             rotation = angle_for_layout
 
             regions = if layout == :flat
-                        @city.slots == 1 ? { [9, 16] => 1.0, [10, 17] => 0.5, [11, 18] => 0.25 } : [11, 18]
+                        @city.slots(all: true) == 1 ? { [9, 16] => 1.0, [10, 17] => 0.5, [11, 18] => 0.25 } : [11, 18]
                       else
-                        @city.slots == 1 ? { [8, 9] => 1.0, [2, 10] => 0.5, [3, 4] => 0.25 } : [3, 4]
+                        @city.slots(all: true) == 1 ? { [8, 9] => 1.0, [2, 10] => 0.5, [3, 4] => 0.25 } : [3, 4]
                       end
-          elsif @edge && @city.slots == 1
+          elsif @edge && @city.slots(all: true) == 1
             revenue_location = REVENUE_LOCATIONS_BY_EDGE[@edge].min_by { |loc| combined_cost(loc[:regions]) }
             regions = revenue_location[:regions]
             rotation = revenue_location[:angle]

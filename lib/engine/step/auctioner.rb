@@ -79,6 +79,10 @@ module Engine
 
       protected
 
+      def bid_target(bid)
+        bid.company || bid.corporation || bid.minor
+      end
+
       def auctioning
         active_auction { |company, _| company }
       end
@@ -88,7 +92,7 @@ module Engine
       end
 
       def add_bid(bid)
-        company = bid.company || bid.corporation
+        company = bid_target(bid)
         entity = bid.entity
         price = bid.price
         min = min_bid(company)

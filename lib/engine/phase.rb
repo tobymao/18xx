@@ -19,13 +19,13 @@ module Engine
     def buying_train!(entity, train)
       next! while @next_on.include?(train.sym)
 
+      @game.rust_trains!(train, entity)
+      @depot.depot_trains(clear: true)
+
       train.events.each do |event|
         @game.send("event_#{event['type']}!")
       end
       train.events.clear
-
-      @game.rust_trains!(train, entity)
-      @depot.depot_trains(clear: true)
     end
 
     def current

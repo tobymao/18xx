@@ -21,17 +21,19 @@ module View
 
         @player = @game.player_by_id(@user['id']) if @user
 
-        enter = lambda do |event|
+        key_event = lambda do |event|
           event = Native(event)
-          code = event['keyCode']
+          key = event['key']
 
-          if code && code == 13
+          if key == 'Enter'
             message = event['target']['value']
             if message.strip != ''
               event['target']['value'] = ''
               sender = @player || Engine::Player.new(@game_data['user']['id'], @game_data['user']['name'])
               process_action(Engine::Action::Message.new(sender, message: message))
             end
+          elsif key == 'Escape'
+            `document.getElementById('game').focus()`
           end
         end
 
@@ -49,12 +51,15 @@ module View
                   margin: 'auto 0',
                 },
               }, [@user['name'] + ':']),
-            h(:input,
+            h('input#chatbar',
+              attrs: {
+                title: 'hotkey: c – esc to leave',
+              },
               style: {
                 marginLeft: '0.5rem',
                 flex: '1',
               },
-              on: { keyup: enter }),
+              on: { keyup: key_event }),
             ])
         end
 

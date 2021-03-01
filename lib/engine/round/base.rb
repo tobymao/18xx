@@ -16,6 +16,7 @@ module Engine
       DEFAULT_STEPS = [
         Step::EndGame,
         Step::Message,
+        Step::Program,
       ].freeze
 
       def initialize(game, steps, **opts)
@@ -64,10 +65,6 @@ module Engine
       # TODO: This is deprecated
       def can_act?(entity)
         active_step&.current_entity == entity
-      end
-
-      def teleported?(_entity)
-        false
       end
 
       def pass_description
@@ -161,6 +158,10 @@ module Engine
       end
 
       def stock?
+        false
+      end
+
+      def merger?
         false
       end
 

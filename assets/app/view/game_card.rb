@@ -68,8 +68,14 @@ module View
         when 'active'
           buttons << render_link(url(@gdata), -> { enter_game(@gdata) }, 'Enter')
           acting?(@user) ? color_for(:your_turn) : ENTER_GREEN
-        when 'finished', 'archived'
+        when 'finished'
           buttons << render_link(url(@gdata), -> { enter_game(@gdata) }, 'Review')
+          FINISHED_GREY
+        when 'archived'
+          buttons << h(:button, {
+                         attrs: { disabled: true },
+                         style: { margin: 0, padding: '0.2rem 0.5rem', cursor: 'unset' },
+                       }, 'Archived')
           FINISHED_GREY
         end
 
@@ -81,8 +87,8 @@ module View
                    end
       end
 
-      game = Engine::GAMES_BY_TITLE[@gdata['title']]
-      @min_p, _max_p = Engine.player_range(game)
+      game = Engine::GAME_META_BY_TITLE[@gdata['title']]
+      @min_p, _max_p = game::PLAYER_RANGE
 
       can_start = owner? && new? && players.size >= @min_p
       buttons << render_button('Start', -> { start_game(@gdata) }) if can_start
@@ -98,11 +104,6 @@ module View
         },
       }
 
-      text_props = {
-        style: {
-          color: contrast_on(bg_color),
-        },
-      }
       buttons_props = {
         style: {
           display: 'grid',
@@ -113,6 +114,12 @@ module View
         },
       }
       owner_props = { attrs: { title: @gdata['user']['name'].to_s } }
+
+      text_props = {
+        style: {
+          color: contrast_on(bg_color),
+        },
+      }
 
       h('div.header', div_props, [
         h(:div, text_props, [
@@ -159,7 +166,7 @@ module View
       selected_rules = @gdata.dig('settings', 'optional_rules') || []
       return if selected_rules.empty?
 
-      rendered_rules = Engine::GAMES_BY_TITLE[@gdata['title']]::OPTIONAL_RULES
+      rendered_rules = Engine::GAME_META_BY_TITLE[@gdata['title']]::OPTIONAL_RULES
         .select { |r| selected_rules.include?(r[:sym]) }
         .map { |r| r[:short_name] }
         .sort
@@ -219,7 +226,8 @@ module View
       end
 
       children = [h(:div, [h(:strong, 'Id: '), @gdata['id'].to_s])]
-      children << h(:div, [h(:i, 'Private game')]) if @gdata['status'] == 'new' && @gdata.dig('settings', 'unlisted')
+      children << h(:div, [h(:i, 'Invite only game')]) if @gdata['status'] == 'new' && @gdata.dig('settings',
+                                                                                                  'unlisted')
       children << h(:div, [h(:strong, 'Description: '), @gdata['description']]) unless @gdata['description'].empty?
 
       optional = render_optional_rules

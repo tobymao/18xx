@@ -169,7 +169,7 @@ Lay a tile and place a station token without connectivity
 - `tiles`: An array of tile numbers which may be placed at the
   teleport destination.
 - `cost`: Cost to use the teleport ability.
-- `fee_tile_lay`: If true, the tile is laid with 0 cost. Default false.
+- `free_tile_lay`: If true, the tile is laid with 0 cost. Default false.
 
 ## tile_discount
 
@@ -196,6 +196,8 @@ normal tile lay actions.
 - `hexes`: Array of hex coordinates where tiles may be laid.
 - `tiles`: Array of tile numbers which may be laid.
 - `cost`: Cost to use the ability.
+- `closed_when_used_up`: This ability has a count that is decreased each time it is used. If this attribute is true the private is closed when count reaches zero, if false the private
+remains open but the discount can no longer be used. Default false.
 - `free`: If true, the tiles are laid with 0 cost. Default false.
 - `discount`: Discount the cost of laying the tile by the given
   amount. Default 0.
@@ -254,7 +256,13 @@ Modified station token placement
   effectively increasing the city's size by one. (See 18 Los Angeles's optional
   company "Dewey, Cheatham, and Howe" or the corporations which get removed in
   1846 2p Variant for examples). Default nil.
-- `special_only`: If true, this ability may only be used by explicitly
+- `extra_slot`: Simlar to `cheater` except this token does not take a slot -
+  When `cheater` is used, when the city gets an extra city slot the 'cheater' token
+  goes into the newly opened slot. If `extra_slot` is used, when the city gets an extra
+  token slot, the new token slot is open - the extra token does not consume it. This
+  also means that an `extra_slot` token lay in an city with an open slot does not use
+  up the open slot.
+- `special_only`: If true, this ability may only be used by explicitly.
   activating the company to which it belongs (i.e., using the `SpecialTrack`
   step); if unset or false, `Engine::Step::Tokener#adjust_token_price_ability!`
   infers that the special ability ought to be used whenever a token is being

@@ -20,63 +20,64 @@ module View
       def render
         @spreadsheet_sort_by = Lib::Storage['spreadsheet_sort_by']
         @spreadsheet_sort_order = Lib::Storage['spreadsheet_sort_order']
-        @delta_value = Lib::Storage['delta_value']
-
-        children = []
-
-        top_line_props = {
-          style: {
-            display: 'grid',
-            grid: 'auto / repeat(auto-fill, minmax(20rem, 1fr))',
-            gap: '3rem 1.2rem',
-          },
-        }
-        top_line = h(:div, top_line_props, [
-          h(Bank, game: @game),
-          h(GameInfo, game: @game, layout: 'upcoming_trains'),
-        ].compact)
-
-        children << top_line
-        children << @game.token_note if @game.respond_to?(:token_note)
-        children << render_table
-        children << render_spreadsheet_controls
+        @delta_value = Lib::Storage['spreadsheet_delta_value']
+        @hide_not_floated = Lib::Storage['spreadsheet_hide_not_floated']
 
         h('div#spreadsheet', {
             style: {
               overflow: 'auto',
+              marginTop: '1rem',
             },
-          }, children.compact)
+          },
+          [render_corporation_table, render_player_table, render_extra_cards])
       end
 
-      def render_table
-        h(:table, {
-            style: {
-              margin: '1rem 0 1.5rem 0',
-              borderCollapse: 'collapse',
-              textAlign: 'center',
-              whiteSpace: 'nowrap',
-            },
-          }, [
-          h(:thead, render_title),
-          h(:tbody, render_corporations),
-          h(:thead, [
-            h(:tr, { style: { height: '1rem' } }, ''),
+      def render_corporation_table
+        h('div#corporation_table', [
+          h(:table, table_props, [
+            h(:thead, render_titles),
+            h(:tbody, render_corporations),
+            h(:tfoot, [
+              h(:tr, { style: { height: '1rem' } }, [
+                h(:td, { attrs: { colspan: @game.players.size + 8 } }, ''),
+                h(:td, { attrs: { colspan: 2 } }, @game.respond_to?(:token_note) ? @game.token_note : ''),
+                h(:td, { attrs: { colspan: 1 + @extra_size } }, ''),
+                h(:td, { attrs: { colspan: @halfpaid ? 6 : 3 } }, "[withheld]#{' ¦half-paid¦' if @halfpaid}"),
+              ]),
+            ]),
           ]),
-          h(:tbody, [
-            render_player_cash,
-            render_player_value,
-            render_player_liquidity,
-            render_player_shares,
-            render_player_companies,
-            render_player_certs,
-          ]),
-          h(:thead, [
-            h(:tr, { style: { height: '1rem' } }, ''),
-          ]),
-          *render_player_history,
         ])
-        # TODO: consider adding OR information (could do both corporation OR revenue and player change in value)
-        # TODO: consider adding train availability
+      end
+
+      def render_player_table
+        h('div#player_table', { style: { float: 'left', marginRight: '1rem' } }, [
+          h(:table, table_props, [
+            h(:thead),
+            h('tbody#player_details', [
+              render_player_cash,
+              render_player_value,
+              render_player_liquidity,
+              render_player_shares,
+              render_player_companies,
+              render_player_certs,
+            ]),
+            h(:thead, [
+              h(:th, { style: { minWidth: '5rem' } }, ''),
+              *@game.players.map do |p|
+                h('th.name.nowrap', p == @game.priority_deal_player ? pd_props : '', p.name)
+              end,
+            ]),
+            h('tbody#player_or_history', [*render_player_or_history]),
+          ]),
+          render_spreadsheet_controls,
+        ])
+      end
+
+      def render_extra_cards
+        h('div#extra_cards', { style: { marginBottom: '1rem' } }, [
+          h(Bank, game: @game),
+          h(GameInfo, game: @game, layout: 'upcoming_trains'),
+        ].compact)
       end
 
       def or_history(corporations)
@@ -84,12 +85,13 @@ module View
       end
 
       def render_history_titles(corporations)
-        or_history(corporations).map { |turn, round| h(:th, @game.or_description_short(turn, round)) }
+        or_history(corporations).map do |turn, round|
+          h(:th, render_sort_link(@game.or_description_short(turn, round), [turn, round]))
+        end
       end
 
-      def render_player_history
+      def render_player_or_history
         # OR history should exist in all
-        zebra_row = true
         last_values = nil
         @game.players.first.history.map do |h|
           values = @game.players.map do |p|
@@ -99,7 +101,6 @@ module View
 
           delta_v = (last_values || Array.new(values.size, 0)).map(&:-@).zip(values).map(&:sum) if @delta_value
           last_values = values
-          zebra_row = !zebra_row
           row_content = values.map.with_index do |v, i|
             disp_value = @delta_value ? delta_v[i] : v
             h('td.padded_number',
@@ -107,7 +108,7 @@ module View
               @game.format_currency(disp_value))
           end
 
-          h(:tr, zebra_props(zebra_row), [
+          h(:tr, tr_default_props, [
             h('th.left', h.round),
             *row_content,
           ])
@@ -115,47 +116,47 @@ module View
       end
 
       def render_history(corporation)
-        hist = corporation.operating_history
-        if hist.empty?
-          # This is a company that hasn't floated yet
-          []
-        else
-          or_history(@game.all_corporations).map do |x|
-            if hist[x]
-              props = {
-                style: {
-                  opacity: case hist[x].dividend.kind
-                           when 'withhold'
-                             '0.5'
-                           when 'half'
-                             '0.75'
-                           else
-                             '1.0'
-                           end,
-                  textDecorationLine: hist[x].dividend.kind == 'half' ? 'underline' : '',
-                  textDecorationStyle: hist[x].dividend.kind == 'half' ? 'dotted' : '',
-                  padding: '0 0.15rem',
-                },
-              }
-
-              if hist[x]&.dividend&.id&.positive?
-                link_h = history_link(hist[x].revenue.abs.to_s,
-                                      "Go to run #{x} of #{corporation.name}",
-                                      hist[x].dividend.id - 1)
-                h(:td, props, [link_h])
-              else
-                h(:td, props, hist[x].revenue.abs.to_s)
-              end
-            else
-              h(:td, '')
-            end
-          end
+        or_history(@game.all_corporations).map do |x|
+          render_or_history_row(corporation.operating_history, corporation, x)
         end
       end
 
-      def render_title
-        th_props = lambda do |cols, alt_bg = false, border_right = true|
-          props = zebra_props(alt_bg)
+      def render_or_history_row(hist, corporation, x)
+        if hist[x]
+          revenue_text, alpha =
+            case (hist[x].dividend.is_a?(Engine::Action::Dividend) ? hist[x].dividend.kind : 'withhold')
+            when 'withhold'
+              ["[#{hist[x].revenue}]", '0.5']
+            when 'half'
+              ["¦#{hist[x].revenue}¦", '0.75']
+            else
+              [hist[x].revenue.to_s, '1.0']
+            end
+
+          props = {
+            style: {
+              color: convert_hex_to_rgba(color_for(:font2), alpha),
+              padding: '0 0.15rem',
+            },
+          }
+
+          if hist[x]&.dividend&.id&.positive?
+            link_h = history_link(revenue_text,
+                                  "Go to run #{x} of #{corporation.name}",
+                                  hist[x].dividend.id - 1,
+                                  { textDecoration: 'none' })
+            h(:td, props, [link_h])
+          else
+            h(:td, props, revenue_text)
+          end
+        else
+          h(:td, '')
+        end
+      end
+
+      def render_titles
+        th_props = lambda do |cols, border_right = true|
+          props = tr_default_props
           props[:attrs] = { colspan: cols }
           props[:style][:padding] = '0.3rem'
           props[:style][:borderRight] = "1px solid #{color_for(:font2)}" if border_right
@@ -166,13 +167,6 @@ module View
 
         or_history_titles = render_history_titles(@game.all_corporations)
 
-        pd_props = {
-          style: {
-            background: 'salmon',
-            color: 'black',
-          },
-        }
-
         extra = []
         extra << h(:th, render_sort_link('Loans', :loans)) if @game.total_loans&.nonzero?
         extra << h(:th, render_sort_link('Shorts', :shorts)) if @game.respond_to?(:available_shorts)
@@ -180,23 +174,24 @@ module View
           extra << h(:th, render_sort_link('Buying Power', :buying_power))
           extra << h(:th, render_sort_link('Interest Due', :interest))
         end
+        @extra_size = extra.size
         [
           h(:tr, [
-            h(:th, ''),
+            h(:th, { style: { minWidth: '5rem' } }, ''),
             h(:th, th_props[@game.players.size], 'Players'),
-            h(:th, th_props[2, true], 'Bank'),
+            h(:th, th_props[2], 'Bank'),
             h(:th, th_props[2], 'Prices'),
-            h(:th, th_props[5 + extra.size, true, false], 'Corporation'),
+            h(:th, th_props[5 + extra.size, false], ['Corporation ', render_toggle_not_floated_link]),
             h(:th, ''),
-            h(:th, th_props[or_history_titles.size, false, false], 'OR History'),
+            h(:th, th_props[or_history_titles.size, false], 'OR History'),
           ]),
           h(:tr, [
             h(:th, { style: { paddingBottom: '0.3rem' } }, render_sort_link('SYM', :id)),
             *@game.players.map do |p|
-              h('th.name.nowrap.right', p == @game.priority_deal_player ? pd_props : '', render_sort_link(p.name, p.id))
+              h('th.name.nowrap', p == @game.priority_deal_player ? pd_props : '', render_sort_link(p.name, p.id))
             end,
-            h(:th, @game.ipo_name),
-            h(:th, 'Market'),
+            h(:th, render_sort_link(@game.ipo_name, :ipo_shares)),
+            h(:th, render_sort_link('Market', :market_shares)),
             h(:th, render_sort_link(@game.ipo_name, :par_price)),
             h(:th, render_sort_link('Market', :share_price)),
             h(:th, render_sort_link('Cash', :cash)),
@@ -244,19 +239,50 @@ module View
       end
 
       def toggle_delta_value
-        Lib::Storage['delta_value'] = !@delta_value
+        Lib::Storage['spreadsheet_delta_value'] = !@delta_value
         update
       end
 
+      def render_toggle_not_floated_link
+        toggle = lambda do
+          Lib::Storage['spreadsheet_hide_not_floated'] = !@hide_not_floated
+          update
+        end
+
+        h('span.small_font', [
+          '(',
+          h(:a,
+            {
+              attrs: {
+                onclick: 'return false',
+                title: @hide_not_floated ? 'Show all corporations' : 'Hide not floated corporations',
+              },
+              on: { click: toggle },
+              style: {
+                cursor: 'pointer',
+                textDecoration: 'underline',
+              },
+            },
+            @hide_not_floated ? 'floated' : 'all'),
+          ')',
+         ])
+      end
+
       def render_spreadsheet_controls
-        h(:button, { on: { click: -> { toggle_delta_value } } }, "Show #{@delta_value ? 'Total' : 'Delta'} Value")
+        h('div#spreadsheet_controls', { style: { marginBottom: '1rem' } }, [
+          h(:button, {
+              style: { minWidth: '9.5rem' },
+              on: { click: -> { toggle_delta_value } },
+            },
+            "Show #{@delta_value ? 'Total' : 'Delta'} Values"),
+        ])
       end
 
       def render_corporations
         current_round = @game.turn_round_num
 
-        sorted_corporations.map.with_index do |corp_array, index|
-          render_corporation(corp_array[1], corp_array[0], current_round, index)
+        sorted_corporations.map do |corp_array|
+          render_corporation(corp_array[1], corp_array[0], current_round)
         end
       end
 
@@ -274,33 +300,41 @@ module View
         end
 
         result.sort_by! do |operating_order, corporation|
-          case @spreadsheet_sort_by
-          when :cash
-            corporation.cash
-          when :id
-            corporation.id
-          when :order
-            operating_order
-          when :par_price
-            corporation.par_price&.price || 0
-          when :share_price
-            corporation.share_price&.price || 0
-          when :loans
-            corporation.loans.size
-          when :short
-            @game.available_shorts(corporation)
-          when :buying_power
-            @game.buying_power(corporation, full: true)
-          when :interest
-            @game.interest_owed(corporation)
-          when :trains
-            corporation.floated? ? corporation.trains.size : -1
-          when :tokens
-            @game.count_available_tokens(corporation)
-          when :companies
-            corporation.companies.size
+          if @spreadsheet_sort_by.is_a?(Array)
+            corporation.operating_history[@spreadsheet_sort_by]&.revenue || -1
           else
-            @game.player_by_id(@spreadsheet_sort_by)&.num_shares_of(corporation)
+            case @spreadsheet_sort_by
+            when :id
+              corporation.id
+            when :ipo_shares
+              num_shares_of(corporation, corporation)
+            when :market_shares
+              num_shares_of(@game.share_pool, corporation)
+            when :share_price
+              [corporation.share_price&.price || 0, -operating_order]
+            when :par_price
+              corporation.par_price&.price || 0
+            when :cash
+              corporation.cash
+            when :order
+              operating_order
+            when :trains
+              corporation.floated? ? [corporation.trains.size, corporation.trains.max_by(&:name).to_s] : [-1, '']
+            when :tokens
+              @game.count_available_tokens(corporation)
+            when :loans
+              corporation.loans.size
+            when :shorts
+              @game.available_shorts(corporation) if @game.respond_to?(:available_shorts)
+            when :buying_power
+              @game.buying_power(corporation, full: true)
+            when :interest
+              @game.interest_owed(corporation) if @game.total_loans.positive?
+            when :companies
+              corporation.companies.size
+            else
+              @game.player_by_id(@spreadsheet_sort_by)&.num_shares_of(corporation)
+            end
           end
         end
 
@@ -308,21 +342,23 @@ module View
         result
       end
 
-      def render_corporation(corporation, operating_order, current_round, index)
+      def render_corporation(corporation, operating_order, current_round)
+        return '' if @hide_not_floated && !corporation.floated?
+
         border_style = "1px solid #{color_for(:font2)}"
 
         name_props =
           {
             style: {
-              background: corporation.color,
+              backgroundColor: corporation.color,
               color: corporation.text_color,
             },
           }
 
-        tr_props = zebra_props(index.odd?)
+        tr_props = tr_default_props
         market_props = { style: { borderRight: border_style } }
         if !corporation.floated?
-          tr_props[:style][:opacity] = '0.6'
+          tr_props[:style][:opacity] = '0.5'
         elsif corporation.share_price&.highlight? &&
           (color = StockMarket::COLOR_MAP[@game.class::STOCKMARKET_COLORS[corporation.share_price.type]])
           market_props[:style][:backgroundColor] = color
@@ -379,39 +415,39 @@ module View
       end
 
       def render_companies(entity)
-        h(:td, entity.companies.map(&:sym).join(', '))
+        h('td.padded_number', entity.companies.map(&:sym).join(', '))
       end
 
       def render_player_companies
-        h(:tr, zebra_props, [
-          h(:th, 'Companies'),
+        h(:tr, tr_default_props, [
+          h('th.left', 'Companies'),
           *@game.players.map { |p| render_companies(p) },
         ])
       end
 
       def render_player_cash
-        h(:tr, zebra_props, [
+        h(:tr, tr_default_props, [
           h('th.left', 'Cash'),
           *@game.players.map { |p| h('td.padded_number', @game.format_currency(p.cash)) },
         ])
       end
 
       def render_player_value
-        h(:tr, zebra_props(true), [
+        h(:tr, tr_default_props, [
           h('th.left', 'Value'),
           *@game.players.map { |p| h('td.padded_number', @game.format_currency(@game.player_value(p))) },
         ])
       end
 
       def render_player_liquidity
-        h(:tr, zebra_props, [
+        h(:tr, tr_default_props, [
           h('th.left', 'Liquidity'),
           *@game.players.map { |p| h('td.padded_number', @game.format_currency(@game.liquidity(p))) },
         ])
       end
 
       def render_player_shares
-        h(:tr, zebra_props(true), [
+        h(:tr, tr_default_props, [
           h('th.left', 'Shares'),
           *@game.players.map do |p|
             h('td.padded_number', @game.all_corporations.sum { |c| c.minor? ? 0 : num_shares_of(p, c) })
@@ -422,8 +458,8 @@ module View
       def render_player_certs
         cert_limit = @game.cert_limit
         props = { style: { color: 'red' } }
-        h(:tr, zebra_props(true), [
-          h('th.left', "Certs/#{cert_limit}"),
+        h(:tr, tr_default_props, [
+          h('th.left', 'Certs' + (@game.show_game_cert_limit? ? "/#{cert_limit}" : '')),
           *@game.players.map { |player| render_player_cert_count(player, cert_limit, props) },
         ])
       end
@@ -433,12 +469,30 @@ module View
         h('td.padded_number', num_certs > cert_limit ? props : '', num_certs)
       end
 
-      def zebra_props(alt_bg = false)
-        factor = Native(`window.matchMedia('(prefers-color-scheme: dark)').matches`) ? 0.9 : 0.5
+      def tr_default_props
         {
           style: {
-            backgroundColor: alt_bg ? convert_hex_to_rgba(color_for(:bg2), factor) : color_for(:bg2),
+            backgroundColor: color_for(:bg2),
             color: color_for(:font2),
+          },
+        }
+      end
+
+      def table_props
+        {
+          style: {
+            borderCollapse: 'collapse',
+            textAlign: 'center',
+            whiteSpace: 'nowrap',
+          },
+        }
+      end
+
+      def pd_props
+        {
+          style: {
+            backgroundColor: 'salmon',
+            color: 'black',
           },
         }
       end

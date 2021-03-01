@@ -16,7 +16,7 @@ module Engine
 
     attr_accessor :blocks_lay, :hex, :icons, :index, :legal_rotations, :location_name,
                   :name, :opposite, :reservations, :upgrades
-    attr_reader :borders, :cities, :color, :edges, :junction, :nodes, :label,
+    attr_reader :borders, :cities, :color, :edges, :junction, :nodes, :labels,
                 :parts, :preprinted, :rotation, :stops, :towns, :offboards, :blockers,
                 :city_towns, :unlimited, :stubs, :partitions, :id, :frame
 
@@ -189,6 +189,7 @@ module Engine
       @blocks_lay = nil
       @reservation_blocks = opts[:reservation_blocks] || false
       @unlimited = opts[:unlimited] || false
+      @labels = []
       @opposite = nil
       @id = "#{@name}-#{@index}"
 
@@ -453,7 +454,12 @@ module Engine
 
     # Used to set label for a recently placed tile
     def label=(label_name)
-      @label = label_name ? Part::Label.new(label_name) : nil
+      @labels.clear
+      @labels << Part::Label.new(label_name) if label_name
+    end
+
+    def label
+      @labels.last
     end
 
     def restore_borders(edges = nil)
@@ -489,7 +495,7 @@ module Engine
           @cities << part
           @city_towns << part
         elsif part.label?
-          @label = part
+          @labels << part
         elsif part.path?
           @paths << part
         elsif part.town?
