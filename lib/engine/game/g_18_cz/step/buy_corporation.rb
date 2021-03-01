@@ -29,10 +29,11 @@ module Engine
 
             price_range = price_range(entity, corporation)
 
-            raise GameError,
-                  "#{entity.name} cannot buy #{corporation.name} for #{price} per share.
+            unless price.between?(price_range[0], price_range[1])
+              raise GameError,
+                    "#{entity.name} cannot buy #{corporation.name} for #{price} per share.
                   The price must be between #{price_range[0]} and #{price_range[1]}"
-                  unless price.between?(price_range[0], price_range[1])
+            end
 
             max_cost = corporation.num_player_shares * price
             raise GameError,
