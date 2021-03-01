@@ -2726,6 +2726,12 @@ module Engine
           ipoed.sort + others
         end
 
+        def status_str(corporation)
+          return if corporation.type != :minor || !corporation.share_price
+
+          "Market value #{format_currency(corporation.share_price.price)}"
+        end
+
         def stock_round
           G1822::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
