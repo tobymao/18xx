@@ -2632,7 +2632,15 @@ module Engine
         end
 
         def status_str(corp)
-          corp.type.capitalize
+          train_type = case corp.type
+                       when :small
+                         'Normal '
+                       when :medium
+                         'Plus-'
+                       else
+                         'E-'
+                       end
+          "#{corp.type.capitalize} / #{train_type}Trains"
         end
 
         def block_lay_for_purple_tiles
