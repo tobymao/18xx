@@ -680,6 +680,7 @@ module Engine
                 price: 0,
                 teleport_price: 0,
                 count: 1,
+                extra: true,
               },
             ],
             color: nil,
