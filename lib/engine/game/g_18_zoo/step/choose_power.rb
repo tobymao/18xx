@@ -18,7 +18,19 @@ module Engine
             end
           end
           @choices[:greek_to_me] = 'It’s all greek to me' if company_greek?(entity)
-          @choices[:whatsup] = 'Whatsup' if company_whatsup?(entity)
+          if company_whatsup?(entity)
+            train = @game.depot.depot_trains&.first
+            p train
+            entity.presidencies.select do |c|
+              p c
+              p c.cash
+              p @game.depot.depot_trains&.first.price
+              c.cash >= @game.depot.depot_trains&.first.price
+              true
+            end.each do |corporation|
+              @choices["whatsup:#{corporation.id}:#{train.id}"] = "Whatsup (#{corporation.id}) (#{train.name})"
+            end
+          end
           @choices
         end
 
@@ -37,7 +49,8 @@ module Engine
         end
 
         def company_whatsup?(entity)
-          entity&.companies&.include?(@game.whatsup)
+          entity&.companies&.include?(@game.whatsup) &&
+            entity.presidencies.any? { |c| c.cash >= @game.depot.depot_trains&.first.price }
         end
 
         def company_greek?(entity)
@@ -62,8 +75,19 @@ module Engine
             @game.holiday.close!
           end
 
-          if action.choice == 'whatsup'
-            raise GameError, 'Power not yet implemented'
+          if action.choice.start_with? 'whatsup:'
+            split = action.choice.split(':')
+            corporation = @game.corporation_by_id(split[1])
+            train = @game.train_by_id(split[2])
+            @game.buy_train(corporation, train, train.price)
+            @game.phase.buying_train!(corporation, train)
+            train.operated = true
+            @game.stock_market.move_right(corporation)
+            # @game.log_share_price(entity, prev, '(new-train bonus)')
+
+            @log << "#{current_entity.name} uses \"Whatsup\" for #{corporation.name}, paying #{train.price} to buy a #{train.name}"
+
+            @game.whatsup.close!
           end
 
           if action.choice == 'greek_to_me'
