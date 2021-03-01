@@ -366,58 +366,37 @@ module View
         [h(:h3, 'Game Progress'), h(:div, { style: { display: 'flex', overflowX: 'auto' } }, children.flatten)]
       end
 
-      def cell_props(type, active)
-        base_style = {
-          height: '55px',
-          border: 'solid 1px rgba(0,0,0,0.2)',
-          display: 'flex',
-          flexDirection: 'column',
-          boxSizing: 'border-box',
-        }
+      def cell_props(type, current)
+        bg_color, font_color, justify =
+          case type
+          when :SR, :PRE
+            [color_for(:green), contrast_on(color_for(:green)), 'space-between']
+          when :Export
+            [color_for(:yellow), contrast_on(color_for(:yellow)), 'center']
+          else
+            [color_for(:bg2), color_for(:font2), 'space-between']
+          end
 
-        default_props = {
+        props = {
           style: {
-            padding: '5px',
-            backgroundColor: color_for(:bg2),
-            color: color_for(:font2),
-            justifyContent: 'space-between',
+            display: 'flex',
+            flexDirection: 'column',
+            boxSizing: 'border-box',
+            height: '55px',
+            padding: '4px',
+            border: '1px solid rgba(0,0,0,0.2)',
+            justifyContent: justify,
+            backgroundColor: bg_color,
+            color: font_color,
           },
         }
-
-        sr_props = {
-          style: {
-            padding: '5px',
-            backgroundColor: color_for(:green),
-            color: contrast_on(color_for(:green)),
-            justifyContent: 'space-between',
-          },
-        }
-
-        export_props = {
-          style: {
-            padding: '5px 1px',
-            backgroundColor: color_for(:yellow),
-            color: contrast_on(color_for(:yellow)),
-            justifyContent: 'center',
-          },
-        }
-
-        current_round_style = {
-          fontWeight: 'bold',
-          border: "4px solid #{color_for(:red)}",
-        }
-
-        props = case type
-                when :SR, :PRE
-                  sr_props
-                when :Export
-                  export_props
-                else
-                  default_props
-                end
-
-        props[:style] = props[:style].merge(base_style)
-        props[:style] = props[:style].merge(current_round_style) if active
+        props[:style].merge!(
+          {
+            fontWeight: 'bold',
+            border: "4px solid #{color_for(:red)}",
+            padding: '1px 4px',
+          }
+        ) if current
 
         props
       end
