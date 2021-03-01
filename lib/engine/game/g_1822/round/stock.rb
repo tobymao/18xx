@@ -58,8 +58,8 @@ module Engine
             remove_minor_and_first_train(remove_minor) if remove_minor
             remove_first_train if !remove_minor && @game.bidbox_minors.empty?
 
-            # Increase player loans with 50% interest
-            @game.add_interest_player_loans!
+            # Finish of the stock round
+            @game.stock_round_finished
 
             super
           end

@@ -74,30 +74,44 @@ module Engine
       end
 
       it 'can\'t buy over 60%' do
+        goto_new_sr!
         player_0.cash = 10_000
         market.set_par(corp_0, market.market[7][0])
         6.times { game.share_pool.buy_shares(player_0, corp_0.shares[0]) }
+        # Force game to SR 2
+        subject = goto_new_sr!
         expect(subject.active_step.can_buy?(player_0, corp_0.shares[0])).to eq(false)
       end
 
       it 'can buy gray over 60%' do
+        goto_new_sr!
         player_0.cash = 10_000
         market.set_par(corp_0, market.market[8][0])
         6.times { game.share_pool.buy_shares(player_0, corp_0.shares[0]) }
+        # Force game to SR 2
+        subject = goto_new_sr!
         expect(subject.active_step.can_buy?(player_0, corp_0.shares[0])).to eq(true)
       end
 
       it 'must sell when over 60%' do
+        goto_new_sr!
         player_0.cash = 10_000
         market.set_par(corp_0, market.market[7][0])
         7.times { game.share_pool.buy_shares(player_0, corp_0.shares[0]) }
+
+        # Force game to SR 2
+        subject = goto_new_sr!
+
         expect(subject.active_step.must_sell?(player_0)).to eq(true)
       end
 
       it 'needn\'t sell gray when over 60%' do
+        goto_new_sr!
         player_0.cash = 10_000
         market.set_par(corp_0, market.market[8][0])
         7.times { game.share_pool.buy_shares(player_0, corp_0.shares[0]) }
+        # Force game to SR 2
+        subject = goto_new_sr!
         expect(subject.active_step.must_sell?(player_0)).to eq(false)
       end
 

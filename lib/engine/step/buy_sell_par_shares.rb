@@ -90,6 +90,7 @@ module Engine
 
       def must_sell?(entity)
         return false if @game.can_hold_above_limit?(entity)
+        return false unless can_sell_any?(entity)
 
         @game.num_certs(entity) > @game.cert_limit ||
           !@game.corporations.all? { |corp| corp.holding_ok?(entity) }

@@ -391,7 +391,7 @@ module Engine
         init_starting_cash(@players, @bank)
         @share_pool = init_share_pool
         @hexes = init_hexes(@companies, @corporations)
-        @graph = Graph.new(self)
+        @graph = init_graph
 
         # call here to set up ids for all cities before any tiles from @tiles
         # can be placed onto the map
@@ -1137,6 +1137,10 @@ module Engine
         city.place_token(corporation, token)
       end
 
+      def graph_for_entity(_entity)
+        @graph
+      end
+
       def upgrade_cost(tile, hex, entity)
         ability = entity.all_abilities.find do |a|
           a.type == :tile_discount &&
@@ -1578,6 +1582,10 @@ module Engine
       end
 
       private
+
+      def init_graph
+        Graph.new(self)
+      end
 
       def init_bank
         cash = self.class::BANK_CASH

@@ -83,9 +83,14 @@ module View
           merge = lambda do
             if @selected_corporation
               do_merge = lambda do
+                to_merge = if @selected_corporation.corporation?
+                             { corporation: @selected_corporation }
+                           else
+                             { minor: @selected_corporation }
+                           end
                 process_action(Engine::Action::Merge.new(
                   @mergeable_entity,
-                  corporation: @selected_corporation,
+                  **to_merge
                 ))
               end
 

@@ -3,6 +3,9 @@
 require_relative 'meta'
 require_relative '../base'
 require_relative 'step/buy_sell_par_shares'
+require_relative 'step/draft'
+require_relative 'step/track'
+require_relative 'step/destinate'
 
 module Engine
   module Game
@@ -10,7 +13,7 @@ module Engine
       class Game < Game::Base
         include_meta(G1873::Meta)
 
-        attr_reader :mine_12, :corporation_info, :minor_info, :mhe
+        attr_reader :mine_12, :corporation_info, :minor_info, :mhe, :mine_graph, :reserved_tiles
         attr_accessor :premium, :premium_order
 
         register_colors(tan: '#d6a06c')
@@ -45,7 +48,9 @@ module Engine
 
         SELL_MOVEMENT = :down_share
 
-        TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded, cost: 10 }].freeze
+        # there are special rules for mines, and RRs that need to complete their concession route
+        TILE_LAYS = [{ lay: true, upgrade: true, cost: 0 },
+                     { lay: :double_lay, upgrade: :double_lay, cost: 0 }].freeze
 
         # FIXME
         # EVENTS_TEXT = Base::EVENTS_TEXT.merge(
@@ -65,6 +70,56 @@ module Engine
         RAILWAY_MIN_BID = 100
         MIN_BID_INCREMENT = 10
         MHE_START_PRICE = 120
+
+        CONCESSION_TILES = {
+          # HBE
+          'B17' => { entity: 'HBE', tile: '78', exits: [0, 4], cost: 0 },
+          # NWE
+          'C8' => { entity: 'NWE', tile: '79', exits: [0, 3], cost: 150 },
+          'D7' => { entity: 'NWE', tile: '956', exits: [0, 3], cost: 50 },
+          'E6' => { entity: 'NWE', tile: '956', exits: [0, 3], cost: 50 },
+          'H7' => { entity: 'NWE', tile: '78', exits: [2, 4], cost: 100 },
+          'I8' => { entity: 'NWE', tile: '956', exits: [0, 3], cost: 150 },
+          # WBE
+          'C10' => { entity: 'WBE', tile: '78', exits: [2, 4], cost: 0 },
+          'C12' => { entity: 'WBE', tile: '956', exits: [1, 4], cost: 0 },
+          'C14' => { entity: 'WBE', tile: '76', exits: [1, 5], cost: 0 },
+          'D15' => { entity: 'WBE', tile: '974', exits: [1, 2, 3, 5], cost: 0 },
+          # SHE
+          'F3' => { entity: 'SHE', tile: '956', exits: [0, 3], cost: 150 },
+          'G2' => { entity: 'SHE', tile: '956', exits: [0, 3], cost: 150 },
+          # KEZ
+          'H3' => { entity: 'KEZ', tile: '78', exits: [3, 5], cost: 100 },
+          # GHE
+          'H19' => { entity: 'GHE', tile: '78', exits: [1, 3], cost: 150 },
+        }.freeze
+
+        STATE_NETWORK = %w[
+         B9
+         E20
+         I2
+        ].freeze
+
+        DOUBLE_LAY_TILES = %w[
+          77
+          78
+          79
+          75
+          76
+          956
+          957
+          958
+          959
+          960
+          961
+          964
+          965
+          966
+          967
+          968
+          969
+          970
+        ].freeze
 
         def location_name(coord)
           @location_names ||= game_location_names
@@ -97,6 +152,17 @@ module Engine
             )
           end
           @mhe.owner = @share_pool
+          @mine_graph = Graph.new(self, home_as_token: true, no_blocking: true)
+          @reserved_tiles = Hash.new { |h, k| h[k] = {} }
+          @state_network_hexes = STATE_NETWORK.map { |h| hex_by_id(h) }
+        end
+
+        def init_graph
+          Graph.new(self, skip_track: :broad)
+        end
+
+        def graph_for_entity(entity)
+          entity.minor? ? @mine_graph : @graph
         end
 
         def load_minor_extended
@@ -162,7 +228,7 @@ module Engine
         def company_header(company)
           if get_mine(company)
             'INDEPENDENT MINE'
-          elsif @corporations.any? { |c| c.id == company.id && @corporation_info[c][:concession_pending] }
+          elsif @corporations.any? { |c| c.id == company.id && concession_pending?(c) }
             'CONCESSION'
           else
             'PURCHASE OPTION'
@@ -232,7 +298,7 @@ module Engine
             @turn > 1
           else
             num_vh = @minors.count { |m| m.owner == player && @minor_info[m][:vor_harzer] }
-            num_vh > 1 && (@turn > 1 || @mine_12.owner == player)
+            num_vh >= 1 && (@turn > 1 || @mine_12.owner == player)
           end
         end
 
@@ -240,7 +306,6 @@ module Engine
           'Form Public Mining Company'
         end
 
-        # FIXME: public mines
         def float_corporation(corporation)
           return if corporation == @mhe
 
@@ -249,7 +314,7 @@ module Engine
           num_ipo_shares = corporation.ipo_shares.size
           added_cash = num_ipo_shares * corporation.share_price.price
 
-          replace_company(corporation)
+          replace_company!(corporation)
 
           return unless added_cash.positive?
 
@@ -286,7 +351,7 @@ module Engine
         end
 
         # replace railway dummy concession company with a dummy purchase option company
-        def replace_company(corporation)
+        def replace_company!(corporation)
           return unless railway?(corporation)
 
           old_co = @companies.find { |c| c.id == corporation.id }
@@ -307,6 +372,56 @@ module Engine
 
         def railway?(entity)
           entity.corporation? && @corporation_info[entity][:type] == :railway
+        end
+
+        def concession_pending?(entity)
+          entity.corporation? &&
+            @corporation_info[entity][:type] == :railway &&
+            @corporation_info[entity][:concession_pending]
+        end
+
+        def concession_incomplete?(entity)
+          entity.corporation? &&
+            @corporation_info[entity][:type] == :railway &&
+            @corporation_info[entity][:concession_incomplete]
+        end
+
+        def concession_route_done?(entity)
+          return true unless concession_incomplete?(entity)
+
+          concession_hexes(entity).all? do |h|
+            info = CONCESSION_TILES[h]
+            (hex_by_id(h).tile.exits & info[:exits]).size == info[:exits].size
+          end
+        end
+
+        def concession_hexes(entity)
+          CONCESSION_TILES.keys.select { |h| CONCESSION_TILES[h][:entity] == entity.name }
+        end
+
+        def concession_complete!(entity)
+          return unless concession_incomplete?(entity)
+
+          @corporation_info[entity][:concession_incomplete] = false
+          @log << "#{entity.name} has a complete concession route"
+        end
+
+        def concession_unpend!(entity)
+          return unless concession_pending?(entity)
+
+          @corporation_info[entity][:concession_pending] = false
+          @log << "#{entity.name} has completed its concession requirements"
+        end
+
+        def advance_concession_phase!(entity)
+          return unless concession_pending?(entity) && !(info = @corporation_info[entity])[:advanced]
+
+          info[:concession_phase] = (info[:concession_phase].to_i - 1).to_s
+          info[:advanced] = true
+        end
+
+        def connected_mine?(entity)
+          entity.minor? && @minor_info[entity][:connected]
         end
 
         def init_round
@@ -356,7 +471,8 @@ module Engine
         # FIXME
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
-            Engine::Step::Track,
+            G1873::Step::Track,
+            G1873::Step::Destinate,
             # Engine::Step::Token,
             # Engine::Step::Route,
             # Engine::Step::Dividend,
@@ -409,10 +525,83 @@ module Engine
           end
         end
 
-        # FIXME
+        def operating_order
+          open_private_mines + @corporations.select(&:floated?).sort
+        end
+
+        def concession_hex(hex)
+          CONCESSION_TILES[hex.id]
+        end
+
+        # concession route in this hex
+        def reserve_tile!(hex, tile)
+          return false unless (ch = concession_hex(hex))
+
+          # look for an upgrade to the tile being laid that has the exits
+          # needed by the concession route
+          res_tile = @tiles.find do |t|
+            exits_match?(t.exits, tile.exits, ch[:exits]) &&
+              upgrades_to?(tile, t) &&
+              t.cities.size == tile.cities.size
+          end
+
+          return false unless res_tile
+
+          add_tile_reservation!(hex, res_tile)
+          res_tile
+        end
+
+        # see if exits_a contain exits_b and exits_c under some rotation
+        def exits_match?(exits_a, exits_b, exits_c)
+          6.times do |rot|
+            rot_exits = rotate_exits(exits_a, rot)
+            return true if (rot_exits & exits_b).size == exits_b.size && (rot_exits & exits_c).size == exits_c.size
+          end
+          false
+        end
+
+        def rotate_exits(exits, rot)
+          exits.map { |e| (e + rot) % 6 }
+        end
+
+        def add_tile_reservation!(hex, tile)
+          ch = concession_hex(hex)
+
+          @log << "Reserving tile ##{tile.name} for #{ch[:entity]} concession route"
+
+          # if there already is a reserved tile for this hex, make the old one available again
+          @tiles << @reserved_tiles[hex.id][:tile] unless @reserved_tiles[hex.id].empty?
+
+          @reserved_tiles[hex.id] = { tile: tile, entity: ch[:entity] }
+          @tiles.delete(tile)
+        end
+
+        # If tile is in reservation hex and it completes the route there,
+        # free the reservation
+        # If it was a different tile that was reserved, put the reserved
+        # tile back into the tile list
+        def free_tile_reservation!(hex, tile)
+          return if @reserved_tiles[hex.id].empty?
+
+          puts 'found a reservation to free'
+
+          ch = concession_hex(hex)
+          return unless (ch[:exits] & tile.exits).size != ch[:exits].size
+
+          @tiles << @reserved_tiles[hex.id][:tile] if @reserved_tiles[hex.id][:tile] != tile
+          @reserved_tiles.delete(hex.id)
+        end
+
+        def double_lay?(tile)
+          DOUBLE_LAY_TILES.include?(tile.name)
+        end
+
         def upgrades_to?(from, to, special = false)
           # correct color progression?
-          return false unless Engine::Tile::COLORS.index(to.color) == (Engine::Tile::COLORS.index(from.color) + 1)
+          if !(reserved_tiles[from.hex.id] && reserved_tiles[from.hex.id][:tile] == to) &&
+            (Engine::Tile::COLORS.index(to.color) != (Engine::Tile::COLORS.index(from.color) + 1))
+            return false
+          end
 
           # honors pre-existing track?
           return false unless from.paths_are_subset_of?(to.paths)
@@ -421,19 +610,38 @@ module Engine
           return true if special
 
           # correct label?
-          return false if from.label != to.label && !(from.label.to_s == 'K' && to.color == :yellow)
+          return false if from.label != to.label
+
+          # old tile doesn't have a lock icon and it's not yet phase 3
+          return false if !@phase.tiles.include?(:green) && from.icons.any? { |i| i.name == 'lock' }
 
           # honors existing town/city counts?
-          # - allow labelled cities to upgrade regardless of count; they're probably
-          #   fine (e.g., 18Chesapeake's OO cities merge to one city in brown)
-          # - TODO: account for games that allow double dits to upgrade to one town
-          return false if from.towns.size != to.towns.size
-          return false if (!from.label || from.label.to_s == 'K') && from.cities.size != to.cities.size
-
-          # handle case where we are laying a yellow OO tile and want to exclude single-city tiles
-          return false if (from.color == :white) && from.label.to_s == 'OO' && from.cities.size != to.cities.size
+          # 1873: towns always upgrade to cities
+          # 1873: single yellow cities can upgrate to single city or OO,
+          #       except B-label tile is one city to one city
+          # 1873: framed tiles can only upgrade to framed tiles
+          return false if from.city_towns.empty? && !to.city_towns.empty?
+          return false if !from.towns.empty? && from.towns.size != to.cities.size
+          return false if !from.cities.empty? && to.cities.empty?
+          return false if from.label.to_s == 'B' && from.cities.size != to.cities.size
+          return false if (from.frame && !to.frame) || (!from.frame && to.frame)
 
           true
+        end
+
+        def check_mine_connected?(entity)
+          return false unless entity.minor?
+          return true if @minor_info[entity][:connected]
+
+          @state_network_hexes.any? { |h| @mine_graph.reachable_hexes(entity)[h] }
+        end
+
+        def connect_mine!(entity)
+          return unless entity.minor?
+
+          old = @minor_info[entity][:connected]
+          @minor_info[entity][:connected] = true
+          @log << "Mine #{entity.name} is now connected to state railway network" unless old
         end
 
         # FIXME: take care of compulsory train
@@ -602,11 +810,11 @@ module Engine
         def game_tiles
           {
             '77' => 2,
-            '78' => 10,
-            '79' => 4,
+            '78' => 'unlimited',
+            '79' => 'unlimited',
             '75' => 4,
-            '76' => 7,
-            '956' => 10,
+            '76' => 'unlimited',
+            '956' => 'unlimited',
             '957' => 2,
             '958' => 2,
             '959' => 1,
@@ -959,7 +1167,9 @@ module Engine
                 concession_routes: [%w[B19 B17 C16 D15]],
                 concession_cost: 0,
                 concession_pending: true,
+                concession_incomplete: true,
                 extra_tokens: 4,
+                advanced: true,
               },
             },
             {
@@ -987,7 +1197,9 @@ module Engine
                 concession_routes: [%w[G20 H19 G17 I18]],
                 concession_cost: 150,
                 concession_pending: true,
+                concession_incomplete: true,
                 extra_tokens: 3,
+                advanced: true,
               },
             },
             {
@@ -1015,7 +1227,9 @@ module Engine
                 concession_routes: [%w[B9 C8 D7 E6 F5 G6], %w[G6 H7 H9 I8 J7]],
                 concession_cost: 500,
                 concession_pending: true,
+                concession_incomplete: true,
                 extra_tokens: 3,
+                advanced: false,
               },
             },
             {
@@ -1041,7 +1255,9 @@ module Engine
                 concession_routes: [%w[E4 F3 G2 H1 I2]],
                 concession_cost: 300,
                 concession_pending: true,
+                concession_incomplete: true,
                 extra_tokens: 2,
+                advanced: false,
               },
             },
             {
@@ -1067,7 +1283,9 @@ module Engine
                 concession_routes: [%w[G4 H3 I4]],
                 concession_cost: 100,
                 concession_pending: true,
+                concession_incomplete: true,
                 extra_tokens: 2,
+                advanced: false,
               },
             },
             {
@@ -1093,7 +1311,9 @@ module Engine
                 concession_routes: [%w[B9 C10 C12 C14 D15]],
                 concession_cost: 0,
                 concession_pending: true,
+                concession_incomplete: true,
                 extra_tokens: 2,
+                advanced: false,
               },
             },
             {
@@ -1119,7 +1339,9 @@ module Engine
                 concession_routes: [],
                 concession_cost: 0,
                 concession_pending: false,
+                concession_incomplete: true,
                 extra_tokens: 2,
+                advanced: true,
               },
             },
             {
