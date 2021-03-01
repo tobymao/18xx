@@ -408,9 +408,12 @@ module View
         }
 
         props = case type
-                when :SR, :PRE then sr_props
-                when :Export then export_props
-                else default_props
+                when :SR, :PRE
+                  sr_props
+                when :Export 
+                  export_props
+                else
+                  default_props
                 end
 
         props[:style] = props[:style].merge(base_style)
