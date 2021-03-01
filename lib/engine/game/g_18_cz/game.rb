@@ -164,7 +164,7 @@ module Engine
             'count' => 1,
             'color' => 'red',
             'code' =>
-            'city=revenue:yellow_20|green_30|brown_40|gray_50;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;' \
+            'city=revenue:green_30|brown_40|gray_50;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;' \
                   'icon=image:18_cz/50;label=Ug',
           },
           '8895' =>
@@ -172,7 +172,7 @@ module Engine
             'count' => 1,
             'color' => 'red',
             'code' =>
-            'city=revenue:yellow_20|green_30|brown_40|gray_50;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;' \
+            'city=revenue:green_30|brown_40|gray_50;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;' \
                   'icon=image:18_cz/50;label=kk',
           },
           '8896' =>
@@ -180,7 +180,7 @@ module Engine
             'count' => 1,
             'color' => 'red',
             'code' =>
-            'city=revenue:yellow_20|green_30|brown_40|gray_50;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;' \
+            'city=revenue:green_30|brown_40|gray_50;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;' \
                   'icon=image:18_cz/50;label=SX',
           },
           '8897' =>
@@ -188,7 +188,7 @@ module Engine
             'count' => 1,
             'color' => 'red',
             'code' =>
-            'city=revenue:yellow_20|green_30|brown_40|gray_50;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;' \
+            'city=revenue:green_30|brown_40|gray_50;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;' \
                   'icon=image:18_cz/50;label=PR',
           },
           '8898' =>
@@ -196,7 +196,7 @@ module Engine
             'count' => 1,
             'color' => 'red',
             'code' =>
-            'city=revenue:yellow_20|green_30|brown_40|gray_50;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;' \
+            'city=revenue:green_30|brown_40|gray_50;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;' \
                   'icon=image:18_cz/50;label=BY',
           },
           '8866p' =>
