@@ -84,7 +84,7 @@ module Engine
             available_mines = if target_mines.empty?
                                 @game.open_private_mines.select { |m| m.owner == owner }
                               else
-                                @game.open_private_mines - [target_mines.first]
+                                @game.open_private_mines - [target_mines.first[:mine]]
                               end
 
             if @game.turn == 1 && target_mines.empty?
@@ -103,10 +103,10 @@ module Engine
 
             # new corp gets formerly independent mines and their cash
             # machines and switchers stay with mines
-            mine.owner = buyer
-            mine.spend(mine.cash, buyer) if mine.cash.positive?
+            old_owner = mine.owner
+            @game.add_mine(buyer, mine)
 
-            target_mines << mine
+            target_mines << { mine: mine, owner: old_owner }
             finalize_formation unless target_mines.one?
           end
 
@@ -115,17 +115,17 @@ module Engine
             buyer.ipo_shares.each_with_index do |share, idx|
               @game.share_pool.transfer_shares(
                  share.to_bundle,
-                 target_mines[idx].owner,
-                 spender: target_mines[idx].owner,
+                 target_mines[idx][:owner],
+                 spender: target_mines[idx][:owner],
                  receiver: buyer,
                  price: 0
                )
               president_text = idx.zero? ? " and becomes president of #{buyer.id}" : ''
-              @log << "#{target_mines[idx].owner.name} receives a share of #{buyer.id}#{president_text}"
+              @log << "#{target_mines[idx][:owner].name} receives a share of #{buyer.id}#{president_text}"
             end
 
             # share price is average of mine values
-            average = (target_mines.sum { |m| @game.minor_info[m][:value] } / 2).to_i
+            average = (target_mines.sum { |m| @game.minor_info[m[:mine]][:value] } / 2).to_i
             price = @game.stock_market.market.first.select { |p| p.price <= average }.max_by(&:price)
             @game.stock_market.set_par(buyer, price)
             @log << "#{buyer.id} share price is set to #{@game.format_currency(price.price)}"

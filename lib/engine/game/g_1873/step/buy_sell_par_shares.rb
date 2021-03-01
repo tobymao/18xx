@@ -18,6 +18,12 @@ module Engine
             []
           end
 
+          def can_ipo_any?(entity)
+            !bought? && @game.corporations.any? do |c|
+              @game.can_par?(c, entity) && (@game.public_mine?(c) || can_buy?(entity, c.shares.first&.to_bundle))
+            end
+          end
+
           # FIXME: need to deal with receivership first and second buy
           def can_buy_multiple?(_entity, corporation)
             return false unless @game.railway?(corporation)

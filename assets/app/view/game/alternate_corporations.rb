@@ -72,9 +72,7 @@ module View
         children = [render_title, render_mine_holdings, render_shares]
 
         children << render_owned_other_shares if @corporation.corporate_shares.any?
-        if @game.respond_to?(:corporate_card_minors)
-          children << render_submines(@game.corporate_card_minors(@corporation))
-        end
+        children << render_submines(use_checkboxes: false)
         children << render_mine_status
 
         h('div.corp.card', { style: card_style, on: { click: select_mine } }, children)
@@ -177,30 +175,45 @@ module View
 
       def render_mine_machines(mine)
         machine_size = @game.machine_size(mine)
-        switcher_size = @game.switcher_size(mine)
+        switcher_size = @game.switcher_size(mine) || 0
 
-        highlight_prop = { style: { border: '1px solid black' } }
+        highlight_prop = { style: { border: '2px solid black' } }
+        shade_prop = { style: { backgroundColor: 'gray' } }
+        shade_highlight_prop = { style: { border: '2px solid black', backgroundColor: 'gray' } }
         machine_row = @game.minor_info[mine][:machine_revenue].map.with_index do |mr, idx|
-          if idx + 1 == machine_size
+          if (idx == machine_size - 1) && (@game.connected_mine?(mine) || idx.zero?)
             h('td.padded_number', highlight_prop, mr)
-          else
+          elsif idx == machine_size - 1
+            h('td.padded_number', shade_highlight_prop, mr)
+          elsif @game.connected_mine?(mine) || idx.zero?
             h('td.padded_number', mr)
+          else
+            h('td.padded_number', shade_prop, mr)
           end
         end
         switcher_row = @game.minor_info[mine][:switcher_revenue].map.with_index do |sr, idx|
-          if idx + 1 == switcher_size
+          if idx == switcher_size - 2 && @game.connected_mine?(mine)
             h('td.padded_number', highlight_prop, sr)
-          else
+          elsif idx == switcher_size - 2
+            h('td.padded_number', shade_highlight_prop, sr)
+          elsif @game.connected_mine?(mine)
             h('td.padded_number', sr)
+          else
+            h('td.padded_number', shade_prop, sr)
           end
+        end
+        if @game.connected_mine?(mine)
+          switcher_row.unshift(h('td.padded_number', ' '))
+        else
+          switcher_row.unshift(h('td.padded_number', shade_prop, ' '))
         end
         rows = [
           h('tr', [
-            h('td', 'M:'),
+            h('td', "#{@game.machine_size(mine)}M"),
             *machine_row,
           ]),
           h('tr', [
-            h('td', 'S:'),
+            h('td', @game.switcher(mine) ? "#{@game.switcher_size(mine)}S" : '!S'),
             *switcher_row,
           ]),
         ]
@@ -212,8 +225,12 @@ module View
         ])
       end
 
-      def render_submines(mines)
+      def render_submines(use_checkboxes: true)
+        mines = @game.public_mine_mines(@corporation)
+
         row_props = { style: { border: '1px solid black' } }
+
+        item_props = { style: { verticalAlign: 'middle' } }
 
         rows = mines.map do |m|
           logo_props = {
@@ -226,10 +243,28 @@ module View
               height: '20px',
             },
           }
-          h('tr', row_props, [
-            h('td', [h(:img, logo_props)]),
-            h('td', [render_mine_machines(m)]),
-          ])
+
+          row_children = [h('td', item_props, [h(:img, logo_props)])]
+          if use_checkboxes
+            checkbox = h(
+              'input.no_margin',
+              style: {
+                width: '1rem',
+                height: '1rem',
+                padding: '0 0 0 0.2rem',
+              },
+              attrs: {
+                type: 'checkbox',
+                id: "mine_#{m.name}",
+                name: "mine_#{m.name}",
+              }
+            )
+            row_children << h('td', item_props, [checkbox])
+            @slot_checkboxes[@game.get_slot(@corporation, m)] = checkbox
+          end
+          row_children << h('td', item_props, [render_mine_machines(m)])
+
+          h('tr', row_props, row_children)
         end
 
         empty_cell_props = { style: { minHeight: '1rem' } }
@@ -242,7 +277,11 @@ module View
 
         table_props = { style: { borderCollapse: 'collapse' } }
 
+        step = @game.round.active_step
+        text = use_checkboxes ? step.checkbox_prompt : '' if step.respond_to?(:checkbox_prompt)
+
         h('div', { style: { padding: '0.5rem' } }, [
+          text,
           h('table.center', table_props, [
             h(:tbody, [
               *rows,

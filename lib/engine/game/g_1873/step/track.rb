@@ -11,12 +11,14 @@ module Engine
             {
               non_double_tile: false,
               num_laid_track: 0,
+              laid_hexes: [],
             }
           end
 
           def setup
             @round.num_laid_track = 0
             @round.non_double_tile = false
+            @round.laid_hexes = []
           end
 
           def actions(entity)
@@ -28,12 +30,10 @@ module Engine
           end
 
           def process_pass(action)
-            # deal with case where concession route happened to be completed
-            # before railroad even got to it's first OR
             entity = action.entity
-            if @game.concession_incomplete?(entity) && @game.concession_route_done?(entity)
-              @game.concession_complete!(entity)
-              pay_full_concession_cost!(entity)
+            if @game.concession_incomplete?(entity)
+              # can't pass if concession is incomplete
+              raise GameError, 'Must complete concession route'
             end
 
             super
@@ -41,13 +41,6 @@ module Engine
 
           def process_lay_tile(action)
             entity = action.entity
-
-            # deal with case where concession route happened to be completed
-            # before railroad even got to it's first OR
-            if @game.concession_incomplete?(entity) && @game.concession_route_done?(entity)
-              @game.concession_complete!(entity)
-              pay_full_concession_cost!(entity)
-            end
 
             lay_tile_action(action)
 
@@ -75,6 +68,14 @@ module Engine
           def can_lay_tile?(entity)
             return true if abilities(entity, time: type, passive_ok: false)
             return false if entity.minor? && @round.num_laid_track.positive?
+
+            # deal with case where concession route happened to be completed
+            # before railroad even got to it's first OR
+            if @game.concession_incomplete?(entity) && @game.concession_route_done?(entity)
+              @game.concession_complete!(entity)
+              pay_full_concession_cost!(entity)
+            end
+
             return false if !@game.concession_incomplete?(entity) && @round.non_double_tile
 
             action = get_tile_lay(entity)
@@ -107,6 +108,7 @@ module Engine
             lay_tile(action, extra_cost: tile_lay[:cost], entity: entity, spender: spender)
             @round.num_laid_track += 1
             @round.non_double_tile = true unless @game.double_lay?(tile)
+            @round.laid_hexes << action.hex
           end
 
           def potential_tiles(entity, hex)
@@ -147,6 +149,7 @@ module Engine
           def pay_tile_cost!(entity, tile, rotation, hex, spender, cost, _extra_cost)
             reimburse = false
             ch = @game.concession_hex(tile.hex)
+            ch_entity = @game.corporation_by_id(ch[:entity]) if ch
             if ch && entity.name != ch[:entity] && (tile.exits & ch[:exits]).size == ch[:exits].size
               @log << "Laying tile finishes concession track in #{hex.id}"
               reimburse = true
@@ -160,10 +163,10 @@ module Engine
             elsif ch && cost != ch[:cost]
               cost += ch[:cost]
               @log << "#{entity.owner} must pay for previously reimbused tile cost"\
-                "of #{@game.format_cureency(ch[:cost])}"
+                "of #{@game.format_currency(ch[:cost])}"
             end
 
-            @game.advance_concession_phase!(ch[:entity]) if reimburse
+            @game.advance_concession_phase!(ch_entity) if reimburse && hex.id != 'D15'
 
             super
 
