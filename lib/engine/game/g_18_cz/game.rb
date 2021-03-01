@@ -2804,6 +2804,14 @@ module Engine
           @player_debts[player.id][:penalty_interest]
         end
 
+        def player_debt(player)
+          debt(player)
+        end
+
+        def player_interest(player)
+          penalty_interest(player)
+        end
+
         def player_value(player)
           player.value - debt(player) - penalty_interest(player)
         end
