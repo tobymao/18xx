@@ -2287,7 +2287,9 @@ module Engine
           merthyr_tydfil_pontypool = {}
 
           routes.each do |route|
-            local_token_hex << route.head[:left].hex.id if route.train.local? && !route.connections.empty?
+            if route.train.local? && !route.connections.empty?
+              local_token_hex.concat(route.visited_stops.select(&:city?).map { |n| n.hex.id })
+            end
 
             route.paths.each do |path|
               a = path.a
@@ -2318,7 +2320,7 @@ module Engine
           end
 
           local_token_hex.group_by(&:itself).each do |k, v|
-            raise GameError, "Local train can only use the token on #{k[0]} once" if v.size > 1
+            raise GameError, "Local train can only use the token on #{k} once" if v.size > 1
           end
 
           # Check Merthyr Tydfil and Pontypool, only one of the 2 tracks may be used
