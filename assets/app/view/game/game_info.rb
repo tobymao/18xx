@@ -31,7 +31,7 @@ module View
       def render_body
         children = upcoming_trains
         children.concat(discarded_trains) if @depot.discarded.any?
-        children.concat(process_bar) if @game.show_process_bar?
+        children.concat(progress_bar) if @game.show_progress_bar?
         children.concat(phases)
         children.concat(timeline) if timeline
         children << h(GameMeta, game: @game)
@@ -345,7 +345,7 @@ module View
         end
       end
 
-      def process_bar
+      def progress_bar
         train_export = h(:div, [
           h(:img, {
               attrs: {
@@ -355,7 +355,7 @@ module View
             }),
         ])
 
-        children = @game.process_information.map.with_index do |item, index|
+        children = @game.progress_information.map.with_index do |item, index|
           cells = []
           # the space is nut just a space but a &nbsp in unicode;
           cells << h(:div, cell_props(item[:type], @game.round_counter == index),
@@ -363,7 +363,7 @@ module View
           cells << h(:div, cell_props(:Export), [train_export]) if item[:exportAfter]
           cells
         end
-        [h(:h3, 'Game Process'), h(:div, { style: { display: 'flex', overflowX: 'auto' } }, children.flatten)]
+        [h(:h3, 'Game Progress'), h(:div, { style: { display: 'flex', overflowX: 'auto' } }, children.flatten)]
       end
 
       def cell_props(type, active)
@@ -410,7 +410,7 @@ module View
         props = case type
                 when :SR, :PRE
                   sr_props
-                when :Export 
+                when :Export
                   export_props
                 else
                   default_props

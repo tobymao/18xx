@@ -1579,11 +1579,11 @@ module Engine
           "( #{owners.map { |c, t| "#{c} x#{t}" }.join(', ')}) --" if rusted_trains.any?
       end
 
-      def show_process_bar?
+      def show_progress_bar?
         false
       end
 
-      def process_information; end
+      def progress_information; end
 
       private
 

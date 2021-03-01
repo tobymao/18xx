@@ -2856,11 +2856,11 @@ module Engine
           self.class::CURRENCY_FORMAT_STR % val
         end
 
-        def show_process_bar?
+        def show_progress_bar?
           true
         end
 
-        def process_information
+        def progress_information
           [
             { type: :PRE },
             { type: :SR },
