@@ -124,21 +124,21 @@ module Engine
             'count' => 1,
             'color' => 'yellow',
             'code' =>
-            'city=revenue:30;city=revenue:30;city=revenue:30;path=a:2,b:_0;path=a:3,b:_1;path=a:4,b:_2;label=P',
+            'city=revenue:30,groups:Praha;city=revenue:30,groups:Praha;city=revenue:30,groups:Praha;path=a:2,b:_0;path=a:3,b:_1;path=a:4,b:_2;label=P',
           },
           '8890' =>
           {
             'count' => 1,
             'color' => 'yellow',
             'code' =>
-            'city=revenue:30;city=revenue:30;city=revenue:30;path=a:0,b:_0;path=a:2,b:_1;path=a:4,b:_2;label=P',
+            'city=revenue:30,groups:Praha;city=revenue:30,groups:Praha;city=revenue:30,groups:Praha;path=a:0,b:_0;path=a:2,b:_1;path=a:4,b:_2;label=P',
           },
           '8891' =>
           {
             'count' => 1,
             'color' => 'green',
             'code' =>
-            'city=revenue:40;city=revenue:40;city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:2,b:_1;' \
+            'city=revenue:40,groups:Praha;city=revenue:40,groups:Praha;city=revenue:40,groups:Praha;city=revenue:40,groups:Praha;path=a:0,b:_0;path=a:2,b:_1;' \
                   'path=a:3,b:_2;path=a:4,b:_3;label=P',
           },
           '8892' =>
