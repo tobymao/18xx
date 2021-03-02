@@ -10,38 +10,51 @@ module View
       class Revenue < Base
         include SmallItem
 
+        FLAT_MULTI_REVENUE_LOCATIONS =
+          [
+            {
+              region_weights: { CENTER => 1.5 },
+              x: 0,
+              y: 0,
+            },
+            {
+              region_weights: { TOP_MIDDLE_ROW => 1.5 },
+              x: 0,
+              y: -48,
+            },
+            {
+              region_weights: { BOTTOM_MIDDLE_ROW => 1.5 },
+              x: 0,
+              y: 45,
+            },
+          ].freeze
+
+        POINTY_MULTI_REVENUE_LOCATIONS =
+          [
+            {
+              region_weights: { CENTER => 1.5 },
+              x: 0,
+              y: 0,
+            },
+            {
+              region_weights: { [2, 6, 7, 8] => 1.5, [3, 5] => 0.5 },
+              x: 0,
+              y: -55,
+            },
+            {
+              region_weights: { [15, 16, 21, 17] => 1.5, [18, 20] => 0.5 },
+              x: 0,
+              y: 55,
+            },
+          ].freeze
+
         def preferred_render_locations
           if multi_revenue?
-
-            top_weights = if layout == :flat
-                            { TOP_MIDDLE_ROW => 1.5 }
-                          else
-                            { [2, 6, 7, 8] => 1.5, [3, 5] => 0.5 }
-                          end
-
-            bottom_weights = if layout == :flat
-                               { BOTTOM_MIDDLE_ROW => 1.5 }
-                             else
-                               { [15, 16, 21, 17] => 1.5, [18, 20] => 0.5 }
-                             end
-
-            [
-              {
-                region_weights: { CENTER => 1.5 },
-                x: 0,
-                y: 0,
-              },
-              {
-                region_weights: top_weights,
-                x: 0,
-                y: -48,
-              },
-              {
-                region_weights: bottom_weights,
-                x: 0,
-                y: 45,
-              },
-            ]
+            if layout == :flat
+              FLAT_MULTI_REVENUE_LOCATIONS
+            else
+              POINTY_MULTI_REVENUE_LOCATIONS
+            end
           elsif layout == :flat
             SMALL_ITEM_LOCATIONS
           else
