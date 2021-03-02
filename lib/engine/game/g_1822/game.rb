@@ -2101,7 +2101,7 @@ module Engine
 
         LIMIT_TOKENS_AFTER_MERGER = 9
 
-        SWANSEA_HEX = 'D35'
+        DOUBLE_HEX = %w[D35 F7 H21 H37].freeze
         CARDIFF_HEX = 'F35'
         LONDON_HEX = 'M38'
         ENGLISH_CHANNEL_HEX = 'P43'
@@ -2629,7 +2629,8 @@ module Engine
         end
 
         def revenue_for(route, stops)
-          if route.hexes.size != route.hexes.uniq.size && route.hexes.none? { |h| h.name == self.class::SWANSEA_HEX }
+          if route.hexes.size != route.hexes.uniq.size &&
+              route.hexes.none? { |h| self.class::DOUBLE_HEX.include?(h.name) }
             raise GameError, 'Route visits same hex twice'
           end
 
