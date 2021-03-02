@@ -62,6 +62,7 @@ module View
             row_events << @game.class::STATUS_TEXT[status] if @game.class::STATUS_TEXT[status]
           end
           phases_events.concat(row_events)
+          row_events = row_events.map(&:first).flat_map { |e| [h('span.nowrap', e), ', '] }[0..-2]
 
           phase_color = Array(phase[:tiles]).last
           bg_color = color_for(phase_color)
@@ -74,7 +75,7 @@ module View
 
           extra = []
           extra << h(:td, phase[:corporation_sizes].join(', ')) if corporation_sizes
-          extra << h(:td, row_events.map(&:first).join(', ')) if phases_events.any?
+          extra << h(:td, row_events) if phases_events.any?
 
           h(:tr, [
             h(:td, (current_phase == phase ? '→ ' : '') + phase[:name]),
@@ -87,7 +88,7 @@ module View
         end
 
         status_text = phases_events.uniq.map do |short, long|
-          h(:tr, [h(:td, short), h(:td, long)])
+          h(:tr, [h('td.nowrap', short), h(:td, long)])
         end
 
         extra = []
