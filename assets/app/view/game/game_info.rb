@@ -123,7 +123,7 @@ module View
                   h(:th, 'Status'),
                 ]),
               ]),
-              h('tbody.zebra', rows),
+              h(:tbody, rows),
             ]),
           ]),
           *status_text,
@@ -250,10 +250,7 @@ module View
           upcoming_train_content << if show_rusts_inline
                                       h(:td, rusts&.join(', ') || '')
                                     else
-                                      h(:td,
-                                        rusts&.map do |value|
-                                          h(:div, { style: { paddingBottom: '0.1rem' } }, value)
-                                        end || '')
+                                      h(:td, rusts&.map { |value| h(:div, value) } || '')
                                     end
 
           upcoming_train_content << h(:td, discounts&.join(' ')) if show_upgrade
