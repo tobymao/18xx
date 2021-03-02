@@ -138,9 +138,7 @@ module View
         scrappable_trains = step.scrappable_trains(@corporation) if step.respond_to?(:scrappable_trains)
         unless scrappable_trains.empty?
           children << h(:h3, h3_props, 'Trains to Scrap')
-          children << h(:div, div_props, [
-            *scrap_trains(scrappable_trains),
-          ])
+          children << h(:div, div_props, scrap_trains(scrappable_trains))
         end
 
         discountable_trains = @game.discountable_trains_for(@corporation)

@@ -89,8 +89,8 @@ module Engine
             other_trains = @depot.other_trains(entity)
             other_trains = [] if entity.cash.zero?
             other_trains.reject! do |ot|
-              @game.train_is_machine?(ot) || @game.any_mine?(entity) && @game.train_is_train?(ot) ||
-                ot.owner.owner && @game.public_mine?(ot.owner.owner) && ot.owner.owner == entity
+              @game.train_is_machine?(ot) || (@game.any_mine?(entity) && @game.train_is_train?(ot)) ||
+                (ot.owner.owner && @game.public_mine?(ot.owner.owner) && ot.owner.owner == entity)
             end
 
             # indie mines can't buy same size machine
@@ -129,12 +129,10 @@ module Engine
               @game.public_mine_mines(entity).any? { |m| @game.switcher(m) }
             else
               # RRs can voluntarily scrap switchers
-              # and any trains if they have at least two (the NWE can't scrap a train
-              # if the only one left would be a 1T)
+              # and any trains if they have at least two
               return true if entity.trains.any? { |t| @game.train_is_switcher?(t) }
 
-              trains = entity.trains.select { |t| @game.train_is_train?(t) }
-              trains.size > 1
+              entity.trains.count { |t| @game.train_is_train?(t) } > 1
             end
           end
 

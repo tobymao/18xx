@@ -871,30 +871,6 @@ module Engine
           @corporation_info[entity][:mines]
         end
 
-        # find the best mine slot for a machine out of the legal candidates (ones that have a smaller machine)
-        def find_machine_slot(entity, new_size)
-          mines = public_mine_mines(entity)
-          candidates = mines.each_index.map { |i| i }.select { |i| machine_size(mines[i]) < new_size }
-          candidates.max do |c|
-            mines.each_index.map { |i| i }.sum do |i|
-              calculate_mine_revenue(mines[i], (c == i ? new_size : machine_size(mines[i])), nil)
-            end
-          end
-        end
-
-        # find the best mine slot for a switcher, first based on switcher sizes, then maximizing
-        # revenue
-        def find_switcher_slot(entity, new_size)
-          mines = public_mine_mines(entity)
-          min_size = mines.map { |m| switcher_size(m) || 0 }.min
-          candidates = mines.each_index.map { |i| i }.select { |i| (switcher_size(mines[i]) || 0) == min_size }
-          candidates.max do |c|
-            mines.each_index.map { |i| i }.sum do |i|
-              calculate_mine_revenue(mines[i], 1, (c == i ? new_size : switcher_size(mines[i])))
-            end
-          end
-        end
-
         def add_train_to_slot(entity, slot, train)
           mine = public_mine_mines(entity)[slot]
           if train_is_machine?(train) && (old_machine = machine(mine))
