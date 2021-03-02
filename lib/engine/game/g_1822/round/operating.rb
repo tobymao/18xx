@@ -11,13 +11,11 @@ module Engine
             # Selling shares may have caused the major corporations that haven't operated yet
             # to change order.
             index = @entity_index + 1
-            if index < @entities.size - 1
-              # Find the first major corporation after current operating entity.
-              index += @entities[index..-1].find_index { |c| c.type == :major } || 0
-              @entities[index..-1] = @entities[index..-1].sort
-            end
+            return unless index < @entities.size - 1
 
-            @entities.pop while @entities.last&.corporation? && @entities.size > index
+            # Find the first major corporation after current operating entity.
+            index += @entities[index..-1].find_index { |c| c.type == :major } || 0
+            @entities[index..-1] = @entities[index..-1].sort
           end
         end
       end
