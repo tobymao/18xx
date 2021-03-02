@@ -96,7 +96,7 @@ module Engine
     def train_limit_to_s(train_limit)
       return train_limit unless train_limit.is_a?(Hash)
 
-      train_limit.map { |type, limit| "#{type} => #{limit}" }.join(', ')
+      train_limit.map { |type, limit| "#{type}: #{limit}" }.join(', ')
     end
   end
 end

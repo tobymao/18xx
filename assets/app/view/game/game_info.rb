@@ -130,7 +130,7 @@ module View
       def train_limit_to_h(train_limit)
         return train_limit unless train_limit.is_a?(Hash)
 
-        train_limit.map { |type, limit| h('span.nowrap', "#{type} => #{limit}") }
+        train_limit.map { |type, limit| h('span.nowrap', "#{type}: #{limit}") }
           .flat_map { |e| [e, ', '] }[0..-2]
       end
 
@@ -214,7 +214,7 @@ module View
               event_name = event['type']
               if @game.class::EVENTS_TEXT[event_name]
                 events << event_name
-                event_name = "#{@game.class::EVENTS_TEXT[event_name][0]}*"
+                event_name = @game.class::EVENTS_TEXT[event_name][0]
               end
 
               event_text << if index.zero?
@@ -246,7 +246,7 @@ module View
 
             # needed for 18CZ where a train can be rusted by multiple different trains
             trains_to_rust = rust_schedule.select { |k, _v| k&.include?(key) }.values.flatten.join(', ')
-            rusts << "#{key} => #{trains_to_rust}"
+            rusts << "#{key} → #{trains_to_rust}"
             show_rusts_inline = false
           end
 
