@@ -227,6 +227,7 @@ module View
               event_text << event_name unless event_text.include?(event_name)
             end
           end
+          event_text = event_text.flat_map { |e| [h('span.nowrap', e), ', '] }[0..-2]
 
           upcoming_train_content = [
             h(:td, names_to_prices.keys.join(', ')),
@@ -261,7 +262,7 @@ module View
 
           upcoming_train_content << h(:td, discounts) if show_upgrade
           upcoming_train_content << h(:td, train.available_on) if show_available
-          upcoming_train_content << h(:td, event_text.join(', ')) if event_text.any?
+          upcoming_train_content << h(:td, event_text) if event_text.any?
           h(:tr, upcoming_train_content)
         end
 
