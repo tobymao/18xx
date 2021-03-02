@@ -88,7 +88,7 @@ module View
         end
 
         status_text = phases_events.uniq.map do |short, long|
-          h(:tr, [h('td.nowrap', short), h(:td, long)])
+          h(:tr, [h('td.nowrap', { style: { maxWidth: '30vw' } }, short), h(:td, long)])
         end
 
         extra = []
@@ -267,7 +267,7 @@ module View
 
         event_text = events.uniq.map do |sym|
           desc = @game.class::EVENTS_TEXT[sym]
-          h(:tr, [h(:td, desc[0]), h(:td, desc[1])])
+          h(:tr, [h('td.nowrap', { style: { maxWidth: '30vw' } }, desc[0]), h(:td, desc[1])])
         end
 
         if event_text.any?
