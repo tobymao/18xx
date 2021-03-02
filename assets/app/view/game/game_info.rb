@@ -75,14 +75,11 @@ module View
           extra = []
           extra << h(:td, phase[:corporation_sizes].join(', ')) if corporation_sizes
 
-          train_limit = phase[:train_limit]
-          train_limit = @game.phase.train_limit_to_s(train_limit)
-
           h(:tr, [
             h(:td, (current_phase == phase ? '→ ' : '') + phase[:name]),
             h(:td, @game.info_on_trains(phase)),
             h(:td, phase[:operating_rounds]),
-            h(:td, train_limit),
+            h(:td, train_limit_to_h(phase[:train_limit])),
             h(:td, phase_props, phase_color.capitalize),
             *extra,
             h(:td, row_events.map(&:first).join(', ')),
@@ -128,6 +125,13 @@ module View
           ]),
           *status_text,
         ]
+      end
+
+      def train_limit_to_h(train_limit)
+        return train_limit unless train_limit.is_a?(Hash)
+
+        train_limit.map { |type, limit| h('span.nowrap', "#{type} => #{limit}") }
+          .flat_map { |e| [e, ', '] }[0..-2]
       end
 
       def rust_obsolete_schedule
