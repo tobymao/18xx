@@ -457,28 +457,13 @@ module Engine
                 count: 1,
                 special: true,
                 tiles: %w[14 15],
-                hexes: %w[B10
-                          B22
-                          C7
-                          C9
+                hexes: %w[C9
                           C17
                           C21
-                          D4
                           D14
-                          D24
-                          E5
                           E7
-                          E11
-                          F8
-                          F12
-                          F20
-                          F24
                           H8
-                          H12
                           H14
-                          I21
-                          I23
-                          J6
                           K13],
               },
             ],
