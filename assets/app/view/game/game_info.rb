@@ -204,8 +204,9 @@ module View
         rows = @depot.upcoming.group_by(&:name).map do |name, trains|
           train = trains.first
           discounts = train.discount&.group_by { |_k, v| v }&.map do |price, price_discounts|
-            price_discounts.map(&:first).join(', ') + ' → ' + @game.format_currency(price)
+            h('span.nowrap', "#{price_discounts.map(&:first).join(', ')} → #{@game.format_currency(price)}")
           end
+          discounts = discounts.flat_map { |e| [e, ', '] }[0..-2] if discounts
           names_to_prices = train.names_to_prices
 
           event_text = []
@@ -257,7 +258,7 @@ module View
                                       h(:td, rusts&.map { |value| h(:div, value) } || '')
                                     end
 
-          upcoming_train_content << h(:td, discounts&.join(' ')) if show_upgrade
+          upcoming_train_content << h(:td, discounts) if show_upgrade
           upcoming_train_content << h(:td, train.available_on) if show_available
           upcoming_train_content << h(:td, event_text.join(', ')) if event_text.any?
           h(:tr, upcoming_train_content)
