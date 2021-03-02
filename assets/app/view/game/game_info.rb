@@ -259,7 +259,7 @@ module View
 
           upcoming_train_content << h(:td, discounts&.join(' ')) if show_upgrade
           upcoming_train_content << h(:td, train.available_on) if show_available
-          upcoming_train_content << h(:td, event_text.join(', '))
+          upcoming_train_content << h(:td, event_text.join(', ')) if event_text.any?
           h(:tr, upcoming_train_content)
         end
 
@@ -295,7 +295,7 @@ module View
                                      { attrs: { title: 'Available after purchase of first train of type' } },
                                      'Available')
         end
-        upcoming_train_header << h(:th, 'Events')
+        upcoming_train_header << h(:th, 'Events') if event_text.any?
 
         [
           h(:h3, 'Upcoming Trains'),
