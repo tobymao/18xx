@@ -265,11 +265,10 @@ module View
           h(:tr, upcoming_train_content)
         end
 
-        event_text = @game.class::EVENTS_TEXT
-          .select { |sym, _desc| events.include?(sym) }
-          .map do |_sym, desc|
-            h(:tr, [h(:td, desc[0]), h(:td, desc[1])])
-          end
+        event_text = events.uniq.map do |sym|
+          desc = @game.class::EVENTS_TEXT[sym]
+          h(:tr, [h(:td, desc[0]), h(:td, desc[1])])
+        end
 
         if event_text.any?
           event_text = [h(:table, { style: { marginTop: '0.3rem' } }, [
