@@ -74,6 +74,7 @@ module View
 
           extra = []
           extra << h(:td, phase[:corporation_sizes].join(', ')) if corporation_sizes
+          extra << h(:td, row_events.map(&:first).join(', ')) if phases_events.any?
 
           h(:tr, [
             h(:td, (current_phase == phase ? '→ ' : '') + phase[:name]),
@@ -82,13 +83,15 @@ module View
             h(:td, train_limit_to_h(phase[:train_limit])),
             h(:td, phase_props, phase_color.capitalize),
             *extra,
-            h(:td, row_events.map(&:first).join(', ')),
           ])
         end
 
         status_text = phases_events.uniq.map do |short, long|
           h(:tr, [h(:td, short), h(:td, long)])
         end
+
+        extra = []
+        extra << h(:th, 'New Corporation Size') if corporation_sizes
 
         if status_text.any?
           status_text = [h(:table, { style: { marginTop: '0.3rem' } }, [
@@ -100,10 +103,8 @@ module View
             ]),
             h(:tbody, status_text),
           ])]
+          extra << h(:th, 'Status')
         end
-
-        extra = []
-        extra << h(:th, 'New Corporation Size') if corporation_sizes
 
         [
           h(:h3, 'Game Phases'),
@@ -117,7 +118,6 @@ module View
                   h(:th, 'Train Limit'),
                   h(:th, 'Tiles'),
                   *extra,
-                  h(:th, 'Status'),
                 ]),
               ]),
               h(:tbody, rows),
