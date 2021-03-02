@@ -83,7 +83,7 @@ module Engine
                   :phase, :players, :operating_rounds, :round, :share_pool, :stock_market, :tile_groups,
                   :tiles, :turn, :total_loans, :undo_possible, :redo_possible, :round_history, :all_tiles,
                   :optional_rules, :exception, :last_processed_action, :broken_action,
-                  :turn_start_action_id, :last_turn_start_action_id, :programmed_actions
+                  :turn_start_action_id, :last_turn_start_action_id, :programmed_actions, :round_counter
 
       # Game end check is described as a dictionary
       # with reason => after
@@ -351,6 +351,7 @@ module Engine
         @players = @names.map { |player_id, name| Player.new(player_id, name) }
         @user = user
         @programmed_actions = {}
+        @round_counter = 0
 
         @optional_rules = init_optional_rules(optional_rules)
 
@@ -886,6 +887,7 @@ module Engine
 
         @finished = true
         store_player_info
+        @round_counter += 1
         scores = result.map { |name, value| "#{name} (#{format_currency(value)})" }
         @log << "-- Game over: #{scores.join(', ')} --"
       end
@@ -1581,6 +1583,12 @@ module Engine
           "( #{owners.map { |c, t| "#{c} x#{t}" }.join(', ')}) --" if rusted_trains.any?
       end
 
+      def show_progress_bar?
+        false
+      end
+
+      def progress_information; end
+
       private
 
       def init_graph
@@ -2059,6 +2067,7 @@ module Engine
 
       def new_stock_round
         @log << "-- #{round_description('Stock')} --"
+        @round_counter += 1
         stock_round
       end
 
@@ -2073,6 +2082,7 @@ module Engine
 
       def new_operating_round(round_num = 1)
         @log << "-- #{round_description('Operating', round_num)} --"
+        @round_counter += 1
         operating_round(round_num)
       end
 

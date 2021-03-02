@@ -31,6 +31,7 @@ module View
       def render_body
         children = upcoming_trains
         children.concat(discarded_trains) if @depot.discarded.any?
+        children.concat(progress_bar) if @game.show_progress_bar?
         children.concat(phases)
         children.concat(timeline) if timeline
         children << h(GameMeta, game: @game)
@@ -342,6 +343,62 @@ module View
         else
           [h(:h3, 'Trains in Bank Pool'), table]
         end
+      end
+
+      def progress_bar
+        train_export = h(:div, [
+          h(:img, {
+              attrs: {
+                src: '/icons/train_export.svg',
+                width: '15px',
+              },
+            }),
+        ])
+
+        children = @game.progress_information.map.with_index do |item, index|
+          cells = []
+          # the space is nut just a space but a &nbsp in unicode;
+          cells << h(:div, cell_props(item[:type], @game.round_counter == index),
+                     [h('div.center', item[:value] || ' '), h('div.nowrap', "#{item[:type]} #{item[:name]}")])
+          cells << h(:div, cell_props(:Export), [train_export]) if item[:exportAfter]
+          cells
+        end
+        [h(:h3, 'Game Progress'), h(:div, { style: { display: 'flex', overflowX: 'auto' } }, children.flatten)]
+      end
+
+      def cell_props(type, current)
+        bg_color, font_color, justify =
+          case type
+          when :SR, :PRE
+            [color_for(:green), contrast_on(color_for(:green)), 'space-between']
+          when :Export
+            [color_for(:yellow), contrast_on(color_for(:yellow)), 'center']
+          else
+            [color_for(:bg2), color_for(:font2), 'space-between']
+          end
+
+        props = {
+          style: {
+            display: 'flex',
+            flexDirection: 'column',
+            boxSizing: 'border-box',
+            height: '55px',
+            padding: '4px',
+            border: '1px solid rgba(0,0,0,0.2)',
+            justifyContent: justify,
+            backgroundColor: bg_color,
+            color: font_color,
+          },
+        }
+        props[:style].merge!(
+          {
+            fontWeight: 'bold',
+            border: "4px solid #{color_for(:red)}",
+            padding: '1px 4px',
+          }
+        ) if current
+
+        props
       end
     end
   end
