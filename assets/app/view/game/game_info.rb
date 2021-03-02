@@ -31,20 +31,17 @@ module View
       def render_body
         children = upcoming_trains
         children.concat(discarded_trains) if @depot.discarded.any?
-        children.concat(progress_bar) if @game.show_progress_bar?
         children.concat(phases)
         children.concat(timeline) if timeline
         children << h(GameMeta, game: @game)
       end
 
       def timeline
-        return nil if @game.timeline.empty?
+        return nil if @game.timeline.empty? && !@game.show_progress_bar?
 
         children = [h(:h3, 'Timeline')]
-
-        @game.timeline.each do |line|
-          children << h(:p, line)
-        end
+        children << progress_bar if @game.show_progress_bar?
+        @game.timeline.each { |line| children << h(:p, line) } if @game.timeline.any?
 
         children
       end
@@ -355,7 +352,7 @@ module View
             }),
         ])
 
-        children = @game.progress_information.map.with_index do |item, index|
+        children = @game.progress_information.flat_map.with_index do |item, index|
           cells = []
           # the space is nut just a space but a &nbsp in unicode;
           cells << h(:div, cell_props(item[:type], @game.round_counter == index),
@@ -363,7 +360,8 @@ module View
           cells << h(:div, cell_props(:Export), [train_export]) if item[:exportAfter]
           cells
         end
-        [h(:h3, 'Game Progress'), h(:div, { style: { display: 'flex', overflowX: 'auto' } }, children.flatten)]
+
+        h(:div, { style: { display: 'flex', overflowX: 'auto' } }, children)
       end
 
       def cell_props(type, current)
