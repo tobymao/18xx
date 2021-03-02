@@ -245,6 +245,7 @@ module Engine
               super
 
               @game.unshort(entity, bundle.shares[0]) if unshort
+              try_buy_tokens(corporation)
             else
               buy_shares(entity, bundle)
               track_action(action, corporation, false)
