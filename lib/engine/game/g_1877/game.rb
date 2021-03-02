@@ -346,7 +346,7 @@ module Engine
         SELL_AFTER = :any_time
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge('signal_end_game' => ['Signal End Game',
-                                                                    'Game Ends 3 ORs after purchase/export'\
+                                                                    'Game ends 3 ORs after purchase/export'\
                                                                     ' of first 4 train']).freeze
         def event_signal_end_game!
           @final_operating_rounds = 2
