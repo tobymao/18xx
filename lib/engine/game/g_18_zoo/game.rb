@@ -1157,6 +1157,14 @@ module Engine
           entity.ipoed || @near_families_purchasable.any? { |f| f[:id] == entity.id }
         end
 
+        def log_share_price(entity, from, additional_info = '')
+          to = entity.share_price.price
+          return unless from != to
+
+          @log << "#{entity.name}'s share price changes from #{format_currency(from)} "\
+              "to #{format_currency(to)} #{additional_info}"
+        end
+
         private
 
         def init_round
@@ -1232,7 +1240,7 @@ module Engine
           return if @round.is_a?(Engine::Round::Draft)
 
           current_order = @players.dup
-          @players.sort_by! { |p| [ midas_active? && p == midas.owner ? -1 : 0, -p.cash, current_order.index(p)] }
+          @players.sort_by! { |p| [midas_active? && p == midas.owner ? -1 : 0, -p.cash, current_order.index(p)] }
           @log << "Priority order: #{@players.map(&:name).join(', ')}"
         end
 
@@ -1274,15 +1282,13 @@ module Engine
           @operating_rounds = 3 if @turn == 3 # Last round has 3 ORs
           update_zoo_tickets_value(@turn, round_num)
 
-          if midas_active?
-            midas.close!
-          end
+          midas.close! if midas_active?
 
           super
         end
 
         def operating_round(round_num)
-          Engine::Round::Operating.new(self, [
+          Engine::Game::G18ZOO::Round::Operating.new(self, [
             Engine::Step::SpecialTrack,
             G18ZOO::Step::BuyCompany,
             Engine::Step::Track,
@@ -1349,7 +1355,7 @@ module Engine
         end
 
         def event_new_train!
-          @round.new_train_brought = true
+          @round.new_train_brought = true if @round.is_a?(Engine::Round::Operating)
         end
 
         def event_rust_own_3s_4s!

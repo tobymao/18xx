@@ -20,14 +20,9 @@ module Engine
           @choices[:greek_to_me] = 'It’s all greek to me' if company_greek?(entity)
           if company_whatsup?(entity)
             train = @game.depot.depot_trains&.first
-            p train
-            entity.presidencies.select do |c|
-              p c
-              p c.cash
-              p @game.depot.depot_trains&.first.price
-              c.cash >= @game.depot.depot_trains&.first.price
-              true
-            end.each do |corporation|
+            entity.presidencies
+                  .select { |corporation| corporation.cash >= @game.depot.depot_trains&.first&.price }
+                  .each do |corporation|
               @choices["whatsup:#{corporation.id}:#{train.id}"] = "Whatsup (#{corporation.id}) (#{train.name})"
             end
           end
@@ -50,7 +45,7 @@ module Engine
 
         def company_whatsup?(entity)
           entity&.companies&.include?(@game.whatsup) &&
-            entity.presidencies.any? { |c| c.cash >= @game.depot.depot_trains&.first.price }
+            entity.presidencies.any? { |c| c.cash >= @game.depot.depot_trains&.first&.price }
         end
 
         def company_greek?(entity)
@@ -70,7 +65,8 @@ module Engine
             current_value = corporation.share_price.price
             @game.stock_market.move_right(corporation)
             new_value = corporation.share_price.price
-            @log << "#{current_entity.name} uses \"Holiday\" for #{corporation.name}, moving from #{current_value} to #{new_value}"
+            @log << "#{current_entity.name} uses \"Holiday\" for #{corporation.name}, "\
+              "moving from #{@game.format_currency(current_value)} to #{@game.format_currency(new_value)}"
 
             @game.holiday.close!
           end
@@ -81,19 +77,26 @@ module Engine
             train = @game.train_by_id(split[2])
             @game.buy_train(corporation, train, train.price)
             @game.phase.buying_train!(corporation, train)
-            train.operated = true
-            @game.stock_market.move_right(corporation)
-            # @game.log_share_price(entity, prev, '(new-train bonus)')
 
-            @log << "#{current_entity.name} uses \"Whatsup\" for #{corporation.name}, paying #{train.price} to buy a #{train.name}"
+            ability = Engine::Ability::Close.new(type: 'train_operated', corporation: train,
+                                                 description: "Whatsup - #{split[2]} disabled")
+            corporation.add_ability(ability)
+
+            prev = corporation.share_price.price
+            @game.stock_market.move_right(corporation)
+            @game.log_share_price(corporation, prev, '(whatsup bonus)')
+
+            @log << "#{current_entity.name} uses \"Whatsup\" for #{corporation.name}, "\
+              "paying #{@game.format_currency(train.price)} to buy a #{train.name}"
 
             @game.whatsup.close!
           end
 
-          if action.choice == 'greek_to_me'
-            @game.it_s_all_greek_to_me.add_ability(Engine::Ability::Close.new(type: 'close'))
-            @log << "#{current_entity.name} uses \"It’s all greek to me\", will get an additional round after passing this round"
-          end
+          return unless action.choice == 'greek_to_me'
+
+          @game.it_s_all_greek_to_me.add_ability(Engine::Ability::Close.new(type: 'close'))
+          @log << "#{current_entity.name} uses \"It’s all greek to me\", "\
+            'will get an additional round after passing this round'
         end
       end
     end
