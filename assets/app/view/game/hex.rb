@@ -85,8 +85,13 @@ module View
         props[:attrs][:cursor] = 'pointer' if @clickable
 
         props[:on] = { click: ->(e) { on_hex_click(e) } }
-        props[:attrs]['stroke'] = 'blue' if !@selected && @laid_this_turn
-        props[:attrs]['stroke-width'] = 5 if @selected || @laid_this_turn
+        props[:attrs]['stroke-width'] = 5 if @selected
+
+        if @laid_this_turn
+          props[:attrs]['stroke-dasharray'] = 15
+          props[:attrs]['stroke-width'] = 10
+        end
+
         h(:g, props, children)
       end
 
