@@ -51,8 +51,11 @@ module Engine
 
           def process_discard_train(action)
             train = action.train
+
             @game.remove_train(train)
             trains.delete(train)
+            train.owner = nil
+
             @log << "#{action.entity.name} scraps #{train.name}"
 
             @round.bought_trains.shift if trains.empty?

@@ -2756,7 +2756,7 @@ module Engine
             next unless rust?(t)
 
             rusted_trains << t.name
-            owners[t.owner.name] += 1
+            owners[t.owner.name] += 1 unless t.owner.nil?
             rust(t)
           end
           return if rusted_trains.none?
