@@ -27,7 +27,7 @@ module View
                    when 4
                      [l_top, l_bottom]
                    else
-                     [l_center, l_up40, l_down40]
+                     [l_center, l_up40, l_down40, l_down24]
                    end
           end
 
@@ -209,23 +209,18 @@ module View
           loc = { x: 0, y: y }
 
           if layout == :flat
-            loc[:region_weights_in] = {
-              TRACK_TO_EDGE_3 => 1,
-              UPPER_CENTER => 1,
-              [6, 10] => 0.25,
-              TOP_ROW => 0.1,
+            loc[:region_weights] = {
+              [0, 2, 4, 6, 8, 10] => 0.7,
+              [1, 3, 7, 9] => 0.2,
             }
-            loc[:region_weights_out] = { UPPER_CENTER => 1, [6, 10] => 0.25 }
           else
             # slight extra nudge to clear the revenue circle
             loc[:y] -= 2
 
-            loc[:region_weights_in] = {
-              [2, 6, 7, 8] => 1,
-              [3, 5] => 0.5,
-              [0, 1] => 0.1,
+            loc[:region_weights] = {
+              [2, 3, 5, 6] => 1,
+              [0, 1, 7, 8] => 0.2,
             }
-            loc[:region_weights_out] = { [2, 6, 7, 8] => 1, [3, 5] => 0.25 }
           end
           loc
         end
@@ -249,7 +244,18 @@ module View
 
         def l_down24
           loc = { x: 0, y: 24 }
-          loc[:region_weights] = layout == :flat ? BOTTOM_MIDDLE_ROW : [11, 15, 16, 17, 19, 21]
+
+          if layout == :flat
+            loc[:region_weights] = {
+              [13, 15, 17] => 1,
+              [12, 14, 16, 18] => 0.4,
+            }
+          elsif layout == :pointy
+            loc[:region_weights] = {
+              [11, 15, 16, 19] => 0.8,
+              [9, 10, 13, 14] => 0.2,
+            }
+          end
           loc
         end
 
@@ -257,23 +263,15 @@ module View
           loc = { x: 0, y: 40 }
 
           if layout == :flat
-            loc[:region_weights_in] = {
-              TRACK_TO_EDGE_0 => 1,
-              LOWER_CENTER => 1,
-              [13, 17] => 0.25,
-              BOTTOM_ROW => 0.1,
-            }
-            loc[:region_weights_out] = {
-              LOWER_CENTER => 1,
-              [13, 14, 16, 17] => 0.25,
+            loc[:region_weights] = {
+              [13, 15, 17, 19, 21, 23] => 0.7,
+              [14, 16, 20, 22] => 0.2,
             }
           elsif layout == :pointy
-            loc[:region_weights_in] = {
-              [15, 16, 21, 17] => 1,
-              [18, 20] => 0.5,
-              [22, 23] => 0.1,
+            loc[:region_weights] = {
+              [17, 18, 20, 21] => 1,
+              [15, 16, 22, 23] => 0.2,
             }
-            loc[:region_weights_out] = { [15, 16, 21, 17] => 1, [11, 18, 19, 20] => 0.25 }
           end
           loc
         end
