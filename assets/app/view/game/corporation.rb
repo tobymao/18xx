@@ -324,15 +324,16 @@ module View
         result.index('.') ? result : "#{result}.0"
       end
 
-      def render_shares
-        player_info = @game.players.map do |player|
+      def entities_rows(entities)
+        entity_info = entities.map do |entity|
           [
-            player,
-            @corporation.president?(player),
-            player.num_shares_of(@corporation, ceil: false),
-            @game.round.active_step&.did_sell?(@corporation, player),
-            !@corporation.holding_ok?(player, 1),
-            player.shares_of(@corporation).any?(&:double_cert),
+            entity,
+            @corporation.president?(entity),
+            entity.num_shares_of(@corporation, ceil: false),
+            @game.round.active_step&.did_sell?(@corporation, entity),
+            @game.round.active_step&.last_acted_upon?(@corporation, entity),
+            !@corporation.holding_ok?(entity, 1),
+            entity.shares_of(@corporation).any?(&:double_cert),
           ]
         end
 
@@ -342,39 +343,34 @@ module View
           },
         }
 
-        player_rows = player_info
-          .select { |_, _, num_shares, did_sell| !num_shares.zero? || did_sell }
-          .sort_by { |_, president, num_shares, _| [president ? 0 : 1, -num_shares] }
-          .map do |player, president, num_shares, did_sell, at_limit, double_cert|
-            flags = (president ? '*' : '') + (double_cert ? 'd' : '') + (at_limit ? 'L' : '')
-            h('tr.player', [
-              h("td.left.name.nowrap.#{president ? 'president' : ''}", player.name),
-              h('td.right', shares_props, "#{flags.empty? ? '' : flags + ' '}#{share_number_str(num_shares)}"),
-              did_sell ? h('td.italic', 'Sold') : '',
-            ])
-          end
+        entity_info
+        .select { |_, _, num_shares, did_sell| !num_shares.zero? || did_sell }
+        .sort_by { |_, president, num_shares, _| [president ? 0 : 1, -num_shares] }
+        .map do |entity, president, num_shares, did_sell, last_acted_upon, at_limit, double_cert|
+          flags = (president ? '*' : '') + (double_cert ? 'd' : '') + (at_limit ? 'L' : '')
 
-        other_corp_info = @game.corporations.reject { |c| c == @corporation }.map do |other_corp|
-          [
-            other_corp,
-            @corporation.president?(other_corp),
-            other_corp.num_shares_of(@corporation, ceil: false),
-            @game.round.active_step&.did_sell?(@corporation, other_corp),
-            !@corporation.holding_ok?(other_corp, 1),
-          ]
+          type = entity.player? ? 'tr.player' : 'tr.corp'
+          type += '.bold' if last_acted_upon
+          name = entity.player? ? entity.name : "© #{entity.name}"
+
+          h(type, [
+            h("td.left.name.nowrap.#{president ? 'president' : ''}", name),
+            h('td.right', shares_props, "#{flags.empty? ? '' : flags + ' '}#{share_number_str(num_shares)}"),
+            did_sell ? h('td.italic', 'Sold') : '',
+          ])
         end
+      end
 
-        other_corp_rows = other_corp_info
-          .select { |_, _, num_shares, did_sell| !num_shares.zero? || did_sell }
-          .sort_by { |_, president, num_shares, _| [president ? 0 : 1, -num_shares] }
-          .map do |other_corp, president, num_shares, did_sell, at_limit|
-            flags = (president ? '*' : '') + (at_limit ? 'L' : '')
-            h('tr.corp', [
-              h("td.left.name.nowrap.#{president ? 'president' : ''}", "© #{other_corp.name}"),
-              h('td.right', shares_props, "#{flags.empty? ? '' : flags + ' '}#{share_number_str(num_shares)}"),
-              did_sell ? h('td.italic', 'Sold') : '',
-            ])
-          end
+      def render_shares
+        shares_props = {
+          style: {
+            paddingRight: '1.3rem',
+          },
+        }
+
+        player_rows = entities_rows(@game.players)
+
+        other_corp_rows = entities_rows(@game.corporations.reject { |c| c == @corporation })
 
         num_ipo_shares = share_number_str(@corporation.num_ipo_shares - @corporation.num_ipo_reserved_shares)
         if !num_ipo_shares.empty? && @corporation.capitalization != @game.class::CAPITALIZATION

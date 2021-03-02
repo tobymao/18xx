@@ -171,8 +171,7 @@ module Engine
               corporation.par_via_exchange.close!
 
               @game.after_par(corporation)
-              @round.last_to_act = entity
-              @current_actions << action
+              track_action(action, corporation)
             else
               super
             end

@@ -49,8 +49,7 @@ module Engine
             @round.acting_player = action.entity
             @round.merge_initiator = corporation
 
-            @round.last_to_act = action.entity
-            @current_actions << action
+            track_action(action, corporation)
           end
 
           def process_failed_merge(action)

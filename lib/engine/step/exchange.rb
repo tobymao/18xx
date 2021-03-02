@@ -28,6 +28,7 @@ module Engine
         end
 
         buy_shares(company.owner, bundle, exchange: company)
+        @round.players_history[company.owner][bundle.corporation] << action if @round.respond_to?(:players_history)
         company.close!
       end
 

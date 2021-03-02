@@ -54,7 +54,7 @@ module Engine
               @game.place_home_token(corporation)
               corporation.par_via_exchange.close!
 
-              @current_actions << action
+              track_action(action, corporation)
             else
               super
             end
