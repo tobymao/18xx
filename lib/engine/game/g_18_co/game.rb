@@ -292,6 +292,16 @@ module Engine
           %w[10a 10a 10a 15a 15a],
         ].freeze
 
+        # Hexes that are small towns. Used in special GJGR ability.
+        SMALL_TOWNS = %w[C9
+                         C17
+                         C21
+                         D14
+                         E7
+                         H8
+                         H14
+                         K13].freeze
+
         PHASES = [{ name: '2', train_limit: 4, tiles: [:yellow], operating_rounds: 2 },
                   {
                     name: '3',
@@ -457,14 +467,7 @@ module Engine
                 count: 1,
                 special: true,
                 tiles: %w[14 15],
-                hexes: %w[C9
-                          C17
-                          C21
-                          D14
-                          E7
-                          H8
-                          H14
-                          K13],
+                hexes: SMALL_TOWNS,
               },
             ],
             color: nil,
