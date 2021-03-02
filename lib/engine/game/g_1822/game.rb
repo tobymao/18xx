@@ -3407,6 +3407,7 @@ module Engine
             corporation = corporation_by_id(corp)
             corporation.add_ability(ability)
             corporation.tokens << Engine::Token.new(corporation, logo: "/logos/1822/#{corp}_DEST.svg",
+                                                                 simple_logo: "/logos/1822/#{corp}_DEST.svg",
                                                                  type: :destination)
             hex_by_id(destination).tile.icons << Part::Icon.new("../icons/1822/#{corp}_DEST", "#{corp}_destination")
           end
