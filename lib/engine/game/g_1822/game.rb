@@ -2354,10 +2354,6 @@ module Engine
             return "(#{format_currency(@highland_railway.cash)})"
           end
 
-          if company.id == self.class::COMPANY_MGNR && company.owner&.player? && @midland_great_northern_choice
-            return '(Double)'
-          end
-
           if company.id == self.class::COMPANY_OSTH && company.owner&.player? && @tax_haven.value.positive?
             company.value = @tax_haven.value
             share = @tax_haven.shares.first
@@ -2457,6 +2453,34 @@ module Engine
           bundles_for_corporation(entity, entity)
             .select { |bundle| @share_pool.fit_in_bank?(bundle) }
             .map { |bundle| reduced_bundle_price_for_market_drop(bundle) }
+        end
+
+        def next_round!
+          @round =
+            case @round
+            when G1822::Round::Choices
+              @operating_rounds = @phase.operating_rounds
+              reorder_players
+              new_operating_round
+            when Engine::Round::Stock
+              G1822::Round::Choices.new(self, [
+                G1822::Step::Choose,
+              ], round_num: @round.round_num)
+            when Engine::Round::Operating
+              if @round.round_num < @operating_rounds
+                or_round_finished
+                new_operating_round(@round.round_num + 1)
+              else
+                @turn += 1
+                or_round_finished
+                or_set_finished
+                new_stock_round
+              end
+            when init_round.class
+              init_round_finished
+              reorder_players
+              new_stock_round
+            end
         end
 
         def num_certs(entity)
@@ -2927,6 +2951,13 @@ module Engine
           { route: route, revenue: destination_token.city.route_revenue(route.phase, route.train) }
         end
 
+        def choices_entities
+          company = company_by_id(self.class::COMPANY_MGNR)
+          return [] unless company&.owner&.player?
+
+          [company.owner]
+        end
+
         def player_loan_interest(loan)
           (loan * 0.5).ceil
         end
@@ -3011,18 +3042,17 @@ module Engine
             exclude_companies.any? { |c| c == company }
           end
           companies.each do |company|
-            choices["#{company.id}_top"] = "#{company.id}-Top"
-            choices["#{company.id}_bottom"] = "#{company.id}-Bottom"
+            choices["#{company.id}_top"] = "#{self.class::COMPANY_SHORT_NAMES[company.id]}-Top"
+            choices["#{company.id}_bottom"] = "#{self.class::COMPANY_SHORT_NAMES[company.id]}-Bottom"
           end
           choices
         end
 
         def company_choices_mgnr(company, time)
-          return {} if @midland_great_northern_choice || !company.owner&.player? || time != :stock_round
+          return {} if @midland_great_northern_choice || !company.owner&.player? || time != :choose
 
           choices = {}
-          choices['double'] = 'Double your actual cash holding at the end of a stock round when '\
-                                'determining player turn order.'
+          choices['double'] = 'Double your actual cash holding when determining player turn order.'
           choices
         end
 
@@ -3120,8 +3150,7 @@ module Engine
 
         def company_made_choice_mgnr(company)
           @midland_great_northern_choice = company.owner
-          @log << "#{company.owner.name} chooses to double actual cash holding at the end of a stock round when "\
-                    'determining player turn order in the next stock round.'
+          @log << "#{company.owner.name} chooses to double actual cash holding when determining player turn order."
         end
 
         def company_made_choice_osth(company, choice)
