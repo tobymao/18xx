@@ -318,12 +318,13 @@ module Engine
           yellow: {
             # city tiles
             ['C9'] => 'city=revenue:30;path=a:5,b:_0',
-            ['K7'] => 'city=revenue:30,loc:2;town=revenue:0,loc:4;path=a:1,b:4;path=a:1,b:_0',
+            # Omaha
+            ['K7'] => 'city=revenue:30,loc:3;town=revenue:0,loc:4;path=a:1,b:4;path=a:1,b:_0',
           },
           gray: {
             ['D8'] => 'path=a:5,b:2',
             ['D10'] => 'path=a:4,b:2',
-            ['E9'] => 'town=revenue:0;path=a:5,b:_0;path=a:_0,b:2;path=a:_0,b:1;path=a:_0,b:3',
+            ['E9'] => 'junction;path=a:5,b:_0;path=a:_0,b:2;path=a:_0,b:1;path=a:_0,b:3',
             ['I1'] => 'path=a:1,b:5',
             ['K1'] => 'path=a:1,b:6',
             ['K13'] => 'path=a:2,b:3',
