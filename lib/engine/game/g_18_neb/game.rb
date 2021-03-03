@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require_relative 'meta'
-require_relative 'step/special_track'
 require_relative '../base'
 
 module Engine
@@ -294,7 +293,6 @@ module Engine
           Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
-            G1889::Step::SpecialTrack,
             Engine::Step::BuyCompany,
             Engine::Step::Track,
             Engine::Step::Token,
