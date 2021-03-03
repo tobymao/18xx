@@ -2722,6 +2722,9 @@ module Engine
         end
 
         def sorted_corporations
+          phase = @phase.status.include?('can_convert_concessions') || @phase.status.include?('can_par')
+          return [] unless phase
+
           ipoed, others = @corporations.select { |c| c.type == :major }.partition(&:ipoed)
           ipoed.sort + others
         end
@@ -3031,9 +3034,12 @@ module Engine
 
           choices = {}
           @corporations.select { |c| c.floated? && c.type == :major }.each do |corporation|
-            choices["#{corporation.id}_ipo"] = "#{corporation.id} IPO" if corporation.num_ipo_shares.positive?
+            price = corporation.share_price&.price || 0
+            if corporation.num_ipo_shares.positive?
+              choices["#{corporation.id}_ipo"] = "#{corporation.id} IPO (#{format_currency(price)})"
+            end
             if @share_pool.num_shares_of(corporation).positive?
-              choices["#{corporation.id}_market"] = "#{corporation.id} Market"
+              choices["#{corporation.id}_market"] = "#{corporation.id} Market (#{format_currency(price)})"
             end
           end
           choices
