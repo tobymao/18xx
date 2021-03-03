@@ -260,7 +260,7 @@ module View
                   train: group[0],
                   price: price,
                   shell: @active_shell,
-                  slots: get_slots,
+                  slots: slots,
                   extra_due: extra_due,
                 ))
               end
