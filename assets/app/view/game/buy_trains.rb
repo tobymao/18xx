@@ -2,12 +2,14 @@
 
 require 'view/game/actionable'
 require 'view/game/emergency_money'
+require 'view/game/alternate_corporations'
 
 module View
   module Game
     class BuyTrains < Snabberb::Component
       include Actionable
       include EmergencyMoney
+      include AlternateCorporations
       needs :show_other_players, default: nil, store: true
       needs :corporation, default: nil
       needs :active_shell, default: nil, store: true
@@ -127,6 +129,18 @@ module View
           ])
         end
 
+        @slot_checkboxes = {}
+        if step.respond_to?(:slot_view) && (view = step.slot_view(@corporation))
+          children << send("render_#{view}")
+        end
+
+        scrappable_trains = []
+        scrappable_trains = step.scrappable_trains(@corporation) if step.respond_to?(:scrappable_trains)
+        unless scrappable_trains.empty?
+          children << h(:h3, h3_props, 'Trains to Scrap')
+          children << h(:div, div_props, scrap_trains(scrappable_trains))
+        end
+
         discountable_trains = @game.discountable_trains_for(@corporation)
 
         if discountable_trains.any? && step.discountable_trains_allowed?(@corporation)
@@ -198,6 +212,7 @@ module View
                 price: price,
                 variant: name,
                 shell: @active_shell,
+                slots: slots,
               ))
             end
 
@@ -211,7 +226,17 @@ module View
         end
       end
 
+      # return checkbox values for slots (if any)
+      def slots
+        return if @slot_checkboxes.empty?
+
+        @slot_checkboxes.keys.map do |k|
+          k if Native(@slot_checkboxes[k]).elm.checked
+        end.compact
+      end
+
       def other_trains(other_corp_trains)
+        step = @game.round.active_step
         hidden_trains = false
         trains_to_buy = other_corp_trains.flat_map do |other, trains|
           trains.group_by(&:name).flat_map do |name, group|
@@ -225,35 +250,64 @@ module View
               attrs: price_range(group[0]),
             )
 
+            extra_due_checkbox = nil
             buy_train_click = lambda do
               price = input.JS['elm'].JS['value'].to_i
+              extra_due = extra_due_checkbox && Native(extra_due_checkbox).elm.checked
               buy_train = lambda do
                 process_action(Engine::Action::BuyTrain.new(
                   @corporation,
                   train: group[0],
                   price: price,
                   shell: @active_shell,
+                  slots: get_slots,
+                  extra_due: extra_due,
                 ))
               end
 
-              if other.owner == @corporation.owner
+              if other_owner(other) == @corporation.owner
                 buy_train.call
               else
-                check_consent(other.owner, buy_train)
+                check_consent(other_owner(other), buy_train)
               end
             end
 
             count = group.size
 
-            if @show_other_players || other.owner == @corporation.owner
-              [h(:div, name),
-               h('div.nowrap', "#{other.name} (#{count > 1 ? "#{count}, " : ''}#{other.owner.name})"),
-               input,
-               h('button.no_margin', { on: { click: buy_train_click } }, 'Buy')]
-            else
-              hidden_trains = true
-              nil
+            real_name = other_owner(other) != other.owner ? " [#{other_owner(other).name}]" : ''
+
+            line = if @show_other_players || other_owner(other) == @corporation.owner
+                     [h(:div, name),
+                      h('div.nowrap',
+                        "#{other.name} (#{count > 1 ? "#{count}, " : ''}#{other.owner.name}#{real_name})"),
+                      input,
+                      h('button.no_margin', { on: { click: buy_train_click } }, 'Buy')]
+                   else
+                     hidden_trains = true
+                     nil
+                   end
+
+            if line && step.respond_to?(:extra_due) && step.extra_due(group[0])
+              extra_due_checkbox = h(
+                'input.no_margin',
+                style: {
+                  width: '1rem',
+                  height: '1rem',
+                  padding: '0 0 0 0.2rem',
+                },
+                attrs: {
+                  type: 'checkbox',
+                  id: 'extra_due',
+                  name: 'extra_due',
+                }
+              )
+
+              line << h(:div, '')
+              line << h(:div, step.extra_due_text(group[0]))
+              line << h(:div, step.extra_due_prompt)
+              line << h(:div, [extra_due_checkbox])
             end
+            line
           end
         end.compact
 
@@ -275,6 +329,29 @@ module View
                              'Hide trains from other players')
         end
         trains_to_buy
+      end
+
+      # need to abstract due to corporations owning minors owning trains
+      def other_owner(other)
+        step = @game.round.active_step
+        step.respond_to?(:real_owner) ? step.real_owner(other) : other.owner
+      end
+
+      def scrap_trains(scrappable_trains)
+        step = @game.round.active_step
+        scrappable_trains.flat_map do |train|
+          scrap = lambda do
+            process_action(Engine::Action::ScrapTrain.new(
+              @corporation,
+              train: train,
+            ))
+          end
+
+          [h(:div, train.name),
+           h('div.nowrap', train.owner.name),
+           h('div.right', step.scrap_info(train)),
+           h('button.no_margin', { on: { click: scrap } }, step.scrap_button_text(train))]
+        end
       end
 
       def price_range(train)
