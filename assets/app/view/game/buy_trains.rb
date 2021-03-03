@@ -63,7 +63,7 @@ module View
                               "take a loan of #{@game.format_currency(share_funds_required)}")
         end
 
-        if @must_buy_train && share_funds_possible < share_funds_required && !must_take_loan
+        if @must_buy_train && share_funds_possible < share_funds_required && must_take_loan.nil?
           children << h(:div, "#{player.name} does not have enough liquidity to "\
                               "contribute towards #{@corporation.name} buying a train "\
                               "from the Depot. #{@corporation.name} must buy a "\
