@@ -15,6 +15,7 @@ module View
       needs :selected_action_id, default: nil, store: true
       needs :limit, default: nil
       needs :scroll_pos, default: nil
+      needs :chat_input, default: ''
 
       def render
         children = [render_log]
@@ -54,6 +55,7 @@ module View
             h('input#chatbar',
               attrs: {
                 title: 'hotkey: c – esc to leave',
+                value: @chat_input,
               },
               style: {
                 marginLeft: '0.5rem',
