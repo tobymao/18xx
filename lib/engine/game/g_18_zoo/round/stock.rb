@@ -11,7 +11,7 @@ module Engine
             # If overriding, make sure to call @game.next_turn!
             @game.next_turn!
 
-            if @game.it_s_all_greek_to_me_active?
+            if @game.it_is_all_greek_to_me_active?
               @log << "#{@game.it_s_all_greek_to_me.owner.name} plays again. \"It’s all greek to me\" is closed."
               @game.it_s_all_greek_to_me.close!
             else

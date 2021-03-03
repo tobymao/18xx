@@ -1129,7 +1129,7 @@ module Engine
           @it_s_all_greek_to_me ||= company_by_id('IT_S_ALL_GREEK_TO_ME')
         end
 
-        def it_s_all_greek_to_me_active?
+        def it_is_all_greek_to_me_active?
           it_s_all_greek_to_me.all_abilities.any? { |ability| ability.is_a?(Engine::Ability::Close) }
         end
 
