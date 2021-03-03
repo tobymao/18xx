@@ -342,11 +342,11 @@ module Engine
             # Valentine
             ['G1'] => 'town=revenue:yellow_30|green_40|brown_50;path=a:0,b:_0;path=a:5,b:_0;path=a:1,b:_0',
             # Chi North
-            ['L4'] => 'city=revenue:yellow_30|green_50|brown_60;path=a:1,b:_0;path=a:2,b:_0;label=E',
+            ['L4'] => 'city=revenue:yellow_30|green_50|brown_60;path=a:1,b:_0,terminal:1;path=a:2,b:_0,terminal:1;label=E',
             # South Chi
-            ['L6'] => 'city=revenue:yellow_20|green_40|brown_60;path=a:2,b:_0;path=a:0,b:_0;path=a:1,b:_0;label=E',
+            ['L6'] => 'city=revenue:yellow_20|green_40|brown_60;path=a:2,b:_0,terminal:1;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;label=E',
             # KC
-            ['L12'] => 'city=revenue:yellow_30|green_50|brown_60;path=a:2,b:_0;path=a:3,b:_0;label=E',
+            ['L12'] => 'city=revenue:yellow_30|green_50|brown_60;path=a:2,b:_0,terminal:1;path=a:3,b:_0,terminal:1;label=E',
           },
         }.freeze
 
