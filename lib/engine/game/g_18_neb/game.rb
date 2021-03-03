@@ -310,16 +310,18 @@ module Engine
           white: {
             # empty tiles
             %w[B4 B8 C5 D2 D4 D6 E3 E5 F2 F4 F8 F10 F12 G3 G5 G9 H2 H4 H6 H12 I7 I9 I11 J2 J4 J6 J10 K9 K11] => '',
-            %w[K5 L8] => 'upgrade=cost:40,terrain:water',
+            %w[K5 L8] => 'upgrade=cost:60,terrain:water',
             # town tiles
             %w[B6 C3 C7 E7 F6 G7 G11 H8 H10 I3 I5 J12] => 'town=revenue:0',
-            %w[J8 K3 L10] => 'town=revenue:0;upgrade=cost:40,terrain:water',
+            %w[K3] => 'town=revenue:0;upgrade=cost:20,terrain:water',
+            %w[J8] => 'town=revenue:0;upgrade=cost:40,terrain:water',
+            %w[L10] => 'town=revenue:0;upgrade=cost:60,terrain:water',
           },
           yellow: {
             # city tiles
             ['C9'] => 'city=revenue:30;path=a:5,b:_0',
             # Omaha
-            ['K7'] => 'city=revenue:30,loc:3;town=revenue:0,loc:4;path=a:1,b:4;path=a:1,b:_0',
+            ['K7'] => 'city=revenue:30,loc:3;town=revenue:0,loc:4;path=a:1,b:4;path=a:1,b:_0;upgrade=cost:60,terrain:water',
           },
           gray: {
             ['D8'] => 'path=a:5,b:2',
@@ -332,19 +334,19 @@ module Engine
           },
           red: {
             # Powder River Basin
-            ['A5'] => 'offboard=revenue:yellow_0|green_30|brown_60;path=a:4,b:_0;path=a:5,b:_0;path=a:0,b:_0',
+            ['A5'] => 'offboard=revenue:yellow_0|green_30|brown_60;path=a:4,b:_0;path=a:5,b:_0;path=a:0,b:_0;label=W',
             # West
-            ['A7'] => 'city=revenue:yellow_30|green_40|brown_50;path=a:4,b:_0;path=a:5,b:_0;path=a:_0,b:3',
+            ['A7'] => 'city=revenue:yellow_30|green_40|brown_50;path=a:4,b:_0;path=a:5,b:_0;path=a:_0,b:3;label=W',
             # Pacific NW
-            ['B2'] => 'offboard=revenue:yellow_30|green_40|brown_50;path=a:0,b:_0;path=a:5,b:_0',
+            ['B2'] => 'offboard=revenue:yellow_30|green_40|brown_50;path=a:0,b:_0;path=a:5,b:_0;label=W',
             # Valentine
             ['G1'] => 'town=revenue:yellow_30|green_40|brown_50;path=a:0,b:_0;path=a:5,b:_0;path=a:1,b:_0',
             # Chi North
-            ['L4'] => 'city=revenue:yellow_30|green_50|brown_60;path=a:1,b:_0;path=a:2,b:_0',
+            ['L4'] => 'city=revenue:yellow_30|green_50|brown_60;path=a:1,b:_0;path=a:2,b:_0;label=E',
             # South Chi
-            ['L6'] => 'city=revenue:yellow_20|green_40|brown_60;path=a:2,b:_0;path=a:0,b:_0;path=a:1,b:_0',
+            ['L6'] => 'city=revenue:yellow_20|green_40|brown_60;path=a:2,b:_0;path=a:0,b:_0;path=a:1,b:_0;label=E',
             # KC
-            ['L12'] => 'city=revenue:yellow_30|green_50|brown_60;path=a:2,b:_0;path=a:3,b:_0',
+            ['L12'] => 'city=revenue:yellow_30|green_50|brown_60;path=a:2,b:_0;path=a:3,b:_0;label=E',
           },
         }.freeze
 
