@@ -29,7 +29,7 @@ module Engine
 
           def add_tokens(entity, tokens)
             super
-            @game.place_second_token(entity) if @game.corp_has_new_zealand?(entity)
+            @game.place_second_token(entity)
           end
         end
       end

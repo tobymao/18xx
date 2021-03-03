@@ -622,8 +622,16 @@ module Engine
           hexes.any? { |h| h.tile.cities.any? { |c| c.tokens.count(&:nil?).positive? } }
         end
 
+        def can_place_second_token(corporation)
+          return false if !tokenable_location_exists? || !corp_has_new_zealand?(corporation)
+
+          # Does the corp have a second token already?
+          corporation.tokens[1] && !corporation.tokens[1].city
+        end
+
+        # This must be idempotent.
         def place_second_token(corporation)
-          return unless tokenable_location_exists?
+          return unless can_place_second_token(corporation)
 
           hex = hex_by_id(corporation.coordinates)
 
@@ -717,7 +725,7 @@ module Engine
 
           G1817::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
-            Engine::Step::HomeToken,
+            G1817WO::Step::HomeToken,
             G1817WO::Step::BuySellParShares,
           ])
         end
