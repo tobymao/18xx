@@ -253,18 +253,18 @@ module Engine
 
         HEXES = {
           green: {
-            %w[D3 H3 J3 B5 C8 E8 I8 D9 I10] => '',
-            %w[F3 G4 H7 A10 J11 G12 E2 I2 K8 C10] => 'city=revenue:0',
-            ['J5'] => 'town=revenue:0',
-            %w[B11 G10 I12 J9] => 'town=revenue:0;icon=image:port',
-            ['K6'] => 'upgrade=cost:80,terrain:water',
-            %w[H5 I6] => 'upgrade=cost:80,terrain:water|mountain',
-            %w[E4 D5 F5 C6 E6 G6 D7 F7 A8 G8 B9 H9 H11 H13] => 'upgrade=cost:80,terrain:mountain',
-            ['I4'] => 'city=revenue:0;label=H;upgrade=cost:80',
+            # empty tiles
+            %w[B4 B8 C5 D2 D4 D6 E3 E5 F2 F4 F8 F12 F14 G3 G5 G9 H2 H4 H6 H12 I7 I9 I11 J2 J4 J6 J10 K9 K11] => '',
+            %w[K5 L8] => 'upgrade=cost:40,terrain:water',
+            # town tiles
+            %w[B6 C3 C7 E7 F6 G7 G11 H8 H10 I3 I5 J12] => 'town=revenue:0',
+            %w[J8 K3 L10] => 'town=revenue:0;upgrade=cost:40,terrain:water',
           },
           yellow: {
-            ['C4'] => 'city=revenue:20;path=a:2,b:_0',
-            ['K4'] => 'city=revenue:30;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;label=T',
+            # city tiles
+            ['C9'] => 'city=revenue:30;label=DRG',
+            #['C4'] => 'city=revenue:20;path=a:2,b:_0',
+            #['K4'] => 'city=revenue:30;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;label=T',
           },
           gray: {
             ['B7'] => 'city=revenue:40,slots:2;path=a:1,b:_0;path=a:3,b:_0;path=a:5,b:_0',
@@ -273,9 +273,20 @@ module Engine
             ['J7'] => 'path=a:1,b:5',
           },
           red: {
-            ['F1'] => 'offboard=revenue:yellow_30|brown_60|diesel_100;path=a:0,b:_0;path=a:1,b:_0',
-            ['J1'] => 'offboard=revenue:yellow_20|brown_40|diesel_80;path=a:0,b:_0;path=a:1,b:_0',
-            ['L7'] => 'offboard=revenue:yellow_20|brown_40|diesel_80;path=a:1,b:_0;path=a:2,b:_0',
+            # Powder River Basin
+            ['A5'] => 'offboard=revenue:yellow_0|green_30|brown_60;path=a:0,b:_0;path=a:1,b:_0',
+            # West
+            ['A7'] => 'offboard=revenue:yellow_30|green_40|brown_50;path=a:0,b:_0;path=a:1,b:_0',
+            # Pacific NW
+            ['B2'] => 'offboard=revenue:yellow_30|green_40|brown_50;path=a:0,b:_0;path=a:1,b:_0',
+            # Valentine
+            ['G1'] => 'offboard=revenue:yellow_30|green_40|brown_50;path=a:0,b:_0;path=a:1,b:_0',
+            # Chi North
+            ['L4'] => 'offboard=revenue:yellow_30|green_50|brown_60;path=a:0,b:_0;path=a:1,b:_0',
+            # South Chi
+            ['L6'] => 'offboard=revenue:yellow_20|green_40|brown_60;path=a:0,b:_0;path=a:1,b:_0',
+            # KC
+            ['L12'] => 'offboard=revenue:yellow_30|green_50|brown_60;path=a:0,b:_0;path=a:1,b:_0',
           },
           white: {
             ['F9'] => 'city=revenue:30,slots:2;path=a:2,b:_0;path=a:3,b:_0;'\
