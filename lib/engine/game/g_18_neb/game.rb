@@ -182,79 +182,134 @@ module Engine
             distance: 999,
             price: 900,
             num: 20,
-            available_on: '6',
-            discount: { '4' => 300, '5' => 300, '6' => 300 },
+            available_on: '6', discount: { '4' => 300, '5' => 300, '6' => 300 },
           },
 ].freeze
 
         COMPANIES = [
           {
-            name: 'Takamatsu E-Railroad',
+            name: 'Denver Pacific Railroad',
             value: 20,
             revenue: 5,
-            desc: 'Blocks Takamatsu (K4) while owned by a player.',
-            sym: 'TR',
-            abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['K4'] }],
+            desc: 'Once per game, allows Corporation owner to lay or upgrade a tile in B8',
+            sym: 'DPR',
+            abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['B8'] }],
+            color: nil,
+          },
+          {
+            name: 'Morison Bridging Company',
+            value: 40,
+            revenue: 10,
+            desc: 'Corporation owner gets two bridge discount tokens',
+            sym: 'MBC',
+            #abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['B8'] }],
+            color: nil,
+          },
+          {
+            name: 'Armour and Company',
+            value: 70,
+            revenue: 15,
+            desc: 'An owning Corporation may place a cattle token in any Town or City',
+            sym: 'AC',
+            # abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['B8'] }],
+            color: nil,
+          },
+          {
+            name: 'Central Pacific Railroad',
+            value: 100,
+            revenue: 15,
+            desc: 'May exchange for share in Colorado & Southern Railroad',
+            sym: 'CPR',
+            abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['C7'] }],
+            color: nil,
+          },
+          {
+            name: 'Crédit Mobilier',
+            value: 130,
+            revenue: 5,
+            desc: '$5 revenue each time ANY tile is laid or upgraded.',
+            sym: 'CM',
+            # abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['C7'] }],
+            color: nil,
+          },
+          {
+            name: 'Union Pacific Railroad',
+            value: 175,
+            revenue: 25,
+            desc: 'Comes with President\'s Certificate of the Union Pacific Railroad',
+            sym: 'UPR',
+            #abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['C7'] }],
             color: nil,
           },
         ].freeze
 
         CORPORATIONS = [
           {
+            float_percent: 20,
             sym: 'UP',
             name: 'Union Pacific',
             logo: '1889/AR',
             tokens: [0, 40, 100],
-            coordinates: 'K8',
+            coordinates: 'K7',
             color: '#37383a',
             reservation_color: nil,
           },
           {
-            float_percent: 50,
-            sym: 'IR',
-            name: 'Iyo Railway',
+            float_percent: 20,
+            sym: 'CBQ',
+            name: 'Chicago Burlington & Quincy',
             logo: '1889/IR',
             tokens: [0, 40],
-            coordinates: 'E2',
+            coordinates: 'L6',
             color: '#f48221',
             reservation_color: nil,
           },
           {
-            float_percent: 50,
-            sym: 'SR',
-            name: 'Sanuki Railway',
+            float_percent: 20,
+            sym: 'CNW',
+            name: 'Chicago & Northwestern',
             logo: '1889/SR',
             tokens: [0, 40],
-            coordinates: 'I2',
+            coordinates: 'L4',
             color: '#76a042',
             reservation_color: nil,
           },
           {
-            float_percent: 50,
-            sym: 'KO',
-            name: 'Takamatsu & Kotohira Electric Railway',
+            float_percent: 20,
+            sym: 'DRG',
+            name: 'Denver & Rio Grande',
             logo: '1889/KO',
             tokens: [0, 40],
-            coordinates: 'K4',
+            coordinates: 'C9',
             color: '#d81e3e',
             reservation_color: nil,
           },
           {
-            float_percent: 50,
-            sym: 'TR',
-            name: 'Tosa Electric Railway',
+            float_percent: 20,
+            sym: 'MP',
+            name: 'Missouri Pacific',
             logo: '1889/TR',
             tokens: [0, 40, 40],
-            coordinates: 'F9',
+            coordinates: 'L12',
+            color: '#00a993',
+            reservation_color: nil,
+          },
+          {
+            float_percent: 20,
+            sym: 'CS',
+            name: 'Colorado & Southern',
+            logo: '1889/TR',
+            tokens: [0, 40, 40],
+            coordinates: 'A7',
             color: '#00a993',
             reservation_color: nil,
           },
         ].freeze
 
         HEXES = {
-          green: {
+          white: {
             # empty tiles
-            %w[B4 B8 C5 D2 D4 D6 E3 E5 F2 F4 F8 F12 F14 G3 G5 G9 H2 H4 H6 H12 I7 I9 I11 J2 J4 J6 J10 K9 K11] => '',
+            %w[B4 B8 C5 D2 D4 D6 E3 E5 F2 F4 F8 F10 F12 G3 G5 G9 H2 H4 H6 H12 I7 I9 I11 J2 J4 J6 J10 K9 K11] => '',
             %w[K5 L8] => 'upgrade=cost:40,terrain:water',
             # town tiles
             %w[B6 C3 C7 E7 F6 G7 G11 H8 H10 I3 I5 J12] => 'town=revenue:0',
@@ -262,35 +317,32 @@ module Engine
           },
           yellow: {
             # city tiles
-            ['C9'] => 'city=revenue:30;label=DRG',
-            #['C4'] => 'city=revenue:20;path=a:2,b:_0',
-            #['K4'] => 'city=revenue:30;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;label=T',
+            ['C9'] => 'city=revenue:30;path=a:5,b:_0',
+            ['K7'] => 'city=revenue:30,loc:2;town=revenue:0,loc:4;path=a:1,b:4;path=a:_1,b:1',
           },
           gray: {
-            ['B7'] => 'city=revenue:40,slots:2;path=a:1,b:_0;path=a:3,b:_0;path=a:5,b:_0',
-            ['B3'] => 'town=revenue:20;path=a:0,b:_0;path=a:_0,b:5',
-            ['G14'] => 'town=revenue:20;path=a:3,b:_0;path=a:_0,b:4',
-            ['J7'] => 'path=a:1,b:5',
+            ['D8'] => 'path=a:5,b:2',
+            ['D10'] => 'path=a:4,b:2',
+            ['E9'] => 'town=revenue:0;path=a:5,b:2;path=a:_0,b:1;path=a:_0,b:3',
+            ['I1'] => 'path=a:1,b:5',
+            ['K1'] => 'path=a:1,b:6',
+            ['K13'] => 'path=a:2,b:3',
           },
           red: {
             # Powder River Basin
-            ['A5'] => 'offboard=revenue:yellow_0|green_30|brown_60;path=a:0,b:_0;path=a:1,b:_0',
+            ['A5'] => 'offboard=revenue:yellow_0|green_30|brown_60;path=a:4,b:_0;path=a:5,b:_0;path=a:0,b:_0',
             # West
-            ['A7'] => 'offboard=revenue:yellow_30|green_40|brown_50;path=a:0,b:_0;path=a:1,b:_0',
+            ['A7'] => 'city=revenue:yellow_30|green_40|brown_50;path=a:4,b:_0;path=a:5,b:_0;path=a:_0,b:3',
             # Pacific NW
-            ['B2'] => 'offboard=revenue:yellow_30|green_40|brown_50;path=a:0,b:_0;path=a:1,b:_0',
+            ['B2'] => 'offboard=revenue:yellow_30|green_40|brown_50;path=a:0,b:_0;path=a:5,b:_0',
             # Valentine
-            ['G1'] => 'offboard=revenue:yellow_30|green_40|brown_50;path=a:0,b:_0;path=a:1,b:_0',
+            ['G1'] => 'town=revenue:yellow_30|green_40|brown_50;path=a:0,b:_0;path=a:5,b:_0;path=a:1,b:_0',
             # Chi North
-            ['L4'] => 'offboard=revenue:yellow_30|green_50|brown_60;path=a:0,b:_0;path=a:1,b:_0',
+            ['L4'] => 'city=revenue:yellow_30|green_50|brown_60;path=a:1,b:_0;path=a:2,b:_0',
             # South Chi
-            ['L6'] => 'offboard=revenue:yellow_20|green_40|brown_60;path=a:0,b:_0;path=a:1,b:_0',
+            ['L6'] => 'city=revenue:yellow_20|green_40|brown_60;path=a:2,b:_0;path=a:0,b:_0;path=a:1,b:_0',
             # KC
-            ['L12'] => 'offboard=revenue:yellow_30|green_50|brown_60;path=a:0,b:_0;path=a:1,b:_0',
-          },
-          white: {
-            ['F9'] => 'city=revenue:30,slots:2;path=a:2,b:_0;path=a:3,b:_0;'\
-                      'path=a:4,b:_0;path=a:5,b:_0;label=K;upgrade=cost:80,terrain:water',
+            ['L12'] => 'city=revenue:yellow_30|green_50|brown_60;path=a:2,b:_0;path=a:3,b:_0',
           },
         }.freeze
 
