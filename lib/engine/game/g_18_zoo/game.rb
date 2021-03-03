@@ -146,7 +146,7 @@ module Engine
                          'multiplier' => 1,
                        }],
             price: 12,
-            rusts_on: '4J',
+            obsolete_on: '4J',
             num: 1,
           },
           {
@@ -188,7 +188,7 @@ module Engine
             ],
             price: 47,
             num: 99,
-            events: [{ 'type' => 'new_train' }],
+            events: [{ 'type' => 'new_train' }, { 'type' => 'rust_own_3s_4s' }],
           },
           {
             name: '2J',
@@ -477,30 +477,30 @@ module Engine
           map_a: {
             gray: {
               %w[B9 C8 J5 L13] => '',
-              [:M8] => 'path=a:0,b:1',
-              [:F9] => 'path=a:0,b:3',
-              [:H3] => 'path=a:0,b:4',
-              [:A10] => 'path=a:0,b:5',
-              [:K6] => 'path=a:1,b:3',
-              [:G20] => 'path=a:2,b:3',
-              [:J19] => 'path=a:2,b:4',
-              [:A12] => 'path=a:3,b:5',
-              [:G16] => 'path=a:1,b:4;path=a:3,b:5',
-              [:L15] => 'path=a:0,b:4;path=a:1,b:4',
-              [:J7] => 'path=a:0,b:4;path=a:4,b:5',
-              [:D7] => 'offboard=revenue:0,hide:1;path=a:0,b:_0',
+              %w[M8] => 'path=a:0,b:1',
+              %w[F9] => 'path=a:0,b:3',
+              %w[H3] => 'path=a:0,b:4',
+              %w[A10] => 'path=a:0,b:5',
+              %w[K6] => 'path=a:1,b:3',
+              %w[G20] => 'path=a:2,b:3',
+              %w[J19] => 'path=a:2,b:4',
+              %w[A12] => 'path=a:3,b:5',
+              %w[G16] => 'path=a:1,b:4;path=a:3,b:5',
+              %w[L15] => 'path=a:0,b:4;path=a:1,b:4',
+              %w[J7] => 'path=a:0,b:4;path=a:4,b:5',
+              %w[D7] => 'offboard=revenue:0,hide:1;path=a:0,b:_0',
               %w[L3 N9] => 'offboard=revenue:0,hide:1;path=a:1,b:_0',
               %w[I6 K10] => 'offboard=revenue:0,hide:1;path=a:2,b:_0',
-              [:F21] => 'offboard=revenue:0,hide:1;path=a:3,b:_0',
-              [:L9] => 'offboard=revenue:0,hide:1;path=a:5,b:_0;path=a:2,b:4',
-              [:K8] => 'offboard=revenue:0,hide:1;path=a:1,b:_0;path=a:2,b:5',
-              [:H13] => 'offboard=revenue:0,hide:1;path=a:1,b:_0;path=a:0,b:4',
+              %w[F21] => 'offboard=revenue:0,hide:1;path=a:3,b:_0',
+              %w[L9] => 'offboard=revenue:0,hide:1;path=a:5,b:_0;path=a:2,b:4',
+              %w[K8] => 'offboard=revenue:0,hide:1;path=a:1,b:_0;path=a:2,b:5',
+              %w[H13] => 'offboard=revenue:0,hide:1;path=a:1,b:_0;path=a:0,b:4',
             },
             red: {
               %w[L5 M18] => 'offboard=revenue:yellow_30|brown_60;path=a:2,b:_0;label=R',
-              [:E8] => 'offboard=revenue:yellow_30|brown_60;path=a:4,b:_0;label=R',
-              [:B17] => 'offboard=revenue:yellow_30|brown_60;path=a:3,b:_0;path=a:4,b:_0;label=R',
-              [:H19] => 'offboard=revenue:yellow_30|brown_60;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=R',
+              %w[E8] => 'offboard=revenue:yellow_30|brown_60;path=a:4,b:_0;label=R',
+              %w[B17] => 'offboard=revenue:yellow_30|brown_60;path=a:3,b:_0;path=a:4,b:_0;label=R',
+              %w[H19] => 'offboard=revenue:yellow_30|brown_60;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=R',
             },
             white: {
               %w[I4 H5 F7 H7 G8 I8 C10 I10 F11 J11 L11 E12 G12 I12 K12 D13 F13 J13 C14 E14 B15 F15 C16 E16 I16 K16 H17
@@ -516,26 +516,26 @@ module Engine
             gray: {
               %w[F14 L14] => '',
               %w[F4 H0 M9] => 'path=a:0,b:1',
-              [:F10] => 'path=a:0,b:3',
+              %w[F10] => 'path=a:0,b:3',
               %w[F0] => 'path=a:0,b:5',
-              ['H14'] => 'path=a:1,b:4',
-              ['G21'] => 'path=a:2,b:3',
-              ['J20'] => 'path=a:2,b:4',
-              ['E5'] => 'path=a:4,b:5',
-              ['L16'] => 'path=a:0,b:4;path=a:1,b:4',
-              ['G17'] => 'path=a:1,b:4;path=a:3,b:5',
-              ['J8'] => 'path=a:0,b:4;path=a:4,b:5',
-              ['H4'] => 'junction;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0',
+              %w[H14] => 'path=a:1,b:4',
+              %w[G21] => 'path=a:2,b:3',
+              %w[J20] => 'path=a:2,b:4',
+              %w[E5] => 'path=a:4,b:5',
+              %w[L16] => 'path=a:0,b:4;path=a:1,b:4',
+              %w[G17] => 'path=a:1,b:4;path=a:3,b:5',
+              %w[J8] => 'path=a:0,b:4;path=a:4,b:5',
+              %w[H4] => 'junction;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0',
               %w[L4 N10] => 'offboard=revenue:0,hide:1;path=a:1,b:_0',
-              ['K11'] => 'offboard=revenue:0,hide:1;path=a:2,b:_0',
-              ['F22'] => 'offboard=revenue:0,hide:1;path=a:3,b:_0',
-              ['K9'] => 'offboard=revenue:0,hide:1;path=a:1,b:_0;path=a:2,b:5',
-              ['L10'] => 'offboard=revenue:0,hide:1;path=a:5,b:_0;path=a:2,b:4',
+              %w[K11] => 'offboard=revenue:0,hide:1;path=a:2,b:_0',
+              %w[F22] => 'offboard=revenue:0,hide:1;path=a:3,b:_0',
+              %w[K9] => 'offboard=revenue:0,hide:1;path=a:1,b:_0;path=a:2,b:5',
+              %w[L10] => 'offboard=revenue:0,hide:1;path=a:5,b:_0;path=a:2,b:4',
             },
             "red": {
-              ['L6'] => 'offboard=revenue:yellow_30|brown_60;path=a:1,b:_0;path=a:2,b:_0;label=R',
-              ['M19'] => 'offboard=revenue:yellow_30|brown_60;path=a:2,b:_0;label=R',
-              ['H20'] => 'offboard=revenue:yellow_30|brown_60;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=R',
+              %w[L6] => 'offboard=revenue:yellow_30|brown_60;path=a:1,b:_0;path=a:2,b:_0;label=R',
+              %w[M19] => 'offboard=revenue:yellow_30|brown_60;path=a:2,b:_0;label=R',
+              %w[H20] => 'offboard=revenue:yellow_30|brown_60;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=R',
             },
             "white": {
               %w[E7 F8 F12 F18 G5 G7 G9 G13 G15 H2 H8 H18 I5 I7 I9 I11 I13 I17 I19 J12 J14 K13 K17 L12 L18] => '',
@@ -552,23 +552,23 @@ module Engine
               %w[F3] => '',
               %w[D3 I0] => 'path=a:0,b:1',
               %w[F7] => 'path=a:1,b:4',
-              [:G10] => 'path=a:0,b:3',
+              %w[G10] => 'path=a:0,b:3',
               %w[G0] => 'path=a:0,b:5',
-              [:H21] => 'path=a:2,b:3',
-              [:B13] => 'path=a:3,b:5',
-              [:C4] => 'path=a:4,b:5',
-              [:H17] => 'path=a:1,b:4;path=a:3,b:5',
-              [:I4] => 'junction;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0',
+              %w[H21] => 'path=a:2,b:3',
+              %w[B13] => 'path=a:3,b:5',
+              %w[C4] => 'path=a:4,b:5',
+              %w[H17] => 'path=a:1,b:4;path=a:3,b:5',
+              %w[I4] => 'junction;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0',
               %w[A10] => 'offboard=revenue:0,hide:1;path=a:5,b:_0',
               %w[M4] => 'offboard=revenue:0,hide:1;path=a:1,b:_0',
-              [:G22] => 'offboard=revenue:0,hide:1;path=a:3,b:_0',
-              [:I14] => 'offboard=revenue:0,hide:1;path=a:1,b:_0;path=a:0,b:4',
+              %w[G22] => 'offboard=revenue:0,hide:1;path=a:3,b:_0',
+              %w[I14] => 'offboard=revenue:0,hide:1;path=a:1,b:_0;path=a:0,b:4',
             },
             red: {
-              [:M6] => 'offboard=revenue:yellow_30|brown_60;path=a:1,b:_0;path=a:2,b:_0;label=R',
-              [:E2] => 'offboard=revenue:yellow_30|brown_60;path=a:0,b:_0;label=R',
-              [:C18] => 'offboard=revenue:yellow_30|brown_60;path=a:3,b:_0;path=a:4,b:_0;label=R',
-              [:I20] => 'offboard=revenue:yellow_30|brown_60;path=a:2,b:_0;path=a:3,b:_0;label=R',
+              %w[M6] => 'offboard=revenue:yellow_30|brown_60;path=a:1,b:_0;path=a:2,b:_0;label=R',
+              %w[E2] => 'offboard=revenue:yellow_30|brown_60;path=a:0,b:_0;label=R',
+              %w[C18] => 'offboard=revenue:yellow_30|brown_60;path=a:3,b:_0;path=a:4,b:_0;label=R',
+              %w[I20] => 'offboard=revenue:yellow_30|brown_60;path=a:2,b:_0;path=a:3,b:_0;label=R',
             },
             white: {
               %w[C10 C16 D11 D15 D17 E4 E14 F5 F13 F15 F17 G4 G8 G12 G14 G16 H5 H7 H9 H13 I2 I8 I18 J5 J7] => '',
@@ -584,30 +584,30 @@ module Engine
             gray: {
               %w[B10 C9 D6 L14] => '',
               %w[F4 H0 M9] => 'path=a:0,b:1',
-              [:F10] => 'path=a:0,b:3',
+              %w[F10] => 'path=a:0,b:3',
               %w[A11 F0] => 'path=a:0,b:5',
-              [:G21] => 'path=a:2,b:3',
-              [:J20] => 'path=a:2,b:4',
-              [:A13] => 'path=a:3,b:5',
-              [:E5] => 'path=a:4,b:5',
-              [:L16] => 'path=a:0,b:4;path=a:1,b:4',
-              [:G17] => 'path=a:1,b:4;path=a:3,b:5',
-              [:J8] => 'path=a:0,b:4;path=a:4,b:5',
-              [:H4] => 'junction;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0',
+              %w[G21] => 'path=a:2,b:3',
+              %w[J20] => 'path=a:2,b:4',
+              %w[A13] => 'path=a:3,b:5',
+              %w[E5] => 'path=a:4,b:5',
+              %w[L16] => 'path=a:0,b:4;path=a:1,b:4',
+              %w[G17] => 'path=a:1,b:4;path=a:3,b:5',
+              %w[J8] => 'path=a:0,b:4;path=a:4,b:5',
+              %w[H4] => 'junction;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0',
               %w[L4 N10] => 'offboard=revenue:0,hide:1;path=a:1,b:_0',
-              [:D8] => 'offboard=revenue:0,hide:1;path=a:0,b:_0',
-              [:K11] => 'offboard=revenue:0,hide:1;path=a:2,b:_0',
-              [:F22] => 'offboard=revenue:0,hide:1;path=a:3,b:_0',
-              [:K9] => 'offboard=revenue:0,hide:1;path=a:1,b:_0;path=a:2,b:5',
-              [:L10] => 'offboard=revenue:0,hide:1;path=a:5,b:_0;path=a:2,b:4',
-              [:H14] => 'offboard=revenue:0,hide:1;path=a:1,b:_0;path=a:0,b:4',
+              %w[D8] => 'offboard=revenue:0,hide:1;path=a:0,b:_0',
+              %w[K11] => 'offboard=revenue:0,hide:1;path=a:2,b:_0',
+              %w[F22] => 'offboard=revenue:0,hide:1;path=a:3,b:_0',
+              %w[K9] => 'offboard=revenue:0,hide:1;path=a:1,b:_0;path=a:2,b:5',
+              %w[L10] => 'offboard=revenue:0,hide:1;path=a:5,b:_0;path=a:2,b:4',
+              %w[H14] => 'offboard=revenue:0,hide:1;path=a:1,b:_0;path=a:0,b:4',
             },
             red: {
-              [:L6] => 'offboard=revenue:yellow_30|brown_60;path=a:1,b:_0;path=a:2,b:_0;label=R',
-              [:M19] => 'offboard=revenue:yellow_30|brown_60;path=a:2,b:_0;label=R',
-              [:E9] => 'offboard=revenue:yellow_30|brown_60;path=a:4,b:_0;label=R',
-              [:B18] => 'offboard=revenue:yellow_30|brown_60;path=a:3,b:_0;path=a:4,b:_0;label=R',
-              [:H20] => 'offboard=revenue:yellow_30|brown_60;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=R',
+              %w[L6] => 'offboard=revenue:yellow_30|brown_60;path=a:1,b:_0;path=a:2,b:_0;label=R',
+              %w[M19] => 'offboard=revenue:yellow_30|brown_60;path=a:2,b:_0;label=R',
+              %w[E9] => 'offboard=revenue:yellow_30|brown_60;path=a:4,b:_0;label=R',
+              %w[B18] => 'offboard=revenue:yellow_30|brown_60;path=a:3,b:_0;path=a:4,b:_0;label=R',
+              %w[H20] => 'offboard=revenue:yellow_30|brown_60;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=R',
             },
             white: {
               %w[B16 C11 C15 C17 D14 E7 E13 E15 E17 F8 F12 F14 F16 G5 G7 G9 G13 H2 H8 H18 I5 I7 I9 I11 I13 I17 I19 J12
@@ -624,28 +624,28 @@ module Engine
             gray: {
               %w[D6 E3 E15 L14] => '',
               %w[C3 H0 M9] => 'path=a:0,b:1',
-              [:F10] => 'path=a:0,b:3',
+              %w[F10] => 'path=a:0,b:3',
               %w[F0] => 'path=a:0,b:5',
-              [:G21] => 'path=a:2,b:3',
-              [:J20] => 'path=a:2,b:4',
-              [:L16] => 'path=a:0,b:4;path=a:1,b:4',
-              [:B4] => 'path=a:4,b:5',
-              [:G17] => 'path=a:1,b:4;path=a:3,b:5',
-              [:J8] => 'path=a:0,b:4;path=a:4,b:5',
-              [:H4] => 'junction;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0',
+              %w[G21] => 'path=a:2,b:3',
+              %w[J20] => 'path=a:2,b:4',
+              %w[L16] => 'path=a:0,b:4;path=a:1,b:4',
+              %w[B4] => 'path=a:4,b:5',
+              %w[G17] => 'path=a:1,b:4;path=a:3,b:5',
+              %w[J8] => 'path=a:0,b:4;path=a:4,b:5',
+              %w[H4] => 'junction;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0',
               %w[L4 N10] => 'offboard=revenue:0,hide:1;path=a:1,b:_0',
-              [:K11] => 'offboard=revenue:0,hide:1;path=a:2,b:_0',
-              [:F22] => 'offboard=revenue:0,hide:1;path=a:3,b:_0',
-              [:E7] => 'offboard=revenue:0,hide:1;path=a:4,b:_0',
-              [:K9] => 'offboard=revenue:0,hide:1;path=a:1,b:_0;path=a:2,b:5',
-              [:L10] => 'offboard=revenue:0,hide:1;path=a:5,b:_0;path=a:2,b:4',
-              [:H14] => 'offboard=revenue:0,hide:1;path=a:1,b:_0;path=a:0,b:4',
+              %w[K11] => 'offboard=revenue:0,hide:1;path=a:2,b:_0',
+              %w[F22] => 'offboard=revenue:0,hide:1;path=a:3,b:_0',
+              %w[E7] => 'offboard=revenue:0,hide:1;path=a:4,b:_0',
+              %w[K9] => 'offboard=revenue:0,hide:1;path=a:1,b:_0;path=a:2,b:5',
+              %w[L10] => 'offboard=revenue:0,hide:1;path=a:5,b:_0;path=a:2,b:4',
+              %w[H14] => 'offboard=revenue:0,hide:1;path=a:1,b:_0;path=a:0,b:4',
             },
             red: {
-              [:L6] => 'offboard=revenue:yellow_30|brown_60;path=a:1,b:_0;path=a:2,b:_0;label=R',
-              [:M19] => 'offboard=revenue:yellow_30|brown_60;path=a:2,b:_0;label=R',
-              [:D2] => 'offboard=revenue:yellow_30|brown_60;path=a:0,b:_0;label=R',
-              [:H20] => 'offboard=revenue:yellow_30|brown_60;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=R',
+              %w[L6] => 'offboard=revenue:yellow_30|brown_60;path=a:1,b:_0;path=a:2,b:_0;label=R',
+              %w[M19] => 'offboard=revenue:yellow_30|brown_60;path=a:2,b:_0;label=R',
+              %w[D2] => 'offboard=revenue:yellow_30|brown_60;path=a:0,b:_0;label=R',
+              %w[H20] => 'offboard=revenue:yellow_30|brown_60;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=R',
             },
             white: {
               %w[D4 E5 F4 F8 F12 F14 F16 G5 G7 G9 G13 H2 H8 H18 I5 I7 I9 I11 I13 I17 I19 J12 J14 K13 K17 L12 L18] => '',
@@ -728,9 +728,7 @@ module Engine
           [0, 0],
         ].freeze
 
-        STOCKMARKET_OWNER_GAIN = [
-          [0, 0, 0, 1, 2, 2, 2, 2, 3],
-        ].freeze
+        STOCKMARKET_OWNER_GAIN = [0, 0, 0, 1, 2, 2, 2, 2, 3].freeze
 
         SELL_AFTER = :any_time
 
@@ -748,37 +746,61 @@ module Engine
         }.freeze
 
         CORPORATION_COORDINATES_BY_MAP = {
-          map_a: { GI: 'J9', PB: 'M10', PE: 'J17', LI: 'D15', TI: 'G14' },
-          map_b: { CR: 'G3', GI: 'J10', PB: 'M11', PE: 'J18', BB: 'H6' },
-          map_c: { CR: 'H3', LI: 'E16', TI: 'H15', BB: 'I6', EL: 'D5' },
-          map_d: { CR: 'G3', GI: 'J10', PB: 'M11', PE: 'J18', LI: 'D16', TI: 'G15', BB: 'H6' },
-          map_e: { CR: 'G3', GI: 'J10', PB: 'M11', PE: 'J18', TI: 'G15', BB: 'H6', EL: 'C5' },
-          map_f: { CR: 'H3', GI: 'K10', PE: 'K18', LI: 'E16', TI: 'H15', BB: 'I6', EL: 'D5' },
+          map_a: { 'GI' => 'J9', 'PB' => 'M10', 'PE' => 'J17', 'LI' => 'D15', 'TI' => 'G14' },
+          map_b: { 'CR' => 'G3', 'GI' => 'J10', 'PB' => 'M11', 'PE' => 'J18', 'BB' => 'H6' },
+          map_c: { 'CR' => 'H3', 'LI' => 'E16', 'TI' => 'H15', 'BB' => 'I6', 'EL' => 'D5' },
+          map_d: {
+            'CR' => 'G3',
+            'GI' => 'J10',
+            'PB' => 'M11',
+            'PE' => 'J18',
+            'LI' => 'D16',
+            'TI' => 'G15',
+            'BB' => 'H6',
+          },
+          map_e: {
+            'CR' => 'G3',
+            'GI' => 'J10',
+            'PB' => 'M11',
+            'PE' => 'J18',
+            'TI' => 'G15',
+            'BB' => 'H6',
+            'EL' => 'C5',
+          },
+          map_f: {
+            'CR' => 'H3',
+            'GI' => 'K10',
+            'PE' => 'K18',
+            'LI' => 'E16',
+            'TI' => 'H15',
+            'BB' => 'I6',
+            'EL' => 'D5',
+          },
         }.freeze
 
         LOCATION_NAMES_BY_MAP = {
           map_a: {
-            "B11": 'O',
-            "B13": 'O',
-            "E18": 'O',
-            "G10": 'O',
-            "H9": 'O',
-            "H11": 'O',
-            "I2": 'O',
-            "K14": 'O',
-            "M12": 'O',
-            "M14": 'O',
-            "D11": 'MM',
-            "E10": 'MM',
-            "F17": 'MM',
-            "G18": 'MM',
-            "J3": 'MM',
-            "K18": 'MM',
-            "M16": 'MM',
-            "C12": 'M',
-            "H15": 'M',
-            "I14": 'M',
-            "D17": 'M',
+            'B11': 'O',
+            'B13': 'O',
+            'E18': 'O',
+            'G10': 'O',
+            'H9': 'O',
+            'H11': 'O',
+            'I2': 'O',
+            'K14': 'O',
+            'M12': 'O',
+            'M14': 'O',
+            'D11': 'MM',
+            'E10': 'MM',
+            'F17': 'MM',
+            'G18': 'MM',
+            'J3': 'MM',
+            'K18': 'MM',
+            'M16': 'MM',
+            'C12': 'M',
+            'H15': 'M',
+            'I14': 'M',
+            'D17': 'M',
           },
           map_b: {
             "F2": 'O',
@@ -812,14 +834,10 @@ module Engine
             "I10": 'O',
             "I12": 'O',
             "J3": 'O',
-            "L15": 'O',
-            "N13": 'O',
-            "N15": 'O',
             "D13": 'M',
             "E18": 'M',
             "F9": 'M',
             "I16": 'M',
-            "J15": 'M',
             "K6": 'M',
             "D7": 'MM',
             "E8": 'MM',
@@ -829,8 +847,6 @@ module Engine
             "H19": 'MM',
             "K4": 'MM',
             "L7": 'MM',
-            "L19": 'MM',
-            "N17": 'MM',
           },
           map_d: {
             "B12": 'O',
@@ -872,14 +888,10 @@ module Engine
             "K15": 'O',
             "M13": 'O',
             "M15": 'O',
-            "C13": 'M',
-            "D18": 'M',
             "H16": 'M',
             "I15": 'M',
             "J6": 'M',
             "C7": 'MM',
-            "D12": 'MM',
-            "E11": 'MM',
             "F18": 'MM',
             "G19": 'MM',
             "J4": 'MM',
@@ -917,12 +929,15 @@ module Engine
           },
         }.freeze
 
-        # HOME_TOKEN_TIMING = :float # TODO enable again after adding G18ZOO::Step::HomeToken
+        HOME_TOKEN_TIMING = :float
 
         MUST_BUY_TRAIN = :always
 
         # A yellow/upgrade and a yellow
-        TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded }].freeze
+        TILE_LAYS = [
+          { lay: true, upgrade: true, cannot_reuse_same_hex: true },
+          { lay: true, upgrade: :not_if_upgraded, cannot_reuse_same_hex: true },
+        ].freeze
 
         MARKET_TEXT = Base::MARKET_TEXT.merge(par_2: 'Can only enter during phase green',
                                               par_3: 'Can only enter during phase brown').freeze
@@ -1022,13 +1037,34 @@ module Engine
           super
         end
 
+        def tile_lays(_entity)
+          return super if @round.is_a?(Engine::Round::Operating)
+
+          return [{ lay: true, upgrade: true }] unless @round.available_tracks.empty?
+
+          @round.bonus_tracks.times.map { |_| { lay: true } } if @round.bonus_tracks.positive?
+        end
+
+        def upgrades_to?(from, to, special = nil)
+          return super if @round.is_a?(Engine::Round::Operating)
+
+          return @round.available_tracks.include?(to.name) &&
+            Engine::Tile::COLORS.index(to.color) > Engine::Tile::COLORS.index(from.color) &&
+            from.paths_are_subset_of?(to.paths) if @round.available_tracks.any?
+
+          super
+        end
+
         def unowned_purchasable_companies(_entity)
           @available_companies + @future_companies
         end
 
         def after_par(corporation)
-          bonus_after_par(corporation, 5, 2) if corporation.par_price.price == 9
-          bonus_after_par(corporation, 10, 4) if corporation.par_price.price == 12
+          @round.floated_corporation = corporation
+          @round.available_tracks = %w[5 6 57]
+
+          bonus_after_par(corporation, 5, 2, %w[14 15]) if corporation.par_price.price == 9
+          bonus_after_par(corporation, 10, 4, %w[14 15 611]) if corporation.par_price.price == 12
 
           return unless @near_families
 
@@ -1052,12 +1088,21 @@ module Engine
             corporations = @near_families_direction == 'reverse' ? corporations_order.reverse : corporations_order
             following_corporation = corporations.drop_while { |c| c.id != corporation.id }
                                                 .find { |c| !c.ipoed }
-            @near_families_purchasable = [{ id: following_corporation.id }]
+            if following_corporation
+              @near_families_purchasable = [{ id: following_corporation.id }]
 
-            unless following_corporation
               @log << "Near family rule: #{following_corporation.full_name} is now available."
             end
           end
+        end
+
+        def entity_can_use_company?(entity, company)
+          return entity == company.owner if entity.player?
+
+          return entity == company.owner ||
+            (entity.owned_by_player? && entity.player == company.owner) if entity.corporation?
+
+          false
         end
 
         def holiday
@@ -1211,6 +1256,9 @@ module Engine
             Engine::Step::Exchange,
             Engine::Step::SpecialTrack,
             G18ZOO::Step::BuySellParShares,
+            G18ZOO::Step::HomeTrack,
+            G18ZOO::Step::BonusTracks,
+            G18ZOO::Step::FreeActionsOnSr,
           ])
         end
 
@@ -1223,9 +1271,15 @@ module Engine
 
         def operating_round(round_num)
           Round::Operating.new(self, [
+            Engine::Step::SpecialTrack,
             G18ZOO::Step::BuyCompany,
             Engine::Step::Track,
             Engine::Step::Token,
+            G18ZOO::Step::Route,
+            G18ZOO::Step::Dividend,
+            Engine::Step::DiscardTrain,
+            G18ZOO::Step::BuyTrain,
+            [G18ZOO::Step::BuyCompany, blocks: true],
           ], round_num: round_num)
         end
 
@@ -1273,15 +1327,22 @@ module Engine
           end
         end
 
-        def bonus_after_par(corporation, money, _additional_tracks)
+        def bonus_after_par(corporation, money, additional_tracks, available_tracks)
           bank.spend(money, corporation)
           @log << "#{corporation.name} earns #{format_currency(money)} as treasury bonus"
-          # TODO: enable again after adding G18ZOO::Step::AdditionalTracksAfterPar
-          # @round.additional_tracks = additional_tracks
+
+          @round.available_tracks.concat(available_tracks)
+
+          @round.bonus_tracks = additional_tracks
         end
 
         def event_new_train!
-          # @new_train_brought = true # TODO: enable again after adding G18ZOO::Step::BuyTrain
+          @round.new_train_brought = true
+        end
+
+        def event_rust_own_3s_4s!
+          @log << '-- Event: 3S long and 4S owned by current player are rusted! --' # TODO: only if any owned
+          # TODO: remove the 3S long and 4S owned by current player
         end
       end
     end
