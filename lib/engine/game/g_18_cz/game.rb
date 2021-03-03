@@ -17,7 +17,7 @@ module Engine
                         yellow: '#ffe600',
                         lightRed: '#F3B1B3')
 
-        CURRENCY_FORMAT_STR = 'K%d'
+        CURRENCY_FORMAT_STR = '%d K'
 
         BANK_CASH = 99_999
 
