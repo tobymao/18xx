@@ -10,8 +10,6 @@ module View
 
       needs :show_other_abilities, default: false, store: true
 
-      ABILITIES = %i[tile_lay teleport assign_hexes assign_corporation token exchange sell_company].freeze
-
       def render
         companies = @game.companies.select do |company|
           company.owner &&

@@ -33,12 +33,14 @@ These attributes may be set for all ability types
     - `Track`, `TrackAndToken`: track-laying step; if normal track lays are used
       up, but there is still a `Track` ability, then the active step will not
       pass on to the next step automatically
-    - `special_track`: make the ability available to the SpecialTrack step
     - `sold`: when the company is bought from a player by a corporation
     - `bought_train`: when the owning corporation has bought a train; generally
       used with `close` abilities
-    - `other_or`: usable during the OR turn of another corporation
     - `owning_corp_or_turn`: usable at any point during the owning corporation's OR turn
+    - `owning_player_or_turn`: usable at any point during any of the owning player's OR turns
+    - `or_between_turns`: usable at the start of any corporation's OR turn,
+      before that corporation has acted
+    - `stock_round`: usable any time during a Stock Round
     - `never`: use with `close` abilities to prevent a company from closing
     - `has_train`: when the owning corporation owns at least one train
 

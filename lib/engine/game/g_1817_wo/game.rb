@@ -223,7 +223,7 @@ module Engine
               type: 'tile_lay',
               hexes: ['I6'],
               tiles: ['X00'],
-              when: %w[special_track owning_corp_or_turn],
+              when: 'track',
               owner_type: 'corporation',
               count: 1,
             },
@@ -254,7 +254,7 @@ module Engine
             revenue: 0,
             desc: 'Comes with one $10 bridge token that may be placed by the owning corp '\
                   'in Mare Nostrum or Dynasties max one token per city, regardless '\
-                  'of connectivity..  Allows owning corp to skip $10 river fee '\
+                  'of connectivity.  Allows owning corp to skip $10 river fee '\
                   'when placing yellow tiles.',
             sym: 'OBC',
             abilities: [
@@ -305,7 +305,7 @@ module Engine
                 hexes: %w[B7 E4 E2 F9 I8 K6 L5],
                 tiles: %w[7 8 9],
                 free: false,
-                when: %w[special_track owning_corp_or_turn],
+                when: 'owning_corp_or_turn',
                 owner_type: 'corporation',
                 count: 1,
               },
@@ -328,7 +328,7 @@ module Engine
                 hexes: %w[B7 E4 E2 F9 I8 K6 L5],
                 tiles: %w[7 8 9],
                 free: false,
-                when: %w[special_track owning_corp_or_turn],
+                when: 'owning_corp_or_turn',
                 owner_type: 'corporation',
                 count: 2,
               },

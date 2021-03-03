@@ -1411,14 +1411,18 @@ module Engine
         'IPO Reserved'
       end
 
-      def abilities(entity, type = nil, time: nil, on_phase: nil, passive_ok: nil)
+      def abilities(entity, type = nil, time: nil, on_phase: nil, passive_ok: nil, strict_time: nil)
         return nil unless entity
 
         active_abilities = entity.all_abilities.select do |ability|
           ability_right_type?(ability, type) &&
             ability_right_owner?(ability.owner, ability) &&
             ability_usable_this_or?(ability) &&
-            ability_right_time?(ability, time, on_phase, passive_ok.nil? ? true : passive_ok) &&
+            ability_right_time?(ability,
+                                time,
+                                on_phase,
+                                passive_ok.nil? ? true : passive_ok,
+                                strict_time.nil? ? true : strict_time) &&
             ability_usable?(ability)
         end
 
@@ -2239,7 +2243,7 @@ module Engine
         !ability.count_per_or || (ability.count_this_or < ability.count_per_or)
       end
 
-      def ability_right_time?(ability, time, on_phase, passive_ok)
+      def ability_right_time?(ability, time, on_phase, passive_ok, strict_time)
         return true unless @round
         return true if time == 'any' || ability.when?('any')
         return (on_phase == ability.on_phase) || (on_phase == 'any') if on_phase
@@ -2254,29 +2258,30 @@ module Engine
           return current_step.company == ability.owner
         end
 
-        return false if @round.operating? &&
-                        ability.owner.owned_by_corporation? &&
-                        @round.current_operator != ability.corporation &&
-                        !ability.when?('other_or')
-
         times = Array(time).map { |t| t == '%current_step%' ? current_step_name : t.to_s }
-        return ability.when?(*times) unless times.empty?
-
-        ability.when.any? do |ability_when|
+        if times.empty?
+          times_to_check = ability.when
+          default = false
+        else
+          times_to_check = ability.when & times
+          default = true
+          return true if !times_to_check.empty? && !strict_time
+        end
+        times_to_check.any? do |ability_when|
           case ability_when
           when current_step_name
             (@round.operating? && @round.current_operator == ability.corporation) ||
               (@round.stock? && @round.current_entity == ability.player)
           when 'owning_corp_or_turn'
             @round.operating? && @round.current_operator == ability.corporation
-          when 'owning_player_sr_turn'
-            @round.stock? && @round.current_entity == ability.player
-          when 'other_or'
-            @round.operating? && @round.current_operator != ability.corporation
+          when 'owning_player_or_turn'
+            @round.operating? && @round.current_operator.player == ability.player
+          when 'or_between_turns'
+            @round.operating? && !@round.current_operator_acted
           when 'or_start'
             ability_time_is_or_start?
           else
-            false
+            default
           end
         end
       end

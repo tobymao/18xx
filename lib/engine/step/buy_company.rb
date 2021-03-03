@@ -14,9 +14,7 @@ module Engine
         return [] if entity.minor?
         return blocks? ? ACTIONS : ACTIONS_NO_PASS if can_buy_company?(entity)
 
-        if blocks? && entity.corporation? && @game.abilities(entity, time: 'owning_corp_or_turn', passive_ok: false)
-          return PASS
-        end
+        return PASS if blocks? && entity.corporation? && @game.abilities(entity, passive_ok: false)
 
         []
       end
