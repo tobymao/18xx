@@ -108,6 +108,12 @@ module View
           y: 65,
         }.freeze
 
+        PP_WIDE_BOTTOM_LEFT_CORNER = {
+          region_weights: [13, 14, 15, 19],
+          x: -52,
+          y: 25,
+        }.freeze
+
         SMALL_ITEM_LOCATIONS = [P_RIGHT_CORNER,
                                 P_LEFT_CORNER,
                                 P_BOTTOM_RIGHT_CORNER,
@@ -127,7 +133,8 @@ module View
                                PP_WIDE_BOTTOM_CORNER].freeze
 
         POINTY_WIDE_ITEM_LOCATIONS = [PP_WIDE_TOP_CORNER,
-                                      PP_WIDE_BOTTOM_CORNER].freeze
+                                      PP_WIDE_BOTTOM_CORNER,
+                                      PP_WIDE_BOTTOM_LEFT_CORNER].freeze
       end
     end
   end

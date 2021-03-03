@@ -330,7 +330,7 @@ module Engine
                 tiles: ['470'],
                 hexes: ['F5'],
                 count: 1,
-                when: %w[special_track track other_or],
+                when: 'track',
               },
             ],
           },
@@ -850,6 +850,7 @@ module Engine
         end
 
         def purchasable_companies(entity = nil)
+          return [] if entity&.minor?
           return super if @phase.current[:name] != '2' || !@optional_rules&.include?(:early_buy_of_kcmo)
           return [] unless p2_company.owner&.player?
 

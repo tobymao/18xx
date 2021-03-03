@@ -196,7 +196,9 @@ module View
           end
         end
 
-        row1 << h(:div, style: cell_style(half_box_style, @game.stock_market.market.first.last.types))
+        # Determine which row needs to end in a half-box
+        shorter_row = row1.size > row0.size ? row0 : row1
+        shorter_row << h(:div, style: cell_style(half_box_style, @game.stock_market.market.first.last.types))
 
         [h(:div, { style: { width: 'max-content' } }, row0),
          h(:div, { style: { width: 'max-content' } }, row1)]

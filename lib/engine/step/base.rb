@@ -40,6 +40,10 @@ module Engine
         false
       end
 
+      def last_acted_upon?(_corporation, _entity)
+        false
+      end
+
       def log_pass(entity)
         @log << "#{entity.name} passes #{description.downcase}"
       end

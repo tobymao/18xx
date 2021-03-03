@@ -61,7 +61,12 @@ module Engine
       end
 
       def round_state
-        { players_sold: Hash.new { |h, k| h[k] = {} } }
+        # What the player has sold/shorted since the start of the round
+        {
+          players_sold: Hash.new { |h, k| h[k] = {} },
+          # What the player did last turn
+          players_history: Hash.new { |h, k| h[k] = Hash.new { |h2, k2| h2[k2] = [] } },
+        }
       end
 
       def setup
@@ -71,6 +76,8 @@ module Engine
         @round.players_sold.each do |_player, corps|
           corps.each { |corp, _k| corps[corp] = :prev }
         end
+
+        @round.players_history[current_entity].clear
 
         @current_actions = []
       end
@@ -126,16 +133,24 @@ module Engine
         @round.players_sold[entity][corporation]
       end
 
+      def last_acted_upon?(corporation, entity)
+        !@round.players_history[entity][corporation]&.empty?
+      end
+
+      def track_action(action, corporation, player_action = true)
+        @round.last_to_act = action.entity.player
+        @current_actions << action if player_action
+        @round.players_history[action.entity.player][corporation] << action
+      end
+
       def process_buy_shares(action)
         buy_shares(action.entity, action.bundle, swap: action.swap)
-        @round.last_to_act = action.entity
-        @current_actions << action
+        track_action(action, action.bundle.corporation)
       end
 
       def process_sell_shares(action)
         sell_shares(action.entity, action.bundle, swap: action.swap)
-        @round.last_to_act = action.entity
-        @current_actions << action
+        track_action(action, action.bundle.corporation)
       end
 
       def process_par(action)
@@ -148,8 +163,7 @@ module Engine
         share = corporation.shares.first
         buy_shares(entity, share.to_bundle)
         @game.after_par(corporation)
-        @round.last_to_act = entity
-        @current_actions << action
+        track_action(action, action.corporation)
       end
 
       def pass!

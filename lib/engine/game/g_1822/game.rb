@@ -2101,7 +2101,7 @@ module Engine
 
         LIMIT_TOKENS_AFTER_MERGER = 9
 
-        SWANSEA_HEX = 'D35'
+        DOUBLE_HEX = %w[D35 F7 H21 H37].freeze
         CARDIFF_HEX = 'F35'
         LONDON_HEX = 'M38'
         ENGLISH_CHANNEL_HEX = 'P43'
@@ -2354,10 +2354,6 @@ module Engine
             return "(#{format_currency(@highland_railway.cash)})"
           end
 
-          if company.id == self.class::COMPANY_MGNR && company.owner&.player? && @midland_great_northern_choice
-            return '(Double)'
-          end
-
           if company.id == self.class::COMPANY_OSTH && company.owner&.player? && @tax_haven.value.positive?
             company.value = @tax_haven.value
             share = @tax_haven.shares.first
@@ -2459,6 +2455,34 @@ module Engine
             .map { |bundle| reduced_bundle_price_for_market_drop(bundle) }
         end
 
+        def next_round!
+          @round =
+            case @round
+            when G1822::Round::Choices
+              @operating_rounds = @phase.operating_rounds
+              reorder_players
+              new_operating_round
+            when Engine::Round::Stock
+              G1822::Round::Choices.new(self, [
+                G1822::Step::Choose,
+              ], round_num: @round.round_num)
+            when Engine::Round::Operating
+              if @round.round_num < @operating_rounds
+                or_round_finished
+                new_operating_round(@round.round_num + 1)
+              else
+                @turn += 1
+                or_round_finished
+                or_set_finished
+                new_stock_round
+              end
+            when init_round.class
+              init_round_finished
+              reorder_players
+              new_stock_round
+            end
+        end
+
         def num_certs(entity)
           certs = super
 
@@ -2519,6 +2543,17 @@ module Engine
           super
         end
 
+        def init_hexes(_companies, _corporations)
+          hexes = super
+
+          self.class::DESTINATIONS.each do |corp, destination|
+            hexes.find { |h| h.id == destination }.tile.icons << Part::Icon.new("../icons/1822/#{corp}_DEST",
+                                                                                "#{corp}_destination")
+          end
+
+          hexes
+        end
+
         def init_round
           stock_round
         end
@@ -2535,7 +2570,7 @@ module Engine
         end
 
         def operating_round(round_num)
-          Engine::Round::Operating.new(self, [
+          G1822::Round::Operating.new(self, [
             G1822::Step::PendingToken,
             G1822::Step::FirstTurnHousekeeping,
             Engine::Step::AcquireCompany,
@@ -2629,7 +2664,8 @@ module Engine
         end
 
         def revenue_for(route, stops)
-          if route.hexes.size != route.hexes.uniq.size && route.hexes.none? { |h| h.name == self.class::SWANSEA_HEX }
+          if route.hexes.size != route.hexes.uniq.size &&
+              route.hexes.none? { |h| self.class::DOUBLE_HEX.include?(h.name) }
             raise GameError, 'Route visits same hex twice'
           end
 
@@ -2722,8 +2758,17 @@ module Engine
         end
 
         def sorted_corporations
+          phase = @phase.status.include?('can_convert_concessions') || @phase.status.include?('can_par')
+          return [] unless phase
+
           ipoed, others = @corporations.select { |c| c.type == :major }.partition(&:ipoed)
           ipoed.sort + others
+        end
+
+        def status_str(corporation)
+          return if corporation.type != :minor || !corporation.share_price
+
+          "Market value #{format_currency(corporation.share_price.price)}"
         end
 
         def stock_round
@@ -2921,6 +2966,13 @@ module Engine
           { route: route, revenue: destination_token.city.route_revenue(route.phase, route.train) }
         end
 
+        def choices_entities
+          company = company_by_id(self.class::COMPANY_MGNR)
+          return [] unless company&.owner&.player?
+
+          [company.owner]
+        end
+
         def player_loan_interest(loan)
           (loan * 0.5).ceil
         end
@@ -3005,18 +3057,17 @@ module Engine
             exclude_companies.any? { |c| c == company }
           end
           companies.each do |company|
-            choices["#{company.id}_top"] = "#{company.id}-Top"
-            choices["#{company.id}_bottom"] = "#{company.id}-Bottom"
+            choices["#{company.id}_top"] = "#{self.class::COMPANY_SHORT_NAMES[company.id]}-Top"
+            choices["#{company.id}_bottom"] = "#{self.class::COMPANY_SHORT_NAMES[company.id]}-Bottom"
           end
           choices
         end
 
         def company_choices_mgnr(company, time)
-          return {} if @midland_great_northern_choice || !company.owner&.player? || time != :stock_round
+          return {} if @midland_great_northern_choice || !company.owner&.player? || time != :choose
 
           choices = {}
-          choices['double'] = 'Double your actual cash holding at the end of a stock round when '\
-                                'determining player turn order.'
+          choices['double'] = 'Double your actual cash holding when determining player turn order.'
           choices
         end
 
@@ -3025,9 +3076,12 @@ module Engine
 
           choices = {}
           @corporations.select { |c| c.floated? && c.type == :major }.each do |corporation|
-            choices["#{corporation.id}_ipo"] = "#{corporation.id} IPO" if corporation.num_ipo_shares.positive?
+            price = corporation.share_price&.price || 0
+            if corporation.num_ipo_shares.positive?
+              choices["#{corporation.id}_ipo"] = "#{corporation.id} IPO (#{format_currency(price)})"
+            end
             if @share_pool.num_shares_of(corporation).positive?
-              choices["#{corporation.id}_market"] = "#{corporation.id} Market"
+              choices["#{corporation.id}_market"] = "#{corporation.id} Market (#{format_currency(price)})"
             end
           end
           choices
@@ -3114,8 +3168,7 @@ module Engine
 
         def company_made_choice_mgnr(company)
           @midland_great_northern_choice = company.owner
-          @log << "#{company.owner.name} chooses to double actual cash holding at the end of a stock round when "\
-                    'determining player turn order in the next stock round.'
+          @log << "#{company.owner.name} chooses to double actual cash holding when determining player turn order."
         end
 
         def company_made_choice_osth(company, choice)
@@ -3401,8 +3454,8 @@ module Engine
             corporation = corporation_by_id(corp)
             corporation.add_ability(ability)
             corporation.tokens << Engine::Token.new(corporation, logo: "/logos/1822/#{corp}_DEST.svg",
+                                                                 simple_logo: "/logos/1822/#{corp}_DEST.svg",
                                                                  type: :destination)
-            hex_by_id(destination).tile.icons << Part::Icon.new("../icons/1822/#{corp}_DEST", "#{corp}_destination")
           end
         end
 

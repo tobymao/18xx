@@ -17,7 +17,7 @@ module Engine
                         yellow: '#ffe600',
                         lightRed: '#F3B1B3')
 
-        CURRENCY_FORMAT_STR = 'K%d'
+        CURRENCY_FORMAT_STR = '%d K'
 
         BANK_CASH = 99_999
 
@@ -2814,6 +2814,14 @@ module Engine
           @player_debts[player.id][:penalty_interest]
         end
 
+        def player_debt(player)
+          debt(player)
+        end
+
+        def player_interest(player)
+          penalty_interest(player)
+        end
+
         def player_value(player)
           player.value - debt(player) - penalty_interest(player)
         end
@@ -2861,9 +2869,41 @@ module Engine
         end
 
         def format_currency(val)
-          return format('K%0.1f', val) if (val - val.to_i).positive?
+          return format('%0.1f K', val) if (val - val.to_i).positive?
 
           self.class::CURRENCY_FORMAT_STR % val
+        end
+
+        def show_progress_bar?
+          true
+        end
+
+        def progress_information
+          [
+            { type: :PRE },
+            { type: :SR },
+            { type: :OR, value: '40', name: '1.1', exportAfter: true },
+            { type: :SR },
+            { type: :OR, value: '45', name: '2.1', exportAfter: true },
+            { type: :SR },
+            { type: :OR, value: '50', name: '3.1', exportAfter: true },
+            { type: :SR },
+            { type: :OR, value: '55', name: '4.1', exportAfter: true },
+            { type: :SR },
+            { type: :OR, value: '60', name: '5.1' },
+            { type: :OR, value: '65', name: '5.2', exportAfter: true },
+            { type: :SR },
+            { type: :OR, value: '70', name: '6.1' },
+            { type: :OR, value: '75', name: '6.2', exportAfter: true },
+            { type: :SR },
+            { type: :OR, value: '80', name: '7.1' },
+            { type: :OR, value: '90', name: '7.2', exportAfter: true },
+            { type: :SR },
+            { type: :OR, value: '100', name: '8.1' },
+            { type: :OR, value: '110', name: '8.2' },
+            { type: :OR, value: '120', name: '8.3' },
+            { type: :End },
+          ]
         end
       end
     end

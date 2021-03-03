@@ -122,11 +122,19 @@ module Engine
           return ability if ability
         end
 
+        possible_times = [
+          '%current_step%',
+          'owning_corp_or_turn',
+          'owning_player_or_turn',
+          'or_between_turns',
+          'stock_round',
+        ]
+
         %i[tile_lay teleport].each do |type|
           ability = @game.abilities(
                             entity,
                             type,
-                            time: %w[special_track %current_step% owning_corp_or_turn],
+                            time: possible_times,
                             **kwargs,
                             &block
                           )

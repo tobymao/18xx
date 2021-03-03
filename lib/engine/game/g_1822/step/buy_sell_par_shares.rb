@@ -57,11 +57,13 @@ module Engine
             corporation = bundle.corporation
             return unless corporation.type == :major
 
+            exchange_bundle = bundle.is_a?(ShareBundle) ? bundle : ShareBundle.new(bundle)
+            exchange = exchange_bundle.presidents_share && @game.phase.status.include?('can_convert_concessions')
             cash = available_cash || available_cash(entity)
             cash >= bundle.price &&
               !@round.players_sold[entity][corporation] &&
               (can_buy_multiple?(entity, corporation) || !bought?) &&
-              can_gain?(entity, bundle)
+              can_gain?(entity, bundle, exchange: exchange)
           end
 
           def can_buy_any_from_ipo?(entity)
@@ -73,12 +75,24 @@ module Engine
             false
           end
 
+          def can_gain?(entity, bundle, exchange: false)
+            return if !bundle || !entity
+
+            corporation = bundle.corporation
+            corporation.holding_ok?(entity, bundle.percent) &&
+              (!corporation.counts_for_limit || exchange || num_certs_with_bids(entity) < @game.cert_limit)
+          end
+
           def can_ipo_any?(entity)
             !bought? && @game.corporations.select { |c| c.type == :major }.any? do |corporation|
               @game.can_par?(corporation, entity) &&
                 can_buy?(entity, corporation.shares.first&.to_bundle,
                          available_cash: available_par_cash(entity, corporation))
             end
+          end
+
+          def num_certs_with_bids(entity)
+            @game.num_certs(entity) + bids_for_player(entity, only_committed_bids: true).size
           end
 
           def description
@@ -171,8 +185,7 @@ module Engine
               corporation.par_via_exchange.close!
 
               @game.after_par(corporation)
-              @round.last_to_act = entity
-              @current_actions << action
+              track_action(action, corporation)
             else
               super
             end
@@ -205,6 +218,7 @@ module Engine
           end
 
           def can_bid?(entity, company)
+            return false unless num_certs_with_bids(entity) < @game.cert_limit
             return false if max_bid(entity, company) < min_bid(company) || highest_player_bid?(entity, company)
 
             !(!find_bid(entity, company) && bidding_tokens(entity).zero?)

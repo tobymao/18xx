@@ -305,7 +305,7 @@ module Engine
                 tiles: ['445'],
                 hexes: %w[G2 M2 O4 N5 P5],
                 count: 1,
-                when: %w[special_track other_or],
+                when: 'track',
               },
             ],
           },

@@ -88,7 +88,7 @@ module Engine
 
             player.companies << company
             player.spend(price, owner)
-            @current_actions << action
+            track_action(action, company)
             @log << "#{player.name} buys #{company.name} from #{owner.name} for #{@game.format_currency(price)}"
 
             @game.close_other_companies!(company) if company.sym == 'FFC'
@@ -145,7 +145,7 @@ module Engine
             raise GameError, "Cannot sell #{company.id}" unless can_sell_company?(company)
 
             sell_company(player, company, action.price)
-            @round.last_to_act = player
+            track_action(action, company)
             @game.check_bank_broken!
           end
 

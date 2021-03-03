@@ -21,8 +21,8 @@ module Engine
             actions << 'par' if can_ipo_any?(entity)
             actions << 'buy_company' unless purchasable_unsold_companies.empty?
             actions << 'sell_shares' if can_sell_any?(entity)
-            actions << 'sell_company' if can_sell_any_companies?(entity)
-            actions << 'choose' if choice_available?(entity)
+            actions << 'sell_company' if can_sell_any_companies?(entity) && !@round.floated_corporation
+            actions << 'choose' if choice_available?(entity) && !@round.floated_corporation
             actions << 'pass' unless actions.empty?
             actions
           end
@@ -58,11 +58,7 @@ module Engine
           end
 
           def log_pass(entity)
-            return @log << "#{entity.name} passes" if @current_actions.empty?
-            return if bought? && sold?
-
-            action = bought? ? 'to sell' : 'to buy'
-            @log << "#{entity.name} declines #{action} shares"
+            super # TODO: add log logic to handle sell / par / buy / sell company / use power
           end
 
           private

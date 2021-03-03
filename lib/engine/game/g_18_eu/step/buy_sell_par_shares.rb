@@ -22,13 +22,11 @@ module Engine
             entity = action.entity
             if entity.minor?
               exchange_minor(entity, action.bundle)
-              entity = entity.owner
             else
               buy_shares(entity, action.bundle)
             end
 
-            @round.last_to_act = entity
-            @current_actions << action
+            track_action(action, action.bundle.corporation)
           end
 
           def exchange_minor(minor, bundle)

@@ -25,6 +25,10 @@ module Engine
             auctioning ? [auctioning] : @companies
           end
 
+          def finished?
+            @companies.empty? || entities.all?(&:passed?)
+          end
+
           def process_pass(action)
             entity = action.entity
 
@@ -56,7 +60,7 @@ module Engine
           end
 
           def actions(entity)
-            return [] if @companies.empty?
+            return [] if finished?
 
             correct = false
 

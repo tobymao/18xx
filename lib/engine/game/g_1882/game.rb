@@ -289,12 +289,12 @@ module Engine
                 hexes: %w[C3 D4 D6 E5],
                 price: 0,
                 teleport_price: 0,
-                when: %w[special_track owning_corp_or_turn],
+                when: 'owning_corp_or_turn',
                 count: 1,
               },
               {
                 type: 'tile_lay',
-                when: %w[special_track owning_corp_or_turn],
+                when: 'owning_corp_or_turn',
                 owner_type: 'corporation',
                 count: 1,
                 hexes: [],
@@ -603,7 +603,7 @@ module Engine
 
           # Due to SC adding an extra train this isn't quite a phase change, so the event needs to be tied to a train.
           nwr_train = trains[rand % trains.size]
-          @log << "NWR Rebellion occurs on purchase of the currently first #{nwr_train} train"
+          @log << "NWR Rebellion occurs on purchase of the first #{nwr_train} train"
           train = depot.upcoming.find { |t| t.name == nwr_train }
           train.events << { 'type' => 'nwr' }
 

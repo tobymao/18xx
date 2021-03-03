@@ -394,6 +394,8 @@ module View
         end
       when Engine::Round::Draft
         h(Game::Round::Auction, game: @game, user: @user, before_process_pass: @before_process_pass)
+      when Engine::Round::Choices
+        h(Game::Round::Choices, game: @game)
       when Engine::Round::Auction
         h(Game::Round::Auction, game: @game, user: @user)
       when Engine::Round::Merger

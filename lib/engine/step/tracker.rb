@@ -21,6 +21,7 @@ module Engine
 
       def can_lay_tile?(entity)
         return true if abilities(entity, time: type, passive_ok: false)
+        return true if can_buy_tile_laying_company?(entity, time: type)
 
         action = get_tile_lay(entity)
         return false unless action
@@ -59,7 +60,7 @@ module Engine
       end
 
       def abilities(entity, **kwargs, &block)
-        kwargs[:time] = [type, 'owning_corp_or_turn'] unless kwargs[:time]
+        kwargs[:time] = [type] unless kwargs[:time]
         @game.abilities(entity, :tile_lay, **kwargs, &block)
       end
 
@@ -320,6 +321,17 @@ module Engine
 
       def hex_neighbors(entity, hex)
         @game.graph_for_entity(entity).connected_hexes(entity)[hex]
+      end
+
+      def can_buy_tile_laying_company?(entity, time:)
+        return false unless entity == current_entity
+        return false unless @game.phase.status.include?('can_buy_companies')
+
+        @game.purchasable_companies(entity).any? do |company|
+          next false unless company.min_price <= buying_power(entity)
+
+          company.all_abilities.any? { |a| a.type == :tile_lay && a.when?(time) }
+        end
       end
     end
   end
