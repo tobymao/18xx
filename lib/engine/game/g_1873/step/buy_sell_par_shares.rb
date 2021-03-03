@@ -47,23 +47,24 @@ module Engine
               president_can_sell?(entity, corporation)
           end
 
-          # president of corp can't dump unless someone else has 20% - even if president only has 10%
-          # this may be the only reason we keep track of the presidents share
+          # president of corp can't dump unless someone else has 20% - even with a president cert of 10%
           def can_dump?(entity, bundle)
             corporation = bundle.corporation
 
-            return true unless bundle.presidents_share
+            return true unless corporation.owner == entity
             return true if corporation == @game.mhe
-            return false if !corporation.operated? && @game.railway?(corporation)
+            return true if corporation.share_holders[entity] - bundle.percent >= 20 # selling above pres
+            return false if @game.concession_pending?(corporation)
 
             sh = corporation.player_share_holders(corporate: true)
             (sh.reject { |k, _| k == entity }.values.max || 0) >= 20
           end
 
-          # president of RR can never drop below 20% if it hasn't operated
+          # president of RR can never drop below 20% if it hasn't finished it's concession (operated)
+          # or nobody else has at least 20%
           def president_can_sell?(entity, corporation)
             return true unless corporation.owner == entity
-            return true if !@game.railway?(corporation) || corporation.operated? || corporation == @game.mhe
+            return true if !@game.concession_pending?(corporation) || corporation == @game.mhe
 
             corporation.share_holders[entity] > 20
           end
