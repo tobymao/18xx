@@ -35,7 +35,7 @@ module View
           left << h(RouteSelector) if @current_actions.include?('run_routes')
           left << h(Dividend) if @current_actions.include?('dividend')
           left << h(Convert) if @current_actions.include?('convert')
-          if @current_actions.include?('buy_train')
+          if @current_actions.include?('buy_train') || @current_actions.include?('scrap_train')
             left << h(IssueShares) if @current_actions.include?('sell_shares')
             left << h(BuyTrains)
           elsif @current_actions.include?('sell_shares') && entity.player?

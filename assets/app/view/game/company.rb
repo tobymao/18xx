@@ -174,6 +174,7 @@ module View
         if (uses = company.ability_uses)
           extra << " (#{uses[0]}/#{uses[1]})"
         end
+        extra << " #{@game.company_status_str(@company)}" if @game.company_status_str(@company)
         [h('div.nowrap', name_props, company.name + extra.join(',')),
          @company.owner&.player? ? h('div.right', @game.format_currency(company.value)) : '',
          h('div.padded_number', @game.format_currency(company.revenue)),

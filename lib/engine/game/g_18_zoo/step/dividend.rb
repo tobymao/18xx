@@ -43,7 +43,7 @@ module Engine
             {
               corporation: 0,
               per_share: payout_per_share(entity, revenue),
-              share_direction: share_price_change(entity, revenue),
+              share_direction: revenue >= threshold(entity) ? :right : nil,
               share_times: 1,
               divs_to_corporation: 0,
             }

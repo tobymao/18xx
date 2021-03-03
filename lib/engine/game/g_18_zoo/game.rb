@@ -1359,7 +1359,7 @@ module Engine
         end
 
         def event_rust_own_3s_4s!
-          @log << '3S long and 4S owned by current player are rusted!'
+          @log << '-- Event: 3S long and 4S owned by current player are rusted! --' # TODO: only if any owned
           # TODO: remove the 3S long and 4S owned by current player
         end
       end

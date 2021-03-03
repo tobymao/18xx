@@ -12,6 +12,8 @@ module Engine
         @tiles = tiles
         @cost = cost
         @free_tile_lay = free_tile_lay
+        @when = %w[track] if @when.empty?
+        @passive = false
       end
     end
   end

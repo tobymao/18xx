@@ -78,8 +78,7 @@ module Engine
               s.buyable = true
             end
 
-            @round.last_to_act = action.entity.owner
-            @current_actions << action
+            track_action(action, action.entity)
           end
         end
       end

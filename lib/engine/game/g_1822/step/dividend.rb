@@ -92,6 +92,13 @@ module Engine
             { corporation: subsidy, per_share: payout_per_share(entity, revenue) }
           end
 
+          def payout_shares(entity, revenue)
+            super
+
+            per_share = payout_per_share(entity, revenue)
+            @game.company_tax_haven_payout(entity, per_share)
+          end
+
           def process_choose(action)
             entity = action.entity
             @extra_train_choice = action.choice

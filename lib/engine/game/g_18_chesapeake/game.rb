@@ -560,7 +560,7 @@ module Engine
 
         def timeline
           @timeline = [
-            'At the end of each set of ORs the next available non-permanent (2,3 or 4) train will be exported
+            'At the end of each set of ORs the next available non-permanent (2, 3 or 4) train will be exported
            (removed, triggering phase change as if purchased)',
           ]
         end

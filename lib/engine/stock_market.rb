@@ -115,6 +115,7 @@ module Engine
 
     def move(corporation, row, column, force: false)
       share_price = share_price(row, column)
+      return unless share_price
       return if share_price == corporation.share_price
       return if !force && !share_price.normal_movement?
 

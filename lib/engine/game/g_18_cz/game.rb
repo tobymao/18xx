@@ -124,22 +124,24 @@ module Engine
             'count' => 1,
             'color' => 'yellow',
             'code' =>
-            'city=revenue:30;city=revenue:30;city=revenue:30;path=a:2,b:_0;path=a:3,b:_1;path=a:4,b:_2;label=P',
+            'city=revenue:30,groups:Praha;city=revenue:30,groups:Praha;city=revenue:30,groups:Praha;path=a:2,b:_0;' \
+                  'path=a:3,b:_1;path=a:4,b:_2;label=P',
           },
           '8890' =>
           {
             'count' => 1,
             'color' => 'yellow',
             'code' =>
-            'city=revenue:30;city=revenue:30;city=revenue:30;path=a:0,b:_0;path=a:2,b:_1;path=a:4,b:_2;label=P',
+            'city=revenue:30,groups:Praha;city=revenue:30,groups:Praha;city=revenue:30,groups:Praha;path=a:0,b:_0;' \
+                'path=a:2,b:_1;path=a:4,b:_2;label=P',
           },
           '8891' =>
           {
             'count' => 1,
             'color' => 'green',
             'code' =>
-            'city=revenue:40;city=revenue:40;city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:2,b:_1;' \
-                  'path=a:3,b:_2;path=a:4,b:_3;label=P',
+            'city=revenue:40,groups:Praha;city=revenue:40,groups:Praha;city=revenue:40,groups:Praha;' \
+                  'city=revenue:40,groups:Praha;path=a:0,b:_0;path=a:2,b:_1;path=a:3,b:_2;path=a:4,b:_3;label=P',
           },
           '8892' =>
           {
@@ -162,7 +164,7 @@ module Engine
             'count' => 1,
             'color' => 'red',
             'code' =>
-            'city=revenue:yellow_20|green_30|brown_40|gray_50;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;' \
+            'city=revenue:green_30|brown_40|gray_50;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;' \
                   'icon=image:18_cz/50;label=Ug',
           },
           '8895' =>
@@ -170,7 +172,7 @@ module Engine
             'count' => 1,
             'color' => 'red',
             'code' =>
-            'city=revenue:yellow_20|green_30|brown_40|gray_50;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;' \
+            'city=revenue:green_30|brown_40|gray_50;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;' \
                   'icon=image:18_cz/50;label=kk',
           },
           '8896' =>
@@ -178,7 +180,7 @@ module Engine
             'count' => 1,
             'color' => 'red',
             'code' =>
-            'city=revenue:yellow_20|green_30|brown_40|gray_50;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;' \
+            'city=revenue:green_30|brown_40|gray_50;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;' \
                   'icon=image:18_cz/50;label=SX',
           },
           '8897' =>
@@ -186,7 +188,7 @@ module Engine
             'count' => 1,
             'color' => 'red',
             'code' =>
-            'city=revenue:yellow_20|green_30|brown_40|gray_50;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;' \
+            'city=revenue:green_30|brown_40|gray_50;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;' \
                   'icon=image:18_cz/50;label=PR',
           },
           '8898' =>
@@ -194,7 +196,7 @@ module Engine
             'count' => 1,
             'color' => 'red',
             'code' =>
-            'city=revenue:yellow_20|green_30|brown_40|gray_50;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;' \
+            'city=revenue:green_30|brown_40|gray_50;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;' \
                   'icon=image:18_cz/50;label=BY',
           },
           '8866p' =>
@@ -2551,7 +2553,7 @@ module Engine
             'At the end of each set of ORs the next available train will be exported
            (removed, triggering phase change as if purchased)',
           ]
-          @timeline.append("Game ends after OR #{@last_or}")
+          @timeline.append("Game ends after OR #{OR_SETS.size}.#{OR_SETS.last}")
           @timeline.append("Current value of each private company is #{COMPANY_VALUES[[0, @or - 1].max]}")
           @timeline.append("Next set of Operating Rounds will have #{OR_SETS[@turn - 1]} ORs")
         end
@@ -2630,7 +2632,15 @@ module Engine
         end
 
         def status_str(corp)
-          corp.type.capitalize
+          train_type = case corp.type
+                       when :small
+                         'Normal '
+                       when :medium
+                         'Plus-'
+                       else
+                         'E-'
+                       end
+          "#{corp.type.capitalize} / #{train_type}Trains"
         end
 
         def block_lay_for_purple_tiles
@@ -2804,6 +2814,14 @@ module Engine
           @player_debts[player.id][:penalty_interest]
         end
 
+        def player_debt(player)
+          debt(player)
+        end
+
+        def player_interest(player)
+          penalty_interest(player)
+        end
+
         def player_value(player)
           player.value - debt(player) - penalty_interest(player)
         end
@@ -2854,6 +2872,38 @@ module Engine
           return format('K%0.1f', val) if (val - val.to_i).positive?
 
           self.class::CURRENCY_FORMAT_STR % val
+        end
+
+        def show_progress_bar?
+          true
+        end
+
+        def progress_information
+          [
+            { type: :PRE },
+            { type: :SR },
+            { type: :OR, value: '40', name: '1.1', exportAfter: true },
+            { type: :SR },
+            { type: :OR, value: '45', name: '2.1', exportAfter: true },
+            { type: :SR },
+            { type: :OR, value: '50', name: '3.1', exportAfter: true },
+            { type: :SR },
+            { type: :OR, value: '55', name: '4.1', exportAfter: true },
+            { type: :SR },
+            { type: :OR, value: '60', name: '5.1' },
+            { type: :OR, value: '65', name: '5.2', exportAfter: true },
+            { type: :SR },
+            { type: :OR, value: '70', name: '6.1' },
+            { type: :OR, value: '75', name: '6.2', exportAfter: true },
+            { type: :SR },
+            { type: :OR, value: '80', name: '7.1' },
+            { type: :OR, value: '90', name: '7.2', exportAfter: true },
+            { type: :SR },
+            { type: :OR, value: '100', name: '8.1' },
+            { type: :OR, value: '110', name: '8.2' },
+            { type: :OR, value: '120', name: '8.3' },
+            { type: :End },
+          ]
         end
       end
     end

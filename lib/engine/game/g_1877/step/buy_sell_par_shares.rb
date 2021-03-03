@@ -108,9 +108,9 @@ module Engine
             end
 
             @corporate_action = action
-            @round.last_to_act = action.entity.player
 
             entity ||= action.entity
+            track_action(action, entity, false)
             train = action.train
             price = action.price
 

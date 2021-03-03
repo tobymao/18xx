@@ -13,7 +13,7 @@ module Engine
           ACTIONS = %w[lay_tile].freeze
 
           def actions(entity)
-            action = abilities(entity)
+            action = abilities(entity) && @game.round.active_step.respond_to?(:process_lay_tile)
             return [] unless action
 
             ACTIONS
@@ -37,6 +37,7 @@ module Engine
                       else
                         @game.current_entity
                       end
+            @in_process = true
             if @game.company_ability_extra_track?(entity)
               upgraded_extra_track = upgraded_track?(action)
               raise GameError, 'Cannot lay an extra upgrade' if upgraded_extra_track && @extra_laided_track
@@ -51,18 +52,24 @@ module Engine
             else
               lay_tile_action(action, spender: spender)
             end
+            @in_process = false
             @game.after_lay_tile(action.hex, action.tile)
             ability.use!
 
-            return if ability.count.positive? || !ability.closed_when_used_up
+            if ability.type == :tile_lay && ability.count.zero? && ability.closed_when_used_up
+              @log << "#{ability.owner.name} closes"
+              ability.owner.close!
+            end
 
-            @log << "#{ability.owner.name} closes"
-            ability.owner.close!
+            return unless ability.type == :teleport
+
+            @round.teleported = ability.owner
           end
 
           def available_hex(entity, hex)
             return unless (ability = abilities(entity))
             return if !ability.hexes&.empty? && !ability.hexes&.include?(hex.id)
+            return @game.hex_by_id(hex.id).neighbors.keys if ability.type == :teleport
 
             operator = entity.owner.corporation? ? entity.owner : @game.current_entity
             connected = hex_neighbors(operator, hex)
@@ -105,9 +112,12 @@ module Engine
           end
 
           def legal_tile_rotation?(entity, hex, tile)
-            return super unless entity.id == @game.class::COMPANY_MTONR
+            if entity.id == @game.class::COMPANY_LCDR && hex.name == @game.class::ENGLISH_CHANNEL_HEX
+              return tile.rotation.zero?
+            end
+            return true if entity.id == @game.class::COMPANY_MTONR
 
-            true
+            super
           end
 
           def potential_tiles(entity, hex)
@@ -128,12 +138,37 @@ module Engine
           def abilities(entity, **kwargs, &block)
             return unless entity&.company?
 
-            @game.abilities(
-              entity,
-              :tile_lay,
-              time: %w[special_track %current_step% owning_corp_or_turn],
-              **kwargs,
-              &block
+            if entity.id == @game.class::COMPANY_LCDR && !@in_process
+              tile = @game.hex_by_id(@game.class::ENGLISH_CHANNEL_HEX).tile
+              city = tile.cities.first
+              phase_color = @game.phase.current[:tiles].last
+              # London, Chatham and Dover Railway may only use its tilelay option if all slots is taken and an
+              # upgrade can make a slot available. this is green to brown, and brown to grey
+              return if city.available_slots.positive? ||
+                @game.exchange_tokens(entity.owner).zero? ||
+                tile.color == :green && !(phase_color == :brown || phase_color == :gray) ||
+                tile.color == :brown && phase_color != :gray
+            end
+
+            %i[tile_lay teleport].each do |type|
+              ability = @game.abilities(
+                entity,
+                type,
+                time: %w[special_track %current_step% owning_corp_or_turn],
+                **kwargs,
+                &block
+              )
+              return ability if ability && (ability.type != :teleport || !ability.used?)
+            end
+
+            nil
+          end
+
+          def round_state
+            super.merge(
+              {
+                teleported: nil,
+              }
             )
           end
         end

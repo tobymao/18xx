@@ -27,6 +27,14 @@ module Engine
             corporation = action.corporation
             price = action.price
 
+            price_range = price_range(entity, corporation)
+
+            unless price.between?(price_range[0], price_range[1])
+              raise GameError,
+                    "#{entity.name} cannot buy #{corporation.name} for #{price} per share.
+                  The price must be between #{price_range[0]} and #{price_range[1]}"
+            end
+
             max_cost = corporation.num_player_shares * price
             raise GameError,
                   "#{entity.name} cannot buy #{corporation.name} for #{price} per share.
@@ -107,9 +115,9 @@ module Engine
             @game.log << "#{destination.name} takes #{transferred.map(&:name).join(', ')} from #{source.name}"
           end
 
-          def price_range(_corporation, corporation_to_boy)
-            max_price = (corporation_to_boy.share_price.price * 1.5).ceil
-            min_price = (corporation_to_boy.share_price.price * 0.5).ceil
+          def price_range(_corporation, corporation_to_buy)
+            max_price = (corporation_to_buy.share_price.price * 1.5).ceil
+            min_price = (corporation_to_buy.share_price.price * 0.5).ceil
             [min_price, max_price]
           end
 

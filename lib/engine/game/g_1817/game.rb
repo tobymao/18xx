@@ -256,7 +256,7 @@ module Engine
               type: 'tile_lay',
               hexes: ['F13'],
               tiles: ['X00'],
-              when: %w[special_track owning_corp_or_turn],
+              when: 'track',
               owner_type: 'corporation',
               count: 1,
             },
@@ -301,7 +301,7 @@ module Engine
                 type: 'assign_hexes',
                 hexes: %w[H3 G6 H9],
                 count: 1,
-                when: %w[owning_corp_or_turn owning_corp_or_turn],
+                when: 'owning_corp_or_turn',
                 owner_type: 'corporation',
               },
             ],
@@ -313,7 +313,7 @@ module Engine
             revenue: 0,
             desc: 'Comes with two $10 bridge token that may be placed by the '\
                   'owning corp in Louisville, Cincinnati, or Charleston, max '\
-                  'one token per city, regardless of connectivity..  Allows '\
+                  'one token per city, regardless of connectivity.  Allows '\
                   'owning corp to skip $10 river fee when placing yellow tiles.',
             sym: 'UBC',
             abilities: [
@@ -327,7 +327,7 @@ module Engine
                 type: 'assign_hexes',
                 hexes: %w[H3 G6 H9],
                 count: 2,
-                when: %w[owning_corp_or_turn owning_corp_or_turn],
+                when: 'owning_corp_or_turn',
                 owner_type: 'corporation',
               },
             ],
@@ -375,7 +375,7 @@ module Engine
                           I10],
                 tiles: %w[7 8 9],
                 free: false,
-                when: %w[special_track owning_corp_or_turn],
+                when: 'owning_corp_or_turn',
                 owner_type: 'corporation',
                 count: 1,
               },
@@ -409,7 +409,7 @@ module Engine
                           I10],
                 tiles: %w[7 8 9],
                 free: false,
-                when: %w[special_track owning_corp_or_turn],
+                when: 'owning_corp_or_turn',
                 owner_type: 'corporation',
                 count: 2,
               },
@@ -443,7 +443,7 @@ module Engine
                           I10],
                 tiles: %w[7 8 9],
                 free: false,
-                when: %w[special_track owning_corp_or_turn],
+                when: 'owning_corp_or_turn',
                 owner_type: 'corporation',
                 count: 3,
               },

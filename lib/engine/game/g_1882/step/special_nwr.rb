@@ -157,7 +157,7 @@ module Engine
             when nil, :place_token
               @game.abilities(entity, :token)
             when :lay_tile
-              @game.abilities(entity, :tile_lay, time: 'special_track')
+              @game.abilities(entity, :tile_lay)
             end
           end
         end

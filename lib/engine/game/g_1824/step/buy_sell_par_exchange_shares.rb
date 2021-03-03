@@ -59,7 +59,7 @@ module Engine
             company.close!
 
             # Exchange is treated as a Buy, and no more actions allowed as Sell-Buy
-            @current_actions << action
+            track_action(action, bundle.corporation)
           end
 
           def buyable_items(entity)
@@ -77,10 +77,11 @@ module Engine
           end
 
           def process_special_buy(action)
-            @game.exchange_coal_railway(@game.company_by_id(action.item.description))
+            company = @game.company_by_id(action.item.description)
+            regional = @game.exchange_coal_railway(company)
 
             # Exchange is treated as a Buy, and no more actions allowed as Sell-Buy
-            @current_actions << action
+            track_action(action, regional)
           end
 
           private

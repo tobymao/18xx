@@ -21,6 +21,7 @@ module Engine
 
       def can_lay_tile?(entity)
         return true if abilities(entity, time: type, passive_ok: false)
+        return true if can_buy_tile_laying_company?(entity, time: type)
 
         action = get_tile_lay(entity)
         return false unless action
@@ -59,7 +60,7 @@ module Engine
       end
 
       def abilities(entity, **kwargs, &block)
-        kwargs[:time] = [type, 'owning_corp_or_turn'] unless kwargs[:time]
+        kwargs[:time] = [type] unless kwargs[:time]
         @game.abilities(entity, :tile_lay, **kwargs, &block)
       end
 
@@ -70,6 +71,7 @@ module Engine
         hex = action.hex
         rotation = action.rotation
         old_tile = hex.tile
+        graph = @game.graph_for_entity(entity)
 
         @game.companies.each do |company|
           break if @game.loading
@@ -94,7 +96,7 @@ module Engine
 
         hex.lay(tile)
 
-        @game.graph.clear
+        graph.clear
         free = false
         discount = 0
         teleport = false
@@ -117,7 +119,7 @@ module Engine
             raise GameError, "Track laid must be connected to one of #{spender.id}'s stations" if ability.reachable &&
               hex.name != spender.coordinates &&
               !@game.loading &&
-              !@game.graph.reachable_hexes(spender)[hex]
+              !graph.reachable_hexes(spender)[hex]
 
             free = ability.free
             discount = ability.discount
@@ -237,12 +239,14 @@ module Engine
       def check_track_restrictions!(entity, old_tile, new_tile)
         return if @game.loading || !entity.operator?
 
+        graph = @game.graph_for_entity(entity)
+
         old_paths = old_tile.paths
         changed_city = false
         used_new_track = old_paths.empty?
 
         new_tile.paths.each do |np|
-          next unless @game.graph.connected_paths(entity)[np]
+          next unless graph.connected_paths(entity)[np]
 
           op = old_paths.find { |path| np <= path }
           used_new_track = true unless op
@@ -316,7 +320,18 @@ module Engine
       end
 
       def hex_neighbors(entity, hex)
-        @game.graph.connected_hexes(entity)[hex]
+        @game.graph_for_entity(entity).connected_hexes(entity)[hex]
+      end
+
+      def can_buy_tile_laying_company?(entity, time:)
+        return false unless entity == current_entity
+        return false unless @game.phase.status.include?('can_buy_companies')
+
+        @game.purchasable_companies(entity).any? do |company|
+          next false unless company.min_price <= buying_power(entity)
+
+          company.all_abilities.any? { |a| a.type == :tile_lay && a.when?(time) }
+        end
       end
     end
   end

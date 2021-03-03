@@ -37,13 +37,11 @@ module View
       end
 
       def timeline
-        return nil if @game.timeline.empty?
+        return nil if @game.timeline.empty? && !@game.show_progress_bar?
 
         children = [h(:h3, 'Timeline')]
-
-        @game.timeline.each do |line|
-          children << h(:p, line)
-        end
+        children << progress_bar if @game.show_progress_bar?
+        @game.timeline.each { |line| children << h(:p, line) } if @game.timeline.any?
 
         children
       end
@@ -61,6 +59,7 @@ module View
             row_events << @game.class::STATUS_TEXT[status] if @game.class::STATUS_TEXT[status]
           end
           phases_events.concat(row_events)
+          row_events = row_events.map(&:first).flat_map { |e| [h('span.nowrap', e), ', '] }[0..-2]
 
           phase_color = Array(phase[:tiles]).last
           bg_color = color_for(phase_color)
@@ -73,24 +72,24 @@ module View
 
           extra = []
           extra << h(:td, phase[:corporation_sizes].join(', ')) if corporation_sizes
-
-          train_limit = phase[:train_limit]
-          train_limit = @game.phase.train_limit_to_s(train_limit)
+          extra << h(:td, row_events) if phases_events.any?
 
           h(:tr, [
             h(:td, (current_phase == phase ? '→ ' : '') + phase[:name]),
             h(:td, @game.info_on_trains(phase)),
             h(:td, phase[:operating_rounds]),
-            h(:td, train_limit),
+            h(:td, train_limit_to_h(phase[:train_limit])),
             h(:td, phase_props, phase_color.capitalize),
             *extra,
-            h(:td, row_events.map(&:first).join(', ')),
           ])
         end
 
         status_text = phases_events.uniq.map do |short, long|
-          h(:tr, [h(:td, short), h(:td, long)])
+          h(:tr, [h('td.nowrap', { style: { maxWidth: '30vw' } }, short), h(:td, long)])
         end
+
+        extra = []
+        extra << h(:th, 'New Corporation Size') if corporation_sizes
 
         if status_text.any?
           status_text = [h(:table, { style: { marginTop: '0.3rem' } }, [
@@ -102,10 +101,8 @@ module View
             ]),
             h(:tbody, status_text),
           ])]
+          extra << h(:th, 'Status')
         end
-
-        extra = []
-        extra << h(:th, 'New Corporation Size') if corporation_sizes
 
         [
           h(:h3, 'Game Phases'),
@@ -119,14 +116,20 @@ module View
                   h(:th, 'Train Limit'),
                   h(:th, 'Tiles'),
                   *extra,
-                  h(:th, 'Status'),
                 ]),
               ]),
-              h('tbody.zebra', rows),
+              h(:tbody, rows),
             ]),
           ]),
           *status_text,
         ]
+      end
+
+      def train_limit_to_h(train_limit)
+        return train_limit unless train_limit.is_a?(Hash)
+
+        train_limit.map { |type, limit| h('span.nowrap', "#{type}: #{limit}") }
+          .flat_map { |e| [e, ', '] }[0..-2]
       end
 
       def rust_obsolete_schedule
@@ -199,8 +202,9 @@ module View
         rows = @depot.upcoming.group_by(&:name).map do |name, trains|
           train = trains.first
           discounts = train.discount&.group_by { |_k, v| v }&.map do |price, price_discounts|
-            price_discounts.map(&:first).join(', ') + ' → ' + @game.format_currency(price)
+            h('span.nowrap', "#{price_discounts.map(&:first).join(', ')} → #{@game.format_currency(price)}")
           end
+          discounts = discounts.flat_map { |e| [e, ', '] }[0..-2] if discounts
           names_to_prices = train.names_to_prices
 
           event_text = []
@@ -209,7 +213,7 @@ module View
               event_name = event['type']
               if @game.class::EVENTS_TEXT[event_name]
                 events << event_name
-                event_name = "#{@game.class::EVENTS_TEXT[event_name][0]}*"
+                event_name = @game.class::EVENTS_TEXT[event_name][0]
               end
 
               event_text << if index.zero?
@@ -220,6 +224,7 @@ module View
               event_text << event_name unless event_text.include?(event_name)
             end
           end
+          event_text = event_text.flat_map { |e| [h('span.nowrap', e), ', '] }[0..-2]
 
           upcoming_train_content = [
             h(:td, names_to_prices.keys.join(', ')),
@@ -241,7 +246,7 @@ module View
 
             # needed for 18CZ where a train can be rusted by multiple different trains
             trains_to_rust = rust_schedule.select { |k, _v| k&.include?(key) }.values.flatten.join(', ')
-            rusts << "#{key} => #{trains_to_rust}"
+            rusts << "#{key} → #{trains_to_rust}"
             show_rusts_inline = false
           end
 
@@ -249,23 +254,19 @@ module View
           upcoming_train_content << if show_rusts_inline
                                       h(:td, rusts&.join(', ') || '')
                                     else
-                                      h(:td,
-                                        rusts&.map do |value|
-                                          h(:div, { style: { paddingBottom: '0.1rem' } }, value)
-                                        end || '')
+                                      h(:td, rusts&.map { |value| h(:div, value) } || '')
                                     end
 
-          upcoming_train_content << h(:td, discounts&.join(' ')) if show_upgrade
+          upcoming_train_content << h(:td, discounts) if show_upgrade
           upcoming_train_content << h(:td, train.available_on) if show_available
-          upcoming_train_content << h(:td, event_text.join(', '))
+          upcoming_train_content << h(:td, event_text) if event_text.any?
           h(:tr, upcoming_train_content)
         end
 
-        event_text = @game.class::EVENTS_TEXT
-          .select { |sym, _desc| events.include?(sym) }
-          .map do |_sym, desc|
-            h(:tr, [h(:td, desc[0]), h(:td, desc[1])])
-          end
+        event_text = events.uniq.map do |sym|
+          desc = @game.class::EVENTS_TEXT[sym]
+          h(:tr, [h('td.nowrap', { style: { maxWidth: '30vw' } }, desc[0]), h(:td, desc[1])])
+        end
 
         if event_text.any?
           event_text = [h(:table, { style: { marginTop: '0.3rem' } }, [
@@ -293,7 +294,7 @@ module View
                                      { attrs: { title: 'Available after purchase of first train of type' } },
                                      'Available')
         end
-        upcoming_train_header << h(:th, 'Events')
+        upcoming_train_header << h(:th, 'Events') if event_text.any?
 
         [
           h(:h3, 'Upcoming Trains'),
@@ -342,6 +343,63 @@ module View
         else
           [h(:h3, 'Trains in Bank Pool'), table]
         end
+      end
+
+      def progress_bar
+        train_export = h(:div, [
+          h(:img, {
+              attrs: {
+                src: '/icons/train_export.svg',
+                width: '15px',
+              },
+            }),
+        ])
+
+        children = @game.progress_information.flat_map.with_index do |item, index|
+          cells = []
+          # the space is nut just a space but a &nbsp in unicode;
+          cells << h(:div, cell_props(item[:type], @game.round_counter == index),
+                     [h('div.center', item[:value] || ' '), h('div.nowrap', "#{item[:type]} #{item[:name]}")])
+          cells << h(:div, cell_props(:Export), [train_export]) if item[:exportAfter]
+          cells
+        end
+
+        h(:div, { style: { display: 'flex', overflowX: 'auto' } }, children)
+      end
+
+      def cell_props(type, current)
+        bg_color, font_color, justify =
+          case type
+          when :SR, :PRE
+            [color_for(:green), contrast_on(color_for(:green)), 'space-between']
+          when :Export
+            [color_for(:yellow), contrast_on(color_for(:yellow)), 'center']
+          else
+            [color_for(:bg2), color_for(:font2), 'space-between']
+          end
+
+        props = {
+          style: {
+            display: 'flex',
+            flexDirection: 'column',
+            boxSizing: 'border-box',
+            height: '55px',
+            padding: '4px',
+            border: '1px solid rgba(0,0,0,0.2)',
+            justifyContent: justify,
+            backgroundColor: bg_color,
+            color: font_color,
+          },
+        }
+        props[:style].merge!(
+          {
+            fontWeight: 'bold',
+            border: "4px solid #{color_for(:red)}",
+            padding: '1px 4px',
+          }
+        ) if current
+
+        props
       end
     end
   end

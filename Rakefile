@@ -27,14 +27,14 @@ task :dev_up do
   migrate.call('development', nil)
 end
 
-desc 'Migrate development database to all the way down'
-task :dev_down do
-  migrate.call('development', 0, true)
+desc 'Migrate development database to version x (0 if no arg given)'
+task :dev_down, [:version] do |_t, args|
+  migrate.call('development', args[:version].to_i, true)
 end
 
-desc 'Migrate development database all the way down and then back up'
-task :dev_bounce do
-  migrate.call('development', 0, true)
+desc 'Migrate development database down to version x (0 if no arg given) and then back up'
+task :dev_bounce, [:version] do |_t, args|
+  migrate.call('development', args[:version].to_i, true)
   Sequel::Migrator.apply(DB, 'migrate')
 end
 

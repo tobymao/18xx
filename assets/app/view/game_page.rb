@@ -235,7 +235,7 @@ module View
         when 'o'
           change_anchor('#tools')
         when 'a'
-          change_anchor('#async')
+          change_anchor('#auto')
         when 'c'
           Native(`document.getElementById('chatbar')`)&.focus()
           event.preventDefault
@@ -308,7 +308,8 @@ module View
         item('To|ols', '#tools'),
       ]
 
-      menu_items << item('A|uto', '#auto') if @game_data[:mode] != :hotseat && !cursor
+      enabled = @game.programmed_actions[@game.player_by_id(@user['id'])] if @user
+      menu_items << item("A|uto#{' ✅' if enabled}", '#auto') if @game_data[:mode] != :hotseat && !cursor
 
       h('nav#game_menu', nav_props, [
         h('ul.no_margin.no_padding', { style: { width: 'max-content' } }, menu_items),
@@ -393,6 +394,8 @@ module View
         end
       when Engine::Round::Draft
         h(Game::Round::Auction, game: @game, user: @user, before_process_pass: @before_process_pass)
+      when Engine::Round::Choices
+        h(Game::Round::Choices, game: @game)
       when Engine::Round::Auction
         h(Game::Round::Auction, game: @game, user: @user)
       when Engine::Round::Merger

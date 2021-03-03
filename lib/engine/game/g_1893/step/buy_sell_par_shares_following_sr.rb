@@ -40,8 +40,7 @@ module Engine
                                                         allow_president_change: allow_president_change)
             end
 
-            @round.last_to_act = action.entity
-            @current_actions << action
+            track_action(action, action.bundle.corporation)
           end
 
           private

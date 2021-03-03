@@ -47,13 +47,13 @@ module Engine
           end
 
           def steamboat_assignable_to_corp?
-            return false unless @game.abilities(@steamboat, :assign_corporation, time: 'or_start')
+            return false unless @game.abilities(@steamboat, :assign_corporation, time: 'or_start', strict_time: false)
 
             !assignable_corporations(@steamboat).empty?
           end
 
           def steamboat_assignable_to_hex?
-            return false unless @game.abilities(@steamboat, :assign_hexes, time: 'or_start')
+            return false unless @game.abilities(@steamboat, :assign_hexes, time: 'or_start', strict_time: false)
             return true if steamboat_assigned_corp
 
             steamboat_assignable_to_corp?
@@ -105,7 +105,7 @@ module Engine
           def process_pass(action)
             raise GameError, "Not #{action.entity.name}'s turn: #{action.to_h}" unless action.entity == @steamboat
 
-            if (ability = @game.abilities(@steamboat, :assign_hexes, time: 'or_start'))
+            if (ability = @game.abilities(@steamboat, :assign_hexes, time: 'or_start', strict_time: false))
               ability.use!
               @log <<
                 if (hex = steamboat_assigned_hex)
@@ -115,7 +115,7 @@ module Engine
                 end
             end
 
-            if (ability = @game.abilities(@steamboat, :assign_corporation, time: 'or_start'))
+            if (ability = @game.abilities(@steamboat, :assign_corporation, time: 'or_start', strict_time: false))
               ability.use!
               @log <<
                 if (corp = steamboat_assigned_corp)

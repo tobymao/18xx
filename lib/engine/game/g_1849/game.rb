@@ -1113,6 +1113,9 @@ module Engine
           # Messina cannot be upgraded until after next stock round
           @log << '-- Messina cannot be upgraded until after the next stock round. --'
           @messina_upgradeable = false
+
+          # Some companies might no longer have valid routes
+          @graph.clear_graph_for_all
         end
 
         def bank_sort(corporations)
