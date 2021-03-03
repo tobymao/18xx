@@ -18,11 +18,11 @@ mkdir -p db/data
 if [[ $1 == 'podman' ]]; then
   db_uid=1000
   mapped_db_uid=$(($(grep "^$USER:" /etc/subuid | cut -d: -f2) - 1 + db_uid))
-  if [[ $(stat --format=%u db/data) -ne $mapped_db_uid ]]; then
+  if [[ $(stat -f%u db/data) -ne $mapped_db_uid ]]; then
     sudo chown -R $mapped_db_uid:$mapped_db_uid db/data
   fi
 else
-  if [[ $(stat --format=%U db/data) == 'root' ]]; then
+  if [[ $(stat -f%u db/data) == '0' ]]; then
     sudo chown -R "$USER":"$USER" db/data
   fi
 fi
