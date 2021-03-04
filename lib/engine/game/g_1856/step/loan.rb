@@ -25,13 +25,13 @@ module Engine
           def can_payoff?(entity)
             (loan = entity.loans[0]) &&
               entity.cash >= loan.amount &&
-              @round.steps.any? { |step| step.passed? && step.is_a?(Engine::Step::BuyTrain) }
+              @round.step_passed? && step.is_a?(Engine::Step::BuyTrain)
           end
 
           def blocks?
             return false if @game.post_nationalization
 
-            @round.steps.any? { |step| step.passed? && step.is_a?(Engine::Step::BuyTrain) }
+            @round.step_passed?(Engine::Step::BuyTrain)
           end
 
           def process_take_loan(action)

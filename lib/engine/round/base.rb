@@ -119,6 +119,10 @@ module Engine
         @steps.find { |step| step.active? && step.actions(entity).include?(action) }
       end
 
+      def step_passed?(action_klass)
+        @steps.any? { |step| step.passed? && step.is_a?(action_klass) }
+      end
+
       def active_step(entity = nil)
         return @steps.find { |step| step.active? && step.actions(entity).any? } if entity
 
