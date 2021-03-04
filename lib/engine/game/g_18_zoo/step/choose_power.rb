@@ -20,9 +20,9 @@ module Engine
           @choices[:greek_to_me] = 'It’s all greek to me' if company_greek?(entity)
           if company_whatsup?(entity)
             train = @game.depot.depot_trains&.first
-            entity.presidencies
-                  .select { |corporation| corporation.cash >= @game.depot.depot_trains&.first&.price }
-                  .each do |corporation|
+            entity.presidencies.each do |corporation|
+              next if corporation.cash < train&.price
+
               @choices["whatsup:#{corporation.id}:#{train.id}"] = "Whatsup (#{corporation.id}) (#{train.name})"
             end
           end
@@ -49,14 +49,14 @@ module Engine
         end
 
         def company_greek?(entity)
-          entity&.companies&.include?(@game.it_s_all_greek_to_me) &&
+          entity&.companies&.include?(@game.it_is_all_greek_to_me) &&
             (@round.floated_corporation || bought? || sold?) &&
-            @game.it_s_all_greek_to_me.all_abilities.none? { |ability| ability.is_a?(Engine::Ability::Close) }
+            !@game.it_is_all_greek_to_me_active?
         end
 
         def process_choose(action)
           if action.choice == 'midas'
-            @game.midas.add_ability(Engine::Ability::Close.new(type: 'close'))
+            @game.midas.add_ability(Engine::Ability::Close.new(type: :close, when: :after_sr))
             @log << "#{current_entity.name} uses \"Midas\", will get the Priority for the next SR"
           end
 
@@ -78,8 +78,8 @@ module Engine
             @game.buy_train(corporation, train, train.price)
             @game.phase.buying_train!(corporation, train)
 
-            ability = Engine::Ability::Close.new(type: 'train_operated', corporation: train,
-                                                 description: "Whatsup - #{split[2]} disabled")
+            ability = Engine::G18ZOO::Ability::DisableTrain.new(type: 'disable_train', train: train,
+                                                                description: "Whatsup - #{split[2]} disabled")
             corporation.add_ability(ability)
 
             prev = corporation.share_price.price
@@ -94,7 +94,7 @@ module Engine
 
           return unless action.choice == 'greek_to_me'
 
-          @game.it_s_all_greek_to_me.add_ability(Engine::Ability::Close.new(type: 'close'))
+          @game.it_is_all_greek_to_me.add_ability(Engine::Ability::Close.new(type: 'close'))
           @log << "#{current_entity.name} uses \"It’s all greek to me\", "\
             'will get an additional round after passing this round'
         end

@@ -428,7 +428,7 @@ module Engine
 
       describe 'It’s all greek to me' do
         let(:game_id) { 'hs_yylreptp_1612654521' }
-        let(:power_sym) { :IT_S_ALL_GREEK_TO_ME }
+        let(:power_sym) { :IT_IS_ALL_GREEK_TO_ME }
         let(:price) { 2 }
 
         include_examples 'a purchasable power'

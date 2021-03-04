@@ -238,7 +238,7 @@ module Engine
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
           },
           {
-            sym: 'IT_S_ALL_GREEK_TO_ME',
+            sym: 'IT_IS_ALL_GREEK_TO_ME',
             name: 'It’s all greek to me (SR)',
             value: 2,
             desc: 'After your action in a SR, do another one.',
@@ -1125,12 +1125,12 @@ module Engine
           @leprechaun_pot_of_gold ||= company_by_id('LEPRECHAUN_POT_OF_GOLD')
         end
 
-        def it_s_all_greek_to_me
-          @it_s_all_greek_to_me ||= company_by_id('IT_S_ALL_GREEK_TO_ME')
+        def it_is_all_greek_to_me
+          @it_is_all_greek_to_me ||= company_by_id('IT_IS_ALL_GREEK_TO_ME')
         end
 
         def it_is_all_greek_to_me_active?
-          it_s_all_greek_to_me.all_abilities.any? { |ability| ability.is_a?(Engine::Ability::Close) }
+          !abilities(it_is_all_greek_to_me, :close).nil?
         end
 
         def whatsup
