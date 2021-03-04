@@ -334,9 +334,11 @@ module Engine
               s.percent > share_to_buy.percent && (s.owner != entity || s.owner != corporation.owner)
             end.max(&:percent)
 
-            other_percent = action.entity.percent_of(corporation, ceil: false) + bigger_share.percent
-            if percentage < other_percent
-              "#{action.entity.player.name} has bought, shares exist that could allow them to gain presidency"
+            if bigger_share
+              other_percent = action.entity.percent_of(corporation, ceil: false) + bigger_share.percent
+              if percentage < other_percent
+                "#{action.entity.player.name} has bought, shares exist that could allow them to gain presidency"
+              end
             end
           end
         elsif action.is_a?(Action::SellShares)
@@ -358,9 +360,11 @@ module Engine
             end
           end
         end
+        nil
       end
 
-      def activate_program_pass_shares(entity, _program)
+      def activate_program_share_pass(entity, _program)
+        available_actions = actions(entity)
         return unless available_actions.include?('pass')
 
         reason = should_stop_applying_program(entity, nil)

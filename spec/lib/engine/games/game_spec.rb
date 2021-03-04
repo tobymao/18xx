@@ -32,6 +32,10 @@ module Engine
     '1861/29683.json', # token pass
     '1830/29133.json', # buy till float
     '1817NA/25363.json', # pass in merger
+    '1882/hs_iopxwxht_26178.json', # Auto-pass pass
+    '1882/hs_fxmfdndg_26178.json', # Auto-pass disable (shares sold)
+    '1882/hs_kufujwkw_26178.json', # Auto-pass disable (PAR)
+    '1882/hs_vaxptumi_26178.json', # Auto-pass disable (buy unsecure)
   ].freeze
 
   AUTO_FIXTURES.each do |fixture_name|

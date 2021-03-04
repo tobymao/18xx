@@ -24,6 +24,7 @@ module View
           types = {
             Engine::Action::ProgramBuyShares => ->(settings) { render_buy_shares(settings) },
             Engine::Action::ProgramMergerPass => ->(settings) { render_merger_pass(settings) },
+            Engine::Action::ProgramSharePass => ->(settings) { render_share_pass(settings) },
           }.freeze
 
           if !(available = @game.available_programmed_actions).empty?
@@ -153,7 +154,9 @@ module View
         text = 'Auto Buy shares till float'
         text += ' (Enabled)' if settings
         children = [h(:h3, text)]
-        children << h(:p, 'This will deactivate itself if other players do actions that may impact you.')
+        children << h(:p,
+                      'Automatically buy shares until a corporation is floated.'\
+                      ' This will deactivate itself if other players do actions that may impact you.')
         children << h(:p,
                       [h(:a, { attrs: { href: AUTO_ACTIONS_WIKI, target: '_blank' } },
                          'Please read this for more details when it will deactivate')])
@@ -176,6 +179,32 @@ module View
           children << h(:div, subchildren)
 
         end
+        children
+      end
+
+      def enable_share_pass
+        process_action(
+          Engine::Action::ProgramSharePass.new(
+            sender
+          )
+        )
+      end
+
+      def render_share_pass(settings)
+        text = 'Auto Pass in Share Round'
+        text += ' (Enabled)' if settings
+        children = [h(:h3, text)]
+        children << h(:p,
+                      'Automatically pass in the share round.'\
+                      ' This will deactivate itself if other players do actions that may impact you.')
+        children << h(:p,
+                      [h(:a, { attrs: { href: AUTO_ACTIONS_WIKI, target: '_blank' } },
+                         'Please read this for more details when it will deactivate')])
+
+        subchildren = [render_button(settings ? 'Save' : 'Enable') { enable_share_pass }]
+        subchildren << render_disable(settings) if settings
+        children << h(:div, subchildren)
+
         children
       end
 
