@@ -319,7 +319,9 @@ module View
             when :order
               operating_order
             when :trains
-              corporation.floated? ? [corporation.trains.size, corporation.trains.max_by(&:name).to_s] : [-1, '']
+              ct = corporation.trains.sort_by(&:name).reverse
+              train_limit = @game.phase.train_limit(corporation)
+              corporation.floated? ? [ct.size, [train_limit.times.map { |i| ct[i]&.name }]] : [-1, []]
             when :tokens
               @game.count_available_tokens(corporation)
             when :loans
