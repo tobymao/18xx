@@ -3294,7 +3294,7 @@ module Engine
           end
         end
 
-        def bidbox_minors_refill
+        def bidbox_minors_refill!
           @bidbox_minors_cache = bank_companies(self.class::COMPANY_MINOR_PREFIX)
                                    .first(self.class::BIDDING_BOX_MINOR_COUNT)
                                    .map(&:id)
@@ -3696,7 +3696,7 @@ module Engine
 
         def setup_bidboxes
           # Set the owner to bank for the companies up for auction this stockround
-          bidbox_minors_refill
+          bidbox_minors_refill!
           bidbox_minors.each do |minor|
             minor.owner = @bank
           end
@@ -3711,14 +3711,6 @@ module Engine
 
           # Reset the choice for Midland & Great Northern Joint Railway
           @midland_great_northern_choice = nil
-        end
-
-        def stock_round_finished
-          # Increase player loans with 50% interest
-          add_interest_player_loans!
-
-          # Refill the minor bidbox
-          bidbox_minors_refill
         end
 
         def remove_exchange_token(entity)
