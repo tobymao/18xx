@@ -76,6 +76,7 @@ module Engine
             return nil unless connected
 
             return connected if @game.company_ability_extra_track?(entity)
+            return connected if entity.id == @game.class::COMPANY_HSBC
 
             tile_lay = get_tile_lay(operator)
             return nil unless tile_lay
