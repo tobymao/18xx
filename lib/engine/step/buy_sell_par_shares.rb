@@ -193,15 +193,24 @@ module Engine
       end
 
       def can_buy_shares?(entity, shares)
-        min_share = nil
+        return false if shares.empty?
 
+        corporation = shares.first.corporation
+        if @round.players_sold[entity][corporation] || (bought? && !can_buy_multiple?(entity, corporation))
+          return false
+        end
+
+        min_share = nil
         shares.each do |share|
           next unless share.buyable
 
           min_share = share if !min_share || share.percent < min_share.percent
         end
 
-        can_buy?(entity, min_share&.to_bundle)
+        bundle = min_share&.to_bundle
+        return unless bundle
+
+        entity.cash >= bundle.price && can_gain?(entity, bundle)
       end
 
       def can_buy_any_from_market?(entity)
