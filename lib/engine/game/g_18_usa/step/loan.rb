@@ -7,7 +7,7 @@ module Engine
   module Game
     module G18USA
       module Step
-        class Loan < G1817::Step::Base
+        class Loan < G1817::Step::Loan
           def process_payoff_loan(action)
             entity = action.entity
             loan = action.loan
