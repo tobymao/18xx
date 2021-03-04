@@ -20,22 +20,25 @@ module View
           h(:p, 'This feature is presently under development. More actions will be available soon.'),
         ]
 
-        types = {
-          Engine::Action::ProgramBuyShares => ->(settings) { render_buy_shares(settings) },
-          Engine::Action::ProgramMergerPass => ->(settings) { render_merger_pass(settings) },
-        }.freeze
+        if @game.players.find { |p| p.name == @user&.dig('name') }
+          types = {
+            Engine::Action::ProgramBuyShares => ->(settings) { render_buy_shares(settings) },
+            Engine::Action::ProgramMergerPass => ->(settings) { render_merger_pass(settings) },
+          }.freeze
 
-        if !(available = @game.available_programmed_actions).empty?
-          enabled = @game.programmed_actions[sender]
-          available.each do |type|
-            method = types[type]
-            if method
-              settings = enabled if enabled.is_a?(type)
-              children.concat(method.call(settings))
+          if !(available = @game.available_programmed_actions).empty?
+            enabled = @game.programmed_actions[sender]
+            available.each do |type|
+              if (method = types[type])
+                settings = enabled if enabled.is_a?(type)
+                children.concat(method.call(settings))
+              end
             end
+          else
+            children << h('p.bold', 'No auto actions are presently available for this game.')
           end
         else
-          children << h('div.bold', 'No auto actions are presently available for this game.')
+          children << h('p.bold', 'No auto actions available. You are not a player in this game.')
         end
 
         props = {
