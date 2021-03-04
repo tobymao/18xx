@@ -113,8 +113,7 @@ module Engine
           end
 
           def pass!
-            @round.bidders = @bidders
-            @round.bids = @bids
+            store_bids!
             super
           end
 
@@ -127,6 +126,7 @@ module Engine
           def process_bid(action)
             action.entity.unpass!
             add_bid(action)
+            store_bids!
           end
 
           def process_buy_shares(action)
@@ -222,6 +222,11 @@ module Engine
             return false if max_bid(entity, company) < min_bid(company) || highest_player_bid?(entity, company)
 
             !(!find_bid(entity, company) && bidding_tokens(entity).zero?)
+          end
+
+          def store_bids!
+            @round.bidders = @bidders
+            @round.bids = @bids
           end
 
           protected
