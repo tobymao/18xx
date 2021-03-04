@@ -199,7 +199,9 @@ module Engine
           },
           {
             name: '4D',
-            distance: 999,
+            # Can pick 4 best city or offboards, skipping smaller cities.
+            distance: [{ 'nodes' => %w[city offboard], 'pay' => 4, 'visit' => 99, 'multiplier' => 2 },
+                       { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             price: 900,
             num: 20,
             available_on: '6', discount: { '4' => 300, '5' => 300, '6' => 300 },
