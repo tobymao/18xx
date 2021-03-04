@@ -812,6 +812,7 @@ module Engine
             Engine::Step::DiscardTrain,
             Engine::Step::BuyTrain,
             [G1870::Step::BuyCompany, blocks: true],
+            G1870::Step::PriceProtection,
           ], round_num: round_num)
         end
 
