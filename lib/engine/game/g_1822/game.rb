@@ -2344,8 +2344,6 @@ module Engine
         FRANCE_HEX = 'Q44'
         FRANCE_HEX_BROWN_TILE = 'offboard=revenue:yellow_0|green_60|brown_90|gray_120,visit_cost:0;'\
                                 'path=a:2,b:_0,lanes:2'
-        HULL_HEX = 'N21'
-        GRIMSBY_HEX = 'N23'
 
         COMPANY_MTONR = 'P2'
         COMPANY_LCDR = 'P5'
@@ -2366,6 +2364,7 @@ module Engine
           { lay: true, upgrade: true },
           { lay: true, upgrade: :not_if_upgraded, cannot_reuse_same_hex: true },
         ].freeze
+        COMPANY_HSBC_TILES = %w[N21 N23].freeze
 
         COMPANY_SHORT_NAMES = {
           'P1' => 'P1-BEC',

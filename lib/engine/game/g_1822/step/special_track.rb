@@ -151,6 +151,13 @@ module Engine
                 tile.color == :brown && phase_color != :gray
             end
 
+            if entity.id == @game.class::COMPANY_HSBC && entity.owner&.corporation?
+              hsbc_token = entity.owner.tokens
+                            .select(&:used)
+                            .any? { |t| @game.class::COMPANY_HSBC_TILES.include?(t.city.hex.id) }
+              return unless hsbc_token
+            end
+
             %i[tile_lay teleport].each do |type|
               ability = @game.abilities(
                 entity,
