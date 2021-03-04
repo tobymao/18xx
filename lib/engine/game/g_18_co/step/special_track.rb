@@ -13,7 +13,6 @@ module Engine
           def process_lay_tile(action)
             ability = abilities(action.entity)
             lay_tile(action, spender: action.entity.owner)
-            check_connect(action, ability)
             ability.use!
 
             @company = ability.count.positive? ? action.entity : nil if ability.must_lay_together
