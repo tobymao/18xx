@@ -1301,6 +1301,10 @@ module Engine
         @cert_limit = init_cert_limit
       end
 
+      def shares_for_corporation(corporation)
+        @_shares.values.select { |share| share.corporation == corporation }
+      end
+
       def reset_corporation(corporation)
         @_shares.reject! do |_, share|
           next if share.corporation != corporation
