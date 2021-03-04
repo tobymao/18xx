@@ -26,18 +26,27 @@ module Engine
         STARTING_CASH = { 2 => 650, 3 => 450, 4 => 350 }.freeze
 
         CAPITALIZATION = :incremental
+        # However 10-share corps that start in round 5: if their 5th share purchase
+        #  - get 5x starting value
+        #  - the remaining 5 shares are placed in bank pool
 
         MUST_SELL_IN_BLOCKS = true
 
+        SELL_BUY_ORDER = :sell_buy
+        # is this first to pass: first, second: second.. yes
+        NEXT_SR_PLAYER_ORDER = :first_to_pass
+        MIN_BID_INCREMENT = 10
+
         TILES = {
-          # yellow
+          # Yellow
           '3' => 4,
           '4' => 6,
           '58' => 6,
           '7' => 4,
           '8' => 14,
           '9' => 14,
-          # green
+
+          # Green
           '80' => 1,
           '81' => 1,
           '82' => 1,
@@ -47,7 +56,8 @@ module Engine
           #'228' => 2,
           #'229' => 1,
           #'407' => 1,
-          ## brown
+
+          # Brown
           #'544' => 2,
           #'545' => 2,
           #'546' => 2,
@@ -55,7 +65,8 @@ module Engine
           #'230' => 1,
           #'234' => 1,
           #'233' => 1,
-          ## gray
+
+          # Gray
           #'51'  => 2,
           #'231'  => 1,
           #'116'  => 1,
@@ -92,11 +103,11 @@ module Engine
 
         MARKET = [
           %w[82 90 100 110 122 135 150 165 180 200 220 270 300 330 360 400],
-          %w[75 82 90 100 110 122 135 150 165 180 200 220 270 300 330 360],
-          %w[70 75 82 90 100 110 122 135 150 165 180 200 220],
-          %w[65 70 75 82 90 100 110 122 135 150 165],
-          %w[60 65 70 75 82 90 100 110],
-          %w[50 60 65 70 75 82],
+          %w[75 82 90 100p 110 122 135 150 165 180 200 220 270 300 330 360],
+          %w[70 75 82 90p 100 110 122 135 150 165 180 200 220],
+          %w[65 70 75 82p 90 100 110 122 135 150 165],
+          %w[60 65 70 75p 82 90 100 110],
+          %w[50 60 65 70p 75 82],
           %w[40 50 60 65 70],
           %w[30 40 50 60],
         ].freeze
@@ -106,7 +117,8 @@ module Engine
             name: '2',
             train_limit: 4,
             tiles: [:yellow],
-            operating_rounds: 1,
+            operating_rounds: 2,
+            status: ['can_buy_morison'],
           },
           {
             name: '3',
@@ -252,6 +264,7 @@ module Engine
             tokens: [0, 40, 100],
             coordinates: 'K7',
             color: '#37383a',
+            always_market_price: true,
             reservation_color: nil,
           },
           {
@@ -262,6 +275,7 @@ module Engine
             tokens: [0, 40],
             coordinates: 'L6',
             color: '#f48221',
+            always_market_price: true,
             reservation_color: nil,
           },
           {
@@ -272,6 +286,7 @@ module Engine
             tokens: [0, 40],
             coordinates: 'L4',
             color: '#76a042',
+            always_market_price: true,
             reservation_color: nil,
           },
           {
@@ -282,6 +297,7 @@ module Engine
             tokens: [0, 40],
             coordinates: 'C9',
             color: '#d81e3e',
+            always_market_price: true,
             reservation_color: nil,
           },
           {
@@ -293,6 +309,7 @@ module Engine
             coordinates: 'L12',
             color: '#00a993',
             reservation_color: nil,
+            always_market_price: true,
           },
           {
             float_percent: 20,
@@ -302,6 +319,7 @@ module Engine
             tokens: [0, 40, 40],
             coordinates: 'A7',
             color: '#00a993',
+            always_market_price: true,
             reservation_color: nil,
           },
         ].freeze
@@ -355,6 +373,12 @@ module Engine
         EBUY_PRES_SWAP = false # allow presidential swaps of other corps when ebuying
         EBUY_OTHER_VALUE = false # allow ebuying other corp trains for up to face
         HOME_TOKEN_TIMING = :operating_round
+
+        def init_round
+          Round::Draft.new(self,
+                           [G18LosAngeles::Step::DraftDistribution],
+                           snake_order: true)
+        end
 
         def operating_round(round_num)
           Round::Operating.new(self, [
