@@ -186,14 +186,14 @@ module Engine
           },
           {
             name: '5/7',
-            distance: { 'pay' => 5, 'visit' => 7 },
+            distance: [{ 'pay' => 5, 'visit' => 7 }],
             price: 450,
             num: 2,
             events: [{ 'type' => 'close_companies' }],
           },
           { 
             name: '6/8',
-            distance: { 'pay' => 6, 'visit' => 8 },
+            distance: [{ 'pay' => 6, 'visit' => 8 }],
             price: 600,
             num: 2
           },
