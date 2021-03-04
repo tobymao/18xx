@@ -380,6 +380,20 @@ module Engine
         #                    snake_order: true)
         # end
 
+        # borrowed from 1846 for initial reverse corporation order
+        def operating_order
+          corporations = @corporations.select(&:floated?)
+          if @turn == 1 && (@round_num || 1) == 1
+            corporations.sort_by! do |c|
+              sp = c.share_price
+              [sp.price, sp.corporations.find_index(c)]
+            end
+          else
+            corporations.sort!
+          end
+          @minors.select(&:floated?) + corporations
+        end
+
         def operating_round(round_num)
           Round::Operating.new(self, [
             Engine::Step::Bankrupt,
