@@ -122,7 +122,7 @@ module Engine
           },
           {
             name: '3',
-            on: '3',
+            on: '3+3',
             train_limit: 4,
             tiles: %i[yellow green],
             operating_rounds: 2,
@@ -130,7 +130,7 @@ module Engine
           },
           {
             name: '4',
-            on: '4',
+            on: '4+4',
             train_limit: 3,
             tiles: %i[yellow green],
             operating_rounds: 2,
@@ -138,21 +138,21 @@ module Engine
           },
           {
             name: '5',
-            on: '5',
+            on: '5/7',
             train_limit: 3,
             tiles: %i[yellow green brown],
             operating_rounds: 3,
           },
           {
             name: '6',
-            on: '6',
+            on: '6/8',
             train_limit: 2,
             tiles: %i[yellow green brown],
             operating_rounds: 3,
           },
           {
             name: 'D',
-            on: 'D',
+            on: '4D',
             train_limit: 2,
             tiles: %i[yellow green brown gray],
             operating_rounds: 3,
@@ -216,7 +216,7 @@ module Engine
             desc: 'Once per game, allows Corporation owner to lay or upgrade a tile in B8',
             sym: 'DPR',
             abilities: [
-                { type: 'tile_lay', owner_type: 'corporation', hexes: ['B8'], blocks: true, count: 1, on_phase: 3 },
+                { type: 'tile_lay', owner_type: 'corporation', hexes: ['B8'], tiles:[], blocks: true, count: 1, on_phase: 3 },
               ],
             color: nil,
           },
@@ -226,7 +226,7 @@ module Engine
             revenue: 10,
             desc: 'Corporation owner gets two bridge discount tokens',
             sym: 'MBC',
-            abilities: [{ type: 'discount', owner_type: 'corporation', hexes: ['B8'] }],
+            abilities: [{ type: 'tile_discount', discount: 60, owner_type: 'corporation', hexes: ['B8'] }],
             color: nil,
           },
           {
@@ -236,8 +236,8 @@ module Engine
             desc: 'An owning Corporation may place a cattle token in any Town or City',
             sym: 'AC',
             abilities: [
-              { type: 'hex_bonus', owner_type: 'corporation', amount: 10 },
-              { type: 'hex_bonus', owner_type: 'corporation', amount: 20 },
+              { type: 'hex_bonus', owner_type: 'corporation', amount: 10, hexes: [] },
+              { type: 'hex_bonus', owner_type: 'corporation', amount: 2, hexes: [] },
             ],
             color: nil,
           },
