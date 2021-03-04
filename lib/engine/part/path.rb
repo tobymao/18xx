@@ -100,7 +100,20 @@ module Engine
         on.keys.select { |p| on[p] == 1 }
       end
 
+      #
+      # 
+      #
       # on and chain are mutually exclusive
+      # skip: An exit to ignore. Useful to prevent ping-ponging between adjacent hexes.
+      # jskip: An junction to ignore. May be useful on complex tiles
+      # visited: a hashset of visited Paths. Used to avoid repeating track segments.
+      # on: A set of Paths mapping to 1 or 0. When `on` is set. Usage is currently limited to `select` in path & node
+      # chain: an array of the previously visited Paths to get to this point
+      #  * If `chain` is set `walk` will yield to a block, providing the chain (including this part), and will
+      #      'bubble up' yields from recursive calls
+      #  * If `chain` is nil `walk` will yield to a block, providing this Part and the visited Paths including this one
+
+      # on: HashSet of Paths that we want to *exclusively* walk on
       def walk(skip: nil, jskip: nil, visited: nil, on: nil, chain: nil)
         return if visited&.[](self)
 

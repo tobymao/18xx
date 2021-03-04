@@ -36,6 +36,17 @@ module Engine
         on.keys.select { |p| on[p] == 1 }
       end
 
+      #
+      # Explore the paths and nodes reachable from this node
+      #
+      #
+      # visited: a hashset of visited Nodes
+      # visited_paths: a hashset of visited Paths
+      # on: see Path::Walk
+      # corporation: If set don't walk on adjacent nodes which are blocked for the passed corporation
+      # skip_track: If passed, don't walk on track of that type (ie: :broad track for 1873)
+      # 
+      # This method recursively bubbles up yielded values from nested Node::Walk and Path::Walk calls
       def walk(visited: nil, on: nil, corporation: nil, visited_paths: {}, skip_track: nil)
         return if visited&.[](self)
 
