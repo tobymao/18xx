@@ -162,33 +162,41 @@ module Engine
         TRAINS = [
           {
             name: '2+2',
-            distance: 2,
+            distance: [{ 'nodes' => %w[city offboard], 'pay' => 2, 'visit' => 2 },
+                       { 'nodes' => %w[town], 'pay' => 2, 'visit' => 2 }],
             price: 100,
             rusts_on: '4+4',
             num: 5,
           },
           {
             name: '3+3',
-            distance: 3,
+            distance: [{ 'nodes' => %w[city offboard], 'pay' => 3, 'visit' => 3 },
+                       { 'nodes' => %w[town], 'pay' => 3, 'visit' => 3 }],
             price: 200,
             rusts_on: '6/8',
             num: 4,
           },
           {
             name: '4+4',
-            distance: 4,
+            distance: [{ 'nodes' => %w[city offboard], 'pay' => 4, 'visit' => 4 },
+                       { 'nodes' => %w[town], 'pay' => 4, 'visit' => 4 }],
             price: 300,
             rusts_on: '4D',
             num: 3,
           },
           {
             name: '5/7',
-            distance: 5,
+            distance: { 'pay' => 5, 'visit' => 7 },
             price: 450,
             num: 2,
             events: [{ 'type' => 'close_companies' }],
           },
-          { name: '6/8', distance: 6, price: 600, num: 2 },
+          { 
+            name: '6/8',
+            distance: { 'pay' => 6, 'visit' => 8 },
+            price: 600,
+            num: 2
+          },
           {
             name: '4D',
             distance: 999,
@@ -196,7 +204,7 @@ module Engine
             num: 20,
             available_on: '6', discount: { '4' => 300, '5' => 300, '6' => 300 },
           },
-].freeze
+        ].freeze
 
         COMPANIES = [
           {
@@ -205,7 +213,9 @@ module Engine
             revenue: 5,
             desc: 'Once per game, allows Corporation owner to lay or upgrade a tile in B8',
             sym: 'DPR',
-            abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['B8'] }],
+            abilities: [
+                { type: 'tile_lay', owner_type: 'corporation', hexes: ['B8'], blocks: true, count: 1, on_phase: 3 },
+              ],
             color: nil,
           },
           {
@@ -214,7 +224,7 @@ module Engine
             revenue: 10,
             desc: 'Corporation owner gets two bridge discount tokens',
             sym: 'MBC',
-            #abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['B8'] }],
+            abilities: [{ type: 'discount', owner_type: 'corporation', hexes: ['B8'] }],
             color: nil,
           },
           {
@@ -223,7 +233,10 @@ module Engine
             revenue: 15,
             desc: 'An owning Corporation may place a cattle token in any Town or City',
             sym: 'AC',
-            # abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['B8'] }],
+            abilities: [
+              { type: 'hex_bonus', owner_type: 'corporation', amount: 10 },
+              { type: 'hex_bonus', owner_type: 'corporation', amount: 20 },
+            ],
             color: nil,
           },
           {
@@ -231,8 +244,8 @@ module Engine
             value: 100,
             revenue: 15,
             desc: 'May exchange for share in Colorado & Southern Railroad',
-            sym: 'CPR',
-            abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['C7'] }],
+            sym: 'P4',
+            abilities: [{ type: 'shares', shares: 'C&S_1' }],
             color: nil,
           },
           {
@@ -240,7 +253,7 @@ module Engine
             value: 130,
             revenue: 5,
             desc: '$5 revenue each time ANY tile is laid or upgraded.',
-            sym: 'CM',
+            sym: 'P5',
             # abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['C7'] }],
             color: nil,
           },
@@ -249,8 +262,8 @@ module Engine
             value: 175,
             revenue: 25,
             desc: 'Comes with President\'s Certificate of the Union Pacific Railroad',
-            sym: 'UPR',
-            #abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['C7'] }],
+            sym: 'P6',
+            abilities: [{ type: 'shares', shares: 'UP_0' }],
             color: nil,
           },
         ].freeze
@@ -305,7 +318,7 @@ module Engine
             sym: 'MP',
             name: 'Missouri Pacific',
             logo: '1889/TR',
-            tokens: [0, 40, 40],
+            tokens: [0, 40, 100],
             coordinates: 'L12',
             color: '#00a993',
             reservation_color: nil,
@@ -313,10 +326,10 @@ module Engine
           },
           {
             float_percent: 20,
-            sym: 'CS',
+            sym: 'C&S',
             name: 'Colorado & Southern',
             logo: '1889/TR',
-            tokens: [0, 40, 40],
+            tokens: [0, 40, 100],
             coordinates: 'A7',
             color: '#00a993',
             always_market_price: true,
@@ -409,12 +422,6 @@ module Engine
           ], round_num: round_num)
         end
 
-        def active_players
-          return super if @finished
-
-          company = company_by_id('ER')
-          current_entity == company ? [@round.company_sellers[company]] : super
-        end
       end
     end
   end
