@@ -45,7 +45,7 @@ module Engine
           '597' => 'unlimited',
           '611' => 'unlimited',
           '619' => 'unlimited',
-          'X01' => 
+          'X01' =>
           {
             'count' => 'unlimited',
             'color' => 'yellow',
@@ -84,7 +84,8 @@ module Engine
           'X12' => {
             'count' => 1,
             'color' => 'green',
-            'code' => 'city=revenue:60,slots:2;city=revenue:60;path=a:0,b:_0;path=a:3,b:_0;path=a:1,b:_1;path=a:2,b:_1;label=NY',
+            'code' => 'city=revenue:60,slots:2;city=revenue:60;path=a:0,b:_0;path=a:3,b:_0;path=a:1,b:_1;path=a:2,'\
+            'b:_1;label=NY',
           },
           'X13' => {
             'count' => 1,
@@ -94,7 +95,8 @@ module Engine
           'X14' => {
             'count' => 1,
             'color' => 'brown',
-            'code' => 'city=revenue:80,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=DFW',
+            'code' => 'city=revenue:80,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;'\
+            'label=DFW',
           },
           'X15' => {
             'count' => 1,
@@ -114,7 +116,8 @@ module Engine
           'X18' => {
             'count' => 1,
             'color' => 'gray',
-            'code' => 'city=revenue:80,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=DFW',
+            'code' => 'city=revenue:80,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
+            'path=a:5,b:_0;label=DFW',
           },
           'X19': {
             'count' => 1,
@@ -125,7 +128,7 @@ module Engine
             'count' => 1,
             'color' => 'gray',
             'code' => 'city=revenue:100,slots:4;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=NY',
-          }
+          },
         }.freeze
 
         LOCATION_NAMES = {
@@ -862,43 +865,40 @@ module Engine
         SEED_MONEY = 200
         # Alphabetized. Not sure what official ordering is
 
-        METROPOLITAN_HEXES = ['G3', 'E11', 'H14', 'H22', 'I19', 'D20'].freeze
+        METROPOLITAN_HEXES = %w[G3 E11 H14 H22 I19 D20].freeze
 
         def setup
-          metro = METROPOLITAN_HEXES.sort_by{ rand }.take(3)
-          @log << metro
+          metro = METROPOLITAN_HEXES.sort_by { rand }.take(3)
           metro.each do |i|
             if i == 'H14'
               hex = @hexes.find { |h| h.id == i }
-              tile =  @tiles.find { |t| t.name == 'X03' }
+              tile = @tiles.find { |t| t.name == 'X03' }
               hex.lay(tile)
             elsif i == 'E11'
-              #test
-              @log << "E11"
+              # Denver needs to be done at a later date
             elsif i == 'G3'
               hex = @hexes.find { |h| h.id == i }
-              tile =  @tiles.find { |t| t.name == 'X05' }
+              tile = @tiles.find { |t| t.name == 'X05' }
               hex.lay(tile.rotate!(3))
             elsif i == 'D20'
               hex = @hexes.find { |h| h.id == i }
-              tile =  @tiles.find { |t| t.name == 'X02' }
+              tile = @tiles.find { |t| t.name == 'X02' }
               hex.lay(tile.rotate!(1))
             elsif i == 'I19'
               hex = @hexes.find { |h| h.id == i }
-              tile =  @tiles.find { |t| t.name == 'X06' }
+              tile = @tiles.find { |t| t.name == 'X06' }
               hex.lay(tile)
             elsif i == 'H22'
               hex = @hexes.find { |h| h.id == i }
-              tile =  @tiles.find { |t| t.name == 'X01' }
+              tile = @tiles.find { |t| t.name == 'X01' }
               hex.lay(tile)
             end
-            hex = ''
           end
         end
 
         def take_loan(entity, loan)
           raise GameError, "Cannot take more than #{maximum_loans(entity)} loans" unless can_take_loan?(entity)
-  
+
           price = entity.share_price.price
           name = entity.name
           name += " (#{entity.owner.name})" if @round.is_a?(Round::Stock)
@@ -923,7 +923,7 @@ module Engine
             red: {
               ['A27'] => "offboard=revenue:yellow_#{offboard[0][0]}|green_#{offboard[0][1]}"\
               "|brown_#{offboard[0][2]}|gray_#{offboard[0][3]};"\
-              "path=a:5,b:_0;path=a:0,b:_0",
+              'path=a:5,b:_0;path=a:0,b:_0',
               ['J20'] => "offboard=revenue:yellow_#{offboard[1][0]}|green_#{offboard[1][1]}|brown_#{offboard[1][2]}"\
               "|gray_#{offboard[1][3]};path=a:2,b:_0",
               ['I5'] => "offboard=revenue:yellow_#{offboard[2][0]}|green_#{offboard[2][1]}|brown_#{offboard[2][2]}"\
@@ -933,7 +933,7 @@ module Engine
                  "|gray_#{offboard[2][3]},groups:Mexico,hide:1;path=a:2,b:_0;path=a:3,b:_0;border=edge:4;border=edge:1",
               ['I11'] => "offboard=revenue:yellow_#{offboard[2][0]}|green_#{offboard[2][1]}|brown_#{offboard[2][2]}"\
               "|gray_#{offboard[2][3]},groups:Mexico;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;border=edge:1;"\
-              "border=edge:5",
+              'border=edge:5',
               ['J12'] => "offboard=revenue:yellow_#{offboard[2][0]}|green_#{offboard[2][1]}|brown_#{offboard[2][2]}"\
               "|gray_#{offboard[2][3]},groups:Mexico,hide:1;path=a:3,b:_0;border=edge:2;border=edge:5",
               ['K13'] => "offboard=revenue:yellow_#{offboard[2][0]}|green_#{offboard[2][1]}|brown_#{offboard[2][2]}"\
@@ -1022,7 +1022,6 @@ module Engine
             G1817::Step::BuyTrain,
           ], round_num: round_num)
         end
-
       end
     end
   end

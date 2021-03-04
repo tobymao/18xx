@@ -13,13 +13,13 @@ module Engine
             loan = action.loan
             amount = loan.amount
             raise GameError, "Loan doesn't belong to that entity" unless entity.loans.include?(loan)
-  
+
             @log << "#{entity.name} pays off a loan for #{@game.format_currency(amount)}"
             entity.spend(amount, @game.bank)
-  
+
             entity.loans.delete(loan)
             @game.loans << loan
-  
+
             price = entity.share_price.price
             @game.stock_market.move_right(entity)
             @game.stock_market.move_right(entity)
