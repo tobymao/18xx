@@ -10,9 +10,6 @@ module Engine
       module Step
         class Track < Engine::Step::Track
           include Engine::Step::UpgradeTrackMaxExits
-          # Special track lays act as normal lays for 1817
-          attr_accessor :laid_track
-
           def lay_tile(action, extra_cost: 0, entity: nil, spender: nil)
             raise GameError, 'Cannot upgrade mines' if action.hex.assigned?('mine')
 
