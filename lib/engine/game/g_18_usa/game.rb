@@ -1011,7 +1011,7 @@ module Engine
           G1817::Round::Operating.new(self, [
             G1817::Step::Bankrupt,
             G1817::Step::CashCrisis,
-            G1817::Step::Loan,
+            G18USA::Step::Loan,
             G1817::Step::SpecialTrack,
             G1817::Step::Assign,
             G1817::Step::Track,

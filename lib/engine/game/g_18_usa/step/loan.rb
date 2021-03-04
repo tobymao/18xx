@@ -4,7 +4,7 @@ require_relative '../../../step/base'
 
 module Engine
   module Game
-    module G1817
+    module G18USA
       module Step
         class Loan < Engine::Step::Base
           def process_payoff_loan(action)
