@@ -1,12 +1,13 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/base'
+require_relative '../../g_1817/step/dividend'
 
 module Engine
   module Game
     module G18USA
       module Step
-        class Loan < Engine::Step::Base
+        class Loan < G1817::Step::Base
           def process_payoff_loan(action)
             entity = action.entity
             loan = action.loan
