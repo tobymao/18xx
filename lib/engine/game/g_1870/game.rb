@@ -493,7 +493,7 @@ module Engine
             tokens: [0, 40, 100],
             abilities: [{ type: 'assign_hexes', hexes: ['N1'], count: 1 }],
             coordinates: 'B9',
-            color: :deepskyblue,
+            color: '#7090c9',
             text_color: 'black',
             reservation_color: nil,
           },
@@ -505,7 +505,7 @@ module Engine
             tokens: [0, 40],
             abilities: [{ type: 'assign_hexes', hexes: ['J3'], count: 1 }],
             coordinates: 'H17',
-            color: '#0189d1',
+            color: '#111199',
             reservation_color: nil,
           },
           {
@@ -527,7 +527,7 @@ module Engine
             tokens: [0, 40, 100],
             abilities: [{ type: 'assign_hexes', hexes: ['M22'], count: 1 }],
             coordinates: 'E12',
-            color: '#d81e3e',
+            color: '#d02020',
             reservation_color: nil,
           },
           {
@@ -538,7 +538,7 @@ module Engine
             tokens: [0, 40, 100],
             abilities: [{ type: 'assign_hexes', hexes: ['J5'], count: 1 }],
             coordinates: 'C18',
-            color: '#7b352a',
+            color: '#5b4545',
             reservation_color: nil,
           },
           {
@@ -549,7 +549,7 @@ module Engine
             tokens: [0, 40, 100],
             abilities: [{ type: 'assign_hexes', hexes: ['N1'], count: 1 }],
             coordinates: 'B11',
-            color: :green,
+            color: '#018471',
             reservation_color: nil,
           },
           {
@@ -560,7 +560,7 @@ module Engine
             tokens: [0, 40],
             abilities: [{ type: 'assign_hexes', hexes: ['A22'], count: 1 }],
             coordinates: 'K16',
-            color: :slategrey,
+            color: '#b0b030',
             reservation_color: nil,
           },
           {
@@ -571,7 +571,8 @@ module Engine
             tokens: [0, 40],
             abilities: [{ type: 'assign_hexes', hexes: ['C18'], count: 1 }],
             coordinates: 'M20',
-            color: :pink,
+            color: '#ff4080',
+            text_color: 'black',
             reservation_color: nil,
           },
           {
@@ -582,7 +583,8 @@ module Engine
             tokens: [0, 40],
             abilities: [{ type: 'assign_hexes', hexes: ['A2'], count: 1 }],
             coordinates: 'J3',
-            color: :purple,
+            color: '#56ad9a',
+            text_color: 'black',
             reservation_color: nil,
           },
           {
