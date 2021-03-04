@@ -6,6 +6,7 @@ require_relative 'step/buy_sell_par_shares'
 require_relative 'step/draft'
 require_relative 'step/track'
 require_relative 'step/destinate'
+require_relative 'step/reassign_switcher'
 require_relative 'step/route'
 require_relative 'step/dividend'
 require_relative 'step/buy_mine'
@@ -688,7 +689,7 @@ module Engine
             G1873::Step::Track,
             G1873::Step::Destinate,
             # G1873::Step::Token,
-            # G1873::Step::AssignSwitchers,
+            G1873::Step::ReassignSwitcher,
             G1873::Step::Route,
             G1873::Step::Dividend,
             G1873::Step::BuyMine,
@@ -965,6 +966,35 @@ module Engine
           return unless public_mine?(entity)
 
           public_mine_mines(entity).find_index(sub)
+        end
+
+        def swap_switchers(entity, slots)
+          mine_a = public_mine_mines(entity)[slots.first]
+          mine_b = public_mine_mines(entity)[slots.last]
+
+          train_a = switcher(mine_a)
+          train_b = switcher(mine_b)
+
+          raise GameError, 'No switchers in either mine' if !train_a && !train_b
+
+          half_swap(train_a, mine_a, mine_b) if train_a
+          half_swap(train_b, mine_b, mine_a) if train_b
+
+          @log << if train_a && train_b
+                    "#{entity.name} swaps #{train_a.name} from #{mine_a.name} with #{train_b.name}"\
+                      "from #{mine_b.name}"
+                  elsif train_a
+                    "#{entity.name} moves #{train_a.name} from #{mine_a.name} to #{mine_b.name}"
+                  else
+                    "#{entity.name} move #{train_b.name} from #{mine_b.name} to #{mine_a.name}"
+                  end
+        end
+
+        # 0 -> 1
+        def half_swap(train, mine0, mine1)
+          train.owner = mine1
+          mine0.trains.delete(train)
+          mine1.trains << train
         end
 
         def add_mine(entity, mine)
