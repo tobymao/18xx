@@ -47,31 +47,92 @@ module Engine
           '9' => 14,
 
           # Green
-          '80' => 1,
-          '81' => 1,
-          '82' => 1,
-          '83' => 1,
-          #'226' => 2,
-          #'227' => 2,
-          #'228' => 2,
-          #'229' => 1,
-          #'407' => 1,
+          '80' => 2,
+          '81' => 2,
+          '82' => 6,
+          '83' => 6,
+          # Single City green tiles
+          '226' =>
+          {
+            'count' => 2,
+            'color' => 'green',
+            'code' => 'city=revenue:30,slots:1;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:6,b:_0',
+          },
+           '227' =>
+           {
+             'count' => 2,
+             'color' => 'green',
+             'code' => 'city=revenue:30,slots:1;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;path=a:6,b:_0',
+           },
+          '228' =>
+          {
+            'count' => 2,
+            'color' => 'green',
+            'code' => 'city=revenue:30,slots:1;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0',
+          },
+          '229' =>
+          {
+            'count' => 1,
+            'color' => 'green',
+            'code' => 'city=revenue:40,slots:2;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=O',
+          },
+          '407' =>
+          {
+            'count' => 1,
+            'color' => 'green',
+            'code' => 'city=revenue:40,slots:2;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0;path=a:5,b:_0;label=D',
+          },
 
           # Brown
-          #'544' => 2,
-          #'545' => 2,
-          #'546' => 2,
-          #'611' => 6,
-          #'230' => 1,
-          #'234' => 1,
-          #'233' => 1,
+          '544' => 2,
+          '545' => 2,
+          '546' => 2,
+          '611' => 6,
+          '230' => 
+          {
+            'count' => 1,
+            'color' => 'brown',
+            'code' => 'city=revenue:50,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=O',
+          },
+          '233' => 
+          {
+            'count' => 2,
+            'color' => 'brown',
+            'code' => 'city=revenue:40,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=LC',
+          },
+          '234' =>
+          {
+            'count' => 1,
+            'color' => 'brown',
+            'code' => 'city=revenue:50,slots:2;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=D',
+          },
 
           # Gray
-          #'51'  => 2,
-          #'231'  => 1,
-          #'116'  => 1,
-          #'192'  => 1,
-          #'409'  => 1,
+          '231' => 
+          {
+            'count' => 1,
+            'color' => 'gray',
+            'code' => 'city=revenue:60,slots:3;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=O',
+          },
+          '192' => 
+          {
+            'count' => 1,
+            'color' => 'gray',
+            'code' => 'city=revenue:50,slots:3;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=C'
+          },
+          '116' =>
+          {
+            'count' => 1,
+            'color' => 'gray',
+            'code' => 'city=revenue:60,slots:3;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=D',
+          },
+          '409' => 
+          {
+            'count' => 1,
+            'color' => 'gray',
+            'code' => 'city=revenue:50,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=L'
+          },
+          '51'  => 2,
         }.freeze
 
         LOCATION_NAMES = {
@@ -215,9 +276,9 @@ module Engine
             revenue: 5,
             desc: 'Once per game, allows Corporation owner to lay or upgrade a tile in B8',
             sym: 'DPR',
-            abilities: [
-                { type: 'tile_lay', owner_type: 'corporation', hexes: ['B8'], tiles:[], blocks: true, count: 1, on_phase: 3 },
-              ],
+            #abilities: [
+            #    #{ type: 'tile_lay', owner_type: 'corporation', hexes: ['B8'], tiles: %w[3 4 5], blocks: true, count: 1, on_phase: 3 },
+            #  ],
             color: nil,
           },
           {
@@ -226,7 +287,7 @@ module Engine
             revenue: 10,
             desc: 'Corporation owner gets two bridge discount tokens',
             sym: 'MBC',
-            abilities: [{ type: 'tile_discount', discount: 60, owner_type: 'corporation', hexes: ['B8'] }],
+            #abilities: [{ type: 'tile_discount', discount: 60, owner_type: 'corporation', hexes: ['B8'] }],
             color: nil,
           },
           {
@@ -235,10 +296,10 @@ module Engine
             revenue: 15,
             desc: 'An owning Corporation may place a cattle token in any Town or City',
             sym: 'AC',
-            abilities: [
-              { type: 'hex_bonus', owner_type: 'corporation', amount: 10, hexes: [] },
-              { type: 'hex_bonus', owner_type: 'corporation', amount: 2, hexes: [] },
-            ],
+            #abilities: [
+            #  { type: 'hex_bonus', owner_type: 'corporation', amount: 10, hexes: [] },
+            #  { type: 'hex_bonus', owner_type: 'corporation', amount: 2, hexes: [] },
+            #],
             color: nil,
           },
           {
@@ -388,12 +449,20 @@ module Engine
         EBUY_PRES_SWAP = false # allow presidential swaps of other corps when ebuying
         EBUY_OTHER_VALUE = false # allow ebuying other corp trains for up to face
         HOME_TOKEN_TIMING = :operating_round
+        # Two tiles can be laid, only one upgrade
+        TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded }].freeze
 
-        # def init_round
+        def init_round
+          super
         #   Round::Draft.new(self,
         #                    [G18LosAngeles::Step::DraftDistribution],
         #                    snake_order: true)
-        # end
+        end
+
+        # TODO: yellow town tiles can upgrade to green single city tile
+        def upgrades_to?(from, to, special=false)
+          super 
+        end
 
         # borrowed from 1846 for initial reverse corporation order
         def operating_order
