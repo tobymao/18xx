@@ -20,22 +20,25 @@ module View
           h(:p, 'This feature is presently under development. More actions will be available soon.'),
         ]
 
-        types = {
-          Engine::Action::ProgramBuyShares => ->(settings) { render_buy_shares(settings) },
-          Engine::Action::ProgramMergerPass => ->(settings) { render_merger_pass(settings) },
-        }.freeze
+        if @game.players.find { |p| p.name == @user&.dig('name') }
+          types = {
+            Engine::Action::ProgramBuyShares => ->(settings) { render_buy_shares(settings) },
+            Engine::Action::ProgramMergerPass => ->(settings) { render_merger_pass(settings) },
+          }.freeze
 
-        if !(available = @game.available_programmed_actions).empty?
-          enabled = @game.programmed_actions[sender]
-          available.each do |type|
-            method = types[type]
-            if method
-              settings = enabled if enabled.is_a?(type)
-              children.concat(method.call(settings))
+          if !(available = @game.available_programmed_actions).empty?
+            enabled = @game.programmed_actions[sender]
+            available.each do |type|
+              if (method = types[type])
+                settings = enabled if enabled.is_a?(type)
+                children.concat(method.call(settings))
+              end
             end
+          else
+            children << h('p.bold', 'No auto actions are presently available for this game.')
           end
         else
-          children << h('div.bold', 'No auto actions are presently available for this game.')
+          children << h('p.bold', 'No auto actions available. You are not a player in this game.')
         end
 
         props = {
@@ -70,9 +73,9 @@ module View
         text = 'Auto Pass in Mergers'
         text += ' (Enabled)' if settings
         children = [h(:h3, text)]
-        children << h(:div,
+        children << h(:p,
                       'This will pass converting/merging or offering your corporations automatically.'\
-                      ' It will not pass otherwise still allowing you to buy shares, bid etc')
+                      ' It will not pass otherwise still allowing you to buy shares, bid etc.')
 
         rounds = @game.merge_rounds
 
@@ -80,9 +83,9 @@ module View
         # Which corps can be passed, by default assume all
         passable = @game.merge_corporations.select { |corp| corp.owner == player }
         if @game.round.stock?
-          children << h('div.bold', 'Cannot program while in a stock round')
+          children << h('p.bold', 'Cannot program while in a stock round!')
         elsif passable.empty?
-          children << h('div.bold', 'No mergable corporations are owned by you, cannot program!')
+          children << h('p.bold', 'No mergable corporations are owned by you, cannot program!')
         else
 
           subchildren = passable.map do |entity|
@@ -149,14 +152,14 @@ module View
         text = 'Auto Buy shares till float'
         text += ' (Enabled)' if settings
         children = [h(:h3, text)]
-        children << h(:div,
+        children << h(:p,
                       'Warning! At present this does not take into account other players’ actions. '\
                       'We suggest not enabling after the first stock round.')
 
         # @todo: later this will support buying to a certain percentage
         floatable = @game.corporations.select { |corp| corp.ipoed && !corp.floated? }
         if floatable.empty?
-          children << h('div.bold', 'No corporations are ipoed and not floated, cannot program!')
+          children << h('p.bold', 'No corporations are ipoed and not floated, cannot program!')
         else
           values = floatable.map do |entity|
             attrs = { value: entity.name }
