@@ -2825,6 +2825,21 @@ module Engine
           help
         end
 
+        def init_companies(players)
+          # Make sure we have the correct starting companies
+          starting_companies = if optional_plus_expansion?
+                                 self.class::STARTING_COMPANIES_PLUS
+                               else
+                                 self.class::STARTING_COMPANIES
+                               end
+          game_companies.map do |company|
+            next if players.size < (company[:min_players] || 0)
+            next unless starting_companies.include?(company[:sym])
+
+            Company.new(**company)
+          end.compact
+        end
+
         def init_company_abilities
           @companies.each do |company|
             next unless (ability = abilities(company, :exchange))
@@ -3755,18 +3770,6 @@ module Engine
         end
 
         def setup_companies
-          # Make sure we have the correct starting companies
-          starting_companies = if optional_plus_expansion?
-                                 self.class::STARTING_COMPANIES_PLUS
-                               else
-                                 self.class::STARTING_COMPANIES
-                               end
-          @companies.dup.each do |company|
-            next if starting_companies.include?(company.id)
-
-            @companies.delete(company)
-          end
-
           # Randomize from preset seed to get same order
           @companies.sort_by! { rand }
 
