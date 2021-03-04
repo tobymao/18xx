@@ -14,6 +14,7 @@ module View
 
         needs :tile
         needs :region_use, default: nil
+        needs :game, default: nil, store: true
         needs :user, default: nil, store: true
 
         VERTICES = {
@@ -53,7 +54,7 @@ module View
 
           @tile.partitions.each do |partition|
             next if partition.blockers.none? do |blocker|
-              blocker.all_abilities.find { |a| a.type == :blocks_partition && a.blocks?(partition.type) }
+              @game&.abilities(blocker, :blocks_partition)&.blocks?(partition.type)
             end
 
             a_control = VERTICES[(partition.a + partition.a_sign) % 6]
