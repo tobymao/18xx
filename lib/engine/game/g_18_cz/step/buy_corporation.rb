@@ -115,6 +115,18 @@ module Engine
             @game.log << "#{destination.name} takes #{transferred.map(&:name).join(', ')} from #{source.name}"
           end
 
+          def buyable_entities(corporation)
+            @game.corporations.select { |item| can_buy?(corporation, item) }
+          end
+
+          def buyable_types
+            'corporations'
+          end
+
+          def buy_value(corporation)
+            corporation.share_price.price
+          end
+
           def price_range(_corporation, corporation_to_buy)
             max_price = (corporation_to_buy.share_price.price * 1.5).ceil
             min_price = (corporation_to_buy.share_price.price * 0.5).ceil

@@ -19,6 +19,7 @@ module Engine
 
             if @game.any_mine?(current_entity)
               @game.update_mine_revenue(@round, current_entity) if @round.routes.empty?
+              @round.clear_cache!
             end
 
             pass!

@@ -8,7 +8,9 @@ require_relative 'step/track'
 require_relative 'step/destinate'
 require_relative 'step/route'
 require_relative 'step/dividend'
+require_relative 'step/buy_mine'
 require_relative 'step/buy_train'
+require_relative 'step/convert'
 
 module Engine
   module Game
@@ -284,6 +286,45 @@ module Engine
           end
         end
 
+        def convert!(corporation)
+          shares = @_shares.values.select { |share| share.corporation == corporation }
+
+          corporation.share_holders.clear
+
+          case corporation.total_shares
+          when 2
+            shares.each do |share|
+              share.percent = 20
+              corporation.share_holders[share.owner] += share.percent
+            end
+            new_shares = 3.times.map { |i| Share.new(corporation, percent: 20, index: i + 2) }
+            @corporation_info[corporation][:slots] = 4 if public_mine?(corporation)
+            @log << "#{corporation.name} converts to a 5 share corporation"
+          when 5
+            shares.each do |share|
+              share.percent = 10
+              corporation.share_holders[share.owner] += share.percent
+            end
+            new_shares = 5.times.map { |i| Share.new(corporation, percent: 10, index: i + 5) }
+            @corporation_info[corporation][:slots] = 5 if public_mine?(corporation)
+            @log << "#{corporation.name} converts to a 10 share corporation"
+          else
+            raise GameError, 'Cannot convert 10 share corporation'
+          end
+
+          new_shares.each do |share|
+            add_new_share(share)
+          end
+        end
+
+        def add_new_share(share)
+          owner = share.owner
+          corporation = share.corporation
+          corporation.share_holders[owner] += share.percent if owner
+          owner.shares_by_corporation[corporation] << share
+          @_shares[share.id] = share
+        end
+
         def buy_train(operator, train, price = nil)
           super
 
@@ -389,7 +430,7 @@ module Engine
           closed_image = "1873/#{minor.id}_closed"
           @hexes.each do |hex|
             if (icon = hex.tile.icons.find { |i| i.name == open_name })
-              hex.tile.icons[hex.tile.icons.find_index(icon)] = Part::Icon.new(closed_image, sticky: true)
+              hex.tile.icons[hex.tile.icons.find_index(icon)] = Part::Icon.new(closed_image, nil, true)
             end
           end
         end
@@ -403,13 +444,16 @@ module Engine
           open_image = "1873/#{minor.id}_open"
           @hexes.each do |hex|
             if (icon = hex.tile.icons.find { |i| i.name == closed_name })
-              hex.tile.icons[hex.tile.icons.find_index(icon)] = Part::Icon.new(open_image, sticky: true)
+              hex.tile.icons[hex.tile.icons.find_index(icon)] = Part::Icon.new(open_image, nil, true)
             end
           end
         end
 
         # FIXME
-        def insolvent!(entity); end
+        def insolvent!(entity)
+          # switch presidents if needed
+          deferred_president_change(entity) if concession_pending?(entity)
+        end
 
         def all_corporations
           @minors + @corporations
@@ -553,11 +597,34 @@ module Engine
           @log << "#{entity.name} has a complete concession route"
         end
 
-        def concession_unpend!(entity)
-          return unless concession_pending?(entity)
+        def concession_unpend!(corporation)
+          return unless concession_pending?(corporation)
 
-          @corporation_info[entity][:concession_pending] = false
-          @log << "#{entity.name} has completed its concession requirements"
+          @corporation_info[corporation][:concession_pending] = false
+          @log << "#{corporation.name} has completed its concession requirements"
+
+          deferred_president_change(corporation)
+        end
+
+        # change president if needed
+        def deferred_president_change(corporation)
+          previous_president = corporation.owner
+          max_shares = corporation.player_share_holders.values.max
+          majority_share_holders = corporation.player_share_holders.select { |_, p| p == max_shares }.keys
+          return if majority_share_holders.any? { |player| player == previous_president }
+
+          president = majority_share_holders
+            .select { |p| p.percent_of(corporation) >= corporation.presidents_percent }
+            .min_by { |p| @share_pool.distance(previous_president, p) }
+          return unless president
+
+          corporation.owner = president
+          @log << "#{president.name} becomes the president of #{corporation.name}"
+
+          presidents_share = previous_president.shares_of(corporation).find(&:president)
+
+          # swap shares so new president has president share
+          @share_pool.change_president(presidents_share, previous_president, president)
         end
 
         def advance_concession_phase!(entity)
@@ -620,14 +687,13 @@ module Engine
           Engine::Round::Operating.new(self, [
             G1873::Step::Track,
             G1873::Step::Destinate,
-            # Engine::Step::Token,
+            # G1873::Step::Token,
             # G1873::Step::AssignSwitchers,
             G1873::Step::Route,
             G1873::Step::Dividend,
-            # G1873::Step::BuyMine,
+            G1873::Step::BuyMine,
             G1873::Step::BuyTrain,
-            # G1873::Step::CloseMine,
-            # G1873::Step::Convert,
+            G1873::Step::Convert,
           ], round_num: round_num)
         end
 
@@ -836,7 +902,7 @@ module Engine
         def pres_change_ok?(corporation)
           return false if corporation == @mhe
 
-          public_mine?(corporation) || corporation.operated?
+          !concession_pending?(corporation)
         end
 
         def machine(mine)
@@ -857,6 +923,18 @@ module Engine
 
         def mhe_income
           @mhe.trains.first.distance * 100
+        end
+
+        def mine_face_value(entity)
+          return 0 unless entity.minor?
+
+          @minor_info[entity][:value]
+        end
+
+        def any_slot_available?(entity)
+          return false unless public_mine?(entity)
+
+          @corporation_info[entity][:slots] > @corporation_info[entity][:mines].size
         end
 
         def public_mine_slots(entity)

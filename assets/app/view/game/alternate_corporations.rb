@@ -271,14 +271,15 @@ module View
 
         rows += (@game.corporation_info[@corporation][:slots] - mines.size).times.map do |_i|
           h('tr', row_props, [
-            h('td', { attrs: { colspan: '2' } }, [h('div', empty_cell_props, '(empty slot)')]),
+            h('td', { attrs: { colspan: '3' } }, [h('div', empty_cell_props, '(empty slot)')]),
           ])
         end
 
         table_props = { style: { borderCollapse: 'collapse' } }
 
         step = @game.round.active_step
-        text = use_checkboxes ? step.checkbox_prompt : '' if step.respond_to?(:checkbox_prompt)
+        text = ''
+        text = step.checkbox_prompt if step.respond_to?(:checkbox_prompt) && use_checkboxes
 
         h('div', { style: { padding: '0.5rem' } }, [
           text,
