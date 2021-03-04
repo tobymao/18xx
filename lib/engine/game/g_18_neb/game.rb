@@ -374,11 +374,11 @@ module Engine
         EBUY_OTHER_VALUE = false # allow ebuying other corp trains for up to face
         HOME_TOKEN_TIMING = :operating_round
 
-        def init_round
-          Round::Draft.new(self,
-                           [G18LosAngeles::Step::DraftDistribution],
-                           snake_order: true)
-        end
+        # def init_round
+        #   Round::Draft.new(self,
+        #                    [G18LosAngeles::Step::DraftDistribution],
+        #                    snake_order: true)
+        # end
 
         def operating_round(round_num)
           Round::Operating.new(self, [
