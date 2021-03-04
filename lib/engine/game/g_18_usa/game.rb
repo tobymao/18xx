@@ -985,6 +985,17 @@ module Engine
           }
         end
 
+        def stock_round
+          close_bank_shorts
+          @interest_fixed = nil
+
+          G18USA::Round::Stock.new(self, [
+            Engine::Step::DiscardTrain,
+            Engine::Step::HomeToken,
+            G1817::Step::BuySellParShares,
+          ])
+        end
+
         def operating_round(round_num)
           @interest_fixed = nil
           @interest_fixed = interest_rate
