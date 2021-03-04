@@ -47,40 +47,26 @@ module View
         }.freeze
 
         def render_part
-          children = []
           color = @reservation&.corporation? && @reservation&.reservation_color || 'white'
           radius = @radius
-          if (owner = @token&.corporation&.owner) && Lib::Storage['show_player_colors'] &&
-              @game.players.include?(owner)
+          if (owner = @token&.corporation&.owner) && Lib::Storage['show_player_colors'] && @game.players.include?(owner)
             color = player_colors(@game.players)[owner]
             radius -= 4
           end
+
+          children = [h(:circle, attrs: { r: @radius, fill: color })]
+          children << reservation if @reservation && !@token
+          children << h(Token, token: @token, radius: radius) if @token
 
           props = {
             on: { click: ->(event) { on_click(event) } },
             attrs: { transform: '' },
           }
-
           props[:attrs][:transform] = rotation_for_layout if @edge
-
-          circle_attrs = { r: @radius, fill: color }
           if @extra_token
-            children << h(:defs, [
-              h(:filter, { attrs: { id: 'shadow', x: '-50%', y: '-50%', width: '200%', height: '200%' } }, [
-                h(:feOffset, attrs: { result: 'offOut', in: 'SourceAlpha', dx: 2, dy: 2 }),
-                h(:feGaussianBlur, attrs: { result: 'blurOut', in: 'offOut', stdDeviation: '5' }),
-                h(:feBlend, attrs: { in: 'SourceGraphic', in2: 'blurOut', mode: 'normal' }),
-              ]),
-            ])
-            circle_attrs[:filter] = 'url(#shadow)'
-
-            # The shadow makes the token look larger, this offsets the effect a little
             props[:attrs][:transform] += ' scale(0.95)'
+            props[:attrs][:filter] = 'drop-shadow(0 0 6px #000)'
           end
-
-          children << h(:circle, attrs: circle_attrs)
-          children << reservation if @reservation && !@token
-          children << h(Token, token: @token, radius: radius) if @token
 
           h(:g, props, children)
         end
