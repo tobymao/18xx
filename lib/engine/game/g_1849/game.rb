@@ -1035,6 +1035,8 @@ module Engine
         def legal_tile_rotation?(corp, hex, tile)
           return true if corp.sms_hexes
 
+          return true if hex.tile.cities.any? { |city| city.tokened_by?(corp) }
+
           connection_directions = graph.connected_hexes(corp).find { |k, _| k.id == hex.id }[1]
           ever_not_nil = false # to permit teleports and SFA/AFG initial tile lay
           connection_directions.each do |dir|
