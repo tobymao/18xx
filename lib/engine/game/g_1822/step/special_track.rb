@@ -116,9 +116,36 @@ module Engine
             if entity.id == @game.class::COMPANY_LCDR && hex.name == @game.class::ENGLISH_CHANNEL_HEX
               return tile.rotation.zero?
             end
-            return true if entity.id == @game.class::COMPANY_MTONR
+            return legal_tile_rotation_mtonr?(entity.owner, hex, tile) if entity.id == @game.class::COMPANY_MTONR
 
             super
+          end
+
+          def legal_tile_rotation_mtonr?(entity, hex, tile)
+            return false unless @game.legal_tile_rotation?(entity, hex, tile)
+
+            old_paths = hex.tile.paths
+            old_ctedges = hex.tile.city_town_edges
+
+            new_paths = tile.paths
+            new_exits = tile.exits
+            new_ctedges = tile.city_town_edges
+            extra_cities = [0, new_ctedges.size - old_ctedges.size].max
+            multi_city_upgrade = new_ctedges.size > 1 && old_ctedges.size > 1
+
+            new_exits.all? { |edge| hex.neighbors[edge] } &&
+              !(new_exits & hex_neighbors(entity, hex)).empty? &&
+              old_paths_are_preserved(old_paths, new_paths) &&
+              extra_cities >= new_ctedges.count { |newct| old_ctedges.all? { |oldct| (newct & oldct).none? } } &&
+              (!multi_city_upgrade ||
+                old_ctedges.all? { |oldct| new_ctedges.one? { |newct| (oldct & newct) == oldct } })
+          end
+
+          def old_paths_are_preserved(old_paths, new_paths)
+            # We are removing a town, just check the exits
+            old_exits = old_paths.flat_map(&:exits).uniq
+            new_exits = new_paths.flat_map(&:exits).uniq
+            (old_exits - new_exits).empty?
           end
 
           def potential_tiles(entity, hex)
