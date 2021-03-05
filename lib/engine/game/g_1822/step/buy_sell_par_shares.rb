@@ -147,7 +147,7 @@ module Engine
             end
 
             @game.company_made_choice(action.entity, action.choice, :stock_round)
-            track_action(action, corporation)
+            track_action(action, action.entity)
             log_pass(entity)
             pass!
           end
