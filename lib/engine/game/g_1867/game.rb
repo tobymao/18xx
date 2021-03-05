@@ -871,7 +871,7 @@ module Engine
         MUST_BID_INCREMENT_MULTIPLE = true
         MUST_BUY_TRAIN = :always # mostly true, needs custom code
         POOL_SHARE_DROP = :none
-        SELL_MOVEMENT = :left_block_pres
+        SELL_MOVEMENT = :down_block_pres
         ALL_COMPANIES_ASSIGNABLE = true
         SELL_AFTER = :operate
         SELL_BUY_ORDER = :sell_buy
