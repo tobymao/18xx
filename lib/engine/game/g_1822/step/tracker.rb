@@ -72,6 +72,11 @@ module Engine
 
             total_cost -= @game.class::COMPANY_GSWR_DISCOUNT
           end
+
+          # If we use the Humber Suspension Bridge Company private, it must point into a estuary crossing
+          if entity.id == @game.class::COMPANY_HSBC
+            raise GameError, 'Must lay tile with one path over the Hull / Grimsby estuary' if total_cost.zero?
+          end
           [total_cost, types]
         end
 

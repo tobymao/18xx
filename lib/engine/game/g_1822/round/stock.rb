@@ -56,10 +56,15 @@ module Engine
             # This will procced the whole game
             remove_l_trains(remove_l_count) if remove_l_count.positive? && @game.depot.upcoming.first.name == 'L'
             remove_minor_and_first_train(remove_minor) if remove_minor
+
+            # Refill the minors bidbox
+            @game.bidbox_minors_refill!
+
+            # If the minors is empty and no minor was removed. Remove a train
             remove_first_train if !remove_minor && @game.bidbox_minors.empty?
 
-            # Finish of the stock round
-            @game.stock_round_finished
+            # Increase player loans with 50% interest
+            @game.add_interest_player_loans!
 
             super
           end

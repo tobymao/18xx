@@ -76,6 +76,7 @@ module Engine
             return nil unless connected
 
             return connected if @game.company_ability_extra_track?(entity)
+            return connected if entity.id == @game.class::COMPANY_HSBC
 
             tile_lay = get_tile_lay(operator)
             return nil unless tile_lay
@@ -148,6 +149,13 @@ module Engine
                 @game.exchange_tokens(entity.owner).zero? ||
                 tile.color == :green && !(phase_color == :brown || phase_color == :gray) ||
                 tile.color == :brown && phase_color != :gray
+            end
+
+            if entity.id == @game.class::COMPANY_HSBC && entity.owner&.corporation?
+              hsbc_token = entity.owner.tokens
+                            .select(&:used)
+                            .any? { |t| @game.class::COMPANY_HSBC_TILES.include?(t.city.hex.id) }
+              return unless hsbc_token
             end
 
             %i[tile_lay teleport].each do |type|
