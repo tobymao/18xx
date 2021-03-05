@@ -788,8 +788,6 @@ module Engine
           'SCC' => '/icons/1870/SCC.svg',
         }.freeze
 
-        P_HEXES = %w[J5 B11 C18 N17].freeze
-
         def stock_round
           Engine::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
@@ -941,12 +939,10 @@ module Engine
         end
 
         def upgrades_to?(from, to, _special = false)
-          return to.name == '170' if from.color == :green && P_HEXES.include?(from.hex.name)
+          return false if to.name == '171K' && from.hex.name != 'B11'
+          return false if to.name == '171L' && from.hex.name != 'C18'
 
-          return to.name == '171K' if from.color == :brown && from.hex.name == 'B11'
-          return to.name == '172L' if from.color == :brown && from.hex.name == 'C18'
-
-          super(from, to, false, to.cities.any? && %i[yellow green].include?(to.color))
+          super(from, to, to.color != :brown)
         end
 
         def border_impassable?(border)
