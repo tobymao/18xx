@@ -13,11 +13,12 @@ module Engine
           attr_reader :companies
 
           # On your turn, must bid on a private or pass
-          # if any privates are left and everyone passes in a row, privates with a bid are purchased, privates without a bid are reduced by standard deduction 
+          # if any privates are left and everyone passes in a row, privates with a bid
+          #     are purchased, privates without a bid are reduced by standard deduction
           # if everyone passes and all items have a bid, the auction ends.
 
           ACTIONS = %w[bid pass].freeze
-          
+
           STANDARD_DEDUCTION = 10
 
           # TODO: grab min prices from companies
@@ -31,7 +32,7 @@ module Engine
           }.freeze
 
           def description
-            "Price Finding Auction on Private Companies"
+            'Price Finding Auction on Private Companies'
           end
 
           def available

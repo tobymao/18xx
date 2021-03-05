@@ -47,6 +47,7 @@ module Engine
         BROWN_CITIES = %w[611].freeze
         GRAY_CITIES = %w[51].freeze
 
+        # rubocop:disable Layout/LineLength
         TILES = {
           # Yellow
           '3a' =>
@@ -61,15 +62,12 @@ module Engine
             'color' => 'yellow',
             'code' => 'town=revenue:10,to_city:1;path=a:0,b:_0;path=a:_0,b:3',
           },
-          # '3' => 4,
-          # '4' => 6,
           '58a' =>
           {
             'count' => 6,
             'color' => 'yellow',
             'code' => 'town=revenue:10,to_city:1;path=a:0,b:_0;path=a:_0,b:2',
           },
-          #'58' => 6,
           '7' => 4,
           '8' => 14,
           '9' => 14,
@@ -86,12 +84,12 @@ module Engine
             'color' => 'green',
             'code' => 'city=revenue:30,slots:1;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:6,b:_0',
           },
-           '227' =>
-           {
-             'count' => 2,
-             'color' => 'green',
-             'code' => 'city=revenue:30,slots:1;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;path=a:6,b:_0',
-           },
+          '227' =>
+          {
+            'count' => 2,
+            'color' => 'green',
+            'code' => 'city=revenue:30,slots:1;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;path=a:6,b:_0',
+          },
           '228' =>
           {
             'count' => 2,
@@ -116,13 +114,13 @@ module Engine
           '545' => 2,
           '546' => 2,
           '611' => 6,
-          '230' => 
+          '230' =>
           {
             'count' => 1,
             'color' => 'brown',
             'code' => 'city=revenue:50,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=O',
           },
-          '233' => 
+          '233' =>
           {
             'count' => 2,
             'color' => 'brown',
@@ -136,17 +134,17 @@ module Engine
           },
 
           # Gray
-          '231' => 
+          '231' =>
           {
             'count' => 1,
             'color' => 'gray',
             'code' => 'city=revenue:60,slots:3;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=O',
           },
-          '192' => 
+          '192' =>
           {
             'count' => 1,
             'color' => 'gray',
-            'code' => 'city=revenue:50,slots:3;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=C'
+            'code' => 'city=revenue:50,slots:3;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=C',
           },
           '116' =>
           {
@@ -154,14 +152,15 @@ module Engine
             'color' => 'gray',
             'code' => 'city=revenue:60,slots:3;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=D',
           },
-          '409' => 
+          '409' =>
           {
             'count' => 1,
             'color' => 'gray',
-            'code' => 'city=revenue:50,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=L'
+            'code' => 'city=revenue:50,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=L',
           },
-          '51'  => 2,
+          '51' => 2,
         }.freeze
+        # rubocop:enable Layout/LineLength
 
         LOCATION_NAMES = {
           'A5' => 'Powder River Basin',
@@ -280,11 +279,11 @@ module Engine
             num: 2,
             events: [{ 'type' => 'close_companies' }],
           },
-          { 
+          {
             name: '6/8',
             distance: [{ 'pay' => 6, 'visit' => 8 }],
             price: 600,
-            num: 2
+            num: 2,
           },
           {
             name: '4D',
@@ -293,7 +292,8 @@ module Engine
                        { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             price: 900,
             num: 20,
-            available_on: '6', discount: { '4' => 300, '5' => 300, '6' => 300 },
+            available_on: '6',
+            discount: { '4' => 300, '5' => 300, '6' => 300 },
           },
         ].freeze
 
@@ -306,14 +306,15 @@ module Engine
             sym: 'DPR',
             abilities: [
               { type: 'blocks_hexes', owner_type: 'player', hexes: ['B8'] },
-              { 
+              {
                 type: 'tile_lay',
                 owner_type: 'corporation',
                 hexes: ['B8'],
                 tiles: %w[3 4 5],
                 count: 1,
-                on_phase: 3
-              }],
+                on_phase: 3,
+              },
+            ],
             color: nil,
           },
           {
@@ -339,10 +340,10 @@ module Engine
             revenue: 15,
             desc: 'An owning Corporation may place a cattle token in any Town or City',
             sym: 'P3',
-            #abilities: [
-            #  { type: 'hex_bonus', owner_type: 'corporation', amount: 10, hexes: [] },
-            #  { type: 'hex_bonus', owner_type: 'corporation', amount: 2, hexes: [] },
-            #],
+            # abilities: [
+            #   { type: 'hex_bonus', owner_type: 'corporation', amount: 10, hexes: [] },
+            #   { type: 'hex_bonus', owner_type: 'corporation', amount: 2, hexes: [] },
+            # ],
             color: nil,
           },
           {
@@ -352,18 +353,18 @@ module Engine
             desc: 'May exchange for share in Colorado & Southern Railroad',
             sym: 'P4',
             abilities: [
-                { 
+                {
                   type: 'exchange',
                   corporations: ['C&S'],
                   owner_type: 'player',
                   when: 'any',
                   from: 'ipo',
                 },
-                { 
+                {
                   type: 'blocks_hexes',
-                  owner_type: 'player', 
+                  owner_type: 'player',
                   hexes: ['C7'],
-                  on_phase: 3  
+                  on_phase: 3,
                 },
               ],
             color: nil,
@@ -458,6 +459,7 @@ module Engine
           },
         ].freeze
 
+        # rubocop:disable Layout/LineLength
         HEXES = {
           white: {
             # empty tiles
@@ -501,6 +503,7 @@ module Engine
             ['L12'] => 'city=revenue:yellow_30|green_50|brown_60;path=a:2,b:_0,terminal:1;path=a:3,b:_0,terminal:1;label=E',
           },
         }.freeze
+        # rubocop:enable Layout/LineLength
 
         LAYOUT = :flat
 
@@ -515,32 +518,33 @@ module Engine
           # Round::Auction.new(self, [G18NEB::Step::ModifiedDutchAuction])
         end
 
-        def upgrades_to?(from, to, special=false)
-          case from.hex.name 
+        def upgrades_to?(from, to, special = false)
+          case from.hex.name
           when OMAHA_HEX
-            return to.name == '229' if (from.color == :yellow) 
-            return to.name == '230' if (from.color == :green)
-            return to.name == '231' if (from.color == :brown)
+            return to.name == '229' if from.color == :yellow
+            return to.name == '230' if from.color == :green
+            return to.name == '231' if from.color == :brown
           when DENVER_HEX
-            return to.name == '407' if (from.color == :yellow) 
-            return to.name == '234' if (from.color == :green)
-            return to.name == '116' if (from.color == :brown)
+            return to.name == '407' if from.color == :yellow
+            return to.name == '234' if from.color == :green
+            return to.name == '116' if from.color == :brown
           when LINCOLN_HEX
-            return GREEN_CITIES.include?(to.name) if (from.color == :yellow)
-            return to.name == '233' if (from.color == :green)
-            return to.name == '409' if (from.color == :brown)
+            return GREEN_CITIES.include?(to.name) if from.color == :yellow
+            return to.name == '233' if from.color == :green
+            return to.name == '409' if from.color == :brown
           when CHADRON_HEX
-            return GREEN_CITIES.include?(to.name) if (from.color == :yellow)
-            return to.name == '233' if (from.color == :green)
-            return to.name == '192' if (from.color == :brown)
+            return GREEN_CITIES.include?(to.name) if from.color == :yellow
+            return to.name == '233' if from.color == :green
+            return to.name == '192' if from.color == :brown
           else
-            return GREEN_CITIES.include?(to.name) if (YELLOW_TOWNS.include? from.hex.tile.name)
-            return BROWN_CITIES.include?(to.name) if (GREEN_CITIES.include? from.hex.tile.name)
-            return GRAY_CITIES.include?(to.name) if (BROWN_CITIES.include? from.hex.tile.name)
+            return GREEN_CITIES.include?(to.name) if YELLOW_TOWNS.include? from.hex.tile.name
+            return BROWN_CITIES.include?(to.name) if GREEN_CITIES.include? from.hex.tile.name
+            return GRAY_CITIES.include?(to.name) if BROWN_CITIES.include? from.hex.tile.name
           end
 
-          super 
+          super
         end
+
         def all_potential_upgrades(tile, tile_manifest: false)
           upgrades = super
           return upgrades unless tile_manifest
@@ -577,7 +581,6 @@ module Engine
             [Engine::Step::BuyCompany, blocks: true],
           ], round_num: round_num)
         end
-
       end
     end
   end
