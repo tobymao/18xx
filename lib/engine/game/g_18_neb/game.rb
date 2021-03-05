@@ -430,6 +430,7 @@ module Engine
             tokens: [0, 40],
             coordinates: 'C9',
             color: '#D4AF37',
+            text_color: 'black',
             always_market_price: true,
             reservation_color: nil,
           },
