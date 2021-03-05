@@ -36,8 +36,9 @@ module View
 
       # 1D markets
       VERTICAL_TOKEN_PAD = 4                      # vertical space between tokens
-      MIN_NUM_TOKENS = 4                          # guarantee space for this many tokens
+      MIN_NUM_TOKENS = 3                          # guarantee space for this many tokens
       PRICE_HEIGHT = 20                           # depends on font and size!
+      MIN_TOKENS_HEIGHT = MIN_NUM_TOKENS * (TOKEN_SIZE + VERTICAL_TOKEN_PAD)
 
       # 2D markets
       HEIGHT_TOTAL = 50
@@ -73,10 +74,11 @@ module View
       end
 
       def box_height_1d
-        token_height = @game.stock_market.market.first.map do |p|
-          p.corporations.sum { |c| TOKEN_SIZES[@game.corporation_size(c)] + VERTICAL_TOKEN_PAD }
-        end.push(MIN_NUM_TOKENS * (TOKEN_SIZE + VERTICAL_TOKEN_PAD)).max
-        "#{token_height + VERTICAL_TOKEN_PAD + PRICE_HEIGHT - 2 * BORDER}px"
+        tokens_height = [*@game.stock_market.market.first.map do |p|
+                           p.corporations.sum { |c| TOKEN_SIZES[@game.corporation_size(c)] + VERTICAL_TOKEN_PAD }
+                         end,
+                         MIN_TOKENS_HEIGHT].max
+        "#{tokens_height + VERTICAL_TOKEN_PAD + PRICE_HEIGHT - 2 * BORDER}px"
       end
 
       CROSSHATCH_TYPES = %i[par_overlap convert_range].freeze
