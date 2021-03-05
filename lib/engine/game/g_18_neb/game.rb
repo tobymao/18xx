@@ -457,6 +457,34 @@ module Engine
             always_market_price: true,
             reservation_color: nil,
           },
+          {
+            float_percent: 20,
+            sym: 'OLB',
+            name: 'Omaha, Lincoln & Beatrice',
+            logo: '18_neb/OLB',
+            shares: [40, 20, 20, 20],
+            tokens: [0, 40],
+            coordinates: 'K7',
+            max_ownership_percent: 100,
+            color: '#F40003',
+            type: 'local',
+            always_market_price: true,
+            reservation_color: nil,
+          },
+          {
+            float_percent: 20,
+            sym: 'NR',
+            name: 'NebKota',
+            logo: '18_neb/NR',
+            shares: [40, 20, 20, 20],
+            type: 'local',
+            tokens: [0, 40],
+            coordinates: 'C3',
+            max_ownership_percent: 100,
+            color: '#000000',
+            always_market_price: true,
+            reservation_color: nil,
+          },
         ].freeze
 
         # rubocop:disable Layout/LineLength
@@ -516,6 +544,10 @@ module Engine
         def init_round
           super
           # Round::Auction.new(self, [G18NEB::Step::ModifiedDutchAuction])
+        end
+
+        def setup
+          @corporations, @future_corporations = @corporations.partition { |corporation| corporation.type != :local }
         end
 
         def upgrades_to?(from, to, special = false)
