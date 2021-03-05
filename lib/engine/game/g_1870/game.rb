@@ -83,14 +83,19 @@ module Engine
           '145' => 2,
           '146' => 2,
           '147' => 2,
-          '170' => 4,
+          '170P' =>
+          {
+            'count' => 4,
+            'color' => 'brown',
+            'code' => 'city=revenue:50,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
+          },
           '171K' =>
           {
             'count' => 1,
             'color' => 'gray',
             'code' =>
             'city=revenue:60,slots:3;path=a:0,b:_0;path=a:1,b:_0;'\
-            'path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=K',
+            'path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
           },
           '172L' =>
           {
@@ -98,7 +103,7 @@ module Engine
             'color' => 'gray',
             'code' =>
             'city=revenue:60,slots:2;path=a:0,b:_0;path=a:1,b:_0;'\
-            'path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=L',
+            'path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
           },
         }.freeze
 
@@ -106,16 +111,16 @@ module Engine
           'A2' => 'Denver',
           'A22' => 'Chicago',
           'B9' => 'Topeka',
-          'B11' => 'Kansas City',
+          'B11' => 'Kansas City (P+K)',
           'B19' => 'Springfield, IL',
-          'C18' => 'St. Louis',
+          'C18' => 'St. Louis (P+L)',
           'D5' => 'Wichita',
           'E12' => 'Springfield, MO',
           'F5' => 'Oklahoma City',
           'H13' => 'Little Rock',
           'H17' => 'Memphis',
           'J3' => 'Fort Worth',
-          'J5' => 'Dallas',
+          'J5' => 'Dallas (P)',
           'K16' => 'Jackson',
           'L11' => 'Alexandria',
           'M2' => 'Austin',
@@ -125,7 +130,7 @@ module Engine
           'M22' => 'Southeast',
           'N1' => 'Southwest',
           'N7' => 'Galveston',
-          'N17' => 'New Orleans',
+          'N17' => 'New Orleans (P)',
         }.freeze
 
         MARKET = [
@@ -678,7 +683,7 @@ module Engine
                N3
                N5] => '',
             %w[B9 B19 D5 F5 H13 J3 K16 M2 M6] => 'city=revenue:0',
-            ['J5'] => 'city=revenue:0;label=P',
+            ['J5'] => 'city=revenue:0',
             %w[B7
                D9
                D21
@@ -696,7 +701,7 @@ module Engine
             ['M20'] => 'city=revenue:0;icon=image:port',
             %w[C14 C16 G2 H5] => 'upgrade=cost:40,terrain:water',
             %w[H7 I8 J11 K10] => 'upgrade=cost:60,terrain:water',
-            ['B11'] => 'city=revenue:0;upgrade=cost:40,terrain:water;label=P',
+            ['B11'] => 'city=revenue:0;upgrade=cost:40,terrain:water',
             ['L11'] => 'city=revenue:0;upgrade=cost:60,terrain:water',
             %w[A10 B13 H3] => 'town=revenue:0;upgrade=cost:40,terrain:water',
             %w[I10 E20] =>
@@ -713,7 +718,7 @@ module Engine
             ['O18'] =>
                    'upgrade=cost:100,terrain:river;partition=a:0-,b:2-,type:water;border=edge:3,type:impassable',
             ['C18'] =>
-                   'city=revenue:0;upgrade=cost:40,terrain:river;partition=a:0+,b:2+,type:water,restrict:inner;label=P',
+                   'city=revenue:0;upgrade=cost:40,terrain:river;partition=a:0+,b:2+,type:water,restrict:inner',
             ['M14'] =>
                    'city=revenue:0;upgrade=cost:40,terrain:river;icon=image:port;'\
                    'partition=a:0-,b:2+,type:water,restrict:outer',
@@ -733,7 +738,7 @@ module Engine
             ['O14'] => 'upgrade=cost:100,terrain:lake',
             ['N7'] => 'city=revenue:0;upgrade=cost:80,terrain:lake;icon=image:port',
             ['N17'] =>
-                   'city=revenue:0;upgrade=cost:80,terrain:lake;icon=image:port;border=edge:4,type:impassable;label=P',
+                   'city=revenue:0;upgrade=cost:80,terrain:lake;icon=image:port;border=edge:4,type:impassable',
             ['N21'] => 'town=revenue:0;upgrade=cost:80,terrain:lake',
             %w[D13 D15 E14 E16 F11 F13 F15] =>
                    'upgrade=cost:60,terrain:mountain',
@@ -932,13 +937,13 @@ module Engine
             end
         end
 
-        def upgrades_to?(from, to, _special = false)
-          return to.name == '170' if from.color == :green && P_HEXES.include?(from.hex.name)
+        def upgrades_to?(from, to, special = false)
+          return false if (to.name == '171K') ^ (from.color == :brown && from.hex.name == 'B11')
+          return false if (to.name == '172L') ^ (from.color == :brown && from.hex.name == 'C18')
 
-          return to.name == '171K' if from.color == :brown && from.hex.name == 'B11'
-          return to.name == '172L' if from.color == :brown && from.hex.name == 'C18'
+          return false if (to.name == '170P') ^ (from.color == :green && P_HEXES.include?(from.hex.name))
 
-          super(from, to, false, to.cities.any? && %i[yellow green].include?(to.color))
+          super
         end
 
         def border_impassable?(border)
