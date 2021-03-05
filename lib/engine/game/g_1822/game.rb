@@ -500,7 +500,7 @@ module Engine
           {
             name: '5',
             distance: 5,
-            num: 5,
+            num: 3,
             price: 500,
             events: [
               {
