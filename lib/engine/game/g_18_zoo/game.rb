@@ -238,7 +238,7 @@ module Engine
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
           },
           {
-            sym: 'IT_S_ALL_GREEK_TO_ME',
+            sym: 'IT_IS_ALL_GREEK_TO_ME',
             name: 'It’s all greek to me (SR)',
             value: 2,
             desc: 'After your action in a SR, do another one.',
@@ -1113,6 +1113,10 @@ module Engine
           @midas ||= company_by_id('MIDAS')
         end
 
+        def midas_active?
+          midas.all_abilities.any? { |ability| ability.is_a?(Engine::Ability::Close) }
+        end
+
         def too_much_responsibility
           @too_much_responsibility ||= company_by_id('TOO_MUCH_RESPONSIBILITY')
         end
@@ -1121,8 +1125,12 @@ module Engine
           @leprechaun_pot_of_gold ||= company_by_id('LEPRECHAUN_POT_OF_GOLD')
         end
 
-        def it_s_all_greek_to_me
-          @it_s_all_greek_to_me ||= company_by_id('IT_S_ALL_GREEK_TO_ME')
+        def it_is_all_greek_to_me
+          @it_is_all_greek_to_me ||= company_by_id('IT_IS_ALL_GREEK_TO_ME')
+        end
+
+        def it_is_all_greek_to_me_active?
+          !abilities(it_is_all_greek_to_me, :close).nil?
         end
 
         def whatsup
@@ -1149,10 +1157,18 @@ module Engine
           entity.ipoed || @near_families_purchasable.any? { |f| f[:id] == entity.id }
         end
 
+        def log_share_price(entity, from, additional_info = '')
+          to = entity.share_price.price
+          return unless from != to
+
+          @log << "#{entity.name}'s share price changes from #{format_currency(from)} "\
+              "to #{format_currency(to)} #{additional_info}"
+        end
+
         private
 
         def init_round
-          Round::Draft.new(self, [G18ZOO::Step::SimpleDraft], reverse_order: true)
+          Engine::Round::Draft.new(self, [G18ZOO::Step::SimpleDraft], reverse_order: true)
         end
 
         def init_companies(players)
@@ -1224,8 +1240,8 @@ module Engine
           return if @round.is_a?(Engine::Round::Draft)
 
           current_order = @players.dup
-          @players.sort_by! { |p| [-p.cash, current_order.index(p)] }
-          @log << "Priority order: #{@players.reject(&:bankrupt).map(&:name).join(', ')}"
+          @players.sort_by! { |p| [midas_active? && p == midas.owner ? -1 : 0, -p.cash, current_order.index(p)] }
+          @log << "Priority order: #{@players.map(&:name).join(', ')}"
         end
 
         def new_stock_round
@@ -1251,7 +1267,7 @@ module Engine
         end
 
         def stock_round
-          Round::Stock.new(self, [
+          Engine::Game::G18ZOO::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
             Engine::Step::Exchange,
             Engine::Step::SpecialTrack,
@@ -1266,11 +1282,13 @@ module Engine
           @operating_rounds = 3 if @turn == 3 # Last round has 3 ORs
           update_zoo_tickets_value(@turn, round_num)
 
+          midas.close! if midas_active?
+
           super
         end
 
         def operating_round(round_num)
-          Round::Operating.new(self, [
+          Engine::Game::G18ZOO::Round::Operating.new(self, [
             Engine::Step::SpecialTrack,
             G18ZOO::Step::BuyCompany,
             Engine::Step::Track,
@@ -1337,7 +1355,7 @@ module Engine
         end
 
         def event_new_train!
-          @round.new_train_brought = true
+          @round.new_train_brought = true if @round.is_a?(Engine::Round::Operating)
         end
 
         def event_rust_own_3s_4s!
