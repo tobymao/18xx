@@ -871,27 +871,17 @@ module Engine
           metro = METROPOLITAN_HEXES.sort_by { rand }.take(3)
           metro.each do |i|
             if i == 'H14'
-              hex = @hexes.find { |h| h.id == i }
-              tile = @tiles.find { |t| t.name == 'X03' }
-              hex.lay(tile)
+              @hexes.find { |h| h.id == i }.lay(@tiles.find { |t| t.name == 'X03' })
             elsif i == 'E11'
               # Denver needs to be done at a later date
             elsif i == 'G3'
-              hex = @hexes.find { |h| h.id == i }
-              tile = @tiles.find { |t| t.name == 'X05' }
-              hex.lay(tile.rotate!(3))
+              @hexes.find { |h| h.id == i }.lay(@tiles.find { |t| t.name == 'X05' }.rotate!(3))
             elsif i == 'D20'
-              hex = @hexes.find { |h| h.id == i }
-              tile = @tiles.find { |t| t.name == 'X02' }
-              hex.lay(tile.rotate!(1))
+              @hexes.find { |h| h.id == i }.lay(@tiles.find { |t| t.name == 'X02' }.rotate!(1))
             elsif i == 'I19'
-              hex = @hexes.find { |h| h.id == i }
-              tile = @tiles.find { |t| t.name == 'X06' }
-              hex.lay(tile)
+              @hexes.find { |h| h.id == i }.lay(@tiles.find { |t| t.name == 'X06' })
             elsif i == 'H22'
-              hex = @hexes.find { |h| h.id == i }
-              tile = @tiles.find { |t| t.name == 'X01' }
-              hex.lay(tile)
+              @hexes.find { |h| h.id == i }.lay(@tiles.find { |t| t.name == 'X01' })
             end
           end
         end
