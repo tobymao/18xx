@@ -48,6 +48,14 @@ module View
             },
           ].freeze
 
+        SIX_CITY_CENTER_REVENUE = [
+          {
+            region_weights: CENTER,
+            x: 0,
+            y: 0,
+          },
+        ].freeze
+
         def preferred_render_locations
           if multi_revenue?
             if layout == :flat
@@ -55,6 +63,8 @@ module View
             else
               POINTY_MULTI_REVENUE_LOCATIONS
             end
+          elsif @cities == 6
+            SIX_CITY_CENTER_REVENUE
           elsif layout == :flat
             SMALL_ITEM_LOCATIONS
           else
