@@ -66,6 +66,8 @@ module Engine
               price: price
             )
 
+            # Price protecting a share counts as an action, which changes what player
+            # gets to act next. But not if done during an OR
             @round.goto_entity!(player) if @round.entities[@round.entity_index].player?
 
             num_presentation = @game.share_pool.num_presentation(bundle)
