@@ -514,7 +514,6 @@ module Engine
           # Round::Auction.new(self, [G18NEB::Step::ModifiedDutchAuction])
         end
 
-        # TODO: yellow town tiles can upgrade to green single city tile
         def upgrades_to?(from, to, special=false)
           case from.hex.name 
           when 'K7'
@@ -535,6 +534,8 @@ module Engine
             return to.name == '192' if (from.color == :brown)
           else
             return GREEN_CITIES.include?(to.name) if (YELLOW_TOWNS.include? from.hex.tile.name)
+            return BROWN_CITIES.include?(to.name) if (GREEN_CITIES.include? from.hex.tile.name)
+            return GRAY_CITIES.include?(to.name) if (BROWN_CITIES.include? from.hex.tile.name)
           end
 
           super 
