@@ -37,11 +37,39 @@ module Engine
         NEXT_SR_PLAYER_ORDER = :first_to_pass
         MIN_BID_INCREMENT = 10
 
+        # Special City hexes
+        OMAHA_HEX = 'K7'
+        DENVER_HEX = 'C9'
+        LINCOLN_HEX = 'J8'
+        CHADRON_HEX = 'C3'
+        YELLOW_TOWNS = %w[3 4 58 3a 4a 58a].freeze
+        GREEN_CITIES = %w[226 227 228].freeze
+        BROWN_CITIES = %w[611].freeze
+        GRAY_CITIES = %w[51].freeze
+
         TILES = {
           # Yellow
-          '3' => 4,
-          '4' => 6,
-          '58' => 6,
+          '3a' =>
+          {
+            'count' => 4,
+            'color' => 'yellow',
+            'code' => 'town=revenue:10,to_city:1;path=a:0,b:_0;path=a:_0,b:1',
+          },
+          '4a' =>
+          {
+            'count' => 6,
+            'color' => 'yellow',
+            'code' => 'town=revenue:10,to_city:1;path=a:0,b:_0;path=a:_0,b:3',
+          },
+          # '3' => 4,
+          # '4' => 6,
+          '58a' =>
+          {
+            'count' => 6,
+            'color' => 'yellow',
+            'code' => 'town=revenue:10,to_city:1;path=a:0,b:_0;path=a:_0,b:2',
+          },
+          #'58' => 6,
           '7' => 4,
           '8' => 14,
           '9' => 14,
@@ -276,9 +304,16 @@ module Engine
             revenue: 5,
             desc: 'Once per game, allows Corporation owner to lay or upgrade a tile in B8',
             sym: 'DPR',
-            #abilities: [
-            #    #{ type: 'tile_lay', owner_type: 'corporation', hexes: ['B8'], tiles: %w[3 4 5], blocks: true, count: 1, on_phase: 3 },
-            #  ],
+            abilities: [
+              { type: 'blocks_hexes', owner_type: 'player', hexes: ['B8'] },
+              { 
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                hexes: ['B8'],
+                tiles: %w[3 4 5],
+                count: 1,
+                on_phase: 3
+              }],
             color: nil,
           },
           {
@@ -286,8 +321,16 @@ module Engine
             value: 40,
             revenue: 10,
             desc: 'Corporation owner gets two bridge discount tokens',
-            sym: 'MBC',
-            #abilities: [{ type: 'tile_discount', discount: 60, owner_type: 'corporation', hexes: ['B8'] }],
+            sym: 'P2',
+            abilities: [
+              {
+                type: 'tile_discount',
+                discount: 60,
+                terrain: 'water',
+                owner_type: 'corporation',
+                hexes: %w[K3 K5 K7 J8 L8 L10],
+              },
+            ],
             color: nil,
           },
           {
@@ -295,7 +338,7 @@ module Engine
             value: 70,
             revenue: 15,
             desc: 'An owning Corporation may place a cattle token in any Town or City',
-            sym: 'AC',
+            sym: 'P3',
             #abilities: [
             #  { type: 'hex_bonus', owner_type: 'corporation', amount: 10, hexes: [] },
             #  { type: 'hex_bonus', owner_type: 'corporation', amount: 2, hexes: [] },
@@ -308,7 +351,21 @@ module Engine
             revenue: 15,
             desc: 'May exchange for share in Colorado & Southern Railroad',
             sym: 'P4',
-            abilities: [{ type: 'shares', shares: 'C&S_1' }],
+            abilities: [
+                { 
+                  type: 'exchange',
+                  corporations: ['C&S'],
+                  owner_type: 'player',
+                  when: 'any',
+                  from: 'ipo',
+                },
+                { 
+                  type: 'blocks_hexes',
+                  owner_type: 'player', 
+                  hexes: ['C7'],
+                  on_phase: 3  
+                },
+              ],
             color: nil,
           },
           {
@@ -448,20 +505,46 @@ module Engine
 
         EBUY_PRES_SWAP = false # allow presidential swaps of other corps when ebuying
         EBUY_OTHER_VALUE = false # allow ebuying other corp trains for up to face
-        HOME_TOKEN_TIMING = :operating_round
+        HOME_TOKEN_TIMING = :float # not :operating_round
         # Two tiles can be laid, only one upgrade
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded }].freeze
 
         def init_round
           super
-        #   Round::Draft.new(self,
-        #                    [G18LosAngeles::Step::DraftDistribution],
-        #                    snake_order: true)
+          # Round::Auction.new(self, [G18NEB::Step::ModifiedDutchAuction])
         end
 
         # TODO: yellow town tiles can upgrade to green single city tile
         def upgrades_to?(from, to, special=false)
+          case from.hex.name 
+          when 'K7'
+            return to.name == '229' if (from.color == :yellow) 
+            return to.name == '230' if (from.color == :green)
+            return to.name == '231' if (from.color == :brown)
+          when DENVER_HEX
+            return to.name == '407' if (from.color == :yellow) 
+            return to.name == '234' if (from.color == :green)
+            return to.name == '116' if (from.color == :brown)
+          when LINCOLN_HEX
+            return GREEN_CITIES.include?(to.name) if (from.color == :yellow)
+            return to.name == '233' if (from.color == :green)
+            return to.name == '409' if (from.color == :brown)
+          when CHADRON_HEX
+            return GREEN_CITIES.include?(to.name) if (from.color == :yellow)
+            return to.name == '233' if (from.color == :green)
+            return to.name == '192' if (from.color == :brown)
+          else
+            return GREEN_CITIES.include?(to.name) if (YELLOW_TOWNS.include? from.hex.tile.name)
+          end
+
           super 
+        end
+        def all_potential_upgrades(tile, tile_manifest: false)
+          upgrades = super
+          return upgrades unless tile_manifest
+
+          upgrades |= GREEN_CITIES if YELLOW_TOWNS.include?(tile.name)
+          upgrades
         end
 
         # borrowed from 1846 for initial reverse corporation order
@@ -475,7 +558,7 @@ module Engine
           else
             corporations.sort!
           end
-          @minors.select(&:floated?) + corporations
+          corporations
         end
 
         def operating_round(round_num)
