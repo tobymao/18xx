@@ -599,12 +599,12 @@ module Engine
             sym: 'P2',
             value: 0,
             revenue: 10,
-            desc: 'MAJOR/MINOR, Phase 2. Remove Small Station. NO LAY TRACK CHECK. Make sure the laid track is '\
-                  'valid. Allows the owning company to place a plain yellow track tile directly on an undeveloped '\
-                  'small station hex location or upgrade a small station tile of one colour to a plain track tile '\
-                  'of the next colour. This closes the company and counts as the company’s normal track laying '\
-                  'step. All other normal track laying restrictions apply. Once acquired, the private company pays '\
-                  'its revenue to the owning company until the power is exercised and the company is closed.',
+            desc: 'MAJOR/MINOR, Phase 2. Remove Small Station. Allows the owning company to place a plain yellow '\
+                  'track tile directly on an undeveloped small station hex location or upgrade a small station tile '\
+                  'of one colour to a plain track tile of the next colour. This closes the company and counts as '\
+                  'the company’s normal track laying step. All other normal track laying restrictions apply. Once '\
+                  'acquired, the private company pays its revenue to the owning company until the power is '\
+                  'exercised and the company is closed.',
             abilities: [
               {
                 type: 'tile_lay',
