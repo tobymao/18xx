@@ -846,6 +846,8 @@ module Engine
           @stock_market.move_down(corporation)
         when :left_block
           @stock_market.move_left(corporation)
+        when :down_block_pres
+          stock_market.move_down(corporation) if was_president
         when :left_block_pres
           stock_market.move_left(corporation) if was_president
         when :none
