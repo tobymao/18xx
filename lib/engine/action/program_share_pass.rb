@@ -11,11 +11,11 @@ module Engine
       end
 
       def self.description
-        'Pass in the Share Round'
+        'Pass in the Stock Round'
       end
 
       def self.print_name
-        'Pass in Share Round'
+        'Pass in Stock Round'
       end
 
       def disable?(game)

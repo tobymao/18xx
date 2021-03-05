@@ -191,11 +191,11 @@ module View
       end
 
       def render_share_pass(settings)
-        text = 'Auto Pass in Share Round'
+        text = 'Auto Pass in Stock Round'
         text += ' (Enabled)' if settings
         children = [h(:h3, text)]
         children << h(:p,
-                      'Automatically pass in the share round.'\
+                      'Automatically pass in the stock round.'\
                       ' This will deactivate itself if other players do actions that may impact you.')
         children << h(:p,
                       [h(:a, { attrs: { href: AUTO_ACTIONS_WIKI, target: '_blank' } },
