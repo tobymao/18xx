@@ -429,7 +429,7 @@ module Engine
             logo: '18_neb/DRG',
             tokens: [0, 40],
             coordinates: 'C9',
-            color: '#F2EB00',
+            color: '#D4AF37',
             always_market_price: true,
             reservation_color: nil,
           },
