@@ -129,119 +129,12 @@ module Engine
         }.freeze
 
         MARKET = [
-          %w[64y
-             68
-             72
-             78
-             82
-             90
-             100p
-             110
-             120
-             140
-             160
-             180
-             200
-             225
-             250
-             285
-             300
-             325
-             350
-             375
-             400],
-          %w[60y
-             64y
-             68
-             72
-             78
-             82
-             90p
-             100
-             110
-             120
-             140
-             160
-             180
-             200
-             225
-             250
-             285
-             300
-             325
-             350
-             375],
-          %w[55y
-             60y
-             64y
-             68
-             72
-             78
-             82p
-             90
-             100
-             110
-             120
-             140
-             160
-             180
-             200
-             225
-             250i
-             285i
-             300i
-             325i
-             350i],
-          %w[50o
-             55y
-             60y
-             64y
-             68
-             72
-             78p
-             82
-             90
-             100
-             110
-             120
-             140
-             160i
-             180i
-             200i
-             225i
-             250i
-             285i
-             300i
-             325i],
-          %w[40b
-             50o
-             55y
-             60y
-             64
-             68
-             72p
-             78
-             82
-             90
-             100
-             110i
-             120i
-             140i
-             160i
-             180i],
-          %w[30b
-             40o
-             50o
-             55y
-             60y
-             64
-             68p
-             72
-             78
-             82
-             90i
-             100i
-             110i],
+          %w[64y 68 72 78 82 90 100p 110 120 140 160 180 200 225 250 285 300 325 350 375 400],
+          %w[60y 64y 68 72 78 82 90p 100 110 120 140 160 180 200 225 250 285 300 325 350 375],
+          %w[55y 60y 64y 68 72 78 82p 90 100 110 120 140 160 180 200 225 250i 285i 300i 325i 350i],
+          %w[50o 55y 60y 64y 68 72 78p 82 90 100 110 120 140 160i 180i 200i 225i 250i 285i 300i 325i],
+          %w[40b 50o 55y 60y 64 68 72p 78 82 90 100 110i 120i 140i 160i 180i],
+          %w[30b 40o 50o 55y 60y 64 68p 72 78 82 90i 100i 110i],
           %w[20b 30b 40o 50o 55y 60y 64 68 72 78i 82i],
           %w[10b 20b 30b 40o 50y 55y 60y 64 68i 72i],
           %w[0c 10b 20b 30b 40o 50y 55y 60i 64i],
@@ -376,23 +269,8 @@ module Engine
                 special: false,
                 when: 'track',
                 discount: 40,
-                hexes: %w[A16
-                          B17
-                          C18
-                          D17
-                          E18
-                          F19
-                          G18
-                          H17
-                          I16
-                          J15
-                          K14
-                          L13
-                          M14
-                          N15
-                          O16
-                          O18],
-                tiles: [],
+                hexes: %w[A16 B17 C18 D17 E18 F19 G18 H17 I16 J15 K14 L13 M14 N15 O16 O18],
+                tiles: %w[1 2 3 4 5 6 7 8 9 55 56 57 58 69],
               },
             ],
             color: nil,
@@ -409,19 +287,8 @@ module Engine
             abilities: [
               {
                 type: 'assign_hexes',
-                hexes: %w[B9
-                          B11
-                          D5
-                          E12
-                          F5
-                          H13
-                          J3
-                          J5
-                          L11
-                          M2
-                          M14
-                          N7],
-                when: 'track',
+                hexes: %w[B9 B11 D5 E12 F5 H13 J3 J5 L11 M2 M14 N7],
+                when: 'owning_corp_or_turn',
                 count: 1,
                 owner_type: 'corporation',
               },
@@ -452,6 +319,7 @@ module Engine
                 hexes: %w[H17 M14 M20 N7 N17],
                 count: 2,
                 owner_type: 'corporation',
+                when: 'owning_corp_or_turn',
               },
               {
                 type: 'assign_corporation',
@@ -774,7 +642,8 @@ module Engine
         CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT = true
         IPO_RESERVED_NAME = 'Treasury'
 
-        TILE_LAYS = [{ lay: true, upgrade: true, cost: 0 }, { lay: :not_if_upgraded, upgrade: false, cost: 0 }].freeze
+        TILE_LAYS = [{ lay: true, upgrade: true, cost: 0, cannot_reuse_same_hex: true },
+                     { lay: :not_if_upgraded, upgrade: false, cost: 0 }].freeze
 
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(unlimited: :green, par: :white,
                                                             ignore_one_sale: :red).freeze
