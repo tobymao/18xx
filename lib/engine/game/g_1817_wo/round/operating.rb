@@ -11,7 +11,7 @@ module Engine
             @cash_crisis_due_to_interest = nil
             return if @paid_loans[entity]
 
-            return unless @steps.any? { |step| step.passed? && step.is_a?(Engine::Step::BuyTrain) }
+            return unless step_passed?(Engine::Step::BuyTrain)
 
             @paid_loans[entity] = true
             return if entity.loans.empty? && !@game.corp_has_new_zealand?(entity)
