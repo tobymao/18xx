@@ -48,139 +48,234 @@ module Engine
         }.freeze
 
         MARKET = [
-          %w[60y
-             67
-             71
-             76
-             82
+          %w[71
+             80
              90
-             100p
-             112
+             101
+             113
              126
-             142
-             160
-             180
-             200
-             225
-             250
-             275
-             300
-             325
-             350],
-          %w[53y
-             60y
-             66
-             70
-             76
-             82
-             90p
-             100
-             112
-             126
-             142
-             160
-             180
-             200
-             220
-             240
-             260
-             280
-             300],
-          %w[46y
-             55y
-             60y
-             65
-             70
-             76
-             82p
-             90
-             100
-             111
-             125
              140
              155
+             171
+             188
+             206
+             225
+             245
+             266
+             288
+             311
+             335
+             360
+             386
+             413
+             441
+             470
+             500],
+          %w[62
+             70
+             79
+             89
+             100p
+             112
+             125x
+             139
+             154
              170
-             185
-             200],
-          %w[39o
-             48y
-             54y
-             60y
-             66
-             71
-             76p
-             82
-             90
-             100
+             187
+             205
+             224
+             244
+             265
+             287
+             310
+             334
+             359
+             385
+             412
+             440
+             469],
+          %w[54
+             61
+             69
+             78
+             88p
+             99
+             111
+             124
+             138
+             153
+             169
+             186
+             204
+             223
+             243
+             264],
+          %w[46
+             53
+             60
+             68
+             77p
+             87
+             98
              110
-             120
-             130],
-          %w[32o 41o 48y 55y 62 67 71p 76 82 90 100],
-          %w[25b 34o 42o 50y 58y 65 67p 71 75 80],
-          %w[18b 27b 36o 45o 54y 63 67 69 70],
-          %w[10b 20b 30b 40o 50y 60y 67 68],
-          ['', '10b', '20b', '30b', '40o', '50y', '60y'],
-          ['', '', '10b', '20b', '30b', '40o', '50y'],
-          ['', '', '', '10b', '20b', '30b', '40o'],
+             123
+             137
+             152
+             168
+             185],
+          %w[36
+             45
+             52
+             59
+             67p
+             76
+             86
+             97
+             109
+             122
+             136],
+          %w[24
+             35
+             44
+             51
+             58
+             66
+             75
+             85
+             96],
+          %w[10z
+             23
+             34
+             43
+             50
+             57
+             65],
         ].freeze
 
-        PHASES = [{ name: '2', train_limit: 4, tiles: [:yellow], operating_rounds: 1 },
+        MARKET_TEXT = Base::MARKET_TEXT.merge(par: 'Public Corps Par',
+                                              par_1: 'Asteroid League Par',
+                                              par_2: 'All Growth Corps Par')
+
+        STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(par: :grey,
+                                                            par_1: :brown,
+                                                            par_2: :blue)
+
+        PHASES = [{ name: '1', train_limit: 4, tiles: [:yellow], operating_rounds: 2 },
                   {
-                    name: '3',
-                    on: '3',
+                    name: '2',
+                    on: '4dc3',
                     train_limit: 4,
                     tiles: %i[yellow green],
                     operating_rounds: 2,
                     status: ['can_buy_companies'],
                   },
                   {
-                    name: '4',
-                    on: '4',
+                    name: '3',
+                    on: '5dc4',
                     train_limit: 3,
                     tiles: %i[yellow green],
                     operating_rounds: 2,
                     status: ['can_buy_companies'],
                   },
                   {
-                    name: '5',
-                    on: '5',
-                    train_limit: 2,
+                    name: '4',
+                    on: '6d5c',
+                    train_limit: 3,
                     tiles: %i[yellow green brown],
-                    operating_rounds: 3,
+                    operating_rounds: 2,
+                  },
+                  {
+                    name: '5',
+                    on: '7d6c',
+                    train_limit: 3,
+                    tiles: %i[yellow green brown],
+                    operating_rounds: 2,
                   },
                   {
                     name: '6',
-                    on: '6',
+                    on: '9d7c',
                     train_limit: 2,
                     tiles: %i[yellow green brown],
-                    operating_rounds: 3,
-                  },
-                  {
-                    name: 'D',
-                    on: 'D',
-                    train_limit: 2,
-                    tiles: %i[yellow green brown],
-                    operating_rounds: 3,
+                    operating_rounds: 2,
                   }].freeze
 
-        TRAINS = [{ name: '2', distance: 2, price: 80, rusts_on: '4', num: 6 },
-                  { name: '3', distance: 3, price: 180, rusts_on: '6', num: 5 },
-                  { name: '4', distance: 4, price: 300, rusts_on: 'D', num: 4 },
+        TRAINS = [{
+                    name: '3dc2',
+                    distance: 3,
+                    price: 100,
+                    rusts_on: ['5dc4', '7d3c'],
+                    num: 10,
+                    variants: [
+                      {
+                        name: '5dc1',
+                        rusts_on: ['5dc4', '7d3c'],
+                        distance: 5,
+                        price: 100,
+                      },
+                    ],
+                  },
                   {
-                    name: '5',
+                    name: '4dc3',
+                    distance: 4,
+                    price: 200,
+                    rusts_on: ['7d6c', '9d5c'],
+                    num: 10,
+                    variants: [
+                      {
+                        name: '6d2c',
+                        rusts_on: ['7d6c', '9d5c'],
+                        distance: 6,
+                        price: 175,
+                      },
+                    ],
+                  },
+                  {
+                    name: '5dc4',
                     distance: 5,
+                    price: 325,
+                    rusts_on: 'D',
+                    num: 6,
+                    variants: [
+                      {
+                        name: '7d3c',
+                        distance: 7,
+                        price: 275,
+                      },
+                    ],
+                  },
+                  {
+                    name: '6d5c',
+                    distance: 6,
                     price: 450,
-                    num: 3,
+                    num: 5,
+                    variants: [
+                      {
+                        name: '8d4c',
+                        distance: 8,
+                        price: 400,
+                      },
+                    ],
                     events: [{ 'type' => 'close_companies' }],
                   },
-                  { name: '6', distance: 6, price: 630, num: 2 },
                   {
-                    name: 'D',
-                    distance: 999,
-                    price: 1100,
-                    num: 20,
-                    available_on: '6',
-                    discount: { '4' => 300, '5' => 300, '6' => 300 },
+                    name: '7d6c',
+                    distance: 7,
+                    price: 600,
+                    num: 2,
+                    variants: [
+                      {
+                        name: '9d5c',
+                        distance: 9,
+                        price: 550,
+                      },
+                    ],
+                  },
+                  {
+                    name: '9d7c',
+                    distance: 9,
+                    price: 950,
+                    num: 9,
+                    discount: { '5dc4' => 700, '7d3c' => 700 },
                   }].freeze
 
         COMPANIES = [
