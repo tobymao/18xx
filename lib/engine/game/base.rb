@@ -481,7 +481,7 @@ module Engine
 
       def available_programmed_actions
         # By default assume normal 1830esk buy shares
-        [Action::ProgramBuyShares]
+        [Action::ProgramBuyShares, Action::ProgramSharePass]
       end
 
       def self.filtered_actions(actions)
@@ -1299,6 +1299,10 @@ module Engine
         end
 
         @cert_limit = init_cert_limit
+      end
+
+      def shares_for_corporation(corporation)
+        @_shares.values.select { |share| share.corporation == corporation }
       end
 
       def reset_corporation(corporation)

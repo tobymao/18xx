@@ -1071,7 +1071,7 @@ module Engine
         end
 
         def size_corporation(corporation, size)
-          original_shares = @_shares.values.select { |share| share.corporation == corporation }
+          original_shares = shares_for_corporation(corporation)
           raise GameError, 'Can only convert 2 share corporation' unless corporation.total_shares == 2
 
           corporation.share_holders.clear
@@ -1252,9 +1252,7 @@ module Engine
           end
 
           # Consolidate shorts with their share pair (including share pool shares)
-          @_shares
-            .values
-            .select { |share| share.corporation == corporation }
+          shares_for_corporation(corporation)
             .group_by(&:owner)
             .each do |owner, _shares_|
             shares = owner.shares_of(corporation)
@@ -1285,7 +1283,7 @@ module Engine
           price = corporation.share_price.price
           percent = corporation.share_percent
 
-          shares = @_shares.values.select { |share| share.corporation == corporation }
+          shares = shares_for_corporation(corporation)
 
           # Highest share (9 is all the potential 'normal' share certificates)
           highest_share = [shares.map(&:index).max, 9].max
