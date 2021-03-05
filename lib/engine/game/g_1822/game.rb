@@ -2211,7 +2211,7 @@ module Engine
             ['E26'] =>
               'path=a:0,b:4,lanes:2',
             ['E28'] =>
-              'city=revenue:yellow_10|green_20|brown_20|gray_30,slots:3;path=a:0,b:_0,lanes:2,terminal:1;'\
+              'city=revenue:yellow_10|green_20|brown_20|gray_30,slots:3,loc:1.5;path=a:0,b:_0,lanes:2,terminal:1;'\
               'path=a:3,b:_0,lanes:2,terminal:1;path=a:4,b:_0,lanes:2,terminal:1;path=a:5,b:_0,lanes:2,terminal:1',
             ['E30'] =>
               'path=a:3,b:5,lanes:2',
