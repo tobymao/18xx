@@ -243,6 +243,8 @@ module View
 
           region_weights =
             case @city.slots(all: true)
+            when 0
+              []
             when 1
               CENTER
             when (2..4)

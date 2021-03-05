@@ -1593,6 +1593,10 @@ module Engine
 
       def progress_information; end
 
+      def assignment_tokens(assignment)
+        self.class::ASSIGNMENT_TOKENS[assignment]
+      end
+
       private
 
       def init_graph

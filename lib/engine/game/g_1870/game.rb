@@ -826,6 +826,14 @@ module Engine
 
         def setup
           river_company.max_price = river_company.value
+
+          @corporations.each do |corporation|
+            ability = abilities(corporation, :assign_hexes)
+            hex = hexes.find { |h| h.name == ability.hexes.first }
+
+            hex.assign!(corporation)
+            ability.description = "Destination: #{hex.location_name} (#{hex.name})"
+          end
         end
 
         def event_companies_buyable!
