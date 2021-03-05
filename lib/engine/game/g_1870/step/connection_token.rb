@@ -32,7 +32,7 @@ module Engine
           def process_choose(action)
             entity = action.entity
             destination = @round.connection_runs[entity]
-            ability = @game.abilities(entity, :assign_hexes)
+            ability = entity.abilities.first
 
             token = Engine::Token.new(action.entity, price: 100)
             action.entity.tokens << token

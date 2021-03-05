@@ -929,7 +929,7 @@ module Engine
         end
 
         def destination_hex(corporation)
-          ability = abilities(corporation, :assign_hexes)
+          ability = corporation.abilities.first
           hexes.find { |h| h.name == ability.hexes.first } if ability
         end
 
