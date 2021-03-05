@@ -942,7 +942,13 @@ module Engine
           return false if to.name == '171K' && from.hex.name != 'B11'
           return false if to.name == '171L' && from.hex.name != 'C18'
 
-          super(from, to, to.color != :brown)
+          super
+        end
+
+        def upgrades_to_correct_label?(from, to)
+          return true if to.color != :brown
+
+          super
         end
 
         def border_impassable?(border)
