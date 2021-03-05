@@ -26,7 +26,9 @@ module Engine
           end
 
           def active_entities
-            @round.sell_queue.map(&:president)
+            return [] if @round.sell_queue.empty?
+
+            [@round.sell_queue.first.president]
           end
 
           def purchasable_companies(_entity = nil)
