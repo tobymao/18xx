@@ -147,8 +147,7 @@ module Engine
             end
 
             @game.company_made_choice(action.entity, action.choice, :stock_round)
-            @round.last_to_act = entity
-            @current_actions << action
+            track_action(action, corporation)
             log_pass(entity)
             pass!
           end
@@ -239,10 +238,9 @@ module Engine
             entity = action.entity
 
             @bidders[company] |= [entity]
+            track_action(action, bid_target(action))
 
-            @current_actions << action
             @log << "#{entity.name} bids #{@game.format_currency(price)} for #{company.name}"
-            @round.last_to_act = action.entity
             @bid_actions += 1
 
             return if @bid_actions < @game.class::BIDDING_TOKENS_PER_ACTION
