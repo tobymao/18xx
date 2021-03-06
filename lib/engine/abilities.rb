@@ -9,6 +9,8 @@ end
 
 module Engine
   module Abilities
+    attr_reader :abilities
+
     def init_abilities(abilities)
       @abilities = []
 

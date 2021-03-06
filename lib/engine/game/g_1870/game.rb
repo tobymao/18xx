@@ -808,6 +808,10 @@ module Engine
 
         def operating_round(round_num)
           G1870::Round::Operating.new(self, [
+            G1870::Step::ConnectionToken,
+            G1870::Step::ConnectionRoute,
+            G1870::Step::ConnectionDividend,
+            G1870::Step::CheckConnection,
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
             G1870::Step::BuyCompany,
@@ -821,6 +825,7 @@ module Engine
             Engine::Step::BuyTrain,
             [G1870::Step::BuyCompany, blocks: true],
             G1870::Step::PriceProtection,
+            G1870::Step::CheckConnection,
           ], round_num: round_num)
         end
 
@@ -919,6 +924,15 @@ module Engine
           super
         end
 
+        def home_hex(corporation)
+          corporation.tokens.first.city&.hex
+        end
+
+        def destination_hex(corporation)
+          ability = corporation.abilities.first
+          hexes.find { |h| h.name == ability.hexes.first } if ability
+        end
+
         def revenue_for(route, stops)
           revenue = super
 
@@ -929,7 +943,20 @@ module Engine
 
           revenue += (route.corporation.assigned?('GSC') ? 20 : 10) if stops.any? { |stop| stop.hex.assigned?('GSC') }
 
+          revenue += destination_revenue(route, stops)
+
           revenue
+        end
+
+        def destination_revenue(route, stops)
+          return 0 if stops.size < 2
+          return 0 unless (destination = destination_hex(route.corporation))
+          return 0 if destination.assigned?(route.corporation)
+
+          destination_stop = stops.values_at(0, -1).find { |s| s.hex == destination }
+          return 0 unless destination_stop
+
+          destination_stop.route_revenue(route.phase, route.train)
         end
 
         def sell_shares_and_change_price(bundle, _allow_president_change: true, _swap: nil)
@@ -964,6 +991,19 @@ module Engine
 
         def border_impassable?(border)
           border.type == :water
+        end
+
+        def check_other(route)
+          return unless (destination = @round.connection_runs[route.corporation])
+
+          home = home_hex(route.corporation)
+          return if route.routes.any? do |r|
+            next if r.visited_stops.size < 2
+
+            (r.visited_stops.values_at(0, -1).map(&:hex) - [home, destination]).none?
+          end
+
+          raise GameError, 'At least one train has to run from the home station to the destination'
         end
       end
     end
