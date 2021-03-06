@@ -25,7 +25,7 @@ module Engine
           def can_payoff?(entity)
             (loan = entity.loans[0]) &&
               entity.cash >= loan.amount &&
-              @round.step_passed? && step.is_a?(Engine::Step::BuyTrain)
+              @round.step_passed?(Engine::Step::BuyTrain)
           end
 
           def blocks?
