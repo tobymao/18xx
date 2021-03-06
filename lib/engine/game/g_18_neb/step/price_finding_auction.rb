@@ -123,12 +123,18 @@ module Engine
           end
 
           def resolve_bids
-            @companies.each do |company|
-              bid = @bids[company]
-              if !bid.empty?
-                accept_bid(bid.first)
-              end
+            # company is deleted from @companies when they are won, so we can't loop
+            # through @companies instead of @bids.
+            @bids.each do |company, bids|
+              resolve_bids_for_company(company, bids)
             end
+          end
+
+          def resolve_bids_for_company(company, bids)
+            return if bids.empty?
+
+            high_bid = highest_bid(company)
+            buy_company(high_bid.entity, company, high_bid.price)
           end
 
           def buy_company(player, company, price)
