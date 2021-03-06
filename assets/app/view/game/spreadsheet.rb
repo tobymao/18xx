@@ -130,6 +130,7 @@ module View
             when 'withhold'
               ["[#{hist[x].revenue}]", '0.5']
             when 'half'
+              @halfpaid = true
               ["¦#{hist[x].revenue}¦", '0.75']
             else
               [hist[x].revenue.to_s, '1.0']
