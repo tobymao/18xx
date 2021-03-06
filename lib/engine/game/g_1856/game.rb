@@ -1184,7 +1184,7 @@ module Engine
             G1856::Step::SpecialBuy,
             G1856::Step::Track,
             G1856::Step::Escrow,
-            Engine::Step::Token,
+            G1856::Step::Token,
             Engine::Step::Route,
             # Interest - See Loan
             G1856::Step::Dividend,
