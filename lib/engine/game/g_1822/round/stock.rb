@@ -134,11 +134,18 @@ module Engine
           end
 
           def remove_l_trains(count)
-            @game.log << "#{count} minors with no bids. If available up to #{count} L trains will be removed"
+            total_count = count
+            removed_trains = 0
             while (train = @game.depot.upcoming.first).name == 'L' && count.positive?
               @game.remove_train(train)
               count -= 1
+              removed_trains += 1
             end
+            @game.log << if total_count != removed_trains
+                           "#{total_count} minors with no bids. The last #{removed_trains} L trains have been removed"
+                         else
+                           "#{total_count} minors with no bids. #{removed_trains} L trains have been removed"
+                         end
           end
 
           def remove_minor_and_first_train(company)

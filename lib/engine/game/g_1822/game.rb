@@ -599,7 +599,7 @@ module Engine
 
         COMPANIES = [
           {
-            name: 'BEC',
+            name: 'P1-BEC',
             sym: 'P1',
             value: 0,
             revenue: 5,
@@ -612,7 +612,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'MtonR',
+            name: 'P2-MtonR',
             sym: 'P2',
             value: 0,
             revenue: 10,
@@ -637,7 +637,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'S&HR',
+            name: 'P3-S&HR',
             sym: 'P3',
             value: 0,
             revenue: 0,
@@ -654,7 +654,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'SDR',
+            name: 'P4-SDR',
             sym: 'P4',
             value: 0,
             revenue: 0,
@@ -671,7 +671,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'LC&DR',
+            name: 'P5-LC&DR',
             sym: 'P5',
             value: 0,
             revenue: 10,
@@ -703,7 +703,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'L&SR',
+            name: 'P6-L&SR',
             sym: 'P6',
             value: 0,
             revenue: 10,
@@ -717,7 +717,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'S&BR',
+            name: 'P7-S&BR',
             sym: 'P7',
             value: 0,
             revenue: 10,
@@ -731,7 +731,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'E&GR',
+            name: 'P8-E&GR',
             sym: 'P8',
             value: 0,
             revenue: 10,
@@ -745,7 +745,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'M&GNR',
+            name: 'P9-M&GNR',
             sym: 'P9',
             value: 0,
             revenue: 10,
@@ -757,7 +757,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'G&SWR',
+            name: 'P10-G&SWR',
             sym: 'P10',
             value: 0,
             revenue: 10,
@@ -787,7 +787,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'B&ER',
+            name: 'P11-B&ER',
             sym: 'P11',
             value: 0,
             revenue: 10,
@@ -813,7 +813,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'L&SR',
+            name: 'P12-L&SR',
             sym: 'P12',
             value: 0,
             revenue: 10,
@@ -837,7 +837,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'YN&BR',
+            name: 'P13-YN&BR',
             sym: 'P13',
             value: 0,
             revenue: 10,
@@ -849,7 +849,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'K&TR',
+            name: 'P14-K&TR',
             sym: 'P14',
             value: 0,
             revenue: 10,
@@ -861,7 +861,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'HR',
+            name: 'P15-HR',
             sym: 'P15',
             value: 0,
             revenue: 0,
@@ -874,7 +874,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'Tax Haven',
+            name: 'P16-TH',
             sym: 'P16',
             value: 0,
             revenue: 0,
@@ -895,7 +895,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'LUR',
+            name: 'P17-LUR',
             sym: 'P17',
             value: 0,
             revenue: 10,
@@ -907,7 +907,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'C&HPR',
+            name: 'P18-C&HPR',
             sym: 'P18',
             value: 0,
             revenue: 10,
@@ -918,7 +918,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'AEC',
+            name: 'P19-AEC',
             sym: 'P19',
             value: 0,
             revenue: 0,
@@ -935,7 +935,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'C&WR',
+            name: 'P20-C&WR',
             sym: 'P20',
             value: 0,
             revenue: 0,
@@ -948,7 +948,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'HSBC',
+            name: 'P21-HSBC',
             sym: 'P21',
             value: 0,
             revenue: 10,
@@ -2020,7 +2020,7 @@ module Engine
           },
           {
             sym: 'LYR',
-            name: 'Lancashire & Yorkshire',
+            name: 'Lancashire & Yorkshire Railway',
             logo: '1822/LYR',
             tokens: [0, 100],
             type: 'major',
