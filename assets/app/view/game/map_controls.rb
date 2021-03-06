@@ -12,7 +12,6 @@ module View
       needs :show_starting_map, default: false, store: true
       needs :historical_routes, default: [], store: true
       needs :game, default: nil, store: true
-      needs :show_player_colors, default: nil, store: true
 
       def render
         children = [
@@ -27,12 +26,13 @@ module View
       end
 
       def player_colors_controls
-        show_player_colors = Lib::Storage['show_player_colors']
+        title = @game&.class&.title
+        show_player_colors = Lib::Storage["show_player_colors_#{title}"] || Lib::Storage['show_player_colors']
 
         on_click = lambda do
-          new_value = !show_player_colors
-          Lib::Storage['show_player_colors'] = new_value
-          store(:show_player_colors, new_value)
+          Lib::Storage['show_player_colors'] = !show_player_colors
+          Lib::Storage["show_player_colors_#{title}"] = !show_player_colors
+          update
         end
 
         render_button("#{show_player_colors ? 'Hide' : 'Show'} Player Colors", on_click)
