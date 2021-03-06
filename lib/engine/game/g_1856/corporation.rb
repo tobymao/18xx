@@ -49,9 +49,9 @@ module Engine
 
         def _capitalization_type
           # TODO: escrow
-          return :escrow if @game.phase.status.include? :escrow
-          return :incremental if @game.phase.status.include? :incremental
-          return :full if @game.phase.status.include? :fullcap
+          return :escrow if @game.phase.status.include?('escrow')
+          return :incremental if @game.phase.status.include?('incremental')
+          return :full if @game.phase.status.include?('fullcap')
 
           # This shouldn't happen
           raise NotImplementedError
@@ -59,11 +59,11 @@ module Engine
 
         # As long as this is only used in core code for display we can re-use it
         def percent_to_float
-          return 20 if @game.phase.status.include?(:facing_2)
-          return 30 if @game.phase.status.include?(:facing_3)
-          return 40 if @game.phase.status.include?(:facing_4)
-          return 50 if @game.phase.status.include?(:facing_5)
-          return 60 if @game.phase.status.include?(:facing_6)
+          return 20 if @game.phase.status.include?('facing_2')
+          return 30 if @game.phase.status.include?('facing_3')
+          return 40 if @game.phase.status.include?('facing_4')
+          return 50 if @game.phase.status.include?('facing_5')
+          return 60 if @game.phase.status.include?('facing_6')
 
           # This shouldn't happen
           raise NotImplementedError

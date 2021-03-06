@@ -6,7 +6,7 @@ module Engine
   module Game
     module G1856
       module Step
-        class Token <  Engine::Step::Token
+        class Token < Engine::Step::Token
           # Overriding buying_power in Game has implications for emergency fund raising so it is implemented here
           def buying_power(entity)
             buying_power = entity.cash
