@@ -419,6 +419,7 @@ module Engine
             sym: 'PRR',
             name: 'Pennsylvania Railroad',
             logo: '1846/PRR',
+            simple_logo: '1846/PRR.alt',
             tokens: [0, 80, 80, 80, 80],
             abilities: [
             {
@@ -440,6 +441,7 @@ module Engine
             sym: 'NYC',
             name: 'New York Central Railroad',
             logo: '1846/NYC',
+            simple_logo: '1846/NYC.alt',
             tokens: [0, 80, 80, 80],
             coordinates: 'D20',
             color: '#110a0c',
@@ -451,6 +453,7 @@ module Engine
             sym: 'B&O',
             name: 'Baltimore & Ohio Railroad',
             logo: '1846/BO',
+            simple_logo: '1846/BO.alt',
             tokens: [0, 80, 80, 80],
             abilities: [
               {
@@ -473,6 +476,7 @@ module Engine
             sym: 'C&O',
             name: 'Chesapeake & Ohio Railroad',
             logo: '1846/CO',
+            simple_logo: '1846/CO.alt',
             tokens: [0, 80, 80, 80],
             coordinates: 'I15',
             color: :"#ADD8E6",
@@ -485,6 +489,7 @@ module Engine
             sym: 'ERIE',
             name: 'Erie Railroad',
             logo: '1846/ERIE',
+            simple_logo: '1846/ERIE.alt',
             tokens: [0, 80, 80, 80],
             abilities: [
               {
@@ -507,6 +512,7 @@ module Engine
             sym: 'GT',
             name: 'Grand Trunk Railway',
             logo: '1846/GT',
+            simple_logo: '1846/GT.alt',
             tokens: [0, 80, 80],
             coordinates: 'B16',
             color: '#f58121',
@@ -518,6 +524,7 @@ module Engine
             sym: 'IC',
             name: 'Illinois Central Railroad',
             logo: '1846/IC',
+            simple_logo: '1846/IC.alt',
             tokens: [0, 80, 80, 80],
             abilities: [
               {
@@ -555,6 +562,7 @@ module Engine
             sym: 'MS',
             name: 'Michigan Southern',
             logo: '1846/MS',
+            simple_logo: '1846/MS.alt',
             tokens: [0],
             coordinates: 'C15',
             color: :pink,
@@ -564,6 +572,7 @@ module Engine
             sym: 'BIG4',
             name: 'Big 4',
             logo: '1846/B4',
+            simple_logo: '1846/B4.alt',
             tokens: [0],
             coordinates: 'G9',
             color: :cyan,

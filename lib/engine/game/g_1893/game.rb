@@ -457,6 +457,7 @@ module Engine
             sym: 'DE',
             tokens: [0, 40, 100],
             logo: '1893/DE',
+            simple_logo: '1893/DE.alt',
             color: :blue,
             coordinates: 'O2',
             abilities: [
@@ -475,6 +476,7 @@ module Engine
             always_market_price: true,
             tokens: [0, 40, 100],
             logo: '1893/RSE',
+            simple_logo: '1893/RSE.alt',
             color: :pink,
             text_color: 'black',
             coordinates: 'R7',
@@ -495,6 +497,7 @@ module Engine
             tokens: [0, 40, 100],
             color: '#B3B3B3',
             logo: '1893/RAG',
+            simple_logo: '1893/RAG.alt',
             text_color: 'black',
             coordinates: 'D5',
             abilities: [
@@ -515,6 +518,7 @@ module Engine
             tokens: [],
             shares: [0, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
             logo: '1893/AdSK',
+            simple_logo: '1893/AdSK.alt',
             color: :gray,
             text_color: 'white',
             abilities: [
@@ -535,6 +539,7 @@ module Engine
             tokens: [100, 100],
             shares: [20, 10, 20, 10, 10, 10, 10, 10],
             logo: '1893/AGV',
+            simple_logo: '1893/AGV.alt',
             color: :green,
             text_color: 'black',
             abilities: [
@@ -555,6 +560,7 @@ module Engine
             tokens: [100, 100],
             shares: [20, 10, 20, 10, 10, 10, 10, 10],
             logo: '1893/HGK',
+            simple_logo: '1893/HGK.alt',
             color: :red,
             abilities: [
               {
@@ -573,6 +579,7 @@ module Engine
             type: 'minor',
             tokens: [0],
             logo: '1893/EKB',
+            simple_logo: '1893/EKB.alt',
             coordinates: 'T3',
             city: 0,
             color: :green,
@@ -583,6 +590,7 @@ module Engine
             type: 'minor',
             tokens: [0],
             logo: '1893/KFBE',
+            simple_logo: '1893/KFBE.alt',
             coordinates: 'L3',
             city: 0,
             color: :red,
@@ -593,6 +601,7 @@ module Engine
             type: 'minor',
             tokens: [0],
             logo: '1893/KSZ',
+            simple_logo: '1893/KSZ.alt',
             coordinates: 'P7',
             city: 0,
             color: :green,
@@ -603,6 +612,7 @@ module Engine
             type: 'minor',
             tokens: [0],
             logo: '1893/KBE',
+            simple_logo: '1893/KBE.alt',
             coordinates: 'O4',
             city: 0,
             color: :red,
@@ -613,6 +623,7 @@ module Engine
             type: 'minor',
             tokens: [0],
             logo: '1893/BKB',
+            simple_logo: '1893/BKB.alt',
             coordinates: 'I2',
             city: 0,
             color: :green,
@@ -822,6 +833,7 @@ module Engine
             sym: 'N',
             name: 'Neutral',
             logo: 'open_city',
+            simple_logo: 'open_city.alt',
             tokens: [0, 0],
           )
           @neutral.owner = @bank

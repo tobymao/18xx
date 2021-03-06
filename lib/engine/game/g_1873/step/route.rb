@@ -15,10 +15,12 @@ module Engine
           end
 
           def skip!
+            @game.update_tokens(current_entity, [])
             return super if !@game.any_mine?(current_entity) && current_entity != @game.mhe
 
             if @game.any_mine?(current_entity)
               @game.update_mine_revenue(@round, current_entity) if @round.routes.empty?
+              @round.clear_cache!
             end
 
             pass!
@@ -28,9 +30,12 @@ module Engine
             super
 
             entity = action.entity
+
             maintenance = @game.maintenance_costs(entity)
             @round.maintenance = maintenance
             @log << "#{entity.name} owes #{@game.format_currency(maintenance)} for maintenance" if maintenance.positive?
+
+            @game.update_tokens(entity, action.routes)
           end
 
           def round_state

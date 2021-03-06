@@ -20,6 +20,7 @@ module View
         needs :slot_index, default: 0
         needs :city
         needs :edge
+        needs :extra_token, default: false
         needs :radius
         needs :selected_company, default: nil, store: true
         needs :tile_selector, default: nil, store: true
@@ -46,22 +47,26 @@ module View
         }.freeze
 
         def render_part
-          children = []
           color = @reservation&.corporation? && @reservation&.reservation_color || 'white'
           radius = @radius
-          if (owner = @token&.corporation&.owner) && Lib::Storage['show_player_colors'] &&
-              @game.players.include?(owner)
+          if (owner = @token&.corporation&.owner) && Lib::Storage['show_player_colors'] && @game.players.include?(owner)
             color = player_colors(@game.players)[owner]
             radius -= 4
           end
 
-          children << h(:circle, attrs: { r: @radius, fill: color })
+          children = [h(:circle, attrs: { r: @radius, fill: color })]
           children << reservation if @reservation && !@token
           children << h(Token, token: @token, radius: radius) if @token
 
-          props = { on: { click: ->(event) { on_click(event) } } }
-
-          props[:attrs] = { transform: rotation_for_layout } if @edge
+          props = {
+            on: { click: ->(event) { on_click(event) } },
+            attrs: { transform: '' },
+          }
+          props[:attrs][:transform] = rotation_for_layout if @edge
+          if @extra_token
+            props[:attrs][:transform] += ' scale(0.95)'
+            props[:attrs][:filter] = 'drop-shadow(0 0 6px #000)'
+          end
 
           h(:g, props, children)
         end

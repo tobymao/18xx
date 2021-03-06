@@ -20,6 +20,7 @@ module Engine
           end
 
           def skip!
+            @round.clear_cache!
             revenue = total_revenue(current_entity)
             process_dividend(Action::Dividend.new(
               current_entity,

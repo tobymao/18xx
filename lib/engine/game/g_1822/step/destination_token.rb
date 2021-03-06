@@ -41,21 +41,34 @@ module Engine
             @game.class::DESTINATIONS[entity.id] == hex.name
           end
 
+          def destination_node_check?(entity)
+            destination_hex = @game.class::DESTINATIONS[entity.id]
+            node_keys = @game.graph.connected_nodes(entity).keys
+            node_keys.select(&:city?).any? { |c| c.hex.id == destination_hex }
+          end
+
           def process_hex_token(action)
             entity = action.entity
             hex = action.hex
             token = action.token
 
             unless @game.loading
-              destination_hex = @game.class::DESTINATIONS[entity.id]
-              node_keys = @game.graph.connected_nodes(entity).keys
-              found_connected_city = node_keys.select(&:city?).any? { |c| c.hex.id == destination_hex }
               raise GameError, "Can't place the destination token on #{hex.name} "\
-                               'because it is not connected' unless found_connected_city
+                               'because it is not connected' unless destination_node_check?(entity)
             end
 
             @game.place_destination_token(entity, hex, token)
             pass!
+          end
+
+          def process_pass(action)
+            entity = action.entity
+            unless @game.loading
+              raise GameError, "You can't skip placing your destination token when you have a connection "\
+                               "to #{@game.class::DESTINATIONS[entity.id]}" if destination_node_check?(entity)
+            end
+
+            super
           end
 
           def skip!

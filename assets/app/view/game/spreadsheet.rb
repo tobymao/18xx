@@ -17,6 +17,8 @@ module View
 
       needs :game
 
+      PLAYER_COL_MAX_WIDTH = '5rem'
+
       def render
         @spreadsheet_sort_by = Lib::Storage['spreadsheet_sort_by']
         @spreadsheet_sort_order = Lib::Storage['spreadsheet_sort_order']
@@ -128,6 +130,7 @@ module View
             when 'withhold'
               ["[#{hist[x].revenue}]", '0.5']
             when 'half'
+              @halfpaid = true
               ["¦#{hist[x].revenue}¦", '0.75']
             else
               [hist[x].revenue.to_s, '1.0']
@@ -188,7 +191,9 @@ module View
           h(:tr, [
             h(:th, { style: { paddingBottom: '0.3rem' } }, render_sort_link('SYM', :id)),
             *@game.players.map do |p|
-              h('th.name.nowrap', p == @game.priority_deal_player ? pd_props : '', render_sort_link(p.name, p.id))
+              props = p == @game.priority_deal_player ? pd_props : { style: {} }
+              props[:style][:minWidth] = PLAYER_COL_MAX_WIDTH if p.companies.size > 1
+              h('th.name.nowrap', props, render_sort_link(p.name, p.id))
             end,
             h(:th, render_sort_link(@game.ipo_name, :ipo_shares)),
             h(:th, render_sort_link('Market', :market_shares)),
@@ -319,7 +324,9 @@ module View
             when :order
               operating_order
             when :trains
-              corporation.floated? ? [corporation.trains.size, corporation.trains.max_by(&:name).to_s] : [-1, '']
+              ct = corporation.trains.sort_by(&:name).reverse
+              train_limit = @game.phase.train_limit(corporation)
+              corporation.floated? ? [ct.size, [train_limit.times.map { |i| ct[i]&.name }]] : [-1, []]
             when :tokens
               @game.count_available_tokens(corporation)
             when :loans
@@ -415,7 +422,16 @@ module View
       end
 
       def render_companies(entity)
-        h('td.padded_number', entity.companies.map(&:sym).join(', '))
+        if entity.player?
+          props = {
+            style: {
+              maxWidth: PLAYER_COL_MAX_WIDTH,
+              whiteSpace: 'normal',
+            },
+          }
+          props[:style][:width] = PLAYER_COL_MAX_WIDTH if entity.companies.size > 1
+        end
+        h('td.right', props, entity.companies.map(&:sym).join(', '))
       end
 
       def render_player_companies

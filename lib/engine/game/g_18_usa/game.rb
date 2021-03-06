@@ -22,16 +22,15 @@ module Engine
         MUST_SELL_IN_BLOCKS = false
 
         TILES = {
-          '5' => 'unlimited',
           '6' => 'unlimited',
+          '5' => 'unlimited',
           '7' => 'unlimited',
           '8' => 'unlimited',
           '9' => 'unlimited',
           '14' => 'unlimited',
           '15' => 'unlimited',
-          '54' => 'unlimited',
           '57' => 'unlimited',
-          '62' => 'unlimited',
+          '60' => 'unlimited',
           '63' => 'unlimited',
           '80' => 'unlimited',
           '81' => 'unlimited',
@@ -46,19 +45,89 @@ module Engine
           '597' => 'unlimited',
           '611' => 'unlimited',
           '619' => 'unlimited',
-          'X00' =>
+          'X01' =>
           {
             'count' => 'unlimited',
             'color' => 'yellow',
-            'code' =>
-            'city=revenue:30;path=a:1,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=B',
+            'code' => 'city=revenue:30;path=a:1,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=B',
           },
-          'X30' =>
-          {
+          'X02' => {
+            'count' => 'unlimited',
+            'color' => 'yellow',
+            'code' => 'city=revenue:30;path=a:1,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=B',
+          },
+          'X06' => {
+            'count' => 'unlimited',
+            'color' => 'yellow',
+            'code' => 'city=revenue:30;path=a:1,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=B',
+          },
+          'X03' => {
+            'count' => 1,
+            'color' => 'yellow',
+            'code' => 'city=revenue:30;path=a:1,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=DFW',
+          },
+          'X05' => {
+            'count' => 1,
+            'color' => 'yellow',
+            'code' => 'city=revenue:30;path=a:1,b:_0;path=a:2,b:_0;path=a:5,b:_0;label=LA',
+          },
+          'X10' => {
+            'count' => 1,
+            'color' => 'green',
+            'code' => 'city=revenue:50,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=DFW',
+          },
+          'X11' => {
+            'count' => 1,
+            'color' => 'green',
+            'code' => 'city=revenue:50,slots:2;path=a:1,b:_0;path=a:2,b:_0;path=a:5,b:_0;label=LA',
+          },
+          'X12' => {
+            'count' => 1,
+            'color' => 'green',
+            'code' => 'city=revenue:60,slots:2;city=revenue:60;path=a:0,b:_0;path=a:3,b:_0;path=a:1,b:_1;path=a:2,'\
+            'b:_1;label=NY',
+          },
+          'X13' => {
+            'count' => 1,
+            'color' => 'brown',
+            'code' => 'city=revenue:50,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:5,b:_0;label=CL',
+          },
+          'X14' => {
+            'count' => 1,
+            'color' => 'brown',
+            'code' => 'city=revenue:80,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;'\
+            'label=DFW',
+          },
+          'X15' => {
+            'count' => 1,
+            'color' => 'brown',
+            'code' => 'city=revenue:70,slots:3;path=a:0,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=LA',
+          },
+          'X16' => {
+            'count' => 1,
+            'color' => 'brown',
+            'code' => 'city=revenue:70,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;label=NY',
+          },
+          'X17': {
             'count' => 'unlimited',
             'color' => 'gray',
-            'code' =>
-            'city=revenue:100,slots:4;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=NY',
+            'code' => 'junction;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;',
+          },
+          'X18' => {
+            'count' => 1,
+            'color' => 'gray',
+            'code' => 'city=revenue:80,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
+            'path=a:5,b:_0;label=DFW',
+          },
+          'X19': {
+            'count' => 1,
+            'color' => 'gray',
+            'code' => 'city=revenue:90,slots:4;path=a:0,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=LA',
+          },
+          'X30' => {
+            'count' => 1,
+            'color' => 'gray',
+            'code' => 'city=revenue:100,slots:4;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=NY',
           },
         }.freeze
 
@@ -545,6 +614,7 @@ module Engine
             sym: 'A&S',
             name: 'Alton & Southern Railway',
             logo: '1817/AS',
+            simple_logo: '1817/AS.alt',
             shares: [100],
             max_ownership_percent: 100,
             tokens: [0],
@@ -557,6 +627,7 @@ module Engine
             sym: 'A&A',
             name: 'Arcade and Attica',
             logo: '1817/AA',
+            simple_logo: '1817/AA.alt',
             shares: [100],
             max_ownership_percent: 100,
             tokens: [0],
@@ -569,6 +640,7 @@ module Engine
             sym: 'Belt',
             name: 'Belt Railway of Chicago',
             logo: '1817/Belt',
+            simple_logo: '1817/Belt.alt',
             shares: [100],
             max_ownership_percent: 100,
             tokens: [0],
@@ -582,6 +654,7 @@ module Engine
             sym: 'Bess',
             name: 'Bessemer and Lake Erie Railroad',
             logo: '1817/Bess',
+            simple_logo: '1817/Bess.alt',
             shares: [100],
             max_ownership_percent: 100,
             tokens: [0],
@@ -594,6 +667,7 @@ module Engine
             sym: 'B&A',
             name: 'Boston and Albany Railroad',
             logo: '1817/BA',
+            simple_logo: '1817/BA.alt',
             shares: [100],
             max_ownership_percent: 100,
             tokens: [0],
@@ -606,6 +680,7 @@ module Engine
             sym: 'DL&W',
             name: 'Delaware, Lackawanna and Western Railroad',
             logo: '1817/DLW',
+            simple_logo: '1817/DLW.alt',
             shares: [100],
             max_ownership_percent: 100,
             tokens: [0],
@@ -618,6 +693,7 @@ module Engine
             sym: 'J',
             name: 'Elgin, Joliet and Eastern Railway',
             logo: '1817/J',
+            simple_logo: '1817/J.alt',
             shares: [100],
             max_ownership_percent: 100,
             tokens: [0],
@@ -631,6 +707,7 @@ module Engine
             sym: 'GT',
             name: 'Grand Trunk Western Railroad',
             logo: '1817/GT',
+            simple_logo: '1817/GT.alt',
             shares: [100],
             max_ownership_percent: 100,
             tokens: [0],
@@ -643,6 +720,7 @@ module Engine
             sym: 'H',
             name: 'Housatonic Railroad',
             logo: '1817/H',
+            simple_logo: '1817/H.alt',
             shares: [100],
             max_ownership_percent: 100,
             tokens: [0],
@@ -656,6 +734,7 @@ module Engine
             sym: 'ME',
             name: 'Morristown and Erie Railway',
             logo: '1817/ME',
+            simple_logo: '1817/ME.alt',
             shares: [100],
             max_ownership_percent: 100,
             tokens: [0],
@@ -669,6 +748,7 @@ module Engine
             sym: 'NYOW',
             name: 'New York, Ontario and Western Railway',
             logo: '1817/W',
+            simple_logo: '1817/W.alt',
             shares: [100],
             max_ownership_percent: 100,
             tokens: [0],
@@ -681,6 +761,7 @@ module Engine
             sym: 'NYSW',
             name: 'New York, Susquehanna and Western Railway',
             logo: '1817/S',
+            simple_logo: '1817/S.alt',
             shares: [100],
             max_ownership_percent: 100,
             tokens: [0],
@@ -694,6 +775,7 @@ module Engine
             sym: 'PSNR',
             name: 'Pittsburgh, Shawmut and Northern Railroad',
             logo: '1817/PSNR',
+            simple_logo: '1817/PSNR.alt',
             shares: [100],
             max_ownership_percent: 100,
             tokens: [0],
@@ -706,6 +788,7 @@ module Engine
             sym: 'PLE',
             name: 'Pittsburgh and Lake Erie Railroad',
             logo: '1817/PLE',
+            simple_logo: '1817/PLE.alt',
             shares: [100],
             max_ownership_percent: 100,
             tokens: [0],
@@ -718,6 +801,7 @@ module Engine
             sym: 'PW',
             name: 'Providence and Worcester Railroad',
             logo: '1817/PW',
+            simple_logo: '1817/PW.alt',
             shares: [100],
             max_ownership_percent: 100,
             tokens: [0],
@@ -731,6 +815,7 @@ module Engine
             sym: 'R',
             name: 'Rutland Railroad',
             logo: '1817/R',
+            simple_logo: '1817/R.alt',
             shares: [100],
             max_ownership_percent: 100,
             tokens: [0],
@@ -743,6 +828,7 @@ module Engine
             sym: 'SR',
             name: 'Strasburg Railroad',
             logo: '1817/SR',
+            simple_logo: '1817/SR.alt',
             shares: [100],
             max_ownership_percent: 100,
             tokens: [0],
@@ -755,6 +841,7 @@ module Engine
             sym: 'UR',
             name: 'Union Railroad',
             logo: '1817/UR',
+            simple_logo: '1817/UR.alt',
             shares: [100],
             max_ownership_percent: 100,
             tokens: [0],
@@ -767,6 +854,7 @@ module Engine
             sym: 'WT',
             name: 'Warren & Trumbull Railroad',
             logo: '1817/WT',
+            simple_logo: '1817/WT.alt',
             shares: [100],
             max_ownership_percent: 100,
             tokens: [0],
@@ -779,6 +867,7 @@ module Engine
             sym: 'WC',
             name: 'West Chester Railroad',
             logo: '1817/WC',
+            simple_logo: '1817/WC.alt',
             shares: [100],
             max_ownership_percent: 100,
             tokens: [0],
@@ -796,33 +885,69 @@ module Engine
         SEED_MONEY = 200
         # Alphabetized. Not sure what official ordering is
 
+        METROPOLITAN_HEXES = %w[G3 E11 H14 H22 I19 D20].freeze
+
+        def setup
+          metro = METROPOLITAN_HEXES.sort_by { rand }.take(3)
+          metro.each do |i|
+            if i == 'H14'
+              @hexes.find { |h| h.id == i }.lay(@tiles.find { |t| t.name == 'X03' })
+            elsif i == 'E11'
+              # Denver needs to be done at a later date
+            elsif i == 'G3'
+              @hexes.find { |h| h.id == i }.lay(@tiles.find { |t| t.name == 'X05' }.rotate!(3))
+            elsif i == 'D20'
+              @hexes.find { |h| h.id == i }.lay(@tiles.find { |t| t.name == 'X02' }.rotate!(1))
+            elsif i == 'I19'
+              @hexes.find { |h| h.id == i }.lay(@tiles.find { |t| t.name == 'X06' })
+            elsif i == 'H22'
+              @hexes.find { |h| h.id == i }.lay(@tiles.find { |t| t.name == 'X01' })
+            end
+          end
+        end
+
+        def take_loan(entity, loan)
+          raise GameError, "Cannot take more than #{maximum_loans(entity)} loans" unless can_take_loan?(entity)
+
+          price = entity.share_price.price
+          name = entity.name
+          name += " (#{entity.owner.name})" if @round.is_a?(Round::Stock)
+          @log << "#{name} takes a loan and receives #{format_currency(loan.amount)}"
+          @bank.spend(loan.amount, entity)
+          @stock_market.move_left(entity)
+          @stock_market.move_left(entity)
+          log_share_price(entity, price)
+          entity.loans << loan
+          @loans.delete(loan)
+        end
+
         OFFBOARD_VALUES = [[20, 30, 40, 50], [20, 30, 40, 60], [20, 30, 50, 60], [20, 30, 50, 60], [20, 30, 60, 90],
                            [20, 40, 50, 80], [30, 40, 40, 50], [30, 40, 50, 60], [30, 50, 60, 80], [30, 50, 60, 80],
                            [40, 50, 40, 40]].freeze
 
         def optional_hexes
-          ofboard = OFFBOARD_VALUES.sort_by { rand }
+          offboard = OFFBOARD_VALUES.sort_by { rand }
           plain_hexes = %w[B20 B26 C5 C11 C13 C15 D2 D4 D12 D22 E13 E27 F2 F6 F12 F14 G9 G13 G19 G25 H10 H12 H16
                            H24 H26]
           {
             red: {
-              ['A27'] => "offboard=revenue:yellow_#{ofboard[0][0]}|green_#{ofboard[0][1]}"\
-              "|brown_#{ofboard[0][2]}|gray_#{ofboard[0][3]};"\
+              ['A27'] => "offboard=revenue:yellow_#{offboard[0][0]}|green_#{offboard[0][1]}"\
+              "|brown_#{offboard[0][2]}|gray_#{offboard[0][3]};"\
               'path=a:5,b:_0;path=a:0,b:_0',
-              ['J20'] => "offboard=revenue:yellow_#{ofboard[1][0]}|green_#{ofboard[1][1]}|brown_#{ofboard[1][2]}"\
-              "|gray_#{ofboard[1][3]};path=a:2,b:_0",
-              ['I5'] => "offboard=revenue:yellow_#{ofboard[2][0]}|green_#{ofboard[2][1]}|brown_#{ofboard[2][2]}"\
-              "|gray_#{ofboard[2][3]},groups:Mexico,hide:1;path=a:2,b:_0;path=a:3,b:_0;border=edge:4",
+              ['J20'] => "offboard=revenue:yellow_#{offboard[1][0]}|green_#{offboard[1][1]}|brown_#{offboard[1][2]}"\
+              "|gray_#{offboard[1][3]};path=a:2,b:_0",
+              ['I5'] => "offboard=revenue:yellow_#{offboard[2][0]}|green_#{offboard[2][1]}|brown_#{offboard[2][2]}"\
+              "|gray_#{offboard[2][3]},groups:Mexico,hide:1;path=a:2,b:_0;path=a:3,b:_0;border=edge:4",
               %w[I7
-                 I9] => "offboard=revenue:yellow_#{ofboard[2][0]}|green_#{ofboard[2][1]}|brown_#{ofboard[2][2]}"\
-                 "|gray_#{ofboard[2][3]},groups:Mexico,hide:1;path=a:2,b:_0;path=a:3,b:_0;border=edge:4;border=edge:1",
-              ['I11'] => "offboard=revenue:yellow_#{ofboard[2][0]}|green_#{ofboard[2][1]}|brown_#{ofboard[2][2]}"\
-              "|gray_#{ofboard[2][3]},groups:Mexico;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;border=edge:1;"\
+                 I9] => "offboard=revenue:yellow_#{offboard[2][0]}|green_#{offboard[2][1]}|brown_#{offboard[2][2]}"\
+                 "|gray_#{offboard[2][3]},groups:Mexico,hide:1;path=a:2,b:_0;path=a:3,b:_0;border=edge:4;border=edge:1",
+              ['I11'] => "offboard=revenue:yellow_#{offboard[2][0]}|green_#{offboard[2][1]}|brown_#{offboard[2][2]}"\
+              "|gray_#{offboard[2][3]},groups:Mexico;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;border=edge:1;"\
               'border=edge:5',
-              ['J12'] => "offboard=revenue:yellow_#{ofboard[2][0]}|green_#{ofboard[2][1]}|brown_#{ofboard[2][2]}"\
-              "|gray_#{ofboard[2][3]},groups:Mexico,hide:1;path=a:3,b:_0;border=edge:2;border=edge:5",
-              ['K13'] => "offboard=revenue:yellow_#{ofboard[2][0]}|green_#{ofboard[2][1]}|brown_#{ofboard[2][2]}"\
-              "|gray_#{ofboard[2][3]},groups:Mexico,hide:1;path=a:3,b:_0;border=edge:2",
+              ['J12'] => "offboard=revenue:yellow_#{offboard[2][0]}|green_#{offboard[2][1]}|brown_#{offboard[2][2]}"\
+              "|gray_#{offboard[2][3]},groups:Mexico,hide:1;path=a:3,b:_0;border=edge:2;border=edge:5",
+              ['K13'] => "offboard=revenue:yellow_#{offboard[2][0]}|green_#{offboard[2][1]}|brown_#{offboard[2][2]}"\
+              "|gray_#{offboard[2][3]},groups:Mexico,hide:1;path=a:3,b:_0;border=edge:2",
             },
             white: {
               %w[E11 G3 H14 I15 H20 H22 F26 C29 D24] => 'city=revenue:0',
@@ -849,14 +974,14 @@ module Engine
               plain_hexes => '',
             },
             gray: {
-              ['A15'] => "town=revenue:yellow_#{ofboard[3][0]}|green_#{ofboard[3][1]}|brown_#{ofboard[3][2]}"\
-              "|gray_#{ofboard[3][3]};path=a:0,b:_0;path=a:5,b:_0",
-              ['B2'] => "town=revenue:yellow_#{ofboard[4][0]}|green_#{ofboard[4][1]}|brown_#{ofboard[4][2]}"\
-              "|gray_#{ofboard[4][3]};path=a:4,b:_0;path=a:5,b:_0",
-              ['J24'] => "town=revenue:yellow_#{ofboard[5][0]}|green_#{ofboard[5][1]}|brown_#{ofboard[5][2]}"\
-              "|gray_#{ofboard[5][3]};path=a:2,b:_0;path=a:3,b:_0",
-              ['E1'] => "town=revenue:yellow_#{ofboard[6][0]}|green_#{ofboard[6][1]}|brown_#{ofboard[6][2]}"\
-              "|gray_#{ofboard[6][3]};path=a:4,b:_0;path=a:5,b:_0;path=a:3,b:_0",
+              ['A15'] => "town=revenue:yellow_#{offboard[3][0]}|green_#{offboard[3][1]}|brown_#{offboard[3][2]}"\
+              "|gray_#{offboard[3][3]};path=a:0,b:_0;path=a:5,b:_0",
+              ['B2'] => "town=revenue:yellow_#{offboard[4][0]}|green_#{offboard[4][1]}|brown_#{offboard[4][2]}"\
+              "|gray_#{offboard[4][3]};path=a:4,b:_0;path=a:5,b:_0",
+              ['J24'] => "town=revenue:yellow_#{offboard[5][0]}|green_#{offboard[5][1]}|brown_#{offboard[5][2]}"\
+              "|gray_#{offboard[5][3]};path=a:2,b:_0;path=a:3,b:_0",
+              ['E1'] => "town=revenue:yellow_#{offboard[6][0]}|green_#{offboard[6][1]}|brown_#{offboard[6][2]}"\
+              "|gray_#{offboard[6][3]};path=a:4,b:_0;path=a:5,b:_0;path=a:3,b:_0",
               ['B30'] => 'path=a:1,b:0',
               ['C23'] => 'town=revenue:yellow_30|green_40|brown_50|gray_60;path=a:4,b:_0;path=a:2,b:_0;path=a:0,b:_0',
               ['C25'] => 'town=revenue:yellow_20|green_30|brown_40|gray_50;path=a:1,b:_0;path=a:5,b:_0;path=a:3,b:_0',
@@ -868,6 +993,44 @@ module Engine
               %w[B24 C21] => '',
             },
           }
+        end
+
+        def stock_round
+          close_bank_shorts
+          @interest_fixed = nil
+
+          G18USA::Round::Stock.new(self, [
+            Engine::Step::DiscardTrain,
+            Engine::Step::HomeToken,
+            G1817::Step::BuySellParShares,
+          ])
+        end
+
+        def operating_round(round_num)
+          @interest_fixed = nil
+          @interest_fixed = interest_rate
+          # Revaluate if private companies are owned by corps with trains
+          @companies.each do |company|
+            next unless company.owner
+
+            abilities(company, :revenue_change, time: 'has_train') do |ability|
+              company.revenue = company.owner.trains.any? ? ability.revenue : 0
+            end
+          end
+
+          G1817::Round::Operating.new(self, [
+            G1817::Step::Bankrupt,
+            G1817::Step::CashCrisis,
+            G18USA::Step::Loan,
+            G1817::Step::SpecialTrack,
+            G1817::Step::Assign,
+            G1817::Step::Track,
+            Engine::Step::Token,
+            Engine::Step::Route,
+            G18USA::Step::Dividend,
+            Engine::Step::DiscardTrain,
+            G1817::Step::BuyTrain,
+          ], round_num: round_num)
         end
       end
     end

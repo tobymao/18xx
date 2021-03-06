@@ -7,13 +7,15 @@ module Engine
     include Entity
 
     attr_accessor :coordinates
-    attr_reader :color, :city, :loans, :logo, :simple_logo, :operating_history, :text_color, :tokens, :trains
+    attr_reader :color, :city, :loans, :logo, :logo_filename, :simple_logo,
+                :operating_history, :text_color, :tokens, :trains
 
     def init_operator(opts)
       @cash = 0
       @trains = []
       @operating_history = {}
-      @logo = "/logos/#{opts[:logo]}.svg"
+      @logo_filename = "#{opts[:logo]}.svg"
+      @logo = "/logos/#{@logo_filename}"
       @simple_logo = opts[:simple_logo] ? "/logos/#{opts[:simple_logo]}.svg" : @logo
       @coordinates = opts[:coordinates]
       @city = opts[:city]

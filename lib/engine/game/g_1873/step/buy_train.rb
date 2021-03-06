@@ -11,11 +11,15 @@ module Engine
             return [] if entity.company? || entity == @game.mhe
             return [] if entity != current_entity
 
-            actions = []
-            actions << 'buy_train' if can_really_buy_train?(entity)
-            actions << 'scrap_train' if can_scrap_train?(entity)
-            actions << 'pass' unless actions.empty?
-            actions
+            rval = []
+            rval << 'buy_train' if can_really_buy_train?(entity)
+            rval << 'scrap_train' if can_scrap_train?(entity)
+            rval << 'pass' if !rval.empty? && !compulsory_buy?(entity)
+            rval
+          end
+
+          def description
+            @game.concession_pending?(current_entity) ? 'Buy Compulsory Train' : 'Buy Trains'
           end
 
           def pass_description
@@ -61,13 +65,23 @@ module Engine
             # indie mines can't buy 1Ms
             return false if entity.minor? && !@game.phase.available?('2')
 
-            if @game.switcher_price
-              # force creation of a switcher
-              @game.next_switcher
+            # FIXME: need to correct for entity-specific variants?
+            # FIXME: this is lazy and computationally expensive
+            !buyable_trains(entity).empty?
+          end
+
+          def compulsory_buy?(entity)
+            return false if !@game.concession_pending?(entity) || !entity.cash.positive?
+
+            depot_trains = @depot.depot_trains.reject do |dt|
+              dt.price > entity.cash || (entity == @game.nwe && dt.distance < 2)
             end
 
-            # FIXME: need to correct for entity-specific variants?
-            !buyable_trains(entity).empty?
+            other_trains = @depot.other_trains(entity).reject do |ot|
+              !@game.train_is_train?(ot) || ot.owner.owner != entity || (entity == @game.nwe && ot.distance < 2)
+            end
+
+            !depot_trains.empty? || !other_trains.empty?
           end
 
           def minor_distance(entity)
@@ -89,8 +103,11 @@ module Engine
             other_trains = @depot.other_trains(entity)
             other_trains = [] if entity.cash.zero?
             other_trains.reject! do |ot|
-              @game.train_is_machine?(ot) || (@game.any_mine?(entity) && @game.train_is_train?(ot)) ||
-                (ot.owner.owner && @game.public_mine?(ot.owner.owner) && ot.owner.owner == entity)
+              @game.train_is_machine?(ot) ||
+                ot.owner == @game.mhe ||
+                (@game.any_mine?(entity) && @game.train_is_train?(ot)) ||
+                (ot.owner.owner && @game.public_mine?(ot.owner.owner) && ot.owner.owner == entity) ||
+                (@game.concession_pending?(entity) && (!@game.train_is_train?(ot) || ot.owner.owner != entity))
             end
 
             # indie mines can't buy same size machine
@@ -99,7 +116,7 @@ module Engine
             # public mines have to have at least one mine with a smaller machine
             depot_trains.reject! { |t| t.distance <= public_mine_min_distance(entity) } if @game.public_mine?(entity)
 
-            switchers = if (sp = @game.switcher_price)
+            switchers = if (sp = @game.switcher_price) && !@game.concession_pending?(entity)
                           entity.cash >= sp ? [@game.next_switcher] : []
                         else
                           []
@@ -161,12 +178,8 @@ module Engine
             entity = action.entity
             train = action.train
             slots = action.slots
-            if @game.concession_pending?(entity)
-              if entity == @game.nwe && action.train.distance == 1
-                raise GameError, 'NWE must puchase at least a 2T for its compulsory train'
-              end
-
-              @game.concession_unpend!(entity)
+            if @game.concession_pending?(entity) && entity == @game.nwe && action.train.distance == 1
+              raise GameError, 'NWE must puchase at least a 2T for its compulsory train'
             end
 
             scrap_mine_train(entity, action.train) if entity.minor?
@@ -192,6 +205,8 @@ module Engine
 
             allocate_machines!(entity, train, slots) if @game.train_is_machine?(train) && @game.public_mine?(entity)
             allocate_switcher!(entity, train, slots) if @game.train_is_switcher?(train) && @game.public_mine?(entity)
+
+            @game.concession_unpend!(entity) if @game.concession_pending?(entity)
           end
 
           def process_scrap_train(action)

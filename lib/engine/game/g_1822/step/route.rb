@@ -40,7 +40,7 @@ module Engine
 
           def choices
             choices = {}
-            @game.route_trains(current_entity).each_with_index do |train, index|
+            pullman_train_choices(current_entity).each_with_index do |train, index|
               choices[index.to_s] = "#{train.name} train"
             end
             choices
@@ -54,13 +54,17 @@ module Engine
             @pullman_train = nil
           end
 
+          def pullman_train_choices(entity)
+            @game.route_trains(entity).reject { |t| @game.class::LOCAL_TRAINS.include?(t.name) }
+          end
+
           def find_pullman_train(entity)
             entity.trains.find { |t| @game.pullman_train?(t) }
           end
 
           def process_choose(action)
             entity = action.entity
-            @pullman_train = @game.route_trains(entity)[action.choice.to_i]
+            @pullman_train = pullman_train_choices(entity)[action.choice.to_i]
             @log << "#{entity.id} chooses to attach the pullman to the #{@pullman_train.name} train"
 
             attach_pullman

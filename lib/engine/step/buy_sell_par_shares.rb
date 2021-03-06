@@ -286,11 +286,99 @@ module Engine
         programmed_auto_actions(entity)
       end
 
+      def corporation_secure_percent
+        # Most games 50% is fine, those where it's not (e.g. 1817) should subclass
+        50
+      end
+
+      def corporation_secure?(corporation)
+        # Can any other player steal the corporation?
+
+        (corporation.owner.percent_of(corporation, ceil: false)) >= corporation_secure_percent
+      end
+
+      def maximum_share_ownership_after_purchase(_entity, _ignore_entity)
+        # Biggest share not owned by the player, or the player being checked
+        50
+      end
+
+      def action_is_shenanigan?(entity, action, corporation, share_to_buy)
+        corp_buying = share_to_buy&.corporation
+
+        if action.is_a?(Action::Par)
+
+          # If the player can sell shares or they're passing
+          # they may wish to manipulate share price
+          "Corporation #{corporation.name} parred" if !corp_buying || @game.check_sale_timing(entity, corporation)
+        elsif action.is_a?(Action::BuyShares)
+          if corporation.owner == entity
+            return if corporation_secure?(corporation) # Don't care...
+
+            unless corporation == corp_buying
+              return "#{action.entity.player.name} bought on corporation #{corporation.name} and is unsecure"
+            end
+
+            percentage = corporation.owner.percent_of(corporation, ceil: false) + share_to_buy.percent
+            # If next share is bought, is the corp secure? Then it's safe to buy...
+            return if percentage > corporation_secure_percent
+
+            # 1849: Don't automatically buy if shares that could potentially be purchased
+            # Owner has 20% and buys 10%, Other Entity 20% and could buy the 20% becoming president
+            # For simplicity this finds all shares that could potentially make the other player president
+            # it doesn't care where that share is (except for the current president))
+
+            # This assumes there's only one buy per round for other games this needs reexamining.
+            # This doesn't protect against potential brown exploits, players should have already spotted it's
+            # in the brown and made decisions appropriately.
+            bigger_share = @game.shares_for_corporation(corporation).select do |s|
+              s.percent > share_to_buy.percent && (s.owner != entity || s.owner != corporation.owner)
+            end.max(&:percent)
+
+            if bigger_share
+              other_percent = action.entity.percent_of(corporation, ceil: false) + bigger_share.percent
+              if percentage < other_percent
+                "#{action.entity.player.name} has bought, shares exist that could allow them to gain presidency"
+              end
+            end
+          end
+        elsif action.is_a?(Action::SellShares)
+          'Shares were sold'
+        else
+          "Unknown action #{action.type} disabling for safety"
+        end
+      end
+
+      def should_stop_applying_program(entity, corp_buying)
+        # check for shenanigans, returning the first failure reason it finds
+        @round.players_history.each do |other_entity, corporations|
+          next if other_entity == entity
+
+          corporations.each do |corporation, actions|
+            actions.each do |action|
+              reason = action_is_shenanigan?(entity, action, corporation, corp_buying)
+              return reason if reason
+            end
+          end
+        end
+        nil
+      end
+
+      def activate_program_share_pass(entity, _program)
+        available_actions = actions(entity)
+        return unless available_actions.include?('pass')
+
+        reason = should_stop_applying_program(entity, nil)
+        return [Action::ProgramDisable.new(entity, reason: reason)] if reason
+
+        [Action::Pass.new(entity)]
+      end
+
       def activate_program_buy_shares(entity, program)
         # TODO: non-ipo? non-10% shares
         available_actions = actions(entity)
         if available_actions.include?('buy_shares')
           corporation = program.corporation
+
           # check if end condition met
           if program.until_condition == 'float'
             return [Action::ProgramDisable.new(entity,
@@ -299,6 +387,9 @@ module Engine
           end
           share = corporation.ipo_shares.first
           if can_buy?(entity, share.to_bundle)
+            reason = should_stop_applying_program(entity, share)
+            return [Action::ProgramDisable.new(entity, reason: reason)] if reason
+
             [Action::BuyShares.new(entity, shares: share)]
           else
             [Action::ProgramDisable.new(entity, reason: "Cannot buy #{corporation.name}")]

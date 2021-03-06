@@ -10,12 +10,6 @@ module View
       def render
         @corporation = @game.round.active_step.current_entity
 
-        h3_props = {
-          style: {
-            margin: '0.5rem 0 0 0',
-          },
-        }
-
         div_props = {
           style: {
             display: 'grid',
@@ -25,7 +19,7 @@ module View
         }
 
         children = @corporation.shells.flat_map do |shell|
-          [h(:h3, h3_props, "#{shell.name} Shell Trains"),
+          [h(:h3, "#{shell.name} Shell Trains"),
            h(:div, div_props, shell_trains(shell.trains))]
         end
 

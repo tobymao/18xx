@@ -186,7 +186,7 @@ module View
         instructions += ' Click button under Revenue to pick number of halts.' if render_halts
 
         h(:div, div_props, [
-          h(:h3, { style: { margin: '0.5rem 0 0.2rem' } }, 'Select Routes'),
+          h(:h3, 'Select Routes'),
           h('div.small_font', description),
           h('div.small_font', instructions),
           train_help,

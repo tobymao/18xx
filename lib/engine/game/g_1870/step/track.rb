@@ -8,11 +8,24 @@ module Engine
     module G1870
       module Step
         class Track < Engine::Step::Track
+          P_HEXES = %w[J5 B11 C18 N17].freeze
+
           def lay_tile(action, extra_cost: 0, entity: nil, spender: nil)
             raise GameError,
                   'Cannot upgrade the tile in the same turn' if action.hex == @round.river_special_tile_lay
 
             super
+          end
+
+          def process_lay_tile(action)
+            old_tile = action.hex.tile
+
+            super
+
+            old_tile.label = nil if %i[yellow green].include?(old_tile.color) && old_tile.label.to_s == 'P'
+            return unless P_HEXES.include?(action.hex.coordinates)
+
+            action.tile.label = 'P' if %i[yellow green].include?(action.tile.color)
           end
         end
       end

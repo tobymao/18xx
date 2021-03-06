@@ -243,6 +243,8 @@ module View
 
           region_weights =
             case @city.slots(all: true)
+            when 0
+              []
             when 1
               CENTER
             when (2..4)
@@ -285,6 +287,7 @@ module View
                             edge: @edge,
                             token: token,
                             slot_index: slot_index,
+                            extra_token: @city.extra_tokens.include?(token),
                             radius: SLOT_RADIUS,
                             reservation: @city.reservations[slot_index],
                             tile: @tile,

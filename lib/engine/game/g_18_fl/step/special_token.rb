@@ -9,8 +9,8 @@ module Engine
         class SpecialToken < Engine::Step::SpecialToken
           def can_lay_token?(tokener)
             !@game.round.laid_token[tokener] &&
-            @game.round.steps.any? { |step| step.passed? && step.is_a?(G18FL::Step::Track) } &&
-            @game.round.steps.none? { |step| step.passed? && step.is_a?(Engine::Step::Route) }
+              @game.round.step_passed?(G18FL::Step::Track) &&
+              !@game.round.step_passed?(Engine::Step::Route)
           end
 
           def process_place_token(action)
