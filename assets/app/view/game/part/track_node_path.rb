@@ -437,8 +437,8 @@ module View
           # terminal tapered track only supported for centered city/town
           props[:attrs].merge!(
             transform: "rotate(#{rotation})",
-            d: "M #{terminal_start_x} 60 L #{terminal_start_x} 87 L #{terminal_end_x} 87 "\
-               "L #{terminal_end_x} 60 L #{point_x} 25 Z",
+            d: "M #{terminal_start_x} 70 L #{terminal_start_x} 87 L #{terminal_end_x} 87 "\
+               "L #{terminal_end_x} 70 L #{point_x} 35 Z",
             fill: @color,
             stroke: 'none',
             'stroke-linecap': 'butt',
