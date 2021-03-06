@@ -2,13 +2,16 @@
 
 # TODO list for 1825.
 # (working on unit 3 to start)
-# map - done, pending laying-only offboards.
+# map - done
 # map labels - done
 # tile
 # trains
 # phases
 # companies + minors
 # market
+#
+# PHASE 2.
+# Unit 2, with options for choosing which units you play with.
 
 
 
