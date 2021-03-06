@@ -365,7 +365,13 @@ module Engine
             ' corporation.  Remove from the game after AL aquires a spaceship.',
             abilities: [{ type: 'close', when: 'bought_train', corporation: 'AL' },
                         { type: 'no_buy' },
-                        { type: 'shares', shares: 'AL_0' }],
+                        { 
+                          type: 'exchange',
+                          corporations: ['AL'],
+                          owner_type: 'player',
+                          when: ['Phase 3', 'Phase 4'],
+                          from: 'ipo',
+                        }],
             color: nil,
           },
         ].freeze
@@ -375,7 +381,6 @@ module Engine
             sym: 'FB',
             name: 'Fast Buck',
             coordinates: 'G7',
-            city: 0,
             logo: '18_eu/1',
             tokens: [60, 100],
             color: 'black',
@@ -393,7 +398,6 @@ module Engine
             sym: 'IF',
             name: 'Ice Finder',
             coordinates: 'G7',
-            city: 0,
             logo: '18_eu/1',
             tokens: [60, 100],
             color: 'black',
@@ -579,6 +583,16 @@ module Engine
         end
 
         LAYOUT = :pointy
+
+        #EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+        #  'groupB_corps_available' => ['Group B Corps Available',
+        #                               'Group B corps VP, LE and MM are available to start'],
+        #  'groupC_corps_available' => ['Group C Corps Available',
+        #                               'Group C corps OPC and RCC are available to start'],
+        #  'groupD_corps_available' => ['Astroid League Corp Available',
+        #                               'Astroid League Corp is available to start']
+        #).freeze
+        
 
         def operating_round(round_num)
           Round::Operating.new(self, [
