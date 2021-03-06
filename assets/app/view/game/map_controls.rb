@@ -7,7 +7,6 @@ module View
   module Game
     class MapControls < Snabberb::Component
       include Lib::Settings
-      needs :show_coords, default: nil, store: true
       needs :show_starting_map, default: false, store: true
       needs :historical_routes, default: [], store: true
       needs :game, default: nil, store: true
@@ -48,12 +47,11 @@ module View
 
       def hex_coord_controls
         on_click = lambda do
-          new_value = !@show_coords
-          Lib::Storage['show_coords'] = new_value
-          store(:show_coords, new_value)
+          Lib::Storage['show_coords'] = !Lib::Storage['show_coords']
+          update
         end
 
-        render_button("#{@show_coords ? 'Hide' : 'Show'} Hex Coordinates", on_click)
+        render_button("#{Lib::Storage['show_coords'] ? 'Hide' : 'Show'} Hex Coordinates", on_click)
       end
 
       def starting_map_controls

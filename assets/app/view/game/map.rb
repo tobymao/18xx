@@ -15,7 +15,6 @@ module View
       needs :selected_route, default: nil, store: true
       needs :selected_company, default: nil, store: true
       needs :opacity, default: nil
-      needs :show_coords, default: nil, store: true
       needs :show_starting_map, default: false, store: true
       needs :routes, default: [], store: true
       needs :historical_routes, default: [], store: true
@@ -56,7 +55,6 @@ module View
             entity: current_entity,
             clickable: clickable,
             actions: actions,
-            show_coords: show_coords,
             routes: routes,
             start_pos: @start_pos
           )
@@ -151,7 +149,7 @@ module View
       end
 
       def render_controls
-        h(MapControls, show_coords: show_coords)
+        h(MapControls)
       end
 
       def render_map
@@ -180,11 +178,6 @@ module View
               start_pos: @start_pos),
           ]),
         ])
-      end
-
-      def show_coords
-        show = Lib::Storage['show_coords']
-        show.nil? ? false : show
       end
 
       def map_zoom

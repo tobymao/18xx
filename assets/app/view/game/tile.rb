@@ -16,7 +16,6 @@ module View
     class Tile < Snabberb::Component
       needs :tile
       needs :routes, default: []
-
       needs :show_coords, default: nil
 
       # helper method to pass @tile and @region_use to every part
