@@ -88,7 +88,7 @@ module View
             textAlign: 'left',
           },
         }
-        share_props = { style: { width: '2.9rem' } }
+        share_props = { style: { width: '2.7rem' } }
 
         if corporation_interest_penalty?(entity)
           corporation_penalty = "#{entity.name} has " +
