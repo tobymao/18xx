@@ -116,7 +116,9 @@ module Engine
             # 2. End auction if companies have all been purchased.
             resolve_bids
             discount_companies
+            # reset players and bids array with setup auction
             entities.each(&:unpass!)
+            setup_auction
             @round.next_entity_index!
           end
 
@@ -126,7 +128,6 @@ module Engine
             @bids.each do |company, bids|
               resolve_bids_for_company(company, bids)
             end
-            setup_auction
           end
 
           def resolve_bids_for_company(company, bids)
