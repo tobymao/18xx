@@ -1,5 +1,17 @@
 # frozen_string_literal: true
 
+# TODO list for 1825.
+# (working on unit 3 to start)
+# map - done, pending laying-only offboards.
+# map labels - done
+# tile
+# trains
+# phases
+# companies + minors
+# market
+
+
+
 require_relative 'meta'
 require_relative '../base'
 
@@ -514,6 +526,16 @@ module Engine
                       'town=revenue:10,loc:1;path=a:5,b:_1',
             ['F10'] => 'town=revenue:10,loc:2;path=a:2,b:_0;path=a:5,b:0',
             ['K7'] => 'city=revenue:10,loc:3;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
+            ['B6'] => 'offboard=revenue:0;path=a:5,b:_0',
+            ['B10'] => 'offboard=revenue:0;path=a:0,b:_0;path=a:5,b:_0',
+            ['C1'] => 'offboard=revenue:0;path=a:5,b:_0',
+            ['C3'] => 'offboard=revenue:0;path=a:0,b:_0;path=a:5,b:_0',
+            ['C5'] => 'offboard=revenue:0;path=a:0,b:_0;path=a:5,b:_0;path=a:4,b:_0',
+            ['L8'] => 'offboard=revenue:0;path=a:2,b:_0;path=a:3,b:_0',
+            ['L10'] => 'offboard=revenue:0;path=a:2,b:_0;path=a:3,b:_0',
+            ['L12'] => 'offboard=revenue:0;path=a:2,b:_0;path=a:3,b:_0',
+            ['L14'] => 'offboard=revenue:0;path=a:2,b:_0;path=a:3,b:_0',
+            ['L16'] => 'offboard=revenue:0;path=a:2,b:_0',
           }
         }.freeze
 
