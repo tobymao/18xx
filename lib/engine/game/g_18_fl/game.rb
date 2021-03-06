@@ -680,7 +680,7 @@ module Engine
         # 5 => 10 share conversion logic
         def event_forced_conversions!
           @log << '-- Event: All 5 share corporations must convert to 10 share corporations immediately --'
-          @corporations.select { |c| c.type == :medium }.each { |c| convert(c, funding: c.share_price) }
+          @corporations.select { |c| c.type == 'medium' }.each { |c| convert(c, funding: c.share_price) }
         end
 
         def process_convert(action)
@@ -694,11 +694,11 @@ module Engine
           corporation.share_holders.clear
 
           case corporation.type
-          when :medium
+          when 'medium'
             shares.each { |share| share.percent = 10 }
             shares[0].percent = 20
             new_shares = 5.times.map { |i| Share.new(corporation, percent: 10, index: i + 4) }
-            corporation.type = :large
+            corporation.type = 'large'
           else
             raise GameError, 'Cannot convert 10 share corporation'
           end

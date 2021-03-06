@@ -65,7 +65,8 @@ module Engine
 
           def size_corporation(size)
             @corporation_size = size
-            @game.convert(@parred.corporation, funding: false) if @corporation_size == 10
+            @game.convert(@parred.corporation, funding: false) if @corporation_size == 10 &&
+                @parred.corporation.type == 'medium'
           end
 
           def choice_available?(entity)
