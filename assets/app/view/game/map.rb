@@ -127,7 +127,7 @@ module View
           },
         }
 
-        h(:div, [h(:div, props, children), render_controls])
+        h(:div, [h(:div, props, children), h(MapControls)])
       end
 
       def map_x
@@ -146,10 +146,6 @@ module View
           [(((@cols.size / 2 + 0.5) * SIDE_TO_SIDE + 2 * GAP) + 1) * map_zoom,
            ((@rows.size * 1.5 + 0.5) * EDGE_LENGTH + 2 * GAP) * map_zoom]
         end
-      end
-
-      def render_controls
-        h(MapControls)
       end
 
       def render_map

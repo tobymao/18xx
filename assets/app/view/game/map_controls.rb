@@ -21,7 +21,7 @@ module View
           route_controls,
         ].compact
 
-        h(:div, children)
+        h('div#map_controls', children)
       end
 
       def player_colors_controls
