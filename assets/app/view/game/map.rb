@@ -122,12 +122,12 @@ module View
         props = {
           style: {
             overflow: 'auto',
-            margin: '1rem 0',
+            margin: '0.5rem 0 0 0',
             position: 'relative',
           },
         }
 
-        h(:div, [h(:div, props, children), h(MapControls)])
+        h(:div, { style: { marginBottom: '1rem' } }, [h(:div, props, children), h(MapControls)])
       end
 
       def map_x
