@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'lib/storage'
 require 'view/game/part/blocker'
 require 'view/game/part/borders'
 require 'view/game/part/cities'
@@ -17,7 +18,6 @@ module View
       needs :routes, default: []
 
       needs :show_coords, default: nil
-      needs :show_location_names, default: true
 
       # helper method to pass @tile and @region_use to every part
       def render_tile_part(part_class, **kwargs)
@@ -72,7 +72,7 @@ module View
         children << borders if borders
         children << render_tile_part(Part::Partitions) unless @tile.partitions.empty?
 
-        children << rendered_loc_name if rendered_loc_name && @show_location_names
+        children << rendered_loc_name if rendered_loc_name && !Lib::Storage['hide_location_names']
         children << render_coords if @show_coords
 
         children.flatten!

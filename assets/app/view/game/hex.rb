@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'lib/hex'
+require 'lib/storage'
 require 'lib/tile_selector'
 require 'view/game/actionable'
 require 'view/game/runnable'
@@ -35,7 +36,6 @@ module View
       needs :entity, default: nil
       needs :unavailable, default: nil
       needs :show_coords, default: nil
-      needs :show_location_names, default: true
       needs :routes, default: []
       needs :start_pos, default: [1, 1]
 
@@ -55,7 +55,6 @@ module View
             Tile,
             tile: @tile,
             show_coords: @show_coords && (@role == :map),
-            show_location_names: @show_location_names,
             routes: @routes
           )
         end
