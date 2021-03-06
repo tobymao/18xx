@@ -554,9 +554,9 @@ module Engine
                  H10
                  H18
                  O11
-              ] => 'blank'
+              ] => ''
             },
-            grey: {
+            gray: {
               %w[A1
                  B6
                  D8
@@ -570,10 +570,10 @@ module Engine
                  M5
                  M13
                  O1
-              ] => 'blank'
+              ] => ''
             },
             blue: {
-              blue_hexes => 'blank'
+              blue_hexes => ''
             }
           }
         end
