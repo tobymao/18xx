@@ -35,7 +35,7 @@ module Engine
         SELL_BUY_ORDER = :sell_buy
         # is this first to pass: first, second: second.. yes
         NEXT_SR_PLAYER_ORDER = :first_to_pass
-        MIN_BID_INCREMENT = 10
+        MIN_BID_INCREMENT = 5
 
         # Special City hexes
         OMAHA_HEX = 'K7'
@@ -541,9 +541,9 @@ module Engine
         # Two tiles can be laid, only one upgrade
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded }].freeze
 
+
         def init_round
-          super
-          # Round::Auction.new(self, [G18NEB::Step::ModifiedDutchAuction])
+          Round::Auction.new(self, [G18NEB::Step::PriceFindingAuction])
         end
 
         def setup

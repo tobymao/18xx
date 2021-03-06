@@ -11,7 +11,7 @@ module Engine
           include Engine::Step::Auctioner
 
           attr_reader :companies
-          attr_accessor :bids
+          attr_reader :bids
 
           # On your turn, must bid on a private or pass
           # if any privates are left and everyone passes in a row, privates with a bid
@@ -54,7 +54,9 @@ module Engine
 
           def process_bid(action)
             # replace the current bid on company, if any, with this bid.
+            entity = action.entity
             replace_bid(action)
+            entity.unpass!
             @round.next_entity_index!
           end
 
@@ -75,20 +77,29 @@ module Engine
           def setup
             setup_auction
             @companies = @game.companies.sort_by(&:min_bid)
+            @bidders = Hash.new { |h, k| h[k] = [] }
+            @log << "started Price Finding Auction"
           end
 
           def min_bid(company) return unless company
+            return unless company
 
-            company.value - company.discount
+            high_bid = highest_bid(company)
+            high_bid ? high_bid.price + min_increment : company.value - company.discount
           end
 
+          def auctioning
+            nil
+          end
+
+          # can never purchase directly
           def may_purchase?(_company)
-            true
+            false
           end
 
           def discount_company(company)
             company.discount += STANDARD_DEDUCTION
-            price = company.min_bid
+            price = company.value - company.discount
             @log << "#{company.name} min price reduced " +
                      "by #{@game.format_currency(STANDARD_DEDUCTION)} " +
                      "to #{@game.format_currency(price)}"
@@ -112,8 +123,9 @@ module Engine
           end
 
           def resolve_bids
-            @companies.sort_by(&:min_bid).each do |company|
-              if bid = @bids[company]
+            @companies.each do |company|
+              bid = @bids[company]
+              if !bid.empty?
                 accept_bid(bid.first)
               end
             end
@@ -155,7 +167,7 @@ module Engine
             bids.reject! { |b| b.entity != entity }
             bids << bid
 
-            @bidders[company] = [entity]
+            #@bidders[company] = [entity]
 
             @log << "#{entity.name} is bidder #{@game.format_currency(price)} on #{bid.company.name}"
           end
@@ -172,6 +184,10 @@ module Engine
             if price > max_bid(entity, company)
               raise GameError, "Cannot afford bid. Maximum possible bid is #{max_bid(entity, company)}"
             end
+          end
+
+          def max_bid(player, company)
+            player.cash - committed_cash(player) + current_bid_amount(player, company)
           end
 
           def accept_bid(bid)
