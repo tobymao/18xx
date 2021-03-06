@@ -216,7 +216,7 @@ module Engine
             train_limit: 4,
             tiles: [:yellow],
             operating_rounds: 1,
-            status: ['gray_uses_yellow'],
+            status: ['gray_uses_white'],
           },
           {
             name: '6H',
@@ -224,7 +224,7 @@ module Engine
             train_limit: 4,
             tiles: %i[yellow green],
             operating_rounds: 2,
-            status: %w[gray_uses_yellow can_buy_companies],
+            status: %w[gray_uses_white can_buy_companies],
           },
           {
             name: '8H',
@@ -232,7 +232,7 @@ module Engine
             train_limit: 3,
             tiles: %i[yellow green],
             operating_rounds: 2,
-            status: %w[gray_uses_green can_buy_companies],
+            status: %w[gray_uses_gray can_buy_companies],
           },
           {
             name: '10H',
@@ -240,7 +240,7 @@ module Engine
             train_limit: 2,
             tiles: %i[yellow green brown],
             operating_rounds: 3,
-            status: %w[gray_uses_green can_buy_companies],
+            status: %w[gray_uses_gray can_buy_companies],
           },
           {
             name: '12H',
@@ -248,7 +248,7 @@ module Engine
             train_limit: 2,
             tiles: %i[yellow green brown],
             operating_rounds: 3,
-            status: ['gray_uses_brown'],
+            status: ['gray_uses_black'],
           },
           {
             name: '16H',
@@ -256,7 +256,7 @@ module Engine
             train_limit: 2,
             tiles: %i[yellow green brown],
             operating_rounds: 3,
-            status: %w[gray_uses_brown blue_zone],
+            status: %w[gray_uses_black blue_zone],
           },
         ].freeze
 
