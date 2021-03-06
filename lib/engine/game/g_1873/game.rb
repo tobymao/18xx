@@ -24,7 +24,7 @@ module Engine
                     :track_graph
         attr_accessor :premium, :premium_order
 
-        CURRENCY_FORMAT_STR = '%d ℳ'
+        CURRENCY_FORMAT_STR = '%d ℳ'
         BANK_CASH = 100_000
         CERT_LIMIT = {
           2 => 99,
