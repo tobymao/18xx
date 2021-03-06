@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'meta'
+require_relative 'minor'
 require_relative '../base'
 
 module Engine
@@ -296,54 +297,6 @@ module Engine
             color: nil,
           },
           {
-            name: 'Fast Buck',
-            sym: 'FB',
-            value: 100,
-            revenue: 0,
-            desc: 'Buy gives control to minor corporation with same name.',
-            color: nil,
-          },
-          {
-            name: 'Ice Finder',
-            sym: 'IF',
-            value: 100,
-            revenue: 0,
-            desc: 'Buy gives control to minor corporation with same name.',
-            color: nil,
-          },
-          {
-            name: 'Drill Hound',
-            sym: 'HD',
-            value: 100,
-            revenue: 0,
-            desc: 'Buy gives control to minor corporation with same name.',
-            color: nil,
-          },
-          {
-            name: 'Ore Crusher',
-            sym: 'OC',
-            value: 100,
-            revenue: 0,
-            desc: 'Buy gives control to minor corporation with same name.',
-            color: nil,
-          },
-          {
-            name: 'Torch',
-            sym: 'TT',
-            value: 100,
-            revenue: 0,
-            desc: 'Buy gives control to minor corporation with same name.',
-            color: nil,
-          },
-          {
-            name: 'Lucky',
-            sym: 'LY',
-            value: 100,
-            revenue: 0,
-            desc: 'Buy gives control to minor corporation with same name.',
-            color: nil,
-          },
-          {
             name: 'Tunnel Systems',
             sym: 'TS',
             value: 120,
@@ -429,6 +382,7 @@ module Engine
           {
             sym: 'FB',
             name: 'Fast Buck',
+            value: 100,
             coordinates: 'G7',
             logo: '18_eu/1',
             tokens: [60, 100],
@@ -446,6 +400,7 @@ module Engine
           {
             sym: 'IF',
             name: 'Ice Finder',
+            value: 100,
             coordinates: 'G7',
             logo: '18_eu/2',
             tokens: [60, 100],
@@ -463,6 +418,7 @@ module Engine
           {
             sym: 'DH',
             name: 'Drill Hound',
+            value: 100,
             coordinates: 'D14',
             logo: '18_eu/3',
             tokens: [60, 100],
@@ -480,6 +436,7 @@ module Engine
           {
             sym: 'OC',
             name: 'Ore Crusher',
+            value: 100,
             coordinates: 'M5',
             logo: '18_eu/4',
             tokens: [60, 100],
@@ -497,6 +454,7 @@ module Engine
           {
             sym: 'TT',
             name: 'Torch',
+            value: 100,
             coordinates: 'B6',
             logo: '18_eu/5',
             tokens: [60, 100],
@@ -514,6 +472,7 @@ module Engine
           {
             sym: 'LY',
             name: 'Lucky',
+            value: 100,
             coordinates: 'H14',
             logo: '18_eu/6',
             tokens: [60, 100],
@@ -631,6 +590,12 @@ module Engine
           },
         ].freeze
 
+        # Overrides
+
+        def init_minors
+          game_minors.map { |minor| G2038::Minor.new(**minor) }
+        end
+
         def to_hex_list(s, e, l)
           Range.new(s,e).step(2).map { |x| "%s%d" % [l, x] }
         end
@@ -699,17 +664,7 @@ module Engine
           }
         end
 
-        LAYOUT = :pointy
-
-        #EVENTS_TEXT = Base::EVENTS_TEXT.merge(
-        #  'groupB_corps_available' => ['Group B Corps Available',
-        #                               'Group B corps VP, LE and MM are available to start'],
-        #  'groupC_corps_available' => ['Group C Corps Available',
-        #                               'Group C corps OPC and RCC are available to start'],
-        #  'groupD_corps_available' => ['Astroid League Corp Available',
-        #                               'Astroid League Corp is available to start']
-        #).freeze
-        
+        LAYOUT = :pointy        
 
         def operating_round(round_num)
           Round::Operating.new(self, [
