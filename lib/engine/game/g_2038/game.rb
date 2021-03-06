@@ -19,6 +19,7 @@ module Engine
                         brightGreen: '#6ec037')
         TRACK_RESTRICTION = :permissive
         SELL_BUY_ORDER = :sell_buy
+        SELL_AFTER = :p_any_operate
         CURRENCY_FORMAT_STR = '$%d'
 
         BANK_CASH = 10_000
