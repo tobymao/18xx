@@ -39,12 +39,19 @@ module Engine
             @companies
           end
 
-          def auctioneer?
-            false
+          def available_cash(player)
+            player.cash - committed_cash(player)
           end
 
-          def committed_cash(_player, _show_hidden = false)
-            0
+          def committed_cash(player, _show_hidden = false)
+            player_bids = bids_for_player(player)
+            return 0 if player_bids.empty?
+
+            player_bids.sum(&:price)
+          end
+
+          def auctioneer?
+            false
           end
 
           def pass_description
