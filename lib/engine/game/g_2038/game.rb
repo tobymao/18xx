@@ -664,7 +664,14 @@ module Engine
           }
         end
 
-        LAYOUT = :pointy        
+        LAYOUT = :pointy
+
+        def new_auction_round
+          Round::Auction.new(self, [
+            Engine::Step::CompanyPendingPar,
+            G2038::Step::WaterfallAuction,
+          ])
+        end
 
         def operating_round(round_num)
           Round::Operating.new(self, [
