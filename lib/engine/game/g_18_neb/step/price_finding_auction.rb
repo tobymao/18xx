@@ -11,6 +11,7 @@ module Engine
           include Engine::Step::Auctioner
 
           attr_reader :companies
+          attr_accessor :bids
 
           # On your turn, must bid on a private or pass
           # if any privates are left and everyone passes in a row, privates with a bid
@@ -52,9 +53,8 @@ module Engine
           end
 
           def process_bid(action)
-            company = action.company
-            price = company.min_bid
-            buy_company(current_entity, company, price)
+            # replace the current bid on company, if any, with this bid.
+            replace_bid(action)
             @round.next_entity_index!
           end
 
@@ -75,11 +75,9 @@ module Engine
           def setup
             setup_auction
             @companies = @game.companies.sort_by(&:min_bid)
-            @cheapest = @companies.first
           end
 
-          def min_bid(company)
-            return unless company
+          def min_bid(company) return unless company
 
             company.value - company.discount
           end
@@ -88,21 +86,12 @@ module Engine
             true
           end
 
-          def process_assign(action)
-            action.entity.unpass!
-            company = action.target
-            company.discount += 5
-            price = company.min_bid
-            @log << "#{current_entity.name} reduces #{company.name} by #{@game.format_currency(5)}
-                  to #{@game.format_currency(price)}"
-            @round.next_entity_index!
-          end
-
           def discount_company(company)
             company.discount += STANDARD_DEDUCTION
             price = company.min_bid
-            @log << "#{current_entity.name} reduces #{company.name} by #{@game.format_currency(5)}
-                  to #{@game.format_currency(price)}"
+            @log << "#{company.name} min price reduced " +
+                     "by #{@game.format_currency(STANDARD_DEDUCTION)} " +
+                     "to #{@game.format_currency(price)}"
           end
 
           protected
@@ -117,7 +106,17 @@ module Engine
             # 3. Unpass all players
             # 2. End auction if companies have all been purchased.
             resolve_bids
+            discount_companies
             entities.each(&:unpass!)
+            @round.next_entity_index!
+          end
+
+          def resolve_bids
+            @companies.sort_by(&:min_bid).each do |company|
+              if bid = @bids[company]
+                accept_bid(bid.first)
+              end
+            end
           end
 
           def buy_company(player, company, price)
@@ -138,6 +137,49 @@ module Engine
                 @game.share_pool.buy_shares(player, share, exchange: :free)
               end
             end
+          end
+
+          def discount_companies
+            @companies.each {|company| discount_company(company) }
+          end
+
+          # Only one person may bid at a time 
+          def replace_bid(bid)
+            check_bid(bid)
+            company = bid.company
+            price = bid.price
+            entity = bid.entity
+
+            bids = @bids[company]
+            bids.reject! { |b| b.entity == entity }
+            bids.reject! { |b| b.entity != entity }
+            bids << bid
+
+            @bidders[company] = [entity]
+
+            @log << "#{entity.name} is bidder #{@game.format_currency(price)} on #{bid.company.name}"
+          end
+
+          def check_bid(bid)
+            company = bid_target(bid)
+            entity = bid.entity
+            price = bid.price
+            min = min_bid(company)
+            raise GameError, "Minimum bid is #{@game.format_currency(min)} for #{company.name}" if price < min
+            if @game.class::MUST_BID_INCREMENT_MULTIPLE && ((price - min) % @game.class::MIN_BID_INCREMENT).nonzero?
+              raise GameError, "Must increase bid by a multiple of #{@game.class::MIN_BID_INCREMENT}"
+            end
+            if price > max_bid(entity, company)
+              raise GameError, "Cannot afford bid. Maximum possible bid is #{max_bid(entity, company)}"
+            end
+          end
+
+          def accept_bid(bid)
+            price = bid.price
+            company = bid.company
+            player = bid.entity
+            @bids.delete(company)
+            buy_company(player, company, price)
           end
         end
       end
