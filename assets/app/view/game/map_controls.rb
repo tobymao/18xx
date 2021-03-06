@@ -33,7 +33,7 @@ module View
           store(:show_player_colors, new_value)
         end
 
-        render_button("#{show_player_colors ? 'Hide' : 'Show'} Player Colors", on_click)
+        render_button("Player Colors #{show_player_colors ? '✅' : '❌'}", on_click)
       end
 
       def location_names_controls
@@ -42,7 +42,7 @@ module View
           update
         end
 
-        render_button("#{Lib::Storage['hide_location_names'] ? 'Show' : 'Hide'} Location Names", on_click)
+        render_button("Location Names #{Lib::Storage['hide_location_names'] ? '❌' : '✅'}", on_click)
       end
 
       def hex_coord_controls
@@ -51,7 +51,7 @@ module View
           update
         end
 
-        render_button("#{Lib::Storage['show_coords'] ? 'Hide' : 'Show'} Hex Coordinates", on_click)
+        render_button("Hex Coordinates #{Lib::Storage['show_coords'] ? '✅' : '❌'}", on_click)
       end
 
       def starting_map_controls
@@ -59,7 +59,7 @@ module View
           store(:show_starting_map, !@show_starting_map)
         end
 
-        render_button("Show #{@show_starting_map ? 'Current' : 'Starting'} Map", on_click)
+        render_button("Starting Map #{@show_starting_map ? '✅' : '❌'}", on_click)
       end
 
       def generate_last_route(entity)
