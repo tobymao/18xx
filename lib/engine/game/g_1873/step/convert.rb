@@ -27,7 +27,10 @@ module Engine
           end
 
           def skip!
-            log_skip(current_entity) if !@acted && current_entity && current_entity != @game.mhe
+            if !@acted && current_entity && current_entity != @game.mhe &&
+                (current_entity.minor? || current_entity.total_shares < 10)
+              log_skip(current_entity)
+            end
             pass!
           end
 

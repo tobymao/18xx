@@ -16,6 +16,7 @@ module Engine
       @home_as_token = opts[:home_as_token] || false
       @no_blocking = opts[:no_blocking] || false
       @skip_track = opts[:skip_track]
+      @check_tokens = opts[:check_tokens]
     end
 
     def clear
@@ -100,6 +101,7 @@ module Engine
       @game.hexes.each do |hex|
         hex.tile.cities.each do |city|
           next unless city.tokened_by?(corporation)
+          next if @check_tokens && @game.skip_token?(corporation, city)
 
           hex.neighbors.each { |e, _| hexes[hex][e] = true }
           nodes[city] = true

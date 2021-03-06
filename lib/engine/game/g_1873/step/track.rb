@@ -47,6 +47,9 @@ module Engine
             # force recalculation of mine connections
             @game.mine_graph.clear if entity.corporation?
 
+            # update token/route graph
+            @game.graph.clear
+
             # check to see if concession is complete
             if @game.concession_incomplete?(entity) && @game.concession_route_done?(entity)
               @game.concession_complete!(entity)
@@ -114,7 +117,7 @@ module Engine
           def potential_tiles(entity, hex)
             return super unless @game.concession_incomplete?(entity)
 
-            if !@game.concession_hex(hex)
+            if !@game.concession_tile(hex)
               # can only lay in concession hexes
               []
             elsif @game.reserved_tiles[hex.id][:entity] == entity.name
@@ -122,7 +125,7 @@ module Engine
               [@game.reserved_tiles[hex.id][:tile]]
             else
               # can only lay concession tile of this hex
-              [@game.tiles.find { |t| t.name == @game.concession_hex(hex)[:tile] }]
+              [@game.tiles.find { |t| t.name == @game.concession_tile(hex)[:tile] }]
             end
           end
 
@@ -148,7 +151,7 @@ module Engine
           # and the concession company having to pay for previously laid tiles
           def pay_tile_cost!(entity, tile, rotation, hex, spender, cost, _extra_cost)
             reimburse = false
-            ch = @game.concession_hex(tile.hex)
+            ch = @game.concession_tile(tile.hex)
             ch_entity = @game.corporation_by_id(ch[:entity]) if ch
             if ch && entity.name != ch[:entity] && (tile.exits & ch[:exits]).size == ch[:exits].size
               @log << "Laying tile finishes concession track in #{hex.id}"
@@ -177,7 +180,7 @@ module Engine
           end
 
           def pay_full_concession_cost!(entity)
-            total_cost = @game.concession_hexes(entity).sum { |h| @game.concession_hex(h)[:cost] }
+            total_cost = @game.concession_tile_hexes(entity).sum { |h| @game.concession_tile_hex(h)[:cost] }
             return unless total_cost.positive?
 
             @log << "#{entity.name} had entire concession route previously built"
