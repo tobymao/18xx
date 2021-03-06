@@ -39,39 +39,31 @@ module View
       end
 
       def location_names_controls
-        show_hide = @show_location_names ? 'Hide' : 'Show'
-        text = "#{show_hide} Location Names"
-
         on_click = lambda do
           new_value = !@show_location_names
           Lib::Storage['show_location_names'] = new_value
           store(:show_location_names, new_value)
         end
 
-        render_button(text, on_click)
+        render_button("#{@show_location_names ? 'Hide' : 'Show'} Location Names", on_click)
       end
 
       def hex_coord_controls
-        show_hide = @show_coords ? 'Hide' : 'Show'
-        text = "#{show_hide} Hex Coordinates"
-
         on_click = lambda do
           new_value = !@show_coords
           Lib::Storage['show_coords'] = new_value
           store(:show_coords, new_value)
         end
 
-        render_button(text, on_click)
+        render_button("#{@show_coords ? 'Hide' : 'Show'} Hex Coordinates", on_click)
       end
 
       def starting_map_controls
-        text = @show_starting_map ? 'Show Current Map' : 'Show Starting Map'
-
         on_click = lambda do
           store(:show_starting_map, !@show_starting_map)
         end
 
-        render_button(text, on_click)
+        render_button("Show #{@show_starting_map ? 'Current' : 'Starting'} Map", on_click)
       end
 
       def generate_last_route(entity)
