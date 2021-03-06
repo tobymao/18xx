@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'lib/hex'
+require 'lib/settings'
 require 'lib/storage'
 require 'lib/tile_selector'
 require 'view/game/actionable'
@@ -14,6 +15,7 @@ module View
     class Hex < Snabberb::Component
       include Actionable
       include Runnable
+      include Lib::Settings
 
       SIZE = 100
 
@@ -73,7 +75,7 @@ module View
           key: @hex.id,
           attrs: {
             transform: transform,
-            fill: @user&.dig(:settings, @tile&.color) || (Lib::Hex::COLOR[@tile&.color || 'white']),
+            fill: color_for(@tile&.color) || (Lib::Hex::COLOR[@tile&.color || 'white']),
             stroke: 'black',
           },
         }
