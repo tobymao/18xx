@@ -7661,27 +7661,24 @@
         "created_at": 1614995581
       },
       {
-        "type": "lay_tile",
-        "entity": "Plant",
-        "entity_type": "corporation",
-        "id": 429,
-        "created_at": 1614995599,
-        "hex": "H23",
-        "tile": "9-12",
-        "rotation": 0
+        "type": "pass",
+        "entity": "Player 3",
+        "entity_type": "player",
+        "id": 428,
+        "created_at": 1614995591
       },
       {
         "type": "pass",
         "entity": "Plant",
         "entity_type": "corporation",
-        "id": 430,
+        "id": 429,
         "created_at": 1614995614
       },
       {
         "type": "run_routes",
         "entity": "Plant",
         "entity_type": "corporation",
-        "id": 431,
+        "id": 430,
         "created_at": 1614995616,
         "routes": [
           {
@@ -7809,7 +7806,7 @@
         "type": "dividend",
         "entity": "Plant",
         "entity_type": "corporation",
-        "id": 432,
+        "id": 431,
         "created_at": 1614995617,
         "kind": "payout"
       },
@@ -7817,21 +7814,21 @@
         "type": "pass",
         "entity": "LN",
         "entity_type": "corporation",
-        "id": 433,
+        "id": 432,
         "created_at": 1614995621
       },
       {
         "type": "pass",
         "entity": "LN",
         "entity_type": "corporation",
-        "id": 434,
+        "id": 433,
         "created_at": 1614995622
       },
       {
         "type": "run_routes",
         "entity": "LN",
         "entity_type": "corporation",
-        "id": 435,
+        "id": 434,
         "created_at": 1614995623,
         "routes": [
           {
@@ -7926,7 +7923,7 @@
         "type": "dividend",
         "entity": "LN",
         "entity_type": "corporation",
-        "id": 436,
+        "id": 435,
         "created_at": 1614995624,
         "kind": "payout"
       },
@@ -7934,21 +7931,21 @@
         "type": "pass",
         "entity": "SAL",
         "entity_type": "corporation",
-        "id": 437,
+        "id": 436,
         "created_at": 1614995626
       },
       {
         "type": "pass",
         "entity": "SAL",
         "entity_type": "corporation",
-        "id": 438,
+        "id": 437,
         "created_at": 1614995627
       },
       {
         "type": "run_routes",
         "entity": "SAL",
         "entity_type": "corporation",
-        "id": 439,
+        "id": 438,
         "created_at": 1614995628,
         "routes": [
           {
@@ -8062,7 +8059,7 @@
         "type": "dividend",
         "entity": "SAL",
         "entity_type": "corporation",
-        "id": 440,
+        "id": 439,
         "created_at": 1614995629,
         "kind": "payout"
       },
@@ -8070,28 +8067,28 @@
         "type": "pass",
         "entity": "SAL",
         "entity_type": "corporation",
-        "id": 441,
+        "id": 440,
         "created_at": 1614995634
       },
       {
         "type": "pass",
         "entity": "SR",
         "entity_type": "corporation",
-        "id": 442,
+        "id": 441,
         "created_at": 1614995636
       },
       {
         "type": "pass",
         "entity": "SR",
         "entity_type": "corporation",
-        "id": 443,
+        "id": 442,
         "created_at": 1614995640
       },
       {
         "type": "run_routes",
         "entity": "SR",
         "entity_type": "corporation",
-        "id": 444,
+        "id": 443,
         "created_at": 1614995641,
         "routes": [
           {
@@ -8195,7 +8192,7 @@
         "type": "dividend",
         "entity": "SR",
         "entity_type": "corporation",
-        "id": 445,
+        "id": 444,
         "created_at": 1614995642,
         "kind": "payout"
       },
@@ -8203,28 +8200,28 @@
         "type": "pass",
         "entity": "SR",
         "entity_type": "corporation",
-        "id": 446,
+        "id": 445,
         "created_at": 1614995643
       },
       {
         "type": "pass",
         "entity": "FECR",
         "entity_type": "corporation",
-        "id": 447,
+        "id": 446,
         "created_at": 1614995646
       },
       {
         "type": "pass",
         "entity": "FECR",
         "entity_type": "corporation",
-        "id": 448,
+        "id": 447,
         "created_at": 1614995647
       },
       {
         "type": "run_routes",
         "entity": "FECR",
         "entity_type": "corporation",
-        "id": 449,
+        "id": 448,
         "created_at": 1614995648,
         "routes": [
           {
@@ -8306,7 +8303,7 @@
         "type": "dividend",
         "entity": "FECR",
         "entity_type": "corporation",
-        "id": 450,
+        "id": 449,
         "created_at": 1614995649,
         "kind": "payout"
       },
@@ -8314,28 +8311,28 @@
         "type": "pass",
         "entity": "FECR",
         "entity_type": "corporation",
-        "id": 451,
+        "id": 450,
         "created_at": 1614995650
       },
       {
         "type": "pass",
         "entity": "ACL",
         "entity_type": "corporation",
-        "id": 452,
+        "id": 451,
         "created_at": 1614995652
       },
       {
         "type": "pass",
         "entity": "ACL",
         "entity_type": "corporation",
-        "id": 453,
+        "id": 452,
         "created_at": 1614995653
       },
       {
         "type": "run_routes",
         "entity": "ACL",
         "entity_type": "corporation",
-        "id": 454,
+        "id": 453,
         "created_at": 1614995654,
         "routes": [
           {
@@ -8395,7 +8392,7 @@
         "type": "dividend",
         "entity": "ACL",
         "entity_type": "corporation",
-        "id": 455,
+        "id": 454,
         "created_at": 1614995655,
         "kind": "payout"
       },
@@ -8403,21 +8400,21 @@
         "type": "pass",
         "entity": "ACL",
         "entity_type": "corporation",
-        "id": 456,
+        "id": 455,
         "created_at": 1614995655
       },
       {
         "type": "pass",
         "entity": "Plant",
         "entity_type": "corporation",
-        "id": 457,
+        "id": 456,
         "created_at": 1614995656
       },
       {
         "type": "run_routes",
         "entity": "Plant",
         "entity_type": "corporation",
-        "id": 458,
+        "id": 457,
         "created_at": 1614995658,
         "routes": [
           {
@@ -8545,9 +8542,16 @@
         "type": "dividend",
         "entity": "Plant",
         "entity_type": "corporation",
-        "id": 459,
+        "id": 458,
         "created_at": 1614995659,
         "kind": "payout"
+      },
+      {
+        "type": "pass",
+        "entity": "LN",
+        "entity_type": "corporation",
+        "id": 459,
+        "created_at": 1614995660
       },
       {
         "type": "pass",
@@ -8557,17 +8561,10 @@
         "created_at": 1614995660
       },
       {
-        "type": "pass",
-        "entity": "LN",
-        "entity_type": "corporation",
-        "id": 461,
-        "created_at": 1614995660
-      },
-      {
         "type": "run_routes",
         "entity": "LN",
         "entity_type": "corporation",
-        "id": 462,
+        "id": 461,
         "created_at": 1614995661,
         "routes": [
           {
@@ -8662,7 +8659,7 @@
         "type": "dividend",
         "entity": "LN",
         "entity_type": "corporation",
-        "id": 463,
+        "id": 462,
         "created_at": 1614995662,
         "kind": "payout"
       },
@@ -8670,21 +8667,21 @@
         "type": "pass",
         "entity": "SAL",
         "entity_type": "corporation",
-        "id": 464,
+        "id": 463,
         "created_at": 1614995663
       },
       {
         "type": "pass",
         "entity": "SAL",
         "entity_type": "corporation",
-        "id": 465,
+        "id": 464,
         "created_at": 1614995664
       },
       {
         "type": "run_routes",
         "entity": "SAL",
         "entity_type": "corporation",
-        "id": 466,
+        "id": 465,
         "created_at": 1614995665,
         "routes": [
           {
@@ -8798,13 +8795,20 @@
         "type": "dividend",
         "entity": "SAL",
         "entity_type": "corporation",
-        "id": 467,
+        "id": 466,
         "created_at": 1614995666,
         "kind": "payout"
       },
       {
         "type": "pass",
         "entity": "SAL",
+        "entity_type": "corporation",
+        "id": 467,
+        "created_at": 1614995667
+      },
+      {
+        "type": "pass",
+        "entity": "SR",
         "entity_type": "corporation",
         "id": 468,
         "created_at": 1614995667
@@ -8814,20 +8818,13 @@
         "entity": "SR",
         "entity_type": "corporation",
         "id": 469,
-        "created_at": 1614995667
-      },
-      {
-        "type": "pass",
-        "entity": "SR",
-        "entity_type": "corporation",
-        "id": 470,
         "created_at": 1614995668
       },
       {
         "type": "run_routes",
         "entity": "SR",
         "entity_type": "corporation",
-        "id": 471,
+        "id": 470,
         "created_at": 1614995669,
         "routes": [
           {
@@ -8931,13 +8928,20 @@
         "type": "dividend",
         "entity": "SR",
         "entity_type": "corporation",
-        "id": 472,
+        "id": 471,
         "created_at": 1614995670,
         "kind": "payout"
       },
       {
         "type": "pass",
         "entity": "SR",
+        "entity_type": "corporation",
+        "id": 472,
+        "created_at": 1614995672
+      },
+      {
+        "type": "pass",
+        "entity": "FECR",
         "entity_type": "corporation",
         "id": 473,
         "created_at": 1614995672
@@ -8947,20 +8951,13 @@
         "entity": "FECR",
         "entity_type": "corporation",
         "id": 474,
-        "created_at": 1614995672
-      },
-      {
-        "type": "pass",
-        "entity": "FECR",
-        "entity_type": "corporation",
-        "id": 475,
         "created_at": 1614995673
       },
       {
         "type": "run_routes",
         "entity": "FECR",
         "entity_type": "corporation",
-        "id": 476,
+        "id": 475,
         "created_at": 1614995674,
         "routes": [
           {
@@ -9042,7 +9039,7 @@
         "type": "dividend",
         "entity": "FECR",
         "entity_type": "corporation",
-        "id": 477,
+        "id": 476,
         "created_at": 1614995674,
         "kind": "payout"
       },
@@ -9050,8 +9047,15 @@
         "type": "pass",
         "entity": "FECR",
         "entity_type": "corporation",
-        "id": 478,
+        "id": 477,
         "created_at": 1614995675
+      },
+      {
+        "type": "pass",
+        "entity": "ACL",
+        "entity_type": "corporation",
+        "id": 478,
+        "created_at": 1614995676
       },
       {
         "type": "pass",
@@ -9061,17 +9065,10 @@
         "created_at": 1614995676
       },
       {
-        "type": "pass",
-        "entity": "ACL",
-        "entity_type": "corporation",
-        "id": 480,
-        "created_at": 1614995676
-      },
-      {
         "type": "run_routes",
         "entity": "ACL",
         "entity_type": "corporation",
-        "id": 481,
+        "id": 480,
         "created_at": 1614995677,
         "routes": [
           {
@@ -9131,7 +9128,7 @@
         "type": "dividend",
         "entity": "ACL",
         "entity_type": "corporation",
-        "id": 482,
+        "id": 481,
         "created_at": 1614995678,
         "kind": "payout"
       },
@@ -9139,21 +9136,21 @@
         "type": "pass",
         "entity": "ACL",
         "entity_type": "corporation",
-        "id": 483,
+        "id": 482,
         "created_at": 1614995678
       },
       {
         "type": "pass",
         "entity": "Plant",
         "entity_type": "corporation",
-        "id": 484,
+        "id": 483,
         "created_at": 1614995679
       },
       {
         "type": "run_routes",
         "entity": "Plant",
         "entity_type": "corporation",
-        "id": 485,
+        "id": 484,
         "created_at": 1614995680,
         "routes": [
           {
@@ -9281,9 +9278,16 @@
         "type": "dividend",
         "entity": "Plant",
         "entity_type": "corporation",
-        "id": 486,
+        "id": 485,
         "created_at": 1614995681,
         "kind": "payout"
+      },
+      {
+        "type": "pass",
+        "entity": "LN",
+        "entity_type": "corporation",
+        "id": 486,
+        "created_at": 1614995682
       },
       {
         "type": "pass",
@@ -9293,17 +9297,10 @@
         "created_at": 1614995682
       },
       {
-        "type": "pass",
-        "entity": "LN",
-        "entity_type": "corporation",
-        "id": 488,
-        "created_at": 1614995682
-      },
-      {
         "type": "run_routes",
         "entity": "LN",
         "entity_type": "corporation",
-        "id": 489,
+        "id": 488,
         "created_at": 1614995683,
         "routes": [
           {
@@ -9398,9 +9395,16 @@
         "type": "dividend",
         "entity": "LN",
         "entity_type": "corporation",
-        "id": 490,
+        "id": 489,
         "created_at": 1614995684,
         "kind": "payout"
+      },
+      {
+        "type": "pass",
+        "entity": "SAL",
+        "entity_type": "corporation",
+        "id": 490,
+        "created_at": 1614995685
       },
       {
         "type": "pass",
@@ -9410,17 +9414,10 @@
         "created_at": 1614995685
       },
       {
-        "type": "pass",
-        "entity": "SAL",
-        "entity_type": "corporation",
-        "id": 492,
-        "created_at": 1614995685
-      },
-      {
         "type": "run_routes",
         "entity": "SAL",
         "entity_type": "corporation",
-        "id": 493,
+        "id": 492,
         "created_at": 1614995686,
         "routes": [
           {
@@ -9534,7 +9531,7 @@
         "type": "dividend",
         "entity": "SAL",
         "entity_type": "corporation",
-        "id": 494,
+        "id": 493,
         "created_at": 1614995687,
         "kind": "payout"
       },
@@ -9542,28 +9539,28 @@
         "type": "pass",
         "entity": "SAL",
         "entity_type": "corporation",
-        "id": 495,
+        "id": 494,
         "created_at": 1614995688
       },
       {
         "type": "pass",
         "entity": "SR",
         "entity_type": "corporation",
-        "id": 496,
+        "id": 495,
         "created_at": 1614995689
       },
       {
         "type": "pass",
         "entity": "SR",
         "entity_type": "corporation",
-        "id": 497,
+        "id": 496,
         "created_at": 1614995690
       },
       {
         "type": "run_routes",
         "entity": "SR",
         "entity_type": "corporation",
-        "id": 498,
+        "id": 497,
         "created_at": 1614995691,
         "routes": [
           {
@@ -9667,7 +9664,7 @@
         "type": "dividend",
         "entity": "SR",
         "entity_type": "corporation",
-        "id": 499,
+        "id": 498,
         "created_at": 1614995691,
         "kind": "payout"
       },
@@ -9675,8 +9672,15 @@
         "type": "pass",
         "entity": "SR",
         "entity_type": "corporation",
-        "id": 500,
+        "id": 499,
         "created_at": 1614995692
+      },
+      {
+        "type": "pass",
+        "entity": "FECR",
+        "entity_type": "corporation",
+        "id": 500,
+        "created_at": 1614995693
       },
       {
         "type": "pass",
@@ -9686,17 +9690,10 @@
         "created_at": 1614995693
       },
       {
-        "type": "pass",
-        "entity": "FECR",
-        "entity_type": "corporation",
-        "id": 502,
-        "created_at": 1614995693
-      },
-      {
         "type": "run_routes",
         "entity": "FECR",
         "entity_type": "corporation",
-        "id": 503,
+        "id": 502,
         "created_at": 1614995694,
         "routes": [
           {
@@ -9778,7 +9775,7 @@
         "type": "dividend",
         "entity": "FECR",
         "entity_type": "corporation",
-        "id": 504,
+        "id": 503,
         "created_at": 1614995695,
         "kind": "payout"
       },
@@ -9786,28 +9783,28 @@
         "type": "pass",
         "entity": "FECR",
         "entity_type": "corporation",
-        "id": 505,
+        "id": 504,
         "created_at": 1614995695
       },
       {
         "type": "pass",
         "entity": "ACL",
         "entity_type": "corporation",
-        "id": 506,
+        "id": 505,
         "created_at": 1614995696
       },
       {
         "type": "pass",
         "entity": "ACL",
         "entity_type": "corporation",
-        "id": 507,
+        "id": 506,
         "created_at": 1614995697
       },
       {
         "type": "run_routes",
         "entity": "ACL",
         "entity_type": "corporation",
-        "id": 508,
+        "id": 507,
         "created_at": 1614995697,
         "routes": [
           {
@@ -9867,7 +9864,7 @@
         "type": "dividend",
         "entity": "ACL",
         "entity_type": "corporation",
-        "id": 509,
+        "id": 508,
         "created_at": 1614995698,
         "kind": "payout"
       },
@@ -9875,7 +9872,7 @@
         "type": "pass",
         "entity": "ACL",
         "entity_type": "corporation",
-        "id": 510,
+        "id": 509,
         "created_at": 1614995699
       }
     ],
