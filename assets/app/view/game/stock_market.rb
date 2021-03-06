@@ -36,8 +36,9 @@ module View
 
       # 1D markets
       VERTICAL_TOKEN_PAD = 4                      # vertical space between tokens
-      MIN_NUM_TOKENS = 4                          # guarantee space for this many tokens
+      MIN_NUM_TOKENS = 3                          # guarantee space for this many tokens
       PRICE_HEIGHT = 20                           # depends on font and size!
+      MIN_TOKENS_HEIGHT = MIN_NUM_TOKENS * (TOKEN_SIZE + VERTICAL_TOKEN_PAD)
 
       # 2D markets
       HEIGHT_TOTAL = 50
@@ -70,6 +71,14 @@ module View
           border: "solid #{BORDER}px rgba(0,0,0,0.2)",
           color: color_for(:font2),
         }
+      end
+
+      def box_height_1d
+        tokens_height = [*@game.stock_market.market.first.map do |p|
+                           p.corporations.sum { |c| TOKEN_SIZES[@game.corporation_size(c)] + VERTICAL_TOKEN_PAD }
+                         end,
+                         MIN_TOKENS_HEIGHT].max
+        "#{tokens_height + VERTICAL_TOKEN_PAD + PRICE_HEIGHT - 2 * BORDER}px"
       end
 
       CROSSHATCH_TYPES = %i[par_overlap convert_range].freeze
@@ -146,17 +155,11 @@ module View
       end
 
       def grid_1d
-        token_height = @game.stock_market.market.first.map do |p|
-          p.corporations.sum { |c| TOKEN_SIZES[@game.corporation_size(c)] + VERTICAL_TOKEN_PAD }
-        end.push(MIN_NUM_TOKENS * (TOKEN_SIZE + VERTICAL_TOKEN_PAD)).max
-        box_height = token_height + VERTICAL_TOKEN_PAD + PRICE_HEIGHT + 2 * PAD
-        height = "#{box_height - 2 * PAD - 2 * BORDER}px"
-
         row = @game.stock_market.market.first.map do |price|
           tokens = price.corporations.map { |corporation| h(:img, token_props(corporation)) }
 
           box_style = box_style_1d
-          box_style[:height] = height
+          box_style[:height] = box_height_1d
           box_style = box_style.merge('margin-right': '10px') unless price.normal_movement?
 
           h(:div, { style: cell_style(box_style, price.types) }, [
@@ -174,10 +177,9 @@ module View
         half_box_style = box_style_1d
         half_box_style[:width] = "#{WIDTH_TOTAL / 2 - 2 * PAD - 2 * BORDER}px"
 
-        max_num_corps = @game.stock_market.market.first.map { |p| p.corporations.size }.push(MIN_NUM_TOKENS).max
-        box_height = max_num_corps * (TOKEN_SIZE + VERTICAL_TOKEN_PAD) + VERTICAL_TOKEN_PAD + PRICE_HEIGHT + 2 * PAD
-        box_style[:height] = "#{box_height - 2 * PAD - 2 * BORDER}px"
-        half_box_style[:height] = "#{box_height - 2 * PAD - 2 * BORDER}px"
+        box_height = box_height_1d
+        box_style[:height] = box_height
+        half_box_style[:height] = box_height
 
         row0 = []
         row1 = [h(:div, style: cell_style(half_box_style, @game.stock_market.market.first.first.types))]
