@@ -196,9 +196,7 @@ module Engine
         return false if shares.empty?
 
         corporation = shares.first.corporation
-        if @round.players_sold[entity][corporation] || (bought? && !can_buy_multiple?(entity, corporation))
-          return false
-        end
+        return false if @round.players_sold[entity][corporation] || (bought? && !can_buy_multiple?(entity, corporation))
 
         min_share = nil
         shares.each do |share|
