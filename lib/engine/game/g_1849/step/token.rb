@@ -15,6 +15,7 @@ module Engine
 
           def place_token(entity, city, token, connected: true, extra: false, special_ability: nil)
             return super unless entity.sms_hexes
+
             hex = city.hex
             raise GameError, 'Must place token on SMS hex' unless entity.sms_hexes.find { |h| hex.id == h }
 
