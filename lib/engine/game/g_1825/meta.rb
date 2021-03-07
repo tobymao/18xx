@@ -15,7 +15,7 @@ module Engine
         GAME_LOCATION = 'United Kingdom'
         GAME_RULES_URL = 'http://google.com'
 
-        PLAYER_RANGE = [2, 3].freeze
+        PLAYER_RANGE = [2, 2].freeze
       end
     end
   end

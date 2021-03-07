@@ -8,7 +8,7 @@
 # weird promotion rules
 # trains
 # phases
-# companies + minors
+# companies + minors - done
 # market - done
 # minor floating rules (train value)
 # share price movemennt
@@ -42,13 +42,13 @@ module Engine
                         blue: '#0189d1',
                         brown: '#7b352a')
 
-        CURRENCY_FORMAT_STR = '%dM'
+        CURRENCY_FORMAT_STR = 'GBP%d'
 
-        BANK_CASH = 12_000
+        BANK_CASH = 7000
 
-        CERT_LIMIT = { 3 => 19, 4 => 15, 5 => 12, 6 => 11, 7 => 9 }.freeze
+        CERT_LIMIT = { 2 => 17 }.freeze
 
-        STARTING_CASH = { 3 => 600, 4 => 475, 5 => 390, 6 => 340, 7 => 310 }.freeze
+        STARTING_CASH = { 2 => 750}.freeze
 
         CAPITALIZATION = :full
 
@@ -273,141 +273,64 @@ module Engine
 
         CORPORATIONS = [
           {
-            sym: 'BY',
-            name: 'Bayrische Eisenbahn',
-            logo: '1835/BY',
-            simple_logo: '1835/BY.alt',
-            tokens: [0, 0, 0, 0, 0],
-            coordinates: 'O15',
+            sym: 'CR',
+            name: 'Caledonia Railway',
+            tokens: [0, 40, 100, 100],
+            coordinates: 'G5',
+            city: 2,
             color: :Blue,
             reservation_color: nil,
           },
           {
-            sym: 'OL',
-            name: 'Oldenburgische Eisenbahn',
-            logo: '1835/OL',
-            simple_logo: '1835/OL.alt',
-            tokens: [0, 0],
-            coordinates: 'D6',
-            color: '#6e6966',
+            sym: 'NBR',
+            name: 'North British Railway',
+            tokens: [0, 40, 100, 100],
+            coordinates: 'G5',
+            city: 1,
+            color: '#868c1b',
             reservation_color: nil,
           },
           {
-            sym: 'SX',
-            name: 'Sächsische Eisenbahn',
-            logo: '1835/SX',
-            simple_logo: '1835/SX.alt',
-            tokens: [0, 0, 0],
-            coordinates: 'H16',
-            color: '#d81e3e',
-            reservation_color: nil,
-          },
-          {
-            sym: 'BA',
-            name: 'Badische Eisenbahn',
-            logo: '1835/BA',
-            simple_logo: '1835/BA.alt',
-            tokens: [0, 0],
-            coordinates: 'L6',
-            color: '#7b352a',
-            reservation_color: nil,
-          },
-          {
-            sym: 'HE',
-            name: 'Hessische Eisenbahn',
-            logo: '1835/HE',
-            simple_logo: '1835/HE.alt',
-            tokens: [0, 0],
-            coordinates: 'J8',
-            color: :green,
-            reservation_color: nil,
-          },
-          {
-            sym: 'WT',
-            name: 'Württembergische Eisenbahn',
-            logo: '1835/WT',
-            simple_logo: '1835/WT.alt',
-            tokens: [0, 0],
-            coordinates: 'M9',
-            color: :yellow,
-            reservation_color: nil,
-          },
-          {
-            sym: 'MS',
-            name: 'Eisenbahn Mecklenburg Schwerin',
-            logo: '1835/MS',
-            simple_logo: '1835/MS.alt',
-            tokens: [0, 0],
-            coordinates: 'C13',
-            color: :violet,
-            reservation_color: nil,
-          },
-          {
-            sym: 'PR',
-            name: 'Preussische Eisenbahn',
-            logo: '1835/PR',
-            simple_logo: '1835/PR.alt',
-            tokens: [0, 0, 0, 0, 0],
-            coordinates: 'E19',
-            color: '#37383a',
+            sym: 'GS',
+            name: 'Glasgow & South West Railway Company',
+            tokens: [0, 40, 100],
+            coordinates: 'G5',
+            city: 0,
+            color: '#8c1b2f',
             reservation_color: nil,
           },
         ].freeze
 
         MINORS = [
           {
-            sym: 'P1',
-            name: 'Bergisch Märkische Bahn',
-            logo: '1835/PR',
-            simple_logo: '1835/PR.alt',
+            sym: 'GN',
+            name: 'Great North of Scotland Railway',
             tokens: [0],
-            coordinates: 'H2',
-            color: '#37383a',
+            coordinates: 'B12',
+            city: 0,
+            color: '#0c6b0c',
+            traincost: 550,
+            train: '5',
           },
           {
-            sym: 'P2',
-            name: 'Berlin Potsdamer Bahn',
-            logo: '1835/PR',
-            simple_logo: '1835/PR.alt',
+            sym: 'HR',
+            name: 'Highland Railway',
             tokens: [0],
-            coordinates: 'E19',
-            color: '#37383a',
+            coordinates: 'B8',
+            city: 0,
+            color: '#e0b53d',
+            traincost: 410,
+            train: 'U3',
           },
           {
-            sym: 'P3',
-            name: 'Magdeburger-Bahn',
-            logo: '1835/PR',
-            simple_logo: '1835/PR.alt',
+            sym: 'M&C',
+            name: 'Maryport and Carslisle Railway Company',
             tokens: [0],
-            coordinates: 'F14',
-            color: '#37383a',
-          },
-          {
-            sym: 'P4',
-            name: 'Köln-Mindener Bahn',
-            logo: '1835/PR',
-            simple_logo: '1835/PR.alt',
-            tokens: [0],
-            coordinates: 'G5',
-            color: '#37383a',
-          },
-          {
-            sym: 'P5',
-            name: 'Berlin Stettiner Bahn',
-            logo: '1835/PR',
-            simple_logo: '1835/PR.alt',
-            tokens: [0],
-            coordinates: 'E19',
-            color: '#37383a',
-          },
-          {
-            sym: 'P6',
-            name: 'Altona Kiel Bahn',
-            logo: '1835/PR',
-            simple_logo: '1835/PR.alt',
-            tokens: [0],
-            coordinates: 'C11',
-            color: '#37383a',
+            coordinates: 'K7',
+            city: 0,
+            color: '#1b967a',
+            traincost: 370,
+            train: '3T',
           },
         ].freeze
 
@@ -520,9 +443,13 @@ module Engine
         HOME_TOKEN_TIMING = :operating_round
 
         def setup
-          # 1 of each right is reserved w/ the private when it gets bought in. This leaves 2 extra to sell.
-          @available_bridge_tokens = 2
-          @available_tunnel_tokens = 2
+
+          @minors.each do |minor|
+            hex = hex_by_id(minor.coordinates)
+            # hex.tile.cities[minor.city].place_token(minor, minor.next_token)
+            hex.tile.add_reservation!(minor, minor.city)
+          end
+
         end
 
         def operating_round(round_num)
