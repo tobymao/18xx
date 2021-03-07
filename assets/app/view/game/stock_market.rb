@@ -216,7 +216,7 @@ module View
               tokens = corporations.map.with_index { |corp, index| h(:img, token_props(corp, index, num, spacing)) }
 
               h(:div, { style: cell_style(@box_style_2d, price.types) }, [
-                h(:div, { style: { fontSize: '80%' } }, price.price),
+                h('div.xsmall_font', price.price),
                 h(:div, tokens),
               ])
             else
@@ -229,7 +229,7 @@ module View
       end
 
       def logo_for_user(entity)
-        @user&.dig('settings', 'simple_logos') ? entity.simple_logo : entity.logo
+        setting_for(:simple_logos) ? entity.simple_logo : entity.logo
       end
 
       def render
@@ -285,12 +285,7 @@ module View
           types_in_market = @game.stock_market.market.flatten.compact.flat_map(&:types)
           .uniq.map { |p| [p, colors[p]] }.to_h
 
-          legend_items = types_in_market.map do |type, color|
-            text = type_text[type]
-
-            style = @box_style_2d.merge(backgroundColor: COLOR_MAP[color])
-            style[:borderColor] = color_for(:font) if color == :black
-
+          legend_items = types_in_market.map do |type, _color|
             line_props = {
               style: {
                 display: 'inline-grid',
@@ -303,7 +298,7 @@ module View
 
             h(:div, line_props, [
               h(:div, { style: cell_style(@box_style_2d, [type]) }, []),
-              h(:div, { style: { maxWidth: '24rem' } }, text),
+              h(:div, { style: { maxWidth: '24rem' } }, type_text[type]),
             ])
           end
           legend_items.reverse! unless @game.stock_market.one_d?

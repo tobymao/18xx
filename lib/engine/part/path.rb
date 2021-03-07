@@ -11,6 +11,8 @@ module Engine
       LANES = [[1, 0].freeze, [1, 0].freeze].freeze
       MATCHES_BROAD = %i[broad dual].freeze
       MATCHES_NARROW = %i[narrow dual].freeze
+      LANE_INDEX = 1
+      LANE_WIDTH = 0
 
       def self.decode_lane_spec(x_lane)
         if x_lane
@@ -146,19 +148,19 @@ module Engine
 
         exits.each do |edge|
           next if edge == skip
-          next if visited_edges[[hex, edge]]
+          next if visited_edges[[hex, edge, @exit_lanes[edge]]]
           next unless (neighbor = hex.neighbors[edge])
 
           np_edge = hex.invert(edge)
-          next if visited_edges[[neighbor, np_edge]]
 
           neighbor.paths[np_edge].each do |np|
             next if on && !on[np]
             next unless lane_match?(@exit_lanes[edge], np.exit_lanes[np_edge])
             next unless tracks_match?(np, dual_ok: true)
+            next if visited_edges[[neighbor, np_edge, np.exit_lanes[np_edge]]]
 
             # We only need to store one side of the edge so let's keep the 'source'
-            neighbors_edges = visited_edges.merge({ [hex, edge] => 1 })
+            neighbors_edges = visited_edges.merge({ [hex, edge, @exit_lanes[edge]] => 1 })
             if chain
               np.walk(skip: np_edge, visited: visited, visited_edges: neighbors_edges, chain: chained) do |c|
                 yield c
@@ -175,7 +177,12 @@ module Engine
       # return true if facing exits on adjacent tiles match up taking lanes into account
       # TBD: support titles where lanes of different sizes can connect
       def lane_match?(lanes0, lanes1)
-        lanes0 && lanes1 && lanes1[0] == lanes0[0] && lanes1[1] == (lanes0[0] - lanes0[1] - 1)
+        lanes0 && lanes1 &&
+            lanes1[LANE_WIDTH] == lanes0[LANE_WIDTH] && lanes1[LANE_INDEX] == lane_invert(lanes0)[LANE_INDEX]
+      end
+
+      def lane_invert(lane)
+        [lane[LANE_WIDTH], lane[LANE_WIDTH] - lane[LANE_INDEX] - 1]
       end
 
       def path?
@@ -195,7 +202,7 @@ module Engine
       def single?
         return @_single if defined?(@_single)
 
-        @_single = @lanes.first[0] == 1 && @lanes.last[0] == 1
+        @_single = @lanes.first[LANE_WIDTH] == 1 && @lanes.last[LANE_WIDTH] == 1
       end
 
       def exits
