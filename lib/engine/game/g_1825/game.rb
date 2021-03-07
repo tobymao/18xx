@@ -4,11 +4,14 @@
 # (working on unit 3 to start)
 # map - done
 # map labels - done
-# tile
+# tileset
+# weird promotion rules
 # trains
 # phases
 # companies + minors
-# market
+# market - done
+# minor floating rules (train value)
+# share price movemennt
 #
 # PHASE 2.
 # Unit 2, with options for choosing which units you play with.
