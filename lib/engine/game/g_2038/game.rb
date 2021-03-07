@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require_relative 'meta'
-require_relative 'minor'
 require_relative '../base'
 
 module Engine
@@ -592,10 +591,6 @@ module Engine
 
         # Overrides
 
-        def init_minors
-          game_minors.map { |minor| G2038::Minor.new(**minor) }
-        end
-
         def to_hex_list(s, e, l)
           Range.new(s,e).step(2).map { |x| "%s%d" % [l, x] }
         end
@@ -662,6 +657,18 @@ module Engine
               blue_hexes => ''
             }
           }
+        end
+
+        def is_minor?(company)
+          @minors.find { |m| m.id == company.id }
+        end
+
+        def company_header(company)
+          if is_minor?(company)
+            'INDEPENDENT COMPANY'
+          else
+            'PRIVATE COMPANY'
+          end
         end
 
         LAYOUT = :pointy

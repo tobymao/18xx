@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/waterfall_auction'
+require_relative '../company_wrapper'
 
 module Engine
   module Game
@@ -11,11 +12,18 @@ module Engine
             @log << "-- Using our setup"
             super
 
-            @companies = @companies + @game.minors
+            @wrappedCompanies = @game.minors.map { |minor| CompanyWrapper.new(minor) }
+
+            @companies = @companies + @wrappedCompanies
             @companies = @companies.sort_by(&:value)
             @cheapest = @companies.first
 
             @log << "-- Done"
+          end
+
+          def buy_company(player, company, price)
+
+            # TODO: Handle our custom "company" here, otherwise super
           end
         end
       end
