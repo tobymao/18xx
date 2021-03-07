@@ -26,6 +26,7 @@ module Engine
 
             return unless (company.instance_of? CompanyWrapper)
 
+            player.companies.delete(company)   # remove our wrapper which was added in super.buy_company
             minor = company.minor
             minor.owner = player
             minor.float!
