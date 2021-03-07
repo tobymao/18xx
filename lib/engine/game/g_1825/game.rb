@@ -9,6 +9,7 @@
 # trains
 # phases
 # companies + minors - done
+# privates
 # market - done
 # minor floating rules (train value)
 # share price movemennt
