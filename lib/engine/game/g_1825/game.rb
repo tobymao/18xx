@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# TODO list for 1825.
+# TODO: list for 1825.
 # (working on unit 3 to start)
 # map - done
 # map labels - done
@@ -15,8 +15,6 @@
 #
 # PHASE 2.
 # Unit 2, with options for choosing which units you play with.
-
-
 
 require_relative 'meta'
 require_relative '../base'
@@ -48,7 +46,7 @@ module Engine
 
         CERT_LIMIT = { 2 => 17 }.freeze
 
-        STARTING_CASH = { 2 => 750}.freeze
+        STARTING_CASH = { 2 => 750 }.freeze
 
         CAPITALIZATION = :full
 
@@ -433,7 +431,7 @@ module Engine
             ['L12'] => 'offboard=revenue:0;path=a:2,b:_0;path=a:3,b:_0',
             ['L14'] => 'offboard=revenue:0;path=a:2,b:_0;path=a:3,b:_0',
             ['L16'] => 'offboard=revenue:0;path=a:2,b:_0',
-          }
+          },
         }.freeze
 
         LAYOUT = :pointy
@@ -443,13 +441,10 @@ module Engine
         HOME_TOKEN_TIMING = :operating_round
 
         def setup
-
           @minors.each do |minor|
             hex = hex_by_id(minor.coordinates)
-            # hex.tile.cities[minor.city].place_token(minor, minor.next_token)
             hex.tile.add_reservation!(minor, minor.city)
           end
-
         end
 
         def operating_round(round_num)
