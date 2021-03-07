@@ -9,6 +9,13 @@ module Engine
       module Step
         class Track < Engine::Step::Track
           include AcquireVaTunnelCoalMarker
+
+          def update_token!(action, _entity, tile, _old_tile)
+            # Nothing to update if blocking tokens have been laid
+            return if action.hex.id == 'E15' && @game.blocking_token?(tile.cities.flat_map(&:tokens).find(&:itself))
+
+            super
+          end
         end
       end
     end

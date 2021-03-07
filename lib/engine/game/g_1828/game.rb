@@ -1360,6 +1360,10 @@ module Engine
           city.place_token(@blocking_corporation, token, check_tokenable: false)
         end
 
+        def blocking_token?(token)
+          token&.corporation == @blocking_corporation
+        end
+
         def exchange_for_partial_presidency?
           true
         end
