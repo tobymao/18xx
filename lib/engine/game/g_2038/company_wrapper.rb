@@ -5,7 +5,7 @@ require_relative '../../company'
 module Engine
   module Game
     module G2038
-      class CompanyWrapper < Engine::Company
+      class Company < Engine::Company
 
         attr_accessor :minor
 

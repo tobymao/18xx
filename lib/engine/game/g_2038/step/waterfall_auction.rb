@@ -12,7 +12,7 @@ module Engine
             @log << "-- Using our setup"
             super
 
-            @wrappedCompanies = @game.minors.map { |minor| CompanyWrapper.new(minor) }
+            @wrappedCompanies = @game.minors.map { |minor| G2038::Company.new(minor) }
 
             @companies = @companies + @wrappedCompanies
             @companies = @companies.sort_by(&:value)
@@ -24,7 +24,7 @@ module Engine
           def buy_company(player, company, price)
             super
 
-            return unless (company.instance_of? CompanyWrapper)
+            return unless (company.instance_of? (G2038::Company))
 
             player.companies.delete(company)   # remove our wrapper which was added in super.buy_company
             minor = company.minor
