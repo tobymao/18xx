@@ -449,7 +449,7 @@ module Engine
             name: 'Cobourg & Peterborough Railway',
             value: 80,
             revenue: 15,
-            desc: 'Blocks Peterborough (C15) while owned by a player. Revenue $0 after auction completes. ' \
+            desc: 'Blocks/reserves Peterborough (C15) while owned by a player. Revenue $0 after auction completes. ' \
                   'Owning player may place or upgrade track tiles on a route connected to Peterborough (C15). ' \
                   'Half-pays the revenue of a 2-train route from that track tile.',
             sym: 'C&P',
