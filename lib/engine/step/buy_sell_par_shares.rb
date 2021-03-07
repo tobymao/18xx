@@ -297,11 +297,6 @@ module Engine
         (corporation.owner.percent_of(corporation, ceil: false)) >= corporation_secure_percent
       end
 
-      def maximum_share_ownership_after_purchase(_entity, _ignore_entity)
-        # Biggest share not owned by the player, or the player being checked
-        50
-      end
-
       def action_is_shenanigan?(entity, action, corporation, share_to_buy)
         corp_buying = share_to_buy&.corporation
 
@@ -348,14 +343,14 @@ module Engine
         end
       end
 
-      def should_stop_applying_program(entity, corp_buying)
+      def should_stop_applying_program(entity, share_to_buy)
         # check for shenanigans, returning the first failure reason it finds
         @round.players_history.each do |other_entity, corporations|
           next if other_entity == entity
 
           corporations.each do |corporation, actions|
             actions.each do |action|
-              reason = action_is_shenanigan?(entity, action, corporation, corp_buying)
+              reason = action_is_shenanigan?(entity, action, corporation, share_to_buy)
               return reason if reason
             end
           end
