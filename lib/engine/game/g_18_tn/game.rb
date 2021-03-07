@@ -395,6 +395,7 @@ module Engine
             tokens: [0, 40],
             coordinates: 'H15',
             color: 'orange',
+            text_color: 'black',
           },
           {
             sym: 'TC',
