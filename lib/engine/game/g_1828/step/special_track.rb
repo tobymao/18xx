@@ -13,11 +13,13 @@ module Engine
           include Engine::Step::TrackLayWhenCompanySold
 
           def process_lay_tile(action)
-            if action.entity.id == 'E&K' && !@company && @round.upgraded_track
-              raise GameError, "Cannot use #{action.entity.name} after a tile upgrade"
-            end
-
             super
+
+            if action.entity.id == 'E&K' && action.tile.hex.id != 'E7'
+              raise GameError, "Cannot use #{action.entity.name} after a tile upgrade" if @round.upgraded_track
+              
+              @round.upgraded_track = true
+            end
           end
         end
       end

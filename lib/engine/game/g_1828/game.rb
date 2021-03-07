@@ -1034,7 +1034,7 @@ module Engine
           tiles
         end
 
-        TILE_LAYS = [{ lay: true, upgrade: true, cannot_reuse_same_hex: true, cost: 0 }].freeze
+        TILE_LAYS = [{ lay: true, upgrade: :not_if_upgraded, cannot_reuse_same_hex: true, cost: 0 }].freeze
         EXTRA_TILE_LAY_CORPS = %w[B&M NYH].freeze
 
         def tile_lays(entity)
