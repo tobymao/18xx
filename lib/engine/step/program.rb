@@ -5,7 +5,7 @@ require_relative 'base'
 module Engine
   module Step
     class Program < Base
-      ACTIONS = %w[program_buy_shares program_merger_pass program_disable].freeze
+      ACTIONS = %w[program_buy_shares program_merger_pass program_share_pass program_disable].freeze
 
       def actions(entity)
         return [] unless entity.player?
@@ -18,6 +18,10 @@ module Engine
       end
 
       def process_program_merger_pass(action)
+        process_program_enable(action)
+      end
+
+      def process_program_share_pass(action)
         process_program_enable(action)
       end
 

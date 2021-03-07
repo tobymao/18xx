@@ -55,15 +55,22 @@ module View
       @min_p = {}
       @max_p = {}
 
-      game_options = visible_games.map do |game|
-        @min_p[game.title], @max_p[game.title] = game::PLAYER_RANGE
+      game_options = visible_games.group_by { |game| game::DEV_STAGE }.flat_map do |dev_stage, game_list|
+        option_list = game_list.map do |game|
+          @min_p[game.title], @max_p[game.title] = game::PLAYER_RANGE
 
-        title = game.title
-        title += " (#{game::GAME_LOCATION})" if game::GAME_LOCATION
-        title += " (#{game::DEV_STAGE})" if game::DEV_STAGE != :production
-        attrs = { value: game.title }
+          title = game.title
+          title += " (#{game::GAME_LOCATION})" if game::GAME_LOCATION
+          attrs = { value: game.title }
 
-        h(:option, { attrs: attrs }, title)
+          h(:option, { attrs: attrs }, title)
+        end
+
+        if dev_stage == :production
+          option_list
+        else
+          [h(:optgroup, { attrs: { label: dev_stage } }, option_list)]
+        end
       end
 
       title_change = lambda do

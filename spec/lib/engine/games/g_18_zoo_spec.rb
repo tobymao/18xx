@@ -4,6 +4,121 @@ require './spec/spec_helper'
 
 module Engine
   describe Game::G18ZOO::Game do
+    def par(game, player, corporation, share_price)
+      game.round.process_action(Action::Par.new(player, corporation: corporation, share_price: share_price))
+      game.round.process_action(Action::Pass.new(corporation))
+      game.round.process_action(Action::Pass.new(player))
+    end
+
+    def pass_until_player(game, player)
+      3.times do |_|
+        game.round.process_action(Engine::Action::Pass.new(game.current_entity)) if game.current_entity != player
+      end
+    end
+
+    shared_examples 'a purchasable power' do
+      it 'is inside available_companies' do
+        expect(power).to be_truthy
+      end
+    end
+
+    shared_examples 'power not implemented' do
+      it 'cannot be purchased yet' do
+        expect do
+          first_player_buy_power_on_isr(power)
+        end.to raise_error(Engine::GameError, 'Power logic not yet implemented')
+      end
+    end
+
+    shared_examples 'with choice' do
+      it 'should have a choice' do
+        expect(game.round.active_step.actions(game.current_entity)).to include 'choose'
+        expect(game.round.active_step.choices).to include choice
+      end
+    end
+
+    shared_examples 'without choice' do
+      it 'should not have any choice' do
+        expect(game.round.active_step.choices).to be_empty
+      end
+    end
+
+    shared_context 'when player 1 buys it' do
+      before do
+        first_player_buy_power_on_isr(power)
+        next_sr!
+      end
+    end
+
+    shared_context 'when player 1 sell a company' do
+      before do
+        company = player_1.companies.select { |c| c.name.start_with?('ZOOTicket') }.first
+        game.round.process_action(Action::SellCompany.new(player_1, company: company, price: 4))
+      end
+    end
+
+    shared_context 'when player X par corporation Y' do
+      let(:share_price) { game.stock_market.par_prices.find { |par_price| par_price.price == 5 } }
+      let(:skip_action) { true }
+      let(:skip_after) { 2 }
+
+      before do
+        2.times do |_|
+          game.round.process_action(Engine::Action::Pass.new(game.current_entity)) if game.current_entity != player
+        end
+
+        game.round.process_action(Action::Par.new(player, corporation: corporation, share_price: share_price))
+        game.round.process_action(Action::Pass.new(corporation))
+        game.round.process_action(Action::Pass.new(player)) if skip_action
+
+        skip_after.times { |_| game.round.process_action(Engine::Action::Pass.new(game.current_entity)) }
+        expect(game.round.current_entity).to be(player_1)
+      end
+    end
+
+    shared_context 'when player 1 par corporation 1' do
+      include_context 'when player X par corporation Y' do
+        let(:player) { player_1 }
+        let(:corporation) { game.corporations.first }
+      end
+    end
+
+    shared_context 'when player 2 par corporation 1' do
+      include_context 'when player X par corporation Y' do
+        let(:player) { game.players[1] }
+        let(:corporation) { game.corporations.first }
+        let(:skip_after) { 1 }
+      end
+    end
+
+    shared_context 'when player 1 uses choice' do
+      before do
+        game.round.process_action(Engine::Action::Choose.new(game.current_entity, choice: choice))
+      end
+    end
+
+    shared_context 'when player 1 (pars, then-)buys share of corporation 1' do
+      let(:share_price) { game.stock_market.par_prices.find { |par_price| par_price.price == 5 } }
+      let(:corporation) { game.corporations.first }
+
+      before do
+        game.stock_market.set_par(corporation, share_price)
+        game.share_pool.buy_shares(player_1, corporation.shares[0])
+        game.round.process_action(Action::BuyShares.new(player_1, shares: corporation.shares[0]))
+      end
+    end
+
+    shared_context 'when player 1 sells share of corporation 1' do
+      let(:share_price) { game.stock_market.par_prices.find { |par_price| par_price.price == 5 } }
+      let(:corporation) { game.corporations.first }
+
+      before do
+        game.stock_market.set_par(corporation, share_price)
+        2.times { game.share_pool.buy_shares(player_1, corporation.shares[0]) }
+        game.round.process_action(Action::SellShares.new(player_1, shares: player_1.shares[1]))
+      end
+    end
+
     def next_round!
       loop do
         game.send(:next_round!)
@@ -14,11 +129,11 @@ module Engine
     end
 
     def next_or!
-      next_round! { game.round.is_a?(Round::Operating) }
+      next_round! { game.round.is_a?(Engine::Round::Operating) }
     end
 
     def next_sr!
-      next_round! { game.round.is_a?(Round::Stock) }
+      next_round! { game.round.is_a?(Engine::Round::Stock) }
     end
 
     def first_player_buy_power_on_isr(company)
@@ -99,175 +214,487 @@ module Engine
       end
     end
 
-    describe 'powers' do
+    describe 'Power' do
       let(:players) { %w[a b c] }
+      let(:game) { Engine::Game::G18ZOO::Game.new(players, id: game_id) }
+      let(:player_1) { game.players.first }
+      let(:power) { game.available_companies.find { |c| c.sym.to_sym == power_sym } }
 
-      [
-        { name: 'Holiday', id: 'hs_mqzfamvd_1612649245', sym: :HOLIDAY, price: 3, choice: 'holiday' },
-        { name: 'Midas', id: 'hs_mqzfamvd_1612649245', sym: :MIDAS, price: 2, choice: 'midas' },
-        {
-          name: 'It’s all greek to me',
-          id: 'hs_yylreptp_1612654521',
-          sym: :IT_S_ALL_GREEK_TO_ME,
-          price: 2,
-          choice: 'greek_to_me',
-        },
-        { name: 'Whatsup', id: 'hs_gpptfzdv_1612649034', sym: :WHATSUP, price: 3, choice: 'whatsup' },
-      ].each do |power|
-        describe power[:name] do
-          let(:game) { Engine::Game::G18ZOO::Game.new(players, id: power[:id]) }
-          let(:current_power) { game.available_companies.find { |c| c.sym.to_sym == power[:sym] } }
-          let(:player_1) { game.players.first }
-          let!(:starting_money) { player_1.cash }
+      describe 'Holiday' do
+        let(:game_id) { 'hs_mqzfamvd_1612649245' }
+        let(:power_sym) { :HOLIDAY }
+        let(:price) { 3 }
 
-          it "should contains '#{power[:name]}' inside available_companies" do
-            expect(current_power).to be_truthy
+        include_examples 'a purchasable power'
+
+        context 'when player 1 buys it' do
+          include_context 'when player 1 buys it'
+
+          include_examples 'without choice'
+
+          context 'when player par' do
+            include_context 'when player 1 par corporation 1'
+
+            include_examples 'with choice' do
+              let(:choice) { "holiday:#{corporation.name}" }
+            end
+
+            context 'when player uses power' do
+              include_context 'when player 1 uses choice' do
+                let(:choice) { "holiday:#{corporation.name}" }
+              end
+
+              it 'power should close' do
+                expect(power.closed?).to be_truthy
+              end
+
+              it 'corporation should change price' do
+                expect(corporation.shares[0].price).to eq(6)
+              end
+
+              include_examples 'without choice'
+            end
           end
 
-          describe 'when bought by 1st player' do
+          context 'when another player par' do
+            include_context 'when player 2 par corporation 1'
+
+            include_examples 'with choice' do
+              let(:choice) { "holiday:#{corporation.name}" }
+            end
+
+            context 'when player uses power' do
+              include_context 'when player 1 uses choice' do
+                let(:choice) { "holiday:#{corporation.name}" }
+              end
+
+              it 'power should close' do
+                expect(power.closed?).to be_truthy
+              end
+
+              it 'corporation should change price' do
+                expect(corporation.shares[0].price).to eq(6)
+              end
+
+              include_examples 'without choice'
+            end
+          end
+
+          context 'when all companies par' do
+            let(:share_price) { game.stock_market.par_prices.find { |par_price| par_price.price == 5 } }
+
             before do
-              first_player_buy_power_on_isr(current_power)
+              game.corporations.each do |corporation|
+                par(game, game.current_entity, corporation, share_price)
+              end
+              pass_until_player(game, player_1)
+            end
+
+            it 'should add a choice for each corporation' do
+              game.corporations.each do |corporation|
+                expect(game.round.active_step.actions(game.current_entity)).to include 'choose'
+                expect(game.round.active_step.choices).to include "holiday:#{corporation.name}"
+              end
+            end
+
+            context 'when player uses power' do
+              let(:corporation) { game.corporations.first }
+              include_context 'when player 1 uses choice' do
+                let(:choice) { "holiday:#{corporation.name}" }
+              end
+
+              it 'power should close' do
+                expect(power.closed?).to be_truthy
+              end
+
+              it 'corporation should change price' do
+                expect(corporation.shares[0].price).to eq(6)
+              end
+
+              include_examples 'without choice'
+            end
+          end
+        end
+      end
+
+      describe 'Midas' do
+        let(:game_id) { 'hs_mqzfamvd_1612649245' }
+        let(:power_sym) { :MIDAS }
+        let(:price) { 2 }
+
+        include_examples 'a purchasable power'
+
+        context 'when player buys it' do
+          include_context 'when player 1 buys it'
+
+          include_examples 'with choice' do
+            let(:choice) { :midas }
+          end
+
+          context 'when player uses power' do
+            include_context 'when player 1 uses choice' do
+              let(:choice) { 'midas' }
+            end
+
+            it 'power should not be immediately closed' do
+              expect(power.closed?).to be_falsy
+            end
+
+            it 'player should have priority in the following sr ' do
               next_sr!
+
+              expect(game.round.current_entity).to be(player_1)
             end
 
-            it "should costs #{power[:price]}$N to Player 1" do
-              expect(player_1.cash).to eq(starting_money - power[:price])
-            end
+            it 'power should close when sr ends' do
+              next_or!
 
-            it 'should add a choice for Player 1' do
-              expect(game.round.active_step.actions(game.current_entity)).to include 'choose'
-            end
-
-            it "should have '#{power[:choice]}' as choice for Player 1" do
-              expect(game.round.active_step.choices).to include power[:choice].to_sym
-            end
-
-            it 'should fail when power is used' do
-              expect do
-                game.round.process_action(Engine::Action::Choose.new(game.current_entity, choice: power[:choice]))
-              end.to raise_error(Engine::GameError, 'Power not yet implemented')
+              expect(power.closed?).to be_truthy
             end
           end
         end
       end
 
       describe 'Too much responsibility' do
-        let(:game) { Engine::Game::G18ZOO::Game.new(players, id: 'hs_sazxgyzi_1612654581') }
-        let(:power) { game.available_companies.find { |c| c.sym.to_sym == :TOO_MUCH_RESPONSIBILITY } }
-        let(:player_1) { game.players.first }
+        let(:game_id) { 'hs_sazxgyzi_1612654581' }
+        let(:power_sym) { :TOO_MUCH_RESPONSIBILITY }
+        let(:price) { -2 }
         let!(:starting_money) { player_1.cash }
 
-        it 'should contains "Too much responsibility" inside available_companies' do
-          expect(power).to be_truthy
-        end
+        include_examples 'a purchasable power'
 
-        describe 'when bought by 1st player on ISR' do
-          before do
-            first_player_buy_power_on_isr(power)
-          end
+        context 'when player buys it' do
+          include_context 'when player 1 buys it'
 
-          it 'should costs 1$N but earns 3$N to Player 1' do
-            expect(player_1.cash).to eq(starting_money - 1 + 3)
-          end
-
-          it 'should close the company after buy' do
+          it 'should close the company' do
             expect(power.closed?).to be_truthy
           end
-        end
 
-        describe 'when bought by 1st player on SR' do
-          before do
-            next_sr!
-            game.round.process_action(Engine::Action::BuyCompany.new(game.current_entity, price: power.value,
-                                                                                          company: power))
-          end
-
-          it 'should costs 1$N but earns 3$N to Player 1 on SR' do
-            expect(player_1.cash).to eq(starting_money - 1 + 3)
-          end
-
-          it 'should close the company after buy on ISR' do
-            expect(power.closed?).to be_truthy
+          it 'should gain money' do
+            expect(player_1.cash).to eq(starting_money + 2)
           end
         end
       end
 
       describe 'Leprechaun pot of gold' do
-        let(:game) { Engine::Game::G18ZOO::Game.new(players, id: 'hs_qttengzm_1612655076') }
-        let(:power) { game.available_companies.find { |c| c.sym.to_sym == :LEPRECHAUN_POT_OF_GOLD } }
-        let(:player_1) { game.players.first }
+        let(:game_id) { 'hs_qttengzm_1612655076' }
+        let(:power_sym) { :LEPRECHAUN_POT_OF_GOLD }
+        let(:price) { -2 }
         let!(:starting_money) { player_1.cash }
 
-        it 'should contains "Leprechaun pot of gold" inside available_companies' do
-          expect(power).to be_truthy
-        end
+        include_examples 'a purchasable power'
 
-        describe 'when bought by 1st player on ISR' do
+        context 'when player buys it on ISR' do
           before do
             first_player_buy_power_on_isr(power)
           end
 
-          it 'should costs 2$N but earns 2$N on ISR and 2$N on each SR to Player 1' do
-            expect(player_1.cash).to eq(starting_money - 2 + 2)
-            next_sr!
-            expect(player_1.cash).to eq(starting_money - 2 + 2 + 2)
-            next_sr!
-            expect(player_1.cash).to eq(starting_money - 2 + 2 + 2 + 2)
-            next_sr!
-            expect(player_1.cash).to eq(starting_money - 2 + 2 + 2 + 2 + 2)
+          it 'should costs 2$N and earns 2$N on current ISR and 2$N on each SR' do
+            expected_money = starting_money - 2 + 2
+            expect(player_1.cash).to eq(expected_money)
+
+            3.times do |_|
+              next_sr!
+              expect(player_1.cash).to eq(expected_money += 2)
+            end
           end
         end
 
-        describe 'when bought by 1st player on Monday SR' do
-          before do
-            next_sr!
-            game.round.process_action(Engine::Action::BuyCompany.new(game.current_entity, price: power.value,
-                                                                                          company: power))
-          end
+        [{ phase: 'Monday', skip: 1, test: 3 },
+         { phase: 'Tuesday', skip: 2, test: 2 },
+         { phase: 'Wednesday', skip: 3, test: 1 }]
+          .each do |item|
+          context "when player buys it on #{item[:phase]} SR" do
+            let!(:starting_money) { player_1.cash }
 
-          it 'should costs 2$N but earns 2$N on each SR to Player 1' do
-            expect(player_1.cash).to eq(starting_money - 2 + 2)
-            next_sr!
-            expect(player_1.cash).to eq(starting_money - 2 + 2 + 2)
-            next_sr!
-            expect(player_1.cash).to eq(starting_money - 2 + 2 + 2 + 2)
+            before do
+              item[:skip].times { |_| next_sr! }
+              game.round.process_action(Engine::Action::BuyCompany.new(game.current_entity, price: power.value,
+                                                                                            company: power))
+            end
+
+            it 'should costs 2$N but earns 2$N on each SR' do
+              expected_money = starting_money - 2 + 2
+              expect(player_1.cash).to eq(expected_money)
+
+              item[:test].times do |_|
+                next_sr!
+                expect(player_1.cash).to eq(expected_money += 2)
+              end
+            end
           end
         end
       end
 
-      [
-        { name: 'Rabbits', id: 'hs_tsquafuj_1612655713', sym: :RABBITS },
-        { name: 'Moles', id: 'hs_tsquafuj_1612655713', sym: :MOLES },
-        { name: 'Ancient maps', id: 'hs_yylreptp_1612654521', sym: :ANCIENT_MAPS },
-        { name: 'Hole', id: 'hs_yylreptp_1612654521', sym: :HOLE },
-        { name: 'On diet', id: 'hs_iwznzqfy_1612655316', sym: :ON_DIET },
-        { name: 'Sparkling gold', id: 'hs_sazxgyzi_1612654581', sym: :SPARKLING_GOLD },
-        { name: "That's mine!", id: 'hs_mqzfamvd_1612649245', sym: :THAT_S_MINE },
-        { name: 'Work in progress', id: 'hs_gpptfzdv_1612649034', sym: :WORK_IN_PROGRESS },
-        { name: 'Corn', id: 'hs_qttengzm_1612655076', sym: :CORN },
-        { name: 'Two barrels', id: 'hs_mqzfamvd_1612649245', sym: :TWO_BARRELS },
-        { name: 'A squeeze', id: 'hs_gpptfzdv_1612649034', sym: :A_SQUEEZE },
-        { name: 'Bandage', id: 'hs_yylreptp_1612654521', sym: :BANDAGE },
-        { name: 'Wings', id: 'hs_walbtakv_1612655500', sym: :WINGS },
-        { name: 'A spoonful of sugar', id: 'hs_rykjpksq_1612654725', sym: :A_SPOONFUL_OF_SUGAR },
-      ].each do |power|
-        describe power[:name] do
-          let(:game) { Engine::Game::G18ZOO::Game.new(players, id: power[:id]) }
-          let(:current_power) { game.available_companies.find { |c| c.sym.to_sym == power[:sym] } }
-          let(:player_1) { game.players.first }
-          let!(:starting_money) { player_1.cash }
+      describe 'It’s all greek to me' do
+        let(:game_id) { 'hs_yylreptp_1612654521' }
+        let(:power_sym) { :IT_IS_ALL_GREEK_TO_ME }
+        let(:price) { 2 }
 
-          it "should contains '#{power[:name]}' inside available_companies" do
-            expect(current_power).to be_truthy
+        include_examples 'a purchasable power'
+
+        context 'when player buys it' do
+          include_context 'when player 1 buys it'
+
+          context 'when no action' do
+            include_examples 'without choice'
           end
 
-          it 'should fail when bought by 3rd player' do
-            expect do
-              game.round.process_action(Engine::Action::Bid.new(game.current_entity, price: current_power.value,
-                                                                                     company: current_power))
-            end.to raise_error(Engine::GameError, 'Power logic not yet implemented')
+          context 'when sell a company' do
+            include_context 'when player 1 sell a company'
+
+            include_examples 'without choice'
+          end
+
+          context 'when uses a power' do
+            before do
+              game.round.process_action(Action::BuyCompany.new(player_1, company: game.leprechaun_pot_of_gold,
+                                                                         price: game.leprechaun_pot_of_gold.max_price))
+              3.times { |_| game.round.process_action(Engine::Action::Pass.new(game.current_entity)) }
+            end
+
+            include_examples 'without choice'
+          end
+
+          context 'when par' do
+            include_context 'when player 1 par corporation 1' do
+              let(:skip_action) { false }
+              let(:skip_after) { 0 }
+            end
+
+            include_examples 'with choice' do
+              let(:choice) { :greek_to_me }
+            end
+          end
+
+          context 'when sell a share' do
+            include_context 'when player 1 sells share of corporation 1'
+
+            include_examples 'with choice' do
+              let(:choice) { :greek_to_me }
+            end
+          end
+
+          context 'when buys a company' do
+            before do
+              game.round.process_action(Action::BuyCompany.new(player_1, company: game.holiday,
+                                                                         price: game.holiday.max_price))
+            end
+
+            include_examples 'with choice' do
+              let(:choice) { :greek_to_me }
+            end
+
+            context 'when player uses power' do
+              before do
+                game.round.process_action(Engine::Action::Choose.new(game.current_entity, choice: 'greek_to_me'))
+                game.round.process_action(Engine::Action::Pass.new(game.current_entity))
+              end
+
+              it 'power should close' do
+                expect(power.closed?).to be_truthy
+              end
+
+              it 'player 1 should be the current player' do
+                expect(game.round.current_entity).to be(player_1)
+              end
+
+              include_examples 'without choice'
+            end
+          end
+
+          context 'when buys a share' do
+            include_context 'when player 1 (pars, then-)buys share of corporation 1'
+
+            include_examples 'with choice' do
+              let(:choice) { :greek_to_me }
+            end
           end
         end
+      end
+
+      describe 'Whatsup' do
+        let(:game_id) { 'hs_gpptfzdv_1612649034' }
+        let(:power_sym) { :WHATSUP }
+        let(:price) { 3 }
+
+        include_examples 'a purchasable power'
+
+        context 'when player 1 buys it' do
+          include_context 'when player 1 buys it'
+
+          include_examples 'without choice'
+
+          context 'when player par' do
+            include_context 'when player 1 par corporation 1'
+
+            let(:corporation) { game.corporations.first }
+            include_examples 'with choice' do
+              let(:choice) { "whatsup:#{corporation.name}:2S-0" }
+            end
+
+            context 'when player uses power' do
+              include_context 'when player 1 uses choice' do
+                let(:choice) { "whatsup:#{corporation.name}:2S-0" }
+              end
+
+              it 'power closes' do
+                expect(power.closed?).to be_truthy
+              end
+
+              it 'corporation pays for a train' do
+                expect(corporation.cash).to eq(3)
+              end
+
+              it 'corporation gets a train' do
+                expect(corporation.trains[0].id).to eq('2S-0')
+              end
+
+              it 'new train is disabled' do
+                next_or!
+
+                expect(corporation.trains[0].operated).to be_truthy
+              end
+
+              include_examples 'without choice'
+            end
+          end
+
+          context 'when player par multiple companies' do
+            let(:share_price) { game.stock_market.par_prices.find { |par_price| par_price.price == 5 } }
+            let(:corporation_1) { game.corporations.first }
+            let(:corporation_2) { game.corporations[1] }
+
+            before do
+              par(game, player_1, corporation_1, share_price)
+              pass_until_player(game, player_1)
+              par(game, player_1, corporation_2, share_price)
+              pass_until_player(game, player_1)
+            end
+
+            include_examples 'with choice' do
+              let(:choice) { "whatsup:#{corporation_1.name}:2S-0" }
+            end
+
+            include_examples 'with choice' do
+              let(:choice) { "whatsup:#{corporation_2.name}:2S-0" }
+            end
+          end
+        end
+      end
+
+      describe 'Rabbits' do
+        let(:game_id) { 'hs_tsquafuj_1612655713' }
+        let(:power_sym) { :RABBITS }
+        let(:price) { 3 }
+
+        include_examples 'a purchasable power'
+        include_examples 'power not implemented'
+      end
+
+      describe 'Moles' do
+        let(:game_id) { 'hs_tsquafuj_1612655713' }
+        let(:power_sym) { :MOLES }
+        let(:price) { 3 }
+
+        include_examples 'a purchasable power'
+        include_examples 'power not implemented'
+      end
+
+      describe 'Ancient maps' do
+        let(:game_id) { 'hs_yylreptp_1612654521' }
+        let(:power_sym) { :ANCIENT_MAPS }
+
+        include_examples 'a purchasable power'
+        include_examples 'power not implemented'
+      end
+
+      describe 'Hole' do
+        let(:game_id) { 'hs_yylreptp_1612654521' }
+        let(:power_sym) { :HOLE }
+
+        include_examples 'a purchasable power'
+        include_examples 'power not implemented'
+      end
+
+      describe 'On diet' do
+        let(:game_id) { 'hs_iwznzqfy_1612655316' }
+        let(:power_sym) { :ON_DIET }
+
+        include_examples 'a purchasable power'
+        include_examples 'power not implemented'
+      end
+
+      describe 'Sparkling gold' do
+        let(:game_id) { 'hs_sazxgyzi_1612654581' }
+        let(:power_sym) { :SPARKLING_GOLD }
+
+        include_examples 'a purchasable power'
+        include_examples 'power not implemented'
+      end
+
+      describe "That's mine!" do
+        let(:game_id) { 'hs_mqzfamvd_1612649245' }
+        let(:power_sym) { :THAT_S_MINE }
+
+        include_examples 'a purchasable power'
+        include_examples 'power not implemented'
+      end
+
+      describe 'Work in progress' do
+        let(:game_id) { 'hs_gpptfzdv_1612649034' }
+        let(:power_sym) { :WORK_IN_PROGRESS }
+
+        include_examples 'a purchasable power'
+        include_examples 'power not implemented'
+      end
+
+      describe 'Corn' do
+        let(:game_id) { 'hs_qttengzm_1612655076' }
+        let(:power_sym) { :CORN }
+
+        include_examples 'a purchasable power'
+        include_examples 'power not implemented'
+      end
+
+      describe 'Two barrels' do
+        let(:game_id) { 'hs_mqzfamvd_1612649245' }
+        let(:power_sym) { :TWO_BARRELS }
+
+        include_examples 'a purchasable power'
+        include_examples 'power not implemented'
+      end
+
+      describe 'A squeeze' do
+        let(:game_id) { 'hs_gpptfzdv_1612649034' }
+        let(:power_sym) { :A_SQUEEZE }
+
+        include_examples 'a purchasable power'
+        include_examples 'power not implemented'
+      end
+
+      describe 'Bandage' do
+        let(:game_id) { 'hs_yylreptp_1612654521' }
+        let(:power_sym) { :BANDAGE }
+
+        include_examples 'a purchasable power'
+        include_examples 'power not implemented'
+      end
+
+      describe 'Wings' do
+        let(:game_id) { 'hs_walbtakv_1612655500' }
+        let(:power_sym) { :WINGS }
+
+        include_examples 'a purchasable power'
+        include_examples 'power not implemented'
+      end
+
+      describe 'A spoonful of sugar' do
+        let(:game_id) { 'hs_rykjpksq_1612654725' }
+        let(:power_sym) { :A_SPOONFUL_OF_SUGAR }
+
+        include_examples 'a purchasable power'
+        include_examples 'power not implemented'
       end
 
       describe 'addition to available' do

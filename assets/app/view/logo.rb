@@ -1,7 +1,11 @@
 # frozen_string_literal: true
 
+require 'lib/settings'
+
 module View
   class Logo < Snabberb::Component
+    include Lib::Settings
+
     needs :user, default: nil, store: true
 
     def render
@@ -20,7 +24,7 @@ module View
           textDecoration: 'none',
         },
       }
-      logo_color = @user&.dig(:settings, :red_logo) ? 'red' : 'yellow'
+      logo_color = setting_for(:red_logo) ? 'red' : 'yellow'
       logo_props = {
         style: {
           display: 'inline-block',

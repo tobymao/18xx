@@ -11,6 +11,8 @@ module Engine
       LANES = [[1, 0].freeze, [1, 0].freeze].freeze
       MATCHES_BROAD = %i[broad dual].freeze
       MATCHES_NARROW = %i[narrow dual].freeze
+      LANE_INDEX = 1
+      LANE_WIDTH = 0
 
       def self.decode_lane_spec(x_lane)
         if x_lane
@@ -100,8 +102,22 @@ module Engine
         on.keys.select { |p| on[p] == 1 }
       end
 
+      #
+      #
+      #
       # on and chain are mutually exclusive
-      def walk(skip: nil, jskip: nil, visited: nil, on: nil, chain: nil)
+      # skip: An exit to ignore. Useful to prevent ping-ponging between adjacent hexes.
+      # jskip: An junction to ignore. May be useful on complex tiles
+      # visited: a hashset of visited Paths. Used to avoid repeating track segments.
+      # visited_edges: See Node.walk
+      # on: A set of Paths mapping to 1 or 0. When `on` is set. Usage is currently limited to `select` in path & node
+      # chain: an array of the previously visited Paths to get to this point
+      #  * If `chain` is set `walk` will yield to a block, providing the chain (including this part), and will
+      #      'bubble up' yields from recursive calls
+      #  * If `chain` is nil `walk` will yield to a block, providing this Part and the visited Paths including this one
+
+      # on: HashSet of Paths that we want to *exclusively* walk on
+      def walk(skip: nil, jskip: nil, visited: nil, visited_edges: {}, on: nil, chain: nil)
         return if visited&.[](self)
 
         visited = visited&.dup || {}
@@ -111,7 +127,7 @@ module Engine
           chained = chain + [self]
           yield chained if chain.empty? ? @nodes.size == 2 : @nodes.any?
         else
-          yield self, visited
+          yield self, visited, visited_edges
         end
 
         if @junction && @junction != jskip
@@ -119,15 +135,20 @@ module Engine
             next if on && !on[jp]
 
             if chain
-              jp.walk(jskip: @junction, visited: visited, chain: chained) { |c| yield c }
+              jp.walk(jskip: @junction, visited: visited, visited_edges: visited_edges, chain: chained) do |c|
+                yield c
+              end
             else
-              jp.walk(jskip: @junction, visited: visited, on: on) { |p, v| yield p, v }
+              jp.walk(jskip: @junction, visited: visited, visited_edges: visited_edges, on: on) do |p, v, ve|
+                yield p, v, ve
+              end
             end
           end
         end
 
         exits.each do |edge|
           next if edge == skip
+          next if visited_edges[[hex, edge, @exit_lanes[edge]]]
           next unless (neighbor = hex.neighbors[edge])
 
           np_edge = hex.invert(edge)
@@ -136,11 +157,18 @@ module Engine
             next if on && !on[np]
             next unless lane_match?(@exit_lanes[edge], np.exit_lanes[np_edge])
             next unless tracks_match?(np, dual_ok: true)
+            next if visited_edges[[neighbor, np_edge, np.exit_lanes[np_edge]]]
 
+            # We only need to store one side of the edge so let's keep the 'source'
+            neighbors_edges = visited_edges.merge({ [hex, edge, @exit_lanes[edge]] => 1 })
             if chain
-              np.walk(skip: np_edge, visited: visited, chain: chained) { |c| yield c }
+              np.walk(skip: np_edge, visited: visited, visited_edges: neighbors_edges, chain: chained) do |c|
+                yield c
+              end
             else
-              np.walk(skip: np_edge, visited: visited, on: on) { |p, v| yield p, v }
+              np.walk(skip: np_edge, visited: visited, visited_edges: neighbors_edges, on: on) do |p, v, ve|
+                yield p, v, ve
+              end
             end
           end
         end
@@ -149,7 +177,12 @@ module Engine
       # return true if facing exits on adjacent tiles match up taking lanes into account
       # TBD: support titles where lanes of different sizes can connect
       def lane_match?(lanes0, lanes1)
-        lanes0 && lanes1 && lanes1[0] == lanes0[0] && lanes1[1] == (lanes0[0] - lanes0[1] - 1)
+        lanes0 && lanes1 &&
+            lanes1[LANE_WIDTH] == lanes0[LANE_WIDTH] && lanes1[LANE_INDEX] == lane_invert(lanes0)[LANE_INDEX]
+      end
+
+      def lane_invert(lane)
+        [lane[LANE_WIDTH], lane[LANE_WIDTH] - lane[LANE_INDEX] - 1]
       end
 
       def path?
@@ -169,7 +202,7 @@ module Engine
       def single?
         return @_single if defined?(@_single)
 
-        @_single = @lanes.first[0] == 1 && @lanes.last[0] == 1
+        @_single = @lanes.first[LANE_WIDTH] == 1 && @lanes.last[LANE_WIDTH] == 1
       end
 
       def exits

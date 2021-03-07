@@ -16,15 +16,11 @@ module Engine
           end
 
           def share_price_change(_entity, revenue)
-            if revenue.positive?
-              if revenue == @game.routes_revenue(routes)
-                { share_direction: :right, share_times: 1 }
-              else
-                {}
-              end
-            else
-              { share_direction: :left, share_times: 1 }
-            end
+            return { share_direction: :left, share_times: 1 } if revenue.zero?
+
+            return { share_direction: :right, share_times: 1 } if revenue == @game.routes_revenue(routes)
+
+            {}
           end
         end
       end

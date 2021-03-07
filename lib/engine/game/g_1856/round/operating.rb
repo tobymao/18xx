@@ -52,9 +52,7 @@ module Engine
           def force_repay_loans!(entity)
             loans_to_payoff = entity.loans.size - @game.maximum_loans(entity)
             @cash_crisis_due_to_forced_repay = nil
-            return unless @steps.any? do |step|
-                            step.passed? && step.is_a?(Engine::Step::BuyTrain)
-                          end && loans_to_payoff.positive?
+            return unless step_passed?(Engine::Step::BuyTrain) && loans_to_payoff.positive?
 
             bank = @game.bank
             owed = 100 * loans_to_payoff
@@ -83,7 +81,7 @@ module Engine
           def pay_interest!(entity)
             @cash_crisis_due_to_interest = nil
             return if @paid_interest[entity]
-            return unless @steps.any? { |step| step.passed? && step.is_a?(Engine::Step::Route) }
+            return unless step_passed?(Engine::Step::Route)
 
             # Log interest owed now so that if no interest is owed it is clear
             # why a corporation only gets $90 when taking a loan after this

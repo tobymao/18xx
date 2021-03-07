@@ -449,6 +449,7 @@ module Engine
           {
             sym: 'BBG',
             logo: '1856/BBG',
+            simple_logo: '1856/BBG.alt',
             name: 'Buffalo, Brantford & Goderich Railway',
             tokens: [0, 40, 100],
             coordinates: 'J15',
@@ -459,6 +460,7 @@ module Engine
           {
             sym: 'CA',
             logo: '1856/CA',
+            simple_logo: '1856/CA.alt',
             name: 'Canada Air Line Railway',
             tokens: [0, 40, 100],
             coordinates: 'D17',
@@ -468,6 +470,7 @@ module Engine
           {
             sym: 'CPR',
             logo: '1856/CPR',
+            simple_logo: '1856/CPR.alt',
             name: 'Canadian Pacific Railroad',
             tokens: [0, 40, 100, 100],
             coordinates: 'M4',
@@ -477,6 +480,7 @@ module Engine
           {
             sym: 'CV',
             logo: '1856/CV',
+            simple_logo: '1856/CV.alt',
             name: 'Credit Valley Railway',
             tokens: [0, 40, 100],
             coordinates: 'N11',
@@ -487,6 +491,7 @@ module Engine
           {
             sym: 'GT',
             logo: '1856/GT',
+            simple_logo: '1856/GT.alt',
             name: 'Grand Trunk Railway',
             tokens: [0, 40, 100, 100],
             coordinates: 'P9',
@@ -496,6 +501,7 @@ module Engine
           {
             sym: 'GW',
             logo: '1856/GW',
+            simple_logo: '1856/GW.alt',
             name: 'Great Western Railway',
             tokens: [0, 40, 100, 100],
             coordinates: 'F15',
@@ -505,6 +511,7 @@ module Engine
           {
             sym: 'LPS',
             logo: '1856/LPS',
+            simple_logo: '1856/LPS.alt',
             name: 'London & Port Sarnia Railway',
             tokens: [0, 40],
             coordinates: 'C14',
@@ -515,6 +522,7 @@ module Engine
           {
             sym: 'TGB',
             logo: '1856/TGB',
+            simple_logo: '1856/TGB.alt',
             name: 'Toronto, Grey & Bruce Railway',
             tokens: [0, 40],
             coordinates: 'K8',
@@ -524,6 +532,7 @@ module Engine
           {
             sym: 'THB',
             logo: '1856/THB',
+            simple_logo: '1856/THB.alt',
             name: 'Toronto, Hamilton and Buffalo Railway',
             tokens: [0, 40],
             coordinates: 'L15',
@@ -534,6 +543,7 @@ module Engine
           {
             sym: 'WR',
             logo: '1856/WR',
+            simple_logo: '1856/WR.alt',
             name: 'Welland Railway',
             tokens: [0, 40, 100],
             coordinates: 'O16',
@@ -543,6 +553,7 @@ module Engine
           {
             sym: 'WGB',
             logo: '1856/WGB',
+            simple_logo: '1856/WGB.alt',
             name: 'Wellington, Grey & Bruce Railway',
             tokens: [0, 40],
             coordinates: 'J11',
@@ -552,6 +563,7 @@ module Engine
           {
             sym: 'CGR',
             logo: '1856/CGR',
+            simple_logo: '1856/CGR.alt',
             name: 'Canadian Government Railway',
             tokens: [],
             color: '#000',
@@ -1184,7 +1196,7 @@ module Engine
             G1856::Step::SpecialBuy,
             G1856::Step::Track,
             G1856::Step::Escrow,
-            Engine::Step::Token,
+            G1856::Step::Token,
             Engine::Step::Route,
             # Interest - See Loan
             G1856::Step::Dividend,

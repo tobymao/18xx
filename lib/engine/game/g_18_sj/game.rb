@@ -23,7 +23,7 @@ module Engine
           yellow: '#FFF500' # MYJ
         )
 
-        CURRENCY_FORMAT_STR = '%d kr'
+        CURRENCY_FORMAT_STR = '%d kr'
 
         BANK_CASH = 12_000
 
@@ -458,6 +458,7 @@ module Engine
             sym: 'BJ',
             name: 'Bergslagernas järnvägar AB',
             logo: '18_sj/BJ',
+            simple_logo: '18_sj/BJ.alt',
             tokens: [0, 40, 100],
             coordinates: 'A10',
             color: '#7b352a',
@@ -468,6 +469,7 @@ module Engine
             sym: 'KFJ',
             name: 'Kil-Fryksdalens Järnväg',
             logo: '18_sj/KFJ',
+            simple_logo: '18_sj/KFJ.alt',
             tokens: [0, 40, 100],
             coordinates: 'C16',
             color: :pink,
@@ -479,6 +481,7 @@ module Engine
             sym: 'MYJ',
             name: 'Malmö-Ystads järnväg',
             logo: '18_sj/MYJ',
+            simple_logo: '18_sj/MYJ.alt',
             tokens: [0, 40, 100],
             coordinates: 'A2',
             color: '#FFF500',
@@ -490,6 +493,7 @@ module Engine
             sym: 'MÖJ',
             name: 'Mellersta Östergötlands Järnvägar',
             logo: '18_sj/MOJ',
+            simple_logo: '18_sj/MOJ.alt',
             tokens: [0, 40],
             coordinates: 'E8',
             color: :turquoise,
@@ -501,6 +505,7 @@ module Engine
             sym: 'SNJ',
             name: 'The Swedish-Norwegian Railroad Company ltd',
             logo: '18_sj/SNJ',
+            simple_logo: '18_sj/SNJ.alt',
             tokens: [0, 40, 100, 100],
             coordinates: 'G26',
             color: :blue,
@@ -511,6 +516,7 @@ module Engine
             sym: 'STJ',
             name: 'Sundsvall-Torphammars järnväg',
             logo: '18_sj/STJ',
+            simple_logo: '18_sj/STJ.alt',
             tokens: [0, 40, 100, 100],
             coordinates: 'F19',
             color: '#0a0a0a',
@@ -521,6 +527,7 @@ module Engine
             sym: 'SWB',
             name: 'Stockholm-Västerås-Bergslagens Järnvägar',
             logo: '18_sj/SWB',
+            simple_logo: '18_sj/SWB.alt',
             tokens: [0, 40],
             coordinates: 'G10',
             city: 2,
@@ -532,6 +539,7 @@ module Engine
             sym: 'TGOJ',
             name: 'Trafikaktiebolaget Grängesberg-Oxelösunds järnvägar',
             logo: '18_sj/TGOJ',
+            simple_logo: '18_sj/TGOJ.alt',
             tokens: [0, 40, 100, 100],
             coordinates: 'D19',
             color: '#f48221',
@@ -542,6 +550,7 @@ module Engine
             sym: 'UGJ',
             name: 'Uppsala-Gävle järnväg',
             logo: '18_sj/UGJ',
+            simple_logo: '18_sj/UGJ.alt',
             tokens: [0, 40, 100],
             coordinates: 'F13',
             color: :lime,
@@ -553,6 +562,7 @@ module Engine
             sym: 'ÖKJ',
             name: 'Örebro-Köpings järnvägsaktiebolag',
             logo: '18_sj/OKJ',
+            simple_logo: '18_sj/OKJ.alt',
             tokens: [0, 40],
             coordinates: 'C12',
             color: :purple,
@@ -563,6 +573,7 @@ module Engine
             sym: 'ÖSJ',
             name: 'Östra Skånes Järnvägsaktiebolag',
             logo: '18_sj/OSJ',
+            simple_logo: '18_sj/OSJ.alt',
             tokens: [0, 40, 100],
             coordinates: 'C2',
             color: '#d81e3e',
@@ -575,6 +586,7 @@ module Engine
             sym: 'KHJ',
             name: 'Köping-Hults järnväg',
             logo: '18_sj/KHJ',
+            simple_logo: '18_sj/KHJ.alt',
             tokens: [0],
             coordinates: 'D15',
             color: '#ffffff',
@@ -845,6 +857,7 @@ module Engine
             sym: 'SJ',
             name: 'Statens Järnvägar',
             logo: '18_sj/SJ',
+            simple_logo: '18_sj/SJ.alt',
             tokens: [],
           )
           @sj.owner = @bank

@@ -17,6 +17,15 @@ module Engine
         GAME_RULES_URL = 'https://docs.google.com/document/d/1yUap9cNais_Tapv6ZjudbvukmKPgRUhY32BOaqcH8Hw/edit'
 
         PLAYER_RANGE = [3, 7].freeze
+
+        OPTIONAL_RULES = [
+          {
+            sym: :plus_expansion,
+            short_name: '1822+',
+            desc: '6 more minors and 3 more privates. The privates is categorized into blue (bidbox 1), '\
+                  'dark grey (bidbox 2) and gold (bidbox 3) stacks.',
+          },
+        ].freeze
       end
     end
   end

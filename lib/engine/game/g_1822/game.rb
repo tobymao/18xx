@@ -500,7 +500,7 @@ module Engine
           {
             name: '5',
             distance: 5,
-            num: 5,
+            num: 3,
             price: 500,
             events: [
               {
@@ -545,7 +545,7 @@ module Engine
             ],
             events: [
               {
-                'type' => 'highland_railway',
+                'type' => 'phase_revenue',
               },
             ],
           },
@@ -553,6 +553,23 @@ module Engine
             name: '2P',
             distance: 2,
             num: 2,
+            price: 0,
+          },
+          {
+            name: 'LP',
+            distance: [
+              {
+                'nodes' => ['city'],
+                'pay' => 1,
+                'visit' => 1,
+              },
+              {
+                'nodes' => ['town'],
+                'pay' => 1,
+                'visit' => 1,
+              },
+            ],
+            num: 1,
             price: 0,
           },
           {
@@ -582,7 +599,7 @@ module Engine
 
         COMPANIES = [
           {
-            name: 'BEC',
+            name: 'P1-BEC',
             sym: 'P1',
             value: 0,
             revenue: 5,
@@ -595,16 +612,16 @@ module Engine
             color: nil,
           },
           {
-            name: 'MtonR',
+            name: 'P2-MtonR',
             sym: 'P2',
             value: 0,
             revenue: 10,
-            desc: 'MAJOR/MINOR, Phase 2. Remove Small Station. NO LAY TRACK CHECK. Make sure the laid track is '\
-                  'valid. Allows the owning company to place a plain yellow track tile directly on an undeveloped '\
-                  'small station hex location or upgrade a small station tile of one colour to a plain track tile '\
-                  'of the next colour. This closes the company and counts as the company’s normal track laying '\
-                  'step. All other normal track laying restrictions apply. Once acquired, the private company pays '\
-                  'its revenue to the owning company until the power is exercised and the company is closed.',
+            desc: 'MAJOR/MINOR, Phase 2. Remove Small Station. Allows the owning company to place a plain yellow '\
+                  'track tile directly on an undeveloped small station hex location or upgrade a small station tile '\
+                  'of one colour to a plain track tile of the next colour. This closes the company and counts as '\
+                  'the company’s normal track laying step. All other normal track laying restrictions apply. Once '\
+                  'acquired, the private company pays its revenue to the owning company until the power is '\
+                  'exercised and the company is closed.',
             abilities: [
               {
                 type: 'tile_lay',
@@ -620,7 +637,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'S&HR',
+            name: 'P3-S&HR',
             sym: 'P3',
             value: 0,
             revenue: 0,
@@ -637,7 +654,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'SDR',
+            name: 'P4-SDR',
             sym: 'P4',
             value: 0,
             revenue: 0,
@@ -654,7 +671,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'LC&DR',
+            name: 'P5-LC&DR',
             sym: 'P5',
             value: 0,
             revenue: 10,
@@ -686,7 +703,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'L&SR',
+            name: 'P6-L&SR',
             sym: 'P6',
             value: 0,
             revenue: 10,
@@ -700,7 +717,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'S&BR',
+            name: 'P7-S&BR',
             sym: 'P7',
             value: 0,
             revenue: 10,
@@ -714,7 +731,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'E&GR',
+            name: 'P8-E&GR',
             sym: 'P8',
             value: 0,
             revenue: 10,
@@ -728,7 +745,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'M&GNR',
+            name: 'P9-M&GNR',
             sym: 'P9',
             value: 0,
             revenue: 10,
@@ -740,7 +757,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'G&SWR',
+            name: 'P10-G&SWR',
             sym: 'P10',
             value: 0,
             revenue: 10,
@@ -770,7 +787,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'B&ER',
+            name: 'P11-B&ER',
             sym: 'P11',
             value: 0,
             revenue: 10,
@@ -796,7 +813,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'L&SR',
+            name: 'P12-L&SR',
             sym: 'P12',
             value: 0,
             revenue: 10,
@@ -820,7 +837,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'YN&BR',
+            name: 'P13-YN&BR',
             sym: 'P13',
             value: 0,
             revenue: 10,
@@ -832,7 +849,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'K&TR',
+            name: 'P14-K&TR',
             sym: 'P14',
             value: 0,
             revenue: 10,
@@ -844,7 +861,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'HR',
+            name: 'P15-HR',
             sym: 'P15',
             value: 0,
             revenue: 0,
@@ -857,7 +874,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'Tax Haven',
+            name: 'P16-TH',
             sym: 'P16',
             value: 0,
             revenue: 0,
@@ -878,7 +895,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'LUR',
+            name: 'P17-LUR',
             sym: 'P17',
             value: 0,
             revenue: 10,
@@ -890,7 +907,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'C&HPR',
+            name: 'P18-C&HPR',
             sym: 'P18',
             value: 0,
             revenue: 10,
@@ -898,6 +915,63 @@ module Engine
                   'token area of its charter to the available token area, or vice versa. This company closes when '\
                   'its power is exercised.',
             abilities: [],
+            color: nil,
+          },
+          {
+            name: 'P19-AEC',
+            sym: 'P19',
+            value: 0,
+            revenue: 0,
+            desc: 'MAJOR/MINOR, Phase 1. Permanent L-Train. An L-train cannot be sold to another company. It does '\
+                  'not count as a train for the purposes of mandatory train ownership. It does not count against '\
+                  'train ownership limit A company cannot own a permanent L-train and a permanent 2-train. '\
+                  'Dividends can be separated from other trains and may be split, paid in full, or retained. If a '\
+                  'company runs a permanent L-train and pays a dividend (split or full), but retains its dividend '\
+                  'from other train operations this still counts as a normal dividend for stock price movement '\
+                  'purposes. Vice-versa, if a company pays a dividend (split or full) with its other trains, but '\
+                  'retains the dividend from the permanent L, this also still counts as a normal dividend for stock '\
+                  'price movement purposes. Does not close.',
+            abilities: [],
+            color: nil,
+          },
+          {
+            name: 'P20-C&WR',
+            sym: 'P20',
+            value: 0,
+            revenue: 0,
+            desc: 'MAJOR/MINOR, Phase 3. £5x Phase. Pays revenue of £5 x phase number to the player, and pays '\
+                  'treasury credits of £5 x phase number to the private company. This credit is retained on the '\
+                  'private company charter. When acquired, the acquiring company receives this treasury money and '\
+                  'this private company closes. If not acquired beforehand, this company closes at the start of '\
+                  'Phase 7 and all treasury credits are returned to the bank.',
+            abilities: [],
+            color: nil,
+          },
+          {
+            name: 'P21-HSBC',
+            sym: 'P21',
+            value: 0,
+            revenue: 10,
+            desc: 'MAJOR/MINOR, Phase 2. Grimsby/Hull Bridge. Allows the owning company to lay yellow tiles in '\
+                  'Grimsby and / or Hull, forming a direct track connection between the two cities over the '\
+                  'Humber estuary. If one of the cities already has a yellow tile in place, then if used in phase 3 '\
+                  'or later, one of the tile lays may be a green upgrade. No terrain costs apply for these tile '\
+                  'lays. These tile lays count as the normal track laying phase for the operating company. The '\
+                  'owning company must have a token in Hull or Grimsby to use this power. Closes when its power is '\
+                  'exercised.',
+            abilities: [
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                when: 'track',
+                count: 2,
+                free: true,
+                reachable: true,
+                closed_when_used_up: true,
+                hexes: %w[N21 N23],
+                tiles: %w[5 6 57 15],
+              },
+            ],
             color: nil,
           },
           {
@@ -1313,6 +1387,66 @@ module Engine
             color: '#ffffff',
             text_color: 'black',
           },
+          {
+            name: 'MINOR: 25. Yarmouth & Norwich Railway',
+            sym: 'M25',
+            value: 100,
+            revenue: 0,
+            desc: 'A 50% director’s certificate in the associated minor company. Starting location is Q30.',
+            abilities: [],
+            color: '#ffffff',
+            text_color: 'black',
+          },
+          {
+            name: 'MINOR: 26. Hull and Selby Railway',
+            sym: 'M26',
+            value: 100,
+            revenue: 0,
+            desc: 'A 50% director’s certificate in the associated minor company. Starting location is N21.',
+            abilities: [],
+            color: '#ffffff',
+            text_color: 'black',
+          },
+          {
+            name: 'MINOR: 27. City of Glasgow Union Railway',
+            sym: 'M27',
+            value: 100,
+            revenue: 0,
+            desc: 'A 50% director’s certificate in the associated minor company. Starting location is E6.',
+            abilities: [],
+            color: '#ffffff',
+            text_color: 'black',
+          },
+          {
+            name: 'MINOR: 28. Maryport and Carlisle Railway',
+            sym: 'M28',
+            value: 100,
+            revenue: 0,
+            desc: 'A 50% director’s certificate in the associated minor company. Starting location is G12.',
+            abilities: [],
+            color: '#ffffff',
+            text_color: 'black',
+          },
+          {
+            name: 'MINOR: 29. Shropshire and Montgomeryshire Railway',
+            sym: 'M29',
+            value: 100,
+            revenue: 0,
+            desc: 'A 50% director’s certificate in the associated minor company. Starting location is E28.',
+            abilities: [],
+            color: '#ffffff',
+            text_color: 'black',
+          },
+          {
+            name: 'MINOR: 30. Plymouth and Dartmoor Railway',
+            sym: 'M30',
+            value: 100,
+            revenue: 0,
+            desc: 'A 50% director’s certificate in the associated minor company. Starting location is B43.',
+            abilities: [],
+            color: '#ffffff',
+            text_color: 'black',
+          },
         ].freeze
 
         CORPORATIONS = [
@@ -1702,6 +1836,102 @@ module Engine
             reservation_color: nil,
           },
           {
+            sym: '25',
+            name: 'Yarmouth & Norwich Railway',
+            logo: '1822/25',
+            tokens: [0],
+            type: 'minor',
+            always_market_price: true,
+            float_percent: 100,
+            hide_shares: true,
+            shares: [100],
+            max_ownership_percent: 100,
+            coordinates: 'Q30',
+            color: '#ffffff',
+            text_color: 'black',
+            reservation_color: nil,
+          },
+          {
+            sym: '26',
+            name: 'Hull and Selby Railway',
+            logo: '1822/26',
+            tokens: [0],
+            type: 'minor',
+            always_market_price: true,
+            float_percent: 100,
+            hide_shares: true,
+            shares: [100],
+            max_ownership_percent: 100,
+            coordinates: 'N21',
+            color: '#ffffff',
+            text_color: 'black',
+            reservation_color: nil,
+          },
+          {
+            sym: '27',
+            name: 'City of Glasgow Union Railway',
+            logo: '1822/27',
+            tokens: [0],
+            type: 'minor',
+            always_market_price: true,
+            float_percent: 100,
+            hide_shares: true,
+            shares: [100],
+            max_ownership_percent: 100,
+            coordinates: 'E6',
+            color: '#ffffff',
+            text_color: 'black',
+            reservation_color: nil,
+          },
+          {
+            sym: '28',
+            name: 'Maryport and Carlisle Railway',
+            logo: '1822/28',
+            tokens: [0],
+            type: 'minor',
+            always_market_price: true,
+            float_percent: 100,
+            hide_shares: true,
+            shares: [100],
+            max_ownership_percent: 100,
+            coordinates: 'G12',
+            color: '#ffffff',
+            text_color: 'black',
+            reservation_color: nil,
+          },
+          {
+            sym: '29',
+            name: 'Shropshire and Montgomeryshire Railway',
+            logo: '1822/29',
+            tokens: [0],
+            type: 'minor',
+            always_market_price: true,
+            float_percent: 100,
+            hide_shares: true,
+            shares: [100],
+            max_ownership_percent: 100,
+            coordinates: 'E28',
+            color: '#ffffff',
+            text_color: 'black',
+            reservation_color: nil,
+          },
+          {
+            sym: '30',
+            name: 'Shropshire and Montgomeryshire Railway',
+            logo: '1822/30',
+            tokens: [0],
+            type: 'minor',
+            always_market_price: true,
+            float_percent: 100,
+            hide_shares: true,
+            shares: [100],
+            max_ownership_percent: 100,
+            coordinates: 'B43',
+            color: '#ffffff',
+            text_color: 'black',
+            reservation_color: nil,
+          },
+          {
             sym: 'LNWR',
             name: 'London and North West Railway',
             logo: '1822/LNWR',
@@ -1790,7 +2020,7 @@ module Engine
           },
           {
             sym: 'LYR',
-            name: 'Lancashire & Yorkshire',
+            name: 'Lancashire & Yorkshire Railway',
             logo: '1822/LYR',
             tokens: [0, 100],
             type: 'major',
@@ -1981,7 +2211,7 @@ module Engine
             ['E26'] =>
               'path=a:0,b:4,lanes:2',
             ['E28'] =>
-              'city=revenue:yellow_10|green_20|brown_20|gray_30,slots:3;path=a:0,b:_0,lanes:2,terminal:1;'\
+              'city=revenue:yellow_10|green_20|brown_20|gray_30,slots:3,loc:1.5;path=a:0,b:_0,lanes:2,terminal:1;'\
               'path=a:3,b:_0,lanes:2,terminal:1;path=a:4,b:_0,lanes:2,terminal:1;path=a:5,b:_0,lanes:2,terminal:1',
             ['E30'] =>
               'path=a:3,b:5,lanes:2',
@@ -2033,8 +2263,9 @@ module Engine
             ['Concessions close', 'All concessions close without compensation, major companies now float at 50%'],
           'full_capitalisation' =>
             ['Full capitalisation', 'Major companies now receives full capitalisation when floated'],
-          'highland_railway' =>
-            ['Highland Railway', 'Highland Railway closes if not acquired by a major company'],
+          'phase_revenue' =>
+            ['Phase revenue', 'Highland Railway and Canterbury & Whitstable Railway closes if not acquired by a '\
+                              'major company'],
         }.freeze
 
         STATUS_TEXT = Base::STATUS_TEXT.merge(
@@ -2052,6 +2283,10 @@ module Engine
         BIDDING_BOX_MINOR_COUNT = 4
         BIDDING_BOX_CONCESSION_COUNT = 3
         BIDDING_BOX_PRIVATE_COUNT = 3
+
+        BIDDING_BOX_START_MINOR = 'M24'
+        BIDDING_BOX_START_CONCESSION = 'C1'
+        BIDDING_BOX_START_PRIVATE = 'P1'
 
         BIDDING_TOKENS = {
           '3': 6,
@@ -2098,6 +2333,7 @@ module Engine
         EXTRA_TRAINS = %w[2P P+ LP].freeze
         EXTRA_TRAIN_PULLMAN = 'P+'
         EXTRA_TRAIN_PERMANENTS = %w[2P LP].freeze
+        LOCAL_TRAINS = %w[L LP].freeze
 
         LIMIT_TOKENS_AFTER_MERGER = 9
 
@@ -2122,6 +2358,13 @@ module Engine
         COMPANY_OSTH = 'P16'
         COMPANY_LUR = 'P17'
         COMPANY_CHPR = 'P18'
+        COMPANY_CWR = 'P20'
+        COMPANY_HSBC = 'P21'
+        COMPANY_HSBC_TILE_LAYS = [
+          { lay: true, upgrade: true },
+          { lay: true, upgrade: :not_if_upgraded, cannot_reuse_same_hex: true },
+        ].freeze
+        COMPANY_HSBC_TILES = %w[N21 N23].freeze
 
         COMPANY_SHORT_NAMES = {
           'P1' => 'P1-BEC',
@@ -2142,6 +2385,9 @@ module Engine
           'P16' => 'P16-Tax Haven',
           'P17' => 'P17-LUR',
           'P18' => 'P18-C&HPR',
+          'P19' => 'P19-AEC',
+          'P20' => 'P20-C&WR',
+          'P21' => 'P21-HSBC',
           'C1' => 'LNWR',
           'C2' => 'GWR',
           'C3' => 'LBSCR',
@@ -2176,6 +2422,12 @@ module Engine
           'M22' => '22',
           'M23' => '23',
           'M24' => '24',
+          'M25' => '25',
+          'M26' => '26',
+          'M27' => '27',
+          'M28' => '28',
+          'M29' => '29',
+          'M30' => '30',
         }.freeze
 
         MAJOR_TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
@@ -2187,6 +2439,10 @@ module Engine
         MINOR_GREEN_UPGRADE = %w[yellow green].freeze
 
         MINOR_14_ID = '14'
+
+        PLUS_EXPANSION_BIDBOX_1 = %w[P1 P3 P4 P13 P14 P19].freeze
+        PLUS_EXPANSION_BIDBOX_2 = %w[P2 P5 P8 P10 P11 P12 P21].freeze
+        PLUS_EXPANSION_BIDBOX_3 = %w[P6 P7 P9 P15 P16 P17 P18 P20].freeze
 
         PRIVATE_COMPANIES_ACQUISITION = {
           'P1' => { acquire: %i[major], phase: 5 },
@@ -2207,11 +2463,28 @@ module Engine
           'P16' => { acquire: %i[none], phase: 0 },
           'P17' => { acquire: %i[major], phase: 2 },
           'P18' => { acquire: %i[major], phase: 5 },
+          'P19' => { acquire: %i[major minor], phase: 1 },
+          'P20' => { acquire: %i[major minor], phase: 3 },
+          'P21' => { acquire: %i[major minor], phase: 2 },
         }.freeze
 
+        PRIVATE_CLOSE_AFTER_PASS = %w[P12 P21].freeze
         PRIVATE_MAIL_CONTRACTS = %w[P6 P7].freeze
-        PRIVATE_REMOVE_REVENUE = %w[P5 P6 P7 P8 P10 P17 P18].freeze
-        PRIVATE_TRAINS = %w[P1 P3 P4 P13 P14].freeze
+        PRIVATE_REMOVE_REVENUE = %w[P5 P6 P7 P8 P10 P17 P18 P21].freeze
+        PRIVATE_PHASE_REVENUE = %w[P15 P20].freeze
+        PRIVATE_TRAINS = %w[P1 P3 P4 P13 P14 P19].freeze
+
+        STARTING_COMPANIES = %w[P1 P2 P3 P4 P5 P6 P7 P8 P9 P10 P11 P12 P13 P14 P15 P16 P17 P18
+                                C1 C2 C3 C4 C5 C6 C7 C8 C9 C10 M1 M2 M3 M4 M5 M6 M7 M8 M9 M10 M11 M12 M13 M14 M15
+                                M16 16 M17 M18 M19 M20 M21 M22 M23 M24].freeze
+        STARTING_COMPANIES_PLUS = %w[P1 P2 P3 P4 P5 P6 P7 P8 P9 P10 P11 P12 P13 P14 P15 P16 P17 P18 P19 P20 P21
+                                     C1 C2 C3 C4 C5 C6 C7 C8 C9 C10 M1 M2 M3 M4 M5 M6 M7 M8 M9 M10 M11 M12 M13 M14 M15
+                                     M16 16 M17 M18 M19 M20 M21 M22 M23 M24 M25 M26 M27 M28 M29 M30].freeze
+
+        STARTING_CORPORATIONS = %w[1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24
+                                   LNWR GWR LBSCR SECR CR MR LYR NBR SWR NER].freeze
+        STARTING_CORPORATIONS_PLUS = %w[1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29
+                                        30 LNWR GWR LBSCR SECR CR MR LYR NBR SWR NER].freeze
 
         TOKEN_PRICE = 100
 
@@ -2261,13 +2534,18 @@ module Engine
         end
 
         def can_run_route?(entity)
-          entity.trains.any? { |t| t.name == 'L' } || super
+          entity.trains.any? { |t| self.class::LOCAL_TRAINS.include?(t.name) } || super
         end
 
         def check_distance(route, visits)
+          english_channel_visit = english_channel_visit(visits)
+          # Permanent local train cant run in the english channel
+          if self.class::LOCAL_TRAINS.include?(route.train.name) && english_channel_visit.positive?
+            raise GameError, 'Local train can not have a route over the english channel'
+          end
+
           # Must visit both hex tiles to be a valid visit. If you are tokened out from france then you cant visit the
           # EC tile either.
-          english_channel_visit = english_channel_visit(visits)
           raise GameError, 'Must connect english channel to france' if english_channel_visit == 1
 
           # Special case when a train just runs english channel to france, this only counts as one visit
@@ -2333,7 +2611,7 @@ module Engine
           # On acquired abilities
           on_acquired_train(company, entity) if self.class::PRIVATE_TRAINS.include?(company.id)
           on_aqcuired_remove_revenue(company) if self.class::PRIVATE_REMOVE_REVENUE.include?(company.id)
-          on_aqcuired_highland_railway(company) if self.class::COMPANY_HR == company.id
+          on_aqcuired_phase_revenue(company) if self.class::PRIVATE_PHASE_REVENUE.include?(company.id)
           on_aqcuired_midland_great_northern(company) if self.class::COMPANY_MGNR == company.id
         end
 
@@ -2346,12 +2624,22 @@ module Engine
             return "Bid box #{index + 1}" if c == company
           end
 
-          bidbox_privates.each_with_index do |c, index|
-            return "Bid box #{index + 1}" if c == company
+          if optional_plus_expansion?
+            bidbox_privates.each do |c|
+              next unless c == company
+
+              return 'Bid box 1' if self.class::PLUS_EXPANSION_BIDBOX_1.include?(c.id)
+              return 'Bid box 2' if self.class::PLUS_EXPANSION_BIDBOX_2.include?(c.id)
+              return 'Bid box 3' if self.class::PLUS_EXPANSION_BIDBOX_3.include?(c.id)
+            end
+          else
+            bidbox_privates.each_with_index do |c, index|
+              return "Bid box #{index + 1}" if c == company
+            end
           end
 
-          if company.id == self.class::COMPANY_HR && company.owner&.player? && @highland_railway
-            return "(#{format_currency(@highland_railway.cash)})"
+          if self.class::PRIVATE_PHASE_REVENUE.include?(company.id) && company.owner&.player?
+            return "(#{format_currency(@phase_revenue[company.id].cash)})"
           end
 
           if company.id == self.class::COMPANY_OSTH && company.owner&.player? && @tax_haven.value.positive?
@@ -2417,14 +2705,17 @@ module Engine
           end
         end
 
-        def event_highland_railway!
-          company = @companies.find { |c| c.id == self.class::COMPANY_HR }
-          return if company.closed? || !@highland_railway
+        def event_phase_revenue!
+          @log << '-- Event: Highland Railway and Canterbury & Whitstable Railway now closes and its money returned '\
+                  'to the bank --'
+          self.class::PRIVATE_PHASE_REVENUE.each do |company_id|
+            company = @companies.find { |c| c.id == company_id }
+            next if !company || company&.closed? || !@phase_revenue[company_id]
 
-          @log << '-- Event: Highland Railway now closes and its money returned to the bank --'
-          @highland_railway.spend(@highland_railway.cash, @bank)
-          @highland_railway = nil
-          company.close!
+            @phase_revenue[company.id].spend(@phase_revenue[company.id].cash, @bank)
+            @phase_revenue[company.id] = nil
+            company.close!
+          end
         end
 
         def float_corporation(corporation)
@@ -2493,6 +2784,8 @@ module Engine
         end
 
         def tile_lays(entity)
+          return self.class::COMPANY_HSBC_TILE_LAYS if entity.id == self.class::COMPANY_HSBC
+
           operator = entity.company? ? entity.owner : entity
           if @phase.name.to_i >= 3 && operator.corporation? && operator.type == :major
             return self.class::MAJOR_TILE_LAYS
@@ -2507,7 +2800,7 @@ module Engine
           entity = runnable_trains.first.owner
 
           # L - trains
-          l_trains = !runnable_trains.select { |t| t.name == 'L' }.empty?
+          l_trains = runnable_trains.any? { |t| self.class::LOCAL_TRAINS.include?(t.name) }
 
           # Destination bonues
           destination_token = nil
@@ -2532,6 +2825,21 @@ module Engine
           help
         end
 
+        def init_companies(players)
+          # Make sure we have the correct starting companies
+          starting_companies = if optional_plus_expansion?
+                                 self.class::STARTING_COMPANIES_PLUS
+                               else
+                                 self.class::STARTING_COMPANIES
+                               end
+          game_companies.map do |company|
+            next if players.size < (company[:min_players] || 0)
+            next unless starting_companies.include?(company[:sym])
+
+            Company.new(**company)
+          end.compact
+        end
+
         def init_company_abilities
           @companies.each do |company|
             next unless (ability = abilities(company, :exchange))
@@ -2541,6 +2849,24 @@ module Engine
           end
 
           super
+        end
+
+        def init_corporations(stock_market)
+          # Make sure we have the correct starting corporations
+          starting_corporations = if optional_plus_expansion?
+                                    self.class::STARTING_CORPORATIONS_PLUS
+                                  else
+                                    self.class::STARTING_CORPORATIONS
+                                  end
+          game_corporations.map do |corporation|
+            next unless starting_corporations.include?(corporation[:sym])
+
+            Corporation.new(
+              min_price: stock_market.par_prices.map(&:price).min,
+              capitalization: self.class::CAPITALIZATION,
+              **corporation.merge(corporation_opts),
+            )
+          end.compact
         end
 
         def init_hexes(_companies, _corporations)
@@ -2596,10 +2922,15 @@ module Engine
           @companies.each do |c|
             next unless c.owner
 
-            if c.id == self.class::COMPANY_HR
-              revenue = @phase.name.to_i * 10
+            if self.class::PRIVATE_PHASE_REVENUE.include?(c.id)
+              multiplier = if c.id == self.class::COMPANY_HR
+                             10
+                           elsif c.id == self.class::COMPANY_CWR
+                             5
+                           end
+              revenue = @phase.name.to_i * multiplier
               c.revenue = revenue
-              @bank.spend(revenue, @highland_railway)
+              @bank.spend(revenue, @phase_revenue[c.id])
               @log << "#{c.name} collects #{format_currency(revenue)}"
             end
 
@@ -2735,8 +3066,12 @@ module Engine
           # Initialize the player depts, if player have to take an emergency loan
           @player_debts = Hash.new { |h, k| h[k] = 0 }
 
-          # Initialize a dummy player for Highland Railway to hold the cash it generates
-          @highland_railway = Engine::Player.new(-1, 'Highland Railway')
+          # Initialize a dummy player for Highland Railway and Canterbury and Whitstable Railway
+          # to hold the cash it generates
+          @phase_revenue = {}
+          self.class::PRIVATE_PHASE_REVENUE.each do |company_id|
+            @phase_revenue[company_id] = Engine::Player.new(-1, company_id)
+          end
 
           # Initialize a dummy player for Tax haven to hold the share and the cash it generates
           @tax_haven = Engine::Player.new(-1, 'Tax Haven')
@@ -2748,6 +3083,7 @@ module Engine
           setup_companies
 
           # Setup the fist bidboxes
+          @bidbox_minors_cache = []
           setup_bidboxes
 
           # Setup exchange token abilities for all corporations
@@ -2787,8 +3123,22 @@ module Engine
           concessions = timeline_companies(self.class::COMPANY_CONCESSION_PREFIX, bidbox_concessions)
           timeline << "Concessions: #{concessions.join(', ')}" unless concessions.empty?
 
-          privates = timeline_companies(self.class::COMPANY_PRIVATE_PREFIX, bidbox_privates)
-          timeline << "Privates: #{privates.join(', ')}" unless privates.empty?
+          if optional_plus_expansion?
+            b1_privates = timeline_companies_plus(self.class::COMPANY_PRIVATE_PREFIX,
+                                                  self.class::PLUS_EXPANSION_BIDBOX_1)
+            timeline << "Privates bidbox 1 : #{b1_privates.join(', ')}" unless b1_privates.empty?
+
+            b2_privates = timeline_companies_plus(self.class::COMPANY_PRIVATE_PREFIX,
+                                                  self.class::PLUS_EXPANSION_BIDBOX_2)
+            timeline << "Privates bidbox 2: #{b2_privates.join(', ')}" unless b2_privates.empty?
+
+            b3_privates = timeline_companies_plus(self.class::COMPANY_PRIVATE_PREFIX,
+                                                  self.class::PLUS_EXPANSION_BIDBOX_3)
+            timeline << "Privates bidbox 3: #{b3_privates.join(', ')}" unless b3_privates.empty?
+          else
+            privates = timeline_companies(self.class::COMPANY_PRIVATE_PREFIX, bidbox_privates)
+            timeline << "Privates: #{privates.join(', ')}" unless privates.empty?
+          end
 
           timeline
         end
@@ -2797,6 +3147,17 @@ module Engine
           bank_companies(prefix).map do |company|
             "#{self.class::COMPANY_SHORT_NAMES[company.id]}#{'*' if bidbox_companies.any? { |c| c == company }}"
           end
+        end
+
+        def timeline_companies_plus(prefix, bidbox)
+          first = true
+          bank_companies(prefix).map do |company|
+            next unless bidbox.include?(company.id)
+
+            company_str = "#{self.class::COMPANY_SHORT_NAMES[company.id]}#{'*' if first}"
+            first = false
+            company_str
+          end.compact
         end
 
         def unowned_purchasable_companies(_entity)
@@ -2902,17 +3263,18 @@ module Engine
         end
 
         def after_track_pass(entity)
-          return unless entity.type == :major
+          # Special case of when we only used up one of the 2 track lays of
+          # Leicester & Swannington Railway or Humber Suspension Bridge Company
+          self.class::PRIVATE_CLOSE_AFTER_PASS.each do |company_id|
+            company = entity.companies.find { |c| c.id == company_id }
+            next unless company
 
-          # Special case of when we only used up one of the 2 track lays of private Leicester & Swannington Railway
-          company = entity.companies.find { |c| c.id == self.class::COMPANY_LSR }
-          return unless company
+            count = company.all_abilities.find { |a| a.type == :tile_lay }&.count
+            next if !count || count == 2
 
-          count = company.all_abilities.find { |a| a.type == :tile_lay }&.count
-          return if !count || count == 2
-
-          @log << "#{company.name} closes"
-          company.close!
+            @log << "#{company.name} closes"
+            company.close!
+          end
         end
 
         def bank_companies(prefix)
@@ -2922,7 +3284,11 @@ module Engine
         end
 
         def bidbox_minors
-          bank_companies(self.class::COMPANY_MINOR_PREFIX).first(self.class::BIDDING_BOX_MINOR_COUNT)
+          bank_companies(self.class::COMPANY_MINOR_PREFIX)
+            .first(self.class::BIDDING_BOX_MINOR_COUNT)
+            .select do |company|
+            @bidbox_minors_cache.include?(company.id)
+          end
         end
 
         def bidbox_concessions
@@ -2930,7 +3296,22 @@ module Engine
         end
 
         def bidbox_privates
-          bank_companies(self.class::COMPANY_PRIVATE_PREFIX).first(self.class::BIDDING_BOX_PRIVATE_COUNT)
+          if optional_plus_expansion?
+            companies = bank_companies(self.class::COMPANY_PRIVATE_PREFIX)
+            privates = []
+            privates << companies.find { |c| self.class::PLUS_EXPANSION_BIDBOX_1.include?(c.id) }
+            privates << companies.find { |c| self.class::PLUS_EXPANSION_BIDBOX_2.include?(c.id) }
+            privates << companies.find { |c| self.class::PLUS_EXPANSION_BIDBOX_3.include?(c.id) }
+            privates.compact
+          else
+            bank_companies(self.class::COMPANY_PRIVATE_PREFIX).first(self.class::BIDDING_BOX_PRIVATE_COUNT)
+          end
+        end
+
+        def bidbox_minors_refill!
+          @bidbox_minors_cache = bank_companies(self.class::COMPANY_MINOR_PREFIX)
+                                   .first(self.class::BIDDING_BOX_MINOR_COUNT)
+                                   .map(&:id)
         end
 
         def can_gain_extra_train?(entity, train)
@@ -3001,7 +3382,7 @@ module Engine
         end
 
         def company_choices_chpr(company, time)
-          return {} if time != :token || !company.owner&.corporation?
+          return {} if !(time == :token || time == :track) || !company.owner&.corporation?
 
           choices = {}
           exchange_token_count = exchange_tokens(company.owner)
@@ -3257,11 +3638,11 @@ module Engine
           entity.tokens << Engine::Token.new(entity, price: self.class::TOKEN_PRICE)
         end
 
-        def on_aqcuired_highland_railway(company)
-          @log << "#{company.owner.name} gains #{format_currency(@highland_railway.cash)}"
-          @highland_railway.spend(@highland_railway.cash, company.owner)
-          @highland_railway = nil
-
+        def on_aqcuired_phase_revenue(company)
+          revenue_player = @phase_revenue[company.id]
+          @log << "#{company.owner.name} gains #{format_currency(revenue_player.cash)}"
+          revenue_player.spend(revenue_player.cash, company.owner)
+          @phase_revenue[company.id] = nil
           @log << "#{company.name} closes"
           company.close!
         end
@@ -3278,7 +3659,7 @@ module Engine
           train = @company_trains[company.id]
 
           unless can_gain_extra_train?(entity, train)
-            raise GameError, "Can't gain an extra #{train.name}, already have one"
+            raise GameError, "Can't gain an extra #{train.name}, already have a permanent 2P or LP"
           end
 
           buy_train(entity, train, :free)
@@ -3287,6 +3668,10 @@ module Engine
           # Company closes after it is flipped into a train
           company.close!
           @log << "#{company.name} closes"
+        end
+
+        def optional_plus_expansion?
+          @optional_rules&.include?(:plus_expansion)
         end
 
         def payoff_player_loan(player)
@@ -3325,6 +3710,7 @@ module Engine
 
         def setup_bidboxes
           # Set the owner to bank for the companies up for auction this stockround
+          bidbox_minors_refill!
           bidbox_minors.each do |minor|
             minor.owner = @bank
           end
@@ -3339,13 +3725,6 @@ module Engine
 
           # Reset the choice for Midland & Great Northern Joint Railway
           @midland_great_northern_choice = nil
-        end
-
-        def stock_round_finished
-          # Increase player loans with 50% interest
-          add_interest_player_loans!
-
-          # TODO: 1822 Restock the minor bid boxes
         end
 
         def remove_exchange_token(entity)
@@ -3399,17 +3778,40 @@ module Engine
           privates = @companies.select { |c| c.id[0] == self.class::COMPANY_PRIVATE_PREFIX }
 
           # Always set the P1, C1 and M24 in the first biddingbox
-          m24 = minors.find { |c| c.id == 'M24' }
+          m24 = minors.find { |c| c.id == self.class::BIDDING_BOX_START_MINOR }
           minors.delete(m24)
           minors.unshift(m24)
 
-          c1 = concessions.find { |c| c.id == 'C1' }
+          c1 = concessions.find { |c| c.id == self.class::BIDDING_BOX_START_CONCESSION }
           concessions.delete(c1)
           concessions.unshift(c1)
 
-          p1 = privates.find { |c| c.id == 'P1' }
+          p1 = privates.find { |c| c.id == self.class::BIDDING_BOX_START_PRIVATE }
           privates.delete(p1)
           privates.unshift(p1)
+
+          # If have have activated 1822+, 3 companies will be removed from the game
+          if optional_plus_expansion?
+            # Make sure we have correct order of the bidboxes
+            bid_box_1 = privates.map { |c| c if self.class::PLUS_EXPANSION_BIDBOX_1.include?(c.id) }.compact
+            bid_box_2 = privates.map { |c| c if self.class::PLUS_EXPANSION_BIDBOX_2.include?(c.id) }.compact
+            bid_box_3 = privates.map { |c| c if self.class::PLUS_EXPANSION_BIDBOX_3.include?(c.id) }.compact
+            privates = bid_box_1 + bid_box_2 + bid_box_3
+
+            # Remove one of the bidbid 2 privates, except London, Chatham and Dover Railway
+            company = privates.find do |c|
+              c.id != self.class::COMPANY_LCDR && self.class::PLUS_EXPANSION_BIDBOX_2.include?(c.id)
+            end
+            privates.delete(company)
+            @log << "#{company.id}-#{company.name} have been removed from the game"
+
+            # Remove two of the bidbox 3 privates
+            2.times.each do |_|
+              company = privates.find { |c| self.class::PLUS_EXPANSION_BIDBOX_3.include?(c.id) }
+              privates.delete(company)
+              @log << "#{company.id}-#{company.name} have been removed from the game"
+            end
+          end
 
           # Clear and add the companies in the correct randomize order sorted by type
           @companies.clear
@@ -3435,6 +3837,7 @@ module Engine
           @company_trains['P1'] = find_and_remove_train_by_id('5P-0')
           @company_trains['P13'] = find_and_remove_train_by_id('P+-0', buyable: false)
           @company_trains['P14'] = find_and_remove_train_by_id('P+-1', buyable: false)
+          @company_trains['P19'] = find_and_remove_train_by_id('LP-0', buyable: false)
 
           # Setup the minor 14 ability
           corporation_by_id(self.class::MINOR_14_ID).add_ability(london_extra_token_ability)

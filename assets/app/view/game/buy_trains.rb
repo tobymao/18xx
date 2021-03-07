@@ -95,11 +95,6 @@ module View
         @must_buy_train = step.must_buy_train?(@corporation)
         @should_buy_train = step.should_buy_train?(@corporation)
 
-        h3_props = {
-          style: {
-            margin: '0.5rem 0 0 0',
-          },
-        }
         div_props = {
           style: {
             display: 'grid',
@@ -122,7 +117,7 @@ module View
           if @should_buy_train == :liquidation
             children << h(:div, "#{@corporation.name} must buy a train or it will be liquidated")
           end
-          children << h(:h3, h3_props, 'Available Trains')
+          children << h(:h3, 'Available Trains')
           children << h(:div, div_props, [
             *from_depot(depot_trains),
             *other_corp_trains.any? ? other_trains(other_corp_trains) : '',
@@ -144,7 +139,7 @@ module View
         discountable_trains = @game.discountable_trains_for(@corporation)
 
         if discountable_trains.any? && step.discountable_trains_allowed?(@corporation)
-          children << h(:h3, h3_props, 'Exchange Trains')
+          children << h(:h3, 'Exchange Trains')
 
           discountable_trains.each do |train, discount_train, variant, price|
             exchange_train = lambda do
@@ -167,7 +162,7 @@ module View
           end
         end
 
-        children << h(:h3, h3_props, 'Remaining Trains')
+        children << h(:h3, 'Remaining Trains')
         children << remaining_trains
 
         children << h(:div, "#{@corporation.name} has #{@game.format_currency(@corporation.cash)}.")

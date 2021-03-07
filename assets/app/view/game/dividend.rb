@@ -66,11 +66,10 @@ module View
           end
           button = h('td.no_padding', [h(:button, { style: { margin: '0.2rem 0' }, on: { click: click } }, text)])
 
-          props = { style: { paddingRight: '1rem' } }
           h(:tr, [
             button,
-            h('td.right', props, [@game.format_currency(corp_income)]),
-            h('td.right', props, [@game.format_currency(option[:per_share])]),
+            h('td.padded_number', [@game.format_currency(corp_income)]),
+            h('td.padded_number', [@game.format_currency(option[:per_share])]),
             h(:td, [direction]),
           ])
         end

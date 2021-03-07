@@ -4,6 +4,7 @@ require 'index'
 require 'game_manager'
 require 'user_manager'
 require 'lib/connection'
+require 'lib/settings'
 require 'lib/storage'
 require 'view/about'
 require 'view/create_game'
@@ -23,14 +24,16 @@ require 'view/reset'
 class App < Snabberb::Component
   include GameManager
   include UserManager
+  include Lib::Settings
+
   needs :pin, default: nil
 
   def render
     props = {
       props: { id: 'app' },
       style: {
-        backgroundColor: @user&.dig(:settings, :bg) || 'inherit',
-        color: @user&.dig(:settings, :font) || 'currentColor',
+        backgroundColor: color_for(:bg) || 'inherit',
+        color: color_for(:font) || 'currentColor',
         minHeight: '98vh',
         padding: '0 2vmin 2vmin 2vmin',
         transition: 'background-color 1s ease',

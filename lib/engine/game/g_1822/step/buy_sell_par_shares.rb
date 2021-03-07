@@ -113,8 +113,7 @@ module Engine
           end
 
           def pass!
-            @round.bidders = @bidders
-            @round.bids = @bids
+            store_bids!
             super
           end
 
@@ -127,6 +126,7 @@ module Engine
           def process_bid(action)
             action.entity.unpass!
             add_bid(action)
+            store_bids!
           end
 
           def process_buy_shares(action)
@@ -147,8 +147,7 @@ module Engine
             end
 
             @game.company_made_choice(action.entity, action.choice, :stock_round)
-            @round.last_to_act = entity
-            @current_actions << action
+            track_action(action, action.entity)
             log_pass(entity)
             pass!
           end
@@ -224,6 +223,11 @@ module Engine
             !(!find_bid(entity, company) && bidding_tokens(entity).zero?)
           end
 
+          def store_bids!
+            @round.bidders = @bidders
+            @round.bids = @bids
+          end
+
           protected
 
           def add_bid(action)
@@ -234,10 +238,9 @@ module Engine
             entity = action.entity
 
             @bidders[company] |= [entity]
+            track_action(action, bid_target(action))
 
-            @current_actions << action
             @log << "#{entity.name} bids #{@game.format_currency(price)} for #{company.name}"
-            @round.last_to_act = action.entity
             @bid_actions += 1
 
             return if @bid_actions < @game.class::BIDDING_TOKENS_PER_ACTION

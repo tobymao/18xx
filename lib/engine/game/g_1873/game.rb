@@ -6,6 +6,8 @@ require_relative 'step/buy_sell_par_shares'
 require_relative 'step/draft'
 require_relative 'step/track'
 require_relative 'step/destinate'
+require_relative 'step/token'
+require_relative 'step/reassign_switcher'
 require_relative 'step/route'
 require_relative 'step/dividend'
 require_relative 'step/buy_mine'
@@ -18,10 +20,11 @@ module Engine
       class Game < Game::Base
         include_meta(G1873::Meta)
 
-        attr_reader :mine_12, :corporation_info, :minor_info, :mhe, :mine_graph, :nwe, :reserved_tiles
+        attr_reader :mine_12, :corporation_info, :minor_info, :mhe, :mine_graph, :nwe, :reserved_tiles,
+                    :track_graph
         attr_accessor :premium, :premium_order
 
-        CURRENCY_FORMAT_STR = '%d ℳ'
+        CURRENCY_FORMAT_STR = '%d ℳ'
         BANK_CASH = 100_000
         CERT_LIMIT = {
           2 => 99,
@@ -46,8 +49,9 @@ module Engine
         SELL_AFTER = :first
         SELL_BUY_ORDER = :sell_buy
         MARKET_SHARE_LIMIT = 80
+        SOLD_OUT_INCREASE = false
 
-        TRACK_RESTRICTION = :restrictive # FIXME: needs to be very_restrictive when implemented
+        TRACK_RESTRICTION = :restrictive
 
         SELL_MOVEMENT = :down_share
 
@@ -74,6 +78,7 @@ module Engine
         MIN_BID_INCREMENT = 10
         MHE_START_PRICE = 120
         HW_BONUS = 50
+        TOKEN_PRICE = 100
 
         MAINTENANCE_BY_PHASE = {
           '1' => {},
@@ -108,6 +113,7 @@ module Engine
           },
         }.freeze
 
+        # tiles to be laid to complete concession
         CONCESSION_TILES = {
           # HBE
           'B17' => { entity: 'HBE', tile: '78', exits: [0, 4], cost: 0 },
@@ -129,6 +135,33 @@ module Engine
           'H3' => { entity: 'KEZ', tile: '78', exits: [3, 5], cost: 100 },
           # GHE
           'H19' => { entity: 'GHE', tile: '78', exits: [1, 3], cost: 150 },
+        }.freeze
+
+        # exits on portions of concession routes without starting tokens
+        CONCESSION_ROUTE_EXITS = {
+          # HBE
+          'B17' => [0, 4],
+          'C16' => [0, 3], # preprinted tile
+          # NWE
+          'C8' => [0, 3],
+          'D7' => [0, 3],
+          'E6' => [0, 3],
+          'F5' => [3, 5], # preprinted tile
+          'H7' => [2, 4],
+          'H9' => [0, 1], # preprinted tile
+          'I8' => [0, 3],
+          # WBE
+          'C10' => [2, 4],
+          'C12' => [1, 4],
+          'C14' => [1, 5],
+          # SHE
+          'F3' => [0, 3],
+          'G2' => [0, 3],
+          # KEZ
+          'H3' => [3, 5],
+          # GHE
+          'H17' => [4, 5], # preprinted tile
+          'H19' => [1, 3],
         }.freeze
 
         STATE_NETWORK = %w[
@@ -182,6 +215,11 @@ module Engine
           @minor_info = load_minor_extended
           @corporation_info = load_corporation_extended
 
+          @concession_route_corporations = {}
+          @corporations.select { |c| concession_incomplete?(c) }.each do |rr|
+            concession_routes(rr).flatten.each { |h| @concession_route_corporations[h] = rr }
+          end
+
           @mine_12 = @minors.find { |m| m.id == '12' }
           @mhe = @corporations.find { |c| c.id == 'MHE' }
           @nwe = @corporations.find { |c| c.id == 'NWE' }
@@ -204,16 +242,22 @@ module Engine
           @mhe.trains.first.buyable = false
 
           @mine_graph = Graph.new(self, home_as_token: true, no_blocking: true)
+
+          # can't trace paths from a flipped token for the purposes of laying track
+          @track_graph = Graph.new(self, skip_track: :broad, check_tokens: true)
+
           @reserved_tiles = Hash.new { |h, k| h[k] = {} }
           @state_network_hexes = STATE_NETWORK.map { |h| hex_by_id(h) }
         end
 
+        # used for laying tokens and running routes
         def init_graph
           Graph.new(self, skip_track: :broad)
         end
 
+        # select graph for laying track
         def graph_for_entity(entity)
-          entity.minor? ? @mine_graph : @graph
+          entity.minor? ? @mine_graph : @track_graph
         end
 
         def load_minor_extended
@@ -286,6 +330,39 @@ module Engine
           end
         end
 
+        def skip_token?(corporation, city)
+          return false unless railway?(corporation)
+
+          city.tokens.find { |t| t&.corporation == corporation }&.status == :flipped
+        end
+
+        def update_tokens(corporation, routes)
+          return unless railway?(corporation)
+
+          visited_tokens = {}
+
+          routes.each do |route|
+            route.visited_stops.each do |node|
+              next unless node.city?
+
+              node.tokens.each do |token|
+                next if !token || token.corporation != corporation
+
+                visited_tokens[token] = true
+              end
+            end
+          end
+
+          route_hexes = concession_routes(corporation).flatten
+          corporation.placed_tokens.each do |token|
+            token.status = if visited_tokens[token] || route_hexes.include?(token.city.hex.id)
+                             nil
+                           else
+                             :flipped
+                           end
+          end
+        end
+
         def convert!(corporation)
           shares = @_shares.values.select { |share| share.corporation == corporation }
 
@@ -307,6 +384,7 @@ module Engine
             end
             new_shares = 5.times.map { |i| Share.new(corporation, percent: 10, index: i + 5) }
             @corporation_info[corporation][:slots] = 5 if public_mine?(corporation)
+            increase_tokens!(corporation) if railway?(corporation)
             @log << "#{corporation.name} converts to a 10 share corporation"
           else
             raise GameError, 'Cannot convert 10 share corporation'
@@ -323,6 +401,13 @@ module Engine
           corporation.share_holders[owner] += share.percent if owner
           owner.shares_by_corporation[corporation] << share
           @_shares[share.id] = share
+        end
+
+        def increase_tokens!(corporation)
+          num_new_tokens = @corporation_info[corporation][:extra_tokens]
+          new_tokens = num_new_tokens.times.map { |_i| Token.new(corporation, price: TOKEN_PRICE) }
+          corporation.tokens.concat(new_tokens)
+          @log << "#{corporation.name} receives #{num_new_tokens} more tokens"
         end
 
         def buy_train(operator, train, price = nil)
@@ -565,6 +650,17 @@ module Engine
           entity.corporation? && @corporation_info[entity][:type] == :railway
         end
 
+        def concession_blocks?(city)
+          hex = city.hex
+          return false unless (exits = CONCESSION_ROUTE_EXITS[hex.id])
+          return false unless concession_incomplete?(@concession_route_corporations[hex.id])
+          # take care of OO tile. Only care about city along concession route
+          return false unless info && (city.exits & exits).size == exits.size
+
+          # must be two slots available for another RR to put a token here
+          city.slots - city.tokens.count { |c| c } > 1
+        end
+
         def concession_pending?(entity)
           entity.corporation? &&
             @corporation_info[entity][:type] == :railway &&
@@ -580,14 +676,20 @@ module Engine
         def concession_route_done?(entity)
           return true unless concession_incomplete?(entity)
 
-          concession_hexes(entity).all? do |hex|
+          concession_tile_hexes(entity).all? do |hex|
             info = CONCESSION_TILES[hex.id]
             (hex.tile.exits & info[:exits]).size == info[:exits].size
           end
         end
 
-        def concession_hexes(entity)
+        def concession_tile_hexes(entity)
           CONCESSION_TILES.keys.select { |h| CONCESSION_TILES[h][:entity] == entity.name }.map { |h| hex_by_id(h) }
+        end
+
+        def concession_routes(entity)
+          return unless railway?(entity)
+
+          @corporation_info[entity][:concession_routes]
         end
 
         def concession_complete!(entity)
@@ -667,7 +769,6 @@ module Engine
           ])
         end
 
-        # FIXME
         def new_auction_round
           @log << "-- #{round_description('Auction')} --"
           G1873::Round::Auction.new(self, [
@@ -682,13 +783,12 @@ module Engine
           ])
         end
 
-        # FIXME
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
             G1873::Step::Track,
             G1873::Step::Destinate,
-            # G1873::Step::Token,
-            # G1873::Step::AssignSwitchers,
+            G1873::Step::Token,
+            G1873::Step::ReassignSwitcher,
             G1873::Step::Route,
             G1873::Step::Dividend,
             G1873::Step::BuyMine,
@@ -753,13 +853,13 @@ module Engine
           @corporations.reject { |c| @corporation_info[c][:type] == :external }
         end
 
-        def concession_hex(hex)
+        def concession_tile(hex)
           CONCESSION_TILES[hex.id]
         end
 
         # concession route in this hex
         def reserve_tile!(hex, tile)
-          return false unless (ch = concession_hex(hex))
+          return false unless (ch = concession_tile(hex))
 
           # look for an upgrade to the tile being laid that has the exits
           # needed by the concession route
@@ -789,7 +889,7 @@ module Engine
         end
 
         def add_tile_reservation!(hex, tile)
-          ch = concession_hex(hex)
+          ch = concession_tile(hex)
 
           @log << "Reserving tile ##{tile.name} for #{ch[:entity]} concession route"
 
@@ -807,7 +907,7 @@ module Engine
         def free_tile_reservation!(hex, tile)
           return if @reserved_tiles[hex.id].empty?
 
-          ch = concession_hex(hex)
+          ch = concession_tile(hex)
           return unless (ch[:exits] & tile.exits).size != ch[:exits].size
 
           @tiles << @reserved_tiles[hex.id][:tile] if @reserved_tiles[hex.id][:tile] != tile
@@ -866,9 +966,8 @@ module Engine
           @log << "Mine #{entity.name} is now connected to state railway network" unless old
         end
 
-        # FIXME: take care of compulsory train
-        def must_buy_train?(_entity)
-          false
+        def must_buy_train?(entity)
+          concession_pending?(entity)
         end
 
         def sellable_bundles(player, corporation)
@@ -965,6 +1064,35 @@ module Engine
           return unless public_mine?(entity)
 
           public_mine_mines(entity).find_index(sub)
+        end
+
+        def swap_switchers(entity, slots)
+          mine_a = public_mine_mines(entity)[slots.first]
+          mine_b = public_mine_mines(entity)[slots.last]
+
+          train_a = switcher(mine_a)
+          train_b = switcher(mine_b)
+
+          raise GameError, 'No switchers in either mine' if !train_a && !train_b
+
+          half_swap(train_a, mine_a, mine_b) if train_a
+          half_swap(train_b, mine_b, mine_a) if train_b
+
+          @log << if train_a && train_b
+                    "#{entity.name} swaps #{train_a.name} from #{mine_a.name} with #{train_b.name}"\
+                      "from #{mine_b.name}"
+                  elsif train_a
+                    "#{entity.name} moves #{train_a.name} from #{mine_a.name} to #{mine_b.name}"
+                  else
+                    "#{entity.name} move #{train_b.name} from #{mine_b.name} to #{mine_a.name}"
+                  end
+        end
+
+        # 0 -> 1
+        def half_swap(train, mine0, mine1)
+          train.owner = mine1
+          mine0.trains.delete(train)
+          mine1.trains << train
         end
 
         def add_mine(entity, mine)
@@ -1217,6 +1345,7 @@ module Engine
               sym: '1',
               name: 'Mine 1 (V-H)',
               logo: '1873/1',
+              simple_logo: '1873/1.alt',
               tokens: [],
               coordinates: 'E8',
               color: '#772500',
@@ -1233,6 +1362,7 @@ module Engine
               sym: '2',
               name: 'Mine 2',
               logo: '1873/2',
+              simple_logo: '1873/2.alt',
               tokens: [],
               coordinates: 'E4',
               color: 'black',
@@ -1249,6 +1379,7 @@ module Engine
               sym: '3',
               name: 'Mine 3',
               logo: '1873/3',
+              simple_logo: '1873/3.alt',
               tokens: [],
               coordinates: 'I16',
               color: 'black',
@@ -1265,6 +1396,7 @@ module Engine
               sym: '4',
               name: 'Mine 4 (V-H)',
               logo: '1873/4',
+              simple_logo: '1873/4.alt',
               tokens: [],
               coordinates: 'D11',
               color: '#772500',
@@ -1281,6 +1413,7 @@ module Engine
               sym: '5',
               name: 'Mine 5 (V-H)',
               logo: '1873/5',
+              simple_logo: '1873/5.alt',
               tokens: [],
               coordinates: 'D13',
               color: '#772500',
@@ -1297,6 +1430,7 @@ module Engine
               sym: '6',
               name: 'Mine 6 (V-H)',
               logo: '1873/6',
+              simple_logo: '1873/6.alt',
               tokens: [],
               coordinates: 'E10',
               color: '#772500',
@@ -1313,6 +1447,7 @@ module Engine
               sym: '7',
               name: 'Mine 7',
               logo: '1873/7',
+              simple_logo: '1873/7.alt',
               tokens: [],
               coordinates: 'I14',
               color: 'black',
@@ -1329,6 +1464,7 @@ module Engine
               sym: '8',
               name: 'Mine 8',
               logo: '1873/8',
+              simple_logo: '1873/8.alt',
               tokens: [],
               coordinates: 'I8',
               color: 'black',
@@ -1345,6 +1481,7 @@ module Engine
               sym: '9',
               name: 'Mine 9',
               logo: '1873/9',
+              simple_logo: '1873/9.alt',
               tokens: [],
               coordinates: 'G2',
               color: 'black',
@@ -1361,6 +1498,7 @@ module Engine
               sym: '10',
               name: 'Mine 10 (V-H)',
               logo: '1873/10',
+              simple_logo: '1873/10.alt',
               tokens: [],
               coordinates: 'D9',
               color: '#772500',
@@ -1377,6 +1515,7 @@ module Engine
               sym: '11',
               name: 'Mine 11 (V-H)',
               logo: '1873/11',
+              simple_logo: '1873/11.alt',
               tokens: [],
               coordinates: 'F7',
               color: '#772500',
@@ -1393,6 +1532,7 @@ module Engine
               sym: '12',
               name: 'Mine 12 (V-H)',
               logo: '1873/12',
+              simple_logo: '1873/12.alt',
               tokens: [],
               coordinates: 'D15',
               color: '#772500',
@@ -1409,6 +1549,7 @@ module Engine
               sym: '13',
               name: 'Mine 13',
               logo: '1873/13',
+              simple_logo: '1873/13.alt',
               tokens: [],
               coordinates: 'I18',
               color: 'black',
@@ -1425,6 +1566,7 @@ module Engine
               sym: '14',
               name: 'Mine 14 (V-H)',
               logo: '1873/14',
+              simple_logo: '1873/14.alt',
               tokens: [],
               coordinates: 'G4',
               color: '#772500',
@@ -1441,6 +1583,7 @@ module Engine
               sym: '15',
               name: 'Mine 15',
               logo: '1873/15',
+              simple_logo: '1873/15.alt',
               tokens: [],
               coordinates: 'F15',
               color: 'black',
@@ -1462,6 +1605,7 @@ module Engine
               sym: 'HBE',
               name: 'Halberstadt-Blankenburger Eisenbahn',
               logo: '1873/HBE',
+              simple_logo: '1873/HBE.alt',
               float_percent: 60,
               shares: [20, 20, 20, 20, 20],
               max_ownership_percent: 100,
@@ -1494,6 +1638,7 @@ module Engine
               sym: 'GHE',
               name: 'Gernrode-Harzgeroder Eisenbahn',
               logo: '1873/GHE',
+              simple_logo: '1873/GHE.alt',
               float_percent: 60,
               shares: [20, 20, 20, 20, 20],
               max_ownership_percent: 100,
@@ -1512,7 +1657,7 @@ module Engine
               extended: {
                 type: :railway,
                 concession_phase: '1',
-                concession_routes: [%w[G20 H19 G17 I18]],
+                concession_routes: [%w[G20 H19 H17 I18]],
                 concession_cost: 150,
                 concession_pending: true,
                 concession_incomplete: true,
@@ -1524,6 +1669,7 @@ module Engine
               sym: 'NWE',
               name: 'Nordhausen-Wernigeroder Eisenbahn',
               logo: '1873/NWE',
+              simple_logo: '1873/NWE.alt',
               float_percent: 60,
               shares: [20, 20, 20, 20, 20],
               max_ownership_percent: 100,
@@ -1554,6 +1700,7 @@ module Engine
               sym: 'SHE',
               name: 'Südharzeisenbahn',
               logo: '1873/SHE',
+              simple_logo: '1873/SHE.alt',
               float_percent: 60,
               shares: [20, 20, 20, 20, 20],
               max_ownership_percent: 100,
@@ -1582,6 +1729,7 @@ module Engine
               sym: 'KEZ',
               name: 'Kleinbahn Ellrich-Zorge',
               logo: '1873/KEZ',
+              simple_logo: '1873/KEZ.alt',
               float_percent: 60,
               shares: [20, 20, 20, 20, 20],
               max_ownership_percent: 100,
@@ -1610,6 +1758,7 @@ module Engine
               sym: 'WBE',
               name: 'Wernigerode-Blankenburger Eisenbahn',
               logo: '1873/WBE',
+              simple_logo: '1873/WBE.alt',
               float_percent: 60,
               shares: [20, 20, 20, 20, 20],
               max_ownership_percent: 100,
@@ -1638,6 +1787,7 @@ module Engine
               sym: 'QLB',
               name: 'Quedlinburger Lokalbahn',
               logo: '1873/QLB',
+              simple_logo: '1873/QLB.alt',
               float_percent: 60,
               shares: [20, 20, 20, 20, 20],
               max_ownership_percent: 100,
@@ -1666,6 +1816,7 @@ module Engine
               sym: 'MHE',
               name: 'Magdeburg-Halberstädter Eisenbahn',
               logo: '1873/MHE',
+              simple_logo: '1873/MHE.alt',
               float_percent: 0,
               shares: [10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
               tokens: [],
@@ -1680,6 +1831,7 @@ module Engine
               sym: 'U',
               name: 'Union',
               logo: '1873/U',
+              simple_logo: '1873/U.alt',
               float_percent: 80,
               shares: [50, 50],
               tokens: [],
@@ -1697,6 +1849,7 @@ module Engine
               sym: 'HW',
               name: 'Harzer Werke',
               logo: '1873/HW',
+              simple_logo: '1873/HW.alt',
               float_percent: 80,
               shares: [50, 50],
               tokens: [],
@@ -1714,6 +1867,7 @@ module Engine
               sym: 'CO',
               name: 'Concordia',
               logo: '1873/CO',
+              simple_logo: '1873/CO.alt',
               float_percent: 80,
               shares: [50, 50],
               tokens: [],
@@ -1731,6 +1885,7 @@ module Engine
               sym: 'SN',
               name: 'Schachtbau',
               logo: '1873/SN',
+              simple_logo: '1873/SN.alt',
               float_percent: 80,
               shares: [50, 50],
               tokens: [],
@@ -1748,6 +1903,7 @@ module Engine
               sym: 'MO',
               name: 'Montania',
               logo: '1873/MO',
+              simple_logo: '1873/MO.alt',
               float_percent: 80,
               shares: [50, 50],
               tokens: [],
@@ -2024,7 +2180,7 @@ module Engine
               %w[
                 H17
               ] => 'city=revenue:30;path=a:0,b:_0,track:narrow;path=a:4,b:_0,track:narrow;'\
-                'path=a:5,b:_0,track:narrow;upgrade=cost:100,terrain:mountain;frame=color:purple',
+                'path=a:5,b:_0,track:narrow;upgrade=cost:100,terrain:mountain',
             },
             gray: {
               %w[

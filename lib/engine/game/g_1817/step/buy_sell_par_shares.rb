@@ -428,6 +428,19 @@ module Engine
           def choice_available?(entity)
             entity.corporation?
           end
+
+          def corporation_secure_percent(_corporation)
+            # Due to shorts 50% isn't enough on 1817, need 60%
+            60
+          end
+
+          def action_is_shenanigan?(entity, action, corporation, corp_buying)
+            if action.is_a?(Action::Short)
+              'Short bought'
+            else
+              super
+            end
+          end
         end
       end
     end

@@ -56,10 +56,15 @@ module Engine
             # This will procced the whole game
             remove_l_trains(remove_l_count) if remove_l_count.positive? && @game.depot.upcoming.first.name == 'L'
             remove_minor_and_first_train(remove_minor) if remove_minor
+
+            # Refill the minors bidbox
+            @game.bidbox_minors_refill!
+
+            # If the minors is empty and no minor was removed. Remove a train
             remove_first_train if !remove_minor && @game.bidbox_minors.empty?
 
-            # Finish of the stock round
-            @game.stock_round_finished
+            # Increase player loans with 50% interest
+            @game.add_interest_player_loans!
 
             super
           end
@@ -129,11 +134,18 @@ module Engine
           end
 
           def remove_l_trains(count)
-            @game.log << "#{count} minors with no bids. If available up to #{count} L trains will be removed"
+            total_count = count
+            removed_trains = 0
             while (train = @game.depot.upcoming.first).name == 'L' && count.positive?
               @game.remove_train(train)
               count -= 1
+              removed_trains += 1
             end
+            @game.log << if total_count != removed_trains
+                           "#{total_count} minors with no bids. The last #{removed_trains} L trains have been removed"
+                         else
+                           "#{total_count} minors with no bids. #{removed_trains} L trains have been removed"
+                         end
           end
 
           def remove_minor_and_first_train(company)
