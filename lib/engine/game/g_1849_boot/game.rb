@@ -543,7 +543,7 @@ module Engine
 
         LAYOUT = :pointy
 
-        NEW_SFR_HEXES = %w[E11 H8 I13 I17 J18 K19 L12 L20 O9].freeze
+        NEW_SFR_HEXES = %w[E11 H8 I13 I17 J18 K19 L12 L20 O9 P2].freeze
         NEW_PORT_HEXES = %w[B16 G5 J20 L16].freeze
         NEW_SMS_HEXES = %w[B14 G7 H8 J18 L12 L18 L20 N20 O9 P2].freeze
 

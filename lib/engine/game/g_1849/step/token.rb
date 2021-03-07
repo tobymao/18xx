@@ -15,7 +15,7 @@ module Engine
 
           def place_token(entity, city, token, connected: true, extra: false, special_ability: nil)
             return super unless entity.sms_hexes
-
+SFR
             hex = city.hex
             raise GameError, 'Must place token on SMS hex' unless entity.sms_hexes.find { |h| hex.id == h }
 
@@ -38,6 +38,19 @@ module Engine
               @game.corporations.delete(afg)
               @game.corporations << afg
               @log << 'AFG has no home token locations and cannot be opened until one becomes available.'
+            end
+
+            index = @game.corporations.index { |c| c.name == 'SFR' }
+            sfr = index ? @game.corporations[index] : nil
+            if sfr && !sfr.floated? && @game.home_token_locations(sfr).empty?
+              if sfr.next_to_par && sfr != @game.corporations.last
+                @game.corporations[index + 1].next_to_par = true
+                sfr.next_to_par = false
+              end
+              sfr.slot_open = false
+              @game.corporations.delete(sfr)
+              @game.corporations << sfr
+              @log << 'SFR has no home token locations and cannot be opened until one becomes available.'
             end
 
             pass!
