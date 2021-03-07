@@ -11,7 +11,8 @@ module Engine
 
         def initialize(minor)
           @minor = minor
-          super(sym: @minor.name, name: @minor.full_name, value: 100, desc: 'Buy the Independant company of the same name')
+          desc = 'Buy the Independant company of the same name'
+          super(sym: @minor.name, name: @minor.full_name, value: 100, desc: desc, color: 'white')
         end
       end
     end
