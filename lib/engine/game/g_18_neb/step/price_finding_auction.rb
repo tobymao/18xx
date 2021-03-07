@@ -190,9 +190,11 @@ module Engine
             if @game.class::MUST_BID_INCREMENT_MULTIPLE && ((price - min) % @game.class::MIN_BID_INCREMENT).nonzero?
               raise GameError, "Must increase bid by a multiple of #{@game.class::MIN_BID_INCREMENT}"
             end
+            # rubocop:disable Style/GuardClause
             if price > max_bid(entity, company)
               raise GameError, "Cannot afford bid. Maximum possible bid is #{max_bid(entity, company)}"
             end
+            # rubocop:enable Style/GuardClause
           end
 
           def max_bid(player, company)
