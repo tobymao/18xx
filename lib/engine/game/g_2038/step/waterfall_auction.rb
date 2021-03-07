@@ -24,19 +24,13 @@ module Engine
           def buy_company(player, company, price)
             super
 
-            @log << "-- Ran super.buy_company"
-
             return unless (company.instance_of? CompanyWrapper)
 
             minor = company.minor
-
             minor.owner = player
             minor.float!
             capital = (price - 100) / 2
             minor.cash = 100 + capital
-
-            @log << "-- Got a Company wrapper"
-
           end
         end
       end
