@@ -541,7 +541,6 @@ module Engine
         # Two tiles can be laid, only one upgrade
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded }].freeze
 
-
         def init_round
           Round::Auction.new(self, [G18NEB::Step::PriceFindingAuction])
         end

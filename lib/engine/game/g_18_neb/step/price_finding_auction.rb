@@ -83,14 +83,13 @@ module Engine
           def setup
             setup_auction
             @companies = @game.companies.sort_by(&:min_bid)
-            @log << "started Price Finding Auction"
           end
 
-          def min_bid(company) return unless company
+          def min_bid(company)
             return unless company
 
             high_bid = highest_bid(company)
-            high_bid ? high_bid.price + min_increment : company.value - company.discount
+            high_bid ? (high_bid.price + min_increment) : (company.value - company.discount)
           end
 
           def auctioning
@@ -105,8 +104,8 @@ module Engine
           def discount_company(company)
             company.discount += STANDARD_DEDUCTION
             price = company.value - company.discount
-            @log << "#{company.name} min price reduced " +
-                     "by #{@game.format_currency(STANDARD_DEDUCTION)} " +
+            @log << "#{company.name} min price reduced " \
+                     "by #{@game.format_currency(STANDARD_DEDUCTION)} " \
                      "to #{@game.format_currency(price)}"
           end
 
@@ -165,10 +164,10 @@ module Engine
           end
 
           def discount_companies
-            @companies.each {|company| discount_company(company) }
+            @companies.each { |company| discount_company(company) }
           end
 
-          # Only one person may bid at a time 
+          # Only one person may bid at a time
           def replace_bid(bid)
             check_bid(bid)
             company = bid.company
@@ -176,8 +175,7 @@ module Engine
             entity = bid.entity
 
             bids = @bids[company]
-            bids.reject! { |b| b.entity == entity }
-            bids.reject! { |b| b.entity != entity }
+            bids.clear
             bids << bid
 
             @log << "#{entity.name} is bidder #{@game.format_currency(price)} on #{bid.company.name}"
