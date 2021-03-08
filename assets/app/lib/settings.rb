@@ -20,7 +20,6 @@ module Lib
 
     SETTINGS = {
       notifications: true,
-      simple_logos: false,
       red_logo: false,
       show_location_names: true,
       bg: DARK ? '#000000' : '#ffffff',
