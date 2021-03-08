@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/waterfall_auction'
-require_relative '../company_wrapper'
+require_relative '../company'
 
 module Engine
   module Game
@@ -26,7 +26,7 @@ module Engine
 
             return unless (company.instance_of? (G2038::Company))
 
-            player.companies.delete(company)   # remove our wrapper which was added in super.buy_company
+            company.close!   # remove our wrapper which was added in super.buy_company
             minor = company.minor
             minor.owner = player
             minor.float!
