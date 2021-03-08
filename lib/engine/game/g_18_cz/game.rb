@@ -2920,6 +2920,17 @@ module Engine
             { type: :End },
           ]
         end
+
+        def route_distance(route)
+          return super if train_of_size?(route.train, :small)
+
+          n_cities = route.stops.count { |n| n.city? || n.offboard? }
+
+          return n_cities if train_of_size?(route.train, :large)
+
+          n_towns = route.stops.count(&:town?)
+          "#{n_cities}+#{n_towns}"
+        end
       end
     end
   end

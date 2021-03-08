@@ -1863,7 +1863,7 @@ module Engine
         end
 
         def route_distance(route)
-          n_cities = route.stops.select { |n| n.city? || n.offboard? }.size
+          n_cities = route.stops.count { |n| n.city? || n.offboard? }
           # halts are treated like towns for leased trains (new rules)
           n_towns = if !loaner_new_rules?(route)
                       route.stops.count { |n| n.town? && !n.halt? }
