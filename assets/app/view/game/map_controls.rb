@@ -14,6 +14,7 @@ module View
       def render
         children = [
           player_colors_controls,
+          simple_logos_controls,
           location_names_controls,
           hex_coord_controls,
           starting_map_controls,
@@ -34,6 +35,19 @@ module View
         end
 
         render_button("Player Colors #{show_player_colors ? '✅' : '❌'}", on_click)
+      end
+
+      def simple_logos_controls
+        title = @game&.class&.title
+        show_simple_logos = Lib::Storage["show_simple_logos_#{title}"] || Lib::Storage['show_simple_logos']
+
+        on_click = lambda do
+          Lib::Storage['show_simple_logos'] = !show_simple_logos
+          Lib::Storage["show_simple_logos_#{title}"] = !show_simple_logos
+          update
+        end
+
+        render_button("Simple Logos #{show_simple_logos ? '✅' : '❌'}", on_click)
       end
 
       def location_names_controls
