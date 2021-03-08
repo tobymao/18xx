@@ -119,12 +119,12 @@ module Engine
             # 1. Resolve Bids: companies with bids are purchased AND removed from auction
             # 2. Discount companies without bids
             # 3. Unpass all players
-            # 2. End auction if companies have all been purchased.
+            # 4. reset the bids
+            # 5. End auction if companies have all been purchased.
             resolve_bids
             discount_companies
-            # reset players and bids array with setup auction
             entities.each(&:unpass!)
-            setup_auction
+            reset_bids
             @round.next_entity_index!
           end
 
@@ -146,55 +146,24 @@ module Engine
           def buy_company(player, company, price)
             company.owner = player
             player.companies << company
-            # P1 can be reduced to free, so we disable `check_positive` in that case
-            player.spend(price, @game.bank, check_positive: company.sym != 'P1')
+            player.spend(price, @game.bank) if price.positive?
             @companies.delete(company)
             @log << "#{player.name} buys #{company.name} for #{@game.format_currency(price)}"
 
-            @game.abilities(company, :share) do |ability|
-              share = ability.share
-
-              if share.president
-                # TODO: - I think this isn't necessary since we must par CAR to 100
-                @round.company_pending_par = company
-              else
-                @game.share_pool.buy_shares(player, share, exchange: :free)
+            # TODO: it feels weird having the auction trigger company shares ability
+            @game.abilities(company, :shares) do |ability|
+              ability.shares.each do |share|
+                if share.president
+                  @round.company_pending_par << company
+                else
+                  @game.share_pool.buy_shares(player, share, exchange: :free)
+                end
               end
             end
           end
 
           def discount_companies
             @companies.each { |company| discount_company(company) }
-          end
-
-          # Only one person may bid at a time
-          def replace_bid(bid)
-            check_bid(bid)
-            company = bid.company
-            price = bid.price
-            entity = bid.entity
-
-            bids = @bids[company]
-            bids.clear
-            bids << bid
-
-            @log << "#{entity.name} is bidder #{@game.format_currency(price)} on #{bid.company.name}"
-          end
-
-          def check_bid(bid)
-            company = bid_target(bid)
-            entity = bid.entity
-            price = bid.price
-            min = min_bid(company)
-            raise GameError, "Minimum bid is #{@game.format_currency(min)} for #{company.name}" if price < min
-            if @game.class::MUST_BID_INCREMENT_MULTIPLE && ((price - min) % @game.class::MIN_BID_INCREMENT).nonzero?
-              raise GameError, "Must increase bid by a multiple of #{@game.class::MIN_BID_INCREMENT}"
-            end
-            # rubocop:disable Style/GuardClause
-            if price > max_bid(entity, company)
-              raise GameError, "Cannot afford bid. Maximum possible bid is #{max_bid(entity, company)}"
-            end
-            # rubocop:enable Style/GuardClause
           end
 
           def max_bid(player, company)
