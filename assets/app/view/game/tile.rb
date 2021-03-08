@@ -16,6 +16,7 @@ module View
     class Tile < Snabberb::Component
       include Lib::Settings
 
+      needs :game, default: nil
       needs :tile
       needs :routes, default: []
       needs :show_coords, default: nil
@@ -73,7 +74,7 @@ module View
         children << borders if borders
         children << render_tile_part(Part::Partitions) unless @tile.partitions.empty?
 
-        children << rendered_loc_name if rendered_loc_name && setting_for(:show_location_names)
+        children << rendered_loc_name if rendered_loc_name && setting_for(:show_location_names, @game)
         children << render_coords if @show_coords
 
         children.flatten!
