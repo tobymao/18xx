@@ -130,6 +130,7 @@ module Engine
           def setup
             @discard = ShareHolderEntity.new
             @used = ShareHolderEntity.new
+            @ipo = ShareHolderEntity.new('IPO')
           end
 
           private
@@ -147,6 +148,12 @@ module Engine
           class ShareHolderEntity
             include Engine::Entity
             include Engine::ShareHolder
+
+            attr_reader :name
+
+            def initialize(name = nil)
+              @name = name
+            end
           end
 
           def enter_state(state)
@@ -213,8 +220,8 @@ module Engine
             exchange_pairs(@game.share_pool)
             exchange_singles(@game.share_pool)
             combine_ipo_shares
-            exchange_pairs(@merger)
-            exchange_singles(@merger)
+            exchange_pairs(@ipo)
+            exchange_singles(@ipo)
             exchange_discarded_shares
             complete_merger
           end
@@ -246,7 +253,8 @@ module Engine
           end
 
           def combine_ipo_shares
-            @target.shares_of(@target).dup.each { |s| s.transfer(@merger) }
+            @merger.shares_of(@merger).dup.each { |s| s.transfer(@ipo) }
+            @target.shares_of(@target).dup.each { |s| s.transfer(@ipo) }
           end
 
           def exchange_pairs(entity)
@@ -283,10 +291,9 @@ module Engine
                               else
                                 @system.shares_of(@system).take(shares_needed)
                               end
-              @game.share_pool.transfer_shares(ShareBundle.new(system_shares), entity) unless entity == @merger
-
               @log << "#{entity.name} exchanges #{shares_str(exchanged_shares + discarded_shares)} for " \
                       "#{shares_needed} system share#{'s' if shares_needed > 1}"
+              @game.share_pool.transfer_shares(ShareBundle.new(system_shares), entity) unless entity == @ipo
             else
               # Execute trade to get share(s) needed for the exchange
               shares_to_trade = [merger_pshare || target_pshare || entity.shares_of(@target).first]
@@ -302,10 +309,9 @@ module Engine
               discarded_share.transfer(@discard)
 
               system_share = @system.shares_of(@system).reject(&:president).first
-              @game.share_pool.transfer_shares(system_share.to_bundle, entity) unless entity == @merger
-
               @log << "#{entity.name} exchanges #{shares_str([exchanged_share,
                                                               discarded_share])} for 1 system share"
+              @game.share_pool.transfer_shares(system_share.to_bundle, entity) unless entity == @ipo
             end
 
             # Repeat until all pairs owned by the entity are exchanged
@@ -398,13 +404,10 @@ module Engine
               end
 
               entity.shares_of(@merger).first.transfer(@used)
-              unless entity == @merger
-                @game.share_pool.transfer_shares(@system.shares_of(@system).first.to_bundle, entity)
-              end
+              @log << "#{entity.name} exchanges 1 #{share.corporation.name} share " + payment_msg + 'for 1 system share'
+              @game.share_pool.transfer_shares(@system.shares_of(@system).first.to_bundle, entity) unless entity == @ipo
 
               @exchange_selection = nil
-
-              @log << "#{entity.name} exchanges 1 #{share.corporation.name} share " + payment_msg + 'for 1 system share'
             end
           end
 
@@ -513,6 +516,7 @@ module Engine
 
             # Donate share
             if @system.owner.num_shares_of(@system) >= 3
+              @log << "President (#{@system.owner.name}) contributes 1 system share to the #{@system.name} treasury"
               share = @system.owner.shares_of(@system).reject(&:president).first
               share.buyable = false
               @game.share_pool.transfer_shares(share.to_bundle, @system)
