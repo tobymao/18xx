@@ -29,6 +29,10 @@ module Engine
             super
           end
 
+          def log_skip(entity)
+            super if entity&.system?
+          end
+
           def process_swap_train(action)
             train = action.train
             entity = action.entity

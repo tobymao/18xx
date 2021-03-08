@@ -1034,16 +1034,18 @@ module Engine
           tiles
         end
 
+        TILE_LAYS = [{ lay: true, upgrade: :not_if_upgraded, cannot_reuse_same_hex: true, cost: 0 }].freeze
         EXTRA_TILE_LAY_CORPS = %w[B&M NYH].freeze
 
         def tile_lays(entity)
           tile_lays = super
-          tile_lays += [{ lay: true, upgrade: :not_if_upgraded }] if entity.system?
+          tile_lays += [{ lay: true, upgrade: :not_if_upgraded, cannot_reuse_same_hex: true }] if entity.system?
           (entity.system? ? entity.corporations.map(&:name) : [entity.name]).each do |corp_name|
             tile_lays += [
               {
                 lay: :not_if_upgraded,
                 upgrade: false,
+                cannot_reuse_same_hex: true,
                 cost: 40,
               },
             ] if EXTRA_TILE_LAY_CORPS.include?(corp_name)
@@ -1317,7 +1319,7 @@ module Engine
         end
 
         def can_run_route?(entity)
-          return false if entity.id == 'C&P' && !@round.last_tile_lay
+          return false if entity.id == 'C&P' && @round.laid_hexes.empty?
 
           super
         end
