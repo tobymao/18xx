@@ -2,6 +2,7 @@
 
 require_relative 'meta'
 require_relative '../base'
+require_relative 'company'
 
 module Engine
   module Game
@@ -669,6 +670,13 @@ module Engine
           else
             'PRIVATE COMPANY'
           end
+        end
+
+        def init_companies(players)
+          companies = super(players)
+
+          wrappedCompanies = game_minors.map { |minor| G2038::Company.new(minor) }
+          companies + wrappedCompanies
         end
 
         LAYOUT = :pointy
