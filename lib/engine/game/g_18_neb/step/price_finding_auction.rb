@@ -80,6 +80,12 @@ module Engine
             ACTIONS
           end
 
+          def round_state
+            {
+              companies_pending_par: [],
+            }
+          end
+
           def setup
             setup_auction
             @companies = @game.companies.sort_by(&:min_bid)
@@ -154,7 +160,7 @@ module Engine
             @game.abilities(company, :shares) do |ability|
               ability.shares.each do |share|
                 if share.president
-                  @round.company_pending_par << company
+                  @round.companies_pending_par << company
                 else
                   @game.share_pool.buy_shares(player, share, exchange: :free)
                 end

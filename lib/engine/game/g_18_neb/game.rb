@@ -542,7 +542,10 @@ module Engine
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded }].freeze
 
         def init_round
-          Round::Auction.new(self, [G18NEB::Step::PriceFindingAuction])
+          Round::Auction.new(self, [
+            Engine::Step::CompanyPendingPar,
+            G18NEB::Step::PriceFindingAuction,
+          ])
         end
 
         def setup
