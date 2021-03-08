@@ -36,7 +36,7 @@ module View
 
           props = {
             attrs: {
-              src: setting_for(:show_simple_logos, @game) ? token.simple_logo : token.logo,
+              src: setting_for(:simple_logos, @game) ? token.simple_logo : token.logo,
             },
             on: {
               click: click,

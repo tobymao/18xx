@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'lib/storage'
+require 'lib/settings'
 require 'view/game/part/blocker'
 require 'view/game/part/borders'
 require 'view/game/part/cities'
@@ -14,6 +14,8 @@ require 'view/game/part/upgrades'
 module View
   module Game
     class Tile < Snabberb::Component
+      include Lib::Settings
+
       needs :tile
       needs :routes, default: []
       needs :show_coords, default: nil
@@ -71,7 +73,7 @@ module View
         children << borders if borders
         children << render_tile_part(Part::Partitions) unless @tile.partitions.empty?
 
-        children << rendered_loc_name if rendered_loc_name && !Lib::Storage['hide_location_names']
+        children << rendered_loc_name if rendered_loc_name && setting_for(:show_location_names)
         children << render_coords if @show_coords
 
         children.flatten!

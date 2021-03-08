@@ -22,6 +22,7 @@ module Lib
       notifications: true,
       simple_logos: false,
       red_logo: false,
+      show_location_names: true,
       bg: DARK ? '#000000' : '#ffffff',
       bg2: DARK ? '#dcdcdc' : '#d3d3d3',
       font: DARK ? '#ffffff' : '#000000',
@@ -41,17 +42,15 @@ module Lib
     end
 
     def setting_for(option, game = nil)
-      if game
-        Lib::Storage["#{option}_#{game.class.title}"] || Lib::Storage[option]
-      else
-        setting = @user&.dig(:settings, option)
-        setting.nil? ? SETTINGS[option] : setting
-      end
+      [game ? Lib::Storage["#{option}_#{game.class.title}"] : @user&.dig(:settings, option),
+       Lib::Storage[option],
+       SETTINGS[option]].compact.first
     end
 
-    def save_setting(option, game, value)
+    def toggle_setting(option, game = nil)
+      value = !setting_for(option, game)
       Lib::Storage[option] = value
-      Lib::Storage["#{option}_#{game.class.title}"] = value
+      Lib::Storage["#{option}_#{game.class.title}"] = value if game
     end
 
     alias color_for setting_for
