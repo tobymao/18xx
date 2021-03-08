@@ -372,9 +372,16 @@ module Engine
         nil
       end
 
+      def normal_pass?(_entity)
+        # If the user passes now is it a 'normal' pass? i.e. if it's not inside a bid
+        # not price protection or something similar
+        true
+      end
+
       def activate_program_share_pass(entity, _program)
         available_actions = actions(entity)
         return unless available_actions.include?('pass')
+        return unless normal_pass?(entity)
 
         reason = should_stop_applying_program(entity, nil)
         return [Action::ProgramDisable.new(entity, reason: reason)] if reason

@@ -50,6 +50,10 @@ module Engine
             actions
           end
 
+          def normal_pass?(_entity)
+            !@auctioning && !@winning_bid
+          end
+
           def can_sell_order?
             !bought?
           end
