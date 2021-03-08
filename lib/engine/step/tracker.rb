@@ -152,8 +152,8 @@ module Engine
         update_token!(action, entity, tile, old_tile)
 
         @game.all_companies_with_ability(:tile_income) do |company, ability|
-          if ability.terrain.nil?
-            # company with tile income for all tiles
+          if !ability.terrain
+            # company with tile income ability that pays for all tiles
             pay_all_tile_income(company, ability)
           else
             # company with tile income for specific terrain
