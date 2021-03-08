@@ -128,7 +128,7 @@ module Engine
           end
 
           def setup
-            @discard = ShareHolderEntity.new
+            @discard = ShareHolderEntity.new('the discard')
             @used = ShareHolderEntity.new
             @ipo = ShareHolderEntity.new('IPO')
           end
@@ -268,11 +268,7 @@ module Engine
             # Determine where the system share will come from
             from = exchange_source(entity, num_needed: shares_needed)
             return if @player_choice
-
-            unless from
-              entity.shares_of(@target).dup.each { |share| share.transfer(@discard) }
-              return
-            end
+            return discard_shares(entity) unless from
 
             if from == entity
               # Entity already has the required shares, execute exchange, including presidency edge cases
@@ -389,7 +385,7 @@ module Engine
               # Determine where the system share will come from
               from = exchange_source(entity)
               return if @player_choice
-              return entity.shares_of(@target).each { |s| s.transfer(@discard) } unless from
+              return discard_shares(entity) unless from
 
               # Execute trade to get share(s) needed for the exchange
               trade_share(entity, [share], from,
@@ -444,6 +440,12 @@ module Engine
             source
           end
 
+          def discard_shares(entity)
+            shares_to_discard = entity.shares_of(@target)
+            @log << "#{entity.name} discards #{shares_str(shares_to_discard)}"
+            shares_to_discard.dup.each { |s| s.transfer(@discard) }
+          end
+
           def shares_str(shares)
             return unless shares&.any?
 
@@ -465,27 +467,28 @@ module Engine
           def trade_share(entity_a, shares_a, entity_b, shares_b)
             shares_a.each { |s| s.transfer(entity_b) }
             shares_b.each { |s| s.transfer(entity_a) }
-            return unless entity_b.player?
-
-            log_msg = "#{entity_a.name} trades #{shares_str(shares_a)} to #{entity_b.name} for #{shares_str(shares_b)}."
+            log_msg = "#{entity_a.name} trades #{shares_str(shares_a)} to #{entity_b.name} for #{shares_str(shares_b)}"
 
             # If the receiving player cannot exchange the share as a pair, they pay/receive the share price difference
-            if shares_b.size == 1 && (entity_b.num_shares_of(@merger) + entity_b.num_shares_of(@target)).odd? &&
+            if entity_b.player? &&
+               shares_b.size == 1 &&
+               (entity_b.num_shares_of(@merger) + entity_b.num_shares_of(@target)).odd? &&
                !(cash_difference = shares_b.first.price - shares_a.first.price).zero?
+              log_msg += '. '
               if cash_difference.positive?
                 @game.bank.spend(cash_difference, entity_b)
-                log_msg += " #{entity_b.name} receives #{@game.format_currency(cash_difference)} from the bank."
+                log_msg += "#{entity_b.name} receives #{@game.format_currency(cash_difference)} from the bank."
               else
                 cash_difference = cash_difference.abs
                 if entity_b.cash >= cash_difference
                   entity_b.spend(cash_difference, @game.bank)
-                  log_msg += " #{entity_b.name} pays #{@game.format_currency(cash_difference)} to the bank."
+                  log_msg += "#{entity_b.name} pays #{@game.format_currency(cash_difference)} to the bank."
                 else
                   discard_share = shares_a.first
                   discard_share.transfer(@discard)
                   sold_share(entity_b, discard_share.corporation)
                   @game.bank.spend(discard_share.price, entity_b)
-                  log_msg += " #{entity_b.name} must discard #{shares_str([discard_share])} and receives " \
+                  log_msg += "#{entity_b.name} must discard #{shares_str([discard_share])} and receives " \
                              "#{@game.format_currency(discard_share.price)} from the bank."
                 end
               end
