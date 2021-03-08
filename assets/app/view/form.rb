@@ -22,7 +22,7 @@ module View
       (inputs || @inputs).map do |key, input|
         input = Native(input)
         elm = input['elm']
-        [key, elm['type'] == 'checkbox' ? elm['checked'] : elm['value']]
+        [key, %w[checkbox radio].include?(elm['type']) ? elm['checked'] : elm['value']]
       end.to_h
     end
 

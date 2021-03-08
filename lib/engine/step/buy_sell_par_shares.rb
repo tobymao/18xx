@@ -394,17 +394,35 @@ module Engine
           if program.until_condition == 'float'
             return [Action::ProgramDisable.new(entity,
                                                reason: "#{corporation.name} is floated")] if corporation.floated?
-            # TODO: until n shares
+          elsif entity.num_shares_of(corporation, ceil: false) >= program.until_condition
+            return [Action::ProgramDisable.new(entity,
+                                               reason: "#{corporation.name} shares already bought")]
           end
-          share = corporation.ipo_shares.first
-          if can_buy?(entity, share.to_bundle)
-            reason = should_stop_applying_program(entity, share)
-            return [Action::ProgramDisable.new(entity, reason: reason)] if reason
+          shares_by_percent = if program.from_market
+                                source = 'market'
+                                @game.share_pool.shares_by_corporation[corporation]
+                              else
+                                source = @game.ipo_name(corporation)
+                                corporation.ipo_shares
+                              end.select { |share| can_buy?(entity, share) }.group_by(&:percent)
 
-            [Action::BuyShares.new(entity, shares: share)]
-          else
-            [Action::ProgramDisable.new(entity, reason: "Cannot buy #{corporation.name}")]
+          if shares_by_percent.empty?
+            return [Action::ProgramDisable.new(entity,
+                                               reason: "Cannot buy #{corporation.name} from #{source}")]
           end
+
+          if shares_by_percent.size != 1
+            return [Action::ProgramDisable.new(entity,
+                                               reason: 'Shares of different sizes exist, cannot auto buy'\
+                                               " #{corporation.name} from #{source}")]
+          end
+
+          share = shares_by_percent.values.first.first
+
+          reason = should_stop_applying_program(entity, share)
+          return [Action::ProgramDisable.new(entity, reason: reason)] if reason
+
+          [Action::BuyShares.new(entity, shares: share)]
         elsif bought? && available_actions.include?('pass')
           # Buy-then-Sell games need the pass
           [Action::Pass.new(entity)]
