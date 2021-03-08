@@ -183,10 +183,13 @@ module Engine
               @players = @round.entities.rotate(@round.entities.index(@round.acting_player))
             end
 
-            until @players.empty?
-              exchange_pairs(@players.first)
+            while (player = @players.first)
+              hide_odd_share(player)
+              exchange_pairs(player)
+              restore_odd_share(player)
               return if @player_choice
 
+              @odd_share = nil
               @players.shift
             end
 
@@ -251,9 +254,6 @@ module Engine
 
           def exchange_pairs(entity)
             return unless entity.num_shares_of(@merger) + entity.num_shares_of(@target) >= 2
-
-            # Determine which share not to trade-in if entity has an odd number of shares
-            hide_odd_share(entity)
             return if @player_choice
 
             merger_pshare = entity.shares_of(@merger).find(&:president)
@@ -265,7 +265,6 @@ module Engine
             return if @player_choice
 
             unless from
-              restore_odd_share(entity)
               entity.shares_of(@target).dup.each { |share| share.transfer(@discard) }
               return
             end
@@ -314,11 +313,14 @@ module Engine
 
             # Repeat until all pairs owned by the entity are exchanged
             exchange_pairs(entity) if entity.num_shares_of(@merger).positive? || entity.num_shares_of(@target).positive?
-
-            restore_odd_share(entity)
           end
 
           def hide_odd_share(entity)
+            identify_odd_share(entity) unless @odd_share
+            @odd_share&.transfer(@used)
+          end
+
+          def identify_odd_share(entity)
             total_shares = entity.num_shares_of(@merger) + entity.num_shares_of(@target)
             return unless total_shares.odd?
 
@@ -346,12 +348,10 @@ module Engine
             else
               @odd_share = entity.shares_of(@merger).first
             end
-            @odd_share&.transfer(@used)
           end
 
           def restore_odd_share(entity)
             @odd_share&.transfer(entity)
-            @odd_share = nil
           end
 
           def exchange_singles(entity)
