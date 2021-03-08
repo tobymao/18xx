@@ -8,7 +8,7 @@ module Engine
       attr_reader :terrain, :income, :owner_only
 
       def setup(terrain:, income:, owner_only: false)
-        @terrain = terrain.to_sym
+        @terrain = terrain&.to_sym
         @income = income
         @owner_only = owner_only
       end
