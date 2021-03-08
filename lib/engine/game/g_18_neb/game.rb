@@ -384,7 +384,7 @@ module Engine
             revenue: 25,
             desc: 'Comes with President\'s Certificate of the Union Pacific Railroad',
             sym: 'P6',
-            abilities: [{ type: 'shares', shares: 'UP_0' }, { type: 'no_buy'}],
+            abilities: [{ type: 'shares', shares: 'UP_0' }, { type: 'no_buy' }],
             color: nil,
           },
         ].freeze
