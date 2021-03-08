@@ -55,7 +55,7 @@ module Engine
             end
 
             @merger = mergeable_entity
-            merge_corporations
+            enter_state(:start_merge)
           end
 
           def process_choose(action)
@@ -65,7 +65,7 @@ module Engine
 
             @player_selection = action.choice
             @player_choice = nil
-            merge_corporations
+            enter_state(@state)
           end
 
           def merge_action
@@ -109,7 +109,7 @@ module Engine
           end
 
           def active_entities
-            merge_corporations if @state == :token_removal
+            enter_state(@state) if @state == :token_removal
             return [] unless merge_in_progress?
 
             if @player_choice
@@ -152,36 +152,64 @@ module Engine
             include Engine::ShareHolder
           end
 
-          def merge_corporations
-            if @state == :select_target
-              create_system
-              @round.corporation_removing_tokens ? enter_token_removal_state : enter_exchange_pairs_state
-            end
+          def enter_state(state)
+            @state = state
 
-            enter_exchange_pairs_state if @state == :token_removal && !@round.corporation_removing_tokens
-
-            if @state == :exchange_pairs
-              while @players.any?
-                exchange_pairs(@players.first)
-                return if @player_choice
-
-                @players.shift
-              end
+            case state
+            when :start_merge
+              enter_start_merge_state
+            when :token_removal
+              enter_token_removal_state
+            when :exchange_pairs
+              enter_exchange_pairs_state
+            when :exchange_singles
               enter_exchange_singles_state
-            end
-
-            if @state == :exchange_singles
-              while @players.any?
-                exchange_singles(@players.first)
-                return if @player_choice
-
-                @players.shift
-              end
+            when :complete_merger
               enter_complete_merger_state
             end
+          end
 
-            return unless @state == :complete_merger
+          def enter_start_merge_state
+            create_system
+            @round.corporation_removing_tokens ? enter_state(:token_removal) : enter_state(:exchange_pairs)
+          end
 
+          def enter_token_removal_state
+            enter_state(:exchange_pairs) unless @round.corporation_removing_tokens
+          end
+
+          def enter_exchange_pairs_state
+            if !@players || @players.empty?
+              @players = @round.entities.rotate(@round.entities.index(@round.acting_player))
+            end
+
+            until @players.empty?
+              exchange_pairs(@players.first)
+              return if @player_choice
+
+              @players.shift
+            end
+
+            enter_state(:exchange_singles)
+          end
+
+          def enter_exchange_singles_state
+            if !@players || @players.empty?
+              @players = @round.entities.rotate(@round.entities.index(@round.acting_player) + 1)
+            end
+
+            while @players.any?
+              exchange_singles(@players.first)
+              return if @player_choice
+
+              @players.shift
+            end
+
+            enter_state(:complete_merger)
+          end
+
+          def enter_complete_merger_state
+            @players = []
             exchange_pairs(@game.share_pool)
             exchange_singles(@game.share_pool)
             combine_ipo_shares
@@ -191,26 +219,7 @@ module Engine
             complete_merger
           end
 
-          def enter_token_removal_state
-            @state = :token_removal
-          end
-
-          def enter_exchange_pairs_state
-            @state = :exchange_pairs
-            @players = @round.entities.rotate(@round.entities.index(@round.acting_player))
-          end
-
-          def enter_exchange_singles_state
-            @state = :exchange_singles
-            @players = @round.entities.rotate(@round.entities.index(@round.acting_player) + 1)
-          end
-
-          def enter_complete_merger_state
-            @state = :complete_merger
-            @players = []
-          end
-
-          def reset_merge_state
+          def reset_merger_step
             @state = nil
             @merger = nil
             @target = nil
@@ -519,7 +528,7 @@ module Engine
               @log << "#{@system.name} not yet floated, discarding treasury."
             end
 
-            reset_merge_state
+            reset_merger_step
           end
 
           def sold_share(player, corporation)
