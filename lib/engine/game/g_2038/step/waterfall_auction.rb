@@ -17,7 +17,7 @@ module Engine
             minor.owner = player
             minor.float!
             capital = (price - 100) / 2
-            minor.cash = 100 + capital
+            @game.bank.spend(100+capital, minor)
           end
         end
       end
