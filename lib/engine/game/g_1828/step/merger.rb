@@ -25,13 +25,10 @@ module Engine
           end
 
           def description
-            if @player_choice
-              @player_choice.step_description
-            elsif @state == :select_target
-              "Select a corporation to merge with #{mergeable_entity.name}"
-            else
-              'Merge failed'
-            end
+            description = 'Merger - '
+            description += @player_choice.step_description if @player_choice
+            description += "Select corporation to merge with #{mergeable_entity.name}" if @state == :select_target
+            description
           end
 
           def blocks?
@@ -82,8 +79,8 @@ module Engine
 
           def mergeable_entity
             if !@state && @round.merge_initiator
-              @state = :select_target
               @merge_start_action_id = @game.last_game_action_id
+              enter_state(:select_target)
             end
             @system || @round.merge_initiator
           end
@@ -341,10 +338,10 @@ module Engine
               choices = merging_corporations.map do |c|
                 "#{c.name} (#{@game.format_currency(c.share_price.price)})"
               end
-              @player_choice = PlayerChoice.new(step_description: 'Choose Share not to Exchange',
+              @player_choice = PlayerChoice.new(step_description: 'Choose share to retain after 2:1 exchange',
                                                 choice_description: 'Choose share',
                                                 choices: choices)
-              return
+              nil
             else
               @odd_share = entity.shares_of(@merger).first
             end
@@ -378,7 +375,7 @@ module Engine
                       "#{@game.format_currency(share.price)} from the bank."
             elsif entity.player? && !@exchange_selection
               exchange_cost = share.price - @system.share_price.price
-              @player_choice = PlayerChoice.new(step_description: 'Exchange or Sell Share',
+              @player_choice = PlayerChoice.new(step_description: 'Exchange or sell share',
                                                 choice_description: 'Choose',
                                                 choices: ["Exchange (#{@game.format_currency(exchange_cost)})",
                                                           "Sell (#{@game.format_currency(share.price)})"])
@@ -432,9 +429,10 @@ module Engine
               if sources.any? && sources.first.player? && (players = sources.select do |s|
                                                              @players.include?(s)
                                                            end).size > 1
-                @player_choice = PlayerChoice.new(step_description: 'Choose Player to Trade with for a System Share',
-                                                  choice_description: 'Choose player',
-                                                  choices: players.map(&:name))
+                @player_choice =
+                  PlayerChoice.new(step_description: "Trade #{@target.name} share for #{@merger.name} share",
+                                   choice_description: 'Choose player',
+                                   choices: players.map(&:name))
               end
 
               source = sources.first
