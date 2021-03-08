@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-require_relative '../../../step/token'
+require_relative '../../g_1849/step/token'
 
 module Engine
   module Game
     module G1849Boot
       module Step
-        class Token < Engine::Step::Token
+        class Token < G1849::Step::Token
           def process_place_token(action)
             entity = action.entity
 
