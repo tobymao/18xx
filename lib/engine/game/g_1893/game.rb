@@ -2,7 +2,6 @@
 
 require_relative '../base'
 require_relative 'meta'
-require_relative 'round/stock'
 
 module Engine
   module Game
@@ -448,6 +447,8 @@ module Engine
           },
         ].freeze
 
+        NAME_OF_PRIVATES = %w[FdSD EVA HdSK].freeze
+
         CORPORATIONS = [
           {
             float_percent: 50,
@@ -460,12 +461,6 @@ module Engine
             simple_logo: '1893/DE.alt',
             color: :blue,
             coordinates: 'O2',
-            abilities: [
-            {
-              type: 'no_buy',
-              description: 'Unbuyable until all but one privates sold',
-            },
-          ],
             reservation_color: nil,
           },
           {
@@ -480,12 +475,6 @@ module Engine
             color: :pink,
             text_color: 'black',
             coordinates: 'R7',
-            abilities: [
-              {
-                type: 'no_buy',
-                description: 'Unbuyable until all but one privates sold',
-              },
-            ],
             reservation_color: nil,
           },
           {
@@ -500,12 +489,6 @@ module Engine
             simple_logo: '1893/RAG.alt',
             text_color: 'black',
             coordinates: 'D5',
-            abilities: [
-              {
-                type: 'no_buy',
-                description: 'Unbuyable until all but one privates sold',
-              },
-            ],
             reservation_color: nil,
           },
           {
@@ -521,12 +504,6 @@ module Engine
             simple_logo: '1893/AdSK.alt',
             color: :gray,
             text_color: 'white',
-            abilities: [
-              {
-                type: 'no_buy',
-                description: 'Unbuyable until all but one privates sold',
-              },
-            ],
             reservation_color: nil,
           },
           {
@@ -716,17 +693,56 @@ module Engine
           end
         end
 
+        def next_round!
+          @round =
+            case @round
+            when Engine::Round::Stock
+              @operating_rounds = @phase.operating_rounds
+              reorder_players
+              new_operating_round
+            when Engine::Round::Operating
+              if @round.round_num < @operating_rounds
+                or_round_finished
+                new_operating_round(@round.round_num + 1)
+              else
+                @turn += 1
+                or_round_finished
+                or_set_finished
+                # If starting package remains, need to sell it first
+                buyable_companies.empty? ? new_stock_round : new_auction_round
+              end
+            when Engine::Round::Draft
+              if @is_init_round
+                @is_init_round = false
+                init_round_finished
+                reorder_players
+                # If one certificate remains, continue with SR
+                buyable_companies.one? ? new_stock_round : new_operating_round
+              else
+                new_stock_round
+              end
+            end
+        end
+
         def init_round
-          @log << '-- First Stock Round --'
-          Engine::Round::Stock.new(self, [
-            G1893::Step::BuySellParSharesFirstSr,
+          @log << '-- Draft of starting package'
+          @is_init_round = true
+          Engine::Round::Draft.new(self, [
+            G1893::Step::StartingPackageInitialAuction,
+          ])
+        end
+
+        def new_auction_round
+          @log << '-- Auction of starting package'
+          Engine::Round::Draft.new(self, [
+            G1893::Step::StartingPackageForcedAuction,
           ])
         end
 
         def stock_round
           G1893::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
-            G1893::Step::BuySellParSharesFollowingSr,
+            G1893::Step::BuySellParShares,
           ])
         end
 
@@ -840,6 +856,8 @@ module Engine
           @neutral.tokens.each { |token| token.type = :neutral }
           city_by_id('H5-0-0').place_token(@neutral, @neutral.next_token)
           city_by_id('J5-0-0').place_token(@neutral, @neutral.next_token)
+
+          @is_init_round = false
         end
 
         def upgrades_to?(from, to, special = false)
@@ -895,6 +913,14 @@ module Engine
           return true unless entity.corporation?
 
           entity.all_abilities.none? { |a| a.type == :no_buy }
+        end
+
+        def buyable_companies
+          buyable = @companies.select { |c| !c.closed? && c.owner == @bank }
+
+          # Privates A-C always buyable, minors topmost 2
+          privates, minors = buyable.partition { |c| NAME_OF_PRIVATES.include?(c.sym) }
+          privates + (minors.size < 2 ? minors : minors[0..1])
         end
 
         def remove_ability(corporation, ability_name)

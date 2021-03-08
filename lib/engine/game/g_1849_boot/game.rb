@@ -199,8 +199,8 @@ module Engine
 
         MARKET = [
           %w[72 83 95 107 120 133 147 164 182 202 224 248 276 306u 340u 377e],
-          %w[63 72 82 93 104 116 128 142 158 175 195 216p 240 266u 295u 328u],
-          %w[57 66 75 84 95 105 117 129 144p 159 177 196 218 242u 269u 298u],
+          %w[63 72 82 93 104 116 128 142 158 175 195 216z 240 266u 295u 328u],
+          %w[57 66 75 84 95 105 117 129 144x 159 177 196 218 242u 269u 298u],
           %w[54 62 71 80 90 100p 111 123 137 152 169 187 208 230],
           %w[52 59 68p 77 86 95 106 117 130 145 160 178 198],
           %w[47 54 62 70 78 87 96 107 118 131 146 162],
@@ -216,7 +216,7 @@ module Engine
             train_limit: 4,
             tiles: [:yellow],
             operating_rounds: 1,
-            status: ['gray_uses_yellow'],
+            status: ['gray_uses_white'],
           },
           {
             name: '6H',
@@ -224,7 +224,7 @@ module Engine
             train_limit: 4,
             tiles: %i[yellow green],
             operating_rounds: 2,
-            status: %w[gray_uses_yellow can_buy_companies],
+            status: %w[gray_uses_white can_buy_companies],
           },
           {
             name: '8H',
@@ -232,7 +232,7 @@ module Engine
             train_limit: 3,
             tiles: %i[yellow green],
             operating_rounds: 2,
-            status: %w[gray_uses_green can_buy_companies],
+            status: %w[gray_uses_gray can_buy_companies],
           },
           {
             name: '10H',
@@ -240,7 +240,7 @@ module Engine
             train_limit: 2,
             tiles: %i[yellow green brown],
             operating_rounds: 3,
-            status: %w[gray_uses_green can_buy_companies],
+            status: %w[gray_uses_gray can_buy_companies],
           },
           {
             name: '12H',
@@ -248,7 +248,7 @@ module Engine
             train_limit: 2,
             tiles: %i[yellow green brown],
             operating_rounds: 3,
-            status: ['gray_uses_brown'],
+            status: ['gray_uses_black'],
           },
           {
             name: '16H',
@@ -256,7 +256,7 @@ module Engine
             train_limit: 2,
             tiles: %i[yellow green brown],
             operating_rounds: 3,
-            status: %w[gray_uses_brown blue_zone],
+            status: %w[gray_uses_black blue_zone],
           },
         ].freeze
 

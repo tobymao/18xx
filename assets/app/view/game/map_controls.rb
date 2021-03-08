@@ -7,12 +7,9 @@ module View
   module Game
     class MapControls < Snabberb::Component
       include Lib::Settings
-      needs :show_coords, default: nil, store: true
-      needs :show_location_names, default: true, store: true
       needs :show_starting_map, default: false, store: true
       needs :historical_routes, default: [], store: true
       needs :game, default: nil, store: true
-      needs :show_player_colors, default: nil, store: true
 
       def render
         children = [
@@ -23,55 +20,46 @@ module View
           route_controls,
         ].compact
 
-        h(:div, children)
+        h('div#map_controls', children)
       end
 
       def player_colors_controls
-        show_player_colors = Lib::Storage['show_player_colors']
+        title = @game&.class&.title
+        show_player_colors = Lib::Storage["show_player_colors_#{title}"] || Lib::Storage['show_player_colors']
 
         on_click = lambda do
-          new_value = !show_player_colors
-          Lib::Storage['show_player_colors'] = new_value
-          store(:show_player_colors, new_value)
+          Lib::Storage['show_player_colors'] = !show_player_colors
+          Lib::Storage["show_player_colors_#{title}"] = !show_player_colors
+          update
         end
 
-        render_button("#{show_player_colors ? 'Hide' : 'Show'} Player Colors", on_click)
+        render_button("Player Colors #{show_player_colors ? '✅' : '❌'}", on_click)
       end
 
       def location_names_controls
-        show_hide = @show_location_names ? 'Hide' : 'Show'
-        text = "#{show_hide} Location Names"
-
         on_click = lambda do
-          new_value = !@show_location_names
-          Lib::Storage['show_location_names'] = new_value
-          store(:show_location_names, new_value)
+          Lib::Storage['hide_location_names'] = !Lib::Storage['hide_location_names']
+          update
         end
 
-        render_button(text, on_click)
+        render_button("Location Names #{Lib::Storage['hide_location_names'] ? '❌' : '✅'}", on_click)
       end
 
       def hex_coord_controls
-        show_hide = @show_coords ? 'Hide' : 'Show'
-        text = "#{show_hide} Hex Coordinates"
-
         on_click = lambda do
-          new_value = !@show_coords
-          Lib::Storage['show_coords'] = new_value
-          store(:show_coords, new_value)
+          Lib::Storage['show_coords'] = !Lib::Storage['show_coords']
+          update
         end
 
-        render_button(text, on_click)
+        render_button("Hex Coordinates #{Lib::Storage['show_coords'] ? '✅' : '❌'}", on_click)
       end
 
       def starting_map_controls
-        text = @show_starting_map ? 'Show Current Map' : 'Show Starting Map'
-
         on_click = lambda do
           store(:show_starting_map, !@show_starting_map)
         end
 
-        render_button(text, on_click)
+        render_button("Starting Map #{@show_starting_map ? '✅' : '❌'}", on_click)
       end
 
       def generate_last_route(entity)

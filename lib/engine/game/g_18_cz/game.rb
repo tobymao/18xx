@@ -17,7 +17,7 @@ module Engine
                         yellow: '#ffe600',
                         lightRed: '#F3B1B3')
 
-        CURRENCY_FORMAT_STR = '%d K'
+        CURRENCY_FORMAT_STR = '%d K'
 
         BANK_CASH = 99_999
 
@@ -2884,7 +2884,7 @@ module Engine
         end
 
         def format_currency(val)
-          return format('%0.1f K', val) if (val - val.to_i).positive?
+          return format('%0.1f K', val) if (val - val.to_i).positive?
 
           self.class::CURRENCY_FORMAT_STR % val
         end

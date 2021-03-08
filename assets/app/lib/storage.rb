@@ -4,7 +4,7 @@ module Lib
   module Storage
     def self.[](key)
       value = `localStorage.getItem(#{key})`
-      JSON.parse(value) if value
+      JSON.parse(value) if value && !value.empty?
     end
 
     def self.[]=(key, value)

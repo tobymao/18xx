@@ -49,7 +49,9 @@ module View
         def render_part
           color = @reservation&.corporation? && @reservation&.reservation_color || 'white'
           radius = @radius
-          if (owner = @token&.corporation&.owner) && Lib::Storage['show_player_colors'] && @game.players.include?(owner)
+          show_player_colors = Lib::Storage["show_player_colors_#{@game&.class&.title}"] ||
+                               Lib::Storage['show_player_colors']
+          if show_player_colors && (owner = @token&.corporation&.owner) && @game.players.include?(owner)
             color = player_colors(@game.players)[owner]
             radius -= 4
           end
