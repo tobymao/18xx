@@ -56,7 +56,7 @@ module View
           if entity.corporation? || entity.minor?
             size = TOKEN_SIZES[@game.corporation_size(entity)]
             logo_props = {
-              attrs: { src: setting_for(:simple_logos) ? entity.simple_logo : entity.logo },
+              attrs: { src: setting_for(:show_simple_logos, @game) ? entity.simple_logo : entity.logo },
               style: {
                 padding: "#{TOKEN_SIZES[:large] - size}rem 0.4rem 0 0",
                 height: "#{size}rem",

@@ -40,9 +40,18 @@ module Lib
       SETTINGS[option]
     end
 
-    def setting_for(option)
-      setting = @user&.dig(:settings, option)
-      setting.nil? ? SETTINGS[option] : setting
+    def setting_for(option, game = nil)
+      if game
+        Lib::Storage["#{option}_#{game.class.title}"] || Lib::Storage[option]
+      else
+        setting = @user&.dig(:settings, option)
+        setting.nil? ? SETTINGS[option] : setting
+      end
+    end
+
+    def save_setting(option, game, value)
+      Lib::Storage[option] = value
+      Lib::Storage["#{option}_#{game.class.title}"] = value
     end
 
     alias color_for setting_for

@@ -620,7 +620,7 @@ module View
       end
 
       def logo_for_user(entity)
-        setting_for(:simple_logos) ? entity.simple_logo : entity.logo
+        setting_for(:show_simple_logos, @game) ? entity.simple_logo : entity.logo
       end
 
       def can_assign_corporation?
