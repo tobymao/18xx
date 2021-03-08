@@ -7,11 +7,10 @@ module Engine
     module G2038
       module Step
         class WaterfallAuction < Engine::Step::WaterfallAuction
-
           def buy_company(player, company, price)
             super
 
-            return unless (company.instance_of? (G2038::Company))
+            return unless company.instance_of?(G2038::Company)
 
             company.close!   # remove our wrapper which was added in super.buy_company
             minor = @game.minors.find { |m| m.id == company.minor_id }

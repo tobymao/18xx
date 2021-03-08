@@ -202,22 +202,22 @@ module Engine
                   }].freeze
 
         TRAINS = [{
-                    name: 'probe',
-                    distance: 4,
-                    price: 1,
-                    rusts_on: ['4dc3', '6d2c'],
-                    num: 1,
-                  },
+          name: 'probe',
+          distance: 4,
+          price: 1,
+          rusts_on: %w[4dc3 6d2c],
+          num: 1,
+        },
                   {
                     name: '3dc2',
                     distance: 3,
                     price: 100,
-                    rusts_on: ['5dc4', '7d3c'],
+                    rusts_on: %w[5dc4 7d3c],
                     num: 10,
                     variants: [
                       {
                         name: '5dc1',
-                        rusts_on: ['5dc4', '7d3c'],
+                        rusts_on: %w[5dc4 7d3c],
                         distance: 5,
                         price: 100,
                       },
@@ -227,12 +227,12 @@ module Engine
                     name: '4dc3',
                     distance: 4,
                     price: 200,
-                    rusts_on: ['7d6c', '9d5c'],
+                    rusts_on: %w[7d6c 9d5c],
                     num: 10,
                     variants: [
                       {
                         name: '6d2c',
-                        rusts_on: ['7d6c', '9d5c'],
+                        rusts_on: %w[7d6c 9d5c],
                         distance: 6,
                         price: 175,
                       },
@@ -284,7 +284,14 @@ module Engine
                     distance: 9,
                     price: 950,
                     num: 9,
-                    discount: { '5dc4' => 700, '7d3c' => 700, '6d5c' => 700, '8d4c' => 700, '7d6c' => 700, '9d5c' => 700, },
+                    discount: {
+                      '5dc4' => 700,
+                      '7d3c' => 700,
+                      '6d5c' => 700,
+                      '8d4c' => 700,
+                      '7d6c' => 700,
+                      '9d5c' => 700,
+                    },
                   }].freeze
 
         COMPANIES = [
@@ -354,8 +361,7 @@ module Engine
             ' by a corporation. Remove from the game after TSI buys a spaceship.',
             abilities: [{ type: 'shares', shares: 'TSI_0' },
                         { type: 'no_buy' },
-                        { type: 'close', when: 'bought_train', corporation: 'TSI' },
-                       ],
+                        { type: 'close', when: 'bought_train', corporation: 'TSI' }],
             color: nil,
           },
           {
@@ -367,7 +373,7 @@ module Engine
             ' corporation.  Remove from the game after AL aquires a spaceship.',
             abilities: [{ type: 'close', when: 'bought_train', corporation: 'AL' },
                         { type: 'no_buy' },
-                        { 
+                        {
                           type: 'exchange',
                           corporations: ['AL'],
                           owner_type: 'player',
@@ -496,7 +502,7 @@ module Engine
             name: 'Trans-Space Incorporated',
             logo: '18_chesapeake/PRR',
             simple_logo: '1830/PRR.alt',
-            tokens: [60, 100, 60, 100, 60, 100, 60, 100, 60, 100,],
+            tokens: [60, 100, 60, 100, 60, 100, 60, 100, 60, 100],
             coordinates: 'K9',
             color: '#32763f',
             type: 'groupA',
@@ -508,7 +514,7 @@ module Engine
             name: 'Resources Unlimited',
             logo: '18_chesapeake/PRR',
             simple_logo: '1830/PRR.alt',
-            tokens: [0, 100, 0, 100, 0, 100, 0, 100, 0, 100, 0, 100,],
+            tokens: [0, 100, 0, 100, 0, 100, 0, 100, 0, 100, 0, 100],
             coordinates: 'D8',
             color: '#32763f',
             type: 'groupA',
@@ -544,7 +550,7 @@ module Engine
             name: 'Mars Mining',
             logo: '18_chesapeake/BO',
             simple_logo: '1830/BO.alt',
-            tokens: [60, 100, 60, 100, 60, 100, ],
+            tokens: [60, 100, 60, 100, 60, 100],
             coordinates: 'A1',
             color: '#025aaa',
             type: 'groupB',
@@ -569,7 +575,7 @@ module Engine
             name: 'Ring Construction Corporation',
             logo: '1846/ERIE',
             simple_logo: '1830/ERIE.alt',
-            tokens: [60, 100, 60, 100, 60, 100, 60, 100,],
+            tokens: [60, 100, 60, 100, 60, 100, 60, 100],
             coordinates: 'F18',
             color: :"#FFF500",
             text_color: 'black',
@@ -582,7 +588,7 @@ module Engine
             name: 'Asteroid League',
             logo: '1830/NYNH',
             simple_logo: '1830/NYNH.alt',
-            tokens: [60, 75, 100, 60, 75, 100, 60, 75, 100, 60, 75, 100, 60, 75, 100,],
+            tokens: [60, 75, 100, 60, 75, 100, 60, 75, 100, 60, 75, 100, 60, 75, 100],
             coordinates: 'H10',
             color: :"#d88e39",
             type: 'groupD',
@@ -593,7 +599,7 @@ module Engine
         # Overrides
 
         def to_hex_list(s, e, l)
-          Range.new(s,e).step(2).map { |x| "%s%d" % [l, x] }
+          Range.new(s, e).step(2).map { |x| format('%s%d', l, x) }
         end
 
         def game_hexes
@@ -626,7 +632,7 @@ module Engine
           ]
 
           blue_hexes = []
-          blue_map.each { |l,s,e| blue_hexes.append(to_hex_list(s,e,l)) }
+          blue_map.each { |l, s, e| blue_hexes.append(to_hex_list(s, e, l)) }
           blue_hexes = blue_hexes.flatten
 
           hexes = {
@@ -635,8 +641,7 @@ module Engine
                  D2
                  H10
                  H18
-                 O11
-              ] => ''
+                 O11] => '',
             },
             gray: {
               %w[A1
@@ -651,12 +656,11 @@ module Engine
                  K9
                  M5
                  M13
-                 O1
-              ] => ''
+                 O1] => '',
             },
             blue: {
-              blue_hexes => ''
-            }
+              blue_hexes => '',
+            },
           }
         end
 

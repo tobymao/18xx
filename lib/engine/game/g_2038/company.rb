@@ -6,7 +6,6 @@ module Engine
   module Game
     module G2038
       class Company < Engine::Company
-
         attr_accessor :minor_id
 
         def initialize(minor_hash)
