@@ -151,17 +151,33 @@ module Engine
 
         update_token!(action, entity, tile, old_tile)
 
-        return if terrain.empty?
-
         @game.all_companies_with_ability(:tile_income) do |company, ability|
-          if terrain.include?(ability.terrain) && (!ability.owner_only || company.owner == entity)
-            # If multiple borders are connected bonus counts each individually
-            income = ability.income * terrain.find_all { |t| t == ability.terrain }.size
-            @game.bank.spend(income, company.owner)
-            @log << "#{company.owner.name} earns #{@game.format_currency(income)}"\
-              " for the #{ability.terrain} tile built by #{company.name}"
+          if ability.terrain.nil?
+            # company with tile income for all tiles
+            pay_all_tile_income(company, ability)
+          else
+            # company with tile income for specific terrain
+            pay_terrain_tile_income(company, ability, terrain, entity)
           end
         end
+      end
+
+      def pay_all_tile_income(company, ability)
+        income = ability.income
+        @game.bank.spend(income, company.owner)
+        @log << "#{company.owner.name} earns #{@game.format_currency(income)}"\
+            " for the tile built by #{company.name}"
+      end
+
+      def pay_terrain_tile_income(company, ability, terrain, entity)
+        return unless terrain.include?(ability.terrain)
+        return if ability.owner_only && company.owner != entity
+
+        # If multiple borders are connected bonus counts each individually
+        income = ability.income * terrain.find_all { |t| t == ability.terrain }.size
+        @game.bank.spend(income, company.owner)
+        @log << "#{company.owner.name} earns #{@game.format_currency(income)}"\
+          " for the #{ability.terrain} tile built by #{company.name}"
       end
 
       def update_tile_lists(tile, old_tile)
