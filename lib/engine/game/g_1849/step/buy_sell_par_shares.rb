@@ -28,7 +28,7 @@ module Engine
 
           def pass!
             @passed = true
-            if @current_actions.empty?
+            if @round.current_actions.empty?
               @round.pass_order |= [current_entity]
               current_entity.pass!
             else
@@ -57,11 +57,25 @@ module Engine
           end
 
           def just_parred(corporation)
-            @current_actions.any? { |x| x.is_a?(Action::Par) && x.corporation == corporation }
+            @round.current_actions.any? { |x| x.is_a?(Action::Par) && x.corporation == corporation }
           end
 
           def num_shares_bought(corporation)
-            @current_actions.count { |x| x.is_a?(Action::BuyShares) && x.bundle.corporation == corporation }
+            @round.current_actions.count { |x| x.is_a?(Action::BuyShares) && x.bundle.corporation == corporation }
+          end
+
+          def should_stop_applying_program(entity, share_to_buy)
+            # The automatic program should stop if the 20% share is acquireable
+            if !share_to_buy || !share_to_buy.last_cert
+              @game.corporations.each do |corporation|
+                share = corporation.ipo_shares.find(&:last_cert)
+                share ||= @game.share_pool.shares_by_corporation[corporation].find(&:last_cert)
+                if share && @game.last_cert_last?(share.to_bundle) && corporation.holding_ok?(entity, share.percent)
+                  return "Last cert available for #{corporation.name}"
+                end
+              end
+            end
+            super
           end
         end
       end

@@ -196,7 +196,8 @@ module View
         children = [h(:h3, text)]
         children << h(:p,
                       'Automatically pass in the stock round.'\
-                      ' This will deactivate itself if other players do actions that may impact you.')
+                      ' This will deactivate itself if other players do actions that may impact you.'\
+                      ' It will only pass on your normal turn and allow you to bid etc.')
         children << h(:p,
                       [h(:a, { attrs: { href: AUTO_ACTIONS_WIKI, target: '_blank' } },
                          'Please read this for more details when it will deactivate')])

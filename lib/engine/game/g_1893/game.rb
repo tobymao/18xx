@@ -9,6 +9,8 @@ module Engine
       class Game < Game::Base
         include_meta(G1893::Meta)
 
+        attr_accessor :passers_first_stock_round
+
         register_colors(
           gray70: '#B3B3B3',
           gray50: '#7F7F7F'
@@ -698,7 +700,11 @@ module Engine
             case @round
             when Engine::Round::Stock
               @operating_rounds = @phase.operating_rounds
-              reorder_players
+              if @turn == 1
+                reorder_player_pass_order
+              else
+                reorder_players
+              end
               new_operating_round
             when Engine::Round::Operating
               if @round.round_num < @operating_rounds
@@ -715,13 +721,21 @@ module Engine
               if @is_init_round
                 @is_init_round = false
                 init_round_finished
-                reorder_players
+                reorder_player_pass_order
                 # If one certificate remains, continue with SR
                 buyable_companies.one? ? new_stock_round : new_operating_round
               else
                 new_stock_round
               end
             end
+        end
+
+        def reorder_player_pass_order
+          return reorder_players(:first_to_pass) if @passers_first_stock_round.empty?
+
+          pd = @passers_first_stock_round.first
+          @players.rotate!(@players.index(pd))
+          @log << "#{pd.name} has priority deal due to being first to pass"
         end
 
         def init_round
@@ -737,6 +751,11 @@ module Engine
           Engine::Round::Draft.new(self, [
             G1893::Step::StartingPackageForcedAuction,
           ])
+        end
+
+        def new_operating_round(_round_num = 1)
+          @passers_first_stock_round = []
+          super
         end
 
         def stock_round
@@ -772,7 +791,7 @@ module Engine
           return 'Exchangable corporation' if !entity.floated? && merged_corporation?(entity)
           return 'Bond - Buy/Sell as share for set price' if entity == adsk
 
-          'Corproation'
+          'Corporation'
         end
 
         def adsk
@@ -849,7 +868,7 @@ module Engine
             sym: 'N',
             name: 'Neutral',
             logo: 'open_city',
-            simple_logo: 'open_city.alt',
+            simple_logo: 'open_city',
             tokens: [0, 0],
           )
           @neutral.owner = @bank
@@ -857,7 +876,7 @@ module Engine
           city_by_id('H5-0-0').place_token(@neutral, @neutral.next_token)
           city_by_id('J5-0-0').place_token(@neutral, @neutral.next_token)
 
-          @is_init_round = false
+          @passers_first_stock_round = []
         end
 
         def upgrades_to?(from, to, special = false)
@@ -946,6 +965,13 @@ module Engine
             @log << "#{player.name} collects #{format_currency(revenue)} from #{adsk.name}"
             @bank.spend(revenue, player)
           end
+        end
+
+        def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
+          corporation = bundle.corporation
+          return super unless corporation == adsk
+
+          @share_pool.sell_shares(bundle, allow_president_change: false, swap: swap)
         end
 
         private

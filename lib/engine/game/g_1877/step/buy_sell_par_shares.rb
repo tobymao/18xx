@@ -13,7 +13,7 @@ module Engine
             return [] if @corporate_action && @corporate_action.entity != entity
 
             actions = []
-            if @current_actions.none?
+            if @round.current_actions.none?
               actions << 'take_loan' if @game.can_take_loan?(entity) && !@corporate_action.is_a?(Action::BuyShares)
               actions << 'buy_shares' unless @game.redeemable_shares(entity).empty?
               actions << 'buy_train' if can_buy_train?(entity)

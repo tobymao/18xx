@@ -32,6 +32,10 @@ module Engine
             @auctioning
           end
 
+          def normal_pass?(_entity)
+            !@auctioning
+          end
+
           def active_entities
             return super unless @auctioning
 

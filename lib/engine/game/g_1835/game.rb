@@ -406,6 +406,7 @@ module Engine
             tokens: [0, 0],
             coordinates: 'M9',
             color: :yellow,
+            text_color: 'black',
             reservation_color: nil,
           },
           {

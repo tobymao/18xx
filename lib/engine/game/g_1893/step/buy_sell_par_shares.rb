@@ -23,11 +23,13 @@ module Engine
           end
 
           def can_buy_company?(player, _company = nil)
+            return false if first_sr_passed?(player)
+
             @game.buyable_companies.any? { |c| player.cash >= c.value } && !sold? && !bought?
           end
 
-          def can_buy?(_entity, bundle)
-            super && @game.buyable?(bundle.corporation)
+          def can_buy?(entity, bundle)
+            !first_sr_passed?(entity) && super && @game.buyable?(bundle.corporation)
           end
 
           def can_sell?(_entity, bundle)
@@ -37,14 +39,23 @@ module Engine
             super && @game.buyable?(bundle.corporation)
           end
 
-          def can_gain?(_entity, bundle, exchange: false)
+          def can_gain?(entity, bundle, exchange: false)
             return false if exchange
 
-            super && @game.buyable?(bundle.corporation)
+            !first_sr_passed?(entity) && super && @game.buyable?(bundle.corporation)
           end
 
           def can_exchange?(_entity)
             false
+          end
+
+          def first_sr_passed?(entity)
+            @game.passers_first_stock_round.include?(entity)
+          end
+
+          def process_pass(action)
+            @game.passers_first_stock_round << action.entity if @game.turn == 1
+            super
           end
 
           def process_buy_company(action)
@@ -68,31 +79,12 @@ module Engine
           end
 
           def process_sell_shares(action)
-            if action.bundle.corporation == @game.adsk
-              sell_adsk(action.bundle)
-            else
-              # In case president's share is reserved, do not change presidency
-              allow_president_change = action.bundle.corporation.presidents_share.buyable
-              sell_shares(action.entity, action.bundle, swap: action.swap,
-                                                        allow_president_change: allow_president_change)
-            end
+            # In case president's share is reserved, do not change presidency
+            allow_president_change = action.bundle.corporation.presidents_share.buyable
+            sell_shares(action.entity, action.bundle, swap: action.swap,
+                                                      allow_president_change: allow_president_change)
 
             track_action(action, action.bundle.corporation)
-          end
-
-          private
-
-          def sell_adsk(bundle)
-            entity = bundle.owner
-            price = bundle.price
-            @log << "#{entity.name} sell #{bundle.percent}% " \
-              "of #{bundle.corporation.name} and receives #{@game.format_currency(price)}"
-            @game.share_pool.transfer_shares(bundle,
-                                             @game.share_pool,
-                                             spender: @bank,
-                                             receiver: entity,
-                                             price: price,
-                                             allow_president_change: false)
           end
         end
       end
