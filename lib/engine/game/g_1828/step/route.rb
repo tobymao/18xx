@@ -28,7 +28,7 @@ module Engine
           def route_uses_tile_lay(routes)
             tile_used = false
             stops = routes.first.visited_stops
-            tile = @round.last_tile_lay
+            tile = @round.laid_hexes.first&.tile
 
             if tile.nodes.any?
               tile_used = (stops & tile.nodes).any?

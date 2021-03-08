@@ -35,7 +35,7 @@ module Engine
               if @round.current_entity != company.owner
                 raise GameError, "Must use #{company.name} on your turn when in a stock round"
               end
-              raise GameError, 'Cannot exchange and buy on the same turn' if buy_sell_step&.bought?
+              raise GameError, 'Cannot exchange and buy on the same turn' if bought?
             end
 
             if !bundle.presidents_share
@@ -44,8 +44,7 @@ module Engine
 
               super
 
-              # Exchange counts as a stock action
-              buy_sell_step&.stock_action(action)
+              @round.current_actions << action if @round.stock?
 
               # Corporation operates at the start of the operating round where it floated
               if @round.operating? && @game.round_start? && !already_floated && corporation.floated?
@@ -79,11 +78,14 @@ module Engine
                                         exchange: true,
                                         exchange_price: bundle.price_per_share)
 
-            # Exchange counts as a stock action
-            buy_sell_step&.stock_action(action)
+            @round.current_actions(action) if @round.stock?
 
             @entity = nil
             @corporation = nil
+          end
+
+          def can_exchange?(entity, bundle = nil)
+            super && (!@round.stock? || !bought?)
           end
 
           def corporation_pending_par
@@ -98,15 +100,15 @@ module Engine
             !get_par_prices(entity, corporation).empty?
           end
 
-          def buy_sell_step
-            @round.steps.find { |s| s.is_a?(Engine::Game::G1828::Step::BuySellParShares) }
-          end
-
           def can_gain?(entity, bundle, exchange: false)
             return false unless bundle.buyable
             return true if exchange
 
             super
+          end
+
+          def bought?
+            @round.current_actions.any? { |x| BuySellParShares::PURCHASE_ACTIONS.include?(x.class) }
           end
         end
       end

@@ -28,8 +28,8 @@ module Engine
           def can_buy_multiple?(_entity, corporation)
             return false unless @game.railway?(corporation)
 
-            @current_actions.any? { |x| x.is_a?(Action::Par) && x.corporation == corporation } &&
-              @current_actions.none? { |x| x.is_a?(Action::BuyShares) }
+            @round.current_actions.any? { |x| x.is_a?(Action::Par) && x.corporation == corporation } &&
+              @round.current_actions.none? { |x| x.is_a?(Action::BuyShares) }
           end
 
           def can_sell?(entity, bundle)

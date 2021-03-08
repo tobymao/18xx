@@ -109,6 +109,29 @@ module Engine
         bids << bid
       end
 
+      def replace_bid(bid)
+        company = bid_target(bid)
+        entity = bid.entity
+        price = bid.price
+        min = min_bid(company)
+        raise GameError, "Minimum bid is #{@game.format_currency(min)} for #{company.name}" if price < min
+        if @game.class::MUST_BID_INCREMENT_MULTIPLE && ((price - min) % @game.class::MIN_BID_INCREMENT).nonzero?
+          raise GameError, "Must increase bid by a multiple of #{@game.class::MIN_BID_INCREMENT}"
+        end
+        if price > max_bid(entity, company)
+          raise GameError, "Cannot afford bid. Maximum possible bid is #{max_bid(entity, company)}"
+        end
+
+        bids = @bids[company]
+        # clear other bids as we are replacing all other bids
+        bids.clear
+        bids << bid
+      end
+
+      def reset_bids
+        @bids.clear
+      end
+
       def bids_for_player(player)
         @bids.values.map do |bids|
           if @game.class::ONLY_HIGHEST_BID_COMMITTED

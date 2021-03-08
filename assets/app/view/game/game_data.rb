@@ -48,6 +48,12 @@ module View
           h(:button, { on: { click: -> { store(:show_json, !@show_json) } } },
             "#{@show_json ? 'Hide' : 'Show'} Game Data"),
           h(:button, { on: { click: copy_data } }, 'Copy Game Data'),
+          h('a.button_link', {
+              attrs: {
+                href: "data:text/plain;charset=utf-8,#{`encodeURI(self.json)`}",
+                download: "#{@game_data[:id]}.json",
+              },
+            }, 'Download Game Data'),
         ]
 
         if @allow_delete

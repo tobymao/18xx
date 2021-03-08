@@ -17,5 +17,7 @@ module ParAndBuy
     allow_president_change = action.bundle.corporation.presidents_share.buyable
     buy_shares(action.entity, action.bundle, swap: action.swap, allow_president_change: allow_president_change)
     track_action(action, action.bundle.corporation)
+    @round.last_to_act = action.entity
+    @round.current_actions << action
   end
 end

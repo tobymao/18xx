@@ -35,7 +35,7 @@ module Engine
         SELL_BUY_ORDER = :sell_buy
         # is this first to pass: first, second: second.. yes
         NEXT_SR_PLAYER_ORDER = :first_to_pass
-        MIN_BID_INCREMENT = 10
+        MIN_BID_INCREMENT = 5
 
         # Special City hexes
         OMAHA_HEX = 'K7'
@@ -335,7 +335,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'Armour and Company',
+            name: 'Amour and Company',
             value: 70,
             revenue: 15,
             desc: 'An owning Corporation may place a cattle token in any Town or City',
@@ -384,7 +384,7 @@ module Engine
             revenue: 25,
             desc: 'Comes with President\'s Certificate of the Union Pacific Railroad',
             sym: 'P6',
-            abilities: [{ type: 'shares', shares: 'UP_0' }],
+            abilities: [{ type: 'shares', shares: 'UP_0' }, { type: 'no_buy' }],
             color: nil,
           },
         ].freeze
@@ -406,7 +406,7 @@ module Engine
             sym: 'CBQ',
             name: 'Chicago Burlington & Quincy',
             logo: '18_neb/CBQ',
-            tokens: [0, 40],
+            tokens: [0, 40, 100, 100],
             coordinates: 'L6',
             color: '#666666',
             always_market_price: true,
@@ -417,7 +417,7 @@ module Engine
             sym: 'CNW',
             name: 'Chicago & Northwestern',
             logo: '18_neb/CNW',
-            tokens: [0, 40],
+            tokens: [0, 40, 100],
             coordinates: 'L4',
             color: '#2C9846',
             always_market_price: true,
@@ -451,7 +451,7 @@ module Engine
             sym: 'C&S',
             name: 'Colorado & Southern',
             logo: '18_neb/CS',
-            tokens: [0, 40, 100],
+            tokens: [0, 40, 100, 100],
             coordinates: 'A7',
             color: '#AE4A84',
             always_market_price: true,
@@ -542,8 +542,10 @@ module Engine
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded }].freeze
 
         def init_round
-          super
-          # Round::Auction.new(self, [G18NEB::Step::ModifiedDutchAuction])
+          Round::Auction.new(self, [
+            Engine::Step::CompanyPendingPar,
+            G18NEB::Step::PriceFindingAuction,
+          ])
         end
 
         def setup

@@ -28,7 +28,7 @@ module Engine
 
           def pass!
             @passed = true
-            if @current_actions.empty?
+            if @round.current_actions.empty?
               @round.pass_order |= [current_entity]
               current_entity.pass!
             else
@@ -57,11 +57,11 @@ module Engine
           end
 
           def just_parred(corporation)
-            @current_actions.any? { |x| x.is_a?(Action::Par) && x.corporation == corporation }
+            @round.current_actions.any? { |x| x.is_a?(Action::Par) && x.corporation == corporation }
           end
 
           def num_shares_bought(corporation)
-            @current_actions.count { |x| x.is_a?(Action::BuyShares) && x.bundle.corporation == corporation }
+            @round.current_actions.count { |x| x.is_a?(Action::BuyShares) && x.bundle.corporation == corporation }
           end
         end
       end

@@ -14,10 +14,14 @@ module Engine
           ACTIONS_WITH_PASS = %w[bid pass].freeze
 
           def help
-            'Buy or Pass. This continues until just one certificate remains after which regular ' \
-            'share round commences. If everyone passes earlier this means the game will skip the ' \
-            'share round and go directly to operation round, and the remaining privates will be ' \
-            'auctioned out before the share round following the operation round.'
+            'Buy or Pass. If you pass you cannot act more this round. This continues until just one ' \
+            'certificate remains after which regular share round commences. If everyone passes earlier ' \
+            'this means the game will skip the share round and go directly to operation round, and the ' \
+            'remaining privates will be auctioned out before the share round following the operation round.'
+          end
+
+          def setup
+            @finished = false
           end
 
           def actions(entity)
@@ -65,7 +69,7 @@ module Engine
           end
 
           def finished?
-            @finished
+            available.one? || @game.passers_first_stock_round.size == @game.players.size
           end
 
           def min_bid(company)
@@ -94,6 +98,7 @@ module Engine
 
           def process_pass(action)
             @log << "#{action.entity.name} passes"
+            @game.passers_first_stock_round << action.entity
 
             action_finalized
           end
@@ -106,9 +111,15 @@ module Engine
 
           def action_finalized
             @round.next_entity_index!
-            @finished = true if available.one?
+            if finished?
+              @round.reset_entity_index!
+            else
+              entity = entities[entity_index]
+              return unless @game.passers_first_stock_round.include?(entity)
 
-            @round.reset_entity_index! if finished?
+              @log << "#{entity.name} has already passed"
+              action_finalized
+            end
           end
         end
       end
