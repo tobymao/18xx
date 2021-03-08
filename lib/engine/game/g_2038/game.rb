@@ -375,11 +375,9 @@ module Engine
             abilities: [{ type: 'close', when: 'bought_train', corporation: 'AL' },
                         { type: 'no_buy' },
                         {
-                          type: 'exchange',
-                          corporations: ['AL'],
-                          owner_type: 'player',
+                          type: 'shares',
+                          shares: 'AL_0',
                           when: ['Phase 3', 'Phase 4'],
-                          from: 'ipo',
                         }],
             color: nil,
           },
@@ -682,6 +680,21 @@ module Engine
           companies + wrapped_companies
         end
 
+        # def init_corporations(stock_market)
+        #  min_price = stock_market.par_prices.map(&:price).min
+
+        #  game_corporations.map do |corporation|
+        #    next unless corporation[:type] == 'groupA'
+
+        #    G2038::Corporation.new(
+        #      self,
+        #      min_price: min_price,
+        #      capitalization: nil,
+        #      **corporation.merge(corporation_opts),
+        #    )
+        #  end
+        # end
+
         LAYOUT = :pointy
 
         def new_auction_round
@@ -689,24 +702,6 @@ module Engine
             Engine::Step::CompanyPendingPar,
             G2038::Step::WaterfallAuction,
           ])
-        end
-
-        def operating_round(round_num)
-          Round::Operating.new(self, [
-            Step::Bankrupt,
-            Step::Exchange,
-            Step::SpecialTrack,
-            Step::SpecialToken,
-            Step::BuyCompany,
-            Step::HomeToken,
-            Step::Track,
-            Step::Token,
-            Step::Route,
-            Step::Dividend,
-            Step::DiscardTrain,
-            Step::BuyTrain,
-            [Step::BuyCompany, blocks: true],
-          ], round_num: round_num)
         end
       end
     end
