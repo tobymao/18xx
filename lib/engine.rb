@@ -27,4 +27,12 @@ module Engine
       game if game&.title == title
     end.compact.first
   end
+
+  def self.all_game_titles
+    Engine::Game.constants.sort.map do |c|
+      const = Game.const_get(c)
+      game = const::Game if const.constants.include?(:Game)
+      game&.title
+    end.compact
+  end
 end
