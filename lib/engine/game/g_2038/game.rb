@@ -325,7 +325,8 @@ module Engine
             sym: 'VA',
             value: 140,
             revenue: 10,
-            desc: 'Buyer recieves a TSI Share.  If owned by a corporation, may place 1 free Refueling Station within range.',
+            desc: 'Buyer recieves a TSI Share.  If owned by a corporation, may place 1 free'\
+            'Refueling Station within range.',
             abilities: [{ type: 'shares', shares: 'TSI_2' },
                         {
                           type: 'tile_lay',
@@ -599,7 +600,7 @@ module Engine
         # Overrides
 
         def to_hex_list(s, e, l)
-          Range.new(s, e).step(2).map { |x| format('%s%d', l, x) }
+          Range.new(s, e).step(2).map { |x| "#{l}#{x}" }
         end
 
         def game_hexes
@@ -635,7 +636,7 @@ module Engine
           blue_map.each { |l, s, e| blue_hexes.append(to_hex_list(s, e, l)) }
           blue_hexes = blue_hexes.flatten
 
-          hexes = {
+          {
             black: {
               %w[A13
                  D2
@@ -664,12 +665,10 @@ module Engine
           }
         end
 
-        def is_minor?(company)
-          @minors.find { |m| m.id == company.id }
-        end
-
         def company_header(company)
-          if is_minor?(company)
+          is_minor = @minors.find { |m| m.id == company.id }
+
+          if is_minor
             'INDEPENDENT COMPANY'
           else
             'PRIVATE COMPANY'
@@ -679,8 +678,8 @@ module Engine
         def init_companies(players)
           companies = super(players)
 
-          wrappedCompanies = game_minors.map { |minor| G2038::Company.new(minor) }
-          companies + wrappedCompanies
+          wrapped_companies = game_minors.map { |minor| G2038::Company.new(minor) }
+          companies + wrapped_companies
         end
 
         LAYOUT = :pointy
