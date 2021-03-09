@@ -50,6 +50,7 @@ module View
       end
 
       def render
+        step = @game.active_step
         current_entity = @game.round.current_entity
         if @selected_company&.owner == current_entity
           ability = @game.abilities(@selected_company, :hex_bonus, time: 'route')
@@ -158,8 +159,9 @@ module View
               padding: '0 0 0.4rem 0.4rem',
             },
           }
+          train_name = step.respond_to?(:train_name) ? step.train_name(current_entity, train) : train.name
           [
-            h(:tr, [h('td.middle', [h(:div, { style: style, on: { click: onclick } }, train.name)]), *children]),
+            h(:tr, [h('td.middle', [h(:div, { style: style, on: { click: onclick } }, train_name)]), *children]),
             invalid ? h(:tr, [h(:td, invalid_props, invalid)]) : '',
           ]
         end

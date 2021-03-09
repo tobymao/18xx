@@ -30,12 +30,22 @@ module Engine
             super
 
             entity = action.entity
+            routes = action.routes
+
+            routes.each do |r|
+              @game.use_pool_diesel(r.train, entity) if @game.diesel?(r.train)
+            end
+            @game.free_pool_diesels(entity)
 
             maintenance = @game.maintenance_costs(entity)
             @round.maintenance = maintenance
             @log << "#{entity.name} owes #{@game.format_currency(maintenance)} for maintenance" if maintenance.positive?
 
             @game.update_tokens(entity, action.routes)
+          end
+
+          def train_name(_entity, train)
+            @game.train_name(train)
           end
 
           def round_state

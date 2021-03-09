@@ -71,7 +71,7 @@ module Engine
               super
             end
 
-            @game.track_graph.clear
+            @game.diesel_graph.clear
           end
 
           def check_legal_placement(_entity, city, _token)
