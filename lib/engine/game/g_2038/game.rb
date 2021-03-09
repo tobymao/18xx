@@ -558,7 +558,7 @@ module Engine
           end
         end
 
-       LAYOUT = :pointy
+        LAYOUT = :pointy
       end
     end
   end
