@@ -158,11 +158,19 @@ module Engine
                                               par_1: 'Asteroid League Par',
                                               par_2: 'All Growth Corps Par')
 
-        STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(par: :grey,
-                                                            par_1: :brown,
-                                                            par_2: :blue)
+        STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
+          par: :grey,
+          par_1: :brown,
+          par_2: :blue
+        )
 
-        PHASES = [{ name: '1', train_limit: 4, tiles: [:yellow], operating_rounds: 2 },
+        PHASES = [
+                  {
+                    name: '1',
+                    train_limit: 4,
+                    tiles: [:yellow],
+                    operating_rounds: 2,
+                  },
                   {
                     name: '2',
                     on: '4dc3',
@@ -199,100 +207,103 @@ module Engine
                     train_limit: 2,
                     tiles: %i[yellow green brown],
                     operating_rounds: 2,
-                  }].freeze
+                  },
+                ].freeze
 
-        TRAINS = [{
-          name: 'probe',
-          distance: 4,
-          price: 1,
-          rusts_on: %w[4dc3 6d2c],
-          num: 1,
-        },
-                  {
-                    name: '3dc2',
-                    distance: 3,
-                    price: 100,
-                    rusts_on: %w[5dc4 7d3c],
-                    num: 10,
-                    variants: [
-                      {
-                        name: '5dc1',
-                        rusts_on: %w[5dc4 7d3c],
-                        distance: 5,
-                        price: 100,
-                      },
-                    ],
-                  },
-                  {
-                    name: '4dc3',
-                    distance: 4,
-                    price: 200,
-                    rusts_on: %w[7d6c 9d5c],
-                    num: 10,
-                    variants: [
-                      {
-                        name: '6d2c',
-                        rusts_on: %w[7d6c 9d5c],
-                        distance: 6,
-                        price: 175,
-                      },
-                    ],
-                  },
-                  {
-                    name: '5dc4',
-                    distance: 5,
-                    price: 325,
-                    rusts_on: 'D',
-                    num: 6,
-                    variants: [
-                      {
-                        name: '7d3c',
-                        distance: 7,
-                        price: 275,
-                      },
-                    ],
-                  },
-                  {
-                    name: '6d5c',
-                    distance: 6,
-                    price: 450,
-                    num: 5,
-                    variants: [
-                      {
-                        name: '8d4c',
-                        distance: 8,
-                        price: 400,
-                      },
-                    ],
-                    events: [{ 'type' => 'close_companies' }],
-                  },
-                  {
-                    name: '7d6c',
-                    distance: 7,
-                    price: 600,
-                    num: 2,
-                    variants: [
-                      {
-                        name: '9d5c',
-                        distance: 9,
-                        price: 550,
-                      },
-                    ],
-                  },
-                  {
-                    name: '9d7c',
-                    distance: 9,
-                    price: 950,
-                    num: 9,
-                    discount: {
-                      '5dc4' => 700,
-                      '7d3c' => 700,
-                      '6d5c' => 700,
-                      '8d4c' => 700,
-                      '7d6c' => 700,
-                      '9d5c' => 700,
-                    },
-                  }].freeze
+        TRAINS = [
+          {
+            name: 'probe',
+            distance: 4,
+            price: 1,
+            rusts_on: %w[4dc3 6d2c],
+            num: 1,
+          },
+          {
+            name: '3dc2',
+            distance: 3,
+            price: 100,
+            rusts_on: %w[5dc4 7d3c],
+            num: 10,
+            variants: [
+              {
+                name: '5dc1',
+                rusts_on: %w[5dc4 7d3c],
+                distance: 5,
+                price: 100,
+              },
+            ],
+          },
+          {
+            name: '4dc3',
+            distance: 4,
+            price: 200,
+            rusts_on: %w[7d6c 9d5c],
+            num: 10,
+            variants: [
+              {
+                name: '6d2c',
+                rusts_on: %w[7d6c 9d5c],
+                distance: 6,
+                price: 175,
+              },
+            ],
+          },
+          {
+            name: '5dc4',
+            distance: 5,
+            price: 325,
+            rusts_on: 'D',
+            num: 6,
+            variants: [
+              {
+                name: '7d3c',
+                distance: 7,
+                price: 275,
+              },
+            ],
+          },
+          {
+            name: '6d5c',
+            distance: 6,
+            price: 450,
+            num: 5,
+            variants: [
+              {
+                name: '8d4c',
+                distance: 8,
+                price: 400,
+              },
+            ],
+            events: [{ 'type' => 'close_companies' }],
+          },
+          {
+            name: '7d6c',
+            distance: 7,
+            price: 600,
+            num: 2,
+            variants: [
+              {
+                name: '9d5c',
+                distance: 9,
+                price: 550,
+              },
+            ],
+          },
+          {
+            name: '9d7c',
+            distance: 9,
+            price: 950,
+            num: 9,
+            discount: {
+              '5dc4' => 700,
+              '7d3c' => 700,
+              '6d5c' => 700,
+              '8d4c' => 700,
+              '7d6c' => 700,
+              '9d5c' => 700,
+            },
+          },
+        ].freeze
 
         COMPANIES = [
           {
