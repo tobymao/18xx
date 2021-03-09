@@ -408,7 +408,7 @@ module Engine
             abilities: [
               { type: 'shares', shares: 'UP_0' },
               { type: 'close', when: 'bought_train', corporation: 'UP' },
-              { type: 'no_buy' }
+              { type: 'no_buy' },
             ],
             color: nil,
           },
