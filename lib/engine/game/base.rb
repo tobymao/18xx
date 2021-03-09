@@ -272,6 +272,8 @@ module Engine
       RAND_C = 12_345
       RAND_M = 2**31
 
+      def setup_preround; end
+
       def setup; end
 
       def init_optional_rules(optional_rules)
@@ -402,6 +404,7 @@ module Engine
         @operating_rounds = @phase.operating_rounds
 
         @round_history = []
+        setup_preround
         @round = init_round
 
         cache_objects
