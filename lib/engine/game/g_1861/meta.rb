@@ -18,7 +18,7 @@ module Engine
         GAME_RULES_URL = 'https://boardgamegeek.com/filepage/212807/18611867-rulebook'
         GAME_TITLE = '1861'
 
-        PLAYER_RANGE = [3, 6].freeze
+        PLAYER_RANGE = [2, 6].freeze
       end
     end
   end

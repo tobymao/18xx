@@ -39,9 +39,9 @@ module Engine
 
         BANK_CASH = 15_000
 
-        CERT_LIMIT = { 3 => 21, 4 => 16, 5 => 13, 6 => 11 }.freeze
+        CERT_LIMIT = { 2 => 21, 3 => 21, 4 => 16, 5 => 13, 6 => 11 }.freeze
 
-        STARTING_CASH = { 3 => 420, 4 => 315, 5 => 252, 6 => 210 }.freeze
+        STARTING_CASH = { 2 => 420, 3 => 420, 4 => 315, 5 => 252, 6 => 210 }.freeze
 
         CAPITALIZATION = :incremental
 
@@ -1385,6 +1385,31 @@ module Engine
               hex.tile.cities.first.exchange_token(@national.tokens.first)
             end
           end
+        end
+
+        def setup_preround
+          setup_for_2_players if @players.size == 2
+        end
+
+        def setup_for_2_players
+          # Only been tested for 1861, but Ian think's it'll work for 1867.
+          @log << '1867 has not been tested for 2 players.' if instance_of?(G1867::Game)
+
+          # 70% not 60%
+          @corporations.each { |c| c.max_ownership_percent = 70 if c.max_ownership_percent == 60 }
+
+          # Remove trains
+          remove_trains = { '2' => 3, '3' => 2, '4' => 1, '5' => 1, '6' => 1, '7' => 1 }
+          remove_trains.each do |train_name, count|
+            trains = depot.upcoming.select { |t| t.name == train_name }.reverse.take(count)
+
+            trains.each { |t| depot.remove_train(t) }
+          end
+
+          # Standard game, remove 2 privates randomly
+          removal_companies = @companies.reject { |c| c.id == '3' }.sort_by { rand }.take(2)
+          @log << "Following companies are removed #{removal_companies.map(&:id).join(', ')}"
+          removal_companies.each { |company| @companies.delete(company) }
         end
 
         def setup
