@@ -1406,10 +1406,16 @@ module Engine
 
           return if diesel?(route.train)
 
-          # make sure concession route is run
-          return if concession_route_run?(train_owner(route.train), route.routes)
+          # make sure concession route is run by normal trains and also by the diesel if there is one
+          type_routes = route.routes.partition { |r| train_type(r.train) }
+          owner = train_owner(route.train)
 
-          raise GameError, 'Concession route not run by one train'
+          if !concession_route_run?(owner, type_routes[:freight]) && train_type(route.train) == :freight
+            raise GameError, 'Concession route not run by one non-diesel train'
+          end
+          return if concession_route_run?(owner, type_routes[:passenger]) || train_type(route.train) == :freight
+
+          raise GameError, 'Concession route not run by diesel train'
         end
 
         # all routes from one supertrain must intersect each other (borrowed from 1860)
@@ -1476,8 +1482,7 @@ module Engine
           return true if entity == @qlb
 
           @corporation_info[entity][:concession_routes].all? do |con_route|
-            routes.reject { |r| diesel?(r.train) }
-              .any? { |r| (r.connection_hexes.flatten & con_route).size == con_route.size }
+            routes.any? { |r| (r.connection_hexes.flatten & con_route).size == con_route.size }
           end
         end
 
