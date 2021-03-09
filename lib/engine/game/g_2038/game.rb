@@ -2,7 +2,6 @@
 
 require_relative 'meta'
 require_relative '../base'
-require_relative 'company'
 
 module Engine
   module Game
