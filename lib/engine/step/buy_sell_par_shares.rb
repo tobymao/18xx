@@ -385,7 +385,6 @@ module Engine
       end
 
       def activate_program_buy_shares(entity, program)
-        # TODO: non-ipo? non-10% shares
         available_actions = actions(entity)
         if available_actions.include?('buy_shares')
           corporation = program.corporation
@@ -396,7 +395,8 @@ module Engine
                                                reason: "#{corporation.name} is floated")] if corporation.floated?
           elsif entity.num_shares_of(corporation, ceil: false) >= program.until_condition
             return [Action::ProgramDisable.new(entity,
-                                               reason: "#{corporation.name} shares already bought")]
+                                               reason: "#{program.until_condition} share(s) bought in "\
+                                               "#{corporation.name}, end condition met")]
           end
           shares_by_percent = if program.from_market
                                 source = 'market'

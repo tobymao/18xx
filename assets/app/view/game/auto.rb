@@ -141,16 +141,15 @@ module View
         settings = params(form)
 
         corporation = @game.corporation_by_id(settings['corporation'])
-        existing_shares = sender.num_shares_of(corporation, ceil: false)
 
         if settings['float']
           until_condition = 'float'
           from_market = false
         elsif settings['ipo']
-          until_condition = settings['buy_ipo'].to_i + existing_shares
+          until_condition = settings['buy_ipo'].to_i
           from_market = false
         elsif settings['market']
-          until_condition = settings['buy_market'].to_i + existing_shares
+          until_condition = settings['buy_market'].to_i
           from_market = true
         end
 
@@ -233,12 +232,25 @@ module View
 
           children << h(Corporation, corporation: selected)
           corp_settings = settings if selected == settings&.corporation
-          first_radio = true
 
-          unless selected.floated?
+          # Which settings should be checked
+          settings_checked = if corp_settings&.until_condition == 'float'
+                               :float
+                             elsif corp_settings&.from_market
+                               :from_market
+                             elsif corp_settings
+                               :from_ipo
+                             else
+                               first_radio = true
+                               nil
+                             end
+
+          # Because the program does not deactivate it could be there
+          # is nothing left in the ipo/market/float. Show it anyway
+          # if it is activated
+          if !selected.floated? || settings_checked == :float
             # There is a settings and it's floated, otherwise true if not selected already
-            checked = first_radio
-            checked = corp_settings&.until_condition == 'float' if corp_settings
+            checked = first_radio || settings_checked == :float
 
             children << h(:div, [render_input('Until float',
                                               id: 'float',
@@ -252,9 +264,8 @@ module View
             first_radio = false
           end
 
-          unless selected.ipo_shares.empty?
-            checked = first_radio
-            checked = (corp_settings&.until_condition != 'float' && !corp_settings&.from_market) if corp_settings
+          if !selected.ipo_shares.empty? || settings_checked == :from_ipo
+            checked = first_radio || settings_checked == :from_ipo
             children << render_share_choice(form,
                                             selected.ipo_shares,
                                             'ipo',
@@ -264,7 +275,7 @@ module View
             first_radio = false
           end
 
-          unless @game.share_pool.shares_by_corporation[selected].empty?
+          if !@game.share_pool.shares_by_corporation[selected].empty? || settings_checked == :from_market
             checked = first_radio
             checked = (corp_settings&.until_condition != 'float' && corp_settings&.from_market) if corp_settings
             children << render_share_choice(form,
