@@ -337,7 +337,6 @@ module Engine
                 owner_type: 'corporation',
                 hexes: %w[K3 K5 K7 J8 L8 L10],
                 count: 2,
-                closed_when_used_up: true,
                 remove: 5,
               },
             ],
