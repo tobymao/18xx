@@ -743,20 +743,20 @@ module Engine
             { type: :OR, name: '2' },
             { type: :SR },
             { type: :OR, name: '3' },
-            { type: :OR, name: '4', exportAfter: true },
+            { type: :OR, name: '4', exportAfter: true, exportAfterValue: '2+' },
             { type: :SR },
             { type: :OR, name: '5' },
-            { type: :OR, name: '6', exportAfter: true },
+            { type: :OR, name: '6', exportAfter: true, exportAfterValue: '3+' },
             { type: :SR },
             { type: :OR, name: '7' },
-            { type: :OR, name: '8', exportAfter: true },
+            { type: :OR, name: '8', exportAfter: true, exportAfterValue: '4+' },
             { type: :SR },
             { type: :OR, name: '9' },
             { type: :OR, name: '10' },
           ]
 
-          base_progress.push({ type: :OR, name: '11' }) if @optional_rules&.include?(:or_11)
-          base_progress.push({ type: :END })
+          base_progress << { type: :OR, name: '11' } if @optional_rules&.include?(:or_11)
+          base_progress << { type: :End }
         end
 
         private
