@@ -393,7 +393,6 @@ module Engine
             abilities: [
               {
                 type: 'tile_income',
-                terrain: nil,
                 income: 5,
               },
             ],
