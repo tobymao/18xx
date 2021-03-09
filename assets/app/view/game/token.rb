@@ -7,6 +7,7 @@ module View
     class Token < Snabberb::Component
       include Lib::Settings
 
+      needs :game
       needs :token
       needs :radius
       needs :user, default: nil, store: true
@@ -27,7 +28,7 @@ module View
       def render_token
         h(
           :image, attrs: {
-            href: setting_for(:simple_logos) ? @token.simple_logo : @token.logo,
+            href: setting_for(:simple_logos, @game) ? @token.simple_logo : @token.logo,
             x: -@radius,
             y: -@radius,
             height: (2 * @radius),
