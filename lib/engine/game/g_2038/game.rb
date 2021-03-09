@@ -665,21 +665,6 @@ module Engine
           companies + wrapped_companies
         end
 
-        # def init_corporations(stock_market)
-        #  min_price = stock_market.par_prices.map(&:price).min
-
-        #  game_corporations.map do |corporation|
-        #    next unless corporation[:type] == 'groupA'
-
-        #    G2038::Corporation.new(
-        #      self,
-        #      min_price: min_price,
-        #      capitalization: nil,
-        #      **corporation.merge(corporation_opts),
-        #    )
-        #  end
-        # end
-
         LAYOUT = :pointy
 
         def new_auction_round
