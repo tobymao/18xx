@@ -199,19 +199,19 @@ module Engine
           "#{tile.location_name.to_s.empty? ? '' : " (#{tile.location_name})"}"
       end
 
-      def update_token!(action, _entity, tile, old_tile)
+      def update_token!(action, entity, tile, old_tile)
         cities = tile.cities
         if old_tile.paths.empty? &&
             !tile.paths.empty? &&
             cities.size > 1 &&
             (token = cities.flat_map(&:tokens).find(&:itself))
-          corporation = token.corporation
+          actor = entity.company? ? entity.owner : entity
           @round.pending_tokens << {
-            entity: corporation,
+            entity: actor,
             hexes: [action.hex],
             token: token,
           }
-          @log << "#{corporation.name} must choose city for token"
+          @log << "#{actor.name} must choose city for token"
 
           token.remove!
         end
