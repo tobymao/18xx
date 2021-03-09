@@ -527,19 +527,8 @@ module Engine
             variants: [
               {
                 name: 'E',
-                distance: [
-                  {
-                    'nodes' => %w[city offboard],
-                    'pay' => 99,
-                    'visit' => 99,
-                    'multiplier' => 2,
-                  },
-                  {
-                    'nodes' => ['town'],
-                    'pay' => 0,
-                    'visit' => 99,
-                  },
-                ],
+                distance: 99,
+                multiplier: 2,
                 price: 1000,
               },
             ],
