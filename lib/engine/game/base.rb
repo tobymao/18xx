@@ -2218,6 +2218,10 @@ module Engine
         "#{count_available_tokens(corporation)}/#{corporation.tokens.size}"
       end
 
+      def show_value_of_companies?(entity)
+        entity.player?
+      end
+
       # minors to show on player cards
       def player_card_minors(_player)
         []
