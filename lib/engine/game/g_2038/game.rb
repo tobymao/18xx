@@ -59,9 +59,11 @@ module Engine
           %w[10z 23 34 43 50 57 65],
         ].freeze
 
-        MARKET_TEXT = Base::MARKET_TEXT.merge(par: 'Public Corps Par',
-                                              par_1: 'Asteroid League Par',
-                                              par_2: 'All Growth Corps Par')
+        MARKET_TEXT = Base::MARKET_TEXT.merge(
+                                        par: 'Public Corps Par',
+                                        par_1: 'Asteroid League Par',
+                                        par_2: 'All Growth Corps Par',
+                                      )
 
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
           par: :grey,
