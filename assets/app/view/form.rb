@@ -61,14 +61,19 @@ module View
         on: { **on },
       }
       input_props[:attrs][:placeholder] = placeholder if placeholder != ''
+      if (small_input_elm = %w[radio checkbox].include?(type))
+        label_props[:style][:verticalAlign] = 'middle'
+        input_props[:style][:verticalAlign] = 'middle'
+      end
       input = h(el, input_props, children)
       inputs ||= @inputs
-
       inputs[id] = input
+      children = small_input_elm ? [input, h(:label, label_props, label)] : [h(:label, label_props, label), input]
+
       h(
         'div.input-container',
         { style: { **container_style } },
-        [h(:label, label_props, label), input]
+        children
       )
     end
 

@@ -144,7 +144,6 @@ module View
           id: o_r[:sym],
           attrs: { value: o_r[:sym] },
           on: { input: toggle_optional_rule(o_r[:sym]) },
-          input_style: { float: 'left', margin: '5px' },
         )])
       end
 
