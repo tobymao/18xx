@@ -573,11 +573,6 @@ module Engine
         def upgrades_to?(from, to, special = false)
           case from.hex.name
           when OMAHA_HEX
-            #@log << "upgrading Omaha from #{from.color} to #{to.name}"
-            if to.name == '229' && from.color == :yellow
-              @log << "found 229!"
-              return true
-            end
             return to.name == '229' if from.color == :yellow
             return to.name == '230' if from.color == :green
             return to.name == '231' if from.color == :brown
