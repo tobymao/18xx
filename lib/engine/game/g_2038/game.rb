@@ -511,12 +511,6 @@ module Engine
           },
         ].freeze
 
-        # Overrides
-
-        def to_hex_list(s, e, l)
-          Range.new(s, e).step(2).map { |x| "#{l}#{x}" }
-        end
-
         def game_hexes
           {
             black: {
