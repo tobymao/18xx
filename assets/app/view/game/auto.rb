@@ -99,8 +99,7 @@ module View
                            attrs: {
                              name: 'mode_options',
                              checked: !settings || settings&.corporations&.include?(entity),
-                           },
-                           input_style: { float: 'left', margin: '5px' },),
+                           }),
             ])
           end
 
@@ -120,8 +119,7 @@ module View
                            attrs: {
                              name: 'mode_options',
                              checked: !settings || settings&.rounds&.include?(round.short_name),
-                           },
-                           input_style: { float: 'left', margin: '5px' },),
+                           }),
             ])
           end
 
@@ -182,7 +180,8 @@ module View
             value: default_value,
             required: true,
           },
-          input_style: { width: '2.5rem' }
+          input_style: { width: '2.5rem' },
+          container_style: { margin: '0' },
         )
 
         h(:div, [render_input([input, 'share(s)'],
@@ -193,8 +192,7 @@ module View
                               attrs: {
                                 name: 'mode_options',
                                 checked: selected,
-                              },
-                              input_style: { float: 'left', margin: '5px' },)])
+                              })])
       end
 
       def render_buy_shares(settings)
@@ -250,8 +248,7 @@ module View
                                               attrs: {
                                                 name: 'mode_options',
                                                 checked: checked,
-                                              },
-                                              input_style: { float: 'left', margin: '5px' },)])
+                                              })])
             first_radio = false
           end
 
