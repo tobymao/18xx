@@ -229,7 +229,7 @@ module Engine
             on: '5/7',
             train_limit: 3,
             tiles: %i[yellow green brown],
-            operating_rounds: 3,
+            operating_rounds: 2,
           },
           {
             name: '6',
@@ -277,7 +277,8 @@ module Engine
             distance: [{ 'pay' => 5, 'visit' => 7 }],
             price: 450,
             num: 2,
-            events: [{ 'type' => 'close_companies' }],
+            events: [{ 'type' => 'close_companies' },
+                     { 'type' => 'local_railroads_available' }],
           },
           {
             name: '6/8',
@@ -392,6 +393,7 @@ module Engine
             abilities: [
               {
                 type: 'tile_income',
+                terrain: nil,
                 income: 5,
               },
             ],
@@ -481,7 +483,7 @@ module Engine
             reservation_color: nil,
           },
           {
-            float_percent: 20,
+            float_percent: 40,
             sym: 'OLB',
             name: 'Omaha, Lincoln & Beatrice',
             logo: '18_neb/OLB',
@@ -495,7 +497,7 @@ module Engine
             reservation_color: nil,
           },
           {
-            float_percent: 20,
+            float_percent: 40,
             sym: 'NR',
             name: 'NebKota',
             logo: '18_neb/NR',
@@ -571,6 +573,11 @@ module Engine
         def upgrades_to?(from, to, special = false)
           case from.hex.name
           when OMAHA_HEX
+            #@log << "upgrading Omaha from #{from.color} to #{to.name}"
+            if to.name == '229' && from.color == :yellow
+              @log << "found 229!"
+              return true
+            end
             return to.name == '229' if from.color == :yellow
             return to.name == '230' if from.color == :green
             return to.name == '231' if from.color == :brown
@@ -615,6 +622,13 @@ module Engine
             corporations.sort!
           end
           corporations
+        end
+
+        def event_local_railroads_available!
+          @log << 'Local railroads are now available!'
+
+          @corporations += @future_corporations
+          @future_corporations = []
         end
 
         def init_round
