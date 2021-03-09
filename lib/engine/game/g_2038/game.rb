@@ -558,21 +558,7 @@ module Engine
           end
         end
 
-        def init_companies(players)
-          companies = super(players)
-
-          wrapped_companies = game_minors.map { |minor| G2038::Company.new(minor) }
-          companies + wrapped_companies
-        end
-
-        LAYOUT = :pointy
-
-        def new_auction_round
-          Round::Auction.new(self, [
-            Engine::Step::CompanyPendingPar,
-            G2038::Step::WaterfallAuction,
-          ])
-        end
+       LAYOUT = :pointy
       end
     end
   end
