@@ -43,9 +43,8 @@ module View
       inputs = [
         render_username,
         h('div#settings__options', [
-          render_notifications(setting_for(:notifications)),
-          render_simple_logos(setting_for(:simple_logos)),
-          render_logo_color(setting_for(:red_logo)),
+          render_checkbox('Turn and Message Emails', :notifications),
+          render_checkbox('Red 18xx.games Logo', :red_logo),
         ]),
         h('div#settings__colors', { style: { maxWidth: '38rem' } }, [
           render_color('Main Background', :bg, color_for(:bg)),
@@ -86,7 +85,7 @@ module View
         render_input('User Name', id: :name),
         render_input('Email', id: :email, type: :email, attrs: { autocomplete: 'email' }),
         render_input('Password', id: :password, type: :password, attrs: { autocomplete: 'new-password' }),
-        render_notifications,
+        render_checkbox('Turn and Message Emails', :notifications),
         h(:div, [render_button('Create Account') { submit }]),
       ]
 
@@ -108,7 +107,7 @@ module View
     end
 
     def reset_settings
-      %i[simple_logos red_logo].each { |e| input_elm(e).checked = default_for(e) }
+      input_elm(:red_logo).checked = default_for(:red_logo)
       %i[bg font bg2 font2 your_turn hotseat_game].each { |e| input_elm(e).value = default_for(e) }
       TILE_COLORS.each { |color, hex_color| input_elm(color).value = hex_color }
       ROUTE_COLORS.each_with_index do |hex_color, index|
@@ -131,31 +130,8 @@ module View
       ])
     end
 
-    def render_notifications(checked = true)
-      render_input(
-        'Turn and Message Emails',
-        id: :notifications,
-        type: :checkbox,
-        attrs: { checked: checked },
-      )
-    end
-
-    def render_simple_logos(checked = true)
-      render_input(
-        'Simple Corporation Logos',
-        id: :simple_logos,
-        type: :checkbox,
-        attrs: { checked: checked },
-      )
-    end
-
-    def render_logo_color(checked = false)
-      render_input(
-        'Red 18xx.games Logo',
-        id: :red_logo,
-        type: :checkbox,
-        attrs: { checked: checked },
-      )
+    def render_checkbox(label, id)
+      render_input(label, id: id, type: :checkbox, attrs: { checked: setting_for(id) })
     end
 
     def render_color(label, id, hex_color, attrs: {})

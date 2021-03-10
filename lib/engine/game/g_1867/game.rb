@@ -962,7 +962,7 @@ module Engine
         end
 
         def available_programmed_actions
-          [Action::ProgramMergerPass]
+          [Action::ProgramMergerPass, Action::ProgramBuyShares, Action::ProgramSharePass]
         end
 
         def merge_rounds
@@ -1075,6 +1075,10 @@ module Engine
           minor = unipoed.select { |c| c.type == :minor }
           major = unipoed.select { |c| c.type == :major }
           ["#{minor.size} minor, #{major.size} major", [@national]]
+        end
+
+        def show_value_of_companies?(_owner)
+          true
         end
 
         def nationalization_loan_movement(corporation)

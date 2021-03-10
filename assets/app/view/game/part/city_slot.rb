@@ -4,7 +4,6 @@ require 'view/game/actionable'
 require 'view/game/part/base'
 require 'view/game/token'
 require 'lib/settings'
-require 'lib/storage'
 require 'lib/tile_selector'
 require 'lib/token_selector'
 
@@ -49,14 +48,15 @@ module View
         def render_part
           color = @reservation&.corporation? && @reservation&.reservation_color || 'white'
           radius = @radius
-          if (owner = @token&.corporation&.owner) && Lib::Storage['show_player_colors'] && @game.players.include?(owner)
+          show_player_colors = setting_for(:show_player_colors, @game)
+          if show_player_colors && (owner = @token&.corporation&.owner) && @game.players.include?(owner)
             color = player_colors(@game.players)[owner]
             radius -= 4
           end
 
           children = [h(:circle, attrs: { r: @radius, fill: color })]
           children << reservation if @reservation && !@token
-          children << h(Token, token: @token, radius: radius) if @token
+          children << h(Token, token: @token, radius: radius, game: @game) if @token
 
           props = {
             on: { click: ->(event) { on_click(event) } },

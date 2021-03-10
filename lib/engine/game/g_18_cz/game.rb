@@ -17,7 +17,7 @@ module Engine
                         yellow: '#ffe600',
                         lightRed: '#F3B1B3')
 
-        CURRENCY_FORMAT_STR = '%d K'
+        CURRENCY_FORMAT_STR = '%d K'
 
         BANK_CASH = 99_999
 
@@ -2884,7 +2884,7 @@ module Engine
         end
 
         def format_currency(val)
-          return format('%0.1f K', val) if (val - val.to_i).positive?
+          return format('%0.1f K', val) if (val - val.to_i).positive?
 
           self.class::CURRENCY_FORMAT_STR % val
         end
@@ -2919,6 +2919,17 @@ module Engine
             { type: :OR, value: '120', name: '8.3' },
             { type: :End },
           ]
+        end
+
+        def route_distance(route)
+          return super if train_of_size?(route.train, :small)
+
+          n_cities = route.stops.count { |n| n.city? || n.offboard? }
+
+          return n_cities if train_of_size?(route.train, :large)
+
+          n_towns = route.stops.count(&:town?)
+          "#{n_cities}+#{n_towns}"
         end
       end
     end

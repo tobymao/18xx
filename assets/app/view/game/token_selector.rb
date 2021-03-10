@@ -1,13 +1,15 @@
 # frozen_string_literal: true
 
-require 'view/game/hex'
 require 'lib/radial_selector'
+require 'lib/settings'
+require 'view/game/hex'
 
 module View
   module Game
     class TokenSelector < Snabberb::Component
-      include Lib::RadialSelector
       include Actionable
+      include Lib::RadialSelector
+      include Lib::Settings
 
       needs :user, default: nil, store: true
       needs :tile_selector, store: true
@@ -34,7 +36,7 @@ module View
 
           props = {
             attrs: {
-              src: @user&.dig('settings', 'simple_logos') ? token.simple_logo : token.logo,
+              src: setting_for(:simple_logos, @game) ? token.simple_logo : token.logo,
             },
             on: {
               click: click,

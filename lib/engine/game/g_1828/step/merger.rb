@@ -25,13 +25,10 @@ module Engine
           end
 
           def description
-            if @player_choice
-              @player_choice.step_description
-            elsif @state == :select_target
-              "Select a corporation to merge with #{mergeable_entity.name}"
-            else
-              'Merge failed'
-            end
+            description = 'Merger - '
+            description += @player_choice.step_description if @player_choice
+            description += "Select corporation to merge with #{mergeable_entity.name}" if @state == :select_target
+            description
           end
 
           def blocks?
@@ -55,7 +52,7 @@ module Engine
             end
 
             @merger = mergeable_entity
-            merge_corporations
+            enter_state(:start_merge)
           end
 
           def process_choose(action)
@@ -65,7 +62,7 @@ module Engine
 
             @player_selection = action.choice
             @player_choice = nil
-            merge_corporations
+            enter_state(@state)
           end
 
           def merge_action
@@ -82,8 +79,8 @@ module Engine
 
           def mergeable_entity
             if !@state && @round.merge_initiator
-              @state = :select_target
               @merge_start_action_id = @game.last_game_action_id
+              enter_state(:select_target)
             end
             @system || @round.merge_initiator
           end
@@ -109,7 +106,7 @@ module Engine
           end
 
           def active_entities
-            merge_corporations if @state == :token_removal
+            enter_state(@state) if @state == :token_removal
             return [] unless merge_in_progress?
 
             if @player_choice
@@ -131,8 +128,9 @@ module Engine
           end
 
           def setup
-            @discard = ShareHolderEntity.new
+            @discard = ShareHolderEntity.new('the discard')
             @used = ShareHolderEntity.new
+            @ipo = ShareHolderEntity.new('IPO')
           end
 
           private
@@ -150,67 +148,85 @@ module Engine
           class ShareHolderEntity
             include Engine::Entity
             include Engine::ShareHolder
+
+            attr_reader :name
+
+            def initialize(name = nil)
+              @name = name
+            end
           end
 
-          def merge_corporations
-            if @state == :select_target
-              create_system
-              @round.corporation_removing_tokens ? enter_token_removal_state : enter_exchange_pairs_state
-            end
+          def enter_state(state)
+            @state = state
 
-            enter_exchange_pairs_state if @state == :token_removal && !@round.corporation_removing_tokens
-
-            if @state == :exchange_pairs
-              while @players.any?
-                exchange_pairs(@players.first)
-                return if @player_choice
-
-                @players.shift
-              end
+            case state
+            when :start_merge
+              enter_start_merge_state
+            when :token_removal
+              enter_token_removal_state
+            when :exchange_pairs
+              enter_exchange_pairs_state
+            when :exchange_singles
               enter_exchange_singles_state
-            end
-
-            if @state == :exchange_singles
-              while @players.any?
-                exchange_singles(@players.first)
-                return if @player_choice
-
-                @players.shift
-              end
+            when :complete_merger
               enter_complete_merger_state
             end
+          end
 
-            return unless @state == :complete_merger
+          def enter_start_merge_state
+            create_system
+            @round.corporation_removing_tokens ? enter_state(:token_removal) : enter_state(:exchange_pairs)
+          end
 
+          def enter_token_removal_state
+            enter_state(:exchange_pairs) unless @round.corporation_removing_tokens
+          end
+
+          def enter_exchange_pairs_state
+            if !@players || @players.empty?
+              @players = @round.entities.rotate(@round.entities.index(@round.acting_player))
+            end
+
+            while (player = @players.first)
+              hide_odd_share(player)
+              exchange_pairs(player)
+              restore_odd_share(player)
+              return if @player_choice
+
+              @odd_share = nil
+              @players.shift
+            end
+
+            enter_state(:exchange_singles)
+          end
+
+          def enter_exchange_singles_state
+            if !@players || @players.empty?
+              @players = @round.entities.rotate(@round.entities.index(@round.acting_player) + 1)
+            end
+
+            while @players.any?
+              exchange_singles(@players.first)
+              return if @player_choice
+
+              @players.shift
+            end
+
+            enter_state(:complete_merger)
+          end
+
+          def enter_complete_merger_state
+            @players = []
             exchange_pairs(@game.share_pool)
             exchange_singles(@game.share_pool)
             combine_ipo_shares
-            exchange_pairs(@merger)
-            exchange_singles(@merger)
+            exchange_pairs(@ipo)
+            exchange_singles(@ipo)
             exchange_discarded_shares
             complete_merger
           end
 
-          def enter_token_removal_state
-            @state = :token_removal
-          end
-
-          def enter_exchange_pairs_state
-            @state = :exchange_pairs
-            @players = @round.entities.rotate(@round.entities.index(@round.acting_player))
-          end
-
-          def enter_exchange_singles_state
-            @state = :exchange_singles
-            @players = @round.entities.rotate(@round.entities.index(@round.acting_player) + 1)
-          end
-
-          def enter_complete_merger_state
-            @state = :complete_merger
-            @players = []
-          end
-
-          def reset_merge_state
+          def reset_merger_step
             @state = nil
             @merger = nil
             @target = nil
@@ -237,14 +253,12 @@ module Engine
           end
 
           def combine_ipo_shares
-            @target.shares_of(@target).dup.each { |s| s.transfer(@merger) }
+            @merger.shares_of(@merger).dup.each { |s| s.transfer(@ipo) }
+            @target.shares_of(@target).dup.each { |s| s.transfer(@ipo) }
           end
 
           def exchange_pairs(entity)
             return unless entity.num_shares_of(@merger) + entity.num_shares_of(@target) >= 2
-
-            # Determine which share not to trade-in if entity has an odd number of shares
-            hide_odd_share(entity)
             return if @player_choice
 
             merger_pshare = entity.shares_of(@merger).find(&:president)
@@ -254,12 +268,7 @@ module Engine
             # Determine where the system share will come from
             from = exchange_source(entity, num_needed: shares_needed)
             return if @player_choice
-
-            unless from
-              restore_odd_share(entity)
-              entity.shares_of(@target).dup.each { |share| share.transfer(@discard) }
-              return
-            end
+            return discard_shares(entity) unless from
 
             if from == entity
               # Entity already has the required shares, execute exchange, including presidency edge cases
@@ -278,10 +287,9 @@ module Engine
                               else
                                 @system.shares_of(@system).take(shares_needed)
                               end
-              @game.share_pool.transfer_shares(ShareBundle.new(system_shares), entity) unless entity == @merger
-
               @log << "#{entity.name} exchanges #{shares_str(exchanged_shares + discarded_shares)} for " \
                       "#{shares_needed} system share#{'s' if shares_needed > 1}"
+              @game.share_pool.transfer_shares(ShareBundle.new(system_shares), entity) unless entity == @ipo
             else
               # Execute trade to get share(s) needed for the exchange
               shares_to_trade = [merger_pshare || target_pshare || entity.shares_of(@target).first]
@@ -297,19 +305,21 @@ module Engine
               discarded_share.transfer(@discard)
 
               system_share = @system.shares_of(@system).reject(&:president).first
-              @game.share_pool.transfer_shares(system_share.to_bundle, entity) unless entity == @merger
-
               @log << "#{entity.name} exchanges #{shares_str([exchanged_share,
                                                               discarded_share])} for 1 system share"
+              @game.share_pool.transfer_shares(system_share.to_bundle, entity) unless entity == @ipo
             end
 
             # Repeat until all pairs owned by the entity are exchanged
             exchange_pairs(entity) if entity.num_shares_of(@merger).positive? || entity.num_shares_of(@target).positive?
-
-            restore_odd_share(entity)
           end
 
           def hide_odd_share(entity)
+            identify_odd_share(entity) unless @odd_share
+            @odd_share&.transfer(@used)
+          end
+
+          def identify_odd_share(entity)
             total_shares = entity.num_shares_of(@merger) + entity.num_shares_of(@target)
             return unless total_shares.odd?
 
@@ -330,19 +340,17 @@ module Engine
               choices = merging_corporations.map do |c|
                 "#{c.name} (#{@game.format_currency(c.share_price.price)})"
               end
-              @player_choice = PlayerChoice.new(step_description: 'Choose Share not to Exchange',
+              @player_choice = PlayerChoice.new(step_description: 'Choose share to retain after 2:1 exchange',
                                                 choice_description: 'Choose share',
                                                 choices: choices)
-              return
+              nil
             else
               @odd_share = entity.shares_of(@merger).first
             end
-            @odd_share&.transfer(@used)
           end
 
           def restore_odd_share(entity)
             @odd_share&.transfer(entity)
-            @odd_share = nil
           end
 
           def exchange_singles(entity)
@@ -369,7 +377,7 @@ module Engine
                       "#{@game.format_currency(share.price)} from the bank."
             elsif entity.player? && !@exchange_selection
               exchange_cost = share.price - @system.share_price.price
-              @player_choice = PlayerChoice.new(step_description: 'Exchange or Sell Share',
+              @player_choice = PlayerChoice.new(step_description: 'Exchange or sell share',
                                                 choice_description: 'Choose',
                                                 choices: ["Exchange (#{@game.format_currency(exchange_cost)})",
                                                           "Sell (#{@game.format_currency(share.price)})"])
@@ -377,7 +385,7 @@ module Engine
               # Determine where the system share will come from
               from = exchange_source(entity)
               return if @player_choice
-              return entity.shares_of(@target).each { |s| s.transfer(@discard) } unless from
+              return discard_shares(entity) unless from
 
               # Execute trade to get share(s) needed for the exchange
               trade_share(entity, [share], from,
@@ -392,13 +400,10 @@ module Engine
               end
 
               entity.shares_of(@merger).first.transfer(@used)
-              unless entity == @merger
-                @game.share_pool.transfer_shares(@system.shares_of(@system).first.to_bundle, entity)
-              end
+              @log << "#{entity.name} exchanges 1 #{share.corporation.name} share " + payment_msg + 'for 1 system share'
+              @game.share_pool.transfer_shares(@system.shares_of(@system).first.to_bundle, entity) unless entity == @ipo
 
               @exchange_selection = nil
-
-              @log << "#{entity.name} exchanges 1 #{share.corporation.name} share " + payment_msg + 'for 1 system share'
             end
           end
 
@@ -423,15 +428,22 @@ module Engine
               if sources.any? && sources.first.player? && (players = sources.select do |s|
                                                              @players.include?(s)
                                                            end).size > 1
-                @player_choice = PlayerChoice.new(step_description: 'Choose Player to Trade with for a System Share',
-                                                  choice_description: 'Choose player',
-                                                  choices: players.map(&:name))
+                @player_choice =
+                  PlayerChoice.new(step_description: "Trade #{@target.name} share for #{@merger.name} share",
+                                   choice_description: 'Choose player',
+                                   choices: players.map(&:name))
               end
 
               source = sources.first
             end
 
             source
+          end
+
+          def discard_shares(entity)
+            shares_to_discard = entity.shares_of(@target)
+            @log << "#{entity.name} discards #{shares_str(shares_to_discard)}"
+            shares_to_discard.dup.each { |s| s.transfer(@discard) }
           end
 
           def shares_str(shares)
@@ -455,27 +467,28 @@ module Engine
           def trade_share(entity_a, shares_a, entity_b, shares_b)
             shares_a.each { |s| s.transfer(entity_b) }
             shares_b.each { |s| s.transfer(entity_a) }
-            return unless entity_b.player?
-
-            log_msg = "#{entity_a.name} trades #{shares_str(shares_a)} to #{entity_b.name} for #{shares_str(shares_b)}."
+            log_msg = "#{entity_a.name} trades #{shares_str(shares_a)} to #{entity_b.name} for #{shares_str(shares_b)}"
 
             # If the receiving player cannot exchange the share as a pair, they pay/receive the share price difference
-            if shares_b.size == 1 && (entity_b.num_shares_of(@merger) + entity_b.num_shares_of(@target)).odd? &&
+            if entity_b.player? &&
+               shares_b.size == 1 &&
+               (entity_b.num_shares_of(@merger) + entity_b.num_shares_of(@target)).odd? &&
                !(cash_difference = shares_b.first.price - shares_a.first.price).zero?
+              log_msg += '. '
               if cash_difference.positive?
                 @game.bank.spend(cash_difference, entity_b)
-                log_msg += " #{entity_b.name} receives #{@game.format_currency(cash_difference)} from the bank."
+                log_msg += "#{entity_b.name} receives #{@game.format_currency(cash_difference)} from the bank."
               else
                 cash_difference = cash_difference.abs
                 if entity_b.cash >= cash_difference
                   entity_b.spend(cash_difference, @game.bank)
-                  log_msg += " #{entity_b.name} pays #{@game.format_currency(cash_difference)} to the bank."
+                  log_msg += "#{entity_b.name} pays #{@game.format_currency(cash_difference)} to the bank."
                 else
                   discard_share = shares_a.first
                   discard_share.transfer(@discard)
                   sold_share(entity_b, discard_share.corporation)
                   @game.bank.spend(discard_share.price, entity_b)
-                  log_msg += " #{entity_b.name} must discard #{shares_str([discard_share])} and receives " \
+                  log_msg += "#{entity_b.name} must discard #{shares_str([discard_share])} and receives " \
                              "#{@game.format_currency(discard_share.price)} from the bank."
                 end
               end
@@ -506,6 +519,7 @@ module Engine
 
             # Donate share
             if @system.owner.num_shares_of(@system) >= 3
+              @log << "President (#{@system.owner.name}) contributes 1 system share to the #{@system.name} treasury"
               share = @system.owner.shares_of(@system).reject(&:president).first
               share.buyable = false
               @game.share_pool.transfer_shares(share.to_bundle, @system)
@@ -519,7 +533,7 @@ module Engine
               @log << "#{@system.name} not yet floated, discarding treasury."
             end
 
-            reset_merge_state
+            reset_merger_step
           end
 
           def sold_share(player, corporation)

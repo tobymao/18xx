@@ -202,7 +202,7 @@ module View
         }
         logo_props = {
           attrs: {
-            src: @user&.dig('settings', 'simple_logos') ? corporation.simple_logo : corporation.logo,
+            src: setting_for(:simple_logos, @game) ? corporation.simple_logo : corporation.logo,
           },
           style: {
             height: '20px',

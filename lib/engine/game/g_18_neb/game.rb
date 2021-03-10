@@ -35,7 +35,7 @@ module Engine
         SELL_BUY_ORDER = :sell_buy
         # is this first to pass: first, second: second.. yes
         NEXT_SR_PLAYER_ORDER = :first_to_pass
-        MIN_BID_INCREMENT = 10
+        MIN_BID_INCREMENT = 5
 
         # Special City hexes
         OMAHA_HEX = 'K7'
@@ -229,7 +229,7 @@ module Engine
             on: '5/7',
             train_limit: 3,
             tiles: %i[yellow green brown],
-            operating_rounds: 3,
+            operating_rounds: 2,
           },
           {
             name: '6',
@@ -277,7 +277,8 @@ module Engine
             distance: [{ 'pay' => 5, 'visit' => 7 }],
             price: 450,
             num: 2,
-            events: [{ 'type' => 'close_companies' }],
+            events: [{ 'type' => 'close_companies' },
+                     { 'type' => 'local_railroads_available' }],
           },
           {
             name: '6/8',
@@ -305,12 +306,17 @@ module Engine
             desc: 'Once per game, allows Corporation owner to lay or upgrade a tile in B8',
             sym: 'DPR',
             abilities: [
-              { type: 'blocks_hexes', owner_type: 'player', hexes: ['B8'] },
+              {
+                type: 'blocks_hexes',
+                owner_type: 'player',
+                remove: 3, # No tile may be placed on C7 until phase 3.
+                hexes: ['B8'],
+              },
               {
                 type: 'tile_lay',
                 owner_type: 'corporation',
                 hexes: ['B8'],
-                tiles: %w[3 4 5],
+                tiles: %w[3 4 5 80 81 82 83],
                 count: 1,
                 on_phase: 3,
               },
@@ -330,6 +336,8 @@ module Engine
                 terrain: 'water',
                 owner_type: 'corporation',
                 hexes: %w[K3 K5 K7 J8 L8 L10],
+                count: 2,
+                remove: 5,
               },
             ],
             color: nil,
@@ -340,10 +348,16 @@ module Engine
             revenue: 15,
             desc: 'An owning Corporation may place a cattle token in any Town or City',
             sym: 'P3',
-            # abilities: [
-            #   { type: 'hex_bonus', owner_type: 'corporation', amount: 10, hexes: [] },
-            #   { type: 'hex_bonus', owner_type: 'corporation', amount: 2, hexes: [] },
-            # ],
+            abilities: [
+              {
+                type: 'assign_hexes',
+                hexes: %w[B6 C3 C7 C9 E7 F6 G7 G11 H8 H10 I3 I5 J8 J12 K3 K7 L10],
+                count: 1,
+                when: 'TrackAndToken',
+                owner_type: 'corporation',
+              },
+              { type: 'hex_bonus', owner_type: 'corporation', amount: 20, hexes: [] },
+            ],
             color: nil,
           },
           {
@@ -357,14 +371,15 @@ module Engine
                   type: 'exchange',
                   corporations: ['C&S'],
                   owner_type: 'player',
-                  when: 'any',
-                  from: 'ipo',
+                  when: 'owning_player_stock_round',
+                  from: %w[ipo market],
                 },
                 {
                   type: 'blocks_hexes',
                   owner_type: 'player',
                   hexes: ['C7'],
-                  on_phase: 3,
+                  # on_phase: 3,
+                  remove: 3, # No tile may be placed on C7 until phase 3.
                 },
               ],
             color: nil,
@@ -375,7 +390,12 @@ module Engine
             revenue: 5,
             desc: '$5 revenue each time ANY tile is laid or upgraded.',
             sym: 'P5',
-            # abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['C7'] }],
+            abilities: [
+              {
+                type: 'tile_income',
+                income: 5,
+              },
+            ],
             color: nil,
           },
           {
@@ -384,7 +404,11 @@ module Engine
             revenue: 25,
             desc: 'Comes with President\'s Certificate of the Union Pacific Railroad',
             sym: 'P6',
-            abilities: [{ type: 'shares', shares: 'UP_0' }],
+            abilities: [
+              { type: 'shares', shares: 'UP_0' },
+              { type: 'close', when: 'bought_train', corporation: 'UP' },
+              { type: 'no_buy' },
+            ],
             color: nil,
           },
         ].freeze
@@ -406,7 +430,7 @@ module Engine
             sym: 'CBQ',
             name: 'Chicago Burlington & Quincy',
             logo: '18_neb/CBQ',
-            tokens: [0, 40],
+            tokens: [0, 40, 100, 100],
             coordinates: 'L6',
             color: '#666666',
             always_market_price: true,
@@ -417,7 +441,7 @@ module Engine
             sym: 'CNW',
             name: 'Chicago & Northwestern',
             logo: '18_neb/CNW',
-            tokens: [0, 40],
+            tokens: [0, 40, 100],
             coordinates: 'L4',
             color: '#2C9846',
             always_market_price: true,
@@ -451,14 +475,14 @@ module Engine
             sym: 'C&S',
             name: 'Colorado & Southern',
             logo: '18_neb/CS',
-            tokens: [0, 40, 100],
+            tokens: [0, 40, 100, 100],
             coordinates: 'A7',
             color: '#AE4A84',
             always_market_price: true,
             reservation_color: nil,
           },
           {
-            float_percent: 20,
+            float_percent: 40,
             sym: 'OLB',
             name: 'Omaha, Lincoln & Beatrice',
             logo: '18_neb/OLB',
@@ -472,16 +496,16 @@ module Engine
             reservation_color: nil,
           },
           {
-            float_percent: 20,
+            float_percent: 40,
             sym: 'NR',
             name: 'NebKota',
             logo: '18_neb/NR',
             shares: [40, 20, 20, 20],
-            type: 'local',
             tokens: [0, 40],
             coordinates: 'C3',
             max_ownership_percent: 100,
             color: '#000000',
+            type: 'local',
             always_market_price: true,
             reservation_color: nil,
           },
@@ -541,11 +565,6 @@ module Engine
         # Two tiles can be laid, only one upgrade
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded }].freeze
 
-        def init_round
-          super
-          # Round::Auction.new(self, [G18NEB::Step::ModifiedDutchAuction])
-        end
-
         def setup
           @corporations, @future_corporations = @corporations.partition { |corporation| corporation.type != :local }
         end
@@ -597,6 +616,30 @@ module Engine
             corporations.sort!
           end
           corporations
+        end
+
+        def event_local_railroads_available!
+          @log << 'Local railroads are now available!'
+
+          @corporations += @future_corporations
+          @future_corporations = []
+        end
+
+        def init_round
+          Round::Auction.new(self, [
+            Engine::Step::CompanyPendingPar,
+            G18NEB::Step::PriceFindingAuction,
+          ])
+        end
+
+        def stock_round
+          Round::Stock.new(self, [
+            Engine::Step::DiscardTrain,
+            Engine::Step::Exchange,
+            Engine::Step::HomeToken,
+            Engine::Step::SpecialTrack,
+            Engine::Step::BuySellParShares,
+          ])
         end
 
         def operating_round(round_num)

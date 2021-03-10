@@ -229,7 +229,7 @@ module View
       end
 
       def logo_for_user(entity)
-        @user&.dig('settings', 'simple_logos') ? entity.simple_logo : entity.logo
+        setting_for(:simple_logos, @game) ? entity.simple_logo : entity.logo
       end
 
       def render

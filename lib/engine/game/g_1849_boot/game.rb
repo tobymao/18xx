@@ -183,7 +183,7 @@ module Engine
           'J18' => 'Bari',
           'K9' => 'Scalea',
           'K13' => 'Metaponto',
-          'L12' => 'Montegiordano',
+          'L12' => 'Sibari',
           'L18' => 'Taranto',
           'L20' => 'Brindisi',
           'M9' => 'Cosenza',
@@ -199,8 +199,8 @@ module Engine
 
         MARKET = [
           %w[72 83 95 107 120 133 147 164 182 202 224 248 276 306u 340u 377e],
-          %w[63 72 82 93 104 116 128 142 158 175 195 216p 240 266u 295u 328u],
-          %w[57 66 75 84 95 105 117 129 144p 159 177 196 218 242u 269u 298u],
+          %w[63 72 82 93 104 116 128 142 158 175 195 216z 240 266u 295u 328u],
+          %w[57 66 75 84 95 105 117 129 144x 159 177 196 218 242u 269u 298u],
           %w[54 62 71 80 90 100p 111 123 137 152 169 187 208 230],
           %w[52 59 68p 77 86 95 106 117 130 145 160 178 198],
           %w[47 54 62 70 78 87 96 107 118 131 146 162],
@@ -216,7 +216,7 @@ module Engine
             train_limit: 4,
             tiles: [:yellow],
             operating_rounds: 1,
-            status: ['gray_uses_yellow'],
+            status: ['gray_uses_white'],
           },
           {
             name: '6H',
@@ -224,7 +224,7 @@ module Engine
             train_limit: 4,
             tiles: %i[yellow green],
             operating_rounds: 2,
-            status: %w[gray_uses_yellow can_buy_companies],
+            status: %w[gray_uses_white can_buy_companies],
           },
           {
             name: '8H',
@@ -232,7 +232,7 @@ module Engine
             train_limit: 3,
             tiles: %i[yellow green],
             operating_rounds: 2,
-            status: %w[gray_uses_green can_buy_companies],
+            status: %w[gray_uses_gray can_buy_companies],
           },
           {
             name: '10H',
@@ -240,7 +240,7 @@ module Engine
             train_limit: 2,
             tiles: %i[yellow green brown],
             operating_rounds: 3,
-            status: %w[gray_uses_green can_buy_companies],
+            status: %w[gray_uses_gray can_buy_companies],
           },
           {
             name: '12H',
@@ -248,7 +248,7 @@ module Engine
             train_limit: 2,
             tiles: %i[yellow green brown],
             operating_rounds: 3,
-            status: ['gray_uses_brown'],
+            status: ['gray_uses_black'],
           },
           {
             name: '16H',
@@ -256,7 +256,7 @@ module Engine
             train_limit: 2,
             tiles: %i[yellow green brown],
             operating_rounds: 3,
-            status: %w[gray_uses_brown blue_zone],
+            status: %w[gray_uses_black blue_zone],
           },
         ].freeze
 
@@ -382,10 +382,9 @@ module Engine
         CORPORATIONS = [
           {
             float_percent: 20,
-            sym: 'AFG',
-            name: 'Azienda Ferroviaria Garibaldi',
-            logo: '1849/AFG',
-            simple_logo: '1849/AFG.alt',
+            sym: 'SFR',
+            name: 'Società per le Strade Ferrate Romane',
+            logo: '1849_boot/SFR',
             token_fee: 40,
             tokens: [0, 0, 0],
             shares: [20, 10, 10, 10, 10, 10, 10, 20],
@@ -395,10 +394,9 @@ module Engine
           },
           {
             float_percent: 20,
-            sym: 'ATA',
-            name: 'Azienda Trasporti Archimede',
-            logo: '1849/ATA',
-            simple_logo: '1849/ATA.alt',
+            sym: 'SFCS',
+            name: 'Società per le Strade Ferrate Calabro-Sicule',
+            logo: '1849_boot/SFCS',
             token_fee: 30,
             tokens: [0, 0, 0],
             shares: [20, 10, 10, 10, 10, 10, 10, 20],
@@ -409,10 +407,9 @@ module Engine
           },
           {
             float_percent: 20,
-            sym: 'CTL',
-            name: 'Compagnia Trasporti Lilibeo',
-            logo: '1849/CTL',
-            simple_logo: '1849/CTL.alt',
+            sym: 'AL',
+            name: 'Società Adami e Lemmi',
+            logo: '1849_boot/AL',
             token_fee: 40,
             tokens: [0, 0, 0],
             shares: [20, 10, 10, 10, 10, 10, 10, 20],
@@ -424,10 +421,9 @@ module Engine
           },
           {
             float_percent: 20,
-            sym: 'IFT',
-            name: 'Impresa Ferroviaria Trinacria',
-            logo: '1849/IFT',
-            simple_logo: '1849/IFT.alt',
+            sym: 'SFM',
+            name: 'Società Italiana per le Strade Ferrate Meridionali',
+            logo: '1849_boot/SFM',
             token_fee: 90,
             tokens: [0, 0, 0],
             shares: [20, 10, 10, 10, 10, 10, 10, 20],
@@ -438,10 +434,9 @@ module Engine
           },
           {
             float_percent: 20,
-            sym: 'RCS',
-            name: 'Rete Centrale Sicula',
-            logo: '1849/RCS',
-            simple_logo: '1849/RCS.alt',
+            sym: 'IFP',
+            name: 'Impresa Ferroviaria di Pietrarsa',
+            logo: '1849_boot/IFP',
             token_fee: 130,
             tokens: [0, 0, 0],
             shares: [20, 10, 10, 10, 10, 10, 10, 20],
@@ -452,10 +447,9 @@ module Engine
           },
           {
             float_percent: 20,
-            sym: 'SFA',
-            name: 'Società Ferroviaria Akragas',
-            logo: '1849/SFA',
-            simple_logo: '1849/SFA.alt',
+            sym: 'PL',
+            name: 'Società Anonima Pia Latina',
+            logo: '1849_boot/PL',
             token_fee: 40,
             tokens: [0, 0, 0],
             shares: [20, 10, 10, 10, 10, 10, 10, 20],
@@ -467,10 +461,9 @@ module Engine
           },
           {
             float_percent: 20,
-            sym: 'TSR',
-            name: 'Terni–Sulmona Railway',
-            logo: '1849_boot/TSR',
-            simple_logo: '1849_boot/TSR.alt',
+            sym: 'FCU',
+            name: 'Ferrovia Centrale Umbra',
+            logo: '1849_boot/FCU',
             token_fee: 40,
             tokens: [0, 0, 0],
             shares: [20, 10, 10, 10, 10, 10, 10, 20],
@@ -481,16 +474,15 @@ module Engine
           },
           {
             float_percent: 20,
-            sym: 'BTR',
-            name: 'Bari–Taranto Railway',
-            logo: '1849_boot/BTR',
-            simple_logo: '1849_boot/BTR.alt',
+            sym: 'M&C',
+            name: 'Società in Commandita E. Melisurgo & C.',
+            logo: '1849_boot/MC',
             token_fee: 90,
             tokens: [0, 0, 0],
             shares: [20, 10, 10, 10, 10, 10, 10, 20],
             coordinates: 'L18',
             always_market_price: true,
-            color: '#000000',
+            color: '#000',
             reservation_color: nil,
           },
         ].freeze
@@ -551,7 +543,7 @@ module Engine
 
         LAYOUT = :pointy
 
-        NEW_AFG_HEXES = %w[E11 H8 I13 I17 J18 K19 L12 L20 O9].freeze
+        NEW_SFR_HEXES = %w[E11 H8 I13 I17 J18 K19 L12 L20 O9 P2].freeze
         NEW_PORT_HEXES = %w[B16 G5 J20 L16].freeze
         NEW_SMS_HEXES = %w[B14 G7 H8 J18 L12 L18 L20 N20 O9 P2].freeze
 
@@ -634,9 +626,9 @@ module Engine
           }.freeze
 
         def home_token_locations(corporation)
-          raise NotImplementedError unless corporation.name == 'AFG'
+          raise NotImplementedError unless corporation.name == 'SFR'
 
-          NEW_AFG_HEXES.map { |coord| hex_by_id(coord) }.select do |hex|
+          NEW_SFR_HEXES.map { |coord| hex_by_id(coord) }.select do |hex|
             hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
           end
         end

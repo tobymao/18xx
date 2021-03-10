@@ -17,7 +17,7 @@ module View
 
       needs :game
 
-      PLAYER_COL_MAX_WIDTH = '5rem'
+      PLAYER_COL_MAX_WIDTH = '4.5rem'
 
       def render
         @spreadsheet_sort_by = Lib::Storage['spreadsheet_sort_by']
@@ -192,7 +192,7 @@ module View
             h(:th, { style: { paddingBottom: '0.3rem' } }, render_sort_link('SYM', :id)),
             *@game.players.map do |p|
               props = p == @game.priority_deal_player ? pd_props : { style: {} }
-              props[:style][:minWidth] = PLAYER_COL_MAX_WIDTH if p.companies.size > 1
+              props[:style][:minWidth] = min_width(p)
               h('th.name.nowrap', props, render_sort_link(p.name, p.id))
             end,
             h(:th, render_sort_link(@game.ipo_name, :ipo_shares)),
@@ -429,7 +429,7 @@ module View
               whiteSpace: 'normal',
             },
           }
-          props[:style][:width] = PLAYER_COL_MAX_WIDTH if entity.companies.size > 1
+          props[:style][:minWidth] = min_width(entity)
         end
         h('td.right', props, entity.companies.map(&:sym).join(', '))
       end
@@ -519,6 +519,10 @@ module View
         return corporation.president?(entity) ? 1 : 0 if corporation.minor?
 
         entity.num_shares_of(corporation, ceil: false)
+      end
+
+      def min_width(entity)
+        PLAYER_COL_MAX_WIDTH if entity.companies.size > 1 || @game.format_currency(entity.value).size > 6
       end
     end
   end

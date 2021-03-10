@@ -9,7 +9,7 @@ module Engine
       class Game < Game::Base
         include_meta(G1836Jr30::Meta)
 
-        CURRENCY_FORMAT_STR = '%d F'
+        CURRENCY_FORMAT_STR = '%d F'
 
         BANK_CASH = 6000
 

@@ -3,16 +3,16 @@
 require 'lib/color'
 require 'lib/settings'
 require 'view/game/actionable'
-require 'view/game/companies'
 require 'view/game/alternate_corporations'
+require 'view/game/companies'
 
 module View
   module Game
     class Corporation < Snabberb::Component
       include Actionable
+      include AlternateCorporations
       include Lib::Color
       include Lib::Settings
-      include AlternateCorporations
 
       needs :user, default: nil, store: true
       needs :corporation
@@ -620,7 +620,7 @@ module View
       end
 
       def logo_for_user(entity)
-        @user&.dig('settings', 'simple_logos') ? entity.simple_logo : entity.logo
+        setting_for(:simple_logos, @game) ? entity.simple_logo : entity.logo
       end
 
       def can_assign_corporation?

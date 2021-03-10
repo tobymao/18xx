@@ -935,7 +935,7 @@ module Engine
         end
 
         def available_programmed_actions
-          [Action::ProgramMergerPass]
+          [Action::ProgramMergerPass, Action::ProgramBuyShares, Action::ProgramSharePass]
         end
 
         def merge_rounds

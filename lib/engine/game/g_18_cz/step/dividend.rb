@@ -22,6 +22,10 @@ module Engine
           def corporation_dividends(_entity, _per_share)
             0
           end
+
+          def movement_str(times, dir)
+            "#{times / 2} #{dir}"
+          end
         end
       end
     end

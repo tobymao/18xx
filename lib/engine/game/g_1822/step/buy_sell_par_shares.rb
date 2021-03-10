@@ -228,6 +228,15 @@ module Engine
             @round.bids = @bids
           end
 
+          def action_is_shenanigan?(entity, action, corporation, share_to_buy)
+            if action.is_a?(Action::Bid)
+              # Can assume that any bid on that corporation will outbid
+              "Outbid on #{corporation.name}" if find_bid(entity, corporation)
+            else
+              super
+            end
+          end
+
           protected
 
           def add_bid(action)

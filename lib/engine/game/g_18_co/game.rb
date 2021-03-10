@@ -658,7 +658,7 @@ module Engine
             simple_logo: '18_co/ATSF.alt',
             tokens: [0, 40, 80, 100, 100, 100],
             coordinates: 'J26',
-            color: :"#0323ad",
+            color: :"#000e4b",
             abilities: [{ type: 'description', description: 'Par Group - B' }],
             reservation_color: nil,
           },

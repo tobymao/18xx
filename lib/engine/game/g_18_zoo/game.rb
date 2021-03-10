@@ -414,6 +414,7 @@ module Engine
             always_market_price: true,
             tokens: [0, 2, 4, 4],
             color: '#55b7b7',
+            text_color: 'black',
           },
           {
             sym: 'LI',
@@ -436,6 +437,7 @@ module Engine
             always_market_price: true,
             tokens: [0, 2],
             color: '#ffa023',
+            text_color: 'black',
           },
           {
             sym: 'BB',

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'lib/hex'
+require 'lib/settings'
 require 'lib/tile_selector'
 require 'view/game/actionable'
 require 'view/game/runnable'
@@ -13,6 +14,7 @@ module View
     class Hex < Snabberb::Component
       include Actionable
       include Runnable
+      include Lib::Settings
 
       SIZE = 100
 
@@ -34,8 +36,6 @@ module View
       needs :actions, default: []
       needs :entity, default: nil
       needs :unavailable, default: nil
-      needs :show_coords, default: nil
-      needs :show_location_names, default: true
       needs :routes, default: []
       needs :start_pos, default: [1, 1]
 
@@ -54,9 +54,9 @@ module View
           children << h(
             Tile,
             tile: @tile,
-            show_coords: @show_coords && (@role == :map),
-            show_location_names: @show_location_names,
-            routes: @routes
+            show_coords: setting_for(:show_coords, @game) && (@role == :map),
+            routes: @routes,
+            game: @game
           )
         end
         children << h(TriangularGrid) if Lib::Params['grid']
@@ -75,7 +75,7 @@ module View
           key: @hex.id,
           attrs: {
             transform: transform,
-            fill: @user&.dig(:settings, @tile&.color) || (Lib::Hex::COLOR[@tile&.color || 'white']),
+            fill: color_for(@tile&.color) || (Lib::Hex::COLOR[@tile&.color || 'white']),
             stroke: 'black',
           },
         }
