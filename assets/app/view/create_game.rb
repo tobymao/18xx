@@ -45,11 +45,7 @@ module View
           }
         end
 
-        inputs << h(:input, {
-                      attrs: { type: :file, id: :import_json_file, accept: '.json' },
-                      on: { change: upload },
-                      style: { background: :unset },
-                    })
+        inputs << h(:div, [render_button('Upload file') { `document.getElementById('import_json_file').click()` }])
         inputs << render_input(
           '',
           id: :game_data,
@@ -63,6 +59,11 @@ module View
             display: 'block',
           },
         )
+        inputs << h(:input, {
+                      attrs: { type: :file, id: :import_json_file, accept: '.json' },
+                      on: { change: upload },
+                      style: { visibility: :hidden },
+                    })
       end
 
       description = []
