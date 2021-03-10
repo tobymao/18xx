@@ -17,6 +17,7 @@ module View
       needs :tile_selector, default: nil, store: true
       needs :display, default: 'inline-block'
       needs :layout, default: nil
+      needs :user, default: nil
 
       def selected?
         @company == @selected_company
@@ -43,8 +44,25 @@ module View
         }
         names = @bids
           .sort_by(&:price)
-          .reverse.map { |bid| "#{bid.entity.name} (#{@game.format_currency(bid.price)})" }
-          .join(', ')
+          .reverse.map.with_index do |bid, i|
+            bg_color =
+              if setting_for(:show_player_colors, @game)
+                player_colors(@game.players)[bid.entity]
+              elsif @user && bid.entity.name == @user['name']
+                color_for(i.zero? ? :green : :yellow)
+              else
+                color_for(:bg)
+              end
+            props = {
+              style: {
+                backgroundColor: bg_color,
+                color: contrast_on(bg_color),
+              },
+            }
+            h(:span, props, "#{bid.entity.name} (#{@game.format_currency(bid.price)})")
+          end
+        names = names.flat_map { |elm| [elm, '  '] }[0..-2]
+
         h(:div, { style: bidders_style }, names)
       end
 
