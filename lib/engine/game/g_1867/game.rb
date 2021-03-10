@@ -1077,6 +1077,10 @@ module Engine
           ["#{minor.size} minor, #{major.size} major", [@national]]
         end
 
+        def show_value_of_companies?(_owner)
+          true
+        end
+
         def nationalization_loan_movement(corporation)
           corporation.loans.each do
             stock_market.move_left(corporation)
