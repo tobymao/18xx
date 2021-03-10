@@ -226,7 +226,7 @@ module Engine
             value: 120,
             revenue: 5,
             desc: 'Buyer recieves a TSI Share.  If owned by a corporation, may place 1 free Base on ANY'\
-            'explored and unclaimed tile.',
+            ' explored and unclaimed tile.',
             abilities: [{ type: 'shares', shares: 'TSI_3' },
                         {
                           type: 'tile_lay',
@@ -243,7 +243,7 @@ module Engine
             value: 140,
             revenue: 10,
             desc: 'Buyer recieves a TSI Share.  If owned by a corporation, may place 1 free'\
-            'Refueling Station within range.',
+            ' Refueling Station within range.',
             abilities: [{ type: 'shares', shares: 'TSI_2' },
                         {
                           type: 'tile_lay',
@@ -277,9 +277,10 @@ module Engine
             revenue: 20,
             desc: "Buyer recieves TSI president's Share and flies probe if TSI isn't active.  May not be owned"\
             ' by a corporation. Remove from the game after TSI buys a spaceship.',
-            abilities: [{ type: 'shares', shares: 'TSI_0' },
+            abilities: [{ type: 'launch', corporation: 'TSI' },
                         { type: 'no_buy' },
-                        { type: 'close', when: 'bought_train', corporation: 'TSI' }],
+                        { type: 'close', when: 'bought_train', corporation: 'TSI' },
+                      ],
             color: nil,
           },
           {
@@ -559,6 +560,18 @@ module Engine
         end
 
         LAYOUT = :pointy
+
+        def new_auction_round
+          Round::Auction.new(self, [
+            Engine::Step::CompanyPendingPar,
+            G2038::Step::WaterfallAuction,
+          ])
+        end
+
+        def optional_short_game
+          @optional_rules&.include?(:optional_short_game)
+        end
+
       end
     end
   end
