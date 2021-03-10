@@ -246,14 +246,16 @@ module Engine
             revenue: 10,
             desc: 'Buyer recieves a TSI Share.  If owned by a corporation, may place 1 free'\
             ' Refueling Station within range.',
-            abilities: [{ type: 'shares', shares: 'TSI_2' },
-                        {
-                          type: 'tile_lay',
-                          owner_type: 'corporation',
-                          tiles: ['2'],
-                          when: 'owning_corp_or_turn',
-                          count: 1,
-                        }],
+            abilities: [
+              { type: 'shares', shares: 'TSI_2' },
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                tiles: ['2'],
+                when: 'owning_corp_or_turn',
+                count: 1,
+              },
+            ],
             color: nil,
           },
           {
@@ -271,7 +273,7 @@ module Engine
                 when: 'owning_corp_or_turn',
                 count: 1,
               },
-],
+            ],
             color: nil,
           },
           {
@@ -281,9 +283,11 @@ module Engine
             revenue: 20,
             desc: "Buyer recieves TSI president's Share and flies probe if TSI isn't active.  May not be owned"\
             ' by a corporation. Remove from the game after TSI buys a spaceship.',
-            abilities: [{ type: 'launch', corporation: 'TSI' },
-                        { type: 'no_buy' },
-                        { type: 'close', when: 'bought_train', corporation: 'TSI' }],
+            abilities: [
+              { type: 'launch', corporation: 'TSI' },
+              { type: 'no_buy' },
+              { type: 'close', when: 'bought_train', corporation: 'TSI' },
+            ],
             color: nil,
           },
           {
