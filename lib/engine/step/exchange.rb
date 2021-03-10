@@ -49,7 +49,7 @@ module Engine
           shares << @game.share_pool.shares_by_corporation[corporation]&.first if ability.from.include?(:market)
         end
 
-        shares.any? { |s| can_gain?(entity.owner, s&.to_bundle, exchange: true) }
+        shares.compact.any? { |s| can_gain?(entity.owner, s&.to_bundle, exchange: true) }
       end
     end
   end
