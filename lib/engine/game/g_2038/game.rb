@@ -283,8 +283,7 @@ module Engine
             ' by a corporation. Remove from the game after TSI buys a spaceship.',
             abilities: [{ type: 'launch', corporation: 'TSI' },
                         { type: 'no_buy' },
-                        { type: 'close', when: 'bought_train', corporation: 'TSI' },
-                      ],
+                        { type: 'close', when: 'bought_train', corporation: 'TSI' }],
             color: nil,
           },
           {
@@ -561,7 +560,6 @@ module Engine
         def optional_short_game
           @optional_rules&.include?(:optional_short_game)
         end
-
       end
     end
   end

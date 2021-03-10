@@ -11,7 +11,6 @@ module Engine
             super
 
             @game.abilities(company, :launch) do |ability|
-
               corporation = @game.corporation_by_id(ability.corporation)
 
               target_price = @game.optional_short_game ? 67 : 100
