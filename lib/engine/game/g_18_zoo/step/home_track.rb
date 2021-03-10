@@ -7,7 +7,8 @@ module Engine
         class HomeTrack < Engine::Step::Track
           ACTIONS = %w[lay_tile pass].freeze
 
-          def actions(_entity)
+          def actions(entity)
+            return [] if entity.company?
             return [] unless can_lay_tile?(current_entity)
 
             ACTIONS
@@ -28,7 +29,7 @@ module Engine
           end
 
           def active?
-            current_entity && !@round.available_tracks.empty?
+            current_entity && @round.available_tracks.any?
           end
 
           def current_entity

@@ -5,6 +5,14 @@ module Engine
     module G18ZOO
       module Step
         class Dividend < Engine::Step::Dividend
+          include Engine::Game::G18ZOO::ChooseAbilityOnOr
+
+          def actions(entity)
+            return ['choose_ability'] if entity.company? && can_choose_ability?(entity)
+
+            super
+          end
+
           def dividend_options(entity)
             revenue = @game.routes_revenue(routes)
 
@@ -88,6 +96,16 @@ module Engine
 
           def threshold(entity)
             G18ZOO::Game::STOCKMARKET_THRESHOLD[entity.share_price.coordinates[0]][entity.share_price.coordinates[1]]
+          end
+
+          def can_choose_ability?(company)
+            entity = @game.current_entity
+            return false if entity.player?
+
+            # p "Dividend.can_choose_ability?(#{company.name})" # TODO: use for debug
+            return true if can_choose_ability_on_any_step(entity, company)
+
+            false
           end
         end
       end

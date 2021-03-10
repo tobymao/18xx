@@ -1,30 +1,21 @@
 # frozen_string_literal: true
 
-require_relative '../../../step/buy_sell_par_shares'
-require_relative 'sell_company'
-require_relative 'choose_power'
+require_relative 'choose_ability_on_sr'
 
 module Engine
   module Game
     module G18ZOO
       module Step
         class BuySellParShares < Engine::Step::BuySellParShares
-          include SellCompany
-          include ChoosePower
+          include Engine::Game::G18ZOO::ChooseAbilityOnSr
 
           def actions(entity)
-            return [] unless entity == current_entity
-            return ['sell_shares'] if must_sell?(entity)
+            return ['choose_ability'] if entity.company? && can_choose_ability?(entity)
 
-            actions = []
-            actions << 'buy_shares' if can_buy_any?(entity)
-            actions << 'par' if can_ipo_any?(entity)
-            actions << 'buy_company' unless purchasable_unsold_companies.empty?
-            actions << 'sell_shares' if can_sell_any?(entity)
-            actions << 'sell_company' if can_sell_any_companies?(entity) && !@round.floated_corporation
-            actions << 'choose' if choice_available?(entity) && !@round.floated_corporation
+            actions = super
+            actions << 'choose_ability' if entity.player? && can_choose_any_ability?(entity)
             actions << 'pass' unless actions.empty?
-            actions
+            actions.uniq
           end
 
           def can_buy_company?(player, _company)
@@ -61,9 +52,7 @@ module Engine
             super # TODO: add log logic to handle sell / par / buy / sell company / use power
           end
 
-          private
-
-          def purchasable_unsold_companies
+          def purchasable_companies(_entity)
             return [] if bought?
 
             @game.available_companies
