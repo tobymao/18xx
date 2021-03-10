@@ -43,11 +43,11 @@ module Engine
         end
 
         def process_choose_ability(action)
-          process_choose_zoo_ticket(action) if action.choice[:type] == :sell
-          process_midas(action) if action.choice[:type] == :midas
-          process_holiday(action) if action.choice[:type] == :holiday
-          process_whatsup(action) if action.choice[:type] == :whatsup
-          process_greek(action) if action.choice[:type] == :greek
+          process_choose_zoo_ticket(action) if action.choice['type'] == 'sell'
+          process_midas(action) if action.choice['type'] == 'midas'
+          process_holiday(action) if action.choice['type'] == 'holiday'
+          process_whatsup(action) if action.choice['type'] == 'whatsup'
+          process_greek(action) if action.choice['type'] == 'greek'
         end
 
         def can_choose_midas?(_player)
@@ -94,7 +94,7 @@ module Engine
         end
 
         def process_choose_zoo_ticket(action)
-          company = @game.company_by_id(action.choice[:company])
+          company = @game.company_by_id(action.choice['company'])
           price = company.value
           player = company.player
 
@@ -112,7 +112,7 @@ module Engine
         end
 
         def process_holiday(action)
-          corporation = @game.corporation_by_id(action.choice[:corporation_id])
+          corporation = @game.corporation_by_id(action.choice['corporation_id'])
           current_value = corporation.share_price.price
           @game.stock_market.move_right(corporation)
           new_value = corporation.share_price.price

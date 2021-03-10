@@ -19,7 +19,7 @@ module Engine
           end
 
           def can_buy_company?(player, _company)
-            player.companies.count { |c| !c.name.start_with?('ZOOTicket') } < 3
+            player.companies.count { |c| !@game.zoo_ticket?(c) } < 3
           end
 
           def process_buy_company(action)

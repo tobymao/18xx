@@ -41,19 +41,19 @@ module Engine
         end
 
         def process_choose_ability(action)
-          process_choose_zoo_ticket(action) if action.choice[:type] == :sell
-          process_choose_rabbits(action) if action.choice[:type] == :rabbits
-          process_choose_moles?(action) if action.choice[:type] == :moles
-          process_choose_ancient_maps?(action) if action.choice[:type] == :ancient_maps
-          process_choose_hole?(action) if action.choice[:type] == :hole
-          process_choose_on_diet?(action) if action.choice[:type] == :on_diet
-          process_choose_is_mine(action) if action.choice[:type] == :that_is_mine
-          process_choose_work_in_progress?(action) if action.choice[:type] == :work_in_progress
-          process_choose_corn?(action) if action.choice[:type] == :corn
-          process_choose_two_barrels?(action) if action.choice[:type] == :two_barrels
-          process_choose_bandage?(action) if action.choice[:type] == :bandage
-          process_choose_wings?(action) if action.choice[:type] == :wings
-          process_choose_sugar(action) if action.choice[:type] == :sugar
+          process_choose_zoo_ticket(action) if action.choice['type'] == 'sell'
+          process_choose_rabbits(action) if action.choice['type'] == 'rabbits'
+          process_choose_moles?(action) if action.choice['type'] == 'moles'
+          process_choose_ancient_maps?(action) if action.choice['type'] == 'ancient_maps'
+          process_choose_hole?(action) if action.choice['type'] == 'hole'
+          process_choose_on_diet?(action) if action.choice['type'] == 'on_diet'
+          process_choose_is_mine(action) if action.choice['type'] == 'that_is_mine'
+          process_choose_work_in_progress?(action) if action.choice['type'] == 'work_in_progress'
+          process_choose_corn?(action) if action.choice['type'] == 'corn'
+          process_choose_two_barrels?(action) if action.choice['type'] == 'two_barrels'
+          process_choose_bandage?(action) if action.choice['type'] == 'bandage'
+          process_choose_wings?(action) if action.choice['type'] == 'wings'
+          process_choose_sugar(action) if action.choice['type'] == 'sugar'
         end
 
         # TODO: add additional logic
@@ -195,10 +195,10 @@ module Engine
         end
 
         def process_choose_zoo_ticket(action)
-          company = @game.company_by_id(action.choice[:company])
+          company = @game.company_by_id(action.choice['company'])
           player = company.owner
-          corporation = @game.corporation_by_id(action.choice[:corporation])
-          price_for_corporation = action.choice[:price]
+          corporation = @game.corporation_by_id(action.choice['corporation'])
+          price_for_corporation = action.choice['price']
           price_for_player = company.value - price_for_corporation
 
           @log << "-- #{corporation.name} sells #{company.name} (owned by #{player.name}) "\

@@ -1,0 +1,631 @@
+{
+  "acting": [
+    "Player 3",
+    "Player 2",
+    "Player 1"
+  ],
+  "actions": [
+    {
+      "type": "pass",
+      "entity": "Player 3",
+      "entity_type": "player",
+      "id": 1,
+      "created_at": 1615400254
+    },
+    {
+      "type": "pass",
+      "entity": "Player 2",
+      "entity_type": "player",
+      "id": 2,
+      "created_at": 1615400254
+    },
+    {
+      "type": "pass",
+      "entity": "Player 1",
+      "entity_type": "player",
+      "id": 3,
+      "created_at": 1615400254
+    },
+    {
+      "type": "choose_ability",
+      "entity": "ZOOTicket 1 - Player 1",
+      "entity_type": "company",
+      "id": 4,
+      "created_at": 1615400258,
+      "choice": {
+        "type": "sell",
+        "company": "ZOOTicket 1 - Player 1"
+      }
+    },
+    {
+      "type": "par",
+      "entity": "Player 1",
+      "entity_type": "player",
+      "id": 5,
+      "created_at": 1615400267,
+      "corporation": "GI",
+      "share_price": "7,1,1"
+    },
+    {
+      "type": "pass",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 6,
+      "created_at": 1615400270
+    },
+    {
+      "type": "pass",
+      "entity": "Player 1",
+      "entity_type": "player",
+      "id": 7,
+      "created_at": 1615400272
+    },
+    {
+      "type": "par",
+      "entity": "Player 2",
+      "entity_type": "player",
+      "id": 8,
+      "created_at": 1615400280,
+      "corporation": "PB",
+      "share_price": "7,1,1"
+    },
+    {
+      "type": "pass",
+      "entity": "PB",
+      "entity_type": "corporation",
+      "id": 9,
+      "created_at": 1615400281
+    },
+    {
+      "type": "pass",
+      "entity": "Player 2",
+      "entity_type": "player",
+      "id": 10,
+      "created_at": 1615400283
+    },
+    {
+      "type": "par",
+      "entity": "Player 3",
+      "entity_type": "player",
+      "id": 11,
+      "created_at": 1615400286,
+      "corporation": "PE",
+      "share_price": "7,1,1"
+    },
+    {
+      "type": "pass",
+      "entity": "PE",
+      "entity_type": "corporation",
+      "id": 12,
+      "created_at": 1615400287
+    },
+    {
+      "type": "pass",
+      "entity": "Player 3",
+      "entity_type": "player",
+      "id": 13,
+      "created_at": 1615400291
+    },
+    {
+      "type": "pass",
+      "entity": "Player 1",
+      "entity_type": "player",
+      "id": 14,
+      "created_at": 1615400292
+    },
+    {
+      "type": "pass",
+      "entity": "Player 2",
+      "entity_type": "player",
+      "id": 15,
+      "created_at": 1615400293
+    },
+    {
+      "type": "pass",
+      "entity": "Player 3",
+      "entity_type": "player",
+      "id": 16,
+      "created_at": 1615400293
+    },
+    {
+      "type": "choose_ability",
+      "entity": "ZOOTicket 2 - Player 1",
+      "entity_type": "company",
+      "id": 17,
+      "created_at": 1615400297,
+      "choice": {
+        "type": "sell",
+        "price": 5,
+        "company": "ZOOTicket 2 - Player 1",
+        "corporation": "GI"
+      }
+    },
+    {
+      "type": "pass",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 18,
+      "created_at": 1615400300
+    },
+    {
+      "type": "buy_train",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 19,
+      "created_at": 1615400301,
+      "train": "2S-0",
+      "price": 7,
+      "variant": "2S"
+    },
+    {
+      "type": "pass",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 20,
+      "created_at": 1615400314
+    },
+    {
+      "type": "pass",
+      "entity": "PB",
+      "entity_type": "corporation",
+      "id": 21,
+      "created_at": 1615400318
+    },
+    {
+      "type": "buy_train",
+      "entity": "PB",
+      "entity_type": "corporation",
+      "id": 22,
+      "created_at": 1615400319,
+      "train": "2S-1",
+      "price": 7,
+      "variant": "2S"
+    },
+    {
+      "type": "pass",
+      "entity": "PB",
+      "entity_type": "corporation",
+      "id": 23,
+      "created_at": 1615400320
+    },
+    {
+      "type": "pass",
+      "entity": "PE",
+      "entity_type": "corporation",
+      "id": 24,
+      "created_at": 1615400321
+    },
+    {
+      "type": "buy_train",
+      "entity": "PE",
+      "entity_type": "corporation",
+      "id": 25,
+      "created_at": 1615400322,
+      "train": "2S-2",
+      "price": 7,
+      "variant": "2S"
+    },
+    {
+      "type": "pass",
+      "entity": "PE",
+      "entity_type": "corporation",
+      "id": 26,
+      "created_at": 1615400323
+    },
+    {
+      "type": "choose_ability",
+      "entity": "ZOOTicket 3 - Player 1",
+      "entity_type": "company",
+      "id": 27,
+      "created_at": 1615400326,
+      "choice": {
+        "type": "sell",
+        "price": 6,
+        "company": "ZOOTicket 3 - Player 1",
+        "corporation": "GI"
+      }
+    },
+    {
+      "type": "pass",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 28,
+      "created_at": 1615400327
+    },
+    {
+      "type": "pass",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 29,
+      "created_at": 1615400330
+    },
+    {
+      "type": "pass",
+      "entity": "PB",
+      "entity_type": "corporation",
+      "id": 30,
+      "created_at": 1615400331
+    },
+    {
+      "type": "pass",
+      "entity": "PB",
+      "entity_type": "corporation",
+      "id": 31,
+      "created_at": 1615400331
+    },
+    {
+      "type": "pass",
+      "entity": "PE",
+      "entity_type": "corporation",
+      "id": 32,
+      "created_at": 1615400332
+    },
+    {
+      "type": "pass",
+      "entity": "PE",
+      "entity_type": "corporation",
+      "id": 33,
+      "created_at": 1615400332
+    },
+    {
+      "type": "pass",
+      "entity": "Player 1",
+      "entity_type": "player",
+      "id": 34,
+      "created_at": 1615400337
+    },
+    {
+      "type": "choose_ability",
+      "entity": "ZOOTicket 1 - Player 2",
+      "entity_type": "company",
+      "id": 35,
+      "created_at": 1615400339,
+      "choice": {
+        "type": "sell",
+        "company": "ZOOTicket 1 - Player 2"
+      }
+    },
+    {
+      "type": "pass",
+      "entity": "Player 2",
+      "entity_type": "player",
+      "id": 36,
+      "created_at": 1615400339
+    },
+    {
+      "type": "pass",
+      "entity": "Player 3",
+      "entity_type": "player",
+      "id": 37,
+      "created_at": 1615400340
+    },
+    {
+      "type": "pass",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 38,
+      "created_at": 1615400342
+    },
+    {
+      "type": "pass",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 39,
+      "created_at": 1615400343
+    },
+    {
+      "type": "choose_ability",
+      "entity": "ZOOTicket 2 - Player 2",
+      "entity_type": "company",
+      "id": 40,
+      "created_at": 1615400345,
+      "choice": {
+        "type": "sell",
+        "price": 8,
+        "company": "ZOOTicket 2 - Player 2",
+        "corporation": "PB"
+      }
+    },
+    {
+      "type": "pass",
+      "entity": "PB",
+      "entity_type": "corporation",
+      "id": 41,
+      "created_at": 1615400346
+    },
+    {
+      "type": "pass",
+      "entity": "PB",
+      "entity_type": "corporation",
+      "id": 42,
+      "created_at": 1615400347
+    },
+    {
+      "type": "pass",
+      "entity": "PE",
+      "entity_type": "corporation",
+      "id": 43,
+      "created_at": 1615400349
+    },
+    {
+      "type": "pass",
+      "entity": "PE",
+      "entity_type": "corporation",
+      "id": 44,
+      "created_at": 1615400350
+    },
+    {
+      "type": "pass",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 45,
+      "created_at": 1615400353
+    },
+    {
+      "type": "pass",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 46,
+      "created_at": 1615400354
+    },
+    {
+      "type": "choose_ability",
+      "entity": "ZOOTicket 3 - Player 2",
+      "entity_type": "company",
+      "id": 47,
+      "created_at": 1615400356,
+      "choice": {
+        "type": "sell",
+        "price": 9,
+        "company": "ZOOTicket 3 - Player 2",
+        "corporation": "PB"
+      }
+    },
+    {
+      "type": "pass",
+      "entity": "PB",
+      "entity_type": "corporation",
+      "id": 48,
+      "created_at": 1615400374
+    },
+    {
+      "type": "pass",
+      "entity": "PB",
+      "entity_type": "corporation",
+      "id": 49,
+      "created_at": 1615400375
+    },
+    {
+      "type": "pass",
+      "entity": "PE",
+      "entity_type": "corporation",
+      "id": 50,
+      "created_at": 1615400376
+    },
+    {
+      "type": "pass",
+      "entity": "PE",
+      "entity_type": "corporation",
+      "id": 51,
+      "created_at": 1615400377
+    },
+    {
+      "type": "pass",
+      "entity": "Player 2",
+      "entity_type": "player",
+      "id": 52,
+      "created_at": 1615400380
+    },
+    {
+      "type": "pass",
+      "entity": "Player 1",
+      "entity_type": "player",
+      "id": 53,
+      "created_at": 1615400380
+    },
+    {
+      "type": "choose_ability",
+      "entity": "ZOOTicket 1 - Player 3",
+      "entity_type": "company",
+      "id": 54,
+      "created_at": 1615400383,
+      "choice": {
+        "type": "sell",
+        "company": "ZOOTicket 1 - Player 3"
+      }
+    },
+    {
+      "type": "pass",
+      "entity": "Player 3",
+      "entity_type": "player",
+      "id": 55,
+      "created_at": 1615400384
+    },
+    {
+      "type": "pass",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 56,
+      "created_at": 1615400386
+    },
+    {
+      "type": "pass",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 57,
+      "created_at": 1615400387
+    },
+    {
+      "type": "pass",
+      "entity": "PB",
+      "entity_type": "corporation",
+      "id": 58,
+      "created_at": 1615400387
+    },
+    {
+      "type": "pass",
+      "entity": "PB",
+      "entity_type": "corporation",
+      "id": 59,
+      "created_at": 1615400389
+    },
+    {
+      "type": "choose_ability",
+      "entity": "ZOOTicket 2 - Player 3",
+      "entity_type": "company",
+      "id": 60,
+      "created_at": 1615400392,
+      "choice": {
+        "type": "sell",
+        "price": 12,
+        "company": "ZOOTicket 2 - Player 3",
+        "corporation": "PE"
+      }
+    },
+    {
+      "type": "pass",
+      "entity": "PE",
+      "entity_type": "corporation",
+      "id": 61,
+      "created_at": 1615400393
+    },
+    {
+      "type": "pass",
+      "entity": "PE",
+      "entity_type": "corporation",
+      "id": 62,
+      "created_at": 1615400394
+    },
+    {
+      "type": "pass",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 63,
+      "created_at": 1615400395
+    },
+    {
+      "type": "pass",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 64,
+      "created_at": 1615400396
+    },
+    {
+      "type": "pass",
+      "entity": "PB",
+      "entity_type": "corporation",
+      "id": 65,
+      "created_at": 1615400397
+    },
+    {
+      "type": "pass",
+      "entity": "PB",
+      "entity_type": "corporation",
+      "id": 66,
+      "created_at": 1615400401
+    },
+    {
+      "type": "choose_ability",
+      "entity": "ZOOTicket 3 - Player 3",
+      "entity_type": "company",
+      "id": 67,
+      "created_at": 1615400403,
+      "choice": {
+        "type": "sell",
+        "price": 15,
+        "company": "ZOOTicket 3 - Player 3",
+        "corporation": "PE"
+      }
+    },
+    {
+      "type": "pass",
+      "entity": "PE",
+      "entity_type": "corporation",
+      "id": 68,
+      "created_at": 1615400405
+    },
+    {
+      "type": "pass",
+      "entity": "PE",
+      "entity_type": "corporation",
+      "id": 69,
+      "created_at": 1615400409
+    },
+    {
+      "type": "pass",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 70,
+      "created_at": 1615400410
+    },
+    {
+      "type": "pass",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 71,
+      "created_at": 1615400411
+    },
+    {
+      "type": "pass",
+      "entity": "PB",
+      "entity_type": "corporation",
+      "id": 72,
+      "created_at": 1615400412
+    },
+    {
+      "type": "pass",
+      "entity": "PB",
+      "entity_type": "corporation",
+      "id": 73,
+      "created_at": 1615400413
+    },
+    {
+      "type": "pass",
+      "entity": "PE",
+      "entity_type": "corporation",
+      "id": 74,
+      "created_at": 1615400414
+    },
+    {
+      "type": "pass",
+      "entity": "PE",
+      "entity_type": "corporation",
+      "id": 75,
+      "created_at": 1615400415
+    }
+  ],
+  "created_at": "2021-03-10",
+  "description": "",
+  "id": "hs_jwvtmjbz_1615400251",
+  "loaded": true,
+  "max_players": "3",
+  "mode": "hotseat",
+  "players": [
+    {
+      "name": "Player 1"
+    },
+    {
+      "name": "Player 2"
+    },
+    {
+      "name": "Player 3"
+    }
+  ],
+  "result": {
+    "Player 3": 28,
+    "Player 2": 25,
+    "Player 1": 22
+  },
+  "round": "Operating Round",
+  "settings": {
+    "optional_rules": []
+  },
+  "status": "finished",
+  "title": "18ZOO",
+  "turn": 3,
+  "updated_at": 1615400415,
+  "user": {
+    "id": 0,
+    "name": "You"
+  }
+}

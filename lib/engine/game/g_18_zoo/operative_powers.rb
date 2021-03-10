@@ -46,8 +46,8 @@ module Engine
 
         def two_barrels_used_this_or?(entity)
           entity&.corporation? &&
-            @game.two_barrels.owner == entity &&
-            @game.two_barrels.all_abilities[0].count_this_or.positive?
+            two_barrels.owner == entity &&
+            two_barrels.all_abilities[0].count_this_or.positive?
         end
 
         def a_squeeze

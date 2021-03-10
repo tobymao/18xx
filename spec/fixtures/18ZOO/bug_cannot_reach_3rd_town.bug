@@ -1,0 +1,380 @@
+{
+  "status": "active",
+  "actions": [
+    {
+      "type": "pass",
+      "entity": "Player 2",
+      "entity_type": "player",
+      "id": 1,
+      "created_at": 1615239512
+    },
+    {
+      "type": "bid",
+      "entity": "Player 1",
+      "entity_type": "player",
+      "id": 2,
+      "created_at": 1615239516,
+      "company": "HOLIDAY",
+      "price": 3
+    },
+    {
+      "type": "choose_ability",
+      "entity": "ZOOTicket 1 - Player 1",
+      "entity_type": "company",
+      "id": 3,
+      "created_at": 1615239521,
+      "choice": {
+        "type": "sell",
+        "company": "ZOOTicket 1 - Player 1"
+      }
+    },
+    {
+      "type": "choose_ability",
+      "entity": "ZOOTicket 2 - Player 1",
+      "entity_type": "company",
+      "id": 4,
+      "created_at": 1615239523,
+      "choice": {
+        "type": "sell",
+        "company": "ZOOTicket 2 - Player 1"
+      }
+    },
+    {
+      "type": "choose_ability",
+      "entity": "ZOOTicket 3 - Player 1",
+      "entity_type": "company",
+      "id": 5,
+      "created_at": 1615239524,
+      "choice": {
+        "type": "sell",
+        "company": "ZOOTicket 3 - Player 1"
+      }
+    },
+    {
+      "type": "par",
+      "entity": "Player 1",
+      "entity_type": "player",
+      "id": 6,
+      "created_at": 1615239544,
+      "corporation": "GI",
+      "share_price": "7,1,1"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 7,
+      "created_at": 1615239550,
+      "hex": "J9",
+      "tile": "6-0",
+      "rotation": 1
+    },
+    {
+      "type": "pass",
+      "entity": "Player 1",
+      "entity_type": "player",
+      "id": 8,
+      "created_at": 1615239554
+    },
+    {
+      "type": "choose_ability",
+      "entity": "ZOOTicket 1 - Player 2",
+      "entity_type": "company",
+      "id": 9,
+      "created_at": 1615239556,
+      "choice": {
+        "type": "sell",
+        "company": "ZOOTicket 1 - Player 2"
+      }
+    },
+    {
+      "type": "choose_ability",
+      "entity": "ZOOTicket 2 - Player 2",
+      "entity_type": "company",
+      "id": 10,
+      "created_at": 1615239558,
+      "choice": {
+        "type": "sell",
+        "company": "ZOOTicket 2 - Player 2"
+      }
+    },
+    {
+      "type": "choose_ability",
+      "entity": "ZOOTicket 3 - Player 2",
+      "entity_type": "company",
+      "id": 11,
+      "created_at": 1615239559,
+      "choice": {
+        "type": "sell",
+        "company": "ZOOTicket 3 - Player 2"
+      }
+    },
+    {
+      "type": "buy_shares",
+      "entity": "Player 2",
+      "entity_type": "player",
+      "id": 12,
+      "created_at": 1615239565,
+      "shares": [
+        "GI_1"
+      ],
+      "percent": 20
+    },
+    {
+      "type": "buy_shares",
+      "entity": "Player 1",
+      "entity_type": "player",
+      "id": 13,
+      "created_at": 1615239574,
+      "shares": [
+        "GI_2"
+      ],
+      "percent": 20
+    },
+    {
+      "type": "pass",
+      "entity": "Player 1",
+      "entity_type": "player",
+      "id": 14,
+      "created_at": 1615239585
+    },
+    {
+      "type": "buy_shares",
+      "entity": "Player 2",
+      "entity_type": "player",
+      "id": 15,
+      "created_at": 1615239590,
+      "shares": [
+        "GI_3"
+      ],
+      "percent": 20
+    },
+    {
+      "type": "choose_ability",
+      "entity": "HOLIDAY",
+      "entity_type": "company",
+      "id": 16,
+      "created_at": 1615239976,
+      "choice": {
+        "type": "holiday",
+        "corporation_id": "GI"
+      }
+    },
+    {
+      "type": "pass",
+      "entity": "Player 1",
+      "entity_type": "player",
+      "id": 17,
+      "created_at": 1615240024
+    },
+    {
+      "type": "pass",
+      "entity": "Player 2",
+      "entity_type": "player",
+      "id": 18,
+      "created_at": 1615240033
+    },
+    {
+      "type": "lay_tile",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 19,
+      "created_at": 1615240044,
+      "hex": "K4",
+      "tile": "201-0",
+      "rotation": 5
+    },
+    {
+      "type": "lay_tile",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 20,
+      "created_at": 1615240047,
+      "hex": "I10",
+      "tile": "8-0",
+      "rotation": 2
+    },
+    {
+      "type": "place_token",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 21,
+      "created_at": 1615240051,
+      "city": "201-0-0",
+      "slot": 0
+    },
+    {
+      "type": "buy_train",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 22,
+      "created_at": 1615240053,
+      "train": "2S-0",
+      "price": 7,
+      "variant": "2S"
+    },
+    {
+      "type": "buy_train",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 23,
+      "created_at": 1615240054,
+      "train": "2S-1",
+      "price": 7,
+      "variant": "2S"
+    },
+    {
+      "type": "buy_train",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 24,
+      "created_at": 1615240057,
+      "train": "3S-0",
+      "price": 12,
+      "variant": "3S"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 25,
+      "created_at": 1615240069,
+      "hex": "H9",
+      "tile": "8-1",
+      "rotation": 5
+    },
+    {
+      "type": "lay_tile",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 26,
+      "created_at": 1615240073,
+      "hex": "G10",
+      "tile": "7-0",
+      "rotation": 4
+    },
+    {
+      "type": "run_routes",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 27,
+      "created_at": 1615240096,
+      "routes": [
+        {
+          "train": "2S-0",
+          "connections": [
+            [
+              "L5",
+              "K4"
+            ]
+          ],
+          "hexes": [
+            "K4",
+            "L5"
+          ],
+          "revenue": 60,
+          "revenue_str": "K4-L5"
+        },
+        {
+          "train": "2S-1",
+          "connections": [
+            [
+              "H9",
+              "G10"
+            ],
+            [
+              "J9",
+              "I10",
+              "H9"
+            ],
+            [
+              "K4",
+              "K6",
+              "J7",
+              "J9"
+            ]
+          ],
+          "hexes": [
+            "G10",
+            "H9",
+            "J9",
+            "K4"
+          ],
+          "revenue": 90,
+          "revenue_str": "G10-H9-J9-K4"
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 28,
+      "created_at": 1615240101,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "Player 2",
+      "entity_type": "player",
+      "id": 29,
+      "created_at": 1615240724
+    },
+    {
+      "type": "pass",
+      "entity": "Player 1",
+      "entity_type": "player",
+      "id": 30,
+      "created_at": 1615240725
+    },
+    {
+      "type": "lay_tile",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 31,
+      "created_at": 1615240748,
+      "hex": "H11",
+      "tile": "7-1",
+      "rotation": 1
+    },
+    {
+      "type": "lay_tile",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 32,
+      "created_at": 1615240754,
+      "hex": "G12",
+      "tile": "8-2",
+      "rotation": 4
+    }
+  ],
+  "id": "hs_ahtoyntr_1612649245",
+  "players": [
+    {
+      "name": "Player 1"
+    },
+    {
+      "name": "Player 2"
+    }
+  ],
+  "title": "18ZOO",
+  "description": "",
+  "max_players": "3",
+  "acting": [
+    "Player 1"
+  ],
+  "created_at": "2021-03-08",
+  "loaded": true,
+  "mode": "hotseat",
+  "result": {},
+  "round": "Operating Round",
+  "settings": {
+    "optional_rules": []
+  },
+  "turn": 2,
+  "updated_at": 1615240754,
+  "user": {
+    "id": 0,
+    "name": "You"
+  }
+}
