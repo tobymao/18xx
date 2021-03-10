@@ -72,10 +72,7 @@ module View
           buttons << render_link(url(@gdata), -> { enter_game(@gdata) }, 'Review')
           FINISHED_GREY
         when 'archived'
-          buttons << h(:button, {
-                         attrs: { disabled: true },
-                         style: { margin: 0, padding: '0.2rem 0.5rem', cursor: 'unset' },
-                       }, 'Archived')
+          buttons << h('p.bold', { style: { color: 'black' } }, 'Archived')
           FINISHED_GREY
         end
 
