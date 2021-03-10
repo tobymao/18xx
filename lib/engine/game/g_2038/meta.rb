@@ -16,6 +16,14 @@ module Engine
         GAME_RULES_URL = 'https://boardgamegeek.com/filepage/135017/2038-english-rules-and-supplements'
 
         PLAYER_RANGE = [3, 6].freeze
+
+        OPTIONAL_RULES = [
+          {
+            sym: :optional_short_game,
+            short_name: 'Short Game',
+            desc: 'Play a shorter game',
+          },
+        ].freeze
       end
     end
   end
