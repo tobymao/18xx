@@ -80,10 +80,12 @@ button.active {
 }
 
 input, select, textarea {
+  cursor: pointer;
+}
+input:not([type=radio]):not([type=checkbox]), select, textarea {
   background: whitesmoke;
   border-radius: 5px;
   padding: 0 0.5rem;
-  cursor: pointer;
   margin: 0.5rem;
 }
 input:not([type=radio]):not([type=checkbox]), select:not([multiple]) {
@@ -193,7 +195,7 @@ nav#game_menu {
 #settings__options .input-container {
   display: block;
 }
-#settings__colors label, #settings__options label  {
+#settings__colors label  {
     display: inline-block;
     width: 11.5rem;
 }
