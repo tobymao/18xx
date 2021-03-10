@@ -501,11 +501,11 @@ module Engine
             name: 'NebKota',
             logo: '18_neb/NR',
             shares: [40, 20, 20, 20],
-            type: 'local',
             tokens: [0, 40],
             coordinates: 'C3',
             max_ownership_percent: 100,
             color: '#000000',
+            type: 'local',
             always_market_price: true,
             reservation_color: nil,
           },
@@ -633,6 +633,16 @@ module Engine
           Round::Auction.new(self, [
             Engine::Step::CompanyPendingPar,
             G18NEB::Step::PriceFindingAuction,
+          ])
+        end
+
+        def stock_round
+          Round::Stock.new(self, [
+            Engine::Step::DiscardTrain,
+            Engine::Step::Exchange,
+            Engine::Step::HomeToken,
+            Engine::Step::SpecialTrack,
+            Engine::Step::BuySellParShares,
           ])
         end
 

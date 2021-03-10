@@ -33,6 +33,8 @@ module Engine
 
         CERT_LIMIT = { 3 => 26, 4 => 20, 5 => 16, 6 => 13, 7 => 11 }.freeze
 
+        EBUY_OTHER_VALUE = false
+
         STARTING_CASH = { 3 => 700, 4 => 525, 5 => 420, 6 => 350, 7 => 300 }.freeze
 
         CAPITALIZATION = :incremental
@@ -364,6 +366,7 @@ module Engine
           'P39' => 'Canterbury',
           'P41' => 'Dover',
           'P43' => 'English Channel',
+          'Q30' => 'Norwich',
           'Q44' => 'France',
         }.freeze
 
@@ -527,19 +530,8 @@ module Engine
             variants: [
               {
                 name: 'E',
-                distance: [
-                  {
-                    'nodes' => %w[city offboard],
-                    'pay' => 99,
-                    'visit' => 99,
-                    'multiplier' => 2,
-                  },
-                  {
-                    'nodes' => ['town'],
-                    'pay' => 0,
-                    'visit' => 99,
-                  },
-                ],
+                distance: 99,
+                multiplier: 2,
                 price: 1000,
               },
             ],
@@ -1282,7 +1274,8 @@ module Engine
             sym: 'M14',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. Starting location is M38.',
+            desc: 'A 50% director’s certificate in the associated minor company. Starting location is M38. Home '\
+                  'token cost £20, placing home token counts as first tile lay. ',
             abilities: [],
             color: '#ffffff',
             text_color: 'black',
@@ -3803,13 +3796,13 @@ module Engine
               c.id != self.class::COMPANY_LCDR && self.class::PLUS_EXPANSION_BIDBOX_2.include?(c.id)
             end
             privates.delete(company)
-            @log << "#{company.id}-#{company.name} have been removed from the game"
+            @log << "#{company.name} have been removed from the game"
 
             # Remove two of the bidbox 3 privates
             2.times.each do |_|
               company = privates.find { |c| self.class::PLUS_EXPANSION_BIDBOX_3.include?(c.id) }
               privates.delete(company)
-              @log << "#{company.id}-#{company.name} have been removed from the game"
+              @log << "#{company.name} have been removed from the game"
             end
           end
 

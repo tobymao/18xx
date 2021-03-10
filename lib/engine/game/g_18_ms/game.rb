@@ -731,6 +731,34 @@ module Engine
           super
         end
 
+        def show_progress_bar?
+          true
+        end
+
+        def progress_information
+          base_progress = [
+            { type: :PRE },
+            { type: :SR },
+            { type: :OR, name: '1' },
+            { type: :OR, name: '2' },
+            { type: :SR },
+            { type: :OR, name: '3' },
+            { type: :OR, name: '4', exportAfter: true, exportAfterValue: '2+' },
+            { type: :SR },
+            { type: :OR, name: '5' },
+            { type: :OR, name: '6', exportAfter: true, exportAfterValue: '3+' },
+            { type: :SR },
+            { type: :OR, name: '7' },
+            { type: :OR, name: '8', exportAfter: true, exportAfterValue: '4+' },
+            { type: :SR },
+            { type: :OR, name: '9' },
+            { type: :OR, name: '10' },
+          ]
+
+          base_progress << { type: :OR, name: '11' } if @optional_rules&.include?(:or_11)
+          base_progress << { type: :End }
+        end
+
         private
 
         def rust_all(train, salvage)
