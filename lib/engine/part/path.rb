@@ -102,9 +102,6 @@ module Engine
         on.keys.select { |p| on[p] == 1 }
       end
 
-      #
-      #
-      #
       # on and chain are mutually exclusive
       # skip: An exit to ignore. Useful to prevent ping-ponging between adjacent hexes.
       # jskip: An junction to ignore. May be useful on complex tiles

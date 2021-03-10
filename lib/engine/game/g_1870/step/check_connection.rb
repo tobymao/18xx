@@ -31,7 +31,7 @@ module Engine
             return unless destination.assigned?(corporation)
             return unless (home = @game.home_hex(corporation))
 
-            destination.tile.nodes.first&.walk(corporation: corporation) do |path|
+            destination.tile.nodes.first&.walk(corporation: corporation) do |path, _vp, _ve|
               return true if path.hex.id == home.id
             end
 
