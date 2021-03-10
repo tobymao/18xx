@@ -114,6 +114,12 @@ th, td {
   vertical-align: top;
 }
 
+svg {
+  user-select: none;
+  -ms-user-select: none;
+  -webkit-user-select: none;
+}
+
 #game_info tbody > tr:hover, #bank.card tr:hover, #upcoming_trains.card tr:hover {
   background-color: gainsboro;
   color: black;
