@@ -618,6 +618,10 @@ module Engine
           corporations
         end
 
+        def armour
+          @armour ||= company_by_id('P3')
+        end
+
         def event_local_railroads_available!
           @log << 'Local railroads are now available!'
 
