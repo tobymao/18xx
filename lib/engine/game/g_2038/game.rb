@@ -22,6 +22,8 @@ module Engine
         SELL_AFTER = :p_any_operate
         CURRENCY_FORMAT_STR = '$%d'
 
+        LAYOUT = :pointy
+
         BANK_CASH = 10_000
 
         CERT_LIMIT = { 3 => 22, 4 => 16, 5 => 13, 6 => 11 }.freeze
@@ -59,62 +61,62 @@ module Engine
         ].freeze
 
         MARKET_TEXT = Base::MARKET_TEXT.merge(
-                                        par: 'Public Corps Par',
-                                        par_1: 'Asteroid League Par',
-                                        par_2: 'All Growth Corps Par',
-                                      )
+          par: 'Public Corps Par',
+          par_1: 'Asteroid League Par',
+          par_2: 'All Growth Corps Par',
+        )
 
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
           par: :grey,
           par_1: :brown,
-          par_2: :blue
+          par_2: :blue,
         )
 
         PHASES = [
-                  {
-                    name: '1',
-                    train_limit: 4,
-                    tiles: [:yellow],
-                    operating_rounds: 2,
-                  },
-                  {
-                    name: '2',
-                    on: '4dc3',
-                    train_limit: 4,
-                    tiles: %i[yellow green],
-                    operating_rounds: 2,
-                    status: ['can_buy_companies'],
-                  },
-                  {
-                    name: '3',
-                    on: '5dc4',
-                    train_limit: 3,
-                    tiles: %i[yellow green],
-                    operating_rounds: 2,
-                    status: ['can_buy_companies'],
-                  },
-                  {
-                    name: '4',
-                    on: '6d5c',
-                    train_limit: 3,
-                    tiles: %i[yellow green brown],
-                    operating_rounds: 2,
-                  },
-                  {
-                    name: '5',
-                    on: '7d6c',
-                    train_limit: 3,
-                    tiles: %i[yellow green brown],
-                    operating_rounds: 2,
-                  },
-                  {
-                    name: '6',
-                    on: '9d7c',
-                    train_limit: 2,
-                    tiles: %i[yellow green brown],
-                    operating_rounds: 2,
-                  },
-                ].freeze
+          {
+            name: '1',
+            train_limit: 4,
+            tiles: [:yellow],
+            operating_rounds: 2,
+          },
+          {
+            name: '2',
+            on: '4dc3',
+            train_limit: 4,
+            tiles: %i[yellow green],
+            operating_rounds: 2,
+            status: ['can_buy_companies'],
+          },
+          {
+            name: '3',
+            on: '5dc4',
+            train_limit: 3,
+            tiles: %i[yellow green],
+            operating_rounds: 2,
+            status: ['can_buy_companies'],
+          },
+          {
+            name: '4',
+            on: '6d5c',
+            train_limit: 3,
+            tiles: %i[yellow green brown],
+            operating_rounds: 2,
+          },
+          {
+            name: '5',
+            on: '7d6c',
+            train_limit: 3,
+            tiles: %i[yellow green brown],
+            operating_rounds: 2,
+          },
+          {
+            name: '6',
+            on: '9d7c',
+            train_limit: 2,
+            tiles: %i[yellow green brown],
+            operating_rounds: 2,
+          },
+        ].freeze
 
         TRAINS = [
           {
@@ -244,14 +246,16 @@ module Engine
             revenue: 10,
             desc: 'Buyer recieves a TSI Share.  If owned by a corporation, may place 1 free'\
             'Refueling Station within range.',
-            abilities: [{ type: 'shares', shares: 'TSI_2' },
-                        {
-                          type: 'tile_lay',
-                          owner_type: 'corporation',
-                          tiles: ['2'],
-                          when: 'owning_corp_or_turn',
-                          count: 1,
-                        }],
+            abilities: [
+              { type: 'shares', shares: 'TSI_2' },
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                tiles: ['2'],
+                when: 'owning_corp_or_turn',
+                count: 1,
+              },
+            ],
             color: nil,
           },
           {
@@ -260,14 +264,16 @@ module Engine
             value: 160,
             revenue: 15,
             desc: 'Buyer recieves a TSI Share.  If owned by a corporation, may place 1 free Claim within range.',
-            abilities: [{ type: 'shares', shares: 'TSI_1' },
-                        {
-                          type: 'tile_lay',
-                          owner_type: 'corporation',
-                          tiles: ['3'],
-                          when: 'owning_corp_or_turn',
-                          count: 1,
-                        }],
+            abilities: [
+              { type: 'shares', shares: 'TSI_1' },
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                tiles: ['3'],
+                when: 'owning_corp_or_turn',
+                count: 1,
+              },
+],
             color: nil,
           },
           {
@@ -277,9 +283,11 @@ module Engine
             revenue: 20,
             desc: "Buyer recieves TSI president's Share and flies probe if TSI isn't active.  May not be owned"\
             ' by a corporation. Remove from the game after TSI buys a spaceship.',
-            abilities: [{ type: 'shares', shares: 'TSI_0' },
-                        { type: 'no_buy' },
-                        { type: 'close', when: 'bought_train', corporation: 'TSI' }],
+            abilities: [
+              { type: 'shares', shares: 'TSI_0' },
+              { type: 'no_buy' },
+              { type: 'close', when: 'bought_train', corporation: 'TSI' },
+            ],
             color: nil,
           },
           {
@@ -289,13 +297,15 @@ module Engine
             revenue: 30,
             desc: "Forms Asteroid League, receiving its President's certificate.  May not be bought by a"\
             ' corporation.  Remove from the game after AL aquires a spaceship.',
-            abilities: [{ type: 'close', when: 'bought_train', corporation: 'AL' },
-                        { type: 'no_buy' },
-                        {
-                          type: 'shares',
-                          shares: 'AL_0',
-                          when: ['Phase 3', 'Phase 4'],
-                        }],
+            abilities: [
+              { type: 'close', when: 'bought_train', corporation: 'AL' },
+              { type: 'no_buy' },
+              {
+                type: 'shares',
+                shares: 'AL_0',
+                when: ['Phase 3', 'Phase 4'],
+              },
+            ],
             color: nil,
           },
         ].freeze
@@ -512,40 +522,24 @@ module Engine
           },
         ].freeze
 
+        GAME_HEXES = {
+          black: { %w[A13 D2 H10 H18 O11] => '' },
+          gray: { %w[A1 B6 D8 D14 F18 G7 H14 J2 J18 K9 M5 M13 O1] => '' },
+          blue: {
+            %w[
+                A3 A5 A7 A9 A11 B2 B4 B8 B10 B12 B14 C1 C3 C5 C7 C9
+                C11 C13 C15 D4 D6 D10 D12 D16 E3 E5 E7 E9 E11 E13 E15
+                E17 F2 F4 F6 F8 F10 F12 F14 F16 G3 G5 G9 G11 G13 G15
+                G17 H4 H6 H8 H12 H16 I3 I5 I7 I9 I11 I13 I15 I17 J4
+                J6 J8 J10 J12 J14 J16 K3 K5 K7 K11 K13 K15 K17 L2 L4
+                L6 L8 L10 L12 L14 L16 M1 M3 M7 M9 M11 M15 N2 N4 N6 N8
+                N10 N12 N14 O3 O5 O7 O9 O13
+            ] => '',
+          },
+        }.freeze
+
         def game_hexes
-          {
-            black: {
-              %w[A13
-                 D2
-                 H10
-                 H18
-                 O11] => '',
-            },
-            gray: {
-              %w[A1
-                 B6
-                 D8
-                 D14
-                 F18
-                 G7
-                 H14
-                 J2
-                 J18
-                 K9
-                 M5
-                 M13
-                 O1] => '',
-            },
-            blue: {
-              %w[A3 A5 A7 A9 A11 B2 B4 B8 B10 B12 B14 C1 C3 C5 C7 C9
-                 C11 C13 C15 D4 D6 D10 D12 D16 E3 E5 E7 E9 E11 E13 E15
-                 E17 F2 F4 F6 F8 F10 F12 F14 F16 G3 G5 G9 G11 G13 G15
-                 G17 H4 H6 H8 H12 H16 I3 I5 I7 I9 I11 I13 I15 I17 J4
-                 J6 J8 J10 J12 J14 J16 K3 K5 K7 K11 K13 K15 K17 L2 L4
-                 L6 L8 L10 L12 L14 L16 M1 M3 M7 M9 M11 M15 N2 N4 N6 N8
-                 N10 N12 N14 O3 O5 O7 O9 O13] => '',
-            },
-          }
+          GAME_HEXES
         end
 
         def company_header(company)
@@ -557,8 +551,6 @@ module Engine
             'PRIVATE COMPANY'
           end
         end
-
-        LAYOUT = :pointy
       end
     end
   end
