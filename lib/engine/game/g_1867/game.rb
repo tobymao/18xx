@@ -927,6 +927,7 @@ module Engine
         # A token is reserved for Montreal is reserved for nationalization
         NATIONAL_RESERVATIONS = ['L12'].freeze
         GREEN_CORPORATIONS = %w[BBG LPS QLS SLA TGB THB].freeze
+        TRAINS_REMOVE_2_PLAYER = { '2' => 3, '3' => 2, '4' => 1, '5' => 1, '6' => 1, '7' => 1 }.freeze
 
         include InterestOnLoans
         include CompanyPriceUpToFace
@@ -1399,8 +1400,7 @@ module Engine
           @corporations.each { |c| c.max_ownership_percent = 70 if c.max_ownership_percent == 60 }
 
           # Remove trains
-          remove_trains = { '2' => 3, '3' => 2, '4' => 1, '5' => 1, '6' => 1, '7' => 1 }
-          remove_trains.each do |train_name, count|
+          TRAINS_REMOVE_2_PLAYER.each do |train_name, count|
             trains = depot.upcoming.select { |t| t.name == train_name }.reverse.take(count)
 
             trains.each { |t| depot.remove_train(t) }
