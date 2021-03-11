@@ -26,10 +26,10 @@ module View
         inputs << render_input('Invite only game', id: 'unlisted', type: :checkbox,
                                                    container_style: { paddingLeft: '0.5rem' })
       elsif @mode == :hotseat
+        inputs << h(:label, { style: @label_style }, 'Player Names')
         @num_players.times do |index|
           n = index + 1
-          label = index.zero? ? 'Player Names' : ''
-          inputs << render_input(label, id: "player_#{n}", attrs: { value: "Player #{n}" }, label_style: @label_style)
+          inputs << render_input('', id: "player_#{n}", attrs: { value: "Player #{n}" })
         end
       elsif @mode == :json
         inputs << render_upload_button
