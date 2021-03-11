@@ -2,6 +2,7 @@
 
 require 'lib/color'
 require 'lib/settings'
+require 'lib/truncate'
 require 'view/game/actionable'
 
 module View
@@ -38,11 +39,15 @@ module View
       end
 
       def render_bidders
-        bidders_style = {
-          fontWeight: 'normal',
-          margin: '0 0.5rem',
+        table_props = {
+          style: {
+            margin: '0 auto',
+            borderSpacing: '0 1px',
+            fontWeight: 'normal',
+          },
         }
-        names = @bids
+
+        rows = @bids
           .sort_by(&:price)
           .reverse.map.with_index do |bid, i|
             bg_color =
@@ -59,11 +64,20 @@ module View
                 color: contrast_on(bg_color),
               },
             }
-            h(:span, props, "#{bid.entity.name} (#{@game.format_currency(bid.price)})")
+            h(:tr, props, [
+              h('td.left', bid.entity.name.truncate(20)),
+              h('td.right', @game.format_currency(bid.price)),
+            ])
           end
-        names = names.flat_map { |elm| [elm, '  '] }[0..-2]
 
-        h(:div, { style: bidders_style }, names)
+        h(:div, { style: { clear: 'both' } }, [
+           h(:label, 'Bidders:'),
+           h(:table, table_props, [
+             h(:tbody, [
+               *rows,
+             ]),
+           ]),
+        ])
       end
 
       def render
@@ -129,11 +143,7 @@ module View
             h(:div, { style: value_style }, "Value: #{@game.format_currency(@company.value)}"),
             h(:div, { style: revenue_style }, "Revenue: #{@game.format_currency(@company.revenue)}"),
           ]
-
-          if @bids&.any?
-            children << h(:div, { style: bidders_style }, 'Bidders:')
-            children << render_bidders
-          end
+          children << render_bidders if @bids&.any?
 
           unless @company.discount.zero?
             children << h(
