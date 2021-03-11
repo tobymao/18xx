@@ -200,7 +200,7 @@ module Engine
           'A19' => 'Detroit',
         }.freeze
 
-        MARKET = [
+        COLUMN_MARKET = [
           %w[35
              40
              45
@@ -230,6 +230,82 @@ module Engine
              490
              540],
            ].freeze
+
+        GRID_MARKET = [['',
+                        '',
+                        '',
+                        '',
+                        '135',
+                        '150',
+                        '165mC',
+                        '180',
+                        '200z',
+                        '220',
+                        '245',
+                        '270',
+                        '300',
+                        '330',
+                        '360',
+                        '400',
+                        '440',
+                        '490',
+                        '540'],
+                       ['',
+                        '',
+                        '',
+                        '110',
+                        '120',
+                        '135',
+                        '150mC',
+                        '165z',
+                        '180z',
+                        '200',
+                        '220',
+                        '245',
+                        '270',
+                        '300',
+                        '330',
+                        '360',
+                        '400',
+                        '440',
+                        '490'],
+                       ['',
+                        '',
+                        '90',
+                        '100',
+                        '110',
+                        '120',
+                        '135pmC',
+                        '150z',
+                        '165',
+                        '180',
+                        '200',
+                        '220',
+                        '245',
+                        '270',
+                        '300',
+                        '330',
+                        '360',
+                        '400',
+                        '440'],
+                       ['',
+                        '70',
+                        '80',
+                        '90',
+                        '100',
+                        '110p',
+                        '120pmC',
+                        '135',
+                        '150',
+                        '165',
+                        '180',
+                        '200'],
+                       %w[60 65 70 80 90p 100p 110mC 120 135 150],
+                       %w[55 60 65 70p 80p 90 100mC 110],
+                       %w[50 55 60x 65x 70 80],
+                       %w[45 50x 55x 60 65],
+                       %w[40 45 50 55],
+                       %w[35 40 45]].freeze
 
         PHASES = [
           {
@@ -945,8 +1021,12 @@ module Engine
           5 # constant
         end
 
+        def game_market
+          @optional_rules&.include?(:grid_market) ? self.class::GRID_MARKET : self.class::COLUMN_MARKET
+        end
+
         def init_stock_market
-          G1867::StockMarket.new(self.class::MARKET, self.class::CERT_LIMIT_TYPES,
+          G1867::StockMarket.new(game_market, self.class::CERT_LIMIT_TYPES,
                                  multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
         end
 
