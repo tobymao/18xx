@@ -117,7 +117,9 @@ module Engine
       #  * If `chain` is nil `walk` will yield to a block, providing this Part and the visited Paths including this one
 
       # on: HashSet of Paths that we want to *exclusively* walk on
-      def walk(skip: nil, jskip: nil, visited: nil, visited_edges: nil, on: nil, chain: nil)
+      def walk(skip: nil, jskip: nil, visited: nil, visited_edges: nil, on: nil, chain: nil, skip_track: nil,
+               corporation: nil, connections: nil, path_chain: [], visited_nodes: nil, current_node: nil,
+               max_nodes: nil)
         return if visited&.[](self)
 
         visited = visited&.dup || {}
@@ -127,10 +129,32 @@ module Engine
         if chain
           chained = chain + [self]
           yield chained if chain.empty? ? @nodes.size == 2 : @nodes.any?
+        elsif connections
+          path_chained = path_chain + [self]
+          if @nodes.any? { |n| n != current_node }
+            return if connections[path_chained]
+
+            connections[path_chained] = true
+            path_chained.each { |p| yield p }
+
+            @nodes.each do |node|
+              next if node == current_node
+              next if corporation && node.blocks?(corporation)
+              next if terminal?
+
+              node.walk(visited: visited_nodes, on: on, corporation: corporation, visited_paths: visited,
+                        visited_edges: visited_edges, skip_track: skip_track, connections: connections,
+                        max_nodes: max_nodes) do |p|
+                yield p
+              end
+            end
+            return
+          end
         else
           yield self, visited, visited_edges
         end
 
+        yield_path_chained = true
         if @junction && @junction != jskip
           @junction.paths.each do |jp|
             next if on && !on[jp]
@@ -139,6 +163,13 @@ module Engine
               jp.walk(jskip: @junction, visited: visited, visited_edges: visited_edges, chain: chained) do |c|
                 yield c
               end
+            elsif connections
+              jp.walk(jskip: @junction, visited: visited, visited_edges: visited_edges, on: on,
+                      corporation: corporation, connections: connections, path_chain: path_chained,
+                      visited_nodes: visited_nodes, current_node: current_node) do |p|
+                yield p
+              end
+              yield_path_chained = false
             else
               jp.walk(jskip: @junction, visited: visited, visited_edges: visited_edges, on: on) do |p, v, ve|
                 yield p, v, ve
@@ -166,6 +197,13 @@ module Engine
               np.walk(skip: np_edge, visited: visited, visited_edges: neighbors_edges, chain: chained) do |c|
                 yield c
               end
+            elsif connections
+              np.walk(skip: np_edge, visited: visited, visited_edges: neighbors_edges, on: on,
+                      corporation: corporation, connections: connections, path_chain: path_chained,
+                      visited_nodes: visited_nodes, current_node: current_node) do |p|
+                yield p
+              end
+              yield_path_chained = false
             else
               np.walk(skip: np_edge, visited: visited, visited_edges: neighbors_edges, on: on) do |p, v, ve|
                 yield p, v, ve
@@ -173,6 +211,8 @@ module Engine
             end
           end
         end
+
+        path_chained&.each { |p| yield p } if connections && yield_path_chained
       end
 
       # return true if facing exits on adjacent tiles match up taking lanes into account
