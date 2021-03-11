@@ -86,10 +86,11 @@ input:not([type=radio]):not([type=checkbox]), select, textarea {
   background: whitesmoke;
   border-radius: 5px;
   padding: 0 0.5rem;
+  box-sizing: border-box;
   margin: 0.5rem;
 }
 input:not([type=radio]):not([type=checkbox]), select:not([multiple]) {
-  height: 1.5rem;
+  height: 1.7rem;
 }
 input + label, select + label {
   margin-left: 0.5rem;

@@ -14,18 +14,22 @@ module View
     needs :visible_optional_rules, default: nil, store: true
 
     def render_content
+      @label_style = { display: 'block' }
       inputs = [
         mode_selector,
-        render_button('Create') { submit },
+        render_button('Create', { style: { margin: '0.5rem 1rem 1rem 0' } }) { submit },
         render_inputs,
       ]
 
       if @mode == :multi
-        inputs << render_input('Invite only game', id: 'unlisted', type: :checkbox)
+        inputs << h(:label, { style: @label_style }, 'Game Options')
+        inputs << render_input('Invite only game', id: 'unlisted', type: :checkbox,
+                                                   container_style: { paddingLeft: '1.5rem' })
       elsif @mode == :hotseat
         @num_players.times do |index|
-          num = index + 1
-          inputs << render_input("Player #{num}", id: "player_#{num}", attrs: { value: "Player #{num}" })
+          n = index + 1
+          label = index.zero? ? 'Player Names' : ''
+          inputs << render_input(label, id: "player_#{n}", attrs: { value: "Player #{n}" }, label_style: @label_style)
         end
       elsif @mode == :json
         inputs << render_upload_button
@@ -34,12 +38,16 @@ module View
           id: :game_data,
           el: :textarea,
           attrs: {
-            placeholder: 'Paste JSON Game Data',
-            rows: 35,
+            placeholder: 'Paste JSON game data or upload a file.',
             cols: 50,
           },
           container_style: {
             display: 'block',
+          },
+          input_style: {
+            height: '66vh',
+            maxWidth: '96vw',
+            margin: '1rem 0',
           },
         )
       end
@@ -47,8 +55,7 @@ module View
       description = []
       description += [h(:a, { attrs: { href: '/signup' } }, 'Signup'), ' or ',
                       h(:a, { attrs: { href: '/login' } }, 'login'), ' to play multiplayer.'] unless @user
-      description << h(:div,
-                       'If you are new to 18xx games then 1889, 18Chesapeake, or 18MS are good games to begin with.')
+      description << h(:p, 'If you are new to 18xx games then 1889, 18Chesapeake or 18MS are good games to begin with.')
       render_form('Create New Game', inputs, description)
     end
 
@@ -80,8 +87,10 @@ module View
       end
 
       inputs = [
-        render_input('Game Title', id: :title, el: 'select', on: { input: title_change }, children: game_options),
-        render_input('Description', placeholder: 'Add a title', id: :description),
+        render_input('Game Title', id: :title, el: 'select', on: { input: title_change },
+                                   container_style: @label_style, label_style: @label_style,
+                                   input_style: { maxWidth: '90vw' }, children: game_options),
+        render_input('Description', id: :description, placeholder: 'Add a title', label_style: @label_style),
         render_input(
           @mode == :hotseat ? 'Players' : 'Max Players',
           id: :max_players,
@@ -92,7 +101,8 @@ module View
             value: @num_players,
             required: true,
           },
-          input_style: { width: '2.5rem' },
+          input_style: { width: '3.5rem' },
+          label_style: @label_style,
           on: { input: -> { update_inputs } },
         ),
       ]
@@ -126,9 +136,17 @@ module View
         )])
       end
 
+      ul_props = {
+        style: {
+          listStyle: 'none',
+          marginTop: '0',
+          paddingLeft: '1.5rem',
+        },
+      }
+
       h(:div, [
-          h(:p, 'Optional Rules:'),
-          h(:ul, { style: { 'list-style': 'none' } }, children),
+          h(:label, 'Optional Rules'),
+          h(:ul, ul_props, children),
         ])
     end
 
@@ -168,7 +186,7 @@ module View
       h(:div, { style: { margin: '1rem 0' } }, [
         *mode_input(:multi, 'Multiplayer'),
         *mode_input(:hotseat, 'Hotseat'),
-        *mode_input(:json, 'Import game (hotseat)'),
+        *mode_input(:json, 'Import hotseat game'),
       ])
     end
 
