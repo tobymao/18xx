@@ -28,28 +28,7 @@ module View
           inputs << render_input("Player #{num}", id: "player_#{num}", attrs: { value: "Player #{num}" })
         end
       elsif @mode == :json
-        upload = lambda do |e|
-          %x{
-            const result = document.getElementById('game_data')
-            var file = #{e}.target.files[0];
-
-            if(file.size <= 5 * 1024 * 1024) {
-              var reader = new FileReader();
-              reader.onload = function(event) {
-                  result.value = event.target.result;
-                };
-              reader.readAsText(file, 'UTF-8');
-            } else {
-              self['$store']('flash_opts', 'The file is too big')
-            }
-          }
-        end
-
-        inputs << h(:input, {
-                      attrs: { type: :file, id: :import_json_file, accept: '.json' },
-                      on: { change: upload },
-                      style: { background: :unset },
-                    })
+        inputs << render_upload_button
         inputs << render_input(
           '',
           id: :game_data,
@@ -151,6 +130,38 @@ module View
           h(:p, 'Optional Rules:'),
           h(:ul, { style: { 'list-style': 'none' } }, children),
         ])
+    end
+
+    def render_upload_button
+      upload = lambda do |e|
+        %x{
+          const result = document.getElementById('game_data')
+          var file = #{e}.target.files[0];
+
+          if(file.size <= 5 * 1024 * 1024) {
+            var reader = new FileReader();
+            reader.onload = function(event) {
+                result.value = event.target.result;
+              };
+            reader.readAsText(file, 'UTF-8');
+          } else {
+            self['$store']('flash_opts', 'This file is too big.')
+          }
+        }
+      end
+
+      h('div.inline-block', [
+        render_button('Upload file') { `document.getElementById('file_upload').click()` },
+        h(:input, {
+            attrs: {
+              id: :file_upload,
+              type: :file,
+              accept: 'application/json',
+            },
+            on: { change: upload },
+            style: { display: 'none' },
+          }),
+      ])
     end
 
     def mode_selector
