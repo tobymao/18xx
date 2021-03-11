@@ -501,11 +501,11 @@ module Engine
             name: 'NebKota',
             logo: '18_neb/NR',
             shares: [40, 20, 20, 20],
-            type: 'local',
             tokens: [0, 40],
             coordinates: 'C3',
             max_ownership_percent: 100,
             color: '#000000',
+            type: 'local',
             always_market_price: true,
             reservation_color: nil,
           },
@@ -527,7 +527,7 @@ module Engine
             # city tiles
             ['C9'] => 'city=revenue:30;path=a:5,b:_0',
             # Omaha
-            ['K7'] => 'city=revenue:30,loc:3;town=revenue:0,loc:4;path=a:1,b:4;path=a:1,b:_0;upgrade=cost:60,terrain:water',
+            ['K7'] => 'city=revenue:30,loc:5;town=revenue:10,loc:4,to_city:1;path=a:1,b:_1;path=a:_1,b:4;path=a:1,b:_0;upgrade=cost:60,terrain:water',
           },
           gray: {
             ['D8'] => 'path=a:5,b:2',
@@ -569,16 +569,24 @@ module Engine
           @corporations, @future_corporations = @corporations.partition { |corporation| corporation.type != :local }
         end
 
+        def omaha_upgrade(to, from)
+          return to == '229' if from == 'yellow'
+          return to == '230' if from == 'green'
+          return to == '231' if from == 'brown'
+        end
+
+        def denver_upgrade(to, from)
+          return to == '407' if from == :yellow
+          return to == '234' if from == :green
+          return to == '116' if from == :brown
+        end
+
         def upgrades_to?(from, to, special = false)
           case from.hex.name
           when OMAHA_HEX
-            return to.name == '229' if from.color == :yellow
-            return to.name == '230' if from.color == :green
-            return to.name == '231' if from.color == :brown
+            return omaha_upgrade(to.name, from.color)
           when DENVER_HEX
-            return to.name == '407' if from.color == :yellow
-            return to.name == '234' if from.color == :green
-            return to.name == '116' if from.color == :brown
+            return denver_upgrade(to.name, from.color)
           when LINCOLN_HEX
             return GREEN_CITIES.include?(to.name) if from.color == :yellow
             return to.name == '233' if from.color == :green
@@ -629,6 +637,16 @@ module Engine
           Round::Auction.new(self, [
             Engine::Step::CompanyPendingPar,
             G18NEB::Step::PriceFindingAuction,
+          ])
+        end
+
+        def stock_round
+          Round::Stock.new(self, [
+            Engine::Step::DiscardTrain,
+            Engine::Step::Exchange,
+            Engine::Step::HomeToken,
+            Engine::Step::SpecialTrack,
+            Engine::Step::BuySellParShares,
           ])
         end
 
