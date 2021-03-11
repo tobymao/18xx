@@ -28,6 +28,11 @@ module Engine
           def process_place_token(action)
             raise GameError, "#{action.entity.name} cannot lay token now" if @game.round.laid_token[action.entity]
 
+            raise GameError, "#{action.entity.name} cannot afford "\
+                "#{@game.format_currency(action.cost)} to lay token in "\
+                "#{action.city.hex.tile.location_name}" if action.cost > action.entity.cash
+
+            action.token.price = action.cost if action.cost
             super
             @game.round.laid_token[action.entity] = true
           end
@@ -42,14 +47,23 @@ module Engine
             token = action.token
 
             raise GameError, "#{hex.id} is not a town" if hex.tile.towns.empty?
-            raise GameError, "#{entity.name} already has a hotel in #{hex.tile.location_name}" if tokened(hex,
-                                                                                                          entity)
+            raise GameError, "#{entity.name} already has a hotel in #{hex.tile.location_name}" if tokened(hex, entity)
 
-            @game.log << "#{entity.name} places a hotel on #{hex.name}"
+            cost = action.cost # We are using token_cost_override
+            raise GameError, "#{entity.name} cannot afford "\
+                  "#{@game.format_currency(cost)} cost to lay hotel" if cost > entity.cash
+
+            @game.log << "#{entity.name} places a hotel on #{hex.name} for #{@game.format_currency(cost)}"
+            entity.spend(cost, @game.bank)
 
             entity.tokens.delete(token)
             hex.tile.icons << Part::Icon.new("../logos/18_fl/#{entity.id}")
             pass!
+          end
+
+          def token_cost_override(entity, city_hex, _slot, token, _tokener)
+            hex = city_hex.respond_to?(:city?) ? city_hex.hex : city_hex
+            token.price * @game.graph.distance_to_station(entity, hex)
           end
 
           def tokened(hex, entity)

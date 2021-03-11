@@ -24,6 +24,13 @@ module Engine
           @game.graph.can_token?(entity)
       end
 
+      # This is called to see if the cost of a PlaceToken action should be overriden
+      # Avoid throwing an error here; it will get logged to browser console not browser window!
+      # _city_hex is a city, or a hex. Depends on if it's for a PlaceToken or HexToken action.
+      def token_cost_override(_entity, _city_hex, _slot, _token)
+        nil
+      end
+
       def available_tokens(entity)
         token_holder = entity.company? ? entity.owner : entity
         token_holder.tokens_by_type
