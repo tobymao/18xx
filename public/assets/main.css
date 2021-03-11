@@ -13,7 +13,7 @@ a {
 
 button, .button_link {
   font-size: 14px;
-  background: whitesmoke;
+  background-color: gainsboro;
   color: black;
   border: solid 1px black;
   border-radius: 5px;
@@ -36,7 +36,7 @@ button:last-child, button.par_price:nth-of-type(6n), button.sell_share:nth-of-ty
   margin-right: 0;
 }
 button:disabled {
-  background: gray;
+  background-color: gray;
 }
 
 h2 {
@@ -60,7 +60,7 @@ h3 {
     outline: 0;
   }
   button:hover:not([disabled]), .button_link:hover {
-    background: black;
+    background-color: black;
     border-color: gainsboro;
     color: gainsboro;
     text-decoration: none;
@@ -75,7 +75,7 @@ h3 {
 }
 
 button.active {
-  background: lightblue;
+  background-color: lightblue;
   color: black;
 }
 
@@ -83,13 +83,14 @@ input, select, textarea {
   cursor: pointer;
 }
 input:not([type=radio]):not([type=checkbox]), select, textarea {
-  background: whitesmoke;
+  background: gainsboro;
   border-radius: 5px;
   padding: 0 0.5rem;
+  box-sizing: border-box;
   margin: 0.5rem;
 }
 input:not([type=radio]):not([type=checkbox]), select:not([multiple]) {
-  height: 1.5rem;
+  height: 1.7rem;
 }
 input + label, select + label {
   margin-left: 0.5rem;
