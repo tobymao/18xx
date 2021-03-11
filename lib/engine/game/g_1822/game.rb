@@ -2277,6 +2277,8 @@ module Engine
         BIDDING_BOX_CONCESSION_COUNT = 3
         BIDDING_BOX_PRIVATE_COUNT = 3
 
+        BIDDING_BOX_MINOR_COLOR = '#c6e9af'
+
         BIDDING_BOX_START_MINOR = 'M24'
         BIDDING_BOX_START_CONCESSION = 'C1'
         BIDDING_BOX_START_PRIVATE = 'P1'
@@ -3305,6 +3307,11 @@ module Engine
           @bidbox_minors_cache = bank_companies(self.class::COMPANY_MINOR_PREFIX)
                                    .first(self.class::BIDDING_BOX_MINOR_COUNT)
                                    .map(&:id)
+
+          # Set the reservation color of all the minors in the bid boxes
+          @bidbox_minors_cache.each do |company_id|
+            corporation_by_id(company_id[1..-1]).reservation_color = self.class::BIDDING_BOX_MINOR_COLOR
+          end
         end
 
         def can_gain_extra_train?(entity, train)

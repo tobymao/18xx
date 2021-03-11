@@ -87,6 +87,7 @@ module Engine
 
             # Find the correct minor in the corporations
             minor = @game.find_corporation(company)
+            minor.reservation_color = :white
 
             # Get the correct par price according to phase
             current_phase = @game.phase.name.to_i
