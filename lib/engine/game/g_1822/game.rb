@@ -163,7 +163,7 @@ module Engine
               'count' => 1,
               'color' => 'brown',
               'code' =>
-                'city=revenue:50,slots:3;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;label=C',
+                'city=revenue:40,slots:3;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;label=C',
             },
           'X7' =>
             {
