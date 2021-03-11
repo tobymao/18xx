@@ -34,9 +34,7 @@ module Engine
 
             choices = @game.company_choices(entity, :stock_round)
             if !choices.empty? && entity.id == @game.class::COMPANY_OSTH
-              if @bid_actions.positive? || !can_buy_any?(entity.owner) || @game.player_debt(entity.owner).positive?
-                return {}
-              end
+              return {} if @bid_actions.positive? || @game.player_debt(entity.owner).positive?
             end
             choices
           end
