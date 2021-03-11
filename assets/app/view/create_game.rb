@@ -24,7 +24,7 @@ module View
       if @mode == :multi
         inputs << h(:label, { style: @label_style }, 'Game Options')
         inputs << render_input('Invite only game', id: 'unlisted', type: :checkbox,
-                                                   container_style: { paddingLeft: '1.5rem' })
+                                                   container_style: { paddingLeft: '0.5rem' })
       elsif @mode == :hotseat
         @num_players.times do |index|
           n = index + 1
@@ -140,7 +140,7 @@ module View
         style: {
           listStyle: 'none',
           marginTop: '0',
-          paddingLeft: '1.5rem',
+          paddingLeft: '0.5rem',
         },
       }
 
