@@ -97,6 +97,7 @@ module Engine
       hexes = Hash.new { |h, k| h[k] = {} }
       nodes = {}
       paths = {}
+      connections = Hash.new { |h, k| h[k] = false }
 
       @game.hexes.each do |hex|
         hex.tile.cities.each do |city|
@@ -155,7 +156,8 @@ module Engine
 
         walk_corporation = @no_blocking ? nil : corporation
 
-        node.walk(visited: visited, corporation: walk_corporation, skip_track: @skip_track) do |path|
+        node.walk(visited: visited, corporation: walk_corporation, skip_track: @skip_track,
+                  connections: connections) do |path|
           paths[path] = true
           path.nodes.each do |p_node|
             nodes[p_node] = true
