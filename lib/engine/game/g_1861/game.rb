@@ -11,16 +11,6 @@ module Engine
 
         CURRENCY_FORMAT_STR = '%d₽'
 
-        BANK_CASH = 15_000
-
-        CERT_LIMIT = { 3 => 21, 4 => 16, 5 => 13, 6 => 11 }.freeze
-
-        STARTING_CASH = { 3 => 420, 4 => 315, 5 => 252, 6 => 210 }.freeze
-
-        CAPITALIZATION = :incremental
-
-        MUST_SELL_IN_BLOCKS = false
-
         TILES = {
           '3' => 2,
           '4' => 4,
