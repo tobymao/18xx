@@ -9,8 +9,7 @@ module Engine
         class BuyTrain < G1867::Step::BuyTrain
           include SkipForNational
 
-          def buy_cheapest(entity)
-            train = @depot.upcoming.first
+          def buy_train(entity, train)
             action = Engine::Action::BuyTrain.new(
               entity,
               train: train,
@@ -23,7 +22,9 @@ module Engine
             entity = current_entity
             return super if entity.type != :national
 
-            buy_cheapest(entity) while must_buy_train?(entity) || entity.cash > @depot.upcoming.first.price
+            buy_train(entity, @depot.min_depot_train) if must_buy_train?(entity)
+
+            buy_train(entity, @depot.upcoming.first) while entity.cash > @depot.upcoming.first.price
           end
 
           def buyable_trains(entity)

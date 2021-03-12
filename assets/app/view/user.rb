@@ -45,7 +45,6 @@ module View
         h('div#settings__options', [
           render_checkbox('Turn and Message Emails', :notifications),
           render_checkbox('Red 18xx.games Logo', :red_logo),
-          render_checkbox('Simple Corporation Logos', :simple_logos),
         ]),
         h('div#settings__colors', { style: { maxWidth: '38rem' } }, [
           render_color('Main Background', :bg, color_for(:bg)),
@@ -108,7 +107,7 @@ module View
     end
 
     def reset_settings
-      %i[simple_logos red_logo].each { |e| input_elm(e).checked = default_for(e) }
+      input_elm(:red_logo).checked = default_for(:red_logo)
       %i[bg font bg2 font2 your_turn hotseat_game].each { |e| input_elm(e).value = default_for(e) }
       TILE_COLORS.each { |color, hex_color| input_elm(color).value = hex_color }
       ROUTE_COLORS.each_with_index do |hex_color, index|
@@ -177,7 +176,7 @@ module View
               max: 24,
               value: route_prop(index, :width),
             },
-            input_style: { width: '2.5rem' },
+            input_style: { width: '3.5rem' },
           ),
           render_input(
             '',
@@ -187,7 +186,7 @@ module View
               title: 'dash/gap lengths of route on map, for help hover/click header',
               value: route_prop(index, :dash),
             },
-            input_style: { width: '2.5rem' },
+            input_style: { width: '7rem' },
           ),
         ])
       end

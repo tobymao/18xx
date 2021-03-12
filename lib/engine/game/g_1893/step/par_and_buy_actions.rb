@@ -16,7 +16,8 @@ module ParAndBuy
     # In case president's share is reserved, do not change presidency
     allow_president_change = action.bundle.corporation.presidents_share.buyable
     buy_shares(action.entity, action.bundle, swap: action.swap, allow_president_change: allow_president_change)
+    track_action(action, action.bundle.corporation)
     @round.last_to_act = action.entity
-    @current_actions << action
+    @round.current_actions << action
   end
 end

@@ -87,6 +87,7 @@ module Engine
 
             # Find the correct minor in the corporations
             minor = @game.find_corporation(company)
+            minor.reservation_color = :white
 
             # Get the correct par price according to phase
             current_phase = @game.phase.name.to_i
@@ -122,6 +123,11 @@ module Engine
 
             # Remove the proxy company for the minor
             @game.companies.delete(company)
+
+            # If there is a difference between the treasury and the price. The rest is paid to the bank.
+            price_treasury_difference = price - treasury
+            @log << "#{player.name} pays #{@game.format_currency(price_treasury_difference)} "\
+                    'to the bank' if price_treasury_difference.positive?
 
             # If there is a difference between the treasury and the money the company get from the IPO
             treasury_par_difference = treasury - (par_price * 2)

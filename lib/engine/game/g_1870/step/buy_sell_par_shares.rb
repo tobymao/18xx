@@ -8,11 +8,11 @@ module Engine
       module Step
         class BuySellParShares < Engine::Step::BuySellParShares
           def actions(entity)
-            return [] if @current_actions.last&.entity&.corporation?
+            return [] if @round.current_actions.last&.entity&.corporation?
 
             if entity.corporation? && entity.owned_by?(current_entity)
               actions = []
-              actions << 'buy_shares' if @current_actions.none? &&
+              actions << 'buy_shares' if @round.current_actions.none? &&
                                          entity.operated? &&
                                          entity.num_ipo_shares < 4
 

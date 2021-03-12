@@ -2,7 +2,6 @@
 
 require 'lib/hex'
 require 'lib/settings'
-require 'lib/storage'
 require 'lib/tile_selector'
 require 'view/game/actionable'
 require 'view/game/runnable'
@@ -55,8 +54,9 @@ module View
           children << h(
             Tile,
             tile: @tile,
-            show_coords: Lib::Storage['show_coords'] && (@role == :map),
-            routes: @routes
+            show_coords: setting_for(:show_coords, @game) && (@role == :map),
+            routes: @routes,
+            game: @game
           )
         end
         children << h(TriangularGrid) if Lib::Params['grid']

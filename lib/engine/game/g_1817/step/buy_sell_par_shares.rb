@@ -50,12 +50,16 @@ module Engine
             actions
           end
 
+          def normal_pass?(_entity)
+            !@auctioning && !@winning_bid
+          end
+
           def can_sell_order?
             !bought?
           end
 
           def shorted?
-            @current_actions.any? { |x| x.instance_of?(Action::Short) }
+            @round.current_actions.any? { |x| x.instance_of?(Action::Short) }
           end
 
           def redeemable_shares(entity)
@@ -82,7 +86,7 @@ module Engine
             return [] if @corporate_action && @corporate_action.entity != entity
 
             actions = []
-            if @current_actions.none?
+            if @round.current_actions.none?
               actions << 'take_loan' if @game.can_take_loan?(entity) && !@corporate_action.is_a?(Action::BuyShares)
               actions << 'buy_shares' unless @game.redeemable_shares(entity).empty?
             end
@@ -174,7 +178,7 @@ module Engine
             return par_corporation if @winning_bid
 
             unless @auctioning
-              @current_actions << @corporate_action
+              @round.current_actions << @corporate_action
               return super
             end
 
@@ -226,7 +230,7 @@ module Engine
             else
               @log << "#{entity.name} auctions #{corporation.name} for #{@game.format_currency(price)}"
               @round.last_to_act = action.entity
-              @current_actions.clear
+              @round.current_actions.clear
               @game.place_home_token(action.corporation)
             end
             super(action)

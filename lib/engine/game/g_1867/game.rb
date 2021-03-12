@@ -39,9 +39,9 @@ module Engine
 
         BANK_CASH = 15_000
 
-        CERT_LIMIT = { 3 => 21, 4 => 16, 5 => 13, 6 => 11 }.freeze
+        CERT_LIMIT = { 2 => 21, 3 => 21, 4 => 16, 5 => 13, 6 => 11 }.freeze
 
-        STARTING_CASH = { 3 => 420, 4 => 315, 5 => 252, 6 => 210 }.freeze
+        STARTING_CASH = { 2 => 420, 3 => 420, 4 => 315, 5 => 252, 6 => 210 }.freeze
 
         CAPITALIZATION = :incremental
 
@@ -200,7 +200,7 @@ module Engine
           'A19' => 'Detroit',
         }.freeze
 
-        MARKET = [
+        COLUMN_MARKET = [
           %w[35
              40
              45
@@ -230,6 +230,82 @@ module Engine
              490
              540],
            ].freeze
+
+        GRID_MARKET = [['',
+                        '',
+                        '',
+                        '',
+                        '135',
+                        '150',
+                        '165mC',
+                        '180',
+                        '200z',
+                        '220',
+                        '245',
+                        '270',
+                        '300',
+                        '330',
+                        '360',
+                        '400',
+                        '440',
+                        '490',
+                        '540'],
+                       ['',
+                        '',
+                        '',
+                        '110',
+                        '120',
+                        '135',
+                        '150mC',
+                        '165z',
+                        '180z',
+                        '200',
+                        '220',
+                        '245',
+                        '270',
+                        '300',
+                        '330',
+                        '360',
+                        '400',
+                        '440',
+                        '490'],
+                       ['',
+                        '',
+                        '90',
+                        '100',
+                        '110',
+                        '120',
+                        '135pmC',
+                        '150z',
+                        '165',
+                        '180',
+                        '200',
+                        '220',
+                        '245',
+                        '270',
+                        '300',
+                        '330',
+                        '360',
+                        '400',
+                        '440'],
+                       ['',
+                        '70',
+                        '80',
+                        '90',
+                        '100',
+                        '110p',
+                        '120pmC',
+                        '135',
+                        '150',
+                        '165',
+                        '180',
+                        '200'],
+                       %w[60 65 70 80 90p 100p 110mC 120 135 150],
+                       %w[55 60 65 70p 80p 90 100mC 110],
+                       %w[50 55 60x 65x 70 80],
+                       %w[45 50x 55x 60 65],
+                       %w[40 45 50 55],
+                       %w[35 40 45]].freeze
 
         PHASES = [
           {
@@ -927,6 +1003,7 @@ module Engine
         # A token is reserved for Montreal is reserved for nationalization
         NATIONAL_RESERVATIONS = ['L12'].freeze
         GREEN_CORPORATIONS = %w[BBG LPS QLS SLA TGB THB].freeze
+        TRAINS_REMOVE_2_PLAYER = { '2' => 3, '3' => 2, '4' => 1, '5' => 1, '6' => 1, '7' => 1 }.freeze
 
         include InterestOnLoans
         include CompanyPriceUpToFace
@@ -944,8 +1021,12 @@ module Engine
           5 # constant
         end
 
+        def game_market
+          @optional_rules&.include?(:grid_market) ? self.class::GRID_MARKET : self.class::COLUMN_MARKET
+        end
+
         def init_stock_market
-          G1867::StockMarket.new(self.class::MARKET, self.class::CERT_LIMIT_TYPES,
+          G1867::StockMarket.new(game_market, self.class::CERT_LIMIT_TYPES,
                                  multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
         end
 
@@ -962,7 +1043,7 @@ module Engine
         end
 
         def available_programmed_actions
-          [Action::ProgramMergerPass]
+          [Action::ProgramMergerPass, Action::ProgramBuyShares, Action::ProgramSharePass]
         end
 
         def merge_rounds
@@ -1075,6 +1156,10 @@ module Engine
           minor = unipoed.select { |c| c.type == :minor }
           major = unipoed.select { |c| c.type == :major }
           ["#{minor.size} minor, #{major.size} major", [@national]]
+        end
+
+        def show_value_of_companies?(_owner)
+          true
         end
 
         def nationalization_loan_movement(corporation)
@@ -1381,6 +1466,30 @@ module Engine
               hex.tile.cities.first.exchange_token(@national.tokens.first)
             end
           end
+        end
+
+        def setup_preround
+          setup_for_2_players if @players.size == 2
+        end
+
+        def setup_for_2_players
+          # Only been tested for 1861, but Ian think's it'll work for 1867.
+          @log << '1867 has not been tested for 2 players.' if instance_of?(G1867::Game)
+
+          # 70% not 60%
+          @corporations.each { |c| c.max_ownership_percent = 70 if c.max_ownership_percent == 60 }
+
+          # Remove trains
+          TRAINS_REMOVE_2_PLAYER.each do |train_name, count|
+            trains = depot.upcoming.select { |t| t.name == train_name }.reverse.take(count)
+
+            trains.each { |t| depot.remove_train(t) }
+          end
+
+          # Standard game, remove 2 privates randomly
+          removal_companies = @companies.reject { |c| c.id == '3' }.sort_by { rand }.take(2)
+          @log << "Following companies are removed #{removal_companies.map(&:id).join(', ')}"
+          removal_companies.each { |company| @companies.delete(company) }
         end
 
         def setup

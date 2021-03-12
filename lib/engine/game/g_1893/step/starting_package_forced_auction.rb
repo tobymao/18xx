@@ -23,9 +23,9 @@ module Engine
           def help
             return 'Select a company to auction' unless @auctioning
 
-            "Buy or Pass. If everyone passes, the price is lowered by #{@game.format_currency(10)} and a new " \
-              'buy/pass opportunity is presented. This continues until someone buys it or when price would go ' \
-              'below 50% of the value in which case the player that selected the company is force to buy it. ' \
+            "Buy (if enough cash) or Pass. If everyone passes, the price is lowered by #{@game.format_currency(10)} "\
+              'and a new buy/pass opportunity is presented. This continues until someone buys it or when price go '\
+              'below 50% of the value in which case the player that selected the company is force to buy it. '\
               'Then next player in SR order gets to select a new company to be auctioned, and so on until all ' \
               'companies are sold. Then the game continues with SR2. Note! Minors bought in this way will get the '\
               "purchase price as treasury, or #{@game.format_currency(100)}, whichever is highest."
@@ -111,7 +111,7 @@ module Engine
             @auction_triggerer = bid.entity
             target = bid_target(bid)
 
-            @game.log << "#{@auction_triggerer.name} selects #{target.name} for aution"
+            @game.log << "#{@auction_triggerer.name} selects #{target.name} for auction"
             auction_entity(target)
           end
 

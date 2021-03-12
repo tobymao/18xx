@@ -33,6 +33,8 @@ module Engine
 
         CERT_LIMIT = { 3 => 26, 4 => 20, 5 => 16, 6 => 13, 7 => 11 }.freeze
 
+        EBUY_OTHER_VALUE = false
+
         STARTING_CASH = { 3 => 700, 4 => 525, 5 => 420, 6 => 350, 7 => 300 }.freeze
 
         CAPITALIZATION = :incremental
@@ -161,7 +163,7 @@ module Engine
               'count' => 1,
               'color' => 'brown',
               'code' =>
-                'city=revenue:50,slots:3;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;label=C',
+                'city=revenue:40,slots:3;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;label=C',
             },
           'X7' =>
             {
@@ -364,6 +366,7 @@ module Engine
           'P39' => 'Canterbury',
           'P41' => 'Dover',
           'P43' => 'English Channel',
+          'Q30' => 'Norwich',
           'Q44' => 'France',
         }.freeze
 
@@ -527,19 +530,8 @@ module Engine
             variants: [
               {
                 name: 'E',
-                distance: [
-                  {
-                    'nodes' => %w[city offboard],
-                    'pay' => 99,
-                    'visit' => 99,
-                    'multiplier' => 2,
-                  },
-                  {
-                    'nodes' => ['town'],
-                    'pay' => 0,
-                    'visit' => 99,
-                  },
-                ],
+                distance: 99,
+                multiplier: 2,
                 price: 1000,
               },
             ],
@@ -1282,7 +1274,8 @@ module Engine
             sym: 'M14',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. Starting location is M38.',
+            desc: 'A 50% director’s certificate in the associated minor company. Starting location is M38. Home '\
+                  'token cost £20, placing home token counts as first tile lay. ',
             abilities: [],
             color: '#ffffff',
             text_color: 'black',
@@ -2283,6 +2276,8 @@ module Engine
         BIDDING_BOX_MINOR_COUNT = 4
         BIDDING_BOX_CONCESSION_COUNT = 3
         BIDDING_BOX_PRIVATE_COUNT = 3
+
+        BIDDING_BOX_MINOR_COLOR = '#c6e9af'
 
         BIDDING_BOX_START_MINOR = 'M24'
         BIDDING_BOX_START_CONCESSION = 'C1'
@@ -3312,6 +3307,11 @@ module Engine
           @bidbox_minors_cache = bank_companies(self.class::COMPANY_MINOR_PREFIX)
                                    .first(self.class::BIDDING_BOX_MINOR_COUNT)
                                    .map(&:id)
+
+          # Set the reservation color of all the minors in the bid boxes
+          @bidbox_minors_cache.each do |company_id|
+            corporation_by_id(company_id[1..-1]).reservation_color = self.class::BIDDING_BOX_MINOR_COLOR
+          end
         end
 
         def can_gain_extra_train?(entity, train)
@@ -3556,7 +3556,8 @@ module Engine
           spender = company.owner
           bundle = company_tax_haven_bundle(choice)
           corporation = bundle.corporation
-          @share_pool.transfer_shares(bundle, @tax_haven, spender: spender, receiver: corporation,
+          receiver = bundle.owner == @share_pool ? @bank : corporation
+          @share_pool.transfer_shares(bundle, @tax_haven, spender: spender, receiver: receiver,
                                                           price: bundle.price, allow_president_change: false)
           @log << "#{spender.name} spends #{format_currency(bundle.price)} and tax haven gains a share of "\
                   "#{corporation.name}."
@@ -3803,13 +3804,13 @@ module Engine
               c.id != self.class::COMPANY_LCDR && self.class::PLUS_EXPANSION_BIDBOX_2.include?(c.id)
             end
             privates.delete(company)
-            @log << "#{company.id}-#{company.name} have been removed from the game"
+            @log << "#{company.name} have been removed from the game"
 
             # Remove two of the bidbox 3 privates
             2.times.each do |_|
               company = privates.find { |c| self.class::PLUS_EXPANSION_BIDBOX_3.include?(c.id) }
               privates.delete(company)
-              @log << "#{company.id}-#{company.name} have been removed from the game"
+              @log << "#{company.name} have been removed from the game"
             end
           end
 

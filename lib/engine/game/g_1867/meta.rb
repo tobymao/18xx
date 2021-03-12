@@ -16,7 +16,14 @@ module Engine
         GAME_PUBLISHER = :grand_trunk_games
         GAME_RULES_URL = 'https://boardgamegeek.com/filepage/212807/18611867-rulebook'
 
-        PLAYER_RANGE = [3, 6].freeze
+        PLAYER_RANGE = [2, 6].freeze
+        OPTIONAL_RULES = [
+          {
+            sym: :grid_market,
+            short_name: 'Grid Stock Market',
+            desc: 'Play with the Grid (2D) Stock Market from 1861 rather than the default Column (1D) Stock Market',
+          },
+        ].freeze
       end
     end
   end

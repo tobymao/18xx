@@ -405,7 +405,7 @@ describe 'Assets' do
       ['1889',
        314,
        [[7, 'buy_to_float', [
-        'Auto Buy shares till float',
+        'Auto Buy Shares',
         'KO',
        ]]],
        ['1817',

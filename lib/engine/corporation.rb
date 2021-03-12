@@ -23,9 +23,9 @@ module Engine
     include Spender
 
     attr_accessor :ipoed, :par_via_exchange, :max_ownership_percent, :float_percent, :capitalization, :second_share,
-                  :type, :floatable, :original_par_price
+                  :type, :floatable, :original_par_price, :reservation_color
     attr_reader :companies, :min_price, :name, :full_name, :fraction_shares, :id, :needs_token_to_par,
-                :presidents_share, :reservation_color
+                :presidents_share
     attr_writer :par_price, :share_price
 
     SHARES = ([20] + Array.new(8, 10)).freeze

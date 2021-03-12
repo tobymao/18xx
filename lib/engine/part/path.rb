@@ -117,10 +117,11 @@ module Engine
       #  * If `chain` is nil `walk` will yield to a block, providing this Part and the visited Paths including this one
 
       # on: HashSet of Paths that we want to *exclusively* walk on
-      def walk(skip: nil, jskip: nil, visited: nil, visited_edges: {}, on: nil, chain: nil)
+      def walk(skip: nil, jskip: nil, visited: nil, visited_edges: nil, on: nil, chain: nil)
         return if visited&.[](self)
 
         visited = visited&.dup || {}
+        visited_edges = visited_edges&.dup || {}
         visited[self] = true
 
         if chain

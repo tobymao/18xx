@@ -360,7 +360,10 @@ module View
           # the space is nut just a space but a &nbsp in unicode;
           cells << h(:div, cell_props(item[:type], @game.round_counter == index),
                      [h('div.center', item[:value] || ' '), h('div.nowrap', "#{item[:type]} #{item[:name]}")])
-          cells << h(:div, cell_props(:Export), [train_export]) if item[:exportAfter]
+          cells << h(:div, cell_props(:Export), [
+            item[:exportAfterValue] ? h(:div, item[:exportAfterValue]) : nil,
+            train_export,
+          ].compact) if item[:exportAfter]
           cells
         end
 
@@ -374,6 +377,8 @@ module View
             [color_for(:green), contrast_on(color_for(:green)), 'space-between']
           when :Export
             [color_for(:yellow), contrast_on(color_for(:yellow)), 'center']
+          when :End
+            [color_for(:blue), contrast_on(color_for(:blue)), 'space-between']
           else
             [color_for(:bg2), color_for(:font2), 'space-between']
           end

@@ -36,6 +36,8 @@ module Engine
     '1882/hs_fxmfdndg_26178.json', # Auto-pass disable (shares sold)
     '1882/hs_kufujwkw_26178.json', # Auto-pass disable (PAR)
     '1882/hs_vaxptumi_26178.json', # Auto-pass disable (buy unsecure)
+    '1889/hs_lhglbbiz_17502.json', # Auto-buy from market
+    '1889/hs_jmmljkbw_17502.json', # Auto-buy multiple from IPO
   ].freeze
 
   AUTO_FIXTURES.each do |fixture_name|

@@ -10,38 +10,16 @@ module Engine
         class Track < Engine::Step::Track
           include AcquireVaTunnelCoalMarker
 
-          attr_accessor :no_upgrades
-          attr_reader :upgraded
+          def update_token!(action, entity, tile, old_tile)
+            if action.hex.id == 'E15' && (token = tile.cities.flat_map(&:tokens).find(&:itself))
+              # If there are blocking tokens in both cities, no decisions to be made
+              return if @game.blocking_token?(token)
 
-          def setup
-            super
-            @no_upgrades = false
-            @round.last_tile_lay = nil
-          end
-
-          def round_state
-            super.merge(
-              {
-                last_tile_lay: nil,
-              }
-            )
-          end
-
-          def get_tile_lay(entity)
-            action = super
-            return unless action
-
-            action[:upgrade] = false if @no_upgrades
-            action
-          end
-
-          def process_lay_tile(action)
-            if @round.last_tile_lay && action.hex == @round.last_tile_lay.hex
-              raise GameError, 'Cannot lay and upgrade the same tile in the same turn'
+              # Otherwise, the token owner gets to decide the token location
+              entity = token.corporation
             end
 
-            @round.last_tile_lay = action.tile
-            super
+            super(action, entity, tile, old_tile)
           end
         end
       end
