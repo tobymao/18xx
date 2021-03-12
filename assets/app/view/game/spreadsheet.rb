@@ -219,7 +219,7 @@ module View
             title: 'Sort',
             click: lambda {
               mark_sort_column(sort_by)
-              toggle_sort_order
+              toggle_sort_order if @spreadsheet_sort_by == sort_by
             },
             children: text,
           ),
