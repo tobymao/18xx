@@ -82,8 +82,6 @@ module Engine
         end
       end
 
-      private
-
       def sold_out_stock_movement(corp)
         @game.stock_market.move_up(corp)
       end
