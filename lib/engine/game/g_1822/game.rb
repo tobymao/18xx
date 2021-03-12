@@ -2329,6 +2329,7 @@ module Engine
         EXTRA_TRAIN_PULLMAN = 'P+'
         EXTRA_TRAIN_PERMANENTS = %w[2P LP].freeze
         LOCAL_TRAINS = %w[L LP].freeze
+        E_TRAIN = 'E'
 
         LIMIT_TOKENS_AFTER_MERGER = 9
 
