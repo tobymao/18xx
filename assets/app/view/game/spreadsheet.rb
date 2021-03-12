@@ -409,17 +409,29 @@ module View
         h(:tr, tr_props, [
           h(:th, name_props, corporation.name),
           *@game.players.map do |p|
-            sold_props = { style: {} }
+            props = { style: {} }
             if @game.round.active_step&.did_sell?(corporation, p)
-              sold_props[:style][:backgroundColor] = '#9e0000'
-              sold_props[:style][:color] = 'white'
+              props[:style][:backgroundColor] = '#9e0000'
+              props[:style][:color] = 'white'
             end
+            props[:style][:color] = 'transparent' if num_shares_of(p, corporation).zero?
             share_holding = corporation.president?(p) ? '*' : ''
             share_holding += num_shares_of(p, corporation).to_s unless corporation.minor?
-            h('td.padded_number', sold_props, share_holding)
+            h('td.padded_number', props, share_holding)
           end,
-          h('td.padded_number', { style: { borderLeft: border_style } }, num_shares_of(corporation, corporation).to_s),
-          h('td.padded_number', { style: { borderRight: border_style } },
+          h('td.padded_number', {
+              style: {
+                borderLeft: border_style,
+                color: num_shares_of(corporation, corporation).zero? ? 'transparent' : 'inherit',
+              },
+            },
+            num_shares_of(corporation, corporation)),
+          h('td.padded_number', {
+              style: {
+                borderRight: border_style,
+                color: num_shares_of(@game.share_pool, corporation).zero? ? 'transparent' : 'inherit',
+              },
+            },
             "#{corporation.receivership? ? '*' : ''}#{num_shares_of(@game.share_pool, corporation)}"),
           h('td.padded_number', corporation.par_price ? @game.format_currency(corporation.par_price.price) : ''),
           h('td.padded_number', market_props,
