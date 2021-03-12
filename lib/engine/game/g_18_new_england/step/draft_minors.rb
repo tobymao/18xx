@@ -4,7 +4,7 @@ require_relative '../../../step/base'
 
 module Engine
   module Game
-    module G18NE
+    module G18NewEngland
       module Step
         class DraftMinors < Engine::Step::Base
           attr_reader :corporations, :choices, :minor_slots
@@ -21,7 +21,7 @@ module Engine
 
           def build_minor_slots
             %i[50 55 60 65 70].each do |price|
-              [:top, :bottom].each do |pos|
+              %i[top bottom].each do |pos|
                 @minor_slots[price][pos] = :available
               end
             end

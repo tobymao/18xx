@@ -2,7 +2,7 @@
 
 module Engine
   module Game
-    module G18NE
+    module G18NewEngland
     end
   end
 end

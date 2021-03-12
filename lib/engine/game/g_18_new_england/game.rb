@@ -1,15 +1,15 @@
 # frozen_string_literal: true
 
 require_relative 'meta'
-#require_relative 'stock_market'
+# require_relative 'stock_market'
 require_relative '../base'
 
 module Engine
   module Game
-    module G18NE
+    module G18NewEngland
       class Game < Game::Base
-      # class Game < G1867::Game
-        include_meta(G18NE::Meta)
+        # class Game < G1867::Game
+        include_meta(G18NewEngland::Meta)
 
         register_colors(black: '#16190e',
                         blue: '#0189d1',
@@ -36,9 +36,9 @@ module Engine
 
         BANK_CASH = 12_000
 
-        CERT_LIMIT = { 3 => 20, 4 => 16, 5 => 13}.freeze
+        CERT_LIMIT = { 3 => 20, 4 => 16, 5 => 13 }.freeze
 
-        STARTING_CASH = { 3 => 400, 4 => 280, 5 => 280}.freeze
+        STARTING_CASH = { 3 => 400, 4 => 280, 5 => 280 }.freeze
 
         CAPITALIZATION = :incremental
 
@@ -85,7 +85,7 @@ module Engine
           '70' => 2,
           '611' => 3,
           '216' => 2,
-          '911' => 4
+          '911' => 4,
         }.freeze
 
         LOCATION_NAMES = {
@@ -122,7 +122,7 @@ module Engine
           'M1': 'Portland',
           'M5': 'Boston',
           'M7': 'Quincy',
-          'O11': 'Cape Cod'
+          'O11': 'Cape Cod',
         }.freeze
 
         MARKET = [
@@ -160,42 +160,42 @@ module Engine
           {
             name: '2',
             train_limit: '4',
-            tiles: %i[ yellow ],
-            operating_rounds: 2
+            tiles: %i[yellow],
+            operating_rounds: 2,
           },
           {
             name: '3',
             on: '3',
             train_limit: 4,
-            tiles: %i[ yellow green ],
+            tiles: %i[yellow green],
             operating_rounds: 2,
           },
           {
             name: '4',
             on: '4',
             train_limit: 3,
-            tiles: %i[ yellow green ],
+            tiles: %i[yellow green],
             operating_rounds: 2,
           },
           {
             name: '5',
             on: '5E',
             train_limit: 3,
-            tiles: %i[ yellow green brown ],
+            tiles: %i[yellow green brown],
             operating_rounds: 2,
           },
           {
             name: '6',
             on: '6E',
             train_limit: 2,
-            tiles: %i[ yellow green brown ],
+            tiles: %i[yellow green brown],
             operating_rounds: 2,
           },
           {
             name: '8',
             on: '8E',
             train_limit: 2,
-            tiles: %i[ yellow green brown gray ],
+            tiles: %i[yellow green brown gray],
             operating_rounds: 2,
           },
           #    status: ['can_buy_companies'],
@@ -235,18 +235,17 @@ module Engine
             name: '6E',
             distance: 6,
             price: 600,
-            num: 3
+            num: 3,
           },
           {
             name: '8E',
             distance: 8,
             price: 800,
-            num: 20
-          }
+            num: 20,
+          },
         ].freeze
 
-        COMPANIES = [
-        ].freeze
+        COMPANIES = [].freeze
 
         CORPORATIONS = [
           {
@@ -434,41 +433,40 @@ module Engine
         # rubocop:disable Layout/LineLength
         HEXES = {
           white: {
-            %w[ B16 B6 C13 D10 D12 D14 D16 D2 D6 D8 E3 G3 G7 G9 I11 I3 I9 J10 J12 J4 J8 K11 K13 K7 L2 M11 M9 N10 N8 O9 L6] => 'blank',
-            %w[ E11 E5 E7 E9 F10 F12 F6 F8 G5 I5 I7 ] => 'upgrade=cost:40,terrain:mountain',
-            %w[ B10 B14 B18 B8 C15 C7 H12 H2 K9 M3 ] => 'upgrade=cost:20,terrain:water',
-            %w[ C17 C9 D4 F14 G11 H14 H6 J14 K5 L8 ] => 'town=revenue:0',
-            %w[ C5 E15 F12 F4 I13 ] => 'city=revenue:0',
-            %w[ B12 E13 H4 ] => 'city=revenue:0;upgrade=cost:20,terrain:water',
-            %w[ M7 ] => 'town=revenue:20,loc:1;city=revenue:20,loc:center;path=a:_1,b:_0',
-            %w[ N4] => 'town=revenue:10;path=a:1,b:_0;upgrade=cost:20,terrain:water',
+            %w[B16 B6 C13 D10 D12 D14 D16 D2 D6 D8 E3 G3 G7 G9 I11 I3 I9 J10 J12 J4 J8 K11 K13 K7 L2 M11 M9 N10 N8 O9 L6] => 'blank',
+            %w[E11 E5 E7 E9 F10 F12 F6 F8 G5 I5 I7] => 'upgrade=cost:40,terrain:mountain',
+            %w[B10 B14 B18 B8 C15 C7 H12 H2 K9 M3] => 'upgrade=cost:20,terrain:water',
+            %w[C17 C9 D4 F14 G11 H14 H6 J14 K5 L8] => 'town=revenue:0',
+            %w[C5 E15 F12 F4 I13] => 'city=revenue:0',
+            %w[B12 E13 H4] => 'city=revenue:0;upgrade=cost:20,terrain:water',
+            %w[M7] => 'town=revenue:20,loc:1;city=revenue:20,loc:center;path=a:_1,b:_0',
+            %w[N4] => 'town=revenue:10;path=a:1,b:_0;upgrade=cost:20,terrain:water',
           },
           yellow: {
             %w[L10] => 'city=revenue:30;path=a:_0,b:2;path=a:_0,b:3;upgrade=cost:20,terrain:water;label=Y',
-            %w[ C3 ] => 'city=revenue:30;city=revenue:30;path=a:0,b:_0;path=a:5,b:_1;label=Y',
-            %w[ C11 ] => 'city=revenue:20;path=a:_0,b:0;path=a:_0,b:3',
-            %w[ G13 ] => 'city=revenue:30;city=revenue:30;city=revenue:30;path=a:_0,b:1;path=a:_1,b:3;path=a:_2,b:5;label=NH',
-            %w[ H10 ] => 'city=revenue:30;path=a:_0,b:1;path=a:_0,b:2;label=H', 
-            %w[ H8 ] => 'city=revenue:20;city=revenue:20;path=a:_0,b:1;path=a:_1,b:3',
-            %w[ J6 ] => 'city=revenue:20;path=a:_0,b:4;path=a:_0,b:5',
-            %w[ K3 ] => 'city=revenue:20;path=a:_0,b:0;path=a:_0,b:1;upgrade=cost:20,terrain:water',
-            %w[ L4 ] => 'city=revenue:20,loc:center;town=revenue:10,loc:5;path=a:5,b:_0',
-            %w[ M5 ] => 'city=revenue:30;city=revenue:30;path=a:2,b:_0;path=a:4,b:_1;label=B',
+            %w[C3] => 'city=revenue:30;city=revenue:30;path=a:0,b:_0;path=a:5,b:_1;label=Y',
+            %w[C11] => 'city=revenue:20;path=a:_0,b:0;path=a:_0,b:3',
+            %w[G13] => 'city=revenue:30;city=revenue:30;city=revenue:30;path=a:_0,b:1;path=a:_1,b:3;path=a:_2,b:5;label=NH',
+            %w[H10] => 'city=revenue:30;path=a:_0,b:1;path=a:_0,b:2;label=H',
+            %w[H8] => 'city=revenue:20;city=revenue:20;path=a:_0,b:1;path=a:_1,b:3',
+            %w[J6] => 'city=revenue:20;path=a:_0,b:4;path=a:_0,b:5',
+            %w[K3] => 'city=revenue:20;path=a:_0,b:0;path=a:_0,b:1;upgrade=cost:20,terrain:water',
+            %w[L4] => 'city=revenue:20,loc:center;town=revenue:10,loc:5;path=a:5,b:_0',
+            %w[M5] => 'city=revenue:30;city=revenue:30;path=a:2,b:_0;path=a:4,b:_1;label=B',
           },
           gray: {
-            %w[ A13 ] => 'path=a:4,b:5',
-            %w[ B4 ] => 'path=a:4,b:5',
-            %w[ A13 ] => 'path=a:4,b:5',
-            %w[ E17 ] => 'path=a:2,b:3',
-            %w[ G15 ] => 'path=a:2,b:3;path=a:3,b:4',
-            %w[ O11] => 'town=revenue:40;path=a:2,b:_0;path=a:_0,b:3',
+            %w[A13] => 'path=a:4,b:5',
+            %w[B4] => 'path=a:4,b:5',
+            %w[E17] => 'path=a:2,b:3',
+            %w[G15] => 'path=a:2,b:3;path=a:3,b:4',
+            %w[O11] => 'town=revenue:40;path=a:2,b:_0;path=a:_0,b:3',
           },
           red: {
-            %w[ B2 ] => 'offboard=revenue:yellow_0|green_20|brown_30|gray_30;path=a:5,b:_0',
-            %w[ C19 ] => 'city=revenue:yellow_40|green_50|brown_70|gray_100;path=a:2,b:_0;path=a:3,b:_0',
-            %w[ F2 ] => 'city=revenue:yellow_30|green_40|brown_50|gray_60;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0',
-            %w[ K1 ] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_60;path=a:0,b:_0;path=a:5,b:_0',
-            %w[ M1 ] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_60;path=a:0,b:_0;path=a:1,b:_0',
+            %w[B2] => 'offboard=revenue:yellow_0|green_20|brown_30|gray_30;path=a:5,b:_0',
+            %w[C19] => 'city=revenue:yellow_40|green_50|brown_70|gray_100;path=a:2,b:_0;path=a:3,b:_0',
+            %w[F2] => 'city=revenue:yellow_30|green_40|brown_50|gray_60;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0',
+            %w[K1] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_60;path=a:0,b:_0;path=a:5,b:_0',
+            %w[M1] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_60;path=a:0,b:_0;path=a:1,b:_0',
           },
         }.freeze
         # rubocop:enable Layout/LineLength
@@ -499,7 +497,6 @@ module Engine
           { lay: true, upgrade: true },
           { lay: true, upgrade: :not_if_upgraded, cost: 20, cannot_reuse_same_hex: true },
         ].freeze
-
       end
     end
   end
