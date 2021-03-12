@@ -74,6 +74,18 @@ module Engine
           end
 
           def check_for_cheapest_train(entity, train); end
+
+          def cheapest_train_price(corporation)
+            cheapest_train = @depot.min_depot_train.variants.values.find do |item|
+              @game.train_of_size?(item, corporation.type)
+            end
+            cheapest_train[:price]
+          end
+
+          def must_take_loan?(corporation)
+            price = cheapest_train_price(corporation)
+            @game.buying_power(corporation) < price
+          end
         end
       end
     end
