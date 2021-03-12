@@ -410,6 +410,8 @@ module View
           extra << h(:td, corp_size)
         end
 
+        n_ipo_shares = num_shares_of(corporation, corporation)
+        n_market_shares = num_shares_of(@game.share_pool, corporation)
         h(:tr, tr_props, [
           h(:th, name_props, corporation.name),
           *@game.players.map do |p|
@@ -418,25 +420,26 @@ module View
               props[:style][:backgroundColor] = '#9e0000'
               props[:style][:color] = 'white'
             end
-            props[:style][:color] = 'transparent' if num_shares_of(p, corporation).zero?
+            n_shares = num_shares_of(p, corporation)
+            props[:style][:color] = 'transparent' if n_shares.zero?
             share_holding = corporation.president?(p) ? '*' : ''
-            share_holding += num_shares_of(p, corporation).to_s unless corporation.minor?
+            share_holding += n_shares.to_s unless corporation.minor?
             h('td.padded_number', props, share_holding)
           end,
           h('td.padded_number', {
               style: {
                 borderLeft: border_style,
-                color: num_shares_of(corporation, corporation).zero? ? 'transparent' : 'inherit',
+                color: n_ipo_shares.zero? ? 'transparent' : 'inherit',
               },
             },
-            num_shares_of(corporation, corporation)),
+            n_ipo_shares),
           h('td.padded_number', {
               style: {
                 borderRight: border_style,
-                color: num_shares_of(@game.share_pool, corporation).zero? ? 'transparent' : 'inherit',
+                color: n_market_shares.zero? ? 'transparent' : 'inherit',
               },
             },
-            "#{corporation.receivership? ? '*' : ''}#{num_shares_of(@game.share_pool, corporation)}"),
+            "#{corporation.receivership? ? '*' : ''}#{n_market_shares}"),
           h('td.padded_number', corporation.par_price ? @game.format_currency(corporation.par_price.price) : ''),
           h('td.padded_number', market_props,
             corporation.share_price ? @game.format_currency(corporation.share_price.price) : ''),
