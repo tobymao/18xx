@@ -2879,6 +2879,11 @@ module Engine
           stock_round
         end
 
+        def init_stock_market
+          G1822::StockMarket.new(game_market, self.class::CERT_LIMIT_TYPES,
+                                 multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
+        end
+
         def must_buy_train?(entity)
           entity.trains.none? { |t| !extra_train?(t) } &&
           !depot.depot_trains.empty?
