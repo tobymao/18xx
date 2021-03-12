@@ -389,7 +389,7 @@ module View
         if !(%w[place_token lay_tile remove_token] & current_entity_actions).empty?
           h(Game::Map, game: @game)
         else
-          h(Game::Round::Stock, game: @game)
+          h(Game::Round::Stock, game: @game, user: @user)
         end
       when Engine::Round::Operating
         if current_entity_actions.include?('merge')

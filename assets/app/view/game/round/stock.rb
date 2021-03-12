@@ -20,6 +20,7 @@ module View
         needs :selected_company, default: nil, store: true
         needs :last_player, default: nil, store: true
         needs :show_other_players, default: nil, store: true
+        needs :user, default: nil
 
         def render
           @step = @game.round.active_step
@@ -299,7 +300,7 @@ module View
 
           @game.companies.select { |c| c.owner == @game.bank }.map do |company|
             children = []
-            children << h(Company, company: company,
+            children << h(Company, company: company, user: @user,
                                    bids: (@current_actions.include?('bid') ? @step.bids[company] : nil))
             if @selected_company == company
               inputs = []
