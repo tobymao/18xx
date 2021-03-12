@@ -555,14 +555,12 @@ module Engine
         LAYOUT = :pointy
 
         def after_buy_company(player, company)
-          puts "Hello!  Actually using the new thing"
           target_price = optional_short_game ? 67 : 100
           share_price = stock_market.par_prices.find { |pp| pp.price == target_price }
 
           abilities(company, :shares) do |ability|
             ability.shares.each do |share|
-              if share.president
-                puts "Handling presidents share"      
+              if share.president   
                 stock_market.set_par(share.corporation, share_price)
                 share_pool.buy_shares(player, share, exchange: :free)
                 after_par(share.corporation)
