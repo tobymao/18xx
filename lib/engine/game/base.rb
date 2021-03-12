@@ -714,6 +714,18 @@ module Engine
         end
       end
 
+      def after_buy_company(player, company)
+        abilities(company, :shares) do |ability|
+          ability.shares.each do |share|
+            if share.president
+              @round.companies_pending_par << company
+            else
+              share_pool.buy_shares(player, share, exchange: :free)
+            end
+          end
+        end
+      end
+
       def player_value(player)
         player.value
       end

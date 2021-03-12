@@ -284,7 +284,7 @@ module Engine
             desc: "Buyer recieves TSI president's Share and flies probe if TSI isn't active.  May not be owned"\
             ' by a corporation. Remove from the game after TSI buys a spaceship.',
             abilities: [
-              { type: 'launch', corporation: 'TSI' },
+              { type: 'shares', shares: 'TSI_0' },
               { type: 'no_buy' },
               { type: 'close', when: 'bought_train', corporation: 'TSI' },
             ],
@@ -553,6 +553,25 @@ module Engine
         end
 
         LAYOUT = :pointy
+
+        def after_buy_company(player, company)
+          puts "Hello!  Actually using the new thing"
+          target_price = optional_short_game ? 67 : 100
+          share_price = stock_market.par_prices.find { |pp| pp.price == target_price }
+
+          abilities(company, :shares) do |ability|
+            ability.shares.each do |share|
+              if share.president
+                puts "Handling presidents share"      
+                stock_market.set_par(share.corporation, share_price)
+                share_pool.buy_shares(player, share, exchange: :free)
+                after_par(share.corporation)
+              else
+                share_pool.buy_shares(player, share, exchange: :free)
+              end
+            end
+          end
+        end
 
         def new_auction_round
           Round::Auction.new(self, [
