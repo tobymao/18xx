@@ -216,6 +216,7 @@ module View
 
       def render_sort_link(text, sort_by)
         [
+          h(:span, @spreadsheet_sort_by == sort_by ? sort_order_icon : ''),
           h(
             Link,
             href: '',
@@ -226,7 +227,6 @@ module View
             },
             children: text,
           ),
-          h(:span, @spreadsheet_sort_by == sort_by ? sort_order_icon : ''),
         ]
       end
 
