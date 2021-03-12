@@ -571,13 +571,6 @@ module Engine
           end
         end
 
-        def new_auction_round
-          Round::Auction.new(self, [
-            Engine::Step::CompanyPendingPar,
-            G2038::Step::WaterfallAuction,
-          ])
-        end
-
         def optional_short_game
           @optional_rules&.include?(:optional_short_game)
         end
