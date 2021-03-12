@@ -176,7 +176,7 @@ module View
         end
         extra << " #{@game.company_status_str(@company)}" if @game.company_status_str(@company)
         [h('div.nowrap', name_props, company.name + extra.join(',')),
-         @company.owner&.player? ? h('div.right', @game.format_currency(company.value)) : '',
+         @game.show_value_of_companies?(company.owner) ? h('div.right', @game.format_currency(company.value)) : '',
          h('div.padded_number', @game.format_currency(company.revenue)),
          @hidden_divs[company.sym]]
       end

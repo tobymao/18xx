@@ -123,6 +123,11 @@ module Engine
             # Remove the proxy company for the minor
             @game.companies.delete(company)
 
+            # If there is a difference between the treasury and the price. The rest is paid to the bank.
+            price_treasury_difference = price - treasury
+            @log << "#{player.name} pays #{@game.format_currency(price_treasury_difference)} "\
+                    'to the bank' if price_treasury_difference.positive?
+
             # If there is a difference between the treasury and the money the company get from the IPO
             treasury_par_difference = treasury - (par_price * 2)
             @log << "#{minor.name} receives an additional #{@game.format_currency(treasury_par_difference)} "\

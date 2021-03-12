@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'lib/settings'
-require 'lib/storage'
 
 module View
   module Game
@@ -13,9 +12,10 @@ module View
 
       def render
         children = [
-          player_colors_controls,
-          location_names_controls,
-          hex_coord_controls,
+          render_controls('Player Colors', :show_player_colors),
+          render_controls('Simple Logos', :simple_logos),
+          render_controls('Location Names', :show_location_names),
+          render_controls('Hex Coordinates', :show_coords),
           starting_map_controls,
           route_controls,
         ].compact
@@ -23,35 +23,13 @@ module View
         h('div#map_controls', children)
       end
 
-      def player_colors_controls
-        title = @game&.class&.title
-        show_player_colors = Lib::Storage["show_player_colors_#{title}"] || Lib::Storage['show_player_colors']
-
+      def render_controls(label, option)
         on_click = lambda do
-          Lib::Storage['show_player_colors'] = !show_player_colors
-          Lib::Storage["show_player_colors_#{title}"] = !show_player_colors
+          toggle_setting(option, @game)
           update
         end
 
-        render_button("Player Colors #{show_player_colors ? '✅' : '❌'}", on_click)
-      end
-
-      def location_names_controls
-        on_click = lambda do
-          Lib::Storage['hide_location_names'] = !Lib::Storage['hide_location_names']
-          update
-        end
-
-        render_button("Location Names #{Lib::Storage['hide_location_names'] ? '❌' : '✅'}", on_click)
-      end
-
-      def hex_coord_controls
-        on_click = lambda do
-          Lib::Storage['show_coords'] = !Lib::Storage['show_coords']
-          update
-        end
-
-        render_button("Hex Coordinates #{Lib::Storage['show_coords'] ? '✅' : '❌'}", on_click)
+        render_button("#{label} #{setting_for(option, @game) ? '✅' : '❌'}", on_click)
       end
 
       def starting_map_controls
