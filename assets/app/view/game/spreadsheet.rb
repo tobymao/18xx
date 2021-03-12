@@ -383,7 +383,9 @@ module View
 
         order_props = { style: { paddingLeft: '1.2em' } }
         order_props[:style][:color] =
-          if corporation.operating_history.keys[-1] == current_round
+          if operating_order.zero?
+            'transparent'
+          elsif corporation.operating_history.keys[-1] == current_round
             convert_hex_to_rgba(color_for(:font2), 0.5)
           end
 
