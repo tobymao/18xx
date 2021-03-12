@@ -340,7 +340,10 @@ module View
             when :companies
               corporation.companies.size
             else
-              @game.player_by_id(@spreadsheet_sort_by)&.num_shares_of(corporation)
+              p = @game.player_by_id(@spreadsheet_sort_by)
+              n = p&.num_shares_of(corporation)
+              n += 0.01 if corporation.president?(p)
+              n || 0
             end
           end
         end
