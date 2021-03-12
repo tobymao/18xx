@@ -430,11 +430,12 @@ module View
             style: {
               maxWidth: PLAYER_COL_MAX_WIDTH,
               whiteSpace: 'normal',
+              textAlign: 'right',
             },
           }
           props[:style][:minWidth] = min_width(entity)
         end
-        h('td.right', props, entity.companies.map(&:sym).join(', '))
+        h(:td, props, entity.companies.map(&:sym).join(', '))
       end
 
       def render_player_companies
