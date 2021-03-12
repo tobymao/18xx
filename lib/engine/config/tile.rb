@@ -103,7 +103,6 @@ module Engine
         '59' => 'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:2,b:_1;label=OO',
         '80' => 'junction;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0',
         '81' => 'junction;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0',
-        '81TR' => 'path=a:0,b:2;path=a:2,b:4;path=a:4,b:0',
         '82' => 'junction;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0',
         '83' => 'junction;path=a:0,b:_0;path=a:5,b:_0;path=a:3,b:_0',
         '84' => 'path=a:0,b:1,track:narrow;path=a:1,b:2,track:narrow;path=a:0,b:2,track:narrow',
