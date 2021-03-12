@@ -2061,7 +2061,7 @@ module Engine
         self.class::NEXT_SR_PLAYER_ORDER
       end
 
-      def reorder_players(order = nil)
+      def reorder_players(order = nil, log_all_players: false)
         order ||= next_sr_player_order
         case order
         when :after_last_to_act
@@ -2076,7 +2076,11 @@ module Engine
           current_order = @players.dup
           @players.sort_by! { |p| [p.cash, current_order.index(p)] }
         end
-        @log << "#{@players.first.name} has priority deal"
+        @log << if log_all_players
+                  "Priority order: #{@players.reject(&:bankrupt).map(&:name).join(', ')}"
+                else
+                  "#{@players.first.name} has priority deal"
+                end
       end
 
       def new_auction_round
