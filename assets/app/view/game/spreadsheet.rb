@@ -382,7 +382,10 @@ module View
         end
 
         order_props = { style: { paddingLeft: '1.2em' } }
-        operating_order_text = "#{operating_order}#{corporation.operating_history.keys[-1] == current_round ? '*' : ''}"
+        order_props[:style][:color] =
+          if corporation.operating_history.keys[-1] == current_round
+            convert_hex_to_rgba(color_for(:font2), 0.5)
+          end
 
         extra = []
         extra << h(:td, "#{corporation.loans.size}/#{@game.maximum_loans(corporation)}") if @game.total_loans&.nonzero?
@@ -437,7 +440,7 @@ module View
           h('td.padded_number', market_props,
             corporation.share_price ? @game.format_currency(corporation.share_price.price) : ''),
           h('td.padded_number', @game.format_currency(corporation.cash)),
-          h('td.left', order_props, operating_order_text),
+          h('td.padded_number', order_props, operating_order),
           h(:td, corporation.trains.map(&:name).join(', ')),
           h(:td, @game.token_string(corporation)),
           *extra,
