@@ -44,6 +44,8 @@ module Engine
 
             abilities = @game.abilities(action.entity, :tile_lay, time: 'any')
             abilities.each(&:use!)
+
+            @log << "The ability of #{action.entity.name} was used"
           end
 
           def hex_neighbors(entity, hex)
