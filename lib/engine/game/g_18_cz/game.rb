@@ -2424,6 +2424,7 @@ module Engine
 
         HOME_TOKEN_TIMING = :operate
         LIMIT_TOKENS_AFTER_MERGER = 999
+        NEXT_SR_PLAYER_ORDER = :most_cash
 
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false # if ebuying from depot, must buy cheapest train
         EBUY_OTHER_VALUE = false # allow ebuying other corp trains for up to face
@@ -2613,7 +2614,7 @@ module Engine
             case @round
             when Round::Stock
               @operating_rounds = OR_SETS[@turn - 1]
-              reorder_players(:most_cash, log_all_players: true)
+              reorder_players(log_all_players: true)
               new_operating_round
             when Round::Operating
               if @round.round_num < @operating_rounds
