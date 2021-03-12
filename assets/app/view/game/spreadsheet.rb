@@ -348,7 +348,7 @@ module View
               p = @game.player_by_id(@spreadsheet_sort_by)
               n = p&.num_shares_of(corporation)
               n += 0.01 if corporation.president?(p)
-              n || 0
+              n.nil? || n.zero? ? -99 : n # sort shorts between longs and 0 shares
             end
           end
         end
