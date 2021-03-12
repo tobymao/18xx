@@ -139,7 +139,6 @@ module View
           props = {
             style: {
               color: convert_hex_to_rgba(color_for(:font2), alpha),
-              padding: '0 0.15rem',
             },
           }
 
@@ -148,9 +147,9 @@ module View
                                   "Go to run #{x} of #{corporation.name}",
                                   hist[x].dividend.id - 1,
                                   { textDecoration: 'none' })
-            h(:td, props, [link_h])
+            h('td.right', props, [link_h])
           else
-            h(:td, props, revenue_text)
+            h('td.right', props, revenue_text)
           end
         else
           h(:td, '')
