@@ -326,7 +326,7 @@ module Engine
             name: 'Fitchburg Railroad',
             coordinates: 'J4',
             logo: '18_new_england/FRR',
-            color: 'Green',
+            color: 'green',
             tokens: [0],
             float_percent: 100,
             shares: [100],
@@ -440,8 +440,8 @@ module Engine
             %w[ C17 C9 D4 F14 G11 H14 H6 J14 K5 L8 ] => 'town=revenue:0',
             %w[ C5 E15 F12 F4 I13 ] => 'city=revenue:0',
             %w[ B12 E13 H4 ] => 'city=revenue:0;upgrade=cost:20,terrain:water',
-            %w[ M7 ] => 'town=revenue:20;city=revenue:20',
-            %w[ N4] => 'town=revenue:0;upgrade=cost:20,terrain:water',
+            %w[ M7 ] => 'town=revenue:20,loc:1;city=revenue:20,loc:center;path=a:_1,b:_0',
+            %w[ N4] => 'town=revenue:10;path=a:1,b:_0;upgrade=cost:20,terrain:water',
           },
           yellow: {
             %w[L10] => 'city=revenue:30;path=a:_0,b:2;path=a:_0,b:3;upgrade=cost:20,terrain:water;label=Y',
@@ -452,7 +452,7 @@ module Engine
             %w[ H8 ] => 'city=revenue:20;city=revenue:20;path=a:_0,b:1;path=a:_1,b:3',
             %w[ J6 ] => 'city=revenue:20;path=a:_0,b:4;path=a:_0,b:5',
             %w[ K3 ] => 'city=revenue:20;path=a:_0,b:0;path=a:_0,b:1;upgrade=cost:20,terrain:water',
-            %w[ L4 ] => 'city=revenue:20;town=revenue=10',
+            %w[ L4 ] => 'city=revenue:20,loc:center;town=revenue:10,loc:5;path=a:5,b:_0',
             %w[ M5 ] => 'city=revenue:30;city=revenue:30;path=a:2,b:_0;path=a:4,b:_1;label=B',
           },
           gray: {
