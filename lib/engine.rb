@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'jaro_winkler'
+require_relative 'engine/jaro_winkler'
 
 if RUBY_ENGINE == 'opal'
   require_tree 'engine/game'

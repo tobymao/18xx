@@ -2,7 +2,6 @@
 
 `Opal.config.unsupported_features_severity = 'ignore'`
 require 'native'
-require 'jaro_winkler'
 require 'json'
 require 'snabberb'
 require 'vendor/big'
