@@ -47,8 +47,9 @@ module Engine
             # force recalculation of mine connections
             @game.mine_graph.clear if entity.corporation?
 
-            # update token/route graph
+            # update token/route and diesel graphs
             @game.graph.clear
+            @game.diesel_graph.clear
 
             # check to see if concession is complete
             if @game.concession_incomplete?(entity) && @game.concession_route_done?(entity)

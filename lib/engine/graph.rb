@@ -101,7 +101,7 @@ module Engine
       @game.hexes.each do |hex|
         hex.tile.cities.each do |city|
           next unless city.tokened_by?(corporation)
-          next if @check_tokens && @game.skip_token?(corporation, city)
+          next if @check_tokens && @game.skip_token?(self, corporation, city)
 
           hex.neighbors.each { |e, _| hexes[hex][e] = true }
           nodes[city] = true

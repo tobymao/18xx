@@ -35,7 +35,7 @@ module Engine
             return @game.mhe_income if entity == @game.mhe
             return 0 - @round.maintenance if routes.empty? && @game.railway?(entity)
 
-            @game.routes_revenue(routes) - @round.maintenance
+            @game.routes_revenue(routes) - @round.maintenance + (entity == @game.qlb ? @game.qlb_bonus : 0)
           end
 
           def dividend_options(entity)
