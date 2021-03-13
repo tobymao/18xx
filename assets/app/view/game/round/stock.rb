@@ -20,7 +20,6 @@ module View
         needs :selected_company, default: nil, store: true
         needs :last_player, default: nil, store: true
         needs :show_other_players, default: nil, store: true
-        needs :user, default: nil
 
         def render
           @step = @game.round.active_step
