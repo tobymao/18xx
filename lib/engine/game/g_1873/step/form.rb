@@ -82,9 +82,9 @@ module Engine
           # else all open private mines
           def mergeable_entities
             available_mines = if target_mines.empty?
-                                @game.open_private_mines.select { |m| m.owner == owner }
+                                @game.mergeable_private_mines(buyer).select { |m| m.owner == owner }
                               else
-                                @game.open_private_mines - [target_mines.first[:mine]]
+                                @game.mergeable_private_mines(buyer) - [target_mines.first[:mine]]
                               end
 
             if @game.turn == 1 && target_mines.empty?

@@ -7,9 +7,15 @@ module Engine
     module G1873
       module Step
         class BuyTrain < Engine::Step::BuyTrain
+          def setup
+            @check_pending = true
+            super
+          end
+
           def actions(entity)
             return [] if entity.company? || entity == @game.mhe
             return [] if entity != current_entity
+            return [] if entity.corporation? && entity.receivership?
 
             rval = []
             rval << 'buy_train' if can_really_buy_train?(entity)
@@ -46,7 +52,7 @@ module Engine
           end
 
           def pass!
-            if @game.concession_pending?(current_entity)
+            if @check_pending && @game.concession_pending?(current_entity)
               @log << "#{current_entity.name} has not purchased its compulsory train"
               @game.insolvent!(current_entity)
             end
@@ -118,7 +124,7 @@ module Engine
             depot_trains.reject! { |t| t.distance <= public_mine_min_distance(entity) } if @game.public_mine?(entity)
 
             # only RRs can have a diesel - but only one
-            depot_trains.reject! { |t| @game.diesel?(t) } if @game.entity_has_diesel?(entity) || !@game.railway?(ot)
+            depot_trains.reject! { |t| @game.diesel?(t) } if @game.entity_has_diesel?(entity) || !@game.railway?(entity)
 
             switchers = if (sp = @game.switcher_price) && !@game.concession_pending?(entity)
                           entity.cash >= sp ? [@game.next_switcher] : []
@@ -152,6 +158,7 @@ module Engine
               # RRs can voluntarily scrap switchers
               # and any trains, except diesels, if they have at least two
               return true if entity.trains.any? { |t| @game.train_is_switcher?(t) }
+              return true if !entity.trains.empty? && entity == @game.qlb # QLB can have 0 trains
 
               entity.trains.count { |t| @game.train_is_train?(t) } > 1
             end
@@ -170,7 +177,7 @@ module Engine
               # if the only one left would be a 1T)
               switchers = entity.trains.select { |t| @game.train_is_switcher?(t) }
               trains = entity.trains.select { |t| @game.train_is_train?(t) }
-              trains = [] if trains.one?
+              trains = [] if trains.one? && entity != @game.qlb
               if entity == @game.nwe && trains.size == 2 && trains.any? { |t| t.name == '1T' }
                 trains.select! { |t| t.name == '1T' }
               end
@@ -182,15 +189,14 @@ module Engine
             entity = action.entity
             train = action.train
             slots = action.slots
-            if @game.concession_pending?(entity) && entity == @game.nwe && action.train.distance == 1
-              raise GameError, 'NWE must puchase at least a 2T for its compulsory train'
-            end
 
             scrap_mine_train(entity, action.train) if entity.minor?
 
             old_owner = train.owner
 
+            @check_pending = false
             super
+            @check_pending = true
 
             maint_due = @game.train_maintenance(train.name)
             if maint_due.positive? && action.extra_due
@@ -209,9 +215,11 @@ module Engine
 
             allocate_machines!(entity, train, slots) if @game.train_is_machine?(train) && @game.public_mine?(entity)
             allocate_switcher!(entity, train, slots) if @game.train_is_switcher?(train) && @game.public_mine?(entity)
-            @game.add_subtrains!(train) if @game.railway?(entity) && old_owner == @game.depot
 
-            @game.concession_unpend!(entity) if @game.concession_pending?(entity)
+            if @game.concession_pending?(entity) && (entity != @game.nwe || train.distance > 1)
+              @game.concession_unpend!(entity) if @game.concession_pending?(entity)
+            end
+            pass! unless can_buy_train?(entity) # force concession check again
           end
 
           def process_scrap_train(action)

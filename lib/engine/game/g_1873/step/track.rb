@@ -23,6 +23,7 @@ module Engine
 
           def actions(entity)
             return [] unless entity == current_entity
+            return [] if entity.corporation? && entity.receivership?
             return [] if @game.public_mine?(entity) || @game.connected_mine?(entity) || entity == @game.mhe
             return [] if entity.company? || !can_lay_tile?(entity)
 
@@ -101,15 +102,16 @@ module Engine
             action
           end
 
-          def lay_tile_action(action, entity: nil, spender: nil)
+          def lay_tile_action(action)
             tile = action.tile
-            tile_lay = get_tile_lay(action.entity)
+            entity = action.entity
+            tile_lay = get_tile_lay(entity)
 
-            if !@game.double_lay?(tile) && @round.num_laid_track.positive?
+            if !@game.double_lay?(tile) && @round.num_laid_track.positive? && !@game.concession_incomplete?(entity)
               raise GameError, 'Must lay yellow or green with 2 unconnected track sections'
             end
 
-            lay_tile(action, extra_cost: tile_lay[:cost], entity: entity, spender: spender)
+            lay_tile(action, extra_cost: tile_lay[:cost], entity: entity)
             @round.num_laid_track += 1
             @round.non_double_tile = true unless @game.double_lay?(tile)
             @round.laid_hexes << action.hex
@@ -125,8 +127,9 @@ module Engine
               # can only lay reserved tile for this hex
               [@game.reserved_tiles[hex.id][:tile]]
             else
-              # can only lay concession tile of this hex
-              [@game.tiles.find { |t| t.name == @game.concession_tile(hex)[:tile] }]
+              # can only lay concession tile of this hex (but only if it isn't already there)
+              needed_tile = @game.tiles.find { |t| t.name == @game.concession_tile(hex)[:tile] }
+              hex.tile.name != needed_tile.name ? [needed_tile] : []
             end
           end
 
@@ -154,15 +157,17 @@ module Engine
             reimburse = false
             ch = @game.concession_tile(tile.hex)
             ch_entity = @game.corporation_by_id(ch[:entity]) if ch
-            if ch && entity.name != ch[:entity] && (tile.exits & ch[:exits]).size == ch[:exits].size
+            follows_path = @game.tile_has_path?(tile, ch[:exits]) if ch
+
+            if ch && entity.name != ch[:entity] && follows_path
               @log << "Laying tile finishes concession track in #{hex.id}"
               reimburse = true
-            elsif ch && entity.name != ch[:entity] && (tile.exits & ch[:exits]).size != ch[:exits].size
-              res_tile = @game.reserve_tile!(hex, tile)
+            elsif ch && entity.name != ch[:entity] && !follows_path
+              res_tile = @game.reserve_tile!(entity, hex, tile)
               raise GameError, 'Tile prevents concession from being completed' unless res_tile
 
               reimburse = true
-            elsif ch && (tile.exits & ch[:exits]).size != ch[:exits].size
+            elsif ch && !follows_path
               raise GameError, 'Tile must complete concession route'
             elsif ch && cost != ch[:cost]
               cost += ch[:cost]

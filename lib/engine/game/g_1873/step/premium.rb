@@ -164,6 +164,7 @@ module Engine
             @order << player
             @game.premium = price
             @game.premium_order = @order.uniq.reverse
+            @game.premium_winner = player
           end
         end
       end

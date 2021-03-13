@@ -27,9 +27,22 @@ module Engine
             pass!
           end
 
-          # don't bother with this step if all mines have the same level of switcher
+          # don't bother with this step if:
+          # - no mines have switchers, or
+          # - no mines are connected, or
+          # - all have switchers and all are connected, or
+          # - all have switchers and all are the same size
+          #
+          # since revenue can't change with reassignment
+          #
           def reassign_possible?(entity)
-            !@game.public_mine_mines(entity).map { |m| @game.switcher_size(m) || 0 }.uniq.one?
+            num_mines = @game.public_mine_mines(entity).size
+            num_switchers = @game.public_mine_mines(entity).count { |m| @game.switcher(m) }
+            num_sizes = @game.public_mine_mines(entity).map { |m| @game.switcher_size(m) || 0 }.uniq.size
+            num_can_use = @game.public_mine_mines(entity).count { |m| @game.connected_mine?(m) }
+            num_switchers.positive? &&
+              num_can_use.positive? &&
+              (num_switchers < num_mines || (num_can_use < num_mines && num_sizes > 1))
           end
 
           def description
