@@ -404,11 +404,7 @@ module View
           end
           extra << h(:td, interest_props, @game.format_currency(@game.interest_owed(corporation)).to_s)
         end
-        if @diff_corp_sizes
-          corp_size = @game.corporation_size(corporation)
-          corp_size = corp_size[0].capitalize if %w[small medium large].include?(corp_size)
-          extra << h(:td, corp_size)
-        end
+        extra << h(:td, @game.corporation_size_name(corporation)) if @diff_corp_sizes
 
         n_ipo_shares = num_shares_of(corporation, corporation)
         n_market_shares = num_shares_of(@game.share_pool, corporation)

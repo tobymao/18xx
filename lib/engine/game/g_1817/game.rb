@@ -1401,6 +1401,10 @@ module Engine
           CORPORATION_SIZES[entity.total_shares]
         end
 
+        def corporation_size_name(entity)
+          entity.total_shares.to_s
+        end
+
         private
 
         def new_auction_round
