@@ -33,7 +33,9 @@ describe 'Assets' do
       expect(render(app_route: '/tiles/all')).to include('Generic Map Hexes')
 
       expect(render(app_route: '/tiles/57')).to include('57')
-      expect(render(app_route: '/tiles/18Chesapeake')).to include('I9')
+
+      expect(render(app_route: '/tiles/18Chesapeake/all')).to include('I9')
+
       expect(render(app_route: '/tiles/18Chesapeake/I9')).to include('I9')
       expect(render(app_route: '/tiles/18Chesapeake/X1')).to include('X1')
       x2_x3 = render(app_route: '/tiles/18Chesapeake/X2+X3')
@@ -47,14 +49,14 @@ describe 'Assets' do
         end
       end
 
-      multiple_games = render(app_route: '/tiles/1889+18Chesapeake')
+      multiple_games = render(app_route: '/tiles/1889+18Chesapeake/all')
       expect(multiple_games).to include('Kouchi')
       expect(multiple_games).to include('Delmarva')
 
       %w[1889 18Chesapeake].each do |title|
-        expect(render(app_route: "/tiles/#{title}")).to include("#{title} Map Hexes")
-        expect(render(app_route: "/tiles/#{title}")).to include("#{title} Tile Manifest")
-        expect(render(app_route: "/tiles/#{title}")).not_to include('TODO')
+        expect(render(app_route: "/tiles/#{title}/all")).to include("#{title} Map Hexes")
+        expect(render(app_route: "/tiles/#{title}/all")).to include("#{title} Tile Manifest")
+        expect(render(app_route: "/tiles/#{title}/all")).not_to include('TODO')
       end
     end
 

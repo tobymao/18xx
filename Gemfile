@@ -3,6 +3,7 @@
 source 'https://rubygems.org'
 
 gem 'argon2'
+gem 'jaro_winkler', git: 'https://github.com/michaeljb/jaro_winkler', ref: 'v1.5.4.opal'
 gem 'message_bus'
 gem 'mini_racer'
 gem 'newrelic_rpm'

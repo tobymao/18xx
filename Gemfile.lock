@@ -1,3 +1,10 @@
+GIT
+  remote: https://github.com/michaeljb/jaro_winkler
+  revision: a52c5dc09e363e900a0d997dfab0b819272b522f
+  ref: v1.5.4.opal
+  specs:
+    jaro_winkler (1.5.4)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -104,6 +111,7 @@ PLATFORMS
 
 DEPENDENCIES
   argon2
+  jaro_winkler!
   message_bus
   mini_racer
   newrelic_rpm

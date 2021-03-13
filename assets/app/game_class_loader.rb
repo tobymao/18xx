@@ -16,7 +16,7 @@ module GameClassLoader
     return unless title
     return @game_classes_loaded[title] if @game_classes_loaded[title]
 
-    game_meta = Engine::GAME_META_BY_TITLE[title]
+    game_meta = Engine.meta_by_title(title)
     require_tree "engine/game/#{game_meta.fs_name}"
 
     if (dep_title = game_meta::DEPENDS_ON)
