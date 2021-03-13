@@ -54,9 +54,11 @@ describe 'Assets' do
       expect(multiple_games).to include('Delmarva')
 
       %w[1889 18Chesapeake].each do |title|
-        expect(render(app_route: "/tiles/#{title}/all")).to include("#{title} Map Hexes")
-        expect(render(app_route: "/tiles/#{title}/all")).to include("#{title} Tile Manifest")
-        expect(render(app_route: "/tiles/#{title}/all")).not_to include('TODO')
+        rendered = render(app_route: "/tiles/#{title}/all")
+
+        expect(rendered).to include("#{title} Map Hexes")
+        expect(rendered).to include("#{title} Tile Manifest")
+        expect(rendered).not_to include('TODO')
       end
     end
 
