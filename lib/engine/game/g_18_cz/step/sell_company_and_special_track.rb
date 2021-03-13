@@ -38,6 +38,14 @@ module Engine
                       else
                         @game.current_entity
                       end
+
+            unless @game.purple_tile?(action.tile)
+              discount = action.hex.tile.upgrades.sum(&:cost)
+              @log << "#{action.entity.owner.name} receives a discount of "\
+              "#{@game.format_currency(discount)} from "\
+              "#{action.entity.name}"
+            end
+
             lay_tile(action, spender: spender)
 
             @game.skip_default_track unless @game.purple_tile?(action.tile)
