@@ -163,7 +163,7 @@ module Engine
               'count' => 1,
               'color' => 'brown',
               'code' =>
-                'city=revenue:50,slots:3;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;label=C',
+                'city=revenue:40,slots:3;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;label=C',
             },
           'X7' =>
             {
@@ -2277,6 +2277,8 @@ module Engine
         BIDDING_BOX_CONCESSION_COUNT = 3
         BIDDING_BOX_PRIVATE_COUNT = 3
 
+        BIDDING_BOX_MINOR_COLOR = '#c6e9af'
+
         BIDDING_BOX_START_MINOR = 'M24'
         BIDDING_BOX_START_CONCESSION = 'C1'
         BIDDING_BOX_START_PRIVATE = 'P1'
@@ -2327,6 +2329,7 @@ module Engine
         EXTRA_TRAIN_PULLMAN = 'P+'
         EXTRA_TRAIN_PERMANENTS = %w[2P LP].freeze
         LOCAL_TRAINS = %w[L LP].freeze
+        E_TRAIN = 'E'
 
         LIMIT_TOKENS_AFTER_MERGER = 9
 
@@ -2877,6 +2880,11 @@ module Engine
           stock_round
         end
 
+        def init_stock_market
+          G1822::StockMarket.new(game_market, self.class::CERT_LIMIT_TYPES,
+                                 multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
+        end
+
         def must_buy_train?(entity)
           entity.trains.none? { |t| !extra_train?(t) } &&
           !depot.depot_trains.empty?
@@ -3305,6 +3313,11 @@ module Engine
           @bidbox_minors_cache = bank_companies(self.class::COMPANY_MINOR_PREFIX)
                                    .first(self.class::BIDDING_BOX_MINOR_COUNT)
                                    .map(&:id)
+
+          # Set the reservation color of all the minors in the bid boxes
+          @bidbox_minors_cache.each do |company_id|
+            corporation_by_id(company_id[1..-1]).reservation_color = self.class::BIDDING_BOX_MINOR_COLOR
+          end
         end
 
         def can_gain_extra_train?(entity, train)
@@ -3549,7 +3562,8 @@ module Engine
           spender = company.owner
           bundle = company_tax_haven_bundle(choice)
           corporation = bundle.corporation
-          @share_pool.transfer_shares(bundle, @tax_haven, spender: spender, receiver: corporation,
+          receiver = bundle.owner == @share_pool ? @bank : corporation
+          @share_pool.transfer_shares(bundle, @tax_haven, spender: spender, receiver: receiver,
                                                           price: bundle.price, allow_president_change: false)
           @log << "#{spender.name} spends #{format_currency(bundle.price)} and tax haven gains a share of "\
                   "#{corporation.name}."

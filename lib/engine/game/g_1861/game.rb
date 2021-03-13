@@ -11,16 +11,6 @@ module Engine
 
         CURRENCY_FORMAT_STR = '%d₽'
 
-        BANK_CASH = 15_000
-
-        CERT_LIMIT = { 3 => 21, 4 => 16, 5 => 13, 6 => 11 }.freeze
-
-        STARTING_CASH = { 3 => 420, 4 => 315, 5 => 252, 6 => 210 }.freeze
-
-        CAPITALIZATION = :incremental
-
-        MUST_SELL_IN_BLOCKS = false
-
         TILES = {
           '3' => 2,
           '4' => 4,
@@ -173,82 +163,6 @@ module Engine
           'Q3' => 'Ekaterinburg (₽80 if includes M)',
           'Q11' => 'Central Asia',
         }.freeze
-
-        MARKET = [['',
-                   '',
-                   '',
-                   '',
-                   '135',
-                   '150',
-                   '165mC',
-                   '180',
-                   '200z',
-                   '220',
-                   '245',
-                   '270',
-                   '300',
-                   '330',
-                   '360',
-                   '400',
-                   '440',
-                   '490',
-                   '540'],
-                  ['',
-                   '',
-                   '',
-                   '110',
-                   '120',
-                   '135',
-                   '150mC',
-                   '165z',
-                   '180z',
-                   '200',
-                   '220',
-                   '245',
-                   '270',
-                   '300',
-                   '330',
-                   '360',
-                   '400',
-                   '440',
-                   '490'],
-                  ['',
-                   '',
-                   '90',
-                   '100',
-                   '110',
-                   '120',
-                   '135pmC',
-                   '150z',
-                   '165',
-                   '180',
-                   '200',
-                   '220',
-                   '245',
-                   '270',
-                   '300',
-                   '330',
-                   '360',
-                   '400',
-                   '440'],
-                  ['',
-                   '70',
-                   '80',
-                   '90',
-                   '100',
-                   '110p',
-                   '120pmC',
-                   '135',
-                   '150',
-                   '165',
-                   '180',
-                   '200'],
-                  %w[60 65 70 80 90p 100p 110mC 120 135 150],
-                  %w[55 60 65 70p 80p 90 100mC 110],
-                  %w[50 55 60x 65x 70 80],
-                  %w[45 50x 55x 60 65],
-                  %w[40 45 50 55],
-                  %w[35 40 45]].freeze
 
         PHASES = [
           {
@@ -925,6 +839,10 @@ module Engine
         BONUS_CAPITALS = %w[H8].freeze
         BONUS_REVENUE = 'Q3'
         NATIONAL_RESERVATIONS = %w[E1 H8].freeze
+
+        def game_market
+          @optional_rules&.include?(:column_market) ? self.class::COLUMN_MARKET : self.class::GRID_MARKET
+        end
 
         def all_corporations
           corporations + [@national]

@@ -176,7 +176,7 @@ module View
               max: 24,
               value: route_prop(index, :width),
             },
-            input_style: { width: '2.5rem' },
+            input_style: { width: '3.5rem' },
           ),
           render_input(
             '',
@@ -186,7 +186,7 @@ module View
               title: 'dash/gap lengths of route on map, for help hover/click header',
               value: route_prop(index, :dash),
             },
-            input_style: { width: '2.5rem' },
+            input_style: { width: '7rem' },
           ),
         ])
       end

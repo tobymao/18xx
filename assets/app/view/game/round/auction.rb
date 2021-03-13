@@ -121,7 +121,7 @@ module View
             },
           }
 
-          children = [h(Company, company: company, bids: @step.bids[company])]
+          children = [h(Company, company: company, bids: @step.bids[company], user: @user)]
           children << render_input(company) if @selected_company == company
           h(:div, props, children)
         end
