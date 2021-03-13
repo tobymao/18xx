@@ -158,8 +158,8 @@ module View
         order = @game.next_sr_player_order
         trs << render_priority_deal(priority_props) if order == :after_last_to_act &&
                                                        @player == @game.priority_deal_player
-        trs << render_next_sr_position(priority_props) if %i[first_to_pass most_cash].include?(order) &&
-                                                          @game.next_sr_position(@player)
+        trs << render_next_sr_position(priority_props, order) if %i[first_to_pass most_cash].include?(order) &&
+                                                          @game.next_sr_position(@player, order)
 
         h(:table, trs)
       end
@@ -170,8 +170,8 @@ module View
         ])
       end
 
-      def render_next_sr_position(priority_props)
-        position = @game.next_sr_position(@player) + 1
+      def render_next_sr_position(priority_props, order)
+        position = @game.next_sr_position(@player, order) + 1
 
         h(:tr, [
           h(:td, 'Next SR'),
