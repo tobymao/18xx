@@ -300,7 +300,7 @@ module View
 
           @game.companies.select { |c| c.owner == @game.bank }.map do |company|
             children = []
-            children << h(Company, company: company, user: @user,
+            children << h(Company, company: company,
                                    bids: (@current_actions.include?('bid') ? @step.bids[company] : nil))
             if @selected_company == company
               inputs = []
