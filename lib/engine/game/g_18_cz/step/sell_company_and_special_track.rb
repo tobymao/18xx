@@ -38,14 +38,20 @@ module Engine
                       else
                         @game.current_entity
                       end
+
+            unless @game.purple_tile?(action.tile)
+              discount = action.hex.tile.upgrades.sum(&:cost)
+              @log << "#{action.entity.owner.name} receives a discount of "\
+              "#{@game.format_currency(discount)} from "\
+              "#{action.entity.name}"
+            end
+
             lay_tile(action, spender: spender)
 
             @game.skip_default_track unless @game.purple_tile?(action.tile)
 
             abilities = @game.abilities(action.entity, :tile_lay, time: 'any')
             abilities.each(&:use!)
-
-            @log << "The ability of #{action.entity.name} was used"
           end
 
           def hex_neighbors(entity, hex)
