@@ -176,7 +176,7 @@ module View
           extra << h(:th, render_sort_link('Buying Power', :buying_power))
           extra << h(:th, render_sort_link('Interest Due', :interest))
         end
-        if (@diff_corp_sizes = @game.all_corporations.map { |c| @game.corporation_size(c) }.uniq != [:small])
+        if (@diff_corp_sizes = @game.all_corporations.any? { |c| @game.corporation_size(c) != :small })
           extra << h(:th, render_sort_link('Size', :corp_size))
         end
         @extra_size = extra.size
