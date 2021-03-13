@@ -38,6 +38,7 @@ module Engine
     '1882/hs_vaxptumi_26178.json', # Auto-pass disable (buy unsecure)
     '1889/hs_lhglbbiz_17502.json', # Auto-buy from market
     '1889/hs_jmmljkbw_17502.json', # Auto-buy multiple from IPO
+    '1822/hs_lxemeslq_30797.json', # Auto-pass 1822 bid cases
   ].freeze
 
   AUTO_FIXTURES.each do |fixture_name|
