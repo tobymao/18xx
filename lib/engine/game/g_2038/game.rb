@@ -228,7 +228,7 @@ module Engine
             value: 120,
             revenue: 5,
             desc: 'Buyer recieves a TSI Share.  If owned by a corporation, may place 1 free Base on ANY'\
-            'explored and unclaimed tile.',
+            ' explored and unclaimed tile.',
             abilities: [{ type: 'shares', shares: 'TSI_3' },
                         {
                           type: 'tile_lay',
@@ -245,7 +245,7 @@ module Engine
             value: 140,
             revenue: 10,
             desc: 'Buyer recieves a TSI Share.  If owned by a corporation, may place 1 free'\
-            'Refueling Station within range.',
+            ' Refueling Station within range.',
             abilities: [
               { type: 'shares', shares: 'TSI_2' },
               {
@@ -273,7 +273,7 @@ module Engine
                 when: 'owning_corp_or_turn',
                 count: 1,
               },
-],
+            ],
             color: nil,
           },
           {
@@ -550,6 +550,29 @@ module Engine
           else
             'PRIVATE COMPANY'
           end
+        end
+
+        LAYOUT = :pointy
+
+        def after_buy_company(player, company)
+          target_price = optional_short_game ? 67 : 100
+          share_price = stock_market.par_prices.find { |pp| pp.price == target_price }
+
+          abilities(company, :shares) do |ability|
+            ability.shares.each do |share|
+              if share.president
+                stock_market.set_par(share.corporation, share_price)
+                share_pool.buy_shares(player, share, exchange: :free)
+                after_par(share.corporation)
+              else
+                share_pool.buy_shares(player, share, exchange: :free)
+              end
+            end
+          end
+        end
+
+        def optional_short_game
+          @optional_rules&.include?(:optional_short_game)
         end
       end
     end
