@@ -29,6 +29,14 @@ module Engine
             actions
           end
 
+          def auto_actions(entity)
+            return super if @converting || @merge_major || @merging || can_convert?(entity)
+
+            return [Engine::Action::Pass.new(entity)] if mergeable_candidates(entity).empty?
+
+            super
+          end
+
           def merge_name
             return 'Convert' if @converting
             return 'Finish Merge' if @merge_major
