@@ -53,6 +53,12 @@ module View
               return [center]
             end
 
+            # flat map: if three cities, and they are on edges [0, 2, 4] or [1, 3, 5], pick the center.
+            if layout == :flat && @tile.cities.size == 3 &&
+                (([0, 2, 4] - ct_edges).empty? || ([1, 3, 5] - ct_edges).empty?)
+              return [center]
+            end
+
             # pointy map: if two cities or towns, and neither of them are on edges 1 or 4 or in the center,
             # pick the center.
             if layout == :pointy && @tile.city_towns.size == 2 &&
