@@ -18,7 +18,6 @@ module View
       needs :tile_selector, default: nil, store: true
       needs :display, default: 'inline-block'
       needs :layout, default: nil
-      needs :user, default: nil
 
       def selected?
         @company == @selected_company
