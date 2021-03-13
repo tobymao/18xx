@@ -44,21 +44,23 @@ module View
 
         children << h(:div, "#{player.name} has #{@game.format_currency(player.cash)} in cash.")
 
-        if share_funds_allowed.positive? && @game.class::EBUY_CAN_SELL_SHARES
-          children << h(:div, "#{player.name} has #{@game.format_currency(share_funds_possible)} "\
-                              'in sellable shares.')
-        end
+        if @game.class::EBUY_CAN_SELL_SHARES
+          if share_funds_allowed.positive?
+            children << h(:div, "#{player.name} has #{@game.format_currency(share_funds_possible)} "\
+                                'in sellable shares.')
+          end
 
-        if share_funds_required.positive? && @game.class::EBUY_CAN_SELL_SHARES
-          children << h(:div, "#{player.name} #{verb} sell shares to raise at least "\
-                              "#{@game.format_currency(share_funds_required)}.")
-        end
+          if share_funds_required.positive?
+            children << h(:div, "#{player.name} #{verb} sell shares to raise at least "\
+                                "#{@game.format_currency(share_funds_required)}.")
+          end
 
-        if share_funds_allowed.positive? &&
-           (share_funds_allowed != share_funds_required) &&
-           (share_funds_possible >= share_funds_allowed) && @game.class::EBUY_CAN_SELL_SHARES
-          children << h(:div, "#{player.name} may continue to sell shares until raising up to "\
-                              "#{@game.format_currency(share_funds_allowed)}.")
+          if share_funds_allowed.positive? &&
+             (share_funds_allowed != share_funds_required) &&
+             (share_funds_possible >= share_funds_allowed)
+            children << h(:div, "#{player.name} may continue to sell shares until raising up to "\
+                                "#{@game.format_currency(share_funds_allowed)}.")
+          end
         end
 
         must_take_loan = step.must_take_loan?(@corporation) if step.respond_to?(:must_take_loan?)

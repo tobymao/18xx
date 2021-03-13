@@ -84,7 +84,7 @@ module Engine
 
           def must_take_loan?(corporation)
             price = cheapest_train_price(corporation)
-            @game.buying_power(corporation) < price
+            (@game.buying_power(corporation) + corporation.owner.cash) < price
           end
         end
       end
