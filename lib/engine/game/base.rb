@@ -2214,6 +2214,8 @@ module Engine
         :small
       end
 
+      def corporation_size_name(_entity); end
+
       def company_status_str(_company); end
 
       def status_str(_corporation); end

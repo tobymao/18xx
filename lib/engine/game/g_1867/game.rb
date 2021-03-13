@@ -1300,6 +1300,10 @@ module Engine
           CORPORATION_SIZES[entity.total_shares]
         end
 
+        def corporation_size_name(entity)
+          entity.type == :national ? 'Nat’l' : entity.type.capitalize
+        end
+
         def upgrades_to?(from, to, special = false)
           # O labelled tile upgrades to Ys until Grey
           return super unless self.class::HEX_WITH_O_LABEL.include?(from.hex.name)

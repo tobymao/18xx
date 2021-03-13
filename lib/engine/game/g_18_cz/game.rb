@@ -2646,6 +2646,10 @@ module Engine
           entity.type
         end
 
+        def corporation_size_name(entity)
+          entity.type[0].capitalize
+        end
+
         def status_str(corp)
           train_type = case corp.type
                        when :small
