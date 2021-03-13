@@ -2614,7 +2614,7 @@ module Engine
             case @round
             when Round::Stock
               @operating_rounds = OR_SETS[@turn - 1]
-              reorder_players(log_all_players: true)
+              reorder_players(log_player_order: true)
               new_operating_round
             when Round::Operating
               if @round.round_num < @operating_rounds
@@ -2628,7 +2628,7 @@ module Engine
               end
             when init_round.class
               init_round_finished
-              reorder_players(:least_cash, log_all_players: true)
+              reorder_players(:least_cash, log_player_order: true)
               new_stock_round
             end
         end
