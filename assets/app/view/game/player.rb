@@ -158,7 +158,7 @@ module View
         order = @game.next_sr_player_order
         trs << render_priority_deal(priority_props) if order == :after_last_to_act &&
                                                        @player == @game.priority_deal_player
-        trs << render_next_sr_position(priority_props) if (order == :first_to_pass || order == :most_cash) &&
+        trs << render_next_sr_position(priority_props) if %i[first_to_pass most_cash].include?(order) &&
                                                           @game.next_sr_position(@player)
 
         h(:table, trs)
