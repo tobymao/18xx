@@ -373,12 +373,12 @@ module Engine
         true
       end
 
-      def activate_program_share_pass(entity, _program)
+      def activate_program_share_pass(entity, program)
         available_actions = actions(entity)
         return unless available_actions.include?('pass')
         return unless normal_pass?(entity)
 
-        reason = should_stop_applying_program(entity, nil)
+        reason = should_stop_applying_program(entity, program, nil) unless @game.actions.last == program
         return [Action::ProgramDisable.new(entity, reason: reason)] if reason
 
         [Action::Pass.new(entity)]
@@ -419,7 +419,7 @@ module Engine
 
           share = shares_by_percent.values.first.first
 
-          reason = should_stop_applying_program(entity, share)
+          reason = should_stop_applying_program(entity, share) unless @game.actions.last == program
           return [Action::ProgramDisable.new(entity, reason: reason)] if reason
 
           [Action::BuyShares.new(entity, shares: share)]
