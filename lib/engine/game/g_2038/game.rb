@@ -552,8 +552,6 @@ module Engine
           end
         end
 
-        LAYOUT = :pointy
-
         def after_buy_company(player, company)
           target_price = optional_short_game ? 67 : 100
           share_price = stock_market.par_prices.find { |pp| pp.price == target_price }
