@@ -152,14 +152,16 @@ module View
       grid_props = {
         style: {
           display: 'grid',
-          grid: '1fr / 5rem 4rem 5rem 5rem',
+          grid: '1fr / 6rem 4rem 5rem 5rem',
           alignItems: 'center',
         },
       }
 
       children = ROUTE_COLORS.map.with_index do |_, index|
+        label = "Route #{index + 1}"
+        label += ' (Your player color)' if index.zero?
         h(:div, grid_props, [
-          h(:label, "Route #{index + 1}"),
+          h(:label, label),
           render_color(
             '',
             route_prop_string(index, :color),
