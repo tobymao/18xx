@@ -276,10 +276,10 @@ module View
         max = range.max = @max_p[title]
         val = range.value.to_i
         range.value = (min..max).include?(val) ? val : max
-        store(:num_players, range.value.to_i)
+        store(:num_players, range.value.to_i, skip: true)
       end
 
-      store(:selected_game, selected_game)
+      store(:selected_game, selected_game, skip: true)
 
       visible_rules = selected_game::OPTIONAL_RULES.reject do |rule|
         rule[:players] && !rule[:players].include?(@num_players)
