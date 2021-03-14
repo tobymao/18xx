@@ -41,7 +41,9 @@ module Engine
 
               next unless corporation.owner == player
 
-              @log << "-- #{corporation.name} enters liquidation (it has no president) --"
+              unless corporation.share_price.liquidation?
+                @log << "-- #{corporation.name} enters liquidation (it has no president) --"
+              end
               @game.liquidate!(corporation)
               corporation.owner = @game.share_pool
             end

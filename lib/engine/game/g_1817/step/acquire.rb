@@ -46,7 +46,7 @@ module Engine
             elsif @buyer && can_take_loan?(@buyer)
               'Pass (Take Loan)'
             elsif @buyer
-              'Pass (Repay Loan)'
+              'Pass (On payoff Loan)'
             end
           end
 
