@@ -8,8 +8,10 @@ module Engine
       module Step
         class BuyCompanyPreloan < Engine::Step::BuyCompany
           def auto_actions(entity)
+            return unless entity.loans.empty?
+
             # If the entity has no loans then passing here makes no difference
-            [Engine::Action::Pass.new(entity)] if entity.loans.empty?
+            [Engine::Action::Pass.new(entity)]
           end
         end
       end
