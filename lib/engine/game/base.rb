@@ -2052,9 +2052,9 @@ module Engine
         end
       end
 
-      def next_sr_position(entity, order)
+      def next_sr_position(entity)
         player_order = if @round.current_entity&.player?
-                         order == :first_to_pass ? @round.pass_order : []
+                         next_sr_player_order == :first_to_pass ? @round.pass_order : []
                        else
                          @players
                        end
