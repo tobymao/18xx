@@ -9,12 +9,14 @@ module Engine
         {
           num_laid_track: 0,
           upgraded_track: false,
+          laid_hexes: [],
         }
       end
 
       def setup
         @round.num_laid_track = 0
         @round.upgraded_track = false
+        @round.laid_hexes = []
       end
 
       def can_lay_tile?(entity)

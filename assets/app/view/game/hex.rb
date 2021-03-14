@@ -38,12 +38,12 @@ module View
       needs :unavailable, default: nil
       needs :routes, default: []
       needs :start_pos, default: [1, 1]
+      needs :highlight, default: false
 
       def render
         return nil if @hex.empty
 
         @selected = @hex == @tile_selector&.hex || @selected_route&.last_node&.hex == @hex
-        @laid_this_turn = @game.round.operating? && @game.round.laid_hexes.include?(@hex)
         @tile =
           if @selected && @actions.include?('lay_tile') && @tile_selector&.tile
             @tile_selector.tile
@@ -87,9 +87,9 @@ module View
         props[:on] = { click: ->(e) { on_hex_click(e) } }
         props[:attrs]['stroke-width'] = 5 if @selected
 
-        if @laid_this_turn
-          props[:attrs]['stroke-dasharray'] = 15
-          props[:attrs]['stroke-width'] = 10
+        if @highlight && !@selected
+          props[:attrs]['stroke-dasharray'] = 10
+          props[:attrs]['stroke-width'] = 5 
         end
 
         h(:g, props, children)

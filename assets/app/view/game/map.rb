@@ -17,6 +17,7 @@ module View
       needs :opacity, default: nil
       needs :show_starting_map, default: false, store: true
       needs :routes, default: [], store: true
+      needs :historical_laid_hexes, default: [], store: true
       needs :historical_routes, default: [], store: true
       needs :map_zoom, default: nil, store: true
 
@@ -38,9 +39,11 @@ module View
         step = @game.round.active_step(@selected_company)
         current_entity = @selected_company || step&.current_entity
         actions = step&.actions(current_entity) || []
-        # move the hexes laid this turn and selected hex to the back so they render highest in z space
-        @game.round.laid_hexes.each {|hex| @hexes << @hexes.delete(hex) } if @game.round.operating?
+
+        laid_hexes = @historical_laid_hexes || @game.round.laid_hexes
         selected_hex = @tile_selector&.hex
+        # Move the laid and selected hexes to the back so they render highest in z space
+        laid_hexes.each {|hex| @hexes << @hexes.delete(hex) }
         @hexes << @hexes.delete(selected_hex) if @hexes.include?(selected_hex)
 
         routes = @routes
@@ -57,7 +60,8 @@ module View
             clickable: clickable,
             actions: actions,
             routes: routes,
-            start_pos: @start_pos
+            start_pos: @start_pos,
+            highlight: laid_hexes.include?(hex),
           )
         end
         @hexes.compact!
