@@ -7,7 +7,7 @@ module Engine
     module G1822
       module Round
         class Stock < Engine::Round::Stock
-          attr_accessor :bids, :bidders
+          attr_accessor :bids, :bidders, :bid_exceeded
 
           def setup
             super

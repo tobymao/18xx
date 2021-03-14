@@ -20,8 +20,8 @@ module Engine
       class Game < Game::Base
         include_meta(G1873::Meta)
 
-        attr_reader :mine_12, :corporation_info, :minor_info, :mhe, :mine_graph, :nwe, :reserved_tiles,
-                    :track_graph
+        attr_reader :mine_12, :corporation_info, :diesel_graph, :minor_info, :mhe, :mine_graph, :nwe, :qlb,
+                    :reserved_tiles, :subtrains
         attr_accessor :premium, :premium_order
 
         CURRENCY_FORMAT_STR = '%d ℳ'
@@ -59,13 +59,6 @@ module Engine
         TILE_LAYS = [{ lay: true, upgrade: true, cost: 0 },
                      { lay: :double_lay, upgrade: :double_lay, cost: 0 }].freeze
 
-        # FIXME
-        # EVENTS_TEXT = Base::EVENTS_TEXT.merge(
-        #  'first_three' => ['First 3', 'Advance phase'],
-        #  'first_four' => ['First 4', 'Advance phase'],
-        #  'first_six' => ['First 6', 'Advance phase'],
-        # ).freeze
-
         # FIXME: on purchase of 1st 5 train: two more OR sets
         GAME_END_CHECK = { stock_market: :current_or, custom: :one_more_full_or_set }.freeze
 
@@ -79,6 +72,14 @@ module Engine
         MHE_START_PRICE = 120
         HW_BONUS = 50
         TOKEN_PRICE = 100
+        STOP_REVENUE = 10
+        DIESEL_STOP_REVENUE = 10
+
+        DIESEL_POOL_HIGHWATER = 40
+        DIESEL_POOL_LOWWATER = 20
+
+        DIESEL_PRE_PHASE = '5'
+        DIESEL_PURCHASE_ON = '5a'
 
         MAINTENANCE_BY_PHASE = {
           '1' => {},
@@ -164,6 +165,14 @@ module Engine
           'H19' => [1, 3],
         }.freeze
 
+        FACTORY_INFO = {
+          'B13' => { name: 'ZW', revenue: 70 },
+          'C6' => { name: 'SB', revenue: 60 },
+          'E18' => { name: 'PM', revenue: 40 },
+          'F11' => { name: 'SM', revenue: 50 },
+          'H9' => { name: 'SB', revenue: 50 },
+        }.freeze
+
         STATE_NETWORK = %w[
          B9
          E20
@@ -212,6 +221,11 @@ module Engine
           @machine_index = trains.size
           @next_switcher = nil
 
+          @subtrains = Hash.new { |h, k| h[k] = [] }
+          @subtrain_index = {}
+          game_trains.each { |gt| @subtrain_index[gt[:name]] = gt[:num] }
+          @supertrains = {}
+
           @minor_info = load_minor_extended
           @corporation_info = load_corporation_extended
 
@@ -223,6 +237,10 @@ module Engine
           @mine_12 = @minors.find { |m| m.id == '12' }
           @mhe = @corporations.find { |c| c.id == 'MHE' }
           @nwe = @corporations.find { |c| c.id == 'NWE' }
+          @qlb = @corporations.find { |c| c.id == 'QLB' }
+          @qlb_dummy_train = Train.new(name: '1T', distance: 1, price: 0, index: 2, no_local: true)
+
+          init_diesel_pool
 
           # float the MHE and move all shares into market and give it a 1T
           @stock_market.set_par(@mhe, @stock_market.par_prices.find { |p| p.price == MHE_START_PRICE })
@@ -243,8 +261,8 @@ module Engine
 
           @mine_graph = Graph.new(self, home_as_token: true, no_blocking: true)
 
-          # can't trace paths from a flipped token for the purposes of laying track
-          @track_graph = Graph.new(self, skip_track: :broad, check_tokens: true)
+          # can only trace paths from concession route cities for diesel runs
+          @diesel_graph = Graph.new(self, skip_track: :broad, check_tokens: true)
 
           @reserved_tiles = Hash.new { |h, k| h[k] = {} }
           @state_network_hexes = STATE_NETWORK.map { |h| hex_by_id(h) }
@@ -257,7 +275,7 @@ module Engine
 
         # select graph for laying track
         def graph_for_entity(entity)
-          entity.minor? ? @mine_graph : @track_graph
+          entity.minor? ? @mine_graph : @graph
         end
 
         def load_minor_extended
@@ -299,6 +317,68 @@ module Engine
           mine_comps + corp_comps
         end
 
+        def init_diesel_pool
+          @diesel_pool = {}
+          proto_train = @depot.trains.find { |t| diesel?(t) }
+          DIESEL_POOL_HIGHWATER.times do
+            create_pool_diesel(proto_train)
+          end
+          update_cache(:trains)
+        end
+
+        def create_pool_diesel(proto)
+          new_train = Train.new(name: proto.name, distance: proto.distance, price: proto.price,
+                                index: @subtrain_index[proto.name], no_local: true)
+          new_train.owner = nil
+          @depot.trains << new_train
+          @diesel_pool[new_train] = { assigned: false, used: false }
+          @subtrain_index[proto.name] += 1
+        end
+
+        def use_pool_diesel(train, entity)
+          return unless @diesel_pool[train] # might not be from pool
+
+          s_train = entity.trains.find { |t| diesel?(t) }
+          @diesel_pool[train][:used] = true
+          @diesel_pool[train][:allocated] = true
+          @supertrains[train] = s_train
+          @subtrains[s_train] << train
+          @subtrains[s_train].uniq!
+
+          num_available = @diesel_pool.values.count { |v| !v[:used] }
+          return unless num_available < DIESEL_POOL_LOWWATER
+
+          (DIESEL_POOL_HIGHWATER - num_available).times do
+            create_pool_diesel(s_train)
+          end
+          update_cache(:trains)
+        end
+
+        def allocate_pool_diesel(train)
+          s_train = @supertrains[train] || train
+
+          new_train = @diesel_pool.keys.sort_by(&:id).find { |t| !@diesel_pool[t][:allocated] }
+          @diesel_pool[new_train][:allocated] = true
+          @supertrains[new_train] = s_train
+          @subtrains[s_train] << new_train
+          @subtrains[s_train].uniq!
+          new_train
+        end
+
+        def free_pool_diesels(entity)
+          s_train = entity.trains.find { |t| diesel?(t) }
+          return unless s_train
+          return if @subtrains[s_train].one? # always leave one allocated per supertrain
+
+          @subtrains[s_train].each do |sub|
+            next unless @diesel_pool[sub][:allocated] && !@diesel_pool[sub][:used] && @subtrains[s_train].size > 1
+
+            @diesel_pool[sub][:allocated] = false
+            @subtrains[s_train].delete(sub)
+            @supertrains.delete(sub)
+          end
+        end
+
         def start_companies
           mine_ids = @minors.map(&:id)
           mine_comps = @companies.select { |c| mine_ids.include?(c.id) }
@@ -330,10 +410,13 @@ module Engine
           end
         end
 
-        def skip_token?(corporation, city)
-          return false unless railway?(corporation)
+        def skip_token?(_graph, corporation, city)
+          # diesel graph
+          return false if corporation.coordinates.include?(city.hex.id) # never skip home tokens
+          return true unless concession_routes(corporation).flatten.include?(city.hex.id)
 
-          city.tokens.find { |t| t&.corporation == corporation }&.status == :flipped
+          exits = CONCESSION_ROUTE_EXITS[city.hex.id]
+          (city.exits & exits).size != exits.size # don't skip villages on concession route
         end
 
         def update_tokens(corporation, routes)
@@ -444,8 +527,31 @@ module Engine
           train.name.include?('T')
         end
 
+        def add_subtrains!(train)
+          return use_pool_diesel(allocate_pool_diesel(train), train_owner(train)) if diesel?(train)
+
+          train = @supertrains[train] || train
+          count = train.distance > 5 ? 1 : train.distance # only one diesel
+
+          count.times do |idx|
+            create_duplicate_train!(train, @subtrain_index[train.name] + idx)
+          end
+          @subtrain_index[train.name] += count
+          update_cache(:trains)
+        end
+
+        def create_duplicate_train!(train, index)
+          new_train = Train.new(name: train.name, distance: train.distance, price: train.price,
+                                index: index, no_local: true)
+          new_train.owner = nil
+          @subtrains[train] << new_train
+          @supertrains[new_train] = train
+          @depot.trains << new_train
+          new_train
+        end
+
         def switcher_level
-          @phase.name == 'D' ? 5 : @phase.name.to_i
+          @phase.name == 'D' ? 5 : @phase.name.delete('a').to_i
         end
 
         def switcher_price
@@ -655,7 +761,7 @@ module Engine
           return false unless (exits = CONCESSION_ROUTE_EXITS[hex.id])
           return false unless concession_incomplete?(@concession_route_corporations[hex.id])
           # take care of OO tile. Only care about city along concession route
-          return false unless info && (city.exits & exits).size == exits.size
+          return false unless (city.exits & exits).size == exits.size
 
           # must be two slots available for another RR to put a token here
           city.slots - city.tokens.count { |c| c } > 1
@@ -813,6 +919,10 @@ module Engine
               @operating_rounds = @phase.operating_rounds
               stock_round_finished
               reorder_players
+              if @phase.name == DIESEL_PRE_PHASE
+                @phase.next!
+                @log << '-- Diesels now available --'
+              end
               new_operating_round
             when Engine::Round::Operating
               if @round.round_num < @operating_rounds
@@ -1102,7 +1212,7 @@ module Engine
         end
 
         def train_maintenance(train_name)
-          MAINTENANCE_BY_PHASE[@phase.name][train_name] || 0
+          MAINTENANCE_BY_PHASE[@phase.name.delete('a')][train_name] || 0
         end
 
         def minor_maintenance_costs(entity)
@@ -1163,6 +1273,293 @@ module Engine
           @log << "#{entity.name} owes #{format_currency(maintenance)} for maintenance" if maintenance.positive?
         end
 
+        # one NT train is really N trains, so we use the subtrains we created earlier
+        def route_trains(entity)
+          entity.runnable_trains.map { |t| @subtrains[t] }.flatten
+        end
+
+        def train_name(train)
+          train = @supertrains[train] || train
+          owner = train_owner(train)
+          train_idx = owner.trains.find_index(train)
+          if diesel?(train)
+            train.name
+          elsif train_idx < 26
+            "#{train.name}#{('a'.ord + train_idx).chr}"
+          else
+            # unlikely that someone will have more than 26 trains...
+            "#{train.name}-#{train_idx}"
+          end
+        end
+
+        ##########################################
+        # start of route methods
+        #
+        def compute_stops(route)
+          route.visited_stops
+        end
+
+        def check_connected(route, token)
+          # special case: don't check on concession route(s)
+          con_route = @corporation_info[train_owner(route.train)][:concession_routes].any? do |c_r|
+            (route.connection_hexes.flatten & c_r).size == c_r.size
+          end
+
+          super unless con_route
+        end
+
+        def check_distance(route, visits)
+          train = route.train
+
+          # no real "distance" for 1873 routes, instead might as well use visits for checks:
+          # check that route begins and ends with termini
+          corporation = train_owner(route.train)
+          if (!terminus?(visits.first, corporation) || !terminus?(visits.last, corporation)) && !diesel?(train)
+            raise GameError, 'Route must begin and end with token or non-tokened out open mine or factory'
+          end
+          if (!d_terminus?(visits.first, corporation) || !d_terminus?(visits.last, corporation)) && diesel?(train)
+            raise GameError, 'Route must begin and end with token'
+          end
+
+          # check that route doesn't pass through a "town" (framed hex)
+          return unless visits.size > 2
+
+          visits[1..-2].each do |node|
+            raise GameError, 'Route cannot pass through a town' if node.tile.frame
+          end
+        end
+
+        # a node is a legal terminus if:
+        # it is a city with the corp's token
+        # it is a town with a factory
+        # it is a city that is not tokened-out with a factory or open mine
+        def terminus?(node, corporation)
+          (node.city? && node.tokened_by?(corporation)) ||
+          (node.town? && FACTORY_INFO[node.hex.id]) ||
+          (node.city? && !node.blocks?(corporation) &&
+           (((mine = find_mine_in_hex(node.hex)) && @minor_info[mine][:open]) || FACTORY_INFO[node.hex.id]))
+        end
+
+        # a node is a legal diesel terminus if:
+        # it is a city with the corp's token
+        def d_terminus?(node, corporation)
+          node.city? && node.tokened_by?(corporation)
+        end
+
+        def find_mine_in_hex(hex)
+          @minors.find { |m| m.coordinates == hex.id }
+        end
+
+        def check_overlap(routes)
+          tracks_by_type = Hash.new { |h, k| h[k] = [] }
+
+          routes.each do |route|
+            route.paths.each do |path|
+              a = path.a
+              b = path.b
+
+              tracks = tracks_by_type[train_type(route.train)]
+              tracks << [path.hex, a.num, path.lanes[0][1]] if a.edge?
+              tracks << [path.hex, b.num, path.lanes[1][1]] if b.edge?
+            end
+          end
+
+          tracks_by_type.each do |_type, tracks|
+            tracks.group_by(&:itself).each do |k, v|
+              raise GameError, "Route cannot reuse track on #{k[0].id}" if v.size > 1
+            end
+          end
+        end
+
+        def train_type(train)
+          train.name.include?('D') ? :passenger : :mining
+        end
+
+        def diesel?(train)
+          train.name.include?('D')
+        end
+
+        def entity_has_diesel?(entity)
+          railway?(entity) && entity.trains.any? { |t| diesel?(t) }
+        end
+
+        # needed to keep diesel routes separate from the rest
+        def compute_other_paths(routes, route)
+          routes
+            .reject { |r| r == route }
+            .select { |r| train_type(route.train) == train_type(r.train) }
+            .flat_map(&:paths)
+        end
+
+        def check_other(route)
+          # make sure routes from same supertrain intersect
+          super_routes = route.routes.reject do |r|
+            r.connections.empty? ||
+                                @supertrains[route.train] != @supertrains[r.train]
+          end
+          check_intersection(@supertrains[route.train], super_routes)
+
+          # make sure a single route doesn't visit cities in a given hex twice
+          check_hex_reentry(route)
+
+          check_diesel_nodes(route) if diesel?(route.train)
+
+          return if diesel?(route.train)
+
+          # make sure concession route is run by normal trains and also by the diesel if there is one
+          type_routes = route.routes.partition { |r| train_type(r.train) }
+          owner = train_owner(route.train)
+
+          if !concession_route_run?(owner, type_routes[:freight]) && train_type(route.train) == :freight
+            raise GameError, 'Concession route not run by one non-diesel train'
+          end
+          return if concession_route_run?(owner, type_routes[:passenger]) || train_type(route.train) == :freight
+
+          raise GameError, 'Concession route not run by diesel train'
+        end
+
+        # all routes from one supertrain must intersect each other (borrowed from 1860)
+        def check_intersection(supertrain, routes)
+          owner = supertrain.owner
+
+          # build a map of which routes intersect with each route
+          intersects = Hash.new { |h, k| h[k] = [] }
+          routes.each_with_index do |r, ir|
+            routes.each_with_index do |s, is|
+              next if ir == is
+
+              # cannot intersect at a tokened-out city
+              if (untokened_stops(owner, r.visited_stops) & untokened_stops(owner, s.visited_stops)).any?
+                intersects[ir] << is
+              end
+            end
+            intersects[ir].uniq!
+          end
+
+          # starting with the first route, make sure every route can be visited
+          visited = {}
+          visit_route(0, intersects, visited)
+
+          return unless visited.size != routes.size
+
+          raise GameError, "All routes using train #{train_name(supertrain)} must intersect with each other"
+        end
+
+        def untokened_stops(entity, visits)
+          visits.reject { |v| v.blocks?(entity) }
+        end
+
+        def visit_route(ridx, intersects, visited)
+          return if visited[ridx]
+
+          visited[ridx] = true
+          intersects[ridx].each { |i| visit_route(i, intersects, visited) }
+        end
+
+        def check_hex_reentry(route)
+          return if diesel?(route.train)
+
+          visited_hexes = route.visited_stops.map(&:hex)
+          return if visited_hexes == visited_hexes.uniq
+
+          raise GameError, 'Route cannot visit a hex with a town or village more than once'
+        end
+
+        def check_diesel_nodes(route)
+          entity = train_owner(route.train)
+          if route.visited_stops.any? { |n| !diesel_graph.connected_nodes(entity)[n] }
+            raise GameError, 'Diesel route has to directly or indirectly connect to concession route'
+          end
+
+          # add diesel to end if all diesel routes are defined
+          s_train = @supertrains[route.train]
+          num_diesel_routes = route.routes.count { |r| diesel?(r.train) }
+          num_diesels = @subtrains[s_train].size
+          allocate_pool_diesel(route.train) if num_diesel_routes == num_diesels
+        end
+
+        def concession_route_run?(entity, routes)
+          return true if entity == @qlb
+
+          @corporation_info[entity][:concession_routes].all? do |con_route|
+            routes.any? { |r| (r.connection_hexes.flatten & con_route).size == con_route.size }
+          end
+        end
+
+        def revenue_for(route, stops)
+          return diesel_revenue(route, stops) if diesel?(route.train)
+
+          owner = train_owner(route.train)
+          stops.sum do |stop|
+            next 0 if stop.city? && stop.blocks?(owner)
+
+            stop_total = 0
+            first = !stop_on_other_route?(route, stop)
+            if stop.city? && first
+              stop_total += stop.tokened_by?(owner) ? stop.route_revenue(route.phase, route.train) : STOP_REVENUE
+            end
+
+            if (mine = find_mine_in_hex(stop.hex)) && @minor_info[mine][:open] &&
+                highest_train_at_stop?(route, stop)
+              stop_total += @minor_info[mine][:multiplier] * route.train.distance
+            end
+
+            stop_total += FACTORY_INFO[stop.hex.id][:revenue] if FACTORY_INFO[stop.hex.id] && first
+
+            stop_total
+          end
+        end
+
+        def stop_on_other_route?(this_route, stop)
+          t_type = train_type(this_route.train)
+          this_route.routes.select { |r| t_type == train_type(r.train) }.each do |r|
+            return false if r == this_route
+
+            return true if r.visited_stops.include?(stop)
+          end
+          true
+        end
+
+        # actually, first highest train on route
+        def highest_train_at_stop?(this_route, stop)
+          max = 0
+          max_route = nil
+          this_route.routes.each do |r|
+            if r.visited_stops.include?(stop) && r.train.distance > max
+              max = r.train.distance
+              max_route = r
+            end
+          end
+          max_route == this_route
+        end
+
+        def diesel_revenue(route, stops)
+          stops.sum do |stop|
+            if stop.city? && !stop_on_other_route?(route, stop) && !stop.blocks?(train_owner(route.train))
+              DIESEL_STOP_REVENUE
+            else
+              0
+            end
+          end
+        end
+
+        def revenue_str(route)
+          # FIXME: not sure anything is needed here
+          super
+        end
+
+        def train_owner(train)
+          (@supertrains[train] || train).owner
+        end
+
+        def qlb_bonus
+          hex = hex_by_id(@qlb.coordinates.first)
+          hex.tile.city.route_revenue(@phase, @qlb_dummy_train)
+        end
+        #
+        # end of route methods
+        ##########################################
+
         def price_movement_chart
           [
             ['Dividend', 'Share Price Change'],
@@ -1206,7 +1603,7 @@ module Engine
         def game_location_names
           {
             'B9' => 'Wernigerode',
-            'B13' => 'Derenbug',
+            'B13' => 'Derenburg',
             'B19' => 'Halberstadt',
             'C4' => 'Brocken',
             'C6' => 'Knaupsholz',
@@ -1278,6 +1675,13 @@ module Engine
             '965' => 1,
             '966' => 1,
             '967' => 1,
+            '914' =>
+            {
+              'count' => 1,
+              'color' => 'green',
+              'code' => 'city=revenue:20;city=revenue:20;path=a:1,b:_0,track:narrow;'\
+                'path=a:_0,b:2,track:narrow;path=a:3,b:_1,track:narrow;path=a:_1,b:5,track:narrow',
+            },
             '968' => 2,
             '969' => 2,
             '970' => 1,
@@ -1354,6 +1758,7 @@ module Engine
                 vor_harzer: true,
                 machine_revenue: [40, 50, 60, 70, 80],
                 switcher_revenue: [30, 40, 50, 60],
+                multiplier: 10,
                 connected: false,
                 open: true,
               },
@@ -1371,6 +1776,7 @@ module Engine
                 vor_harzer: false,
                 machine_revenue: [40, 60, 80, 100, 120],
                 switcher_revenue: [20, 30, 40, 50],
+                multiplier: 20,
                 connected: false,
                 open: true,
               },
@@ -1388,6 +1794,7 @@ module Engine
                 vor_harzer: false,
                 machine_revenue: [40, 60, 80, 100, 120],
                 switcher_revenue: [20, 30, 40, 50],
+                multiplier: 20,
                 connected: false,
                 open: true,
               },
@@ -1405,6 +1812,7 @@ module Engine
                 vor_harzer: true,
                 machine_revenue: [40, 60, 80, 100, 120],
                 switcher_revenue: [20, 30, 40, 50],
+                multiplier: 20,
                 connected: false,
                 open: true,
               },
@@ -1422,6 +1830,7 @@ module Engine
                 vor_harzer: true,
                 machine_revenue: [50, 60, 70, 80, 90],
                 switcher_revenue: [40, 50, 60, 70],
+                multiplier: 10,
                 connected: false,
                 open: true,
               },
@@ -1439,6 +1848,7 @@ module Engine
                 vor_harzer: true,
                 machine_revenue: [50, 70, 90, 110, 130],
                 switcher_revenue: [30, 40, 50, 60],
+                multiplier: 20,
                 connected: false,
                 open: true,
               },
@@ -1456,6 +1866,7 @@ module Engine
                 vor_harzer: false,
                 machine_revenue: [50, 80, 110, 140, 170],
                 switcher_revenue: [20, 30, 40, 50],
+                multiplier: 30,
                 connected: false,
                 open: true,
               },
@@ -1473,6 +1884,7 @@ module Engine
                 vor_harzer: false,
                 machine_revenue: [60, 80, 100, 120, 140],
                 switcher_revenue: [40, 50, 60, 70],
+                multiplier: 20,
                 connected: false,
                 open: true,
               },
@@ -1490,6 +1902,7 @@ module Engine
                 vor_harzer: false,
                 machine_revenue: [60, 90, 120, 150, 180],
                 switcher_revenue: [30, 40, 50, 60],
+                multiplier: 30,
                 connected: false,
                 open: true,
               },
@@ -1507,6 +1920,7 @@ module Engine
                 vor_harzer: true,
                 machine_revenue: [60, 90, 120, 150, 180],
                 switcher_revenue: [30, 40, 50, 60],
+                multiplier: 10,
                 connected: false,
                 open: true,
               },
@@ -1524,6 +1938,7 @@ module Engine
                 vor_harzer: true,
                 machine_revenue: [70, 90, 110, 130, 150],
                 switcher_revenue: [50, 60, 70, 80],
+                multiplier: 20,
                 connected: false,
                 open: true,
               },
@@ -1541,6 +1956,7 @@ module Engine
                 vor_harzer: true,
                 machine_revenue: [70, 90, 110, 130, 150],
                 switcher_revenue: [50, 60, 70, 80],
+                multiplier: 20,
                 connected: false,
                 open: true,
               },
@@ -1558,6 +1974,7 @@ module Engine
                 vor_harzer: false,
                 machine_revenue: [70, 100, 130, 160, 190],
                 switcher_revenue: [40, 50, 60, 70],
+                multiplier: 30,
                 connected: false,
                 open: true,
               },
@@ -1575,6 +1992,7 @@ module Engine
                 vor_harzer: true,
                 machine_revenue: [90, 110, 130, 150, 170],
                 switcher_revenue: [70, 80, 90, 100],
+                multiplier: 20,
                 connected: false,
                 open: true,
               },
@@ -1592,6 +2010,7 @@ module Engine
                 vor_harzer: false,
                 machine_revenue: [90, 120, 150, 180, 210],
                 switcher_revenue: [60, 70, 80, 90],
+                multiplier: 30,
                 connected: true,
                 open: true,
               },
@@ -1806,8 +2225,8 @@ module Engine
                 concession_phase: '4',
                 concession_routes: [],
                 concession_cost: 0,
-                concession_pending: false,
-                concession_incomplete: true,
+                concession_pending: true,
+                concession_incomplete: false,
                 extra_tokens: 2,
                 advanced: true,
               },
@@ -1985,6 +2404,7 @@ module Engine
               distance: 999,
               price: 250,
               num: 7,
+              available_on: DIESEL_PURCHASE_ON,
             },
           ]
         end
@@ -2192,7 +2612,7 @@ module Engine
                 B13
               ] => 'city=slots:2,revenue:yellow_30|green_70|brown_60|gray_60;'\
                 'path=a:4,b:_0,track:narrow;path=a:5,b:_0,track:narrow;'\
-                'frame=color:purple',
+                'frame=color:purple;icon=image:1873/ZW_open,sticky:1',
               %w[
                 C4
               ] => 'city=revenue:yellow_50|green_80|brown_120|gray_150;path=a:5,b:_0,track:narrow',
@@ -2297,6 +2717,16 @@ module Engine
             {
               name: '5',
               on: '5T',
+              train_limit: 99,
+              tiles: %w[
+                yellow
+                green
+                brown
+              ],
+              operating_rounds: 3,
+            },
+            {
+              name: '5a',
               train_limit: 99,
               tiles: %w[
                 yellow

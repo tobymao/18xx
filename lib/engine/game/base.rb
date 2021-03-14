@@ -717,6 +717,18 @@ module Engine
         end
       end
 
+      def after_buy_company(player, company)
+        abilities(company, :shares) do |ability|
+          ability.shares.each do |share|
+            if share.president
+              @round.companies_pending_par << company
+            else
+              share_pool.buy_shares(player, share, exchange: :free)
+            end
+          end
+        end
+      end
+
       def player_value(player)
         player.value
       end
@@ -2061,7 +2073,7 @@ module Engine
         self.class::NEXT_SR_PLAYER_ORDER
       end
 
-      def reorder_players(order = nil)
+      def reorder_players(order = nil, log_player_order: false)
         order ||= next_sr_player_order
         case order
         when :after_last_to_act
@@ -2076,7 +2088,11 @@ module Engine
           current_order = @players.dup
           @players.sort_by! { |p| [p.cash, current_order.index(p)] }
         end
-        @log << "#{@players.first.name} has priority deal"
+        @log << if log_player_order
+                  "Priority order: #{@players.reject(&:bankrupt).map(&:name).join(', ')}"
+                else
+                  "#{@players.first.name} has priority deal"
+                end
       end
 
       def new_auction_round
@@ -2201,6 +2217,8 @@ module Engine
         # For display purposes is a corporation small, medium or large
         :small
       end
+
+      def corporation_size_name(_entity); end
 
       def company_status_str(_company); end
 

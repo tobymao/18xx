@@ -2,6 +2,7 @@
 
 require 'lib/color'
 require 'lib/settings'
+require 'lib/truncate'
 require 'view/game/actionable'
 
 module View
@@ -37,15 +38,45 @@ module View
       end
 
       def render_bidders
-        bidders_style = {
-          fontWeight: 'normal',
-          margin: '0 0.5rem',
+        table_props = {
+          style: {
+            margin: '0 auto',
+            borderSpacing: '0 1px',
+            fontWeight: 'normal',
+          },
         }
-        names = @bids
+
+        rows = @bids
           .sort_by(&:price)
-          .reverse.map { |bid| "#{bid.entity.name} (#{@game.format_currency(bid.price)})" }
-          .join(', ')
-        h(:div, { style: bidders_style }, names)
+          .reverse.map.with_index do |bid, i|
+            bg_color =
+              if setting_for(:show_player_colors, @game)
+                player_colors(@game.players)[bid.entity]
+              elsif @user && bid.entity.name == @user['name']
+                color_for(i.zero? ? :green : :yellow)
+              else
+                color_for(:bg)
+              end
+            props = {
+              style: {
+                backgroundColor: bg_color,
+                color: contrast_on(bg_color),
+              },
+            }
+            h(:tr, props, [
+              h('td.left', bid.entity.name.truncate(20)),
+              h('td.right', @game.format_currency(bid.price)),
+            ])
+          end
+
+        h(:div, { style: { clear: 'both' } }, [
+           h(:label, 'Bidders:'),
+           h(:table, table_props, [
+             h(:tbody, [
+               *rows,
+             ]),
+           ]),
+        ])
       end
 
       def render
@@ -111,11 +142,7 @@ module View
             h(:div, { style: value_style }, "Value: #{@game.format_currency(@company.value)}"),
             h(:div, { style: revenue_style }, "Revenue: #{@game.format_currency(@company.revenue)}"),
           ]
-
-          if @bids&.any?
-            children << h(:div, { style: bidders_style }, 'Bidders:')
-            children << render_bidders
-          end
+          children << render_bidders if @bids&.any?
 
           unless @company.discount.zero?
             children << h(

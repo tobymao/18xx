@@ -2329,6 +2329,7 @@ module Engine
         EXTRA_TRAIN_PULLMAN = 'P+'
         EXTRA_TRAIN_PERMANENTS = %w[2P LP].freeze
         LOCAL_TRAINS = %w[L LP].freeze
+        E_TRAIN = 'E'
 
         LIMIT_TOKENS_AFTER_MERGER = 9
 
@@ -2877,6 +2878,11 @@ module Engine
 
         def init_round
           stock_round
+        end
+
+        def init_stock_market
+          G1822::StockMarket.new(game_market, self.class::CERT_LIMIT_TYPES,
+                                 multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
         end
 
         def must_buy_train?(entity)

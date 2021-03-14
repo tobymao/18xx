@@ -132,7 +132,7 @@ module View
         scrappable_trains = []
         scrappable_trains = step.scrappable_trains(@corporation) if step.respond_to?(:scrappable_trains)
         unless scrappable_trains.empty?
-          children << h(:h3, h3_props, 'Trains to Scrap')
+          children << h(:h3, 'Trains to Scrap')
           children << h(:div, div_props, scrap_trains(scrappable_trains))
         end
 

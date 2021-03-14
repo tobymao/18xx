@@ -207,6 +207,7 @@ module Engine
 
             @bid_actions = 0
             @bidders = @round.bidders || Hash.new { |h, k| h[k] = [] }
+            @bid_exceeded = @round.bid_exceeded || Hash.new { |h, k| h[k] = [] }
             @bids = @round.bids if @round.bids
           end
 
@@ -224,26 +225,37 @@ module Engine
           def store_bids!
             @round.bidders = @bidders
             @round.bids = @bids
+            @bid_exceeded[current_entity].clear
+            @round.bid_exceeded = @bid_exceeded
+          end
+
+          def should_stop_applying_program(entity, share_to_buy)
+            unless @bid_exceeded[entity].empty?
+              return "No longer winning bids on #{@bid_exceeded[entity].map(&:id).join(',')}"
+            end
+
+            super
           end
 
           def action_is_shenanigan?(entity, action, corporation, share_to_buy)
-            if action.is_a?(Action::Bid)
-              # Can assume that any bid on that corporation will outbid
-              "Outbid on #{corporation.name}" if find_bid(entity, corporation)
-            else
-              super
-            end
+            # Bid is done in should_stop_applying_program
+            return if action.is_a?(Action::Bid)
+
+            super
           end
 
           protected
 
           def add_bid(action)
-            super
-
             company = action.company
             price = action.price
             entity = action.entity
 
+            winning_bid = highest_bid(company)
+            # Mark the previous highest bid as no longer winning
+            @bid_exceeded[winning_bid.entity] << company if winning_bid
+
+            super
             @bidders[company] |= [entity]
             track_action(action, bid_target(action))
 

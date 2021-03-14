@@ -104,6 +104,7 @@ module Engine
             other_trains = [] if entity.cash.zero?
             other_trains.reject! do |ot|
               @game.train_is_machine?(ot) ||
+                @game.diesel?(ot) && (@game.entity_has_diesel?(entity) || !@game.railway?(ot)) ||
                 ot.owner == @game.mhe ||
                 (@game.any_mine?(entity) && @game.train_is_train?(ot)) ||
                 (ot.owner.owner && @game.public_mine?(ot.owner.owner) && ot.owner.owner == entity) ||
@@ -115,6 +116,9 @@ module Engine
 
             # public mines have to have at least one mine with a smaller machine
             depot_trains.reject! { |t| t.distance <= public_mine_min_distance(entity) } if @game.public_mine?(entity)
+
+            # only RRs can have a diesel - but only one
+            depot_trains.reject! { |t| @game.diesel?(t) } if @game.entity_has_diesel?(entity) || !@game.railway?(ot)
 
             switchers = if (sp = @game.switcher_price) && !@game.concession_pending?(entity)
                           entity.cash >= sp ? [@game.next_switcher] : []
@@ -146,7 +150,7 @@ module Engine
               @game.public_mine_mines(entity).any? { |m| @game.switcher(m) }
             else
               # RRs can voluntarily scrap switchers
-              # and any trains if they have at least two
+              # and any trains, except diesels, if they have at least two
               return true if entity.trains.any? { |t| @game.train_is_switcher?(t) }
 
               entity.trains.count { |t| @game.train_is_train?(t) } > 1
@@ -205,6 +209,7 @@ module Engine
 
             allocate_machines!(entity, train, slots) if @game.train_is_machine?(train) && @game.public_mine?(entity)
             allocate_switcher!(entity, train, slots) if @game.train_is_switcher?(train) && @game.public_mine?(entity)
+            @game.add_subtrains!(train) if @game.railway?(entity) && old_owner == @game.depot
 
             @game.concession_unpend!(entity) if @game.concession_pending?(entity)
           end
