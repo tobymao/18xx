@@ -43,7 +43,7 @@ module View
 
       def render_title
         bg_color = if setting_for(:show_player_colors, @game)
-                     player_colors(@game.players)[@player]
+                     player_colors(@game.players)[@player] || color_for(:bg2)
                    else
                      color_for(:bg2)
                    end
