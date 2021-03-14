@@ -284,6 +284,9 @@ module View
 
       store(:selected_game, selected_game, skip: true)
 
+      `window.history.replaceState(window.history.state, null, '?title=' + encodeURIComponent(#{title}))`
+      root.store_app_route
+
       visible_rules = selected_game::OPTIONAL_RULES.reject do |rule|
         rule[:players] && !rule[:players].include?(@num_players)
       end
