@@ -204,16 +204,18 @@ module Engine
         if old_tile.paths.empty? &&
             !tile.paths.empty? &&
             cities.size > 1 &&
-            (token = cities.flat_map(&:tokens).find(&:itself))
-          actor = entity.company? ? entity.owner : entity
-          @round.pending_tokens << {
-            entity: actor,
-            hexes: [action.hex],
-            token: token,
-          }
-          @log << "#{actor.name} must choose city for token"
+            !(tokens = cities.flat_map(&:tokens).select(&:itself)).empty?
+          tokens.each do |token|
+            actor = entity.company? ? entity.owner : entity
+            @round.pending_tokens << {
+              entity: actor,
+              hexes: [action.hex],
+              token: token,
+            }
+            @log << "#{actor.name} must choose city for token"
 
-          token.remove!
+            token.remove!
+          end
         end
       end
 
