@@ -13,6 +13,7 @@ module View
     needs :user, default: nil, store: true
     needs :visible_optional_rules, default: nil, store: true
     needs :selected_game, default: nil, store: true
+    needs :title, default: nil
 
     def render_content
       @label_style = { display: 'block' }
@@ -73,6 +74,7 @@ module View
           title = game.title
           title += " (#{game::GAME_LOCATION})" if game::GAME_LOCATION
           attrs = { value: game.title }
+          attrs[:selected] = true if game.title == @title
 
           h(:option, { attrs: attrs }, title)
         end
@@ -263,7 +265,8 @@ module View
     end
 
     def selected_game
-      title = Native(@inputs[:title]).elm&.value || visible_games.first.title
+      title = Native(@inputs[:title]).elm&.value \
+              || (visible_games.include?(@title) ? @title : visible_games.first.title)
       Engine::GAME_META_BY_TITLE[title]
     end
 
