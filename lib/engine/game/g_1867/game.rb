@@ -1090,8 +1090,8 @@ module Engine
           return open_locations if corporation.type == :minor
 
           # @todo: this may need optimizing when changing connections for loading.
-          unconnected = open_locations.select { |hex| hex.connections.none? }
-          if unconnected.none?
+          unconnected = open_locations.select { |hex| hex.connections.empty? }
+          if unconnected.empty?
             open_locations
           else
             unconnected
