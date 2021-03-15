@@ -907,7 +907,6 @@ module Engine
         @round_counter += 1
         scores = result.map { |name, value| "#{name} (#{format_currency(value)})" }
         @log << "-- Game over: #{scores.join(', ')} --"
-        @round.steps.find { |s| s.is_a?(Engine::Step::Message) }.unpass!
       end
 
       def revenue_for(route, stops)
