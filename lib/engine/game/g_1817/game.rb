@@ -55,6 +55,8 @@ module Engine
 
         MUST_SELL_IN_BLOCKS = false
 
+        TILE_TYPE = :lawson
+
         TILES = {
           '5' => 'unlimited',
           '6' => 'unlimited',

@@ -154,7 +154,8 @@ module Engine
         visited = tokens.reject { |token, _| token == node }
         local_nodes = {}
 
-        node.walk(visited: visited, corporation: walk_corporation, skip_track: @skip_track) do |path|
+        node.walk(visited: visited, corporation: walk_corporation, skip_track: @skip_track,
+                  tile_type: @game.class::TILE_TYPE) do |path|
           next if paths[path]
 
           paths[path] = true

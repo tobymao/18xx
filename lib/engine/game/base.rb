@@ -220,6 +220,11 @@ module Engine
       # allows multiple lays, value must be either true, false or :not_if_upgraded
       TILE_LAYS = [{ lay: true, upgrade: true, cost: 0 }].freeze
 
+      # The tile type of the game
+      # :normal Tile type like 1830, 1846.
+      # :lawson Tile type like 1817, 1822
+      TILE_TYPE = :normal
+
       IMPASSABLE_HEX_COLORS = %i[blue gray red].freeze
 
       EVENTS_TEXT = {
