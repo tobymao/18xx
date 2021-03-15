@@ -2715,12 +2715,16 @@ module Engine
         end
 
         def float_corporation(corporation)
-          super
-          return if !@phase.status.include?('full_capitalisation') || corporation.type != :major
+          if @phase.status.include?('full_capitalisation') && corporation.type == :major
+            # Transfer any money corporation have gotten during phase 5 with incremental floating
+            corporation.spend(corporation.cash, @bank) if corporation.cash.positive?
 
-          bundle = ShareBundle.new(corporation.shares_of(corporation))
-          @share_pool.transfer_shares(bundle, @share_pool)
-          @log << "#{corporation.name}'s remaining shares are transferred to the Market"
+            bundle = ShareBundle.new(corporation.shares_of(corporation))
+            @share_pool.transfer_shares(bundle, @share_pool)
+            @log << "#{corporation.name}'s remaining shares are transferred to the Market"
+          end
+
+          super
         end
 
         def format_currency(val)
