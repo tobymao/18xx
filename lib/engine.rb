@@ -48,6 +48,8 @@ module Engine
   end
 
   def self.closest_title(title)
+    title = title.upcase
+
     @fuzzy_titles[title] ||= GAME_METAS.max_by do |m|
       titles = [
         m.title,
@@ -59,8 +61,8 @@ module Engine
 
       titles = titles.concat(titles.map { |t| t.sub(/^G?18/, '') }).uniq
 
-      titles.uniq.map do |t|
-        JaroWinkler.distance(title, t)
+      titles.map do |t|
+        JaroWinkler.distance(title, t.upcase)
       end.max
     end.title
   end
