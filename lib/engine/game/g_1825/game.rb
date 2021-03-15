@@ -4,17 +4,21 @@
 # (working on unit 3 to start)
 # map - done
 # map labels - done
-# tileset
+# tileset - done
 # weird promotion rules
-# trains
+# trains - done
 # phases
 # companies + minors - done
+# privates - done
 # market - done
 # minor floating rules (train value)
 # share price movemennt
 #
 # PHASE 2.
 # Unit 2, with options for choosing which units you play with.
+#
+# PHASE 3
+# Unit 1 + regional kits.
 
 require_relative 'meta'
 require_relative '../base'
@@ -40,22 +44,65 @@ module Engine
                         blue: '#0189d1',
                         brown: '#7b352a')
 
-        CURRENCY_FORMAT_STR = 'GBP%d'
+        CURRENCY_FORMAT_STR = '£%d'
 
-        BANK_CASH = 7000
+        BANK_CASH = 7_000
 
-        CERT_LIMIT = { 2 => 17 }.freeze
+        CERT_LIMIT = { 2 => 17, 3 => 15 }.freeze
 
-        STARTING_CASH = { 2 => 750 }.freeze
+        STARTING_CASH = { 2 => 750, 3 => 750 }.freeze
 
         CAPITALIZATION = :full
 
         MUST_SELL_IN_BLOCKS = false
 
+        # this is the Unit-3 tileset for now.
         TILES = {
           '1' => 1,
           '2' => 1,
-          '3' => 2,
+          '3' => 1,
+          '4' => 3,
+          '5' => 2,
+          '6' => 2,
+          '7' => 3,
+          '8' => 6,
+          '9' => 5,
+          '55' => 1,
+          '56' => 1,
+          '115' => 1,
+          '12' => 2,
+          '13' => 1,
+          '14' => 3,
+          '15' => 3,
+          '16' => 1,
+          '19' => 1,
+          '23' => 3,
+          '24' => 3,
+          '26' => 1,
+          '27' => 1,
+          '28' => 1,
+          '29' => 1,
+          '52' => 2,
+          '81' =>
+          {
+            'count' => 1,
+            'color' => 'green',
+            'code' => 'path=a:0,b:2;path=a:2,b:4;path=a:4,b:0',
+          },
+          '34' => 1,
+          '38' => 2,
+          '39' => 1,
+          '41' => 1,
+          '42' => 1,
+          '43' => 1,
+          '44' => 1,
+          '45' => 1,
+          '46' => 1,
+          '47' => 1,
+          '63' => 2,
+          '66' => 2,
+          '67' => 1,
+          '118' => 1,
         }.freeze
 
         MARKET = [
@@ -91,181 +138,73 @@ module Engine
 
         PHASES = [
           {
-            name: '1.1',
+            name: '1',
             on: '2',
-            train_limit: { minor: 2, major: 4 },
+            train_limit: { minor: 4, major: 4 },
             tiles: [:yellow],
             operating_rounds: 1,
           },
           {
-            name: '1.2',
-            on: '2+2',
-            train_limit: { minor: 2, major: 4 },
-            tiles: [:yellow],
-            operating_rounds: 1,
-          },
-          {
-            name: '2.1',
+            name: '2',
             on: '3',
-            train_limit: { minor: 2, major: 4 },
+            train_limit: { minor: 4, major: 4 },
             tiles: %i[yellow green],
             operating_rounds: 2,
           },
           {
-            name: '2.2',
-            on: '3+3',
-            train_limit: { major: 4, minor: 2 },
-            tiles: %i[yellow green],
-            operating_rounds: 2,
-          },
-          {
-            name: '2.3',
-            on: '4',
-            train_limit: { major: 3, minor: 1 },
-            tiles: %i[yellow green],
-            operating_rounds: 2,
-          },
-          {
-            name: '2.4',
-            on: '4+4',
-            train_limit: { prussian: 4, major: 3, minor: 1 },
-            tiles: %i[yellow green],
-            operating_rounds: 2,
-          },
-          {
-            name: '3.1',
+            name: '3',
             on: '5',
-            train_limit: { prussian: 4, major: 3, minor: 1 },
-            tiles: %i[yellow green],
-            operating_rounds: 3,
-            events: { close_companies: true },
-          },
-          {
-            name: '3.2',
-            on: '5+5',
-            train_limit: { prussian: 3, major: 2 },
-            tiles: %i[yellow green brown],
-            operating_rounds: 3,
-          },
-          {
-            name: '3.3',
-            on: '6',
-            train_limit: { prussian: 3, major: 2 },
-            tiles: %i[yellow green brown],
-            operating_rounds: 3,
-          },
-          {
-            name: '3.4',
-            on: '6+6',
-            train_limit: { prussian: 3, major: 2 },
+            train_limit: { minor: 3, major: 3 },
             tiles: %i[yellow green brown],
             operating_rounds: 3,
           },
         ].freeze
 
-        TRAINS = [{ name: '2', distance: 2, price: 80, rusts_on: '4', num: 9 },
-                  { name: '2+2', distance: 2, price: 120, rusts_on: '4+4', num: 4 },
-                  { name: '3', distance: 3, price: 180, rusts_on: '6', num: 4 },
-                  { name: '3+3', distance: 3, price: 270, rusts_on: '6+6', num: 3 },
-                  { name: '4', distance: 4, price: 360, num: 3 },
-                  { name: '4+4', distance: 4, price: 440, num: 1 },
-                  { name: '5', distance: 5, price: 500, num: 2 },
-                  { name: '5+5', distance: 5, price: 600, num: 1 },
-                  { name: '6', distance: 6, price: 600, num: 2 },
-                  { name: '6+6', distance: 6, price: 720, num: 4 }].freeze
+        # Unit 3 train set.
+        TRAINS = [{ name: '2', distance: 2, price: 180, rusts_on: '5', num: 5 },
+                  { name: '3', distance: 3, price: 300, num: 3 },
+                  { name: '4', distance: 4, price: 430, num: 1 },
+                  { name: '5', distance: 5, price: 550, num: 2 },
+                  {
+                    name: '3T',
+                    distance: 3,
+                    price: 370,
+                    num: 2,
+                    available_on: '5',
+                  },
+                  {
+                    name: 'U3',
+                    distance: 3,
+                    price: 410,
+                    num: 2,
+                    available_on: '5',
+                  },
+                  { name: '7', distance: 7, price: 720, num: 2 }].freeze
 
         COMPANIES = [
           {
-            name: 'Leipzig-Dresdner Bahn',
-            sym: 'LD',
-            value: 190,
-            revenue: 20,
-            desc: 'Leipzig-Dresdner Bahn - Sachsen Direktor Papier',
-            abilities: [{ type: 'shares', shares: %w[SX_0 SX_1] },
-                        { type: 'no_buy' },
-                        { type: 'close', when: 'bought_train', corporation: 'SX' }],
-            color: nil,
-          },
-          {
-            name: 'Ostbayrische Bahn',
-            sym: 'OBB',
-            value: 120,
-            revenue: 10,
-            desc: 'Ostbayrische Bahn - 2 Tiles on M15, M17 extra (one per OR) and without cost',
-            abilities: [
-              {
-                type: 'tile_lay',
-                description: "Place a free track tile at m15, M17 at any time during the corporation's operations.",
-                owner_type: 'player',
-                hexes: %w[M15 M17],
-                tiles: %w[3 4 7 8 9 58],
-                free: true,
-                count: 1,
-              },
-              { type: 'shares', shares: 'BY_2' },
-            ],
-            color: nil,
-          },
-          {
-            name: 'Nürnberg-Fürth',
-            sym: 'NF',
-            value: 100,
+            name: 'Arbroath & Forfar',
+            sym: 'A&F',
+            value: 30,
             revenue: 5,
-            desc: 'Nürnberg-Fürth Bahn, Director of AG may lay token on L14 north or south',
-            abilities: [{ type: 'shares', shares: 'BY_2' }],
-            color: nil,
+            color: :Green,
+            abilities: [{ type: 'no_buy' }],
           },
           {
-            name: 'Hannoversche Bahn',
-            sym: 'HB',
+            name: 'Tanfield Wagon Way',
+            sym: 'TWW',
+            value: 60,
+            revenue: 10,
+            color: :Green,
+            abilities: [{ type: 'no_buy' }],
+          },
+          {
+            name: 'Stockton & Darlington',
+            sym: 'S&D',
             value: 160,
-            revenue: 30,
-            desc: '10 Percent Share of Preussische Bahn on Exchange',
-            abilities: [
-              {
-                type: 'exchange',
-                corporations: ['PR'],
-                owner_type: 'player',
-                when: ['Phase 2.3', 'Phase 2.4', 'Phase 3.1'],
-                from: 'ipo',
-              },
-            ],
-            color: nil,
-          },
-          {
-            name: 'Pfalzbahnen',
-            sym: 'PB',
-            value: 150,
-            revenue: 15,
-            desc: 'Can lay a tile on L6 and Token on L6 if Baden AG is active already',
-            abilities: [
-              {
-                type: 'teleport',
-                owner_type: 'player',
-                free_tile_lay: true,
-                hexes: ['L6'],
-                tiles: %w[210 211 212 213 214 215],
-              },
-              { type: 'shares', shares: 'BY_1' },
-            ],
-            color: nil,
-          },
-          {
-            name: 'Braunschweigische Bahn',
-            sym: 'BB',
-            value: 130,
             revenue: 25,
-            desc: 'Can be exchanged for a 10% share of Preussische Bahn',
-            abilities: [
-              {
-                type: 'exchange',
-                corporations: ['PR'],
-                owner_type: 'player',
-                when: ['Phase 2.3', 'Phase 2.4', 'Phase 3.1'],
-                from: 'ipo',
-              },
-            ],
-            color: nil,
+            color: :Green,
+            abilities: [{ type: 'no_buy' }],
           },
         ].freeze
 
@@ -297,9 +236,6 @@ module Engine
             color: '#8c1b2f',
             reservation_color: nil,
           },
-        ].freeze
-
-        MINORS = [
           {
             sym: 'GN',
             name: 'Great North of Scotland Railway',
@@ -452,13 +388,10 @@ module Engine
             Step::Bankrupt,
             Step::Exchange,
             Step::BuyCompany,
-            Step::SpecialTrack,
-            Step::SpecialToken,
             Step::Track,
             Step::Token,
             Step::Route,
             Step::Dividend,
-            Step::DiscardTrain,
             Step::BuyTrain,
             [Step::BuyCompany, blocks: true],
           ], round_num: round_num)
