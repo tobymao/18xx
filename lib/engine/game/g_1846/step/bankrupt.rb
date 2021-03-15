@@ -53,7 +53,7 @@ module Engine
 
               @game.sell_shares_and_change_price(bundle)
 
-              if corporation.owner == player
+              if corporation.owner == player && corporation.share_price.price.positive?
                 @log << "-- #{corporation.name} enters receivership (it has no president) --"
                 corporation.owner = @game.share_pool
               end
@@ -71,6 +71,13 @@ module Engine
             @log << "#{@game.format_currency(player.cash)} is transferred from "\
                     "#{player.name} to #{corp.name}"
             player.spend(player.cash, corp) if player.cash.positive?
+
+            @game.corporations.dup.each do |corporation|
+              if corporation.share_price&.type == :close
+                @game.close_corporation(corporation)
+                corporation.close!
+              end
+            end
 
             @game.declare_bankrupt(player)
           end
