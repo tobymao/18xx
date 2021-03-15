@@ -11,6 +11,7 @@ module Engine
         DEV_STAGE = :production
         DEPENDS_ON = '1867'
 
+        GAME_SUBTITLE = 'The Railways of the Russian Empire'
         GAME_DESIGNER = 'Ian D. Wilson'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1867'
         GAME_LOCATION = 'Russia'

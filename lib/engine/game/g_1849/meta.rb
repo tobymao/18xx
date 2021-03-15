@@ -10,6 +10,7 @@ module Engine
 
         DEV_STAGE = :beta
 
+        GAME_SUBTITLE = 'The Game of Sicilian Railways'
         GAME_DESIGNER = 'Federico Vellani'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1849'
         GAME_LOCATION = 'Sicily'

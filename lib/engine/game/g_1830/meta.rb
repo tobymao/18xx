@@ -10,6 +10,7 @@ module Engine
 
         DEV_STAGE = :beta
 
+        GAME_SUBTITLE = 'Railways & Robber Barons'
         GAME_DESIGNER = 'Francis Tresham'
         GAME_LOCATION = 'Northeastern USA and Southeastern Canada'
         GAME_PUBLISHER = :lookout
