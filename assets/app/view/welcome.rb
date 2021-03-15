@@ -17,7 +17,7 @@ module View
 
     def render_notification
       message = <<~MESSAGE
-        <p>Check out the <a href='https://forms.gle/Aaz9L1R4tzQQD9hB8'>18xx In-Person Registry<a/> to support in-person play post COVID (maintained by Bill Hackenbracht)!</p>
+        <p>Check out the <a href='https://forms.gle/Aaz9L1R4tzQQD9hB8'>18xx In-Person Registry</a> to support in-person play post COVID (maintained by Bill Hackenbracht)!</p>
         <p><b>1822</b> is now in alpha! <b>1861</b> now in production!</p>
         <p>Please submit problem reports and make suggestions for improvements on
         <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>.</p>
