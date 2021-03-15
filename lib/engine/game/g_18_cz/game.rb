@@ -2428,6 +2428,7 @@ module Engine
 
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false # if ebuying from depot, must buy cheapest train
         EBUY_OTHER_VALUE = false # allow ebuying other corp trains for up to face
+        EBUY_CAN_SELL_SHARES = false # player cannot sell shares
 
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
           par: :red,
