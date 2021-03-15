@@ -186,7 +186,7 @@ module View
     end
 
     def render_game_info
-      h(Game::GameMeta, game_class: @selected_game || selected_game)
+      h(Game::GameMeta, game: @selected_game || selected_game)
     end
 
     def mode_selector
