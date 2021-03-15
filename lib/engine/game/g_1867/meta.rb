@@ -10,6 +10,7 @@ module Engine
 
         DEV_STAGE = :production
 
+        GAME_SUBTITLE = 'Railways of Canada'
         GAME_DESIGNER = 'Ian D. Wilson'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1867'
         GAME_LOCATION = 'Canada'

@@ -10,6 +10,7 @@ module Engine
 
         DEV_STAGE = :production
 
+        GAME_SUBTITLE = 'The Railroads Come to Mississippi'
         GAME_DESIGNER = 'Mark Derrick'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18MS'
         GAME_LOCATION = 'Mississippi, USA'
