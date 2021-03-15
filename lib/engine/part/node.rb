@@ -45,16 +45,15 @@ module Engine
       # skip_track: If passed, don't walk on track of that type (ie: :broad track for 1873)
       #
       # This method recursively bubbles up yielded values from nested Node::Walk and Path::Walk calls
-      def walk(visited: {}, on: nil, corporation: nil, visited_paths: {}, skip_track: nil)
+      def walk(visited: {}, on: nil, corporation: nil, visited_paths: {}, skip_track: nil, tile_type: :normal)
         return if visited[self]
 
-        visited = visited.dup
         visited[self] = true
 
         paths.each do |node_path|
           next if node_path.track == skip_track
 
-          node_path.walk(visited: visited_paths, on: on) do |path, vp|
+          node_path.walk(visited: visited_paths, on: on, tile_type: tile_type) do |path, vp|
             yield path
             next if path.terminal?
 
@@ -68,10 +67,13 @@ module Engine
                 corporation: corporation,
                 visited_paths: vp,
                 skip_track: skip_track,
+                tile_type: tile_type
               ) { |p| yield p }
             end
           end
         end
+
+        visited.delete(self) unless tile_type == :lawson
       end
     end
   end

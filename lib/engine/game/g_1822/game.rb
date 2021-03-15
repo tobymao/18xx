@@ -41,6 +41,8 @@ module Engine
 
         MUST_SELL_IN_BLOCKS = false
 
+        TILE_TYPE = :lawson
+
         TILES = {
           '1' => 1,
           '2' => 1,

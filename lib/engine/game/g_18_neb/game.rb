@@ -47,6 +47,8 @@ module Engine
         BROWN_CITIES = %w[611].freeze
         GRAY_CITIES = %w[51].freeze
 
+        TILE_TYPE = :lawson
+
         # rubocop:disable Layout/LineLength
         TILES = {
           # Yellow
