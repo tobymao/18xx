@@ -3,7 +3,7 @@
 module View
   module Game
     class GameMeta < Snabberb::Component
-      needs :game, default: nil
+      needs :game
 
       def render
         children = [h(:h3, 'Game Info')]
