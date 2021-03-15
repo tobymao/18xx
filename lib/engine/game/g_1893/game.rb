@@ -205,12 +205,12 @@ module Engine
         }.freeze
 
         LOCATION_NAMES = {
-          'B5' => 'Düseldorf & Neuss',
+          'B5' => 'Düsseldorf & Neuss',
           'D5' => 'Benrath',
           'D7' => 'Solingen',
           'B9' => 'Wuppertal',
           'E2' => 'Grevenbroich',
-          'E4' => 'DOrmagen',
+          'E4' => 'Dormagen',
           'G6' => 'Leverkusen',
           'I2' => 'Bergheim',
           'I8' => 'Bergisch-Gladbach',
@@ -221,7 +221,7 @@ module Engine
           'O2' => 'Düren',
           'O4' => 'Brühl',
           'O6' => 'Porz',
-          'P7' => 'Troizdorf',
+          'P7' => 'Troisdorf',
           'P9' => 'Siegen',
           'R7' => 'Bonn-Beuel',
           'S6' => 'Bonn',
@@ -367,7 +367,7 @@ module Engine
         COMPANIES = [
           {
             sym: 'FdSD',
-            name: 'Fond de Stadt Düsseldorf',
+            name: 'Fond der Stadt Düsseldorf',
             value: 190,
             revenue: 20,
             desc: 'May be exchanged against 20% shares of the Rheinbahn AG. This private cannot be sold.',
@@ -376,7 +376,7 @@ module Engine
           },
           {
             sym: 'EVA',
-            name: 'Eisenbehnverkehrsmittel Aktiengesellschaft',
+            name: 'Eisenbahnverkehrsmittel Aktiengesellschaft',
             value: 150,
             revenue: 30,
             desc: 'Leaves the game after the purchase of the first 6-train. This private cannot be sold.',
@@ -397,7 +397,7 @@ module Engine
             name: 'Euskirchener Kreisbahn',
             value: 210,
             revenue: 0,
-            desc: "Buyer take control of minor with same name (EKB), and the price paid makes the minor's treasury. "\
+            desc: "Buyer takes control of minor with same name (EKB), and the price paid makes the minor's treasury. "\
               "EKB minor and private are exchanged into the 20% president's certificate of AGV when AGV is formed. "\
               'The private and minor cannot be sold.',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
@@ -408,7 +408,7 @@ module Engine
             name: 'Köln-Frechen-Benzelrather Eisenbahn',
             value: 200,
             revenue: 0,
-            desc: "Buyer take control of minor with same name (KFBE), and the price paid makes the minor's treasury. "\
+            desc: "Buyer takes control of minor with same name (KFBE), and the price paid makes the minor's treasury. "\
               "KFBE minor and private are exchanged into the 20% president's certificate of AGV when AGV is formed. "\
               'The private and minor cannot be sold.',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
@@ -416,10 +416,10 @@ module Engine
           },
           {
             sym: 'KSZ',
-            name: 'Klienahn Siegburg-Zündorf',
+            name: 'Kleinbahn Siegburg-Zündorf',
             value: 100,
             revenue: 0,
-            desc: "Buyer take control of minor with same name (KSZ), and the price paid makes the minor's treasury. "\
+            desc: "Buyer takes control of minor with same name (KSZ), and the price paid makes the minor's treasury. "\
               'KSZ minor and private are exchanged into a 10% certificate of AGV when AGV is formed. '\
               'The private and minor cannot be sold.',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
@@ -430,7 +430,7 @@ module Engine
             name: 'Köln-Bonner Eisenbahn',
             value: 220,
             revenue: 0,
-            desc: "Buyer take control of minor with same name (KBE), and the price paid makes the minor's treasury. "\
+            desc: "Buyer takes control of minor with same name (KBE), and the price paid makes the minor's treasury. "\
               "KBE minor and private are exchanged into the 20% president's certificate of HGK when HGK is formed. "\
               'The private and minor cannot be sold.',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
@@ -441,7 +441,7 @@ module Engine
             name: 'Bergheimer Kreisbahn',
             value: 190,
             revenue: 0,
-            desc: "Buyer take control of minor with same name (BKB), and the price paid makes the minor's treasury. "\
+            desc: "Buyer takes control of minor with same name (BKB), and the price paid makes the minor's treasury. "\
               'BKB minor and private are exchanged into a 20% certificate of AGV when AGV is formed. '\
               'The private and minor cannot be sold.',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
@@ -576,7 +576,7 @@ module Engine
           },
           {
             sym: 'KSZ',
-            name: '3 Kleinbagn Siegburg-Zündprf',
+            name: '3 Kleinbahn Siegburg-Zündorf',
             type: 'minor',
             tokens: [0],
             logo: '1893/KSZ',
@@ -598,7 +598,7 @@ module Engine
           },
           {
             sym: 'BKB',
-            name: '5 Bergerheimer Kreisbahn',
+            name: '5 Bergheimer Kreisbahn',
             type: 'minor',
             tokens: [0],
             logo: '1893/BKB',
