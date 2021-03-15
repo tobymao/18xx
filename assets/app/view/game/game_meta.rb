@@ -4,12 +4,6 @@ module View
   module Game
     class GameMeta < Snabberb::Component
       needs :game, default: nil
-      needs :game_class, default: nil
-
-      def initialize(*)
-        super
-        @game_class = @game.class unless defined? @game_class
-      end
 
       def render
         children = [h(:h3, 'Game Info')]
@@ -18,39 +12,39 @@ module View
         children.concat(render_designer)
         children.concat(render_implementer)
         children.concat(render_rule_links)
-        children.concat(render_optional_rules) if defined?(@game)
+        children.concat(render_optional_rules) if @game.game_instance?
         children.concat(render_more_info)
 
         h(:div, children)
       end
 
       def render_publisher
-        return [] unless @game_class::GAME_PUBLISHER
+        return [] unless @game.meta::GAME_PUBLISHER
 
         [h(:p, [
           'Published by ',
-          *Lib::Publisher.link_list(component: self, publishers: Array(@game_class::GAME_PUBLISHER)),
+          *Lib::Publisher.link_list(component: self, publishers: Array(@game.meta::GAME_PUBLISHER)),
         ])]
       end
 
       def render_designer
-        return [] unless @game_class::GAME_DESIGNER
+        return [] unless @game.meta::GAME_DESIGNER
 
-        [h(:p, "Designed by #{@game_class::GAME_DESIGNER}")]
+        [h(:p, "Designed by #{@game.meta::GAME_DESIGNER}")]
       end
 
       def render_implementer
-        return [] unless @game_class::GAME_IMPLEMENTER
+        return [] unless @game.meta::GAME_IMPLEMENTER
 
-        [h(:p, "Implemented by #{@game_class::GAME_IMPLEMENTER}")]
+        [h(:p, "Implemented by #{@game.meta::GAME_IMPLEMENTER}")]
       end
 
       def render_rule_links
-        unless @game_class::GAME_RULES_URL.is_a?(Hash)
-          return [h(:p, [h(:a, { attrs: { href: @game_class::GAME_RULES_URL, target: '_blank' } }, 'Rules')])]
+        unless @game.meta::GAME_RULES_URL.is_a?(Hash)
+          return [h(:p, [h(:a, { attrs: { href: @game.meta::GAME_RULES_URL, target: '_blank' } }, 'Rules')])]
         end
 
-        @game_class::GAME_RULES_URL.map do |desc, url|
+        @game.meta::GAME_RULES_URL.map do |desc, url|
           h(:p, [h(:a, { attrs: { href: url, target: '_blank' } }, desc)])
         end
       end
@@ -58,7 +52,7 @@ module View
       def render_optional_rules
         return [] if @game.optional_rules.empty?
 
-        used_optional_rules = @game_class::OPTIONAL_RULES.map do |o_r|
+        used_optional_rules = @game.meta::OPTIONAL_RULES.map do |o_r|
           next unless @game.optional_rules.include?(o_r[:sym])
 
           h(:p, " * #{o_r[:short_name]}: #{o_r[:desc]}")
@@ -69,9 +63,9 @@ module View
       end
 
       def render_more_info
-        return [] unless @game_class::GAME_INFO_URL
+        return [] unless @game.meta::GAME_INFO_URL
 
-        [h(:p, [h(:a, { attrs: { href: @game_class::GAME_INFO_URL, target: '_blank' } }, 'More info')])]
+        [h(:p, [h(:a, { attrs: { href: @game.meta::GAME_INFO_URL, target: '_blank' } }, 'More info')])]
       end
     end
   end
