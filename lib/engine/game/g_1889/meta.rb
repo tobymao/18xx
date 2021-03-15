@@ -15,6 +15,8 @@ module Engine
         GAME_LOCATION = 'Shikoku, Japan'
         GAME_PUBLISHER = :grand_trunk_games
         GAME_RULES_URL = 'http://dl.deepthoughtgames.com/1889-Rules.pdf'
+        GAME_SUBTITLE = 'History of Shikoku Railways'
+        GAME_ALIASES = ['Shikoku: 1889'].freeze
 
         PLAYER_RANGE = [2, 6].freeze
       end

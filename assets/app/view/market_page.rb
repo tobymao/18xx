@@ -11,7 +11,7 @@ module View
     ROUTE_FORMAT = %r{/market/([^/?]*)/?}.freeze
 
     def render
-      game_title = @route.match(ROUTE_FORMAT)[1].gsub('%20', ' ')
+      game_title = @route.match(ROUTE_FORMAT)[1]
       game = load_game_class(game_title)
       unless game
         return h(:div, [

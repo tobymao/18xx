@@ -95,6 +95,8 @@ class Assets
   end
 
   def js_tags(titles)
+    titles.delete('all')
+
     scripts = %w[deps main].map do |key|
       file = builds[key]['path'].gsub(@out_path, @root_path)
       %(<script type="text/javascript" src="#{file}"></script>)
@@ -105,7 +107,7 @@ class Assets
   def game_js_tags(title)
     return [] unless title
 
-    game = Engine::GAME_META_BY_TITLE[title]
+    game = Engine.meta_by_title(title)
     tags = game_js_tags(game::DEPENDS_ON)
 
     key = game.fs_name

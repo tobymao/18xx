@@ -12,7 +12,7 @@ module View
     ROUTE_FORMAT = %r{/map/([^/?]*)/?}.freeze
 
     def render
-      game_title = @route.match(ROUTE_FORMAT)[1].gsub('%20', ' ')
+      game_title = @route.match(ROUTE_FORMAT)[1]
       game = load_game_class(game_title)
       unless game
         return h(:div, [
@@ -23,7 +23,11 @@ module View
       end
 
       players = game::PLAYER_RANGE.max.times.map { |n| "Player #{n + 1}" }
-      h(Game::Map, game: game.new(players), opacity: 1.0)
+
+      h(:div, [
+          h(:h2, game.title.to_s),
+          h(Game::Map, game: game.new(players), opacity: 1.0),
+        ])
     end
   end
 end

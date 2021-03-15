@@ -16,6 +16,8 @@ module Engine
       GAME_PUBLISHER = nil
       GAME_RULES_URL = nil
       GAME_TITLE = nil
+      GAME_SUBTITLE = nil
+      GAME_ALIASES = [].freeze
 
       # rules data that needs to be known to the engine without loading in the
       # full game class
