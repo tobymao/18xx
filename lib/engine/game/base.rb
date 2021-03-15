@@ -2065,7 +2065,11 @@ module Engine
       end
 
       def next_sr_position(entity)
-        player_order = @round.current_entity&.player? ? @round.pass_order : @players
+        player_order = if @round.current_entity&.player?
+                         next_sr_player_order == :first_to_pass ? @round.pass_order : []
+                       else
+                         @players
+                       end
         player_order.reject(&:bankrupt).index(entity)
       end
 

@@ -158,13 +158,29 @@ module View
       }
 
       children = ROUTE_COLORS.map.with_index do |_, index|
+        label_props =
+          if index.zero?
+            {
+              attrs: {
+                title: 'Your player color',
+              },
+              style: {
+                textDecoration: 'underline',
+                textUnderlineOffset: '0.2rem',
+                cursor: 'pointer',
+              },
+            }
+          else
+            {}
+          end
+
         h(:div, grid_props, [
-          h(:label, "Route #{index + 1}"),
+          h(:label, label_props, "Route #{index + 1}"),
           render_color(
             '',
             route_prop_string(index, :color),
             route_prop(index, :color),
-            attrs: { title: 'color of train and route on map' },
+            attrs: { title: "color of route, train and player #{index + 1}#{index.zero? ? ' (you)' : ''}" },
           ),
           render_input(
             '',
