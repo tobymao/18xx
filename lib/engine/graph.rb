@@ -146,6 +146,7 @@ module Engine
       end
 
       routes = @routes[corporation] || {}
+      walk_corporation = @no_blocking ? nil : corporation
 
       tokens.keys.each do |node|
         return nil if routes[:route_train_purchase] && routes_only
@@ -153,20 +154,21 @@ module Engine
         visited = tokens.reject { |token, _| token == node }
         local_nodes = {}
 
-        walk_corporation = @no_blocking ? nil : corporation
-
         node.walk(visited: visited, corporation: walk_corporation, skip_track: @skip_track) do |path|
+          next if paths[path]
+
           paths[path] = true
+
           path.nodes.each do |p_node|
             nodes[p_node] = true
-            yield p_node if block_given?
             local_nodes[p_node] = true
+            yield p_node if block_given?
           end
+
           hex = path.hex
-          edges = hexes[hex]
 
           path.exits.each do |edge|
-            edges[edge] = true
+            hexes[hex][edge] = true
             hexes[hex.neighbors[edge]][hex.invert(edge)] = true
           end
         end

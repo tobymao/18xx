@@ -24,7 +24,7 @@ module Engine
         end
       end
 
-      hex.connections.values.each do |connections|
+      hex.connections.each do |_, connections|
         connections.uniq!(&:hash)
       end
     end
@@ -101,10 +101,6 @@ module Engine
 
     def hexes
       @hexes ||= @paths.map(&:hex)
-    end
-
-    def valid?
-      nodes.size == 2 && @paths.all?(&:hex)
     end
 
     def include?(hex)

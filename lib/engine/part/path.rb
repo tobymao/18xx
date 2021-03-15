@@ -106,10 +106,12 @@ module Engine
       # jskip: An junction to ignore. May be useful on complex tiles
       # visited: a hashset of visited Paths. Used to avoid repeating track segments.
       # on: A set of Paths mapping to 1 or 0. When `on` is set. Usage is currently limited to `select` in path & node
-      def walk(skip: nil, jskip: nil, visited: nil, on: nil)
-        return if visited&.[](self)
+      def walk(skip: nil, jskip: nil, visited: {}, on: nil)
+        return if visited[self]
 
-        visited = visited&.dup || {}
+        # duplicate visited if new branch (no skip passed)
+        # or the edge we're coming from is a fork
+        visited = visited.dup if !skip || hex.paths[skip].size > 1
         visited[self] = true
 
         yield self, visited
