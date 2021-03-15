@@ -1107,6 +1107,11 @@ module Engine
           super
         end
 
+        def total_emr_buying_power(player, corporation)
+          emergency = (issuable = emergency_issuable_cash(corporation)).zero?
+          corporation.cash + issuable + liquidity(player, emergency: emergency)
+        end
+
         def issuable_shares(entity)
           return [] unless entity.corporation?
           return [] unless round.steps.find { |step| step.instance_of?(G1846::Step::IssueShares) }.active?
