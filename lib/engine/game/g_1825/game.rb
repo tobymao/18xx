@@ -4,18 +4,21 @@
 # (working on unit 3 to start)
 # map - done
 # map labels - done
-# tileset
+# tileset - done
 # weird promotion rules
-# trains
+# trains - done
 # phases
 # companies + minors - done
-# privates
+# privates - done
 # market - done
 # minor floating rules (train value)
 # share price movemennt
 #
 # PHASE 2.
 # Unit 2, with options for choosing which units you play with.
+#
+# PHASE 3
+# Unit 1 + regional kits.
 
 require_relative 'meta'
 require_relative '../base'
@@ -188,7 +191,7 @@ module Engine
             abilities: [{ type: 'no_buy' }],
           },
           {
-            name: 'Tanfiedld Wagon Way',
+            name: 'Tanfield Wagon Way',
             sym: 'TWW',
             value: 60,
             revenue: 10,
@@ -264,9 +267,6 @@ module Engine
             train: '3T',
           },
         ].freeze
-
-        # MINORS = [
-        # ].freeze
 
         LOCATION_NAMES = {
           'B8' => 'Inverness',
