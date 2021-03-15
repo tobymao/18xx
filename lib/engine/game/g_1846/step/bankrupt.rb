@@ -11,17 +11,6 @@ module Engine
             corp = action.entity
             player = corp.owner
 
-            unless @game.can_go_bankrupt?(player, corp)
-              buying_power = @game.format_currency(@game.total_emr_buying_power(player, corp))
-              price = @game.format_currency(@game.depot.min_depot_price)
-
-              msg = "Cannot go bankrupt. #{corp.name}'s cash plus #{player.name}'s cash and "\
-                    "sellable shares total #{buying_power}, and the cheapest train in the "\
-                    "Depot costs #{price}."
-
-              raise GameError, msg
-            end
-
             @log << "-- #{player.name} goes bankrupt and sells remaining shares --"
 
             # first, the corporation issues as many shares as they can
@@ -33,6 +22,18 @@ module Engine
               @game.log_share_price(corp, price)
 
               @game.round.emergency_issued = true
+            end
+
+            # validate after emergency issuing to fix the math in the exception message
+            unless @game.can_go_bankrupt?(player, corp)
+              buying_power = @game.format_currency(@game.total_emr_buying_power(player, corp))
+              price = @game.format_currency(@game.depot.min_depot_price)
+
+              msg = "Cannot go bankrupt. #{corp.name}'s cash plus #{player.name}'s cash and "\
+                    "sellable shares total #{buying_power}, and the cheapest train in the "\
+                    "Depot costs #{price}."
+
+              raise GameError, msg
             end
 
             # next the president sells all normally allowed shares

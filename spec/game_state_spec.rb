@@ -158,6 +158,15 @@ module Engine
           expect(game.illinois_central.cash).to be(280)
         end
       end
+
+      describe 20_381 do
+        it 'cannot go bankrupt when shares can be emergency issued' do
+          game = game_at_action(game_file, 308)
+          prr = game.corporation_by_id('PRR')
+          expect(game.can_go_bankrupt?(prr.player, prr)).to be(false)
+          expect(game.emergency_issuable_cash(prr)).to eq(10)
+        end
+      end
     end
 
     describe '1846 2p Variant' do
