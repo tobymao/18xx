@@ -37,6 +37,7 @@ module Engine
           def can_convert?(entity)
             return true if entity.minor?
             return false unless entity.corporation?
+            return false if entity.receivership?
             return false unless entity.total_shares < 10
             return false unless entity.num_market_shares.zero? && entity.num_ipo_shares.zero?
 

@@ -12,6 +12,7 @@ module Engine
           def actions(entity)
             return [] unless entity == current_entity
             return [] unless @game.railway?(entity)
+            return [] if entity.receivership?
             return [] unless can_place_token?(entity)
 
             ACTIONS
@@ -40,9 +41,8 @@ module Engine
             raise GameError, 'Token is already used' if token.used
             raise GameError, 'No token available to place' unless (new_token = entity.unplaced_tokens.first)
 
-            # only one per hex
             if tile.cities.any? { |c| c.tokened_by?(entity) }
-              raise GameError, "#{entity.name} cannot lay token on #{id} #{hex.id}"
+              raise GameError, "Cannot lay on #{hex.id}. Can only have one token per hex"
             end
 
             token.status = nil
@@ -72,12 +72,6 @@ module Engine
             end
 
             @game.diesel_graph.clear
-          end
-
-          def check_legal_placement(_entity, city, _token)
-            return unless @game.concession_blocks?(city)
-
-            raise GameError, "Cannot lay on #{city.id} Must leave room for concession RR"
           end
 
           def can_replace_token?(_entity, token)

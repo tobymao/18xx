@@ -26,6 +26,15 @@ module Engine
             pass!
           end
 
+          def help
+            return super unless current_entity.receivership?
+
+            "#{current_entity.name} is in receivership (it went insolvent). Most of its "\
+              'actions are automated, but it must have a player manually run its trains. '\
+              'Please see "Harzbahn 1873" Rules of Play Section 6.2 and enter the '\
+              "mandated routes for #{current_entity.name}."
+          end
+
           def process_run_routes(action)
             super
 

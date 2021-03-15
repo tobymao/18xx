@@ -12,6 +12,7 @@ module Engine
           def actions(entity)
             return [] if entity != current_entity
             return [] unless @game.public_mine?(entity)
+            return [] if entity.receivership?
             return [] unless @game.any_slot_available?(entity)
 
             BUY_ACTIONS
@@ -39,8 +40,8 @@ module Engine
             'mines'
           end
 
-          def buyable_entities(_entity)
-            @game.buyable_private_mines
+          def buyable_entities(entity)
+            @game.buyable_private_mines(entity)
           end
 
           def price_range(buyer, mine)
