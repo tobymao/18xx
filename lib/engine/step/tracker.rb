@@ -204,7 +204,7 @@ module Engine
         if old_tile.paths.empty? &&
             !tile.paths.empty? &&
             cities.size > 1 &&
-            !(tokens = cities.flat_map(&:tokens).select(&:itself)).empty?
+            !(tokens = cities.flat_map(&:tokens).compact).empty?
           tokens.each do |token|
             actor = entity.company? ? entity.owner : entity
             @round.pending_tokens << {
