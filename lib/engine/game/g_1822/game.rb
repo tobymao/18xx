@@ -3367,7 +3367,7 @@ module Engine
 
             if player.cash >= @player_debts[player]
               player.cash -= @player_debts[player]
-              @log << "#{player.name} pays off its loan of #{format_currency(@player_debts[player])}"
+              @log << "#{player.name} pays off their loan of #{format_currency(@player_debts[player])}"
               @player_debts[player] = 0
             else
               @player_debts[player] -= player.cash
