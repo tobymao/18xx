@@ -55,6 +55,14 @@ module Engine
               part.sub(/^G/, 'g_').gsub(/(.)([A-Z]+)/, '\1_\2').downcase
             end
         end
+
+        def meta
+          self
+        end
+
+        def game_instance?
+          false
+        end
       end
     end
   end

@@ -12,6 +12,7 @@ module View
     needs :flash_opts, default: {}, store: true
     needs :user, default: nil, store: true
     needs :visible_optional_rules, default: nil, store: true
+    needs :selected_game, default: nil, store: true
 
     def render_content
       @label_style = { display: 'block' }
@@ -25,12 +26,14 @@ module View
         inputs << h(:label, { style: @label_style }, 'Game Options')
         inputs << render_input('Invite only game', id: 'unlisted', type: :checkbox,
                                                    container_style: { paddingLeft: '0.5rem' })
+        inputs << render_game_info
       elsif @mode == :hotseat
         inputs << h(:label, { style: @label_style }, 'Player Names')
         @num_players.times do |index|
           n = index + 1
           inputs << render_input('', id: "player_#{n}", attrs: { value: "Player #{n}" })
         end
+        inputs << render_game_info
       elsif @mode == :json
         inputs << render_upload_button
         inputs << render_input(
@@ -182,6 +185,10 @@ module View
       ])
     end
 
+    def render_game_info
+      h(Game::GameMeta, game: @selected_game || selected_game)
+    end
+
     def mode_selector
       h(:div, { style: { margin: '1rem 0' } }, [
         *mode_input(:multi, 'Multiplayer'),
@@ -269,8 +276,10 @@ module View
         max = range.max = @max_p[title]
         val = range.value.to_i
         range.value = (min..max).include?(val) ? val : max
-        store(:num_players, range.value.to_i)
+        store(:num_players, range.value.to_i, skip: true)
       end
+
+      store(:selected_game, selected_game, skip: true)
 
       visible_rules = selected_game::OPTIONAL_RULES.reject do |rule|
         rule[:players] && !rule[:players].include?(@num_players)

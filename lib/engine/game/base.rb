@@ -333,6 +333,20 @@ module Engine
         meta_module.constants.each do |const|
           const_set(const, meta_module.const_get(const))
         end
+
+        const_set(:META, meta_module)
+      end
+
+      def self.meta
+        self::META
+      end
+
+      def meta
+        self.class.meta
+      end
+
+      def game_instance?
+        true
       end
 
       def initialize(names, id: 0, actions: [], pin: nil, strict: false, optional_rules: [], user: nil)
