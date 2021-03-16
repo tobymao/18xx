@@ -46,6 +46,10 @@ module Engine
             end
         end
 
+        def full_title
+          [title, self::GAME_SUBTITLE || []].flatten.join(': ')
+        end
+
         def fs_name
           @fs_name ||=
             begin
