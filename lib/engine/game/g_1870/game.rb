@@ -747,12 +747,9 @@ module Engine
           removals.each do |company, removal|
             hex = removal[:hex]
             corp = removal[:corporation]
+            company = 'GSC' if company == 'GSCᶜ'
             @log << "-- Event: #{corp}'s #{company_by_id(company).name} token removed from #{hex} --"
           end
-        end
-
-        def company_by_id(id)
-          return super('GSC') if id == 'GSCᶜ'
         end
 
         def river_company
