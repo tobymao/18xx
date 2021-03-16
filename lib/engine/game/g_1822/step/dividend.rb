@@ -76,6 +76,10 @@ module Engine
             entity.type == :minor ? revenue / 2.0 : (revenue / 2 / entity.total_shares).to_i * entity.total_shares
           end
 
+          def holder_for_corporation(entity)
+            entity
+          end
+
           def log_run_payout(entity, kind, revenue, subsidy, _action, payout)
             @log << "#{entity.name} runs for #{@game.format_currency(revenue)} and pays half" if kind == 'half'
 
