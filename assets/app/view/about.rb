@@ -26,7 +26,7 @@ module View
         <p>Current version <span id='version'>unknown</span> (<a href="https://github.com/tobymao/18xx/commits/master">recent commits</a>).</p>
         
         <h2>Conduct Expectations</h2>
-      
+        
         <p>
         Be nice. Treat people with respect.
         </p>
