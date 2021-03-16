@@ -3451,7 +3451,7 @@ module Engine
         end
 
         def company_choices_lur(company, time)
-          return {} if time != :issue || !company.owner&.corporation?
+          return {} if !(time == :token || time == :track || time == :issue) || !company.owner&.corporation?
 
           exclude_minors = bidbox_minors
           exclude_concessions = bidbox_concessions
