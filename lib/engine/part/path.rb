@@ -105,28 +105,36 @@ module Engine
       # skip: An exit to ignore. Useful to prevent ping-ponging between adjacent hexes.
       # jskip: An junction to ignore. May be useful on complex tiles
       # visited: a hashset of visited Paths. Used to avoid repeating track segments.
+      # counter: a hash tracking edges and junctions to avoid reuse
       # on: A set of Paths mapping to 1 or 0. When `on` is set. Usage is currently limited to `select` in path & node
-      def walk(skip: nil, jskip: nil, visited: {}, on: nil, tile_type: :normal)
+      # tile_type: if :lawson don't undo visited paths
+      def walk(skip: nil, jskip: nil, visited: {}, counter: Hash.new(0), on: nil, tile_type: :normal)
         return if visited[self]
+        return if @junction && counter[@junction] > 1
+        return if edges.sum { |edge| counter[edge.id] }.positive?
 
         visited[self] = true
+        counter[@junction] += 1 if @junction
 
-        yield self, visited
+        yield self, visited, counter
 
         if @junction && @junction != jskip
           @junction.paths.each do |jp|
             next if on && !on[jp]
 
-            jp.walk(jskip: @junction, visited: visited, on: on, tile_type: tile_type) do |p, v|
-              yield p, v
+            jp.walk(jskip: @junction, visited: visited, counter: counter, on: on, tile_type: tile_type) do |p, v, c|
+              yield p, v, c
             end
           end
         end
 
-        exits.each do |edge|
+        edges.each do |edge|
+          edge_id = edge.id
+          edge = edge.num
           next if edge == skip
           next unless (neighbor = hex.neighbors[edge])
 
+          counter[edge_id] += 1
           np_edge = hex.invert(edge)
 
           neighbor.paths[np_edge].each do |np|
@@ -134,13 +142,16 @@ module Engine
             next unless lane_match?(@exit_lanes[edge], np.exit_lanes[np_edge])
             next unless tracks_match?(np, dual_ok: true)
 
-            np.walk(skip: np_edge, visited: visited, on: on, tile_type: tile_type) do |p, v|
-              yield p, v
+            np.walk(skip: np_edge, visited: visited, counter: counter, on: on, tile_type: tile_type) do |p, v, c|
+              yield p, v, c
             end
           end
+
+          counter[edge_id] -= 1
         end
 
         visited.delete(self) unless tile_type == :lawson
+        counter[@junction] -= 1 if @junction
       end
 
       # return true if facing exits on adjacent tiles match up taking lanes into account
