@@ -46,6 +46,11 @@ h3 {
   font-size: 1.1rem;
   margin-bottom: 0.4rem;
 }
+h4 {
+  font-size: 1.0rem;
+  margin-top: 0.7rem;
+  margin-bottom: 0.4rem;
+}
 #game #left h3 {
   margin: 0.5rem 0 0.2rem 0;
 }

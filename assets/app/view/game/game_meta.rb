@@ -8,6 +8,7 @@ module View
       def render
         children = [h(:h3, 'Game Info')]
 
+        children.concat(render_title)
         children.concat(render_publisher)
         children.concat(render_designer)
         children.concat(render_implementer)
@@ -16,6 +17,13 @@ module View
         children.concat(render_more_info)
 
         h(:div, children)
+      end
+
+      def render_title
+        children = [@game.meta.title]
+        children.push(': ', @game.meta::GAME_SUBTITLE) if @game.meta::GAME_SUBTITLE
+
+        [h(:h4, children)]
       end
 
       def render_publisher
