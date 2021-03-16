@@ -45,14 +45,13 @@ module Engine
             end
 
             # finally, the president sells all their shares, regardless of 50% and
-            # presidency restrictions
+            # presidency restrictions, not changing any share prices
             player.shares_by_corporation.each do |corporation, shares|
               next unless corporation.share_price # if a corporation has not parred
               next if shares.empty?
 
               bundle = ShareBundle.new(shares)
-
-              @game.sell_shares_and_change_price(bundle)
+              @game.share_pool.sell_shares(bundle, allow_president_change: true)
 
               if corporation.owner == player && corporation.share_price.price.positive?
                 @log << "-- #{corporation.name} enters receivership (it has no president) --"
