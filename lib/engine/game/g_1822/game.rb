@@ -2739,6 +2739,10 @@ module Engine
           [hex_by_id(self.class::LONDON_HEX)] if corporation.id == self.class::MINOR_14_ID
         end
 
+        def ipo_name(_entity = nil)
+          'Treasury'
+        end
+
         def issuable_shares(entity)
           return [] if !entity.corporation? || (entity.corporation? && entity.type != :major)
           return [] if entity.num_ipo_shares.zero? || entity.operating_history.size < 2
