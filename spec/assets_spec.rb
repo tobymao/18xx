@@ -138,7 +138,7 @@ describe 'Assets' do
       expect(render(app_route: '/game/1#entities', **needs)).to include('entities', 'Player 1', 'Awa Railroad')
       expect(render(app_route: '/game/1#map', **needs)).to include('Kotohira')
       expect(render(app_route: '/game/1#market', **needs)).to include('The Bank', 'Cash', 'Par value')
-      expect(render(app_route: '/game/1#info', **needs)).to include('Upcoming')
+      expect(render(app_route: '/game/1#info', **needs)).to include('Upcoming', '1889: History of Shikoku Railways')
       expect(render(app_route: '/game/1#tiles', **needs)).to include('492')
       expect(render(app_route: '/game/1#spreadsheet', **needs)).to include('Value')
       expect(render(app_route: '/game/1#tools', **needs)).to include('Clone this')
