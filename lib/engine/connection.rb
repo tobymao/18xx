@@ -6,7 +6,9 @@ module Engine
 
     def self.connect!(hex)
       hex.tile.paths.each do |path|
-        path.walk do |_, visited|
+        path.walk do |current, visited|
+          next unless current.node?
+
           chain = visited.keys
           next unless chain.sum { |p| p.nodes.size } > 1
 

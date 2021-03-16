@@ -174,7 +174,7 @@ module Engine
       def node?
         return @_node if defined?(@_node)
 
-        @_node = @nodes.any?
+        @_node = !@nodes.empty?
       end
 
       def terminal?
