@@ -654,6 +654,12 @@ module Engine
 
         UPGRADE_COST_L_TO_2_PHASE_2 = 70
 
+        def bidbox_start_minor
+          return self.class::BIDDING_BOX_START_MINOR_ADV if optional_advanced?
+
+          self.class::BIDDING_BOX_START_MINOR
+        end
+
         def discountable_trains_for(corporation)
           discount_info = []
 
@@ -668,19 +674,14 @@ module Engine
           discount_info
         end
 
-        def init_companies(players)
-          # Make sure we have the correct starting companies
-          self.class.const_set(:STARTING_COMPANIES, self.class::STARTING_COMPANIES_ADVANCED) if optional_advanced?
-          super
+        def starting_companies
+          return self.class::STARTING_COMPANIES_ADVANCED if optional_advanced?
+
+          self.class::STARTING_COMPANIES
         end
 
         def optional_advanced?
           @optional_rules&.include?(:advanced)
-        end
-
-        def setup
-          self.class.const_set(:BIDDING_BOX_START_MINOR, self.class::BIDDING_BOX_START_MINOR_ADV) if optional_advanced?
-          super
         end
       end
     end
