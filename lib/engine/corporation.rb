@@ -55,7 +55,7 @@ module Engine
       @closed = false
       @float_percent = opts[:float_percent] || 60
       @float_excludes_market = opts[:float_excludes_market] || false
-      @floatable = opts[:floatable] || true
+      @floatable = opts[:floatable].nil? ? true : opts[:floatable]
       @floated = false
       @max_ownership_percent = opts[:max_ownership_percent] || 60
       @min_price = opts[:min_price]
