@@ -2832,12 +2832,6 @@ module Engine
         end
 
         def init_companies(players)
-          # Make sure we have the correct starting companies
-          starting_companies = if optional_plus_expansion?
-                                 self.class::STARTING_COMPANIES_PLUS
-                               else
-                                 self.class::STARTING_COMPANIES
-                               end
           game_companies.map do |company|
             next if players.size < (company[:min_players] || 0)
             next unless starting_companies.include?(company[:sym])
@@ -3338,6 +3332,18 @@ module Engine
           end
         end
 
+        def bidbox_start_concession
+          self.class::BIDDING_BOX_START_CONCESSION
+        end
+
+        def bidbox_start_minor
+          self.class::BIDDING_BOX_START_MINOR
+        end
+
+        def bidbox_start_private
+          self.class::BIDDING_BOX_START_PRIVATE
+        end
+
         def can_gain_extra_train?(entity, train)
           if train.name == self.class::EXTRA_TRAIN_PULLMAN
             return false if entity.trains.any? { |t| t.name == self.class::EXTRA_TRAIN_PULLMAN }
@@ -3770,6 +3776,12 @@ module Engine
           @midland_great_northern_choice = nil
         end
 
+        def starting_companies
+          return self.class::STARTING_COMPANIES_PLUS if optional_plus_expansion?
+
+          self.class::STARTING_COMPANIES
+        end
+
         def remove_exchange_token(entity)
           ability = entity.all_abilities.find { |a| a.type == :exchange_token }
           ability.use!
@@ -3821,15 +3833,15 @@ module Engine
           privates = @companies.select { |c| c.id[0] == self.class::COMPANY_PRIVATE_PREFIX }
 
           # Always set the P1, C1 and M24 in the first biddingbox
-          m24 = minors.find { |c| c.id == self.class::BIDDING_BOX_START_MINOR }
+          m24 = minors.find { |c| c.id == bidbox_start_minor }
           minors.delete(m24)
           minors.unshift(m24)
 
-          c1 = concessions.find { |c| c.id == self.class::BIDDING_BOX_START_CONCESSION }
+          c1 = concessions.find { |c| c.id == bidbox_start_concession }
           concessions.delete(c1)
           concessions.unshift(c1)
 
-          p1 = privates.find { |c| c.id == self.class::BIDDING_BOX_START_PRIVATE }
+          p1 = privates.find { |c| c.id == bidbox_start_private }
           privates.delete(p1)
           privates.unshift(p1)
 
