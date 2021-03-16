@@ -3371,7 +3371,7 @@ module Engine
               @player_debts[player] = 0
             else
               @player_debts[player] -= player.cash
-              @log << "#{player.name} decreases its loans by #{format_currency(player.cash)} "\
+              @log << "#{player.name} decreases their loan by #{format_currency(player.cash)} "\
                       "(#{format_currency(@player_debts[player])})"
               player.cash = 0
             end
