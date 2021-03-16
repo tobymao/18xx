@@ -54,6 +54,10 @@ module Engine
             @offer
           end
 
+          def others_acted?
+            !@round.acquired.empty?
+          end
+
           def can_take_loan?(entity)
             entity == @buyer && @game.can_take_loan?(entity) && !@passed_take_loans
           end
@@ -375,6 +379,7 @@ module Engine
             # If not aquired by the bank
             @round.offering.delete(acquired_corp)
             @winner = nil
+            @round.acquired << acquired_corp
             setup_auction
           end
 
@@ -478,6 +483,12 @@ module Engine
 
           def setup
             setup_auction
+          end
+
+          def round_state
+            {
+              acquired: [],
+            }
           end
 
           private

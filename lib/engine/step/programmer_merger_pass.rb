@@ -11,12 +11,16 @@ module Engine
       end
 
       def activate_program_merger_pass(entity, program)
+        if @game.actions.last != program && program.options&.include?('disable_others') && others_acted?
+          return [Action::ProgramDisable.new(entity.player,
+                                             reason: 'Other players have acted and requested to stop')]
+        end
+
         pass_entity = merger_auto_pass_entity
         return unless pass_entity
 
         # Check to see if the round and corps include the current one
-        return unless program.rounds.include?(@round.class.short_name)
-        return unless program.corporations.include?(pass_entity)
+        return unless program.corporations_by_round&.dig(@round.class.short_name)&.include?(pass_entity)
 
         # Corporation and round matchs, pass!
         [Action::Pass.new(entity)]
