@@ -5,9 +5,9 @@ require_relative '../base'
 
 module Engine
   module Game
-    module G18NEB
+    module G18Neb
       class Game < Game::Base
-        include_meta(G18NEB::Meta)
+        include_meta(G18Neb::Meta)
 
         register_colors(black: '#37383a',
                         orange: '#f48221',
@@ -638,7 +638,7 @@ module Engine
         def init_round
           Round::Auction.new(self, [
             Engine::Step::CompanyPendingPar,
-            G18NEB::Step::PriceFindingAuction,
+            G18Neb::Step::PriceFindingAuction,
           ])
         end
 
