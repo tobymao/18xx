@@ -106,10 +106,6 @@ module Engine
               .select { |p| p.price * share_multiplier <= available_cash }
           end
 
-          def log_pass(entity)
-            @log << "#{entity.name} passes"
-          end
-
           def pass!
             store_bids!
             super
