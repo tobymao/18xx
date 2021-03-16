@@ -2947,6 +2947,8 @@ module Engine
           end
 
           super
+
+          check_player_loans!
         end
 
         def place_home_token(corporation)
@@ -3055,6 +3057,12 @@ module Engine
 
         def route_trains(entity)
           entity.runnable_trains.reject { |t| pullman_train?(t) }
+        end
+
+        def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
+          super
+
+          check_player_loans!
         end
 
         def setup
@@ -3357,6 +3365,23 @@ module Engine
           return nil unless token_count == 2
 
           { route: route, revenue: destination_token.city.route_revenue(route.phase, route.train) }
+        end
+
+        def check_player_loans!
+          @players.each do |player|
+            next if @player_debts[player].zero? || player.cash.zero?
+
+            if player.cash >= @player_debts[player]
+              player.cash -= @player_debts[player]
+              @log << "#{player.name} pays off their loan of #{format_currency(@player_debts[player])}"
+              @player_debts[player] = 0
+            else
+              @player_debts[player] -= player.cash
+              @log << "#{player.name} decreases their loan by #{format_currency(player.cash)} "\
+                      "(#{format_currency(@player_debts[player])})"
+              player.cash = 0
+            end
+          end
         end
 
         def choices_entities
