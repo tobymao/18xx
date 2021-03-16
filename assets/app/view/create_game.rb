@@ -66,6 +66,7 @@ module View
     def render_inputs
       @min_p = {}
       @max_p = {}
+      closest_title = @title && Engine.closest_title(@title)
 
       game_options = visible_games.group_by { |game| game::DEV_STAGE }.flat_map do |dev_stage, game_list|
         option_list = game_list.map do |game|
@@ -74,7 +75,7 @@ module View
           title = game.title
           title += " (#{game::GAME_LOCATION})" if game::GAME_LOCATION
           attrs = { value: game.title }
-          attrs[:selected] = true if game.title == @title
+          attrs[:selected] = true if game.title == closest_title
 
           h(:option, { attrs: attrs }, title)
         end
@@ -265,8 +266,13 @@ module View
     end
 
     def selected_game
-      title = Native(@inputs[:title]).elm&.value \
-              || (visible_games.include?(@title) ? @title : visible_games.first.title)
+      title = Native(@inputs[:title]).elm&.value
+      title ||= lambda do
+        closest_title = Engine.closest_title(@title)
+        closest_title if visible_games.include?(closest_title)
+      end.call if @title
+      title ||= visible_games.first.title
+
       Engine::GAME_META_BY_TITLE[title]
     end
 
