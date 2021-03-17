@@ -2,7 +2,7 @@
 
 module Engine
   module Game
-    module G18NEB
+    module G18Neb
     end
   end
 end

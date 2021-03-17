@@ -5,9 +5,9 @@ require_relative '../base'
 
 module Engine
   module Game
-    module G18NEB
+    module G18Neb
       class Game < Game::Base
-        include_meta(G18NEB::Meta)
+        include_meta(G18Neb::Meta)
 
         register_colors(black: '#37383a',
                         orange: '#f48221',
@@ -276,7 +276,7 @@ module Engine
           },
           {
             name: '5/7',
-            distance: [{ 'pay' => 5, 'visit' => 7 }],
+            distance: [{ 'nodes' => %w[city offboard town], 'pay' => 5, 'visit' => 7 }],
             price: 450,
             num: 2,
             events: [{ 'type' => 'close_companies' },
@@ -565,7 +565,7 @@ module Engine
         EBUY_OTHER_VALUE = false # allow ebuying other corp trains for up to face
         HOME_TOKEN_TIMING = :float # not :operating_round
         # Two tiles can be laid, only one upgrade
-        TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded }].freeze
+        TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, cost: 20, upgrade: :not_if_upgraded }].freeze
 
         def setup
           @corporations, @future_corporations = @corporations.partition { |corporation| corporation.type != :local }
@@ -638,7 +638,7 @@ module Engine
         def init_round
           Round::Auction.new(self, [
             Engine::Step::CompanyPendingPar,
-            G18NEB::Step::PriceFindingAuction,
+            G18Neb::Step::PriceFindingAuction,
           ])
         end
 
