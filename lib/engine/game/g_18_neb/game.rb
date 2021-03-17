@@ -276,7 +276,7 @@ module Engine
           },
           {
             name: '5/7',
-            distance: [{ 'pay' => 5, 'visit' => 7 }],
+            distance: [{ 'nodes' => %w[city offboard town], 'pay' => 5, 'visit' => 7 }],
             price: 450,
             num: 2,
             events: [{ 'type' => 'close_companies' },
