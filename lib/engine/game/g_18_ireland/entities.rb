@@ -3,7 +3,7 @@
 module Engine
   module Game
     module G18Ireland
-      module EntityConfig
+      module Entities
         CORPORATIONS = [
           {
             float_percent: 20,
