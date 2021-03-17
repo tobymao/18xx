@@ -71,6 +71,7 @@ module Engine
             if (minor = @game.get_mine(company))
               minor.owner = player
               minor.float!
+              @game.open_mine!(minor)
               company.close!
               @game.companies.delete(company)
             else
