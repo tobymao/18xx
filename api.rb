@@ -69,7 +69,7 @@ class Api < Roda
   ].freeze
 
   ROUTES_WITH_GAME_TITLES = %w[
-     map market tiles fixture
+     map market fixture
   ].freeze
 
   Dir['./routes/*'].sort.each { |file| require file }
@@ -107,6 +107,12 @@ class Api < Roda
 
     r.on ROUTES_WITH_GAME_TITLES do
       render(titles: request.path.split('/')[2].split('+'))
+    end
+
+    r.on 'tiles' do
+      parts = request.path.split('/')
+      titles = parts.size == 4 ? parts[2].split(/[+ ]/) : []
+      render(titles: titles)
     end
 
     r.on 'game', Integer do |id|

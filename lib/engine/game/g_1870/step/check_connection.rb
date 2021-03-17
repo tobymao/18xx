@@ -31,7 +31,8 @@ module Engine
             return unless destination.assigned?(corporation)
             return unless (home = @game.home_hex(corporation))
 
-            destination.tile.nodes.first&.walk(corporation: corporation) do |path, _vp, _ve|
+            max_nodes = corporation.trains.map(&:distance).max
+            destination.tile.nodes.first&.walk(corporation: corporation, max_nodes: max_nodes) do |path|
               return true if path.hex.id == home.id
             end
 

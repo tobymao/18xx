@@ -40,42 +40,53 @@ module Engine
       #
       # visited: a hashset of visited Nodes
       # visited_paths: a hashset of visited Paths
-      # visited_edges: a hashset of crossed HexEdges (2-size Arr of hex and edge to represent hex edge crossings)
       # on: see Path::Walk
       # corporation: If set don't walk on adjacent nodes which are blocked for the passed corporation
       # skip_track: If passed, don't walk on track of that type (ie: :broad track for 1873)
+      # max_nodes: If passed, stop walking after visiting the number of nodes
       #
       # This method recursively bubbles up yielded values from nested Node::Walk and Path::Walk calls
-      # At the top level this method will yield all possible paths for the corporation from this node
-      def walk(visited: nil, on: nil, corporation: nil, visited_paths: {}, visited_edges: nil, skip_track: nil)
-        return if visited&.[](self)
+      def walk(
+        visited: {},
+        on: nil,
+        corporation: nil,
+        visited_paths: {},
+        counter: Hash.new(0),
+        skip_track: nil,
+        tile_type: :normal,
+        max_nodes: nil
+      )
+        return if visited[self]
 
-        visited = visited&.dup || {}
-        visited_edges = visited_edges&.dup || {}
         visited[self] = true
+        return if max_nodes && visited.size >= max_nodes
 
         paths.each do |node_path|
           next if node_path.track == skip_track
 
-          node_path.walk(visited: visited_paths, on: on, visited_edges: visited_edges) do |path, vp, ve|
-            yield path, vp, ve
+          node_path.walk(visited: visited_paths, counter: counter, on: on, tile_type: tile_type) do |path, vp, ct|
+            yield path
+            next if path.terminal?
+
             path.nodes.each do |next_node|
               next if next_node == self
               next if corporation && next_node.blocks?(corporation)
-              next if path.terminal?
 
               next_node.walk(
                 visited: visited,
+                counter: ct,
                 on: on,
                 corporation: corporation,
-                # Is merging what we passed into node_path.walk with what it gave us actually neccessary?
-                visited_paths: visited_paths.merge(vp),
-                visited_edges: visited_edges.merge(ve),
+                visited_paths: vp,
                 skip_track: skip_track,
-              ) { |p, v, e| yield p, v, e }
+                tile_type: tile_type,
+                max_nodes: max_nodes,
+              ) { |p| yield p }
             end
           end
         end
+
+        visited.delete(self) unless tile_type == :lawson
       end
     end
   end

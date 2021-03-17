@@ -9,6 +9,7 @@ module View
     class Player < Snabberb::Component
       include Lib::Settings
       include Lib::Text
+      include Lib::Color
 
       needs :player
       needs :game
@@ -41,11 +42,16 @@ module View
       end
 
       def render_title
+        bg_color = if setting_for(:show_player_colors, @game)
+                     player_colors(@game.players)[@player]
+                   else
+                     color_for(:bg2)
+                   end
         props = {
           style: {
             padding: '0.4rem',
-            backgroundColor: color_for(:bg2),
-            color: color_for(:font2),
+            backgroundColor: bg_color,
+            color: contrast_on(bg_color),
           },
         }
 
@@ -158,7 +164,7 @@ module View
         order = @game.next_sr_player_order
         trs << render_priority_deal(priority_props) if order == :after_last_to_act &&
                                                        @player == @game.priority_deal_player
-        trs << render_next_sr_position(priority_props) if order == :first_to_pass &&
+        trs << render_next_sr_position(priority_props) if %i[first_to_pass most_cash].include?(order) &&
                                                           @game.next_sr_position(@player)
 
         h(:table, trs)

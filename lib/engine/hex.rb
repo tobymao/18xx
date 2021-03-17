@@ -240,7 +240,7 @@ module Engine
     end
 
     def all_connections
-      connections.values.flatten.uniq.select(&:valid?)
+      connections.flat_map { |_, values| values }.uniq
     end
 
     def neighbor_direction(other)

@@ -19,8 +19,12 @@ module View
         @ipo_shares = @corporation.ipo_shares.group_by(&:percent).values
           .map(&:first).sort_by(&:percent).reverse
 
-        @pool_shares = @game.share_pool.shares_by_corporation[@corporation].group_by(&:percent).values
-          .map(&:first).sort_by(&:percent).reverse
+        @pool_shares = if @step.respond_to?(:pool_shares)
+                         @step.pool_shares(@corporation)
+                       else
+                         @game.share_pool.shares_by_corporation[@corporation].group_by(&:percent).values
+                           .map(&:first).sort_by(&:percent).reverse
+                       end
 
         children = []
 
@@ -61,7 +65,7 @@ module View
       def render_market_shares
         @pool_shares.map do |share|
           next unless @step.can_buy?(@current_entity, share)
-          next if share.president && @pool_shares.size > 1
+          next if share.to_bundle.presidents_share && @pool_shares.size > 1
 
           h(Button::BuyShare,
             share: share,

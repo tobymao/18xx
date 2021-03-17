@@ -10,6 +10,7 @@ module Engine
 
         DEV_STAGE = :production
 
+        GAME_SUBTITLE = 'The Birth of American Railroads'
         GAME_DESIGNER = 'Scott Petersen'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18Chesapeake'
         GAME_PUBLISHER = :all_aboard_games

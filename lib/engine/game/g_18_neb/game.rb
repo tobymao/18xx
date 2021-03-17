@@ -5,9 +5,9 @@ require_relative '../base'
 
 module Engine
   module Game
-    module G18NEB
+    module G18Neb
       class Game < Game::Base
-        include_meta(G18NEB::Meta)
+        include_meta(G18Neb::Meta)
 
         register_colors(black: '#37383a',
                         orange: '#f48221',
@@ -46,6 +46,8 @@ module Engine
         GREEN_CITIES = %w[226 227 228].freeze
         BROWN_CITIES = %w[611].freeze
         GRAY_CITIES = %w[51].freeze
+
+        TILE_TYPE = :lawson
 
         # rubocop:disable Layout/LineLength
         TILES = {
@@ -274,7 +276,7 @@ module Engine
           },
           {
             name: '5/7',
-            distance: [{ 'pay' => 5, 'visit' => 7 }],
+            distance: [{ 'nodes' => %w[city offboard town], 'pay' => 5, 'visit' => 7 }],
             price: 450,
             num: 2,
             events: [{ 'type' => 'close_companies' },
@@ -527,7 +529,7 @@ module Engine
             # city tiles
             ['C9'] => 'city=revenue:30;path=a:5,b:_0',
             # Omaha
-            ['K7'] => 'city=revenue:30,loc:3;town=revenue:0,loc:4;path=a:1,b:4;path=a:1,b:_0;upgrade=cost:60,terrain:water',
+            ['K7'] => 'city=revenue:30,loc:5;town=revenue:10,loc:4,to_city:1;path=a:1,b:_1;path=a:_1,b:4;path=a:1,b:_0;upgrade=cost:60,terrain:water',
           },
           gray: {
             ['D8'] => 'path=a:5,b:2',
@@ -563,22 +565,30 @@ module Engine
         EBUY_OTHER_VALUE = false # allow ebuying other corp trains for up to face
         HOME_TOKEN_TIMING = :float # not :operating_round
         # Two tiles can be laid, only one upgrade
-        TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded }].freeze
+        TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, cost: 20, upgrade: :not_if_upgraded }].freeze
 
         def setup
           @corporations, @future_corporations = @corporations.partition { |corporation| corporation.type != :local }
         end
 
+        def omaha_upgrade(to, from)
+          return to == '229' if from == 'yellow'
+          return to == '230' if from == 'green'
+          return to == '231' if from == 'brown'
+        end
+
+        def denver_upgrade(to, from)
+          return to == '407' if from == :yellow
+          return to == '234' if from == :green
+          return to == '116' if from == :brown
+        end
+
         def upgrades_to?(from, to, special = false)
           case from.hex.name
           when OMAHA_HEX
-            return to.name == '229' if from.color == :yellow
-            return to.name == '230' if from.color == :green
-            return to.name == '231' if from.color == :brown
+            return omaha_upgrade(to.name, from.color)
           when DENVER_HEX
-            return to.name == '407' if from.color == :yellow
-            return to.name == '234' if from.color == :green
-            return to.name == '116' if from.color == :brown
+            return denver_upgrade(to.name, from.color)
           when LINCOLN_HEX
             return GREEN_CITIES.include?(to.name) if from.color == :yellow
             return to.name == '233' if from.color == :green
@@ -628,7 +638,7 @@ module Engine
         def init_round
           Round::Auction.new(self, [
             Engine::Step::CompanyPendingPar,
-            G18NEB::Step::PriceFindingAuction,
+            G18Neb::Step::PriceFindingAuction,
           ])
         end
 

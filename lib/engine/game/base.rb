@@ -202,7 +202,7 @@ module Engine
       EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = true # if ebuying from depot, must buy cheapest train
       MUST_EMERGENCY_ISSUE_BEFORE_EBUY = false # corporation must issue shares before ebuy (if possible)
       EBUY_SELL_MORE_THAN_NEEDED = false # true if corporation may continue to sell shares even though enough funds
-
+      EBUY_CAN_SELL_SHARES = true # true if a player can sell shares for ebuy
       # when is the home token placed? on...
       # operate
       # float
@@ -219,6 +219,11 @@ module Engine
       # Default tile lay, one tile either upgrade or lay at zero cost
       # allows multiple lays, value must be either true, false or :not_if_upgraded
       TILE_LAYS = [{ lay: true, upgrade: true, cost: 0 }].freeze
+
+      # The tile type of the game
+      # :normal Tile type like 1830, 1846.
+      # :lawson Tile type like 1817, 1822
+      TILE_TYPE = :normal
 
       IMPASSABLE_HEX_COLORS = %i[blue gray red].freeze
 
@@ -271,6 +276,8 @@ module Engine
       RAND_A = 1_103_515_245
       RAND_C = 12_345
       RAND_M = 2**31
+
+      def setup_preround; end
 
       def setup; end
 
@@ -326,6 +333,20 @@ module Engine
         meta_module.constants.each do |const|
           const_set(const, meta_module.const_get(const))
         end
+
+        const_set(:META, meta_module)
+      end
+
+      def self.meta
+        self::META
+      end
+
+      def meta
+        self.class.meta
+      end
+
+      def game_instance?
+        true
       end
 
       def initialize(names, id: 0, actions: [], pin: nil, strict: false, optional_rules: [], user: nil)
@@ -402,6 +423,7 @@ module Engine
         @operating_rounds = @phase.operating_rounds
 
         @round_history = []
+        setup_preround
         @round = init_round
 
         cache_objects
@@ -714,6 +736,18 @@ module Engine
         end
       end
 
+      def after_buy_company(player, company)
+        abilities(company, :shares) do |ability|
+          ability.shares.each do |share|
+            if share.president
+              @round.companies_pending_par << company
+            else
+              share_pool.buy_shares(player, share, exchange: :free)
+            end
+          end
+        end
+      end
+
       def player_value(player)
         player.value
       end
@@ -903,7 +937,7 @@ module Engine
       end
 
       def float_str(entity)
-        "#{entity.percent_to_float}% to float" if entity.corporation?
+        "#{entity.percent_to_float}% to float" if entity.corporation? && entity.floatable
       end
 
       def route_distance_str(route)
@@ -2050,7 +2084,11 @@ module Engine
       end
 
       def next_sr_position(entity)
-        player_order = @round.current_entity&.player? ? @round.pass_order : @players
+        player_order = if @round.current_entity&.player?
+                         next_sr_player_order == :first_to_pass ? @round.pass_order : []
+                       else
+                         @players
+                       end
         player_order.reject(&:bankrupt).index(entity)
       end
 
@@ -2058,7 +2096,7 @@ module Engine
         self.class::NEXT_SR_PLAYER_ORDER
       end
 
-      def reorder_players(order = nil)
+      def reorder_players(order = nil, log_player_order: false)
         order ||= next_sr_player_order
         case order
         when :after_last_to_act
@@ -2073,7 +2111,11 @@ module Engine
           current_order = @players.dup
           @players.sort_by! { |p| [p.cash, current_order.index(p)] }
         end
-        @log << "#{@players.first.name} has priority deal"
+        @log << if log_player_order
+                  "Priority order: #{@players.reject(&:bankrupt).map(&:name).join(', ')}"
+                else
+                  "#{@players.first.name} has priority deal"
+                end
       end
 
       def new_auction_round
@@ -2198,6 +2240,8 @@ module Engine
         # For display purposes is a corporation small, medium or large
         :small
       end
+
+      def corporation_size_name(_entity); end
 
       def company_status_str(_company); end
 

@@ -102,81 +102,65 @@ module Engine
         on.keys.select { |p| on[p] == 1 }
       end
 
-      # on and chain are mutually exclusive
       # skip: An exit to ignore. Useful to prevent ping-ponging between adjacent hexes.
       # jskip: An junction to ignore. May be useful on complex tiles
       # visited: a hashset of visited Paths. Used to avoid repeating track segments.
-      # visited_edges: See Node.walk
+      # counter: a hash tracking edges and junctions to avoid reuse
       # on: A set of Paths mapping to 1 or 0. When `on` is set. Usage is currently limited to `select` in path & node
-      # chain: an array of the previously visited Paths to get to this point
-      #  * If `chain` is set `walk` will yield to a block, providing the chain (including this part), and will
-      #      'bubble up' yields from recursive calls
-      #  * If `chain` is nil `walk` will yield to a block, providing this Part and the visited Paths including this one
+      # tile_type: if :lawson don't undo visited paths
+      def walk(skip: nil, jskip: nil, visited: {}, counter: Hash.new(0), on: nil, tile_type: :normal)
+        return if visited[self]
+        return if @junction && counter[@junction] > 1
+        return if edges.sum { |edge| counter[edge.id] }.positive?
 
-      # on: HashSet of Paths that we want to *exclusively* walk on
-      def walk(skip: nil, jskip: nil, visited: nil, visited_edges: nil, on: nil, chain: nil)
-        return if visited&.[](self)
-
-        visited = visited&.dup || {}
-        visited_edges = visited_edges&.dup || {}
         visited[self] = true
+        counter[@junction] += 1 if @junction
 
-        if chain
-          chained = chain + [self]
-          yield chained if chain.empty? ? @nodes.size == 2 : @nodes.any?
-        else
-          yield self, visited, visited_edges
-        end
+        yield self, visited, counter
 
         if @junction && @junction != jskip
           @junction.paths.each do |jp|
             next if on && !on[jp]
 
-            if chain
-              jp.walk(jskip: @junction, visited: visited, visited_edges: visited_edges, chain: chained) do |c|
-                yield c
-              end
-            else
-              jp.walk(jskip: @junction, visited: visited, visited_edges: visited_edges, on: on) do |p, v, ve|
-                yield p, v, ve
-              end
+            jp.walk(jskip: @junction, visited: visited, counter: counter, on: on, tile_type: tile_type) do |p, v, c|
+              yield p, v, c
             end
           end
         end
 
-        exits.each do |edge|
+        edges.each do |edge|
+          edge_id = edge.id
+          edge = edge.num
           next if edge == skip
-          next if visited_edges[[hex, edge, @exit_lanes[edge]]]
           next unless (neighbor = hex.neighbors[edge])
 
+          counter[edge_id] += 1
           np_edge = hex.invert(edge)
 
           neighbor.paths[np_edge].each do |np|
             next if on && !on[np]
             next unless lane_match?(@exit_lanes[edge], np.exit_lanes[np_edge])
             next unless tracks_match?(np, dual_ok: true)
-            next if visited_edges[[neighbor, np_edge, np.exit_lanes[np_edge]]]
 
-            # We only need to store one side of the edge so let's keep the 'source'
-            neighbors_edges = visited_edges.merge({ [hex, edge, @exit_lanes[edge]] => 1 })
-            if chain
-              np.walk(skip: np_edge, visited: visited, visited_edges: neighbors_edges, chain: chained) do |c|
-                yield c
-              end
-            else
-              np.walk(skip: np_edge, visited: visited, visited_edges: neighbors_edges, on: on) do |p, v, ve|
-                yield p, v, ve
-              end
+            np.walk(skip: np_edge, visited: visited, counter: counter, on: on, tile_type: tile_type) do |p, v, c|
+              yield p, v, c
             end
           end
+
+          counter[edge_id] -= 1
         end
+
+        visited.delete(self) unless tile_type == :lawson
+        counter[@junction] -= 1 if @junction
       end
 
       # return true if facing exits on adjacent tiles match up taking lanes into account
       # TBD: support titles where lanes of different sizes can connect
       def lane_match?(lanes0, lanes1)
-        lanes0 && lanes1 &&
-            lanes1[LANE_WIDTH] == lanes0[LANE_WIDTH] && lanes1[LANE_INDEX] == lane_invert(lanes0)[LANE_INDEX]
+        lanes0 &&
+          lanes1 &&
+          lanes1[LANE_WIDTH] == lanes0[LANE_WIDTH] &&
+          lanes1[LANE_INDEX] == lane_invert(lanes0)[LANE_INDEX]
       end
 
       def lane_invert(lane)
@@ -190,7 +174,7 @@ module Engine
       def node?
         return @_node if defined?(@_node)
 
-        @_node = @nodes.any?
+        @_node = !@nodes.empty?
       end
 
       def terminal?

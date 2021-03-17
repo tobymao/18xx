@@ -19,6 +19,10 @@ module Engine
 
       def skip!; end
 
+      def pass!; end
+
+      def unpass!; end
+
       def blocks?
         @game.finished
       end

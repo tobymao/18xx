@@ -10,6 +10,7 @@ module Engine
 
         DEV_STAGE = :production
 
+        GAME_SUBTITLE = 'Rock & Stock'
         GAME_DESIGNER = 'R. Ryan Driskel'
         GAME_IMPLEMENTER = 'R. Ryan Driskel'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18CO:-Rock-&-Stock'

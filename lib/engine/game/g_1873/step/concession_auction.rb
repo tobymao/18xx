@@ -54,7 +54,7 @@ module Engine
           def active_entities
             active_auction do |_, bids|
               return [bids.min_by(&:price).entity]
-            end
+            end if @auctioning
 
             super
           end
@@ -107,6 +107,7 @@ module Engine
             player = bid.entity
             @bids.delete(company)
             buy_company(player, company, price)
+            @round.next_entity_index!
           end
 
           def active_auction
@@ -145,15 +146,13 @@ module Engine
 
             bids = @bids[@auctioning]
 
-            players = entities
-            players.rotate!(players.find_index(starter))
-            players.each_with_index do |player, idx|
+            entities.rotate(entities.find_index(starter)).each_with_index do |player, idx|
               next if player == starter
               next if max_bid(player, @auctioning) <= start_price
 
               bids << (Engine::Action::Bid.new(player,
                                                corporation: @auctioning,
-                                               price: idx - players.size))
+                                               price: idx - entities.size))
             end
           end
 

@@ -33,7 +33,9 @@ describe 'Assets' do
       expect(render(app_route: '/tiles/all')).to include('Generic Map Hexes')
 
       expect(render(app_route: '/tiles/57')).to include('57')
-      expect(render(app_route: '/tiles/18Chesapeake')).to include('I9')
+
+      expect(render(app_route: '/tiles/18Chesapeake/all')).to include('I9')
+
       expect(render(app_route: '/tiles/18Chesapeake/I9')).to include('I9')
       expect(render(app_route: '/tiles/18Chesapeake/X1')).to include('X1')
       x2_x3 = render(app_route: '/tiles/18Chesapeake/X2+X3')
@@ -47,14 +49,16 @@ describe 'Assets' do
         end
       end
 
-      multiple_games = render(app_route: '/tiles/1889+18Chesapeake')
+      multiple_games = render(app_route: '/tiles/1889+18Chesapeake/all')
       expect(multiple_games).to include('Kouchi')
       expect(multiple_games).to include('Delmarva')
 
       %w[1889 18Chesapeake].each do |title|
-        expect(render(app_route: "/tiles/#{title}")).to include("#{title} Map Hexes")
-        expect(render(app_route: "/tiles/#{title}")).to include("#{title} Tile Manifest")
-        expect(render(app_route: "/tiles/#{title}")).not_to include('TODO')
+        rendered = render(app_route: "/tiles/#{title}/all")
+
+        expect(rendered).to include("#{title} Map Hexes")
+        expect(rendered).to include("#{title} Tile Manifest")
+        expect(rendered).not_to include('TODO')
       end
     end
 
@@ -134,7 +138,7 @@ describe 'Assets' do
       expect(render(app_route: '/game/1#entities', **needs)).to include('entities', 'Player 1', 'Awa Railroad')
       expect(render(app_route: '/game/1#map', **needs)).to include('Kotohira')
       expect(render(app_route: '/game/1#market', **needs)).to include('The Bank', 'Cash', 'Par value')
-      expect(render(app_route: '/game/1#info', **needs)).to include('Upcoming')
+      expect(render(app_route: '/game/1#info', **needs)).to include('Upcoming', 'Shikoku: 1889')
       expect(render(app_route: '/game/1#tiles', **needs)).to include('492')
       expect(render(app_route: '/game/1#spreadsheet', **needs)).to include('Value')
       expect(render(app_route: '/game/1#tools', **needs)).to include('Clone this')

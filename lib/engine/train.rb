@@ -22,6 +22,7 @@ module Engine
       @available_on = opts[:available_on]
       @discount = opts[:discount]
       @multiplier = opts[:multiplier]
+      @no_local = opts[:no_local]
       @buyable = true
       @rusted = false
       @obsolete = false
@@ -82,6 +83,7 @@ module Engine
     end
 
     def local?
+      return false if @no_local
       return @local if defined?(@local)
 
       @local = if @distance.is_a?(Numeric)

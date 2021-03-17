@@ -190,15 +190,7 @@ module Engine
             "with a bid of #{@game.format_currency(price)}"
         end
 
-        @game.abilities(company, :shares) do |ability|
-          ability.shares.each do |share|
-            if share.president
-              @round.companies_pending_par << company
-            else
-              @game.share_pool.buy_shares(player, share, exchange: :free)
-            end
-          end
-        end
+        @game.after_buy_company(player, company)
       end
 
       private

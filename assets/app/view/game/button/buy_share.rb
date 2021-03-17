@@ -18,21 +18,22 @@ module View
         needs :action, default: Engine::Action::BuyShares
 
         def render
+          bundle = @share.to_bundle
           show_percentage = @percentages_available > 1 ||
-                            @share.percent != @share.corporation.share_percent && !@share.president
-          reduced_price = @game.format_currency(@share.price - @swap_share.price) if @swap_share
+                            bundle.percent != bundle.corporation.share_percent && !bundle.presidents_share
+          reduced_price = @game.format_currency(bundle.price - @swap_share.price) if @swap_share
 
           text = @prefix.to_s
           text += " #{@partial_percent}% of" if @partial_percent
-          text += " #{@share.percent}%" if show_percentage
+          text += " #{bundle.percent}%" if show_percentage
           text += " #{@source} Share"
           text += " (#{reduced_price} + #{@swap_share.percent}% Share)" if @swap_share
 
-          h(:button, { on: { click: -> { buy_share(@entity, @share, swap: @swap_share) } } }, text)
+          h(:button, { on: { click: -> { buy_shares(@entity, bundle, swap: @swap_share) } } }, text)
         end
 
-        def buy_share(entity, share, swap: nil)
-          process_action(@action.new(entity, shares: share, swap: swap))
+        def buy_shares(entity, bundle, swap: nil)
+          process_action(@action.new(entity, shares: bundle.shares, swap: swap))
         end
       end
     end

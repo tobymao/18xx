@@ -20,9 +20,9 @@ module Engine
       class Game < Game::Base
         include_meta(G1873::Meta)
 
-        attr_reader :mine_12, :corporation_info, :minor_info, :mhe, :mine_graph, :nwe, :reserved_tiles,
-                    :track_graph
-        attr_accessor :premium, :premium_order
+        attr_reader :mine_12, :corporation_info, :diesel_graph, :hw, :minor_info, :mhe, :mine_graph, :nwe, :qlb,
+                    :reserved_tiles, :subtrains
+        attr_accessor :premium, :premium_order, :premium_winner
 
         CURRENCY_FORMAT_STR = '%d ℳ'
         BANK_CASH = 100_000
@@ -59,14 +59,6 @@ module Engine
         TILE_LAYS = [{ lay: true, upgrade: true, cost: 0 },
                      { lay: :double_lay, upgrade: :double_lay, cost: 0 }].freeze
 
-        # FIXME
-        # EVENTS_TEXT = Base::EVENTS_TEXT.merge(
-        #  'first_three' => ['First 3', 'Advance phase'],
-        #  'first_four' => ['First 4', 'Advance phase'],
-        #  'first_six' => ['First 6', 'Advance phase'],
-        # ).freeze
-
-        # FIXME: on purchase of 1st 5 train: two more OR sets
         GAME_END_CHECK = { stock_market: :current_or, custom: :one_more_full_or_set }.freeze
 
         # FIXME
@@ -79,6 +71,14 @@ module Engine
         MHE_START_PRICE = 120
         HW_BONUS = 50
         TOKEN_PRICE = 100
+        STOP_REVENUE = 10
+        DIESEL_STOP_REVENUE = 10
+
+        DIESEL_POOL_HIGHWATER = 40
+        DIESEL_POOL_LOWWATER = 20
+
+        DIESEL_PRE_PHASE = '5'
+        DIESEL_PURCHASE_ON = '5a'
 
         MAINTENANCE_BY_PHASE = {
           '1' => {},
@@ -127,7 +127,7 @@ module Engine
           'C10' => { entity: 'WBE', tile: '78', exits: [2, 4], cost: 0 },
           'C12' => { entity: 'WBE', tile: '956', exits: [1, 4], cost: 0 },
           'C14' => { entity: 'WBE', tile: '76', exits: [1, 5], cost: 0 },
-          'D15' => { entity: 'WBE', tile: '974', exits: [1, 2, 3, 5], cost: 0 },
+          'D15' => { entity: 'WBE', tile: '974', exits: [1, 2], cost: 0 }, # any of [1,3,5]and 2 will work
           # SHE
           'F3' => { entity: 'SHE', tile: '956', exits: [0, 3], cost: 150 },
           'G2' => { entity: 'SHE', tile: '956', exits: [0, 3], cost: 150 },
@@ -162,6 +162,14 @@ module Engine
           # GHE
           'H17' => [4, 5], # preprinted tile
           'H19' => [1, 3],
+        }.freeze
+
+        FACTORY_INFO = {
+          'B13' => { name: 'ZW', revenue: 70 },
+          'C6' => { name: 'SB', revenue: 60 },
+          'E18' => { name: 'PM', revenue: 40 },
+          'F11' => { name: 'SM', revenue: 50 },
+          'H9' => { name: 'SB', revenue: 50 },
         }.freeze
 
         STATE_NETWORK = %w[
@@ -208,9 +216,15 @@ module Engine
           @premium = nil
           @premium_order = nil
           @premium_auction = true
+          @premium_winner = nil
           @switcher_index = 0
           @machine_index = trains.size
           @next_switcher = nil
+
+          @subtrains = Hash.new { |h, k| h[k] = [] }
+          @subtrain_index = {}
+          game_trains.each { |gt| @subtrain_index[gt[:name]] = gt[:num] }
+          @supertrains = {}
 
           @minor_info = load_minor_extended
           @corporation_info = load_corporation_extended
@@ -221,8 +235,13 @@ module Engine
           end
 
           @mine_12 = @minors.find { |m| m.id == '12' }
+          @hw = @corporations.find { |c| c.id == 'HW' }
           @mhe = @corporations.find { |c| c.id == 'MHE' }
           @nwe = @corporations.find { |c| c.id == 'NWE' }
+          @qlb = @corporations.find { |c| c.id == 'QLB' }
+          @qlb_dummy_train = Train.new(name: '1T', distance: 1, price: 0, index: 2, no_local: true)
+
+          init_diesel_pool
 
           # float the MHE and move all shares into market and give it a 1T
           @stock_market.set_par(@mhe, @stock_market.par_prices.find { |p| p.price == MHE_START_PRICE })
@@ -243,8 +262,8 @@ module Engine
 
           @mine_graph = Graph.new(self, home_as_token: true, no_blocking: true)
 
-          # can't trace paths from a flipped token for the purposes of laying track
-          @track_graph = Graph.new(self, skip_track: :broad, check_tokens: true)
+          # can only trace paths from concession route cities for diesel runs
+          @diesel_graph = Graph.new(self, skip_track: :broad, check_tokens: true)
 
           @reserved_tiles = Hash.new { |h, k| h[k] = {} }
           @state_network_hexes = STATE_NETWORK.map { |h| hex_by_id(h) }
@@ -257,7 +276,7 @@ module Engine
 
         # select graph for laying track
         def graph_for_entity(entity)
-          entity.minor? ? @mine_graph : @track_graph
+          entity.minor? ? @mine_graph : @graph
         end
 
         def load_minor_extended
@@ -286,6 +305,8 @@ module Engine
                         desc: description)
           end
           corp_comps = game_corporations.map do |gc|
+            next if gc[:sym] == 'MHE'
+
             if gc[:extended][:type] == :railway
               description = "Concession for Railway #{gc[:name]} in #{gc[:coordinates].join(', ')}. "\
                "Total concession tile cost: #{format_currency(gc[:extended][:concession_cost])}"
@@ -297,6 +318,68 @@ module Engine
             Company.new(sym: gc[:sym], name: name, value: RAILWAY_MIN_BID, desc: description)
           end.compact
           mine_comps + corp_comps
+        end
+
+        def init_diesel_pool
+          @diesel_pool = {}
+          proto_train = @depot.trains.find { |t| diesel?(t) }
+          DIESEL_POOL_HIGHWATER.times do
+            create_pool_diesel(proto_train)
+          end
+          update_cache(:trains)
+        end
+
+        def create_pool_diesel(proto)
+          new_train = Train.new(name: proto.name, distance: proto.distance, price: proto.price,
+                                index: @subtrain_index[proto.name], no_local: true)
+          new_train.owner = nil
+          @depot.trains << new_train
+          @diesel_pool[new_train] = { assigned: false, used: false }
+          @subtrain_index[proto.name] += 1
+        end
+
+        def use_pool_diesel(train, entity)
+          return unless @diesel_pool[train] # might not be from pool
+
+          s_train = entity.trains.find { |t| diesel?(t) }
+          @diesel_pool[train][:used] = true
+          @diesel_pool[train][:allocated] = true
+          @supertrains[train] = s_train
+          @subtrains[s_train] << train
+          @subtrains[s_train].uniq!
+
+          num_available = @diesel_pool.values.count { |v| !v[:used] }
+          return unless num_available < DIESEL_POOL_LOWWATER
+
+          (DIESEL_POOL_HIGHWATER - num_available).times do
+            create_pool_diesel(s_train)
+          end
+          update_cache(:trains)
+        end
+
+        def allocate_pool_diesel(train)
+          s_train = @supertrains[train] || train
+
+          new_train = @diesel_pool.keys.sort_by(&:id).find { |t| !@diesel_pool[t][:allocated] }
+          @diesel_pool[new_train][:allocated] = true
+          @supertrains[new_train] = s_train
+          @subtrains[s_train] << new_train
+          @subtrains[s_train].uniq!
+          new_train
+        end
+
+        def free_pool_diesels(entity)
+          s_train = entity.trains.find { |t| diesel?(t) }
+          return unless s_train
+          return if @subtrains[s_train].one? # always leave one allocated per supertrain
+
+          @subtrains[s_train].each do |sub|
+            next unless @diesel_pool[sub][:allocated] && !@diesel_pool[sub][:used] && @subtrains[s_train].size > 1
+
+            @diesel_pool[sub][:allocated] = false
+            @subtrains[s_train].delete(sub)
+            @supertrains.delete(sub)
+          end
         end
 
         def start_companies
@@ -315,7 +398,9 @@ module Engine
           corp_ids = @corporations.select do |corp|
             next if corp == @mhe
 
-            corp.receivership? || (railway?(corp) && @phase.available?(@corporation_info[corp][:concession_phase]))
+            corp.receivership? || (railway?(corp) &&
+                                   @phase.available?(@corporation_info[corp][:concession_phase]) &&
+                                   !corp.ipoed)
           end.map(&:id)
           @companies.select { |c| corp_ids.include?(c.id) }
         end
@@ -330,10 +415,13 @@ module Engine
           end
         end
 
-        def skip_token?(corporation, city)
-          return false unless railway?(corporation)
+        def skip_token?(_graph, corporation, city)
+          # diesel graph
+          return false if corporation.coordinates.include?(city.hex.id) # never skip home tokens
+          return true unless concession_routes(corporation).flatten.include?(city.hex.id)
 
-          city.tokens.find { |t| t&.corporation == corporation }&.status == :flipped
+          exits = CONCESSION_ROUTE_EXITS[city.hex.id]
+          (city.exits & exits).size != exits.size # don't skip villages on concession route
         end
 
         def update_tokens(corporation, routes)
@@ -353,7 +441,7 @@ module Engine
             end
           end
 
-          route_hexes = concession_routes(corporation).flatten
+          route_hexes = (concession_routes(corporation).flatten + corporation.coordinates).uniq
           corporation.placed_tokens.each do |token|
             token.status = if visited_tokens[token] || route_hexes.include?(token.city.hex.id)
                              nil
@@ -411,17 +499,22 @@ module Engine
         end
 
         def buy_train(operator, train, price = nil)
+          old_owner = train.owner
+
           super
 
           add_switcher! if train_is_switcher?(train)
+          add_subtrains!(train) if railway?(operator) && old_owner == @depot
         end
 
         def mhe_buy_train
           return if !last_or_in_round || @mhe.trains.first.distance >= 5
 
           scrap_train(@mhe.trains.first)
-          @log << "MHE buys a #{@depot.depot_trains.first.name} from bank"
-          buy_train(@mhe, @depot.depot_trains.first, :free)
+          train = @depot.upcoming.first
+          @log << "MHE buys a #{train.name} from bank"
+          buy_train(@mhe, train, :free)
+          phase.buying_train!(@mhe, train)
         end
 
         def scrap_train(train)
@@ -444,8 +537,32 @@ module Engine
           train.name.include?('T')
         end
 
+        def add_subtrains!(train)
+          return use_pool_diesel(allocate_pool_diesel(train), train_owner(train)) if diesel?(train)
+          return unless train_is_train?(train)
+
+          train = @supertrains[train] || train
+          count = train.distance > 5 ? 1 : train.distance # only one diesel
+
+          count.times do |idx|
+            create_duplicate_train!(train, @subtrain_index[train.name] + idx)
+          end
+          @subtrain_index[train.name] += count
+          update_cache(:trains)
+        end
+
+        def create_duplicate_train!(train, index)
+          new_train = Train.new(name: train.name, distance: train.distance, price: train.price,
+                                index: index, no_local: true)
+          new_train.owner = nil
+          @subtrains[train] << new_train
+          @supertrains[new_train] = train
+          @depot.trains << new_train
+          new_train
+        end
+
         def switcher_level
-          @phase.name == 'D' ? 5 : @phase.name.to_i
+          @phase.name == 'D' ? 5 : @phase.name.delete('a').to_i
         end
 
         def switcher_price
@@ -515,7 +632,8 @@ module Engine
           closed_image = "1873/#{minor.id}_closed"
           @hexes.each do |hex|
             if (icon = hex.tile.icons.find { |i| i.name == open_name })
-              hex.tile.icons[hex.tile.icons.find_index(icon)] = Part::Icon.new(closed_image, nil, true)
+              hex.tile.icons[hex.tile.icons.find_index(icon)] =
+                Part::Icon.new(closed_image, nil, true, nil, hex.tile.preprinted)
             end
           end
         end
@@ -529,35 +647,210 @@ module Engine
           open_image = "1873/#{minor.id}_open"
           @hexes.each do |hex|
             if (icon = hex.tile.icons.find { |i| i.name == closed_name })
-              hex.tile.icons[hex.tile.icons.find_index(icon)] = Part::Icon.new(open_image, nil, true)
+              hex.tile.icons[hex.tile.icons.find_index(icon)] =
+                Part::Icon.new(open_image, nil, true, nil, hex.tile.preprinted)
             end
           end
         end
 
-        # FIXME
         def insolvent!(entity)
-          # switch presidents if needed
-          deferred_president_change(entity) if concession_pending?(entity)
+          @log << "#{entity.name} is now Insolvent and will be recapitalized"
+          # drop the price if insolvency was caused by not buying compulsory train
+          if concession_pending?(entity)
+            deferred_president_change(entity)
+            price = entity.share_price.price
+            @stock_market.move_down(entity)
+            log_share_price(entity, price)
+          end
+
+          # All stock in players' hands is returned to pool w/no compensation
+          entity.player_share_holders.keys.each do |sh|
+            bundle = ShareBundle.new(sh.shares_of(entity))
+            @share_pool.transfer_shares(
+              bundle,
+              share_pool,
+              spender: @bank,
+              receiver: sh,
+              price: 0
+            )
+            @log << "All shares of #{entity.name} held by #{sh.name} is forfeited to share pool"
+          end
+          entity.owner = @share_pool
+
+          # Any shares in IPO are sold to pool at current price
+          sell_ipo_shares(entity)
+
+          r_cost = reorg_costs(entity)
+          @log << "Reorganization cost = #{format_currency(r_cost)}" if r_cost.positive?
+
+          # if there is insuffient cash to pay for reorg, up convert and sell shares to pool
+          # repeat if needed
+          while entity.cash < r_cost && entity.total_shares < 10
+            convert!(entity)
+            sell_ipo_shares(entity)
+          end
+
+          # free money! bank pays for reorg costs if corp can't
+          # includes bonus price boost
+          if (diff = r_cost - entity.cash).positive?
+            @bank.spend(diff, entity)
+            @log << "Bank pays #{format_currency(diff)} to #{entity.name}"
+            price = entity.share_price.price
+            if diff > price
+              @stock_market.move_up(entity)
+              log_share_price(entity, price)
+            end
+          end
+
+          # toss any trains that have maintenance costs
+          if railway?(entity)
+            entity.trains.each { |t| scrap_train(t) if train_maintenance(t.name).positive? }
+          else
+            public_mine_mines(entity).each do |mine|
+              mine.trains.each { |t| scrap_train(t) if train_maintenance(t.name).positive? }
+            end
+          end
+
+          # buy required trains
+          if railway?(entity) && r_cost.positive?
+            # railways need to buy next train
+            buy_reorg_train(entity, 'T')
+          elsif r_cost.positive?
+            # public mines need to buy next one or two machines
+            buy_reorg_machines(entity)
+          end
+
+          @log << "#{entity.name} has been recapitalized and reorganized and is in receivership"
+
+          # finally, take care of any pending concession
+          concession_unpend!(entity)
+        end
+
+        def sell_ipo_shares(entity)
+          return if entity.ipo_shares.empty?
+
+          @log << "#{entity.ipo_shares.size} IPO share(s) of #{entity.name} are sold to share pool"
+          entity.ipo_shares.each do |share|
+            @share_pool.transfer_shares(
+              share.to_bundle,
+              share_pool,
+              spender: @bank,
+              receiver: entity
+            )
+          end
+        end
+
+        def reorg_costs(entity)
+          if concession_pending?(entity)
+            # RR that couldn't buy a train to run concession routes
+            @depot.upcoming.first.variants.values.find { |v| v[:name].include?('T') }[:price]
+          elsif railway?(entity)
+            # it was a RR that couldn't afford maintenance costs
+            return 0 if entity == @qlb # QLB never has to own a train
+            return 0 if entity.trains.any? { |t| train_is_train?(t) && train_maintenance(t.name).zero? }
+
+            @depot.upcoming.first.variants.values.find { |v| v[:name].include?('T') }[:price]
+          else
+            # it was a Public Mine that couldn't afford maintenance costs
+            num_obsolete = public_mine_mines(entity)
+              .count { |m| train_maintenance(machine(m)&.name || '1M').positive? }
+            return 0 if num_obsolete.zero?
+
+            cost = 0
+            depot_idx = 0
+            while num_obsolete.positive?
+              num_obsolete -= @depot.upcoming[depot_idx].distance
+              cost += @depot.upcoming[depot_idx].variants.values.find { |v| v[:name].include?('M') }[:price]
+              depot_idx += 1
+            end
+            cost
+          end
+        end
+
+        def buy_reorg_train(entity, type)
+          train = @depot.upcoming.first
+          variant = train.variants.values.find { |v| v[:name].include?(type) }
+          price = variant[:price]
+          train.variant = variant[:name]
+          @log << "#{entity.name} buys a #{train.name} train for #{format_currency(price)} from depot"
+          buy_train(entity, train, price)
+          phase.buying_train!(entity, train)
+          train
+        end
+
+        def buy_reorg_machines(entity)
+          submines = public_mine_mines(entity)
+          num_empty = submines.count { |m| !machine(m) }
+          while num_empty.positive?
+            new_machine = buy_reorg_train(entity, 'M')
+            entity.trains.delete(new_machine)
+
+            # fill empty slots first, then ones with smaller machines
+            num_smaller = submines.count { |m| machine(m) && machine_size(m) < new_machine.distance }
+            if num_empty >= new_machine.distance
+              num_to_fill = new_machine.distance
+              num_extra = 0
+            elsif num_smaller >= (new_machine.distance - num_empty)
+              num_to_fill = new_machine.distance
+              num_extra = num_to_fill - num_empty
+            else
+              num_to_fill = num_empty + num_smaller
+              num_extra = num_smaller
+            end
+
+            mine_trains = replicate_machines(new_machine, num_to_fill)
+            [num_empty, num_to_fill].min.times do
+              add_train_to_slot(entity, submines.find_index { |m| !machine(m) }, mine_trains.shift)
+              num_empty -= 1
+            end
+            num_extra.times do
+              replace_slot = submines.find_index { |m| machine_size(m) < new_machine.distance }
+              add_train_to_slot(entity, replace_slot, mine_trains.shift) if replace_slot
+            end
+          end
         end
 
         def all_corporations
           @minors + @corporations
         end
 
-        # mines that can be used to form a public mining company
+        # mines that open and in players hands
         def open_private_mines
-          @minors.select { |m| @players.include?(m.owner) && @minor_info[m][:open] }
+          @minors.select { |m| @players.include?(m.owner) && mine_open?(m) }
         end
 
-        # mines that can be merged into a public mining company
-        def buyable_private_mines
-          @minors.select { |m| !m.owner || @players.include?(m.owner) }
+        # mines that can be merged to form a public mining company
+        def mergeable_private_mines(entity)
+          if entity == @hw
+            @minors.select { |m| @players.include?(m.owner) && @minor_info[m][:vor_harzer] }
+          else
+            @minors.select { |m| @players.include?(m.owner) }
+          end
+        end
+
+        # mines that can be bought by a public mining company
+        def buyable_private_mines(entity)
+          if entity == @hw
+            @minors.select { |m| (!m.owner || @players.include?(m.owner)) && @minor_info[m][:vor_harzer] }
+          else
+            @minors.select { |m| !m.owner || @players.include?(m.owner) }
+          end
         end
 
         def corporation_available?(entity)
           return false unless entity.corporation?
+          return true if entity == @mhe
+          return can_restart?(entity, @round.active_step.current_entity) if entity.receivership?
 
           entity.ipoed || can_par?(entity, @round.active_step.current_entity)
+        end
+
+        def can_restart?(corporation, player)
+          return false if corporation == @mhe
+          return false unless corporation.receivership?
+
+          # see if player has corresponding purchase option (private) for corp
+          player.companies.any? { |c| c.id == corporation.id }
         end
 
         def can_par?(corporation, player)
@@ -567,10 +860,12 @@ module Engine
           if railway?(corporation)
             player.companies.any? { |c| c.id == corporation.id }
           elsif !@corporation_info[corporation][:vor_harzer]
-            @turn > 1
+            # if not vor-harzer, player must own at least one mine, and there must be one other available
+            @turn > 1 && @minors.any? { |m| m.owner == player } && @minors.count(&:owner) > 1
           else
-            num_vh = @minors.count { |m| m.owner == player && @minor_info[m][:vor_harzer] }
-            num_vh >= 1 && (@turn > 1 || @mine_12.owner == player)
+            num_total_vh = @minors.count { |m| m.owner && @minor_info[m][:vor_harzer] }
+            num_player_vh = @minors.count { |m| m.owner == player && @minor_info[m][:vor_harzer] }
+            num_total_vh >= 2 && num_player_vh >= 1 && (@turn > 1 || @mine_12.owner == player)
           end
         end
 
@@ -585,9 +880,6 @@ module Engine
 
           num_ipo_shares = corporation.ipo_shares.size
           added_cash = num_ipo_shares * corporation.share_price.price
-
-          replace_company!(corporation)
-
           return unless added_cash.positive?
 
           corporation.ipo_shares.each do |share|
@@ -627,11 +919,12 @@ module Engine
           return unless railway?(corporation)
 
           old_co = @companies.find { |c| c.id == corporation.id }
-          description = "Purchase Option for Railway #{corporation_info[corporation][:name]}"
-          sym = corporation_info[corporation][:sym]
-          name = "#{sym} Purchase Options"
-          @companies[@companies.find_index(old_co)] = Company.new(sym: sym, name: name,
-                                                                  value: RAILWAY_MIN_BID, desc: description)
+          description = "Purchase Option for Railway #{corporation.full_name}"
+          sym = corporation.id
+          name = "#{sym} Purchase Option"
+          @companies.delete(old_co)
+          @companies << Company.new(sym: sym, name: name, value: RAILWAY_MIN_BID, desc: description)
+          update_cache(:companies)
         end
 
         def independent_mine?(entity)
@@ -655,7 +948,7 @@ module Engine
           return false unless (exits = CONCESSION_ROUTE_EXITS[hex.id])
           return false unless concession_incomplete?(@concession_route_corporations[hex.id])
           # take care of OO tile. Only care about city along concession route
-          return false unless info && (city.exits & exits).size == exits.size
+          return false unless (city.exits & exits).size == exits.size
 
           # must be two slots available for another RR to put a token here
           city.slots - city.tokens.count { |c| c } > 1
@@ -676,6 +969,7 @@ module Engine
         def concession_route_done?(entity)
           return true unless concession_incomplete?(entity)
 
+          # FIXME: need to check paths, not exits?
           concession_tile_hexes(entity).all? do |hex|
             info = CONCESSION_TILES[hex.id]
             (hex.tile.exits & info[:exits]).size == info[:exits].size
@@ -813,6 +1107,11 @@ module Engine
               @operating_rounds = @phase.operating_rounds
               stock_round_finished
               reorder_players
+              if @phase.name == DIESEL_PRE_PHASE
+                @phase.next!
+                @depot.depot_trains(clear: true)
+                @log << '-- Diesels now available --'
+              end
               new_operating_round
             when Engine::Round::Operating
               if @round.round_num < @operating_rounds
@@ -829,6 +1128,10 @@ module Engine
               reorder_players_start
               new_start_auction_round
             end
+        end
+
+        def custom_end_game_reached?
+          @phase.name == '5a' || @phase.name == 'D'
         end
 
         def last_or_in_round
@@ -858,15 +1161,15 @@ module Engine
         end
 
         # concession route in this hex
-        def reserve_tile!(hex, tile)
+        def reserve_tile!(entity, hex, tile)
           return false unless (ch = concession_tile(hex))
 
           # look for an upgrade to the tile being laid that has the exits
           # needed by the concession route
           res_tile = @tiles.find do |t|
-            exits_match?(t.exits, tile.exits, ch[:exits]) &&
-              upgrades_to?(tile, t) &&
-              t.cities.size == tile.cities.size
+            next if t.name == tile.name
+
+            tile_has_path_any_rotation?(entity, hex, tile, t, ch[:exits])
           end
 
           return false unless res_tile
@@ -875,11 +1178,68 @@ module Engine
           res_tile
         end
 
-        # see if exits_a contain exits_b and exits_c under some rotation
-        def exits_match?(exits_a, exits_b, exits_c)
-          6.times do |rot|
-            rot_exits = rotate_exits(exits_a, rot)
-            return true if (rot_exits & exits_b).size == exits_b.size && (rot_exits & exits_c).size == exits_c.size
+        # see if tile matches exits under some rotation
+        def tile_has_path_any_rotation?(entity, hex, orig_tile, new_tile, exits)
+          Engine::Tile::ALL_EDGES.each do |rot|
+            new_tile.rotate!(rot)
+
+            # only look at rotations where orig_tile and new_tile are compatible
+            next unless legal_reservation_rotation?(entity, hex, orig_tile, new_tile)
+            next unless upgrades_to?(orig_tile, new_tile)
+
+            return true if tile_has_path?(new_tile, exits)
+          end
+          false
+        end
+
+        # see if new_tile has same paths as rotated orig_tile
+        # - new exits don't run into illegal tiles/borders
+        # - new exits are a superset of original tile
+        # - new paths are a superset of original tile
+        #
+        # mostly the same as legal_rotation? in Tracker, but it doesn't reference graph
+        def legal_reservation_rotation?(entity, hex, old_tile, new_tile)
+          old_paths = old_tile.paths
+          old_exits = old_tile.exits
+
+          new_paths = new_tile.paths
+          new_exits = new_tile.exits
+
+          rval = new_exits.all? { |edge| hex.neighbors[edge] } &&
+            (new_exits & old_exits).size == old_exits.size &&
+            old_paths.all? { |path| new_paths.any? { |p| path <= p } }
+
+          # ICK - remove ASAP
+          rval_test = new_exits.all? { |edge| hex.neighbors[edge] } &&
+            !(new_exits & hex_neighbors(entity, hex)).empty? &&
+            old_paths.all? { |path| new_paths.any? { |p| path <= p } }
+
+          raise GameError, 'Logic error. Please file a bug report.' if rval && !rval_test
+
+          rval
+        end
+
+        def hex_neighbors(entity, hex)
+          graph_for_entity(entity).connected_hexes(entity)[hex]
+        end
+
+        # determine if tile has direct or indirect path between given exits
+        # Note: this assumes no intra-node paths or junctions (valid for 1873)
+        def tile_has_path?(tile, exits)
+          tile.paths.each do |path|
+            if path.exits.size == 2
+              # Case 1: simple path from edge to edge
+              return true if (path.exits - exits).empty?
+            elsif exits.include?(path.exits.first)
+              # Case 2: path from edge to node => follow paths out of node
+              target_exit = exits.find { |x| x != path.exits.first }
+              node = path.nodes.first
+              node.paths.each do |node_path|
+                next if node_path == path
+
+                return true if node_path.exits.first == target_exit
+              end
+            end
           end
           false
         end
@@ -891,7 +1251,7 @@ module Engine
         def add_tile_reservation!(hex, tile)
           ch = concession_tile(hex)
 
-          @log << "Reserving tile ##{tile.name} for #{ch[:entity]} concession route"
+          @log << "Reserving tile ##{tile.name} for #{ch[:entity]} concession route in hex #{hex.id}"
 
           # if there already is a reserved tile for this hex, make the old one available again
           @tiles << @reserved_tiles[hex.id][:tile] unless @reserved_tiles[hex.id].empty?
@@ -908,7 +1268,8 @@ module Engine
           return if @reserved_tiles[hex.id].empty?
 
           ch = concession_tile(hex)
-          return unless (ch[:exits] & tile.exits).size != ch[:exits].size
+          # FIXME: need to check paths, not exits?
+          return unless (ch[:exits] & tile.exits).size == ch[:exits].size
 
           @tiles << @reserved_tiles[hex.id][:tile] if @reserved_tiles[hex.id][:tile] != tile
           @reserved_tiles.delete(hex.id)
@@ -953,7 +1314,7 @@ module Engine
 
         def check_mine_connected?(entity)
           return false unless entity.minor?
-          return true if @minor_info[entity][:connected]
+          return true if connected_mine?(entity)
 
           @state_network_hexes.any? { |h| @mine_graph.reachable_hexes(entity)[h] }
         end
@@ -961,9 +1322,8 @@ module Engine
         def connect_mine!(entity)
           return unless entity.minor?
 
-          old = @minor_info[entity][:connected]
+          @log << "Mine #{entity.name} is now connected to state railway network" unless connected_mine?(entity)
           @minor_info[entity][:connected] = true
-          @log << "Mine #{entity.name} is now connected to state railway network" unless old
         end
 
         def must_buy_train?(entity)
@@ -993,6 +1353,10 @@ module Engine
             end unless @mhe.trains.any? { |t| t.name == '5T' }
           elsif corporation.operated?
             bundle.num_shares.times { @stock_market.move_down(corporation) }
+          else
+            # force it last
+            @stock_market.move_up(corporation)
+            @stock_market.move_down(corporation)
           end
           log_share_price(corporation, price)
         end
@@ -1022,6 +1386,10 @@ module Engine
 
         def mhe_income
           @mhe.trains.first.distance * 100
+        end
+
+        def mine_open?(entity)
+          entity.minor? && @minor_info[entity][:open]
         end
 
         def mine_face_value(entity)
@@ -1102,7 +1470,7 @@ module Engine
         end
 
         def train_maintenance(train_name)
-          MAINTENANCE_BY_PHASE[@phase.name][train_name] || 0
+          MAINTENANCE_BY_PHASE[@phase.name.delete('a')][train_name] || 0
         end
 
         def minor_maintenance_costs(entity)
@@ -1126,7 +1494,7 @@ module Engine
           m_revs = @minor_info[mine][:machine_revenue]
           m_rev = m_revs[m_size - 1]
           s_rev = s_size ? @minor_info[mine][:switcher_revenue][s_size - 2] : 0
-          @minor_info[mine][:connected] ? m_rev + s_rev : m_revs.first
+          connected_mine?(mine) ? m_rev + s_rev : m_revs.first
         end
 
         def mine_revenue(entity)
@@ -1163,6 +1531,290 @@ module Engine
           @log << "#{entity.name} owes #{format_currency(maintenance)} for maintenance" if maintenance.positive?
         end
 
+        # one NT train is really N trains, so we use the subtrains we created earlier
+        def route_trains(entity)
+          entity.runnable_trains.map { |t| @subtrains[t] }.flatten
+        end
+
+        def train_name(train)
+          train = @supertrains[train] || train
+          owner = train_owner(train)
+          train_idx = owner.trains.find_index(train)
+          if diesel?(train)
+            train.name
+          elsif train_idx < 26
+            "#{train.name}#{('a'.ord + train_idx).chr}"
+          else
+            # unlikely that someone will have more than 26 trains...
+            "#{train.name}-#{train_idx}"
+          end
+        end
+
+        ##########################################
+        # start of route methods
+        #
+        def compute_stops(route)
+          route.visited_stops
+        end
+
+        def check_connected(route, token)
+          # special case: don't check on concession route(s)
+          con_route = @corporation_info[train_owner(route.train)][:concession_routes].any? do |c_r|
+            (route.connection_hexes.flatten & c_r).size == c_r.size
+          end
+
+          super unless con_route
+        end
+
+        def check_distance(route, visits)
+          train = route.train
+
+          # no real "distance" for 1873 routes, instead might as well use visits for checks:
+          # check that route begins and ends with termini
+          corporation = train_owner(route.train)
+          if (!terminus?(visits.first, corporation) || !terminus?(visits.last, corporation)) && !diesel?(train)
+            raise GameError, 'Route must begin and end with token or non-tokened out open mine or factory'
+          end
+          if (!d_terminus?(visits.first, corporation) || !d_terminus?(visits.last, corporation)) && diesel?(train)
+            raise GameError, 'Route must begin and end with token'
+          end
+
+          # check that route doesn't pass through a "town" (framed hex)
+          return unless visits.size > 2
+
+          visits[1..-2].each do |node|
+            raise GameError, 'Route cannot pass through a town' if node.tile.frame
+          end
+        end
+
+        # a node is a legal terminus if:
+        # it is a city with the corp's token
+        # it is a town with a factory
+        # it is a city that is not tokened-out with a factory or open mine
+        def terminus?(node, corporation)
+          (node.city? && node.tokened_by?(corporation)) ||
+          (node.town? && FACTORY_INFO[node.hex.id]) ||
+          (node.city? && !node.blocks?(corporation) &&
+           (((mine = find_mine_in_hex(node.hex)) && mine_open?(mine)) || FACTORY_INFO[node.hex.id]))
+        end
+
+        # a node is a legal diesel terminus if:
+        # it is a city with the corp's token
+        def d_terminus?(node, corporation)
+          node.city? && node.tokened_by?(corporation)
+        end
+
+        def find_mine_in_hex(hex)
+          @minors.find { |m| m.coordinates == hex.id }
+        end
+
+        def check_overlap(routes)
+          tracks_by_type = Hash.new { |h, k| h[k] = [] }
+
+          routes.each do |route|
+            route.paths.each do |path|
+              a = path.a
+              b = path.b
+
+              tracks = tracks_by_type[train_type(route.train)]
+              tracks << [path.hex, a.num, path.lanes[0][1]] if a.edge?
+              tracks << [path.hex, b.num, path.lanes[1][1]] if b.edge?
+            end
+          end
+
+          tracks_by_type.each do |_type, tracks|
+            tracks.group_by(&:itself).each do |k, v|
+              raise GameError, "Route cannot reuse track on #{k[0].id}" if v.size > 1
+            end
+          end
+        end
+
+        def train_type(train)
+          train.name.include?('D') ? :passenger : :mining
+        end
+
+        def diesel?(train)
+          train.name.include?('D')
+        end
+
+        def entity_has_diesel?(entity)
+          railway?(entity) && entity.trains.any? { |t| diesel?(t) }
+        end
+
+        # needed to keep diesel routes separate from the rest
+        def compute_other_paths(routes, route)
+          routes
+            .reject { |r| r == route }
+            .select { |r| train_type(route.train) == train_type(r.train) }
+            .flat_map(&:paths)
+        end
+
+        def check_other(route)
+          # make sure routes from same supertrain intersect
+          super_routes = route.routes.reject do |r|
+            r.connections.empty? ||
+              @supertrains[route.train] != @supertrains[r.train]
+          end
+          check_intersection(@supertrains[route.train], super_routes)
+
+          # make sure a single route doesn't visit cities in a given hex twice
+          check_hex_reentry(route)
+
+          check_diesel_nodes(route) if diesel?(route.train)
+
+          # make sure concession route is run by normal trains and also by the diesel if there is one
+          type_routes = route.routes.group_by { |r| train_type(r.train) }
+          owner = train_owner(route.train)
+
+          if train_type(route.train) == :mining && !concession_route_run?(owner, type_routes[:mining])
+            raise GameError, 'Concession route not run by one non-diesel train'
+          end
+          return if train_type(route.train) == :mining || concession_route_run?(owner, type_routes[:passenger])
+
+          raise GameError, 'Concession route not run by diesel train'
+        end
+
+        # all routes from one supertrain must intersect each other (borrowed from 1860)
+        def check_intersection(supertrain, routes)
+          owner = supertrain.owner
+
+          # build a map of which routes intersect with each route
+          intersects = Hash.new { |h, k| h[k] = [] }
+          routes.each_with_index do |r, ir|
+            routes.each_with_index do |s, is|
+              next if ir == is
+
+              # cannot intersect at a tokened-out city
+              if (untokened_stops(owner, r.visited_stops) & untokened_stops(owner, s.visited_stops)).any?
+                intersects[ir] << is
+              end
+            end
+            intersects[ir].uniq!
+          end
+
+          # starting with the first route, make sure every route can be visited
+          visited = {}
+          visit_route(0, intersects, visited)
+
+          return unless visited.size != routes.size
+
+          raise GameError, "All routes using train #{train_name(supertrain)} must intersect with each other"
+        end
+
+        def untokened_stops(entity, visits)
+          visits.reject { |v| v.blocks?(entity) }
+        end
+
+        def visit_route(ridx, intersects, visited)
+          return if visited[ridx]
+
+          visited[ridx] = true
+          intersects[ridx].each { |i| visit_route(i, intersects, visited) }
+        end
+
+        def check_hex_reentry(route)
+          return if diesel?(route.train)
+
+          visited_hexes = route.visited_stops.map(&:hex)
+          return if visited_hexes == visited_hexes.uniq
+
+          raise GameError, 'Route cannot visit a hex with a town or village more than once'
+        end
+
+        def check_diesel_nodes(route)
+          entity = train_owner(route.train)
+          if route.visited_stops.any? { |n| !diesel_graph.connected_nodes(entity)[n] }
+            raise GameError, 'Diesel route has to directly or indirectly connect to concession route'
+          end
+
+          # add diesel to end if all diesel routes are defined
+          s_train = @supertrains[route.train]
+          num_diesel_routes = route.routes.count { |r| diesel?(r.train) }
+          num_diesels = @subtrains[s_train].size
+          allocate_pool_diesel(route.train) if num_diesel_routes == num_diesels
+        end
+
+        def concession_route_run?(entity, routes)
+          return true if entity == @qlb
+
+          @corporation_info[entity][:concession_routes].all? do |con_route|
+            routes.any? { |r| (r.connection_hexes.flatten & con_route).size == con_route.size }
+          end
+        end
+
+        def revenue_for(route, stops)
+          return diesel_revenue(route, stops) if diesel?(route.train)
+
+          owner = train_owner(route.train)
+          stops.sum do |stop|
+            next 0 if stop.city? && stop.blocks?(owner)
+
+            stop_total = 0
+            first = !stop_on_other_route?(route, stop)
+            if stop.city? && first
+              stop_total += stop.tokened_by?(owner) ? stop.route_revenue(route.phase, route.train) : STOP_REVENUE
+            end
+
+            if (mine = find_mine_in_hex(stop.hex)) && mine_open?(mine) && highest_train_at_stop?(route, stop)
+              stop_total += @minor_info[mine][:multiplier] * route.train.distance
+            end
+
+            stop_total += FACTORY_INFO[stop.hex.id][:revenue] if FACTORY_INFO[stop.hex.id] && first
+
+            stop_total
+          end
+        end
+
+        def stop_on_other_route?(this_route, stop)
+          t_type = train_type(this_route.train)
+          this_route.routes.select { |r| t_type == train_type(r.train) }.each do |r|
+            return false if r == this_route
+
+            return true if r.visited_stops.include?(stop)
+          end
+          true
+        end
+
+        # actually, first highest train on route
+        def highest_train_at_stop?(this_route, stop)
+          max = 0
+          max_route = nil
+          this_route.routes.each do |r|
+            if r.visited_stops.include?(stop) && r.train.distance > max
+              max = r.train.distance
+              max_route = r
+            end
+          end
+          max_route == this_route
+        end
+
+        def diesel_revenue(route, stops)
+          stops.sum do |stop|
+            if stop.city? && !stop_on_other_route?(route, stop) && !stop.blocks?(train_owner(route.train))
+              DIESEL_STOP_REVENUE
+            else
+              0
+            end
+          end
+        end
+
+        def revenue_str(route)
+          # FIXME: not sure anything is needed here
+          super
+        end
+
+        def train_owner(train)
+          (@supertrains[train] || train).owner
+        end
+
+        def qlb_bonus
+          hex = hex_by_id(@qlb.coordinates.first)
+          hex.tile.cities.first.route_revenue(@phase, @qlb_dummy_train)
+        end
+        #
+        # end of route methods
+        ##########################################
+
         def price_movement_chart
           [
             ['Dividend', 'Share Price Change'],
@@ -1172,6 +1824,10 @@ module Engine
             ['≥ 2× stock value', '2 →'],
             ['≥ 3× stock value', '3 →'],
           ]
+        end
+
+        def ipo_name(entity = nil)
+          !entity || entity&.ipoed ? 'Treasury' : 'IPO'
         end
 
         def corporation_view(corporation)
@@ -1186,7 +1842,7 @@ module Engine
           return if corporation == @mhe
 
           str = "Maintenance: #{format_currency(maintenance_costs(corporation))}"
-          str += ' (Closed)' if corporation.minor? && !@minor_info[corporation][:open]
+          str += ' (Closed)' if corporation.minor? && !mine_open?(corporation)
           str
         end
 
@@ -1206,7 +1862,7 @@ module Engine
         def game_location_names
           {
             'B9' => 'Wernigerode',
-            'B13' => 'Derenbug',
+            'B13' => 'Derenburg',
             'B19' => 'Halberstadt',
             'C4' => 'Brocken',
             'C6' => 'Knaupsholz',
@@ -1278,6 +1934,13 @@ module Engine
             '965' => 1,
             '966' => 1,
             '967' => 1,
+            '914' =>
+            {
+              'count' => 1,
+              'color' => 'green',
+              'code' => 'city=revenue:20;city=revenue:20;path=a:1,b:_0,track:narrow;'\
+                'path=a:_0,b:2,track:narrow;path=a:3,b:_1,track:narrow;path=a:_1,b:5,track:narrow',
+            },
             '968' => 2,
             '969' => 2,
             '970' => 1,
@@ -1354,6 +2017,7 @@ module Engine
                 vor_harzer: true,
                 machine_revenue: [40, 50, 60, 70, 80],
                 switcher_revenue: [30, 40, 50, 60],
+                multiplier: 10,
                 connected: false,
                 open: true,
               },
@@ -1371,6 +2035,7 @@ module Engine
                 vor_harzer: false,
                 machine_revenue: [40, 60, 80, 100, 120],
                 switcher_revenue: [20, 30, 40, 50],
+                multiplier: 20,
                 connected: false,
                 open: true,
               },
@@ -1388,6 +2053,7 @@ module Engine
                 vor_harzer: false,
                 machine_revenue: [40, 60, 80, 100, 120],
                 switcher_revenue: [20, 30, 40, 50],
+                multiplier: 20,
                 connected: false,
                 open: true,
               },
@@ -1405,6 +2071,7 @@ module Engine
                 vor_harzer: true,
                 machine_revenue: [40, 60, 80, 100, 120],
                 switcher_revenue: [20, 30, 40, 50],
+                multiplier: 20,
                 connected: false,
                 open: true,
               },
@@ -1422,6 +2089,7 @@ module Engine
                 vor_harzer: true,
                 machine_revenue: [50, 60, 70, 80, 90],
                 switcher_revenue: [40, 50, 60, 70],
+                multiplier: 10,
                 connected: false,
                 open: true,
               },
@@ -1439,6 +2107,7 @@ module Engine
                 vor_harzer: true,
                 machine_revenue: [50, 70, 90, 110, 130],
                 switcher_revenue: [30, 40, 50, 60],
+                multiplier: 20,
                 connected: false,
                 open: true,
               },
@@ -1456,6 +2125,7 @@ module Engine
                 vor_harzer: false,
                 machine_revenue: [50, 80, 110, 140, 170],
                 switcher_revenue: [20, 30, 40, 50],
+                multiplier: 30,
                 connected: false,
                 open: true,
               },
@@ -1473,6 +2143,7 @@ module Engine
                 vor_harzer: false,
                 machine_revenue: [60, 80, 100, 120, 140],
                 switcher_revenue: [40, 50, 60, 70],
+                multiplier: 20,
                 connected: false,
                 open: true,
               },
@@ -1490,6 +2161,7 @@ module Engine
                 vor_harzer: false,
                 machine_revenue: [60, 90, 120, 150, 180],
                 switcher_revenue: [30, 40, 50, 60],
+                multiplier: 30,
                 connected: false,
                 open: true,
               },
@@ -1507,6 +2179,7 @@ module Engine
                 vor_harzer: true,
                 machine_revenue: [60, 90, 120, 150, 180],
                 switcher_revenue: [30, 40, 50, 60],
+                multiplier: 10,
                 connected: false,
                 open: true,
               },
@@ -1524,6 +2197,7 @@ module Engine
                 vor_harzer: true,
                 machine_revenue: [70, 90, 110, 130, 150],
                 switcher_revenue: [50, 60, 70, 80],
+                multiplier: 20,
                 connected: false,
                 open: true,
               },
@@ -1541,6 +2215,7 @@ module Engine
                 vor_harzer: true,
                 machine_revenue: [70, 90, 110, 130, 150],
                 switcher_revenue: [50, 60, 70, 80],
+                multiplier: 20,
                 connected: false,
                 open: true,
               },
@@ -1558,6 +2233,7 @@ module Engine
                 vor_harzer: false,
                 machine_revenue: [70, 100, 130, 160, 190],
                 switcher_revenue: [40, 50, 60, 70],
+                multiplier: 30,
                 connected: false,
                 open: true,
               },
@@ -1575,6 +2251,7 @@ module Engine
                 vor_harzer: true,
                 machine_revenue: [90, 110, 130, 150, 170],
                 switcher_revenue: [70, 80, 90, 100],
+                multiplier: 20,
                 connected: false,
                 open: true,
               },
@@ -1592,6 +2269,7 @@ module Engine
                 vor_harzer: false,
                 machine_revenue: [90, 120, 150, 180, 210],
                 switcher_revenue: [60, 70, 80, 90],
+                multiplier: 30,
                 connected: true,
                 open: true,
               },
@@ -1607,6 +2285,7 @@ module Engine
               logo: '1873/HBE',
               simple_logo: '1873/HBE.alt',
               float_percent: 60,
+              always_market_price: true,
               shares: [20, 20, 20, 20, 20],
               max_ownership_percent: 100,
               coordinates: %w[B19 D15],
@@ -1640,6 +2319,7 @@ module Engine
               logo: '1873/GHE',
               simple_logo: '1873/GHE.alt',
               float_percent: 60,
+              always_market_price: true,
               shares: [20, 20, 20, 20, 20],
               max_ownership_percent: 100,
               coordinates: %w[G20 I18],
@@ -1671,6 +2351,7 @@ module Engine
               logo: '1873/NWE',
               simple_logo: '1873/NWE.alt',
               float_percent: 60,
+              always_market_price: true,
               shares: [20, 20, 20, 20, 20],
               max_ownership_percent: 100,
               coordinates: %w[J7 B9 G6],
@@ -1702,6 +2383,7 @@ module Engine
               logo: '1873/SHE',
               simple_logo: '1873/SHE.alt',
               float_percent: 60,
+              always_market_price: true,
               shares: [20, 20, 20, 20, 20],
               max_ownership_percent: 100,
               coordinates: %w[I2 E4],
@@ -1731,6 +2413,7 @@ module Engine
               logo: '1873/KEZ',
               simple_logo: '1873/KEZ.alt',
               float_percent: 60,
+              always_market_price: true,
               shares: [20, 20, 20, 20, 20],
               max_ownership_percent: 100,
               coordinates: %w[I4 G4],
@@ -1760,6 +2443,7 @@ module Engine
               logo: '1873/WBE',
               simple_logo: '1873/WBE.alt',
               float_percent: 60,
+              always_market_price: true,
               shares: [20, 20, 20, 20, 20],
               max_ownership_percent: 100,
               coordinates: %w[B9 D15],
@@ -1789,6 +2473,7 @@ module Engine
               logo: '1873/QLB',
               simple_logo: '1873/QLB.alt',
               float_percent: 60,
+              always_market_price: true,
               shares: [20, 20, 20, 20, 20],
               max_ownership_percent: 100,
               coordinates: ['E20'],
@@ -1806,8 +2491,8 @@ module Engine
                 concession_phase: '4',
                 concession_routes: [],
                 concession_cost: 0,
-                concession_pending: false,
-                concession_incomplete: true,
+                concession_pending: true,
+                concession_incomplete: false,
                 extra_tokens: 2,
                 advanced: true,
               },
@@ -1818,6 +2503,7 @@ module Engine
               logo: '1873/MHE',
               simple_logo: '1873/MHE.alt',
               float_percent: 0,
+              always_market_price: true,
               shares: [10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
               tokens: [],
               max_ownership_percent: 100,
@@ -1833,6 +2519,7 @@ module Engine
               logo: '1873/U',
               simple_logo: '1873/U.alt',
               float_percent: 80,
+              always_market_price: true,
               shares: [50, 50],
               tokens: [],
               max_ownership_percent: 100,
@@ -1851,6 +2538,7 @@ module Engine
               logo: '1873/HW',
               simple_logo: '1873/HW.alt',
               float_percent: 80,
+              always_market_price: true,
               shares: [50, 50],
               tokens: [],
               max_ownership_percent: 100,
@@ -1869,6 +2557,7 @@ module Engine
               logo: '1873/CO',
               simple_logo: '1873/CO.alt',
               float_percent: 80,
+              always_market_price: true,
               shares: [50, 50],
               tokens: [],
               max_ownership_percent: 100,
@@ -1887,6 +2576,7 @@ module Engine
               logo: '1873/SN',
               simple_logo: '1873/SN.alt',
               float_percent: 80,
+              always_market_price: true,
               shares: [50, 50],
               tokens: [],
               max_ownership_percent: 100,
@@ -1905,6 +2595,7 @@ module Engine
               logo: '1873/MO',
               simple_logo: '1873/MO.alt',
               float_percent: 80,
+              always_market_price: true,
               shares: [50, 50],
               tokens: [],
               max_ownership_percent: 100,
@@ -1985,6 +2676,7 @@ module Engine
               distance: 999,
               price: 250,
               num: 7,
+              available_on: DIESEL_PURCHASE_ON,
             },
           ]
         end
@@ -2004,12 +2696,12 @@ module Engine
               %w[
                 I8
               ] => 'town=revenue:0;upgrade=cost:150,terrain:mountain;icon=image:1873/NWE,sticky:1;'\
-                  'border=edge:2,type:impassible;'\
+                  'border=edge:2,type:impassable;'\
                   'icon=image:1873/8_open,sticky:1',
               %w[
                 H7
               ] => 'upgrade=cost:100,terrain:mountain;icon=image:1873/NWE,sticky:1;'\
-                  'border=edge:5,type:impassible',
+                  'border=edge:5,type:impassable',
               %w[
                 E6
                 D7
@@ -2021,7 +2713,7 @@ module Engine
               %w[
                 G2
               ] => 'town=revenue:0;upgrade=cost:150,terrain:mountain;icon=image:1873/SHE,sticky:1;'\
-                  'border=edge:4,type:impassible;border=edge:5,type:impassible;'\
+                  'border=edge:4,type:impassable;border=edge:5,type:impassable;'\
                   'icon=image:1873/9_open,sticky:1',
               %w[
                 F3
@@ -2030,21 +2722,21 @@ module Engine
               %w[
                 H3
               ] => 'upgrade=cost:100,terrain:mountain;icon=image:1873/KEZ,sticky:1;'\
-                  'border=edge:2,type:impassible',
+                  'border=edge:2,type:impassable',
               # WBE concession route
               %w[
                 C10
-              ] => 'border=edge:5,type:impassible;'\
+              ] => 'border=edge:5,type:impassable;'\
                 'icon=image:1873/lock;'\
                 'icon=image:1873/WBE,sticky:1',
               %w[
                 C12
-              ] => 'town=revenue:0;border=edge:0,type:impassible;border=edge:5,type:impassible;'\
+              ] => 'town=revenue:0;border=edge:0,type:impassable;border=edge:5,type:impassable;'\
                 'icon=image:1873/lock;'\
                 'icon=image:1873/WBE,sticky:1',
               %w[
                 C14
-              ] => 'town=revenue:0;border=edge:0,type:impassible;'\
+              ] => 'town=revenue:0;border=edge:0,type:impassable;'\
                 'icon=image:1873/lock;'\
                 'icon=image:1873/WBE,sticky:1',
               # empty tiles
@@ -2062,7 +2754,7 @@ module Engine
               ] => 'upgrade=cost:100,terrain:mountain',
               %w[
                 E12
-              ] => 'upgrade=cost:100,terrain:mountain;border=edge:1,type:impassible',
+              ] => 'upgrade=cost:100,terrain:mountain;border=edge:1,type:impassable',
               %w[
                 E14
                 G10
@@ -2074,28 +2766,28 @@ module Engine
               # towns
               %w[
                 D5
-              ] => 'town=revenue:0;upgrade=cost:150,terrain:mountain;border=edge:0,type:impassible',
+              ] => 'town=revenue:0;upgrade=cost:150,terrain:mountain;border=edge:0,type:impassable',
               %w[
                 D11
-              ] => 'town=revenue:0;upgrade=cost:100,terrain:mountain;border=edge:1,type:impassible;'\
-                'border=edge:2,type:impassible;border=edge:3,type:impassible;'\
+              ] => 'town=revenue:0;upgrade=cost:100,terrain:mountain;border=edge:1,type:impassable;'\
+                'border=edge:2,type:impassable;border=edge:3,type:impassable;'\
                 'icon=image:1873/4_open,sticky:1',
               %w[
                 D13
               ] => 'town=revenue:0;upgrade=cost:150,terrain:mountain;'\
-                'border=edge:2,type:impassible;border=edge:3,type:impassible;'\
+                'border=edge:2,type:impassable;border=edge:3,type:impassable;'\
                 'icon=image:1873/5_open,sticky:1',
               %w[
                 D17
               ] => 'town=revenue:0;',
               %w[
                 E8
-              ] => 'town=revenue:0;upgrade=cost:100,terrain:mountain;border=edge:4,type:impassible;'\
+              ] => 'town=revenue:0;upgrade=cost:100,terrain:mountain;border=edge:4,type:impassable;'\
                 'icon=image:1873/1_open,sticky:1',
               %w[
                 E10
-              ] => 'town=revenue:0;upgrade=cost:100,terrain:mountain;border=edge:1,type:impassible;'\
-                'border=edge:4,type:impassible;'\
+              ] => 'town=revenue:0;upgrade=cost:100,terrain:mountain;border=edge:1,type:impassable;'\
+                'border=edge:4,type:impassable;'\
                 'icon=image:1873/6_open,sticky:1',
               %w[
                 E16
@@ -2119,7 +2811,7 @@ module Engine
               %w[
                 D9
               ] => 'city=revenue:30;path=a:5,b:_0,track:narrow;upgrade=cost:50,terrain:mountain;'\
-                'border=edge:4,type:impassible;frame=color:purple;'\
+                'border=edge:4,type:impassable;frame=color:purple;'\
                 'icon=image:1873/10_open,sticky:1',
               %w[
                 D15
@@ -2129,7 +2821,7 @@ module Engine
               %w[
                 E4
               ] => 'city=revenue:30;path=a:0,b:_0,track:narrow;upgrade=cost:50,terrain:mountain;'\
-                'border=edge:3,type:impassible;frame=color:purple;'\
+                'border=edge:3,type:impassable;frame=color:purple;'\
                 'icon=image:1873/2_open,sticky:1',
               %w[
                 F11
@@ -2139,7 +2831,7 @@ module Engine
               %w[
                 G4
               ] => 'city=revenue:30;path=a:0,b:_0,track:narrow;upgrade=cost:50,terrain:mountain;'\
-                'border=edge:1,type:impassible;border=edge:3,type:impassible;frame=color:purple;'\
+                'border=edge:1,type:impassable;border=edge:3,type:impassable;frame=color:purple;'\
                 'icon=image:1873/14_open,sticky:1',
             },
             green: {
@@ -2159,7 +2851,7 @@ module Engine
                 F5
               ] => 'city=revenue:20;city=revenue:20;path=a:1,b:_0,track:narrow;path=a:4,b:_0,track:narrow;'\
                 'path=a:3,b:_1,track:narrow;path=a:5,b:_1,track:narrow;'\
-                'upgrade=cost:50,terrain:mountain;border=edge:0,type:impassible',
+                'upgrade=cost:50,terrain:mountain;border=edge:0,type:impassable',
               %w[
                 F7
               ] => 'city=revenue:20;city=revenue:20;path=a:1,b:_0,track:narrow;'\
@@ -2192,7 +2884,7 @@ module Engine
                 B13
               ] => 'city=slots:2,revenue:yellow_30|green_70|brown_60|gray_60;'\
                 'path=a:4,b:_0,track:narrow;path=a:5,b:_0,track:narrow;'\
-                'frame=color:purple',
+                'frame=color:purple;icon=image:1873/ZW_open,sticky:1',
               %w[
                 C4
               ] => 'city=revenue:yellow_50|green_80|brown_120|gray_150;path=a:5,b:_0,track:narrow',
@@ -2297,6 +2989,16 @@ module Engine
             {
               name: '5',
               on: '5T',
+              train_limit: 99,
+              tiles: %w[
+                yellow
+                green
+                brown
+              ],
+              operating_rounds: 3,
+            },
+            {
+              name: '5a',
               train_limit: 99,
               tiles: %w[
                 yellow

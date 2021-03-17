@@ -16,13 +16,19 @@ module View
 
       def render_president_contributions
         player = @corporation.owner
+        step = @game.round.active_step
 
         children = []
 
         verb = @must_buy_train ? 'must' : 'may'
 
+        cheapest_train_price = if step.respond_to?(:cheapest_train_price)
+                                 step.cheapest_train_price(@corporation)
+                               else
+                                 @depot.min_depot_price
+                               end
         cash = @corporation.cash + player.cash
-        share_funds_required = @depot.min_depot_price - cash
+        share_funds_required = cheapest_train_price - cash
         share_funds_allowed = if @game.class::EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST
                                 share_funds_required
                               else
@@ -30,42 +36,46 @@ module View
                               end
         share_funds_possible = @game.liquidity(player, emergency: true) - player.cash
 
-        if @depot.min_depot_price > @corporation.cash
+        if cheapest_train_price > @corporation.cash
           children << h(:div, "#{player.name} #{verb} contribute "\
-                              "#{@game.format_currency(@depot.min_depot_price - @corporation.cash)} "\
+                              "#{@game.format_currency(cheapest_train_price - @corporation.cash)} "\
                               "for #{@corporation.name} to afford a train from the Depot.")
         end
 
         children << h(:div, "#{player.name} has #{@game.format_currency(player.cash)} in cash.")
 
-        if share_funds_allowed.positive?
-          children << h(:div, "#{player.name} has #{@game.format_currency(share_funds_possible)} "\
-                              'in sellable shares.')
+        if @game.class::EBUY_CAN_SELL_SHARES
+          if share_funds_allowed.positive?
+            children << h(:div, "#{player.name} has #{@game.format_currency(share_funds_possible)} "\
+                                'in sellable shares.')
+          end
+
+          if share_funds_required.positive?
+            children << h(:div, "#{player.name} #{verb} sell shares to raise at least "\
+                                "#{@game.format_currency(share_funds_required)}.")
+          end
+
+          if share_funds_allowed.positive? &&
+             (share_funds_allowed != share_funds_required) &&
+             (share_funds_possible >= share_funds_allowed)
+            children << h(:div, "#{player.name} may continue to sell shares until raising up to "\
+                                "#{@game.format_currency(share_funds_allowed)}.")
+          end
         end
 
-        if share_funds_required.positive?
-          children << h(:div, "#{player.name} #{verb} sell shares to raise at least "\
-                              "#{@game.format_currency(share_funds_required)}.")
-        end
-
-        if share_funds_allowed.positive? &&
-           (share_funds_allowed != share_funds_required) &&
-           (share_funds_possible >= share_funds_allowed)
-          children << h(:div, "#{player.name} may continue to sell shares until raising up to "\
-                              "#{@game.format_currency(share_funds_allowed)}.")
-        end
-
-        step = @game.round.active_step
         must_take_loan = step.must_take_loan?(@corporation) if step.respond_to?(:must_take_loan?)
         if must_take_loan
           children << h(:div, "#{player.name} does not have enough liquidity to "\
                               "contribute towards #{@corporation.name} buying a train "\
                               "from the Depot. #{@corporation.name} must buy a "\
                               "train from another corporation, or #{player.name} must "\
-                              "take a loan of #{@game.format_currency(share_funds_required)}")
+                              "take a loan of at least #{@game.format_currency(share_funds_required)}")
         end
 
-        if @must_buy_train && share_funds_possible < share_funds_required && must_take_loan.nil?
+        if @must_buy_train &&
+           share_funds_possible < share_funds_required &&
+           !must_take_loan &&
+           @game.can_go_bankrupt?(player, @corporation)
           children << h(:div, "#{player.name} does not have enough liquidity to "\
                               "contribute towards #{@corporation.name} buying a train "\
                               "from the Depot. #{@corporation.name} must buy a "\
@@ -132,7 +142,7 @@ module View
         scrappable_trains = []
         scrappable_trains = step.scrappable_trains(@corporation) if step.respond_to?(:scrappable_trains)
         unless scrappable_trains.empty?
-          children << h(:h3, h3_props, 'Trains to Scrap')
+          children << h(:h3, 'Trains to Scrap')
           children << h(:div, div_props, scrap_trains(scrappable_trains))
         end
 

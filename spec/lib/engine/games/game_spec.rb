@@ -30,7 +30,7 @@ module Engine
 
   AUTO_FIXTURES = [
     '1861/29683.json', # token pass
-    '1830/29133.json', # buy till float
+    ['1830/29133.json', 150], # buy till float
     '1817NA/25363.json', # pass in merger
     '1882/hs_iopxwxht_26178.json', # Auto-pass pass
     '1882/hs_fxmfdndg_26178.json', # Auto-pass disable (shares sold)
@@ -38,9 +38,11 @@ module Engine
     '1882/hs_vaxptumi_26178.json', # Auto-pass disable (buy unsecure)
     '1889/hs_lhglbbiz_17502.json', # Auto-buy from market
     '1889/hs_jmmljkbw_17502.json', # Auto-buy multiple from IPO
+    '1822/hs_lxemeslq_30797.json', # Auto-pass 1822 bid cases
   ].freeze
 
   AUTO_FIXTURES.each do |fixture_name|
+    fixture_name, max_action = fixture_name if fixture_name.is_a?(Array)
     fixture = FIXTURES_DIR + '/' + fixture_name
     game_title = File.basename(File.dirname(fixture))
     filename = File.basename(fixture)
@@ -56,18 +58,27 @@ module Engine
           actions.compact.each do |action|
             next unless action['auto_actions']
 
+            break if max_action && action['id'] >= max_action
+
             # Run game as per the spec
             spec_game = Game.load(data, at_action: action['id'])
 
             # Process game to previous action
             auto_game = Game.load(data, at_action: action['id'] - 1)
+
             # Add the action but without the auto actions
             clone = action.dup
             clone.delete('auto_actions')
-            auto_game.process_action(action, add_auto_actions: true)
+            auto_game.process_action(clone, add_auto_actions: true)
+
+            # Remove time the actions were created at
+            spec_last = spec_game.actions.last.to_h
+            spec_last['auto_actions']&.each { |a| a.delete('created_at') }
+            auto_last = auto_game.actions.last.to_h
+            auto_last['auto_actions']&.each { |a| a.delete('created_at') }
 
             expect(spec_game.result).to eq(auto_game.result)
-            expect(spec_game.actions.last.to_h).to eq(auto_game.actions.last.to_h)
+            expect(spec_last).to eq(auto_last)
           end
         end
       end
