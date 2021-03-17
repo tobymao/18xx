@@ -662,7 +662,11 @@ module Engine
           end
         end
 
-        def after_buy_company(player, company)
+        def after_buy_company(player, company, price)
+          if minor = @minors.find { |m| m.id == company.id }
+            float_minor(player, minor, price)
+          end
+
           target_price = optional_short_game ? 67 : 100
           share_price = stock_market.par_prices.find { |pp| pp.price == target_price }
 
@@ -677,6 +681,13 @@ module Engine
               end
             end
           end
+        end
+
+        def float_minor(player, minor, price)
+          minor.owner = player
+          minor.float!
+          capital = (price - 100) / 2
+          @bank.spend(100 + capital, minor)
         end
 
         def optional_short_game
