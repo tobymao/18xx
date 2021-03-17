@@ -17,6 +17,7 @@ module Engine
       GAME_RULES_URL = nil
       GAME_TITLE = nil
       GAME_SUBTITLE = nil
+      GAME_SUPERTITLE = nil
       GAME_ALIASES = [].freeze
 
       # rules data that needs to be known to the engine without loading in the
@@ -44,6 +45,10 @@ module Engine
               part = (last == 'Game' || last == 'Meta' ? parts[-2] : last)
               part.slice(1..-1)
             end
+        end
+
+        def full_title
+          [self::GAME_SUPERTITLE, title, self::GAME_SUBTITLE].compact.join(': ')
         end
 
         def fs_name
