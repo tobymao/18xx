@@ -20,10 +20,7 @@ module View
       end
 
       def render_title
-        children = [@game.meta.title]
-        children.push(': ', @game.meta::GAME_SUBTITLE) if @game.meta::GAME_SUBTITLE
-
-        [h(:h4, children)]
+        [h(:h4, @game.meta.full_title)]
       end
 
       def render_publisher

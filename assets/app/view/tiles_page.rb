@@ -125,7 +125,7 @@ module View
         end
 
       h(:div, [
-          h(:h2, game_class.title.to_s),
+          h(:h2, game_class.full_title),
           *render_tile_blocks(
             name,
             layout: game.class::LAYOUT,
@@ -193,7 +193,7 @@ module View
       end
 
       h("div#hexes_and_tiles_#{game_class.title}", [
-          h(:h2, game_class.title.to_s),
+          h(:h2, game_class.full_title),
           h("div#map_hexes_#{game_class.title}", [
               h(:h3, "#{game_class.title} Map Hexes"),
               *rendered_map_hexes,
