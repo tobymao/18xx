@@ -23,7 +23,9 @@ module Engine
 
   GAME_METAS = GAME_META_BY_TITLE.values
 
-  VISIBLE_GAMES = GAME_METAS.select { |g_m| %i[alpha beta production].include?(g_m::DEV_STAGE) }
+  VISIBLE_GAMES = GAME_METAS.select do |game_meta|
+    !game_meta::GAME_IS_VARIANT && %i[alpha beta production].include?(game_meta::DEV_STAGE)
+  end
 
   def self.game_by_title(title)
     title = closest_title(title)
