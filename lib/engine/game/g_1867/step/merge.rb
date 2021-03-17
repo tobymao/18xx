@@ -48,6 +48,10 @@ module Engine
             current_entity unless @converting || @merge_major
           end
 
+          def others_acted?
+            !@round.converts.empty?
+          end
+
           def pass_description
             return 'Done Adding Corporations' if @merging
 
@@ -104,6 +108,7 @@ module Engine
             # Replace the entity with the new one.
             @round.entities[@round.entity_index] = target
             @round.converted = target
+            @round.converts << target
             @round.merge_type = :convert
             # All players are eligable to buy shares unlike merger
             @round.share_dealing_players = @game.players.rotate(@game.players.index(target.owner))
@@ -227,6 +232,7 @@ module Engine
 
             @merging = nil
             @round.converted = target
+            @round.converts << target
             @round.merge_type = :merge
 
             @round.share_dealing_players = players
@@ -322,6 +328,7 @@ module Engine
             {
               converted: nil,
               merge_type: nil,
+              converts: [],
               share_dealing_players: [],
               share_dealing_multiple: [],
             }

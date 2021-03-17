@@ -10197,15 +10197,10 @@
       "entity_type": "player",
       "id": 953,
       "created_at": 1614238394,
-      "corporations": [
-        "GT",
-        "NYOW",
-        "PLE"
-      ],
-      "rounds": [
-        "MR",
-        "AR"
-      ]
+      "corporations_by_round": {
+        "MR": ["GT", "NYOW", "PLE"],
+        "AR": ["GT", "NYOW", "PLE"]
+      }
     },
     {
       "type": "lay_tile",
@@ -11573,15 +11568,10 @@
       "entity_type": "player",
       "id": 1062,
       "created_at": 1614272572,
-      "corporations": [
-        "GT",
-        "NYOW",
-        "PLE"
-      ],
-      "rounds": [
-        "MR",
-        "AR"
-      ]
+      "corporations_by_round": {
+	"MR": ["GT", "NYOW", "PLE"],
+	"AR": ["GT", "NYOW", "PLE"]
+      }
     },
     {
       "type": "take_loan",

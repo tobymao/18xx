@@ -36,6 +36,10 @@ module Engine
             current_entity
           end
 
+          def others_acted?
+            !@round.converts.empty?
+          end
+
           def process_convert(action)
             corporation = action.entity
             before = corporation.total_shares

@@ -6,20 +6,30 @@ require_relative 'program_enable'
 module Engine
   module Action
     class ProgramMergerPass < ProgramEnable
-      attr_reader :corporations, :rounds
+      attr_reader :corporations_by_round, :options
 
-      def initialize(entity, corporations:, rounds:)
+      def initialize(entity, corporations_by_round:, options:)
         super(entity)
-        @corporations = corporations
-        @rounds = rounds
+        @corporations_by_round = corporations_by_round
+        @options = options
       end
 
       def self.h_to_args(h, game)
-        { corporations: h['corporations']&.map { |c| game.corporation_by_id(c) }, rounds: h['rounds'] }
+        {
+          corporations_by_round: h['corporations_by_round']&.map do |r, v|
+                                   [r, v&.map do |c|
+                                         game.corporation_by_id(c)
+                                       end]
+                                 end.to_h,
+          options: h['options'],
+        }
       end
 
       def args_to_h
-        { 'corporations' => @corporations.map(&:id), 'rounds' => @rounds }
+        {
+          'corporations_by_round' => @corporations_by_round&.map { |r, v| [r, v.map(&:id)] }.to_h,
+          'options' => @options,
+        }
       end
 
       def self.description
