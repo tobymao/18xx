@@ -1089,13 +1089,24 @@ module Engine
 
           return open_locations if corporation.type == :minor
 
-          # @todo: this may need optimizing when changing connections for loading.
-          unconnected = open_locations.select { |hex| hex.connections.empty? }
+          unconnected = open_locations.reject { |hex| connected_hex?(hex) }
           if unconnected.empty?
             open_locations
           else
             unconnected
           end
+        end
+
+        def connected_hex?(hex)
+          hex.tile.cities.each do |city|
+            city.paths.each do |path|
+              path.walk do |current|
+                next if current == path
+                return true if current.node?
+              end
+            end
+          end
+          false
         end
 
         def redeemable_shares(entity)
