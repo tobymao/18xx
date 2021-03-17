@@ -7,6 +7,11 @@ module Lib
       "rgba(#{m[1].hex},#{m[2].hex},#{m[3].hex},#{alpha})"
     end
 
+    def convert_rgba_to_hex(color)
+      m = color.match(/rgba\((\d+),\s*(\d+),\s*(\d+),\s*(\d(\.\d)?)/)
+      "##{(1..3).map { |e| format('%02x', (m[e].to_i * m[5].to_f)) }.join}"
+    end
+
     # helper functions to calc contrasting bg, font and logo colors
     # https://www.w3.org/TR/AERT/#color-contrast
     def brightness(hexcolor)
