@@ -871,19 +871,6 @@ module Engine
           unconnected_hexes(open_locations)
         end
 
-        def unconnected_hexes(locs)
-          locs.reject do |hex|
-            hex.tile.cities.any? do |city|
-              city.paths.any? do |path|
-                path.walk do |current|
-                  next if current == path
-                  break true if path.node?
-                end
-              end
-            end
-          end
-        end
-
         def place_rsr_home_token
           # RSR on first run places their home token...
           # unless RSR already has a token due to SPW nationalization,
