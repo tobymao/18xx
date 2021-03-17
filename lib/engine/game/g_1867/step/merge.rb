@@ -29,6 +29,14 @@ module Engine
             actions
           end
 
+          def auto_actions(entity)
+            return super if @converting || @merge_major || @merging || can_convert?(entity)
+
+            return [Engine::Action::Pass.new(entity)] if mergeable_candidates(entity).empty?
+
+            super
+          end
+
           def merge_name
             return 'Convert' if @converting
             return 'Finish Merge' if @merge_major
@@ -38,6 +46,10 @@ module Engine
 
           def merger_auto_pass_entity
             current_entity unless @converting || @merge_major
+          end
+
+          def others_acted?
+            !@round.converts.empty?
           end
 
           def pass_description
@@ -96,6 +108,7 @@ module Engine
             # Replace the entity with the new one.
             @round.entities[@round.entity_index] = target
             @round.converted = target
+            @round.converts << target
             @round.merge_type = :convert
             # All players are eligable to buy shares unlike merger
             @round.share_dealing_players = @game.players.rotate(@game.players.index(target.owner))
@@ -219,6 +232,7 @@ module Engine
 
             @merging = nil
             @round.converted = target
+            @round.converts << target
             @round.merge_type = :merge
 
             @round.share_dealing_players = players
@@ -314,6 +328,7 @@ module Engine
             {
               converted: nil,
               merge_type: nil,
+              converts: [],
               share_dealing_players: [],
               share_dealing_multiple: [],
             }

@@ -10,6 +10,7 @@ module Engine
 
         DEV_STAGE = :beta
 
+        GAME_SUBTITLE = 'Hungarian Railway History'
         GAME_DESIGNER = 'Leonhard "Lonny" Orgler'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18Mag'
         GAME_LOCATION = 'Hungary'

@@ -33,11 +33,15 @@ module Engine
 
         CERT_LIMIT = { 3 => 26, 4 => 20, 5 => 16, 6 => 13, 7 => 11 }.freeze
 
+        EBUY_OTHER_VALUE = false
+
         STARTING_CASH = { 3 => 700, 4 => 525, 5 => 420, 6 => 350, 7 => 300 }.freeze
 
         CAPITALIZATION = :incremental
 
         MUST_SELL_IN_BLOCKS = false
+
+        TILE_TYPE = :lawson
 
         TILES = {
           '1' => 1,
@@ -161,7 +165,7 @@ module Engine
               'count' => 1,
               'color' => 'brown',
               'code' =>
-                'city=revenue:50,slots:3;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;label=C',
+                'city=revenue:40,slots:3;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;label=C',
             },
           'X7' =>
             {
@@ -364,6 +368,7 @@ module Engine
           'P39' => 'Canterbury',
           'P41' => 'Dover',
           'P43' => 'English Channel',
+          'Q30' => 'Norwich',
           'Q44' => 'France',
         }.freeze
 
@@ -1271,7 +1276,8 @@ module Engine
             sym: 'M14',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. Starting location is M38.',
+            desc: 'A 50% director’s certificate in the associated minor company. Starting location is M38. Home '\
+                  'token cost £20, placing home token counts as first tile lay. ',
             abilities: [],
             color: '#ffffff',
             text_color: 'black',
@@ -2273,6 +2279,8 @@ module Engine
         BIDDING_BOX_CONCESSION_COUNT = 3
         BIDDING_BOX_PRIVATE_COUNT = 3
 
+        BIDDING_BOX_MINOR_COLOR = '#c6e9af'
+
         BIDDING_BOX_START_MINOR = 'M24'
         BIDDING_BOX_START_CONCESSION = 'C1'
         BIDDING_BOX_START_PRIVATE = 'P1'
@@ -2323,6 +2331,7 @@ module Engine
         EXTRA_TRAIN_PULLMAN = 'P+'
         EXTRA_TRAIN_PERMANENTS = %w[2P LP].freeze
         LOCAL_TRAINS = %w[L LP].freeze
+        E_TRAIN = 'E'
 
         LIMIT_TOKENS_AFTER_MERGER = 9
 
@@ -2708,12 +2717,16 @@ module Engine
         end
 
         def float_corporation(corporation)
-          super
-          return if !@phase.status.include?('full_capitalisation') || corporation.type != :major
+          if @phase.status.include?('full_capitalisation') && corporation.type == :major
+            # Transfer any money corporation have gotten during phase 5 with incremental floating
+            corporation.spend(corporation.cash, @bank) if corporation.cash.positive?
 
-          bundle = ShareBundle.new(corporation.shares_of(corporation))
-          @share_pool.transfer_shares(bundle, @share_pool)
-          @log << "#{corporation.name}'s remaining shares are transferred to the Market"
+            bundle = ShareBundle.new(corporation.shares_of(corporation))
+            @share_pool.transfer_shares(bundle, @share_pool)
+            @log << "#{corporation.name}'s remaining shares are transferred to the Market"
+          end
+
+          super
         end
 
         def format_currency(val)
@@ -2724,6 +2737,10 @@ module Engine
 
         def home_token_locations(corporation)
           [hex_by_id(self.class::LONDON_HEX)] if corporation.id == self.class::MINOR_14_ID
+        end
+
+        def ipo_name(_entity = nil)
+          'Treasury'
         end
 
         def issuable_shares(entity)
@@ -2815,12 +2832,6 @@ module Engine
         end
 
         def init_companies(players)
-          # Make sure we have the correct starting companies
-          starting_companies = if optional_plus_expansion?
-                                 self.class::STARTING_COMPANIES_PLUS
-                               else
-                                 self.class::STARTING_COMPANIES
-                               end
           game_companies.map do |company|
             next if players.size < (company[:min_players] || 0)
             next unless starting_companies.include?(company[:sym])
@@ -2871,6 +2882,11 @@ module Engine
 
         def init_round
           stock_round
+        end
+
+        def init_stock_market
+          G1822::StockMarket.new(game_market, self.class::CERT_LIMIT_TYPES,
+                                 multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
         end
 
         def must_buy_train?(entity)
@@ -2929,6 +2945,8 @@ module Engine
           end
 
           super
+
+          check_player_loans!
         end
 
         def place_home_token(corporation)
@@ -3037,6 +3055,12 @@ module Engine
 
         def route_trains(entity)
           entity.runnable_trains.reject { |t| pullman_train?(t) }
+        end
+
+        def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
+          super
+
+          check_player_loans!
         end
 
         def setup
@@ -3301,6 +3325,23 @@ module Engine
           @bidbox_minors_cache = bank_companies(self.class::COMPANY_MINOR_PREFIX)
                                    .first(self.class::BIDDING_BOX_MINOR_COUNT)
                                    .map(&:id)
+
+          # Set the reservation color of all the minors in the bid boxes
+          @bidbox_minors_cache.each do |company_id|
+            corporation_by_id(company_id[1..-1]).reservation_color = self.class::BIDDING_BOX_MINOR_COLOR
+          end
+        end
+
+        def bidbox_start_concession
+          self.class::BIDDING_BOX_START_CONCESSION
+        end
+
+        def bidbox_start_minor
+          self.class::BIDDING_BOX_START_MINOR
+        end
+
+        def bidbox_start_private
+          self.class::BIDDING_BOX_START_PRIVATE
         end
 
         def can_gain_extra_train?(entity, train)
@@ -3334,6 +3375,23 @@ module Engine
           return nil unless token_count == 2
 
           { route: route, revenue: destination_token.city.route_revenue(route.phase, route.train) }
+        end
+
+        def check_player_loans!
+          @players.each do |player|
+            next if @player_debts[player].zero? || player.cash.zero?
+
+            if player.cash >= @player_debts[player]
+              player.cash -= @player_debts[player]
+              @log << "#{player.name} pays off their loan of #{format_currency(@player_debts[player])}"
+              @player_debts[player] = 0
+            else
+              @player_debts[player] -= player.cash
+              @log << "#{player.name} decreases their loan by #{format_currency(player.cash)} "\
+                      "(#{format_currency(@player_debts[player])})"
+              player.cash = 0
+            end
+          end
         end
 
         def choices_entities
@@ -3403,7 +3461,8 @@ module Engine
         end
 
         def company_choices_lur(company, time)
-          return {} if time != :issue || !company.owner&.corporation?
+          return {} if time != :token && time != :track && time != :issue
+          return {} unless company.owner&.corporation?
 
           exclude_minors = bidbox_minors
           exclude_concessions = bidbox_concessions
@@ -3545,7 +3604,8 @@ module Engine
           spender = company.owner
           bundle = company_tax_haven_bundle(choice)
           corporation = bundle.corporation
-          @share_pool.transfer_shares(bundle, @tax_haven, spender: spender, receiver: corporation,
+          receiver = bundle.owner == @share_pool ? @bank : corporation
+          @share_pool.transfer_shares(bundle, @tax_haven, spender: spender, receiver: receiver,
                                                           price: bundle.price, allow_president_change: false)
           @log << "#{spender.name} spends #{format_currency(bundle.price)} and tax haven gains a share of "\
                   "#{corporation.name}."
@@ -3716,6 +3776,12 @@ module Engine
           @midland_great_northern_choice = nil
         end
 
+        def starting_companies
+          return self.class::STARTING_COMPANIES_PLUS if optional_plus_expansion?
+
+          self.class::STARTING_COMPANIES
+        end
+
         def remove_exchange_token(entity)
           ability = entity.all_abilities.find { |a| a.type == :exchange_token }
           ability.use!
@@ -3767,15 +3833,15 @@ module Engine
           privates = @companies.select { |c| c.id[0] == self.class::COMPANY_PRIVATE_PREFIX }
 
           # Always set the P1, C1 and M24 in the first biddingbox
-          m24 = minors.find { |c| c.id == self.class::BIDDING_BOX_START_MINOR }
+          m24 = minors.find { |c| c.id == bidbox_start_minor }
           minors.delete(m24)
           minors.unshift(m24)
 
-          c1 = concessions.find { |c| c.id == self.class::BIDDING_BOX_START_CONCESSION }
+          c1 = concessions.find { |c| c.id == bidbox_start_concession }
           concessions.delete(c1)
           concessions.unshift(c1)
 
-          p1 = privates.find { |c| c.id == self.class::BIDDING_BOX_START_PRIVATE }
+          p1 = privates.find { |c| c.id == bidbox_start_private }
           privates.delete(p1)
           privates.unshift(p1)
 
@@ -3792,13 +3858,13 @@ module Engine
               c.id != self.class::COMPANY_LCDR && self.class::PLUS_EXPANSION_BIDBOX_2.include?(c.id)
             end
             privates.delete(company)
-            @log << "#{company.id}-#{company.name} have been removed from the game"
+            @log << "#{company.name} have been removed from the game"
 
             # Remove two of the bidbox 3 privates
             2.times.each do |_|
               company = privates.find { |c| self.class::PLUS_EXPANSION_BIDBOX_3.include?(c.id) }
               privates.delete(company)
-              @log << "#{company.id}-#{company.name} have been removed from the game"
+              @log << "#{company.name} have been removed from the game"
             end
           end
 

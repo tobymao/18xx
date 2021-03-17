@@ -17,7 +17,8 @@ module View
 
     def render_notification
       message = <<~MESSAGE
-        <p><b>1822</b> is now in alpha!</p>
+        <p>1870, 1822, and 1822MRS are now in alpha! 1861 is in production.</p>
+        <p>Check out the <a href='https://forms.gle/Aaz9L1R4tzQQD9hB8'>18xx In-Person Registry</a> to support in-person play post COVID (maintained by Bill Hackenbracht)!</p>
         <p>Please submit problem reports and make suggestions for improvements on
         <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>.</p>
         <p>The <a href='https://github.com/tobymao/18xx/wiki'>18xx.games Wiki</a> has rules, maps,

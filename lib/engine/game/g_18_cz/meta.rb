@@ -10,6 +10,7 @@ module Engine
 
         DEV_STAGE = :alpha
 
+        GAME_SUBTITLE = 'The Railway Comes to Czech Lands'
         GAME_DESIGNER = 'Leonhard Orgler'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18CZ'
         GAME_LOCATION = 'Czech Republic'

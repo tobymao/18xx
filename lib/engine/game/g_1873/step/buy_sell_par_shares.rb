@@ -14,6 +14,11 @@ module Engine
             'Sell then Buy Certificates or Form Public Mine'
           end
 
+          def setup
+            @reopened = nil
+            super
+          end
+
           def purchasable_companies(_entity)
             []
           end
@@ -24,12 +29,17 @@ module Engine
             end
           end
 
-          # FIXME: need to deal with receivership first and second buy
-          def can_buy_multiple?(_entity, corporation)
-            return false unless @game.railway?(corporation)
+          def can_buy_multiple?(entity, corporation)
+            return unless corporation.corporation?
 
-            @round.current_actions.any? { |x| x.is_a?(Action::Par) && x.corporation == corporation } &&
-              @round.current_actions.none? { |x| x.is_a?(Action::BuyShares) }
+            if @reopened == corporation
+              entity.percent_of(corporation) < 40
+            elsif @game.railway?(corporation)
+              @round.current_actions.any? { |x| x.is_a?(Action::Par) && x.corporation == corporation } &&
+                @round.current_actions.none? { |x| x.is_a?(Action::BuyShares) }
+            else
+              false
+            end
           end
 
           def can_sell?(entity, bundle)
@@ -77,15 +87,30 @@ module Engine
             end
           end
 
-          def get_par_prices(entity, _corp)
+          def get_par_prices(entity, corp)
             @game
               .stock_market
               .par_prices
-              .select { |p| p.price <= entity.cash }
+              .select { |p| p.price <= entity.cash || @game.public_mine?(corp) }
+          end
+
+          def pool_shares(corporation)
+            if corporation.receivership? && corporation != @game.mhe && corporation.total_shares == 10
+              shares = @game.share_pool.shares_by_corporation[corporation].reject(&:president).reverse
+              # offer 20% bundle
+              [ShareBundle.new(shares.take(2))]
+            else
+              @game.share_pool.shares_by_corporation[corporation].group_by(&:percent).values
+                .map(&:first).sort_by(&:percent).reverse
+            end
           end
 
           def process_buy_shares(action)
             corporation = action.bundle.corporation
+            if corporation.receivership? && corporation != @game.mhe
+              @reopened = corporation
+              remove_company(action.entity, corporation)
+            end
             buy_shares(action.entity, action.bundle, swap: action.swap,
                                                      allow_president_change: @game.pres_change_ok?(corporation))
             track_action(action, corporation)
@@ -98,6 +123,7 @@ module Engine
             if @game.railway?(corporation)
               super
               remove_company(entity, corporation)
+              @game.replace_company!(corporation)
               return
             end
 

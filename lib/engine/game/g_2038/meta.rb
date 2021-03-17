@@ -16,6 +16,15 @@ module Engine
         GAME_RULES_URL = 'https://boardgamegeek.com/filepage/135017/2038-english-rules-and-supplements'
 
         PLAYER_RANGE = [3, 6].freeze
+
+        OPTIONAL_RULES = [
+          {
+            sym: :optional_short_game,
+            short_name: 'Short Game',
+            desc: 'Play a shorter game by removing $6,000 and 2 Phase II ships from the game.  '\
+            'See bottom right of page 3 for more details.',
+          },
+        ].freeze
       end
     end
   end

@@ -12,7 +12,9 @@ module Engine
 
             @pullman_train ||= nil
             actions = ACTIONS.dup
-            actions << 'choose' if !@pullman_train && find_pullman_train(entity)
+            if !@pullman_train && find_pullman_train(entity) && !pullman_train_choices(entity).empty?
+              actions << 'choose'
+            end
             actions
           end
 
@@ -55,7 +57,9 @@ module Engine
           end
 
           def pullman_train_choices(entity)
-            @game.route_trains(entity).reject { |t| @game.class::LOCAL_TRAINS.include?(t.name) }
+            @game.route_trains(entity).reject do |t|
+              @game.class::LOCAL_TRAINS.include?(t.name) || t.name == @game.class::E_TRAIN
+            end
           end
 
           def find_pullman_train(entity)

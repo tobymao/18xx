@@ -808,6 +808,7 @@ module Engine
         MARKET_SHARE_LIMIT = 100
         TRAIN_PRICE_MIN = 10
         TRAIN_PRICE_MULTIPLE = 10
+        MIN_PAR_AFTER_BANKRUPTCY = 40
 
         COMPANY_SALE_FEE = 30
 
@@ -1209,6 +1210,7 @@ module Engine
           corp.share_price = nil
           corp.par_price = nil
           corp.ipoed = false
+          corp.min_price = MIN_PAR_AFTER_BANKRUPTCY
           corp.unfloat!
 
           # return shares to IPO

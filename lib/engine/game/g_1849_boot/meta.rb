@@ -16,6 +16,7 @@ module Engine
         GAME_LOCATION = 'Southern Italy'
         GAME_RULES_URL = 'https://docs.google.com/document/d/1gNn2RmtcPWh0KpNduv3p0Lraa3iWIAV3cWcHpCu8X-E/edit'
         GAME_TITLE = '1849: Kingdom of the Two Sicilies'
+        GAME_ALIASES = ['1849K2S'].freeze
 
         PLAYER_RANGE = [3, 6].freeze
       end

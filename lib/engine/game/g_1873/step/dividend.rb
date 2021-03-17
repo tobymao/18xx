@@ -14,6 +14,7 @@ module Engine
           def actions(entity)
             return [] if entity.minor? || entity == @game.mhe
             return [] if entity.company?
+            return [] if entity.corporation? && entity.receivership?
             return [] unless total_revenue(entity).positive?
 
             ACTIONS
@@ -22,9 +23,11 @@ module Engine
           def skip!
             @round.clear_cache!
             revenue = total_revenue(current_entity)
+            receivership = current_entity.corporation? && current_entity.receivership? &&
+              current_entity != @game.mhe
             process_dividend(Action::Dividend.new(
               current_entity,
-              kind: revenue.positive? ? 'payout' : 'withhold',
+              kind: revenue.positive? && !receivership ? 'payout' : 'withhold',
             ))
 
             current_entity.operating_history[[@game.turn, @round.round_num]] =
@@ -35,7 +38,7 @@ module Engine
             return @game.mhe_income if entity == @game.mhe
             return 0 - @round.maintenance if routes.empty? && @game.railway?(entity)
 
-            @game.routes_revenue(routes) - @round.maintenance
+            @game.routes_revenue(routes) - @round.maintenance + (entity == @game.qlb ? @game.qlb_bonus : 0)
           end
 
           def dividend_options(entity)
@@ -55,9 +58,8 @@ module Engine
 
             if (revenue + entity.cash).negative?
               @log << "#{entity.name} loses #{@game.format_currency(-revenue)} and cannot pay out of treasury"
+              entity.spend(entity.cash, @game.bank) if entity.cash.positive? # zero out cash
               if entity.minor?
-                # zero out cash so owner doesn't get anything
-                entity.spend(entity.cash, @game.bank) if entity.cash.positive?
                 @game.close_mine!(entity)
               else
                 @game.insolvent!(entity)
@@ -69,6 +71,15 @@ module Engine
             if revenue.negative?
               @log << "#{entity.name} pays #{@game.format_currency(-revenue)} from treasury"
               entity.spend(-revenue, @game.bank)
+            end
+
+            # receivership: withhold and no price change
+            if entity.corporation? && entity.receivership? && entity != @game.mhe
+              return unless revenue.positive?
+
+              @game.bank.spend(revenue, entity)
+              @log << "Insolvent #{entity.name} withholds #{@game.format_currency(revenue)}"
+              return
             end
 
             payout = dividend_options(entity)[kind]
@@ -89,6 +100,9 @@ module Engine
             payout_shares(entity, revenue - payout[:corporation]) if payout[:per_share].positive?
 
             change_share_price(entity, payout)
+
+            # special case: QLB completes concession at start of train buy phase (i.e. here)
+            @game.concession_unpend!(entity) if @game.concession_pending?(entity) && entity == @game.qlb
 
             pass!
           end

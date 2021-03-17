@@ -454,7 +454,7 @@ module Engine
           {
             float_percent: 60,
             sym: 'FW',
-            name: 'Fortsworth',
+            name: 'Fort Worth',
             logo: '1870/FW',
             simple_logo: '1870/FW.alt',
             tokens: [0, 40],
@@ -593,7 +593,7 @@ module Engine
             ['C18'] =>
                    'city=revenue:0;upgrade=cost:40,terrain:river;partition=a:0+,b:2+,type:water,restrict:inner;label=P',
             ['M14'] =>
-                   'city=revenue:0;upgrade=cost:40,terrain:river;icon=image:port;'\
+                   'city=revenue:0;upgrade=cost:80,terrain:river;icon=image:port;'\
                    'partition=a:0-,b:2+,type:water,restrict:outer',
             ['H17'] =>
                    'city=revenue:0;upgrade=cost:60,terrain:river;icon=image:port;'\
@@ -747,12 +747,9 @@ module Engine
           removals.each do |company, removal|
             hex = removal[:hex]
             corp = removal[:corporation]
+            company = 'GSC' if company == 'GSCᶜ'
             @log << "-- Event: #{corp}'s #{company_by_id(company).name} token removed from #{hex} --"
           end
-        end
-
-        def company_by_id(id)
-          return super('GSC') if id == 'GSCᶜ'
         end
 
         def river_company
@@ -828,11 +825,13 @@ module Engine
           destination_stop.route_revenue(route.phase, route.train)
         end
 
-        def sell_shares_and_change_price(bundle, _allow_president_change: true, _swap: nil)
+        # rubocop:disable Lint/UnusedMethodArgument
+        def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
           @round.sell_queue << bundle
 
           @share_pool.sell_shares(bundle)
         end
+        # rubocop:enable Lint/UnusedMethodArgument
 
         def legal_tile_rotation?(_entity, hex, tile)
           return true unless abilities(river_company, :blocks_partition)
@@ -847,7 +846,7 @@ module Engine
 
         def upgrades_to?(from, to, _special = false)
           return false if to.name == '171K' && from.hex.name != 'B11'
-          return false if to.name == '171L' && from.hex.name != 'C18'
+          return false if to.name == '172L' && from.hex.name != 'C18'
 
           super
         end

@@ -10,6 +10,7 @@ module Engine
 
         DEV_STAGE = :prealpha
 
+        GAME_SUBTITLE = 'Railroads to Paradise'
         GAME_DESIGNER = 'David Hecht'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18FL'
         GAME_LOCATION = 'Florida, US'

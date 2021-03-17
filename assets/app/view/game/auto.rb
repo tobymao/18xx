@@ -56,22 +56,27 @@ module View
         @game.player_by_id(@user['id']) if @user
       end
 
-      def enable_merger_pass(form, passable, rounds)
-        settings = params(form)
+      def enable_merger_pass(form)
+        corporations = {}
+        form['corporations'].each do |round, corps|
+          corp_settings = params(corps).select { |_k, v| v }.keys.map { |c| @game.corporation_by_id(c) }
+          corporations[round.short_name] = corp_settings
+        end
 
-        selected_corps = passable.select { |corp| settings[corp.name] }
-        selected_rounds = rounds.select { |round| settings[round.round_name] }.map(&:short_name)
+        options = params(form['options']).select { |_k, v| v }.keys
+
         process_action(
           Engine::Action::ProgramMergerPass.new(
             sender,
-            corporations: selected_corps,
-            rounds: selected_rounds
+            corporations_by_round: corporations,
+            options: options
           )
         )
       end
 
       def render_merger_pass(settings)
-        form = {}
+        corporations = Hash.new { |h, k| h[k] = {} }
+
         text = 'Auto Pass in Mergers'
         text += ' (Enabled)' if settings
         children = [h(:h3, text)]
@@ -90,41 +95,46 @@ module View
           children << h('p.bold', 'No mergable corporations are owned by you, cannot program!')
         else
 
-          subchildren = passable.map do |entity|
-            h(:li, [
-              render_input(entity.name,
-                           id: entity.name,
-                           type: 'checkbox',
-                           inputs: form,
-                           attrs: {
-                             name: 'mode_options',
-                             checked: !settings || settings&.corporations&.include?(entity),
-                           }),
+          rounds.each do |round|
+            tmpform = {}
+            round_settings = settings&.corporations_by_round&.dig(round.short_name)
+            subchildren = passable.map do |entity|
+              id = round.short_name + ',' + entity.name
+              input = h(:li, [
+                render_input(entity.name,
+                             id: id,
+                             type: 'checkbox',
+                             inputs: tmpform,
+                             attrs: {
+                               name: 'mode_options',
+                               checked: !settings || round_settings&.include?(entity),
+                             }),
+              ])
+              corporations[round][entity.name] = tmpform[id]
+              input
+            end
+            children << h(:div, [
+              h(:p, "Pass on Corporations in #{round.round_name}:"),
+              h(:ul, { style: { 'list-style': 'none' } }, subchildren),
             ])
           end
 
-          children << h(:div, [
-            h(:p, 'Pass on Corporations:'),
-            h(:ul, { style: { 'list-style': 'none' } }, subchildren),
-          ])
+          options = {}
+          subchildren = [h(:li, [
+            render_input('Disable if others merge',
+                         id: 'disable_others',
+                         type: 'checkbox',
+                         inputs: options,
+                         attrs: {
+                           name: 'mode_options',
+                           checked: !settings || settings&.options&.include?('disable_others'),
+                         }),
+          ])]
 
-          # Which rounds does it apply to, by default assume all
-          subchildren = rounds.map do |round|
-            h(:li, [
-              # Use the long name to ensure no clash with corp ids
-              render_input(round.round_name,
-                           id: round.round_name,
-                           type: 'checkbox',
-                           inputs: form,
-                           attrs: {
-                             name: 'mode_options',
-                             checked: !settings || settings&.rounds&.include?(round.short_name),
-                           }),
-            ])
-          end
+          form = { "corporations": corporations, "options": options }
 
           children << h(:div, [
-            h(:p, 'Pass in Rounds:'),
+            h(:p, 'Options:'),
             h(:ul, { style: { 'list-style': 'none' } }, subchildren),
           ])
 

@@ -16,6 +16,7 @@ module Engine
         GAME_PUBLISHER = :all_aboard_games
         GAME_RULES_URL = 'https://www.dropbox.com/s/ivm4jsopnzabhru/18ChesOTR_Rules.png?dl=0'
         GAME_TITLE = '18Chesapeake: Off the Rails'
+        GAME_ALIASES = %w[OTR 18ChesapeakeOTR].freeze
 
         PLAYER_RANGE = [2, 6].freeze
       end

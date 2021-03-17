@@ -23,9 +23,9 @@ module Engine
     include Spender
 
     attr_accessor :ipoed, :par_via_exchange, :max_ownership_percent, :float_percent, :capitalization, :second_share,
-                  :type, :floatable, :original_par_price
-    attr_reader :companies, :min_price, :name, :full_name, :fraction_shares, :id, :needs_token_to_par,
-                :presidents_share, :reservation_color
+                  :type, :floatable, :original_par_price, :reservation_color, :min_price
+    attr_reader :companies, :name, :full_name, :fraction_shares, :id, :needs_token_to_par,
+                :presidents_share
     attr_writer :par_price, :share_price
 
     SHARES = ([20] + Array.new(8, 10)).freeze
@@ -55,7 +55,7 @@ module Engine
       @closed = false
       @float_percent = opts[:float_percent] || 60
       @float_excludes_market = opts[:float_excludes_market] || false
-      @floatable = opts[:floatable] || true
+      @floatable = opts[:floatable].nil? ? true : opts[:floatable]
       @floated = false
       @max_ownership_percent = opts[:max_ownership_percent] || 60
       @min_price = opts[:min_price]

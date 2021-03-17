@@ -46,12 +46,16 @@ module Engine
             elsif @buyer && can_take_loan?(@buyer)
               'Pass (Take Loan)'
             elsif @buyer
-              'Pass (Repay Loan)'
+              'Pass (On payoff Loan)'
             end
           end
 
           def merger_auto_pass_entity
             @offer
+          end
+
+          def others_acted?
+            !@round.acquired.empty?
           end
 
           def can_take_loan?(entity)
@@ -375,6 +379,7 @@ module Engine
             # If not aquired by the bank
             @round.offering.delete(acquired_corp)
             @winner = nil
+            @round.acquired << acquired_corp
             setup_auction
           end
 
@@ -478,6 +483,12 @@ module Engine
 
           def setup
             setup_auction
+          end
+
+          def round_state
+            {
+              acquired: [],
+            }
           end
 
           private

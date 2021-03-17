@@ -10,6 +10,7 @@ module Engine
 
         DEV_STAGE = :prealpha
 
+        GAME_SUBTITLE = 'Austrian-Hungarian Railway'
         GAME_DESIGNER = 'Leonhard Orgler & Helmut Ohley'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1824'
         GAME_LOCATION = 'Austria-Hungary'

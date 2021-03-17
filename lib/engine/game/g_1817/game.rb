@@ -55,6 +55,8 @@ module Engine
 
         MUST_SELL_IN_BLOCKS = false
 
+        TILE_TYPE = :lawson
+
         TILES = {
           '5' => 'unlimited',
           '6' => 'unlimited',
@@ -1399,6 +1401,10 @@ module Engine
         def corporation_size(entity)
           # For display purposes is a corporation small, medium or large
           CORPORATION_SIZES[entity.total_shares]
+        end
+
+        def corporation_size_name(entity)
+          entity.total_shares.to_s
         end
 
         private

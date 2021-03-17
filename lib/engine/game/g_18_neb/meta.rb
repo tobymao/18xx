@@ -4,7 +4,7 @@ require_relative '../meta'
 
 module Engine
   module Game
-    module G18NEB
+    module G18Neb
       module Meta
         include Game::Meta
 

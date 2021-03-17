@@ -91,7 +91,6 @@ module Engine
           end
 
           def pass!
-            super
             @round.start_operating
           end
 

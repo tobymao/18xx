@@ -14,6 +14,11 @@ module Engine
           def process_place_token(action)
             entity = action.entity
             city = action.city
+            hex = action.city.hex
+            unless available_hex(action.entity, hex)
+              raise GameError, "Cannot place token on #{hex.name} as the hex is not available"
+            end
+
             if action.city.tokened_by?(entity)
               hex = city.hex
               city_string = city.hex.tile.cities.size > 1 ? " city #{city.index}" : ''

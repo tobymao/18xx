@@ -10,6 +10,7 @@ module Engine
 
         DEV_STAGE = :alpha
 
+        GAME_SUBTITLE = 'The Railways of Great Britain'
         GAME_DESIGNER = 'Simon Cutforth'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1822'
         GAME_LOCATION = 'Great Britain'

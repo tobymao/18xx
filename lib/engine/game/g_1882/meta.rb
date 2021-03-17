@@ -10,6 +10,7 @@ module Engine
 
         DEV_STAGE = :production
 
+        GAME_SUBTITLE = 'Assiniboia'
         GAME_DESIGNER = 'Marc Voyer'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1882'
         GAME_LOCATION = 'Assiniboia, Canada'

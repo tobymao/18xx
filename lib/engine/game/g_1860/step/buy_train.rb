@@ -10,7 +10,7 @@ module Engine
           def actions(entity)
             return [] if entity.receivership? && entity.trains.any?
             return [] if entity != current_entity || buyable_trains(entity).empty?
-            return [] if @game.bankrupt?(entity)
+            return [] if @game.bankrupt?(entity) || entity.share_price&.type == :close
             return %w[buy_train] if must_buy_train?(entity)
 
             super
