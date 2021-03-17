@@ -303,7 +303,7 @@ module Engine
       def corporation_secure?(corporation)
         # Can any other player steal the corporation?
 
-        (corporation.owner.percent_of(corporation, ceil: false)) >= corporation_secure_percent
+        (corporation.owner.percent_of(corporation)) >= corporation_secure_percent
       end
 
       def action_is_shenanigan?(entity, action, corporation, share_to_buy)
@@ -322,7 +322,7 @@ module Engine
               return "#{action.entity.player.name} bought on corporation #{corporation.name} and is unsecure"
             end
 
-            percentage = corporation.owner.percent_of(corporation, ceil: false) + share_to_buy.percent
+            percentage = corporation.owner.percent_of(corporation) + share_to_buy.percent
             # If next share is bought, is the corp secure? Then it's safe to buy...
             return if percentage > corporation_secure_percent
 
@@ -339,7 +339,7 @@ module Engine
             end.max(&:percent)
 
             if bigger_share
-              other_percent = action.entity.percent_of(corporation, ceil: false) + bigger_share.percent
+              other_percent = action.entity.percent_of(corporation) + bigger_share.percent
               if percentage < other_percent
                 "#{action.entity.player.name} has bought, shares exist that could allow them to gain presidency"
               end

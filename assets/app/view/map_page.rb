@@ -25,7 +25,7 @@ module View
       players = game::PLAYER_RANGE.max.times.map { |n| "Player #{n + 1}" }
 
       h(:div, [
-          h(:h2, game.title.to_s),
+          h(:h2, game.full_title),
           h(Game::Map, game: game.new(players), opacity: 1.0),
         ])
     end
