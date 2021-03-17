@@ -663,7 +663,7 @@ module Engine
         end
 
         def after_buy_company(player, company, price)
-          if minor = @minors.find { |m| m.id == company.id }
+          if (minor = @minors.find { |m| m.id == company.id })
             float_minor(player, minor, price)
           end
 
