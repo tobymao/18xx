@@ -1677,7 +1677,7 @@ module Engine
 
         # all routes must intersect each other
         def check_intersection(routes)
-          actual_routes = routes.reject { |r| r.connections.empty? }
+          actual_routes = routes.reject { |r| r.chains.empty? }
 
           # build a map of which routes intersect with each route
           intersects = Hash.new { |h, k| h[k] = [] }

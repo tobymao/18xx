@@ -64,10 +64,6 @@ module Engine
       connection_data&.map { |c| c[:chain] }
     end
 
-    def connections
-      chains
-    end
-
     def next_chain(node, chain, other)
       chains = select(node, other, chain)
       index = chains.find_index(chain) || chains.size
@@ -99,7 +95,7 @@ module Engine
               new_chains << {
                 nodes: [start_node, end_node],
                 paths: paths,
-                hexes: chain_hexes(paths),
+                hexes: paths.map(&:hex),
                 id: chain_id(paths),
               }
             end
@@ -308,22 +304,18 @@ module Engine
         node0, node1 = paths[0].nodes.map(&:index).sort
         ["#{paths[0].hex.id} #{node0}.#{node1}"]
       else
-        uniq_paths = []
         junction_map = {}
+        hex_ids = []
 
         # skip over paths that have a junction we've already seen
         paths.each do |path|
-          uniq_paths << path if !junction_map[path.a] && !junction_map[path.b]
+          hex_ids << path.hex.id if !junction_map[path.a] && !junction_map[path.b]
           junction_map[path.a] = true if path.a.junction?
           junction_map[path.b] = true if path.b.junction?
         end
 
-        uniq_paths.map! { |path| path.hex.id }
+        hex_ids
       end
-    end
-
-    def chain_hexes(paths)
-      paths.map(&:hex)
     end
 
     def add_single_node_connection(node)
@@ -336,7 +328,7 @@ module Engine
       chains_a.each do |a|
         chains_b.each do |b|
           next if (middle = (a[:nodes] & b[:nodes])).empty?
-          next if (b[:paths] & a[:paths]).any?
+          next unless (b[:paths] & a[:paths]).empty?
 
           left = (a[:nodes] - middle)[0]
           right = (b[:nodes] - middle)[0]
@@ -355,8 +347,7 @@ module Engine
         end_hex.tile.nodes.each do |end_node|
           next if start_node == end_node
 
-          chains = get_node_chains(start_node, end_node)
-          chains.each do |ch|
+          get_node_chains(start_node, end_node).each do |ch|
             matching << ch if ch[:id] == hex_ids
           end
         end

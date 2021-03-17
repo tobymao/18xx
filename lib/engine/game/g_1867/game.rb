@@ -1089,24 +1089,24 @@ module Engine
 
           return open_locations if corporation.type == :minor
 
-          unconnected = open_locations.reject { |hex| connected_hex?(hex) }
-          if unconnected.empty?
+          if (unconnected = unconnected_hexes(open_locations)).empty?
             open_locations
           else
             unconnected
           end
         end
 
-        def connected_hex?(hex)
-          hex.tile.cities.each do |city|
-            city.paths.each do |path|
-              path.walk do |current|
-                next if current == path
-                return true if current.node?
+        def unconnected_hexes(locs)
+          locs.reject do |hex|
+            hex.tile.cities.any? do |city|
+              city.paths.any? do |path|
+                path.walk do |current|
+                  next if current == path
+                  break true if path.node?
+                end
               end
             end
           end
-          false
         end
 
         def redeemable_shares(entity)
