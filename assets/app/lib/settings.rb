@@ -6,7 +6,7 @@ module Lib
   module Settings
     DARK = `window.matchMedia('(prefers-color-scheme: dark)').matches`.freeze
     # http://mkweb.bcgsc.ca/colorblind/ 12 color palette
-    ROUTE_COLORS = %i[#A40122 #008DF9 #00FCCF #FF5AAF #8400CD #FF6E3A #009F81 #FFC33B].freeze
+    ROUTE_COLORS = %i[#A40122 #008DF9 #00FCCF #FF5AAF #8400CD #FF6E3A #FFB2FD #FFC33B].freeze
 
     ENTER_GREEN = '#3CB371'
     JOIN_YELLOW = '#F0E58C'
@@ -82,7 +82,11 @@ module Lib
         players = players.rotate(player_idx)
       end
 
-      players.map.with_index { |p, idx| [p, route_prop(idx, 'color')] }.to_h
+      players.map.with_index do |p, idx|
+        color = route_prop(idx % ROUTE_COLORS.size, 'color')
+        color = convert_rgba_to_hex(convert_hex_to_rgba(color, 0.5)) if idx > ROUTE_COLORS.size - 1
+        [p, color]
+      end.to_h
     end
   end
 end
