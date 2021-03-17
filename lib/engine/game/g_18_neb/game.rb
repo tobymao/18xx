@@ -14,12 +14,12 @@ module Engine
     module G18Neb
       class Game < Game::Base
         include_meta(G18Neb::Meta)
-        include G18Neb::CompanyConfig
-        include G18Neb::CorporationConfig
-        include G18Neb::MapConfig
-        include G18Neb::MarketConfig
-        include G18Neb::PhaseConfig
-        include G18Neb::TrainConfig
+        include G18Neb::Config::CompanyConfig
+        include G18Neb::Config::CorporationConfig
+        include G18Neb::Config::MapConfig
+        include G18Neb::Config::MarketConfig
+        include G18Neb::Config::PhaseConfig
+        include G18Neb::Config::TrainConfig
 
         register_colors(black: '#37383a',
                         orange: '#f48221',
