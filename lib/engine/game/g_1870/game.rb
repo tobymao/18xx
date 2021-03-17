@@ -593,7 +593,7 @@ module Engine
             ['C18'] =>
                    'city=revenue:0;upgrade=cost:40,terrain:river;partition=a:0+,b:2+,type:water,restrict:inner;label=P',
             ['M14'] =>
-                   'city=revenue:0;upgrade=cost:40,terrain:river;icon=image:port;'\
+                   'city=revenue:0;upgrade=cost:80,terrain:river;icon=image:port;'\
                    'partition=a:0-,b:2+,type:water,restrict:outer',
             ['H17'] =>
                    'city=revenue:0;upgrade=cost:60,terrain:river;icon=image:port;'\
