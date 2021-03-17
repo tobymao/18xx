@@ -454,7 +454,7 @@ module Engine
           {
             float_percent: 60,
             sym: 'FW',
-            name: 'Fortsworth',
+            name: 'Fort Worth',
             logo: '1870/FW',
             simple_logo: '1870/FW.alt',
             tokens: [0, 40],
