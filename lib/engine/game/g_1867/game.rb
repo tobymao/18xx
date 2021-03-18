@@ -1224,8 +1224,7 @@ module Engine
           # We'll treat random as in hex order
           corporation.tokens.select(&:used)
           .sort_by { |t| [t.city.max_revenue, t.city.hex.id] }
-          .reverse
-          .each do |token|
+          .reverse_each do |token|
             city = token.city
             token.remove!
 
