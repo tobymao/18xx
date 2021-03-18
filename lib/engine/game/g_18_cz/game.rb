@@ -2937,6 +2937,10 @@ module Engine
           n_towns = route.stops.count(&:town?)
           "#{n_cities}+#{n_towns}"
         end
+
+        def can_par?(corporation, parrer)
+          super && debt(parrer).zero?
+        end
       end
     end
   end
