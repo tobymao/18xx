@@ -856,8 +856,8 @@ module Engine
         end
 
         def hex_edge_cost(conn, train)
-          track = track_type(conn.paths)
-          edges = conn.paths.each_cons(2).sum do |a, b|
+          track = track_type(conn[:paths])
+          edges = conn[:paths].each_cons(2).sum do |a, b|
             a.hex == b.hex ? 0 : 1
           end
           if train.name == 'R6H'

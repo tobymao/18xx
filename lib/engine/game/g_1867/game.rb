@@ -1101,8 +1101,8 @@ module Engine
             hex.tile.cities.any? do |city|
               city.paths.any? do |path|
                 path.walk do |current|
-                  next if current == path
-                  break true if path.node?
+                  next if path == current
+                  break true if current.node?
                 end
               end
             end

@@ -319,7 +319,7 @@ module Engine
     end
 
     def add_single_node_connection(node)
-      @connection_data << { left: node, right: node, chain: { nodes: [], paths: [], hexes: [], id: nil } }
+      @connection_data << { left: node, right: node, chain: { nodes: [], paths: nil, hexes: nil, id: nil } }
     end
 
     def find_pairwise_chain(chains_a, chains_b, other_paths)
@@ -382,6 +382,8 @@ module Engine
         chain = possibilities[0].find do |ch|
           ch[:nodes].any? { |node| @game.city_tokened_by?(node, corporation) } && (ch[:paths] & other_paths).empty?
         end
+        return @connection_data unless chain
+
         left, right = chain[:nodes]
         return @connection_data if !left || !right
 
