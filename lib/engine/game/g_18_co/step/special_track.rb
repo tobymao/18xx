@@ -13,6 +13,7 @@ module Engine
           def process_lay_tile(action)
             ability = abilities(action.entity)
             lay_tile(action, spender: action.entity.owner)
+            @round.laid_hexes << action.hex
             ability.use!
 
             @company = ability.count.positive? ? action.entity : nil if ability.must_lay_together

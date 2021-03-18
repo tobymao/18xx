@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'lib/hex'
+require 'lib/color'
 require 'lib/settings'
 require 'lib/tile_selector'
 require 'view/game/actionable'
@@ -14,6 +15,7 @@ module View
     class Hex < Snabberb::Component
       include Actionable
       include Runnable
+      include Lib::Color
       include Lib::Settings
 
       SIZE = 100
@@ -21,7 +23,7 @@ module View
       FRAME_COLOR_STROKE_WIDTH = 10
       FRAME_COLOR_POINTS = Lib::Hex.points(scale: 1 - ((FRAME_COLOR_STROKE_WIDTH + 1) / 2) / Lib::Hex::Y_B).freeze
 
-      HIGHLIGHT_STROKE_WIDTH = 8
+      HIGHLIGHT_STROKE_WIDTH = 6
       HIGHLIGHT_POINTS = Lib::Hex.points(scale: 1 - ((HIGHLIGHT_STROKE_WIDTH + 1) / 2) / Lib::Hex::Y_B).freeze
 
       LAYOUT = {
@@ -116,8 +118,11 @@ module View
       def hex_highlight
         polygon_props = { attrs: { points: HIGHLIGHT_POINTS } }
         polygon_props[:attrs]['fill-opacity'] = 0
-        polygon_props[:attrs]['stroke-dasharray'] = 15
+        polygon_props[:attrs]['stroke-dasharray'] = 10
         polygon_props[:attrs]['stroke-width'] = HIGHLIGHT_STROKE_WIDTH
+        if (color = @tile&.frame&.color)
+          polygon_props[:attrs]['stroke'] = contrast_on(color_for(color))
+        end
 
         [h(:polygon, polygon_props)]
       end

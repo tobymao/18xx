@@ -47,6 +47,7 @@ module Engine
             end
 
             lay_tile(action, spender: spender)
+            @round.laid_hexes << action.hex
 
             @game.skip_default_track unless @game.purple_tile?(action.tile)
 

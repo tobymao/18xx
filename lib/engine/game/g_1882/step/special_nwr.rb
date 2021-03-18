@@ -112,6 +112,7 @@ module Engine
 
           def process_lay_tile(action)
             lay_tile(action, entity: action.entity.owner)
+            @round.laid_hexes << action.hex
             gain_nwr_bonus(action.tile, action.entity.owner)
             ability(action.entity).use!
             @state = nil
