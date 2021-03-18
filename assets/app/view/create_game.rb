@@ -356,7 +356,7 @@ module View
         min = range.min = @min_p[title]
         max = range.max = @max_p[title]
         val = range.value.to_i
-        range.value = (min..max).include?(val) ? val : max
+        range.value = (min..max).cover?(val) ? val : max
         store(:num_players, range.value.to_i, skip: true)
       end
 
