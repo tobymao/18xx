@@ -40,10 +40,11 @@ module View
         current_entity = @selected_company || step&.current_entity
         actions = step&.actions(current_entity) || []
 
-        laid_hexes = @historical_laid_hexes || @game.round.laid_hexes
+        laid_hexes = @historical_laid_hexes
+        laid_hexes = @game.round.laid_hexes if laid_hexes.none?
+
         selected_hex = @tile_selector&.hex
-        # Move the laid and selected hexes to the back so they render highest in z space
-        laid_hexes.each {|hex| @hexes << @hexes.delete(hex) }
+        # Move the selected hex to the back so they render highest in z space
         @hexes << @hexes.delete(selected_hex) if @hexes.include?(selected_hex)
 
         routes = @routes

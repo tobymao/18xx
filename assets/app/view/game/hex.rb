@@ -21,6 +21,9 @@ module View
       FRAME_COLOR_STROKE_WIDTH = 10
       FRAME_COLOR_POINTS = Lib::Hex.points(scale: 1 - ((FRAME_COLOR_STROKE_WIDTH + 1) / 2) / Lib::Hex::Y_B).freeze
 
+      HIGHLIGHT_STROKE_WIDTH = 8
+      HIGHLIGHT_POINTS = Lib::Hex.points(scale: 1 - ((HIGHLIGHT_STROKE_WIDTH + 1) / 2) / Lib::Hex::Y_B).freeze
+
       LAYOUT = {
         flat: [SIZE * 3 / 2, SIZE * Math.sqrt(3) / 2],
         pointy: [SIZE * Math.sqrt(3) / 2, SIZE * 3 / 2],
@@ -72,6 +75,8 @@ module View
           children.insert(1, h(:polygon, attrs: attrs))
         end
 
+        children << hex_highlight if @highlight
+
         props = {
           key: @hex.id,
           attrs: {
@@ -87,12 +92,7 @@ module View
         props[:on] = { click: ->(e) { on_hex_click(e) } }
         props[:attrs]['stroke-width'] = 5 if @selected
 
-        if @highlight && !@selected
-          props[:attrs]['stroke-dasharray'] = 10
-          props[:attrs]['stroke-width'] = 5 
-        end
-
-        h(:g, props, children)
+        h(:g, props, children.flatten)
       end
 
       def hex_outline
@@ -111,6 +111,15 @@ module View
         else
           [h(:polygon, polygon_props)]
         end
+      end
+
+      def hex_highlight
+        polygon_props = { attrs: { points: HIGHLIGHT_POINTS } }
+        polygon_props[:attrs]['fill-opacity'] = 0
+        polygon_props[:attrs]['stroke-dasharray'] = 15
+        polygon_props[:attrs]['stroke-width'] = HIGHLIGHT_STROKE_WIDTH
+
+        [h(:polygon, polygon_props)]
       end
 
       def translation

@@ -65,7 +65,7 @@ module Engine
         ability.use!
 
         # Record any track laid after the dividend step
-        if owner&.corporation? && operating_info = owner.operating_history[[@game.turn, @game.round_num]]
+        if owner&.corporation? && operating_info = owner.operating_history[[@game.turn, @round.round_num]]
           operating_info.laid_hexes = @round.laid_hexes
         end
 
