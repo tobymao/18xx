@@ -23,7 +23,7 @@ module View
       # Due to the way this and the map hook up routes needs to have
       # an entry, but that route is not valid at zero length
       def active_routes
-        @routes.select { |r| r.chains.any? }
+        @routes.select { |r| r.connections.any? }
       end
 
       def generate_last_routes!
@@ -34,7 +34,7 @@ module View
         return [] if @abilities&.any?
 
         halts = operating[operating.keys.max]&.halts
-        last_run.map do |train, connection_hexes|
+        last_run.map do |train, connections|
           next unless trains.include?(train)
 
           # A future enhancement to this could be to find trains and move the routes over
@@ -42,7 +42,7 @@ module View
             @game,
             @game.phase,
             train,
-            connection_hexes: connection_hexes,
+            connection_hexes: connections,
             routes: @routes,
             halts: halts[train],
           )

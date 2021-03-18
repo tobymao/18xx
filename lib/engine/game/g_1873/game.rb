@@ -1652,7 +1652,7 @@ module Engine
         def check_other(route)
           # make sure routes from same supertrain intersect
           super_routes = route.routes.reject do |r|
-            r.chains.empty? ||
+            r.connections.empty? ||
               @supertrains[route.train] != @supertrains[r.train]
           end
           check_intersection(@supertrains[route.train], super_routes)

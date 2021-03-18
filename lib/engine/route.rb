@@ -21,7 +21,6 @@ module Engine
       @halts = opts[:halts]
       @abilities = opts[:abilities]
 
-      @node_chains = {}
       @connection_data = nil
       @last_node = nil
       @stops = nil
@@ -60,53 +59,34 @@ module Engine
       connection_data[-1]
     end
 
-    def chains
-      connection_data&.map { |c| c[:chain] }
+    def connections
+      connection_data&.map { |c| c[:connection] }
     end
 
-    def next_chain(node, chain, other)
-      chains = select(node, other, chain)
-      index = chains.find_index(chain) || chains.size
-      chains[index + 1]
+    def next_connection(node, connection, other)
+      connections = select(node, other, connection)
+      index = connections.find_index(connection) || connections.size
+      connections[index + 1]
     end
 
     def select(node, other, keep = nil)
       other_paths = @game.compute_other_paths(@routes, self)
 
       connection_data.each do |c|
-        next if c[:chain] == keep
+        next if c[:connection] == keep
 
-        other_paths.concat(c[:chain][:paths])
+        other_paths.concat(c[:connection].paths)
       end
 
-      get_node_chains(node, other).select { |c| (c[:paths] & other_paths).empty? }
+      nodes = [node, other]
+
+      node.hex.all_connections.select do |c|
+        (c.nodes & nodes).size == 2 && (c.paths & other_paths).empty?
+      end
     end
 
-    # walk paths from start_node, and only keep connections that end at end_node
-    def get_node_chains(start_node, end_node)
-      @node_chains[[start_node, end_node]] ||=
-        begin
-          new_chains = []
-          start_node.paths.each do |start_path|
-            start_path.walk do |current, visited|
-              next unless current.nodes.include?(end_node)
-
-              paths = visited.keys
-              new_chains << {
-                nodes: [start_node, end_node],
-                paths: paths,
-                hexes: paths.map(&:hex),
-                id: chain_id(paths),
-              }
-            end
-          end
-
-          new_chains
-        end
-    end
-
-    def segment(chain, left: nil, right: nil)
-      nodes = chain[:nodes]
+    def segment(connection, left: nil, right: nil)
+      nodes = connection.nodes
 
       if left
         right = (nodes - [left])[0]
@@ -114,21 +94,21 @@ module Engine
         left = (nodes - [right])[0]
       end
 
-      { left: left, right: right, chain: chain }
+      { left: left, right: right, connection: connection }
     end
 
     def touch_node(node)
       if connection_data.any?
         case node
         when head[:left]
-          if (chain = next_chain(head[:right], head[:chain], node))
-            connection_data[0] = segment(chain, right: head[:right])
+          if (connection = next_connection(head[:right], head[:connection], node))
+            connection_data[0] = segment(connection, right: head[:right])
           else
             connection_data.shift
           end
         when tail[:right]
-          if (chain = next_chain(tail[:left], tail[:chain], node))
-            connection_data[-1] = segment(chain, left: tail[:left])
+          if (connection = next_connection(tail[:left], tail[:connection], node))
+            connection_data[-1] = segment(connection, left: tail[:left])
           else
             connection_data.pop
           end
@@ -137,10 +117,10 @@ module Engine
         when tail[:left]
           connection_data.pop
         else
-          if (chain = select(head[:left], node)[0])
-            connection_data.unshift(segment(chain, right: head[:left]))
-          elsif (chain = select(tail[:right], node)[0])
-            connection_data << segment(chain, left: tail[:right])
+          if (connection = select(head[:left], node)[0])
+            connection_data.unshift(segment(connection, right: head[:left]))
+          elsif (connection = select(tail[:right], node)[0])
+            connection_data << segment(connection, left: tail[:right])
           end
         end
         connection_data.pop if @train.local? && connection_data.size == 2
@@ -149,10 +129,10 @@ module Engine
         connection_data.clear
       elsif @last_node
         connection_data.clear
-        if (chain = select(@last_node, node)[0])
-          a, b = chain[:nodes]
+        if (connection = select(@last_node, node)[0])
+          a, b = connection.nodes
           a, b = b, a if @last_node == a
-          connection_data << { left: a, right: b, chain: chain }
+          connection_data << { left: a, right: b, connection: connection }
         end
       else
         @last_node = node
@@ -164,7 +144,7 @@ module Engine
     end
 
     def paths
-      chains.flat_map { |ch| ch[:paths] }
+      connections.flat_map(&:paths)
     end
 
     def paths_for(other_paths)
@@ -221,7 +201,7 @@ module Engine
 
     def ordered_paths
       connection_data.flat_map do |c|
-        cpaths = c[:chain][:paths]
+        cpaths = c[:connection].paths
         cpaths[0].nodes.include?(c[:left]) ? cpaths : cpaths.reverse
       end
     end
@@ -289,70 +269,34 @@ module Engine
     end
 
     def connection_hexes
-      @connection_hexes ||= if @train.local? && connection_data.one? && connection_data[0][:chain][:paths].empty?
+      @connection_hexes ||= if @train.local? && connection_data.one? && connection_data[0][:connection].paths.empty?
                               [['local', connection_data[0][:left].hex.id]]
                             else
-                              chains&.map { |ch| ch[:id] }
+                              connections&.map(&:id)
                             end
     end
 
     private
 
-    def chain_id(paths)
-      # deal with ambiguous intra-tile path
-      if paths.one? && paths[0].tile.ambiguous_connection?
-        node0, node1 = paths[0].nodes.map(&:index).sort
-        ["#{paths[0].hex.id} #{node0}.#{node1}"]
-      else
-        junction_map = {}
-        hex_ids = []
-
-        # skip over paths that have a junction we've already seen
-        paths.each do |path|
-          hex_ids << path.hex.id if !junction_map[path.a] && !junction_map[path.b]
-          junction_map[path.a] = true if path.a.junction?
-          junction_map[path.b] = true if path.b.junction?
-        end
-
-        hex_ids
-      end
-    end
-
     def add_single_node_connection(node)
-      @connection_data << { left: node, right: node, chain: { nodes: [], paths: [], hexes: [], id: nil } }
+      @connection_data << { left: node, right: node, connection: Connection.new }
     end
 
-    def find_pairwise_chain(chains_a, chains_b, other_paths)
-      chains_a = chains_a.select { |a| (a[:paths] & other_paths).empty? }
-      chains_b = chains_b.select { |b| (b[:paths] & other_paths).empty? }
-      chains_a.each do |a|
-        chains_b.each do |b|
-          next if (middle = (a[:nodes] & b[:nodes])).empty?
-          next unless (b[:paths] & a[:paths]).empty?
+    def find_connections(connections_a, connections_b, other_paths)
+      connections_a = connections_a.select { |a| (a.paths & other_paths).empty? }
+      connections_b = connections_b.select { |b| (b.paths & other_paths).empty? }
+      connections_a.each do |a|
+        connections_b.each do |b|
+          next if (middle = (a.nodes & b.nodes)).empty?
+          next if (b.paths & a.paths).any?
 
-          left = (a[:nodes] - middle)[0]
-          right = (b[:nodes] - middle)[0]
+          left = (a.nodes - middle)[0]
+          right = (b.nodes - middle)[0]
           return [a, b, left, right, middle[0]]
         end
       end
 
       []
-    end
-
-    def find_matching_chains(hex_ids)
-      start_hex = @game.hex_by_id(hex_ids.first.split.first)
-      end_hex = @game.hex_by_id(hex_ids.last.split.first)
-      matching = []
-      start_hex.tile.nodes.each do |start_node|
-        end_hex.tile.nodes.each do |end_node|
-          next if start_node == end_node
-
-          get_node_chains(start_node, end_node).each do |ch|
-            matching << ch if ch[:id] == hex_ids
-          end
-        end
-      end
-      matching
     end
 
     def connection_data
@@ -373,28 +317,30 @@ module Engine
       end
 
       possibilities = @connection_hexes.map do |hex_ids|
-        find_matching_chains(hex_ids)
+        hexes = hex_ids.map { |hex_str| @game.hex_by_id(hex_str.split.first) }
+        hexes[0].all_connections.select { |c| c.matches?(hex_ids) }
       end
 
       other_paths = @game.compute_other_paths(@routes, self)
 
       if possibilities.one?
-        chain = possibilities[0].find do |ch|
-          ch[:nodes].any? { |node| @game.city_tokened_by?(node, corporation) } && (ch[:paths] & other_paths).empty?
+        connection = possibilities[0].find do |conn|
+          conn.nodes.any? { |node| @game.city_tokened_by?(node, corporation) } &&
+            (conn.paths & other_paths).empty?
         end
-        left, right = chain[:nodes]
+        left, right = connection&.nodes
         return @connection_data if !left || !right
 
-        @connection_data << { left: left, right: right, chain: chain }
+        @connection_data << { left: left, right: right, connection: connection }
       else
         possibilities.each_cons(2).with_index do |pair, index|
-          a, b, left, right, middle = find_pairwise_chain(*pair, other_paths)
+          a, b, left, right, middle = find_connections(*pair, other_paths)
           return @connection_data.clear if !left&.hex || !right&.hex || !middle&.hex
 
-          @connection_data << { left: left, right: middle, chain: a } if index.zero?
-          @connection_data << { left: middle, right: right, chain: b }
+          @connection_data << { left: left, right: middle, connection: a } if index.zero?
+          @connection_data << { left: middle, right: right, connection: b }
 
-          other_paths.concat(a[:paths])
+          other_paths.concat(a.paths)
         end
       end
 

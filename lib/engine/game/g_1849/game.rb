@@ -868,7 +868,7 @@ module Engine
         end
 
         def route_distance(route)
-          route.chains.sum { |conn| hex_edge_cost(conn, route.train) }
+          route.connections.sum { |conn| hex_edge_cost(conn, route.train) }
         end
 
         def route_distance_str(route)
