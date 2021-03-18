@@ -654,7 +654,7 @@ module Engine
         end
 
         def stop_revenue(stop, phase, train)
-          return gray_revenue(stop) if NEW_GRAY_REVENUE_CENTERS.keys.include?(stop.hex.id)
+          return gray_revenue(stop) if NEW_GRAY_REVENUE_CENTERS.key?(stop.hex.id)
 
           stop.route_revenue(phase, train)
         end

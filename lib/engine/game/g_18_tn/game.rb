@@ -574,7 +574,7 @@ module Engine
           end
 
           if allowed_to_buy_during_operation_round_one?
-            candidates.reject! { |c| @round.company_sellers.values.include?(c.owner) }
+            candidates.reject! { |c| @round.company_sellers.value?(c.owner) }
           end
           candidates
         end
