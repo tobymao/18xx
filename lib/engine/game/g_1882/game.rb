@@ -603,7 +603,7 @@ module Engine
 
           @sc_reserve_trains = []
           trains.each do |train_name|
-            train = depot.upcoming.select { |t| t.name == train_name }.last
+            train = depot.upcoming.reverse.find { |t| t.name == train_name }
             @sc_reserve_trains << train
             depot.remove_train(train)
           end
