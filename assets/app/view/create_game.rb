@@ -268,8 +268,8 @@ module View
     def selected_game
       title = Native(@inputs[:title]).elm&.value
       title ||= lambda do
-        closest_title = Engine.closest_title(@title)
-        closest_title if visible_games.include?(closest_title)
+        closest = Engine.meta_by_title(@title)
+        closest.title if visible_games.include?(closest)
       end.call if @title
       title ||= visible_games.first.title
 
