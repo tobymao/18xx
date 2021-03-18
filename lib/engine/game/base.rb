@@ -2257,7 +2257,7 @@ module Engine
       end
 
       def count_available_tokens(corporation)
-        corporation.tokens.map { |t| t.used ? 0 : 1 }.sum
+        corporation.tokens.sum { |t| t.used ? 0 : 1 }
       end
 
       def token_string(corporation)

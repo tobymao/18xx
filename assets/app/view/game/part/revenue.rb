@@ -73,7 +73,7 @@ module View
         end
 
         def load_from_tile
-          @slots = @tile.cities.map(&:slots).sum + @tile.towns.size
+          @slots = @tile.cities.sum(&:slots) + @tile.towns.size
           @cities = @tile.cities.size
           stops = @tile.stops
           @hide = stops.any?(&:hide)
