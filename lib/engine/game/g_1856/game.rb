@@ -966,7 +966,7 @@ module Engine
           tokens.keys.each do |node|
             visited = tokens.reject { |token, _| token == node }
 
-            node.walk(visited: visited, corporation: nil) do |path, _vp, _ve|
+            node.walk(visited: visited, corporation: nil) do |path, _|
               return true if goal_hex_ids.include?(path.hex.id)
             end
           end
