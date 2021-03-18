@@ -163,6 +163,8 @@ module Engine
             grant_priority(player) if company == @first_comp
             @bids.reject! { |bidder, _| bidder == player }
             @companies.delete(company)
+
+            @game.after_buy_company(player, company)
           end
 
           def grant_priority(player)
