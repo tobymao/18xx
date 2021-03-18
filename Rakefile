@@ -6,7 +6,9 @@ unless ENV['RACK_ENV'] == 'production'
 
   # Specs
   RSpec::Core::RakeTask.new(:spec)
-  RuboCop::RakeTask.new
+  RuboCop::RakeTask.new do |task|
+    task.requires << 'rubocop-performance'
+  end
 
   task default: %i[spec rubocop]
 end

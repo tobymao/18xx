@@ -1,3 +1,5 @@
+require: rubocop-performance
+
 AllCops:
   TargetRubyVersion: 3.0
 
@@ -117,6 +119,73 @@ Naming/VariableNumber: # TODO enable & check offenses, default or snake_case?
   # EnforcedStyle: snake_case
 
 Naming/MethodParameterName:
+  Enabled: false
+
+Performance/AncestorsInclude:
+  Enabled: false
+
+Performance/BigDecimalWithNumericArgument:
+  Enabled: true
+
+Performance/BlockGivenWithExplicitBlock:
+  Enabled: true
+
+# https://github.com/rubocop/rubocop-performance/issues/99#issuecomment-582560228
+Performance/Caller:
+  Enabled: false
+
+# code readibility trumps performance improvement
+Performance/Casecmp:
+  Enabled: false
+
+# would add many lines, but does not improve performance significantly
+Performance/ChainArrayAllocation:
+  Enabled: false
+
+# code readibility trumps performance improvement
+Performance/CollectionLiteralInLoop:
+  Enabled: false
+
+Performance/ConstantRegexp:
+  Enabled: true
+
+Performance/MethodObjectAsBlock:
+  Enabled: true
+
+# works fine for numbers, might be problematic for strings
+# http://www.albertoalmagro.com/ruby-rangeinclude-vs-rangecover/
+Performance/RangeInclude:
+  Enabled: true
+
+# not safe, performance improvement negligible
+Performance/RedundantEqualityComparisonBlock:
+  Enabled: false
+
+Performance/RedundantSortBlock:
+  Enabled: true
+
+Performance/RedundantSplitRegexpArgument:
+  Enabled: true
+
+Performance/RedundantStringChars:
+  Enabled: true
+
+Performance/ReverseFirst:
+  Enabled: true
+
+Performance/SortReverse:
+  Enabled: true
+
+Performance/Squeeze:
+  Enabled: true
+
+Performance/StringInclude:
+  Enabled: true
+
+Performance/Sum:
+  Enabled: true
+
+Performance/TimesMap:
   Enabled: false
 
 Style/ArgumentsForwarding:
