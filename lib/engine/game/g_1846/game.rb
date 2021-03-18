@@ -888,7 +888,7 @@ module Engine
 
           steam = steamboat.id
           if route.corporation.assigned?(steam) && (port = stops.map(&:hex).find { |hex| hex.assigned?(steam) })
-            revenue += 20 * port.tile.icons.select { |icon| icon.name == 'port' }.size
+            revenue += 20 * port.tile.icons.count { |icon| icon.name == 'port' }
           end
 
           revenue += east_west_bonus(stops)[:revenue]

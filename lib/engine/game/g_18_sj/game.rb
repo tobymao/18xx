@@ -1276,7 +1276,7 @@ module Engine
           revenue = 0
           if route.corporation == sveabolaget&.owner &&
             (port = route.stops.map(&:hex).find { |hex| hex.assigned?(steam) })
-            revenue += 30 * port.tile.icons.select { |icon| icon.name == 'port' }.size
+            revenue += 30 * port.tile.icons.count { |icon| icon.name == 'port' }
           end
           if revenue.positive?
             bonus[:revenue] = revenue
