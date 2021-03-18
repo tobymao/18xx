@@ -416,11 +416,9 @@ module View
             },
           }
 
-          props[:attrs].merge!(
-            d: "M #{@begin_x} #{@begin_y} "\
+          props[:attrs][:d] = "M #{@begin_x} #{@begin_y} "\
             "A #{@arc_parameters[:radius]} #{@arc_parameters[:radius]} "\
-            "0 0 #{@arc_parameters[:sweep]} #{@end_x} #{@end_y}",
-          ) if @need_arc
+            "0 0 #{@arc_parameters[:sweep]} #{@end_x} #{@end_y}" if @need_arc
 
           # Calculate the correct x position of the terminal pointer
           d_width = @width.to_i / 2
