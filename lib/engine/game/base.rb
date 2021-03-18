@@ -1401,7 +1401,7 @@ module Engine
         # Find the highest tile that exists of this type in the tile list and duplicate it.
         # The highest one in the list should be the highest index anywhere.
         tiles = @_tiles.values.select { |t| t.name == tile.name }
-        new_tile = tiles.max { |a, b| a.index <=> b.index }.dup
+        new_tile = tiles.max_by(&:index).dup
         @tiles << new_tile
 
         @_tiles[new_tile.id] = new_tile
