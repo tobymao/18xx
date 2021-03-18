@@ -2563,7 +2563,7 @@ module Engine
           merthyr_tydfil_pontypool = {}
 
           routes.each do |route|
-            if route.train.local? && !route.connections.empty?
+            if route.train.local? && !route.chains.empty?
               local_token_hex.concat(route.visited_stops.select(&:city?).map { |n| n.hex.id })
             end
 
