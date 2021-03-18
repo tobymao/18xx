@@ -381,7 +381,7 @@ describe 'Assets' do
       html = render(app_route: "/game/#{needs[:game_data]['id']}#{suffix}", **needs)
       strings = Array(string)
       strings.each do |str|
-        if str =~ /^!!/
+        if /^!!/.match?(str)
           expect(html).not_to include(str.slice(2..))
         else
           expect(html).to include(str)

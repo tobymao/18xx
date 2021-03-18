@@ -199,7 +199,7 @@ class Assets
         next if game
       elsif !game
         next unless file.start_with?("#{lib_path}/#{ns}")
-        next if file =~ %r{^lib/engine/game/g_.*/}
+        next if %r{^lib/engine/game/g_.*/}.match?(file)
       end
 
       mtime = File.new(file).mtime
