@@ -60,9 +60,6 @@ module Engine
             # Refill the minors bidbox
             @game.bidbox_minors_refill!
 
-            # If the minors is empty and no minor was removed. Remove a train
-            remove_first_train if !remove_minor && @game.bidbox_minors.empty?
-
             # Increase player loans with 50% interest
             @game.add_interest_player_loans!
 

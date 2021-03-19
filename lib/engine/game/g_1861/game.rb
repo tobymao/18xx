@@ -868,13 +868,7 @@ module Engine
             hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) && city.tokens.none? }
           end
 
-          # @todo: this may need optimizing when changing connections for loading.
-          unconnected = open_locations.select { |hex| hex.connections.none? }
-          if unconnected.none?
-            []
-          else
-            unconnected
-          end
+          unconnected_hexes(open_locations)
         end
 
         def place_rsr_home_token

@@ -17,7 +17,7 @@ module Engine
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1822'
         GAME_LOCATION = 'Great Britain'
         GAME_PUBLISHER = :all_aboard_games
-        GAME_RULES_URL = 'https://docs.google.com/document/d/1yUap9cNais_Tapv6ZjudbvukmKPgRUhY32BOaqcH8Hw/edit'
+        GAME_RULES_URL = 'https://boardgamegeek.com/filepage/219065/1822-railways-great-britain-rules'
         GAME_TITLE = '1822MRS'
         GAME_IS_VARIANT = true
 

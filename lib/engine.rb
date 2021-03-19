@@ -53,15 +53,18 @@ module Engine
     title = title.upcase
 
     @fuzzy_titles[title] ||= GAME_METAS.max_by do |m|
+      class_name = m.name.split('::')[-2]
+
       titles = [
         m.title,
+        m.title.split(' '),
         m::GAME_LOCATION,
         m::GAME_SUBTITLE,
-        m.name.split('::')[-2],
+        class_name,
+        class_name.sub(/^G/, ''),
+        class_name.sub(/^G18/, ''),
         *m::GAME_ALIASES,
-      ].compact
-
-      titles = titles.concat(titles.map { |t| t.sub(/^G?18/, '') }).uniq
+      ].flatten.compact.uniq
 
       titles.map do |t|
         JaroWinkler.distance(title, t.upcase)

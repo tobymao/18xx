@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../../../step/dividend'
+require_relative 'dividend'
 require_relative 'connection'
 require_relative 'connection_token'
 require_relative 'connection_route'
@@ -10,7 +10,7 @@ module Engine
   module Game
     module G1870
       module Step
-        class ConnectionDividend < Engine::Step::Dividend
+        class ConnectionDividend < G1870::Step::Dividend
           include Connection
 
           DIVIDEND_TYPES = %i[payout withhold].freeze

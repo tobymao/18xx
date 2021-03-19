@@ -37,7 +37,7 @@ module Engine
 
         @log << "-- #{player.name} goes bankrupt and sells remaining shares --"
 
-        player.shares_by_corporation.each do |corporation, _|
+        player.shares_by_corporation(sorted: true).each do |corporation, _|
           next unless corporation.share_price # if a corporation has not parred
 
           # Do a potential repeated sell of bundles. This is important for NdM in 18MEX
