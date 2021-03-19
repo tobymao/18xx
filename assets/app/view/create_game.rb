@@ -16,6 +16,7 @@ module View
     needs :game_variants, default: nil, store: true
     needs :selected_variant, default: nil, store: true
     needs :title, default: nil
+    needs :production, default: nil
 
     def render_content
       @label_style = { display: 'block' }
@@ -322,7 +323,7 @@ module View
     end
 
     def visible_games
-      (Lib::Params['all'] ? Engine::GAME_METAS : Engine::VISIBLE_GAMES).sort
+      @visible_games ||= (@production ? Engine::VISIBLE_GAMES : Engine::GAME_METAS).sort
     end
 
     def selected_game
