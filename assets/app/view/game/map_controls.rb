@@ -47,8 +47,8 @@ module View
 
         halts = operating[operating.keys.max]&.halts
         routes = []
-        last_run.each do |train, connections|
-          routes << Engine::Route.new(@game, @game.phase, train, connection_hexes: connections,
+        last_run.each do |train, connection_hexes|
+          routes << Engine::Route.new(@game, @game.phase, train, connection_hexes: connection_hexes,
                                                                  routes: routes, num_halts: halts[train])
         end
 
