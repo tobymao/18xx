@@ -663,7 +663,9 @@ module Engine
 
           @corporations.reject! { |c| c.id == 'AL' }
 
-          return if optional_variant_start_pack 
+          return if optional_variant_start_pack
+
+          @available_corp_group = :groupA
 
           @corporations, @b_group_corporations = @corporations.partition do |corporation|
             puts "#{corporation.name} corporation.type = #{corporation.type}, #{corporation.type != :groupA}"
@@ -681,6 +683,7 @@ module Engine
           
           @corporations += @b_group_corporations
           @b_group_corporations = []
+          @available_corp_group = :groupB
         end
 
         def event_group_c_corps_available!
@@ -688,6 +691,7 @@ module Engine
           
           @corporations += @c_group_corporations
           @c_group_corporations = []
+          @available_corp_group = :groupC
         end
 
         def event_asteroid_league_formed!
@@ -703,6 +707,19 @@ module Engine
             'INDEPENDENT COMPANY'
           else
             'PRIVATE COMPANY'
+          end
+        end
+
+        def after_par(corporation)
+          super
+
+          return unless @corporations.all?(&:ipoed)
+
+          case @available_corp_group
+          when :groupA
+            event_group_b_corps_available!
+          when :groupB
+            event_group_c_corps_available!
           end
         end
 
