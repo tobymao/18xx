@@ -81,8 +81,8 @@ Lint/UnmodifiedReduceAccumulator:
 Lint/UselessMethodDefinition: # TODO enable & check offenses
   Enabled: false
 
-Lint/UselessTimes: # TODO enable & check offenses
-  Enabled: false
+Lint/UselessTimes:
+  Enabled: true
 
 Metrics/AbcSize:
   Enabled: false
