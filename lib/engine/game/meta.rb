@@ -20,7 +20,7 @@ module Engine
       GAME_SUPERTITLE = nil
       GAME_ALIASES = [].freeze
       GAME_VARIANTS = [].freeze
-      GAME_IS_VARIANT = false
+      GAME_IS_VARIANT_OF = nil
 
       # rules data that needs to be known to the engine without loading in the
       # full game class

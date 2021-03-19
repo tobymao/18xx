@@ -76,9 +76,10 @@ module View
 
           title = game.title
           title += " (#{game::GAME_LOCATION})" if game::GAME_LOCATION
+
           attrs = { value: game.title }
-          attrs[:selected] = true if game.title == closest_title  # mavit's
-          # attrs[:selected] = game.title == @selected_game&.title  # mine
+          attrs[:selected] = (game.title == closest_title) ||
+                             (game == Engine.meta_by_title(closest_title)::GAME_IS_VARIANT_OF)
 
           h(:option, { attrs: attrs }, title)
         end
@@ -183,7 +184,7 @@ module View
           label_text,
           type: 'checkbox',
           id: sym,
-          attrs: { value: sym },
+          attrs: { value: sym, checked: @selected_variant == variant },
           on: { input: toggle_game_variant(sym) },
         )])
       end
@@ -330,10 +331,16 @@ module View
       title = visible_games.first.title
       if @title
         closest = Engine.meta_by_title(@title)
-        title = closest.title if visible_games.include?(closest)
+
+        if visible_games.include?(closest)
+          title = closest.title
+        elsif (parent_game = Engine.meta_by_title(closest.title)::GAME_IS_VARIANT_OF)
+          title = parent_game.title
+          @selected_variant = parent_game.game_variants.values.find { |v| v[:title] == closest.title }
+        end
       end
 
-     Engine::GAME_META_BY_TITLE[title]
+     @selected_game = Engine::GAME_META_BY_TITLE[title]
     end
 
     def selected_game_or_variant

@@ -21,7 +21,8 @@ module Engine
           '1846 2p Variant Rules' => 'https://boardgamegeek.com/thread/1616729/draft-2-player-1846-rules-game-designer',
         }.freeze
         GAME_TITLE = '1846 2p Variant'
-        GAME_IS_VARIANT = true
+        GAME_IS_VARIANT_OF = G1846::Meta
+        GAME_ALIASES = ['1846 2p']
 
         PLAYER_RANGE = [2, 2].freeze
       end

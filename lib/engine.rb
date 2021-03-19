@@ -24,7 +24,7 @@ module Engine
   GAME_METAS = GAME_META_BY_TITLE.values
 
   VISIBLE_GAMES = GAME_METAS.select do |game_meta|
-    !game_meta::GAME_IS_VARIANT && %i[alpha beta production].include?(game_meta::DEV_STAGE)
+    !game_meta::GAME_IS_VARIANT_OF && %i[alpha beta production].include?(game_meta::DEV_STAGE)
   end
 
   def self.game_by_title(title)
@@ -50,6 +50,8 @@ module Engine
   end
 
   def self.closest_title(title)
+    return VISIBLE_GAMES.first.title unless title
+
     title = title.upcase
 
     @fuzzy_titles[title] ||= GAME_METAS.max_by do |m|
