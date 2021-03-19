@@ -674,12 +674,11 @@ module Engine
           @b_group_corporations, @c_group_corporations = @b_group_corporations.partition do |corporation|
             corporation.type == :groupB
           end
-
         end
 
         def event_group_b_corps_available!
           @log << 'Group B corporations are now available'
-          
+
           @corporations += @b_group_corporations
           @b_group_corporations = []
           @available_corp_group = :groupB
@@ -687,7 +686,7 @@ module Engine
 
         def event_group_c_corps_available!
           @log << 'Group C corporations are now available'
-          
+
           @corporations += @c_group_corporations
           @c_group_corporations = []
           @available_corp_group = :groupC
