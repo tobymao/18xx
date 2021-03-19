@@ -138,7 +138,7 @@ module View
           # assume can never have edge1=edge, edge0=non-edge
           if !edge0
             CENTER
-          elsif edge0.to_f != edge0.to_i.to_f
+          elsif edge0.is_a?(Float)
             # assume if edge0 is non-integer, then must be a line, no exits
             rot_edge1 = ((edge1 - edge0) + 0.5) % 6
             rot_regions = EDGE0P5_TO_EDGE_LINE_REGIONS[rot_edge1]

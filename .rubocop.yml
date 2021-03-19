@@ -57,8 +57,8 @@ Lint/EmptyBlock:
 Lint/EmptyClass:
   Enabled: true
 
-Lint/FloatComparison: # TODO enable & check offenses
-  Enabled: false
+Lint/FloatComparison:
+  Enabled: true
 
 Lint/MissingSuper: # TODO enable & check offenses
   Enabled: false

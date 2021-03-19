@@ -216,7 +216,7 @@ module Engine
       def gentle_curve?
         return @_gentle_curve if defined?(@_gentle_curve)
 
-        @_gentle_curve = a_num && b_num && (((d = (a_num - b_num).abs) == 2) || d == 4 || d == 2.5 || d == 3.5)
+        @_gentle_curve = a_num && b_num && [2, 2.5, 3.5, 4].include?((a_num - b_num).abs)
       end
 
       def rotate(ticks)
