@@ -67,8 +67,9 @@ module View
         children << render_tile_part(Part::Blocker)
         rendered_loc_name = render_tile_part(Part::LocationName) if @tile.location_name && (@tile.cities.size <= 1)
         @tile.reservations.each { |x| children << render_tile_part(Part::Reservation, reservation: x) }
-        children << render_tile_part(Part::Icons) unless @tile.icons.reject(&:large).empty?
-        children << render_tile_part(Part::LargeIcons) unless @tile.icons.select(&:large).empty?
+        large, normal = @tile.icons.partition(&:large)
+        children << render_tile_part(Part::Icons) unless normal.empty?
+        children << render_tile_part(Part::LargeIcons) unless large.empty?
 
         children << render_tile_part(Part::Assignments) unless @tile.hex&.assignments&.empty?
         # borders should always be the top layer
