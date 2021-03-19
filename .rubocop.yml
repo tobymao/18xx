@@ -191,8 +191,8 @@ Performance/TimesMap:
 Style/ArgumentsForwarding:
   Enabled: true
 
-Style/CaseLikeIf: # TODO enable & check offenses
-  Enabled: false
+Style/CaseLikeIf:
+  Enabled: true
 
 Style/ClassVars:
   Enabled: false

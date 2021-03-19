@@ -1591,9 +1591,10 @@ module Engine
 
           @trainless_major = []
           trainless.each do |c|
-            if c.type == :major
+            case c.type
+            when :major
               @trainless_major << c
-            elsif c.type == :minor
+            when :minor
               nationalize!(c)
             end
           end

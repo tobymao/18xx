@@ -19,9 +19,10 @@ module View
       def render
         @depot = @game.depot
 
-        if @layout == :discarded_trains
+        case @layout
+        when :discarded_trains
           @depot.discarded.empty? ? '' : discarded_trains
-        elsif @layout == :upcoming_trains
+        when :upcoming_trains
           upcoming_trains_card
         else
           h('div#game_info', render_body)
