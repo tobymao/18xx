@@ -4,3 +4,9 @@ hotseat01
  hotseat02
  * 4p game
  * tokens & hotels are laid. Incomplete game
+ hotseat03
+ * 4p game
+ * privates are used
+ * tokens are used
+ * hotels are used
+ * incomplete game
