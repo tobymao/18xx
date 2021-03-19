@@ -84,7 +84,7 @@ module View
           x = render_location[:x]
           y = render_location[:y]
 
-          angle = layout == :pointy ? -60 : 0
+          angle = layout == :pointy ? REVENUE_ANGLE : 0
 
           displacement = @edge ? REVENUE_EDGE_DISPLACEMENT : REVENUE_DISPLACEMENT
 
