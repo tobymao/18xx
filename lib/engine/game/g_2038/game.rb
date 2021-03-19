@@ -652,6 +652,11 @@ module Engine
           GAME_HEXES
         end
 
+        EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+          'group_b_corps_available' => ['Group B Corporations become available'],
+          'group_c_corps_available' => ['Group C Corporations become available'],
+        ).freeze
+
         def setup
           @al_corporation = corporation_by_id('AL')
           @al_corporation.capitalization = :incremental
