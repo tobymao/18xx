@@ -8,7 +8,7 @@ module View
       include Lib::Settings
       needs :show_starting_map, default: false, store: true
       needs :historical_routes, default: [], store: true
-      needs :historical_laid_hexes, default: [], store: true
+      needs :historical_laid_hexes, default: nil, store: true
       needs :game, default: nil, store: true
 
       def render
@@ -90,7 +90,7 @@ module View
             store(:historical_laid_hexes, last_laid_hexes(operator))
           else
             store(:historical_routes, [])
-            store(:historical_laid_hexes, [])
+            store(:historical_laid_hexes, nil)
           end
         end
 
