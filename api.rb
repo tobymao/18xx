@@ -142,6 +142,7 @@ class Api < Roda
       'app',
       javascript_include_tags: ASSETS.js_tags(titles || []),
       app_route: request.path,
+      production: PRODUCTION,
       **needs,
     )
 
