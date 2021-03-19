@@ -21,3 +21,31 @@ describe Engine do
     end
   end
 end
+
+module Engine
+  module Game
+    {
+      G1817 => ['1817'],
+      G1822 => ['1822'],
+      G1846 => %w[1846 46],
+      G1846TwoPlayerVariant => ['1846 2p Variant'],
+      G1849 => ['1849', 'Sicilian Railways'],
+      G1849Boot => ['1849Boot', '1849K2S', 'Two Sicilies'],
+      G1873 => ['Harzbahn 1873', '1873', '73'],
+      G1889 => ['1889', 'Shikoku', 'Shikoku: 1889', 'History of Shikoku Railways'],
+      G18Chesapeake => %w[18Chesapeake Chessie],
+      G18ChesapeakeOffTheRails => ['ChesapeakeOTR', 'OTR', '18Chesapeake: Off the Rails'],
+      G18LosAngeles => ['18 Los Angeles', '18LosAngeles', '18LA'],
+    }.each do |game_module, fuzzy_titles|
+      expected_title = game_module.const_get('Meta').title
+
+      describe 'closest_title' do
+        fuzzy_titles.each do |fuzzy|
+          it "matches '#{fuzzy}' to '#{expected_title}'" do
+            expect(Engine.closest_title(fuzzy)).to eq(expected_title)
+          end
+        end
+      end
+    end
+  end
+end

@@ -115,6 +115,7 @@ describe 'Assets' do
 
     it 'renders new_game' do
       expect(render(app_route: '/new_game')).to include('Create New Game')
+      expect(render(app_route: '/new_game', title: '1889')).to include('Shikoku: 1889')
     end
 
     it 'renders game' do
@@ -303,8 +304,8 @@ describe 'Assets' do
          ['Merger Round 4.2 (of 2) - Buy/Sell Shares Post Conversion',
           'New York, Susquehanna and Western Railway']]]],
       ['1817NA',
-       27_066,
-       [[nil, 'endgame', '1817NA: Phase 7 - Operating Round 5.2 (of 2) - Game Over - Bankruptcy']]],
+       25_351,
+       [[nil, 'endgame', '1817NA: Phase 7 - Acquisition Round 5.1 (of 2) - Game Over - Bankruptcy']]],
       ['18Chesapeake',
        1905,
        [[153, 'blocking_special_track', ['Lay Track for Columbia - Philadelphia Railroad']]]],

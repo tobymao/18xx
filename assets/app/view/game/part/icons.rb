@@ -25,7 +25,7 @@ module View
         end
 
         def load_from_tile
-          @icons = @tile.icons
+          @icons = @tile.icons.reject(&:large)
           @num_cities = @tile.cities.size
         end
 

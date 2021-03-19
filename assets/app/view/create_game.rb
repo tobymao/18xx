@@ -13,6 +13,9 @@ module View
     needs :user, default: nil, store: true
     needs :visible_optional_rules, default: nil, store: true
     needs :selected_game, default: nil, store: true
+    needs :game_variants, default: nil, store: true
+    needs :selected_variant, default: nil, store: true
+    needs :title, default: nil
 
     def render_content
       @label_style = { display: 'block' }
@@ -65,6 +68,7 @@ module View
     def render_inputs
       @min_p = {}
       @max_p = {}
+      closest_title = @title && Engine.closest_title(@title)
 
       game_options = visible_games.group_by { |game| game::DEV_STAGE }.flat_map do |dev_stage, game_list|
         option_list = game_list.map do |game|
@@ -72,7 +76,10 @@ module View
 
           title = game.title
           title += " (#{game::GAME_LOCATION})" if game::GAME_LOCATION
+
           attrs = { value: game.title }
+          attrs[:selected] = (game.title == closest_title) ||
+                             (game == Engine.meta_by_title(closest_title)::GAME_IS_VARIANT_OF)
 
           h(:option, { attrs: attrs }, title)
         end
@@ -85,7 +92,15 @@ module View
       end
 
       title_change = lambda do
+        @selected_game = Engine::GAME_META_BY_TITLE[Native(@inputs[:title]).elm&.value]
+
+        uncheck_game_variant
+        @selected_variant = nil
+        @game_variants = {}
+
+        uncheck_optional_rules
         @optional_rules = []
+
         update_inputs
       end
 
@@ -109,12 +124,41 @@ module View
           on: { input: -> { update_inputs } },
         ),
       ]
-      inputs << render_optional if (@visible_optional_rules ||= selected_game::OPTIONAL_RULES).any?
+
+      @game_variants = selected_game.game_variants
+      @visible_optional_rules = selected_game_or_variant::OPTIONAL_RULES
+      inputs << render_optional if !@game_variants.empty? || !@visible_optional_rules.empty?
 
       div_props = {}
       div_props[:style] = { display: 'none' } if @mode == :json
 
       h(:div, div_props, inputs)
+    end
+
+    def uncheck_game_variant
+      return unless @selected_variant
+
+      Native(@inputs[@selected_variant[:sym]]).elm&.checked = false
+    end
+
+    def uncheck_optional_rules
+      @visible_optional_rules&.each do |o_r|
+        Native(@inputs[o_r[:sym]]).elm&.checked = false
+      end
+    end
+
+    def toggle_game_variant(sym)
+      lambda do
+        uncheck_optional_rules
+        uncheck_game_variant if @selected_variant
+        @selected_variant =
+          if @selected_variant && (@selected_variant[:sym] == sym)
+            nil
+          else
+            selected_game.game_variants[sym]
+          end
+        update_inputs
+      end
     end
 
     def toggle_optional_rule(sym)
@@ -128,7 +172,24 @@ module View
     end
 
     def render_optional
-      children = @visible_optional_rules.map do |o_r|
+      game_variants = @game_variants.map do |sym, variant|
+        title = variant[:title]
+        @min_p[title], @max_p[title] = variant[:meta]::PLAYER_RANGE
+
+        stage = variant[:meta]::DEV_STAGE
+        stage_str = stage == :production ? '' : "(#{stage}) "
+        label_text = "#{stage_str}#{variant[:name]}: #{variant[:desc]}"
+
+        h(:li, [render_input(
+          label_text,
+          type: 'checkbox',
+          id: sym,
+          attrs: { value: sym, checked: @selected_variant == variant },
+          on: { input: toggle_game_variant(sym) },
+        )])
+      end
+
+      optional_rules = @visible_optional_rules.map do |o_r|
         label_text = "#{o_r[:short_name]}: #{o_r[:desc]}"
         h(:li, [render_input(
           label_text,
@@ -148,8 +209,8 @@ module View
       }
 
       h(:div, [
-          h(:label, 'Optional Rules'),
-          h(:ul, ul_props, children),
+          h(:label, 'Game Variants / Optional Rules'),
+          h(:ul, ul_props, [*game_variants, *optional_rules]),
         ])
     end
 
@@ -186,7 +247,7 @@ module View
     end
 
     def render_game_info
-      h(Game::GameMeta, game: @selected_game || selected_game)
+      h(Game::GameMeta, game: selected_game_or_variant)
     end
 
     def mode_selector
@@ -250,6 +311,8 @@ module View
     def params
       params = super
 
+      params['title'] = @selected_variant[:title] if @selected_variant
+
       game = Engine::GAME_META_BY_TITLE[params['title']]
       params[:optional_rules] = game::OPTIONAL_RULES
                                   .map { |o_r| o_r[:sym] }
@@ -263,12 +326,29 @@ module View
     end
 
     def selected_game
-      title = Native(@inputs[:title]).elm&.value || visible_games.first.title
-      Engine::GAME_META_BY_TITLE[title]
+      return @selected_game if @selected_game
+
+      title = visible_games.first.title
+      if @title
+        closest = Engine.meta_by_title(@title)
+
+        if visible_games.include?(closest)
+          title = closest.title
+        elsif (parent_game = Engine.meta_by_title(closest.title)::GAME_IS_VARIANT_OF)
+          title = parent_game.title
+          @selected_variant = parent_game.game_variants.values.find { |v| v[:title] == closest.title }
+        end
+      end
+
+      @selected_game = Engine::GAME_META_BY_TITLE[title]
+    end
+
+    def selected_game_or_variant
+      @selected_variant ? @selected_variant[:meta] : selected_game
     end
 
     def update_inputs
-      title = selected_game.title
+      title = selected_game_or_variant.title
 
       range = Native(@inputs[:max_players]).elm
       unless range.value == ''
@@ -280,6 +360,12 @@ module View
       end
 
       store(:selected_game, selected_game, skip: true)
+
+      store(:selected_variant, @selected_variant, skip: true)
+      store(:game_variants, selected_game.game_variants, skip: true)
+
+      `window.history.replaceState(window.history.state, null, '?title=' + encodeURIComponent(#{title}))`
+      root.store_app_route
 
       visible_rules = selected_game::OPTIONAL_RULES.reject do |rule|
         rule[:players] && !rule[:players].include?(@num_players)

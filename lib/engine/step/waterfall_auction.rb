@@ -190,7 +190,7 @@ module Engine
             "with a bid of #{@game.format_currency(price)}"
         end
 
-        @game.after_buy_company(player, company)
+        @game.after_buy_company(player, company, price)
       end
 
       private

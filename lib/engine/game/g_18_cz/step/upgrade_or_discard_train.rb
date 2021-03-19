@@ -89,7 +89,7 @@ module Engine
 
           def upgrade_infos(train, corporation)
             variant = train.variants.values.find { |item| @game.train_of_size?(item, corporation.type) }
-            return nil, nil unless variant
+            return nil, nil if !variant || @game.variant_is_rusted?(variant)
 
             upgrade_price = [(variant[:price] - train.price), 0].max
             [variant[:name], upgrade_price]

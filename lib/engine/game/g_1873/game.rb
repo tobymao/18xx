@@ -628,29 +628,26 @@ module Engine
           minor.owner = nil
 
           # flip token to closed side
-          open_name = "#{minor.id}_open"
           closed_image = "1873/#{minor.id}_closed"
-          @hexes.each do |hex|
-            if (icon = hex.tile.icons.find { |i| i.name == open_name })
-              hex.tile.icons[hex.tile.icons.find_index(icon)] =
-                Part::Icon.new(closed_image, nil, true, nil, hex.tile.preprinted)
-            end
-          end
+          tile = hex_by_id(minor.coordinates).tile
+          return unless (icon = tile.icons.find(&:large))
+
+          tile.icons[tile.icons.find_index(icon)] =
+            Part::Icon.new(closed_image, nil, true, nil, tile.preprinted, large: true, owner: nil)
         end
 
+        # also used for ownership change
         def open_mine!(minor)
-          @log << "#{minor.name} is opened"
+          @log << "#{minor.name} is opened" unless @minor_info[minor][:open]
           @minor_info[minor][:open] = true
 
           # flip token to open side
-          closed_name = "#{minor.id}_closed"
           open_image = "1873/#{minor.id}_open"
-          @hexes.each do |hex|
-            if (icon = hex.tile.icons.find { |i| i.name == closed_name })
-              hex.tile.icons[hex.tile.icons.find_index(icon)] =
-                Part::Icon.new(open_image, nil, true, nil, hex.tile.preprinted)
-            end
-          end
+          tile = hex_by_id(minor.coordinates).tile
+          return unless (icon = tile.icons.find(&:large))
+
+          tile.icons[tile.icons.find_index(icon)] =
+            Part::Icon.new(open_image, nil, true, nil, tile.preprinted, large: true, owner: minor.owner)
         end
 
         def insolvent!(entity)
@@ -1652,7 +1649,7 @@ module Engine
         def check_other(route)
           # make sure routes from same supertrain intersect
           super_routes = route.routes.reject do |r|
-            r.connections.empty? ||
+            r.chains.empty? ||
               @supertrains[route.train] != @supertrains[r.train]
           end
           check_intersection(@supertrains[route.train], super_routes)
@@ -2697,7 +2694,7 @@ module Engine
                 I8
               ] => 'town=revenue:0;upgrade=cost:150,terrain:mountain;icon=image:1873/NWE,sticky:1;'\
                   'border=edge:2,type:impassable;'\
-                  'icon=image:1873/8_open,sticky:1',
+                  'icon=image:1873/8_open,sticky:1,large:1',
               %w[
                 H7
               ] => 'upgrade=cost:100,terrain:mountain;icon=image:1873/NWE,sticky:1;'\
@@ -2714,7 +2711,7 @@ module Engine
                 G2
               ] => 'town=revenue:0;upgrade=cost:150,terrain:mountain;icon=image:1873/SHE,sticky:1;'\
                   'border=edge:4,type:impassable;border=edge:5,type:impassable;'\
-                  'icon=image:1873/9_open,sticky:1',
+                  'icon=image:1873/9_open,sticky:1,large:1',
               %w[
                 F3
               ] => 'town=revenue:0;upgrade=cost:150,terrain:mountain;icon=image:1873/SHE,sticky:1',
@@ -2771,24 +2768,24 @@ module Engine
                 D11
               ] => 'town=revenue:0;upgrade=cost:100,terrain:mountain;border=edge:1,type:impassable;'\
                 'border=edge:2,type:impassable;border=edge:3,type:impassable;'\
-                'icon=image:1873/4_open,sticky:1',
+                'icon=image:1873/4_open,sticky:1,large:1',
               %w[
                 D13
               ] => 'town=revenue:0;upgrade=cost:150,terrain:mountain;'\
                 'border=edge:2,type:impassable;border=edge:3,type:impassable;'\
-                'icon=image:1873/5_open,sticky:1',
+                'icon=image:1873/5_open,sticky:1,large:1',
               %w[
                 D17
               ] => 'town=revenue:0;',
               %w[
                 E8
               ] => 'town=revenue:0;upgrade=cost:100,terrain:mountain;border=edge:4,type:impassable;'\
-                'icon=image:1873/1_open,sticky:1',
+                'icon=image:1873/1_open,sticky:1,large:1',
               %w[
                 E10
               ] => 'town=revenue:0;upgrade=cost:100,terrain:mountain;border=edge:1,type:impassable;'\
                 'border=edge:4,type:impassable;'\
-                'icon=image:1873/6_open,sticky:1',
+                'icon=image:1873/6_open,sticky:1,large:1',
               %w[
                 E16
                 G12
@@ -2801,38 +2798,38 @@ module Engine
               %w[
                 I14
               ] => 'town=revenue:0;upgrade=cost:50,terrain:mountain;'\
-                'icon=image:1873/7_open,sticky:1',
+                'icon=image:1873/7_open,sticky:1,large:1',
               %w[
                 I16
               ] => 'town=revenue:0;upgrade=cost:100,terrain:mountain;'\
-                'icon=image:1873/3_open,sticky:1',
+                'icon=image:1873/3_open,sticky:1,large:1',
             },
             yellow: {
               %w[
                 D9
               ] => 'city=revenue:30;path=a:5,b:_0,track:narrow;upgrade=cost:50,terrain:mountain;'\
                 'border=edge:4,type:impassable;frame=color:purple;'\
-                'icon=image:1873/10_open,sticky:1',
+                'icon=image:1873/10_open,sticky:1,large:1',
               %w[
                 D15
               ] => 'city=revenue:40,slots:2;path=a:1,b:_0,track:narrow;path=a:3,b:_0,track:narrow;'\
                 'path=a:5,b:_0,track:narrow;label=B;frame=color:purple;'\
-                'icon=image:1873/12_open,sticky:1',
+                'icon=image:1873/12_open,sticky:1,large:1',
               %w[
                 E4
               ] => 'city=revenue:30;path=a:0,b:_0,track:narrow;upgrade=cost:50,terrain:mountain;'\
                 'border=edge:3,type:impassable;frame=color:purple;'\
-                'icon=image:1873/2_open,sticky:1',
+                'icon=image:1873/2_open,sticky:1,large:1',
               %w[
                 F11
               ] => 'city=revenue:30;path=a:5,b:_0,track:narrow;upgrade=cost:50,terrain:mountain;'\
                 'frame=color:purple;'\
-                'icon=image:1873/SM_open,sticky:1',
+                'icon=image:1873/SM_open,sticky:1,large:1',
               %w[
                 G4
               ] => 'city=revenue:30;path=a:0,b:_0,track:narrow;upgrade=cost:50,terrain:mountain;'\
                 'border=edge:1,type:impassable;border=edge:3,type:impassable;frame=color:purple;'\
-                'icon=image:1873/14_open,sticky:1',
+                'icon=image:1873/14_open,sticky:1,large:1',
             },
             green: {
               %w[
@@ -2856,7 +2853,7 @@ module Engine
                 F7
               ] => 'city=revenue:20;city=revenue:20;path=a:1,b:_0,track:narrow;'\
                 'path=a:3,b:_1,track:narrow;upgrade=cost:50,terrain:mountain;'\
-                'icon=image:1873/11_open,sticky:1',
+                'icon=image:1873/11_open,sticky:1,large:1',
               %w[
                 G6
               ] => 'city=revenue:40;path=a:2,b:_0,track:narrow;'\
@@ -2884,29 +2881,29 @@ module Engine
                 B13
               ] => 'city=slots:2,revenue:yellow_30|green_70|brown_60|gray_60;'\
                 'path=a:4,b:_0,track:narrow;path=a:5,b:_0,track:narrow;'\
-                'frame=color:purple;icon=image:1873/ZW_open,sticky:1',
+                'frame=color:purple;icon=image:1873/ZW_open,sticky:1,large:1',
               %w[
                 C4
               ] => 'city=revenue:yellow_50|green_80|brown_120|gray_150;path=a:5,b:_0,track:narrow',
               %w[
                 C6
               ] => 'town=revenue:0;path=a:0,b:_0,track:narrow;'\
-                'icon=image:1873/SBC6_open,sticky:1',
+                'icon=image:1873/SBC6_open,sticky:1,large:1',
               %w[
                 E18
               ] => 'city=revenue:30,slots:2;path=a:1,b:_0,track:narrow;'\
                 'path=a:2,b:_0,track:narrow;path=a:4,b:_0,track:narrow;'\
-                'icon=image:1873/PM_open,sticky:1',
+                'icon=image:1873/PM_open,sticky:1,large:1',
               %w[
                 F15
               ] => 'city=revenue:yellow_30|green_40|brown_60|gray_70;'\
                 'path=a:3,b:_0,track:narrow;path=a:4,b:_0;frame=color:purple;'\
-                'icon=image:1873/15_open,sticky:1',
+                'icon=image:1873/15_open,sticky:1,large:1',
               %w[
                 H9
               ] => 'city=revenue:30,slots:2;path=a:0,b:_0,track:narrow;'\
                 'path=a:1,b:_0,track:narrow;path=a:4,b:_0,track:narrow;'\
-                'icon=image:1873/SBH9_open,sticky:1',
+                'icon=image:1873/SBH9_open,sticky:1,large:1',
               %w[
                 I2
               ] => 'city=revenue:yellow_40|green_50|brown_80|gray_120;path=a:1,b:_0;'\
@@ -2919,7 +2916,7 @@ module Engine
                 I18
               ] => 'city=revenue:yellow_30|green_40|brown_60|gray_70;'\
                 'path=a:2,b:_0,track:narrow;frame=color:purple;'\
-                'icon=image:1873/13_open,sticky:1',
+                'icon=image:1873/13_open,sticky:1,large:1',
               %w[
                 J7
               ] => 'city=revenue:yellow_60|green_80|brown_120|gray_180;path=a:1,b:_0;'\
