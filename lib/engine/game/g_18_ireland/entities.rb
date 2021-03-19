@@ -4,6 +4,20 @@ module Engine
   module Game
     module G18Ireland
       module Entities
+        COMPANIES = [
+          {
+            name: 'Dalkey Atmospheric Railway',
+            value: 20,
+            revenue: 5,
+            desc: 'No company can build in the Wicklow hex until this company is either bought by'\
+            ' any company or closed.',
+            sym: 'DAR',
+            abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['G13'] }], # @todo: update to Wicklow
+            color: nil,
+          },
+          # @todo: add other privates
+        ].freeze
+
         CORPORATIONS = [
           {
             float_percent: 20,

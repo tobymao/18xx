@@ -24,7 +24,7 @@ module Engine
             @log << "#{player.name} sells all legally sellable shares"
 
             # player sells all normally allowed shares
-            player.shares_by_corporation.each do |c, _|
+            player.shares_by_corporation(sorted: true).each do |c, _|
               next unless (bundle = @game.sellable_bundles(player, c).max_by(&:price))
 
               price_before = bundle.shares.first.price

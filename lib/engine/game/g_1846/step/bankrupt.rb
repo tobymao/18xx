@@ -37,7 +37,7 @@ module Engine
             end
 
             # next the president sells all normally allowed shares
-            player.shares_by_corporation.each do |corporation, _|
+            player.shares_by_corporation(sorted: true).each do |corporation, _|
               next unless corporation.share_price # if a corporation has not parred
               next unless (bundle = @game.sellable_bundles(player, corporation).max_by(&:price))
 
@@ -46,7 +46,7 @@ module Engine
 
             # finally, the president sells all their shares, regardless of 50% and
             # presidency restrictions, not changing any share prices
-            player.shares_by_corporation.each do |corporation, shares|
+            player.shares_by_corporation(sorted: true).each do |corporation, shares|
               next unless corporation.share_price # if a corporation has not parred
               next if shares.empty?
 
