@@ -215,9 +215,8 @@ Style/DocumentDynamicEvalDefinition:
 Style/EmptyCaseCondition:
   Enabled: false
 
-Style/ExplicitBlockArgument: # TODO enable & check offenses, EnforcedStyle?
-  Enabled: false
-  # EnforcedStyle: no_braces
+Style/ExplicitBlockArgument:
+  Enabled: true
 
 Style/HashAsLastArrayItem: # TODO enable & check offenses
   Enabled: false

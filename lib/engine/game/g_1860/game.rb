@@ -1502,7 +1502,7 @@ module Engine
           [[a.first, b.first].min, [a.last, b.last].min]
         end
 
-        def node_distance_walk(node, distance, node_distances: {}, corporation: nil, path_distances: {})
+        def node_distance_walk(node, distance, node_distances: {}, corporation: nil, path_distances: {}, &block)
           return if smaller_or_equal_distance?(node_distances[node], distance)
 
           node_distances[node] = merge_distance(node_distances[node], distance)
@@ -1526,8 +1526,8 @@ module Engine
                   distance,
                   node_distances: node_distances,
                   corporation: corporation,
-                  path_distances: path_distances,
-                ) { |p, d| yield p, d }
+                  path_distances: path_distances, &block
+                )
               end
             end
           end
@@ -1537,7 +1537,7 @@ module Engine
           lanes0 && lanes1 && lanes1[0] == lanes0[0] && lanes1[1] == (lanes0[0] - lanes0[1] - 1)
         end
 
-        def path_distance_walk(path, distance, skip: nil, jskip: nil, path_distances: {})
+        def path_distance_walk(path, distance, skip: nil, jskip: nil, path_distances: {}, &block)
           return if smaller_or_equal_distance?(path_distances[path], distance)
 
           path_distances[path] = merge_distance(path_distances[path], distance)
@@ -1546,7 +1546,7 @@ module Engine
 
           if path.junction && path.junction != jskip
             path.junction.paths.each do |jp|
-              path_distance_walk(jp, distance, jskip: @junction, path_distances: path_distances) { |p| yield p }
+              path_distance_walk(jp, distance, jskip: @junction, path_distances: path_distances, &block)
             end
           end
 
@@ -1559,7 +1559,7 @@ module Engine
             neighbor.paths[np_edge].each do |np|
               next unless lane_match?(path.exit_lanes[edge], np.exit_lanes[np_edge])
 
-              path_distance_walk(np, distance, skip: np_edge, path_distances: path_distances) { |p| yield p }
+              path_distance_walk(np, distance, skip: np_edge, path_distances: path_distances, &block)
             end
           end
         end
@@ -1616,7 +1616,7 @@ module Engine
         end
 
         # needed for custom_blocks?
-        def custom_node_walk(node, visited: nil, on: nil, corporation: nil, visited_paths: {})
+        def custom_node_walk(node, visited: nil, on: nil, corporation: nil, visited_paths: {}, &block)
           return if visited&.[](node)
 
           visited = visited&.dup || {}
@@ -1635,8 +1635,8 @@ module Engine
                   visited: visited,
                   on: on,
                   corporation: corporation,
-                  visited_paths: visited_paths.merge(vp),
-                ) { |p| yield p }
+                  visited_paths: visited_paths.merge(vp), &block
+                )
               end
             end
           end
