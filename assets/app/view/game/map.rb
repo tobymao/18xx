@@ -41,7 +41,7 @@ module View
         actions = step&.actions(current_entity) || []
 
         laid_hexes = @historical_laid_hexes
-        laid_hexes = @game.round.laid_hexes if laid_hexes.none?
+        laid_hexes = @game.round.laid_hexes if laid_hexes.none? && @game.round.respond_to?(:laid_hexes)
 
         selected_hex = @tile_selector&.hex
         # Move the selected hex to the back so they render highest in z space
