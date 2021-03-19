@@ -340,7 +340,7 @@ module View
         end
       end
 
-     @selected_game = Engine::GAME_META_BY_TITLE[title]
+      @selected_game = Engine::GAME_META_BY_TITLE[title]
     end
 
     def selected_game_or_variant

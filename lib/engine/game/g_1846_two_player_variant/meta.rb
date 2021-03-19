@@ -22,7 +22,7 @@ module Engine
         }.freeze
         GAME_TITLE = '1846 2p Variant'
         GAME_IS_VARIANT_OF = G1846::Meta
-        GAME_ALIASES = ['1846 2p']
+        GAME_ALIASES = ['1846 2p'].freeze
 
         PLAYER_RANGE = [2, 2].freeze
       end
