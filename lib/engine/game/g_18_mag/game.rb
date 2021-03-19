@@ -649,7 +649,7 @@ module Engine
 
         # see if minor bought unused rail-cars
         def all_railcars_used?(routes)
-          return true if @round.rail_cars.empty?
+          return true if @round.rail_cars.empty? || loading
 
           @round.rail_cars.each do |rc|
             case rc

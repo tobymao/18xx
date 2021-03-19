@@ -20,8 +20,6 @@ module Engine
             check_connect(action, ability)
             ability.use!
 
-            ability.owner.close!
-
             @round.num_laid_track += 1 unless home
             @round.laid_hexes << action.hex
           end
