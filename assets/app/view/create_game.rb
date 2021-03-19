@@ -3,6 +3,8 @@
 require 'game_manager'
 require 'view/form'
 
+VISIBLE_GAMES = (ENV['RACK_ENV'] == 'production' ? Engine::VISIBLE_GAMES : Engine::GAME_METAS).sort
+
 module View
   class CreateGame < Form
     include GameManager
@@ -70,7 +72,7 @@ module View
       @max_p = {}
       closest_title = @title && Engine.closest_title(@title)
 
-      game_options = visible_games.group_by { |game| game::DEV_STAGE }.flat_map do |dev_stage, game_list|
+      game_options = VISIBLE_GAMES.group_by { |game| game::DEV_STAGE }.flat_map do |dev_stage, game_list|
         option_list = game_list.map do |game|
           @min_p[game.title], @max_p[game.title] = game::PLAYER_RANGE
 
@@ -321,18 +323,14 @@ module View
       params
     end
 
-    def visible_games
-      (Lib::Params['all'] ? Engine::GAME_METAS : Engine::VISIBLE_GAMES).sort
-    end
-
     def selected_game
       return @selected_game if @selected_game
 
-      title = visible_games.first.title
+      title = VISIBLE_GAMES.first.title
       if @title
         closest = Engine.meta_by_title(@title)
 
-        if visible_games.include?(closest)
+        if VISIBLE_GAMES.include?(closest)
           title = closest.title
         elsif (parent_game = Engine.meta_by_title(closest.title)::GAME_IS_VARIANT_OF)
           title = parent_game.title
