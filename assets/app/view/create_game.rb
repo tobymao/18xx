@@ -15,6 +15,7 @@ module View
     needs :selected_game, default: nil, store: true
     needs :game_variants, default: nil, store: true
     needs :selected_variant, default: nil, store: true
+    needs :title, default: nil
 
     def render_content
       @label_style = { display: 'block' }
@@ -67,6 +68,7 @@ module View
     def render_inputs
       @min_p = {}
       @max_p = {}
+      closest_title = @title && Engine.closest_title(@title)
 
       game_options = visible_games.group_by { |game| game::DEV_STAGE }.flat_map do |dev_stage, game_list|
         option_list = game_list.map do |game|
@@ -74,7 +76,10 @@ module View
 
           title = game.title
           title += " (#{game::GAME_LOCATION})" if game::GAME_LOCATION
-          attrs = { value: game.title, selected: game.title == @selected_game&.title }
+
+          attrs = { value: game.title }
+          attrs[:selected] = (game.title == closest_title) ||
+                             (game == Engine.meta_by_title(closest_title)::GAME_IS_VARIANT_OF)
 
           h(:option, { attrs: attrs }, title)
         end
@@ -179,7 +184,7 @@ module View
           label_text,
           type: 'checkbox',
           id: sym,
-          attrs: { value: sym },
+          attrs: { value: sym, checked: @selected_variant == variant },
           on: { input: toggle_game_variant(sym) },
         )])
       end
@@ -321,7 +326,21 @@ module View
     end
 
     def selected_game
-      @selected_game || Engine::GAME_META_BY_TITLE[visible_games.first.title]
+      return @selected_game if @selected_game
+
+      title = visible_games.first.title
+      if @title
+        closest = Engine.meta_by_title(@title)
+
+        if visible_games.include?(closest)
+          title = closest.title
+        elsif (parent_game = Engine.meta_by_title(closest.title)::GAME_IS_VARIANT_OF)
+          title = parent_game.title
+          @selected_variant = parent_game.game_variants.values.find { |v| v[:title] == closest.title }
+        end
+      end
+
+      @selected_game = Engine::GAME_META_BY_TITLE[title]
     end
 
     def selected_game_or_variant
@@ -344,6 +363,9 @@ module View
 
       store(:selected_variant, @selected_variant, skip: true)
       store(:game_variants, selected_game.game_variants, skip: true)
+
+      `window.history.replaceState(window.history.state, null, '?title=' + encodeURIComponent(#{title}))`
+      root.store_app_route
 
       visible_rules = selected_game::OPTIONAL_RULES.reject do |rule|
         rule[:players] && !rule[:players].include?(@num_players)

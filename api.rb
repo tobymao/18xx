@@ -125,6 +125,7 @@ class Api < Roda
 
   def render_with_games
     render(
+      title: request.params['title'],
       pin: request.params['pin'],
       games: Game.home_games(user, **request.params).map(&:to_h),
     )

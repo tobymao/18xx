@@ -115,6 +115,7 @@ describe 'Assets' do
 
     it 'renders new_game' do
       expect(render(app_route: '/new_game')).to include('Create New Game')
+      expect(render(app_route: '/new_game', title: '1889')).to include('Shikoku: 1889')
     end
 
     it 'renders game' do
