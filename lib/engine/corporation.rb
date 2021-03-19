@@ -76,12 +76,18 @@ module Engine
     end
 
     def <=>(other)
-      # corporation with higher share price, farthest on the right, and first position on the share price goes first
-      return 1 unless (sp = share_price)
-      return -1 unless (ops = other.share_price)
+      return 1 unless (self_key = sort_order_key)
+      return -1 unless (other_key = other.sort_order_key)
 
-      [ops.price, ops.coordinates.last, -ops.coordinates.first, -ops.corporations.find_index(other)] <=>
-      [sp.price, sp.coordinates.last, -sp.coordinates.first, -sp.corporations.find_index(self)]
+      other_key <=> self_key
+    end
+
+    # sort in operating order, then name: corporation with higher share price,
+    # farthest on the right, and first position on the share price goes first
+    def sort_order_key
+      return unless (sp = share_price)
+
+      [sp.price, sp.coordinates.last, -sp.coordinates.first, -(sp.corporations.find_index(self) || 0), name]
     end
 
     def counts_for_limit

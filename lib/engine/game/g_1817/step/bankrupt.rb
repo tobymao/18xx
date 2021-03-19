@@ -25,7 +25,7 @@ module Engine
             @log << "-- #{player.name} goes bankrupt and sells remaining shares --"
 
             # next the president sells all normally allowed shares
-            player.shares_by_corporation.each do |corporation, _|
+            player.shares_by_corporation(sorted: true).each do |corporation, _|
               next unless corporation.share_price # if a corporation has not parred
               next unless (bundle = @game.sellable_bundles(player, corporation).max_by(&:price))
 
@@ -33,7 +33,7 @@ module Engine
             end
 
             # finally, move all presidencies into the market, do not change presidency
-            player.shares_by_corporation.each do |corporation, shares|
+            player.shares_by_corporation(sorted: true).each do |corporation, shares|
               next if shares.empty?
 
               bundle = ShareBundle.new(shares)
