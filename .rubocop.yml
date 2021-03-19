@@ -233,8 +233,8 @@ Style/HashLikeCase: # code readibility: case trumps hash-lookup
 Style/HashTransformKeys:
   Enabled: true
 
-Style/HashTransformValues: # TODO enable & check offenses
-  Enabled: false
+Style/HashTransformValues:
+  Enabled: true
 
 Style/MultipleComparison:
   Enabled: false

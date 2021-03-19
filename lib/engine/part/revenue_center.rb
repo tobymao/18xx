@@ -28,7 +28,7 @@ module Engine
             @revenue_to_render = rev
             @revenue_to_render =
               if format
-                rev.map { |c, r| [c, format % r] }.to_h
+                rev.transform_values { |r| format % r }
               else
                 rev
               end
