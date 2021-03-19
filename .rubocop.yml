@@ -227,7 +227,7 @@ Style/HashEachMethods: # TODO enable & check offenses
 Style/HashExcept:
   Enabled: true
 
-Style/HashLikeCase: # TODO enable & check offenses
+Style/HashLikeCase: # code readibility: case trumps hash-lookup
   Enabled: false
 
 Style/HashTransformKeys: # TODO enable & check offenses
