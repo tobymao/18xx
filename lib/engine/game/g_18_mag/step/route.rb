@@ -78,7 +78,7 @@ module Engine
             item = action.item
             desc = item.description
             corp = case desc
-                   when /G\&C/
+                   when /G&C/
                      @game.gc
                    when /RABA/
                      @game.raba

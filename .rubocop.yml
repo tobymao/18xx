@@ -257,8 +257,8 @@ Style/RedundantArgument:
 Style/RedundantFreeze: # conflicts with Style/MutableConstant
   Enabled: false
 
-Style/RedundantRegexpEscape: # TODO enable & check offenses
-  Enabled: false
+Style/RedundantRegexpEscape:
+  Enabled: true
 
 Style/SlicingWithRange: # TODO enable & check offenses
   Enabled: false
