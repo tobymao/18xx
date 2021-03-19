@@ -124,6 +124,10 @@ module Engine
 
             company.value
           end
+
+          def show_map
+            true
+          end
         end
       end
     end

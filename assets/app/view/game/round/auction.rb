@@ -411,9 +411,10 @@ module View
 
         # show the map if there are minors to pick from
         def render_map
-          return nil unless @step.available.any?(&:minor?)
+          show = @step.available.any?(&:minor?) || (@step.respond_to?(:show_map) && @step.show_map)
+          return nil unless show
 
-          h(Game::Map, game: @game)
+          h(Game::Map, game: @game, opacity: 1.0)
         end
       end
     end
