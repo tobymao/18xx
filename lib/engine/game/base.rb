@@ -736,7 +736,7 @@ module Engine
         end
       end
 
-      def after_buy_company(player, company)
+      def after_buy_company(player, company, _price)
         abilities(company, :shares) do |ability|
           ability.shares.each do |share|
             if share.president
