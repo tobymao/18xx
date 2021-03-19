@@ -644,9 +644,7 @@ module Engine
 
         def num_trains(train)
           case train[:name]
-          when '6H'
-            4
-          when '8H'
+          when '6H', '8H'
             4
           when '16H'
             6

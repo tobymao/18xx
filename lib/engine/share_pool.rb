@@ -88,9 +88,8 @@ module Engine
       if price.zero?
         transfer_shares(bundle, entity)
       else
-        receiver = if corporation.capitalization == :incremental && bundle.owner.corporation? || bundle.owner.player?
-                     bundle.owner
-                   elsif corporation.capitalization == :escrow && bundle.owner.corporation?
+        receiver = if %i[escrow incremental].include?(corporation.capitalization) && bundle.owner.corporation? ||
+                       bundle.owner.player?
                      # When another game with escrow capitalization is implemented put this into @game
                      bundle.owner
                    else

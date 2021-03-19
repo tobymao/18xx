@@ -45,8 +45,8 @@ Lint/AmbiguousAssignment:
 Lint/ConstantDefinitionInBlock:
   Enabled: true
 
-Lint/DuplicateBranch: # TODO enable & check offenses
-  Enabled: false
+Lint/DuplicateBranch:
+  Enabled: true
 
 Lint/DuplicateRegexpCharacterClassElement:
   Enabled: true
