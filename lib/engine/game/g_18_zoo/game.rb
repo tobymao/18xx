@@ -1299,7 +1299,7 @@ module Engine
             G18ZOO::Step::Dividend,
             Engine::Step::DiscardTrain,
             G18ZOO::Step::BuyTrain,
-            [G18ZOO::Step::BuyCompany, blocks: true],
+            [G18ZOO::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 

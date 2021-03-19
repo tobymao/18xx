@@ -1052,7 +1052,7 @@ module Engine
             G1846::Step::Dividend,
             Engine::Step::DiscardTrain,
             G1846::Step::BuyTrain,
-            [G1846::Step::BuyCompany, blocks: true],
+            [G1846::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 

@@ -909,7 +909,7 @@ module Engine
             G18SJ::Step::Dividend,
             G18SJ::Step::SpecialBuyTrain,
             G18SJ::Step::BuyTrain,
-            [Engine::Step::BuyCompany, blocks: true],
+            [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 

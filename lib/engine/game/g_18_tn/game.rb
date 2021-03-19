@@ -543,7 +543,7 @@ module Engine
             G18TN::Step::Dividend,
             Engine::Step::DiscardTrain,
             Engine::Step::SingleDepotTrainBuy,
-            [Engine::Step::BuyCompany, blocks: true],
+            [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 

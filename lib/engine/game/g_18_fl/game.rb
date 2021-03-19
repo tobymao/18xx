@@ -605,7 +605,7 @@ module Engine
             G18FL::Step::Dividend,
             Engine::Step::DiscardTrain,
             G18FL::Step::BuyTrain,
-            [Engine::Step::BuyCompany, blocks: true],
+            [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 

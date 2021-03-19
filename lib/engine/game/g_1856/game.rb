@@ -1203,7 +1203,7 @@ module Engine
             Engine::Step::DiscardTrain,
             Engine::Step::BuyTrain,
             # Repay Loans - See Loan
-            [Engine::Step::BuyCompany, blocks: true],
+            [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 

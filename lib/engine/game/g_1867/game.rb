@@ -1390,11 +1390,11 @@ module Engine
             Engine::Step::Route,
             G1867::Step::Dividend,
             # The blocking buy company needs to be before loan operations
-            [G1867::Step::BuyCompanyPreloan, blocks: true],
+            [G1867::Step::BuyCompanyPreloan, { blocks: true }],
             G1867::Step::LoanOperations,
             Engine::Step::DiscardTrain,
             G1867::Step::BuyTrain,
-            [Engine::Step::BuyCompany, blocks: true],
+            [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 

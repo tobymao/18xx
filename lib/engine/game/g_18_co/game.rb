@@ -1176,7 +1176,7 @@ module Engine
           G18CO::Step::BuyTrain,
           Engine::Step::CorporateSellShares,
           G18CO::Step::IssueShares,
-          [Engine::Step::BuyCompany, blocks: true],
+          [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 

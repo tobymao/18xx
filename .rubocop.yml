@@ -218,8 +218,8 @@ Style/EmptyCaseCondition:
 Style/ExplicitBlockArgument:
   Enabled: true
 
-Style/HashAsLastArrayItem: # TODO enable & check offenses
-  Enabled: false
+Style/HashAsLastArrayItem:
+  Enabled: true
 
 Style/HashEachMethods: # TODO enable & check offenses
   Enabled: false
