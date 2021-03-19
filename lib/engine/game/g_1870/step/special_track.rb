@@ -17,6 +17,11 @@ module Engine
             extra_cost = owner == @game.ssw_corporation && home ? -20 : 0
             lay_tile(action, spender: spender, extra_cost: extra_cost)
 
+            # Record any track laid after the dividend step
+            if owner&.corporation? && (operating_info = owner.operating_history[[@game.turn, @round.round_num]])
+              operating_info.laid_hexes = @round.laid_hexes
+            end
+
             check_connect(action, ability)
             ability.use!
 
