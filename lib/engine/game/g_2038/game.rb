@@ -540,7 +540,7 @@ module Engine
             simple_logo: '1830/PRR.alt',
             tokens: [60, 100, 60, 100, 60, 100, 60, 100, 60, 100],
             coordinates: 'K9',
-            color: '#32763f',
+            color: '#40b1b9',
             type: 'groupA',
             reservation_color: nil,
           },
@@ -552,7 +552,7 @@ module Engine
             simple_logo: '1830/PRR.alt',
             tokens: [0, 100, 0, 100, 0, 100, 0, 100, 0, 100, 0, 100],
             coordinates: 'D8',
-            color: '#32763f',
+            color: '#d57e59',
             type: 'groupA',
             reservation_color: nil,
           },
@@ -564,7 +564,7 @@ module Engine
             simple_logo: '1830/NYC.alt',
             tokens: [60, 100, 60, 100, 60],
             coordinates: 'J1',
-            color: :"#474548",
+            color: :"#3eb75b",
             type: 'groupB',
             reservation_color: nil,
           },
@@ -576,7 +576,7 @@ module Engine
             simple_logo: '1830/CPR.alt',
             tokens: [60, 100, 60, 100, 60, 100, 60, 100, 60],
             coordinates: 'O1',
-            color: '#d1232a',
+            color: '#fefc5d',
             type: 'groupB',
             reservation_color: nil,
           },
@@ -588,7 +588,7 @@ module Engine
             simple_logo: '1830/BO.alt',
             tokens: [60, 100, 60, 100, 60, 100],
             coordinates: 'A1',
-            color: '#025aaa',
+            color: '#f66936',
             type: 'groupB',
             reservation_color: nil,
           },
@@ -600,7 +600,7 @@ module Engine
             simple_logo: '1830/CO.alt',
             tokens: [60, 100, 60, 100, 60, 100, 60],
             coordinates: 'J18',
-            color: :"#ADD8E6",
+            color: :"#cc4f8c",
             text_color: 'black',
             type: 'groupC',
             reservation_color: nil,
@@ -613,7 +613,7 @@ module Engine
             simple_logo: '1830/ERIE.alt',
             tokens: [60, 100, 60, 100, 60, 100, 60, 100],
             coordinates: 'F18',
-            color: :"#FFF500",
+            color: :"#f8b34b",
             text_color: 'black',
             type: 'groupC',
             reservation_color: nil,
@@ -626,7 +626,7 @@ module Engine
             simple_logo: '1830/NYNH.alt',
             tokens: [60, 75, 100, 60, 75, 100, 60, 75, 100, 60, 75, 100, 60, 75, 100],
             coordinates: 'H10',
-            color: :"#d88e39",
+            color: :"#fa3d58",
             type: 'groupD',
             reservation_color: nil,
           },
@@ -650,6 +650,45 @@ module Engine
 
         def game_hexes
           GAME_HEXES
+        end
+
+        def setup
+          @al_corporation = corporation_by_id('AL')
+          @al_corporation.capitalization = :incremental
+
+          @corporations.reject! { |c| c.id == 'AL' }
+
+          return if optional_variant_start_pack 
+
+          @corporations, @b_group_corporations = @corporations.partition do |corporation|
+            puts "#{corporation.name} corporation.type = #{corporation.type}, #{corporation.type != :groupA}"
+            corporation.type == :groupA
+          end
+
+          @b_group_corporations, @c_group_corporations = @b_group_corporations.partition do |corporation|
+            corporation.type == :groupB
+          end
+
+        end
+
+        def event_group_b_corps_available!
+          @log << 'Group B corporations are now available'
+          
+          @corporations += @b_group_corporations
+          @b_group_corporations = []
+        end
+
+        def event_group_c_corps_available!
+          @log << 'Group C corporations are now available'
+          
+          @corporations += @c_group_corporations
+          @c_group_corporations = []
+        end
+
+        def event_asteroid_league_formed!
+          @log << 'Asteroid League has formed'
+
+          @corporations << @al_corporation
         end
 
         def company_header(company)
@@ -692,6 +731,10 @@ module Engine
 
         def optional_short_game
           @optional_rules&.include?(:optional_short_game)
+        end
+
+        def optional_variant_start_pack
+          @optional_rules&.include?(:optional_variant_start_pack)
         end
       end
     end
