@@ -19,7 +19,7 @@ module View
       Engine::Tile::BROWN.keys,
       Engine::Tile::GRAY.keys,
       Engine::Tile::RED.keys,
-    ].reduce(&:+)
+    ].flatten
 
     def render
       match = @route.match(ROUTE_FORMAT)
