@@ -668,7 +668,6 @@ module Engine
           @available_corp_group = :groupA
 
           @corporations, @b_group_corporations = @corporations.partition do |corporation|
-            puts "#{corporation.name} corporation.type = #{corporation.type}, #{corporation.type != :groupA}"
             corporation.type == :groupA
           end
 
