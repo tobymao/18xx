@@ -263,8 +263,8 @@ Style/RedundantRegexpEscape:
 Style/SlicingWithRange: # TODO enable & check offenses
   Enabled: false
 
-Style/SoleNestedConditional: # TODO enable & check offenses
-  Enabled: false
+Style/SoleNestedConditional:
+  Enabled: true
 
 Style/StringConcatenation:
   Enabled: false
