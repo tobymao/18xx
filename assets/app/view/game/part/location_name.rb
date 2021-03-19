@@ -150,7 +150,7 @@ module View
 
         # split the location name to render across multiple lines; each "segment"
         # that is returned gets rendered on its own line
-        def self.name_segments(name, max_size: 13)
+        def self.name_segments(name, max_size: 12)
           return [name] if name.size <= max_size
 
           segments = name.split(' ')

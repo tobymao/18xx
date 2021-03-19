@@ -16,7 +16,7 @@ module View
         needs :width, default: 8
 
         REVENUE_DISPLACEMENT = 42
-        REVENUE_EDGE_DISPLACEMENT = 38
+        REVENUE_EDGE_DISPLACEMENT = 25
         REVENUE_ANGLE = -60
 
         REVENUE_REGIONS = {
