@@ -230,8 +230,8 @@ Style/HashExcept:
 Style/HashLikeCase: # code readibility: case trumps hash-lookup
   Enabled: false
 
-Style/HashTransformKeys: # TODO enable & check offenses
-  Enabled: false
+Style/HashTransformKeys:
+  Enabled: true
 
 Style/HashTransformValues: # TODO enable & check offenses
   Enabled: false

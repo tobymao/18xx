@@ -916,9 +916,9 @@ module Engine
 
           new_hexes = {}
           HEXES.keys.each do |color|
-            new_map = self.class::HEXES[color].map do |coords, tile_string|
-              [coords - OPTION_REMOVE_HEXES, tile_string]
-            end.to_h
+            new_map = self.class::HEXES[color].transform_keys do |coords|
+              coords - OPTION_REMOVE_HEXES
+            end
             OPTION_ADD_HEXES.each { |coords, tile_str| new_map[coords] = tile_str } if color == :white
 
             new_hexes[color] = new_map
