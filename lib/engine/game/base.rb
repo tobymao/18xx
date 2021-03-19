@@ -819,7 +819,7 @@ module Engine
       end
 
       def sellable_bundles(player, corporation)
-        return [] unless @round.active_step&.respond_to?(:can_sell?)
+        return [] unless @round.active_step.respond_to?(:can_sell?)
 
         bundles = bundles_for_corporation(player, corporation)
         bundles.select { |bundle| @round.active_step.can_sell?(player, bundle) }
@@ -2318,7 +2318,7 @@ module Engine
         current_step = ability_blocking_step
         current_step_name = current_step&.type
 
-        if ability.type == :tile_lay && ability.must_lay_all && current_step&.is_a?(Step::SpecialTrack)
+        if ability.type == :tile_lay && ability.must_lay_all && current_step.is_a?(Step::SpecialTrack)
           return current_step.company == ability.owner
         end
 

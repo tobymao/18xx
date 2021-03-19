@@ -1355,7 +1355,7 @@ module Engine
         end
 
         def sellable_bundles(player, corporation)
-          return [] unless @round.active_step&.respond_to?(:can_sell?)
+          return [] unless @round.active_step.respond_to?(:can_sell?)
 
           bundles = bundles_for_corporation(player, corporation)
           if !corporation.operated? && corporation != @mhe

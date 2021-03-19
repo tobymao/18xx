@@ -93,7 +93,7 @@ module View
         end
 
         def on_click(event)
-          return if @tile_selector&.is_a?(Lib::TileSelector)
+          return if @tile_selector.is_a?(Lib::TileSelector)
 
           step = @game.round.active_step(@selected_company)
           entity = @selected_company || step.current_entity

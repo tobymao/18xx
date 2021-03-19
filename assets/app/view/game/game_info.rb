@@ -235,7 +235,7 @@ module View
           show_rusts_inline = true
           rusts = nil
           names_to_prices.keys.each do |key|
-            next if !rust_schedule[key] && rust_schedule.keys.none? { |item| item&.is_a?(Array) && item&.include?(key) }
+            next if !rust_schedule[key] && rust_schedule.keys.none? { |item| item.is_a?(Array) && item&.include?(key) }
 
             rusts ||= []
 

@@ -66,8 +66,8 @@ Lint/MissingSuper: # TODO enable & check offenses
 Lint/NoReturnInBeginEndBlocks:
   Enabled: true
 
-Lint/RedundantSafeNavigation: # TODO enable & check offenses
-  Enabled: false
+Lint/RedundantSafeNavigation:
+  Enabled: true
 
 Lint/ToEnumArguments:
   Enabled: true
