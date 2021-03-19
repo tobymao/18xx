@@ -27,10 +27,12 @@ module Engine
     {
       G1817 => ['1817'],
       G1822 => ['1822'],
+      G1830 => %w[1830 Robber],
       G1846 => %w[1846 46],
       G1846TwoPlayerVariant => ['1846 2p Variant'],
       G1849 => ['1849', 'Sicilian Railways'],
       G1849Boot => ['1849Boot', '1849K2S', 'Two Sicilies'],
+      G1860 => %w[1860 Wight],
       G1873 => ['Harzbahn 1873', '1873', '73'],
       G1889 => ['1889', 'Shikoku', 'Shikoku: 1889', 'History of Shikoku Railways'],
       G18Chesapeake => %w[18Chesapeake Chessie],
