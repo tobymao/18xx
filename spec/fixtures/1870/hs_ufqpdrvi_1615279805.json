@@ -11615,19 +11615,10 @@
       "created_at": 1615864795
     },
     {
-      "type": "place_token",
-      "entity": "FW",
-      "entity_type": "corporation",
-      "id": 803,
-      "created_at": 1615864796,
-      "city": "14-1-0",
-      "slot": 1
-    },
-    {
       "type": "run_routes",
       "entity": "FW",
       "entity_type": "corporation",
-      "id": 804,
+      "id": 803,
       "created_at": 1615864804,
       "routes": [
         {
@@ -11672,16 +11663,8 @@
       "type": "dividend",
       "entity": "FW",
       "entity_type": "corporation",
-      "id": 805,
+      "id": 804,
       "created_at": 1615864806,
-      "kind": "payout"
-    },
-    {
-      "type": "pass",
-      "entity": "FW",
-      "entity_type": "corporation",
-      "id": 806,
-      "created_at": 1615864808,
       "auto_actions": [
         {
           "type": "destination_connection",
@@ -11697,13 +11680,14 @@
           "created_at": 1615864808,
           "corporations": []
         }
-      ]
+      ],
+      "kind": "payout"
     },
     {
       "type": "lay_tile",
       "entity": "MKT",
       "entity_type": "corporation",
-      "id": 807,
+      "id": 805,
       "created_at": 1615864815,
       "hex": "I6",
       "tile": "45-0",
@@ -12801,14 +12785,6 @@
       "entity_type": "corporation",
       "id": 856,
       "created_at": 1615865154,
-      "kind": "payout"
-    },
-    {
-      "type": "pass",
-      "entity": "FW",
-      "entity_type": "corporation",
-      "id": 857,
-      "created_at": 1615865159,
       "auto_actions": [
         {
           "type": "destination_connection",
@@ -12824,20 +12800,21 @@
           "created_at": 1615865159,
           "corporations": []
         }
-      ]
+      ],
+      "kind": "payout"
     },
     {
       "type": "pass",
       "entity": "MKT",
       "entity_type": "corporation",
-      "id": 858,
+      "id": 857,
       "created_at": 1615865178
     },
     {
       "type": "run_routes",
       "entity": "MKT",
       "entity_type": "corporation",
-      "id": 859,
+      "id": 858,
       "created_at": 1615865181,
       "routes": [
         {
@@ -12889,7 +12866,7 @@
       "type": "dividend",
       "entity": "MKT",
       "entity_type": "corporation",
-      "id": 860,
+      "id": 859,
       "created_at": 1615865182,
       "kind": "payout"
     },
@@ -12897,7 +12874,7 @@
       "type": "pass",
       "entity": "MKT",
       "entity_type": "corporation",
-      "id": 861,
+      "id": 860,
       "created_at": 1615865183,
       "auto_actions": [
         {
@@ -12920,14 +12897,14 @@
       "type": "pass",
       "entity": "SLSF",
       "entity_type": "corporation",
-      "id": 862,
+      "id": 861,
       "created_at": 1615865185
     },
     {
       "type": "run_routes",
       "entity": "SLSF",
       "entity_type": "corporation",
-      "id": 863,
+      "id": 862,
       "created_at": 1615865199,
       "routes": [
         {
@@ -12981,7 +12958,7 @@
       "type": "dividend",
       "entity": "SLSF",
       "entity_type": "corporation",
-      "id": 864,
+      "id": 863,
       "created_at": 1615865201,
       "kind": "payout"
     },
@@ -12989,7 +12966,7 @@
       "type": "pass",
       "entity": "SLSF",
       "entity_type": "corporation",
-      "id": 865,
+      "id": 864,
       "created_at": 1615865202,
       "auto_actions": [
         {
@@ -13012,14 +12989,14 @@
       "type": "pass",
       "entity": "TP",
       "entity_type": "corporation",
-      "id": 866,
+      "id": 865,
       "created_at": 1615865210
     },
     {
       "type": "run_routes",
       "entity": "TP",
       "entity_type": "corporation",
-      "id": 867,
+      "id": 866,
       "created_at": 1615865212,
       "routes": [
         {
@@ -13071,7 +13048,7 @@
       "type": "dividend",
       "entity": "TP",
       "entity_type": "corporation",
-      "id": 868,
+      "id": 867,
       "created_at": 1615865213,
       "kind": "payout"
     },
@@ -13079,7 +13056,7 @@
       "type": "pass",
       "entity": "TP",
       "entity_type": "corporation",
-      "id": 869,
+      "id": 868,
       "created_at": 1615865215,
       "auto_actions": [
         {
@@ -13102,14 +13079,14 @@
       "type": "pass",
       "entity": "SP",
       "entity_type": "corporation",
-      "id": 870,
+      "id": 869,
       "created_at": 1615865229
     },
     {
       "type": "run_routes",
       "entity": "SP",
       "entity_type": "corporation",
-      "id": 871,
+      "id": 870,
       "created_at": 1615865232,
       "routes": [
         {
@@ -13182,7 +13159,7 @@
       "type": "dividend",
       "entity": "SP",
       "entity_type": "corporation",
-      "id": 872,
+      "id": 871,
       "created_at": 1615865234,
       "auto_actions": [
         {
@@ -13206,14 +13183,14 @@
       "type": "pass",
       "entity": "SSW",
       "entity_type": "corporation",
-      "id": 873,
+      "id": 872,
       "created_at": 1615865243
     },
     {
       "type": "run_routes",
       "entity": "SSW",
       "entity_type": "corporation",
-      "id": 874,
+      "id": 873,
       "created_at": 1615865245,
       "routes": [
         {
@@ -13251,7 +13228,7 @@
       "type": "dividend",
       "entity": "SSW",
       "entity_type": "corporation",
-      "id": 875,
+      "id": 874,
       "created_at": 1615865246,
       "kind": "payout"
     },
@@ -13259,7 +13236,7 @@
       "type": "pass",
       "entity": "SSW",
       "entity_type": "corporation",
-      "id": 876,
+      "id": 875,
       "created_at": 1615865248,
       "auto_actions": [
         {
@@ -13282,21 +13259,21 @@
       "type": "pass",
       "entity": "GMO",
       "entity_type": "corporation",
-      "id": 877,
+      "id": 876,
       "created_at": 1615865250
     },
     {
       "type": "pass",
       "entity": "GMO",
       "entity_type": "corporation",
-      "id": 878,
+      "id": 877,
       "created_at": 1615865252
     },
     {
       "type": "run_routes",
       "entity": "GMO",
       "entity_type": "corporation",
-      "id": 879,
+      "id": 878,
       "created_at": 1615865254,
       "routes": [
         {
@@ -13343,7 +13320,7 @@
       "type": "dividend",
       "entity": "GMO",
       "entity_type": "corporation",
-      "id": 880,
+      "id": 879,
       "created_at": 1615865255,
       "kind": "payout"
     },
@@ -13351,7 +13328,7 @@
       "type": "pass",
       "entity": "GMO",
       "entity_type": "corporation",
-      "id": 881,
+      "id": 880,
       "created_at": 1615865256,
       "auto_actions": [
         {
@@ -13374,14 +13351,14 @@
       "type": "pass",
       "entity": "ATSF",
       "entity_type": "corporation",
-      "id": 882,
+      "id": 881,
       "created_at": 1615865258
     },
     {
       "type": "run_routes",
       "entity": "ATSF",
       "entity_type": "corporation",
-      "id": 883,
+      "id": 882,
       "created_at": 1615865259,
       "routes": [
         {
@@ -13437,7 +13414,7 @@
       "type": "dividend",
       "entity": "ATSF",
       "entity_type": "corporation",
-      "id": 884,
+      "id": 883,
       "created_at": 1615865261,
       "kind": "payout"
     },
@@ -13445,7 +13422,7 @@
       "type": "pass",
       "entity": "ATSF",
       "entity_type": "corporation",
-      "id": 885,
+      "id": 884,
       "created_at": 1615865262,
       "auto_actions": [
         {
@@ -13468,14 +13445,14 @@
       "type": "pass",
       "entity": "IC",
       "entity_type": "corporation",
-      "id": 886,
+      "id": 885,
       "created_at": 1615865264
     },
     {
       "type": "run_routes",
       "entity": "IC",
       "entity_type": "corporation",
-      "id": 887,
+      "id": 886,
       "created_at": 1615865266,
       "routes": [
         {
@@ -13526,7 +13503,7 @@
       "type": "dividend",
       "entity": "IC",
       "entity_type": "corporation",
-      "id": 888,
+      "id": 887,
       "created_at": 1615865267,
       "auto_actions": [
         {
@@ -13550,21 +13527,21 @@
       "type": "pass",
       "entity": "MP",
       "entity_type": "corporation",
-      "id": 889,
+      "id": 888,
       "created_at": 1615865281
     },
     {
       "type": "pass",
       "entity": "MP",
       "entity_type": "corporation",
-      "id": 890,
+      "id": 889,
       "created_at": 1615865283
     },
     {
       "type": "run_routes",
       "entity": "MP",
       "entity_type": "corporation",
-      "id": 891,
+      "id": 890,
       "created_at": 1615865346,
       "routes": [
         {
@@ -13664,7 +13641,7 @@
       "type": "dividend",
       "entity": "MP",
       "entity_type": "corporation",
-      "id": 892,
+      "id": 891,
       "created_at": 1615865348,
       "auto_actions": [
         {
@@ -13688,14 +13665,14 @@
       "type": "pass",
       "entity": "FW",
       "entity_type": "corporation",
-      "id": 893,
+      "id": 892,
       "created_at": 1615865357
     },
     {
       "type": "run_routes",
       "entity": "FW",
       "entity_type": "corporation",
-      "id": 894,
+      "id": 893,
       "created_at": 1615865362,
       "routes": [
         {
@@ -13740,16 +13717,8 @@
       "type": "dividend",
       "entity": "FW",
       "entity_type": "corporation",
-      "id": 895,
+      "id": 894,
       "created_at": 1615865364,
-      "kind": "payout"
-    },
-    {
-      "type": "pass",
-      "entity": "FW",
-      "entity_type": "corporation",
-      "id": 896,
-      "created_at": 1615865369,
       "auto_actions": [
         {
           "type": "destination_connection",
@@ -13758,34 +13727,35 @@
           "created_at": 1615865369,
           "corporations": []
         }
-      ]
+      ],
+      "kind": "payout"
     },
     {
       "type": "pass",
       "entity": "Player 1",
       "entity_type": "player",
-      "id": 897,
+      "id": 895,
       "created_at": 1615865373
     },
     {
       "type": "pass",
       "entity": "Player 2",
       "entity_type": "player",
-      "id": 898,
+      "id": 896,
       "created_at": 1615865374
     },
     {
       "type": "pass",
       "entity": "Player 3",
       "entity_type": "player",
-      "id": 899,
+      "id": 897,
       "created_at": 1615865375
     },
     {
       "type": "pass",
       "entity": "Player 4",
       "entity_type": "player",
-      "id": 900,
+      "id": 898,
       "created_at": 1615865376,
       "auto_actions": [
         {
@@ -13801,14 +13771,14 @@
       "type": "pass",
       "entity": "MKT",
       "entity_type": "corporation",
-      "id": 901,
+      "id": 899,
       "created_at": 1615865378
     },
     {
       "type": "run_routes",
       "entity": "MKT",
       "entity_type": "corporation",
-      "id": 902,
+      "id": 900,
       "created_at": 1615866630,
       "routes": [
         {
@@ -13860,7 +13830,7 @@
       "type": "dividend",
       "entity": "MKT",
       "entity_type": "corporation",
-      "id": 903,
+      "id": 901,
       "created_at": 1615866632,
       "kind": "payout"
     },
@@ -13868,7 +13838,7 @@
       "type": "pass",
       "entity": "MKT",
       "entity_type": "corporation",
-      "id": 904,
+      "id": 902,
       "created_at": 1615866633,
       "auto_actions": [
         {
@@ -13891,14 +13861,14 @@
       "type": "pass",
       "entity": "SLSF",
       "entity_type": "corporation",
-      "id": 905,
+      "id": 903,
       "created_at": 1615866635
     },
     {
       "type": "run_routes",
       "entity": "SLSF",
       "entity_type": "corporation",
-      "id": 906,
+      "id": 904,
       "created_at": 1615866636,
       "routes": [
         {
@@ -13952,7 +13922,7 @@
       "type": "dividend",
       "entity": "SLSF",
       "entity_type": "corporation",
-      "id": 907,
+      "id": 905,
       "created_at": 1615866638,
       "kind": "payout"
     },
@@ -13960,7 +13930,7 @@
       "type": "pass",
       "entity": "SLSF",
       "entity_type": "corporation",
-      "id": 908,
+      "id": 906,
       "created_at": 1615866642,
       "auto_actions": [
         {
@@ -13983,14 +13953,14 @@
       "type": "pass",
       "entity": "TP",
       "entity_type": "corporation",
-      "id": 909,
+      "id": 907,
       "created_at": 1615866644
     },
     {
       "type": "run_routes",
       "entity": "TP",
       "entity_type": "corporation",
-      "id": 910,
+      "id": 908,
       "created_at": 1615866647,
       "routes": [
         {
@@ -14042,7 +14012,7 @@
       "type": "dividend",
       "entity": "TP",
       "entity_type": "corporation",
-      "id": 911,
+      "id": 909,
       "created_at": 1615866650,
       "kind": "payout"
     },
@@ -14050,7 +14020,7 @@
       "type": "pass",
       "entity": "TP",
       "entity_type": "corporation",
-      "id": 912,
+      "id": 910,
       "created_at": 1615866774,
       "auto_actions": [
         {
@@ -14073,14 +14043,14 @@
       "type": "pass",
       "entity": "SP",
       "entity_type": "corporation",
-      "id": 913,
+      "id": 911,
       "created_at": 1615866775
     },
     {
       "type": "run_routes",
       "entity": "SP",
       "entity_type": "corporation",
-      "id": 914,
+      "id": 912,
       "created_at": 1615866778,
       "routes": [
         {
@@ -14153,7 +14123,7 @@
       "type": "dividend",
       "entity": "SP",
       "entity_type": "corporation",
-      "id": 915,
+      "id": 913,
       "created_at": 1615866780,
       "auto_actions": [
         {
@@ -14177,14 +14147,14 @@
       "type": "pass",
       "entity": "SSW",
       "entity_type": "corporation",
-      "id": 916,
+      "id": 914,
       "created_at": 1615866782
     },
     {
       "type": "run_routes",
       "entity": "SSW",
       "entity_type": "corporation",
-      "id": 917,
+      "id": 915,
       "created_at": 1615866783,
       "routes": [
         {
@@ -14222,7 +14192,7 @@
       "type": "dividend",
       "entity": "SSW",
       "entity_type": "corporation",
-      "id": 918,
+      "id": 916,
       "created_at": 1615866785,
       "kind": "payout"
     },
@@ -14230,7 +14200,7 @@
       "type": "pass",
       "entity": "SSW",
       "entity_type": "corporation",
-      "id": 919,
+      "id": 917,
       "created_at": 1615866787,
       "auto_actions": [
         {
@@ -14253,21 +14223,21 @@
       "type": "pass",
       "entity": "GMO",
       "entity_type": "corporation",
-      "id": 920,
+      "id": 918,
       "created_at": 1615866789
     },
     {
       "type": "pass",
       "entity": "GMO",
       "entity_type": "corporation",
-      "id": 921,
+      "id": 919,
       "created_at": 1615866790
     },
     {
       "type": "run_routes",
       "entity": "GMO",
       "entity_type": "corporation",
-      "id": 922,
+      "id": 920,
       "created_at": 1615866793,
       "routes": [
         {
@@ -14314,7 +14284,7 @@
       "type": "dividend",
       "entity": "GMO",
       "entity_type": "corporation",
-      "id": 923,
+      "id": 921,
       "created_at": 1615866800,
       "kind": "payout"
     },
@@ -14322,7 +14292,7 @@
       "type": "pass",
       "entity": "GMO",
       "entity_type": "corporation",
-      "id": 924,
+      "id": 922,
       "created_at": 1615866802,
       "auto_actions": [
         {
@@ -14345,14 +14315,14 @@
       "type": "pass",
       "entity": "ATSF",
       "entity_type": "corporation",
-      "id": 925,
+      "id": 923,
       "created_at": 1615866803
     },
     {
       "type": "run_routes",
       "entity": "ATSF",
       "entity_type": "corporation",
-      "id": 926,
+      "id": 924,
       "created_at": 1615866805,
       "routes": [
         {
@@ -14408,7 +14378,7 @@
       "type": "dividend",
       "entity": "ATSF",
       "entity_type": "corporation",
-      "id": 927,
+      "id": 925,
       "created_at": 1615866807,
       "kind": "payout"
     },
@@ -14416,7 +14386,7 @@
       "type": "pass",
       "entity": "ATSF",
       "entity_type": "corporation",
-      "id": 928,
+      "id": 926,
       "created_at": 1615866809,
       "auto_actions": [
         {
@@ -14439,14 +14409,14 @@
       "type": "pass",
       "entity": "IC",
       "entity_type": "corporation",
-      "id": 929,
+      "id": 927,
       "created_at": 1615866810
     },
     {
       "type": "run_routes",
       "entity": "IC",
       "entity_type": "corporation",
-      "id": 930,
+      "id": 928,
       "created_at": 1615866812,
       "routes": [
         {
@@ -14497,7 +14467,7 @@
       "type": "dividend",
       "entity": "IC",
       "entity_type": "corporation",
-      "id": 931,
+      "id": 929,
       "created_at": 1615866813,
       "auto_actions": [
         {
@@ -14521,21 +14491,21 @@
       "type": "pass",
       "entity": "MP",
       "entity_type": "corporation",
-      "id": 932,
+      "id": 930,
       "created_at": 1615866817
     },
     {
       "type": "pass",
       "entity": "MP",
       "entity_type": "corporation",
-      "id": 933,
+      "id": 931,
       "created_at": 1615866818
     },
     {
       "type": "run_routes",
       "entity": "MP",
       "entity_type": "corporation",
-      "id": 934,
+      "id": 932,
       "created_at": 1615866820,
       "routes": [
         {
@@ -14635,7 +14605,7 @@
       "type": "dividend",
       "entity": "MP",
       "entity_type": "corporation",
-      "id": 935,
+      "id": 933,
       "created_at": 1615866821,
       "auto_actions": [
         {
@@ -14659,14 +14629,14 @@
       "type": "pass",
       "entity": "FW",
       "entity_type": "corporation",
-      "id": 936,
+      "id": 934,
       "created_at": 1615866823
     },
     {
       "type": "run_routes",
       "entity": "FW",
       "entity_type": "corporation",
-      "id": 937,
+      "id": 935,
       "created_at": 1615866825,
       "routes": [
         {
@@ -14711,16 +14681,8 @@
       "type": "dividend",
       "entity": "FW",
       "entity_type": "corporation",
-      "id": 938,
+      "id": 936,
       "created_at": 1615866826,
-      "kind": "payout"
-    },
-    {
-      "type": "pass",
-      "entity": "FW",
-      "entity_type": "corporation",
-      "id": 939,
-      "created_at": 1615866830,
       "auto_actions": [
         {
           "type": "destination_connection",
@@ -14736,20 +14698,21 @@
           "created_at": 1615866830,
           "corporations": []
         }
-      ]
+      ],
+      "kind": "payout"
     },
     {
       "type": "pass",
       "entity": "MKT",
       "entity_type": "corporation",
-      "id": 940,
+      "id": 937,
       "created_at": 1615866831
     },
     {
       "type": "run_routes",
       "entity": "MKT",
       "entity_type": "corporation",
-      "id": 941,
+      "id": 938,
       "created_at": 1615866833,
       "routes": [
         {
@@ -14801,7 +14764,7 @@
       "type": "dividend",
       "entity": "MKT",
       "entity_type": "corporation",
-      "id": 942,
+      "id": 939,
       "created_at": 1615866835,
       "kind": "payout"
     },
@@ -14809,7 +14772,7 @@
       "type": "pass",
       "entity": "MKT",
       "entity_type": "corporation",
-      "id": 943,
+      "id": 940,
       "created_at": 1615866837,
       "auto_actions": [
         {
@@ -14832,14 +14795,14 @@
       "type": "pass",
       "entity": "SLSF",
       "entity_type": "corporation",
-      "id": 944,
+      "id": 941,
       "created_at": 1615866839
     },
     {
       "type": "run_routes",
       "entity": "SLSF",
       "entity_type": "corporation",
-      "id": 945,
+      "id": 942,
       "created_at": 1615866841,
       "routes": [
         {
@@ -14893,7 +14856,7 @@
       "type": "dividend",
       "entity": "SLSF",
       "entity_type": "corporation",
-      "id": 946,
+      "id": 943,
       "created_at": 1615866843,
       "kind": "payout"
     },
@@ -14901,7 +14864,7 @@
       "type": "pass",
       "entity": "SLSF",
       "entity_type": "corporation",
-      "id": 947,
+      "id": 944,
       "created_at": 1615866845,
       "auto_actions": [
         {
@@ -14924,14 +14887,14 @@
       "type": "pass",
       "entity": "TP",
       "entity_type": "corporation",
-      "id": 948,
+      "id": 945,
       "created_at": 1615866847
     },
     {
       "type": "run_routes",
       "entity": "TP",
       "entity_type": "corporation",
-      "id": 949,
+      "id": 946,
       "created_at": 1615866849,
       "routes": [
         {
@@ -14983,7 +14946,7 @@
       "type": "dividend",
       "entity": "TP",
       "entity_type": "corporation",
-      "id": 950,
+      "id": 947,
       "created_at": 1615866850,
       "kind": "payout"
     },
@@ -14991,7 +14954,7 @@
       "type": "pass",
       "entity": "TP",
       "entity_type": "corporation",
-      "id": 951,
+      "id": 948,
       "created_at": 1615866852,
       "auto_actions": [
         {
@@ -15014,14 +14977,14 @@
       "type": "pass",
       "entity": "SP",
       "entity_type": "corporation",
-      "id": 952,
+      "id": 949,
       "created_at": 1615866854
     },
     {
       "type": "run_routes",
       "entity": "SP",
       "entity_type": "corporation",
-      "id": 953,
+      "id": 950,
       "created_at": 1615866856,
       "routes": [
         {
@@ -15094,7 +15057,7 @@
       "type": "dividend",
       "entity": "SP",
       "entity_type": "corporation",
-      "id": 954,
+      "id": 951,
       "created_at": 1615866858,
       "auto_actions": [
         {
@@ -15118,14 +15081,14 @@
       "type": "pass",
       "entity": "SSW",
       "entity_type": "corporation",
-      "id": 955,
+      "id": 952,
       "created_at": 1615866863
     },
     {
       "type": "run_routes",
       "entity": "SSW",
       "entity_type": "corporation",
-      "id": 956,
+      "id": 953,
       "created_at": 1615866865,
       "routes": [
         {
@@ -15163,7 +15126,7 @@
       "type": "dividend",
       "entity": "SSW",
       "entity_type": "corporation",
-      "id": 957,
+      "id": 954,
       "created_at": 1615866869,
       "kind": "payout"
     },
@@ -15171,7 +15134,7 @@
       "type": "pass",
       "entity": "SSW",
       "entity_type": "corporation",
-      "id": 958,
+      "id": 955,
       "created_at": 1615866871,
       "auto_actions": [
         {
@@ -15194,21 +15157,21 @@
       "type": "pass",
       "entity": "GMO",
       "entity_type": "corporation",
-      "id": 959,
+      "id": 956,
       "created_at": 1615866873
     },
     {
       "type": "pass",
       "entity": "GMO",
       "entity_type": "corporation",
-      "id": 960,
+      "id": 957,
       "created_at": 1615866874
     },
     {
       "type": "run_routes",
       "entity": "GMO",
       "entity_type": "corporation",
-      "id": 961,
+      "id": 958,
       "created_at": 1615866877,
       "routes": [
         {
@@ -15255,7 +15218,7 @@
       "type": "dividend",
       "entity": "GMO",
       "entity_type": "corporation",
-      "id": 962,
+      "id": 959,
       "created_at": 1615866879,
       "kind": "payout"
     },
@@ -15263,7 +15226,7 @@
       "type": "pass",
       "entity": "GMO",
       "entity_type": "corporation",
-      "id": 963,
+      "id": 960,
       "created_at": 1615866880,
       "auto_actions": [
         {
@@ -15286,14 +15249,14 @@
       "type": "pass",
       "entity": "ATSF",
       "entity_type": "corporation",
-      "id": 964,
+      "id": 961,
       "created_at": 1615866882
     },
     {
       "type": "run_routes",
       "entity": "ATSF",
       "entity_type": "corporation",
-      "id": 965,
+      "id": 962,
       "created_at": 1615866884,
       "routes": [
         {
@@ -15349,7 +15312,7 @@
       "type": "dividend",
       "entity": "ATSF",
       "entity_type": "corporation",
-      "id": 966,
+      "id": 963,
       "created_at": 1615866886,
       "kind": "payout"
     },
@@ -15357,7 +15320,7 @@
       "type": "pass",
       "entity": "ATSF",
       "entity_type": "corporation",
-      "id": 967,
+      "id": 964,
       "created_at": 1615866888,
       "auto_actions": [
         {
@@ -15380,14 +15343,14 @@
       "type": "pass",
       "entity": "IC",
       "entity_type": "corporation",
-      "id": 968,
+      "id": 965,
       "created_at": 1615866890
     },
     {
       "type": "run_routes",
       "entity": "IC",
       "entity_type": "corporation",
-      "id": 969,
+      "id": 966,
       "created_at": 1615866892,
       "routes": [
         {
@@ -15438,7 +15401,7 @@
       "type": "dividend",
       "entity": "IC",
       "entity_type": "corporation",
-      "id": 970,
+      "id": 967,
       "created_at": 1615866894,
       "auto_actions": [
         {
@@ -15462,21 +15425,21 @@
       "type": "pass",
       "entity": "MP",
       "entity_type": "corporation",
-      "id": 971,
+      "id": 968,
       "created_at": 1615866895
     },
     {
       "type": "pass",
       "entity": "MP",
       "entity_type": "corporation",
-      "id": 972,
+      "id": 969,
       "created_at": 1615866897
     },
     {
       "type": "run_routes",
       "entity": "MP",
       "entity_type": "corporation",
-      "id": 973,
+      "id": 970,
       "created_at": 1615866899,
       "routes": [
         {
@@ -15576,7 +15539,7 @@
       "type": "dividend",
       "entity": "MP",
       "entity_type": "corporation",
-      "id": 974,
+      "id": 971,
       "created_at": 1615866901,
       "auto_actions": [
         {
@@ -15600,14 +15563,14 @@
       "type": "pass",
       "entity": "FW",
       "entity_type": "corporation",
-      "id": 975,
+      "id": 972,
       "created_at": 1615866905
     },
     {
       "type": "run_routes",
       "entity": "FW",
       "entity_type": "corporation",
-      "id": 976,
+      "id": 973,
       "created_at": 1615866908,
       "routes": [
         {
@@ -15652,16 +15615,8 @@
       "type": "dividend",
       "entity": "FW",
       "entity_type": "corporation",
-      "id": 977,
+      "id": 974,
       "created_at": 1615866910,
-      "kind": "payout"
-    },
-    {
-      "type": "pass",
-      "entity": "FW",
-      "entity_type": "corporation",
-      "id": 978,
-      "created_at": 1615866912,
       "auto_actions": [
         {
           "type": "destination_connection",
@@ -15677,20 +15632,21 @@
           "created_at": 1615866912,
           "corporations": []
         }
-      ]
+      ],
+      "kind": "payout"
     },
     {
       "type": "pass",
       "entity": "MKT",
       "entity_type": "corporation",
-      "id": 979,
+      "id": 975,
       "created_at": 1615866914
     },
     {
       "type": "run_routes",
       "entity": "MKT",
       "entity_type": "corporation",
-      "id": 980,
+      "id": 976,
       "created_at": 1615866916,
       "routes": [
         {
@@ -15742,7 +15698,7 @@
       "type": "dividend",
       "entity": "MKT",
       "entity_type": "corporation",
-      "id": 981,
+      "id": 977,
       "created_at": 1615866918,
       "kind": "payout"
     },
@@ -15750,7 +15706,7 @@
       "type": "pass",
       "entity": "MKT",
       "entity_type": "corporation",
-      "id": 982,
+      "id": 978,
       "created_at": 1615866919,
       "auto_actions": [
         {
@@ -15773,14 +15729,14 @@
       "type": "pass",
       "entity": "SLSF",
       "entity_type": "corporation",
-      "id": 983,
+      "id": 979,
       "created_at": 1615866921
     },
     {
       "type": "run_routes",
       "entity": "SLSF",
       "entity_type": "corporation",
-      "id": 984,
+      "id": 980,
       "created_at": 1615866923,
       "routes": [
         {
@@ -15834,7 +15790,7 @@
       "type": "dividend",
       "entity": "SLSF",
       "entity_type": "corporation",
-      "id": 985,
+      "id": 981,
       "created_at": 1615866924,
       "kind": "payout"
     },
@@ -15842,7 +15798,7 @@
       "type": "pass",
       "entity": "SLSF",
       "entity_type": "corporation",
-      "id": 986,
+      "id": 982,
       "created_at": 1615866926,
       "auto_actions": [
         {
@@ -15865,14 +15821,14 @@
       "type": "pass",
       "entity": "TP",
       "entity_type": "corporation",
-      "id": 987,
+      "id": 983,
       "created_at": 1615866928
     },
     {
       "type": "run_routes",
       "entity": "TP",
       "entity_type": "corporation",
-      "id": 988,
+      "id": 984,
       "created_at": 1615866929,
       "routes": [
         {
@@ -15924,7 +15880,7 @@
       "type": "dividend",
       "entity": "TP",
       "entity_type": "corporation",
-      "id": 989,
+      "id": 985,
       "created_at": 1615866931,
       "kind": "payout"
     },
@@ -15932,7 +15888,7 @@
       "type": "pass",
       "entity": "TP",
       "entity_type": "corporation",
-      "id": 990,
+      "id": 986,
       "created_at": 1615866932,
       "auto_actions": [
         {
@@ -15955,14 +15911,14 @@
       "type": "pass",
       "entity": "SP",
       "entity_type": "corporation",
-      "id": 991,
+      "id": 987,
       "created_at": 1615866933
     },
     {
       "type": "run_routes",
       "entity": "SP",
       "entity_type": "corporation",
-      "id": 992,
+      "id": 988,
       "created_at": 1615866935,
       "routes": [
         {
@@ -16035,7 +15991,7 @@
       "type": "dividend",
       "entity": "SP",
       "entity_type": "corporation",
-      "id": 993,
+      "id": 989,
       "created_at": 1615866936,
       "auto_actions": [
         {
@@ -16059,14 +16015,14 @@
       "type": "pass",
       "entity": "SSW",
       "entity_type": "corporation",
-      "id": 994,
+      "id": 990,
       "created_at": 1615866938
     },
     {
       "type": "run_routes",
       "entity": "SSW",
       "entity_type": "corporation",
-      "id": 995,
+      "id": 991,
       "created_at": 1615866940,
       "routes": [
         {
@@ -16104,7 +16060,7 @@
       "type": "dividend",
       "entity": "SSW",
       "entity_type": "corporation",
-      "id": 996,
+      "id": 992,
       "created_at": 1615866941,
       "kind": "payout"
     },
@@ -16112,7 +16068,7 @@
       "type": "pass",
       "entity": "SSW",
       "entity_type": "corporation",
-      "id": 997,
+      "id": 993,
       "created_at": 1615866942,
       "auto_actions": [
         {
@@ -16135,21 +16091,21 @@
       "type": "pass",
       "entity": "GMO",
       "entity_type": "corporation",
-      "id": 998,
+      "id": 994,
       "created_at": 1615866944
     },
     {
       "type": "pass",
       "entity": "GMO",
       "entity_type": "corporation",
-      "id": 999,
+      "id": 995,
       "created_at": 1615866945
     },
     {
       "type": "run_routes",
       "entity": "GMO",
       "entity_type": "corporation",
-      "id": 1000,
+      "id": 996,
       "created_at": 1615866947,
       "routes": [
         {
@@ -16196,7 +16152,7 @@
       "type": "dividend",
       "entity": "GMO",
       "entity_type": "corporation",
-      "id": 1001,
+      "id": 997,
       "created_at": 1615866949,
       "kind": "payout"
     },
@@ -16204,7 +16160,7 @@
       "type": "pass",
       "entity": "GMO",
       "entity_type": "corporation",
-      "id": 1002,
+      "id": 998,
       "created_at": 1615866951,
       "auto_actions": [
         {
@@ -16227,14 +16183,14 @@
       "type": "pass",
       "entity": "ATSF",
       "entity_type": "corporation",
-      "id": 1003,
+      "id": 999,
       "created_at": 1615866953
     },
     {
       "type": "run_routes",
       "entity": "ATSF",
       "entity_type": "corporation",
-      "id": 1004,
+      "id": 1000,
       "created_at": 1615866955,
       "routes": [
         {
@@ -16290,7 +16246,7 @@
       "type": "dividend",
       "entity": "ATSF",
       "entity_type": "corporation",
-      "id": 1005,
+      "id": 1001,
       "created_at": 1615866957,
       "kind": "payout"
     },
@@ -16298,7 +16254,7 @@
       "type": "pass",
       "entity": "ATSF",
       "entity_type": "corporation",
-      "id": 1006,
+      "id": 1002,
       "created_at": 1615866959,
       "auto_actions": [
         {
@@ -16321,14 +16277,14 @@
       "type": "pass",
       "entity": "IC",
       "entity_type": "corporation",
-      "id": 1007,
+      "id": 1003,
       "created_at": 1615866960
     },
     {
       "type": "run_routes",
       "entity": "IC",
       "entity_type": "corporation",
-      "id": 1008,
+      "id": 1004,
       "created_at": 1615866963,
       "routes": [
         {
@@ -16379,7 +16335,7 @@
       "type": "dividend",
       "entity": "IC",
       "entity_type": "corporation",
-      "id": 1009,
+      "id": 1005,
       "created_at": 1615866964,
       "auto_actions": [
         {
@@ -16403,21 +16359,21 @@
       "type": "pass",
       "entity": "MP",
       "entity_type": "corporation",
-      "id": 1010,
+      "id": 1006,
       "created_at": 1615866966
     },
     {
       "type": "pass",
       "entity": "MP",
       "entity_type": "corporation",
-      "id": 1011,
+      "id": 1007,
       "created_at": 1615866968
     },
     {
       "type": "run_routes",
       "entity": "MP",
       "entity_type": "corporation",
-      "id": 1012,
+      "id": 1008,
       "created_at": 1615866970,
       "routes": [
         {
@@ -16517,7 +16473,7 @@
       "type": "dividend",
       "entity": "MP",
       "entity_type": "corporation",
-      "id": 1013,
+      "id": 1009,
       "created_at": 1615866972,
       "auto_actions": [
         {
@@ -16541,14 +16497,14 @@
       "type": "pass",
       "entity": "FW",
       "entity_type": "corporation",
-      "id": 1014,
+      "id": 1010,
       "created_at": 1615866974
     },
     {
       "type": "run_routes",
       "entity": "FW",
       "entity_type": "corporation",
-      "id": 1015,
+      "id": 1011,
       "created_at": 1615866976,
       "routes": [
         {
@@ -16593,16 +16549,8 @@
       "type": "dividend",
       "entity": "FW",
       "entity_type": "corporation",
-      "id": 1016,
+      "id": 1012,
       "created_at": 1615866978,
-      "kind": "payout"
-    },
-    {
-      "type": "pass",
-      "entity": "FW",
-      "entity_type": "corporation",
-      "id": 1017,
-      "created_at": 1615866980,
       "auto_actions": [
         {
           "type": "destination_connection",
@@ -16611,7 +16559,8 @@
           "created_at": 1615866980,
           "corporations": []
         }
-      ]
+      ],
+      "kind": "payout"
     }
   ],
   "id": "hs_ufqpdrvi_1615279805",
@@ -16645,7 +16594,7 @@
   "result": {
     "Player 3": 9190,
     "Player 2": 8850,
-    "Player 1": 6970,
+    "Player 1": 6946,
     "Player 4": 5779
   },
   "turn": 9,
