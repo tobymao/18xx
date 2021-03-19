@@ -121,7 +121,7 @@ module View
         polygon_props[:attrs]['stroke-dasharray'] = 10
         polygon_props[:attrs]['stroke-width'] = HIGHLIGHT_STROKE_WIDTH
         if (color = @tile&.frame&.color)
-          polygon_props[:attrs]['stroke'] = contrast_on(color_for(color))
+          polygon_props[:attrs]['stroke'] = contrast_on(color)
         end
 
         [h(:polygon, polygon_props)]

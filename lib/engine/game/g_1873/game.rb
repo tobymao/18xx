@@ -2862,7 +2862,7 @@ module Engine
               %w[
                 B19
               ] => 'city=revenue:60;path=a:1,b:_0,track:narrow;path=a:2,b:_0;path=a:5,b:_0;'\
-                'frame=color:purple;label=HQG',
+                'frame=color:#800080;label=HQG',
               %w[
                 C16
               ] => 'city=revenue:30;path=a:0,b:_0,track:narrow;path=a:2,b:_0,track:narrow;'\
@@ -2870,7 +2870,7 @@ module Engine
               %w[
                 E20
               ] => 'city=revenue:60;path=a:1,b:_0,track:narrow;path=a:0,b:_0;path=a:3,b:_0;'\
-                'frame=color:purple;label=HQG',
+                'frame=color:#800080;label=HQG',
               %w[
                 F5
               ] => 'city=revenue:20;city=revenue:20;path=a:1,b:_0,track:narrow;path=a:4,b:_0,track:narrow;'\
@@ -2884,15 +2884,15 @@ module Engine
               %w[
                 G6
               ] => 'city=revenue:40;path=a:2,b:_0,track:narrow;'\
-                'path=a:5,b:_0,track:narrow;frame=color:purple',
+                'path=a:5,b:_0,track:narrow;frame=color:#800080',
               %w[
                 G20
               ] => 'city=revenue:60;path=a:0,b:_0,track:narrow;path=a:2,b:_0;path=a:5,b:_0;'\
-                'frame=color:purple;label=HQG',
+                'frame=color:#800080;label=HQG',
               %w[
                 H13
               ] => 'city=revenue:40;path=a:2,b:_0,track:narrow;path=a:5,b:_0,track:narrow;'\
-                'upgrade=cost:50,terrain:mountain;frame=color:purple',
+                'upgrade=cost:50,terrain:mountain;frame=color:#800080',
               %w[
                 H17
               ] => 'city=revenue:30;path=a:0,b:_0,track:narrow;path=a:4,b:_0,track:narrow;'\
@@ -2903,7 +2903,7 @@ module Engine
                 B9
               ] => 'city=slots:2,revenue:yellow_60|green_80|brown_120|gray_150;'\
                 'path=a:1,b:_0;path=a:4,b:_0;path=a:0,b:_0,track:narrow;path=a:5,b:_0,track:narrow;'\
-                'frame=color:purple',
+                'frame=color:#800080',
               %w[
                 B13
               ] => 'city=slots:2,revenue:yellow_30|green_70|brown_60|gray_60;'\
@@ -2934,11 +2934,11 @@ module Engine
               %w[
                 I2
               ] => 'city=revenue:yellow_40|green_50|brown_80|gray_120;path=a:1,b:_0;'\
-                'path=a:2,b:_0,track:narrow;path=a:4,b:_0;frame=color:purple',
+                'path=a:2,b:_0,track:narrow;path=a:4,b:_0;frame=color:#800080',
               %w[
                 I4
               ] => 'city=revenue:yellow_40|green_50|brown_80|gray_120;path=a:1,b:_0;'\
-                'path=a:2,b:_0,track:narrow;path=a:5,b:_0;frame=color:purple',
+                'path=a:2,b:_0,track:narrow;path=a:5,b:_0;frame=color:#800080',
               %w[
                 I18
               ] => 'city=revenue:yellow_30|green_40|brown_60|gray_70;'\
@@ -2947,7 +2947,7 @@ module Engine
               %w[
                 J7
               ] => 'city=revenue:yellow_60|green_80|brown_120|gray_180;path=a:1,b:_0;'\
-                'path=a:3,b:_0,track:narrow;path=a:4,b:_0;frame=color:purple',
+                'path=a:3,b:_0,track:narrow;path=a:4,b:_0;frame=color:#800080',
               # implicit tiles
               %w[
                 C20

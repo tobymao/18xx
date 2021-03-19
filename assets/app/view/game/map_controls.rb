@@ -95,7 +95,7 @@ module View
         end
 
         @route_input = render_select(id: :route, on: { input: route_change }, children: operators)
-        h('label.inline-block', ['Show Last Route and Track For:', @route_input])
+        h('label.inline-block', ['Show Last Route and Tile For:', @route_input])
       end
 
       def render_select(id:, on: {}, children: [])
