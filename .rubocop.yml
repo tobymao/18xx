@@ -185,6 +185,7 @@ Performance/StringInclude:
 Performance/Sum:
   Enabled: true
 
+# 50% performance improvement, but decreased code readibility
 Performance/TimesMap:
   Enabled: false
 
@@ -200,7 +201,8 @@ Style/ClassVars:
 Style/CollectionCompact:
   Enabled: false
 
-Style/CombinableLoops: # TODO enable & check offenses
+# all (6) duplicated loops are used on purpose and for good reason
+Style/CombinableLoops:
   Enabled: false
 
 Style/CommandLiteral:
@@ -221,13 +223,15 @@ Style/ExplicitBlockArgument:
 Style/HashAsLastArrayItem:
   Enabled: true
 
-Style/HashEachMethods: # TODO enable & check offenses
+# unsafe, problems with 1860
+Style/HashEachMethods:
   Enabled: false
 
 Style/HashExcept:
   Enabled: true
 
-Style/HashLikeCase: # code readibility: case trumps hash-lookup
+# code readibility: case trumps hash-lookup
+Style/HashLikeCase:
   Enabled: false
 
 Style/HashTransformKeys:
@@ -254,13 +258,15 @@ Style/OptionalBooleanParameter: # TODO enable & check offenses
 Style/RedundantArgument:
   Enabled: false
 
-Style/RedundantFreeze: # conflicts with Style/MutableConstant
+# conflicts with Style/MutableConstant
+Style/RedundantFreeze:
   Enabled: false
 
 Style/RedundantRegexpEscape:
   Enabled: true
 
-Style/SlicingWithRange: # TODO enable & check offenses
+# enabling would break compiling deps!
+Style/SlicingWithRange:
   Enabled: false
 
 Style/SoleNestedConditional:
