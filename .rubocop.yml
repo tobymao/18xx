@@ -42,8 +42,8 @@ Layout/SpaceBeforeBrackets:
 Lint/AmbiguousAssignment:
   Enabled: true
 
-Lint/ConstantDefinitionInBlock: # TODO enable & check offenses
-  Enabled: false
+Lint/ConstantDefinitionInBlock:
+  Enabled: true
 
 Lint/DuplicateBranch: # TODO enable & check offenses
   Enabled: false
