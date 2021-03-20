@@ -8,7 +8,6 @@ module Engine
       module Step
         class BuyTrain < Engine::Step::BuyTrain
           def setup
-            @check_pending = true
             super
           end
 
@@ -52,7 +51,7 @@ module Engine
           end
 
           def pass!
-            if @check_pending && @game.concession_pending?(current_entity)
+            if @game.concession_pending?(current_entity)
               @log << "#{current_entity.name} has not purchased its compulsory train"
               @game.insolvent!(current_entity)
             end
@@ -209,13 +208,15 @@ module Engine
               raise GameError, 'Illegal train buy from another company'
             end
 
+            if @game.concession_pending?(entity) && (entity != @game.nwe || train.distance > 1)
+              @game.concession_unpend!(entity)
+            end
+
             scrap_mine_train(entity, action.train) if entity.minor?
 
             old_owner = train.owner
 
-            @check_pending = false
             super
-            @check_pending = true
 
             maint_due = @game.train_maintenance(train.name)
             if maint_due.positive? && action.extra_due
@@ -234,11 +235,6 @@ module Engine
 
             allocate_machines!(entity, train, slots) if @game.train_is_machine?(train) && @game.public_mine?(entity)
             allocate_switcher!(entity, train, slots) if @game.train_is_switcher?(train) && @game.public_mine?(entity)
-
-            if @game.concession_pending?(entity) && (entity != @game.nwe || train.distance > 1)
-              @game.concession_unpend!(entity) if @game.concession_pending?(entity)
-            end
-            pass! unless can_buy_train?(entity) # force concession check again
           end
 
           def process_scrap_train(action)
