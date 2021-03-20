@@ -58,7 +58,7 @@ module Engine
             @round.current_actions << action
           end
 
-          def can_buy_multiple?(entity, corporation)
+          def can_buy_multiple?(entity, corporation, _owner)
             super && corporation.owner == entity && num_shares_bought(corporation) < 2
           end
 
