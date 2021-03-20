@@ -55,7 +55,18 @@ module View
           else
             @hex.tile
           end
+
         children = hex_outline
+        if (color = @tile&.frame&.color)
+          attrs = {
+            stroke: color,
+            'stroke-width': FRAME_COLOR_STROKE_WIDTH,
+            points: FRAME_COLOR_POINTS,
+          }
+          children << h(:polygon, attrs: attrs)
+        end
+        children << hex_highlight if @highlight
+
         if @tile
           children << h(
             Tile,
@@ -67,17 +78,6 @@ module View
         end
         children << h(TriangularGrid) if Lib::Params['grid']
         children << h(TileUnavailable, unavailable: @unavailable, layout: @hex.layout) if @unavailable
-
-        if (color = @tile&.frame&.color)
-          attrs = {
-            stroke: color,
-            'stroke-width': FRAME_COLOR_STROKE_WIDTH,
-            points: FRAME_COLOR_POINTS,
-          }
-          children.insert(1, h(:polygon, attrs: attrs))
-        end
-
-        children.insert(2, hex_highlight) if @highlight
 
         props = {
           key: @hex.id,
