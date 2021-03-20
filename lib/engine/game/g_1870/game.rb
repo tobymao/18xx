@@ -584,7 +584,7 @@ module Engine
         }.freeze
 
         def stock_round
-          Engine::Round::Stock.new(self, [
+          G1870::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
             G1870::Step::BuySellParShares,
             G1870::Step::PriceProtection,
