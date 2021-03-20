@@ -828,7 +828,7 @@ module Engine
 
         def init_train_handler
           trains = self.class::TRAINS.flat_map do |train|
-            (train[:num] || num_trains(train)).times.map do |index|
+            Array.new((train[:num] || num_trains(train))) do |index|
               Train.new(**train, index: index)
             end
           end

@@ -859,7 +859,7 @@ module Engine
           @loan_value = 50
           # 16 minors * 2, 8 majors * 5
           # The national can take an infinite (100)
-          172.times.map { |id| Loan.new(id, @loan_value) }
+          Array.new(172) { |id| Loan.new(id, @loan_value) }
         end
 
         def home_token_locations(corporation)

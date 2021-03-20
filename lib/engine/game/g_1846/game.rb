@@ -753,7 +753,7 @@ module Engine
         end
 
         def init_companies(players)
-          super + num_pass_companies(players).times.map do |i|
+          super + Array.new(num_pass_companies(players)) do |i|
             name = "Pass (#{i + 1})"
 
             Company.new(

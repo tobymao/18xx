@@ -185,9 +185,8 @@ Performance/StringInclude:
 Performance/Sum:
   Enabled: true
 
-# 50% performance improvement, but decreased code readibility
 Performance/TimesMap:
-  Enabled: false
+  Enabled: true
 
 Style/ArgumentsForwarding:
   Enabled: true

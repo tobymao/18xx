@@ -1702,7 +1702,7 @@ module Engine
 
       def init_train_handler
         trains = game_trains.flat_map do |train|
-          (train[:num] || num_trains(train)).times.map do |index|
+          Array.new((train[:num] || num_trains(train))) do |index|
             Train.new(**train, index: index)
           end
         end
@@ -1849,7 +1849,7 @@ module Engine
       def init_tile(name, val)
         if val.is_a?(Integer) || val == 'unlimited'
           count = val == 'unlimited' ? 1 : val
-          count.times.map do |i|
+          Array.new(count) do |i|
             Tile.for(
               name,
               index: i,
@@ -1861,7 +1861,7 @@ module Engine
           count = val['count'] == 'unlimited' ? 1 : val['count']
           color = val['color']
           code = val['code']
-          count.times.map do |i|
+          Array.new(count) do |i|
             Tile.from_code(
               name,
               color,

@@ -25,7 +25,7 @@ module Engine
       def self.make_lanes(a, b, terminal: nil, lanes: nil, a_lane: nil, b_lane: nil, track: nil)
         track ||= :broad
         if lanes
-          lanes.times.map do |index|
+          Array.new(lanes) do |index|
             a_lanes = [lanes, index]
             b_lanes = if a.edge? && b.edge?
                         [lanes, lanes - index - 1]

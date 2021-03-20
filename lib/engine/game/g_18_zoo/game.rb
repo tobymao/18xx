@@ -1044,7 +1044,7 @@ module Engine
 
           return [{ lay: true, upgrade: true }] unless @round.available_tracks.empty?
 
-          @round.bonus_tracks.times.map { |_| { lay: true } } if @round.bonus_tracks.positive?
+          Array.new(@round.bonus_tracks) { |_| { lay: true } } if @round.bonus_tracks.positive?
         end
 
         def upgrades_to?(from, to, special = nil)

@@ -1446,7 +1446,7 @@ module Engine
         def init_loans
           @loan_value = 50
           # 16 minors * 2, 8 majors * 5
-          72.times.map { |id| Loan.new(id, @loan_value) }
+          Array.new(72) { |id| Loan.new(id, @loan_value) }
         end
 
         def round_end

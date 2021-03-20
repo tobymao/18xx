@@ -705,7 +705,7 @@ module Engine
           when :medium
             shares.each { |share| share.percent = 10 }
             shares[0].percent = 20
-            new_shares = 5.times.map { |i| Share.new(corporation, percent: 10, index: i + 4) }
+            new_shares = Array.new(5) { |i| Share.new(corporation, percent: 10, index: i + 4) }
             corporation.type = :large
           else
             raise GameError, 'Cannot convert 10 share corporation'

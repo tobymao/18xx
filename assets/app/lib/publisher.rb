@@ -23,7 +23,7 @@ module Lib
 
       if publishers.size > 1
         if publishers.size > 2
-          commas = (publishers.size - 1).times.map { ', ' }
+          commas = Array.new(publishers.size - 1) { ', ' }
           publishers = publishers.zip(commas).flatten.compact
         end
         publishers.insert(-2, ' and ')

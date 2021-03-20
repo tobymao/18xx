@@ -855,7 +855,7 @@ module Engine
         end
 
         def init_loans
-          num_loans.times.map { |id| Loan.new(id, loan_value) }
+          Array.new(num_loans) { |id| Loan.new(id, loan_value) }
         end
 
         def can_pay_interest?(_entity, _extra_cash = 0)
