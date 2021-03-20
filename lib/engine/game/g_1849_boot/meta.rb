@@ -16,7 +16,7 @@ module Engine
         GAME_LOCATION = 'Southern Italy'
         GAME_RULES_URL = {
           '1849 Rules' => 'https://boardgamegeek.com/filepage/206628/1849-rules',
-          '1849: Kingdom fo the Two Sicilies Rules Differences' => 'https://docs.google.com/document/d/1gNn2RmtcPWh0KpNduv3p0Lraa3iWIAV3cWcHpCu8X-E/edit',
+          '1849: Kingdom of the Two Sicilies Rules Differences' => 'https://docs.google.com/document/d/1gNn2RmtcPWh0KpNduv3p0Lraa3iWIAV3cWcHpCu8X-E/edit',
           'Playtest Forum (BoardGameGeek)' => 'https://boardgamegeek.com/thread/2582803/1849-kingdom-two-sicilies-playtest-feedback',
           'Submit Direct Feedback (AAG Contact Form)' => 'https://all-aboardgames.com/pages/order-questions',
         }.freeze
