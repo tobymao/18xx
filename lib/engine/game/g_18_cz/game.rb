@@ -21,9 +21,9 @@ module Engine
 
         BANK_CASH = 99_999
 
-        CERT_LIMIT = { 3 => 14, 4 => 12, 5 => 10, 6 => 9 }.freeze
+        CERT_LIMIT = { 2 => 14, 3 => 14, 4 => 12, 5 => 10, 6 => 9 }.freeze
 
-        STARTING_CASH = { 3 => 380, 4 => 300, 5 => 250, 6 => 210 }.freeze
+        STARTING_CASH = { 2 => 280, 3 => 380, 4 => 300, 5 => 250, 6 => 210 }.freeze
 
         CAPITALIZATION = :full
 
@@ -2488,6 +2488,16 @@ module Engine
           '8E' => :large,
         }.freeze
 
+        TWO_PLAYER_CORP_TO_REMOVE = %w[OFE MW KFN PR Ug].freeze
+        TWO_PLAYER_COMPANIES_TO_REMOVE = {
+          5 => 40,
+          10 => 55,
+          20 => 70,
+        }.freeze
+
+        TWO_PLAYER_HEXES_TO_REMOVE = %w[A22 B19 B21 B23 B25 C22 C24 C26 C28 D21 D23 D25 D27 D29 E20 E22 E24 E26
+                                        E28 F21 F23 F25 F27 G20 G22 G24 G26 G28 H21 H23 H25 I20 I22 I24].freeze
+
         include StubsAreRestricted
         attr_accessor :rusted_variants
 
@@ -2498,35 +2508,127 @@ module Engine
           @recently_floated = []
           @entity_used_ability_to_track = false
           @rusted_variants = []
+          @vaclavs_corporations = []
+
+          unless multiplayer?
+            @vaclav = Player.new(-1, 'Vaclav')
+            @corporations = @corporations.reject { |item| TWO_PLAYER_CORP_TO_REMOVE.include?(item.name) }
+
+            @corporations.select { |item| item.type == :large }.each { |item| item.max_ownership_percent = 70 }
+
+            @players << @vaclav
+          end
 
           # Only small companies are available until later phases
           @corporations, @future_corporations = @corporations.partition { |corporation| corporation.type == :small }
+
+          new_corporation_for_vaclave(:small) unless multiplayer?
 
           block_lay_for_purple_tiles
           init_player_debts
         end
 
+        def new_corporation_for_vaclave(size)
+          possible_corporations = @corporations.select { |corporation| corporation.type == size }
+          index = rand % possible_corporations.size
+          new_corporation = possible_corporations[index]
+
+          new_corporation.ipoed = true
+          new_corporation.owner = @vaclav
+          new_corporation.tokens.each { |item| item.price = 0 }
+          @recently_floated << new_corporation
+          @vaclavs_corporations << new_corporation
+
+          par_value = PAR_RANGE[new_corporation.type].first
+          price = @stock_market.par_prices.find { |p| p.price == par_value }
+          @stock_market.set_par(new_corporation, price)
+
+          index = 0
+          until new_corporation.floated?
+            bundle = new_corporation.ipo_shares[index].to_bundle
+            @share_pool.transfer_shares(bundle, @vaclav)
+            index += 1
+          end
+
+          @log << "Vaclav receives new corporation #{new_corporation.name}"
+          new_train_for_vaclav(new_corporation)
+        end
+
+        def new_train_for_vaclav(corporation)
+          corporation.trains.each do |item|
+            remove_train(item)
+            item.owner = nil
+          end
+          train = @depot.upcoming.first
+          variant = train.variants.values.find { |item| train_of_size?(item, corporation.type) }
+          train.variant = variant[:name]
+          remove_train(train)
+          train.owner = corporation
+          corporation.trains << train
+
+          @phase.buying_train!(corporation, train)
+
+          @log << "#{corporation.name} receives a new #{train.name} train"
+        end
+
+        def init_companies(players)
+          companies = super
+          unless multiplayer?
+            companies = companies.reject { |item| item.value >= TWO_PLAYER_COMPANIES_TO_REMOVE[item.revenue] }
+          end
+          companies
+        end
+
+        def active_players
+          active = super
+          return active if multiplayer?
+
+          active.reject { |item| item == @vaclav }
+        end
+
+        def optional_hexes
+          return game_hexes if multiplayer?
+
+          new_hexes = {}
+          game_hexes.keys.each do |color|
+            new_map = game_hexes[color].map do |coords, tile_string|
+              [coords - TWO_PLAYER_HEXES_TO_REMOVE, tile_string]
+            end.to_h
+            new_hexes[color] = new_map
+          end
+          new_hexes
+        end
+
+        def multiplayer?
+          @multiplayer ||= @players.reject { |item| item == @vaclav }.size >= 3
+        end
+
         def init_round
-          Round::Draft.new(self,
-                           [G18CZ::Step::Draft],
-                           snake_order: true)
+          G18CZ::Round::Draft.new(self,
+                                  [G18CZ::Step::Draft],
+                                  snake_order: true)
         end
 
         def stock_round
-          Round::Stock.new(self, [
+          G18CZ::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
             G18CZ::Step::BuySellParShares,
           ])
         end
 
         def operating_round(round_num)
-          Round::Operating.new(self, [
+          unless multiplayer?
+            track_lay_player = player_of_index(1)
+            @vaclavs_corporations.each { |item| item.owner = track_lay_player }
+          end
+
+          G18CZ::Round::Operating.new(self, [
             G18CZ::Step::HomeTrack,
             G18CZ::Step::SellCompanyAndSpecialTrack,
             Engine::Step::HomeToken,
             G18CZ::Step::ReduceTokens,
             G18CZ::Step::BuyCompany,
-            Engine::Step::Track,
+            G18CZ::Step::Track,
             G18CZ::Step::Token,
             Engine::Step::Route,
             G18CZ::Step::Dividend,
@@ -2557,10 +2659,6 @@ module Engine
           super
         end
 
-        def or_round_finished
-          @recently_floated.clear
-        end
-
         def end_now?(_after)
           @or == @last_or
         end
@@ -2587,12 +2685,16 @@ module Engine
           end
           @corporations.concat(medium_corps)
           @log << '-- Medium corporations now available --'
+
+          new_corporation_for_vaclave(:medium) unless multiplayer?
         end
 
         def event_large_corps_available!
           @corporations.concat(@future_corporations)
           @future_corporations.clear
           @log << '-- Large corporations now available --'
+
+          new_corporation_for_vaclave(:large) unless multiplayer?
         end
 
         def float_corporation(corporation)
@@ -2607,17 +2709,25 @@ module Engine
         end
 
         def or_set_finished
-          depot.export!
+          if multiplayer?
+            depot.export!
+          else
+            # cloning is needed because vaclavs corporation changes when a new train triggers a new corporation
+            @vaclavs_corporations.clone.each do |item|
+              item.owner = @vaclav
+              new_train_for_vaclav(item)
+            end
+          end
         end
 
         def next_round!
           @round =
             case @round
-            when Round::Stock
+            when Engine::Round::Stock
               @operating_rounds = OR_SETS[@turn - 1]
               reorder_players(log_player_order: true)
               new_operating_round
-            when Round::Operating
+            when Engine::Round::Operating
               if @round.round_num < @operating_rounds
                 or_round_finished
                 new_operating_round(@round.round_num + 1)
@@ -2940,6 +3050,26 @@ module Engine
 
         def can_par?(corporation, parrer)
           super && debt(parrer).zero?
+        end
+
+        def corporation_of_vaclav?(corporation)
+          @vaclavs_corporations.include?(corporation)
+        end
+
+        def player_of_index(index)
+          players_without_vaclav[index]
+        end
+
+        def players_without_vaclav
+          exclude_vaclav(@players)
+        end
+
+        def exclude_vaclav(entities)
+          entities.reject { |item| item == @vaclav }
+        end
+
+        def track_action_processed(entity)
+          @recently_floated.delete(entity)
         end
       end
     end

@@ -13,7 +13,8 @@ module Engine
           ACTIONS = %w[buy_corporation pass].freeze
 
           def actions(entity)
-            return [] if entity != current_entity || @game.corporations.none? { |item| can_buy?(entity, item) }
+            return [] if entity != current_entity || @game.corporation_of_vaclav?(entity) ||
+                         @game.corporations.none? { |item| can_buy?(entity, item) }
 
             ACTIONS
           end
@@ -93,7 +94,8 @@ module Engine
           end
 
           def can_buy?(entity, corporation)
-            return false if entity.type == :small || !corporation.floated? || corporation.closed?
+            return false if entity.type == :small || !corporation.floated? ||
+                            corporation.closed? || @game.corporation_of_vaclav?(corporation)
 
             if entity.type == :medium && corporation.type == :small ||
                entity.type == :large && (corporation.type == :small || corporation.type == :medium)
