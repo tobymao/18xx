@@ -20,7 +20,6 @@ module Engine
           'Playtest Forum (BoardGameGeek)' => 'https://boardgamegeek.com/thread/2582803/1849-kingdom-two-sicilies-playtest-feedback',
           'Submit Direct Feedback (AAG Contact Form)' => 'https://all-aboardgames.com/pages/order-questions',
         }.freeze
-        GAME_RULES_URL = ''
         GAME_TITLE = '1849: Kingdom of the Two Sicilies'
         GAME_ALIASES = ['1849K2S'].freeze
 
