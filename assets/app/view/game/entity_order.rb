@@ -30,6 +30,7 @@ module View
           else
             @round.entities
           end.dup
+
         entities.unshift(@round.current_entity) if @round.current_entity && !entities.include?(@round.current_entity)
 
         children << h(EntityList, round: @round, entities: entities, acting_entity: @round.current_entity)
