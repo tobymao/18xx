@@ -164,7 +164,7 @@ module Engine
             @bids.reject! { |bidder, _| bidder == player }
             @companies.delete(company)
 
-            @game.after_buy_company(player, company)
+            @game.after_buy_company(player, company, price)
           end
 
           def grant_priority(player)
