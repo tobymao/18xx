@@ -3733,7 +3733,8 @@ module Engine
 
         def place_destination_token(entity, hex, token)
           city = hex.tile.cities.first
-          city.place_token(entity, token, free: true, check_tokenable: false, cheater: 0)
+          cheater_slot = city.slots
+          city.place_token(entity, token, free: true, check_tokenable: false, cheater: cheater_slot)
           hex.tile.icons.reject! { |icon| icon.name == "#{entity.id}_destination" }
 
           ability = entity.all_abilities.find { |a| a.type == :destination }
