@@ -83,8 +83,9 @@ module Engine
               dt.price > entity.cash || (entity == @game.nwe && dt.distance < 2)
             end
 
+            # can't force a player to buy from another player
             other_trains = @depot.other_trains(entity).reject do |ot|
-              !@game.train_is_train?(ot) || ot.owner.owner != entity || (entity == @game.nwe && ot.distance < 2)
+              !@game.train_is_train?(ot) || ot.owner.owner != entity.owner || (entity == @game.nwe && ot.distance < 2)
             end
 
             !depot_trains.empty? || !other_trains.empty?
@@ -108,23 +109,8 @@ module Engine
             depot_trains = buyable_depot_trains(entity)
             other_trains = @depot.other_trains(entity)
             other_trains = [] if entity.cash.zero?
-            other_trains.reject! do |ot|
-              @game.train_is_machine?(ot) ||
-                @game.diesel?(ot) && (@game.entity_has_diesel?(entity) || !@game.railway?(ot)) ||
-                ot.owner == @game.mhe ||
-                (@game.any_mine?(entity) && @game.train_is_train?(ot)) ||
-                (ot.owner.owner && @game.public_mine?(ot.owner.owner) && ot.owner.owner == entity) ||
-                (@game.concession_pending?(entity) && (!@game.train_is_train?(ot) || ot.owner.owner != entity))
-            end
-
-            # indie mines can't buy same size machine
-            depot_trains.reject! { |t| t.distance <= minor_distance(entity) } if entity.minor?
-
-            # public mines have to have at least one mine with a smaller machine
-            depot_trains.reject! { |t| t.distance <= public_mine_min_distance(entity) } if @game.public_mine?(entity)
-
-            # only RRs can have a diesel - but only one
-            depot_trains.reject! { |t| @game.diesel?(t) } if @game.entity_has_diesel?(entity) || !@game.railway?(entity)
+            other_trains.reject! { |ot| illegal_other_buy?(ot, entity) }
+            depot_trains.reject! { |dt| illegal_depot_buy?(dt, entity) }
 
             switchers = if (sp = @game.switcher_price) && !@game.concession_pending?(entity)
                           entity.cash >= sp ? [@game.next_switcher] : []
@@ -133,6 +119,32 @@ module Engine
                         end
 
             (depot_trains + switchers + other_trains).compact
+          end
+
+          def illegal_depot_buy?(train, entity)
+            # indie mines can't buy same size machine
+            (entity.minor? && train.distance <= minor_distance(entity)) ||
+              # public mines have to have at least one mine with a smaller machine
+              (@game.public_mine?(entity) && train.distance <= public_mine_min_distance(entity)) ||
+              # only RRs can have a diesel - but only one
+              ((@game.entity_has_diesel?(entity) || !@game.railway?(entity)) && @game.diesel?(train))
+          end
+
+          def illegal_other_buy?(train, entity)
+            # can't ever buy machines across
+            @game.train_is_machine?(train) ||
+              # only RRs can have a diesel - but only one
+              @game.diesel?(train) && (@game.entity_has_diesel?(entity) || !@game.railway?(train)) ||
+              # can't ever buy from MHE
+              train.owner == @game.mhe ||
+              # Indie or Public mines can't buy actual trains
+              (@game.any_mine?(entity) && @game.train_is_train?(train)) ||
+              # Public mines can't buy switchers from itself
+              (train.owner.owner && @game.public_mine?(train.owner.owner) && train.owner.owner == entity) ||
+              # RR with concession pending must buy an actual train
+              (@game.concession_pending?(entity) && !@game.train_is_train?(train)) ||
+              # entity selling train must be able to
+              !@game.can_sell_train?(train)
           end
 
           def buyable_train_variants(train, entity)
@@ -189,6 +201,13 @@ module Engine
             entity = action.entity
             train = action.train
             slots = action.slots
+
+            if train.owner == @game.depot && illegal_depot_buy?(train, entity)
+              raise GameError, 'Illegal depot train buy'
+            end
+            if train.owner != @game.depot && illegal_other_buy?(train, entity)
+              raise GameError, 'Illegal train buy from another company'
+            end
 
             scrap_mine_train(entity, action.train) if entity.minor?
 

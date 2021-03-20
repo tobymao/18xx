@@ -561,6 +561,22 @@ module Engine
           new_train
         end
 
+        # can't buy last train from railway (last 2+ train from NWE)
+        def can_sell_train?(train)
+          owner = train.owner
+          return true unless railway?(owner)
+          return true if owner == @qlb
+          return true unless train_is_train?(train)
+
+          if owner == @nwe && train.distance < 2
+            true # nwe will always have a train besides a 1T
+          elsif owner == @nwe
+            owner.trains.count { |t| train_is_train?(t) && t.distance > 1 } > 1
+          else
+            owner.trains.count { |t| train_is_train?(t) } > 1
+          end
+        end
+
         def switcher_level
           @phase.name == 'D' ? 5 : @phase.name.delete('a').to_i
         end
@@ -1051,7 +1067,11 @@ module Engine
         # reorder based on cash
         def reorder_players
           @players.sort_by!(&:cash).reverse!
-          @log << "#{@players.first.name} has priority deal"
+          @log << '-- New player order: --'
+          @players.each.with_index do |p, idx|
+            pd = idx.zero? ? ' (Priority Deal)' : ''
+            @log << "#{p.name}#{pd}"
+          end
         end
 
         def new_start_auction_round
@@ -1974,7 +1994,7 @@ module Engine
               190p
               200
               220
-              240
+              240p
               260
               280
               300p
