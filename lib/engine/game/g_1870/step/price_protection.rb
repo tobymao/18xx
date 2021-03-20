@@ -28,7 +28,7 @@ module Engine
           def active_entities
             return [] if @round.sell_queue.empty?
 
-            [@round.sell_queue.first.president]
+            [price_protection_entity]
           end
 
           def purchasable_companies(_entity = nil)
@@ -36,7 +36,11 @@ module Engine
           end
 
           def price_protection
-            @round.sell_queue[0]
+            @round.sell_queue.dig(0, 0)
+          end
+
+          def price_protection_entity
+            @round.sell_queue.dig(0, 1)
           end
 
           def can_sell?
@@ -53,7 +57,7 @@ module Engine
           end
 
           def process_buy_shares(action)
-            bundle = @round.sell_queue.shift
+            bundle, = @round.sell_queue.shift
 
             player = action.entity
             price = bundle.price
@@ -82,7 +86,7 @@ module Engine
           end
 
           def process_pass(_action, forced = false)
-            bundle = @round.sell_queue.shift
+            bundle, corporation_owner = @round.sell_queue.shift
 
             corporation = bundle.corporation
             price = corporation.share_price.price
@@ -96,7 +100,7 @@ module Engine
 
             verb = forced ? 'can\'t' : 'doesn\'t'
             num_presentation = @game.share_pool.num_presentation(bundle)
-            @log << "#{corporation.owner.name} #{verb} price protect #{num_presentation} of #{corporation.name}"
+            @log << "#{corporation_owner.name} #{verb} price protect #{num_presentation} of #{corporation.name}"
 
             if current_ignore && !previous_ignore
               @log << "#{corporation.name} hits the ledge"
