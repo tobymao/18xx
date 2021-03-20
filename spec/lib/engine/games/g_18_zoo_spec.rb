@@ -203,6 +203,12 @@ module Engine
                 expect(game.hexes.map(&:coordinates)).to include(coordinate.to_s)
               end
             end
+
+            it 'should have only valid location names' do
+              game.class::LOCATION_NAMES_BY_MAP[variant.to_sym].each do |coordinate, _name|
+                expect(game.hexes.map(&:coordinates)).to include(coordinate.to_s)
+              end
+            end
           end
         end
       end

@@ -268,21 +268,21 @@ module Engine
         COMPANIES = [
           {
             sym: 'HOLIDAY',
-            name: 'Holiday (SR)',
+            name: 'Holiday',
             value: 3,
             desc: 'Choose a family, its reputation mark goes one tick to the right.',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
           },
           {
             sym: 'MIDAS',
-            name: 'Midas (SR)',
+            name: 'Midas',
             value: 2,
             desc: 'When turn order is appointed, seize the Priority (Squirrel 1).',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
           },
           {
             sym: 'TOO_MUCH_RESPONSIBILITY',
-            name: 'Too much responsibility (SR)',
+            name: 'Too much responsibility',
             value: 1,
             desc: 'Get 3$N.',
             abilities: [{ type: 'no_buy', owner_type: 'player' },
@@ -290,28 +290,28 @@ module Engine
           },
           {
             sym: 'LEPRECHAUN_POT_OF_GOLD',
-            name: 'Leprechaun pot of gold (SR)',
+            name: 'Leprechaun pot of gold',
             value: 2,
             desc: 'Earn 2$N now, and at the start of each SR.',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
           },
           {
             sym: 'IT_IS_ALL_GREEK_TO_ME',
-            name: 'It’s all greek to me (SR)',
+            name: 'It’s all greek to me',
             value: 2,
             desc: 'After your action in a SR, do another one.',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
           },
           {
             sym: 'WHATSUP',
-            name: 'Whatsup (SR)',
+            name: 'Whatsup',
             value: 3,
             desc: 'During SR, a family can buy the first available squirrel, deactivated. Reputation moves one tick.',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
           },
           {
             sym: 'RABBITS',
-            name: 'Rabbits (OR)',
+            name: 'Rabbits',
             value: 3,
             desc: 'Two bonus upgrades, even illegal or before the phase.',
             abilities: [
@@ -332,7 +332,7 @@ module Engine
           },
           {
             sym: 'MOLES',
-            name: 'Moles (OR)',
+            name: 'Moles',
             value: 3,
             desc: '4 special tiles, that can upgrade any plain tiles, even illegal.',
             abilities: [
@@ -353,7 +353,7 @@ module Engine
           },
           {
             sym: 'ANCIENT_MAPS',
-            name: 'Ancient maps (OR)',
+            name: 'Ancient maps',
             value: 1,
             desc: 'Build two additional yellow tiles.',
             abilities: [
@@ -374,13 +374,13 @@ module Engine
           },
           {
             sym: 'HOLE',
-            name: 'Hole (OR)',
+            name: 'Hole',
             value: 2,
             desc: 'Mark two R areas anywhere on the map, so they are connected.',
           },
           {
             sym: 'ON_DIET',
-            name: 'On diet (OR)',
+            name: 'On diet',
             value: 3,
             desc: 'Put a depot in addition to the allowed spaces.',
             abilities: [
@@ -396,7 +396,7 @@ module Engine
           },
           {
             sym: 'SPARKLING_GOLD',
-            name: 'Sparkling gold (OR)',
+            name: 'Sparkling gold',
             value: 1,
             desc: 'Get 2$N / 1$N when you build on a M / MM tile.',
             abilities: [
@@ -411,19 +411,19 @@ module Engine
           },
           {
             sym: 'THAT_IS_MINE',
-            name: "That's mine! (OR)",
+            name: "That's mine!",
             value: 2,
             desc: 'Book anywhere an open place for a station tile.',
           },
           {
             sym: 'WORK_IN_PROGRESS',
-            name: 'Work in progress (OR)',
+            name: 'Work in progress',
             value: 2,
             desc: 'Block anywhere a free place of a station tile.',
           },
           {
             sym: 'CORN',
-            name: 'Corn (OR)',
+            name: 'Corn',
             value: 2,
             desc: 'Chooses a tile with its own depot; the station worths +30.',
             abilities: [
@@ -442,7 +442,7 @@ module Engine
           },
           {
             sym: 'TWO_BARRELS',
-            name: 'Two barrels (OR)',
+            name: 'Two barrels',
             value: 2,
             desc: 'Use twice, to double the value of all O tiles – don’t collect the O in treasury.',
             abilities: [
@@ -458,26 +458,26 @@ module Engine
           },
           {
             sym: 'A_SQUEEZE',
-            name: 'A squeeze (OR)',
+            name: 'A squeeze',
             value: 2,
             desc: 'Take an additional 3$N if at least one squirrel runs an O.',
           },
           {
             sym: 'BANDAGE',
-            name: 'Bandage (OR)',
+            name: 'Bandage',
             value: 1,
             desc: 'Mark a squirrel – it runs as a 1S. It cannot be sold; but can be dismissed'\
             ' (otherwise family cannot purchase new squirrel).',
           },
           {
             sym: 'WINGS',
-            name: 'Wings (OR)',
+            name: 'Wings',
             value: 2,
             desc: 'During the run, a squirrel at will can skip a tokened-out station.',
           },
           {
             sym: 'A_SPOONFUL_OF_SUGAR',
-            name: 'A spoonful of sugar (OR)',
+            name: 'A spoonful of sugar',
             value: 3,
             desc: 'A squirrel at will runs one more station - not applicable to 4J or 2J.',
           },
@@ -624,8 +624,8 @@ module Engine
                  L17 I18] => '',
               %w[J9 M10 J17 D15 G14] => 'city=revenue:0,slots:1',
               %w[B11 B13 E18 G10 H9 H11 I2 K14 M12 M14] => 'town=revenue:0;label=O;icon=image:river,sticky:1',
-              %w[C12 H15 I14 D17] => 'label=M;upgrade=cost:1,terrain:mountain',
-              %w[D11 E10 F17 G18 J3 K18 M16] => 'label=MM;upgrade=cost:2,terrain:mountain',
+              %w[C12 H15 I14 D17] => 'upgrade=cost:1,terrain:mountain',
+              %w[D11 E10 F17 G18 J3 K18 M16] => 'upgrade=cost:2,terrain:mountain',
               %w[D9 F19 J15 K4] => TILE_Y,
             },
           },
@@ -658,8 +658,8 @@ module Engine
               %w[E7 F8 F12 F18 G5 G7 G9 G13 G15 H2 H8 H18 I5 I7 I9 I11 I13 I17 I19 J12 J14 K13 K17 L12 L18] => '',
               %w[G3 H6 J10 J18 M11] => 'city=revenue:0,slots:1',
               %w[F2 F16 G1 G11 H10 H12 I3 K15 M13 M15] => 'label=O;icon=image:river,sticky:1',
-              %w[H16 I15 J6] => 'label=M;upgrade=cost:1,terrain:mountain',
-              %w[G19 J4 K7 K19 M17] => 'label=MM;upgrade=cost:2,terrain:mountain',
+              %w[H16 I15 J6] => 'upgrade=cost:1,terrain:mountain',
+              %w[G19 J4 K7 K19 M17] => 'upgrade=cost:2,terrain:mountain',
               %w[F6 F20 J16 K5] => TILE_Y,
             },
           },
@@ -690,8 +690,8 @@ module Engine
               %w[C10 C16 D11 D15 D17 E4 E14 F5 F13 F15 F17 G4 G8 G12 G14 G16 H5 H7 H9 H13 I2 I8 I18 J5 J7] => '',
               %w[D5 E16 H3 H15 I6] => 'city=revenue:0,slots:1',
               %w[C12 C14 D9 E6 F19 G2 H1 H11 I10 I12 J3] => 'label=O;icon=image:river,sticky:1',
-              %w[D13 E18 F9 I16 K6] => 'label=M;upgrade=cost:1,terrain:mountain',
-              %w[D7 E8 E12 F11 G18 H19 K4 L7] => 'label=MM;upgrade=cost:2,terrain:mountain',
+              %w[D13 E18 F9 I16 K6] => 'upgrade=cost:1,terrain:mountain',
+              %w[D7 E8 E12 F11 G18 H19 K4 L7] => 'upgrade=cost:2,terrain:mountain',
               %w[B11 E10 G6 G20 L5] => TILE_Y,
             },
           },
@@ -729,8 +729,8 @@ module Engine
                  J14 K13 K17 L12 L18] => '',
               %w[D16 G3 G15 H6 J10 J18 M11] => 'city=revenue:0,slots:1',
               %w[B12 B14 E19 F2 G1 G11 H10 H12 I3 K15 M13 M15] => 'label=O;icon=image:river,sticky:1',
-              %w[C13 D18 H16 I15 J6] => 'label=M;upgrade=cost:1,terrain:mountain',
-              %w[D12 E11 F18 G19 J4 K7 K19 M17] => 'label=MM;upgrade=cost:2,terrain:mountain',
+              %w[C13 D18 H16 I15 J6] => 'upgrade=cost:1,terrain:mountain',
+              %w[D12 E11 F18 G19 J4 K7 K19 M17] => 'upgrade=cost:2,terrain:mountain',
               %w[D10 F6 F20 J16 K5] => TILE_Y,
             },
           },
@@ -765,8 +765,8 @@ module Engine
               %w[D4 E5 F4 F8 F12 F14 F16 G5 G7 G9 G13 H2 H8 H18 I5 I7 I9 I11 I13 I17 I19 J12 J14 K13 K17 L12 L18] => '',
               %w[C5 G3 G15 H6 J10 J18 M11] => 'city=revenue:0,slots:1',
               %w[D6 E17 E19 F2 G1 G11 H10 H12 I3 K15 M13 M15] => 'label=O;icon=image:river,sticky:1',
-              %w[H16 I15 J6] => 'label=M;upgrade=cost:1,terrain:mountain',
-              %w[C7 F18 G19 J4 K7 K19 M17] => 'label=MM;upgrade=cost:2,terrain:mountain',
+              %w[H16 I15 J6] => 'upgrade=cost:1,terrain:mountain',
+              %w[C7 F18 G19 J4 K7 K19 M17] => 'upgrade=cost:2,terrain:mountain',
               %w[F6 F20 J16 K5] => TILE_Y,
             },
           },
@@ -804,8 +804,8 @@ module Engine
                  K14 L17] => '',
               %w[D5 E16 H3 H15 I6 K10 K18] => 'city=revenue:0,slots:1',
               %w[C12 C14 D9 E6 F19 G2 H1 H11 I10 I12 J3 L15 L17] => 'label=O;icon=image:river,sticky:1',
-              %w[D13 E18 F9 I16 K6] => 'label=M;upgrade=cost:1,terrain:mountain',
-              %w[D7 E8 E12 F11 G18 H19 K4 L7] => 'label=MM;upgrade=cost:2,terrain:mountain',
+              %w[D13 E18 F9 I16 K6] => 'upgrade=cost:1,terrain:mountain',
+              %w[D7 E8 E12 F11 G18 H19 K4 L7] => 'upgrade=cost:2,terrain:mountain',
               %w[B11 E10 G6 G20 K16 L5] => TILE_Y,
             },
           },
@@ -887,6 +887,89 @@ module Engine
             'TI' => 'H15',
             'BB' => 'I6',
             'EL' => 'D5',
+          },
+        }.freeze
+
+        LOCATION_NAMES_BY_MAP = {
+          map_a: {
+            'D11': 'MM',
+            'E10': 'MM',
+            'F17': 'MM',
+            'G18': 'MM',
+            'J3': 'MM',
+            'K18': 'MM',
+            'M16': 'MM',
+            'C12': 'M',
+            'H15': 'M',
+            'I14': 'M',
+            'D17': 'M',
+          },
+          map_b: {
+            "H16": 'M',
+            "I15": 'M',
+            "J6": 'M',
+            "G19": 'MM',
+            "J4": 'MM',
+            "K7": 'MM',
+            "K19": 'MM',
+            "M17": 'MM',
+          },
+          map_c: {
+            "D13": 'M',
+            "E18": 'M',
+            "F9": 'M',
+            "I16": 'M',
+            "K6": 'M',
+            "D7": 'MM',
+            "E8": 'MM',
+            "E12": 'MM',
+            "F11": 'MM',
+            "G18": 'MM',
+            "H19": 'MM',
+            "K4": 'MM',
+            "L7": 'MM',
+          },
+          map_d: {
+            "C13": 'M',
+            "D18": 'M',
+            "H16": 'M',
+            "I15": 'M',
+            "J6": 'M',
+            "D12": 'MM',
+            "E11": 'MM',
+            "F18": 'MM',
+            "G19": 'MM',
+            "J4": 'MM',
+            "K7": 'MM',
+            "K19": 'MM',
+            "M17": 'MM',
+          },
+          map_e: {
+            "H16": 'M',
+            "I15": 'M',
+            "J6": 'M',
+            "C7": 'MM',
+            "F18": 'MM',
+            "G19": 'MM',
+            "J4": 'MM',
+            "K7": 'MM',
+            "K19": 'MM',
+            "M17": 'MM',
+          },
+          map_f: {
+            "D13": 'M',
+            "E18": 'M',
+            "F9": 'M',
+            "I16": 'M',
+            "K6": 'M',
+            "D7": 'MM',
+            "E8": 'MM',
+            "E12": 'MM',
+            "F11": 'MM',
+            "G18": 'MM',
+            "H19": 'MM',
+            "K4": 'MM',
+            "L7": 'MM',
           },
         }.freeze
 
@@ -998,6 +1081,11 @@ module Engine
         # use to modify hexes based on optional rules
         def optional_hexes
           self.class::HEXES_BY_MAP[@map]
+        end
+
+        # use to modify location names based on optional rules
+        def location_name(coord)
+          self.class::LOCATION_NAMES_BY_MAP[@map][coord]
         end
 
         def purchasable_companies(entity = nil)
@@ -1266,6 +1354,16 @@ module Engine
           end
         end
 
+        def company_header(company)
+          case company.sym
+          when 'HOLIDAY', 'MIDAS', 'TOO_MUCH_RESPONSIBILITY', 'LEPRECHAUN_POT_OF_GOLD',
+            'IT_IS_ALL_GREEK_TO_ME', 'WHATSUP'
+            'POWER (SR)'
+          else
+            'POWER (OR)'
+          end
+        end
+
         private
 
         def init_round
@@ -1388,7 +1486,8 @@ module Engine
 
         def operating_round(round_num)
           Engine::Game::G18ZOO::Round::Operating.new(self, [
-            Engine::Step::SpecialTrack,
+            # G18ZOO::Step::AssignOnOwnTokens, # TODO: check if add new step or change Assign ability
+            Engine::Step::SpecialTrack, # TODO: check if add step G18ZOO::Step::SpecialTrack or not
             G18ZOO::Step::BuyOrUsePowerOnOr,
             G18ZOO::Step::BuyCompany,
             G18ZOO::Step::Track,
@@ -1400,22 +1499,6 @@ module Engine
             [G18ZOO::Step::BuyOrUsePowerOnOr, blocks: true],
           ], round_num: round_num)
         end
-
-        # TODO: will change into
-        # def operating_round(round_num)
-        #   Engine::Game::G18ZOO::Round::Operating.new(self, [
-        #     G18ZOO::Step::AssignOnOwnTokens,
-        #     G18ZOO::Step::SpecialTrack,
-        #     G18ZOO::Step::BuyCompany,
-        #     G18ZOO::Step::Track,
-        #     G18ZOO::Step::Token,
-        #     G18ZOO::Step::Route,
-        #     G18ZOO::Step::Dividend,
-        #     Engine::Step::DiscardTrain,
-        #     G18ZOO::Step::BuyTrain,
-        #     [G18ZOO::Step::BuyCompany, blocks: true],
-        #   ], round_num: round_num)
-        # end
 
         def round_description(name, round_number = nil)
           round_number ||= @round.round_num
