@@ -760,7 +760,7 @@ module Engine
             end
         end
 
-        def upgrades_to?(from, to, _special = false)
+        def upgrades_to?(from, to, _special = false, _selected_company = nil)
           return false if to.name == '171K' && from.hex.name != 'B11'
           return false if to.name == '172L' && from.hex.name != 'C18'
 

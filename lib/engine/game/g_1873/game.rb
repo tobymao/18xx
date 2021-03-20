@@ -1296,7 +1296,7 @@ module Engine
           DOUBLE_LAY_TILES.include?(tile.name)
         end
 
-        def upgrades_to?(from, to, special = false)
+        def upgrades_to?(from, to, special = false, _selected_company = nil)
           # correct color progression?
           if !(reserved_tiles[from.hex.id] && reserved_tiles[from.hex.id][:tile] == to) &&
             (Engine::Tile::COLORS.index(to.color) != (Engine::Tile::COLORS.index(from.color) + 1))

@@ -2749,7 +2749,7 @@ module Engine
           end
         end
 
-        def upgrades_to?(from, to, special = false)
+        def upgrades_to?(from, to, _special = false, selected_company: nil)
           return true if from.color == :white && to.color == :red
           if purple_tile?(to) && from.towns.size == 2 && !to.towns.empty? && from.color == :yellow && to.color == :green
             return true

@@ -583,7 +583,7 @@ module Engine
           return to == '116' if from == :brown
         end
 
-        def upgrades_to?(from, to, special = false)
+        def upgrades_to?(from, to, _special = false, selected_company: nil)
           case from.hex.name
           when OMAHA_HEX
             return omaha_upgrade(to.name, from.color)
@@ -606,7 +606,7 @@ module Engine
           super
         end
 
-        def all_potential_upgrades(tile, tile_manifest: false)
+        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
           upgrades = super
           return upgrades unless tile_manifest
 

@@ -643,7 +643,7 @@ module Engine
           end
         end
 
-        def upgrades_to?(from, to, special = false)
+        def upgrades_to?(from, to, _special = false, selected_company: nil)
           super && (from.hex.id != 'B14' || @messina_upgradeable)
         end
 

@@ -1315,7 +1315,7 @@ module Engine
           entity.type == :national ? 'Nat’l' : entity.type.capitalize
         end
 
-        def upgrades_to?(from, to, special = false)
+        def upgrades_to?(from, to, _special = false, selected_company: nil)
           # O labelled tile upgrades to Ys until Grey
           return super unless self.class::HEX_WITH_O_LABEL.include?(from.hex.name)
 

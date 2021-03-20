@@ -879,7 +879,7 @@ module Engine
           @passers_first_stock_round = []
         end
 
-        def upgrades_to?(from, to, special = false)
+        def upgrades_to?(from, to, _special = false, selected_company: nil)
           return super unless TILE_BLOCK.include?(from.hex.name)
           return super if from.hex.tile.icons.empty?
 

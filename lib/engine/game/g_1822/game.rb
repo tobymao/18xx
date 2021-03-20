@@ -2501,7 +2501,7 @@ module Engine
 
         attr_accessor :bidding_token_per_player, :player_debts
 
-        def all_potential_upgrades(tile, tile_manifest: false)
+        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
           upgrades = super
           return upgrades unless tile_manifest
 
@@ -3197,7 +3197,7 @@ module Engine
           end
         end
 
-        def upgrades_to?(from, to, special = false)
+        def upgrades_to?(from, to, _special = false, selected_company: nil)
           # Check the S hex and potential upgrades
           if self.class::UPGRADABLE_S_HEX_NAME == from.hex.name && from.color == :white
             return self.class::UPGRADABLE_S_YELLOW_CITY_TILE == to.name

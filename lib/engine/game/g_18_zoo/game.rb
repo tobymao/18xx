@@ -1047,12 +1047,26 @@ module Engine
           @round.bonus_tracks.times.map { |_| { lay: true } } if @round.bonus_tracks.positive?
         end
 
-        def upgrades_to?(from, to, special = nil)
-          return super if @round.is_a?(Engine::Round::Operating)
-
+        def upgrades_to?(from, to, special = false, selected_company = nil)
+          # Stock - Home Track
           return @round.available_tracks.include?(to.name) &&
             Engine::Tile::COLORS.index(to.color) > Engine::Tile::COLORS.index(from.color) &&
-            from.paths_are_subset_of?(to.paths) if @round.available_tracks.any?
+            from.paths_are_subset_of?(to.paths) if @round.is_a?(Engine::Round::Stock) && @round.available_tracks.any?
+
+          # Operating - Rabbits
+          if @round.is_a?(Engine::Round::Operating) && selected_company == :rabbits
+            # TODO: fix to use selected_company
+            return super
+          end
+
+          # Operating - Moles
+          if @round.is_a?(Engine::Round::Operating) && selected_company == :moles
+            # TODO: fix to use selected_company
+            return super
+          end
+
+          # Stock - Bonus Track, Operating - Ancient Maps, Operating - Track
+          # TODO: fix to use selected_company
 
           super
         end
