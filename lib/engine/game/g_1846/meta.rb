@@ -16,6 +16,14 @@ module Engine
         GAME_PUBLISHER = %i[gmt_games golden_spike].freeze
         GAME_RULES_URL = 'https://s3-us-west-2.amazonaws.com/gmtwebsiteassets/1846/1846-RULES-GMT.pdf'
         GAME_SUBTITLE = 'The Race for the Midwest'
+        GAME_VARIANTS = [
+          {
+            sym: :two_player,
+            name: '2p Variant',
+            title: '1846 2p Variant',
+            desc: 'unofficial rules for two players',
+          },
+        ].freeze
 
         PLAYER_RANGE = [3, 5].freeze
       end

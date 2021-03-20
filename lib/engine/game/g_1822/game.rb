@@ -2563,7 +2563,7 @@ module Engine
           merthyr_tydfil_pontypool = {}
 
           routes.each do |route|
-            if route.train.local? && !route.connections.empty?
+            if route.train.local? && !route.chains.empty?
               local_token_hex.concat(route.visited_stops.select(&:city?).map { |n| n.hex.id })
             end
 
@@ -3181,7 +3181,8 @@ module Engine
         end
 
         def upgrade_cost(tile, hex, entity)
-          abilities = entity.all_abilities.select do |a|
+          operator = entity.company? ? entity.owner : entity
+          abilities = operator.all_abilities.select do |a|
             a.type == :tile_discount && (!a.hexes || a.hexes.include?(hex.name))
           end
 
@@ -3189,7 +3190,7 @@ module Engine
             total_cost = upgrade.cost
             abilities.each do |ability|
               discount = ability && upgrade.terrains.uniq == [ability.terrain] ? ability.discount : 0
-              log_cost_discount(entity, ability, discount)
+              log_cost_discount(operator, ability, discount)
               total_cost -= discount
             end
             total_cost
