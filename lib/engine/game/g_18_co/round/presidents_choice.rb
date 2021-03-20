@@ -16,7 +16,6 @@ module Engine
           end
 
           def setup
-            @game.next_turn!
             start_entity
           end
 
@@ -28,7 +27,6 @@ module Engine
             return if action.free?
 
             if action.pass?
-              @game.next_turn!
               @entities.delete(action.entity)
               return finish_round if finished?
 
@@ -41,6 +39,7 @@ module Engine
           end
 
           def passed_next_entity_index!
+            @game.next_turn!
             @entity_index = @entity_index % @entities.size
           end
 

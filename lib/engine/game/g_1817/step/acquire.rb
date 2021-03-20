@@ -500,6 +500,7 @@ module Engine
           end
 
           def setup_auction
+            @game.next_turn!
             super
             if @round.offering.none?
               pass!
