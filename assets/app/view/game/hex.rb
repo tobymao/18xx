@@ -77,7 +77,7 @@ module View
           children.insert(1, h(:polygon, attrs: attrs))
         end
 
-        children << hex_highlight if @highlight
+        children.insert(2, hex_highlight) if @highlight
 
         props = {
           key: @hex.id,
@@ -94,7 +94,7 @@ module View
         props[:on] = { click: ->(e) { on_hex_click(e) } }
         props[:attrs]['stroke-width'] = 5 if @selected
 
-        h(:g, props, children.flatten)
+        h(:g, props, children)
       end
 
       def hex_outline
@@ -116,15 +116,21 @@ module View
       end
 
       def hex_highlight
-        polygon_props = { attrs: { points: HIGHLIGHT_POINTS } }
-        polygon_props[:attrs]['fill-opacity'] = 0
-        polygon_props[:attrs]['stroke-dasharray'] = 10
-        polygon_props[:attrs]['stroke-width'] = HIGHLIGHT_STROKE_WIDTH
+        polygon_props = {
+          attrs: {
+            points: HIGHLIGHT_POINTS,
+            'fill-opacity': 0,
+            pathLength: 576, # 6*96, total length of polygon border => easier dasharray arithmetic
+            'stroke-dasharray': 16,
+            'stroke-dashoffset': 8,
+            'stroke-width': HIGHLIGHT_STROKE_WIDTH,
+          },
+        }
         if (color = @tile&.frame&.color)
           polygon_props[:attrs]['stroke'] = contrast_on(color)
         end
 
-        [h(:polygon, polygon_props)]
+        h(:polygon, polygon_props)
       end
 
       def translation
