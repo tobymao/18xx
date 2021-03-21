@@ -1047,7 +1047,7 @@ module Engine
           @round.bonus_tracks.times.map { |_| { lay: true } } if @round.bonus_tracks.positive?
         end
 
-        def upgrades_to?(from, to, special = false, selected_company = nil)
+        def upgrades_to?(from, to, special = false, selected_company: nil)
           # Stock - Home Track
           return @round.available_tracks.include?(to.name) &&
             Engine::Tile::COLORS.index(to.color) > Engine::Tile::COLORS.index(from.color) &&

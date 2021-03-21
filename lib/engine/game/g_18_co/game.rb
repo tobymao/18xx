@@ -1352,7 +1352,7 @@ module Engine
           str
         end
 
-        def upgrades_to?(from, to, special = false, _selected_company = nil)
+        def upgrades_to?(from, to, special = false, selected_company: nil)
           return true if special && from.hex.tile.color == :yellow && GREEN_CITY_TILES.include?(to.name)
 
           # Green towns can't be upgraded to brown cities unless the hex has the upgrade icon

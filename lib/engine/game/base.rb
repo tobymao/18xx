@@ -1236,7 +1236,7 @@ module Engine
         self.class::TILE_LAYS
       end
 
-      def upgrades_to?(from, to, special = false, _selected_company = nil)
+      def upgrades_to?(from, to, special = false, selected_company: nil)
         # correct color progression?
         return false unless Engine::Tile::COLORS.index(to.color) == (Engine::Tile::COLORS.index(from.color) + 1)
 
