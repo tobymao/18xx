@@ -674,6 +674,8 @@ module Engine
       end
 
       def next_turn!
+        return if @turn_start_action_id == current_action_id
+
         @last_turn_start_action_id = @turn_start_action_id
         @turn_start_action_id = current_action_id
       end
@@ -736,7 +738,7 @@ module Engine
         end
       end
 
-      def after_buy_company(player, company)
+      def after_buy_company(player, company, _price)
         abilities(company, :shares) do |ability|
           ability.shares.each do |share|
             if share.president

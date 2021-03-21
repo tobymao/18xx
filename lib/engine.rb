@@ -23,7 +23,9 @@ module Engine
 
   GAME_METAS = GAME_META_BY_TITLE.values
 
-  VISIBLE_GAMES = GAME_METAS.select { |g_m| %i[alpha beta production].include?(g_m::DEV_STAGE) }
+  VISIBLE_GAMES = GAME_METAS.select do |game_meta|
+    !game_meta::GAME_IS_VARIANT_OF && %i[alpha beta production].include?(game_meta::DEV_STAGE)
+  end
 
   def self.game_by_title(title)
     title = closest_title(title)
@@ -48,22 +50,36 @@ module Engine
   end
 
   def self.closest_title(title)
+    return VISIBLE_GAMES.first.title unless title
+    return @fuzzy_titles[title] if @fuzzy_titles[title]
+
     title = title.upcase
-
-    @fuzzy_titles[title] ||= GAME_METAS.max_by do |m|
-      titles = [
-        m.title,
-        m::GAME_LOCATION,
-        m::GAME_SUBTITLE,
-        m.name.split('::')[-2],
-        *m::GAME_ALIASES,
-      ].compact
-
-      titles = titles.concat(titles.map { |t| t.sub(/^G?18/, '') }).uniq
-
-      titles.map do |t|
-        JaroWinkler.distance(title, t.upcase)
+    @fuzzy_titles[title] ||= fuzzy_candidates.max_by do |_, candidates|
+      candidates.map do |candidate|
+        JaroWinkler.distance(title, candidate)
       end.max
-    end.title
+    end.first
+  end
+
+  def self.fuzzy_candidates
+    @fuzzy_candidates ||= GAME_METAS.map do |m|
+      module_name = m.name.split('::')[-2]
+
+      candidates = [
+        m.title,
+        m.full_title,
+        m::GAME_SUPERTITLE,
+        m::GAME_SUBTITLE,
+        module_name,
+        module_name.sub(/^G/, ''),
+        module_name.sub(/^G18/, ''),
+        *m::GAME_ALIASES,
+        m::GAME_LOCATION,
+      ].flatten.compact.map(&:upcase).uniq
+      candidates.concat(candidates.flat_map { |c| c.split(/[:,. ]+/) })
+      candidates = candidates.uniq.reject(&:empty?)
+
+      [m.title, candidates]
+    end.to_h
   end
 end

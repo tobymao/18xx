@@ -29,7 +29,7 @@ module Engine
         @blockers = []
 
         @inner = (restrict == 'outer' ? [] : (@a..(@b - 1)).to_a)
-        @outer = (restrict == 'inner' ? [] : (0..5).to_a - inner)
+        @outer = (restrict == 'inner' ? [] : (0..5).to_a - (@a..(@b - 1)).to_a)
       end
 
       def add_blocker!(private_company)

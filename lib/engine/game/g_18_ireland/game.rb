@@ -1,15 +1,19 @@
 # frozen_string_literal: true
 
-require_relative '../g_1849/game'
+require_relative '../g_1849/map'
 require_relative 'meta'
 require_relative 'entities'
 
 module Engine
   module Game
     module G18Ireland
-      class Game < G1849::Game
+      class Game < Game::Base
         include_meta(G18Ireland::Meta)
         include G18Ireland::Entities
+        include G1849::Map
+
+        CAPITALIZATION = :incremental
+        HOME_TOKEN_TIMING = :float
 
         CURRENCY_FORMAT_STR = '£%d'
 
@@ -30,18 +34,97 @@ module Engine
           %w[0c 20y 24y 30y 38y],
         ].freeze
 
-        # @todo: all the following code will disappear after removing dependency on 1849
-        def setup
-          @corporations[0].next_to_par = true
+        # @todo: these are wrong
+        PHASES = [
+          {
+            name: '4H',
+            train_limit: 4,
+            tiles: [:yellow],
+            operating_rounds: 1,
+            status: ['gray_uses_white'],
+          },
+          {
+            name: '6H',
+            on: '6H',
+            train_limit: 4,
+            tiles: %i[yellow green],
+            operating_rounds: 2,
+            status: %w[gray_uses_white can_buy_companies],
+          },
+          {
+            name: '8H',
+            on: '8H',
+            train_limit: 3,
+            tiles: %i[yellow green],
+            operating_rounds: 2,
+            status: %w[gray_uses_gray can_buy_companies],
+          },
+          {
+            name: '10H',
+            on: '10H',
+            train_limit: 2,
+            tiles: %i[yellow green brown],
+            operating_rounds: 3,
+            status: %w[gray_uses_gray can_buy_companies],
+          },
+          {
+            name: '12H',
+            on: '12H',
+            train_limit: 2,
+            tiles: %i[yellow green brown],
+            operating_rounds: 3,
+            status: ['gray_uses_black'],
+          },
+          {
+            name: '16H',
+            on: '16H',
+            train_limit: 2,
+            tiles: %i[yellow green brown],
+            operating_rounds: 3,
+            status: %w[gray_uses_black blue_zone],
+          },
+        ].freeze
 
-          @available_par_groups = %i[par]
+        # @todo: these are wrong
+        TRAINS = [{ name: '2H', num: 7, distance: 2, price: 100, rusts_on: '6H' },
+                  { name: '4H', num: 5, distance: 4, price: 100, rusts_on: '8H' },
+                  {
+                    name: '6H',
+                    num: 2,
+                    distance: 6,
+                    price: 200,
+                    rusts_on: '10H',
+                  },
+                  { name: '8H', num: 2, distance: 8, price: 350, rusts_on: '16H' },
+                  {
+                    name: '10H',
+                    num: 2,
+                    distance: 10,
+                    price: 550,
+                    events: [{ 'type' => 'brown_par' }],
+                  },
+                  {
+                    name: '12H',
+                    num: 1,
+                    distance: 12,
+                    price: 800,
+                    events: [{ 'type' => 'close_companies' }, { 'type' => 'earthquake' }],
+                  },
+                  { name: '16H', num: 2, distance: 16, price: 1100 }].freeze
 
-          @player_debts = Hash.new { |h, k| h[k] = 0 }
-          @moved_this_turn = []
+        def home_token_locations(corporation)
+          hexes.select do |hex|
+            hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
+          end
         end
 
-        def float_str(entity)
-          "#{entity.percent_to_float}% to float" if entity.corporation? && entity.floatable
+        def stock_round
+          Round::Stock.new(self, [
+            Engine::Step::DiscardTrain,
+            Engine::Step::Exchange,
+            Engine::Step::HomeToken,
+            Engine::Step::BuySellParShares,
+          ])
         end
       end
     end

@@ -299,10 +299,11 @@ module Engine
             description = "Mine in #{gm[:coordinates]}. Machine revenue: "\
               "#{gm[:extended][:machine_revenue].join('/')}. Switcher revenue: "\
               "#{gm[:extended][:switcher_revenue].join('/')}"
+            revenue = "#{format_currency(gm[:extended][:machine_revenue].first)} - "\
+              "#{format_currency(gm[:extended][:machine_revenue].last + gm[:extended][:switcher_revenue].last)}"
 
-            Company.new(sym: gm[:sym], name: gm[:name], value: gm[:extended][:value],
-                        revenue: gm[:extended][:machine_revenue].last + gm[:extended][:switcher_revenue].last,
-                        desc: description)
+            Company.new(sym: gm[:sym], name: "#{gm[:sym]} #{gm[:name]}", value: gm[:extended][:value],
+                        revenue: revenue, desc: description)
           end
           corp_comps = game_corporations.map do |gc|
             next if gc[:sym] == 'MHE'
@@ -315,7 +316,7 @@ module Engine
               description = "Purchase Option for Public Mining Company #{gc[:name]}"
               name = "#{gc[:sym]} Purchase Option"
             end
-            Company.new(sym: gc[:sym], name: name, value: RAILWAY_MIN_BID, desc: description)
+            Company.new(sym: gc[:sym], name: name, value: RAILWAY_MIN_BID, revenue: 'NA', desc: description)
           end.compact
           mine_comps + corp_comps
         end
@@ -415,6 +416,10 @@ module Engine
           end
         end
 
+        def company_revenue_str(company)
+          company.revenue
+        end
+
         def skip_token?(_graph, corporation, city)
           # diesel graph
           return false if corporation.coordinates.include?(city.hex.id) # never skip home tokens
@@ -503,8 +508,10 @@ module Engine
 
           super
 
+          return unless old_owner == @depot
+
           add_switcher! if train_is_switcher?(train)
-          add_subtrains!(train) if railway?(operator) && old_owner == @depot
+          add_subtrains!(train) if railway?(operator)
         end
 
         def mhe_buy_train
@@ -559,6 +566,22 @@ module Engine
           @supertrains[new_train] = train
           @depot.trains << new_train
           new_train
+        end
+
+        # can't buy last train from railway (last 2+ train from NWE)
+        def can_sell_train?(train)
+          owner = train.owner
+          return true unless railway?(owner)
+          return true if owner == @qlb
+          return true unless train_is_train?(train)
+
+          if owner == @nwe && train.distance < 2
+            true # nwe will always have a train besides a 1T
+          elsif owner == @nwe
+            owner.trains.count { |t| train_is_train?(t) && t.distance > 1 } > 1
+          else
+            owner.trains.count { |t| train_is_train?(t) } > 1
+          end
         end
 
         def switcher_level
@@ -628,29 +651,26 @@ module Engine
           minor.owner = nil
 
           # flip token to closed side
-          open_name = "#{minor.id}_open"
           closed_image = "1873/#{minor.id}_closed"
-          @hexes.each do |hex|
-            if (icon = hex.tile.icons.find { |i| i.name == open_name })
-              hex.tile.icons[hex.tile.icons.find_index(icon)] =
-                Part::Icon.new(closed_image, nil, true, nil, hex.tile.preprinted)
-            end
-          end
+          tile = hex_by_id(minor.coordinates).tile
+          return unless (icon = tile.icons.find(&:large))
+
+          tile.icons[tile.icons.find_index(icon)] =
+            Part::Icon.new(closed_image, nil, true, nil, tile.preprinted, large: true, owner: nil)
         end
 
+        # also used for ownership change
         def open_mine!(minor)
-          @log << "#{minor.name} is opened"
+          @log << "#{minor.name} is opened" unless @minor_info[minor][:open]
           @minor_info[minor][:open] = true
 
           # flip token to open side
-          closed_name = "#{minor.id}_closed"
           open_image = "1873/#{minor.id}_open"
-          @hexes.each do |hex|
-            if (icon = hex.tile.icons.find { |i| i.name == closed_name })
-              hex.tile.icons[hex.tile.icons.find_index(icon)] =
-                Part::Icon.new(open_image, nil, true, nil, hex.tile.preprinted)
-            end
-          end
+          tile = hex_by_id(minor.coordinates).tile
+          return unless (icon = tile.icons.find(&:large))
+
+          tile.icons[tile.icons.find_index(icon)] =
+            Part::Icon.new(open_image, nil, true, nil, tile.preprinted, large: true, owner: minor.owner)
         end
 
         def insolvent!(entity)
@@ -1054,7 +1074,11 @@ module Engine
         # reorder based on cash
         def reorder_players
           @players.sort_by!(&:cash).reverse!
-          @log << "#{@players.first.name} has priority deal"
+          @log << '-- New player order: --'
+          @players.each.with_index do |p, idx|
+            pd = idx.zero? ? ' (Priority Deal)' : ''
+            @log << "#{p.name}#{pd}"
+          end
         end
 
         def new_start_auction_round
@@ -1652,7 +1676,7 @@ module Engine
         def check_other(route)
           # make sure routes from same supertrain intersect
           super_routes = route.routes.reject do |r|
-            r.connections.empty? ||
+            r.chains.empty? ||
               @supertrains[route.train] != @supertrains[r.train]
           end
           check_intersection(@supertrains[route.train], super_routes)
@@ -1866,11 +1890,11 @@ module Engine
             'B19' => 'Halberstadt',
             'C4' => 'Brocken',
             'C6' => 'Knaupsholz',
-            'C12' => 'Bezingerode',
+            'C12' => 'Benzingerode',
             'C14' => 'Heimburg',
             'C16' => 'Langenstein',
             'D5' => 'Schierke',
-            'D7' => 'Drie Annen Hohne',
+            'D7' => 'Drei Annen Hohne',
             'D9' => 'Elbingerode',
             'D11' => 'Hüttenrode',
             'D13' => 'Braunesumpf',
@@ -1911,10 +1935,10 @@ module Engine
 
         def game_tiles
           {
-            '77' => 2,
+            '77' => 'unlimited',
             '78' => 'unlimited',
             '79' => 'unlimited',
-            '75' => 4,
+            '75' => 'unlimited',
             '76' => 'unlimited',
             '956' => 'unlimited',
             '957' => 2,
@@ -1977,7 +2001,7 @@ module Engine
               190p
               200
               220
-              240
+              240p
               260
               280
               300p
@@ -2006,7 +2030,7 @@ module Engine
           [
             {
               sym: '1',
-              name: 'Mine 1 (V-H)',
+              name: 'Königshütte (V-H)',
               logo: '1873/1',
               simple_logo: '1873/1.alt',
               tokens: [],
@@ -2024,7 +2048,7 @@ module Engine
             },
             {
               sym: '2',
-              name: 'Mine 2',
+              name: 'Wurmberg',
               logo: '1873/2',
               simple_logo: '1873/2.alt',
               tokens: [],
@@ -2042,7 +2066,7 @@ module Engine
             },
             {
               sym: '3',
-              name: 'Mine 3',
+              name: 'Silberhütte',
               logo: '1873/3',
               simple_logo: '1873/3.alt',
               tokens: [],
@@ -2060,7 +2084,7 @@ module Engine
             },
             {
               sym: '4',
-              name: 'Mine 4 (V-H)',
+              name: 'Hüttenrode (V-H)',
               logo: '1873/4',
               simple_logo: '1873/4.alt',
               tokens: [],
@@ -2078,7 +2102,7 @@ module Engine
             },
             {
               sym: '5',
-              name: 'Mine 5 (V-H)',
+              name: 'Braunesumpf (V-H)',
               logo: '1873/5',
               simple_logo: '1873/5.alt',
               tokens: [],
@@ -2096,7 +2120,7 @@ module Engine
             },
             {
               sym: '6',
-              name: 'Mine 6 (V-H)',
+              name: 'Rübeland (V-H)',
               logo: '1873/6',
               simple_logo: '1873/6.alt',
               tokens: [],
@@ -2114,7 +2138,7 @@ module Engine
             },
             {
               sym: '7',
-              name: 'Mine 7',
+              name: 'Lindenberg',
               logo: '1873/7',
               simple_logo: '1873/7.alt',
               tokens: [],
@@ -2132,7 +2156,7 @@ module Engine
             },
             {
               sym: '8',
-              name: 'Mine 8',
+              name: 'Netzkater',
               logo: '1873/8',
               simple_logo: '1873/8.alt',
               tokens: [],
@@ -2150,7 +2174,7 @@ module Engine
             },
             {
               sym: '9',
-              name: 'Mine 9',
+              name: 'Wieda',
               logo: '1873/9',
               simple_logo: '1873/9.alt',
               tokens: [],
@@ -2168,7 +2192,7 @@ module Engine
             },
             {
               sym: '10',
-              name: 'Mine 10 (V-H)',
+              name: 'Elbingerode (V-H)',
               logo: '1873/10',
               simple_logo: '1873/10.alt',
               tokens: [],
@@ -2179,14 +2203,14 @@ module Engine
                 vor_harzer: true,
                 machine_revenue: [60, 90, 120, 150, 180],
                 switcher_revenue: [30, 40, 50, 60],
-                multiplier: 10,
+                multiplier: 30,
                 connected: false,
                 open: true,
               },
             },
             {
               sym: '11',
-              name: 'Mine 11 (V-H)',
+              name: 'Tanne (V-H)',
               logo: '1873/11',
               simple_logo: '1873/11.alt',
               tokens: [],
@@ -2204,7 +2228,7 @@ module Engine
             },
             {
               sym: '12',
-              name: 'Mine 12 (V-H)',
+              name: 'Blankenburg (V-H)',
               logo: '1873/12',
               simple_logo: '1873/12.alt',
               tokens: [],
@@ -2222,7 +2246,7 @@ module Engine
             },
             {
               sym: '13',
-              name: 'Mine 13',
+              name: 'Harzgerode',
               logo: '1873/13',
               simple_logo: '1873/13.alt',
               tokens: [],
@@ -2240,7 +2264,7 @@ module Engine
             },
             {
               sym: '14',
-              name: 'Mine 14 (V-H)',
+              name: 'Zorge (V-H)',
               logo: '1873/14',
               simple_logo: '1873/14.alt',
               tokens: [],
@@ -2258,7 +2282,7 @@ module Engine
             },
             {
               sym: '15',
-              name: 'Mine 15',
+              name: 'Thale',
               logo: '1873/15',
               simple_logo: '1873/15.alt',
               tokens: [],
@@ -2697,7 +2721,7 @@ module Engine
                 I8
               ] => 'town=revenue:0;upgrade=cost:150,terrain:mountain;icon=image:1873/NWE,sticky:1;'\
                   'border=edge:2,type:impassable;'\
-                  'icon=image:1873/8_open,sticky:1',
+                  'icon=image:1873/8_open,sticky:1,large:1',
               %w[
                 H7
               ] => 'upgrade=cost:100,terrain:mountain;icon=image:1873/NWE,sticky:1;'\
@@ -2714,7 +2738,7 @@ module Engine
                 G2
               ] => 'town=revenue:0;upgrade=cost:150,terrain:mountain;icon=image:1873/SHE,sticky:1;'\
                   'border=edge:4,type:impassable;border=edge:5,type:impassable;'\
-                  'icon=image:1873/9_open,sticky:1',
+                  'icon=image:1873/9_open,sticky:1,large:1',
               %w[
                 F3
               ] => 'town=revenue:0;upgrade=cost:150,terrain:mountain;icon=image:1873/SHE,sticky:1',
@@ -2771,24 +2795,24 @@ module Engine
                 D11
               ] => 'town=revenue:0;upgrade=cost:100,terrain:mountain;border=edge:1,type:impassable;'\
                 'border=edge:2,type:impassable;border=edge:3,type:impassable;'\
-                'icon=image:1873/4_open,sticky:1',
+                'icon=image:1873/4_open,sticky:1,large:1',
               %w[
                 D13
               ] => 'town=revenue:0;upgrade=cost:150,terrain:mountain;'\
                 'border=edge:2,type:impassable;border=edge:3,type:impassable;'\
-                'icon=image:1873/5_open,sticky:1',
+                'icon=image:1873/5_open,sticky:1,large:1',
               %w[
                 D17
               ] => 'town=revenue:0;',
               %w[
                 E8
               ] => 'town=revenue:0;upgrade=cost:100,terrain:mountain;border=edge:4,type:impassable;'\
-                'icon=image:1873/1_open,sticky:1',
+                'icon=image:1873/1_open,sticky:1,large:1',
               %w[
                 E10
               ] => 'town=revenue:0;upgrade=cost:100,terrain:mountain;border=edge:1,type:impassable;'\
                 'border=edge:4,type:impassable;'\
-                'icon=image:1873/6_open,sticky:1',
+                'icon=image:1873/6_open,sticky:1,large:1',
               %w[
                 E16
                 G12
@@ -2801,44 +2825,44 @@ module Engine
               %w[
                 I14
               ] => 'town=revenue:0;upgrade=cost:50,terrain:mountain;'\
-                'icon=image:1873/7_open,sticky:1',
+                'icon=image:1873/7_open,sticky:1,large:1',
               %w[
                 I16
               ] => 'town=revenue:0;upgrade=cost:100,terrain:mountain;'\
-                'icon=image:1873/3_open,sticky:1',
+                'icon=image:1873/3_open,sticky:1,large:1',
             },
             yellow: {
               %w[
                 D9
               ] => 'city=revenue:30;path=a:5,b:_0,track:narrow;upgrade=cost:50,terrain:mountain;'\
-                'border=edge:4,type:impassable;frame=color:purple;'\
-                'icon=image:1873/10_open,sticky:1',
+                'border=edge:4,type:impassable;frame=color:#800080;'\
+                'icon=image:1873/10_open,sticky:1,large:1',
               %w[
                 D15
               ] => 'city=revenue:40,slots:2;path=a:1,b:_0,track:narrow;path=a:3,b:_0,track:narrow;'\
-                'path=a:5,b:_0,track:narrow;label=B;frame=color:purple;'\
-                'icon=image:1873/12_open,sticky:1',
+                'path=a:5,b:_0,track:narrow;label=B;frame=color:#800080;'\
+                'icon=image:1873/12_open,sticky:1,large:1',
               %w[
                 E4
               ] => 'city=revenue:30;path=a:0,b:_0,track:narrow;upgrade=cost:50,terrain:mountain;'\
-                'border=edge:3,type:impassable;frame=color:purple;'\
-                'icon=image:1873/2_open,sticky:1',
+                'border=edge:3,type:impassable;frame=color:#800080;'\
+                'icon=image:1873/2_open,sticky:1,large:1',
               %w[
                 F11
               ] => 'city=revenue:30;path=a:5,b:_0,track:narrow;upgrade=cost:50,terrain:mountain;'\
-                'frame=color:purple;'\
-                'icon=image:1873/SM_open,sticky:1',
+                'frame=color:#800080;'\
+                'icon=image:1873/SM_open,sticky:1,large:1',
               %w[
                 G4
               ] => 'city=revenue:30;path=a:0,b:_0,track:narrow;upgrade=cost:50,terrain:mountain;'\
-                'border=edge:1,type:impassable;border=edge:3,type:impassable;frame=color:purple;'\
-                'icon=image:1873/14_open,sticky:1',
+                'border=edge:1,type:impassable;border=edge:3,type:impassable;frame=color:#800080;'\
+                'icon=image:1873/14_open,sticky:1,large:1',
             },
             green: {
               %w[
                 B19
               ] => 'city=revenue:60;path=a:1,b:_0,track:narrow;path=a:2,b:_0;path=a:5,b:_0;'\
-                'frame=color:purple;label=HQG',
+                'frame=color:#800080;label=HQG',
               %w[
                 C16
               ] => 'city=revenue:30;path=a:0,b:_0,track:narrow;path=a:2,b:_0,track:narrow;'\
@@ -2846,7 +2870,7 @@ module Engine
               %w[
                 E20
               ] => 'city=revenue:60;path=a:1,b:_0,track:narrow;path=a:0,b:_0;path=a:3,b:_0;'\
-                'frame=color:purple;label=HQG',
+                'frame=color:#800080;label=HQG',
               %w[
                 F5
               ] => 'city=revenue:20;city=revenue:20;path=a:1,b:_0,track:narrow;path=a:4,b:_0,track:narrow;'\
@@ -2856,19 +2880,19 @@ module Engine
                 F7
               ] => 'city=revenue:20;city=revenue:20;path=a:1,b:_0,track:narrow;'\
                 'path=a:3,b:_1,track:narrow;upgrade=cost:50,terrain:mountain;'\
-                'icon=image:1873/11_open,sticky:1',
+                'icon=image:1873/11_open,sticky:1,large:1',
               %w[
                 G6
               ] => 'city=revenue:40;path=a:2,b:_0,track:narrow;'\
-                'path=a:5,b:_0,track:narrow;frame=color:purple',
+                'path=a:5,b:_0,track:narrow;frame=color:#800080',
               %w[
                 G20
               ] => 'city=revenue:60;path=a:0,b:_0,track:narrow;path=a:2,b:_0;path=a:5,b:_0;'\
-                'frame=color:purple;label=HQG',
+                'frame=color:#800080;label=HQG',
               %w[
                 H13
               ] => 'city=revenue:40;path=a:2,b:_0,track:narrow;path=a:5,b:_0,track:narrow;'\
-                'upgrade=cost:50,terrain:mountain;frame=color:purple',
+                'upgrade=cost:50,terrain:mountain;frame=color:#800080',
               %w[
                 H17
               ] => 'city=revenue:30;path=a:0,b:_0,track:narrow;path=a:4,b:_0,track:narrow;'\
@@ -2879,51 +2903,51 @@ module Engine
                 B9
               ] => 'city=slots:2,revenue:yellow_60|green_80|brown_120|gray_150;'\
                 'path=a:1,b:_0;path=a:4,b:_0;path=a:0,b:_0,track:narrow;path=a:5,b:_0,track:narrow;'\
-                'frame=color:purple',
+                'frame=color:#800080',
               %w[
                 B13
               ] => 'city=slots:2,revenue:yellow_30|green_70|brown_60|gray_60;'\
                 'path=a:4,b:_0,track:narrow;path=a:5,b:_0,track:narrow;'\
-                'frame=color:purple;icon=image:1873/ZW_open,sticky:1',
+                'frame=color:#800080;icon=image:1873/ZW_open,sticky:1,large:1',
               %w[
                 C4
               ] => 'city=revenue:yellow_50|green_80|brown_120|gray_150;path=a:5,b:_0,track:narrow',
               %w[
                 C6
               ] => 'town=revenue:0;path=a:0,b:_0,track:narrow;'\
-                'icon=image:1873/SBC6_open,sticky:1',
+                'icon=image:1873/SBC6_open,sticky:1,large:1',
               %w[
                 E18
               ] => 'city=revenue:30,slots:2;path=a:1,b:_0,track:narrow;'\
                 'path=a:2,b:_0,track:narrow;path=a:4,b:_0,track:narrow;'\
-                'icon=image:1873/PM_open,sticky:1',
+                'icon=image:1873/PM_open,sticky:1,large:1',
               %w[
                 F15
               ] => 'city=revenue:yellow_30|green_40|brown_60|gray_70;'\
-                'path=a:3,b:_0,track:narrow;path=a:4,b:_0;frame=color:purple;'\
-                'icon=image:1873/15_open,sticky:1',
+                'path=a:3,b:_0,track:narrow;path=a:4,b:_0;frame=color:#800080;'\
+                'icon=image:1873/15_open,sticky:1,large:1',
               %w[
                 H9
               ] => 'city=revenue:30,slots:2;path=a:0,b:_0,track:narrow;'\
                 'path=a:1,b:_0,track:narrow;path=a:4,b:_0,track:narrow;'\
-                'icon=image:1873/SBH9_open,sticky:1',
+                'icon=image:1873/SBH9_open,sticky:1,large:1',
               %w[
                 I2
               ] => 'city=revenue:yellow_40|green_50|brown_80|gray_120;path=a:1,b:_0;'\
-                'path=a:2,b:_0,track:narrow;path=a:4,b:_0;frame=color:purple',
+                'path=a:2,b:_0,track:narrow;path=a:4,b:_0;frame=color:#800080',
               %w[
                 I4
               ] => 'city=revenue:yellow_40|green_50|brown_80|gray_120;path=a:1,b:_0;'\
-                'path=a:2,b:_0,track:narrow;path=a:5,b:_0;frame=color:purple',
+                'path=a:2,b:_0,track:narrow;path=a:5,b:_0;frame=color:#800080',
               %w[
                 I18
               ] => 'city=revenue:yellow_30|green_40|brown_60|gray_70;'\
-                'path=a:2,b:_0,track:narrow;frame=color:purple;'\
-                'icon=image:1873/13_open,sticky:1',
+                'path=a:2,b:_0,track:narrow;frame=color:#800080;'\
+                'icon=image:1873/13_open,sticky:1,large:1',
               %w[
                 J7
               ] => 'city=revenue:yellow_60|green_80|brown_120|gray_180;path=a:1,b:_0;'\
-                'path=a:3,b:_0,track:narrow;path=a:4,b:_0;frame=color:purple',
+                'path=a:3,b:_0,track:narrow;path=a:4,b:_0;frame=color:#800080',
               # implicit tiles
               %w[
                 C20

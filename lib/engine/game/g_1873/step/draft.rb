@@ -71,6 +71,7 @@ module Engine
             if (minor = @game.get_mine(company))
               minor.owner = player
               minor.float!
+              @game.open_mine!(minor)
               company.close!
               @game.companies.delete(company)
             else
@@ -122,6 +123,14 @@ module Engine
             return unless company
 
             company.value
+          end
+
+          def buy_str(company)
+            "Buy (#{@game.format_currency(company.value + @game.premium)})"
+          end
+
+          def show_map
+            true
           end
         end
       end

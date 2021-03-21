@@ -129,13 +129,13 @@ module Engine
         }.freeze
 
         MARKET = [
-          %w[64y 68 72 78 82 90 100p 110 120 140 160 180 200 225 250 285 300 325 350 375 400],
-          %w[60y 64y 68 72 78 82 90p 100 110 120 140 160 180 200 225 250 285 300 325 350 375],
-          %w[55y 60y 64y 68 72 78 82p 90 100 110 120 140 160 180 200 225 250i 285i 300i 325i 350i],
-          %w[50o 55y 60y 64y 68 72 78p 82 90 100 110 120 140 160i 180i 200i 225i 250i 285i 300i 325i],
-          %w[40b 50o 55y 60y 64 68 72p 78 82 90 100 110i 120i 140i 160i 180i],
-          %w[30b 40o 50o 55y 60y 64 68p 72 78 82 90i 100i 110i],
-          %w[20b 30b 40o 50o 55y 60y 64 68 72 78i 82i],
+          %w[64y 68 72 76 82 90 100p 110 120 140 160 180 200 225 250 285 300 325 350 375 400],
+          %w[60y 64y 68 72 76 82 90p 100 110 120 140 160 180 200 225 250 285 300 325 350 375],
+          %w[55y 60y 64y 68 72 76 82p 90 100 110 120 140 160 180 200 225 250i 285i 300i 325i 350i],
+          %w[50o 55y 60y 64y 68 72 76p 82 90 100 110 120 140 160i 180i 200i 225i 250i 285i 300i 325i],
+          %w[40b 50o 55y 60y 64 68 72p 76 82 90 100 110i 120i 140i 160i 180i],
+          %w[30b 40o 50o 55y 60y 64 68p 72 76 82 90i 100i 110i],
+          %w[20b 30b 40o 50o 55y 60y 64 68 72 76i 82i],
           %w[10b 20b 30b 40o 50y 55y 60y 64 68i 72i],
           %w[0c 10b 20b 30b 40o 50y 55y 60i 64i],
           %w[0c 0c 10b 20b 30b 40o 50y],
@@ -480,97 +480,13 @@ module Engine
 
         HEXES = {
           white: {
-            %w[A4
-               A6
-               A8
-               A12
-               A14
-               A18
-               A20
-               B3
-               B5
-               B15
-               B21
-               C2
-               C4
-               C6
-               C8
-               C10
-               C12
-               C20
-               D1
-               D3
-               D7
-               D11
-               D19
-               E2
-               E4
-               E6
-               E10
-               F1
-               F3
-               F7
-               F17
-               F21
-               G4
-               G6
-               G8
-               G12
-               G14
-               G16
-               H1
-               H9
-               H11
-               H15
-               H19
-               I2
-               I4
-               I6
-               I12
-               I18
-               I20
-               J1
-               J7
-               J13
-               J17
-               J19
-               J21
-               K2
-               K6
-               K8
-               K12
-               K18
-               L1
-               L3
-               L5
-               L7
-               L9
-               L15
-               L17
-               L19
-               L21
-               M4
-               M12
-               M16
-               M18
-               N3
-               N5] => '',
-            %w[B9 B19 D5 F5 H13 J3 K16 M2 M6] => 'city=revenue:0',
-            ['J5'] => 'city=revenue:0;label=P',
-            %w[B7
-               D9
-               D21
-               E8
-               F9
-               G10
-               G20
-               H21
-               I14
-               J9
-               K4
-               K20
-               M8
-               M10] => 'town=revenue:0',
+            %w[A4 A6 A8 A12 A14 A18 A20 B3 B5 B15 B21 C2 C4 C6 C8 C10 C12 C20 D1 D3
+               D7 D11 D19 E2 E4 E6 E10 F1 F3 F7 F17 F21 G4 G6 G8 G12 G14 G16 H1
+               H9 H11 H15 H19 I2 I4 I6 I12 I18 I20 J1 J7 J13 J17 J19 J21 K2 K6 K8 K12 K18 L1
+               L3 L5 L7 L9 L15 L17 L19 L21 M4 M12 M16 M18 N3 N5] => '',
+            %w[B9 B19 D5 F5 H13 K16 M2 M6] => 'city=revenue:0',
+            %w[J3 J5] => 'city=revenue:0;label=P',
+            %w[B7 D9 D21 E8 F9 G10 G20 H21 I14 J9 K4 K20 M8 M10] => 'town=revenue:0',
             ['M20'] => 'city=revenue:0;icon=image:port',
             %w[C14 C16 G2 H5] => 'upgrade=cost:40,terrain:water',
             %w[H7 I8 J11 K10] => 'upgrade=cost:60,terrain:water',
@@ -827,7 +743,7 @@ module Engine
 
         # rubocop:disable Lint/UnusedMethodArgument
         def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
-          @round.sell_queue << bundle
+          @round.sell_queue << [bundle, bundle.corporation.owner]
 
           @share_pool.sell_shares(bundle)
         end

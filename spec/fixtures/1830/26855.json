@@ -28,7 +28,7 @@
   "settings": {
     "seed": 59597076,
     "unlisted": true,
-    "optional_rules": []
+    "optional_rules": ["multiple_brown_from_ipo"]
   },
   "user_settings": null,
   "status": "finished",

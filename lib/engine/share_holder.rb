@@ -6,8 +6,14 @@ module Engine
       shares_by_corporation.values.flatten
     end
 
-    def shares_by_corporation
+    def shares_by_corporation(sorted: false)
       @shares_by_corporation ||= Hash.new { |h, k| h[k] = [] }
+      if sorted
+        default_proc = @shares_by_corporation.default_proc
+        @shares_by_corporation = @shares_by_corporation.to_a.sort.to_h
+        @shares_by_corporation.default_proc = default_proc
+      end
+      @shares_by_corporation
     end
 
     def shares_of(corporation)

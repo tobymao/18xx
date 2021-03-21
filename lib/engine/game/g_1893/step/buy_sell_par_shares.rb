@@ -7,12 +7,12 @@ require_relative 'par_and_buy_actions'
 module Engine
   module Game
     module G1893
-      FIRST_SR_ACTIONS = %w[buy_company pass].freeze
-
       module Step
         class BuySellParShares < Engine::Step::BuySellParShares
           include ParAndBuy
           include BuyMinor
+
+          FIRST_SR_ACTIONS = %w[buy_company pass].freeze
 
           def actions(entity)
             return [] unless entity&.player?

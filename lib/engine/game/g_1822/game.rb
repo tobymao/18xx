@@ -974,7 +974,7 @@ module Engine
             value: 100,
             revenue: 10,
             desc: 'Have a face value £100 and converts into the LNWR’s 10% director certificate. LNWR may also put '\
-                  'it’s destination token into Manchester when converted.',
+                  'its destination token into Manchester when converted.',
             abilities: [
               {
                 type: 'exchange',
@@ -2563,7 +2563,7 @@ module Engine
           merthyr_tydfil_pontypool = {}
 
           routes.each do |route|
-            if route.train.local? && !route.connections.empty?
+            if route.train.local? && !route.chains.empty?
               local_token_hex.concat(route.visited_stops.select(&:city?).map { |n| n.hex.id })
             end
 
@@ -3181,7 +3181,8 @@ module Engine
         end
 
         def upgrade_cost(tile, hex, entity)
-          abilities = entity.all_abilities.select do |a|
+          operator = entity.company? ? entity.owner : entity
+          abilities = operator.all_abilities.select do |a|
             a.type == :tile_discount && (!a.hexes || a.hexes.include?(hex.name))
           end
 
@@ -3189,7 +3190,7 @@ module Engine
             total_cost = upgrade.cost
             abilities.each do |ability|
               discount = ability && upgrade.terrains.uniq == [ability.terrain] ? ability.discount : 0
-              log_cost_discount(entity, ability, discount)
+              log_cost_discount(operator, ability, discount)
               total_cost -= discount
             end
             total_cost
@@ -3732,7 +3733,7 @@ module Engine
 
         def place_destination_token(entity, hex, token)
           city = hex.tile.cities.first
-          city.place_token(entity, token, free: true, check_tokenable: false, cheater: 0)
+          city.place_token(entity, token, free: true, check_tokenable: false, cheater: city.slots)
           hex.tile.icons.reject! { |icon| icon.name == "#{entity.id}_destination" }
 
           ability = entity.all_abilities.find { |a| a.type == :destination }
@@ -3833,9 +3834,11 @@ module Engine
           privates = @companies.select { |c| c.id[0] == self.class::COMPANY_PRIVATE_PREFIX }
 
           # Always set the P1, C1 and M24 in the first biddingbox
-          m24 = minors.find { |c| c.id == bidbox_start_minor }
-          minors.delete(m24)
-          minors.unshift(m24)
+          if bidbox_start_minor
+            m24 = minors.find { |c| c.id == bidbox_start_minor }
+            minors.delete(m24)
+            minors.unshift(m24)
+          end
 
           c1 = concessions.find { |c| c.id == bidbox_start_concession }
           concessions.delete(c1)
@@ -3895,7 +3898,7 @@ module Engine
           @company_trains['P19'] = find_and_remove_train_by_id('LP-0', buyable: false)
 
           # Setup the minor 14 ability
-          corporation_by_id(self.class::MINOR_14_ID).add_ability(london_extra_token_ability)
+          corporation_by_id(self.class::MINOR_14_ID).add_ability(london_extra_token_ability) if self.class::MINOR_14_ID
         end
 
         def setup_destinations

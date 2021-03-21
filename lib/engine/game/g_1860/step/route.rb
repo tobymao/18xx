@@ -64,11 +64,6 @@ module Engine
               raise GameError, 'Must run a route'
             end
 
-            # the following two checks must be made here, after all routes have been defined
-            if @round.routes.reject { |r| r.connections.empty? }.any?
-              @game.check_home_token(entity, @round.routes)
-              @game.check_intersection(@round.routes)
-            end
             trains = {}
 
             @round.routes.each do |route|

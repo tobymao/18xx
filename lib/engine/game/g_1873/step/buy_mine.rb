@@ -80,7 +80,7 @@ module Engine
 
             # buyer gets formerly independent mines and their cash
             # machines and switchers stay with mines
-            @game.open_mine!(mine) unless mine.owner
+            @game.open_mine!(mine)
             @game.add_mine(entity, mine)
 
             pass!

@@ -1089,12 +1089,23 @@ module Engine
 
           return open_locations if corporation.type == :minor
 
-          # @todo: this may need optimizing when changing connections for loading.
-          unconnected = open_locations.select { |hex| hex.connections.empty? }
-          if unconnected.empty?
+          if (unconnected = unconnected_hexes(open_locations)).empty?
             open_locations
           else
             unconnected
+          end
+        end
+
+        def unconnected_hexes(locs)
+          locs.reject do |hex|
+            hex.tile.cities.any? do |city|
+              city.paths.any? do |path|
+                path.walk do |current|
+                  next if path == current
+                  break true if current.node?
+                end
+              end
+            end
           end
         end
 
