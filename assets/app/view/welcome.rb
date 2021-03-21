@@ -17,7 +17,7 @@ module View
 
     def render_notification
       message = <<~MESSAGE
-        <p>Harzbahn 1873, 1870, 1822, and 1822MRS are now in alpha! 1861 and 18Chesapeake: Off the Rails is in production.</p>
+        <p>Harzbahn 1873, 1870, 1822, 1822MRS and Restart Turn feature are now in alpha! 1861 and 18Chesapeake: Off the Rails is in production.</p>
         <p>1822MRS, 1846 2p Variant, and 18Chesapeake: Off the Rails are now presented as variants
          of their "parent" games, e.g., select 1822 in the dropdown, then check the "Medium Regional Scenario"
          box to start a game of 1822MRS.</p>
