@@ -92,6 +92,8 @@ module Engine
           end
 
           def min_bid(company)
+            return unless company
+
             company&.min_bid
           end
 
