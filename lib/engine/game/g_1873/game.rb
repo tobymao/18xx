@@ -299,10 +299,11 @@ module Engine
             description = "Mine in #{gm[:coordinates]}. Machine revenue: "\
               "#{gm[:extended][:machine_revenue].join('/')}. Switcher revenue: "\
               "#{gm[:extended][:switcher_revenue].join('/')}"
+            revenue = "#{format_currency(gm[:extended][:machine_revenue].first)} - "\
+              "#{format_currency(gm[:extended][:machine_revenue].last + gm[:extended][:switcher_revenue].last)}"
 
-            Company.new(sym: gm[:sym], name: gm[:name], value: gm[:extended][:value],
-                        revenue: gm[:extended][:machine_revenue].last + gm[:extended][:switcher_revenue].last,
-                        desc: description)
+            Company.new(sym: gm[:sym], name: "#{gm[:sym]} #{gm[:name]}", value: gm[:extended][:value],
+                        revenue: revenue, desc: description)
           end
           corp_comps = game_corporations.map do |gc|
             next if gc[:sym] == 'MHE'
@@ -315,7 +316,7 @@ module Engine
               description = "Purchase Option for Public Mining Company #{gc[:name]}"
               name = "#{gc[:sym]} Purchase Option"
             end
-            Company.new(sym: gc[:sym], name: name, value: RAILWAY_MIN_BID, desc: description)
+            Company.new(sym: gc[:sym], name: name, value: RAILWAY_MIN_BID, revenue: 'NA', desc: description)
           end.compact
           mine_comps + corp_comps
         end
@@ -415,6 +416,10 @@ module Engine
           end
         end
 
+        def company_revenue_str(company)
+          company.revenue
+        end
+
         def skip_token?(_graph, corporation, city)
           # diesel graph
           return false if corporation.coordinates.include?(city.hex.id) # never skip home tokens
@@ -503,8 +508,10 @@ module Engine
 
           super
 
+          return unless old_owner == @depot
+
           add_switcher! if train_is_switcher?(train)
-          add_subtrains!(train) if railway?(operator) && old_owner == @depot
+          add_subtrains!(train) if railway?(operator)
         end
 
         def mhe_buy_train
@@ -1928,10 +1935,10 @@ module Engine
 
         def game_tiles
           {
-            '77' => 2,
+            '77' => 'unlimited',
             '78' => 'unlimited',
             '79' => 'unlimited',
-            '75' => 4,
+            '75' => 'unlimited',
             '76' => 'unlimited',
             '956' => 'unlimited',
             '957' => 2,
@@ -2023,7 +2030,7 @@ module Engine
           [
             {
               sym: '1',
-              name: 'Mine 1 (V-H)',
+              name: 'Königshütte (V-H)',
               logo: '1873/1',
               simple_logo: '1873/1.alt',
               tokens: [],
@@ -2041,7 +2048,7 @@ module Engine
             },
             {
               sym: '2',
-              name: 'Mine 2',
+              name: 'Wurmberg',
               logo: '1873/2',
               simple_logo: '1873/2.alt',
               tokens: [],
@@ -2059,7 +2066,7 @@ module Engine
             },
             {
               sym: '3',
-              name: 'Mine 3',
+              name: 'Silberhütte',
               logo: '1873/3',
               simple_logo: '1873/3.alt',
               tokens: [],
@@ -2077,7 +2084,7 @@ module Engine
             },
             {
               sym: '4',
-              name: 'Mine 4 (V-H)',
+              name: 'Hüttenrode (V-H)',
               logo: '1873/4',
               simple_logo: '1873/4.alt',
               tokens: [],
@@ -2095,7 +2102,7 @@ module Engine
             },
             {
               sym: '5',
-              name: 'Mine 5 (V-H)',
+              name: 'Braunesumpf (V-H)',
               logo: '1873/5',
               simple_logo: '1873/5.alt',
               tokens: [],
@@ -2113,7 +2120,7 @@ module Engine
             },
             {
               sym: '6',
-              name: 'Mine 6 (V-H)',
+              name: 'Rübeland (V-H)',
               logo: '1873/6',
               simple_logo: '1873/6.alt',
               tokens: [],
@@ -2131,7 +2138,7 @@ module Engine
             },
             {
               sym: '7',
-              name: 'Mine 7',
+              name: 'Lindenberg',
               logo: '1873/7',
               simple_logo: '1873/7.alt',
               tokens: [],
@@ -2149,7 +2156,7 @@ module Engine
             },
             {
               sym: '8',
-              name: 'Mine 8',
+              name: 'Netzkater',
               logo: '1873/8',
               simple_logo: '1873/8.alt',
               tokens: [],
@@ -2167,7 +2174,7 @@ module Engine
             },
             {
               sym: '9',
-              name: 'Mine 9',
+              name: 'Wieda',
               logo: '1873/9',
               simple_logo: '1873/9.alt',
               tokens: [],
@@ -2185,7 +2192,7 @@ module Engine
             },
             {
               sym: '10',
-              name: 'Mine 10 (V-H)',
+              name: 'Elbingerode (V-H)',
               logo: '1873/10',
               simple_logo: '1873/10.alt',
               tokens: [],
@@ -2196,14 +2203,14 @@ module Engine
                 vor_harzer: true,
                 machine_revenue: [60, 90, 120, 150, 180],
                 switcher_revenue: [30, 40, 50, 60],
-                multiplier: 10,
+                multiplier: 30,
                 connected: false,
                 open: true,
               },
             },
             {
               sym: '11',
-              name: 'Mine 11 (V-H)',
+              name: 'Tanne (V-H)',
               logo: '1873/11',
               simple_logo: '1873/11.alt',
               tokens: [],
@@ -2221,7 +2228,7 @@ module Engine
             },
             {
               sym: '12',
-              name: 'Mine 12 (V-H)',
+              name: 'Blankenburg (V-H)',
               logo: '1873/12',
               simple_logo: '1873/12.alt',
               tokens: [],
@@ -2239,7 +2246,7 @@ module Engine
             },
             {
               sym: '13',
-              name: 'Mine 13',
+              name: 'Harzgerode',
               logo: '1873/13',
               simple_logo: '1873/13.alt',
               tokens: [],
@@ -2257,7 +2264,7 @@ module Engine
             },
             {
               sym: '14',
-              name: 'Mine 14 (V-H)',
+              name: 'Zorge (V-H)',
               logo: '1873/14',
               simple_logo: '1873/14.alt',
               tokens: [],
@@ -2275,7 +2282,7 @@ module Engine
             },
             {
               sym: '15',
-              name: 'Mine 15',
+              name: 'Thale',
               logo: '1873/15',
               simple_logo: '1873/15.alt',
               tokens: [],

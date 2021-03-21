@@ -134,13 +134,18 @@ module View
           props[:style][:display] = @display
 
           header_text = @game.respond_to?(:company_header) ? @game.company_header(@company) : 'PRIVATE COMPANY'
+          revenue_str = if @game.respond_to?(:company_revenue_str)
+                          @game.company_revenue_str(@company)
+                        else
+                          @game.format_currency(@company.revenue)
+                        end
 
           children = [
             h(:div, { style: header_style }, header_text),
             h(:div, @company.name),
             h(:div, { style: description_style }, @company.desc),
             h(:div, { style: value_style }, "Value: #{@game.format_currency(@company.value)}"),
-            h(:div, { style: revenue_style }, "Revenue: #{@game.format_currency(@company.revenue)}"),
+            h(:div, { style: revenue_style }, "Revenue: #{revenue_str}"),
           ]
           children << render_bidders if @bids&.any?
 
@@ -202,9 +207,16 @@ module View
           extra << " (#{uses[0]}/#{uses[1]})"
         end
         extra << " #{@game.company_status_str(@company)}" if @game.company_status_str(@company)
+
+        revenue_str = if @game.respond_to?(:company_revenue_str)
+                        @game.company_revenue_str(company)
+                      else
+                        @game.format_currency(company.revenue)
+                      end
+
         [h('div.nowrap', name_props, company.name + extra.join(',')),
          @game.show_value_of_companies?(company.owner) ? h('div.right', @game.format_currency(company.value)) : '',
-         h('div.padded_number', @game.format_currency(company.revenue)),
+         h('div.padded_number', revenue_str),
          @hidden_divs[company.sym]]
       end
     end
