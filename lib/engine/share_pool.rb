@@ -88,7 +88,7 @@ module Engine
       if price.zero?
         transfer_shares(bundle, entity)
       else
-        receiver = if %i[escrow incremental].include?(corporation.capitalization) && bundle.owner.corporation? ||
+        receiver = if (%i[escrow incremental].include?(corporation.capitalization) && bundle.owner.corporation?) ||
                        bundle.owner.player?
                      bundle.owner
                    else
