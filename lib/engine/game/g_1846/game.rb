@@ -226,7 +226,7 @@ module Engine
                       },
                     ],
                     events: [
-                      { 'type' => 'remove_tokens' },
+                      { 'type' => 'remove_markers' },
                       { 'type' => 'remove_reservations' },
 ],
 
@@ -732,7 +732,7 @@ module Engine
 
         TILE_COST = 20
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
-          'remove_tokens' => ['Remove Tokens', 'Remove Steamboat and Meat Packing markers'],
+          'remove_markers' => ['Remove Markers', 'Remove Steamboat and Meat Packing markers'],
           'remove_reservations' => ['Remove Reservations', 'Remove reserved token slots for corporations']
         ).freeze
 
@@ -1072,7 +1072,7 @@ module Engine
           @log << '-- Event: Reserved token slots removed --'
         end
 
-        def event_remove_tokens!
+        def event_remove_markers!
           removals = Hash.new { |h, k| h[k] = {} }
 
           @corporations.each do |corp|

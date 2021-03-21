@@ -663,7 +663,7 @@ module Engine
         MEAT_REVENUE_DESC = 'Citrus'
 
         EVENTS_TEXT = G1846::Game::EVENTS_TEXT.merge(
-          'remove_tokens' => ['Remove Tokens', 'Remove LA Steamship and LA Citrus tokens']
+          'remove_markers' => ['Remove Markers', 'Remove LA Steamship and LA Citrus markers']
         ).freeze
 
         include StubsAreRestricted
