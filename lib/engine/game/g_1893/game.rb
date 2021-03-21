@@ -2,6 +2,7 @@
 
 require_relative '../base'
 require_relative 'meta'
+require_relative '../stubs_are_restricted'
 
 module Engine
   module Game
@@ -955,6 +956,8 @@ module Engine
 
           @green_leverkusen_tile ||= @tiles.find { |t| t.name == LEVERKUSEN_GREEN_TILE }
         end
+
+        include StubsAreRestricted
 
         def upgrades_to?(from, to, special = false)
           # Leverkusen can upgrade double dits to one city
