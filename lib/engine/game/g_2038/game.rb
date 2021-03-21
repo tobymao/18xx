@@ -541,7 +541,7 @@ module Engine
             tokens: [60, 100, 60, 100, 60, 100, 60, 100, 60, 100],
             coordinates: 'K9',
             color: '#40b1b9',
-            type: 'groupA',
+            type: 'group_a',
             reservation_color: nil,
           },
           {
@@ -553,7 +553,7 @@ module Engine
             tokens: [0, 100, 0, 100, 0, 100, 0, 100, 0, 100, 0, 100],
             coordinates: 'D8',
             color: '#d57e59',
-            type: 'groupA',
+            type: 'group_a',
             reservation_color: nil,
           },
           {
@@ -565,7 +565,7 @@ module Engine
             tokens: [60, 100, 60, 100, 60],
             coordinates: 'J1',
             color: :"#3eb75b",
-            type: 'groupB',
+            type: 'group_b',
             reservation_color: nil,
           },
           {
@@ -577,7 +577,7 @@ module Engine
             tokens: [60, 100, 60, 100, 60, 100, 60, 100, 60],
             coordinates: 'O1',
             color: '#fefc5d',
-            type: 'groupB',
+            type: 'group_b',
             reservation_color: nil,
           },
           {
@@ -589,7 +589,7 @@ module Engine
             tokens: [60, 100, 60, 100, 60, 100],
             coordinates: 'A1',
             color: '#f66936',
-            type: 'groupB',
+            type: 'group_b',
             reservation_color: nil,
           },
           {
@@ -602,7 +602,7 @@ module Engine
             coordinates: 'J18',
             color: :"#cc4f8c",
             text_color: 'black',
-            type: 'groupC',
+            type: 'group_c',
             reservation_color: nil,
           },
           {
@@ -615,7 +615,7 @@ module Engine
             coordinates: 'F18',
             color: :"#f8b34b",
             text_color: 'black',
-            type: 'groupC',
+            type: 'group_c',
             reservation_color: nil,
           },
           {
@@ -665,14 +665,14 @@ module Engine
 
           return if optional_variant_start_pack
 
-          @available_corp_group = :groupA
+          @available_corp_group = :group_a
 
           @corporations, @b_group_corporations = @corporations.partition do |corporation|
-            corporation.type == :groupA
+            corporation.type == :group_a
           end
 
           @b_group_corporations, @c_group_corporations = @b_group_corporations.partition do |corporation|
-            corporation.type == :groupB
+            corporation.type == :group_b
           end
         end
 
@@ -681,7 +681,7 @@ module Engine
 
           @corporations += @b_group_corporations
           @b_group_corporations = []
-          @available_corp_group = :groupB
+          @available_corp_group = :group_b
         end
 
         def event_group_c_corps_available!
@@ -689,7 +689,7 @@ module Engine
 
           @corporations += @c_group_corporations
           @c_group_corporations = []
-          @available_corp_group = :groupC
+          @available_corp_group = :group_c
         end
 
         def event_asteroid_league_formed!
@@ -714,9 +714,9 @@ module Engine
           return unless @corporations.all?(&:ipoed)
 
           case @available_corp_group
-          when :groupA
+          when :group_a
             event_group_b_corps_available!
-          when :groupB
+          when :group_b
             event_group_c_corps_available!
           end
         end
