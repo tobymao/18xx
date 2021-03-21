@@ -33,7 +33,11 @@ module Engine
                 "#{@game.format_currency(action.cost)} to lay token in "\
                 "#{action.city.hex.tile.location_name}" if action.cost > action.entity.cash
 
-            action.token.price = action.cost if action.cost
+            unless @game.loading
+              verified_cost = token_cost_override(action.entity, action.city, action.slot, action.token)
+              raise GameError, 'Error verifying token cost; is game out of sync?' unless action.cost == verified_cost
+            end
+            action.token.price = action.cost
             super
             @game.round.laid_token[action.entity] = true
           end
@@ -51,6 +55,14 @@ module Engine
             raise GameError, "#{entity.name} already has a hotel in #{hex.tile.location_name}" if tokened(hex, entity)
 
             cost = action.cost # We are using token_cost_override
+            unless @game.loading
+              # Since the view for hex_token does this to determine the `verified_token` going in
+              # but doesn't pass that to the action, we repeat it here
+              next_token = available_tokens(entity)[0].type
+              verified_token = entity.find_token_by_type(next_token&.to_sym)
+              verified_cost = token_cost_override(entity, hex, nil, verified_token)
+              raise GameError, 'Error verifying token cost; is game out of sync?' unless cost == verified_cost
+            end
             raise GameError, "#{entity.name} cannot afford "\
                   "#{@game.format_currency(cost)} cost to lay hotel" if cost > entity.cash
 
@@ -62,7 +74,7 @@ module Engine
             pass!
           end
 
-          def token_cost_override(entity, city_hex, _slot, token, _tokener)
+          def token_cost_override(entity, city_hex, _slot, token)
             node = city_hex.respond_to?(:city?) ? city_hex : city_hex.tile.towns.first
             min_distance = INFINITE_DISTANCE
             goal_cities = entity.tokens.select(&:city).map(&:city)
@@ -70,7 +82,7 @@ module Engine
             node.walk(corporation: entity) do |path, visited_paths|
               if goal_cities.include?(path.city)
                 # minus one to account for the tokened hex getting included in the count
-                distance = visited_paths.select { |_k, v| v }.keys.map(&:hex).uniq.size - 1
+                distance = visited_paths.uniq { |k, _| k.hex }.size - 1
                 min_distance = [min_distance, distance].min
               end
             end
