@@ -177,8 +177,8 @@ module View
 
       def toggle_desc(event, company)
         event.JS.stopPropagation
-        display = Native(@hidden_divs[company.sym]).elm.style.display
-        Native(@hidden_divs[company.sym]).elm.style.display = display == 'none' ? 'grid' : 'none'
+        elm = Native(@hidden_divs[company.sym]).elm
+        elm.style.display = elm.style.display == 'none' ? 'grid' : 'none'
       end
 
       def render_company_on_card(company)
@@ -200,7 +200,7 @@ module View
           },
         }
 
-        @hidden_divs[company.sym] = h('div#hidden', hidden_props, company.desc)
+        @hidden_divs[company.sym] = h(:div, hidden_props, company.desc)
 
         extra = []
         if (uses = company.ability_uses)
