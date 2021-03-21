@@ -1117,6 +1117,7 @@ module Engine
             puts("Mergable #{mergable.name} has no trains")
           end
 
+          mergable.ipoed = true
           @log << "#{mergable.name} have been completly founded and now floats"
         end
 

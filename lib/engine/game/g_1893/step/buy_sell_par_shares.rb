@@ -49,6 +49,12 @@ module Engine
             false
           end
 
+          def ipo_type(corporation)
+            return super if corporation != @game.agv && corporation != @game.hgk
+
+            'Cannot be parred - formed via merge'
+          end
+
           def first_sr_passed?(entity)
             @game.passers_first_stock_round.include?(entity)
           end
