@@ -18,6 +18,11 @@ module Engine
             ACTIONS
           end
 
+          def skip!
+            log_skip(current_entity) if !@acted && current_entity && @game.railway?(current_entity)
+            pass!
+          end
+
           def can_place_token?(entity)
             current_entity == entity &&
               !@round.tokened &&
