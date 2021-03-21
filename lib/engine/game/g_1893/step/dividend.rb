@@ -21,7 +21,7 @@ module Engine
             super
           end
 
-          # In 1893, shares in market does not pay to corporation
+          # In 1893, shares in market do not pay to corporation
           def dividends_for_entity(entity, holder, per_share)
             return 0 if entity.corporation? && holder == @game.share_pool
 

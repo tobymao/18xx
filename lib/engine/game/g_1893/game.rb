@@ -1191,6 +1191,17 @@ module Engine
           super
         end
 
+        def president_assisted_buy(entity, train, price)
+          # Can only assist if it is a train less minor, that
+          # cannot afford the train.
+          return super if entity.corporation? || entity.trains.size.positive? || price <= entity.cash ||
+            entity.player.cash + entity.cash < price
+
+          fee = 0
+          president_assist = price - entity.cash
+          [president_assist, fee]
+        end
+
         def payout_companies
           super
 
