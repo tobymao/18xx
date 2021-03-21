@@ -2387,7 +2387,7 @@ module Engine
             ['C20'] => 'town=revenue:0;border=edge:2,type:offboard',
             %w[E14 F21 B15] => 'town=revenue:0;town=revenue:0',
             ['E12'] =>
-            'city=revenue:20;city=revenue:20;path=a:5,b:_0;path=a:3,b:_1;label=P;upgrade=cost:10,terrain:water',
+            'city=revenue:20,groups:Praha;city=revenue:20,groups:Praha;path=a:5,b:_0;path=a:3,b:_1;label=P;upgrade=cost:10,terrain:water',
             %w[A8 B5] =>
             'label=SX;border=edge:0,type:offboard;border=edge:5,type:offboard;border=edge:4,type:offboard',
             ['B19'] =>
