@@ -16,6 +16,16 @@ module Engine
 
             []
           end
+
+          def buyable_trains(entity)
+            # Trains owned by minor cannot be bought by a corporation
+            buyable = super.reject { |t| entity.corporation? && t.owner.minor? }
+
+            # Can't buy trains from other minor or corporations in phase 1 and 2
+            buyable.select!(&:from_depot?) unless @game.phase.status.include?('can_buy_trains')
+
+            buyable
+          end
         end
       end
     end
