@@ -865,6 +865,10 @@ module Engine
           @bkb_minor ||= minor_by_id('BKB')
         end
 
+        def eva
+          @eva_private ||= company_by_id('EVA')
+        end
+
         def hdsk_reserved_share
           # 10% certificate in HGK
           { share: hgk.shares[1], private: hdsk, minor: nil }
@@ -1130,7 +1134,8 @@ module Engine
         end
 
         def event_eva_closed!
-          @log << 'NOT IMPLEMENTED - eva closed'
+          @log << "#{eva.name} closed"
+          eva.close!
         end
 
         def buyable?(entity)
