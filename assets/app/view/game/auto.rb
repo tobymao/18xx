@@ -138,7 +138,7 @@ module View
             h(:ul, { style: { 'list-style': 'none' } }, subchildren),
           ])
 
-          subchildren = [render_button(settings ? 'Save' : 'Enable') { enable_merger_pass(form, passable, rounds) }]
+          subchildren = [render_button(settings ? 'Update existing' : 'Enable') { enable_merger_pass(form, passable, rounds) }]
           subchildren << render_disable(settings) if settings
           children << h(:div, subchildren)
 
@@ -295,7 +295,7 @@ module View
                                             checked,
                                             corp_settings)
           end
-          subchildren = [render_button(settings ? 'Save' : 'Enable') { enable_buy_shares(form) }]
+          subchildren = [render_button(settings ? 'Update existing' : 'Enable') { enable_buy_shares(form) }]
           subchildren << render_disable(settings) if settings
           children << h(:div, subchildren)
 
@@ -323,7 +323,7 @@ module View
                       [h(:a, { attrs: { href: AUTO_ACTIONS_WIKI, target: '_blank' } },
                          'Please read this for more details when it will deactivate')])
 
-        subchildren = [render_button(settings ? 'Save' : 'Enable') { enable_share_pass }]
+        subchildren = [render_button(settings ? 'Update existing' : 'Enable') { enable_share_pass }]
         subchildren << render_disable(settings) if settings
         children << h(:div, subchildren)
 
