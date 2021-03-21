@@ -8,6 +8,7 @@ module View
       include Lib::Settings
       needs :show_starting_map, default: false, store: true
       needs :historical_routes, default: [], store: true
+      needs :historical_laid_hexes, default: nil, store: true
       needs :game, default: nil, store: true
 
       def render
@@ -55,6 +56,11 @@ module View
         routes
       end
 
+      def last_laid_hexes(entity)
+        operating = entity.operating_history
+        operating[operating.keys.max]&.laid_hexes || []
+      end
+
       def route_controls
         return unless @game
 
@@ -80,14 +86,16 @@ module View
           operator_name = Native(@route_input).elm&.value
           operator = all_operators.find { |o| o.name == operator_name }
           if operator
-            store(:historical_routes, generate_last_route(operator))
+            store(:historical_routes, generate_last_route(operator), skip: true)
+            store(:historical_laid_hexes, last_laid_hexes(operator))
           else
-            store(:historical_routes, [])
+            store(:historical_routes, [], skip: true)
+            store(:historical_laid_hexes, nil)
           end
         end
 
         @route_input = render_select(id: :route, on: { input: route_change }, children: operators)
-        h('label.inline-block', ['Show Last Route For:', @route_input])
+        h('label.inline-block', ['Show Last Route and Tile For:', @route_input])
       end
 
       def render_select(id:, on: {}, children: [])
