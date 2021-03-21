@@ -80,9 +80,7 @@ module Engine
           end
 
           def skip!
-            return process_pass(nil, true) if price_protection
-
-            super if current_entity
+            process_pass(nil, true) while price_protection && !can_buy?(price_protection_entity, price_protection)
           end
 
           def process_pass(_action, forced = false)
