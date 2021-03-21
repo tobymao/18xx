@@ -1297,11 +1297,12 @@ module Engine
         end
 
         def apply_custom_ability(company)
-          if company.sym == 'TOO_MUCH_RESPONSIBILITY'
+          case company.sym
+          when 'TOO_MUCH_RESPONSIBILITY'
             bank.spend(3, company.owner, check_positive: false)
             @log << "#{company.owner.name} earns #{format_currency(3)} using \"#{company.name}\""
             company.close!
-          elsif company.sym == 'LEPRECHAUN_POT_OF_GOLD'
+          when 'LEPRECHAUN_POT_OF_GOLD'
             bank.spend(2, company.owner, check_positive: false)
             @log << "#{company.owner.name} earns #{format_currency(2)} using \"#{company.name}\""
           end
@@ -1496,7 +1497,7 @@ module Engine
             G18ZOO::Step::Dividend,
             Engine::Step::DiscardTrain,
             G18ZOO::Step::BuyTrain,
-            [G18ZOO::Step::BuyOrUsePowerOnOr, blocks: true],
+            [G18ZOO::Step::BuyOrUsePowerOnOr, { blocks: true }],
           ], round_num: round_num)
         end
 
