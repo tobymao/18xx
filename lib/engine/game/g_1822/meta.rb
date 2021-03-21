@@ -17,6 +17,12 @@ module Engine
         GAME_PUBLISHER = :all_aboard_games
         GAME_VARIANTS = [
           {
+            sym: :nrs,
+            name: 'North Regional Scenario',
+            title: '1822NRS',
+            desc: 'shorter game on the northern part of the map',
+          },
+          {
             sym: :mrs,
             name: 'Medium Regional Scenario',
             title: '1822MRS',
