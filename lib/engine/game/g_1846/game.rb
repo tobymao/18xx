@@ -225,7 +225,11 @@ module Engine
                         price: 900,
                       },
                     ],
-                    events: [{ 'type' => 'remove_tokens' }],
+                    events: [
+                      { 'type' => 'remove_tokens' },
+                      { 'type' => 'remove_reservations' },
+],
+
                   }].freeze
 
         COMPANIES = [
@@ -727,7 +731,10 @@ module Engine
         MEAT_REVENUE_DESC = 'Meat-Packing'
 
         TILE_COST = 20
-        EVENTS_TEXT = Base::EVENTS_TEXT.merge('remove_tokens' => ['Remove Tokens', 'Remove Steamboat and Meat Packing markers']).freeze
+        EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+          'remove_tokens' => ['Remove Tokens', 'Remove Steamboat and Meat Packing markers'],
+          'remove_reservations' => ['Remove Reservations', 'Remove reserved token slots for corporations']
+        ).freeze
 
         ASSIGNMENT_TOKENS = {
           'MPC' => '/icons/1846/mpc_token.svg',
@@ -1059,6 +1066,10 @@ module Engine
           @minors.dup.each { |minor| close_corporation(minor) }
 
           remove_lsl_icons
+        end
+
+        def event_remove_reservations!
+          @log << '-- Event: Reserved token slots removed --'
         end
 
         def event_remove_tokens!
