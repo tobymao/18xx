@@ -141,7 +141,7 @@ module View
           subchildren = [
             render_button(settings ? 'Update existing' : 'Enable') {
               enable_merger_pass(form, passable, rounds)
-            }
+            },
           ]
           subchildren << render_disable(settings) if settings
           children << h(:div, subchildren)
