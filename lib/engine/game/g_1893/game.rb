@@ -29,6 +29,20 @@ module Engine
 
         MUST_SELL_IN_BLOCKS = false
 
+        GAME_END_CHECK = { bankrupt: :immediate, bank: :full_or }.freeze
+
+        # Move down one step for a whole block, not per share
+        SELL_MOVEMENT = :down_block
+
+        # Cannot sell until operated
+        SELL_AFTER = :operate
+
+        # Sell zero or more, then Buy zero or one
+        SELL_BUY_ORDER = :sell_buy
+
+        # New track must be usable
+        TRACK_RESTRICTION = :restrictive
+
         TILES = {
           '3' => 2,
           '4' => 4,
@@ -619,17 +633,6 @@ module Engine
         LAYOUT = :flat
 
         AXES = { x: :number, y: :letter }.freeze
-
-        GAME_END_CHECK = { bankrupt: :immediate, bank: :full_or }.freeze
-
-        # Move down one step for a whole block, not per share
-        SELL_MOVEMENT = :down_block
-
-        # Cannot sell until operated
-        SELL_AFTER = :operate
-
-        # Sell zero or more, then Buy zero or one
-        SELL_BUY_ORDER = :sell_buy
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'remove_tile_block' => ['Remove tile block', 'Rhine may be passed. N5 P5 becomes possible to lay tiles in'],
