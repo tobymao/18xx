@@ -41,6 +41,21 @@ module Engine
           end
 
           def process_buy_train(action)
+            entity ||= action.entity
+            price = action.price
+            train = action.train
+            player = entity.player
+            name = action.variant
+
+            president_assist, _fee_amount = @game.president_assisted_buy(entity, train, price)
+
+            if president_assist.positive?
+              player.spend(president_assist, @game.bank)
+              @game.bank.spend(president_assist, entity)
+              assist = @game.format_currency(president_assist).to_s
+              @log << "#{player.name} pays #{assist} to assist buying a #{name} train from The Depot"
+            end
+
             super
 
             return unless action.exchange
