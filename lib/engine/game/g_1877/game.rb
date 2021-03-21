@@ -362,7 +362,7 @@ module Engine
             original_shares = @_shares.values.select { |share| share.corporation == corporation }
 
             corporation.share_holders.clear
-            shares = 5.times.map { |i| Share.new(corporation, percent: 10, index: i + 1) }
+            shares = Array.new(5) { |i| Share.new(corporation, percent: 10, index: i + 1) }
 
             original_shares.each do |share|
               share.percent = share.president ? 20 : 10

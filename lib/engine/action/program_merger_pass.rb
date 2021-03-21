@@ -16,18 +16,18 @@ module Engine
 
       def self.h_to_args(h, game)
         {
-          corporations_by_round: h['corporations_by_round']&.map do |r, v|
-                                   [r, v&.map do |c|
-                                         game.corporation_by_id(c)
-                                       end]
-                                 end.to_h,
+          corporations_by_round: h['corporations_by_round']&.transform_values do |v|
+                                   v&.map do |c|
+                                     game.corporation_by_id(c)
+                                   end
+                                 end,
           options: h['options'],
         }
       end
 
       def args_to_h
         {
-          'corporations_by_round' => @corporations_by_round&.map { |r, v| [r, v.map(&:id)] }.to_h,
+          'corporations_by_round' => @corporations_by_round&.transform_values { |v| v.map(&:id) },
           'options' => @options,
         }
       end

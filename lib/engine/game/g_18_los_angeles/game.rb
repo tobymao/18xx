@@ -738,7 +738,7 @@ module Engine
             G1846::Step::Dividend,
             Engine::Step::DiscardTrain,
             G1846::Step::BuyTrain,
-            [G1846::Step::BuyCompany, blocks: true],
+            [G1846::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 
@@ -798,10 +798,10 @@ module Engine
         def east_west_bonus(stops)
           bonus = { revenue: 0 }
 
-          east = stops.find { |stop| stop.tile.label&.to_s =~ /E/ }
-          west = stops.find { |stop| stop.tile.label&.to_s =~ /W/ }
-          north = stops.find { |stop| stop.tile.label&.to_s =~ /N/ }
-          south = stops.find { |stop| stop.tile.label&.to_s =~ /S/ }
+          east = stops.find { |stop| stop.tile.label.to_s.include?('E') }
+          west = stops.find { |stop| stop.tile.label.to_s.include?('W') }
+          north = stops.find { |stop| stop.tile.label.to_s.include?('N') }
+          south = stops.find { |stop| stop.tile.label.to_s.include?('S') }
           if east && west
             bonus[:revenue] += east.tile.icons.sum { |icon| icon.name.to_i }
             bonus[:revenue] += west.tile.icons.sum { |icon| icon.name.to_i }

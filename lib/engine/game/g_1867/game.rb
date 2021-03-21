@@ -1224,8 +1224,7 @@ module Engine
           # We'll treat random as in hex order
           corporation.tokens.select(&:used)
           .sort_by { |t| [t.city.max_revenue, t.city.hex.id] }
-          .reverse
-          .each do |token|
+          .reverse_each do |token|
             city = token.city
             token.remove!
 
@@ -1391,11 +1390,11 @@ module Engine
             Engine::Step::Route,
             G1867::Step::Dividend,
             # The blocking buy company needs to be before loan operations
-            [G1867::Step::BuyCompanyPreloan, blocks: true],
+            [G1867::Step::BuyCompanyPreloan, { blocks: true }],
             G1867::Step::LoanOperations,
             Engine::Step::DiscardTrain,
             G1867::Step::BuyTrain,
-            [Engine::Step::BuyCompany, blocks: true],
+            [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 
@@ -1447,7 +1446,7 @@ module Engine
         def init_loans
           @loan_value = 50
           # 16 minors * 2, 8 majors * 5
-          72.times.map { |id| Loan.new(id, @loan_value) }
+          Array.new(72) { |id| Loan.new(id, @loan_value) }
         end
 
         def round_end
@@ -1592,9 +1591,10 @@ module Engine
 
           @trainless_major = []
           trainless.each do |c|
-            if c.type == :major
+            case c.type
+            when :major
               @trainless_major << c
-            elsif c.type == :minor
+            when :minor
               nationalize!(c)
             end
           end

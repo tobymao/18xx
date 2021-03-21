@@ -91,7 +91,7 @@ module Engine
             return super if !@bids || @bids.empty?
             return [@bids.find { |_, bid| !bid }.first] if in_auction?
 
-            [@bids.max { |a, b| a[1] <=> b[1] }.first]
+            [@bids.max_by { |a| a[1] }.first]
           end
 
           def min_increment
