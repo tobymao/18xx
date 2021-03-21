@@ -17,6 +17,19 @@ module Engine
             []
           end
 
+          def round_state
+            super.merge(
+              {
+                discountable_trains_bought: [],
+              }
+            )
+          end
+
+          def discountable_trains_allowed?(entity)
+            # A corporation/minor cannot do two discount buys during its turn
+            !@round.discountable_trains_bought.include?(entity)
+          end
+
           def buyable_trains(entity)
             # Trains owned by minor cannot be bought by a corporation
             buyable = super.reject { |t| entity.corporation? && t.owner.minor? }
@@ -25,6 +38,14 @@ module Engine
             buyable.select!(&:from_depot?) unless @game.phase.status.include?('can_buy_trains')
 
             buyable
+          end
+
+          def process_buy_train(action)
+            super
+
+            return unless action.exchange
+
+            @round.discountable_trains_bought << action.entity
           end
         end
       end
