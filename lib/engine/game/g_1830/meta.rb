@@ -17,6 +17,13 @@ module Engine
         GAME_RULES_URL = 'https://lookout-spiele.de/upload/en_1830re.html_Rules_1830-RE_EN.pdf'
 
         PLAYER_RANGE = [3, 6].freeze
+        OPTIONAL_RULES = [
+          {
+            sym: :multiple_brown_from_ipo,
+            short_name: 'Buy Multiple Brown Shares From IPO',
+            desc: 'Mutiple brown shares may be bought from IPO as well as from pool',
+          },
+        ].freeze
       end
     end
   end

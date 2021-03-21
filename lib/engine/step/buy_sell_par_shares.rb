@@ -93,7 +93,7 @@ module Engine
         corporation = bundle.corporation
         entity.cash >= bundle.price &&
           !@round.players_sold[entity][corporation] &&
-          (can_buy_multiple?(entity, corporation) || !bought?) &&
+          (can_buy_multiple?(entity, corporation, bundle.owner) || !bought?) &&
           can_gain?(entity, bundle)
       end
 
@@ -179,7 +179,7 @@ module Engine
         end
       end
 
-      def can_buy_multiple?(_entity, corporation)
+      def can_buy_multiple?(_entity, corporation, _owner)
         corporation.buy_multiple? &&
          @round.current_actions.none? { |x| x.is_a?(Action::Par) } &&
          @round.current_actions.none? { |x| x.is_a?(Action::BuyShares) && x.bundle.corporation != corporation }
@@ -195,8 +195,12 @@ module Engine
       def can_buy_shares?(entity, shares)
         return false if shares.empty?
 
-        corporation = shares.first.corporation
-        return false if @round.players_sold[entity][corporation] || (bought? && !can_buy_multiple?(entity, corporation))
+        sample_share = shares.first
+        corporation = sample_share.corporation
+        owner = sample_share.owner
+        if @round.players_sold[entity][corporation] || (bought? && !can_buy_multiple?(entity, corporation, owner))
+          return false
+        end
 
         min_share = nil
         shares.each do |share|
