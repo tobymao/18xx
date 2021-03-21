@@ -86,10 +86,10 @@ module View
           operator_name = Native(@route_input).elm&.value
           operator = all_operators.find { |o| o.name == operator_name }
           if operator
-            store(:historical_routes, generate_last_route(operator))
+            store(:historical_routes, generate_last_route(operator), skip: true)
             store(:historical_laid_hexes, last_laid_hexes(operator))
           else
-            store(:historical_routes, [])
+            store(:historical_routes, [], skip: true)
             store(:historical_laid_hexes, nil)
           end
         end
