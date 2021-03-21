@@ -8,7 +8,7 @@ module Engine
       module Meta
         include Game::Meta
 
-        DEV_STAGE = :beta
+        DEV_STAGE = :production
 
         GAME_IMPLEMENTER = 'Chris Rericha based on 1828 by J C Lawrence'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1828.Games'
