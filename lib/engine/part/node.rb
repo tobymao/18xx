@@ -59,7 +59,7 @@ module Engine
         return if visited[self]
 
         visited[self] = true
-        return if max_nodes && visited.size >= max_nodes
+        return if max_nodes && visited.size > max_nodes
 
         paths.each do |node_path|
           next if node_path.track == skip_track
