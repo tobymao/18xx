@@ -2203,7 +2203,7 @@ module Engine
                 vor_harzer: true,
                 machine_revenue: [60, 90, 120, 150, 180],
                 switcher_revenue: [30, 40, 50, 60],
-                multiplier: 10,
+                multiplier: 30,
                 connected: false,
                 open: true,
               },
