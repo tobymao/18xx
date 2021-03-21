@@ -78,6 +78,9 @@ GEM
       unicode-display_width (>= 1.4.0, < 2.0)
     rubocop-ast (1.4.1)
       parser (>= 2.7.1.5)
+    rubocop-performance (1.10.1)
+      rubocop (>= 0.90.0, < 2.0)
+      rubocop-ast (>= 0.4.0)
     ruby-progressbar (1.11.0)
     sequel (5.41.0)
     sequel-annotate (1.6.0)
@@ -116,6 +119,7 @@ DEPENDENCIES
   roda
   rspec
   rubocop
+  rubocop-performance
   sequel
   sequel-annotate
   sequel-pg_advisory_lock

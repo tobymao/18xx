@@ -567,7 +567,7 @@ module Engine
             Engine::Step::Dividend,
             Engine::Step::DiscardTrain,
             Engine::Step::BuyTrain,
-            [Engine::Step::BuyCompany, blocks: true],
+            [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 
@@ -603,7 +603,7 @@ module Engine
 
           @sc_reserve_trains = []
           trains.each do |train_name|
-            train = depot.upcoming.select { |t| t.name == train_name }.last
+            train = depot.upcoming.reverse.find { |t| t.name == train_name }
             @sc_reserve_trains << train
             depot.remove_train(train)
           end
@@ -707,13 +707,13 @@ module Engine
         end
 
         def count_available_tokens(corporation)
-          corporation.tokens.map { |t| t.used || t.corporation != corporation ? 0 : 1 }.sum
+          corporation.tokens.sum { |t| t.used || t.corporation != corporation ? 0 : 1 }
         end
 
         def token_string(corporation)
           # All neutral tokens belong to CN, so it will count them normally.
           "#{count_available_tokens(corporation)}"\
-          "/#{corporation.tokens.map { |t| t.corporation != corporation ? 0 : 1 }.sum}"\
+          "/#{corporation.tokens.sum { |t| t.corporation != corporation ? 0 : 1 }}"\
           "#{', N' if corporation.tokens.any? { |t| t.corporation != corporation }}"
         end
 

@@ -186,7 +186,7 @@ module Engine
           end
 
           def pay_full_concession_cost!(entity)
-            total_cost = @game.concession_tile_hexes(entity).sum { |h| @game.concession_tile_hex(h)[:cost] }
+            total_cost = @game.concession_tile_hexes(entity).sum { |h| @game.concession_tile(h)[:cost] }
             return unless total_cost.positive?
 
             @log << "#{entity.name} had entire concession route previously built"

@@ -644,9 +644,7 @@ module Engine
 
         def num_trains(train)
           case train[:name]
-          when '6H'
-            4
-          when '8H'
+          when '6H', '8H'
             4
           when '16H'
             6
@@ -654,7 +652,7 @@ module Engine
         end
 
         def stop_revenue(stop, phase, train)
-          return gray_revenue(stop) if NEW_GRAY_REVENUE_CENTERS.keys.include?(stop.hex.id)
+          return gray_revenue(stop) if NEW_GRAY_REVENUE_CENTERS.key?(stop.hex.id)
 
           stop.route_revenue(phase, train)
         end

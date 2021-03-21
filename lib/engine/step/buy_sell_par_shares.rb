@@ -313,12 +313,13 @@ module Engine
       def action_is_shenanigan?(entity, action, corporation, share_to_buy)
         corp_buying = share_to_buy&.corporation
 
-        if action.is_a?(Action::Par)
+        case action
+        when Action::Par
 
           # If the player can sell shares or they're passing
           # they may wish to manipulate share price
           "Corporation #{corporation.name} parred" if !corp_buying || @game.check_sale_timing(entity, corporation)
-        elsif action.is_a?(Action::BuyShares)
+        when Action::BuyShares
           if corporation.owner == entity
             return if corporation_secure?(corporation) # Don't care...
 
@@ -349,7 +350,7 @@ module Engine
               end
             end
           end
-        elsif action.is_a?(Action::SellShares)
+        when Action::SellShares
           'Shares were sold'
         else
           "Unknown action #{action.type} disabling for safety"

@@ -1,3 +1,5 @@
+require: rubocop-performance
+
 AllCops:
   TargetRubyVersion: 3.0
 
@@ -40,11 +42,11 @@ Layout/SpaceBeforeBrackets:
 Lint/AmbiguousAssignment:
   Enabled: true
 
-Lint/ConstantDefinitionInBlock: # TODO enable & check offenses
-  Enabled: false
+Lint/ConstantDefinitionInBlock:
+  Enabled: true
 
-Lint/DuplicateBranch: # TODO enable & check offenses
-  Enabled: false
+Lint/DuplicateBranch:
+  Enabled: true
 
 Lint/DuplicateRegexpCharacterClassElement:
   Enabled: true
@@ -55,8 +57,8 @@ Lint/EmptyBlock:
 Lint/EmptyClass:
   Enabled: true
 
-Lint/FloatComparison: # TODO enable & check offenses
-  Enabled: false
+Lint/FloatComparison:
+  Enabled: true
 
 Lint/MissingSuper: # TODO enable & check offenses
   Enabled: false
@@ -64,8 +66,8 @@ Lint/MissingSuper: # TODO enable & check offenses
 Lint/NoReturnInBeginEndBlocks:
   Enabled: true
 
-Lint/RedundantSafeNavigation: # TODO enable & check offenses
-  Enabled: false
+Lint/RedundantSafeNavigation:
+  Enabled: true
 
 Lint/ToEnumArguments:
   Enabled: true
@@ -79,8 +81,8 @@ Lint/UnmodifiedReduceAccumulator:
 Lint/UselessMethodDefinition: # TODO enable & check offenses
   Enabled: false
 
-Lint/UselessTimes: # TODO enable & check offenses
-  Enabled: false
+Lint/UselessTimes:
+  Enabled: true
 
 Metrics/AbcSize:
   Enabled: false
@@ -119,11 +121,78 @@ Naming/VariableNumber: # TODO enable & check offenses, default or snake_case?
 Naming/MethodParameterName:
   Enabled: false
 
+Performance/AncestorsInclude:
+  Enabled: false
+
+Performance/BigDecimalWithNumericArgument:
+  Enabled: true
+
+Performance/BlockGivenWithExplicitBlock:
+  Enabled: true
+
+# https://github.com/rubocop/rubocop-performance/issues/99#issuecomment-582560228
+Performance/Caller:
+  Enabled: false
+
+# code readibility trumps performance improvement
+Performance/Casecmp:
+  Enabled: false
+
+# would add many lines, but does not improve performance significantly
+Performance/ChainArrayAllocation:
+  Enabled: false
+
+# code readibility trumps performance improvement
+Performance/CollectionLiteralInLoop:
+  Enabled: false
+
+Performance/ConstantRegexp:
+  Enabled: true
+
+Performance/MethodObjectAsBlock:
+  Enabled: true
+
+# works fine for numbers, might be problematic for strings
+# http://www.albertoalmagro.com/ruby-rangeinclude-vs-rangecover/
+Performance/RangeInclude:
+  Enabled: true
+
+# not safe, performance improvement negligible
+Performance/RedundantEqualityComparisonBlock:
+  Enabled: false
+
+Performance/RedundantSortBlock:
+  Enabled: true
+
+Performance/RedundantSplitRegexpArgument:
+  Enabled: true
+
+Performance/RedundantStringChars:
+  Enabled: true
+
+Performance/ReverseFirst:
+  Enabled: true
+
+Performance/SortReverse:
+  Enabled: true
+
+Performance/Squeeze:
+  Enabled: true
+
+Performance/StringInclude:
+  Enabled: true
+
+Performance/Sum:
+  Enabled: true
+
+Performance/TimesMap:
+  Enabled: true
+
 Style/ArgumentsForwarding:
   Enabled: true
 
-Style/CaseLikeIf: # TODO enable & check offenses
-  Enabled: false
+Style/CaseLikeIf:
+  Enabled: true
 
 Style/ClassVars:
   Enabled: false
@@ -131,7 +200,8 @@ Style/ClassVars:
 Style/CollectionCompact:
   Enabled: false
 
-Style/CombinableLoops: # TODO enable & check offenses
+# all (6) duplicated loops are used on purpose and for good reason
+Style/CombinableLoops:
   Enabled: false
 
 Style/CommandLiteral:
@@ -146,27 +216,28 @@ Style/DocumentDynamicEvalDefinition:
 Style/EmptyCaseCondition:
   Enabled: false
 
-Style/ExplicitBlockArgument: # TODO enable & check offenses, EnforcedStyle?
-  Enabled: false
-  # EnforcedStyle: no_braces
+Style/ExplicitBlockArgument:
+  Enabled: true
 
-Style/HashAsLastArrayItem: # TODO enable & check offenses
-  Enabled: false
+Style/HashAsLastArrayItem:
+  Enabled: true
 
-Style/HashEachMethods: # TODO enable & check offenses
+# unsafe, problems with 1860
+Style/HashEachMethods:
   Enabled: false
 
 Style/HashExcept:
   Enabled: true
 
-Style/HashLikeCase: # TODO enable & check offenses
+# code readibility: case trumps hash-lookup
+Style/HashLikeCase:
   Enabled: false
 
-Style/HashTransformKeys: # TODO enable & check offenses
-  Enabled: false
+Style/HashTransformKeys:
+  Enabled: true
 
-Style/HashTransformValues: # TODO enable & check offenses
-  Enabled: false
+Style/HashTransformValues:
+  Enabled: true
 
 Style/MultipleComparison:
   Enabled: false
@@ -186,17 +257,19 @@ Style/OptionalBooleanParameter: # TODO enable & check offenses
 Style/RedundantArgument:
   Enabled: false
 
-Style/RedundantFreeze: # conflicts with Style/MutableConstant
+# conflicts with Style/MutableConstant
+Style/RedundantFreeze:
   Enabled: false
 
-Style/RedundantRegexpEscape: # TODO enable & check offenses
+Style/RedundantRegexpEscape:
+  Enabled: true
+
+# enabling would break compiling deps!
+Style/SlicingWithRange:
   Enabled: false
 
-Style/SlicingWithRange: # TODO enable & check offenses
-  Enabled: false
-
-Style/SoleNestedConditional: # TODO enable & check offenses
-  Enabled: false
+Style/SoleNestedConditional:
+  Enabled: true
 
 Style/StringConcatenation:
   Enabled: false

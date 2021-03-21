@@ -467,7 +467,7 @@ module Engine
               share.percent = 20
               corporation.share_holders[share.owner] += share.percent
             end
-            new_shares = 3.times.map { |i| Share.new(corporation, percent: 20, index: i + 2) }
+            new_shares = Array.new(3) { |i| Share.new(corporation, percent: 20, index: i + 2) }
             @corporation_info[corporation][:slots] = 4 if public_mine?(corporation)
             @log << "#{corporation.name} converts to a 5 share corporation"
           when 5
@@ -475,7 +475,7 @@ module Engine
               share.percent = 10
               corporation.share_holders[share.owner] += share.percent
             end
-            new_shares = 5.times.map { |i| Share.new(corporation, percent: 10, index: i + 5) }
+            new_shares = Array.new(5) { |i| Share.new(corporation, percent: 10, index: i + 5) }
             @corporation_info[corporation][:slots] = 5 if public_mine?(corporation)
             increase_tokens!(corporation) if railway?(corporation)
             @log << "#{corporation.name} converts to a 10 share corporation"
@@ -498,7 +498,7 @@ module Engine
 
         def increase_tokens!(corporation)
           num_new_tokens = @corporation_info[corporation][:extra_tokens]
-          new_tokens = num_new_tokens.times.map { |_i| Token.new(corporation, price: TOKEN_PRICE) }
+          new_tokens = Array.new(num_new_tokens) { |_i| Token.new(corporation, price: TOKEN_PRICE) }
           corporation.tokens.concat(new_tokens)
           @log << "#{corporation.name} receives #{num_new_tokens} more tokens"
         end
@@ -1355,7 +1355,7 @@ module Engine
         end
 
         def sellable_bundles(player, corporation)
-          return [] unless @round.active_step&.respond_to?(:can_sell?)
+          return [] unless @round.active_step.respond_to?(:can_sell?)
 
           bundles = bundles_for_corporation(player, corporation)
           if !corporation.operated? && corporation != @mhe

@@ -744,7 +744,7 @@ module Engine
             G18MEX::Step::Dividend,
             Engine::Step::DiscardTrain,
             G18MEX::Step::SingleDepotTrainBuy,
-            [Engine::Step::BuyCompany, blocks: true],
+            [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 

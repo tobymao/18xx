@@ -42,7 +42,9 @@ module View
 
       chatbar_props = {
         attrs: {
+          autocomplete: 'off',
           placeholder: 'Send a message (Please keep discussions to 18xx)',
+          type: 'text',
         },
         style: {
           width: '100%',

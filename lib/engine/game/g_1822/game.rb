@@ -2928,9 +2928,10 @@ module Engine
             next unless c.owner
 
             if self.class::PRIVATE_PHASE_REVENUE.include?(c.id)
-              multiplier = if c.id == self.class::COMPANY_HR
+              multiplier = case c.id
+                           when self.class::COMPANY_HR
                              10
-                           elsif c.id == self.class::COMPANY_CWR
+                           when self.class::COMPANY_CWR
                              5
                            end
               revenue = @phase.name.to_i * multiplier
@@ -3578,9 +3579,10 @@ module Engine
 
           @companies.delete(selected_company)
           if top
-            last_bid_box_company = if selected_company.id[0] == self.class::COMPANY_MINOR_PREFIX
+            last_bid_box_company = case selected_company.id[0]
+                                   when self.class::COMPANY_MINOR_PREFIX
                                      bidbox_minors&.last
-                                   elsif selected_company.id[0] == self.class::COMPANY_CONCESSION_PREFIX
+                                   when self.class::COMPANY_CONCESSION_PREFIX
                                      bidbox_concessions&.last
                                    else
                                      bidbox_privates&.last
@@ -3733,7 +3735,8 @@ module Engine
 
         def place_destination_token(entity, hex, token)
           city = hex.tile.cities.first
-          city.place_token(entity, token, free: true, check_tokenable: false, cheater: city.slots)
+          cheater_slot = city.available_slots.positive? ? 0 : city.slots
+          city.place_token(entity, token, free: true, check_tokenable: false, cheater: cheater_slot)
           hex.tile.icons.reject! { |icon| icon.name == "#{entity.id}_destination" }
 
           ability = entity.all_abilities.find { |a| a.type == :destination }

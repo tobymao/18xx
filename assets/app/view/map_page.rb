@@ -22,7 +22,7 @@ module View
                  ])
       end
 
-      players = game::PLAYER_RANGE.max.times.map { |n| "Player #{n + 1}" }
+      players = Array.new(game::PLAYER_RANGE.max) { |n| "Player #{n + 1}" }
 
       h(:div, [
           h(:h2, game.full_title),

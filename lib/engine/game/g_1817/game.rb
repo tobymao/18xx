@@ -977,7 +977,7 @@ module Engine
           @loan_value = 100
           loan_increments = ((self.class::MAX_LOAN - self.class::MIN_LOAN) / self.class::LOAN_INTEREST_INCREMENTS + 1)
           total_loans = loan_increments * self.class::LOANS_PER_INCREMENT
-          total_loans.times.map { |id| Loan.new(id, @loan_value) }
+          Array.new(total_loans) { |id| Loan.new(id, @loan_value) }
         end
 
         def future_interest_rate
@@ -1081,10 +1081,10 @@ module Engine
           case size
           when 5
             original_shares[0].percent = 40
-            shares = 3.times.map { |i| Share.new(corporation, percent: 20, index: i + 1) }
+            shares = Array.new(3) { |i| Share.new(corporation, percent: 20, index: i + 1) }
           when 10
             original_shares[0].percent = 20
-            shares = 8.times.map { |i| Share.new(corporation, percent: 10, index: i + 1) }
+            shares = Array.new(8) { |i| Share.new(corporation, percent: 10, index: i + 1) }
           end
 
           original_shares.each { |share| corporation.share_holders[share.owner] += share.percent }
@@ -1112,11 +1112,11 @@ module Engine
           case corporation.total_shares
           when 2
             shares[0].percent = 40
-            new_shares = 3.times.map { |i| Share.new(corporation, percent: 20, index: i + 1) }
+            new_shares = Array.new(3) { |i| Share.new(corporation, percent: 20, index: i + 1) }
           when 5
             shares.each { |share| share.percent = share.percent.positive? ? 10 : -10 }
             shares[0].percent = 20
-            new_shares = 5.times.map { |i| Share.new(corporation, percent: 10, index: i + 4) }
+            new_shares = Array.new(5) { |i| Share.new(corporation, percent: 10, index: i + 4) }
           else
             raise GameError, 'Cannot convert 10 share corporation'
           end

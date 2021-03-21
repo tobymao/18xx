@@ -52,7 +52,7 @@ module Engine
 
     shared_context 'when player 1 sell a company' do
       before do
-        company = player_1.companies.select { |c| c.name.start_with?('ZOOTicket') }.first
+        company = player_1.companies.find { |c| c.name.start_with?('ZOOTicket') }
         game.round.process_action(Action::SellCompany.new(player_1, company: company, price: 4))
       end
     end

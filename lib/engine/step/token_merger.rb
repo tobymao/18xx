@@ -14,7 +14,7 @@ module Engine
 
         tokens.uniq.size != tokens.size ||
         tokens_in_same_hex(surviving, others) ||
-        (surviving.tokens + others_tokens(others)).select(&:used).size > @game.class::LIMIT_TOKENS_AFTER_MERGER
+        (surviving.tokens + others_tokens(others)).count(&:used) > @game.class::LIMIT_TOKENS_AFTER_MERGER
       end
 
       def others_tokens(others)
