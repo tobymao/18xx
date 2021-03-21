@@ -2522,13 +2522,13 @@ module Engine
           # Only small companies are available until later phases
           @corporations, @future_corporations = @corporations.partition { |corporation| corporation.type == :small }
 
-          new_corporation_for_vaclave(:small) unless multiplayer?
+          new_corporation_for_vaclav(:small) unless multiplayer?
 
           block_lay_for_purple_tiles
           init_player_debts
         end
 
-        def new_corporation_for_vaclave(size)
+        def new_corporation_for_vaclav(size)
           possible_corporations = @corporations.select { |corporation| corporation.type == size }
           index = rand % possible_corporations.size
           new_corporation = possible_corporations[index]
@@ -2591,8 +2591,8 @@ module Engine
 
           new_hexes = {}
           game_hexes.keys.each do |color|
-            new_map = game_hexes[color].map do |coords, tile_string|
-              [coords - TWO_PLAYER_HEXES_TO_REMOVE, tile_string]
+            new_map = game_hexes[color].transform_keys do |coords|
+              coords - TWO_PLAYER_HEXES_TO_REMOVE
             end.to_h
             new_hexes[color] = new_map
           end
@@ -2600,7 +2600,7 @@ module Engine
         end
 
         def multiplayer?
-          @multiplayer ||= @players.reject { |item| item == @vaclav }.size >= 3
+          @multiplayer ||= @players.count { |item| item != @vaclav } > 2
         end
 
         def init_round
@@ -2686,7 +2686,7 @@ module Engine
           @corporations.concat(medium_corps)
           @log << '-- Medium corporations now available --'
 
-          new_corporation_for_vaclave(:medium) unless multiplayer?
+          new_corporation_for_vaclav(:medium) unless multiplayer?
         end
 
         def event_large_corps_available!
@@ -2694,7 +2694,7 @@ module Engine
           @future_corporations.clear
           @log << '-- Large corporations now available --'
 
-          new_corporation_for_vaclave(:large) unless multiplayer?
+          new_corporation_for_vaclav(:large) unless multiplayer?
         end
 
         def float_corporation(corporation)

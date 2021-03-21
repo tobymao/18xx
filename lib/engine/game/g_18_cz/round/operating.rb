@@ -14,7 +14,7 @@ module Engine
             if @game.corporation_of_vaclav?(entity)
               case action
               when Engine::Action::RunRoutes
-                process_action(Engine::Action::Dividend.new(entity, kind: 'payout')) if action.routes.any?
+                process_action(Engine::Action::Dividend.new(entity, kind: 'payout')) unless action.routes.empty?
               end
             end
             super
