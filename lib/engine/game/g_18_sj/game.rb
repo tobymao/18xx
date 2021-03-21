@@ -35,6 +35,10 @@ module Engine
 
         MUST_SELL_IN_BLOCKS = false
 
+        MARKET_TEXT = Base::MARKET_TEXT.merge(
+          max_price: '90 or more is required for double jump if double revenue',
+        ).freeze
+
         TILES = {
           '5' => 4,
           '6' => 4,
@@ -144,7 +148,7 @@ module Engine
              67
              71
              76
-             82
+             82m
              90
              100p
              112
@@ -166,7 +170,7 @@ module Engine
              66
              70
              76
-             82
+             82m
              90p
              100
              112
@@ -180,9 +184,9 @@ module Engine
              260
              280
              300],
-          %w[46y 55y 60y 65 70 76 82p 90 100 111 125 140 155 170 185 200],
-          %w[39o 48y 54y 60y 66 71 76p 82 90 100 110 120 130],
-          %w[32o 41o 48y 55y 62 67 71p 76 82 90 100],
+          %w[46y 55y 60y 65 70 76 82pm 90 100 111 125 140 155 170 185 200],
+          %w[39o 48y 54y 60y 66 71 76p 82m 90 100 110 120 130],
+          %w[32o 41o 48y 55y 62 67 71p 76 82m 90 100],
           %w[25b 34o 42o 50y 58y 65 67p 71 75 80],
           %w[18b 27b 36o 45o 54y 63 67 69 70],
           %w[10b 12b 30b 40o 50y 60y 67 68],
