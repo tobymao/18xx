@@ -33,7 +33,7 @@ module Engine
             return {} unless entity.company?
 
             choices = @game.company_choices(entity, :stock_round)
-            if choices.any? && entity.id == @game.class::COMPANY_OSTH &&
+            if !choices.empty? && entity.id == @game.class::COMPANY_OSTH &&
                 (@bid_actions.positive? || @game.player_debt(entity.owner).positive?)
               return {}
             end
