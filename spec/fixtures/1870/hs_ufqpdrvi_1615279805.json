@@ -16592,10 +16592,10 @@
   "created_at": "2021-03-09",
   "loaded": true,
   "result": {
-    "Player 3": 9190,
-    "Player 2": 8850,
-    "Player 1": 6986,
-    "Player 4": 5779
+    "Player 3": 9165,
+    "Player 2": 8800,
+    "Player 1": 6983,
+    "Player 4": 5649
   },
   "turn": 9,
   "round": "Operating Round",

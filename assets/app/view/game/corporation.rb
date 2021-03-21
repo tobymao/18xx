@@ -404,12 +404,10 @@ module View
           },
         }
 
-        if player_rows.any?
-          if @corporation.share_price&.highlight? &&
+        if player_rows.any? && @corporation.share_price&.highlight? &&
             (color = StockMarket::COLOR_MAP[@game.class::STOCKMARKET_COLORS[@corporation.share_price.type]])
-            market_tr_props[:style][:backgroundColor] = color
-            market_tr_props[:style][:color] = contrast_on(color)
-          end
+          market_tr_props[:style][:backgroundColor] = color
+          market_tr_props[:style][:color] = contrast_on(color)
         end
 
         if player_rows.any? || @corporation.num_market_shares.positive?

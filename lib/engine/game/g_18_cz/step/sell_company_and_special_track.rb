@@ -31,13 +31,13 @@ module Engine
           end
 
           def process_lay_tile(action)
-            spender = if !action.entity.owner
-                        nil
-                      elsif action.entity.owner.corporation?
-                        action.entity.owner
-                      else
-                        @game.current_entity
-                      end
+            owner = if !action.entity.owner
+                      nil
+                    elsif action.entity.owner.corporation?
+                      action.entity.owner
+                    else
+                      @game.current_entity
+                    end
 
             unless @game.purple_tile?(action.tile)
               discount = action.hex.tile.upgrades.sum(&:cost)
@@ -46,7 +46,13 @@ module Engine
               "#{action.entity.name}"
             end
 
-            lay_tile(action, spender: spender)
+            lay_tile(action, spender: owner)
+            @round.laid_hexes << action.hex
+
+            # Record any track laid after the dividend step
+            if owner&.corporation? && (operating_info = owner.operating_history[[@game.turn, @round.round_num]])
+              operating_info.laid_hexes = @round.laid_hexes
+            end
 
             @game.skip_default_track unless @game.purple_tile?(action.tile)
 

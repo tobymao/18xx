@@ -225,7 +225,11 @@ module Engine
                         price: 900,
                       },
                     ],
-                    events: [{ 'type' => 'remove_tokens' }],
+                    events: [
+                      { 'type' => 'remove_tokens' },
+                      { 'type' => 'remove_reservations' },
+],
+
                   }].freeze
 
         COMPANIES = [
@@ -727,7 +731,10 @@ module Engine
         MEAT_REVENUE_DESC = 'Meat-Packing'
 
         TILE_COST = 20
-        EVENTS_TEXT = Base::EVENTS_TEXT.merge('remove_tokens' => ['Remove Tokens', 'Remove Steamboat and Meat Packing markers']).freeze
+        EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+          'remove_tokens' => ['Remove Tokens', 'Remove Steamboat and Meat Packing markers'],
+          'remove_reservations' => ['Remove Reservations', 'Remove reserved token slots for corporations']
+        ).freeze
 
         ASSIGNMENT_TOKENS = {
           'MPC' => '/icons/1846/mpc_token.svg',
@@ -746,7 +753,7 @@ module Engine
         end
 
         def init_companies(players)
-          super + num_pass_companies(players).times.map do |i|
+          super + Array.new(num_pass_companies(players)) do |i|
             name = "Pass (#{i + 1})"
 
             Company.new(
@@ -881,7 +888,7 @@ module Engine
 
           steam = steamboat.id
           if route.corporation.assigned?(steam) && (port = stops.map(&:hex).find { |hex| hex.assigned?(steam) })
-            revenue += 20 * port.tile.icons.select { |icon| icon.name == 'port' }.size
+            revenue += 20 * port.tile.icons.count { |icon| icon.name == 'port' }
           end
 
           revenue += east_west_bonus(stops)[:revenue]
@@ -1045,7 +1052,7 @@ module Engine
             G1846::Step::Dividend,
             Engine::Step::DiscardTrain,
             G1846::Step::BuyTrain,
-            [G1846::Step::BuyCompany, blocks: true],
+            [G1846::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 
@@ -1059,6 +1066,10 @@ module Engine
           @minors.dup.each { |minor| close_corporation(minor) }
 
           remove_lsl_icons
+        end
+
+        def event_remove_reservations!
+          @log << '-- Event: Reserved token slots removed --'
         end
 
         def event_remove_tokens!

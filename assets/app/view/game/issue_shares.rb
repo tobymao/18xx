@@ -20,17 +20,13 @@ module View
         @current_actions = @game.round.actions_for(@entity)
         children = []
 
-        if @current_actions.include?('sell_shares')
-          if (step = @game.round.step_for(@entity, 'sell_shares'))
-            issue_text = emergency? ? 'Emergency Issue' : 'Issue'
-            children << render_shares(issue_text, step.issuable_shares(@entity), Engine::Action::SellShares)
-          end
+        if @current_actions.include?('sell_shares') && (step = @game.round.step_for(@entity, 'sell_shares'))
+          issue_text = emergency? ? 'Emergency Issue' : 'Issue'
+          children << render_shares(issue_text, step.issuable_shares(@entity), Engine::Action::SellShares)
         end
 
-        if @current_actions.include?('buy_shares')
-          if (step = @game.round.step_for(@entity, 'buy_shares'))
-            children << render_shares('Redeem', step.redeemable_shares(@entity), Engine::Action::BuyShares)
-          end
+        if @current_actions.include?('buy_shares') && (step = @game.round.step_for(@entity, 'buy_shares'))
+          children << render_shares('Redeem', step.redeemable_shares(@entity), Engine::Action::BuyShares)
         end
 
         h('div.margined', children.compact)

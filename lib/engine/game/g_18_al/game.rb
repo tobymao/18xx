@@ -541,7 +541,7 @@ module Engine
             Engine::Step::DiscardTrain,
             Engine::Step::SpecialBuyTrain,
             Engine::Step::SingleDepotTrainBuy,
-            [Engine::Step::BuyCompany, blocks: true],
+            [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 

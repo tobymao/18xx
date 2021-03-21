@@ -674,6 +674,8 @@ module Engine
       end
 
       def next_turn!
+        return if @turn_start_action_id == current_action_id
+
         @last_turn_start_action_id = @turn_start_action_id
         @turn_start_action_id = current_action_id
       end
@@ -817,7 +819,7 @@ module Engine
       end
 
       def sellable_bundles(player, corporation)
-        return [] unless @round.active_step&.respond_to?(:can_sell?)
+        return [] unless @round.active_step.respond_to?(:can_sell?)
 
         bundles = bundles_for_corporation(player, corporation)
         bundles.select { |bundle| @round.active_step.can_sell?(player, bundle) }
@@ -1399,7 +1401,7 @@ module Engine
         # Find the highest tile that exists of this type in the tile list and duplicate it.
         # The highest one in the list should be the highest index anywhere.
         tiles = @_tiles.values.select { |t| t.name == tile.name }
-        new_tile = tiles.max { |a, b| a.index <=> b.index }.dup
+        new_tile = tiles.max_by(&:index).dup
         @tiles << new_tile
 
         @_tiles[new_tile.id] = new_tile
@@ -1700,7 +1702,7 @@ module Engine
 
       def init_train_handler
         trains = game_trains.flat_map do |train|
-          (train[:num] || num_trains(train)).times.map do |index|
+          Array.new((train[:num] || num_trains(train))) do |index|
             Train.new(**train, index: index)
           end
         end
@@ -1847,7 +1849,7 @@ module Engine
       def init_tile(name, val)
         if val.is_a?(Integer) || val == 'unlimited'
           count = val == 'unlimited' ? 1 : val
-          count.times.map do |i|
+          Array.new(count) do |i|
             Tile.for(
               name,
               index: i,
@@ -1859,7 +1861,7 @@ module Engine
           count = val['count'] == 'unlimited' ? 1 : val['count']
           color = val['color']
           code = val['code']
-          count.times.map do |i|
+          Array.new(count) do |i|
             Tile.from_code(
               name,
               color,
@@ -2158,16 +2160,16 @@ module Engine
           Step::Dividend,
           Step::DiscardTrain,
           Step::BuyTrain,
-          [Step::BuyCompany, blocks: true],
+          [Step::BuyCompany, { blocks: true }],
         ], round_num: round_num)
       end
 
       def event_close_companies!
         @log << '-- Event: Private companies close --'
         @companies.each do |company|
-          if (ability = abilities(company, :close, on_phase: 'any'))
-            next if ability.on_phase == 'never' ||
-                    @phase.phases.any? { |phase| ability.on_phase == phase[:name] }
+          if (ability = abilities(company, :close, on_phase: 'any')) && (ability.on_phase == 'never' ||
+                    @phase.phases.any? { |phase| ability.on_phase == phase[:name] })
+            next
           end
 
           company.close!
@@ -2255,7 +2257,7 @@ module Engine
       end
 
       def count_available_tokens(corporation)
-        corporation.tokens.map { |t| t.used ? 0 : 1 }.sum
+        corporation.tokens.sum { |t| t.used ? 0 : 1 }
       end
 
       def token_string(corporation)
@@ -2316,7 +2318,7 @@ module Engine
         current_step = ability_blocking_step
         current_step_name = current_step&.type
 
-        if ability.type == :tile_lay && ability.must_lay_all && current_step&.is_a?(Step::SpecialTrack)
+        if ability.type == :tile_lay && ability.must_lay_all && current_step.is_a?(Step::SpecialTrack)
           return current_step.company == ability.owner
         end
 

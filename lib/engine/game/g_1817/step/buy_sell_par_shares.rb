@@ -132,7 +132,7 @@ module Engine
               entity.num_shares_of(corporation) <= 0 &&
               !(corporation.share_price.acquisition? || corporation.share_price.liquidation?) &&
               corporation.operated? &&
-              !@round.players_sold[entity].values.include?(:short)
+              !@round.players_sold[entity].value?(:short)
           end
 
           def choice_name

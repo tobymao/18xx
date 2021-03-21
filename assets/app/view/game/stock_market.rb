@@ -101,6 +101,7 @@ module View
         unless (types & BORDER_TYPES).empty?
           style[:borderRightWidth] = "#{BORDER * 4}px"
           style[:borderRightColor] = COLOR_MAP[:purple]
+          style[:width] = "#{WIDTH_TOTAL - 2 * PAD - 2 * BORDER - 3}px"
         end
         if color == :black
           style[:color] = 'gainsboro'

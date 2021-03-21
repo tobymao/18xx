@@ -2,6 +2,7 @@
 
 require_relative '../base'
 require_relative 'meta'
+require_relative '../stubs_are_restricted'
 
 module Engine
   module Game
@@ -9,7 +10,8 @@ module Engine
       class Game < Game::Base
         include_meta(G1893::Meta)
 
-        attr_accessor :passers_first_stock_round
+        attr_accessor :passers_first_stock_round, :agv_mergable, :agv_auto_found, :hgk_mergable, :hgk_auto_found,
+                      :potential_discard_trains
 
         register_colors(
           gray70: '#B3B3B3',
@@ -27,6 +29,20 @@ module Engine
         CAPITALIZATION = :full
 
         MUST_SELL_IN_BLOCKS = false
+
+        GAME_END_CHECK = { bankrupt: :immediate, bank: :full_or }.freeze
+
+        # Move down one step for a whole block, not per share
+        SELL_MOVEMENT = :down_block
+
+        # Cannot sell until operated
+        SELL_AFTER = :operate
+
+        # Sell zero or more, then Buy zero or one
+        SELL_BUY_ORDER = :sell_buy
+
+        # New track must be usable
+        TRACK_RESTRICTION = :restrictive
 
         TILES = {
           '3' => 2,
@@ -204,6 +220,10 @@ module Engine
           },
         }.freeze
 
+        LEVERKUSEN_YELLOW_TILES = %w[K1 K55].freeze
+        LEVERKUSEN_GREEN_TILE = 'K314'
+        LEVERKUSEN_HEX_NAME = 'G6'
+
         LOCATION_NAMES = {
           'B5' => 'Düsseldorf & Neuss',
           'D5' => 'Benrath',
@@ -211,7 +231,7 @@ module Engine
           'B9' => 'Wuppertal',
           'E2' => 'Grevenbroich',
           'E4' => 'Dormagen',
-          'G6' => 'Leverkusen',
+          LEVERKUSEN_HEX_NAME => 'Leverkusen',
           'I2' => 'Bergheim',
           'I8' => 'Bergisch-Gladbach',
           'L3' => 'Frechen',
@@ -459,6 +479,7 @@ module Engine
             name: 'Dürener Eisenbahn',
             sym: 'DE',
             tokens: [0, 40, 100],
+            type: 'corporation',
             logo: '1893/DE',
             simple_logo: '1893/DE.alt',
             color: :blue,
@@ -472,6 +493,7 @@ module Engine
             float_excludes_market: true,
             always_market_price: true,
             tokens: [0, 40, 100],
+            type: 'corporation',
             logo: '1893/RSE',
             simple_logo: '1893/RSE.alt',
             color: :pink,
@@ -486,6 +508,7 @@ module Engine
             float_excludes_market: true,
             always_market_price: true,
             tokens: [0, 40, 100],
+            type: 'corporation',
             color: '#B3B3B3',
             logo: '1893/RAG',
             simple_logo: '1893/RAG.alt',
@@ -515,7 +538,8 @@ module Engine
             float_excludes_market: true,
             always_market_price: true,
             floatable: false,
-            tokens: [100, 100],
+            tokens: [0, 0, 0, 100, 100],
+            type: 'corporation',
             shares: [20, 10, 20, 10, 10, 10, 10, 10],
             logo: '1893/AGV',
             simple_logo: '1893/AGV.alt',
@@ -536,7 +560,8 @@ module Engine
             float_excludes_market: true,
             always_market_price: true,
             floatable: false,
-            tokens: [100, 100],
+            tokens: [0, 0, 0, 100, 100],
+            type: 'corporation',
             shares: [20, 10, 20, 10, 10, 10, 10, 10],
             logo: '1893/HGK',
             simple_logo: '1893/HGK.alt',
@@ -547,6 +572,7 @@ module Engine
                 description: 'Unavailable in SR before phase 5',
               },
             ],
+            coordinates: 'J5',
             reservation_color: nil,
           },
         ].freeze
@@ -613,24 +639,14 @@ module Engine
 
         AXES = { x: :number, y: :letter }.freeze
 
-        GAME_END_CHECK = { bankrupt: :immediate, bank: :full_or }.freeze
-
-        # Move down one step for a whole block, not per share
-        SELL_MOVEMENT = :down_block
-
-        # Cannot sell until operated
-        SELL_AFTER = :operate
-
-        # Sell zero or more, then Buy zero or one
-        SELL_BUY_ORDER = :sell_buy
-
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'remove_tile_block' => ['Remove tile block', 'Rhine may be passed. N5 P5 becomes possible to lay tiles in'],
           'agv_buyable' => ['AGV buyable', 'AGV shares can be bought in the stockmarket'],
-          'agv_founded' => ['AGV founded', 'AGV is founded if not yet founded'],
+          'agv_founded' => ['AGV founded', 'AGV is automatically founded in next Merge Round if not yet founded'],
           'hgk_buyable' => ['HGK buyable', 'HGK shares can be bought in the stockmarket'],
-          'hgk_founded' => ['HGK founded', 'AGV is founded if not yet founded'],
-          'bonds_exchanged' => ['FdSD exchanged', 'Any remaining Fond der Stadt Düsseldorf bonds are exchanged'],
+          'hgk_founded' => ['HGK founded', 'HGK is automatically founded in next Merge Round if not yet founded'],
+          'bonds_exchanged' => ['FdSD exchanged', 'Any remaining Fond der Stadt Düsseldorf bonds must be exchanged '\
+              'during next Stock Round'],
           'eva_closed' => ['EVA closed', 'EVA Is closed']
         ).freeze
 
@@ -698,6 +714,19 @@ module Engine
         def next_round!
           @round =
             case @round
+            when G1893::Round::Merger
+              case @after_merger_round
+              when :operating_round_first
+                new_operating_round
+              when :operating_round_second
+                new_operating_round(@round.round_num + 1)
+              when :stock_round
+                @turn += 1
+                new_stock_round
+              when :auction_round
+                @turn += 1
+                new_auction_round
+              end
             when Engine::Round::Stock
               @operating_rounds = @phase.operating_rounds
               if @turn == 1
@@ -705,18 +734,24 @@ module Engine
               else
                 reorder_players
               end
-              new_operating_round
+              @after_merger_round = :operating_round_first
+              new_merger_round(1)
             when Engine::Round::Operating
+              or_round_finished
               if @round.round_num < @operating_rounds
-                or_round_finished
-                new_operating_round(@round.round_num + 1)
+                @after_merger_round = :operating_round_second
+                merger_count = 2
               else
-                @turn += 1
-                or_round_finished
                 or_set_finished
                 # If starting package remains, need to sell it first
-                buyable_companies.empty? ? new_stock_round : new_auction_round
+                @after_merger_round = if buyable_companies.empty?
+                                        :stock_round
+                                      else
+                                        :auction_round
+                                      end
+                merger_count = 3
               end
+              new_merger_round(merger_count)
             when Engine::Round::Draft
               if @is_init_round
                 @is_init_round = false
@@ -778,6 +813,14 @@ module Engine
           ], round_num: round_num)
         end
 
+        def new_merger_round(count)
+          @log << "-- Merge Round #{@turn}.#{count} (of 3) --"
+          G1893::Round::Merger.new(self, [
+            G1893::Step::PotentialDiscardTrainsAfterMerge,
+            G1893::Step::Merger,
+          ])
+        end
+
         def float_str(entity)
           return 'Each pay 10M per OR' if entity.name == 'AdSK'
           return super if !entity.corporation || entity.floatable
@@ -806,34 +849,62 @@ module Engine
           @hgk_corporation ||= corporation_by_id('HGK')
         end
 
+        def hdsk
+          @hdsk_company ||= company_by_id('HdSK')
+        end
+
+        def ekb
+          @ekb_minor ||= minor_by_id('EKB')
+        end
+
+        def kfbe
+          @kfbe_minor ||= minor_by_id('KFBE')
+        end
+
+        def ksz
+          @ksz_minor ||= minor_by_id('KSZ')
+        end
+
+        def kbe
+          @kbe_minor ||= minor_by_id('KBE')
+        end
+
+        def bkb
+          @bkb_minor ||= minor_by_id('BKB')
+        end
+
+        def eva
+          @eva_private ||= company_by_id('EVA')
+        end
+
         def hdsk_reserved_share
           # 10% certificate in HGK
-          { share: hgk.shares[1], private: company_by_id('HdSK'), minor: nil }
+          { share: hgk.shares[1], private: hdsk, minor: nil }
         end
 
         def ekb_reserved_share
           # President's certificate in AGV
-          { share: agv.shares[0], private: nil, minor: minor_by_id('EKB') }
+          { share: agv.shares[0], private: nil, minor: ekb }
         end
 
         def kfbe_reserved_share
           # 20% certificate in HGK
-          { share: hgk.shares[2], private: nil, minor: minor_by_id('KFBE') }
+          { share: hgk.shares[2], private: nil, minor: kfbe }
         end
 
         def ksz_reserved_share
           # 10% certificate in AGV
-          { share: agv.shares[1], private: nil, minor: minor_by_id('KSZ') }
+          { share: agv.shares[1], private: nil, minor: ksz }
         end
 
         def kbe_reserved_share
           # President's certificate in HGK
-          { share: hgk.shares[0], private: nil, minor: minor_by_id('KBE') }
+          { share: hgk.shares[0], private: nil, minor: kbe }
         end
 
         def bkb_reserved_share
           # 20% certificate in AGV
-          { share: agv.shares[2], private: nil, minor: minor_by_id('BKB') }
+          { share: agv.shares[2], private: nil, minor: bkb }
         end
 
         def merged_corporation?(corporation)
@@ -863,27 +934,54 @@ module Engine
             hex.tile.cities[0].place_token(minor, minor.next_token)
           end
 
-          # Use neutral tokens to make cities passable, but not blockable
+          # Use neutral token to make cities passable, but not blockable
           @neutral = Corporation.new(
             sym: 'N',
             name: 'Neutral',
             logo: 'open_city',
             simple_logo: 'open_city',
-            tokens: [0, 0],
+            tokens: [0],
           )
           @neutral.owner = @bank
           @neutral.tokens.each { |token| token.type = :neutral }
           city_by_id('H5-0-0').place_token(@neutral, @neutral.next_token)
-          city_by_id('J5-0-0').place_token(@neutral, @neutral.next_token)
 
           @passers_first_stock_round = []
+          @is_init_round = false
+          @after_merger_round = nil
+          @agv_mergable = false
+          @hgk_mergable = false
+          @agv_auto_found = false
+          @hgk_auto_found = false
+          agv.floatable = false
+          hgk.floatable = false
+
+          @potential_discard_trains = []
+
+          @green_leverkusen_tile ||= @tiles.find { |t| t.name == LEVERKUSEN_GREEN_TILE }
         end
 
+        include StubsAreRestricted
+
         def upgrades_to?(from, to, _special = false, selected_company: nil)
+          # Leverkusen can upgrade double dits to one city
+          return to.name == LEVERKUSEN_GREEN_TILE if from.color == :yellow && from.hex.name == LEVERKUSEN_HEX_NAME
+
+          # The TILE_BLOCK hexes cannot be upgraded until block has been removed (when phase 3 starts)
           return super unless TILE_BLOCK.include?(from.hex.name)
           return super if from.hex.tile.icons.empty?
 
           raise GameError, "Cannot place a tile in #{from.hex.name} until green phase"
+        end
+
+        def all_potential_upgrades(tile, tile_manifest: false)
+          upgrades = super
+          return upgrades if !tile_manifest || !LEVERKUSEN_YELLOW_TILES.include?(tile.name)
+
+          # Tile manifest for Leverkusen yellow tiles should show green Leverkusen tile
+          upgrades |= [@green_leverkusen_tile] if @green_leverkusen_tile
+
+          upgrades
         end
 
         def event_remove_tile_block!
@@ -897,15 +995,31 @@ module Engine
           bond_price = @stock_market.par_prices.find { |p| p.price == 120 }
           @stock_market.set_par(agv, bond_price)
           move_buyable_shares_to_market(agv)
+          @agv_mergable = true
+          remove_ability(agv, :no_buy)
         end
 
         def event_agv_founded!
-          found_agv unless agv.presidents_share.buyable
+          @agv_mergable = false
+          return if agv.presidents_share.buyable
+
+          @log << "#{agv.name} will be founded at the start of the next Merge Round"
+          @agv_auto_found = true
         end
 
         def found_agv
-          @log << "#{agv.name} founded"
-          form_mergable(agv, [ekb_reserved_share, ksz_reserved_share, bkb_reserved_share])
+          @agv_mergable = false
+          @agv_auto_found = false
+          form_mergable(agv, mergers_agv)
+        end
+
+        def mergers_agv
+          [ekb_reserved_share, ksz_reserved_share, bkb_reserved_share]
+        end
+
+        def mergers(target)
+          reserved_shares = target == agv ? mergers_agv : mergers_hgk
+          reserved_shares.map { |info| info['minor'] || info['private'] }
         end
 
         def event_hgk_buyable!
@@ -913,19 +1027,142 @@ module Engine
           bond_price = @stock_market.par_prices.reverse.find { |p| p.price == 120 }
           @stock_market.set_par(hgk, bond_price)
           move_buyable_shares_to_market(hgk)
+          @hgk_mergable = true
+          remove_ability(hgk, :no_buy)
         end
 
         def event_hgk_founded!
-          found_hgk unless hgk.presidents_share.buyable
+          @hgk_mergable = false
+          return if hgk.presidents_share.buyable
+
+          @log << "#{hgk.name} will be founded at the start of the next Merge Round"
+          @hgk_auto_found = true
         end
 
         def found_hgk
-          @log << "#{hgk.name} founded"
-          form_mergable(hgk, [kbe_reserved_share, hdsk_reserved_share, kfbe_reserved_share])
+          @hgk_mergable = false
+          @hgk_auto_found = false
+          form_mergable(hgk, mergers_hgk)
         end
 
-        def form_mergable(_mergable, _exchange_info)
-          @log << 'NOT YET IMPLEMENTED'
+        def mergers_hgk
+          [kbe_reserved_share, hdsk_reserved_share, kfbe_reserved_share]
+        end
+
+        def form_mergable(mergable, exchange_info)
+          @log << "#{mergable.name} receives #{format_currency(400)} from the bank as starting treasury"
+          @bank.spend(400, mergable)
+          mergable.floatable = true
+          president_priority = []
+          president_share = nil
+
+          # If HGK, activate J5 token
+          if mergable == hgk
+            @log << "#{hgk.name} places an token in #{hgk.coordinates}"
+            city_by_id('J5-0-0').place_token(hgk, hgk.next_token, free: true)
+          end
+
+          exchange_info.each do |mergeinfo|
+            share = mergeinfo['share']
+            puts("Share: #{share} from #{mergeinfo}")
+            mergee = mergeinfo['minor'] || mergeinfo['private']
+            player = mergee.owner
+            if share.president
+              extra_info = ' presidency'
+              president_share = share
+            else
+              extra_info = ''
+            end
+            @log << "#{player.name} exchanges ownership of #{mergee.name} for #{share.percent}%#{extra_info} "\
+              "share in #{share.corporation.name}"
+            share.buyable = true
+            @share_pool.transfer_shares(
+              share.to_bundle,
+              player,
+              allow_president_change: false,
+              price: 0
+            )
+            president_priority << player
+
+            # If this was the private (company) - nothing more to do
+            if mergee.company?
+              mergee.close!
+              next
+            end
+
+            # Mergee is a minor - transfer any cash
+            if mergee.cash.positive?
+              @log << "#{mergable.name} receives the #{mergee.name} treasure of #{format_currency(mergable.cash)}"
+              mergee.spend(mergee.cash, mergable)
+            end
+
+            # Transfer any trains - director will later get a chance to discard any
+            unless mergee.trains.empty?
+              transferred = transfer(:trains, mergee, mergable)
+              @log << "#{mergable.name} receives the trains from #{mergee.name}: #{transferred.map(&:name).join(', ')}"
+            end
+
+            # Transfer tokens (Note! HGK first token is )
+            minor_token = mergee.tokens.first
+            city = minor_token.city
+            city.remove_reservation!(mergee)
+            @log << "#{mergee.name}'s token in #{city.hex.name} is replaced with a token for #{mergable.name}"
+            minor_token.remove!
+            city.place_token(mergable, mergable.next_token, free: true)
+
+            # Minor is no longer used
+            mergee.close!
+          end
+
+          # Give presidency to largest share percentage - with previous mergee order as tie breaker
+          share_holders = mergable.player_share_holders
+          max_holding = share_holders.values.max
+          majority_share_holders = share_holders.select { |_, p| p == max_holding }.keys
+          if majority_share_holders.include?(president_share.owner)
+            new_president = president_share.owner
+          else
+            majority_share_holders.sort_by! { |sh| president_priority.index(sh) || Integer::MAX }
+            new_president = majority_share_holders.first
+          end
+          if president_share.owner == new_president
+            @log << "#{president_share.owner.name} retains the presidency"
+            mergable.owner = president_share.owner
+          else
+            @log << "#{new_president.name} becomes the president of #{mergable.name}"
+            mergable.owner = new_president
+            shares_for_presidency_swap(mergable, new_president).each do |s|
+              move_share(s, president_share.owner)
+            end
+            move_share(president_share, new_president)
+          end
+
+          # Give president the chance to discard any trains
+          if !mergable.trains.empty?
+            puts("Mergable #{mergable.name} is added to potential_discard_trains")
+            @potential_discard_trains << mergable
+          else
+            puts("Mergable #{mergable.name} has no trains")
+          end
+
+          mergable.ipoed = true
+          @log << "#{mergable.name} have been completly founded and now floats"
+        end
+
+        def shares_for_presidency_swap(corporation, owner)
+          # Try to get 2 10%, otherwise (when owner has 1 10% and 1 20%) return the 20%
+          ten_percents = owner.shares_of(corporation).select { |s| s.percent == 10 }.take(2)
+          return ten_percents if ten_percent.size == 2
+
+          owner.shares_of(corporation).select { |s| s.percent == 20 }
+        end
+
+        def event_bonds_exchanged!
+          @log << 'NOT IMPLEMENTED - bonds exchanged'
+        end
+
+        def event_eva_closed!
+          @log << "#{eva.name} closed"
+          eva.close!
         end
 
         def buyable?(entity)
@@ -952,6 +1189,17 @@ module Engine
           return false if entity.minor?
 
           super
+        end
+
+        def president_assisted_buy(entity, train, price)
+          # Can only assist if it is a train less minor, that
+          # cannot afford the train.
+          return super if entity.corporation? || entity.trains.size.positive? || price <= entity.cash ||
+            entity.player.cash + entity.cash < price
+
+          fee = 0
+          president_assist = price - entity.cash
+          [president_assist, fee]
         end
 
         def payout_companies
@@ -1026,7 +1274,7 @@ module Engine
               %w[B7 H3 I4 K6 M4 M8 Q4 Q8 S2] => 'town=revenue:0',
               simple_city => 'city=revenue:0',
               %w[C8 E8 G8 H7 P3 R3 S4] => 'upgrade=cost:40,terrain:mountain',
-              ['G6'] => 'town=revenue:0;town=revenue:0;label=L',
+              [LEVERKUSEN_HEX_NAME] => 'town=revenue:0;town=revenue:0;label=L',
               ['C4'] => 'border=edge:5,type:impassable',
               ['D5'] => 'city=revenue:0;border=edge:1,type:impassable;border=edge:2,type:impassable;label=BX',
               ['E4'] => 'city=revenue:0;border=edge:4,type:impassable',

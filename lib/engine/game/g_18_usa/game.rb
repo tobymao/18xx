@@ -890,17 +890,18 @@ module Engine
         def setup
           metro = METROPOLITAN_HEXES.sort_by { rand }.take(3)
           metro.each do |i|
-            if i == 'H14'
+            case i
+            when 'H14'
               @hexes.find { |h| h.id == i }.lay(@tiles.find { |t| t.name == 'X03' })
-            elsif i == 'E11'
+            when 'E11'
               # Denver needs to be done at a later date
-            elsif i == 'G3'
+            when 'G3'
               @hexes.find { |h| h.id == i }.lay(@tiles.find { |t| t.name == 'X05' }.rotate!(3))
-            elsif i == 'D20'
+            when 'D20'
               @hexes.find { |h| h.id == i }.lay(@tiles.find { |t| t.name == 'X02' }.rotate!(1))
-            elsif i == 'I19'
+            when 'I19'
               @hexes.find { |h| h.id == i }.lay(@tiles.find { |t| t.name == 'X06' })
-            elsif i == 'H22'
+            when 'H22'
               @hexes.find { |h| h.id == i }.lay(@tiles.find { |t| t.name == 'X01' })
             end
           end

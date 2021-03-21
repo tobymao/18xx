@@ -44,8 +44,8 @@ module Engine
         market.set_par(corp_3, market.market[6][0])
         5.times { game.share_pool.buy_shares(player_0, corp_0.shares[0]) }
         5.times { game.share_pool.buy_shares(player_0, corp_1.shares[0]) }
-        1.times { game.share_pool.buy_shares(player_0, corp_2.shares[0]) } # at 6-player cert limit
-        1.times { game.share_pool.buy_shares(player_1, corp_3.shares[0]) } # at 6-player cert limit
+        game.share_pool.buy_shares(player_0, corp_2.shares[0]) # at 6-player cert limit
+        game.share_pool.buy_shares(player_1, corp_3.shares[0]) # at 6-player cert limit
 
         expect(subject.active_step.can_buy?(player_0, corp_2.shares[0])).to eq(false)
         expect(subject.active_step.can_buy?(player_0, corp_3.shares[0])).to eq(true)

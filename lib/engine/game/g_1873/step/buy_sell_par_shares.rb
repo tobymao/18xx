@@ -29,7 +29,7 @@ module Engine
             end
           end
 
-          def can_buy_multiple?(entity, corporation)
+          def can_buy_multiple?(entity, corporation, _owner)
             return unless corporation.corporation?
 
             if @reopened == corporation
