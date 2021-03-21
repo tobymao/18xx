@@ -1358,7 +1358,6 @@ module Engine
           bundles.select { |bundle| @round.active_step.can_sell?(player, bundle) }
         end
 
-        # rubocop:disable Lint/UnusedMethodArgument
         def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
           corporation = bundle.corporation
           price = corporation.share_price.price
@@ -1377,7 +1376,6 @@ module Engine
           end
           log_share_price(corporation, price)
         end
-        # rubocop:enable Lint/UnusedMethodArgument
 
         def pres_change_ok?(corporation)
           return false if corporation == @mhe

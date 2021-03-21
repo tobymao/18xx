@@ -2200,7 +2200,7 @@ module Engine
         @players.any?(&:bankrupt)
       end
 
-      def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil) # rubocop:disable Lint/UnusedMethodArgument
+      def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
         colors = Array(@phase.phases.last[:tiles])
         @all_tiles
           .select { |t| colors.include?(t.color) }

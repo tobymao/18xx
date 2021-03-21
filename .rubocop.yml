@@ -76,6 +76,10 @@ Lint/UnexpectedBlockArity:
 Lint/UnmodifiedReduceAccumulator:
   Enabled: true
 
+Lint/UnusedMethodArgument:
+  Enabled: true
+  AllowUnusedKeywordArguments: true
+
 Lint/UselessMethodDefinition: # TODO enable & check offenses
   Enabled: false
 
