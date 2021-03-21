@@ -2,6 +2,7 @@
 
 require_relative '../base'
 require_relative 'meta'
+require_relative '../stubs_are_restricted'
 
 module Engine
   module Game
@@ -28,6 +29,20 @@ module Engine
         CAPITALIZATION = :full
 
         MUST_SELL_IN_BLOCKS = false
+
+        GAME_END_CHECK = { bankrupt: :immediate, bank: :full_or }.freeze
+
+        # Move down one step for a whole block, not per share
+        SELL_MOVEMENT = :down_block
+
+        # Cannot sell until operated
+        SELL_AFTER = :operate
+
+        # Sell zero or more, then Buy zero or one
+        SELL_BUY_ORDER = :sell_buy
+
+        # New track must be usable
+        TRACK_RESTRICTION = :restrictive
 
         TILES = {
           '3' => 2,
@@ -205,6 +220,10 @@ module Engine
           },
         }.freeze
 
+        LEVERKUSEN_YELLOW_TILES = %w[K1 K55].freeze
+        LEVERKUSEN_GREEN_TILE = 'K314'
+        LEVERKUSEN_HEX_NAME = 'G6'
+
         LOCATION_NAMES = {
           'B5' => 'Düsseldorf & Neuss',
           'D5' => 'Benrath',
@@ -212,7 +231,7 @@ module Engine
           'B9' => 'Wuppertal',
           'E2' => 'Grevenbroich',
           'E4' => 'Dormagen',
-          'G6' => 'Leverkusen',
+          LEVERKUSEN_HEX_NAME => 'Leverkusen',
           'I2' => 'Bergheim',
           'I8' => 'Bergisch-Gladbach',
           'L3' => 'Frechen',
@@ -620,17 +639,6 @@ module Engine
 
         AXES = { x: :number, y: :letter }.freeze
 
-        GAME_END_CHECK = { bankrupt: :immediate, bank: :full_or }.freeze
-
-        # Move down one step for a whole block, not per share
-        SELL_MOVEMENT = :down_block
-
-        # Cannot sell until operated
-        SELL_AFTER = :operate
-
-        # Sell zero or more, then Buy zero or one
-        SELL_BUY_ORDER = :sell_buy
-
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'remove_tile_block' => ['Remove tile block', 'Rhine may be passed. N5 P5 becomes possible to lay tiles in'],
           'agv_buyable' => ['AGV buyable', 'AGV shares can be bought in the stockmarket'],
@@ -949,13 +957,31 @@ module Engine
           hgk.floatable = false
 
           @potential_discard_trains = []
+
+          @green_leverkusen_tile ||= @tiles.find { |t| t.name == LEVERKUSEN_GREEN_TILE }
         end
 
+        include StubsAreRestricted
+
         def upgrades_to?(from, to, special = false)
+          # Leverkusen can upgrade double dits to one city
+          return to.name == LEVERKUSEN_GREEN_TILE if from.color == :yellow && from.hex.name == LEVERKUSEN_HEX_NAME
+
+          # The TILE_BLOCK hexes cannot be upgraded until block has been removed (when phase 3 starts)
           return super unless TILE_BLOCK.include?(from.hex.name)
           return super if from.hex.tile.icons.empty?
 
           raise GameError, "Cannot place a tile in #{from.hex.name} until green phase"
+        end
+
+        def all_potential_upgrades(tile, tile_manifest: false)
+          upgrades = super
+          return upgrades if !tile_manifest || !LEVERKUSEN_YELLOW_TILES.include?(tile.name)
+
+          # Tile manifest for Leverkusen yellow tiles should show green Leverkusen tile
+          upgrades |= [@green_leverkusen_tile] if @green_leverkusen_tile
+
+          upgrades
         end
 
         def event_remove_tile_block!
@@ -1118,6 +1144,7 @@ module Engine
             puts("Mergable #{mergable.name} has no trains")
           end
 
+          mergable.ipoed = true
           @log << "#{mergable.name} have been completly founded and now floats"
         end
 
@@ -1236,7 +1263,7 @@ module Engine
               %w[B7 H3 I4 K6 M4 M8 Q4 Q8 S2] => 'town=revenue:0',
               simple_city => 'city=revenue:0',
               %w[C8 E8 G8 H7 P3 R3 S4] => 'upgrade=cost:40,terrain:mountain',
-              ['G6'] => 'town=revenue:0;town=revenue:0;label=L',
+              [LEVERKUSEN_HEX_NAME] => 'town=revenue:0;town=revenue:0;label=L',
               ['C4'] => 'border=edge:5,type:impassable',
               ['D5'] => 'city=revenue:0;border=edge:1,type:impassable;border=edge:2,type:impassable;label=BX',
               ['E4'] => 'city=revenue:0;border=edge:4,type:impassable',
