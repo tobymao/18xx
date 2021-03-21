@@ -90,7 +90,6 @@ module Engine
       else
         receiver = if %i[escrow incremental].include?(corporation.capitalization) && bundle.owner.corporation? ||
                        bundle.owner.player?
-                     # When another game with escrow capitalization is implemented put this into @game
                      bundle.owner
                    else
                      @bank
