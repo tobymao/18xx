@@ -974,7 +974,7 @@ module Engine
             value: 100,
             revenue: 10,
             desc: 'Have a face value £100 and converts into the LNWR’s 10% director certificate. LNWR may also put '\
-                  'it’s destination token into Manchester when converted.',
+                  'its destination token into Manchester when converted.',
             abilities: [
               {
                 type: 'exchange',
