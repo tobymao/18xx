@@ -330,12 +330,10 @@ module Engine
             if @player_selection
               @odd_share = @merger.name.include?(@player_selection) ? merger_share : target_share
               @player_selection = nil
-            elsif !merger_share
+            elsif !merger_share || entity.num_shares_of(@merger) <= num_system_shares
               @odd_share = target_share
             elsif !target_share
               @odd_share = merger_share
-            elsif entity.num_shares_of(@merger) <= num_system_shares
-              @odd_share = target_share
             elsif entity.player?
               choices = merging_corporations.map do |c|
                 "#{c.name} (#{@game.format_currency(c.share_price.price)})"

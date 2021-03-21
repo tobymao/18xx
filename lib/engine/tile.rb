@@ -325,11 +325,7 @@ module Engine
     def compute_loc(loc = nil)
       return nil unless loc && loc != 'center'
 
-      if loc.to_f == loc.to_i.to_f
-        (loc.to_i + @rotation) % 6
-      else
-        (loc.to_i + @rotation) % 6 + 0.5
-      end
+      (loc.to_f + @rotation) % 6
     end
 
     def compute_city_town_edges

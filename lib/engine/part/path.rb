@@ -25,7 +25,7 @@ module Engine
       def self.make_lanes(a, b, terminal: nil, lanes: nil, a_lane: nil, b_lane: nil, track: nil)
         track ||= :broad
         if lanes
-          lanes.times.map do |index|
+          Array.new(lanes) do |index|
             a_lanes = [lanes, index]
             b_lanes = if a.edge? && b.edge?
                         [lanes, lanes - index - 1]
@@ -108,7 +108,7 @@ module Engine
       # counter: a hash tracking edges and junctions to avoid reuse
       # on: A set of Paths mapping to 1 or 0. When `on` is set. Usage is currently limited to `select` in path & node
       # tile_type: if :lawson don't undo visited paths
-      def walk(skip: nil, jskip: nil, visited: {}, counter: Hash.new(0), on: nil, tile_type: :normal)
+      def walk(skip: nil, jskip: nil, visited: {}, counter: Hash.new(0), on: nil, tile_type: :normal, &block)
         return if visited[self]
         return if @junction && counter[@junction] > 1
         return if edges.sum { |edge| counter[edge.id] }.positive?
@@ -122,9 +122,7 @@ module Engine
           @junction.paths.each do |jp|
             next if on && !on[jp]
 
-            jp.walk(jskip: @junction, visited: visited, counter: counter, on: on, tile_type: tile_type) do |p, v, c|
-              yield p, v, c
-            end
+            jp.walk(jskip: @junction, visited: visited, counter: counter, on: on, tile_type: tile_type, &block)
           end
         end
 
@@ -142,9 +140,7 @@ module Engine
             next unless lane_match?(@exit_lanes[edge], np.exit_lanes[np_edge])
             next unless tracks_match?(np, dual_ok: true)
 
-            np.walk(skip: np_edge, visited: visited, counter: counter, on: on, tile_type: tile_type) do |p, v, c|
-              yield p, v, c
-            end
+            np.walk(skip: np_edge, visited: visited, counter: counter, on: on, tile_type: tile_type, &block)
           end
 
           counter[edge_id] -= 1
@@ -216,7 +212,7 @@ module Engine
       def gentle_curve?
         return @_gentle_curve if defined?(@_gentle_curve)
 
-        @_gentle_curve = a_num && b_num && (((d = (a_num - b_num).abs) == 2) || d == 4 || d == 2.5 || d == 3.5)
+        @_gentle_curve = a_num && b_num && [2, 2.5, 3.5, 4].include?((a_num - b_num).abs)
       end
 
       def rotate(ticks)
