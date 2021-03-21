@@ -54,7 +54,9 @@ module View
               }, [@user['name'] + ':']),
             h('input#chatbar',
               attrs: {
+                autocomplete: 'off',
                 title: 'hotkey: c – esc to leave',
+                type: 'text',
                 value: @chat_input,
               },
               style: {
