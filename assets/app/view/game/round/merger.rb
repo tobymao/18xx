@@ -68,7 +68,7 @@ module View
             inner << h(Corporation, corporation: auctioning_corporation || corporation_to_merge_into, selectable: false)
             inner << h(Bid, entity: entity, corporation: auctioning_corporation) if actions.include?('bid')
             children << h(:div, props, inner)
-          elsif merge_entity
+          elsif merge_entity&.corporation?
             children << h(:div, props, [h(Corporation, corporation: merge_entity, selectable: false)])
           end
           children << h(Player, game: @game, player: entity.owner) if entity.owner.player?
