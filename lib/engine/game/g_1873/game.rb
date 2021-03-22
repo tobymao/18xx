@@ -22,7 +22,7 @@ module Engine
 
         attr_reader :mine_12, :corporation_info, :diesel_graph, :hw, :minor_info, :mhe, :mine_graph, :nwe, :qlb,
                     :reserved_tiles, :subtrains
-        attr_accessor :premium, :premium_order, :premium_winner
+        attr_accessor :premium, :premium_order, :premium_winner, :reimbursed_hexes
 
         CURRENCY_FORMAT_STR = '%d ℳ'
         BANK_CASH = 100_000
@@ -239,6 +239,8 @@ module Engine
           @switcher_index = 0
           @machine_index = trains.size
           @next_switcher = nil
+
+          @reimbursed_hexes = Hash.new { |h, k| h[k] = 0 }
 
           @subtrains = Hash.new { |h, k| h[k] = [] }
           @subtrain_index = {}
