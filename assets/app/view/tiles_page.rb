@@ -194,13 +194,13 @@ module View
 
       h("div#hexes_and_tiles_#{game_class.title}", [
           h(:h2, game_class.full_title),
-          h("div#map_hexes_#{game_class.title}", [
-              h(:h3, "#{game_class.title} Map Hexes"),
-              *rendered_map_hexes,
-            ]),
           h("div#game_tiles_#{game_class.title}", [
               h(:h3, "#{game_class.title} Tile Manifest"),
               *rendered_tiles,
+            ]),
+          h("div#map_hexes_#{game_class.title}", [
+              h(:h3, "#{game_class.title} Map Hexes"),
+              *rendered_map_hexes,
             ]),
         ])
     end
