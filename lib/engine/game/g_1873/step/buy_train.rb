@@ -116,6 +116,8 @@ module Engine
           end
 
           def illegal_depot_buy?(train, entity)
+            return false if @game.train_is_switcher?(train)
+
             # indie mines can't buy same size machine
             (entity.minor? && train.distance <= minor_distance(entity)) ||
               # public mines have to have at least one mine with a smaller machine
