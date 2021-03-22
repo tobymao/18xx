@@ -38,6 +38,10 @@ module Engine
       @name
     end
 
+    def sym
+      @name
+    end
+
     def minor?
       true
     end

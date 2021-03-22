@@ -82,7 +82,9 @@ module Engine
         end
       end
 
-      def share_price_change(_entity, revenue)
+      def share_price_change(entity, revenue)
+        return {} if entity.minor?
+
         if revenue.positive?
           { share_direction: :right, share_times: 1 }
         else

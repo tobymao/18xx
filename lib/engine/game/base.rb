@@ -1105,7 +1105,7 @@ module Engine
       end
 
       def payout_companies
-        companies = @companies.select { |c| c.owner && c.revenue.positive? }
+        companies = @companies.select { |c| c.owner && c.owner != bank && c.revenue.positive? }
 
         companies.sort_by! do |company|
           [
@@ -2229,7 +2229,7 @@ module Engine
       end
 
       def round_description(name, round_number = nil)
-        round_number ||= @round.round_num
+        round_number ||= @round&.round_num || 1
         description = "#{name} Round "
 
         total = total_rounds(name)
