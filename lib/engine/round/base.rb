@@ -35,6 +35,7 @@ module Engine
             singleton_class.class_eval { attr_accessor key }
             send("#{key}=", value)
           end
+          @game.next_turn!
           step.setup
           step
         end
@@ -138,6 +139,8 @@ module Engine
       end
 
       def goto_entity!(entity)
+        # If overriding, make sure to call @game.next_turn!
+        @game.next_turn!
         @entity_index = @entities.find_index(entity)
       end
 
@@ -148,6 +151,8 @@ module Engine
       end
 
       def reset_entity_index!
+        # If overriding, make sure to call @game.next_turn!
+        @game.next_turn!
         @entity_index = 0
       end
 

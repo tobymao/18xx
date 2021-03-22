@@ -19,9 +19,10 @@ module View
       def render
         @depot = @game.depot
 
-        if @layout == :discarded_trains
+        case @layout
+        when :discarded_trains
           @depot.discarded.empty? ? '' : discarded_trains
-        elsif @layout == :upcoming_trains
+        when :upcoming_trains
           upcoming_trains_card
         else
           h('div#game_info', render_body)
@@ -235,7 +236,7 @@ module View
           show_rusts_inline = true
           rusts = nil
           names_to_prices.keys.each do |key|
-            next if !rust_schedule[key] && rust_schedule.keys.none? { |item| item&.is_a?(Array) && item&.include?(key) }
+            next if !rust_schedule[key] && rust_schedule.keys.none? { |item| item.is_a?(Array) && item&.include?(key) }
 
             rusts ||= []
 

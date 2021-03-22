@@ -329,7 +329,7 @@ module View
             when :trains
               ct = corporation.trains.sort_by(&:name).reverse
               train_limit = @game.phase.train_limit(corporation)
-              corporation.floated? ? [ct.size, [train_limit.times.map { |i| ct[i]&.name }]] : [-1, []]
+              corporation.floated? ? [ct.size, [Array.new(train_limit) { |i| ct[i]&.name }]] : [-1, []]
             when :tokens
               @game.count_available_tokens(corporation)
             when :loans

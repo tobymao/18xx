@@ -56,12 +56,12 @@ module Engine
         counter: Hash.new(0),
         skip_track: nil,
         tile_type: :normal,
-        max_nodes: nil
+        max_nodes: nil, &block
       )
         return if visited[self]
 
         visited[self] = true
-        return if max_nodes && visited.size >= max_nodes
+        return if max_nodes && visited.size > max_nodes
 
         paths.each do |node_path|
           next if node_path.track == skip_track
@@ -82,8 +82,8 @@ module Engine
                 visited_paths: vp,
                 skip_track: skip_track,
                 tile_type: tile_type,
-                max_nodes: max_nodes,
-              ) { |p, q| yield p, q }
+                max_nodes: max_nodes, &block
+              )
             end
           end
         end

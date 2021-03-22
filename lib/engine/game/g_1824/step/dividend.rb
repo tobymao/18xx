@@ -33,7 +33,8 @@ module Engine
             entity.operating_history[[@game.turn, @round.round_num]] = OperatingInfo.new(
               routes,
               action,
-              revenue + mine_revenue
+              revenue + mine_revenue,
+              @round.laid_hexes
             )
 
             entity.trains.each { |train| train.operated = true }

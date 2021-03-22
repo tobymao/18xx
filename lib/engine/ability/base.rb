@@ -9,14 +9,15 @@ module Engine
       include Helper::Type
       include Ownable
 
-      attr_accessor :count_this_or, :description
+      attr_accessor :count_this_or, :description, :desc_detail
       attr_reader :type, :owner_type, :remove, :when, :count, :count_per_or, :start_count, :passive,
                   :on_phase
 
-      def initialize(type:, description: nil, owner_type: nil, count: nil, remove: nil,
+      def initialize(type:, description: nil, desc_detail: nil, owner_type: nil, count: nil, remove: nil,
                      count_per_or: nil, passive: nil, on_phase: nil, **opts)
         @type = type&.to_sym
         @description = description&.to_s
+        @desc_detail = desc_detail&.to_s
         @owner_type = owner_type&.to_sym
         @when = Array(opts.delete(:when)).map(&:to_s)
         @on_phase = on_phase

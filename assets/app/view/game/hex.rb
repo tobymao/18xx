@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'lib/hex'
+require 'lib/color'
 require 'lib/settings'
 require 'lib/tile_selector'
 require 'view/game/actionable'
@@ -14,12 +15,16 @@ module View
     class Hex < Snabberb::Component
       include Actionable
       include Runnable
+      include Lib::Color
       include Lib::Settings
 
       SIZE = 100
 
       FRAME_COLOR_STROKE_WIDTH = 10
       FRAME_COLOR_POINTS = Lib::Hex.points(scale: 1 - ((FRAME_COLOR_STROKE_WIDTH + 1) / 2) / Lib::Hex::Y_B).freeze
+
+      HIGHLIGHT_STROKE_WIDTH = 6
+      HIGHLIGHT_POINTS = Lib::Hex.points(scale: 1 - ((HIGHLIGHT_STROKE_WIDTH + 1) / 2) / Lib::Hex::Y_B).freeze
 
       LAYOUT = {
         flat: [SIZE * 3 / 2, SIZE * Math.sqrt(3) / 2],
@@ -29,7 +34,7 @@ module View
       needs :hex
       needs :tile_selector, default: nil, store: true
       needs :role, default: :map
-      needs :opacity, default: 1.0
+      needs :opacity, default: nil
       needs :user, default: nil, store: true
 
       needs :clickable, default: false
@@ -38,6 +43,7 @@ module View
       needs :unavailable, default: nil
       needs :routes, default: []
       needs :start_pos, default: [1, 1]
+      needs :highlight, default: false
 
       def render
         return nil if @hex.empty
@@ -49,7 +55,18 @@ module View
           else
             @hex.tile
           end
+
         children = hex_outline
+        if (color = @tile&.frame&.color)
+          attrs = {
+            stroke: color,
+            'stroke-width': FRAME_COLOR_STROKE_WIDTH,
+            points: FRAME_COLOR_POINTS,
+          }
+          children << h(:polygon, attrs: attrs)
+        end
+        children << hex_highlight if @highlight
+
         if @tile
           children << h(
             Tile,
@@ -62,15 +79,6 @@ module View
         children << h(TriangularGrid) if Lib::Params['grid']
         children << h(TileUnavailable, unavailable: @unavailable, layout: @hex.layout) if @unavailable
 
-        if (color = @tile&.frame&.color)
-          attrs = {
-            stroke: color,
-            'stroke-width': FRAME_COLOR_STROKE_WIDTH,
-            points: FRAME_COLOR_POINTS,
-          }
-          children.insert(1, h(:polygon, attrs: attrs))
-        end
-
         props = {
           key: @hex.id,
           attrs: {
@@ -80,11 +88,12 @@ module View
           },
         }
 
-        props[:attrs][:opacity] = @opacity if @opacity != 1.0
+        props[:attrs][:opacity] = @opacity if @opacity
         props[:attrs][:cursor] = 'pointer' if @clickable
 
         props[:on] = { click: ->(e) { on_hex_click(e) } }
         props[:attrs]['stroke-width'] = 5 if @selected
+
         h(:g, props, children)
       end
 
@@ -104,6 +113,24 @@ module View
         else
           [h(:polygon, polygon_props)]
         end
+      end
+
+      def hex_highlight
+        polygon_props = {
+          attrs: {
+            points: HIGHLIGHT_POINTS,
+            'fill-opacity': 0,
+            pathLength: 576, # 6*96, total length of polygon border => easier dasharray arithmetic
+            'stroke-dasharray': 16,
+            'stroke-dashoffset': 8,
+            'stroke-width': HIGHLIGHT_STROKE_WIDTH,
+          },
+        }
+        if (color = @tile&.frame&.color)
+          polygon_props[:attrs]['stroke'] = contrast_on(color)
+        end
+
+        h(:polygon, polygon_props)
       end
 
       def translation

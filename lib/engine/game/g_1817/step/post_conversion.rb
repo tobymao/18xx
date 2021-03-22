@@ -77,7 +77,7 @@ module Engine
             return [] unless corporation.share_price == @round.converted_price
 
             [@game.players.rotate(@game.players.index(corporation.owner))
-            .select { |p| p.active? && (can_buy_any?(p) || can_sell?(p, nil)) }.first].compact
+            .find { |p| p.active? && (can_buy_any?(p) || can_sell?(p, nil)) }].compact
           end
         end
       end

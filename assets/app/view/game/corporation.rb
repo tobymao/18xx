@@ -29,6 +29,8 @@ module View
           return send("render_#{view}")
         end
 
+        @hidden_divs = {}
+
         select_corporation = lambda do
           if @selectable
             selected_corporation = selected? ? nil : @corporation
@@ -404,12 +406,10 @@ module View
           },
         }
 
-        if player_rows.any?
-          if @corporation.share_price&.highlight? &&
+        if player_rows.any? && @corporation.share_price&.highlight? &&
             (color = StockMarket::COLOR_MAP[@game.class::STOCKMARKET_COLORS[@corporation.share_price.type]])
-            market_tr_props[:style][:backgroundColor] = color
-            market_tr_props[:style][:color] = contrast_on(color)
-          end
+          market_tr_props[:style][:backgroundColor] = color
+          market_tr_props[:style][:color] = contrast_on(color)
         end
 
         if player_rows.any? || @corporation.num_market_shares.positive?
@@ -570,21 +570,39 @@ module View
         ])
       end
 
-      def render_abilities(abilities)
-        attribute_lines = abilities.map do |ability|
-          h('div.nowrap.inline-block', ability.description)
-        end
+      def toggle_desc_detail(event, i)
+        event.JS.stopPropagation
+        elm = Native(@hidden_divs["#{@corporation.name}_#{i}"]).elm
+        elm.style.display = elm.style.display == 'none' ? 'grid' : 'none'
+      end
 
-        table_props = {
+      def render_abilities(abilities)
+        hidden_props = {
           style: {
-            padding: '0.5rem',
-            justifyContent: 'center',
+            display: 'none',
+            marginBottom: '0.5rem',
+            padding: '0.1rem 0.2rem',
+            fontSize: '80%',
           },
         }
+        ability_props = {}
 
-        h('div#attribute_table', table_props, [
-          h('div.bold', 'Ability'),
-          *attribute_lines,
+        ability_lines = abilities.flat_map.with_index do |ability, i|
+          ability_props = {
+            style: { cursor: 'pointer' },
+            on: { click: ->(event) { toggle_desc_detail(event, i) } },
+          } if ability.desc_detail
+
+          children = [h('div.nowrap', ability_props, ability.description)]
+          if ability.desc_detail
+            children << @hidden_divs["#{@corporation.name}_#{i}"] = h(:div, hidden_props, ability.desc_detail)
+          end
+          children
+        end
+
+        h('div.ability_table', { style: { padding: '0 0.5rem 0.2rem' } }, [
+          h('div.bold', "Abilit#{abilities.count(&:description) > 1 ? 'ies' : 'y'}"),
+          *ability_lines,
         ])
       end
 

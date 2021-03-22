@@ -36,7 +36,7 @@ module Engine
           end
 
           def room?(entity, _shell = nil)
-            entity.trains.reject { |t| @game.extra_train?(t) }.size < @game.train_limit(entity)
+            entity.trains.count { |t| !@game.extra_train?(t) } < @game.train_limit(entity)
           end
 
           def try_take_player_loan(entity, cost)

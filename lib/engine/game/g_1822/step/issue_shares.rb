@@ -9,8 +9,9 @@ module Engine
         class IssueShares < Engine::Step::IssueShares
           def actions(entity)
             actions = super
-            if !choices_ability(entity).empty? || (actions.empty? && ability_lancashire_union_railway?(entity))
-              actions << 'choose_ability' unless actions.include?('choose_ability')
+            if (!choices_ability(entity).empty? || (actions.empty? && ability_lancashire_union_railway?(entity))) &&
+                !actions.include?('choose_ability')
+              actions << 'choose_ability'
             end
             actions << 'pass' if !actions.empty? && !actions.include?('pass')
             actions
