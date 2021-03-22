@@ -601,7 +601,7 @@ module View
         end
 
         h('div.ability_table', { style: { padding: '0 0.5rem 0.2rem' } }, [
-          h('div.bold', "Abilit#{abilities.count { |a| a.type != :reservation } > 1 ? 'ies' : 'y'}"),
+          h('div.bold', "Abilit#{abilities.count(&:description) > 1 ? 'ies' : 'y'}"),
           *ability_lines,
         ])
       end
