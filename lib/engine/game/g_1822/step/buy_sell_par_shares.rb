@@ -45,9 +45,15 @@ module Engine
             entity.cash - committed_cash(entity)
           end
 
-          def available_par_cash(entity, corporation)
+          def available_par_cash(entity, corporation, share_price: nil)
             available = available_cash(entity)
-            available += corporation.par_via_exchange.value if corporation.par_via_exchange
+            if corporation.par_via_exchange
+              available += if share_price && corporation.id == 'LNWR'
+                             share_price.price
+                           else
+                             corporation.par_via_exchange.value
+                           end
+            end
             available
           end
 
