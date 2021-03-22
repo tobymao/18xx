@@ -19,7 +19,7 @@ module Engine
 
             maintenance = @game.maintenance_costs(current_entity)
             @round.maintenance = maintenance
-            if maintenance.positive?
+            if maintenance.positive? && @game.railway?(current_entity)
               @log << "#{current_entity.name} owes #{@game.format_currency(maintenance)} for maintenance"
             end
 

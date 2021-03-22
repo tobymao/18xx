@@ -662,7 +662,7 @@ module Engine
           @log << "#{minor.name} is closed"
 
           # any machines/switchers are trashed
-          minor.trains.each { |t| scrap_train(t) }
+          minor.trains.dup.each { |t| scrap_train(t) }
 
           if minor.owner && minor.cash.positive?
             @log << "#{minor.name} transfers #{format_currency(minor.cash)} to #{minor.owner.name}"
@@ -745,10 +745,12 @@ module Engine
 
           # toss any trains that have maintenance costs
           if railway?(entity)
-            entity.trains.each { |t| scrap_train(t) if train_maintenance(t.name).positive? }
+            entity.trains.dup.each { |t| scrap_train(t) if train_maintenance(t.name).positive? }
           else
             public_mine_mines(entity).each do |mine|
-              mine.trains.each { |t| scrap_train(t) if train_maintenance(t.name).positive? }
+              mine.trains.dup.each do |t|
+                scrap_train(t) if train_maintenance(t.name).positive?
+              end
             end
           end
 
