@@ -3253,7 +3253,7 @@ module Engine
             interest = player_loan_interest(loan)
             new_loan = loan + interest
             @player_debts[player] = new_loan
-            @log << "#{player.name} increases its loan by 50% (#{format_currency(interest)}) to "\
+            @log << "#{player.name} increases their loan by 50% (#{format_currency(interest)}) to "\
                     "#{format_currency(new_loan)}"
           end
         end
