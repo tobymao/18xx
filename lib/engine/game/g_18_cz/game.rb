@@ -2585,9 +2585,9 @@ module Engine
 
           case active_step
           when G18CZ::Step::Track
-            current_entity.type == 'medium' ? [players_without_vaclav[1]] : [players_without_vaclav[0]]
+            current_entity.type == :medium ? [players_without_vaclav[1]] : [players_without_vaclav[0]]
           when G18CZ::Step::Token
-            current_entity.type == 'medium' ? [players_without_vaclav[0]] : [players_without_vaclav[1]]
+            current_entity.type == :medium ? [players_without_vaclav[0]] : [players_without_vaclav[1]]
           else
             players_without_vaclav
           end
@@ -3075,6 +3075,31 @@ module Engine
 
         def track_action_processed(entity)
           @recently_floated.delete(entity)
+        end
+
+        def next_sr_position(entity)
+          player_order = @round.current_entity&.player? ? [] : players_without_vaclav
+          player_order.index(entity)
+        end
+
+        def reorder_players(order = nil, log_player_order: false)
+          return super if multiplayer?
+
+          order ||= next_sr_player_order
+          case order
+          when :most_cash
+            current_order = @players.dup.reverse
+            @players = players_without_vaclav.sort_by { |p| [p.cash, current_order.index(p)] }.reverse
+          when :least_cash
+            current_order = @players.dup
+            @players = players_without_vaclav.sort_by { |p| [p.cash, current_order.index(p)] }
+          end
+          @players << @vaclav
+          @log << if log_player_order
+                    "Priority order: #{players_without_vaclav.map(&:name).join(', ')}"
+                  else
+                    "#{@players.first.name} has priority deal"
+                  end
         end
       end
     end
