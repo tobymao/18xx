@@ -15,8 +15,16 @@ module Engine
           end
 
           def skip!
+            return pass! if current_entity == @game.mhe
+
+            maintenance = @game.maintenance_costs(current_entity)
+            @round.maintenance = maintenance
+            if maintenance.positive?
+              @log << "#{current_entity.name} owes #{@game.format_currency(maintenance)} for maintenance"
+            end
+
             @game.update_tokens(current_entity, [])
-            return super if !@game.any_mine?(current_entity) && current_entity != @game.mhe
+            return super unless @game.any_mine?(current_entity)
 
             if @game.any_mine?(current_entity)
               @game.update_mine_revenue(@round, current_entity) if @round.routes.empty?
