@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../g_1849/map'
+require_relative 'map'
 require_relative 'meta'
 require_relative 'entities'
 
@@ -10,7 +10,7 @@ module Engine
       class Game < Game::Base
         include_meta(G18NY::Meta)
         include G18NY::Entities
-        include G1849::Map
+        include G18NY::Map
 
         CAPITALIZATION = :incremental
         HOME_TOKEN_TIMING = :operate
@@ -26,7 +26,7 @@ module Engine
         SELL_BUY_ORDER = :sell_buy
 
         MARKET = [
-          ['70', '75', '80', '90x', '100p', '110', '125', '150', '175', '200', '230', '260', '300', '350', '400', '450', '500'],
+          ['70', '75', '80', '90', '100p', '110', '125', '150', '175', '200', '230', '260', '300', '350', '400', '450', '500'],
           ['65', '70', '75', '80x', '90p', '100', '110', '125', '150', '175', '200', '230', '260', '300', '350', '400', '450'],
           ['60', '65', '70', '75x', '80p', '90', '100', '110', '125', '150', '175', '200', '230', '260', '300', '350', '400'],
           ['55', '60', '65', '70x', '75p', '80', '90', '100', '110', '125', '150', '175'],
