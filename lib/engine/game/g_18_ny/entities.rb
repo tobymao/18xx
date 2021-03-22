@@ -298,7 +298,7 @@ module Engine
             tokens: [0, 20, 20],
             type: 'major',
             always_market_price: true,
-            coordinates: 'F25',
+            coordinates: 'F26',
             color: '#A7A9AC',
             reservation_color: nil,
           },
