@@ -35,7 +35,7 @@ module View
         end
 
         h('div.margined', [
-          h(:button, { on: { click: toggle } }, "#{mode ? 'Disable' : 'Enable'} Master Mode"),
+          h(:button, { on: { click: toggle } }, "Master Mode #{mode ? '✅' : '❌'}"),
           h(:label, "#{mode ? 'You can' : 'Enable to'} move for others"),
         ])
       end
