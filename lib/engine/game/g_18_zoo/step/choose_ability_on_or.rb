@@ -8,14 +8,10 @@ module Engine
         def can_choose_ability_on_any_step(corporation, company)
           return true if @game.zoo_ticket?(company) && company.owner == corporation.owner
 
-          # return true if company == @game.rabbits && can_choose_rabbits?(corporation)
-          # return true if company == @game.moles && can_choose_moles?(corporation)
-          # return true if company == @game.ancient_maps && can_choose_ancient_maps?(corporation)
           # return true if company == @game.hole && can_choose_hole?(corporation)
           # return true if company == @game.on_diet && can_choose_on_diet?(corporation)
           # return true if company == @game.that_is_mine && can_choose_is_mine?(corporation)
           # return true if company == @game.work_in_progress && can_choose_work_in_progress?(corporation)
-          # return true if company == @game.corn && can_choose_corn?(corporation)
           # return true if company == @game.bandage && can_choose_bandage?(corporation)
 
           false
@@ -34,11 +30,9 @@ module Engine
 
         # TODO: add all commented choice later
         def choices_ability(company)
-          return choices_for_zoo_ticket(company) if @game.zoo_ticket?(company)
+          corporation = @game.current_entity
+          return choices_for_zoo_ticket(company, corporation) if @game.zoo_ticket?(company)
 
-          # return choices_for_rabbits(company.owner) if company == @game.rabbits
-          # return choices_for_moles?(company.owner) if company == @game.moles
-          # return choices_for_ancient_maps?(company.owner) if company == @game.ancient_maps
           # return choices_for_hole?(company.owner) if company == @game.hole
           # return choices_for_on_diet?(company.owner) if company == @game.on_diet
           # return choices_for_is_mine(company.owner) if company == @game.that_is_mine
@@ -54,9 +48,6 @@ module Engine
         # TODO: add all commented choice later
         def process_choose_ability(action)
           process_choose_zoo_ticket(action) if action.choice['type'] == 'sell'
-          # process_choose_rabbits(action) if action.choice['type'] == 'rabbits'
-          # process_choose_moles?(action) if action.choice['type'] == 'moles'
-          # process_choose_ancient_maps?(action) if action.choice['type'] == 'ancient_maps'
           # process_choose_hole?(action) if action.choice['type'] == 'hole'
           # process_choose_on_diet?(action) if action.choice['type'] == 'on_diet'
           # process_choose_is_mine(action) if action.choice['type'] == 'that_is_mine'
@@ -68,21 +59,6 @@ module Engine
         end
 
         private
-
-        # # TODO: add additional logic
-        # def can_choose_rabbits?(entity)
-        #   @game.rabbits.owner == entity
-        # end
-
-        # # TODO: add additional logic
-        # def can_choose_moles?(entity)
-        #   @game.moles.owner == entity
-        # end
-
-        # # TODO: add additional logic
-        # def can_choose_ancient_maps?(entity)
-        #   @game.ancient_maps.owner == entity
-        # end
 
         # TODO: add additional logic
         # def can_choose_hole?(entity)
@@ -102,11 +78,6 @@ module Engine
         # TODO: add additional logic
         # def can_choose_work_in_progress?(entity)
         #   @game.work_in_progress.owner == entity
-        # end
-
-        # TODO: add additional logic
-        # def can_choose_corn?(entity)
-        #   @game.corn.owner == entity
         # end
 
         # TODO: add logic
@@ -131,8 +102,9 @@ module Engine
         #     corporation.all_abilities.none? { |a| a.type == :increase_distance_for_train }
         # end
 
-        def choices_for_zoo_ticket(company)
-          corporation = @game.current_entity
+        def choices_for_zoo_ticket(company, corporation)
+          return [] unless company.owner == corporation.owner
+
           name = company.owner.name
           [*1..company.value].map do |value|
             [
@@ -141,16 +113,6 @@ module Engine
             ]
           end.to_h
         end
-
-        # TODO: add logic
-        # def choices_for_moles?(_corporation)
-        #   {}
-        # end
-
-        # TODO: add logic
-        # def choices_for_ancient_maps?(_corporation)
-        #   {}
-        # end
 
         # TODO: add logic
         # def choices_for_hole?(_corporation)
@@ -206,20 +168,16 @@ module Engine
           @log << "-- #{corporation.name} sells #{company.name} (owned by #{player.name}) "\
             "for #{@game.format_currency(company.value)} --"
 
-          @game.bank.spend(price_for_player, player) if price_for_player.positive?
-          @log << "#{player.name} earns #{@game.format_currency(price_for_player)}" if price_for_player.positive?
+          if price_for_player.positive?
+            @game.bank.spend(price_for_player, player)
+            @log << "#{player.name} earns #{@game.format_currency(price_for_player)}"
+          end
 
           @game.bank.spend(price_for_corporation, corporation)
           @log << "#{corporation.name} earns #{@game.format_currency(price_for_corporation)}"
 
           company.close!
         end
-
-        # TODO: add logic
-        # def process_choose_moles?(_action) end
-
-        # TODO: add logic
-        # def process_choose_ancient_maps?(_action) end
 
         # TODO: add logic
         # def process_choose_hole?(_action) end

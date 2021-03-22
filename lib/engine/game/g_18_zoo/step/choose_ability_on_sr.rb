@@ -12,10 +12,10 @@ module Engine
           return false unless company.owner == entity
 
           return true if @game.zoo_ticket?(company)
-          return can_choose_midas?(entity) if company == @game.midas
-          return can_choose_holiday?(entity) if company == @game.holiday
-          return can_choose_whatsup?(entity) if company == @game.whatsup
-          return can_choose_greek?(entity) if company == @game.it_is_all_greek_to_me
+          return true if company == @game.midas && can_choose_midas?(entity)
+          return true if company == @game.holiday && can_choose_holiday?(entity)
+          return true if company == @game.whatsup && can_choose_whatsup?(entity)
+          return true if company == @game.it_is_all_greek_to_me && can_choose_greek?(entity)
 
           false
         end
@@ -24,10 +24,10 @@ module Engine
           return false unless entity.player?
 
           return true if @game.zoo_tickets?(entity)
-          return can_choose_midas?(entity) if @game.midas.owner == entity
-          return can_choose_holiday?(entity) if @game.holiday.owner == entity
-          return can_choose_whatsup?(entity) if @game.whatsup.owner == entity
-          return can_choose_greek?(entity) if @game.it_is_all_greek_to_me.owner == entity
+          return true if @game.midas.owner == entity && can_choose_midas?(entity)
+          return true if @game.holiday.owner == entity && can_choose_holiday?(entity)
+          return true if @game.whatsup.owner == entity && can_choose_whatsup?(entity)
+          return true if @game.it_is_all_greek_to_me.owner == entity && can_choose_greek?(entity)
 
           false
         end
