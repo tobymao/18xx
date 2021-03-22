@@ -18,9 +18,6 @@ module Engine
           def pass!
             super
             @game.track_action_processed(current_entity)
-            return unless @game.corporation_of_vaclav?(current_entity)
-
-            current_entity.owner = @game.player_of_index(0)
           end
         end
       end

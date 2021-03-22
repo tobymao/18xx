@@ -2581,9 +2581,20 @@ module Engine
 
         def active_players
           active = super
-          return active if multiplayer?
+          return active if active != [@vaclav]
 
-          active.reject { |item| item == @vaclav }
+          case active_step
+          when G18CZ::Step::Track
+            current_entity.type == 'medium' ? [players_without_vaclav[1]] : [players_without_vaclav[0]]
+          when G18CZ::Step::Token
+            current_entity.type == 'medium' ? [players_without_vaclav[0]] : [players_without_vaclav[1]]
+          else
+            players_without_vaclav
+          end
+        end
+
+        def valid_actors(action)
+          action.entity.player == @vaclav ? active_players : super
         end
 
         def optional_hexes
@@ -2617,11 +2628,6 @@ module Engine
         end
 
         def operating_round(round_num)
-          unless multiplayer?
-            track_lay_player = player_of_index(1)
-            @vaclavs_corporations.each { |item| item.owner = track_lay_player }
-          end
-
           G18CZ::Round::Operating.new(self, [
             G18CZ::Step::HomeTrack,
             G18CZ::Step::SellCompanyAndSpecialTrack,
@@ -2714,7 +2720,6 @@ module Engine
           else
             # cloning is needed because vaclavs corporation changes when a new train triggers a new corporation
             @vaclavs_corporations.clone.each do |item|
-              item.owner = @vaclav
               new_train_for_vaclav(item)
             end
           end
