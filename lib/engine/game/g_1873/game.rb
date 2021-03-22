@@ -113,6 +113,25 @@ module Engine
           },
         }.freeze
 
+        STATUS_TEXT = Base::STATUS_TEXT.merge(
+          'HBE_GHE_active' => ['HBE GHE available',
+                               'HBE and GHE concessions are active'],
+          'NWE_SHE_KEZ_may' => ['NWE SHE KEZ ?',
+                                'NWE, SHE and KEZ concessions may be activated'],
+          'NWE_SHE_KEZ_active' => ['NWE SHE KEZ available, WBE ?',
+                                   'NWE, SHE and KEZ concessions are active; WBE may be activated'],
+          'WBE_QLB_active' => ['WBE QLB available',
+                               'WBE and QLB concessions are active'],
+          'maintenance_level_1' => ['Level 1 Maintenance',
+                                    '1M, 1T: 50 ℳ'],
+          'maintenance_level_2' => ['Level 2 Maintenance',
+                                    '1M, 1T, 2T: 100 ℳ | 2M: 50 ℳ | 2S: 20 ℳ'],
+          'maintenance_level_3' => ['Level 3 Maintenance',
+                                    '1M, 1T, 2T, 3T: 150 ℳ | 2M: 100 ℳ | 2S: 50 ℳ | 3M: 50 ℳ | 3S: 30 ℳ'],
+          'end_of_game_trigger' => ['End of game triggered',
+                                    'Game will end after 2nd full set of ORs after this'],
+        ).freeze
+
         # tiles to be laid to complete concession
         CONCESSION_TILES = {
           # HBE
@@ -2980,6 +2999,7 @@ module Engine
                 'yellow',
               ],
               operating_rounds: 1,
+              status: ['HBE_GHE_active'],
             },
             {
               name: '2',
@@ -2989,6 +3009,7 @@ module Engine
                 'yellow',
               ],
               operating_rounds: 1,
+              status: ['NWE_SHE_KEZ_may'],
             },
             {
               name: '3',
@@ -2999,6 +3020,7 @@ module Engine
                 green
               ],
               operating_rounds: 2,
+              status: %w[NWE_SHE_KEZ_active maintenance_level_1],
             },
             {
               name: '4',
@@ -3009,6 +3031,7 @@ module Engine
                 green
               ],
               operating_rounds: 2,
+              status: %w[WBE_QLB_active maintenance_level_2],
             },
             {
               name: '5',
@@ -3020,6 +3043,7 @@ module Engine
                 brown
               ],
               operating_rounds: 3,
+              status: %w[end_of_game_trigger maintenance_level_2],
             },
             {
               name: '5a',
@@ -3030,6 +3054,7 @@ module Engine
                 brown
               ],
               operating_rounds: 3,
+              status: ['maintenance_level_2'],
             },
             {
               name: 'D',
@@ -3042,6 +3067,7 @@ module Engine
                 gray
               ],
               operating_rounds: 3,
+              status: ['maintenance_level_3'],
             },
           ]
         end
