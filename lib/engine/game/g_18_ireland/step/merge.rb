@@ -3,6 +3,7 @@
 require_relative '../../../step/base'
 require_relative '../../../token'
 require_relative '../../../step/token_merger'
+require_relative 'merger_common'
 
 module Engine
   module Game
@@ -10,17 +11,27 @@ module Engine
       module Step
         class Merge < Engine::Step::Base
           include Engine::Step::TokenMerger
+          include MergerCommon
           LIMIT_MERGE = 3
 
           def actions(entity)
             return [] unless entity.player?
             return ['merge'] if @round.merging&.one? || finalize_merger?
             return [] if @round.vote_outcome == :against
+            # Must be an unstarted 10 share corporation to be able to do a merge.
+            return [] if @game.corporations.select { |x| x.type == :major }.empty?
 
             %w[pass merge]
           end
 
-          # @todo: Auto actions including non-possible merger skip
+          def auto_actions(entity)
+            # @todo: Sort of programmed actions for 18ireland
+            return super if @round.merging&.one? || finalize_merger?
+
+            return [Engine::Action::Pass.new(entity)] if mergeable_candidates(entity).empty?
+
+            super
+          end
 
           def finalize_merger?
             @round.vote_outcome == :for
@@ -64,6 +75,7 @@ module Engine
             trains = @game.transfer(:trains, from, to).map(&:name)
             receiving << "trains (#{trains})" if trains.any?
 
+            # @todo: transfer abilities?
             receiving
           end
 
@@ -81,28 +93,57 @@ module Engine
             end
           end
 
+          def new_share_price
+            # Find the left most price
+            new_column = @round.merging.map { |p| p.share_price.coordinates.last }.min
+            # Find the top most price
+            new_row = @round.merging.map { |p| p.share_price.coordinates.first }.min
+            @game.stock_market.share_price(new_row, new_column)
+          end
+
           def finish_merge
-            # @todo: Calculate votes for stock market shares
             players = @game.players.rotate(@game.players.index(current_entity))
             @round.to_vote = players.map do |player|
               shares = @round.merging.sum { |corp| player.num_shares_of(corp,) }
               [player, shares] unless shares.zero?
             end.compact
 
-            @round.votes_needed = (@round.to_vote.sum { |_player, shares| shares } / 2.0).ceil
+            new_price = new_share_price
+            @round.votes_for = 0
+            @round.votes_against = 0
+
+            @round.merging.each do |corp|
+              shares = @game.share_pool.num_shares_of(corp)
+              unless shares.zero?
+
+                if new_price.price > corp.share_price.price
+                  @round.votes_for += shares
+                  @game.log << "#{shares} market shares of #{corp.name} vote for merger #{vote_summary}"
+                elsif new_price.price < corp.share_price.price
+                  @round.votes_against += shares
+                  @game.log << "#{shares} market shares of #{corp.name} vote against merger #{vote_summary}"
+                else
+                  @game.log << "#{shares} market shares of #{corp.name} abstain"
+                end
+              end
+            end
+
+            available_votes = @round.votes_for + @round.votes_against + @round.to_vote.sum do |_player, shares|
+              shares
+            end
+            @round.votes_needed = (available_votes / 2.0).ceil
             voters = @round.to_vote.map { |p, _s| p.name }.join(',')
             @game.log << "Shareholders (#{voters}) will now vote for proposed merge of "\
             "#{@round.merging.map(&:name).join(',')}, #{@round.votes_needed} votes needed"
 
-            @round.votes_for = 0
-            @round.votes_against = 0
+            # just in case the market shares carry the vote
+            check_result
           end
 
           def finish_merge_to_major(action)
             target = action.corporation
             initiator = action.entity
-            # @todo: New price is complex...
-            merged_share_price = @round.merging.first.share_price
+            merged_share_price = new_share_price
 
             @game.stock_market.set_par(target, merged_share_price)
 
@@ -114,6 +155,8 @@ module Engine
               shares = @round.merging.sum { |corp| player.num_shares_of(corp,) }
               [player, shares] unless shares.zero?
             end.compact
+
+            market_shares = @round.merging.sum { |corp| @game.share_pool.num_shares_of(corp) }
 
             # Transfer assets
             @round.merging.each do |corporation|
@@ -127,22 +170,19 @@ module Engine
             end
 
             player_shares.each do |player, shares|
-              # @todo: this could be cleaner
-              shares.times do
-                share = target.shares.last
-
-                if target.shares.first.president && player.percent_of(target) == 10
-                  # give the 10% back
-                  presidency = target.shares.first
-                  player.shares_of(target).first.transfer(presidency.owner)
-                  # grab the presidency
-                  @game.share_pool.buy_shares(player, presidency.to_bundle, exchange: :free)
+              bundle =
+                if shares > 1 && target.shares.first.president
+                  target.shares.take(shares - 1)
+                elsif target.shares.first.president
+                  target.shares.drop(1).take(shares)
                 else
-                  @game.share_pool.buy_shares(player, share.to_bundle, exchange: :free)
+                  target.shares.take(shares)
                 end
-              end
+              @game.share_pool.buy_shares(player, ShareBundle.new(bundle), exchange: :free)
             end
-            # @todo: market shares
+            # market shares, presidency will be with a player, so can just buy
+            @game.share_pool.buy_shares(@game.share_pool, ShareBundle.new(target.shares.take(market_shares)),
+                                        exchange: :free) unless market_shares.zero?
 
             move_tokens_to_surviving(target, @round.merging)
 
@@ -191,16 +231,6 @@ module Engine
             end
           end
 
-          def new_share_price(corporation, target)
-            new_price =
-              if corporation.total_shares == 2
-                corporation.share_price.price + target.share_price.price
-              else
-                (corporation.share_price.price + target.share_price.price) / 2
-              end
-            @game.find_share_price(new_price)
-          end
-
           def mergeable_type(entity)
             if finalize_merger?
               'New Corporation for merger'
@@ -211,6 +241,27 @@ module Engine
             end
           end
 
+          def merge_possible?(corporations, new_corporation)
+            return false if corporations.include?(new_corporation)
+
+            # @todo: connected via broad-gauge track
+
+            # Don't share tokens (minors only have one token)
+            return false if corporations.any? { |c| c.tokens.first.city.tile == new_corporation.tokens.first.city.tile }
+
+            all_corporations = corporations + [new_corporation]
+            # No more than 10 shares issued between players and the market (5 share corporation...)
+            return false if all_corporations.sum { |corp| 5 - corp.shares.size } > 10
+            # no player will end up over 70%
+            return false if @game.players.any? do |player|
+              all_corporations.sum { |corp| player.num_shares_of(corp,) } > 7
+            end
+            # Market wouldn't have more than 50%
+            return false if all_corporations.sum { |corp| @game.share_pool.num_shares_of(corp) } > 5
+
+            true
+          end
+
           def mergeable_candidates(entity)
             merging = @round.merging || []
 
@@ -218,10 +269,15 @@ module Engine
             return [] if merging.size == LIMIT_MERGE
 
             # Can propose merging any corporations they have at least one share of
-            # @todo: filter corporations that would exceed shares, majors and ensure connectivity
-            # there's a bunch of other rules as well
-            @game.corporations.select do |c|
-              c.floated? && c.type == :minor && !merging.include?(c) && !entity.shares_of(c).empty?
+            potential_corporations = @game.corporations.select do |c|
+              c.floated? && c.type == :minor && !merging.include?(c)
+            end
+            if merging.empty?
+              # first corporation must have shares owned by player
+              potential_corporations.reject! { |c| entity.shares_of(c).empty? }
+              potential_corporations.select { |c| potential_corporations.any? { |c2| merge_possible?([c], c2) } }
+            else
+              potential_corporations.select { |c| merge_possible?(merging, c) }
             end
           end
 

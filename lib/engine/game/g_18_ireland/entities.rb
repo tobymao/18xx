@@ -30,6 +30,7 @@ module Engine
             color: 'red',
             reservation_color: nil,
             type: 'major',
+            max_ownership_percent: 70,
           },
           {
             float_percent: 20,
@@ -42,6 +43,7 @@ module Engine
             color: 'blue',
             reservation_color: nil,
             type: 'major',
+            max_ownership_percent: 70,
           },
           {
             float_percent: 20,
@@ -54,6 +56,7 @@ module Engine
             color: 'black',
             reservation_color: nil,
             type: 'major',
+            max_ownership_percent: 70,
           },
           {
             float_percent: 20,
@@ -66,6 +69,7 @@ module Engine
             color: 'green',
             reservation_color: nil,
             type: 'major',
+            max_ownership_percent: 70,
           },
           {
             float_percent: 20,
@@ -78,6 +82,7 @@ module Engine
             color: 'pink',
             reservation_color: nil,
             type: 'major',
+            max_ownership_percent: 70,
           },
           {
             float_percent: 20,
@@ -91,6 +96,7 @@ module Engine
             text_color: 'black',
             reservation_color: nil,
             type: 'major',
+            max_ownership_percent: 70,
           },
           {
             float_percent: 20,
@@ -103,6 +109,7 @@ module Engine
             color: 'brown',
             reservation_color: nil,
             type: 'major',
+            max_ownership_percent: 70,
           },
           # @todo: home token locations
           {
