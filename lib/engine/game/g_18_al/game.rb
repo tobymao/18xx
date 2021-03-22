@@ -516,7 +516,11 @@ module Engine
 
           @corporations.each do |corporation|
             abilities(corporation, :assign_hexes) do |ability|
-              ability.description = "Historical objective: #{get_location_name(ability.hexes.first)}"
+              hex_name = ability.hexes.first
+              location = get_location_name(hex_name)
+              ability.description = "Historical objective: #{location}"
+              ability.desc_detail = "If #{corporation.name} puts a token into #{location} (#{hex_name}) "\
+                "#{format_currency(100)} is added to its treasury."
             end
           end
 
