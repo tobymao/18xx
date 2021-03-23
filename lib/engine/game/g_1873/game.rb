@@ -61,11 +61,6 @@ module Engine
 
         GAME_END_CHECK = { stock_market: :current_or, custom: :one_more_full_or_set }.freeze
 
-        # FIXME
-        STATUS_TEXT = Base::STATUS_TEXT.merge(
-          'end_game_triggered' => ['End Game', 'After next SR, final three ORs are played'],
-        ).freeze
-
         RAILWAY_MIN_BID = 100
         MIN_BID_INCREMENT = 10
         MHE_START_PRICE = 120
@@ -527,7 +522,13 @@ module Engine
         def buy_train(operator, train, price = nil)
           old_owner = train.owner
 
-          super
+          operator.spend(price || train.price, train_operator(train)) if price != :free
+          remove_train(train)
+          train.owner = operator
+          operator.trains << train
+          @crowded_corps = nil
+
+          close_companies_on_train!(operator)
 
           return unless old_owner == @depot
 
@@ -971,19 +972,19 @@ module Engine
         end
 
         def independent_mine?(entity)
-          entity.minor? && @corporations.none? { |c| c == entity.owner }
+          entity&.minor? && @corporations.none? { |c| c == entity.owner }
         end
 
         def public_mine?(entity)
-          entity.corporation? && @corporation_info[entity][:type] == :mine
+          entity&.corporation? && @corporation_info[entity][:type] == :mine
         end
 
         def any_mine?(entity)
-          entity.minor? || (entity.corporation? && @corporation_info[entity][:type] == :mine)
+          entity&.minor? || (entity&.corporation? && @corporation_info[entity][:type] == :mine)
         end
 
         def railway?(entity)
-          entity.corporation? && @corporation_info[entity][:type] == :railway
+          entity&.corporation? && @corporation_info[entity][:type] == :railway
         end
 
         def concession_blocks?(city)
@@ -1845,13 +1846,20 @@ module Engine
           end
         end
 
-        def revenue_str(route)
-          # FIXME: not sure anything is needed here
-          super
-        end
-
+        #  subtrain owner is actually supertrain owner
         def train_owner(train)
           (@supertrains[train] || train).owner
+        end
+
+        # 1. subtrain owner is actually supertrain owner
+        # 2. need to use PMC if submine
+        #    don't want to make PMC direct owner of submine trains
+        #    - this makes PMC train mananagement easy
+        def train_operator(train)
+          owner = (@supertrains[train] || train).owner
+          return owner if !owner&.minor? || !public_mine?(owner&.owner)
+
+          owner.owner
         end
 
         def qlb_bonus
