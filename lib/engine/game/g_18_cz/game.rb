@@ -2581,7 +2581,7 @@ module Engine
 
         def active_players
           active = super
-          return active if active != [@vaclav]
+          return active if multiplayer? || active != [@vaclav]
 
           case active_step
           when G18CZ::Step::Track
@@ -2594,6 +2594,8 @@ module Engine
         end
 
         def valid_actors(action)
+          return super if multiplayer?
+
           action.entity.player == @vaclav ? active_players : super
         end
 
