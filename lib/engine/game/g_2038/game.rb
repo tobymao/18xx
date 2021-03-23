@@ -679,7 +679,7 @@ module Engine
         def event_group_b_corps_available!
           @log << 'Group B corporations are now available'
 
-          @corporations += @b_group_corporations
+          @corporations.concat(@b_group_corporations)
           @b_group_corporations = []
           @available_corp_group = :group_b
         end
@@ -687,7 +687,7 @@ module Engine
         def event_group_c_corps_available!
           @log << 'Group C corporations are now available'
 
-          @corporations += @c_group_corporations
+          @corporations.concat(@c_group_corporations)
           @c_group_corporations = []
           @available_corp_group = :group_c
         end
