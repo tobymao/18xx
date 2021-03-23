@@ -13,5 +13,3 @@ hotseat01
  hotseat04
  * 2p game
  * p1 is used
- hotseat05
- * ebuy of train from other corp
