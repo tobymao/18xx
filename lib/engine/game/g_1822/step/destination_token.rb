@@ -74,6 +74,10 @@ module Engine
           def skip!
             pass!
           end
+
+          def token_cost_override(_entity, _city_hex, _slot, _token)
+            nil
+          end
         end
       end
     end
