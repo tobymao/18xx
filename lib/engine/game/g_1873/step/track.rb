@@ -54,6 +54,7 @@ module Engine
 
             # check to see if concession is complete
             if @game.concession_incomplete?(entity) && @game.concession_route_done?(entity)
+              pay_remaining_concession_cost!(entity)
               @game.concession_complete!(entity)
               @round.num_laid_track = 2 # prevent any more tiles this turn
             end
@@ -77,8 +78,8 @@ module Engine
             # deal with case where concession route happened to be completed
             # before railroad even got to it's first OR
             if @game.concession_incomplete?(entity) && @game.concession_route_done?(entity)
+              pay_remaining_concession_cost!(entity)
               @game.concession_complete!(entity)
-              pay_full_concession_cost!(entity)
             end
 
             return false if !@game.concession_incomplete?(entity) && @round.non_double_tile
@@ -169,28 +170,32 @@ module Engine
               reimburse = true
             elsif ch && !follows_path
               raise GameError, 'Tile must complete concession route'
-            elsif ch && cost != ch[:cost]
-              cost += ch[:cost]
-              @log << "#{entity.owner} must pay for previously reimbused tile cost"\
-                "of #{@game.format_currency(ch[:cost])}"
             end
 
             @game.advance_concession_phase!(ch_entity) if reimburse && hex.id != 'D15'
 
-            super
+            spender.spend(cost, @game.bank) if cost.positive?
+
+            @log << "#{spender.name}"\
+              "#{spender == entity ? '' : " (#{entity.sym})"}"\
+              "#{cost.zero? ? '' : " spends #{@game.format_currency(cost)} and"}"\
+              " lays tile ##{tile.name}"\
+              " with rotation #{rotation} on #{hex.name}"\
+              "#{tile.location_name.to_s.empty? ? '' : " (#{tile.location_name})"}"
 
             return unless reimburse && cost.positive?
 
             @game.bank.spend(cost, entity.owner)
             @log << "#{entity.owner.name} is reimbursed for building the tile"
+            @game.reimbursed_hexes[hex] = cost
           end
 
-          def pay_full_concession_cost!(entity)
-            total_cost = @game.concession_tile_hexes(entity).sum { |h| @game.concession_tile_hex(h)[:cost] }
+          def pay_remaining_concession_cost!(entity)
+            total_cost = @game.concession_tile_hexes(entity).sum { |h| @game.reimbursed_hexes[h] }
             return unless total_cost.positive?
 
-            @log << "#{entity.name} had entire concession route previously built"
-            @log << "#{entity.name} pays entire concession cost of #{@game.format_currency(total_cost)}"
+            @log << "#{entity.name} had portions of concession route previously built"
+            @log << "#{entity.name} pays remaining concession cost of #{@game.format_currency(total_cost)}"
             entity.spend(total_cost, @game.bank)
           end
         end

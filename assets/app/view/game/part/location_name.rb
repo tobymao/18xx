@@ -150,7 +150,7 @@ module View
 
         # split the location name to render across multiple lines; each "segment"
         # that is returned gets rendered on its own line
-        def self.name_segments(name, max_size: 13)
+        def self.name_segments(name, max_size: 12)
           return [name] if name.size <= max_size
 
           segments = name.split(' ')
@@ -185,7 +185,8 @@ module View
         private
 
         def l_top
-          if layout == :flat
+          case layout
+          when :flat
             y = @name_segments.size > 1 ? 54 : 61
             {
               region_weights_in: {
@@ -196,7 +197,7 @@ module View
               x: 0,
               y: -(y + delta_y),
             }
-          elsif layout == :pointy
+          when :pointy
             y = @name_segments.size > 1 ? 63 : 70
             {
               region_weights: {
@@ -251,12 +252,13 @@ module View
         def l_down24
           loc = { x: 0, y: 24 }
 
-          if layout == :flat
+          case layout
+          when :flat
             loc[:region_weights] = {
               [13, 15, 17] => 1,
               [12, 14, 16, 18] => 0.4,
             }
-          elsif layout == :pointy
+          when :pointy
             loc[:region_weights] = {
               [11, 15, 16, 19] => 0.8,
               [9, 10, 13, 14] => 0.2,
@@ -268,12 +270,13 @@ module View
         def l_down40
           loc = { x: 0, y: 40 }
 
-          if layout == :flat
+          case layout
+          when :flat
             loc[:region_weights] = {
               [13, 15, 17, 19, 21, 23] => 0.7,
               [14, 16, 20, 22] => 0.2,
             }
-          elsif layout == :pointy
+          when :pointy
             loc[:region_weights] = {
               [17, 18, 20, 21] => 1,
               [15, 16, 22, 23] => 0.2,
@@ -299,10 +302,11 @@ module View
 
           loc = { x: 0, y: y + delta_y }
 
-          if layout == :flat
+          case layout
+          when :flat
             loc[:region_weights_in] = { TRACK_TO_EDGE_0 => 1, BOTTOM_ROW => 1.5 }
             loc[:region_weights_out] = { BOTTOM_ROW => 1 }
-          elsif layout == :pointy
+          when :pointy
             loc[:region_weights] = {
               [22, 23] => 1,
               [17, 18, 20, 21] => 0.5,

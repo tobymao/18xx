@@ -7,7 +7,6 @@ module View
   module Game
     class RenameHotseat < Form
       include Actionable
-      needs :user_notes, default: nil, store: true
 
       def render_content
         return h(:div) if @game_data[:mode] != :hotseat
@@ -17,7 +16,8 @@ module View
         h(:div, [
           render_input('Hotseat Description:',
                        placeholder: 'Add a title',
-                       id: :description, attrs: { value: description }),
+                       id: :description,
+                       attrs: { value: description }),
           render_button('Save') { submit },
         ])
       end

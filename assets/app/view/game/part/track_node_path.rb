@@ -138,7 +138,7 @@ module View
           # assume can never have edge1=edge, edge0=non-edge
           if !edge0
             CENTER
-          elsif edge0.to_f != edge0.to_i.to_f
+          elsif edge0 % 1 != 0
             # assume if edge0 is non-integer, then must be a line, no exits
             rot_edge1 = ((edge1 - edge0) + 0.5) % 6
             rot_regions = EDGE0P5_TO_EDGE_LINE_REGIONS[rot_edge1]
@@ -416,11 +416,9 @@ module View
             },
           }
 
-          props[:attrs].merge!(
-            d: "M #{@begin_x} #{@begin_y} "\
+          props[:attrs][:d] = "M #{@begin_x} #{@begin_y} "\
             "A #{@arc_parameters[:radius]} #{@arc_parameters[:radius]} "\
-            "0 0 #{@arc_parameters[:sweep]} #{@end_x} #{@end_y}",
-          ) if @need_arc
+            "0 0 #{@arc_parameters[:sweep]} #{@end_x} #{@end_y}" if @need_arc
 
           # Calculate the correct x position of the terminal pointer
           d_width = @width.to_i / 2

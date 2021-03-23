@@ -393,7 +393,7 @@ module Engine
             Step::Route,
             Step::Dividend,
             Step::BuyTrain,
-            [Step::BuyCompany, blocks: true],
+            [Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
       end

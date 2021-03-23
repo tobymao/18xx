@@ -27,7 +27,7 @@ module Engine
               tokener,
               action.city,
               action.token,
-              teleport: ability(entity).teleport_price,
+              connected: false,
               special_ability: ability(entity),
             )
             entity.close!
@@ -41,7 +41,7 @@ module Engine
             [Engine::Token.new(@game.current_entity)]
           end
 
-          def adjust_token_price_ability!(entity, _token, _hex, _city, special_ability = nil)
+          def adjust_token_price_ability!(entity, _token, _hex, _city, special_ability: nil)
             token = Engine::Token.new(entity)
             token.price = special_ability.teleport_price
             [token, special_ability]

@@ -174,7 +174,7 @@ module Engine
         return if ability.owner_only && company.owner != entity
 
         # If multiple borders are connected bonus counts each individually
-        income = ability.income * terrain.find_all { |t| t == ability.terrain }.size
+        income = ability.income * terrain.count { |t| t == ability.terrain }
         @game.bank.spend(income, company.owner)
         @log << "#{company.owner.name} earns #{@game.format_currency(income)}"\
           " for the #{ability.terrain} tile built by #{company.name}"
@@ -192,7 +192,7 @@ module Engine
         spender.spend(cost, @game.bank) if cost.positive?
 
         @log << "#{spender.name}"\
-          "#{spender == entity ? '' : " (#{entity.sym})"}"\
+          "#{spender == entity || !entity.company? ? '' : " (#{entity.sym})"}"\
           "#{cost.zero? ? '' : " spends #{@game.format_currency(cost)} and"}"\
           " lays tile ##{tile.name}"\
           " with rotation #{rotation} on #{hex.name}"\

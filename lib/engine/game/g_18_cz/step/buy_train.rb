@@ -9,7 +9,10 @@ module Engine
         class BuyTrain < Engine::Step::BuyTrain
           def buyable_trains(entity)
             trains = super
-            trains.select { |item| item.owner == @game.depot || train_available?(entity, item) }
+            trains.select do |item|
+              item.owner == @game.depot ||
+              (train_available?(entity, item) && !@game.corporation_of_vaclav?(item.owner))
+            end
           end
 
           def buyable_train_variants(train, entity)
@@ -79,6 +82,12 @@ module Engine
             cheapest_train = @depot.min_depot_train.variants.values.find do |item|
               @game.train_of_size?(item, corporation.type)
             end
+
+            # if the discard contains a train without the variant (e.g. 2a)
+            cheapest_train ||= @depot.upcoming.uniq(&:name).min_by(&:price).variants.values.find do |item|
+              @game.train_of_size?(item, corporation.type)
+            end
+
             cheapest_train[:price]
           end
 

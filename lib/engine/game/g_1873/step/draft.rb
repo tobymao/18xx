@@ -125,6 +125,10 @@ module Engine
             company.value
           end
 
+          def buy_str(company)
+            "Buy (#{@game.format_currency(company.value + @game.premium)})"
+          end
+
           def show_map
             true
           end

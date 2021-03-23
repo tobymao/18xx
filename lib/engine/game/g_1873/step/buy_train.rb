@@ -31,7 +31,7 @@ module Engine
             if @acted
               'Done (Trains)'
             elsif @game.concession_pending?(current_entity)
-              'Skip (Trains) Warning: Compulsory Train Required'
+              'Pass (Trains) Warning: Compulsory Train Required'
             else
               'Skip (Trains)'
             end
@@ -82,12 +82,7 @@ module Engine
               dt.price > entity.cash || (entity == @game.nwe && dt.distance < 2)
             end
 
-            # can't force a player to buy from another player
-            other_trains = @depot.other_trains(entity).reject do |ot|
-              !@game.train_is_train?(ot) || ot.owner.owner != entity.owner || (entity == @game.nwe && ot.distance < 2)
-            end
-
-            !depot_trains.empty? || !other_trains.empty?
+            !depot_trains.empty?
           end
 
           def minor_distance(entity)
@@ -121,6 +116,8 @@ module Engine
           end
 
           def illegal_depot_buy?(train, entity)
+            return false if @game.train_is_switcher?(train)
+
             # indie mines can't buy same size machine
             (entity.minor? && train.distance <= minor_distance(entity)) ||
               # public mines have to have at least one mine with a smaller machine

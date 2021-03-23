@@ -656,9 +656,7 @@ module Engine
             when 'RABA'
               next if routes.any? { |r| r.visited_stops.any?(&:offboard?) }
 
-              unless multiplayer?
-                next if routes.any? { |r| r.visited_stops.sum(&:visit_cost) > r.train.distance }
-              end
+              next if !multiplayer? && routes.any? { |r| r.visited_stops.sum(&:visit_cost) > r.train.distance }
 
               return false
             when 'SNW'

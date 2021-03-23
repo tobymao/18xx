@@ -29,7 +29,8 @@ module Engine
             entity.operating_history[[@game.turn, @round.round_num]] = OperatingInfo.new(
               routes,
               (@game.insolvent?(entity) ? @game.actions.last : action),
-              revenue
+              revenue,
+              @round.laid_hexes
             )
 
             entity.trains.each { |train| train.operated = true } unless @game.insolvent?(entity)

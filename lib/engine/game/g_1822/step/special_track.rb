@@ -43,6 +43,7 @@ module Engine
               raise GameError, 'Cannot lay an extra upgrade' if upgraded_extra_track && @extra_laided_track
 
               lay_tile(action, spender: spender)
+              @round.laid_hexes << action.hex
               if upgraded_extra_track || spender.type == :minor
                 # Use the ability an extra time, upgrade counts as 2 tile lays. Or if its a minor, they ony get one use
                 ability.use!

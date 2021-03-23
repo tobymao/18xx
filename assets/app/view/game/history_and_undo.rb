@@ -21,7 +21,7 @@ module View
       end
 
       def undo
-        h('div#undo_redo', [h(UndoButton), h(RedoButton)])
+        h('div#undo_redo', [h(UndoButton), h(RestartTurnButton), h(RedoButton)])
       end
     end
   end

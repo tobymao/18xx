@@ -22,7 +22,7 @@ module Engine
 
         attr_reader :mine_12, :corporation_info, :diesel_graph, :hw, :minor_info, :mhe, :mine_graph, :nwe, :qlb,
                     :reserved_tiles, :subtrains
-        attr_accessor :premium, :premium_order, :premium_winner
+        attr_accessor :premium, :premium_order, :premium_winner, :reimbursed_hexes
 
         CURRENCY_FORMAT_STR = '%d ℳ'
         BANK_CASH = 100_000
@@ -112,6 +112,25 @@ module Engine
             '3T' => 150,
           },
         }.freeze
+
+        STATUS_TEXT = Base::STATUS_TEXT.merge(
+          'HBE_GHE_active' => ['HBE GHE available',
+                               'HBE and GHE concessions are active'],
+          'NWE_SHE_KEZ_may' => ['NWE SHE KEZ ?',
+                                'NWE, SHE and KEZ concessions may be activated'],
+          'NWE_SHE_KEZ_active' => ['NWE SHE KEZ available, WBE ?',
+                                   'NWE, SHE and KEZ concessions are active; WBE may be activated'],
+          'WBE_QLB_active' => ['WBE QLB available',
+                               'WBE and QLB concessions are active'],
+          'maintenance_level_1' => ['Level 1 Maintenance',
+                                    '1M, 1T: 50 ℳ'],
+          'maintenance_level_2' => ['Level 2 Maintenance',
+                                    '1M, 1T, 2T: 100 ℳ | 2M: 50 ℳ | 2S: 20 ℳ'],
+          'maintenance_level_3' => ['Level 3 Maintenance',
+                                    '1M, 1T, 2T, 3T: 150 ℳ | 2M: 100 ℳ | 2S: 50 ℳ | 3M: 50 ℳ | 3S: 30 ℳ'],
+          'end_of_game_trigger' => ['End of game triggered',
+                                    'Game will end after 2nd full set of ORs after this'],
+        ).freeze
 
         # tiles to be laid to complete concession
         CONCESSION_TILES = {
@@ -221,6 +240,8 @@ module Engine
           @machine_index = trains.size
           @next_switcher = nil
 
+          @reimbursed_hexes = Hash.new { |h, k| h[k] = 0 }
+
           @subtrains = Hash.new { |h, k| h[k] = [] }
           @subtrain_index = {}
           game_trains.each { |gt| @subtrain_index[gt[:name]] = gt[:num] }
@@ -299,10 +320,11 @@ module Engine
             description = "Mine in #{gm[:coordinates]}. Machine revenue: "\
               "#{gm[:extended][:machine_revenue].join('/')}. Switcher revenue: "\
               "#{gm[:extended][:switcher_revenue].join('/')}"
+            revenue = "#{format_currency(gm[:extended][:machine_revenue].first)} - "\
+              "#{format_currency(gm[:extended][:machine_revenue].last + gm[:extended][:switcher_revenue].last)}"
 
-            Company.new(sym: gm[:sym], name: gm[:name], value: gm[:extended][:value],
-                        revenue: gm[:extended][:machine_revenue].last + gm[:extended][:switcher_revenue].last,
-                        desc: description)
+            Company.new(sym: gm[:sym], name: "#{gm[:sym]} #{gm[:name]}", value: gm[:extended][:value],
+                        revenue: revenue, desc: description)
           end
           corp_comps = game_corporations.map do |gc|
             next if gc[:sym] == 'MHE'
@@ -315,7 +337,7 @@ module Engine
               description = "Purchase Option for Public Mining Company #{gc[:name]}"
               name = "#{gc[:sym]} Purchase Option"
             end
-            Company.new(sym: gc[:sym], name: name, value: RAILWAY_MIN_BID, desc: description)
+            Company.new(sym: gc[:sym], name: name, value: RAILWAY_MIN_BID, revenue: 'NA', desc: description)
           end.compact
           mine_comps + corp_comps
         end
@@ -415,6 +437,10 @@ module Engine
           end
         end
 
+        def company_revenue_str(company)
+          company.revenue
+        end
+
         def skip_token?(_graph, corporation, city)
           # diesel graph
           return false if corporation.coordinates.include?(city.hex.id) # never skip home tokens
@@ -462,7 +488,7 @@ module Engine
               share.percent = 20
               corporation.share_holders[share.owner] += share.percent
             end
-            new_shares = 3.times.map { |i| Share.new(corporation, percent: 20, index: i + 2) }
+            new_shares = Array.new(3) { |i| Share.new(corporation, percent: 20, index: i + 2) }
             @corporation_info[corporation][:slots] = 4 if public_mine?(corporation)
             @log << "#{corporation.name} converts to a 5 share corporation"
           when 5
@@ -470,7 +496,7 @@ module Engine
               share.percent = 10
               corporation.share_holders[share.owner] += share.percent
             end
-            new_shares = 5.times.map { |i| Share.new(corporation, percent: 10, index: i + 5) }
+            new_shares = Array.new(5) { |i| Share.new(corporation, percent: 10, index: i + 5) }
             @corporation_info[corporation][:slots] = 5 if public_mine?(corporation)
             increase_tokens!(corporation) if railway?(corporation)
             @log << "#{corporation.name} converts to a 10 share corporation"
@@ -493,7 +519,7 @@ module Engine
 
         def increase_tokens!(corporation)
           num_new_tokens = @corporation_info[corporation][:extra_tokens]
-          new_tokens = num_new_tokens.times.map { |_i| Token.new(corporation, price: TOKEN_PRICE) }
+          new_tokens = Array.new(num_new_tokens) { |_i| Token.new(corporation, price: TOKEN_PRICE) }
           corporation.tokens.concat(new_tokens)
           @log << "#{corporation.name} receives #{num_new_tokens} more tokens"
         end
@@ -503,8 +529,10 @@ module Engine
 
           super
 
+          return unless old_owner == @depot
+
           add_switcher! if train_is_switcher?(train)
-          add_subtrains!(train) if railway?(operator) && old_owner == @depot
+          add_subtrains!(train) if railway?(operator)
         end
 
         def mhe_buy_train
@@ -634,7 +662,7 @@ module Engine
           @log << "#{minor.name} is closed"
 
           # any machines/switchers are trashed
-          minor.trains.each { |t| scrap_train(t) }
+          minor.trains.dup.each { |t| scrap_train(t) }
 
           if minor.owner && minor.cash.positive?
             @log << "#{minor.name} transfers #{format_currency(minor.cash)} to #{minor.owner.name}"
@@ -717,10 +745,12 @@ module Engine
 
           # toss any trains that have maintenance costs
           if railway?(entity)
-            entity.trains.each { |t| scrap_train(t) if train_maintenance(t.name).positive? }
+            entity.trains.dup.each { |t| scrap_train(t) if train_maintenance(t.name).positive? }
           else
             public_mine_mines(entity).each do |mine|
-              mine.trains.each { |t| scrap_train(t) if train_maintenance(t.name).positive? }
+              mine.trains.dup.each do |t|
+                scrap_train(t) if train_maintenance(t.name).positive?
+              end
             end
           end
 
@@ -1348,7 +1378,7 @@ module Engine
         end
 
         def sellable_bundles(player, corporation)
-          return [] unless @round.active_step&.respond_to?(:can_sell?)
+          return [] unless @round.active_step.respond_to?(:can_sell?)
 
           bundles = bundles_for_corporation(player, corporation)
           if !corporation.operated? && corporation != @mhe
@@ -1881,11 +1911,11 @@ module Engine
             'B19' => 'Halberstadt',
             'C4' => 'Brocken',
             'C6' => 'Knaupsholz',
-            'C12' => 'Bezingerode',
+            'C12' => 'Benzingerode',
             'C14' => 'Heimburg',
             'C16' => 'Langenstein',
             'D5' => 'Schierke',
-            'D7' => 'Drie Annen Hohne',
+            'D7' => 'Drei Annen Hohne',
             'D9' => 'Elbingerode',
             'D11' => 'Hüttenrode',
             'D13' => 'Braunesumpf',
@@ -1926,10 +1956,10 @@ module Engine
 
         def game_tiles
           {
-            '77' => 2,
+            '77' => 'unlimited',
             '78' => 'unlimited',
             '79' => 'unlimited',
-            '75' => 4,
+            '75' => 'unlimited',
             '76' => 'unlimited',
             '956' => 'unlimited',
             '957' => 2,
@@ -2021,7 +2051,7 @@ module Engine
           [
             {
               sym: '1',
-              name: 'Mine 1 (V-H)',
+              name: 'Königshütte (V-H)',
               logo: '1873/1',
               simple_logo: '1873/1.alt',
               tokens: [],
@@ -2039,7 +2069,7 @@ module Engine
             },
             {
               sym: '2',
-              name: 'Mine 2',
+              name: 'Wurmberg',
               logo: '1873/2',
               simple_logo: '1873/2.alt',
               tokens: [],
@@ -2057,7 +2087,7 @@ module Engine
             },
             {
               sym: '3',
-              name: 'Mine 3',
+              name: 'Silberhütte',
               logo: '1873/3',
               simple_logo: '1873/3.alt',
               tokens: [],
@@ -2075,7 +2105,7 @@ module Engine
             },
             {
               sym: '4',
-              name: 'Mine 4 (V-H)',
+              name: 'Hüttenrode (V-H)',
               logo: '1873/4',
               simple_logo: '1873/4.alt',
               tokens: [],
@@ -2093,7 +2123,7 @@ module Engine
             },
             {
               sym: '5',
-              name: 'Mine 5 (V-H)',
+              name: 'Braunesumpf (V-H)',
               logo: '1873/5',
               simple_logo: '1873/5.alt',
               tokens: [],
@@ -2111,7 +2141,7 @@ module Engine
             },
             {
               sym: '6',
-              name: 'Mine 6 (V-H)',
+              name: 'Rübeland (V-H)',
               logo: '1873/6',
               simple_logo: '1873/6.alt',
               tokens: [],
@@ -2129,7 +2159,7 @@ module Engine
             },
             {
               sym: '7',
-              name: 'Mine 7',
+              name: 'Lindenberg',
               logo: '1873/7',
               simple_logo: '1873/7.alt',
               tokens: [],
@@ -2147,7 +2177,7 @@ module Engine
             },
             {
               sym: '8',
-              name: 'Mine 8',
+              name: 'Netzkater',
               logo: '1873/8',
               simple_logo: '1873/8.alt',
               tokens: [],
@@ -2165,7 +2195,7 @@ module Engine
             },
             {
               sym: '9',
-              name: 'Mine 9',
+              name: 'Wieda',
               logo: '1873/9',
               simple_logo: '1873/9.alt',
               tokens: [],
@@ -2183,7 +2213,7 @@ module Engine
             },
             {
               sym: '10',
-              name: 'Mine 10 (V-H)',
+              name: 'Elbingerode (V-H)',
               logo: '1873/10',
               simple_logo: '1873/10.alt',
               tokens: [],
@@ -2194,14 +2224,14 @@ module Engine
                 vor_harzer: true,
                 machine_revenue: [60, 90, 120, 150, 180],
                 switcher_revenue: [30, 40, 50, 60],
-                multiplier: 10,
+                multiplier: 30,
                 connected: false,
                 open: true,
               },
             },
             {
               sym: '11',
-              name: 'Mine 11 (V-H)',
+              name: 'Tanne (V-H)',
               logo: '1873/11',
               simple_logo: '1873/11.alt',
               tokens: [],
@@ -2219,7 +2249,7 @@ module Engine
             },
             {
               sym: '12',
-              name: 'Mine 12 (V-H)',
+              name: 'Blankenburg (V-H)',
               logo: '1873/12',
               simple_logo: '1873/12.alt',
               tokens: [],
@@ -2237,7 +2267,7 @@ module Engine
             },
             {
               sym: '13',
-              name: 'Mine 13',
+              name: 'Harzgerode',
               logo: '1873/13',
               simple_logo: '1873/13.alt',
               tokens: [],
@@ -2255,7 +2285,7 @@ module Engine
             },
             {
               sym: '14',
-              name: 'Mine 14 (V-H)',
+              name: 'Zorge (V-H)',
               logo: '1873/14',
               simple_logo: '1873/14.alt',
               tokens: [],
@@ -2273,7 +2303,7 @@ module Engine
             },
             {
               sym: '15',
-              name: 'Mine 15',
+              name: 'Thale',
               logo: '1873/15',
               simple_logo: '1873/15.alt',
               tokens: [],
@@ -2826,34 +2856,34 @@ module Engine
               %w[
                 D9
               ] => 'city=revenue:30;path=a:5,b:_0,track:narrow;upgrade=cost:50,terrain:mountain;'\
-                'border=edge:4,type:impassable;frame=color:purple;'\
+                'border=edge:4,type:impassable;frame=color:#800080;'\
                 'icon=image:1873/10_open,sticky:1,large:1',
               %w[
                 D15
               ] => 'city=revenue:40,slots:2;path=a:1,b:_0,track:narrow;path=a:3,b:_0,track:narrow;'\
-                'path=a:5,b:_0,track:narrow;label=B;frame=color:purple;'\
+                'path=a:5,b:_0,track:narrow;label=B;frame=color:#800080;'\
                 'icon=image:1873/12_open,sticky:1,large:1',
               %w[
                 E4
               ] => 'city=revenue:30;path=a:0,b:_0,track:narrow;upgrade=cost:50,terrain:mountain;'\
-                'border=edge:3,type:impassable;frame=color:purple;'\
+                'border=edge:3,type:impassable;frame=color:#800080;'\
                 'icon=image:1873/2_open,sticky:1,large:1',
               %w[
                 F11
               ] => 'city=revenue:30;path=a:5,b:_0,track:narrow;upgrade=cost:50,terrain:mountain;'\
-                'frame=color:purple;'\
+                'frame=color:#800080;'\
                 'icon=image:1873/SM_open,sticky:1,large:1',
               %w[
                 G4
               ] => 'city=revenue:30;path=a:0,b:_0,track:narrow;upgrade=cost:50,terrain:mountain;'\
-                'border=edge:1,type:impassable;border=edge:3,type:impassable;frame=color:purple;'\
+                'border=edge:1,type:impassable;border=edge:3,type:impassable;frame=color:#800080;'\
                 'icon=image:1873/14_open,sticky:1,large:1',
             },
             green: {
               %w[
                 B19
               ] => 'city=revenue:60;path=a:1,b:_0,track:narrow;path=a:2,b:_0;path=a:5,b:_0;'\
-                'frame=color:purple;label=HQG',
+                'frame=color:#800080;label=HQG',
               %w[
                 C16
               ] => 'city=revenue:30;path=a:0,b:_0,track:narrow;path=a:2,b:_0,track:narrow;'\
@@ -2861,7 +2891,7 @@ module Engine
               %w[
                 E20
               ] => 'city=revenue:60;path=a:1,b:_0,track:narrow;path=a:0,b:_0;path=a:3,b:_0;'\
-                'frame=color:purple;label=HQG',
+                'frame=color:#800080;label=HQG',
               %w[
                 F5
               ] => 'city=revenue:20;city=revenue:20;path=a:1,b:_0,track:narrow;path=a:4,b:_0,track:narrow;'\
@@ -2875,15 +2905,15 @@ module Engine
               %w[
                 G6
               ] => 'city=revenue:40;path=a:2,b:_0,track:narrow;'\
-                'path=a:5,b:_0,track:narrow;frame=color:purple',
+                'path=a:5,b:_0,track:narrow;frame=color:#800080',
               %w[
                 G20
               ] => 'city=revenue:60;path=a:0,b:_0,track:narrow;path=a:2,b:_0;path=a:5,b:_0;'\
-                'frame=color:purple;label=HQG',
+                'frame=color:#800080;label=HQG',
               %w[
                 H13
               ] => 'city=revenue:40;path=a:2,b:_0,track:narrow;path=a:5,b:_0,track:narrow;'\
-                'upgrade=cost:50,terrain:mountain;frame=color:purple',
+                'upgrade=cost:50,terrain:mountain;frame=color:#800080',
               %w[
                 H17
               ] => 'city=revenue:30;path=a:0,b:_0,track:narrow;path=a:4,b:_0,track:narrow;'\
@@ -2894,12 +2924,12 @@ module Engine
                 B9
               ] => 'city=slots:2,revenue:yellow_60|green_80|brown_120|gray_150;'\
                 'path=a:1,b:_0;path=a:4,b:_0;path=a:0,b:_0,track:narrow;path=a:5,b:_0,track:narrow;'\
-                'frame=color:purple',
+                'frame=color:#800080',
               %w[
                 B13
               ] => 'city=slots:2,revenue:yellow_30|green_70|brown_60|gray_60;'\
                 'path=a:4,b:_0,track:narrow;path=a:5,b:_0,track:narrow;'\
-                'frame=color:purple;icon=image:1873/ZW_open,sticky:1,large:1',
+                'frame=color:#800080;icon=image:1873/ZW_open,sticky:1,large:1',
               %w[
                 C4
               ] => 'city=revenue:yellow_50|green_80|brown_120|gray_150;path=a:5,b:_0,track:narrow',
@@ -2915,7 +2945,7 @@ module Engine
               %w[
                 F15
               ] => 'city=revenue:yellow_30|green_40|brown_60|gray_70;'\
-                'path=a:3,b:_0,track:narrow;path=a:4,b:_0;frame=color:purple;'\
+                'path=a:3,b:_0,track:narrow;path=a:4,b:_0;frame=color:#800080;'\
                 'icon=image:1873/15_open,sticky:1,large:1',
               %w[
                 H9
@@ -2925,20 +2955,20 @@ module Engine
               %w[
                 I2
               ] => 'city=revenue:yellow_40|green_50|brown_80|gray_120;path=a:1,b:_0;'\
-                'path=a:2,b:_0,track:narrow;path=a:4,b:_0;frame=color:purple',
+                'path=a:2,b:_0,track:narrow;path=a:4,b:_0;frame=color:#800080',
               %w[
                 I4
               ] => 'city=revenue:yellow_40|green_50|brown_80|gray_120;path=a:1,b:_0;'\
-                'path=a:2,b:_0,track:narrow;path=a:5,b:_0;frame=color:purple',
+                'path=a:2,b:_0,track:narrow;path=a:5,b:_0;frame=color:#800080',
               %w[
                 I18
               ] => 'city=revenue:yellow_30|green_40|brown_60|gray_70;'\
-                'path=a:2,b:_0,track:narrow;frame=color:purple;'\
+                'path=a:2,b:_0,track:narrow;frame=color:#800080;'\
                 'icon=image:1873/13_open,sticky:1,large:1',
               %w[
                 J7
               ] => 'city=revenue:yellow_60|green_80|brown_120|gray_180;path=a:1,b:_0;'\
-                'path=a:3,b:_0,track:narrow;path=a:4,b:_0;frame=color:purple',
+                'path=a:3,b:_0,track:narrow;path=a:4,b:_0;frame=color:#800080',
               # implicit tiles
               %w[
                 C20
@@ -2971,6 +3001,7 @@ module Engine
                 'yellow',
               ],
               operating_rounds: 1,
+              status: ['HBE_GHE_active'],
             },
             {
               name: '2',
@@ -2980,6 +3011,7 @@ module Engine
                 'yellow',
               ],
               operating_rounds: 1,
+              status: ['NWE_SHE_KEZ_may'],
             },
             {
               name: '3',
@@ -2990,6 +3022,7 @@ module Engine
                 green
               ],
               operating_rounds: 2,
+              status: %w[NWE_SHE_KEZ_active maintenance_level_1],
             },
             {
               name: '4',
@@ -3000,6 +3033,7 @@ module Engine
                 green
               ],
               operating_rounds: 2,
+              status: %w[WBE_QLB_active maintenance_level_2],
             },
             {
               name: '5',
@@ -3011,6 +3045,7 @@ module Engine
                 brown
               ],
               operating_rounds: 3,
+              status: %w[end_of_game_trigger maintenance_level_2],
             },
             {
               name: '5a',
@@ -3021,6 +3056,7 @@ module Engine
                 brown
               ],
               operating_rounds: 3,
+              status: ['maintenance_level_2'],
             },
             {
               name: 'D',
@@ -3033,6 +3069,7 @@ module Engine
                 gray
               ],
               operating_rounds: 3,
+              status: ['maintenance_level_3'],
             },
           ]
         end

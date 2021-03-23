@@ -66,8 +66,9 @@ module Engine
         return if bundle.presidents_share
         return if entity == bundle.corporation
 
-        if @game.class::CORPORATE_BUY_SHARE_SINGLE_CORP_ONLY && bought?(entity)
-          return unless bundle.corporation == last_bought(entity)
+        if @game.class::CORPORATE_BUY_SHARE_SINGLE_CORP_ONLY && bought?(entity) &&
+            bundle.corporation != last_bought(entity)
+          return
         end
 
         entity.cash >= bundle.price

@@ -49,6 +49,10 @@ module Engine
           def item_str(item)
             "#{item.description} (#{@game.format_currency(item.cost)})"
           end
+
+          def override_entities
+            @game.exclude_vaclav(@round.entities)
+          end
         end
       end
     end

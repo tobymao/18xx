@@ -269,7 +269,7 @@ module View
 
         empty_cell_props = { style: { minHeight: '1rem' } }
 
-        rows += (@game.corporation_info[@corporation][:slots] - mines.size).times.map do |_i|
+        rows += Array.new((@game.corporation_info[@corporation][:slots] - mines.size)) do |_i|
           h('tr', row_props, [
             h('td', { attrs: { colspan: '3' } }, [h('div', empty_cell_props, '(empty slot)')]),
           ])

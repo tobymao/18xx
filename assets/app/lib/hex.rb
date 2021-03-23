@@ -33,9 +33,9 @@ module Lib
     }.freeze
 
     def self.points(scale: 1.0)
-      "#{X_R * scale},#{Y_M * scale} #{X_M_R * scale},#{Y_B * scale} "\
-      "#{X_M_L * scale},#{Y_B * scale} #{X_L * scale},#{Y_M * scale} "\
-      "#{X_M_L * scale},#{Y_T * scale} #{X_M_R * scale},#{Y_T * scale}"
+      "#{(X_R * scale).round(3)},#{(Y_M * scale).round(3)} #{(X_M_R * scale).round(3)},#{(Y_B * scale).round(3)} "\
+      "#{(X_M_L * scale).round(3)},#{(Y_B * scale).round(3)} #{(X_L * scale).round(3)},#{(Y_M * scale).round(3)} "\
+      "#{(X_M_L * scale).round(3)},#{(Y_T * scale).round(3)} #{(X_M_R * scale).round(3)},#{(Y_T * scale).round(3)}"
     end
   end
 end

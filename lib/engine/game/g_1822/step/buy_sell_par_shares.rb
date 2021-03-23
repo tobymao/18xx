@@ -33,9 +33,11 @@ module Engine
             return {} unless entity.company?
 
             choices = @game.company_choices(entity, :stock_round)
-            if !choices.empty? && entity.id == @game.class::COMPANY_OSTH
-              return {} if @bid_actions.positive? || @game.player_debt(entity.owner).positive?
+            if !choices.empty? && entity.id == @game.class::COMPANY_OSTH &&
+                (@bid_actions.positive? || @game.player_debt(entity.owner).positive?)
+              return {}
             end
+
             choices
           end
 
@@ -43,9 +45,15 @@ module Engine
             entity.cash - committed_cash(entity)
           end
 
-          def available_par_cash(entity, corporation)
+          def available_par_cash(entity, corporation, share_price: nil)
             available = available_cash(entity)
-            available += corporation.par_via_exchange.value if corporation.par_via_exchange
+            if corporation.par_via_exchange
+              available += if share_price && corporation.id == 'LNWR'
+                             share_price.price
+                           else
+                             corporation.par_via_exchange.value
+                           end
+            end
             available
           end
 
@@ -60,7 +68,7 @@ module Engine
             cash = available_cash || available_cash(entity)
             cash >= bundle.price &&
               !@round.players_sold[entity][corporation] &&
-              (can_buy_multiple?(entity, corporation) || !bought?) &&
+              (can_buy_multiple?(entity, corporation, bundle.owner) || !bought?) &&
               can_gain?(entity, bundle, exchange: exchange)
           end
 

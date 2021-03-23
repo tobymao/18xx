@@ -19,7 +19,7 @@ module View
       Engine::Tile::BROWN.keys,
       Engine::Tile::GRAY.keys,
       Engine::Tile::RED.keys,
-    ].reduce(&:+)
+    ].flatten
 
     def render
       match = @route.match(ROUTE_FORMAT)
@@ -107,7 +107,7 @@ module View
       game_class = load_game_class(game_title)
       return [] unless game_class
 
-      players = game_class::PLAYER_RANGE.max.times.map { |n| "Player #{n + 1}" }
+      players = Array.new(game_class::PLAYER_RANGE.max) { |n| "Player #{n + 1}" }
       game = game_class.new(players)
 
       id, rotation = hex_or_tile_id.split('-')
@@ -139,7 +139,7 @@ module View
     end
 
     def map_hexes_and_tile_manifest_for(game_class)
-      players = game_class::PLAYER_RANGE.max.times.map { |n| "Player #{n + 1}" }
+      players = Array.new(game_class::PLAYER_RANGE.max) { |n| "Player #{n + 1}" }
       game = game_class.new(players)
 
       # map_tiles: hash; key is hex ID, value is the Tile there
@@ -194,13 +194,13 @@ module View
 
       h("div#hexes_and_tiles_#{game_class.title}", [
           h(:h2, game_class.full_title),
-          h("div#map_hexes_#{game_class.title}", [
-              h(:h3, "#{game_class.title} Map Hexes"),
-              *rendered_map_hexes,
-            ]),
           h("div#game_tiles_#{game_class.title}", [
               h(:h3, "#{game_class.title} Tile Manifest"),
               *rendered_tiles,
+            ]),
+          h("div#map_hexes_#{game_class.title}", [
+              h(:h3, "#{game_class.title} Map Hexes"),
+              *rendered_map_hexes,
             ]),
         ])
     end
