@@ -38,12 +38,12 @@ module Engine
 
           def process_buy_shares(action)
             super
-            pass!
+            pass! if action.entity.corporation?
           end
 
           def process_sell_shares(action)
             super
-            pass!
+            pass! if action.entity.corporation?
           end
 
           def get_all_par_prices(corp)
