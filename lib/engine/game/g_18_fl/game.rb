@@ -379,7 +379,8 @@ module Engine
             value: 0,
             discount: -110,
             revenue: 20,
-            desc: 'This Company comes with a single share of the Florida East Coast Railway',
+            desc: 'This Company comes with a single share of the Florida East Coast Railway. '\
+            'This company closes when the FECR buys its first train',
             sym: 'FECCTC',
             min_players: 4,
             abilities: [{ type: 'close', when: 'bought_train', corporation: 'FECR' },
