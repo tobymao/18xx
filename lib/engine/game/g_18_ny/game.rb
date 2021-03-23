@@ -22,8 +22,23 @@ module Engine
         CERT_LIMIT = { 2 => 28, 3 => 20, 4 => 16, 5 => 13, 6 => 11 }.freeze
 
         STARTING_CASH = { 2 => 900, 3 => 600, 4 => 450, 5 => 360, 6 => 300 }.freeze
+        
+        MIN_BID_INCREMENT = 5
+        MUST_BID_INCREMENT_MULTIPLE = true
 
         SELL_BUY_ORDER = :sell_buy
+
+        GAME_END_CHECK = { bank: :full_or, custom: :immediate }.freeze
+
+        ALL_COMPANIES_ASSIGNABLE = true
+
+        # Two lays with one being an upgrade. Tile lays cost 20
+        TILE_LAYS = [
+          { lay: true, upgrade: true, cost: 20, cannot_reuse_same_hex: true },
+          { lay: true, upgrade: :not_if_upgraded, cost: 20, cannot_reuse_same_hex: true },
+        ].freeze
+
+        TRACK_RESTRICTION = :permissive
 
         MARKET = [
           %w[70 75 80 90 100p 110 125 150 175 200 230 260 300 350 400
@@ -117,8 +132,20 @@ module Engine
 
         def stock_round
           Round::Stock.new(self, [
-            Engine::Step::BuySellParShares,
+            G18NY::Step::BuySellParShares,
           ])
+        end
+
+        def issuable_shares(entity)
+          return [] unless entity.corporation?
+
+          entity.shares_of(entity)
+        end
+
+        def redeemable_shares(entity)
+          return [] unless entity.corporation?
+
+          @share_pool.shares_of(entity).select { |s| s.price <= entity.cash }
         end
       end
     end
