@@ -139,7 +139,6 @@ module Engine
             @game.bank.spend(payout[:corporation], entity) if payout[:corporation].positive?
             payout_shares(entity, revenue + subsidy - payout[:corporation]) if payout[:per_share].positive?
             change_share_price(entity, payout)
-            @game.check_player_loans!
 
             pass!
 
