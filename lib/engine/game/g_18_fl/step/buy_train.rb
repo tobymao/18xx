@@ -32,6 +32,14 @@ module Engine
             @depot_trains_bought = []
           end
 
+          def spend_minmax(entity, train)
+            if entity.cash.zero? && (buying_power(entity) < train.price)
+              [1, [train.price, buying_power(entity) + entity.owner.cash].min]
+            else
+              [1, buying_power(entity)]
+            end
+          end
+
           def process_buy_train(action)
             # Since the train won't be in the depot after being bought store the state now.
             from_depot = action.train.from_depot?
