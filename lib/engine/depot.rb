@@ -74,6 +74,13 @@ module Engine
       @depot_trains = nil
     end
 
+    def forget_train(train)
+      @trains.delete(train)
+      @upcoming.delete(train)
+      @discarded.delete(train)
+      @depot_trains = nil
+    end
+
     def add_train(train)
       train.owner = self
       @trains << train

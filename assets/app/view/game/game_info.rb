@@ -30,7 +30,7 @@ module View
       end
 
       def render_body
-        children = upcoming_trains
+        children = trains
         children.concat(discarded_trains) if @depot.discarded.any?
         children.concat(phases)
         children.concat(timeline) if timeline
@@ -192,7 +192,7 @@ module View
         ])
       end
 
-      def upcoming_trains
+      def trains
         rust_schedule, obsolete_schedule = rust_obsolete_schedule
 
         show_obsolete_schedule = obsolete_schedule.keys.any?
@@ -200,7 +200,10 @@ module View
         show_available = @depot.upcoming.any?(&:available_on)
         events = []
 
-        rows = @depot.upcoming.group_by(&:name).map do |name, trains|
+        first_train = @depot.upcoming.first
+
+        rows = @depot.trains.reject(&:reserved).group_by(&:sym).map do |sym, trains|
+          remaining = @depot.upcoming.select { |t| t.sym == sym }
           train = trains.first
           discounts = train.discount&.group_by { |_k, v| v }&.map do |price, price_discounts|
             h('span.nowrap', "#{price_discounts.map(&:first).join(', ')} → #{@game.format_currency(price)}")
@@ -209,7 +212,7 @@ module View
           names_to_prices = train.names_to_prices
 
           event_text = []
-          trains.each.with_index do |train2, index|
+          remaining.each.with_index do |train2, index|
             train2.events.each do |event|
               event_name = event['type']
               if @game.class::EVENTS_TEXT[event_name]
@@ -226,11 +229,12 @@ module View
             end
           end
           event_text = event_text.flat_map { |e| [h('span.nowrap', e), ', '] }[0..-2]
+          name = (train.name == first_train.name ? '→ ' : '') + names_to_prices.keys.join(', ')
 
-          upcoming_train_content = [
-            h(:td, names_to_prices.keys.join(', ')),
+          train_content = [
+            h(:td, name),
             h("td#{price_str_class}", names_to_prices.values.map { |p| @game.format_currency(p) }.join(', ')),
-            h('td.center', trains.size),
+            h('td.center', "#{remaining.size} / #{trains.size}"),
           ]
 
           show_rusts_inline = true
@@ -251,17 +255,17 @@ module View
             show_rusts_inline = false
           end
 
-          upcoming_train_content << h(:td, obsolete_schedule[name]&.join(', ') || '') if show_obsolete_schedule
-          upcoming_train_content << if show_rusts_inline
-                                      h(:td, rusts&.join(', ') || '')
-                                    else
-                                      h(:td, rusts&.map { |value| h(:div, value) } || '')
-                                    end
+          train_content << h(:td, obsolete_schedule[name]&.join(', ') || '') if show_obsolete_schedule
+          train_content << if show_rusts_inline
+                             h(:td, rusts&.join(', ') || '')
+                           else
+                             h(:td, rusts&.map { |value| h(:div, value) } || '')
+                           end
 
-          upcoming_train_content << h(:td, discounts) if show_upgrade
-          upcoming_train_content << h(:td, train.available_on) if show_available
-          upcoming_train_content << h(:td, event_text) if event_text.any?
-          h(:tr, upcoming_train_content)
+          train_content << h(:td, discounts) if show_upgrade
+          train_content << h(:td, train.available_on) if show_available
+          train_content << h(:td, event_text) if event_text.any?
+          h(:tr, train_content)
         end
 
         event_text = events.uniq.map do |sym|
@@ -298,7 +302,7 @@ module View
         upcoming_train_header << h(:th, 'Events') if event_text.any?
 
         [
-          h(:h3, 'Upcoming Trains'),
+          h(:h3, 'Trains'),
           h(:div, { style: { overflowX: 'auto' } }, [
             h(:table, [
               h(:thead, [

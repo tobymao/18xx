@@ -592,6 +592,7 @@ module Engine
           train.events, first.events = first.events.partition { |e| e['type'] != 'nwr' }
 
           @log << "#{corporation.name} adds an extra #{train.name} train to the depot"
+          train.reserved = false
           @depot.unshift_train(train)
         end
 
@@ -606,6 +607,7 @@ module Engine
             train = depot.upcoming.reverse.find { |t| t.name == train_name }
             @sc_reserve_trains << train
             depot.remove_train(train)
+            train.reserved = true
           end
 
           # Due to SC adding an extra train this isn't quite a phase change, so the event needs to be tied to a train.
