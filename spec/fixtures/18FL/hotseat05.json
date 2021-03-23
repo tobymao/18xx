@@ -1,0 +1,543 @@
+{
+    "status": "active",
+    "actions": [
+      {
+        "type": "bid",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 1,
+        "created_at": 1616516078,
+        "price": 0
+      },
+      {
+        "type": "bid",
+        "entity": "Player 2",
+        "entity_type": "player",
+        "id": 2,
+        "created_at": 1616516079,
+        "price": 0
+      },
+      {
+        "type": "bid",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 3,
+        "created_at": 1616516080,
+        "company": "TR",
+        "price": 0
+      },
+      {
+        "type": "bid",
+        "entity": "Player 2",
+        "entity_type": "player",
+        "id": 4,
+        "created_at": 1616516081,
+        "company": "POSC",
+        "price": 0
+      },
+      {
+        "type": "par",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 5,
+        "created_at": 1616516083,
+        "corporation": "LN",
+        "share_price": "70,0,2"
+      },
+      {
+        "type": "par",
+        "entity": "Player 2",
+        "entity_type": "player",
+        "id": 6,
+        "created_at": 1616516085,
+        "corporation": "Plant",
+        "share_price": "70,0,2"
+      },
+      {
+        "type": "buy_shares",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 7,
+        "created_at": 1616516089,
+        "shares": [
+          "LN_1"
+        ],
+        "percent": 20
+      },
+      {
+        "type": "buy_shares",
+        "entity": "Player 2",
+        "entity_type": "player",
+        "id": 8,
+        "created_at": 1616516090,
+        "shares": [
+          "Plant_1"
+        ],
+        "percent": 20
+      },
+      {
+        "type": "pass",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 9,
+        "created_at": 1616516092
+      },
+      {
+        "type": "pass",
+        "entity": "LN",
+        "entity_type": "corporation",
+        "id": 10,
+        "created_at": 1616516094
+      },
+      {
+        "type": "pass",
+        "entity": "LN",
+        "entity_type": "corporation",
+        "id": 11,
+        "created_at": 1616516094
+      },
+      {
+        "type": "buy_train",
+        "entity": "LN",
+        "entity_type": "corporation",
+        "id": 12,
+        "created_at": 1616516095,
+        "train": "2-0",
+        "price": 100,
+        "variant": "2"
+      },
+      {
+        "type": "pass",
+        "entity": "Plant",
+        "entity_type": "corporation",
+        "id": 13,
+        "created_at": 1616516099
+      },
+      {
+        "type": "pass",
+        "entity": "Plant",
+        "entity_type": "corporation",
+        "id": 14,
+        "created_at": 1616516100
+      },
+      {
+        "type": "buy_train",
+        "entity": "Plant",
+        "entity_type": "corporation",
+        "id": 15,
+        "created_at": 1616516101,
+        "train": "2-1",
+        "price": 100,
+        "variant": "2"
+      },
+      {
+        "type": "buy_train",
+        "entity": "Plant",
+        "entity_type": "corporation",
+        "id": 16,
+        "created_at": 1616516114,
+        "train": "2-0",
+        "price": 250
+      },
+      {
+        "type": "pass",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 17,
+        "created_at": 1616516115
+      },
+      {
+        "type": "pass",
+        "entity": "Player 2",
+        "entity_type": "player",
+        "id": 18,
+        "created_at": 1616516115
+      },
+      {
+        "type": "pass",
+        "entity": "LN",
+        "entity_type": "corporation",
+        "id": 19,
+        "created_at": 1616516117
+      },
+      {
+        "type": "pass",
+        "entity": "LN",
+        "entity_type": "corporation",
+        "id": 20,
+        "created_at": 1616516118
+      },
+      {
+        "type": "buy_train",
+        "entity": "LN",
+        "entity_type": "corporation",
+        "id": 21,
+        "created_at": 1616516132,
+        "train": "2-0",
+        "price": 1
+      },
+      {
+        "type": "undo",
+        "entity": "LN",
+        "entity_type": "corporation",
+        "id": 22,
+        "created_at": 1616516136
+      },
+      {
+        "type": "undo",
+        "entity": "LN",
+        "entity_type": "corporation",
+        "id": 23,
+        "created_at": 1616517452
+      },
+      {
+        "type": "undo",
+        "entity": "LN",
+        "entity_type": "corporation",
+        "id": 24,
+        "created_at": 1616517453
+      },
+      {
+        "type": "pass",
+        "entity": "LN",
+        "entity_type": "corporation",
+        "id": 25,
+        "created_at": 1616517460
+      },
+      {
+        "type": "pass",
+        "entity": "LN",
+        "entity_type": "corporation",
+        "id": 26,
+        "created_at": 1616517461
+      },
+      {
+        "type": "buy_train",
+        "entity": "LN",
+        "entity_type": "corporation",
+        "id": 27,
+        "created_at": 1616517463,
+        "train": "2-0",
+        "price": 1
+      },
+      {
+        "type": "buy_train",
+        "entity": "LN",
+        "entity_type": "corporation",
+        "id": 28,
+        "created_at": 1616517469,
+        "train": "2-1",
+        "price": 1
+      },
+      {
+        "type": "pass",
+        "entity": "Plant",
+        "entity_type": "corporation",
+        "id": 29,
+        "created_at": 1616517470
+      },
+      {
+        "type": "pass",
+        "entity": "Plant",
+        "entity_type": "corporation",
+        "id": 30,
+        "created_at": 1616517471
+      },
+      {
+        "type": "undo",
+        "entity": "Plant",
+        "entity_type": "corporation",
+        "id": 31,
+        "created_at": 1616517489
+      },
+      {
+        "type": "undo",
+        "entity": "Plant",
+        "entity_type": "corporation",
+        "id": 32,
+        "created_at": 1616517491
+      },
+      {
+        "type": "lay_tile",
+        "entity": "Plant",
+        "entity_type": "corporation",
+        "id": 33,
+        "created_at": 1616517494,
+        "hex": "B13",
+        "tile": "4-0",
+        "rotation": 1
+      },
+      {
+        "type": "pass",
+        "entity": "Plant",
+        "entity_type": "corporation",
+        "id": 34,
+        "created_at": 1616517494
+      },
+      {
+        "type": "pass",
+        "entity": "Plant",
+        "entity_type": "corporation",
+        "id": 35,
+        "created_at": 1616517495
+      },
+      {
+        "type": "sell_shares",
+        "entity": "Player 2",
+        "entity_type": "player",
+        "id": 36,
+        "created_at": 1616517499,
+        "shares": [
+          "Plant_1"
+        ],
+        "percent": 20
+      },
+      {
+        "type": "buy_train",
+        "entity": "Plant",
+        "entity_type": "corporation",
+        "id": 37,
+        "created_at": 1616517526,
+        "train": "2-0",
+        "price": 83
+      },
+      {
+        "type": "undo",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 38,
+        "created_at": 1616517528
+      },
+      {
+        "type": "buy_train",
+        "entity": "Plant",
+        "entity_type": "corporation",
+        "id": 39,
+        "created_at": 1616517593,
+        "train": "2-0",
+        "price": 88
+      },
+      {
+        "type": "undo",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 40,
+        "created_at": 1616517597
+      },
+      {
+        "type": "buy_train",
+        "entity": "Plant",
+        "entity_type": "corporation",
+        "id": 41,
+        "created_at": 1616517745,
+        "train": "2-0",
+        "price": 2
+      },
+      {
+        "type": "undo",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 42,
+        "created_at": 1616517748
+      },
+      {
+        "type": "buy_train",
+        "entity": "Plant",
+        "entity_type": "corporation",
+        "id": 43,
+        "created_at": 1616517779,
+        "train": "2-0",
+        "price": 1
+      },
+      {
+        "type": "buy_train",
+        "entity": "Plant",
+        "entity_type": "corporation",
+        "id": 44,
+        "created_at": 1616517858,
+        "train": "2-1",
+        "price": 1
+      },
+      {
+        "type": "undo",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 45,
+        "created_at": 1616517859
+      },
+      {
+        "type": "undo",
+        "entity": "Plant",
+        "entity_type": "corporation",
+        "id": 46,
+        "created_at": 1616517877
+      },
+      {
+        "type": "undo",
+        "entity": "Plant",
+        "entity_type": "corporation",
+        "id": 47,
+        "created_at": 1616517881
+      },
+      {
+        "type": "undo",
+        "entity": "Plant",
+        "entity_type": "corporation",
+        "id": 48,
+        "created_at": 1616517883
+      },
+      {
+        "type": "pass",
+        "entity": "Plant",
+        "entity_type": "corporation",
+        "id": 49,
+        "created_at": 1616517885
+      },
+      {
+        "type": "sell_shares",
+        "entity": "Player 2",
+        "entity_type": "player",
+        "id": 50,
+        "created_at": 1616518040,
+        "shares": [
+          "Plant_1"
+        ],
+        "percent": 20
+      },
+      {
+        "type": "undo",
+        "entity": "Plant",
+        "entity_type": "corporation",
+        "id": 51,
+        "created_at": 1616518045
+      },
+      {
+        "type": "undo",
+        "entity": "Plant",
+        "entity_type": "corporation",
+        "id": 52,
+        "created_at": 1616518049
+      },
+      {
+        "type": "undo",
+        "entity": "Plant",
+        "entity_type": "corporation",
+        "id": 53,
+        "created_at": 1616518051
+      },
+      {
+        "type": "undo",
+        "entity": "Plant",
+        "entity_type": "corporation",
+        "id": 54,
+        "created_at": 1616518051
+      },
+      {
+        "type": "undo",
+        "entity": "Plant",
+        "entity_type": "corporation",
+        "id": 55,
+        "created_at": 1616518052
+      },
+      {
+        "type": "buy_train",
+        "entity": "LN",
+        "entity_type": "corporation",
+        "id": 56,
+        "created_at": 1616518059,
+        "train": "2-1",
+        "price": 19
+      },
+      {
+        "type": "lay_tile",
+        "entity": "Plant",
+        "entity_type": "corporation",
+        "id": 57,
+        "created_at": 1616518062,
+        "hex": "B13",
+        "tile": "4-0",
+        "rotation": 1
+      },
+      {
+        "type": "pass",
+        "entity": "Plant",
+        "entity_type": "corporation",
+        "id": 58,
+        "created_at": 1616518064
+      },
+      {
+        "type": "hex_token",
+        "entity": "Plant",
+        "entity_type": "corporation",
+        "id": 59,
+        "created_at": 1616518066,
+        "hex": "B13",
+        "cost": 20
+      },
+      {
+        "type": "buy_train",
+        "entity": "Plant",
+        "entity_type": "corporation",
+        "id": 60,
+        "created_at": 1616518122,
+        "train": "2-0",
+        "price": 1
+      },
+      {
+        "type": "undo",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 61,
+        "created_at": 1616518123
+      },
+      {
+        "type": "sell_shares",
+        "entity": "Player 2",
+        "entity_type": "player",
+        "id": 62,
+        "created_at": 1616518126,
+        "shares": [
+          "Plant_1"
+        ],
+        "percent": 20
+      },
+      {
+        "type": "buy_train",
+        "entity": "Plant",
+        "entity_type": "corporation",
+        "id": 63,
+        "created_at": 1616518139,
+        "train": "2-0",
+        "price": 100
+      }
+    ],
+    "id": "hs_wjlxiytg_1616516077",
+    "players": [
+      {
+        "name": "Player 1"
+      },
+      {
+        "name": "Player 2"
+      }
+    ],
+    "title": "18FL",
+    "description": "",
+    "max_players": "2",
+    "settings": {
+      "optional_rules": []
+    },
+    "mode": "hotseat",
+    "user": {
+      "id": 0,
+      "name": "You"
+    },
+    "created_at": "2021-03-23",
+    "loaded": true,
+    "result": {},
+    "turn": 3,
+    "round": "Stock Round",
+    "acting": [
+      "Player 1"
+    ],
+    "updated_at": 1616518139
+  }

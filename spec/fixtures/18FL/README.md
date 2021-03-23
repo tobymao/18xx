@@ -10,3 +10,8 @@ hotseat01
  * tokens are used
  * hotels are used
  * incomplete game
+ hotseat04
+ * 2p game
+ * p1 is used
+ hotseat05
+ * ebuy of train from other corp
