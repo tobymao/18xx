@@ -148,29 +148,29 @@ module Engine
         }.freeze
 
         ASSIGNMENT_TOKENS = {
-          'CNM': '/icons/1849/cnm_token.svg',
+          CNM: '/icons/1849/cnm_token.svg',
         }.freeze
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
-          'green_par': ['144 Par Available',
+          green_par: ['144 Par Available',
                         'Corporations may now par at 144 (in addition to 67 and 100)'],
-          'brown_par': ['216 Par Available',
+          brown_par: ['216 Par Available',
                         'Corporations may now par at 216 (in addition to 67, 100, and 144)'],
-          'earthquake': ['Messina Earthquake',
+          earthquake: ['Messina Earthquake',
                          'Messina (B14) downgraded to yellow, tokens removed from game.
                         Cannot be upgraded until after next stock round']
         ).freeze
 
         STATUS_TEXT = Base::STATUS_TEXT.merge(
-          'blue_zone': ['Blue Zone Available', 'Corporation share prices can enter the blue zone'],
-          'gray_uses_white': ['White Revenues', 'Gray locations use white revenue values'],
-          'gray_uses_gray': ['Gray Revenues', 'Gray locations use gray revenue values'],
-          'gray_uses_black': ['Black Revenues', 'Gray locations use black revenue values']
+          blue_zone: ['Blue Zone Available', 'Corporation share prices can enter the blue zone'],
+          gray_uses_white: ['White Revenues', 'Gray locations use white revenue values'],
+          gray_uses_gray: ['Gray Revenues', 'Gray locations use gray revenue values'],
+          gray_uses_black: ['Black Revenues', 'Gray locations use black revenue values']
         ).freeze
 
         GRAY_REVENUE_CENTERS =
           {
-            'C1':
+            C1:
               {
                 '4H': 20,
                 '6H': 20,
@@ -179,7 +179,7 @@ module Engine
                 '12H': 40,
                 '16H': 40,
               },
-            'E1':
+            E1:
               {
                 '4H': 20,
                 '6H': 20,
@@ -188,7 +188,7 @@ module Engine
                 '12H': 40,
                 '16H': 40,
               },
-            'C15':
+            C15:
               {
                 '4H': 10,
                 '6H': 10,
@@ -197,7 +197,7 @@ module Engine
                 '12H': 90,
                 '16H': 90,
               },
-            'M9':
+            M9:
               {
                 '4H': 20,
                 '6H': 20,

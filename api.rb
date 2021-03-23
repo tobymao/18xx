@@ -211,7 +211,7 @@ class Api < Roda
   def publish(channel, limit = nil, **data)
     MessageBus.publish(
       channel,
-      data.merge('_client_id': request.params['_client_id']),
+      data.merge(_client_id: request.params['_client_id']),
       max_backlog_size: limit,
     )
     {}

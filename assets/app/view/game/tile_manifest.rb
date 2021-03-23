@@ -114,7 +114,7 @@ module View
 
         props = {
           style: {
-            'margin': '3vmin 1vmin',
+            margin: '3vmin 1vmin',
           },
         }
         h('div#tile_manifest', props, children)
