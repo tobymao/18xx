@@ -549,11 +549,11 @@ module Engine
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           green_par: ['144 Par Available',
-                        'Corporations may now par at 144 (in addition to 67 and 100)'],
+                      'Corporations may now par at 144 (in addition to 67 and 100)'],
           brown_par: ['216 Par Available',
-                        'Corporations may now par at 216 (in addition to 67, 100, and 144)'],
+                      'Corporations may now par at 216 (in addition to 67, 100, and 144)'],
           earthquake: ['Avezzano Earthquake',
-                         'Avezzano (C7) loses connection to Rome, revenue reduced to 10.']
+                       'Avezzano (C7) loses connection to Rome, revenue reduced to 10.']
         ).freeze
 
         AVZ_CODE = 'town=revenue:10;path=a:4,b:_0,track:narrow'.freeze

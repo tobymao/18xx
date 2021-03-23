@@ -153,11 +153,11 @@ module Engine
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           green_par: ['144 Par Available',
-                        'Corporations may now par at 144 (in addition to 67 and 100)'],
+                      'Corporations may now par at 144 (in addition to 67 and 100)'],
           brown_par: ['216 Par Available',
-                        'Corporations may now par at 216 (in addition to 67, 100, and 144)'],
+                      'Corporations may now par at 216 (in addition to 67, 100, and 144)'],
           earthquake: ['Messina Earthquake',
-                         'Messina (B14) downgraded to yellow, tokens removed from game.
+                       'Messina (B14) downgraded to yellow, tokens removed from game.
                         Cannot be upgraded until after next stock round']
         ).freeze
 
