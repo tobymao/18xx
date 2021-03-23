@@ -1,12 +1,14 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/base'
+require_relative 'merger_common'
 
 module Engine
   module Game
     module G18Ireland
       module Step
         class MergerVote < Engine::Step::Base
+          include MergerCommon
           def actions(entity)
             return [] if !entity.player? || @round.to_vote.empty?
 
@@ -41,24 +43,8 @@ module Engine
             end
 
             @round.to_vote.shift
-            @game.log << "#{entity.name} casts #{votes} votes #{vote} merger"\
-            " (For: #{@round.votes_for}, Against: #{@round.votes_against})"
+            @game.log << "#{entity.name} casts #{votes} votes #{vote} merger #{vote_summary}"
             check_result
-          end
-
-          def check_result
-            if @round.votes_for >= @round.votes_needed
-              @game.log << 'Majority has voted for merger and proposal is accepted'
-              @round.vote_outcome = :for
-              @round.to_vote = []
-            elsif @round.votes_against > @round.votes_needed
-              @game.log << 'Majority has voted against merger and proposal is rejected'
-              @round.vote_outcome = :against
-              @round.to_vote = []
-            elsif @round.to_vote.empty?
-              @game.log << 'Votes are tided and proposal is rejected'
-              @round.vote_outcome = :against
-            end
           end
 
           def corporation

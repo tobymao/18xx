@@ -83,17 +83,18 @@ module Engine
           },
         ].freeze
 
-        # @todo: these are wrong
-        TRAINS = [{ name: '2H', num: 7, distance: 2, price: 100, rusts_on: '6H' },
-                  { name: '4H', num: 5, distance: 4, price: 100, rusts_on: '8H' },
+        # @todo: how to do the opposite side
+        # rusts turns them to the other side, go into the bankpool obsolete then removes completely
+        TRAINS = [{ name: '2H', num: 6, distance: 2, price: 80, obsolete_on: '8H', rusts_on: '6H' }, # 1H price:40
+                  { name: '4H', num: 5, distance: 4, price: 180, obsolete_on: 'H', rusts_on: '8H' }, # 2H price:90
                   {
                     name: '6H',
-                    num: 2,
+                    num: 4,
                     distance: 6,
-                    price: 200,
+                    price: 300,
                     rusts_on: '10H',
-                  },
-                  { name: '8H', num: 2, distance: 8, price: 350, rusts_on: '16H' },
+                  }, # 3H price:150
+                  { name: '8H', num: 3, distance: 8, price: 440 },
                   {
                     name: '10H',
                     num: 2,
@@ -103,8 +104,8 @@ module Engine
                   {
                     name: 'D',
                     num: 1,
-                    distance: 12,
-                    price: 800,
+                    distance: 99,
+                    price: 770,
                   }].freeze
 
         def home_token_locations(corporation)
