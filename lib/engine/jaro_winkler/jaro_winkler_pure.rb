@@ -111,11 +111,9 @@ module JaroWinkler
           if (flags1[i]).zero?
             j = 0
             while j < len2
-              if (flags2[j]).zero?
-                if DEFAULT_ADJ_TABLE[codes1[i].chr(Encoding::UTF_8)][codes2[j].chr(Encoding::UTF_8)]
-                  similar_count += 3
-                  break
-                end
+              if (flags2[j]).zero? && DEFAULT_ADJ_TABLE[codes1[i].chr(Encoding::UTF_8)][codes2[j].chr(Encoding::UTF_8)]
+                similar_count += 3
+                break
               end
               j += 1
             end

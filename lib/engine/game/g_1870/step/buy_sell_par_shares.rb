@@ -38,7 +38,7 @@ module Engine
             return [Engine::ShareBundle.new(bank_share)] if bank_share
 
             max = entity.player_share_holders.reject { |p, _| p == entity.owner }.values.max
-            entity.player_share_holders.reject { |p, v| p == entity.owner && v == max || v.zero? }
+            entity.player_share_holders.reject { |p, v| (p == entity.owner && v == max) || v.zero? }
               .map { |p, _| Engine::ShareBundle.new(p.shares_of(entity).reject(&:president).first) }
           end
 

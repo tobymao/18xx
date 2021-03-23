@@ -855,7 +855,7 @@ module Engine
         end
 
         def init_loans
-          num_loans.times.map { |id| Loan.new(id, loan_value) }
+          Array.new(num_loans) { |id| Loan.new(id, loan_value) }
         end
 
         def can_pay_interest?(_entity, _extra_cash = 0)
@@ -966,7 +966,7 @@ module Engine
           tokens.keys.each do |node|
             visited = tokens.reject { |token, _| token == node }
 
-            node.walk(visited: visited, corporation: nil) do |path|
+            node.walk(visited: visited, corporation: nil) do |path, _|
               return true if goal_hex_ids.include?(path.hex.id)
             end
           end
@@ -1203,7 +1203,7 @@ module Engine
             Engine::Step::DiscardTrain,
             Engine::Step::BuyTrain,
             # Repay Loans - See Loan
-            [Engine::Step::BuyCompany, blocks: true],
+            [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 

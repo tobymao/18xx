@@ -24,6 +24,13 @@ module Engine
           @game.graph.can_token?(entity)
       end
 
+      # This is called to see if the cost of a PlaceToken action should be overriden
+      # Avoid throwing an error here; it will get logged to browser console not browser window!
+      # _city_hex is a city, or a hex. Depends on if it's for a PlaceToken or HexToken action.
+      def token_cost_override(_entity, _city_hex, _slot, _token)
+        nil
+      end
+
       def available_tokens(entity)
         token_holder = entity.company? ? entity.owner : entity
         token_holder.tokens_by_type
@@ -120,16 +127,18 @@ module Engine
 
           # check if this is correct or should be a corporation
           if ability.extra
-            token = Engine::Token.new(entity)
-            entity.tokens << token
-          elsif ability.neutral
-            neutral_corp = Corporation.new(
-              sym: 'N',
-              name: 'Neutral',
-              logo: 'open_city',
-              tokens: [0],
-            )
-            token = Engine::Token.new(neutral_corp, type: :neutral)
+            if ability.neutral
+              neutral_corp = Corporation.new(
+                sym: 'N',
+                name: 'Neutral',
+                logo: 'open_city',
+                tokens: [0],
+              )
+              token = Engine::Token.new(neutral_corp, type: :neutral)
+            else
+              token = Engine::Token.new(entity)
+              entity.tokens << token
+            end
           end
 
           token.price = ability.teleport_price if ability.teleport_price

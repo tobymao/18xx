@@ -13,6 +13,12 @@ module Engine
             ACTIONS
           end
 
+          def setup
+            super
+
+            @round.bonus_tracks = 0
+          end
+
           def round_state
             super.merge(
               {

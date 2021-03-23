@@ -997,7 +997,7 @@ module Engine
             G1828::Step::Dividend,
             G1828::Step::SwapTrain,
             G1828::Step::BuyTrain,
-            [Engine::Step::BuyCompany, blocks: true],
+            [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 

@@ -17,11 +17,7 @@ module View
 
     def render_notification
       message = <<~MESSAGE
-        <p>Harzbahn 1873, 1870, 1822, and 1822MRS are now in alpha! 1861 and 18Chesapeake: Off the Rails is in production.</p>
-        <p>1822MRS, 1846 2p Variant, and 18Chesapeake: Off the Rails are now presented as variants
-         of their "parent" games, e.g., select 1822 in the dropdown, then check the "Medium Regional Scenario"
-         box to start a game of 1822MRS.</p>
-        <p>Check out the <a href='https://forms.gle/Aaz9L1R4tzQQD9hB8'>18xx In-Person Registry</a> to support in-person play post COVID (maintained by Bill Hackenbracht)!</p>
+        <p>18CZ now supports 2p Bohemia variant.</p>
         <p>Please submit problem reports and make suggestions for improvements on
         <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>.</p>
         <p>The <a href='https://github.com/tobymao/18xx/wiki'>18xx.games Wiki</a> has rules, maps,

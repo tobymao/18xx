@@ -1,17 +1,23 @@
 # frozen_string_literal: true
 
+require_relative 'choose_ability_on_or'
+
 module Engine
   module Game
     module G18ZOO
       module Step
         class BuyTrain < Engine::Step::BuyTrain
+          include Engine::Game::G18ZOO::ChooseAbilityOnOr
+
+          def setup
+            super
+
+            @round.any_train_brought = false
+            @round.new_train_brought = false
+          end
+
           def round_state
-            super.merge(
-              {
-                any_train_brought: false,
-                new_train_brought: false,
-              }
-            )
+            super.merge({ any_train_brought: false, new_train_brought: false })
           end
 
           def process_buy_train(action)

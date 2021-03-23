@@ -127,18 +127,18 @@ module View
           ]),
         ])
 
-        if @game.respond_to?(:player_debt)
+        if @game.respond_to?(:player_debt) && @game.player_debt(@player).positive?
           trs << h(:tr, [
             h(:td, 'Loan'),
             h('td.right', @game.format_currency(@game.player_debt(@player))),
-          ]) if @game.player_debt(@player).positive?
+          ])
         end
 
-        if @game.respond_to?(:player_interest)
+        if @game.respond_to?(:player_interest) && @game.player_interest(@player).positive?
           trs << h(:tr, [
             h(:td, 'Interest'),
             h('td.right', @game.format_currency(@game.player_interest(@player))),
-          ]) if @game.player_interest(@player).positive?
+          ])
         end
 
         if @game.respond_to?(:bidding_power)

@@ -7,12 +7,12 @@ require_relative 'par_and_buy_actions'
 module Engine
   module Game
     module G1893
-      FIRST_SR_ACTIONS = %w[buy_company pass].freeze
-
       module Step
         class BuySellParShares < Engine::Step::BuySellParShares
           include ParAndBuy
           include BuyMinor
+
+          FIRST_SR_ACTIONS = %w[buy_company pass].freeze
 
           def actions(entity)
             return [] unless entity&.player?
@@ -47,6 +47,12 @@ module Engine
 
           def can_exchange?(_entity)
             false
+          end
+
+          def ipo_type(corporation)
+            return super if corporation != @game.agv && corporation != @game.hgk
+
+            'Cannot be parred - formed via merge'
           end
 
           def first_sr_passed?(entity)

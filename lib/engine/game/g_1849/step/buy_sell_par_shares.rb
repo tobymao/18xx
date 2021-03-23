@@ -52,7 +52,7 @@ module Engine
             @game.corporations.any? { |c| c.ipoed && can_buy?(entity, c.shares.min_by(&:percent)&.to_bundle) }
           end
 
-          def can_buy_multiple?(entity, corp)
+          def can_buy_multiple?(entity, corp, _owner)
             super || (corp.owner == entity && just_parred(corp) && num_shares_bought(corp) < 2)
           end
 

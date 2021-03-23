@@ -13,7 +13,7 @@ module Engine
         return [] if entity.minor?
 
         # TODO: This needs to check it actually needs to sell shares.
-        return ['sell_shares'] if entity == current_entity.owner
+        return ['sell_shares'] if entity == current_entity&.owner
 
         return [] if entity != current_entity
         # TODO: Not sure this is right
@@ -41,7 +41,7 @@ module Engine
         return unless action.train.owned_by_corporation?
 
         min, max = spend_minmax(action.entity, action.train)
-        return if (min..max).include?(action.price)
+        return if (min..max).cover?(action.price)
 
         raise GameError, "#{action.entity.name} may not spend "\
                          "#{@game.format_currency(action.price)} on "\

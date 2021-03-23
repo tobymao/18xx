@@ -37,6 +37,10 @@ module Engine
             true
           end
 
+          def override_entities
+            @game.exclude_vaclav(@round.entities)
+          end
+
           def tiered_auction_companies
             @companies.group_by(&:revenue).values
           end

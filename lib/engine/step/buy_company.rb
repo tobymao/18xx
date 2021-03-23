@@ -105,7 +105,7 @@ module Engine
 
         @log << "#{entity.name} buys #{company.name} from "\
                 "#{owner.nil? ? 'the market' : owner.name} for "\
-                "#{@game.format_currency(price)}"
+                "#{@game.format_currency(price)} #{@blocks}"
       end
     end
   end

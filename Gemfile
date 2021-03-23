@@ -22,6 +22,7 @@ group :development do
   gem 'pry-byebug'
   gem 'rerun'
   gem 'rubocop'
+  gem 'rubocop-performance', require: 'false'
   gem 'sequel-annotate'
   gem 'stackprof'
 end

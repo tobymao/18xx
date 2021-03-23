@@ -16,6 +16,7 @@ module View
     needs :game_variants, default: nil, store: true
     needs :selected_variant, default: nil, store: true
     needs :title, default: nil
+    needs :production, default: nil
 
     def render_content
       @label_style = { display: 'block' }
@@ -25,19 +26,20 @@ module View
         render_inputs,
       ]
 
-      if @mode == :multi
+      case @mode
+      when :multi
         inputs << h(:label, { style: @label_style }, 'Game Options')
         inputs << render_input('Invite only game', id: 'unlisted', type: :checkbox,
                                                    container_style: { paddingLeft: '0.5rem' })
         inputs << render_game_info
-      elsif @mode == :hotseat
+      when :hotseat
         inputs << h(:label, { style: @label_style }, 'Player Names')
         @num_players.times do |index|
           n = index + 1
           inputs << render_input('', id: "player_#{n}", attrs: { value: "Player #{n}" })
         end
         inputs << render_game_info
-      elsif @mode == :json
+      when :json
         inputs << render_upload_button
         inputs << render_input(
           '',
@@ -322,7 +324,7 @@ module View
     end
 
     def visible_games
-      (Lib::Params['all'] ? Engine::GAME_METAS : Engine::VISIBLE_GAMES).sort
+      @visible_games ||= (@production ? Engine::VISIBLE_GAMES : Engine::GAME_METAS).sort
     end
 
     def selected_game
@@ -355,7 +357,7 @@ module View
         min = range.min = @min_p[title]
         max = range.max = @max_p[title]
         val = range.value.to_i
-        range.value = (min..max).include?(val) ? val : max
+        range.value = (min..max).cover?(val) ? val : max
         store(:num_players, range.value.to_i, skip: true)
       end
 

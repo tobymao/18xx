@@ -21,9 +21,9 @@ module Engine
 
         BANK_CASH = 99_999
 
-        CERT_LIMIT = { 3 => 14, 4 => 12, 5 => 10, 6 => 9 }.freeze
+        CERT_LIMIT = { 2 => 14, 3 => 14, 4 => 12, 5 => 10, 6 => 9 }.freeze
 
-        STARTING_CASH = { 3 => 380, 4 => 300, 5 => 250, 6 => 210 }.freeze
+        STARTING_CASH = { 2 => 280, 3 => 380, 4 => 300, 5 => 250, 6 => 210 }.freeze
 
         CAPITALIZATION = :full
 
@@ -204,42 +204,42 @@ module Engine
             'count' => 2,
             'color' => 'green',
             'code' =>
-            'town=revenue:20;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0;frame=color:purple',
+            'town=revenue:20;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0;frame=color:#800080',
           },
           '14p' =>
           {
             'count' => 1,
             'color' => 'green',
             'code' =>
-            'city=revenue:30,slots:2;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:5,b:_0;frame=color:purple',
+            'city=revenue:30,slots:2;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:5,b:_0;frame=color:#800080',
           },
           '887p' =>
           {
             'count' => 4,
             'color' => 'green',
             'code' =>
-            'town=revenue:20;path=a:1,b:_0;path=a:3,b:_0;path=a:0,b:_0;path=a:2,b:_0;frame=color:purple',
+            'town=revenue:20;path=a:1,b:_0;path=a:3,b:_0;path=a:0,b:_0;path=a:2,b:_0;frame=color:#800080',
           },
           '15p' =>
           {
             'count' => 1,
             'color' => 'green',
             'code' =>
-            'city=revenue:30,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;frame=color:purple',
+            'city=revenue:30,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;frame=color:#800080',
           },
           '888p' =>
           {
             'count' => 2,
             'color' => 'green',
             'code' =>
-            'town=revenue:20;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:5,b:_0;frame=color:purple',
+            'town=revenue:20;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:5,b:_0;frame=color:#800080',
           },
           '889p' =>
           {
             'count' => 2,
             'color' => 'brown',
             'code' =>
-            'town=revenue:30;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;frame=color:purple',
+            'town=revenue:30;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;frame=color:#800080',
           },
           '611p' =>
           {
@@ -247,7 +247,7 @@ module Engine
             'color' => 'brown',
             'code' =>
             'city=revenue:40,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;' \
-                  'frame=color:purple',
+                  'frame=color:#800080',
           },
           '216p' =>
           {
@@ -255,7 +255,7 @@ module Engine
             'color' => 'brown',
             'code' =>
             'city=revenue:50,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=Y;' \
-                  'frame=color:purple',
+                  'frame=color:#800080',
           },
           '8894p' =>
           {
@@ -263,7 +263,7 @@ module Engine
             'color' => 'brown',
             'code' =>
             'city=revenue:60,slots:2;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=OO;' \
-                  'frame=color:purple',
+                  'frame=color:#800080',
           },
           '8895p' =>
           {
@@ -271,7 +271,7 @@ module Engine
             'color' => 'brown',
             'code' =>
             'city=revenue:60,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=OO;' \
-                  'frame=color:purple',
+                  'frame=color:#800080',
           },
           '8896p' =>
           {
@@ -279,7 +279,7 @@ module Engine
             'color' => 'brown',
             'code' =>
             'city=revenue:60,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=OO;' \
-                  'frame=color:purple',
+                  'frame=color:#800080',
           },
           '8857p' =>
           {
@@ -287,7 +287,7 @@ module Engine
             'color' => 'gray',
             'code' =>
             'city=revenue:70,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;' \
-                  'path=a:5,b:_0;label=Y;frame=color:purple',
+                  'path=a:5,b:_0;label=Y;frame=color:#800080',
           },
           '595p' =>
           {
@@ -295,7 +295,7 @@ module Engine
             'color' => 'gray',
             'code' =>
             'city=revenue:60,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;' \
-                  'path=a:5,b:_0;frame=color:purple',
+                  'path=a:5,b:_0;frame=color:#800080',
           },
         }.freeze
 
@@ -2386,8 +2386,8 @@ module Engine
             ['E2'] => 'town=revenue:0;border=edge:5,type:offboard',
             ['C20'] => 'town=revenue:0;border=edge:2,type:offboard',
             %w[E14 F21 B15] => 'town=revenue:0;town=revenue:0',
-            ['E12'] =>
-            'city=revenue:20;city=revenue:20;path=a:5,b:_0;path=a:3,b:_1;label=P;upgrade=cost:10,terrain:water',
+            ['E12'] => 'city=revenue:20,groups:Praha;city=revenue:20,groups:Praha;'\
+                       'path=a:5,b:_0;path=a:3,b:_1;label=P;upgrade=cost:10,terrain:water',
             %w[A8 B5] =>
             'label=SX;border=edge:0,type:offboard;border=edge:5,type:offboard;border=edge:4,type:offboard',
             ['B19'] =>
@@ -2488,6 +2488,16 @@ module Engine
           '8E' => :large,
         }.freeze
 
+        TWO_PLAYER_CORP_TO_REMOVE = %w[OFE MW KFN PR Ug].freeze
+        TWO_PLAYER_COMPANIES_TO_REMOVE = {
+          5 => 40,
+          10 => 55,
+          20 => 70,
+        }.freeze
+
+        TWO_PLAYER_HEXES_TO_REMOVE = %w[A22 B19 B21 B23 B25 C22 C24 C26 C28 D21 D23 D25 D27 D29 E20 E22 E24 E26
+                                        E28 F21 F23 F25 F27 G20 G22 G24 G26 G28 H21 H23 H25 I20 I22 I24].freeze
+
         include StubsAreRestricted
         attr_accessor :rusted_variants
 
@@ -2498,35 +2508,133 @@ module Engine
           @recently_floated = []
           @entity_used_ability_to_track = false
           @rusted_variants = []
+          @vaclavs_corporations = []
+
+          unless multiplayer?
+            @vaclav = Player.new(-1, 'Vaclav')
+            @corporations = @corporations.reject { |item| TWO_PLAYER_CORP_TO_REMOVE.include?(item.name) }
+
+            @corporations.select { |item| item.type == :large }.each { |item| item.max_ownership_percent = 70 }
+
+            @players << @vaclav
+          end
 
           # Only small companies are available until later phases
           @corporations, @future_corporations = @corporations.partition { |corporation| corporation.type == :small }
+
+          new_corporation_for_vaclav(:small) unless multiplayer?
 
           block_lay_for_purple_tiles
           init_player_debts
         end
 
+        def new_corporation_for_vaclav(size)
+          possible_corporations = @corporations.select { |corporation| corporation.type == size }
+          index = rand % possible_corporations.size
+          new_corporation = possible_corporations[index]
+
+          new_corporation.ipoed = true
+          new_corporation.owner = @vaclav
+          new_corporation.tokens.each { |item| item.price = 0 }
+          @recently_floated << new_corporation
+          @vaclavs_corporations << new_corporation
+
+          par_value = PAR_RANGE[new_corporation.type].first
+          price = @stock_market.par_prices.find { |p| p.price == par_value }
+          @stock_market.set_par(new_corporation, price)
+
+          index = 0
+          until new_corporation.floated?
+            bundle = new_corporation.ipo_shares[index].to_bundle
+            @share_pool.transfer_shares(bundle, @vaclav)
+            index += 1
+          end
+
+          @log << "Vaclav receives new corporation #{new_corporation.name}"
+          new_train_for_vaclav(new_corporation)
+        end
+
+        def new_train_for_vaclav(corporation)
+          corporation.trains.each do |item|
+            remove_train(item)
+            item.owner = nil
+          end
+          train = @depot.upcoming.first
+          variant = train.variants.values.find { |item| train_of_size?(item, corporation.type) }
+          train.variant = variant[:name]
+          remove_train(train)
+          train.owner = corporation
+          corporation.trains << train
+
+          @phase.buying_train!(corporation, train)
+
+          @log << "#{corporation.name} receives a new #{train.name} train"
+        end
+
+        def init_companies(players)
+          companies = super
+          unless multiplayer?
+            companies = companies.reject { |item| item.value >= TWO_PLAYER_COMPANIES_TO_REMOVE[item.revenue] }
+          end
+          companies
+        end
+
+        def active_players
+          active = super
+          return active if active != [@vaclav]
+
+          case active_step
+          when G18CZ::Step::Track
+            current_entity.type == :medium ? [players_without_vaclav[1]] : [players_without_vaclav[0]]
+          when G18CZ::Step::Token
+            current_entity.type == :medium ? [players_without_vaclav[0]] : [players_without_vaclav[1]]
+          else
+            players_without_vaclav
+          end
+        end
+
+        def valid_actors(action)
+          action.entity.player == @vaclav ? active_players : super
+        end
+
+        def optional_hexes
+          return game_hexes if multiplayer?
+
+          new_hexes = {}
+          game_hexes.keys.each do |color|
+            new_map = game_hexes[color].transform_keys do |coords|
+              coords - TWO_PLAYER_HEXES_TO_REMOVE
+            end.to_h
+            new_hexes[color] = new_map
+          end
+          new_hexes
+        end
+
+        def multiplayer?
+          @multiplayer ||= @players.count { |item| item != @vaclav } > 2
+        end
+
         def init_round
-          Round::Draft.new(self,
-                           [G18CZ::Step::Draft],
-                           snake_order: true)
+          G18CZ::Round::Draft.new(self,
+                                  [G18CZ::Step::Draft],
+                                  snake_order: true)
         end
 
         def stock_round
-          Round::Stock.new(self, [
+          G18CZ::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
             G18CZ::Step::BuySellParShares,
           ])
         end
 
         def operating_round(round_num)
-          Round::Operating.new(self, [
+          G18CZ::Round::Operating.new(self, [
             G18CZ::Step::HomeTrack,
             G18CZ::Step::SellCompanyAndSpecialTrack,
             Engine::Step::HomeToken,
             G18CZ::Step::ReduceTokens,
             G18CZ::Step::BuyCompany,
-            Engine::Step::Track,
+            G18CZ::Step::Track,
             G18CZ::Step::Token,
             Engine::Step::Route,
             G18CZ::Step::Dividend,
@@ -2557,10 +2665,6 @@ module Engine
           super
         end
 
-        def or_round_finished
-          @recently_floated.clear
-        end
-
         def end_now?(_after)
           @or == @last_or
         end
@@ -2587,12 +2691,16 @@ module Engine
           end
           @corporations.concat(medium_corps)
           @log << '-- Medium corporations now available --'
+
+          new_corporation_for_vaclav(:medium) unless multiplayer?
         end
 
         def event_large_corps_available!
           @corporations.concat(@future_corporations)
           @future_corporations.clear
           @log << '-- Large corporations now available --'
+
+          new_corporation_for_vaclav(:large) unless multiplayer?
         end
 
         def float_corporation(corporation)
@@ -2607,17 +2715,24 @@ module Engine
         end
 
         def or_set_finished
-          depot.export!
+          if multiplayer?
+            depot.export!
+          else
+            # cloning is needed because vaclavs corporation changes when a new train triggers a new corporation
+            @vaclavs_corporations.clone.each do |item|
+              new_train_for_vaclav(item)
+            end
+          end
         end
 
         def next_round!
           @round =
             case @round
-            when Round::Stock
+            when Engine::Round::Stock
               @operating_rounds = OR_SETS[@turn - 1]
               reorder_players(log_player_order: true)
               new_operating_round
-            when Round::Operating
+            when Engine::Round::Operating
               if @round.round_num < @operating_rounds
                 or_round_finished
                 new_operating_round(@round.round_num + 1)
@@ -2940,6 +3055,51 @@ module Engine
 
         def can_par?(corporation, parrer)
           super && debt(parrer).zero?
+        end
+
+        def corporation_of_vaclav?(corporation)
+          @vaclavs_corporations.include?(corporation)
+        end
+
+        def player_of_index(index)
+          players_without_vaclav[index]
+        end
+
+        def players_without_vaclav
+          exclude_vaclav(@players)
+        end
+
+        def exclude_vaclav(entities)
+          entities.reject { |item| item == @vaclav }
+        end
+
+        def track_action_processed(entity)
+          @recently_floated.delete(entity)
+        end
+
+        def next_sr_position(entity)
+          player_order = @round.current_entity&.player? ? [] : players_without_vaclav
+          player_order.index(entity)
+        end
+
+        def reorder_players(order = nil, log_player_order: false)
+          return super if multiplayer?
+
+          order ||= next_sr_player_order
+          case order
+          when :most_cash
+            current_order = @players.dup.reverse
+            @players = players_without_vaclav.sort_by { |p| [p.cash, current_order.index(p)] }.reverse
+          when :least_cash
+            current_order = @players.dup
+            @players = players_without_vaclav.sort_by { |p| [p.cash, current_order.index(p)] }
+          end
+          @players << @vaclav
+          @log << if log_player_order
+                    "Priority order: #{players_without_vaclav.map(&:name).join(', ')}"
+                  else
+                    "#{@players.first.name} has priority deal"
+                  end
         end
       end
     end

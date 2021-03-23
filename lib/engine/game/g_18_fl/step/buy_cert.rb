@@ -91,7 +91,7 @@ module Engine
             return super if !@bids || @bids.empty?
             return [@bids.find { |_, bid| !bid }.first] if in_auction?
 
-            [@bids.max { |a, b| a[1] <=> b[1] }.first]
+            [@bids.max_by { |a| a[1] }.first]
           end
 
           def min_increment
@@ -163,6 +163,8 @@ module Engine
             grant_priority(player) if company == @first_comp
             @bids.reject! { |bidder, _| bidder == player }
             @companies.delete(company)
+
+            @game.after_buy_company(player, company, price)
           end
 
           def grant_priority(player)
