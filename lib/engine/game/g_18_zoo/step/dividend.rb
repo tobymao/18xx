@@ -5,6 +5,8 @@ module Engine
     module G18ZOO
       module Step
         class Dividend < Engine::Step::Dividend
+          include Engine::Game::G18ZOO::ChooseAbilityOnOr
+
           def dividend_options(entity)
             revenue = @game.routes_revenue(routes)
 
