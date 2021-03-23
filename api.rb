@@ -72,7 +72,7 @@ class Api < Roda
      map market fixture
   ].freeze
 
-  Dir['./routes/*'].sort.each { |file| require file }
+  Dir['./routes/*'].each { |file| require file }
 
   hash_routes do
     on 'api' do |hr|
