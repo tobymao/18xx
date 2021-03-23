@@ -860,15 +860,15 @@ module Engine
 
         # mines that open and in players hands
         def open_private_mines
-          @minors.select { |m| @players.include?(m.owner) && mine_open?(m) }
+          @minors.select { |m| m.owner && @players.include?(m.owner) && mine_open?(m) }
         end
 
         # mines that can be merged to form a public mining company
         def mergeable_private_mines(entity)
           if entity == @hw
-            @minors.select { |m| @players.include?(m.owner) && @minor_info[m][:vor_harzer] }
+            @minors.select { |m| m.owner && @players.include?(m.owner) && @minor_info[m][:vor_harzer] }
           else
-            @minors.select { |m| @players.include?(m.owner) }
+            @minors.select { |m| m.owner && @players.include?(m.owner) }
           end
         end
 
