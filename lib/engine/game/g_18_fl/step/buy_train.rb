@@ -17,8 +17,8 @@ module Engine
               other_trains.reject! { |t| t.price < spend_minmax(entity, t).first } if @last_share_sold_price
             end
 
-            # A corp with nonzero cash may buy trains from other corps if and only if the president sells no shares.
-            other_trains = [] if !entity.cash.zero? && @last_share_sold_price
+            # A corp with zero cash may buy trains from other corps if and only if the president sells no shares.
+            other_trains = [] if entity.cash.zero? && @last_share_sold_price
 
             other_trains.reject! { |t| entity.cash < t.price && must_buy_at_face_value?(t, entity) }
 
