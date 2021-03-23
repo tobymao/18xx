@@ -174,7 +174,12 @@ module View
             return if step.available_tokens(@entity).empty?
 
             next_token = step.available_tokens(@entity)[0].type
-            return process_action(Engine::Action::HexToken.new(@entity, hex: @hex, token_type: next_token))
+            return process_action(Engine::Action::HexToken.new(
+              @entity,
+              hex: @hex,
+              cost: step.token_cost_override(@entity, @hex, nil, @entity.find_token_by_type(next_token&.to_sym)),
+              token_type: next_token
+            ))
           end
           return unless @actions.include?('lay_tile')
 
