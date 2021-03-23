@@ -247,5 +247,25 @@ module Engine
         end
       end
     end
+
+    describe '18 Los Angeles' do
+      describe 30_265 do
+        it 'LA Title places a neutral token' do
+          game = game_at_action(game_file, 31)
+
+          action = {
+            'type' => 'place_token',
+            'entity' => 'LAT',
+            'entity_type' => 'company',
+            'city' => 'B13-0-0',
+            'slot' => 0,
+          }
+          game.process_action(action)
+          token = game.hex_by_id('B13').tile.cities.first.tokens.first
+
+          expect(token.type).to eq(:neutral)
+        end
+      end
+    end
   end
 end
