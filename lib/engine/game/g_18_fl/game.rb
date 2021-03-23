@@ -317,7 +317,7 @@ module Engine
               hexes: [],
               tiles: [],
               closed_when_used_up: 'true',
-              when: 'track',
+              when: %w[track, owning_player_or_turn],
             },
           ],
             color: nil,
