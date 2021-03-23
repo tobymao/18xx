@@ -2727,6 +2727,9 @@ module Engine
           end
 
           super
+
+          # Make sure after its floated its incremental.
+          corporation.capitalization = :incremental if corporation.type == :major
         end
 
         def format_currency(val)
