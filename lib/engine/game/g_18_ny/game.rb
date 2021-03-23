@@ -17,26 +17,29 @@ module Engine
 
         CURRENCY_FORMAT_STR = '$%d'
 
-        BANK_CASH = 12000
+        BANK_CASH = 12_000
 
         CERT_LIMIT = { 2 => 28, 3 => 20, 4 => 16, 5 => 13, 6 => 11 }.freeze
 
         STARTING_CASH = { 2 => 900, 3 => 600, 4 => 450, 5 => 360, 6 => 300 }.freeze
-        
+
         SELL_BUY_ORDER = :sell_buy
 
         MARKET = [
-          ['70', '75', '80', '90', '100p', '110', '125', '150', '175', '200', '230', '260', '300', '350', '400', '450', '500'],
-          ['65', '70', '75', '80x', '90p', '100', '110', '125', '150', '175', '200', '230', '260', '300', '350', '400', '450'],
-          ['60', '65', '70', '75x', '80p', '90', '100', '110', '125', '150', '175', '200', '230', '260', '300', '350', '400'],
-          ['55', '60', '65', '70x', '75p', '80', '90', '100', '110', '125', '150', '175'],
-          ['50', '55', '60', '65x', '70p', '75', '80', '90', '100', '110', '125'],
-          ['40', '50', '55', '60x', '65p', '70', '75', '80', '90', '100'],
-          ['30', '40', '50', '55x', '60', '65', '70', '75', '80'],
-          ['20', '30', '40', '50x', '55', '60', '65', '70'],
-          ['10', '20', '30', '40', '50', '55', '60'],
-          ['0c', '10', '20', '30', '40', '50'],
-          ['0c', '0c', '10', '20', '30'],
+          %w[70 75 80 90 100p 110 125 150 175 200 230 260 300 350 400
+             450 500],
+          %w[65 70 75 80x 90p 100 110 125 150 175 200 230 260 300 350
+             400 450],
+          %w[60 65 70 75x 80p 90 100 110 125 150 175 200 230 260 300 350
+             400],
+          %w[55 60 65 70x 75p 80 90 100 110 125 150 175],
+          %w[50 55 60 65x 70p 75 80 90 100 110 125],
+          %w[40 50 55 60x 65p 70 75 80 90 100],
+          %w[30 40 50 55x 60 65 70 75 80],
+          %w[20 30 40 50x 55 60 65 70],
+          %w[10 20 30 40 50 55 60],
+          %w[0c 10 20 30 40 50],
+          %w[0c 0c 10 20 30],
         ].freeze
 
         MARKET_TEXT = Base::MARKET_TEXT.merge(par_1: 'Minor Corporation Par',
@@ -96,10 +99,21 @@ module Engine
         TRAINS = [{ name: '2H', num: 11, distance: 2, price: 100, rusts_on: '6H' },
                   { name: '4H', num: 6, distance: 4, price: 200, rusts_on: '5DE' },
                   { name: '6H', num: 4, distance: 6, price: 300, rusts_on: 'D' },
-                  { name: '12H', num: 2, distance: 12, price: 600, events: [{ type: 'remove_corporations' }, { type: 'nyc_formation' }] },
+                  {
+                    name: '12H',
+                    num: 2,
+                    distance: 12,
+                    price: 600,
+                    events: [{ type: 'remove_corporations' }, { type: 'nyc_formation' }],
+                  },
                   { name: '12H', num: 1, distance: 12, price: 600, events: [{ type: 'capitalization_round' }] },
-                  { name: '5DE', num: 2, distance: [{ nodes: %w[city offboard town], pay: 5, visit: 99, multiplier: 2 }], price: 800 },
-                  { name: 'D', num: 20, distance: 99, price: 1000 },].freeze
+                  {
+                    name: '5DE',
+                    num: 2,
+                    distance: [{ nodes: %w[city offboard town], pay: 5, visit: 99, multiplier: 2 }],
+                    price: 800,
+                  },
+                  { name: 'D', num: 20, distance: 99, price: 1000 }].freeze
 
         def stock_round
           Round::Stock.new(self, [
