@@ -24,6 +24,11 @@ module Engine
             desc: 'Play a shorter game by removing $6,000 and 2 Phase II ships from the game.  '\
             'See bottom right of page 3 for more details.',
           },
+          {
+            sym: :optional_variant_start_pack,
+            short_name: 'Variant Start Packet',
+            desc: 'The Variant Start Packet portion of the Expansion set.  See Expansion Set rules for details.',
+          },
         ].freeze
       end
     end
