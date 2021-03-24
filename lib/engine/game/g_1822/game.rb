@@ -1435,7 +1435,7 @@ module Engine
         end
 
         def company_choices_chpr(company, time)
-          return {} if !(time == :token || time == :track) || !company.owner&.corporation?
+          return {} if !%i[token track].include?(time) || !company.owner&.corporation?
 
           choices = {}
           exchange_token_count = exchange_tokens(company.owner)
