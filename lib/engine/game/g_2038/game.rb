@@ -663,6 +663,13 @@ module Engine
           Engine::Bank.new(6_000, log: @log)
         end
 
+        def new_auction_round
+          Round::Auction.new(self, [
+            Engine::Step::CompanyPendingPar,
+            G2038::Step::WaterfallAuction,
+          ])
+        end
+
         def setup
           @al_corporation = corporation_by_id('AL')
           @al_corporation.capitalization = :incremental
