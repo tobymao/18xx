@@ -36,6 +36,26 @@ module Engine
           def is_minor?(company)
             @game.minors.find { |m| m.id == company.id }
           end
+
+          def resolve_bids
+            super
+            return if @unbid_companies.empty?
+            @companies.concat(@unbid_companies)
+            @unbid_companies = []
+          end
+
+          def all_passed!
+            @companies, @unbid_companies = @companies.partition do |company|
+              !@bids[company].empty?
+            end
+
+            resolve_bids
+
+            @game.payout_companies
+            @game.or_set_finished
+        
+            entities.each(&:unpass!)
+          end
         end
       end
     end
