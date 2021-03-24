@@ -39,7 +39,7 @@ module Engine
 
           def resolve_bids
             super
-            return if @unbid_companies.empty?
+            return if @unbid_companies == nil || @unbid_companies.empty?
             @companies.concat(@unbid_companies)
             @unbid_companies = []
           end
