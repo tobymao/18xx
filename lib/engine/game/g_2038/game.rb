@@ -169,6 +169,7 @@ module Engine
                 price: 275,
               },
             ],
+            events: [{ 'type' => 'asteroid_league_can_form' }],
           },
           {
             name: '6d5c',
@@ -653,6 +654,7 @@ module Engine
         end
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+          'asteroid_league_can_form' => ['Asteroid League may be formed'],
           'group_b_corps_available' => ['Group B Corporations become available'],
           'group_c_corps_available' => ['Group C Corporations become available'],
         ).freeze
@@ -669,6 +671,18 @@ module Engine
             G2038::Step::WaterfallAuction,
           ])
         end
+
+        # HACKS TO BE ABLE TO TEST FULL SR SETUP
+        HOME_TOKEN_TIMING = :never
+        def or_set_finished()
+          depot.export!
+        end
+
+        def operating_round(round_num)
+          Round::Operating.new(self, [
+        ], round_num: round_num)
+        end
+        # END HACKS
 
         def setup
           @al_corporation = corporation_by_id('AL')
@@ -705,10 +719,13 @@ module Engine
           @available_corp_group = :group_c
         end
 
+        def event_asteroid_league_can_form!
+          @log << 'Asteroid League may now be formed'
+          @corporations << @al_corporation
+        end
+
         def event_asteroid_league_formed!
           @log << 'Asteroid League has formed'
-
-          @corporations << @al_corporation
         end
 
         def company_header(company)
