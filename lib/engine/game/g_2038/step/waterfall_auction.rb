@@ -14,8 +14,7 @@ module Engine
           def may_purchase?(company)
             return false unless super
             return true if @purchasing_first_minor
-            is_minor = @game.minors.find { |m| m.id == company.id }
-            return !is_minor
+            return !is_minor?(company)
           end
 
           def min_bid(company)
@@ -26,10 +25,18 @@ module Engine
             high_bid ? high_bid.price + min_increment : company.min_bid
           end
 
+          def bid_str(company)            
+            company && is_minor?(company) && company == @companies.first ? 'Buy' : 'Place Bid'
+          end
+
           def placement_bid(bid)
             @purchasing_first_minor = bid.company && bid.company == @companies.first
             super
             @purchasing_first_minor = false
+          end
+
+          def is_minor?(company)
+            @game.minors.find { |m| m.id == company.id }
           end
         end
       end

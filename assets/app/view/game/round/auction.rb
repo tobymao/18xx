@@ -152,9 +152,10 @@ module View
                       size: @current_entity.cash.to_s.size,
                     })
 
+          bid_str = @step.respond_to?(:bid_str) ? @step.bid_str(company) : 'Place Bid'
           buttons = []
           if @step.min_bid(company) <= @step.max_place_bid(@current_entity, company)
-            buttons << h(:button, { on: { click: -> { create_bid(company, input) } } }, 'Place Bid')
+            buttons << h(:button, { on: { click: -> { create_bid(company, input) } } }, bid_str)
           end
           buttons.concat(render_move_bid_buttons(company, input))
 
