@@ -22,8 +22,11 @@ module View
         needs :show_other_players, default: nil, store: true
 
         def render
-          @step = @game.round.active_step
-          @current_actions = @step.current_actions
+          round = @game.round
+          @step = round.active_step
+          entity = @step.current_entity
+          @current_actions = round.actions_for(entity)
+
           @auctioning_corporation = @step.auctioning_corporation if @step.respond_to?(:auctioning_corporation)
           @selected_corporation ||= @auctioning_corporation
           @mergeable_entity = @step.mergeable_entity if @step.respond_to?(:mergeable_entity)
