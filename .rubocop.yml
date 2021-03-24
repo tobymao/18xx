@@ -142,9 +142,6 @@ Style/NegatedIfElseCondition:
 Style/OptionalBooleanParameter: # TODO enable & check offenses
   Enabled: false
 
-Style/RedundantArgument:
-  Enabled: false
-
 # conflicts with Style/MutableConstant
 Style/RedundantFreeze:
   Enabled: false
