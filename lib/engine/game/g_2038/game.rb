@@ -657,6 +657,12 @@ module Engine
           'group_c_corps_available' => ['Group C Corporations become available'],
         ).freeze
 
+        def init_bank
+          return super unless optional_short_game
+
+          Engine::Bank.new(6_000, log: @log)
+        end
+
         def setup
           @al_corporation = corporation_by_id('AL')
           @al_corporation.capitalization = :incremental
