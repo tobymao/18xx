@@ -827,7 +827,7 @@ module Engine
           num_empty = submines.count { |m| !machine(m) }
           while num_empty.positive?
             new_machine = buy_reorg_train(entity, 'M')
-            entity.trains.delete(new_machine)
+            entity.trains.delete(new_machine) # PMCs don't own trains directly
 
             # fill empty slots first, then ones with smaller machines
             num_smaller = submines.count { |m| machine(m) && machine_size(m) < new_machine.distance }
@@ -992,10 +992,10 @@ module Engine
           return false unless (exits = CONCESSION_ROUTE_EXITS[hex.id])
           return false unless concession_incomplete?(@concession_route_corporations[hex.id])
           # take care of OO tile. Only care about city along concession route
-          return false unless (city.exits & exits).size == exits.size
+          return false if (city.exits & exits).empty?
 
           # must be two slots available for another RR to put a token here
-          city.slots - city.tokens.count { |c| c } > 1
+          (city.slots - city.tokens.count { |c| c }) < 2
         end
 
         def concession_pending?(entity)
@@ -1188,7 +1188,7 @@ module Engine
 
         def stock_round_finished
           @players.each do |p|
-            p.companies.each do |c|
+            p.companies.dup.each do |c|
               c.owner = nil
               p.companies.delete(c)
               @log << "#{p.name} forfeits #{c.name}"
@@ -1302,7 +1302,10 @@ module Engine
           @log << "Reserving tile ##{tile.name} for #{ch[:entity]} concession route in hex #{hex.id}"
 
           # if there already is a reserved tile for this hex, make the old one available again
-          @tiles << @reserved_tiles[hex.id][:tile] unless @reserved_tiles[hex.id].empty?
+          unless @reserved_tiles[hex.id].empty?
+            @log << "Freeing reserved tile ##{@reserved_tiles[hex.id][:tile].name}"
+            @tiles << @reserved_tiles[hex.id][:tile]
+          end
 
           @reserved_tiles[hex.id] = { tile: tile, entity: ch[:entity] }
           @tiles.delete(tile)
@@ -1318,6 +1321,8 @@ module Engine
           ch = concession_tile(hex)
           # FIXME: need to check paths, not exits?
           return unless (ch[:exits] & tile.exits).size == ch[:exits].size
+
+          @log << "Freeing reserved tile ##{tile.name}"
 
           @tiles << @reserved_tiles[hex.id][:tile] if @reserved_tiles[hex.id][:tile] != tile
           @reserved_tiles.delete(hex.id)
@@ -1344,7 +1349,7 @@ module Engine
           return false if from.label != to.label
 
           # old tile doesn't have a lock icon and it's not yet phase 3
-          return false if !@phase.tiles.include?(:green) && from.icons.any? { |i| i.name == 'lock' }
+          return false if !@phase.tiles.include?('green') && from.icons.any? { |i| i.name.to_s == 'lock' }
 
           # honors existing town/city counts?
           # 1873: towns always upgrade to cities
