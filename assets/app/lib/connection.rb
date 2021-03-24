@@ -40,7 +40,7 @@ module Lib
         if (error = data['error'])
           @root.store(:flash_opts, error)
         elsif block
-          block.call(data)
+          yield(data)
         end
       end
     end
@@ -50,7 +50,7 @@ module Lib
         if (error = data['error'])
           @root.store(:flash_opts, error)
         elsif block
-          block.call(data)
+          yield(data)
         end
       end
     end

@@ -5,6 +5,8 @@ module Engine
     module G18ZOO
       module Step
         class Route < Engine::Step::Route
+          include Engine::Game::G18ZOO::ChooseAbilityOnOr
+
           def process_run_routes(action)
             super
 

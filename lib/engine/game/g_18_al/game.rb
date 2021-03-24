@@ -516,7 +516,11 @@ module Engine
 
           @corporations.each do |corporation|
             abilities(corporation, :assign_hexes) do |ability|
-              ability.description = "Historical objective: #{get_location_name(ability.hexes.first)}"
+              hex_name = ability.hexes.first
+              location = get_location_name(hex_name)
+              ability.description = "Historical objective: #{location}"
+              ability.desc_detail = "If #{corporation.name} puts a token into #{location} (#{hex_name}) "\
+                "#{format_currency(100)} is added to its treasury."
             end
           end
 
@@ -541,7 +545,7 @@ module Engine
             Engine::Step::DiscardTrain,
             Engine::Step::SpecialBuyTrain,
             Engine::Step::SingleDepotTrainBuy,
-            [Engine::Step::BuyCompany, blocks: true],
+            [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 
@@ -618,7 +622,7 @@ module Engine
             .each { |hex| hex.tile.icons = [] }
         end
 
-        def upgrades_to?(from, to, special = false)
+        def upgrades_to?(from, to, _special = false, selected_company: nil)
           # Lumber terminal cannot be upgraded
           return false if from.name == '445'
 
@@ -634,7 +638,7 @@ module Engine
           super
         end
 
-        def all_potential_upgrades(tile, tile_manifest: false)
+        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
           # Lumber terminal cannot be upgraded
           return [] if tile.name == '445'
 

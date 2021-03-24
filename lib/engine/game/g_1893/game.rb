@@ -224,6 +224,8 @@ module Engine
         LEVERKUSEN_GREEN_TILE = 'K314'
         LEVERKUSEN_HEX_NAME = 'G6'
 
+        RHINE_PASSAGE = %w[L5 S6].freeze
+
         LOCATION_NAMES = {
           'B5' => 'Düsseldorf & Neuss',
           'D5' => 'Benrath',
@@ -963,7 +965,15 @@ module Engine
 
         include StubsAreRestricted
 
-        def upgrades_to?(from, to, special = false)
+        def legal_tile_rotation?(_entity, hex, tile)
+          return false unless legal_if_stubbed?(hex, tile)
+          return true if @phase.current[:name] != '2' || !RHINE_PASSAGE.include?(hex.name)
+
+          water_borders = hex.tile.borders.select { |b| b.type == :water }.map(&:edge)
+          (water_borders & tile.exits).empty?
+        end
+
+        def upgrades_to?(from, to, _special = false, selected_company: nil)
           # Leverkusen can upgrade double dits to one city
           return to.name == LEVERKUSEN_GREEN_TILE if from.color == :yellow && from.hex.name == LEVERKUSEN_HEX_NAME
 
@@ -1233,7 +1243,7 @@ module Engine
         end
 
         def base_map
-          simple_city = %w[I2 I8 L3 O2 O4 R7 T3]
+          simple_city = %w[I2 I8 L3 O2 O4 T3]
           simple_city += %w[D7 E2] unless optional_existing_track
           optional_d7 = optional_existing_track ? ['D7'] : []
           optional_e2 = optional_existing_track ? ['E2'] : []
@@ -1261,7 +1271,8 @@ module Engine
             },
             gray: {
               ['F1'] => 'town=revenue:10;path=a:4,b:_0;path=a:5,b:_0',
-              %w[F5 T7] => 'path=a:1,b:2;path=a:3,b:5',
+              ['F5'] => 'path=a:1,b:2;path=a:3,b:5',
+              ['T7'] => 'path=a:1,b:2;path=a:3,b:5;upgrade=cost:0,terrain:water',
               ['F9'] => 'path=a:2,b:0',
               ['H5'] => 'city=revenue:20;path=a:0,b:_0',
               ['H9'] => 'path=a:3,b:1',
@@ -1271,18 +1282,24 @@ module Engine
             },
             white: {
               %w[B3 C2 C6 D3 E6 F3 F7 G2 G4 I6 J3 J7 K2 K4 K8 L7 M2 N3 N7 O8 Q2 R5 S8 T5] => '',
-              %w[B7 H3 I4 K6 M4 M8 Q4 Q8 S2] => 'town=revenue:0',
+              %w[B7 H3 I4 M4 M8 Q4 Q8 S2] => 'town=revenue:0',
+              ['K6'] => 'town=revenue:0;border=edge:1,type:water,cost:0',
               simple_city => 'city=revenue:0',
+              ['R7'] => 'city=revenue:0;border=edge:1,type:water,cost:0',
               %w[C8 E8 G8 H7 P3 R3 S4] => 'upgrade=cost:40,terrain:mountain',
               [LEVERKUSEN_HEX_NAME] => 'town=revenue:0;town=revenue:0;label=L',
               ['C4'] => 'border=edge:5,type:impassable',
               ['D5'] => 'city=revenue:0;border=edge:1,type:impassable;border=edge:2,type:impassable;label=BX',
               ['E4'] => 'city=revenue:0;border=edge:4,type:impassable',
-              ['L5'] => 'city=revenue:0;border=edge:5,type:impassable;upgrade=cost:40,terrain:water;label=K',
+              ['L5'] => 'city=revenue:0;border=edge:5,type:impassable;upgrade=cost:40,terrain:water;label=K;'\
+                        'border=edge:4,type:water,cost:0',
               ['M6'] => 'upgrade=cost:40,terrain:water;border=edge:2,type:impassable',
-              ['O6'] => 'city=revenue:0;border=edge:1,type:impassable;border=edge:2,type:impassable',
-              ['Q6'] => 'border=edge:0,type:impassable;border=edge:1,type:impassable;border=edge:2,type:impassable',
-              ['S6'] => 'city=revenue:0;upgrade=cost:40;border=edge:3,type:impassable;label=BX',
+              ['O6'] => 'city=revenue:0;upgrade=cost:0,terrain:water;border=edge:1,type:impassable;'\
+                        'border=edge:2,type:impassable',
+              ['Q6'] => 'upgrade=cost:0,terrain:water;border=edge:0,type:impassable;border=edge:1,type:impassable;'\
+                        'border=edge:2,type:impassable',
+              ['S6'] => 'city=revenue:0;upgrade=cost:40,terrain:water;border=edge:3,type:impassable;'\
+                        'border=edge:4,type:water,cost:0;label=BX',
               ['N5'] => 'stub=edge:4;border=edge:5,type:impassable;icon=image:1893/green_hex',
               ['P5'] => 'town=revenue:0;border=edge:4,type:impassable;border=edge:5,type:impassable;'\
                         'icon=image:1893/green_hex',

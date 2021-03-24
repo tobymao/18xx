@@ -93,7 +93,7 @@ module View
         end
 
         def on_click(event)
-          return if @tile_selector&.is_a?(Lib::TileSelector)
+          return if @tile_selector.is_a?(Lib::TileSelector)
 
           step = @game.round.active_step(@selected_company)
           entity = @selected_company || step.current_entity
@@ -123,7 +123,13 @@ module View
                 city: @city,
                 tokener: @selected_company&.owned_by_player? ? @game.current_entity : nil,
                 slot: cheater || @slot_index,
-                token_type: next_tokens[0].type
+                token_type: next_tokens[0].type,
+              )
+              action.cost = step.token_cost_override(
+                action.entity,
+                action.city,
+                action.slot,
+                action.token,
               )
               store(:selected_company, nil, skip: true)
               process_action(action)

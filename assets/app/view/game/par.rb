@@ -34,7 +34,9 @@ module View
           }
 
           available_cash = entity.cash
-          available_cash = step.available_par_cash(entity, @corporation) if step.respond_to?(:available_par_cash)
+          if step.respond_to?(:available_par_cash)
+            available_cash = step.available_par_cash(entity, @corporation, share_price: share_price)
+          end
           purchasable_shares = [(available_cash / share_price.price).to_i,
                                 (@corporation.max_ownership_percent / 100) * @corporation.total_shares].min
           at_limit = purchasable_shares * @corporation.total_shares >= @corporation.max_ownership_percent

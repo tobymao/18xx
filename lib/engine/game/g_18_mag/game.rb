@@ -354,7 +354,7 @@ module Engine
           end
         end
 
-        def upgrades_to?(from, to, special = false)
+        def upgrades_to?(from, to, special = false, selected_company: nil)
           # correct color progression?
           return false unless Engine::Tile::COLORS.index(to.color) == (Engine::Tile::COLORS.index(from.color) + 1)
 
@@ -656,9 +656,7 @@ module Engine
             when 'RABA'
               next if routes.any? { |r| r.visited_stops.any?(&:offboard?) }
 
-              unless multiplayer?
-                next if routes.any? { |r| r.visited_stops.sum(&:visit_cost) > r.train.distance }
-              end
+              next if !multiplayer? && routes.any? { |r| r.visited_stops.sum(&:visit_cost) > r.train.distance }
 
               return false
             when 'SNW'

@@ -997,7 +997,7 @@ module Engine
             G1828::Step::Dividend,
             G1828::Step::SwapTrain,
             G1828::Step::BuyTrain,
-            [Engine::Step::BuyCompany, blocks: true],
+            [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 
@@ -1134,7 +1134,7 @@ module Engine
           @round.force_next_entity! if @round.current_entity == minor
         end
 
-        def upgrades_to?(from, to, special = false)
+        def upgrades_to?(from, to, _special = false, selected_company: nil)
           # Virginia tunnel can only be upgraded to #4 tile
           return false if from.hex.id == VA_TUNNEL_HEX && to.name != '4'
 

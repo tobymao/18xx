@@ -519,10 +519,11 @@ module Engine
             'border=edge:4,type:water,cost:40',
             ['F12'] => 'path=a:1,b:3',
           },
-          blue: { ['B6'] =>
-            'offboard=revenue:yellow_20|brown_30,visit_cost:0,route:optional;'\
-            'path=a:0,b:_0;path=a:1,b:_0;icon=image:1882/fish',
-   },
+          blue: {
+            ['B6'] =>
+                        'offboard=revenue:yellow_20|brown_30,visit_cost:0,route:optional;'\
+                        'path=a:0,b:_0;path=a:1,b:_0;icon=image:1882/fish',
+          },
         }.freeze
 
         LAYOUT = :flat
@@ -567,7 +568,7 @@ module Engine
             Engine::Step::Dividend,
             Engine::Step::DiscardTrain,
             Engine::Step::BuyTrain,
-            [Engine::Step::BuyCompany, blocks: true],
+            [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 
@@ -592,6 +593,7 @@ module Engine
           train.events, first.events = first.events.partition { |e| e['type'] != 'nwr' }
 
           @log << "#{corporation.name} adds an extra #{train.name} train to the depot"
+          train.reserved = false
           @depot.unshift_train(train)
         end
 
@@ -603,9 +605,10 @@ module Engine
 
           @sc_reserve_trains = []
           trains.each do |train_name|
-            train = depot.upcoming.select { |t| t.name == train_name }.last
+            train = depot.upcoming.reverse.find { |t| t.name == train_name }
             @sc_reserve_trains << train
             depot.remove_train(train)
+            train.reserved = true
           end
 
           # Due to SC adding an extra train this isn't quite a phase change, so the event needs to be tied to a train.
@@ -707,13 +710,13 @@ module Engine
         end
 
         def count_available_tokens(corporation)
-          corporation.tokens.map { |t| t.used || t.corporation != corporation ? 0 : 1 }.sum
+          corporation.tokens.sum { |t| t.used || t.corporation != corporation ? 0 : 1 }
         end
 
         def token_string(corporation)
           # All neutral tokens belong to CN, so it will count them normally.
           "#{count_available_tokens(corporation)}"\
-          "/#{corporation.tokens.map { |t| t.corporation != corporation ? 0 : 1 }.sum}"\
+          "/#{corporation.tokens.sum { |t| t.corporation != corporation ? 0 : 1 }}"\
           "#{', N' if corporation.tokens.any? { |t| t.corporation != corporation }}"
         end
 

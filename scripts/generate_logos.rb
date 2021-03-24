@@ -8,7 +8,7 @@ DB.extension :pg_array, :pg_advisory_lock, :pg_json, :pg_enum
 def generate_logos(game_title, simple = false, overwrite = false, minors = false)
   return 'invalid title, use GAME_TITLE' unless (game_class = Engine.game_by_title(game_title))
 
-  players = game_class::PLAYER_RANGE.max.times.map { |n| "Player #{n + 1}" }
+  players = Array.new(game_class::PLAYER_RANGE.max) { |n| "Player #{n + 1}" }
   game = game_class.new(players)
 
   # Regenerate to avoid corps that are hidden

@@ -47,7 +47,7 @@ module Engine
             end
 
             # Sort the minors first according to bid price, highest first. If a tie, lowest index first
-            float_minors.sort_by { |m| [m[0].price, minor_count - m[1]] }.reverse.each do |arr|
+            float_minors.sort_by { |m| [m[0].price, minor_count - m[1]] }.reverse_each do |arr|
               float_minor(arr[0])
             end
 

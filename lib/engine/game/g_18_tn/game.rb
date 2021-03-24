@@ -543,7 +543,7 @@ module Engine
             G18TN::Step::Dividend,
             Engine::Step::DiscardTrain,
             Engine::Step::SingleDepotTrainBuy,
-            [Engine::Step::BuyCompany, blocks: true],
+            [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 
@@ -574,7 +574,7 @@ module Engine
           end
 
           if allowed_to_buy_during_operation_round_one?
-            candidates.reject! { |c| @round.company_sellers.values.include?(c.owner) }
+            candidates.reject! { |c| @round.company_sellers.value?(c.owner) }
           end
           candidates
         end
@@ -612,7 +612,7 @@ module Engine
           @lnr ||= company_by_id('LNR')
         end
 
-        def upgrades_to?(from, to, special = false)
+        def upgrades_to?(from, to, _special = false, selected_company: nil)
           # When upgrading from green to brown:
           #   If Memphis (H3), Chattanooga (H15), Nashville (F11)
           #   only brown P tile (#170) are allowed.
@@ -624,7 +624,7 @@ module Engine
           super
         end
 
-        def all_potential_upgrades(tile, tile_manifest: false)
+        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
           upgrades = super
 
           return upgrades unless tile_manifest

@@ -618,10 +618,11 @@ module Engine
             'city=revenue:0;city=revenue:0;label=OO;upgrade=cost:40,terrain:mountain',
           },
           blue: { ['N5'] => '' },
-          gray: { ['F9'] =>
-            'town=revenue:yellow_30|brown_50|black_40;'\
-            'path=a:0,b:_0;path=a:4,b:_0;path=a:5,b:_0;icon=image:port,sticky:1',
-   },
+          gray: {
+            ['F9'] =>
+                        'town=revenue:yellow_30|brown_50|black_40;'\
+                        'path=a:0,b:_0;path=a:4,b:_0;path=a:5,b:_0;icon=image:port,sticky:1',
+          },
           white: {
             %w[H15 G12 I8 J13 D17 J11 J15 K8 O16] =>
                      'city=revenue:0',
@@ -855,7 +856,7 @@ module Engine
         end
 
         def init_loans
-          num_loans.times.map { |id| Loan.new(id, loan_value) }
+          Array.new(num_loans) { |id| Loan.new(id, loan_value) }
         end
 
         def can_pay_interest?(_entity, _extra_cash = 0)
@@ -966,7 +967,7 @@ module Engine
           tokens.keys.each do |node|
             visited = tokens.reject { |token, _| token == node }
 
-            node.walk(visited: visited, corporation: nil) do |path|
+            node.walk(visited: visited, corporation: nil) do |path, _|
               return true if goal_hex_ids.include?(path.hex.id)
             end
           end
@@ -984,7 +985,7 @@ module Engine
         # from: Tile - Tile to upgrade from
         # to: Tile - Tile to upgrade to
         # special - ???
-        def upgrades_to?(from, to, special = false)
+        def upgrades_to?(from, to, _special = false, selected_company: nil)
           return false if from.name == '470'
           # double dits upgrade to Green cities in gray
           return gray_phase? if to.name == '14' && %w[55 1].include?(from.name)
@@ -1025,7 +1026,7 @@ module Engine
         # tile: The tile to be upgraded
         # tile_manifest: true/false Is this being called from the tile manifest screen
         #
-        def all_potential_upgrades(tile, tile_manifest: false)
+        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
           upgrades = super
           return upgrades unless tile_manifest
 
@@ -1203,7 +1204,7 @@ module Engine
             Engine::Step::DiscardTrain,
             Engine::Step::BuyTrain,
             # Repay Loans - See Loan
-            [Engine::Step::BuyCompany, blocks: true],
+            [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 

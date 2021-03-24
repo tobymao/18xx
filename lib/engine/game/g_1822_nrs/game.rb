@@ -186,10 +186,10 @@ module Engine
             ['I30'] =>
               'city=revenue:yellow_40|green_50|brown_60|gray_80,slots:2;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
             ['M30'] =>
-              'city=revenue:yellow_40|green_60|brown_80|gray_100,slots:1;path=a:2,b:_0',
+              'city=revenue:yellow_40|green_60|brown_80|gray_100,slots:1,groups:London;path=a:2,b:_0',
             ['N29'] =>
-              'city=revenue:yellow_40|green_60|brown_80|gray_100,slots:1,loc:1.5;path=a:2,b:_0;'\
-              'city=revenue:yellow_40|green_60|brown_80|gray_100,slots:1,loc:4;path=a:3,b:_1',
+              'city=revenue:yellow_40|green_60|brown_80|gray_100,slots:1,loc:1.5,groups:London;path=a:2,b:_0;'\
+              'city=revenue:yellow_40|green_60|brown_80|gray_100,slots:1,loc:4,groups:London;path=a:3,b:_1',
           },
           blue: {
             %w[L11 R31] =>

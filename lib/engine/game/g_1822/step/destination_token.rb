@@ -52,9 +52,9 @@ module Engine
             hex = action.hex
             token = action.token
 
-            unless @game.loading
+            if !@game.loading && !destination_node_check?(entity)
               raise GameError, "Can't place the destination token on #{hex.name} "\
-                               'because it is not connected' unless destination_node_check?(entity)
+                               'because it is not connected'
             end
 
             @game.place_destination_token(entity, hex, token)
@@ -63,9 +63,9 @@ module Engine
 
           def process_pass(action)
             entity = action.entity
-            unless @game.loading
+            if !@game.loading && destination_node_check?(entity)
               raise GameError, "You can't skip placing your destination token when you have a connection "\
-                               "to #{@game.class::DESTINATIONS[entity.id]}" if destination_node_check?(entity)
+                               "to #{@game.class::DESTINATIONS[entity.id]}"
             end
 
             super
@@ -73,6 +73,10 @@ module Engine
 
           def skip!
             pass!
+          end
+
+          def token_cost_override(_entity, _city_hex, _slot, _token)
+            nil
           end
         end
       end

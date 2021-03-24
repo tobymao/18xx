@@ -447,7 +447,7 @@ module Engine
             Engine::Step::DiscardTrain,
             G1849::Step::BuyTrain,
             G1849::Step::IssueShares,
-            [Engine::Step::BuyCompany, blocks: true],
+            [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 
@@ -512,7 +512,7 @@ module Engine
         end
 
         def stop_revenue(stop, phase, train)
-          return gray_revenue(stop) if GRAY_REVENUE_CENTERS.keys.include?(stop.hex.id)
+          return gray_revenue(stop) if GRAY_REVENUE_CENTERS.key?(stop.hex.id)
 
           stop.route_revenue(phase, train)
         end
@@ -643,7 +643,7 @@ module Engine
           end
         end
 
-        def upgrades_to?(from, to, special = false)
+        def upgrades_to?(from, to, _special = false, selected_company: nil)
           super && (from.hex.id != 'B14' || @messina_upgradeable)
         end
 

@@ -39,10 +39,12 @@ module Engine
       # Explore the paths and nodes reachable from this node
       #
       # visited: a hashset of visited Nodes
-      # visited_paths: a hashset of visited Paths
       # on: see Path::Walk
       # corporation: If set don't walk on adjacent nodes which are blocked for the passed corporation
+      # visited_paths: a hashset of visited Paths
+      # counter: a hash tracking edges and junctions to avoid reuse
       # skip_track: If passed, don't walk on track of that type (ie: :broad track for 1873)
+      # tile_type: if :lawson don't undo visited nodes
       # max_nodes: If passed, stop walking after visiting the number of nodes
       #
       # This method recursively bubbles up yielded values from nested Node::Walk and Path::Walk calls
@@ -54,7 +56,7 @@ module Engine
         counter: Hash.new(0),
         skip_track: nil,
         tile_type: :normal,
-        max_nodes: nil
+        max_nodes: nil, &block
       )
         return if visited[self]
 
@@ -65,7 +67,7 @@ module Engine
           next if node_path.track == skip_track
 
           node_path.walk(visited: visited_paths, counter: counter, on: on, tile_type: tile_type) do |path, vp, ct|
-            yield path
+            yield path, vp
             next if path.terminal?
 
             path.nodes.each do |next_node|
@@ -80,8 +82,8 @@ module Engine
                 visited_paths: vp,
                 skip_track: skip_track,
                 tile_type: tile_type,
-                max_nodes: max_nodes,
-              ) { |p| yield p }
+                max_nodes: max_nodes, &block
+              )
             end
           end
         end

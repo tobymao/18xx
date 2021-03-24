@@ -410,10 +410,8 @@ module Engine
           end
 
           def starting_bid(corporation)
-            if corporation.share_price.liquidation?
+            if corporation.share_price.liquidation? || corporation.share_price.acquisition?
               10 # while technically the bank bids 0 this isn't done by a player.
-            elsif corporation.share_price.acquisition?
-              10
             else
               # Needs rounding to 10
               ((corporation.total_shares * corporation.share_price.price).to_f / 10).round * 10

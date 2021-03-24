@@ -36,8 +36,9 @@ module Engine
           end
 
           def can_buy?(entity, bundle)
-            if bundle&.owner&.corporation? && bundle.corporation != bundle.owner && @game.presidents_choice != :done
-              return false unless bundle.owner.president?(entity)
+            if bundle&.owner&.corporation? && bundle.corporation != bundle.owner &&
+                @game.presidents_choice != :done && !bundle.owner.president?(entity)
+              return false
             end
 
             super

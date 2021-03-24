@@ -422,9 +422,10 @@ module Engine
             ['F12'] => 'path=a:2,b:3;border=edge:3',
             ['E15'] => 'offboard=revenue:yellow_40|brown_50;path=a:1,b:_0;border=edge:1',
           },
-          gray: { ['E1'] =>
-            'city=revenue:yellow_30|brown_60,slots:2;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
-   },
+          gray: {
+            ['E1'] =>
+                        'city=revenue:yellow_30|brown_60,slots:2;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
+          },
         }.freeze
 
         LAYOUT = :pointy
@@ -565,7 +566,7 @@ module Engine
             Engine::Step::DiscardTrain,
             Engine::Step::SpecialBuyTrain,
             G18MS::Step::BuyTrain,
-            [Engine::Step::BuyCompany, blocks: true],
+            [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 
@@ -661,7 +662,7 @@ module Engine
           end
         end
 
-        def upgrades_to?(from, to, _special = false)
+        def upgrades_to?(from, to, _special = false, selected_company: nil)
           # Only allow tile gray tile (446) in Montgomery (E11) or Birmingham (C9)
           return to.name == '446' if from.color == :brown && HEXES_FOR_GRAY_TILE.include?(from.hex.name)
 
@@ -671,7 +672,7 @@ module Engine
           super
         end
 
-        def all_potential_upgrades(tile, tile_manifest: false)
+        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
           upgrades = super
 
           return upgrades unless tile_manifest

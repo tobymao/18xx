@@ -22,7 +22,7 @@ module Engine
 
         attr_reader :mine_12, :corporation_info, :diesel_graph, :hw, :minor_info, :mhe, :mine_graph, :nwe, :qlb,
                     :reserved_tiles, :subtrains
-        attr_accessor :premium, :premium_order, :premium_winner
+        attr_accessor :premium, :premium_order, :premium_winner, :reimbursed_hexes
 
         CURRENCY_FORMAT_STR = '%d ℳ'
         BANK_CASH = 100_000
@@ -60,11 +60,6 @@ module Engine
                      { lay: :double_lay, upgrade: :double_lay, cost: 0 }].freeze
 
         GAME_END_CHECK = { stock_market: :current_or, custom: :one_more_full_or_set }.freeze
-
-        # FIXME
-        STATUS_TEXT = Base::STATUS_TEXT.merge(
-          'end_game_triggered' => ['End Game', 'After next SR, final three ORs are played'],
-        ).freeze
 
         RAILWAY_MIN_BID = 100
         MIN_BID_INCREMENT = 10
@@ -112,6 +107,25 @@ module Engine
             '3T' => 150,
           },
         }.freeze
+
+        STATUS_TEXT = Base::STATUS_TEXT.merge(
+          'HBE_GHE_active' => ['HBE GHE available',
+                               'HBE and GHE concessions are active'],
+          'NWE_SHE_KEZ_may' => ['NWE SHE KEZ ?',
+                                'NWE, SHE and KEZ concessions may be activated'],
+          'NWE_SHE_KEZ_active' => ['NWE SHE KEZ available, WBE ?',
+                                   'NWE, SHE and KEZ concessions are active; WBE may be activated'],
+          'WBE_QLB_active' => ['WBE QLB available',
+                               'WBE and QLB concessions are active'],
+          'maintenance_level_1' => ['Level 1 Maintenance',
+                                    '1M, 1T: 50 ℳ'],
+          'maintenance_level_2' => ['Level 2 Maintenance',
+                                    '1M, 1T, 2T: 100 ℳ | 2M: 50 ℳ | 2S: 20 ℳ'],
+          'maintenance_level_3' => ['Level 3 Maintenance',
+                                    '1M, 1T, 2T, 3T: 150 ℳ | 2M: 100 ℳ | 2S: 50 ℳ | 3M: 50 ℳ | 3S: 30 ℳ'],
+          'end_of_game_trigger' => ['End of game triggered',
+                                    'Game will end after 2nd full set of ORs after this'],
+        ).freeze
 
         # tiles to be laid to complete concession
         CONCESSION_TILES = {
@@ -220,6 +234,8 @@ module Engine
           @switcher_index = 0
           @machine_index = trains.size
           @next_switcher = nil
+
+          @reimbursed_hexes = Hash.new { |h, k| h[k] = 0 }
 
           @subtrains = Hash.new { |h, k| h[k] = [] }
           @subtrain_index = {}
@@ -467,7 +483,7 @@ module Engine
               share.percent = 20
               corporation.share_holders[share.owner] += share.percent
             end
-            new_shares = 3.times.map { |i| Share.new(corporation, percent: 20, index: i + 2) }
+            new_shares = Array.new(3) { |i| Share.new(corporation, percent: 20, index: i + 2) }
             @corporation_info[corporation][:slots] = 4 if public_mine?(corporation)
             @log << "#{corporation.name} converts to a 5 share corporation"
           when 5
@@ -475,7 +491,7 @@ module Engine
               share.percent = 10
               corporation.share_holders[share.owner] += share.percent
             end
-            new_shares = 5.times.map { |i| Share.new(corporation, percent: 10, index: i + 5) }
+            new_shares = Array.new(5) { |i| Share.new(corporation, percent: 10, index: i + 5) }
             @corporation_info[corporation][:slots] = 5 if public_mine?(corporation)
             increase_tokens!(corporation) if railway?(corporation)
             @log << "#{corporation.name} converts to a 10 share corporation"
@@ -498,7 +514,7 @@ module Engine
 
         def increase_tokens!(corporation)
           num_new_tokens = @corporation_info[corporation][:extra_tokens]
-          new_tokens = num_new_tokens.times.map { |_i| Token.new(corporation, price: TOKEN_PRICE) }
+          new_tokens = Array.new(num_new_tokens) { |_i| Token.new(corporation, price: TOKEN_PRICE) }
           corporation.tokens.concat(new_tokens)
           @log << "#{corporation.name} receives #{num_new_tokens} more tokens"
         end
@@ -506,7 +522,13 @@ module Engine
         def buy_train(operator, train, price = nil)
           old_owner = train.owner
 
-          super
+          operator.spend(price || train.price, train_operator(train)) if price != :free
+          remove_train(train)
+          train.owner = operator
+          operator.trains << train
+          @crowded_corps = nil
+
+          close_companies_on_train!(operator)
 
           return unless old_owner == @depot
 
@@ -641,7 +663,7 @@ module Engine
           @log << "#{minor.name} is closed"
 
           # any machines/switchers are trashed
-          minor.trains.each { |t| scrap_train(t) }
+          minor.trains.dup.each { |t| scrap_train(t) }
 
           if minor.owner && minor.cash.positive?
             @log << "#{minor.name} transfers #{format_currency(minor.cash)} to #{minor.owner.name}"
@@ -724,10 +746,12 @@ module Engine
 
           # toss any trains that have maintenance costs
           if railway?(entity)
-            entity.trains.each { |t| scrap_train(t) if train_maintenance(t.name).positive? }
+            entity.trains.dup.each { |t| scrap_train(t) if train_maintenance(t.name).positive? }
           else
             public_mine_mines(entity).each do |mine|
-              mine.trains.each { |t| scrap_train(t) if train_maintenance(t.name).positive? }
+              mine.trains.dup.each do |t|
+                scrap_train(t) if train_maintenance(t.name).positive?
+              end
             end
           end
 
@@ -836,15 +860,15 @@ module Engine
 
         # mines that open and in players hands
         def open_private_mines
-          @minors.select { |m| @players.include?(m.owner) && mine_open?(m) }
+          @minors.select { |m| m.owner && @players.include?(m.owner) && mine_open?(m) }
         end
 
         # mines that can be merged to form a public mining company
         def mergeable_private_mines(entity)
           if entity == @hw
-            @minors.select { |m| @players.include?(m.owner) && @minor_info[m][:vor_harzer] }
+            @minors.select { |m| m.owner && @players.include?(m.owner) && @minor_info[m][:vor_harzer] }
           else
-            @minors.select { |m| @players.include?(m.owner) }
+            @minors.select { |m| m.owner && @players.include?(m.owner) }
           end
         end
 
@@ -948,19 +972,19 @@ module Engine
         end
 
         def independent_mine?(entity)
-          entity.minor? && @corporations.none? { |c| c == entity.owner }
+          entity&.minor? && @corporations.none? { |c| c == entity.owner }
         end
 
         def public_mine?(entity)
-          entity.corporation? && @corporation_info[entity][:type] == :mine
+          entity&.corporation? && @corporation_info[entity][:type] == :mine
         end
 
         def any_mine?(entity)
-          entity.minor? || (entity.corporation? && @corporation_info[entity][:type] == :mine)
+          entity&.minor? || (entity&.corporation? && @corporation_info[entity][:type] == :mine)
         end
 
         def railway?(entity)
-          entity.corporation? && @corporation_info[entity][:type] == :railway
+          entity&.corporation? && @corporation_info[entity][:type] == :railway
         end
 
         def concession_blocks?(city)
@@ -1303,7 +1327,7 @@ module Engine
           DOUBLE_LAY_TILES.include?(tile.name)
         end
 
-        def upgrades_to?(from, to, special = false)
+        def upgrades_to?(from, to, special = false, selected_company: nil)
           # correct color progression?
           if !(reserved_tiles[from.hex.id] && reserved_tiles[from.hex.id][:tile] == to) &&
             (Engine::Tile::COLORS.index(to.color) != (Engine::Tile::COLORS.index(from.color) + 1))
@@ -1355,7 +1379,7 @@ module Engine
         end
 
         def sellable_bundles(player, corporation)
-          return [] unless @round.active_step&.respond_to?(:can_sell?)
+          return [] unless @round.active_step.respond_to?(:can_sell?)
 
           bundles = bundles_for_corporation(player, corporation)
           if !corporation.operated? && corporation != @mhe
@@ -1365,7 +1389,6 @@ module Engine
           bundles.select { |bundle| @round.active_step.can_sell?(player, bundle) }
         end
 
-        # rubocop:disable Lint/UnusedMethodArgument
         def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
           corporation = bundle.corporation
           price = corporation.share_price.price
@@ -1384,7 +1407,6 @@ module Engine
           end
           log_share_price(corporation, price)
         end
-        # rubocop:enable Lint/UnusedMethodArgument
 
         def pres_change_ok?(corporation)
           return false if corporation == @mhe
@@ -1822,13 +1844,20 @@ module Engine
           end
         end
 
-        def revenue_str(route)
-          # FIXME: not sure anything is needed here
-          super
-        end
-
+        #  subtrain owner is actually supertrain owner
         def train_owner(train)
           (@supertrains[train] || train).owner
+        end
+
+        # 1. subtrain owner is actually supertrain owner
+        # 2. need to use PMC if submine
+        #    don't want to make PMC direct owner of submine trains
+        #    - this makes PMC train mananagement easy
+        def train_operator(train)
+          owner = (@supertrains[train] || train).owner
+          return owner if !owner&.minor? || !public_mine?(owner&.owner)
+
+          owner.owner
         end
 
         def qlb_bonus
@@ -2980,6 +3009,7 @@ module Engine
                 'yellow',
               ],
               operating_rounds: 1,
+              status: ['HBE_GHE_active'],
             },
             {
               name: '2',
@@ -2989,6 +3019,7 @@ module Engine
                 'yellow',
               ],
               operating_rounds: 1,
+              status: ['NWE_SHE_KEZ_may'],
             },
             {
               name: '3',
@@ -2999,6 +3030,7 @@ module Engine
                 green
               ],
               operating_rounds: 2,
+              status: %w[NWE_SHE_KEZ_active maintenance_level_1],
             },
             {
               name: '4',
@@ -3009,6 +3041,7 @@ module Engine
                 green
               ],
               operating_rounds: 2,
+              status: %w[WBE_QLB_active maintenance_level_2],
             },
             {
               name: '5',
@@ -3020,6 +3053,7 @@ module Engine
                 brown
               ],
               operating_rounds: 3,
+              status: %w[end_of_game_trigger maintenance_level_2],
             },
             {
               name: '5a',
@@ -3030,6 +3064,7 @@ module Engine
                 brown
               ],
               operating_rounds: 3,
+              status: ['maintenance_level_2'],
             },
             {
               name: 'D',
@@ -3042,6 +3077,7 @@ module Engine
                 gray
               ],
               operating_rounds: 3,
+              status: ['maintenance_level_3'],
             },
           ]
         end

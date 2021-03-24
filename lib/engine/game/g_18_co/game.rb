@@ -961,9 +961,10 @@ module Engine
             ['L4'] => 'path=a:2,b:1;path=a:3,b:1;',
             %w[L12 L18] => 'path=a:2,b:4;path=a:3,b:4;',
           },
-          yellow: { ['K5'] =>
-            'city=revenue:0;border=edge:2,type:mountain,cost:40;border=edge:3,type:mountain,cost:40;',
-   },
+          yellow: {
+            ['K5'] =>
+                        'city=revenue:0;border=edge:2,type:mountain,cost:40;border=edge:3,type:mountain,cost:40;',
+          },
         }.freeze
 
         LAYOUT = :pointy
@@ -1176,7 +1177,7 @@ module Engine
           G18CO::Step::BuyTrain,
           Engine::Step::CorporateSellShares,
           G18CO::Step::IssueShares,
-          [Engine::Step::BuyCompany, blocks: true],
+          [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 
@@ -1352,7 +1353,7 @@ module Engine
           str
         end
 
-        def upgrades_to?(from, to, special = false)
+        def upgrades_to?(from, to, special = false, selected_company: nil)
           return true if special && from.hex.tile.color == :yellow && GREEN_CITY_TILES.include?(to.name)
 
           # Green towns can't be upgraded to brown cities unless the hex has the upgrade icon
@@ -1365,7 +1366,7 @@ module Engine
           super
         end
 
-        def all_potential_upgrades(tile, tile_manifest: false)
+        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
           upgrades = super
 
           return upgrades unless tile_manifest

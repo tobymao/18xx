@@ -34,7 +34,7 @@ module View
       needs :hex
       needs :tile_selector, default: nil, store: true
       needs :role, default: :map
-      needs :opacity, default: 1.0
+      needs :opacity, default: nil
       needs :user, default: nil, store: true
 
       needs :clickable, default: false
@@ -88,7 +88,7 @@ module View
           },
         }
 
-        props[:attrs][:opacity] = @opacity if @opacity != 1.0
+        props[:attrs][:opacity] = @opacity if @opacity
         props[:attrs][:cursor] = 'pointer' if @clickable
 
         props[:on] = { click: ->(e) { on_hex_click(e) } }
@@ -174,7 +174,12 @@ module View
             return if step.available_tokens(@entity).empty?
 
             next_token = step.available_tokens(@entity)[0].type
-            return process_action(Engine::Action::HexToken.new(@entity, hex: @hex, token_type: next_token))
+            return process_action(Engine::Action::HexToken.new(
+              @entity,
+              hex: @hex,
+              cost: step.token_cost_override(@entity, @hex, nil, @entity.find_token_by_type(next_token&.to_sym)),
+              token_type: next_token
+            ))
           end
           return unless @actions.include?('lay_tile')
 

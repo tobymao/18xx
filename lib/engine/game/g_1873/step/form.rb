@@ -88,7 +88,7 @@ module Engine
                               end
 
             if @game.turn == 1 && target_mines.empty?
-              [@game.mine_12]
+              available_mines.select { |m| m == @game.mine_12 }
             elsif @game.corporation_info[buyer][:vor_harzer]
               available_mines.select { |pm| @game.minor_info[pm][:vor_harzer] }
             else

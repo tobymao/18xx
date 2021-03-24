@@ -540,8 +540,8 @@ module Engine
             simple_logo: '1830/PRR.alt',
             tokens: [60, 100, 60, 100, 60, 100, 60, 100, 60, 100],
             coordinates: 'K9',
-            color: '#32763f',
-            type: 'groupA',
+            color: '#40b1b9',
+            type: 'group_a',
             reservation_color: nil,
           },
           {
@@ -552,8 +552,8 @@ module Engine
             simple_logo: '1830/PRR.alt',
             tokens: [0, 100, 0, 100, 0, 100, 0, 100, 0, 100, 0, 100],
             coordinates: 'D8',
-            color: '#32763f',
-            type: 'groupA',
+            color: '#d57e59',
+            type: 'group_a',
             reservation_color: nil,
           },
           {
@@ -564,8 +564,8 @@ module Engine
             simple_logo: '1830/NYC.alt',
             tokens: [60, 100, 60, 100, 60],
             coordinates: 'J1',
-            color: :"#474548",
-            type: 'groupB',
+            color: :"#3eb75b",
+            type: 'group_b',
             reservation_color: nil,
           },
           {
@@ -576,8 +576,8 @@ module Engine
             simple_logo: '1830/CPR.alt',
             tokens: [60, 100, 60, 100, 60, 100, 60, 100, 60],
             coordinates: 'O1',
-            color: '#d1232a',
-            type: 'groupB',
+            color: '#fefc5d',
+            type: 'group_b',
             reservation_color: nil,
           },
           {
@@ -588,8 +588,8 @@ module Engine
             simple_logo: '1830/BO.alt',
             tokens: [60, 100, 60, 100, 60, 100],
             coordinates: 'A1',
-            color: '#025aaa',
-            type: 'groupB',
+            color: '#f66936',
+            type: 'group_b',
             reservation_color: nil,
           },
           {
@@ -600,9 +600,9 @@ module Engine
             simple_logo: '1830/CO.alt',
             tokens: [60, 100, 60, 100, 60, 100, 60],
             coordinates: 'J18',
-            color: :"#ADD8E6",
+            color: :"#cc4f8c",
             text_color: 'black',
-            type: 'groupC',
+            type: 'group_c',
             reservation_color: nil,
           },
           {
@@ -613,9 +613,9 @@ module Engine
             simple_logo: '1830/ERIE.alt',
             tokens: [60, 100, 60, 100, 60, 100, 60, 100],
             coordinates: 'F18',
-            color: :"#FFF500",
+            color: :"#f8b34b",
             text_color: 'black',
-            type: 'groupC',
+            type: 'group_c',
             reservation_color: nil,
           },
           {
@@ -626,7 +626,7 @@ module Engine
             simple_logo: '1830/NYNH.alt',
             tokens: [60, 75, 100, 60, 75, 100, 60, 75, 100, 60, 75, 100, 60, 75, 100],
             coordinates: 'H10',
-            color: :"#d88e39",
+            color: :"#fa3d58",
             type: 'groupD',
             reservation_color: nil,
           },
@@ -652,6 +652,52 @@ module Engine
           GAME_HEXES
         end
 
+        EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+          'group_b_corps_available' => ['Group B Corporations become available'],
+          'group_c_corps_available' => ['Group C Corporations become available'],
+        ).freeze
+
+        def setup
+          @al_corporation = corporation_by_id('AL')
+          @al_corporation.capitalization = :incremental
+
+          @corporations.reject! { |c| c.id == 'AL' }
+
+          return if optional_variant_start_pack
+
+          @available_corp_group = :group_a
+
+          @corporations, @b_group_corporations = @corporations.partition do |corporation|
+            corporation.type == :group_a
+          end
+
+          @b_group_corporations, @c_group_corporations = @b_group_corporations.partition do |corporation|
+            corporation.type == :group_b
+          end
+        end
+
+        def event_group_b_corps_available!
+          @log << 'Group B corporations are now available'
+
+          @corporations.concat(@b_group_corporations)
+          @b_group_corporations = []
+          @available_corp_group = :group_b
+        end
+
+        def event_group_c_corps_available!
+          @log << 'Group C corporations are now available'
+
+          @corporations.concat(@c_group_corporations)
+          @c_group_corporations = []
+          @available_corp_group = :group_c
+        end
+
+        def event_asteroid_league_formed!
+          @log << 'Asteroid League has formed'
+
+          @corporations << @al_corporation
+        end
+
         def company_header(company)
           is_minor = @minors.find { |m| m.id == company.id }
 
@@ -659,6 +705,19 @@ module Engine
             'INDEPENDENT COMPANY'
           else
             'PRIVATE COMPANY'
+          end
+        end
+
+        def after_par(corporation)
+          super
+
+          return unless @corporations.all?(&:ipoed)
+
+          case @available_corp_group
+          when :group_a
+            event_group_b_corps_available!
+          when :group_b
+            event_group_c_corps_available!
           end
         end
 
@@ -692,6 +751,10 @@ module Engine
 
         def optional_short_game
           @optional_rules&.include?(:optional_short_game)
+        end
+
+        def optional_variant_start_pack
+          @optional_rules&.include?(:optional_variant_start_pack)
         end
       end
     end
