@@ -174,8 +174,8 @@ module View
       end
 
       AUTO_ACTIONS_WIKI = 'https://github.com/tobymao/18xx/wiki/Auto-actions'
-      def render_share_choice(form, shares, name, print_name, selected, settings)
-        owned = sender.num_shares_of(shares.first.corporation, ceil: false)
+      def render_share_choice(form, corporation, shares, name, print_name, selected, settings)
+        owned = sender.num_shares_of(corporation, ceil: false)
         default_value = owned + 1
         default_value = settings&.until_condition if selected && settings && settings&.until_condition != 'float'
         input = render_input(
@@ -277,6 +277,7 @@ module View
           if !selected.ipo_shares.empty? || settings_checked == :from_ipo
             checked = first_radio || settings_checked == :from_ipo
             children << render_share_choice(form,
+                                            selected,
                                             selected.ipo_shares,
                                             'ipo',
                                             @game.ipo_name(selected),
@@ -289,6 +290,7 @@ module View
             checked = first_radio
             checked = (corp_settings&.until_condition != 'float' && corp_settings&.from_market) if corp_settings
             children << render_share_choice(form,
+                                            selected,
                                             @game.share_pool.shares_by_corporation[selected],
                                             'market',
                                             'Market',
