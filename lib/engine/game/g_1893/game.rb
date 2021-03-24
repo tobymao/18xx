@@ -973,7 +973,7 @@ module Engine
           (water_borders & tile.exits).empty?
         end
 
-        def upgrades_to?(from, to, special = false)
+        def upgrades_to?(from, to, _special = false, selected_company: nil)
           # Leverkusen can upgrade double dits to one city
           return to.name == LEVERKUSEN_GREEN_TILE if from.color == :yellow && from.hex.name == LEVERKUSEN_HEX_NAME
 

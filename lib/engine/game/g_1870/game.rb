@@ -741,13 +741,11 @@ module Engine
           destination_stop.route_revenue(route.phase, route.train)
         end
 
-        # rubocop:disable Lint/UnusedMethodArgument
         def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
           @round.sell_queue << [bundle, bundle.corporation.owner]
 
           @share_pool.sell_shares(bundle)
         end
-        # rubocop:enable Lint/UnusedMethodArgument
 
         def legal_tile_rotation?(_entity, hex, tile)
           return true unless abilities(river_company, :blocks_partition)
@@ -760,7 +758,7 @@ module Engine
             end
         end
 
-        def upgrades_to?(from, to, _special = false)
+        def upgrades_to?(from, to, _special = false, selected_company: nil)
           return false if to.name == '171K' && from.hex.name != 'B11'
           return false if to.name == '172L' && from.hex.name != 'C18'
 

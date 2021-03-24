@@ -1238,7 +1238,7 @@ module Engine
         self.class::TILE_LAYS
       end
 
-      def upgrades_to?(from, to, special = false)
+      def upgrades_to?(from, to, special = false, selected_company: nil)
         # correct color progression?
         return false unless Engine::Tile::COLORS.index(to.color) == (Engine::Tile::COLORS.index(from.color) + 1)
 
@@ -2202,12 +2202,12 @@ module Engine
         @players.any?(&:bankrupt)
       end
 
-      def all_potential_upgrades(tile, tile_manifest: false) # rubocop:disable Lint/UnusedMethodArgument
+      def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
         colors = Array(@phase.phases.last[:tiles])
         @all_tiles
           .select { |t| colors.include?(t.color) }
           .uniq(&:name)
-          .select { |t| upgrades_to?(tile, t) }
+          .select { |t| upgrades_to?(tile, t, selected_company: selected_company) }
           .reject(&:blocks_lay)
       end
 

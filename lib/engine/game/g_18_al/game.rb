@@ -622,7 +622,7 @@ module Engine
             .each { |hex| hex.tile.icons = [] }
         end
 
-        def upgrades_to?(from, to, special = false)
+        def upgrades_to?(from, to, _special = false, selected_company: nil)
           # Lumber terminal cannot be upgraded
           return false if from.name == '445'
 
@@ -638,7 +638,7 @@ module Engine
           super
         end
 
-        def all_potential_upgrades(tile, tile_manifest: false)
+        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
           # Lumber terminal cannot be upgraded
           return [] if tile.name == '445'
 

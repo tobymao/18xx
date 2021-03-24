@@ -41,7 +41,7 @@ module Engine
             used_tokens.map { |token| token.distance(hex) }.min
           end
 
-          def adjust_token_price_ability!(entity, token, hex, _city, special_ability: nil) # rubocop:disable Lint/UnusedMethodArgument
+          def adjust_token_price_ability!(entity, token, hex, _city, special_ability: nil)
             # 1867 has no special abilities to do with tokens.
             used_tokens = entity.tokens.select(&:used).map { |token2| token2.city.tile.hex }
             token.price = token.price * hex_distance_from_token(used_tokens, hex)
