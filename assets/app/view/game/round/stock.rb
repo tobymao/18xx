@@ -270,8 +270,9 @@ module View
           @step.sellable_companies(@current_entity).map do |company|
             children = []
             children << h(Company, company: company)
-            children << h('div.margined_bottom', { style: { width: '20rem' } },
-                          render_sell_input(company)) if @selected_company == company
+            if @selected_company == company
+              children << h('div.margined_bottom', { style: { width: '20rem' } }, render_sell_input(company))
+            end
             h(:div, props, children)
           end
         end

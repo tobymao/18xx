@@ -1144,9 +1144,11 @@ module Engine
 
         def upgrades_to?(from, to, special = false, selected_company: nil)
           # Stock - Home Track
-          return @round.available_tracks.include?(to.name) &&
-            Engine::Tile::COLORS.index(to.color) > Engine::Tile::COLORS.index(from.color) &&
-            from.paths_are_subset_of?(to.paths) if @round.is_a?(Engine::Round::Stock) && @round.available_tracks.any?
+          if @round.is_a?(Engine::Round::Stock) && @round.available_tracks.any?
+            return @round.available_tracks.include?(to.name) &&
+              Engine::Tile::COLORS.index(to.color) > Engine::Tile::COLORS.index(from.color) &&
+              from.paths_are_subset_of?(to.paths)
+          end
 
           # Operating - Rabbits
           if @round.is_a?(Engine::Round::Operating) && selected_company == :rabbits

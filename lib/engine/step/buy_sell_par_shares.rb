@@ -396,8 +396,9 @@ module Engine
 
           # check if end condition met
           if program.until_condition == 'float'
-            return [Action::ProgramDisable.new(entity,
-                                               reason: "#{corporation.name} is floated")] if corporation.floated?
+            if corporation.floated?
+              return [Action::ProgramDisable.new(entity, reason: "#{corporation.name} is floated")]
+            end
           elsif entity.num_shares_of(corporation, ceil: false) >= program.until_condition
             return [Action::ProgramDisable.new(entity,
                                                reason: "#{program.until_condition} share(s) bought in "\

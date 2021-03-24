@@ -504,10 +504,12 @@ module Engine
         def new_operating_round(round_num = 1)
           @or += 1
           # For OR 1, set company buy price to face value only
-          @companies.each do |company|
-            company.min_price = company.value
-            company.max_price = company.value
-          end if @or == 1
+          if @or == 1
+            @companies.each do |company|
+              company.min_price = company.value
+              company.max_price = company.value
+            end
+          end
 
           # When OR2 is to start setup company prices and switch to green phase
           if @or == 2
@@ -639,13 +641,15 @@ module Engine
         end
 
         def routes_revenue(routes)
-          active_step.current_entity.trains.each do |t|
-            next unless t.name == "#{@turn}+"
+          if @round.round_num == 2
+            active_step.current_entity.trains.each do |t|
+              next unless t.name == "#{@turn}+"
 
-            # Trains that are going to be salvaged at the end of this OR
-            # cannot be sold when they have been run
-            t.buyable = false unless @optional_rules&.include?(:allow_buy_rusting)
-          end if @round.round_num == 2
+              # Trains that are going to be salvaged at the end of this OR
+              # cannot be sold when they have been run
+              t.buyable = false unless @optional_rules&.include?(:allow_buy_rusting)
+            end
+          end
 
           super
         end

@@ -804,11 +804,13 @@ module Engine
             hex.tile.cities[0].place_token(minor, minor.next_token)
           end
 
-          nils_ericsson.add_ability(Ability::Close.new(
-            type: :close,
-            when: 'bought_train',
-            corporation: abilities(nils_ericsson, :shares).shares.first.corporation.name,
-          )) if nils_ericsson && !nils_ericsson.closed?
+          if nils_ericsson && !nils_ericsson.closed?
+            nils_ericsson.add_ability(Ability::Close.new(
+              type: :close,
+              when: 'bought_train',
+              corporation: abilities(nils_ericsson, :shares).shares.first.corporation.name,
+            ))
+          end
 
           @special_tile_lays = []
 
@@ -952,10 +954,12 @@ module Engine
 
         def clean_up_after_dividend
           # Remove Gellivare Company tile lay ability if it has been used this OR
-          abilities(gc, :tile_lay) do |ability|
-            gc.remove_ability(ability)
-            @log << "#{gc.name} tile lay ability removed"
-          end unless @special_tile_lays.empty?
+          unless @special_tile_lays.empty?
+            abilities(gc, :tile_lay) do |ability|
+              gc.remove_ability(ability)
+              @log << "#{gc.name} tile lay ability removed"
+            end
+          end
           @special_tile_lays = []
 
           make_sj_tokens_impassable

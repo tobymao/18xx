@@ -588,10 +588,12 @@ module View
         ability_props = {}
 
         ability_lines = abilities.flat_map.with_index do |ability, i|
-          ability_props = {
-            style: { cursor: 'pointer' },
-            on: { click: ->(event) { toggle_desc_detail(event, i) } },
-          } if ability.desc_detail
+          if ability.desc_detail
+            ability_props = {
+              style: { cursor: 'pointer' },
+              on: { click: ->(event) { toggle_desc_detail(event, i) } },
+            }
+          end
 
           children = [h('div.nowrap', ability_props, ability.description)]
           if ability.desc_detail

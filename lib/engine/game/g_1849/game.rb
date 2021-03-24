@@ -235,8 +235,10 @@ module Engine
           _, after = game_end_check
           return unless after
 
-          return "Bank Broken : Game Ends at conclusion of
-                #{round_end.short_name} #{turn}.#{operating_rounds}" if after == :full_or
+          if after == :full_or
+            return "Bank Broken : Game Ends at conclusion of #{round_end.short_name} #{turn}.#{operating_rounds}"
+          end
+
           'Company hit max stock value : Game Ends after it operates'
         end
 
