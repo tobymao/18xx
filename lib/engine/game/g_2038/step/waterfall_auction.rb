@@ -37,6 +37,17 @@ module Engine
             @game.minors.find { |m| m.id == company.id }
           end
 
+          def buy_company(player, company, price)
+            super
+
+            return unless (minor = @game.minor_by_id(company.id))
+
+            minor.owner = player
+            minor.float!
+            capital = (price - 100) / 2
+            @game.bank.spend(100 + capital, minor)
+          end
+
           def resolve_bids
             super
             return if @unbid_companies == nil || @unbid_companies.empty?
