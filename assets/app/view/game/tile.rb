@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'lib/settings'
 require 'view/game/part/blocker'
 require 'view/game/part/borders'
 require 'view/game/part/cities'
@@ -13,11 +14,12 @@ require 'view/game/part/upgrades'
 module View
   module Game
     class Tile < Snabberb::Component
+      include Lib::Settings
+
+      needs :game, default: nil
       needs :tile
       needs :routes, default: []
-
       needs :show_coords, default: nil
-      needs :show_location_names, default: true
 
       # helper method to pass @tile and @region_use to every part
       def render_tile_part(part_class, **kwargs)
@@ -65,14 +67,16 @@ module View
         children << render_tile_part(Part::Blocker)
         rendered_loc_name = render_tile_part(Part::LocationName) if @tile.location_name && (@tile.cities.size <= 1)
         @tile.reservations.each { |x| children << render_tile_part(Part::Reservation, reservation: x) }
-        children << render_tile_part(Part::Icons) unless @tile.icons.empty?
+        large, normal = @tile.icons.partition(&:large)
+        children << render_tile_part(Part::Icons) unless normal.empty?
+        children << render_tile_part(Part::LargeIcons) unless large.empty?
 
         children << render_tile_part(Part::Assignments) unless @tile.hex&.assignments&.empty?
         # borders should always be the top layer
         children << borders if borders
         children << render_tile_part(Part::Partitions) unless @tile.partitions.empty?
 
-        children << rendered_loc_name if rendered_loc_name && @show_location_names
+        children << rendered_loc_name if rendered_loc_name && setting_for(:show_location_names, @game)
         children << render_coords if @show_coords
 
         children.flatten!

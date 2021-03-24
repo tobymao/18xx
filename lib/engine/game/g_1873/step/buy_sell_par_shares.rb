@@ -14,16 +14,32 @@ module Engine
             'Sell then Buy Certificates or Form Public Mine'
           end
 
+          def setup
+            @reopened = nil
+            super
+          end
+
           def purchasable_companies(_entity)
             []
           end
 
-          # FIXME: need to deal with receivership first and second buy
-          def can_buy_multiple?(_entity, corporation)
-            return false unless @game.railway?(corporation)
+          def can_ipo_any?(entity)
+            !bought? && @game.corporations.any? do |c|
+              @game.can_par?(c, entity) && (@game.public_mine?(c) || can_buy?(entity, c.shares.first&.to_bundle))
+            end
+          end
 
-            @current_actions.any? { |x| x.is_a?(Action::Par) && x.corporation == corporation } &&
-              @current_actions.none? { |x| x.is_a?(Action::BuyShares) }
+          def can_buy_multiple?(entity, corporation, _owner)
+            return unless corporation.corporation?
+
+            if @reopened == corporation
+              entity.percent_of(corporation) < 40
+            elsif @game.railway?(corporation)
+              @round.current_actions.any? { |x| x.is_a?(Action::Par) && x.corporation == corporation } &&
+                @round.current_actions.none? { |x| x.is_a?(Action::BuyShares) }
+            else
+              false
+            end
           end
 
           def can_sell?(entity, bundle)
@@ -41,23 +57,24 @@ module Engine
               president_can_sell?(entity, corporation)
           end
 
-          # president of corp can't dump unless someone else has 20% - even if president only has 10%
-          # this may be the only reason we keep track of the presidents share
+          # president of corp can't dump unless someone else has 20% - even with a president cert of 10%
           def can_dump?(entity, bundle)
             corporation = bundle.corporation
 
-            return true unless bundle.presidents_share
+            return true unless corporation.owner == entity
             return true if corporation == @game.mhe
-            return false if !corporation.operated? && @game.railway?(corporation)
+            return true if corporation.share_holders[entity] - bundle.percent >= 20 # selling above pres
+            return false if @game.concession_pending?(corporation)
 
             sh = corporation.player_share_holders(corporate: true)
             (sh.reject { |k, _| k == entity }.values.max || 0) >= 20
           end
 
-          # president of RR can never drop below 20% if it hasn't operated
+          # president of RR can never drop below 20% if it hasn't finished it's concession (operated)
+          # or nobody else has at least 20%
           def president_can_sell?(entity, corporation)
             return true unless corporation.owner == entity
-            return true if !@game.railway?(corporation) || corporation.operated? || corporation == @game.mhe
+            return true if !@game.concession_pending?(corporation) || corporation == @game.mhe
 
             corporation.share_holders[entity] > 20
           end
@@ -70,19 +87,33 @@ module Engine
             end
           end
 
-          def get_par_prices(entity, _corp)
+          def get_par_prices(entity, corp)
             @game
               .stock_market
               .par_prices
-              .select { |p| p.price <= entity.cash }
+              .select { |p| p.price <= entity.cash || @game.public_mine?(corp) }
+          end
+
+          def pool_shares(corporation)
+            if corporation.receivership? && corporation != @game.mhe && corporation.total_shares == 10
+              shares = @game.share_pool.shares_by_corporation[corporation].reject(&:president).reverse
+              # offer 20% bundle
+              [ShareBundle.new(shares.take(2))]
+            else
+              @game.share_pool.shares_by_corporation[corporation].group_by(&:percent).values
+                .map(&:first).sort_by(&:percent).reverse
+            end
           end
 
           def process_buy_shares(action)
             corporation = action.bundle.corporation
+            if corporation.receivership? && corporation != @game.mhe
+              @reopened = corporation
+              remove_company(action.entity, corporation)
+            end
             buy_shares(action.entity, action.bundle, swap: action.swap,
                                                      allow_president_change: @game.pres_change_ok?(corporation))
-            @round.last_to_act = action.entity
-            @current_actions << action
+            track_action(action, corporation)
           end
 
           def process_par(action)
@@ -92,13 +123,13 @@ module Engine
             if @game.railway?(corporation)
               super
               remove_company(entity, corporation)
+              @game.replace_company!(corporation)
               return
             end
 
             form_public_mine(entity, corporation)
 
-            @round.last_to_act = entity
-            @current_actions << action
+            track_action(action, corporation)
           end
 
           def form_public_mine(entity, corporation)

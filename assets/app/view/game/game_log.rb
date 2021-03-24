@@ -15,6 +15,7 @@ module View
       needs :selected_action_id, default: nil, store: true
       needs :limit, default: nil
       needs :scroll_pos, default: nil
+      needs :chat_input, default: ''
 
       def render
         children = [render_log]
@@ -25,14 +26,15 @@ module View
           event = Native(event)
           key = event['key']
 
-          if key == 'Enter'
+          case key
+          when 'Enter'
             message = event['target']['value']
             if message.strip != ''
               event['target']['value'] = ''
               sender = @player || Engine::Player.new(@game_data['user']['id'], @game_data['user']['name'])
               process_action(Engine::Action::Message.new(sender, message: message))
             end
-          elsif key == 'Escape'
+          when 'Escape'
             `document.getElementById('game').focus()`
           end
         end
@@ -53,7 +55,10 @@ module View
               }, [@user['name'] + ':']),
             h('input#chatbar',
               attrs: {
+                autocomplete: 'off',
                 title: 'hotkey: c – esc to leave',
+                type: 'text',
+                value: @chat_input,
               },
               style: {
                 marginLeft: '0.5rem',

@@ -19,11 +19,11 @@ module View
       Engine::Tile::BROWN.keys,
       Engine::Tile::GRAY.keys,
       Engine::Tile::RED.keys,
-    ].reduce(&:+)
+    ].flatten
 
     def render
       match = @route.match(ROUTE_FORMAT)
-      dest = match[1].gsub('%20', ' ')
+      dest = match[1]
       hexes_or_tiles = match[2]
 
       layout = (Lib::Params['l'] || 'flat').to_sym
@@ -53,7 +53,6 @@ module View
 
           ])
 
-      # hexes/tiles from a specific game
       elsif dest == 'custom'
         location_name = Lib::Params['n']
         color = Lib::Params['c'] || 'yellow'
@@ -66,20 +65,22 @@ module View
         rendered = render_tile_blocks('custom', layout: layout, tile: tile)
         h('div#tiles', rendered)
 
+      # hexes/tiles from a specific game
       elsif hexes_or_tiles
-        game_title = dest
-        hex_or_tile_ids = hexes_or_tiles.split('+')
-        rendered = hex_or_tile_ids.flat_map { |id| render_individual_tile_from_game(game_title, id) }
-        h('div#tiles', rendered)
+        rendered =
+          if hexes_or_tiles == 'all'
+            game_titles = dest.split('+')
+            game_titles.flat_map do |title|
+              next [] unless (game_class = load_game_class(title))
 
-      # everything for one or more games
-      elsif (game_titles = dest.split('+')).all? { |g| Engine::GAME_META_BY_TITLE.keys.include?(g) }
+              map_hexes_and_tile_manifest_for(game_class)
+            end
 
-        rendered = game_titles.flat_map do |title|
-          next [] unless (game_class = load_game_class(title))
-
-          map_hexes_and_tile_manifest_for(game_class)
-        end
+          else
+            game_title = dest
+            hex_or_tile_ids = hexes_or_tiles.split('+')
+            hex_or_tile_ids.flat_map { |id| render_individual_tile_from_game(game_title, id) }
+          end
 
         h('div#tiles', rendered)
 
@@ -106,7 +107,7 @@ module View
       game_class = load_game_class(game_title)
       return [] unless game_class
 
-      players = game_class::PLAYER_RANGE.max.times.map { |n| "Player #{n + 1}" }
+      players = Array.new(game_class::PLAYER_RANGE.max) { |n| "Player #{n + 1}" }
       game = game_class.new(players)
 
       id, rotation = hex_or_tile_id.split('-')
@@ -123,19 +124,22 @@ module View
           [t, id, id]
         end
 
-      render_tile_blocks(
-        name,
-        layout: game.class::LAYOUT,
-        tile: tile,
-        location_name: tile.location_name || @location_name,
-        scale: 3.0,
-        rotations: rotations,
-        hex_coordinates: hex_coordinates,
-      )
+      h(:div, [
+          h(:h2, game_class.full_title),
+          *render_tile_blocks(
+            name,
+            layout: game.class::LAYOUT,
+            tile: tile,
+            location_name: tile.location_name || @location_name,
+            scale: 3.0,
+            rotations: rotations,
+            hex_coordinates: hex_coordinates,
+          ),
+        ])
     end
 
     def map_hexes_and_tile_manifest_for(game_class)
-      players = game_class::PLAYER_RANGE.max.times.map { |n| "Player #{n + 1}" }
+      players = Array.new(game_class::PLAYER_RANGE.max) { |n| "Player #{n + 1}" }
       game = game_class.new(players)
 
       # map_tiles: hash; key is hex ID, value is the Tile there
@@ -189,14 +193,14 @@ module View
       end
 
       h("div#hexes_and_tiles_#{game_class.title}", [
-          h(:h2, game_class.title.to_s),
-          h("div#map_hexes_#{game_class.title}", [
-              h(:h3, "#{game_class.title} Map Hexes"),
-              *rendered_map_hexes,
-            ]),
+          h(:h2, game_class.full_title),
           h("div#game_tiles_#{game_class.title}", [
               h(:h3, "#{game_class.title} Tile Manifest"),
               *rendered_tiles,
+            ]),
+          h("div#map_hexes_#{game_class.title}", [
+              h(:h3, "#{game_class.title} Map Hexes"),
+              *rendered_map_hexes,
             ]),
         ])
     end

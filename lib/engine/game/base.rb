@@ -83,7 +83,7 @@ module Engine
                   :phase, :players, :operating_rounds, :round, :share_pool, :stock_market, :tile_groups,
                   :tiles, :turn, :total_loans, :undo_possible, :redo_possible, :round_history, :all_tiles,
                   :optional_rules, :exception, :last_processed_action, :broken_action,
-                  :turn_start_action_id, :last_turn_start_action_id, :programmed_actions
+                  :turn_start_action_id, :last_turn_start_action_id, :programmed_actions, :round_counter
 
       # Game end check is described as a dictionary
       # with reason => after
@@ -202,7 +202,7 @@ module Engine
       EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = true # if ebuying from depot, must buy cheapest train
       MUST_EMERGENCY_ISSUE_BEFORE_EBUY = false # corporation must issue shares before ebuy (if possible)
       EBUY_SELL_MORE_THAN_NEEDED = false # true if corporation may continue to sell shares even though enough funds
-
+      EBUY_CAN_SELL_SHARES = true # true if a player can sell shares for ebuy
       # when is the home token placed? on...
       # operate
       # float
@@ -219,6 +219,11 @@ module Engine
       # Default tile lay, one tile either upgrade or lay at zero cost
       # allows multiple lays, value must be either true, false or :not_if_upgraded
       TILE_LAYS = [{ lay: true, upgrade: true, cost: 0 }].freeze
+
+      # The tile type of the game
+      # :normal Tile type like 1830, 1846.
+      # :lawson Tile type like 1817, 1822
+      TILE_TYPE = :normal
 
       IMPASSABLE_HEX_COLORS = %i[blue gray red].freeze
 
@@ -271,6 +276,8 @@ module Engine
       RAND_A = 1_103_515_245
       RAND_C = 12_345
       RAND_M = 2**31
+
+      def setup_preround; end
 
       def setup; end
 
@@ -326,6 +333,20 @@ module Engine
         meta_module.constants.each do |const|
           const_set(const, meta_module.const_get(const))
         end
+
+        const_set(:META, meta_module)
+      end
+
+      def self.meta
+        self::META
+      end
+
+      def meta
+        self.class.meta
+      end
+
+      def game_instance?
+        true
       end
 
       def initialize(names, id: 0, actions: [], pin: nil, strict: false, optional_rules: [], user: nil)
@@ -351,6 +372,7 @@ module Engine
         @players = @names.map { |player_id, name| Player.new(player_id, name) }
         @user = user
         @programmed_actions = {}
+        @round_counter = 0
 
         @optional_rules = init_optional_rules(optional_rules)
 
@@ -401,6 +423,7 @@ module Engine
         @operating_rounds = @phase.operating_rounds
 
         @round_history = []
+        setup_preround
         @round = init_round
 
         cache_objects
@@ -480,7 +503,7 @@ module Engine
 
       def available_programmed_actions
         # By default assume normal 1830esk buy shares
-        [Action::ProgramBuyShares]
+        [Action::ProgramBuyShares, Action::ProgramSharePass]
       end
 
       def self.filtered_actions(actions)
@@ -651,6 +674,8 @@ module Engine
       end
 
       def next_turn!
+        return if @turn_start_action_id == current_action_id
+
         @last_turn_start_action_id = @turn_start_action_id
         @turn_start_action_id = current_action_id
       end
@@ -710,6 +735,18 @@ module Engine
       def purchasable_companies(entity = nil)
         @companies.select do |company|
           company.owner&.player? && entity != company.owner && !abilities(company, :no_buy)
+        end
+      end
+
+      def after_buy_company(player, company, _price)
+        abilities(company, :shares) do |ability|
+          ability.shares.each do |share|
+            if share.president
+              @round.companies_pending_par << company
+            else
+              share_pool.buy_shares(player, share, exchange: :free)
+            end
+          end
         end
       end
 
@@ -782,7 +819,7 @@ module Engine
       end
 
       def sellable_bundles(player, corporation)
-        return [] unless @round.active_step&.respond_to?(:can_sell?)
+        return [] unless @round.active_step.respond_to?(:can_sell?)
 
         bundles = bundles_for_corporation(player, corporation)
         bundles.select { |bundle| @round.active_step.can_sell?(player, bundle) }
@@ -845,6 +882,8 @@ module Engine
           @stock_market.move_down(corporation)
         when :left_block
           @stock_market.move_left(corporation)
+        when :down_block_pres
+          stock_market.move_down(corporation) if was_president
         when :left_block_pres
           stock_market.move_left(corporation) if was_president
         when :none
@@ -886,6 +925,7 @@ module Engine
 
         @finished = true
         store_player_info
+        @round_counter += 1
         scores = result.map { |name, value| "#{name} (#{format_currency(value)})" }
         @log << "-- Game over: #{scores.join(', ')} --"
       end
@@ -899,7 +939,7 @@ module Engine
       end
 
       def float_str(entity)
-        "#{entity.percent_to_float}% to float" if entity.corporation?
+        "#{entity.percent_to_float}% to float" if entity.corporation? && entity.floatable
       end
 
       def route_distance_str(route)
@@ -1198,7 +1238,7 @@ module Engine
         self.class::TILE_LAYS
       end
 
-      def upgrades_to?(from, to, special = false)
+      def upgrades_to?(from, to, special = false, selected_company: nil)
         # correct color progression?
         return false unless Engine::Tile::COLORS.index(to.color) == (Engine::Tile::COLORS.index(from.color) + 1)
 
@@ -1209,7 +1249,7 @@ module Engine
         return true if special
 
         # correct label?
-        return false if from.label != to.label
+        return false unless upgrades_to_correct_label?(from, to)
 
         # honors existing town/city counts?
         # - allow labelled cities to upgrade regardless of count; they're probably
@@ -1222,6 +1262,10 @@ module Engine
         return false if (from.color == :white) && from.label.to_s == 'OO' && from.cities.size != to.cities.size
 
         true
+      end
+
+      def upgrades_to_correct_label?(from, to)
+        from.label == to.label
       end
 
       def legal_tile_rotation?(_entity, _hex, _tile)
@@ -1299,6 +1343,10 @@ module Engine
         @cert_limit = init_cert_limit
       end
 
+      def shares_for_corporation(corporation)
+        @_shares.values.select { |share| share.corporation == corporation }
+      end
+
       def reset_corporation(corporation)
         @_shares.reject! do |_, share|
           next if share.corporation != corporation
@@ -1353,7 +1401,7 @@ module Engine
         # Find the highest tile that exists of this type in the tile list and duplicate it.
         # The highest one in the list should be the highest index anywhere.
         tiles = @_tiles.values.select { |t| t.name == tile.name }
-        new_tile = tiles.max { |a, b| a.index <=> b.index }.dup
+        new_tile = tiles.max_by(&:index).dup
         @tiles << new_tile
 
         @_tiles[new_tile.id] = new_tile
@@ -1409,14 +1457,18 @@ module Engine
         'IPO Reserved'
       end
 
-      def abilities(entity, type = nil, time: nil, on_phase: nil, passive_ok: nil)
+      def abilities(entity, type = nil, time: nil, on_phase: nil, passive_ok: nil, strict_time: nil)
         return nil unless entity
 
         active_abilities = entity.all_abilities.select do |ability|
           ability_right_type?(ability, type) &&
             ability_right_owner?(ability.owner, ability) &&
             ability_usable_this_or?(ability) &&
-            ability_right_time?(ability, time, on_phase, passive_ok.nil? ? true : passive_ok) &&
+            ability_right_time?(ability,
+                                time,
+                                on_phase,
+                                passive_ok.nil? ? true : passive_ok,
+                                strict_time.nil? ? true : strict_time) &&
             ability_usable?(ability)
         end
 
@@ -1581,6 +1633,16 @@ module Engine
           "( #{owners.map { |c, t| "#{c} x#{t}" }.join(', ')}) --" if rusted_trains.any?
       end
 
+      def show_progress_bar?
+        false
+      end
+
+      def progress_information; end
+
+      def assignment_tokens(assignment)
+        self.class::ASSIGNMENT_TOKENS[assignment]
+      end
+
       private
 
       def init_graph
@@ -1640,7 +1702,7 @@ module Engine
 
       def init_train_handler
         trains = game_trains.flat_map do |train|
-          (train[:num] || num_trains(train)).times.map do |index|
+          Array.new((train[:num] || num_trains(train))) do |index|
             Train.new(**train, index: index)
           end
         end
@@ -1787,7 +1849,7 @@ module Engine
       def init_tile(name, val)
         if val.is_a?(Integer) || val == 'unlimited'
           count = val == 'unlimited' ? 1 : val
-          count.times.map do |i|
+          Array.new(count) do |i|
             Tile.for(
               name,
               index: i,
@@ -1799,7 +1861,7 @@ module Engine
           count = val['count'] == 'unlimited' ? 1 : val['count']
           color = val['color']
           code = val['code']
-          count.times.map do |i|
+          Array.new(count) do |i|
             Tile.from_code(
               name,
               color,
@@ -2024,7 +2086,11 @@ module Engine
       end
 
       def next_sr_position(entity)
-        player_order = @round.current_entity&.player? ? @round.pass_order : @players
+        player_order = if @round.current_entity&.player?
+                         next_sr_player_order == :first_to_pass ? @round.pass_order : []
+                       else
+                         @players
+                       end
         player_order.reject(&:bankrupt).index(entity)
       end
 
@@ -2032,7 +2098,7 @@ module Engine
         self.class::NEXT_SR_PLAYER_ORDER
       end
 
-      def reorder_players(order = nil)
+      def reorder_players(order = nil, log_player_order: false)
         order ||= next_sr_player_order
         case order
         when :after_last_to_act
@@ -2047,7 +2113,11 @@ module Engine
           current_order = @players.dup
           @players.sort_by! { |p| [p.cash, current_order.index(p)] }
         end
-        @log << "#{@players.first.name} has priority deal"
+        @log << if log_player_order
+                  "Priority order: #{@players.reject(&:bankrupt).map(&:name).join(', ')}"
+                else
+                  "#{@players.first.name} has priority deal"
+                end
       end
 
       def new_auction_round
@@ -2059,6 +2129,7 @@ module Engine
 
       def new_stock_round
         @log << "-- #{round_description('Stock')} --"
+        @round_counter += 1
         stock_round
       end
 
@@ -2073,6 +2144,7 @@ module Engine
 
       def new_operating_round(round_num = 1)
         @log << "-- #{round_description('Operating', round_num)} --"
+        @round_counter += 1
         operating_round(round_num)
       end
 
@@ -2088,16 +2160,16 @@ module Engine
           Step::Dividend,
           Step::DiscardTrain,
           Step::BuyTrain,
-          [Step::BuyCompany, blocks: true],
+          [Step::BuyCompany, { blocks: true }],
         ], round_num: round_num)
       end
 
       def event_close_companies!
         @log << '-- Event: Private companies close --'
         @companies.each do |company|
-          if (ability = abilities(company, :close, on_phase: 'any'))
-            next if ability.on_phase == 'never' ||
-                    @phase.phases.any? { |phase| ability.on_phase == phase[:name] }
+          if (ability = abilities(company, :close, on_phase: 'any')) && (ability.on_phase == 'never' ||
+                    @phase.phases.any? { |phase| ability.on_phase == phase[:name] })
+            next
           end
 
           company.close!
@@ -2130,12 +2202,12 @@ module Engine
         @players.any?(&:bankrupt)
       end
 
-      def all_potential_upgrades(tile, tile_manifest: false) # rubocop:disable Lint/UnusedMethodArgument
+      def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
         colors = Array(@phase.phases.last[:tiles])
         @all_tiles
           .select { |t| colors.include?(t.color) }
           .uniq(&:name)
-          .select { |t| upgrades_to?(tile, t) }
+          .select { |t| upgrades_to?(tile, t, selected_company: selected_company) }
           .reject(&:blocks_lay)
       end
 
@@ -2171,6 +2243,8 @@ module Engine
         :small
       end
 
+      def corporation_size_name(_entity); end
+
       def company_status_str(_company); end
 
       def status_str(_corporation); end
@@ -2183,11 +2257,15 @@ module Engine
       end
 
       def count_available_tokens(corporation)
-        corporation.tokens.map { |t| t.used ? 0 : 1 }.sum
+        corporation.tokens.sum { |t| t.used ? 0 : 1 }
       end
 
       def token_string(corporation)
         "#{count_available_tokens(corporation)}/#{corporation.tokens.size}"
+      end
+
+      def show_value_of_companies?(entity)
+        entity.player?
       end
 
       # minors to show on player cards
@@ -2229,7 +2307,7 @@ module Engine
         !ability.count_per_or || (ability.count_this_or < ability.count_per_or)
       end
 
-      def ability_right_time?(ability, time, on_phase, passive_ok)
+      def ability_right_time?(ability, time, on_phase, passive_ok, strict_time)
         return true unless @round
         return true if time == 'any' || ability.when?('any')
         return (on_phase == ability.on_phase) || (on_phase == 'any') if on_phase
@@ -2240,33 +2318,34 @@ module Engine
         current_step = ability_blocking_step
         current_step_name = current_step&.type
 
-        if ability.type == :tile_lay && ability.must_lay_all && current_step&.is_a?(Step::SpecialTrack)
+        if ability.type == :tile_lay && ability.must_lay_all && current_step.is_a?(Step::SpecialTrack)
           return current_step.company == ability.owner
         end
 
-        return false if @round.operating? &&
-                        ability.owner.owned_by_corporation? &&
-                        @round.current_operator != ability.corporation &&
-                        !ability.when?('other_or')
-
         times = Array(time).map { |t| t == '%current_step%' ? current_step_name : t.to_s }
-        return ability.when?(*times) unless times.empty?
-
-        ability.when.any? do |ability_when|
+        if times.empty?
+          times_to_check = ability.when
+          default = false
+        else
+          times_to_check = ability.when & times
+          default = true
+          return true if !times_to_check.empty? && !strict_time
+        end
+        times_to_check.any? do |ability_when|
           case ability_when
           when current_step_name
             (@round.operating? && @round.current_operator == ability.corporation) ||
               (@round.stock? && @round.current_entity == ability.player)
           when 'owning_corp_or_turn'
             @round.operating? && @round.current_operator == ability.corporation
-          when 'owning_player_sr_turn'
-            @round.stock? && @round.current_entity == ability.player
-          when 'other_or'
-            @round.operating? && @round.current_operator != ability.corporation
+          when 'owning_player_or_turn'
+            @round.operating? && @round.current_operator.player == ability.player
+          when 'or_between_turns'
+            @round.operating? && !@round.current_operator_acted
           when 'or_start'
             ability_time_is_or_start?
           else
-            false
+            default
           end
         end
       end

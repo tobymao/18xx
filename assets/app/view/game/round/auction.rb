@@ -138,7 +138,9 @@ module View
 
         def render_company_actions(company)
           return [] if @step.auctioneer? && @step.max_bid(@current_entity, company) < @step.min_bid(company)
-          return [h(:button, { on: { click: -> { buy(company) } } }, 'Buy')] if @step.may_purchase?(company)
+
+          buy_str = @step.respond_to?(:buy_str) ? @step.buy_str(company) : 'Buy'
+          return [h(:button, { on: { click: -> { buy(company) } } }, buy_str)] if @step.may_purchase?(company)
           return [h(:button, { on: { click: -> { choose } } }, 'Choose')] if @step.may_choose?(company)
 
           input = h(:input, style: { marginRight: '1rem' }, props: {
@@ -411,9 +413,10 @@ module View
 
         # show the map if there are minors to pick from
         def render_map
-          return nil unless @step.available.any?(&:minor?)
+          show = @step.available.any?(&:minor?) || (@step.respond_to?(:show_map) && @step.show_map)
+          return nil unless show
 
-          h(Game::Map, game: @game)
+          h(Game::Map, game: @game, opacity: 1.0)
         end
       end
     end

@@ -188,7 +188,7 @@ module Engine
           %w[32o 41o 48y 55y 62 67 71p 76 82 90 100],
           %w[25b 34o 42o 50y 58y 65 67p 71 75 80],
           %w[18b 27b 36o 45o 54y 63 67 69 70],
-          %w[10b 12b 30b 40o 50y 60y 67 68],
+          %w[10b 20b 30b 40o 50y 60y 67 68],
           ['', '10b', '20b', '30b', '40o', '50y', '60y'],
           ['', '', '10b', '20b', '30b', '40o', '50y'],
           ['', '', '', '10b', '20b', '30b', '40o'],
@@ -534,21 +534,30 @@ module Engine
 
         LAYOUT = :pointy
 
+        def stock_round
+          Round::Stock.new(self, [
+            Engine::Step::DiscardTrain,
+            Engine::Step::Exchange,
+            Engine::Step::SpecialTrack,
+            G1830::Step::BuySellParShares,
+          ])
+        end
+
         def operating_round(round_num)
           Round::Operating.new(self, [
-            Step::Bankrupt,
-            Step::Exchange,
-            Step::SpecialTrack,
-            Step::SpecialToken,
-            Step::BuyCompany,
-            Step::HomeToken,
-            Step::Track,
-            Step::Token,
-            Step::Route,
-            Step::Dividend,
-            Step::DiscardTrain,
-            Step::BuyTrain,
-            [Step::BuyCompany, blocks: true],
+            Engine::Step::Bankrupt,
+            Engine::Step::Exchange,
+            Engine::Step::SpecialTrack,
+            Engine::Step::SpecialToken,
+            Engine::Step::BuyCompany,
+            Engine::Step::HomeToken,
+            Engine::Step::Track,
+            Engine::Step::Token,
+            Engine::Step::Route,
+            Engine::Step::Dividend,
+            Engine::Step::DiscardTrain,
+            Engine::Step::BuyTrain,
+            [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
       end

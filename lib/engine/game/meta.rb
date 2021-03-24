@@ -16,6 +16,11 @@ module Engine
       GAME_PUBLISHER = nil
       GAME_RULES_URL = nil
       GAME_TITLE = nil
+      GAME_SUBTITLE = nil
+      GAME_SUPERTITLE = nil
+      GAME_ALIASES = [].freeze
+      GAME_VARIANTS = [].freeze
+      GAME_IS_VARIANT_OF = nil
 
       # rules data that needs to be known to the engine without loading in the
       # full game class
@@ -44,6 +49,10 @@ module Engine
             end
         end
 
+        def full_title
+          [self::GAME_SUPERTITLE, title, self::GAME_SUBTITLE].compact.join(': ')
+        end
+
         def fs_name
           @fs_name ||=
             begin
@@ -52,6 +61,20 @@ module Engine
               part = (last == 'Game' || last == 'Meta' ? parts[-2] : last)
               part.sub(/^G/, 'g_').gsub(/(.)([A-Z]+)/, '\1_\2').downcase
             end
+        end
+
+        def meta
+          self
+        end
+
+        def game_instance?
+          false
+        end
+
+        def game_variants
+          @game_variants ||= self::GAME_VARIANTS.map do |v|
+            [v[:sym], v.merge({ meta: GAME_META_BY_TITLE[v[:title]] })]
+          end.to_h
         end
       end
     end

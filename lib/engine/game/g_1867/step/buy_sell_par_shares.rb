@@ -19,9 +19,7 @@ module Engine
             return %w[bid pass] if @auctioning
 
             actions = super
-            unless bought?
-              actions << 'bid' if can_bid?(entity)
-            end
+            actions << 'bid' if !bought? && can_bid?(entity)
             actions << 'pass' if actions.any? && !actions.include?('pass')
             actions
           end
@@ -30,6 +28,10 @@ module Engine
             return @winning_bid.corporation if @winning_bid
 
             @auctioning
+          end
+
+          def normal_pass?(_entity)
+            !@auctioning
           end
 
           def active_entities

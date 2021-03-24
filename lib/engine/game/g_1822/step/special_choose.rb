@@ -23,7 +23,7 @@ module Engine
           end
 
           def choices
-            return @game.company_choices(@company) if @company
+            return @game.company_choices(@company, :special_choose) if @company
 
             {}
           end
@@ -33,7 +33,7 @@ module Engine
           end
 
           def process_choose(action)
-            @game.company_made_choice(@company, action.choice)
+            @game.company_made_choice(@company, action.choice, :special_choose)
             @company = nil
           end
 
@@ -44,7 +44,7 @@ module Engine
           def find_company(entity)
             # Check all newly acquired companies if they have any choices
             @company = @round.acquired_companies.find do |c|
-              entity == c.owner && !@game.company_choices(c).empty?
+              entity == c.owner && !@game.company_choices(c, :special_choose).empty?
             end
             @company
           end

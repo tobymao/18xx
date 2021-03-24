@@ -23,7 +23,7 @@ module View
       # Due to the way this and the map hook up routes needs to have
       # an entry, but that route is not valid at zero length
       def active_routes
-        @routes.select { |r| r.connections.any? }
+        @routes.select { |r| r.chains.any? }
       end
 
       def generate_last_routes!
@@ -34,7 +34,7 @@ module View
         return [] if @abilities&.any?
 
         halts = operating[operating.keys.max]&.halts
-        last_run.map do |train, connections|
+        last_run.map do |train, connection_hexes|
           next unless trains.include?(train)
 
           # A future enhancement to this could be to find trains and move the routes over
@@ -42,7 +42,7 @@ module View
             @game,
             @game.phase,
             train,
-            connection_hexes: connections,
+            connection_hexes: connection_hexes,
             routes: @routes,
             halts: halts[train],
           )
@@ -50,6 +50,7 @@ module View
       end
 
       def render
+        step = @game.active_step
         current_entity = @game.round.current_entity
         if @selected_company&.owner == current_entity
           ability = @game.abilities(@selected_company, :hex_bonus, time: 'route')
@@ -158,8 +159,9 @@ module View
               padding: '0 0 0.4rem 0.4rem',
             },
           }
+          train_name = step.respond_to?(:train_name) ? step.train_name(current_entity, train) : train.name
           [
-            h(:tr, [h('td.middle', [h(:div, { style: style, on: { click: onclick } }, train.name)]), *children]),
+            h(:tr, [h('td.middle', [h(:div, { style: style, on: { click: onclick } }, train_name)]), *children]),
             invalid ? h(:tr, [h(:td, invalid_props, invalid)]) : '',
           ]
         end
@@ -186,7 +188,7 @@ module View
         instructions += ' Click button under Revenue to pick number of halts.' if render_halts
 
         h(:div, div_props, [
-          h(:h3, { style: { margin: '0.5rem 0 0.2rem' } }, 'Select Routes'),
+          h(:h3, 'Select Routes'),
           h('div.small_font', description),
           h('div.small_font', instructions),
           train_help,

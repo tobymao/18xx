@@ -305,7 +305,7 @@ module Engine
                 tiles: ['445'],
                 hexes: %w[G2 M2 O4 N5 P5],
                 count: 1,
-                when: %w[special_track other_or],
+                when: 'track',
               },
             ],
           },
@@ -346,6 +346,7 @@ module Engine
             sym: 'L&N',
             name: 'Louisville & Nashville Railroad',
             logo: '18_al/LN',
+            simple_logo: '18_al/LN.alt',
             tokens: [0, 40, 100, 100],
             coordinates: 'A4',
             color: 'blue',
@@ -355,6 +356,7 @@ module Engine
             sym: 'M&O',
             name: 'Mobile & Ohio Railroad',
             logo: '18_al/MO',
+            simple_logo: '18_al/MO.alt',
             tokens: [0, 40, 100, 100],
             coordinates: 'Q2',
             color: 'orange',
@@ -364,6 +366,7 @@ module Engine
             sym: 'WRA',
             name: 'Western Railway of Alabama',
             logo: '18_al/WRA',
+            simple_logo: '18_al/WRA.alt',
             tokens: [0, 40, 100, 100],
             coordinates: 'L5',
             color: 'red',
@@ -373,6 +376,7 @@ module Engine
             sym: 'ATN',
             name: 'Alabama, Tennessee & Northern Railroad',
             logo: '18_al/ATN',
+            simple_logo: '18_al/ATN.alt',
             tokens: [0, 40, 100],
             coordinates: 'F1',
             color: 'black',
@@ -382,6 +386,7 @@ module Engine
             sym: 'ABC',
             name: 'Atlanta, Birmingham & Coast Railroad',
             logo: '18_al/ABC',
+            simple_logo: '18_al/ABC.alt',
             tokens: [0, 40],
             coordinates: 'G6',
             color: 'green',
@@ -391,6 +396,7 @@ module Engine
             sym: 'TAG',
             name: 'Tennessee, Alabama & Georgia Railway',
             logo: '18_al/TAG',
+            simple_logo: '18_al/TAG.alt',
             tokens: [0, 40],
             coordinates: 'E6',
             color: 'yellow',
@@ -510,7 +516,11 @@ module Engine
 
           @corporations.each do |corporation|
             abilities(corporation, :assign_hexes) do |ability|
-              ability.description = "Historical objective: #{get_location_name(ability.hexes.first)}"
+              hex_name = ability.hexes.first
+              location = get_location_name(hex_name)
+              ability.description = "Historical objective: #{location}"
+              ability.desc_detail = "If #{corporation.name} puts a token into #{location} (#{hex_name}) "\
+                "#{format_currency(100)} is added to its treasury."
             end
           end
 
@@ -535,7 +545,7 @@ module Engine
             Engine::Step::DiscardTrain,
             Engine::Step::SpecialBuyTrain,
             Engine::Step::SingleDepotTrainBuy,
-            [Engine::Step::BuyCompany, blocks: true],
+            [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 
@@ -612,7 +622,7 @@ module Engine
             .each { |hex| hex.tile.icons = [] }
         end
 
-        def upgrades_to?(from, to, special = false)
+        def upgrades_to?(from, to, _special = false, selected_company: nil)
           # Lumber terminal cannot be upgraded
           return false if from.name == '445'
 
@@ -628,7 +638,7 @@ module Engine
           super
         end
 
-        def all_potential_upgrades(tile, tile_manifest: false)
+        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
           # Lumber terminal cannot be upgraded
           return [] if tile.name == '445'
 

@@ -449,6 +449,7 @@ module Engine
           {
             sym: 'BBG',
             logo: '1856/BBG',
+            simple_logo: '1856/BBG.alt',
             name: 'Buffalo, Brantford & Goderich Railway',
             tokens: [0, 40, 100],
             coordinates: 'J15',
@@ -459,6 +460,7 @@ module Engine
           {
             sym: 'CA',
             logo: '1856/CA',
+            simple_logo: '1856/CA.alt',
             name: 'Canada Air Line Railway',
             tokens: [0, 40, 100],
             coordinates: 'D17',
@@ -468,6 +470,7 @@ module Engine
           {
             sym: 'CPR',
             logo: '1856/CPR',
+            simple_logo: '1856/CPR.alt',
             name: 'Canadian Pacific Railroad',
             tokens: [0, 40, 100, 100],
             coordinates: 'M4',
@@ -477,6 +480,7 @@ module Engine
           {
             sym: 'CV',
             logo: '1856/CV',
+            simple_logo: '1856/CV.alt',
             name: 'Credit Valley Railway',
             tokens: [0, 40, 100],
             coordinates: 'N11',
@@ -487,6 +491,7 @@ module Engine
           {
             sym: 'GT',
             logo: '1856/GT',
+            simple_logo: '1856/GT.alt',
             name: 'Grand Trunk Railway',
             tokens: [0, 40, 100, 100],
             coordinates: 'P9',
@@ -496,6 +501,7 @@ module Engine
           {
             sym: 'GW',
             logo: '1856/GW',
+            simple_logo: '1856/GW.alt',
             name: 'Great Western Railway',
             tokens: [0, 40, 100, 100],
             coordinates: 'F15',
@@ -505,6 +511,7 @@ module Engine
           {
             sym: 'LPS',
             logo: '1856/LPS',
+            simple_logo: '1856/LPS.alt',
             name: 'London & Port Sarnia Railway',
             tokens: [0, 40],
             coordinates: 'C14',
@@ -515,6 +522,7 @@ module Engine
           {
             sym: 'TGB',
             logo: '1856/TGB',
+            simple_logo: '1856/TGB.alt',
             name: 'Toronto, Grey & Bruce Railway',
             tokens: [0, 40],
             coordinates: 'K8',
@@ -524,6 +532,7 @@ module Engine
           {
             sym: 'THB',
             logo: '1856/THB',
+            simple_logo: '1856/THB.alt',
             name: 'Toronto, Hamilton and Buffalo Railway',
             tokens: [0, 40],
             coordinates: 'L15',
@@ -534,6 +543,7 @@ module Engine
           {
             sym: 'WR',
             logo: '1856/WR',
+            simple_logo: '1856/WR.alt',
             name: 'Welland Railway',
             tokens: [0, 40, 100],
             coordinates: 'O16',
@@ -543,6 +553,7 @@ module Engine
           {
             sym: 'WGB',
             logo: '1856/WGB',
+            simple_logo: '1856/WGB.alt',
             name: 'Wellington, Grey & Bruce Railway',
             tokens: [0, 40],
             coordinates: 'J11',
@@ -552,6 +563,7 @@ module Engine
           {
             sym: 'CGR',
             logo: '1856/CGR',
+            simple_logo: '1856/CGR.alt',
             name: 'Canadian Government Railway',
             tokens: [],
             color: '#000',
@@ -622,10 +634,11 @@ module Engine
             'city=revenue:0;city=revenue:0;label=OO;upgrade=cost:40,terrain:mountain',
           },
           blue: { ['N5'] => '' },
-          gray: { ['F9'] =>
-            'town=revenue:yellow_30|brown_50|black_40;'\
-            'path=a:0,b:_0;path=a:4,b:_0;path=a:5,b:_0;icon=image:port,sticky:1',
-   },
+          gray: {
+            ['F9'] =>
+                        'town=revenue:yellow_30|brown_50|black_40;'\
+                        'path=a:0,b:_0;path=a:4,b:_0;path=a:5,b:_0;icon=image:port,sticky:1',
+          },
           white: {
             %w[H15 G12 I8 J13 D17 J11 J15 K8 O16] =>
                      'city=revenue:0',
@@ -868,7 +881,7 @@ module Engine
         end
 
         def init_loans
-          num_loans.times.map { |id| Loan.new(id, loan_value) }
+          Array.new(num_loans) { |id| Loan.new(id, loan_value) }
         end
 
         def can_pay_interest?(_entity, _extra_cash = 0)
@@ -985,7 +998,7 @@ module Engine
           tokens.keys.each do |node|
             visited = tokens.reject { |token, _| token == node }
 
-            node.walk(visited: visited, corporation: nil) do |path|
+            node.walk(visited: visited, corporation: nil) do |path, _|
               return true if goal_hex_ids.include?(path.hex.id)
             end
           end
@@ -1012,7 +1025,7 @@ module Engine
         # from: Tile - Tile to upgrade from
         # to: Tile - Tile to upgrade to
         # special - ???
-        def upgrades_to?(from, to, special = false)
+        def upgrades_to?(from, to, _special = false, selected_company: nil)
           return false if from.name == '470'
           # double dits upgrade to Green cities in gray
           return gray_phase? if to.name == '14' && %w[55 1].include?(from.name)
@@ -1053,7 +1066,7 @@ module Engine
         # tile: The tile to be upgraded
         # tile_manifest: true/false Is this being called from the tile manifest screen
         #
-        def all_potential_upgrades(tile, tile_manifest: false)
+        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
           upgrades = super
           return upgrades unless tile_manifest
 
@@ -1225,7 +1238,7 @@ module Engine
             G1856::Step::SpecialBuy,
             G1856::Step::Track,
             G1856::Step::Escrow,
-            Engine::Step::Token,
+            G1856::Step::Token,
             G1856::Step::BorrowTrain,
             Engine::Step::Route,
             # Interest - See Loan
@@ -1233,7 +1246,7 @@ module Engine
             Engine::Step::DiscardTrain,
             G1856::Step::BuyTrain,
             # Repay Loans - See Loan
-            [Engine::Step::BuyCompany, blocks: true],
+            [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 
@@ -1320,7 +1333,7 @@ module Engine
 
           @national_ever_owned_permanent = true
           @log << "-- #{national.name} now owns a permanent train, may no longer borrow a train when trainless --"
-          national.remove_ability(national.all_abilities.select { |a| a.type == :borrow_train }.first)
+          national.remove_ability(national.all_abilities.find { |a| a.type == :borrow_train })
         end
 
         def merge_major(major)

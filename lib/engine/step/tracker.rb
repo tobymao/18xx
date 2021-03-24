@@ -21,6 +21,7 @@ module Engine
 
       def can_lay_tile?(entity)
         return true if abilities(entity, time: type, passive_ok: false)
+        return true if can_buy_tile_laying_company?(entity, time: type)
 
         action = get_tile_lay(entity)
         return false unless action
@@ -59,7 +60,7 @@ module Engine
       end
 
       def abilities(entity, **kwargs, &block)
-        kwargs[:time] = [type, 'owning_corp_or_turn'] unless kwargs[:time]
+        kwargs[:time] = [type] unless kwargs[:time]
         @game.abilities(entity, :tile_lay, **kwargs, &block)
       end
 
@@ -84,7 +85,7 @@ module Engine
 
         tile.rotate!(rotation)
 
-        unless @game.upgrades_to?(old_tile, tile, entity.company?)
+        unless @game.upgrades_to?(old_tile, tile, entity.company?, selected_company: entity.company? && entity || nil)
           raise GameError, "#{old_tile.name} is not upgradeable to #{tile.name}"
         end
         if !@game.loading && !legal_tile_rotation?(entity, hex, tile)
@@ -150,17 +151,33 @@ module Engine
 
         update_token!(action, entity, tile, old_tile)
 
-        return if terrain.empty?
-
         @game.all_companies_with_ability(:tile_income) do |company, ability|
-          if terrain.include?(ability.terrain) && (!ability.owner_only || company.owner == entity)
-            # If multiple borders are connected bonus counts each individually
-            income = ability.income * terrain.find_all { |t| t == ability.terrain }.size
-            @game.bank.spend(income, company.owner)
-            @log << "#{company.owner.name} earns #{@game.format_currency(income)}"\
-              " for the #{ability.terrain} tile built by #{company.name}"
+          if !ability.terrain
+            # company with tile income ability that pays for all tiles
+            pay_all_tile_income(company, ability)
+          else
+            # company with tile income for specific terrain
+            pay_terrain_tile_income(company, ability, terrain, entity)
           end
         end
+      end
+
+      def pay_all_tile_income(company, ability)
+        income = ability.income
+        @game.bank.spend(income, company.owner)
+        @log << "#{company.owner.name} earns #{@game.format_currency(income)}"\
+            " for the tile built by #{company.name}"
+      end
+
+      def pay_terrain_tile_income(company, ability, terrain, entity)
+        return unless terrain.include?(ability.terrain)
+        return if ability.owner_only && company.owner != entity
+
+        # If multiple borders are connected bonus counts each individually
+        income = ability.income * terrain.count { |t| t == ability.terrain }
+        @game.bank.spend(income, company.owner)
+        @log << "#{company.owner.name} earns #{@game.format_currency(income)}"\
+          " for the #{ability.terrain} tile built by #{company.name}"
       end
 
       def update_tile_lists(tile, old_tile)
@@ -175,28 +192,30 @@ module Engine
         spender.spend(cost, @game.bank) if cost.positive?
 
         @log << "#{spender.name}"\
-          "#{spender == entity ? '' : " (#{entity.sym})"}"\
+          "#{spender == entity || !entity.company? ? '' : " (#{entity.sym})"}"\
           "#{cost.zero? ? '' : " spends #{@game.format_currency(cost)} and"}"\
           " lays tile ##{tile.name}"\
           " with rotation #{rotation} on #{hex.name}"\
           "#{tile.location_name.to_s.empty? ? '' : " (#{tile.location_name})"}"
       end
 
-      def update_token!(action, _entity, tile, old_tile)
+      def update_token!(action, entity, tile, old_tile)
         cities = tile.cities
         if old_tile.paths.empty? &&
             !tile.paths.empty? &&
             cities.size > 1 &&
-            (token = cities.flat_map(&:tokens).find(&:itself))
-          corporation = token.corporation
-          @round.pending_tokens << {
-            entity: corporation,
-            hexes: [action.hex],
-            token: token,
-          }
-          @log << "#{corporation.name} must choose city for token"
+            !(tokens = cities.flat_map(&:tokens).compact).empty?
+          tokens.each do |token|
+            actor = entity.company? ? entity.owner : entity
+            @round.pending_tokens << {
+              entity: actor,
+              hexes: [action.hex],
+              token: token,
+            }
+            @log << "#{actor.name} must choose city for token"
 
-          token.remove!
+            token.remove!
+          end
         end
       end
 
@@ -320,6 +339,17 @@ module Engine
 
       def hex_neighbors(entity, hex)
         @game.graph_for_entity(entity).connected_hexes(entity)[hex]
+      end
+
+      def can_buy_tile_laying_company?(entity, time:)
+        return false unless entity == current_entity
+        return false unless @game.phase.status.include?('can_buy_companies')
+
+        @game.purchasable_companies(entity).any? do |company|
+          next false unless company.min_price <= buying_power(entity)
+
+          company.all_abilities.any? { |a| a.type == :tile_lay && a.when?(time) }
+        end
       end
     end
   end

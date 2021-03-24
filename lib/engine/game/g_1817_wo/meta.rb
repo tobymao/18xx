@@ -13,7 +13,7 @@ module Engine
 
         GAME_DESIGNER = 'Mark Voyer & Brennan Sheremeto'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1817WO'
-        GAME_LOCATION = 'Earth.'
+        GAME_LOCATION = 'Earth'
         GAME_RULES_URL = {
           '1817WO' =>
                           'https://docs.google.com/document/d/1g9QnttpJa8yOCOTnfPaU9hfAZFFzg-rAs_WGy9T38J0/',

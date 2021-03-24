@@ -84,7 +84,8 @@ module Engine
             entity.spend(@game.class::MINOR_BIDBOX_PRICE, @game.bank)
 
             receiving = []
-            if token_choice == 'replace'
+            case token_choice
+            when 'replace'
               if @selected_minor.id == @game.class::MINOR_14_ID
                 @game.remove_exchange_token(entity)
                 token = Engine::Token.new(entity)
@@ -114,7 +115,7 @@ module Engine
                   receiving << "a token on hex #{@selected_minor.coordinates}"
                 end
               end
-            elsif token_choice == 'exchange'
+            when 'exchange'
               @game.move_exchange_token(entity)
               receiving << 'one token from exchange to available'
             end
@@ -132,6 +133,7 @@ module Engine
 
           def acquire_entity_minor(entity, token_choice)
             share_difference = pay_choice_difference(entity, @selected_minor, @selected_share_num)
+            log_choice = pay_choice_str(entity, @selected_minor, @selected_share_num, show_owner_name: true)
 
             # Transfer money from/to corporation and minor owner
             @selected_minor.owner.spend(share_difference.abs, entity) if share_difference.negative?
@@ -155,7 +157,8 @@ module Engine
             trains = @game.transfer(:trains, @selected_minor, entity).map(&:name)
             receiving << "trains (#{trains})" if trains.any?
 
-            if token_choice == 'replace'
+            case token_choice
+            when 'replace'
               minor_city = @selected_minor.tokens.first.city
               if minor_city.tokened_by?(entity)
                 @game.move_exchange_token(entity)
@@ -166,12 +169,12 @@ module Engine
                 tokens = move_tokens_to_surviving(entity, @selected_minor, check_tokenable: false)
                 receiving << "a token on hex #{tokens.compact}"
               end
-            elsif token_choice == 'exchange'
+            when 'exchange'
               @game.move_exchange_token(entity)
               receiving << 'one token from exchange to available'
             end
 
-            @log << pay_choice_str(entity, @selected_minor, @selected_share_num, show_owner_name: true)
+            @log << log_choice
             @log << "#{entity.id} acquired #{@selected_minor.id} receiving #{receiving.join(', ')}"
 
             # Close the minor, this also removes the minor token if the token choice of 'remove' is selected

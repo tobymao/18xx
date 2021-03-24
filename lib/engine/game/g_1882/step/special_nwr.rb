@@ -111,7 +111,15 @@ module Engine
           end
 
           def process_lay_tile(action)
-            lay_tile(action, entity: action.entity.owner)
+            owner = action.entity.owner
+            lay_tile(action, entity: owner)
+            @round.laid_hexes << action.hex
+
+            # Record any track laid after the dividend step
+            if owner&.corporation? && (operating_info = owner.operating_history[[@game.turn, @round.round_num]])
+              operating_info.laid_hexes = @round.laid_hexes
+            end
+
             gain_nwr_bonus(action.tile, action.entity.owner)
             ability(action.entity).use!
             @state = nil
@@ -157,7 +165,7 @@ module Engine
             when nil, :place_token
               @game.abilities(entity, :token)
             when :lay_tile
-              @game.abilities(entity, :tile_lay, time: 'special_track')
+              @game.abilities(entity, :tile_lay)
             end
           end
         end

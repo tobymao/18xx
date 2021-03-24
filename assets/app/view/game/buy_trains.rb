@@ -2,25 +2,33 @@
 
 require 'view/game/actionable'
 require 'view/game/emergency_money'
+require 'view/game/alternate_corporations'
 
 module View
   module Game
     class BuyTrains < Snabberb::Component
       include Actionable
       include EmergencyMoney
+      include AlternateCorporations
       needs :show_other_players, default: nil, store: true
       needs :corporation, default: nil
       needs :active_shell, default: nil, store: true
 
       def render_president_contributions
         player = @corporation.owner
+        step = @game.round.active_step
 
         children = []
 
         verb = @must_buy_train ? 'must' : 'may'
 
+        cheapest_train_price = if step.respond_to?(:cheapest_train_price)
+                                 step.cheapest_train_price(@corporation)
+                               else
+                                 @depot.min_depot_price
+                               end
         cash = @corporation.cash + player.cash
-        share_funds_required = @depot.min_depot_price - cash
+        share_funds_required = cheapest_train_price - cash
         share_funds_allowed = if @game.class::EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST
                                 share_funds_required
                               else
@@ -28,42 +36,46 @@ module View
                               end
         share_funds_possible = @game.liquidity(player, emergency: true) - player.cash
 
-        if @depot.min_depot_price > @corporation.cash
+        if cheapest_train_price > @corporation.cash
           children << h(:div, "#{player.name} #{verb} contribute "\
-                              "#{@game.format_currency(@depot.min_depot_price - @corporation.cash)} "\
+                              "#{@game.format_currency(cheapest_train_price - @corporation.cash)} "\
                               "for #{@corporation.name} to afford a train from the Depot.")
         end
 
         children << h(:div, "#{player.name} has #{@game.format_currency(player.cash)} in cash.")
 
-        if share_funds_allowed.positive?
-          children << h(:div, "#{player.name} has #{@game.format_currency(share_funds_possible)} "\
-                              'in sellable shares.')
+        if @game.class::EBUY_CAN_SELL_SHARES
+          if share_funds_allowed.positive?
+            children << h(:div, "#{player.name} has #{@game.format_currency(share_funds_possible)} "\
+                                'in sellable shares.')
+          end
+
+          if share_funds_required.positive?
+            children << h(:div, "#{player.name} #{verb} sell shares to raise at least "\
+                                "#{@game.format_currency(share_funds_required)}.")
+          end
+
+          if share_funds_allowed.positive? &&
+             (share_funds_allowed != share_funds_required) &&
+             (share_funds_possible >= share_funds_allowed)
+            children << h(:div, "#{player.name} may continue to sell shares until raising up to "\
+                                "#{@game.format_currency(share_funds_allowed)}.")
+          end
         end
 
-        if share_funds_required.positive?
-          children << h(:div, "#{player.name} #{verb} sell shares to raise at least "\
-                              "#{@game.format_currency(share_funds_required)}.")
-        end
-
-        if share_funds_allowed.positive? &&
-           (share_funds_allowed != share_funds_required) &&
-           (share_funds_possible >= share_funds_allowed)
-          children << h(:div, "#{player.name} may continue to sell shares until raising up to "\
-                              "#{@game.format_currency(share_funds_allowed)}.")
-        end
-
-        step = @game.round.active_step
         must_take_loan = step.must_take_loan?(@corporation) if step.respond_to?(:must_take_loan?)
         if must_take_loan
           children << h(:div, "#{player.name} does not have enough liquidity to "\
                               "contribute towards #{@corporation.name} buying a train "\
                               "from the Depot. #{@corporation.name} must buy a "\
                               "train from another corporation, or #{player.name} must "\
-                              "take a loan of #{@game.format_currency(share_funds_required)}")
+                              "take a loan of at least #{@game.format_currency(share_funds_required)}")
         end
 
-        if @must_buy_train && share_funds_possible < share_funds_required && !must_take_loan
+        if @must_buy_train &&
+           share_funds_possible < share_funds_required &&
+           !must_take_loan &&
+           @game.can_go_bankrupt?(player, @corporation)
           children << h(:div, "#{player.name} does not have enough liquidity to "\
                               "contribute towards #{@corporation.name} buying a train "\
                               "from the Depot. #{@corporation.name} must buy a "\
@@ -93,11 +105,6 @@ module View
         @must_buy_train = step.must_buy_train?(@corporation)
         @should_buy_train = step.should_buy_train?(@corporation)
 
-        h3_props = {
-          style: {
-            margin: '0.5rem 0 0 0',
-          },
-        }
         div_props = {
           style: {
             display: 'grid',
@@ -120,17 +127,29 @@ module View
           if @should_buy_train == :liquidation
             children << h(:div, "#{@corporation.name} must buy a train or it will be liquidated")
           end
-          children << h(:h3, h3_props, 'Available Trains')
+          children << h(:h3, 'Available Trains')
           children << h(:div, div_props, [
             *from_depot(depot_trains),
             *other_corp_trains.any? ? other_trains(other_corp_trains) : '',
           ])
         end
 
+        @slot_checkboxes = {}
+        if step.respond_to?(:slot_view) && (view = step.slot_view(@corporation))
+          children << send("render_#{view}")
+        end
+
+        scrappable_trains = []
+        scrappable_trains = step.scrappable_trains(@corporation) if step.respond_to?(:scrappable_trains)
+        unless scrappable_trains.empty?
+          children << h(:h3, 'Trains to Scrap')
+          children << h(:div, div_props, scrap_trains(scrappable_trains))
+        end
+
         discountable_trains = @game.discountable_trains_for(@corporation)
 
         if discountable_trains.any? && step.discountable_trains_allowed?(@corporation)
-          children << h(:h3, h3_props, 'Exchange Trains')
+          children << h(:h3, 'Exchange Trains')
 
           discountable_trains.each do |train, discount_train, variant, price|
             exchange_train = lambda do
@@ -153,7 +172,7 @@ module View
           end
         end
 
-        children << h(:h3, h3_props, 'Remaining Trains')
+        children << h(:h3, 'Remaining Trains')
         children << remaining_trains
 
         children << h(:div, "#{@corporation.name} has #{@game.format_currency(@corporation.cash)}.")
@@ -198,6 +217,7 @@ module View
                 price: price,
                 variant: name,
                 shell: @active_shell,
+                slots: slots,
               ))
             end
 
@@ -211,7 +231,17 @@ module View
         end
       end
 
+      # return checkbox values for slots (if any)
+      def slots
+        return if @slot_checkboxes.empty?
+
+        @slot_checkboxes.keys.map do |k|
+          k if Native(@slot_checkboxes[k]).elm.checked
+        end.compact
+      end
+
       def other_trains(other_corp_trains)
+        step = @game.round.active_step
         hidden_trains = false
         trains_to_buy = other_corp_trains.flat_map do |other, trains|
           trains.group_by(&:name).flat_map do |name, group|
@@ -225,35 +255,64 @@ module View
               attrs: price_range(group[0]),
             )
 
+            extra_due_checkbox = nil
             buy_train_click = lambda do
               price = input.JS['elm'].JS['value'].to_i
+              extra_due = extra_due_checkbox && Native(extra_due_checkbox).elm.checked
               buy_train = lambda do
                 process_action(Engine::Action::BuyTrain.new(
                   @corporation,
                   train: group[0],
                   price: price,
                   shell: @active_shell,
+                  slots: slots,
+                  extra_due: extra_due,
                 ))
               end
 
-              if other.owner == @corporation.owner
+              if other_owner(other) == @corporation.owner
                 buy_train.call
               else
-                check_consent(other.owner, buy_train)
+                check_consent(other_owner(other), buy_train)
               end
             end
 
             count = group.size
 
-            if @show_other_players || other.owner == @corporation.owner
-              [h(:div, name),
-               h('div.nowrap', "#{other.name} (#{count > 1 ? "#{count}, " : ''}#{other.owner.name})"),
-               input,
-               h('button.no_margin', { on: { click: buy_train_click } }, 'Buy')]
-            else
-              hidden_trains = true
-              nil
+            real_name = other_owner(other) != other.owner ? " [#{other_owner(other).name}]" : ''
+
+            line = if @show_other_players || other_owner(other) == @corporation.owner
+                     [h(:div, name),
+                      h('div.nowrap',
+                        "#{other.name} (#{count > 1 ? "#{count}, " : ''}#{other.owner.name}#{real_name})"),
+                      input,
+                      h('button.no_margin', { on: { click: buy_train_click } }, 'Buy')]
+                   else
+                     hidden_trains = true
+                     nil
+                   end
+
+            if line && step.respond_to?(:extra_due) && step.extra_due(group[0])
+              extra_due_checkbox = h(
+                'input.no_margin',
+                style: {
+                  width: '1rem',
+                  height: '1rem',
+                  padding: '0 0 0 0.2rem',
+                },
+                attrs: {
+                  type: 'checkbox',
+                  id: 'extra_due',
+                  name: 'extra_due',
+                }
+              )
+
+              line << h(:div, '')
+              line << h(:div, step.extra_due_text(group[0]))
+              line << h(:div, step.extra_due_prompt)
+              line << h(:div, [extra_due_checkbox])
             end
+            line
           end
         end.compact
 
@@ -275,6 +334,29 @@ module View
                              'Hide trains from other players')
         end
         trains_to_buy
+      end
+
+      # need to abstract due to corporations owning minors owning trains
+      def other_owner(other)
+        step = @game.round.active_step
+        step.respond_to?(:real_owner) ? step.real_owner(other) : other.owner
+      end
+
+      def scrap_trains(scrappable_trains)
+        step = @game.round.active_step
+        scrappable_trains.flat_map do |train|
+          scrap = lambda do
+            process_action(Engine::Action::ScrapTrain.new(
+              @corporation,
+              train: train,
+            ))
+          end
+
+          [h(:div, train.name),
+           h('div.nowrap', train.owner.name),
+           h('div.right', step.scrap_info(train)),
+           h('button.no_margin', { on: { click: scrap } }, step.scrap_button_text(train))]
+        end
       end
 
       def price_range(train)

@@ -36,6 +36,10 @@ module Engine
             current_entity
           end
 
+          def others_acted?
+            !@round.converts.empty?
+          end
+
           def process_convert(action)
             corporation = action.entity
             before = corporation.total_shares
@@ -46,9 +50,10 @@ module Engine
             tokens = corporation.tokens.size
 
             @round.tokens_needed =
-              if after == 5
+              case after
+              when 5
                 tokens < 8 ? 1 : 0
-              elsif after == 10
+              when 10
                 [[8 - tokens, 0].max, 2].min
               else
                 0

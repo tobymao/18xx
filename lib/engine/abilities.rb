@@ -9,6 +9,8 @@ end
 
 module Engine
   module Abilities
+    attr_reader :abilities
+
     def init_abilities(abilities)
       @abilities = []
 
@@ -19,12 +21,13 @@ module Engine
         @abilities << ability
       end
 
-      @start_count = @abilities.map(&:start_count).compact.max
+      update_start_counter!
     end
 
     def add_ability(ability)
       ability.owner = self
       @abilities << ability
+      update_start_counter!
     end
 
     def remove_ability(ability)
@@ -56,6 +59,10 @@ module Engine
         count = [a.count, a.start_count] if a.start_count
       end
       count
+    end
+
+    def update_start_counter!
+      @start_count = @abilities.map(&:start_count).compact.max
     end
   end
 end

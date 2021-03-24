@@ -14,6 +14,17 @@ module Engine
 
             super
           end
+
+          def process_lay_tile(action)
+            old_tile = action.hex.tile
+
+            super
+
+            return unless old_tile.label.to_s == 'P'
+
+            old_tile.label = nil if %i[yellow green].include?(old_tile.color)
+            action.tile.label = 'P' if %i[yellow green].include?(action.tile.color)
+          end
         end
       end
     end

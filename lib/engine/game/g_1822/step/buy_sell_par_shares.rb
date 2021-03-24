@@ -13,6 +13,7 @@ module Engine
           attr_accessor :bidders, :bid_actions
 
           def actions(entity)
+            return ['choose_ability'] unless choices_ability(entity).empty?
             return [] unless entity == current_entity
             return ['sell_shares'] if must_sell?(entity)
 
@@ -23,18 +24,36 @@ module Engine
             actions << 'par' if @bid_actions.zero? && can_ipo_any?(entity) && player_debt.zero?
             actions << 'sell_shares' if can_sell_any?(entity)
             actions << 'bid' if player_debt.zero?
-            actions << 'payoff_player_debt' if player_debt.positive? && entity.cash >= player_debt
+            actions << 'payoff_player_debt' if player_debt.positive? && entity.cash.positive?
             actions << 'pass' unless actions.empty?
             actions
+          end
+
+          def choices_ability(entity)
+            return {} unless entity.company?
+
+            choices = @game.company_choices(entity, :stock_round)
+            if !choices.empty? && entity.id == @game.class::COMPANY_OSTH &&
+                (@bid_actions.positive? || @game.player_debt(entity.owner).positive?)
+              return {}
+            end
+
+            choices
           end
 
           def available_cash(entity)
             entity.cash - committed_cash(entity)
           end
 
-          def available_par_cash(entity, corporation)
+          def available_par_cash(entity, corporation, share_price: nil)
             available = available_cash(entity)
-            available += corporation.par_via_exchange.value if corporation.par_via_exchange
+            if corporation.par_via_exchange
+              available += if share_price && corporation.id == 'LNWR'
+                             share_price.price
+                           else
+                             corporation.par_via_exchange.value
+                           end
+            end
             available
           end
 
@@ -44,11 +63,13 @@ module Engine
             corporation = bundle.corporation
             return unless corporation.type == :major
 
+            exchange_bundle = bundle.is_a?(ShareBundle) ? bundle : ShareBundle.new(bundle)
+            exchange = exchange_bundle.presidents_share && @game.phase.status.include?('can_convert_concessions')
             cash = available_cash || available_cash(entity)
             cash >= bundle.price &&
               !@round.players_sold[entity][corporation] &&
-              (can_buy_multiple?(entity, corporation) || !bought?) &&
-              can_gain?(entity, bundle)
+              (can_buy_multiple?(entity, corporation, bundle.owner) || !bought?) &&
+              can_gain?(entity, bundle, exchange: exchange)
           end
 
           def can_buy_any_from_ipo?(entity)
@@ -60,12 +81,24 @@ module Engine
             false
           end
 
+          def can_gain?(entity, bundle, exchange: false)
+            return if !bundle || !entity
+
+            corporation = bundle.corporation
+            corporation.holding_ok?(entity, bundle.percent) &&
+              (!corporation.counts_for_limit || exchange || num_certs_with_bids(entity) < @game.cert_limit)
+          end
+
           def can_ipo_any?(entity)
             !bought? && @game.corporations.select { |c| c.type == :major }.any? do |corporation|
               @game.can_par?(corporation, entity) &&
                 can_buy?(entity, corporation.shares.first&.to_bundle,
                          available_cash: available_par_cash(entity, corporation))
             end
+          end
+
+          def num_certs_with_bids(entity)
+            @game.num_certs(entity) + bids_for_player(entity, only_committed_bids: true).size
           end
 
           def description
@@ -81,13 +114,8 @@ module Engine
               .select { |p| p.price * share_multiplier <= available_cash }
           end
 
-          def log_pass(entity)
-            @log << "#{entity.name} passes"
-          end
-
           def pass!
-            @round.bidders = @bidders
-            @round.bids = @bids
+            store_bids!
             super
           end
 
@@ -100,11 +128,29 @@ module Engine
           def process_bid(action)
             action.entity.unpass!
             add_bid(action)
+            store_bids!
           end
 
           def process_buy_shares(action)
             super
             log_pass(action.entity)
+            pass!
+          end
+
+          def process_choose_ability(action)
+            unless action.entity.id == @game.class::COMPANY_OSTH
+              return @game.company_made_choice(action.entity, action.choice, :stock_round)
+            end
+
+            bundle = @game.company_tax_haven_bundle(action.choice)
+            entity = action.entity.owner
+            if available_cash(entity) < bundle.price || @round.players_sold[entity][bundle.corporation]
+              raise GameError, "Can't buy a share of #{bundle&.corporation&.name}"
+            end
+
+            @game.company_made_choice(action.entity, action.choice, :stock_round)
+            track_action(action, action.entity)
+            log_pass(entity)
             pass!
           end
 
@@ -140,8 +186,7 @@ module Engine
               corporation.par_via_exchange.close!
 
               @game.after_par(corporation)
-              @round.last_to_act = entity
-              @current_actions << action
+              track_action(action, corporation)
             else
               super
             end
@@ -151,13 +196,10 @@ module Engine
           end
 
           def process_payoff_player_debt(action)
-            entity = action.entity
-
-            player_debt = @game.player_debt(entity)
-            entity.check_cash(player_debt)
-            @log << "#{entity.name} pays off its loan of #{@game.format_currency(player_debt)}"
-
-            @game.payoff_player_loan(entity)
+            player = action.entity
+            @game.payoff_player_loan(player)
+            @round.last_to_act = player
+            @round.current_actions << action
           end
 
           def setup
@@ -166,6 +208,7 @@ module Engine
 
             @bid_actions = 0
             @bidders = @round.bidders || Hash.new { |h, k| h[k] = [] }
+            @bid_exceeded = @round.bid_exceeded || Hash.new { |h, k| h[k] = [] }
             @bids = @round.bids if @round.bids
           end
 
@@ -174,25 +217,50 @@ module Engine
           end
 
           def can_bid?(entity, company)
+            return false unless num_certs_with_bids(entity) < @game.cert_limit
             return false if max_bid(entity, company) < min_bid(company) || highest_player_bid?(entity, company)
 
             !(!find_bid(entity, company) && bidding_tokens(entity).zero?)
           end
 
+          def store_bids!
+            @round.bidders = @bidders
+            @round.bids = @bids
+            @bid_exceeded[current_entity].clear
+            @round.bid_exceeded = @bid_exceeded
+          end
+
+          def should_stop_applying_program(entity, share_to_buy)
+            unless @bid_exceeded[entity].empty?
+              return "No longer winning bids on #{@bid_exceeded[entity].map(&:id).join(',')}"
+            end
+
+            super
+          end
+
+          def action_is_shenanigan?(entity, action, corporation, share_to_buy)
+            # Bid is done in should_stop_applying_program
+            return if action.is_a?(Action::Bid)
+
+            super
+          end
+
           protected
 
           def add_bid(action)
-            super
-
             company = action.company
             price = action.price
             entity = action.entity
 
-            @bidders[company] |= [entity]
+            winning_bid = highest_bid(company)
+            # Mark the previous highest bid as no longer winning
+            @bid_exceeded[winning_bid.entity] << company if winning_bid
 
-            @current_actions << action
+            super
+            @bidders[company] |= [entity]
+            track_action(action, bid_target(action))
+
             @log << "#{entity.name} bids #{@game.format_currency(price)} for #{company.name}"
-            @round.last_to_act = action.entity
             @bid_actions += 1
 
             return if @bid_actions < @game.class::BIDDING_TOKENS_PER_ACTION

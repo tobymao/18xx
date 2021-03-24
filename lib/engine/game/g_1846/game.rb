@@ -225,7 +225,11 @@ module Engine
                         price: 900,
                       },
                     ],
-                    events: [{ 'type' => 'remove_tokens' }],
+                    events: [
+                      { 'type' => 'remove_markers' },
+                      { 'type' => 'remove_reservations' },
+],
+
                   }].freeze
 
         COMPANIES = [
@@ -419,16 +423,22 @@ module Engine
             sym: 'PRR',
             name: 'Pennsylvania Railroad',
             logo: '1846/PRR',
+            simple_logo: '1846/PRR.alt',
             tokens: [0, 80, 80, 80, 80],
             abilities: [
             {
               type: 'token',
               description: 'Reserved $40/$60 Ft. Wayne (E11) token',
+              desc_detail: 'May place token in Ft. Wayne (E11) for $40 if connected, $60 otherwise. Token slot is reserved until Phase IV.',
               hexes: ['E11'],
               price: 40,
               teleport_price: 60,
             },
-            { type: 'reservation', hex: 'E11', remove: 'IV' },
+            {
+              type: 'reservation',
+              hex: 'E11',
+              remove: 'IV',
+            },
           ],
             coordinates: 'F20',
             color: :"#FF0000",
@@ -440,6 +450,7 @@ module Engine
             sym: 'NYC',
             name: 'New York Central Railroad',
             logo: '1846/NYC',
+            simple_logo: '1846/NYC.alt',
             tokens: [0, 80, 80, 80],
             coordinates: 'D20',
             color: '#110a0c',
@@ -451,17 +462,23 @@ module Engine
             sym: 'B&O',
             name: 'Baltimore & Ohio Railroad',
             logo: '1846/BO',
+            simple_logo: '1846/BO.alt',
             tokens: [0, 80, 80, 80],
             abilities: [
               {
                 type: 'token',
                 description: 'Reserved $40/$100 Cincinnati (H12) token',
+                desc_detail: 'May place token in Cincinnati (H12) for $40 if connected, $100 otherwise. Token slot is reserved until Phase IV.',
                 hexes: ['H12'],
                 price: 40,
                 count: 1,
                 teleport_price: 100,
               },
-              { type: 'reservation', hex: 'H12', remove: 'IV' },
+              {
+                type: 'reservation',
+                hex: 'H12',
+                remove: 'IV',
+              },
             ],
             coordinates: 'G19',
             color: '#025aaa',
@@ -473,6 +490,7 @@ module Engine
             sym: 'C&O',
             name: 'Chesapeake & Ohio Railroad',
             logo: '1846/CO',
+            simple_logo: '1846/CO.alt',
             tokens: [0, 80, 80, 80],
             coordinates: 'I15',
             color: :"#ADD8E6",
@@ -485,16 +503,23 @@ module Engine
             sym: 'ERIE',
             name: 'Erie Railroad',
             logo: '1846/ERIE',
+            simple_logo: '1846/ERIE.alt',
             tokens: [0, 80, 80, 80],
             abilities: [
               {
                 type: 'token',
                 description: 'Reserved $40 Erie (D20) token',
+                desc_detail: 'May place $40 token in Erie (D20) if connected. Token slot is reserved until Phase IV.',
                 hexes: ['D20'],
                 count: 1,
                 price: 40,
               },
-              { type: 'reservation', hex: 'D20', slot: 1, remove: 'IV' },
+              {
+                type: 'reservation',
+                hex: 'D20',
+                slot: 1,
+                remove: 'IV',
+              },
             ],
             coordinates: 'E21',
             color: :"#FFF500",
@@ -507,6 +532,7 @@ module Engine
             sym: 'GT',
             name: 'Grand Trunk Railway',
             logo: '1846/GT',
+            simple_logo: '1846/GT.alt',
             tokens: [0, 80, 80],
             coordinates: 'B16',
             color: '#f58121',
@@ -518,12 +544,14 @@ module Engine
             sym: 'IC',
             name: 'Illinois Central Railroad',
             logo: '1846/IC',
+            simple_logo: '1846/IC.alt',
             tokens: [0, 80, 80, 80],
             abilities: [
               {
                 type: 'tile_lay',
                 free: true,
                 description: 'Free tile lay: E5, F6, G5, H6, J4',
+                desc_detail: 'May lay yellow tiles for free on hexes marked with an IC-icon (E5, F6, G5, H6 and J4).',
                 passive: true,
                 when: 'track_and_token',
                 hexes: %w[E5 F6 G5 H6 J4],
@@ -532,14 +560,20 @@ module Engine
               {
                 type: 'token',
                 description: 'Reserved $40 Centralia (I5) token',
+                desc_detail: 'May place $40 token in Centralia (I5). Token slot is reserved until Phase IV.',
                 hexes: ['I5'],
                 count: 1,
                 price: 40,
               },
-              { type: 'reservation', hex: 'I5', remove: 'IV' },
+              {
+                type: 'reservation',
+                hex: 'I5',
+                remove: 'IV',
+              },
               {
                 type: 'base',
                 description: 'Receives subsidy equal to its par price',
+                desc_detail: 'Upon being launched IC receives a subsidy equal to its par price paid by the bank into its treasury.',
                 remove: 'par',
               },
             ],
@@ -555,6 +589,7 @@ module Engine
             sym: 'MS',
             name: 'Michigan Southern',
             logo: '1846/MS',
+            simple_logo: '1846/MS.alt',
             tokens: [0],
             coordinates: 'C15',
             color: :pink,
@@ -564,6 +599,7 @@ module Engine
             sym: 'BIG4',
             name: 'Big 4',
             logo: '1846/B4',
+            simple_logo: '1846/B4.alt',
             tokens: [0],
             coordinates: 'G9',
             color: :cyan,
@@ -718,7 +754,10 @@ module Engine
         MEAT_REVENUE_DESC = 'Meat-Packing'
 
         TILE_COST = 20
-        EVENTS_TEXT = Base::EVENTS_TEXT.merge('remove_tokens' => ['Remove Tokens', 'Remove Steamboat and Meat Packing markers']).freeze
+        EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+          'remove_markers' => ['Remove Markers', 'Remove Steamboat and Meat Packing markers'],
+          'remove_reservations' => ['Remove Reservations', 'Remove reserved token slots for corporations']
+        ).freeze
 
         ASSIGNMENT_TOKENS = {
           'MPC' => '/icons/1846/mpc_token.svg',
@@ -737,7 +776,7 @@ module Engine
         end
 
         def init_companies(players)
-          super + num_pass_companies(players).times.map do |i|
+          super + Array.new(num_pass_companies(players)) do |i|
             name = "Pass (#{i + 1})"
 
             Company.new(
@@ -872,7 +911,7 @@ module Engine
 
           steam = steamboat.id
           if route.corporation.assigned?(steam) && (port = stops.map(&:hex).find { |hex| hex.assigned?(steam) })
-            revenue += 20 * port.tile.icons.select { |icon| icon.name == 'port' }.size
+            revenue += 20 * port.tile.icons.count { |icon| icon.name == 'port' }
           end
 
           revenue += east_west_bonus(stops)[:revenue]
@@ -1036,7 +1075,7 @@ module Engine
             G1846::Step::Dividend,
             Engine::Step::DiscardTrain,
             G1846::Step::BuyTrain,
-            [G1846::Step::BuyCompany, blocks: true],
+            [G1846::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 
@@ -1052,7 +1091,11 @@ module Engine
           remove_lsl_icons
         end
 
-        def event_remove_tokens!
+        def event_remove_reservations!
+          @log << '-- Event: Reserved token slots removed --'
+        end
+
+        def event_remove_markers!
           removals = Hash.new { |h, k| h[k] = {} }
 
           @corporations.each do |corp|
@@ -1096,6 +1139,11 @@ module Engine
           return [] if corporation.receivership?
 
           super
+        end
+
+        def total_emr_buying_power(player, corporation)
+          emergency = (issuable = emergency_issuable_cash(corporation)).zero?
+          corporation.cash + issuable + liquidity(player, emergency: emergency)
         end
 
         def issuable_shares(entity)

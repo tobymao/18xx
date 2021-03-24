@@ -17,7 +17,7 @@ module Engine
     describe '18GA' do
       describe 9222 do
         it 'MRC\'s ability cannot be used by a non-owning corporation' do
-          game = game_at_action(game_file, 297)
+          game = game_at_action(game_file, 248)
           action = {
             'type' => 'lay_tile',
             'entity' => 'MRC',
@@ -30,13 +30,13 @@ module Engine
           expect(game.process_action(action).exception).to be_a(GameError)
         end
         it 'MRC\'s ability can be used by the owning corporation' do
-          game = game_at_action(game_file, 335)
+          game = game_at_action(game_file, 284)
           mrc = game.company_by_id('MRC')
 
           expect(game.active_step).to be_a(Step::Track)
           expect(game.round.actions_for(mrc)).to eq(%w[lay_tile pass])
 
-          game = game_at_action(game_file, 336)
+          game = game_at_action(game_file, 285)
           mrc = game.company_by_id('MRC')
 
           expect(game.active_step).to be_a(Step::Token)
@@ -48,13 +48,13 @@ module Engine
     describe '18Chesapeake' do
       describe 1277 do
         it 'closes Cornelius Vanderbilt when SRR buys a train' do
-          game = game_at_action(game_file, 168)
+          game = game_at_action(game_file, 171)
           expect(game.cornelius.closed?).to eq(false)
 
           srr = game.corporation_by_id('SRR')
           expect(game.abilities(game.cornelius, :shares).shares.first.corporation).to eq(srr)
 
-          game = game_at_action(game_file, 169)
+          game = game_at_action(game_file, 172)
           expect(game.cornelius.closed?).to eq(true)
         end
       end
@@ -158,6 +158,15 @@ module Engine
           expect(game.illinois_central.cash).to be(280)
         end
       end
+
+      describe 20_381 do
+        it 'cannot go bankrupt when shares can be emergency issued' do
+          game = game_at_action(game_file, 308)
+          prr = game.corporation_by_id('PRR')
+          expect(game.can_go_bankrupt?(prr.player, prr)).to be(false)
+          expect(game.emergency_issuable_cash(prr)).to eq(10)
+        end
+      end
     end
 
     describe '1846 2p Variant' do
@@ -235,6 +244,26 @@ module Engine
           game = game_at_action(game_file, 317)
           sc = game.company_by_id('SC')
           expect(sc.closed?).to eq(true)
+        end
+      end
+    end
+
+    describe '18 Los Angeles' do
+      describe 30_265 do
+        it 'LA Title places a neutral token' do
+          game = game_at_action(game_file, 31)
+
+          action = {
+            'type' => 'place_token',
+            'entity' => 'LAT',
+            'entity_type' => 'company',
+            'city' => 'B13-0-0',
+            'slot' => 0,
+          }
+          game.process_action(action)
+          token = game.hex_by_id('B13').tile.cities.first.tokens.first
+
+          expect(token.type).to eq(:neutral)
         end
       end
     end

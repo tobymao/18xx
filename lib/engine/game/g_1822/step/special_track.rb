@@ -13,7 +13,7 @@ module Engine
           ACTIONS = %w[lay_tile].freeze
 
           def actions(entity)
-            action = abilities(entity)
+            action = abilities(entity) && @game.round.active_step.respond_to?(:process_lay_tile)
             return [] unless action
 
             ACTIONS
@@ -37,11 +37,13 @@ module Engine
                       else
                         @game.current_entity
                       end
+            @in_process = true
             if @game.company_ability_extra_track?(entity)
               upgraded_extra_track = upgraded_track?(action)
               raise GameError, 'Cannot lay an extra upgrade' if upgraded_extra_track && @extra_laided_track
 
               lay_tile(action, spender: spender)
+              @round.laid_hexes << action.hex
               if upgraded_extra_track || spender.type == :minor
                 # Use the ability an extra time, upgrade counts as 2 tile lays. Or if its a minor, they ony get one use
                 ability.use!
@@ -51,24 +53,31 @@ module Engine
             else
               lay_tile_action(action, spender: spender)
             end
+            @in_process = false
             @game.after_lay_tile(action.hex, action.tile)
             ability.use!
 
-            return if ability.count.positive? || !ability.closed_when_used_up
+            if ability.type == :tile_lay && ability.count.zero? && ability.closed_when_used_up
+              @log << "#{ability.owner.name} closes"
+              ability.owner.close!
+            end
 
-            @log << "#{ability.owner.name} closes"
-            ability.owner.close!
+            return unless ability.type == :teleport
+
+            @round.teleported = ability.owner
           end
 
           def available_hex(entity, hex)
             return unless (ability = abilities(entity))
             return if !ability.hexes&.empty? && !ability.hexes&.include?(hex.id)
+            return @game.hex_by_id(hex.id).neighbors.keys if ability.type == :teleport
 
             operator = entity.owner.corporation? ? entity.owner : @game.current_entity
             connected = hex_neighbors(operator, hex)
             return nil unless connected
 
             return connected if @game.company_ability_extra_track?(entity)
+            return connected if entity.id == @game.class::COMPANY_HSBC
 
             tile_lay = get_tile_lay(operator)
             return nil unless tile_lay
@@ -105,9 +114,39 @@ module Engine
           end
 
           def legal_tile_rotation?(entity, hex, tile)
-            return super unless entity.id == @game.class::COMPANY_MTONR
+            if entity.id == @game.class::COMPANY_LCDR && hex.name == @game.class::ENGLISH_CHANNEL_HEX
+              return tile.rotation.zero?
+            end
+            return legal_tile_rotation_mtonr?(entity.owner, hex, tile) if entity.id == @game.class::COMPANY_MTONR
 
-            true
+            super
+          end
+
+          def legal_tile_rotation_mtonr?(entity, hex, tile)
+            return false unless @game.legal_tile_rotation?(entity, hex, tile)
+
+            old_paths = hex.tile.paths
+            old_ctedges = hex.tile.city_town_edges
+
+            new_paths = tile.paths
+            new_exits = tile.exits
+            new_ctedges = tile.city_town_edges
+            extra_cities = [0, new_ctedges.size - old_ctedges.size].max
+            multi_city_upgrade = new_ctedges.size > 1 && old_ctedges.size > 1
+
+            new_exits.all? { |edge| hex.neighbors[edge] } &&
+              !(new_exits & hex_neighbors(entity, hex)).empty? &&
+              old_paths_are_preserved(old_paths, new_paths) &&
+              extra_cities >= new_ctedges.count { |newct| old_ctedges.all? { |oldct| (newct & oldct).none? } } &&
+              (!multi_city_upgrade ||
+                old_ctedges.all? { |oldct| new_ctedges.one? { |newct| (oldct & newct) == oldct } })
+          end
+
+          def old_paths_are_preserved(old_paths, new_paths)
+            # We are removing a town, just check the exits
+            old_exits = old_paths.flat_map(&:exits).uniq
+            new_exits = new_paths.flat_map(&:exits).uniq
+            (old_exits - new_exits).empty?
           end
 
           def potential_tiles(entity, hex)
@@ -128,12 +167,44 @@ module Engine
           def abilities(entity, **kwargs, &block)
             return unless entity&.company?
 
-            @game.abilities(
-              entity,
-              :tile_lay,
-              time: %w[special_track %current_step% owning_corp_or_turn],
-              **kwargs,
-              &block
+            if entity.id == @game.class::COMPANY_LCDR && !@in_process
+              tile = @game.hex_by_id(@game.class::ENGLISH_CHANNEL_HEX).tile
+              city = tile.cities.first
+              phase_color = @game.phase.current[:tiles].last
+              # London, Chatham and Dover Railway may only use its tilelay option if all slots is taken and an
+              # upgrade can make a slot available. this is green to brown, and brown to grey
+              return if city.available_slots.positive? ||
+                @game.exchange_tokens(entity.owner).zero? ||
+                tile.color == :green && !(phase_color == :brown || phase_color == :gray) ||
+                tile.color == :brown && phase_color != :gray
+            end
+
+            if entity.id == @game.class::COMPANY_HSBC && entity.owner&.corporation?
+              hsbc_token = entity.owner.tokens
+                            .select(&:used)
+                            .any? { |t| @game.class::COMPANY_HSBC_TILES.include?(t.city.hex.id) }
+              return unless hsbc_token
+            end
+
+            %i[tile_lay teleport].each do |type|
+              ability = @game.abilities(
+                entity,
+                type,
+                time: %w[special_track %current_step% owning_corp_or_turn],
+                **kwargs,
+                &block
+              )
+              return ability if ability && (ability.type != :teleport || !ability.used?)
+            end
+
+            nil
+          end
+
+          def round_state
+            super.merge(
+              {
+                teleported: nil,
+              }
             )
           end
         end

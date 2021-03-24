@@ -7,7 +7,8 @@ module Engine
   class Train
     include Ownable
 
-    attr_accessor :obsolete, :operated, :events, :variants, :obsolete_on, :rusted, :rusts_on, :index, :name, :distance
+    attr_accessor :obsolete, :operated, :events, :variants, :obsolete_on, :rusted, :rusts_on, :index, :name,
+                  :distance, :reserved
     attr_reader :available_on, :discount, :multiplier, :sym, :variant
     attr_writer :buyable
 
@@ -22,11 +23,13 @@ module Engine
       @available_on = opts[:available_on]
       @discount = opts[:discount]
       @multiplier = opts[:multiplier]
+      @no_local = opts[:no_local]
       @buyable = true
       @rusted = false
       @obsolete = false
       @operated = false
       @events = (opts[:events] || []).select { |e| @index == (e[:when] || 0) }
+      @reserved = opts[:reserved] || false
       init_variants(opts[:variants])
     end
 
@@ -53,7 +56,7 @@ module Engine
       @variant = @variants[new_variant]
       @variant.each { |k, v| instance_variable_set("@#{k}", v) }
 
-      # Remove the @local vaiable, this to get the local? method evaluate the new variant
+      # Remove the @local variable, this to get the local? method evaluate the new variant
       remove_instance_variable(:@local) if defined?(@local)
     end
 
@@ -82,6 +85,7 @@ module Engine
     end
 
     def local?
+      return false if @no_local
       return @local if defined?(@local)
 
       @local = if @distance.is_a?(Numeric)

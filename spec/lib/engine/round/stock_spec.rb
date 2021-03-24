@@ -28,6 +28,13 @@ module Engine
       move_to_sr!
     end
 
+    def finish_sr!
+      round_num = game.round.round_num
+      while game.round.round_num == round_num && game.round.is_a?(Round::Stock)
+        game.process_action(Engine::Action::Pass.new(game.round.current_entity))
+      end
+    end
+
     describe '#can_buy?' do
       it 'can buy yellow at limit' do
         player_0.cash = 10_000
@@ -37,8 +44,8 @@ module Engine
         market.set_par(corp_3, market.market[6][0])
         5.times { game.share_pool.buy_shares(player_0, corp_0.shares[0]) }
         5.times { game.share_pool.buy_shares(player_0, corp_1.shares[0]) }
-        1.times { game.share_pool.buy_shares(player_0, corp_2.shares[0]) } # at 6-player cert limit
-        1.times { game.share_pool.buy_shares(player_1, corp_3.shares[0]) } # at 6-player cert limit
+        game.share_pool.buy_shares(player_0, corp_2.shares[0]) # at 6-player cert limit
+        game.share_pool.buy_shares(player_1, corp_3.shares[0]) # at 6-player cert limit
 
         expect(subject.active_step.can_buy?(player_0, corp_2.shares[0])).to eq(false)
         expect(subject.active_step.can_buy?(player_0, corp_3.shares[0])).to eq(true)
@@ -222,6 +229,8 @@ module Engine
 
         market.set_par(corp_1, game.par_prices[0])
         5.times { game.share_pool.buy_shares(player_1, corp_1.shares.first) }
+
+        move_to_sr!
       end
 
       it 'director can buy two shares from ipo in gray' do
@@ -261,13 +270,14 @@ module Engine
         expect(corp_0.shares.none?).to be_truthy
 
         r, c = corp_0.share_price.coordinates
-        subject.finish_round
+        finish_sr!
         expect(corp_0.share_price).to eq(game.stock_market.market[r - 2][c])
       end
 
       it 'corporation share price goes up if 80% owned by director at end of stock round' do
         share_price = corp_0.share_price
-        subject.finish_round
+        finish_sr!
+        move_to_sr!
         expect(corp_0.share_price).to eq(share_price)
 
         # Owner to 80%
@@ -279,7 +289,7 @@ module Engine
         expect(corp_0.shares.none?).to be_truthy
 
         r, c = corp_0.share_price.coordinates
-        subject.finish_round
+        finish_sr!
         expect(corp_0.share_price).to eq(game.stock_market.market[r - 2][c])
       end
 
@@ -296,7 +306,7 @@ module Engine
         expect(corp_0.shares.none?).to be_truthy
 
         r, c = corp_0.share_price.coordinates
-        subject.finish_round
+        finish_sr!
         expect(corp_0.share_price).to eq(game.stock_market.market[r - 3][c])
       end
     end

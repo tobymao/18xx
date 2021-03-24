@@ -26,10 +26,15 @@ module View
         buy_click = lambda do
           price = input.JS['elm'].JS['value'].to_i
           buy = lambda do
-            if @selected_entity.corporation?
+            if @selected_entity.corporation? || @selected_entity.minor?
+              to_merge = if @selected_corporation.corporation?
+                           { corporation: @selected_entity }
+                         else
+                           { minor: @selected_entity }
+                         end
               process_action(Engine::Action::BuyCorporation.new(
                 @corporation,
-                corporation: @selected_entity,
+                **to_merge,
                 price: price,
               ))
               store(:selected_corporation, nil, skip: true)

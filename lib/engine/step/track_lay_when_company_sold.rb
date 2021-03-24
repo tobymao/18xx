@@ -26,6 +26,7 @@ module Engine
         raise GameError, "Not #{entity.name}'s turn: #{action.to_h}" unless entity == @company
 
         lay_tile(action, spender: entity.owner)
+        @round.laid_hexes << action.hex
         check_connect(action, ability)
         ability.use!
 

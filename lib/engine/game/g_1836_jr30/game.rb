@@ -9,7 +9,7 @@ module Engine
       class Game < Game::Base
         include_meta(G1836Jr30::Meta)
 
-        CURRENCY_FORMAT_STR = '%d F'
+        CURRENCY_FORMAT_STR = '%d F'
 
         BANK_CASH = 6000
 
@@ -251,7 +251,7 @@ module Engine
                           free: true,
                           hexes: ['B8'],
                           tiles: %w[2 56],
-                          when: %w[special_track other_or],
+                          when: 'owning_corp_or_turn',
                           count: 1,
                         }],
           },
@@ -335,6 +335,7 @@ module Engine
             sym: 'B',
             name: "Chemins de Fer de L'État Belge",
             logo: '1836_jr/B',
+            simple_logo: '1836_jr/B.alt',
             tokens: [0, 40, 100, 100],
             coordinates: 'H6',
             color: 'black',
@@ -343,6 +344,7 @@ module Engine
             sym: 'GCL',
             name: 'Grande Compagnie du Luxembourg',
             logo: '1836_jr/GCL',
+            simple_logo: '1836_jr/GCL.alt',
             tokens: [0, 40, 100, 100],
             coordinates: 'I9',
             color: 'green',
@@ -351,6 +353,7 @@ module Engine
             sym: 'Nord',
             name: 'Chemin de Fer du Nord',
             logo: '1836_jr/Nord',
+            simple_logo: '1836_jr/Nord.alt',
             tokens: [0, 40, 100],
             coordinates: 'I3',
             color: 'darkblue',
@@ -359,6 +362,7 @@ module Engine
             sym: 'NBDS',
             name: 'Noord-Brabantsch-Duitsche Spoorweg-Maatschappij',
             logo: '1836_jr/NBDS',
+            simple_logo: '1836_jr/NBDS.alt',
             tokens: [0, 40, 100],
             coordinates: 'E11',
             color: '#ffcd05',
@@ -368,6 +372,7 @@ module Engine
             sym: 'HSM',
             name: 'Hollandsche IJzeren Spoorweg Maatschappij',
             logo: '1836_jr/HSM',
+            simple_logo: '1836_jr/HSM.alt',
             tokens: [0, 40],
             coordinates: 'D6',
             color: '#f26722',
@@ -376,6 +381,7 @@ module Engine
             sym: 'NFL',
             name: 'Noord-Friesche Locaal',
             logo: '1836_jr/NFL',
+            simple_logo: '1836_jr/NFL.alt',
             tokens: [0, 40],
             coordinates: 'A9',
             color: '#90ee90',
@@ -417,12 +423,14 @@ module Engine
             ['H6'] => 'city=revenue:30;path=a:1,b:_0;path=a:_0,b:3;label=B',
             ['I3'] => 'city=revenue:30;path=a:0,b:_0;path=a:_0,b:4;label=B',
           },
-          blue: { %w[E3 G1] =>
-            'offboard=revenue:green_20|brown_30,format:+%d,groups:port,route:never;path=a:4,b:_0;path=a:5,b:_0',
-   },
-          green: { ['J2'] =>
-            'offboard=revenue:green_20|brown_30,format:+%d,groups:port,route:never;path=a:3,b:_0;path=a:4,b:_0',
-   },
+          blue: {
+            %w[E3 G1] =>
+              'offboard=revenue:green_20|brown_30,format:+%d,groups:port,route:never;path=a:4,b:_0;path=a:5,b:_0',
+          },
+          green: {
+            ['J2'] =>
+              'offboard=revenue:green_20|brown_30,format:+%d,groups:port,route:never;path=a:3,b:_0;path=a:4,b:_0',
+          },
         }.freeze
 
         LAYOUT = :pointy
@@ -445,7 +453,7 @@ module Engine
             Engine::Step::Dividend,
             Engine::Step::DiscardTrain,
             G1836Jr30::Step::BuyTrain,
-            [Engine::Step::BuyCompany, blocks: true],
+            [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 

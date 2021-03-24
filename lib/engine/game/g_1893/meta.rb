@@ -10,6 +10,7 @@ module Engine
 
         DEV_STAGE = :prealpha
 
+        GAME_SUBTITLE = 'Cologne'
         GAME_DESIGNER = 'Edwin Eckert'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1893'
         GAME_LOCATION = 'Cologne, Germany'

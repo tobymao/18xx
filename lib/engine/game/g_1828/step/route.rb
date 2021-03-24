@@ -26,19 +26,16 @@ module Engine
           end
 
           def route_uses_tile_lay(routes)
-            tile_used = false
             stops = routes.first.visited_stops
-            tile = @round.last_tile_lay
+            tile = @round.laid_hexes.first&.tile
 
-            if tile.nodes.any?
-              tile_used = (stops & tile.nodes).any?
-            else
-              tile.paths.each do |path|
-                path.walk { |p| tile_used ||= (stops & p.nodes).any? }
-              end
+            return !(stops & tile.nodes).empty? unless tile.nodes.empty?
+
+            tile.paths.each do |path|
+              path.walk { |p| return true unless (stops & p.nodes).empty? }
             end
 
-            tile_used
+            false
           end
         end
       end

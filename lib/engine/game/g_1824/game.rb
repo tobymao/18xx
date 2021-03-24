@@ -828,7 +828,7 @@ module Engine
 
         def init_train_handler
           trains = self.class::TRAINS.flat_map do |train|
-            (train[:num] || num_trains(train)).times.map do |index|
+            Array.new((train[:num] || num_trains(train))) do |index|
               Train.new(**train, index: index)
             end
           end
@@ -1070,8 +1070,8 @@ module Engine
             'Staatsbahn'
           elsif regional?(entity)
             str = 'Regional Railway'
-            if (coal = associated_coal_railway(entity))
-              str += " - Presidency reserved (#{coal.name})" unless coal.closed?
+            if (coal = associated_coal_railway(entity)) && !coal.closed?
+              str += " - Presidency reserved (#{coal.name})"
             end
             str
           end
@@ -1254,7 +1254,7 @@ module Engine
 
           # Transfer Coal Railway cash and trains to Regional. Remove CR token.
           if minor.cash.positive?
-            @log << "#{regional.name} recieves the #{minor.name} treasury of #{format_currency(minor.cash)}"
+            @log << "#{regional.name} receives the #{minor.name} treasury of #{format_currency(minor.cash)}"
             minor.spend(minor.cash, regional)
           end
           unless minor.trains.empty?
@@ -1289,6 +1289,7 @@ module Engine
           end
 
           float_corporation(regional) if regional.floated?
+          regional
         end
 
         def float_corporation(corporation)

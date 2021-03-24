@@ -289,12 +289,12 @@ module Engine
                 hexes: %w[C3 D4 D6 E5],
                 price: 0,
                 teleport_price: 0,
-                when: %w[special_track owning_corp_or_turn],
+                when: 'owning_corp_or_turn',
                 count: 1,
               },
               {
                 type: 'tile_lay',
-                when: %w[special_track owning_corp_or_turn],
+                when: 'owning_corp_or_turn',
                 owner_type: 'corporation',
                 count: 1,
                 hexes: [],
@@ -340,6 +340,7 @@ module Engine
             sym: 'CN',
             name: 'Canadian National',
             logo: '1882/CN',
+            simple_logo: '1882/CN.alt',
             tokens: [],
             color: :orange,
             text_color: 'black',
@@ -349,6 +350,7 @@ module Engine
             sym: 'CNR',
             name: 'Canadian Northern',
             logo: '1882/CNR',
+            simple_logo: '1882/CNR.alt',
             tokens: [0, 40, 100],
             coordinates: 'D8',
             color: '#237333',
@@ -358,6 +360,7 @@ module Engine
             sym: 'HBR',
             name: 'Hudson Bay Railway',
             logo: '1882/HBR',
+            simple_logo: '1882/HBR.alt',
             tokens: [0, 40, 100],
             coordinates: 'G11',
             color: :gold,
@@ -368,6 +371,7 @@ module Engine
             sym: 'CPR',
             name: 'Canadian Pacific Railway',
             logo: '1882/CPR',
+            simple_logo: '1882/CPR.alt',
             tokens: [0, 40, 100, 100],
             coordinates: 'I5',
             color: '#d81e3e',
@@ -377,6 +381,7 @@ module Engine
             sym: 'GT',
             name: 'Grand Trunk Pacific',
             logo: '1882/GT',
+            simple_logo: '1882/GT.alt',
             tokens: [0, 40, 100],
             coordinates: 'L8',
             color: :black,
@@ -386,6 +391,7 @@ module Engine
             sym: 'SC',
             name: 'Saskatchewan Central Railroad',
             logo: '1882/SC',
+            simple_logo: '1882/SC.alt',
             tokens: [0],
             color: '#0189d1',
             reservation_color: nil,
@@ -394,6 +400,7 @@ module Engine
             sym: 'QLL',
             name: "Qu'Appelle, Long Lake Railroad Co.",
             logo: '1882/QLL',
+            simple_logo: '1882/QLL.alt',
             tokens: [0, 40],
             coordinates: 'J10',
             color: :purple,
@@ -512,10 +519,11 @@ module Engine
             'border=edge:4,type:water,cost:40',
             ['F12'] => 'path=a:1,b:3',
           },
-          blue: { ['B6'] =>
-            'offboard=revenue:yellow_20|brown_30,visit_cost:0,route:optional;'\
-            'path=a:0,b:_0;path=a:1,b:_0;icon=image:1882/fish',
-   },
+          blue: {
+            ['B6'] =>
+                        'offboard=revenue:yellow_20|brown_30,visit_cost:0,route:optional;'\
+                        'path=a:0,b:_0;path=a:1,b:_0;icon=image:1882/fish',
+          },
         }.freeze
 
         LAYOUT = :flat
@@ -560,7 +568,7 @@ module Engine
             Engine::Step::Dividend,
             Engine::Step::DiscardTrain,
             Engine::Step::BuyTrain,
-            [Engine::Step::BuyCompany, blocks: true],
+            [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 
@@ -585,6 +593,7 @@ module Engine
           train.events, first.events = first.events.partition { |e| e['type'] != 'nwr' }
 
           @log << "#{corporation.name} adds an extra #{train.name} train to the depot"
+          train.reserved = false
           @depot.unshift_train(train)
         end
 
@@ -596,14 +605,15 @@ module Engine
 
           @sc_reserve_trains = []
           trains.each do |train_name|
-            train = depot.upcoming.select { |t| t.name == train_name }.last
+            train = depot.upcoming.reverse.find { |t| t.name == train_name }
             @sc_reserve_trains << train
             depot.remove_train(train)
+            train.reserved = true
           end
 
           # Due to SC adding an extra train this isn't quite a phase change, so the event needs to be tied to a train.
           nwr_train = trains[rand % trains.size]
-          @log << "NWR Rebellion occurs on purchase of the currently first #{nwr_train} train"
+          @log << "NWR Rebellion occurs on purchase of the first #{nwr_train} train"
           train = depot.upcoming.find { |t| t.name == nwr_train }
           train.events << { 'type' => 'nwr' }
 
@@ -700,13 +710,13 @@ module Engine
         end
 
         def count_available_tokens(corporation)
-          corporation.tokens.map { |t| t.used || t.corporation != corporation ? 0 : 1 }.sum
+          corporation.tokens.sum { |t| t.used || t.corporation != corporation ? 0 : 1 }
         end
 
         def token_string(corporation)
           # All neutral tokens belong to CN, so it will count them normally.
           "#{count_available_tokens(corporation)}"\
-          "/#{corporation.tokens.map { |t| t.corporation != corporation ? 0 : 1 }.sum}"\
+          "/#{corporation.tokens.sum { |t| t.corporation != corporation ? 0 : 1 }}"\
           "#{', N' if corporation.tokens.any? { |t| t.corporation != corporation }}"
         end
 

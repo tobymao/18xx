@@ -239,7 +239,7 @@ module Engine
               reachable: true,
               hexes: [],
               tiles: [],
-              when: %w[special_track track other_or],
+              when: %w[track owning_corp_or_turn],
             },
           ],
           },
@@ -264,7 +264,7 @@ module Engine
                 must_lay_together: true,
                 hexes: [],
                 tiles: [],
-                when: %w[special_track track],
+                when: %w[track owning_corp_or_turn],
               },
             ],
           },
@@ -328,6 +328,7 @@ module Engine
             sym: 'GMO',
             name: 'Gulf, Mobile and Ohio Railroad',
             logo: '18_ms/GMO',
+            simple_logo: '18_ms/GMO.alt',
             tokens: [0, 40, 100, 100],
             coordinates: 'H6',
             color: 'black',
@@ -338,6 +339,7 @@ module Engine
             sym: 'IC',
             name: 'Illinois Central Railroad',
             logo: '18_ms/IC',
+            simple_logo: '18_ms/IC.alt',
             tokens: [0, 40, 100],
             coordinates: 'A1',
             color: '#397641',
@@ -348,6 +350,7 @@ module Engine
             sym: 'L&N',
             name: 'Louisville and Nashville Railroad',
             logo: '18_ms/LN',
+            simple_logo: '18_ms/LN.alt',
             tokens: [0, 40, 100],
             coordinates: 'C9',
             color: '#0d5ba5',
@@ -358,6 +361,7 @@ module Engine
             sym: 'Fr',
             name: 'Frisco',
             logo: '18_ms/Fr',
+            simple_logo: '18_ms/Fr.alt',
             tokens: [0, 40, 100],
             coordinates: 'E1',
             color: '#ed1c24',
@@ -368,6 +372,7 @@ module Engine
             sym: 'WRA',
             name: 'Western Railway of Alabama',
             logo: '18_ms/WRA',
+            simple_logo: '18_ms/WRA.alt',
             tokens: [0, 40, 100],
             coordinates: 'E11',
             color: '#c7c4e2',
@@ -417,9 +422,10 @@ module Engine
             ['F12'] => 'path=a:2,b:3;border=edge:3',
             ['E15'] => 'offboard=revenue:yellow_40|brown_50;path=a:1,b:_0;border=edge:1',
           },
-          gray: { ['E1'] =>
-            'city=revenue:yellow_30|brown_60,slots:2;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
-   },
+          gray: {
+            ['E1'] =>
+                        'city=revenue:yellow_30|brown_60,slots:2;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
+          },
         }.freeze
 
         LAYOUT = :pointy
@@ -560,7 +566,7 @@ module Engine
             Engine::Step::DiscardTrain,
             Engine::Step::SpecialBuyTrain,
             G18MS::Step::BuyTrain,
-            [Engine::Step::BuyCompany, blocks: true],
+            [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 
@@ -656,7 +662,7 @@ module Engine
           end
         end
 
-        def upgrades_to?(from, to, _special = false)
+        def upgrades_to?(from, to, _special = false, selected_company: nil)
           # Only allow tile gray tile (446) in Montgomery (E11) or Birmingham (C9)
           return to.name == '446' if from.color == :brown && HEXES_FOR_GRAY_TILE.include?(from.hex.name)
 
@@ -666,7 +672,7 @@ module Engine
           super
         end
 
-        def all_potential_upgrades(tile, tile_manifest: false)
+        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
           upgrades = super
 
           return upgrades unless tile_manifest
@@ -724,6 +730,34 @@ module Engine
           end
 
           super
+        end
+
+        def show_progress_bar?
+          true
+        end
+
+        def progress_information
+          base_progress = [
+            { type: :PRE },
+            { type: :SR },
+            { type: :OR, name: '1' },
+            { type: :OR, name: '2' },
+            { type: :SR },
+            { type: :OR, name: '3' },
+            { type: :OR, name: '4', exportAfter: true, exportAfterValue: '2+' },
+            { type: :SR },
+            { type: :OR, name: '5' },
+            { type: :OR, name: '6', exportAfter: true, exportAfterValue: '3+' },
+            { type: :SR },
+            { type: :OR, name: '7' },
+            { type: :OR, name: '8', exportAfter: true, exportAfterValue: '4+' },
+            { type: :SR },
+            { type: :OR, name: '9' },
+            { type: :OR, name: '10' },
+          ]
+
+          base_progress << { type: :OR, name: '11' } if @optional_rules&.include?(:or_11)
+          base_progress << { type: :End }
         end
 
         private

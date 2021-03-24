@@ -46,12 +46,16 @@ module Engine
             elsif @buyer && can_take_loan?(@buyer)
               'Pass (Take Loan)'
             elsif @buyer
-              'Pass (Repay Loan)'
+              'Pass (On payoff Loan)'
             end
           end
 
           def merger_auto_pass_entity
             @offer
+          end
+
+          def others_acted?
+            !@round.acquired.empty?
           end
 
           def can_take_loan?(entity)
@@ -375,6 +379,7 @@ module Engine
             # If not aquired by the bank
             @round.offering.delete(acquired_corp)
             @winner = nil
+            @round.acquired << acquired_corp
             setup_auction
           end
 
@@ -405,10 +410,8 @@ module Engine
           end
 
           def starting_bid(corporation)
-            if corporation.share_price.liquidation?
+            if corporation.share_price.liquidation? || corporation.share_price.acquisition?
               10 # while technically the bank bids 0 this isn't done by a player.
-            elsif corporation.share_price.acquisition?
-              10
             else
               # Needs rounding to 10
               ((corporation.total_shares * corporation.share_price.price).to_f / 10).round * 10
@@ -480,6 +483,12 @@ module Engine
             setup_auction
           end
 
+          def round_state
+            {
+              acquired: [],
+            }
+          end
+
           private
 
           def corporation_entered_acquisition_this_round?(corporation)
@@ -489,6 +498,7 @@ module Engine
           end
 
           def setup_auction
+            @game.next_turn!
             super
             if @round.offering.none?
               pass!

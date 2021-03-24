@@ -353,6 +353,7 @@ module Engine
             sym: 'PRR',
             name: 'Pennsylvania Railroad',
             logo: '18_chesapeake/PRR',
+            simple_logo: '18_chesapeake/PRR.alt',
             tokens: [0, 40, 60, 80],
             coordinates: 'F2',
             color: '#237333',
@@ -363,6 +364,7 @@ module Engine
             sym: 'PLE',
             name: 'Pittsburgh and Lake Erie Railroad',
             logo: '18_chesapeake/PLE',
+            simple_logo: '18_chesapeake/PLE.alt',
             tokens: [0, 40, 60],
             coordinates: 'A3',
             color: :black,
@@ -373,6 +375,7 @@ module Engine
             sym: 'SRR',
             name: 'Strasburg Rail Road',
             logo: '18_chesapeake/SRR',
+            simple_logo: '18_chesapeake/SRR.alt',
             tokens: [0, 40],
             coordinates: 'H4',
             color: '#d81e3e',
@@ -383,6 +386,7 @@ module Engine
             sym: 'B&O',
             name: 'Baltimore & Ohio Railroad',
             logo: '18_chesapeake/BO',
+            simple_logo: '18_chesapeake/BO.alt',
             tokens: [0, 40, 60],
             coordinates: 'H6',
             city: 0,
@@ -394,6 +398,7 @@ module Engine
             sym: 'C&O',
             name: 'Chesapeake & Ohio Railroad',
             logo: '18_chesapeake/CO',
+            simple_logo: '18_chesapeake/CO.alt',
             tokens: [0, 40, 60, 80],
             coordinates: 'G13',
             color: '#a2dced',
@@ -405,6 +410,7 @@ module Engine
             sym: 'LV',
             name: 'Lehigh Valley Railroad',
             logo: '18_chesapeake/LV',
+            simple_logo: '18_chesapeake/LV.alt',
             tokens: [0, 40],
             coordinates: 'J2',
             color: '#FFF500',
@@ -416,6 +422,7 @@ module Engine
             sym: 'C&A',
             name: 'Camden & Amboy Railroad',
             logo: '18_chesapeake/CA',
+            simple_logo: '18_chesapeake/CA.alt',
             tokens: [0, 40],
             coordinates: 'J6',
             color: '#f48221',
@@ -426,6 +433,7 @@ module Engine
             sym: 'N&W',
             name: 'Norfolk & Western Railway',
             logo: '18_chesapeake/NW',
+            simple_logo: '18_chesapeake/NW.alt',
             tokens: [0, 40, 60],
             coordinates: 'C13',
             color: '#7b352a',
@@ -526,7 +534,7 @@ module Engine
             Step::Dividend,
             Step::DiscardTrain,
             Step::BuyTrain,
-            [Step::BuyCompany, blocks: true],
+            [Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 
@@ -560,7 +568,7 @@ module Engine
 
         def timeline
           @timeline = [
-            'At the end of each set of ORs the next available non-permanent (2,3 or 4) train will be exported
+            'At the end of each set of ORs the next available non-permanent (2, 3 or 4) train will be exported
            (removed, triggering phase change as if purchased)',
           ]
         end

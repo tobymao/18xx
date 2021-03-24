@@ -1,77 +1,44 @@
 # frozen_string_literal: true
 
 require 'lib/settings'
-require 'lib/storage'
 
 module View
   module Game
     class MapControls < Snabberb::Component
       include Lib::Settings
-      needs :show_coords, default: nil, store: true
-      needs :show_location_names, default: true, store: true
       needs :show_starting_map, default: false, store: true
       needs :historical_routes, default: [], store: true
+      needs :historical_laid_hexes, default: nil, store: true
       needs :game, default: nil, store: true
-      needs :show_player_colors, default: nil, store: true
 
       def render
         children = [
-          player_colors_controls,
-          location_names_controls,
-          hex_coord_controls,
+          render_controls('Player Colors', :show_player_colors),
+          render_controls('Simple Logos', :simple_logos),
+          render_controls('Location Names', :show_location_names),
+          render_controls('Hex Coordinates', :show_coords),
           starting_map_controls,
           route_controls,
         ].compact
 
-        h(:div, children)
+        h('div#map_controls', children)
       end
 
-      def player_colors_controls
-        show_player_colors = Lib::Storage['show_player_colors']
-
+      def render_controls(label, option)
         on_click = lambda do
-          new_value = !show_player_colors
-          Lib::Storage['show_player_colors'] = new_value
-          store(:show_player_colors, new_value)
+          toggle_setting(option, @game)
+          update
         end
 
-        render_button("#{show_player_colors ? 'Hide' : 'Show'} Player Colors", on_click)
-      end
-
-      def location_names_controls
-        show_hide = @show_location_names ? 'Hide' : 'Show'
-        text = "#{show_hide} Location Names"
-
-        on_click = lambda do
-          new_value = !@show_location_names
-          Lib::Storage['show_location_names'] = new_value
-          store(:show_location_names, new_value)
-        end
-
-        render_button(text, on_click)
-      end
-
-      def hex_coord_controls
-        show_hide = @show_coords ? 'Hide' : 'Show'
-        text = "#{show_hide} Hex Coordinates"
-
-        on_click = lambda do
-          new_value = !@show_coords
-          Lib::Storage['show_coords'] = new_value
-          store(:show_coords, new_value)
-        end
-
-        render_button(text, on_click)
+        render_button("#{label} #{setting_for(option, @game) ? '✅' : '❌'}", on_click)
       end
 
       def starting_map_controls
-        text = @show_starting_map ? 'Show Current Map' : 'Show Starting Map'
-
         on_click = lambda do
           store(:show_starting_map, !@show_starting_map)
         end
 
-        render_button(text, on_click)
+        render_button("Starting Map #{@show_starting_map ? '✅' : '❌'}", on_click)
       end
 
       def generate_last_route(entity)
@@ -81,12 +48,17 @@ module View
 
         halts = operating[operating.keys.max]&.halts
         routes = []
-        last_run.each do |train, connections|
-          routes << Engine::Route.new(@game, @game.phase, train, connection_hexes: connections,
+        last_run.each do |train, connection_hexes|
+          routes << Engine::Route.new(@game, @game.phase, train, connection_hexes: connection_hexes,
                                                                  routes: routes, num_halts: halts[train])
         end
 
         routes
+      end
+
+      def last_laid_hexes(entity)
+        operating = entity.operating_history
+        operating[operating.keys.max]&.laid_hexes || []
       end
 
       def route_controls
@@ -114,14 +86,16 @@ module View
           operator_name = Native(@route_input).elm&.value
           operator = all_operators.find { |o| o.name == operator_name }
           if operator
-            store(:historical_routes, generate_last_route(operator))
+            store(:historical_routes, generate_last_route(operator), skip: true)
+            store(:historical_laid_hexes, last_laid_hexes(operator))
           else
-            store(:historical_routes, [])
+            store(:historical_routes, [], skip: true)
+            store(:historical_laid_hexes, nil)
           end
         end
 
         @route_input = render_select(id: :route, on: { input: route_change }, children: operators)
-        h('label.inline-block', ['Show Last Route For:', @route_input])
+        h('label.inline-block', ['Show Last Route and Tile For:', @route_input])
       end
 
       def render_select(id:, on: {}, children: [])

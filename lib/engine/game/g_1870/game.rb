@@ -129,120 +129,13 @@ module Engine
         }.freeze
 
         MARKET = [
-          %w[64y
-             68
-             72
-             78
-             82
-             90
-             100p
-             110
-             120
-             140
-             160
-             180
-             200
-             225
-             250
-             285
-             300
-             325
-             350
-             375
-             400],
-          %w[60y
-             64y
-             68
-             72
-             78
-             82
-             90p
-             100
-             110
-             120
-             140
-             160
-             180
-             200
-             225
-             250
-             285
-             300
-             325
-             350
-             375],
-          %w[55y
-             60y
-             64y
-             68
-             72
-             78
-             82p
-             90
-             100
-             110
-             120
-             140
-             160
-             180
-             200
-             225
-             250i
-             285i
-             300i
-             325i
-             350i],
-          %w[50o
-             55y
-             60y
-             64y
-             68
-             72
-             78p
-             82
-             90
-             100
-             110
-             120
-             140
-             160i
-             180i
-             200i
-             225i
-             250i
-             285i
-             300i
-             325i],
-          %w[40b
-             50o
-             55y
-             60y
-             64
-             68
-             72p
-             78
-             82
-             90
-             100
-             110i
-             120i
-             140i
-             160i
-             180i],
-          %w[30b
-             40o
-             50o
-             55y
-             60y
-             64
-             68p
-             72
-             78
-             82
-             90i
-             100i
-             110i],
-          %w[20b 30b 40o 50o 55y 60y 64 68 72 78i 82i],
+          %w[64y 68 72 76 82 90 100p 110 120 140 160 180 200 225 250 285 300 325 350 375 400],
+          %w[60y 64y 68 72 76 82 90p 100 110 120 140 160 180 200 225 250 285 300 325 350 375],
+          %w[55y 60y 64y 68 72 76 82p 90 100 110 120 140 160 180 200 225 250i 285i 300i 325i 350i],
+          %w[50o 55y 60y 64y 68 72 76p 82 90 100 110 120 140 160i 180i 200i 225i 250i 285i 300i 325i],
+          %w[40b 50o 55y 60y 64 68 72p 76 82 90 100 110i 120i 140i 160i 180i],
+          %w[30b 40o 50o 55y 60y 64 68p 72 76 82 90i 100i 110i],
+          %w[20b 30b 40o 50o 55y 60y 64 68 72 76i 82i],
           %w[10b 20b 30b 40o 50y 55y 60y 64 68i 72i],
           %w[0c 10b 20b 30b 40o 50y 55y 60i 64i],
           %w[0c 0c 10b 20b 30b 40o 50y],
@@ -376,23 +269,8 @@ module Engine
                 special: false,
                 when: 'track',
                 discount: 40,
-                hexes: %w[A16
-                          B17
-                          C18
-                          D17
-                          E18
-                          F19
-                          G18
-                          H17
-                          I16
-                          J15
-                          K14
-                          L13
-                          M14
-                          N15
-                          O16
-                          O18],
-                tiles: [],
+                hexes: %w[A16 B17 C18 D17 E18 F19 G18 H17 I16 J15 K14 L13 M14 N15 O16 O18],
+                tiles: %w[1 2 3 4 5 6 7 8 9 55 56 57 58 69],
               },
             ],
             color: nil,
@@ -409,19 +287,8 @@ module Engine
             abilities: [
               {
                 type: 'assign_hexes',
-                hexes: %w[B9
-                          B11
-                          D5
-                          E12
-                          F5
-                          H13
-                          J3
-                          J5
-                          L11
-                          M2
-                          M14
-                          N7],
-                when: 'track',
+                hexes: %w[B9 B11 D5 E12 F5 H13 J3 J5 L11 M2 M14 N7],
+                when: 'owning_corp_or_turn',
                 count: 1,
                 owner_type: 'corporation',
               },
@@ -452,6 +319,7 @@ module Engine
                 hexes: %w[H17 M14 M20 N7 N17],
                 count: 2,
                 owner_type: 'corporation',
+                when: 'owning_corp_or_turn',
               },
               {
                 type: 'assign_corporation',
@@ -490,10 +358,11 @@ module Engine
             sym: 'ATSF',
             name: 'Santa Fe',
             logo: '1870/ATSF',
+            simple_logo: '1870/ATSF.alt',
             tokens: [0, 40, 100],
             abilities: [{ type: 'assign_hexes', hexes: ['N1'], count: 1 }],
             coordinates: 'B9',
-            color: :deepskyblue,
+            color: '#7090c9',
             text_color: 'black',
             reservation_color: nil,
           },
@@ -502,10 +371,11 @@ module Engine
             sym: 'SSW',
             name: 'Cotton',
             logo: '1870/SSW',
+            simple_logo: '1870/SSW.alt',
             tokens: [0, 40],
             abilities: [{ type: 'assign_hexes', hexes: ['J3'], count: 1 }],
             coordinates: 'H17',
-            color: '#0189d1',
+            color: '#111199',
             reservation_color: nil,
           },
           {
@@ -513,6 +383,7 @@ module Engine
             sym: 'SP',
             name: 'Southern Pacific',
             logo: '1870/SP',
+            simple_logo: '1870/SP.alt',
             tokens: [0, 40, 100],
             abilities: [{ type: 'assign_hexes', hexes: ['N17'], count: 1 }],
             coordinates: 'N1',
@@ -524,10 +395,11 @@ module Engine
             sym: 'SLSF',
             name: 'Frisco',
             logo: '1870/SLSF',
+            simple_logo: '1870/SLSF.alt',
             tokens: [0, 40, 100],
             abilities: [{ type: 'assign_hexes', hexes: ['M22'], count: 1 }],
             coordinates: 'E12',
-            color: '#d81e3e',
+            color: '#d02020',
             reservation_color: nil,
           },
           {
@@ -535,10 +407,11 @@ module Engine
             sym: 'MP',
             name: 'Missouri Pacific',
             logo: '1870/MP',
+            simple_logo: '1870/MP.alt',
             tokens: [0, 40, 100],
             abilities: [{ type: 'assign_hexes', hexes: ['J5'], count: 1 }],
             coordinates: 'C18',
-            color: '#7b352a',
+            color: '#5b4545',
             reservation_color: nil,
           },
           {
@@ -546,10 +419,11 @@ module Engine
             sym: 'MKT',
             name: 'Katy',
             logo: '1870/MKT',
+            simple_logo: '1870/MKT.alt',
             tokens: [0, 40, 100],
             abilities: [{ type: 'assign_hexes', hexes: ['N1'], count: 1 }],
             coordinates: 'B11',
-            color: :green,
+            color: '#018471',
             reservation_color: nil,
           },
           {
@@ -557,10 +431,11 @@ module Engine
             sym: 'IC',
             name: 'Illinois Central',
             logo: '1870/IC',
+            simple_logo: '1870/IC.alt',
             tokens: [0, 40],
             abilities: [{ type: 'assign_hexes', hexes: ['A22'], count: 1 }],
             coordinates: 'K16',
-            color: :slategrey,
+            color: '#b0b030',
             reservation_color: nil,
           },
           {
@@ -568,21 +443,25 @@ module Engine
             sym: 'GMO',
             name: 'Gulf Mobile Ohio',
             logo: '1870/GMO',
+            simple_logo: '1870/GMO.alt',
             tokens: [0, 40],
             abilities: [{ type: 'assign_hexes', hexes: ['C18'], count: 1 }],
             coordinates: 'M20',
-            color: :pink,
+            color: '#ff4080',
+            text_color: 'black',
             reservation_color: nil,
           },
           {
             float_percent: 60,
             sym: 'FW',
-            name: 'Fortsworth',
+            name: 'Fort Worth',
             logo: '1870/FW',
+            simple_logo: '1870/FW.alt',
             tokens: [0, 40],
             abilities: [{ type: 'assign_hexes', hexes: ['A2'], count: 1 }],
             coordinates: 'J3',
-            color: :purple,
+            color: '#56ad9a',
+            text_color: 'black',
             reservation_color: nil,
           },
           {
@@ -590,6 +469,7 @@ module Engine
             sym: 'TP',
             name: 'Texas Pacific',
             logo: '1870/TP',
+            simple_logo: '1870/TP.alt',
             tokens: [0, 40],
             abilities: [{ type: 'assign_hexes', hexes: ['N17'], count: 1 }],
             coordinates: 'J5',
@@ -600,97 +480,13 @@ module Engine
 
         HEXES = {
           white: {
-            %w[A4
-               A6
-               A8
-               A12
-               A14
-               A18
-               A20
-               B3
-               B5
-               B15
-               B21
-               C2
-               C4
-               C6
-               C8
-               C10
-               C12
-               C20
-               D1
-               D3
-               D7
-               D11
-               D19
-               E2
-               E4
-               E6
-               E10
-               F1
-               F3
-               F7
-               F17
-               F21
-               G4
-               G6
-               G8
-               G12
-               G14
-               G16
-               H1
-               H9
-               H11
-               H15
-               H19
-               I2
-               I4
-               I6
-               I12
-               I18
-               I20
-               J1
-               J7
-               J13
-               J17
-               J19
-               J21
-               K2
-               K6
-               K8
-               K12
-               K18
-               L1
-               L3
-               L5
-               L7
-               L9
-               L15
-               L17
-               L19
-               L21
-               M4
-               M12
-               M16
-               M18
-               N3
-               N5] => '',
-            %w[B9 B19 D5 F5 H13 J3 K16 M2 M6] => 'city=revenue:0',
-            ['J5'] => 'city=revenue:0;label=P',
-            %w[B7
-               D9
-               D21
-               E8
-               F9
-               G10
-               G20
-               H21
-               I14
-               J9
-               K4
-               K20
-               M8
-               M10] => 'town=revenue:0',
+            %w[A4 A6 A8 A12 A14 A18 A20 B3 B5 B15 B21 C2 C4 C6 C8 C10 C12 C20 D1 D3
+               D7 D11 D19 E2 E4 E6 E10 F1 F3 F7 F17 F21 G4 G6 G8 G12 G14 G16 H1
+               H9 H11 H15 H19 I2 I4 I6 I12 I18 I20 J1 J7 J13 J17 J19 J21 K2 K6 K8 K12 K18 L1
+               L3 L5 L7 L9 L15 L17 L19 L21 M4 M12 M16 M18 N3 N5] => '',
+            %w[B9 B19 D5 F5 H13 K16 M2 M6] => 'city=revenue:0',
+            %w[J3 J5] => 'city=revenue:0;label=P',
+            %w[B7 D9 D21 E8 F9 G10 G20 H21 I14 J9 K4 K20 M8 M10] => 'town=revenue:0',
             ['M20'] => 'city=revenue:0;icon=image:port',
             %w[C14 C16 G2 H5] => 'upgrade=cost:40,terrain:water',
             %w[H7 I8 J11 K10] => 'upgrade=cost:60,terrain:water',
@@ -713,7 +509,7 @@ module Engine
             ['C18'] =>
                    'city=revenue:0;upgrade=cost:40,terrain:river;partition=a:0+,b:2+,type:water,restrict:inner;label=P',
             ['M14'] =>
-                   'city=revenue:0;upgrade=cost:40,terrain:river;icon=image:port;'\
+                   'city=revenue:0;upgrade=cost:80,terrain:river;icon=image:port;'\
                    'partition=a:0-,b:2+,type:water,restrict:outer',
             ['H17'] =>
                    'city=revenue:0;upgrade=cost:60,terrain:river;icon=image:port;'\
@@ -762,7 +558,8 @@ module Engine
         CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT = true
         IPO_RESERVED_NAME = 'Treasury'
 
-        TILE_LAYS = [{ lay: true, upgrade: true, cost: 0 }, { lay: :not_if_upgraded, upgrade: false, cost: 0 }].freeze
+        TILE_LAYS = [{ lay: true, upgrade: true, cost: 0, cannot_reuse_same_hex: true },
+                     { lay: :not_if_upgraded, upgrade: false, cost: 0 }].freeze
 
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(unlimited: :green, par: :white,
                                                             ignore_one_sale: :red).freeze
@@ -786,10 +583,8 @@ module Engine
           'SCC' => '/icons/1870/SCC.svg',
         }.freeze
 
-        P_HEXES = %w[J5 B11 C18 N17].freeze
-
         def stock_round
-          Engine::Round::Stock.new(self, [
+          G1870::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
             G1870::Step::BuySellParShares,
             G1870::Step::PriceProtection,
@@ -798,6 +593,10 @@ module Engine
 
         def operating_round(round_num)
           G1870::Round::Operating.new(self, [
+            G1870::Step::ConnectionToken,
+            G1870::Step::ConnectionRoute,
+            G1870::Step::ConnectionDividend,
+            G1870::Step::CheckConnection,
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
             G1870::Step::BuyCompany,
@@ -809,7 +608,9 @@ module Engine
             G1870::Step::Dividend,
             Engine::Step::DiscardTrain,
             Engine::Step::BuyTrain,
-            [G1870::Step::BuyCompany, blocks: true],
+            [G1870::Step::BuyCompany, { blocks: true }],
+            G1870::Step::PriceProtection,
+            G1870::Step::CheckConnection,
           ], round_num: round_num)
         end
 
@@ -824,6 +625,14 @@ module Engine
 
         def setup
           river_company.max_price = river_company.value
+
+          @corporations.each do |corporation|
+            ability = abilities(corporation, :assign_hexes)
+            hex = hexes.find { |h| h.name == ability.hexes.first }
+
+            hex.assign!(corporation)
+            ability.description = "Destination: #{hex.location_name} (#{hex.name})"
+          end
         end
 
         def event_companies_buyable!
@@ -854,12 +663,9 @@ module Engine
           removals.each do |company, removal|
             hex = removal[:hex]
             corp = removal[:corporation]
+            company = 'GSC' if company == 'GSCᶜ'
             @log << "-- Event: #{corp}'s #{company_by_id(company).name} token removed from #{hex} --"
           end
-        end
-
-        def company_by_id(id)
-          return super('GSC') if id == 'GSCᶜ'
         end
 
         def river_company
@@ -900,6 +706,15 @@ module Engine
           super
         end
 
+        def home_hex(corporation)
+          corporation.tokens.first.city&.hex
+        end
+
+        def destination_hex(corporation)
+          ability = corporation.abilities.first
+          hexes.find { |h| h.name == ability.hexes.first } if ability
+        end
+
         def revenue_for(route, stops)
           revenue = super
 
@@ -910,11 +725,24 @@ module Engine
 
           revenue += (route.corporation.assigned?('GSC') ? 20 : 10) if stops.any? { |stop| stop.hex.assigned?('GSC') }
 
+          revenue += destination_revenue(route, stops)
+
           revenue
         end
 
-        def sell_shares_and_change_price(bundle, _allow_president_change: true, _swap: nil)
-          @round.sell_queue << bundle
+        def destination_revenue(route, stops)
+          return 0 if stops.size < 2
+          return 0 unless (destination = destination_hex(route.corporation))
+          return 0 if destination.assigned?(route.corporation)
+
+          destination_stop = stops.values_at(0, -1).find { |s| s.hex == destination }
+          return 0 unless destination_stop
+
+          destination_stop.route_revenue(route.phase, route.train)
+        end
+
+        def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
+          @round.sell_queue << [bundle, bundle.corporation.owner]
 
           @share_pool.sell_shares(bundle)
         end
@@ -930,17 +758,34 @@ module Engine
             end
         end
 
-        def upgrades_to?(from, to, _special = false)
-          return to.name == '170' if from.color == :green && P_HEXES.include?(from.hex.name)
+        def upgrades_to?(from, to, _special = false, selected_company: nil)
+          return false if to.name == '171K' && from.hex.name != 'B11'
+          return false if to.name == '172L' && from.hex.name != 'C18'
 
-          return to.name == '171K' if from.color == :brown && from.hex.name == 'B11'
-          return to.name == '172L' if from.color == :brown && from.hex.name == 'C18'
+          super
+        end
 
-          super(from, to, false, to.cities.any? && %i[yellow green].include?(to.color))
+        def upgrades_to_correct_label?(from, to)
+          return true if to.color != :brown
+
+          super
         end
 
         def border_impassable?(border)
           border.type == :water
+        end
+
+        def check_other(route)
+          return unless (destination = @round.connection_runs[route.corporation])
+
+          home = home_hex(route.corporation)
+          return if route.routes.any? do |r|
+            next if r.visited_stops.size < 2
+
+            (r.visited_stops.values_at(0, -1).map(&:hex) - [home, destination]).none?
+          end
+
+          raise GameError, 'At least one train has to run from the home station to the destination'
         end
       end
     end

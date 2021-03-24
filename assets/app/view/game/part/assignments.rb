@@ -8,16 +8,21 @@ module View
     module Part
       class Assignments < Base
         include SmallItem
-        needs :game, store: true
+        needs :game, default: nil, store: true
         ICON_RADIUS = 20
-        DELTA_X = (ICON_RADIUS * 2) + 2
+        DELTA = (ICON_RADIUS * 2) + 2
 
         def preferred_render_locations
-          if layout == :pointy && @assignments.one?
-            POINTY_SMALL_ITEM_LOCATIONS
-          elsif layout == :pointy
-            POINTY_WIDE_ITEM_LOCATIONS
-          elsif layout == :flat && @assignments.one?
+          if layout == :pointy
+            case @assignments&.size
+            when 1
+              POINTY_SMALL_ITEM_LOCATIONS
+            when 2
+              POINTY_WIDE_ITEM_LOCATIONS + POINTY_TALL_ITEM_LOCATIONS + POINTY_WIDER_ITEM_LOCATIONS
+            else
+              POINTY_WIDE_ITEM_LOCATIONS
+            end
+          elsif @assignments.one?
             SMALL_ITEM_LOCATIONS
           else
             WIDE_ITEM_LOCATIONS
@@ -29,20 +34,26 @@ module View
         end
 
         def render_part
+          axis = (POINTY_TALL_ITEM_LOCATIONS.any?(render_location) ? :y : :x)
+          multiplyer = (POINTY_WIDER_ITEM_LOCATIONS.any?(render_location) ? 3 : 1)
+
           children = @assignments.keys.map.with_index do |assignment, index|
-            img = @game.class::ASSIGNMENT_TOKENS[assignment]
-            h(:image,
+            img = @game.assignment_tokens(assignment)
+
+            props = {
               attrs: {
                 href: img,
-                x: index * -DELTA_X,
                 width: "#{ICON_RADIUS * 2}px",
                 height: "#{ICON_RADIUS * 2}px",
-              })
-          end
+              },
+            }
+            props[:attrs][axis] = ((index - (@assignments.size - 1) / 2) * multiplyer * DELTA).round(2)
 
-          h(:g, { attrs: { transform: "#{rotation_for_layout} translate(#{-ICON_RADIUS} #{-ICON_RADIUS})" } }, [
-              h(:g, { attrs: { transform: translate } }, children),
-            ])
+            h(:image, props)
+          end if @game
+
+          h(:g, { attrs: { transform: "#{rotation_for_layout} translate(#{-ICON_RADIUS} #{-ICON_RADIUS})" } },
+            [h(:g, { attrs: { transform: translate } }, children)])
         end
       end
     end

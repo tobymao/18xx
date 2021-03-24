@@ -76,6 +76,10 @@ module Engine
             entity.type == :minor ? revenue / 2.0 : (revenue / 2 / entity.total_shares).to_i * entity.total_shares
           end
 
+          def holder_for_corporation(entity)
+            entity
+          end
+
           def log_run_payout(entity, kind, revenue, subsidy, _action, payout)
             @log << "#{entity.name} runs for #{@game.format_currency(revenue)} and pays half" if kind == 'half'
 
@@ -90,6 +94,13 @@ module Engine
 
           def payout(entity, revenue, subsidy)
             { corporation: subsidy, per_share: payout_per_share(entity, revenue) }
+          end
+
+          def payout_shares(entity, revenue)
+            super
+
+            per_share = payout_per_share(entity, revenue)
+            @game.company_tax_haven_payout(entity, per_share)
           end
 
           def process_choose(action)
@@ -117,7 +128,8 @@ module Engine
             entity.operating_history[[@game.turn, @round.round_num]] = OperatingInfo.new(
               routes,
               action,
-              revenue
+              revenue,
+              @round.laid_hexes
             )
 
             entity.trains.each { |train| train.operated = true }

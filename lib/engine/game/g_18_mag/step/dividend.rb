@@ -54,7 +54,8 @@ module Engine
             entity.operating_history[[@game.turn, @round.round_num]] = OperatingInfo.new(
               routes,
               action,
-              amount
+              amount,
+              @round.laid_hexes
             )
 
             @round.routes = []

@@ -48,20 +48,26 @@ module Engine
         end
 
         ability = abilities(action.entity)
-        spender = if !action.entity.owner
-                    nil
-                  elsif action.entity.owner.corporation?
-                    action.entity.owner
-                  else
-                    @game.current_entity
-                  end
+        owner = if !action.entity.owner
+                  nil
+                elsif action.entity.owner.corporation?
+                  action.entity.owner
+                else
+                  @game.current_entity
+                end
         if ability.type == :teleport
-          lay_tile_action(action, spender: spender)
+          lay_tile_action(action, spender: owner)
         else
-          lay_tile(action, spender: spender)
+          lay_tile(action, spender: owner)
+          @round.laid_hexes << action.hex
           check_connect(action, ability)
         end
         ability.use!
+
+        # Record any track laid after the dividend step
+        if owner&.corporation? && (operating_info = owner.operating_history[[@game.turn, @round.round_num]])
+          operating_info.laid_hexes = @round.laid_hexes
+        end
 
         if ability.type == :tile_lay
           ability.owner.close! unless ability.count.positive? || !ability.closed_when_used_up
@@ -122,11 +128,19 @@ module Engine
           return ability if ability
         end
 
+        possible_times = [
+          '%current_step%',
+          'owning_corp_or_turn',
+          'owning_player_or_turn',
+          'or_between_turns',
+          'stock_round',
+        ]
+
         %i[tile_lay teleport].each do |type|
           ability = @game.abilities(
                             entity,
                             type,
-                            time: %w[special_track %current_step% owning_corp_or_turn],
+                            time: possible_times,
                             **kwargs,
                             &block
                           )

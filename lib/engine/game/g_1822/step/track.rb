@@ -13,10 +13,17 @@ module Engine
           ACTIONS = %w[lay_tile pass].freeze
 
           def actions(entity)
+            return ['choose_ability'] unless choices_ability(entity).empty?
             return [] unless entity == current_entity
             return [] if entity.company? || !can_lay_tile?(entity)
 
             ACTIONS
+          end
+
+          def choices_ability(entity)
+            return {} unless entity.company?
+
+            @game.company_choices(entity, :track)
           end
 
           def description
@@ -34,6 +41,10 @@ module Engine
 
           def pass_description
             @acted ? 'Done (Track)' : 'Skip (Track)'
+          end
+
+          def process_choose_ability(action)
+            @game.company_made_choice(action.entity, action.choice, :track)
           end
 
           def process_lay_tile(action)

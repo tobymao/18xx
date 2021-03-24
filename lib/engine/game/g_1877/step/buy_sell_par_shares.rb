@@ -13,7 +13,7 @@ module Engine
             return [] if @corporate_action && @corporate_action.entity != entity
 
             actions = []
-            if @current_actions.none?
+            if @round.current_actions.none?
               actions << 'take_loan' if @game.can_take_loan?(entity) && !@corporate_action.is_a?(Action::BuyShares)
               actions << 'buy_shares' unless @game.redeemable_shares(entity).empty?
               actions << 'buy_train' if can_buy_train?(entity)
@@ -99,7 +99,7 @@ module Engine
               shorts < corporation.total_shares &&
               entity.num_shares_of(corporation) <= 0 &&
               !(corporation.share_price.acquisition? || corporation.share_price.liquidation?) &&
-              !@round.players_sold[entity].values.include?(:short)
+              !@round.players_sold[entity].value?(:short)
           end
 
           def process_buy_train(action)
@@ -108,9 +108,9 @@ module Engine
             end
 
             @corporate_action = action
-            @round.last_to_act = action.entity.player
 
             entity ||= action.entity
+            track_action(action, entity, false)
             train = action.train
             price = action.price
 

@@ -69,7 +69,7 @@ class Api < Roda
   ].freeze
 
   ROUTES_WITH_GAME_TITLES = %w[
-     map market tiles fixture
+     map market fixture
   ].freeze
 
   Dir['./routes/*'].sort.each { |file| require file }
@@ -109,6 +109,12 @@ class Api < Roda
       render(titles: request.path.split('/')[2].split('+'))
     end
 
+    r.on 'tiles' do
+      parts = request.path.split('/')
+      titles = parts.size == 4 ? parts[2].split(/[+ ]/) : []
+      render(titles: titles)
+    end
+
     r.on 'game', Integer do |id|
       halt(404, 'Game not found') unless (game = Game[id])
 
@@ -119,6 +125,7 @@ class Api < Roda
 
   def render_with_games
     render(
+      title: request.params['title'],
       pin: request.params['pin'],
       games: Game.home_games(user, **request.params).map(&:to_h),
     )
@@ -135,6 +142,7 @@ class Api < Roda
       'app',
       javascript_include_tags: ASSETS.js_tags(titles || []),
       app_route: request.path,
+      production: PRODUCTION,
       **needs,
     )
 

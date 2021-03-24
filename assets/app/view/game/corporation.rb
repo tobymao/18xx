@@ -3,16 +3,16 @@
 require 'lib/color'
 require 'lib/settings'
 require 'view/game/actionable'
-require 'view/game/companies'
 require 'view/game/alternate_corporations'
+require 'view/game/companies'
 
 module View
   module Game
     class Corporation < Snabberb::Component
       include Actionable
+      include AlternateCorporations
       include Lib::Color
       include Lib::Settings
-      include AlternateCorporations
 
       needs :user, default: nil, store: true
       needs :corporation
@@ -28,6 +28,8 @@ module View
         if @game.respond_to?(:corporation_view) && (view = @game.corporation_view(@corporation))
           return send("render_#{view}")
         end
+
+        @hidden_divs = {}
 
         select_corporation = lambda do
           if @selectable
@@ -324,15 +326,16 @@ module View
         result.index('.') ? result : "#{result}.0"
       end
 
-      def render_shares
-        player_info = @game.players.map do |player|
+      def entities_rows(entities)
+        entity_info = entities.map do |entity|
           [
-            player,
-            @corporation.president?(player),
-            player.num_shares_of(@corporation, ceil: false),
-            @game.round.active_step&.did_sell?(@corporation, player),
-            !@corporation.holding_ok?(player, 1),
-            player.shares_of(@corporation).any?(&:double_cert),
+            entity,
+            @corporation.president?(entity),
+            entity.num_shares_of(@corporation, ceil: false),
+            @game.round.active_step&.did_sell?(@corporation, entity),
+            @game.round.active_step&.last_acted_upon?(@corporation, entity),
+            !@corporation.holding_ok?(entity, 1),
+            entity.shares_of(@corporation).any?(&:double_cert),
           ]
         end
 
@@ -342,39 +345,34 @@ module View
           },
         }
 
-        player_rows = player_info
-          .select { |_, _, num_shares, did_sell| !num_shares.zero? || did_sell }
-          .sort_by { |_, president, num_shares, _| [president ? 0 : 1, -num_shares] }
-          .map do |player, president, num_shares, did_sell, at_limit, double_cert|
-            flags = (president ? '*' : '') + (double_cert ? 'd' : '') + (at_limit ? 'L' : '')
-            h('tr.player', [
-              h("td.left.name.nowrap.#{president ? 'president' : ''}", player.name),
-              h('td.right', shares_props, "#{flags.empty? ? '' : flags + ' '}#{share_number_str(num_shares)}"),
-              did_sell ? h('td.italic', 'Sold') : '',
-            ])
-          end
+        entity_info
+        .select { |_, _, num_shares, did_sell| !num_shares.zero? || did_sell }
+        .sort_by { |_, president, num_shares, _| [president ? 0 : 1, -num_shares] }
+        .map do |entity, president, num_shares, did_sell, last_acted_upon, at_limit, double_cert|
+          flags = (president ? '*' : '') + (double_cert ? 'd' : '') + (at_limit ? 'L' : '')
 
-        other_corp_info = @game.corporations.reject { |c| c == @corporation }.map do |other_corp|
-          [
-            other_corp,
-            @corporation.president?(other_corp),
-            other_corp.num_shares_of(@corporation, ceil: false),
-            @game.round.active_step&.did_sell?(@corporation, other_corp),
-            !@corporation.holding_ok?(other_corp, 1),
-          ]
+          type = entity.player? ? 'tr.player' : 'tr.corp'
+          type += '.bold' if last_acted_upon
+          name = entity.player? ? entity.name : "© #{entity.name}"
+
+          h(type, [
+            h("td.left.name.nowrap.#{president ? 'president' : ''}", name),
+            h('td.right', shares_props, "#{flags.empty? ? '' : flags + ' '}#{share_number_str(num_shares)}"),
+            did_sell ? h('td.italic', 'Sold') : '',
+          ])
         end
+      end
 
-        other_corp_rows = other_corp_info
-          .select { |_, _, num_shares, did_sell| !num_shares.zero? || did_sell }
-          .sort_by { |_, president, num_shares, _| [president ? 0 : 1, -num_shares] }
-          .map do |other_corp, president, num_shares, did_sell, at_limit|
-            flags = (president ? '*' : '') + (at_limit ? 'L' : '')
-            h('tr.corp', [
-              h("td.left.name.nowrap.#{president ? 'president' : ''}", "© #{other_corp.name}"),
-              h('td.right', shares_props, "#{flags.empty? ? '' : flags + ' '}#{share_number_str(num_shares)}"),
-              did_sell ? h('td.italic', 'Sold') : '',
-            ])
-          end
+      def render_shares
+        shares_props = {
+          style: {
+            paddingRight: '1.3rem',
+          },
+        }
+
+        player_rows = entities_rows(@game.players)
+
+        other_corp_rows = entities_rows(@game.corporations.reject { |c| c == @corporation })
 
         num_ipo_shares = share_number_str(@corporation.num_ipo_shares - @corporation.num_ipo_reserved_shares)
         if !num_ipo_shares.empty? && @corporation.capitalization != @game.class::CAPITALIZATION
@@ -408,12 +406,10 @@ module View
           },
         }
 
-        if player_rows.any?
-          if @corporation.share_price&.highlight? &&
+        if player_rows.any? && @corporation.share_price&.highlight? &&
             (color = StockMarket::COLOR_MAP[@game.class::STOCKMARKET_COLORS[@corporation.share_price.type]])
-            market_tr_props[:style][:backgroundColor] = color
-            market_tr_props[:style][:color] = contrast_on(color)
-          end
+          market_tr_props[:style][:backgroundColor] = color
+          market_tr_props[:style][:color] = contrast_on(color)
         end
 
         if player_rows.any? || @corporation.num_market_shares.positive?
@@ -574,21 +570,39 @@ module View
         ])
       end
 
-      def render_abilities(abilities)
-        attribute_lines = abilities.map do |ability|
-          h('div.nowrap.inline-block', ability.description)
-        end
+      def toggle_desc_detail(event, i)
+        event.JS.stopPropagation
+        elm = Native(@hidden_divs["#{@corporation.name}_#{i}"]).elm
+        elm.style.display = elm.style.display == 'none' ? 'grid' : 'none'
+      end
 
-        table_props = {
+      def render_abilities(abilities)
+        hidden_props = {
           style: {
-            padding: '0.5rem',
-            justifyContent: 'center',
+            display: 'none',
+            marginBottom: '0.5rem',
+            padding: '0.1rem 0.2rem',
+            fontSize: '80%',
           },
         }
+        ability_props = {}
 
-        h('div#attribute_table', table_props, [
-          h('div.bold', 'Ability'),
-          *attribute_lines,
+        ability_lines = abilities.flat_map.with_index do |ability, i|
+          ability_props = {
+            style: { cursor: 'pointer' },
+            on: { click: ->(event) { toggle_desc_detail(event, i) } },
+          } if ability.desc_detail
+
+          children = [h('div.nowrap', ability_props, ability.description)]
+          if ability.desc_detail
+            children << @hidden_divs["#{@corporation.name}_#{i}"] = h(:div, hidden_props, ability.desc_detail)
+          end
+          children
+        end
+
+        h('div.ability_table', { style: { padding: '0 0.5rem 0.2rem' } }, [
+          h('div.bold', "Abilit#{abilities.count(&:description) > 1 ? 'ies' : 'y'}"),
+          *ability_lines,
         ])
       end
 
@@ -624,7 +638,7 @@ module View
       end
 
       def logo_for_user(entity)
-        @user&.dig('settings', 'simple_logos') ? entity.simple_logo : entity.logo
+        setting_for(:simple_logos, @game) ? entity.simple_logo : entity.logo
       end
 
       def can_assign_corporation?

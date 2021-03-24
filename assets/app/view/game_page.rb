@@ -19,6 +19,7 @@ module View
     needs :connected, default: false, store: true
     needs :before_process_pass, default: -> {}, store: true
     needs :scroll_pos, default: nil, store: true
+    needs :chat_input, default: '', store: true
 
     APP_PADDING_BOTTOM = '2vmin'
 
@@ -185,6 +186,9 @@ module View
         elm = Native(`document.getElementById('chatlog')`)
         # only store when scrolled up at least one line (20px)
         store(:scroll_pos, elm.scrollTop < elm.scrollHeight - elm.offsetHeight - 20 ? elm.scrollTop : nil, skip: true)
+        if (chatbar = Native(`document.getElementById('chatbar')`))
+          store(:chat_input, chatbar.value, skip: true)
+        end
       end
       store(:tile_selector, nil, skip: true)
       base = @app_route.split('#').first
@@ -235,10 +239,13 @@ module View
         when 'o'
           change_anchor('#tools')
         when 'a'
-          change_anchor('#async')
+          change_anchor('#auto')
         when 'c'
-          Native(`document.getElementById('chatbar')`)&.focus()
-          event.preventDefault
+          if (chatbar = Native(`document.getElementById('chatbar')`))
+            chatbar.focus
+            chatbar.selectionStart = chatbar.value.length
+            event.preventDefault
+          end
         when '-', '0', '+' # + on qwertz
           button_click('zoom' + key)
         when 'Home', 'End', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'
@@ -308,7 +315,8 @@ module View
         item('To|ols', '#tools'),
       ]
 
-      menu_items << item('A|uto', '#auto') if @game_data[:mode] != :hotseat && !cursor
+      enabled = @game.programmed_actions[@game.player_by_id(@user['id'])] if @user
+      menu_items << item("A|uto#{' ✅' if enabled}", '#auto') if @game_data[:mode] != :hotseat && !cursor
 
       h('nav#game_menu', nav_props, [
         h('ul.no_margin.no_padding', { style: { width: 'max-content' } }, menu_items),
@@ -393,6 +401,8 @@ module View
         end
       when Engine::Round::Draft
         h(Game::Round::Auction, game: @game, user: @user, before_process_pass: @before_process_pass)
+      when Engine::Round::Choices
+        h(Game::Round::Choices, game: @game)
       when Engine::Round::Auction
         h(Game::Round::Auction, game: @game, user: @user)
       when Engine::Round::Merger
@@ -405,7 +415,7 @@ module View
 
       h('div.game', [
         render_round,
-        h(Game::GameLog, user: @user, scroll_pos: @scroll_pos),
+        h(Game::GameLog, user: @user, scroll_pos: @scroll_pos, chat_input: @chat_input),
         h(Game::HistoryAndUndo, num_actions: @num_actions),
         h(Game::EntityOrder, round: @round),
         h(Game::Abilities, user: @user, game: @game),

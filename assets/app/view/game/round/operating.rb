@@ -6,6 +6,7 @@ require 'view/game/special_buy'
 require 'view/game/buy_trains'
 require 'view/game/borrow_train'
 require 'view/game/convert'
+require 'view/game/switch_trains'
 require 'view/game/company'
 require 'view/game/corporation'
 require 'view/game/player'
@@ -36,7 +37,8 @@ module View
           left << h(RouteSelector) if @current_actions.include?('run_routes')
           left << h(Dividend) if @current_actions.include?('dividend')
           left << h(Convert) if @current_actions.include?('convert')
-          if @current_actions.include?('buy_train')
+          left << h(SwitchTrains) if @current_actions.include?('switch_trains')
+          if @current_actions.include?('buy_train') || @current_actions.include?('scrap_train')
             left << h(IssueShares) if @current_actions.include?('sell_shares')
             left << h(BuyTrains)
           elsif @current_actions.include?('borrow_train')
@@ -44,7 +46,12 @@ module View
           elsif @current_actions.include?('sell_shares') && entity.player?
             left << h(CashCrisis)
           elsif @current_actions.include?('buy_shares') || @current_actions.include?('sell_shares')
-            left << h(IssueShares)
+            if @step.respond_to?(:price_protection) && (price_protection = @step.price_protection)
+              left << h(Corporation, corporation: price_protection.corporation)
+              left << h(BuySellShares, corporation: price_protection.corporation)
+            else
+              left << h(IssueShares)
+            end
           elsif @current_actions.include?('corporate_buy_shares')
             left << h(CorporateBuyShares)
           elsif @current_actions.include?('corporate_sell_shares')

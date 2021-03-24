@@ -33,7 +33,7 @@ module Engine
           end
 
           def pass_description
-            if @current_actions.empty?
+            if @round.current_actions.empty?
               'Pass (Certificates)'
             else
               'Done (Certificates)'
@@ -88,7 +88,7 @@ module Engine
 
             player.companies << company
             player.spend(price, owner)
-            @current_actions << action
+            track_action(action, company)
             @log << "#{player.name} buys #{company.name} from #{owner.name} for #{@game.format_currency(price)}"
 
             @game.close_other_companies!(company) if company.sym == 'FFC'
@@ -102,7 +102,7 @@ module Engine
             corporation = bundle.corporation
             entity.cash >= bundle.price && can_gain?(entity, bundle) &&
               !@round.players_sold[entity][corporation] &&
-              (can_buy_multiple?(entity, corporation) || !bought?) &&
+              (can_buy_multiple?(entity, corporation, bundle.owner) || !bought?) &&
               can_buy_presidents_share?(entity, bundle, corporation)
           end
 
@@ -145,7 +145,7 @@ module Engine
             raise GameError, "Cannot sell #{company.id}" unless can_sell_company?(company)
 
             sell_company(player, company, action.price)
-            @round.last_to_act = player
+            track_action(action, company)
             @game.check_bank_broken!
           end
 

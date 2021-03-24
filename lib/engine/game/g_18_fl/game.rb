@@ -37,6 +37,8 @@ module Engine
 
         MUST_SELL_IN_BLOCKS = true
 
+        TILE_TYPE = :lawson
+
         TILES = {
           '3' => 6,
           '4' => 8,
@@ -315,7 +317,7 @@ module Engine
               hexes: [],
               tiles: [],
               closed_when_used_up: 'true',
-              when: 'track',
+              when: %w[track owning_player_or_turn],
             },
           ],
             color: nil,
@@ -377,7 +379,8 @@ module Engine
             value: 0,
             discount: -110,
             revenue: 20,
-            desc: 'This Company comes with a single share of the Florida East Coast Railway',
+            desc: 'This Company comes with a single share of the Florida East Coast Railway. '\
+            'This company closes when the FECR buys its first train',
             sym: 'FECCTC',
             min_players: 4,
             abilities: [{ type: 'close', when: 'bought_train', corporation: 'FECR' },
@@ -392,6 +395,7 @@ module Engine
             sym: 'LN',
             name: 'Louisville and Nashville Railroad',
             logo: '18_fl/LN',
+            simple_logo: '18_fl/LN.alt',
             shares: [40, 20, 20, 20],
             tokens: [0, 20, 20, 20],
             coordinates: 'B5',
@@ -405,6 +409,7 @@ module Engine
             sym: 'Plant',
             name: 'The Plant System',
             logo: '18_fl/Plant',
+            simple_logo: '18_fl/Plant.alt',
             shares: [40, 20, 20, 20],
             tokens: [0, 20, 20, 20],
             coordinates: 'B15',
@@ -419,6 +424,7 @@ module Engine
             sym: 'SR',
             name: 'Southern Railway',
             logo: '18_fl/SR',
+            simple_logo: '18_fl/SR.alt',
             shares: [40, 20, 20, 20],
             tokens: [0, 20, 20, 20],
             coordinates: 'B23',
@@ -433,6 +439,7 @@ module Engine
             sym: 'SAL',
             name: 'Seaboard Air Line',
             logo: '18_fl/SAL',
+            simple_logo: '18_fl/SAL.alt',
             shares: [40, 20, 20, 20],
             tokens: [0, 20, 20, 20],
             coordinates: 'B23',
@@ -447,6 +454,7 @@ module Engine
             sym: 'ACL',
             name: 'Atlantic Coast Line',
             logo: '18_fl/ACL',
+            simple_logo: '18_fl/ACL.alt',
             shares: [40, 20, 20, 20],
             tokens: [0, 20, 20, 20],
             coordinates: 'G20',
@@ -460,6 +468,7 @@ module Engine
             sym: 'FECR',
             name: 'Florida East Coast Railway',
             logo: '18_fl/FECR',
+            simple_logo: '18_fl/FECR.alt',
             shares: [40, 20, 20, 20],
             tokens: [0, 20, 20, 20],
             coordinates: 'K28',
@@ -597,7 +606,7 @@ module Engine
             G18FL::Step::Dividend,
             Engine::Step::DiscardTrain,
             G18FL::Step::BuyTrain,
-            [Engine::Step::BuyCompany, blocks: true],
+            [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 
@@ -623,7 +632,7 @@ module Engine
 
           steam = steamboat.id
           if route.corporation.assigned?(steam) && (port = stops.map(&:hex).find { |hex| hex.assigned?(steam) })
-            revenue += 20 * port.tile.icons.select { |icon| icon.name == 'port' }.size
+            revenue += 20 * port.tile.icons.count { |icon| icon.name == 'port' }
           end
           hotels = stops.count { |h| h.tile.icons.any? { |i| i.name == route.corporation.id } }
 
@@ -697,7 +706,7 @@ module Engine
           when :medium
             shares.each { |share| share.percent = 10 }
             shares[0].percent = 20
-            new_shares = 5.times.map { |i| Share.new(corporation, percent: 10, index: i + 4) }
+            new_shares = Array.new(5) { |i| Share.new(corporation, percent: 10, index: i + 4) }
             corporation.type = :large
           else
             raise GameError, 'Cannot convert 10 share corporation'

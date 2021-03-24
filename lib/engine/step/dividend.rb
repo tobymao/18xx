@@ -28,7 +28,7 @@ module Engine
         process_dividend(Action::Dividend.new(current_entity, kind: 'withhold'))
 
         current_entity.operating_history[[@game.turn, @round.round_num]] =
-          OperatingInfo.new([], @game.actions.last, 0)
+          OperatingInfo.new([], @game.actions.last, 0, @round.laid_hexes)
       end
 
       def dividend_options(entity)
@@ -51,7 +51,8 @@ module Engine
         entity.operating_history[[@game.turn, @round.round_num]] = OperatingInfo.new(
           routes,
           action,
-          revenue
+          revenue,
+          @round.laid_hexes
         )
 
         entity.trains.each { |train| train.operated = true }

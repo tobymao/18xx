@@ -17,13 +17,13 @@ module Engine
                         yellow: '#ffe600',
                         lightRed: '#F3B1B3')
 
-        CURRENCY_FORMAT_STR = 'K%d'
+        CURRENCY_FORMAT_STR = '%d K'
 
         BANK_CASH = 99_999
 
-        CERT_LIMIT = { 3 => 14, 4 => 12, 5 => 10, 6 => 9 }.freeze
+        CERT_LIMIT = { 2 => 14, 3 => 14, 4 => 12, 5 => 10, 6 => 9 }.freeze
 
-        STARTING_CASH = { 3 => 380, 4 => 300, 5 => 250, 6 => 210 }.freeze
+        STARTING_CASH = { 2 => 280, 3 => 380, 4 => 300, 5 => 250, 6 => 210 }.freeze
 
         CAPITALIZATION = :full
 
@@ -124,22 +124,24 @@ module Engine
             'count' => 1,
             'color' => 'yellow',
             'code' =>
-            'city=revenue:30;city=revenue:30;city=revenue:30;path=a:2,b:_0;path=a:3,b:_1;path=a:4,b:_2;label=P',
+            'city=revenue:30,groups:Praha;city=revenue:30,groups:Praha;city=revenue:30,groups:Praha;path=a:2,b:_0;' \
+                  'path=a:3,b:_1;path=a:4,b:_2;label=P',
           },
           '8890' =>
           {
             'count' => 1,
             'color' => 'yellow',
             'code' =>
-            'city=revenue:30;city=revenue:30;city=revenue:30;path=a:0,b:_0;path=a:2,b:_1;path=a:4,b:_2;label=P',
+            'city=revenue:30,groups:Praha;city=revenue:30,groups:Praha;city=revenue:30,groups:Praha;path=a:0,b:_0;' \
+                'path=a:2,b:_1;path=a:4,b:_2;label=P',
           },
           '8891' =>
           {
             'count' => 1,
             'color' => 'green',
             'code' =>
-            'city=revenue:40;city=revenue:40;city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:2,b:_1;' \
-                  'path=a:3,b:_2;path=a:4,b:_3;label=P',
+            'city=revenue:40,groups:Praha;city=revenue:40,groups:Praha;city=revenue:40,groups:Praha;' \
+                  'city=revenue:40,groups:Praha;path=a:0,b:_0;path=a:2,b:_1;path=a:3,b:_2;path=a:4,b:_3;label=P',
           },
           '8892' =>
           {
@@ -162,7 +164,7 @@ module Engine
             'count' => 1,
             'color' => 'red',
             'code' =>
-            'city=revenue:yellow_20|green_30|brown_40|gray_50;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;' \
+            'city=revenue:green_30|brown_40|gray_50;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;' \
                   'icon=image:18_cz/50;label=Ug',
           },
           '8895' =>
@@ -170,7 +172,7 @@ module Engine
             'count' => 1,
             'color' => 'red',
             'code' =>
-            'city=revenue:yellow_20|green_30|brown_40|gray_50;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;' \
+            'city=revenue:green_30|brown_40|gray_50;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;' \
                   'icon=image:18_cz/50;label=kk',
           },
           '8896' =>
@@ -178,7 +180,7 @@ module Engine
             'count' => 1,
             'color' => 'red',
             'code' =>
-            'city=revenue:yellow_20|green_30|brown_40|gray_50;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;' \
+            'city=revenue:green_30|brown_40|gray_50;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;' \
                   'icon=image:18_cz/50;label=SX',
           },
           '8897' =>
@@ -186,7 +188,7 @@ module Engine
             'count' => 1,
             'color' => 'red',
             'code' =>
-            'city=revenue:yellow_20|green_30|brown_40|gray_50;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;' \
+            'city=revenue:green_30|brown_40|gray_50;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;' \
                   'icon=image:18_cz/50;label=PR',
           },
           '8898' =>
@@ -194,7 +196,7 @@ module Engine
             'count' => 1,
             'color' => 'red',
             'code' =>
-            'city=revenue:yellow_20|green_30|brown_40|gray_50;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;' \
+            'city=revenue:green_30|brown_40|gray_50;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;' \
                   'icon=image:18_cz/50;label=BY',
           },
           '8866p' =>
@@ -202,42 +204,42 @@ module Engine
             'count' => 2,
             'color' => 'green',
             'code' =>
-            'town=revenue:20;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0;frame=color:purple',
+            'town=revenue:20;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0;frame=color:#800080',
           },
           '14p' =>
           {
             'count' => 1,
             'color' => 'green',
             'code' =>
-            'city=revenue:30,slots:2;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:5,b:_0;frame=color:purple',
+            'city=revenue:30,slots:2;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:5,b:_0;frame=color:#800080',
           },
           '887p' =>
           {
             'count' => 4,
             'color' => 'green',
             'code' =>
-            'town=revenue:20;path=a:1,b:_0;path=a:3,b:_0;path=a:0,b:_0;path=a:2,b:_0;frame=color:purple',
+            'town=revenue:20;path=a:1,b:_0;path=a:3,b:_0;path=a:0,b:_0;path=a:2,b:_0;frame=color:#800080',
           },
           '15p' =>
           {
             'count' => 1,
             'color' => 'green',
             'code' =>
-            'city=revenue:30,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;frame=color:purple',
+            'city=revenue:30,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;frame=color:#800080',
           },
           '888p' =>
           {
             'count' => 2,
             'color' => 'green',
             'code' =>
-            'town=revenue:20;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:5,b:_0;frame=color:purple',
+            'town=revenue:20;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:5,b:_0;frame=color:#800080',
           },
           '889p' =>
           {
             'count' => 2,
             'color' => 'brown',
             'code' =>
-            'town=revenue:30;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;frame=color:purple',
+            'town=revenue:30;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;frame=color:#800080',
           },
           '611p' =>
           {
@@ -245,7 +247,7 @@ module Engine
             'color' => 'brown',
             'code' =>
             'city=revenue:40,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;' \
-                  'frame=color:purple',
+                  'frame=color:#800080',
           },
           '216p' =>
           {
@@ -253,7 +255,7 @@ module Engine
             'color' => 'brown',
             'code' =>
             'city=revenue:50,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=Y;' \
-                  'frame=color:purple',
+                  'frame=color:#800080',
           },
           '8894p' =>
           {
@@ -261,7 +263,7 @@ module Engine
             'color' => 'brown',
             'code' =>
             'city=revenue:60,slots:2;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=OO;' \
-                  'frame=color:purple',
+                  'frame=color:#800080',
           },
           '8895p' =>
           {
@@ -269,7 +271,7 @@ module Engine
             'color' => 'brown',
             'code' =>
             'city=revenue:60,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=OO;' \
-                  'frame=color:purple',
+                  'frame=color:#800080',
           },
           '8896p' =>
           {
@@ -277,7 +279,7 @@ module Engine
             'color' => 'brown',
             'code' =>
             'city=revenue:60,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=OO;' \
-                  'frame=color:purple',
+                  'frame=color:#800080',
           },
           '8857p' =>
           {
@@ -285,7 +287,7 @@ module Engine
             'color' => 'gray',
             'code' =>
             'city=revenue:70,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;' \
-                  'path=a:5,b:_0;label=Y;frame=color:purple',
+                  'path=a:5,b:_0;label=Y;frame=color:#800080',
           },
           '595p' =>
           {
@@ -293,7 +295,7 @@ module Engine
             'color' => 'gray',
             'code' =>
             'city=revenue:60,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;' \
-                  'path=a:5,b:_0;frame=color:purple',
+                  'path=a:5,b:_0;frame=color:#800080',
           },
         }.freeze
 
@@ -2081,6 +2083,7 @@ module Engine
             sym: 'SX',
             name: 'Sächsische Eisenbahn',
             logo: '18_cz/SX',
+            simple_logo: '18_cz/SX.alt',
             max_ownership_percent: 60,
             always_market_price: true,
             tokens: [0, 40],
@@ -2095,6 +2098,7 @@ module Engine
             sym: 'PR',
             name: 'Preußische Eisenbahn',
             logo: '18_cz/PR',
+            simple_logo: '18_cz/PR.alt',
             max_ownership_percent: 60,
             always_market_price: true,
             tokens: [0, 40],
@@ -2109,6 +2113,7 @@ module Engine
             sym: 'BY',
             name: 'Bayrische Staatsbahn',
             logo: '18_cz/BY',
+            simple_logo: '18_cz/BY.alt',
             max_ownership_percent: 60,
             always_market_price: true,
             tokens: [0, 40],
@@ -2123,6 +2128,7 @@ module Engine
             sym: 'kk',
             name: 'kk Staatsbahn',
             logo: '18_cz/kk',
+            simple_logo: '18_cz/kk.alt',
             max_ownership_percent: 60,
             always_market_price: true,
             tokens: [0, 40],
@@ -2137,6 +2143,7 @@ module Engine
             sym: 'Ug',
             name: 'Ungarische Staatsbahn',
             logo: '18_cz/Ug',
+            simple_logo: '18_cz/Ug.alt',
             max_ownership_percent: 60,
             always_market_price: true,
             tokens: [0, 40],
@@ -2151,6 +2158,7 @@ module Engine
             sym: 'BN',
             name: 'Böhmische Nordbahn',
             logo: '18_cz/BN',
+            simple_logo: '18_cz/BN.alt',
             max_ownership_percent: 60,
             always_market_price: true,
             shares: [40, 20, 20, 20],
@@ -2168,6 +2176,7 @@ module Engine
             sym: 'NWB',
             name: 'Österreichische Nordwestbahn',
             logo: '18_cz/NWB',
+            simple_logo: '18_cz/NWB.alt',
             max_ownership_percent: 60,
             always_market_price: true,
             shares: [40, 20, 20, 20],
@@ -2185,6 +2194,7 @@ module Engine
             sym: 'ATE',
             name: 'Aussig-Teplitzer Eisenbahn',
             logo: '18_cz/ATE',
+            simple_logo: '18_cz/ATE.alt',
             max_ownership_percent: 60,
             always_market_price: true,
             shares: [40, 20, 20, 20],
@@ -2201,6 +2211,7 @@ module Engine
             sym: 'BTE',
             name: 'Buschtehrader Eisenbahn',
             logo: '18_cz/BTE',
+            simple_logo: '18_cz/BTE.alt',
             max_ownership_percent: 60,
             always_market_price: true,
             shares: [40, 20, 20, 20],
@@ -2217,6 +2228,7 @@ module Engine
             sym: 'KFN',
             name: 'Kaiser Ferdinands Nordbahn',
             logo: '18_cz/KFN',
+            simple_logo: '18_cz/KFN.alt',
             max_ownership_percent: 60,
             always_market_price: true,
             shares: [40, 20, 20, 20],
@@ -2232,6 +2244,7 @@ module Engine
             sym: 'EKJ',
             name: 'Eisenbahn Karlsbad Johanngeorgenstadt',
             logo: '18_cz/EKJ',
+            simple_logo: '18_cz/EKJ.alt',
             max_ownership_percent: 75,
             always_market_price: true,
             shares: [50, 25, 25],
@@ -2247,6 +2260,7 @@ module Engine
             sym: 'OFE',
             name: 'Ostrau-Friedlander Eisenbahn',
             logo: '18_cz/OFE',
+            simple_logo: '18_cz/OFE.alt',
             max_ownership_percent: 75,
             always_market_price: true,
             shares: [50, 25, 25],
@@ -2262,6 +2276,7 @@ module Engine
             sym: 'BCB',
             name: 'Böhmische Commercialbahn',
             logo: '18_cz/BCB',
+            simple_logo: '18_cz/BCB.alt',
             max_ownership_percent: 75,
             always_market_price: true,
             shares: [50, 25, 25],
@@ -2277,6 +2292,7 @@ module Engine
             sym: 'MW',
             name: 'Mährische Westbahn',
             logo: '18_cz/MW',
+            simple_logo: '18_cz/MW.alt',
             max_ownership_percent: 75,
             always_market_price: true,
             shares: [50, 25, 25],
@@ -2292,6 +2308,7 @@ module Engine
             sym: 'VBW',
             name: 'Vereinigte Böhmerwaldbahnen',
             logo: '18_cz/VBW',
+            simple_logo: '18_cz/VBW.alt',
             max_ownership_percent: 75,
             always_market_price: true,
             shares: [50, 25, 25],
@@ -2369,8 +2386,8 @@ module Engine
             ['E2'] => 'town=revenue:0;border=edge:5,type:offboard',
             ['C20'] => 'town=revenue:0;border=edge:2,type:offboard',
             %w[E14 F21 B15] => 'town=revenue:0;town=revenue:0',
-            ['E12'] =>
-            'city=revenue:20;city=revenue:20;path=a:5,b:_0;path=a:3,b:_1;label=P;upgrade=cost:10,terrain:water',
+            ['E12'] => 'city=revenue:20,groups:Praha;city=revenue:20,groups:Praha;'\
+                       'path=a:5,b:_0;path=a:3,b:_1;label=P;upgrade=cost:10,terrain:water',
             %w[A8 B5] =>
             'label=SX;border=edge:0,type:offboard;border=edge:5,type:offboard;border=edge:4,type:offboard',
             ['B19'] =>
@@ -2407,9 +2424,11 @@ module Engine
 
         HOME_TOKEN_TIMING = :operate
         LIMIT_TOKENS_AFTER_MERGER = 999
+        NEXT_SR_PLAYER_ORDER = :most_cash
 
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false # if ebuying from depot, must buy cheapest train
         EBUY_OTHER_VALUE = false # allow ebuying other corp trains for up to face
+        EBUY_CAN_SELL_SHARES = false # player cannot sell shares
 
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
           par: :red,
@@ -2469,6 +2488,16 @@ module Engine
           '8E' => :large,
         }.freeze
 
+        TWO_PLAYER_CORP_TO_REMOVE = %w[OFE MW KFN PR Ug].freeze
+        TWO_PLAYER_COMPANIES_TO_REMOVE = {
+          5 => 40,
+          10 => 55,
+          20 => 70,
+        }.freeze
+
+        TWO_PLAYER_HEXES_TO_REMOVE = %w[A22 B19 B21 B23 B25 C22 C24 C26 C28 D21 D23 D25 D27 D29 E20 E22 E24 E26
+                                        E28 F21 F23 F25 F27 G20 G22 G24 G26 G28 H21 H23 H25 I20 I22 I24].freeze
+
         include StubsAreRestricted
         attr_accessor :rusted_variants
 
@@ -2479,35 +2508,135 @@ module Engine
           @recently_floated = []
           @entity_used_ability_to_track = false
           @rusted_variants = []
+          @vaclavs_corporations = []
+
+          unless multiplayer?
+            @vaclav = Player.new(-1, 'Vaclav')
+            @corporations = @corporations.reject { |item| TWO_PLAYER_CORP_TO_REMOVE.include?(item.name) }
+
+            @corporations.select { |item| item.type == :large }.each { |item| item.max_ownership_percent = 70 }
+
+            @players << @vaclav
+          end
 
           # Only small companies are available until later phases
           @corporations, @future_corporations = @corporations.partition { |corporation| corporation.type == :small }
+
+          new_corporation_for_vaclav(:small) unless multiplayer?
 
           block_lay_for_purple_tiles
           init_player_debts
         end
 
+        def new_corporation_for_vaclav(size)
+          possible_corporations = @corporations.select { |corporation| corporation.type == size }
+          index = rand % possible_corporations.size
+          new_corporation = possible_corporations[index]
+
+          new_corporation.ipoed = true
+          new_corporation.owner = @vaclav
+          new_corporation.tokens.each { |item| item.price = 0 }
+          @recently_floated << new_corporation
+          @vaclavs_corporations << new_corporation
+
+          par_value = PAR_RANGE[new_corporation.type].first
+          price = @stock_market.par_prices.find { |p| p.price == par_value }
+          @stock_market.set_par(new_corporation, price)
+
+          index = 0
+          until new_corporation.floated?
+            bundle = new_corporation.ipo_shares[index].to_bundle
+            @share_pool.transfer_shares(bundle, @vaclav)
+            index += 1
+          end
+
+          @log << "Vaclav receives new corporation #{new_corporation.name}"
+          new_train_for_vaclav(new_corporation)
+        end
+
+        def new_train_for_vaclav(corporation)
+          corporation.trains.each do |item|
+            remove_train(item)
+            item.owner = nil
+          end
+          train = @depot.upcoming.first
+          variant = train.variants.values.find { |item| train_of_size?(item, corporation.type) }
+          train.variant = variant[:name]
+          remove_train(train)
+          train.owner = corporation
+          corporation.trains << train
+
+          @phase.buying_train!(corporation, train)
+
+          @log << "#{corporation.name} receives a new #{train.name} train"
+        end
+
+        def init_companies(players)
+          companies = super
+          unless multiplayer?
+            companies = companies.reject { |item| item.value >= TWO_PLAYER_COMPANIES_TO_REMOVE[item.revenue] }
+          end
+          companies
+        end
+
+        def active_players
+          active = super
+          return active if multiplayer? || active != [@vaclav]
+
+          case active_step
+          when G18CZ::Step::Track
+            current_entity.type == :medium ? [players_without_vaclav[1]] : [players_without_vaclav[0]]
+          when G18CZ::Step::Token
+            current_entity.type == :medium ? [players_without_vaclav[0]] : [players_without_vaclav[1]]
+          else
+            players_without_vaclav
+          end
+        end
+
+        def valid_actors(action)
+          return super if multiplayer?
+
+          action.entity.player == @vaclav ? active_players : super
+        end
+
+        def optional_hexes
+          return game_hexes if multiplayer?
+
+          new_hexes = {}
+          game_hexes.keys.each do |color|
+            new_map = game_hexes[color].transform_keys do |coords|
+              coords - TWO_PLAYER_HEXES_TO_REMOVE
+            end.to_h
+            new_hexes[color] = new_map
+          end
+          new_hexes
+        end
+
+        def multiplayer?
+          @multiplayer ||= @players.count { |item| item != @vaclav } > 2
+        end
+
         def init_round
-          Round::Draft.new(self,
-                           [G18CZ::Step::Draft],
-                           snake_order: true)
+          G18CZ::Round::Draft.new(self,
+                                  [G18CZ::Step::Draft],
+                                  snake_order: true)
         end
 
         def stock_round
-          Round::Stock.new(self, [
+          G18CZ::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
             G18CZ::Step::BuySellParShares,
           ])
         end
 
         def operating_round(round_num)
-          Round::Operating.new(self, [
+          G18CZ::Round::Operating.new(self, [
             G18CZ::Step::HomeTrack,
             G18CZ::Step::SellCompanyAndSpecialTrack,
             Engine::Step::HomeToken,
             G18CZ::Step::ReduceTokens,
             G18CZ::Step::BuyCompany,
-            Engine::Step::Track,
+            G18CZ::Step::Track,
             G18CZ::Step::Token,
             Engine::Step::Route,
             G18CZ::Step::Dividend,
@@ -2538,10 +2667,6 @@ module Engine
           super
         end
 
-        def or_round_finished
-          @recently_floated.clear
-        end
-
         def end_now?(_after)
           @or == @last_or
         end
@@ -2551,7 +2676,7 @@ module Engine
             'At the end of each set of ORs the next available train will be exported
            (removed, triggering phase change as if purchased)',
           ]
-          @timeline.append("Game ends after OR #{@last_or}")
+          @timeline.append("Game ends after OR #{OR_SETS.size}.#{OR_SETS.last}")
           @timeline.append("Current value of each private company is #{COMPANY_VALUES[[0, @or - 1].max]}")
           @timeline.append("Next set of Operating Rounds will have #{OR_SETS[@turn - 1]} ORs")
         end
@@ -2568,12 +2693,16 @@ module Engine
           end
           @corporations.concat(medium_corps)
           @log << '-- Medium corporations now available --'
+
+          new_corporation_for_vaclav(:medium) unless multiplayer?
         end
 
         def event_large_corps_available!
           @corporations.concat(@future_corporations)
           @future_corporations.clear
           @log << '-- Large corporations now available --'
+
+          new_corporation_for_vaclav(:large) unless multiplayer?
         end
 
         def float_corporation(corporation)
@@ -2588,17 +2717,24 @@ module Engine
         end
 
         def or_set_finished
-          depot.export!
+          if multiplayer?
+            depot.export!
+          else
+            # cloning is needed because vaclavs corporation changes when a new train triggers a new corporation
+            @vaclavs_corporations.clone.each do |item|
+              new_train_for_vaclav(item)
+            end
+          end
         end
 
         def next_round!
           @round =
             case @round
-            when Round::Stock
+            when Engine::Round::Stock
               @operating_rounds = OR_SETS[@turn - 1]
-              reorder_players(:most_cash)
+              reorder_players(log_player_order: true)
               new_operating_round
-            when Round::Operating
+            when Engine::Round::Operating
               if @round.round_num < @operating_rounds
                 or_round_finished
                 new_operating_round(@round.round_num + 1)
@@ -2610,7 +2746,7 @@ module Engine
               end
             when init_round.class
               init_round_finished
-              reorder_players(:least_cash)
+              reorder_players(:least_cash, log_player_order: true)
               new_stock_round
             end
         end
@@ -2629,8 +2765,20 @@ module Engine
           entity.type
         end
 
+        def corporation_size_name(entity)
+          entity.type[0].capitalize
+        end
+
         def status_str(corp)
-          corp.type.capitalize
+          train_type = case corp.type
+                       when :small
+                         'Normal '
+                       when :medium
+                         'Plus-'
+                       else
+                         'E-'
+                       end
+          "#{corp.type.capitalize} / #{train_type}Trains"
         end
 
         def block_lay_for_purple_tiles
@@ -2718,7 +2866,7 @@ module Engine
           end
         end
 
-        def upgrades_to?(from, to, special = false)
+        def upgrades_to?(from, to, _special = false, selected_company: nil)
           return true if from.color == :white && to.color == :red
           if purple_tile?(to) && from.towns.size == 2 && !to.towns.empty? && from.color == :yellow && to.color == :green
             return true
@@ -2746,7 +2894,7 @@ module Engine
             next unless rust?(t)
 
             rusted_trains << t.name
-            owners[t.owner.name] += 1
+            owners[t.owner.name] += 1 if t.owner
             rust(t)
           end
           return if rusted_trains.none?
@@ -2804,6 +2952,14 @@ module Engine
           @player_debts[player.id][:penalty_interest]
         end
 
+        def player_debt(player)
+          debt(player)
+        end
+
+        def player_interest(player)
+          penalty_interest(player)
+        end
+
         def player_value(player)
           player.value - debt(player) - penalty_interest(player)
         end
@@ -2851,9 +3007,101 @@ module Engine
         end
 
         def format_currency(val)
-          return format('K%0.1f', val) if (val - val.to_i).positive?
+          return format('%0.1f K', val) if (val - val.to_i).positive?
 
           self.class::CURRENCY_FORMAT_STR % val
+        end
+
+        def show_progress_bar?
+          true
+        end
+
+        def progress_information
+          [
+            { type: :PRE },
+            { type: :SR },
+            { type: :OR, value: '40', name: '1.1', exportAfter: true },
+            { type: :SR },
+            { type: :OR, value: '45', name: '2.1', exportAfter: true },
+            { type: :SR },
+            { type: :OR, value: '50', name: '3.1', exportAfter: true },
+            { type: :SR },
+            { type: :OR, value: '55', name: '4.1', exportAfter: true },
+            { type: :SR },
+            { type: :OR, value: '60', name: '5.1' },
+            { type: :OR, value: '65', name: '5.2', exportAfter: true },
+            { type: :SR },
+            { type: :OR, value: '70', name: '6.1' },
+            { type: :OR, value: '75', name: '6.2', exportAfter: true },
+            { type: :SR },
+            { type: :OR, value: '80', name: '7.1' },
+            { type: :OR, value: '90', name: '7.2', exportAfter: true },
+            { type: :SR },
+            { type: :OR, value: '100', name: '8.1' },
+            { type: :OR, value: '110', name: '8.2' },
+            { type: :OR, value: '120', name: '8.3' },
+            { type: :End },
+          ]
+        end
+
+        def route_distance(route)
+          return super if train_of_size?(route.train, :small)
+
+          n_cities = route.stops.count { |n| n.city? || n.offboard? }
+
+          return n_cities if train_of_size?(route.train, :large)
+
+          n_towns = route.stops.count(&:town?)
+          "#{n_cities}+#{n_towns}"
+        end
+
+        def can_par?(corporation, parrer)
+          super && debt(parrer).zero?
+        end
+
+        def corporation_of_vaclav?(corporation)
+          @vaclavs_corporations.include?(corporation)
+        end
+
+        def player_of_index(index)
+          players_without_vaclav[index]
+        end
+
+        def players_without_vaclav
+          exclude_vaclav(@players)
+        end
+
+        def exclude_vaclav(entities)
+          entities.reject { |item| item == @vaclav }
+        end
+
+        def track_action_processed(entity)
+          @recently_floated.delete(entity)
+        end
+
+        def next_sr_position(entity)
+          player_order = @round.current_entity&.player? ? [] : players_without_vaclav
+          player_order.index(entity)
+        end
+
+        def reorder_players(order = nil, log_player_order: false)
+          return super if multiplayer?
+
+          order ||= next_sr_player_order
+          case order
+          when :most_cash
+            current_order = @players.dup.reverse
+            @players = players_without_vaclav.sort_by { |p| [p.cash, current_order.index(p)] }.reverse
+          when :least_cash
+            current_order = @players.dup
+            @players = players_without_vaclav.sort_by { |p| [p.cash, current_order.index(p)] }
+          end
+          @players << @vaclav
+          @log << if log_player_order
+                    "Priority order: #{players_without_vaclav.map(&:name).join(', ')}"
+                  else
+                    "#{@players.first.name} has priority deal"
+                  end
         end
       end
     end

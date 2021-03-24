@@ -223,7 +223,7 @@ module Engine
               type: 'tile_lay',
               hexes: ['I6'],
               tiles: ['X00'],
-              when: %w[special_track owning_corp_or_turn],
+              when: 'track',
               owner_type: 'corporation',
               count: 1,
             },
@@ -254,7 +254,7 @@ module Engine
             revenue: 0,
             desc: 'Comes with one $10 bridge token that may be placed by the owning corp '\
                   'in Mare Nostrum or Dynasties max one token per city, regardless '\
-                  'of connectivity..  Allows owning corp to skip $10 river fee '\
+                  'of connectivity.  Allows owning corp to skip $10 river fee '\
                   'when placing yellow tiles.',
             sym: 'OBC',
             abilities: [
@@ -305,7 +305,7 @@ module Engine
                 hexes: %w[B7 E4 E2 F9 I8 K6 L5],
                 tiles: %w[7 8 9],
                 free: false,
-                when: %w[special_track owning_corp_or_turn],
+                when: 'owning_corp_or_turn',
                 owner_type: 'corporation',
                 count: 1,
               },
@@ -328,7 +328,7 @@ module Engine
                 hexes: %w[B7 E4 E2 F9 I8 K6 L5],
                 tiles: %w[7 8 9],
                 free: false,
-                when: %w[special_track owning_corp_or_turn],
+                when: 'owning_corp_or_turn',
                 owner_type: 'corporation',
                 count: 2,
               },
@@ -555,9 +555,10 @@ module Engine
             'town=revenue:yellow_10|green_20|brown_30|gray_40;path=a:2,b:_0;path=a:_0,b:4',
             ['L9'] => 'city=revenue:0',
           },
-          yellow: { ['C4'] =>
-            'city=revenue:40;city=revenue:40;path=a:2,b:_0;path=a:5,b:_1;label=NY;upgrade=cost:20',
-   },
+          yellow: {
+            ['C4'] =>
+                        'city=revenue:40;city=revenue:40;path=a:2,b:_0;path=a:5,b:_1;label=NY;upgrade=cost:20',
+          },
           red: {
             ['A2'] =>
                      'offboard=revenue:yellow_30|green_50|brown_20|gray_60;path=a:4,b:_0',
@@ -622,8 +623,16 @@ module Engine
           hexes.any? { |h| h.tile.cities.any? { |c| c.tokens.count(&:nil?).positive? } }
         end
 
+        def can_place_second_token(corporation)
+          return false if !tokenable_location_exists? || !corp_has_new_zealand?(corporation)
+
+          # Does the corp have a second token already?
+          corporation.tokens[1] && !corporation.tokens[1].city
+        end
+
+        # This must be idempotent.
         def place_second_token(corporation)
-          return unless tokenable_location_exists?
+          return unless can_place_second_token(corporation)
 
           hex = hex_by_id(corporation.coordinates)
 
@@ -717,7 +726,7 @@ module Engine
 
           G1817::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
-            Engine::Step::HomeToken,
+            G1817WO::Step::HomeToken,
             G1817WO::Step::BuySellParShares,
           ])
         end

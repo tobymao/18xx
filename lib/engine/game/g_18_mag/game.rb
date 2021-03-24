@@ -11,7 +11,7 @@ module Engine
 
         attr_reader :tile_groups, :unused_tiles, :sik, :skev, :ldsteg, :mavag, :raba, :snw, :gc, :terrain_tokens
 
-        CURRENCY_FORMAT_STR = '%d Ft'
+        CURRENCY_FORMAT_STR = '%d Ft'
         BANK_CASH = 100_000
         CERT_LIMIT = {
           2 => 10,
@@ -354,7 +354,7 @@ module Engine
           end
         end
 
-        def upgrades_to?(from, to, special = false)
+        def upgrades_to?(from, to, special = false, selected_company: nil)
           # correct color progression?
           return false unless Engine::Tile::COLORS.index(to.color) == (Engine::Tile::COLORS.index(from.color) + 1)
 
@@ -649,16 +649,14 @@ module Engine
 
         # see if minor bought unused rail-cars
         def all_railcars_used?(routes)
-          return true if @round.rail_cars.empty?
+          return true if @round.rail_cars.empty? || loading
 
           @round.rail_cars.each do |rc|
             case rc
             when 'RABA'
               next if routes.any? { |r| r.visited_stops.any?(&:offboard?) }
 
-              unless multiplayer?
-                next if routes.any? { |r| r.visited_stops.sum(&:visit_cost) > r.train.distance }
-              end
+              next if !multiplayer? && routes.any? { |r| r.visited_stops.sum(&:visit_cost) > r.train.distance }
 
               return false
             when 'SNW'
@@ -991,6 +989,7 @@ module Engine
               sym: '1',
               name: 'Magyar Északi Vasút',
               logo: '18_mag/1',
+              simple_logo: '18_mag/1.alt',
               tokens: [
                 0,
                 40,
@@ -1004,6 +1003,7 @@ module Engine
               sym: '2',
               name: 'Magyar Keleti Vasút',
               logo: '18_mag/2',
+              simple_logo: '18_mag/2.alt',
               tokens: [
                 0,
                 40,
@@ -1017,6 +1017,7 @@ module Engine
               sym: '3',
               name: 'Magyar Nyugoti Vasút',
               logo: '18_mag/3',
+              simple_logo: '18_mag/3.alt',
               tokens: [
                 0,
                 40,
@@ -1029,6 +1030,7 @@ module Engine
               sym: '4',
               name: 'TiszaVidéki Vasút',
               logo: '18_mag/4',
+              simple_logo: '18_mag/4.alt',
               tokens: [
                 0,
                 40,
@@ -1042,6 +1044,7 @@ module Engine
               sym: '5',
               name: 'Első Erdélyi Vasút',
               logo: '18_mag/5',
+              simple_logo: '18_mag/5.alt',
               tokens: [
                 0,
                 40,
@@ -1054,6 +1057,7 @@ module Engine
               sym: '6',
               name: 'Kassa-Oderbergi Vasút',
               logo: '18_mag/6',
+              simple_logo: '18_mag/6.alt',
               tokens: [
                 0,
                 40,
@@ -1066,6 +1070,7 @@ module Engine
               sym: '7',
               name: 'Mohács-Pécsi Vasút',
               logo: '18_mag/7',
+              simple_logo: '18_mag/7.alt',
               tokens: [
                 0,
                 40,
@@ -1079,6 +1084,7 @@ module Engine
               sym: '8',
               name: 'Hrvatske Željeznice',
               logo: '18_mag/8',
+              simple_logo: '18_mag/8.alt',
               tokens: [
                 0,
                 40,
@@ -1091,6 +1097,7 @@ module Engine
               sym: '9',
               name: 'Szabadka-Újvidék Vasút',
               logo: '18_mag/9',
+              simple_logo: '18_mag/9.alt',
               tokens: [
                 0,
                 40,
@@ -1104,6 +1111,7 @@ module Engine
               sym: '10',
               name: 'Arad-Temesvári Vasúttársaság',
               logo: '18_mag/10',
+              simple_logo: '18_mag/10.alt',
               tokens: [
                 0,
                 40,
@@ -1117,6 +1125,7 @@ module Engine
               sym: '11',
               name: 'Győr-Sopron-Ebenfurti Vasút',
               logo: '18_mag/11',
+              simple_logo: '18_mag/11.alt',
               tokens: [
                 0,
                 40,
@@ -1129,6 +1138,7 @@ module Engine
               sym: '12',
               name: 'Segesvár–Szentágotai Vasút',
               logo: '18_mag/12',
+              simple_logo: '18_mag/12.alt',
               tokens: [
                 0,
                 40,
@@ -1141,6 +1151,7 @@ module Engine
               sym: '13',
               name: 'Déli Vasút',
               logo: '18_mag/13',
+              simple_logo: '18_mag/13.alt',
               tokens: [
                 0,
                 40,
@@ -1153,6 +1164,7 @@ module Engine
               sym: 'mine',
               name: 'mine',
               logo: '18_mag/mine',
+              simple_logo: '18_mag/mine.alt',
               tokens: [
                 0,
                 0,
@@ -1184,6 +1196,7 @@ module Engine
               sym: 'RABA',
               name: 'Magyar Waggon-és Gépgyár Rt.',
               logo: '18_mag/RABA',
+              simple_logo: '18_mag/RABA.alt',
               float_percent: 0,
               max_ownership_percent: 60,
               tokens: [
@@ -1196,6 +1209,7 @@ module Engine
               sym: 'G&C',
               name: 'Ganz & Cie',
               logo: '18_mag/GC',
+              simple_logo: '18_mag/GC.alt',
               float_percent: 0,
               max_ownership_percent: 60,
               tokens: [
@@ -1209,6 +1223,7 @@ module Engine
               sym: 'SNW',
               name: 'Schlick-Nicholson Gép-, Waggon és Hajógyár Rt.',
               logo: '18_mag/SNW',
+              simple_logo: '18_mag/SNW.alt',
               float_percent: 0,
               max_ownership_percent: 60,
               tokens: [
@@ -1221,6 +1236,7 @@ module Engine
               sym: 'SIK',
               name: 'Gróf Széchenyi István Konsorcium',
               logo: '18_mag/SIK',
+              simple_logo: '18_mag/SIK.alt',
               float_percent: 0,
               max_ownership_percent: 60,
               tokens: [
@@ -1233,6 +1249,7 @@ module Engine
               sym: 'SKEV',
               name: 'Széchy Károly Építőipari Vállalat',
               logo: '18_mag/SKEV',
+              simple_logo: '18_mag/SKEV.alt',
               float_percent: 0,
               max_ownership_percent: 60,
               tokens: [
@@ -1246,6 +1263,7 @@ module Engine
               sym: 'LdStEG',
               name: 'Lokomotivfabrik der Staatseisenbahn-Gesellschaft',
               logo: '18_mag/LdStEG',
+              simple_logo: '18_mag/LdStEG.alt',
               float_percent: 0,
               max_ownership_percent: 60,
               tokens: [
@@ -1259,6 +1277,7 @@ module Engine
               sym: 'MAVAG',
               name: 'Magyar Királyi Államvasutak Gépgyára',
               logo: '18_mag/MAVAG',
+              simple_logo: '18_mag/MAVAG.alt',
               float_percent: 0,
               max_ownership_percent: 60,
               tokens: [

@@ -11,17 +11,6 @@ module Engine
             corp = action.entity
             player = corp.owner
 
-            unless @game.can_go_bankrupt?(player, corp)
-              buying_power = @game.format_currency(@game.total_emr_buying_power(player, corp))
-              price = @game.format_currency(@game.depot.min_depot_price)
-
-              msg = "Cannot go bankrupt. #{corp.name}'s cash plus #{player.name}'s cash and "\
-                    "sellable shares total #{buying_power}, and the cheapest train in the "\
-                    "Depot costs #{price}."
-
-              raise GameError, msg
-            end
-
             @log << "-- #{player.name} goes bankrupt and sells remaining shares --"
 
             # first, the corporation issues as many shares as they can
@@ -35,8 +24,20 @@ module Engine
               @game.round.emergency_issued = true
             end
 
+            # validate after emergency issuing to fix the math in the exception message
+            unless @game.can_go_bankrupt?(player, corp)
+              buying_power = @game.format_currency(@game.total_emr_buying_power(player, corp))
+              price = @game.format_currency(@game.depot.min_depot_price)
+
+              msg = "Cannot go bankrupt. #{corp.name}'s cash plus #{player.name}'s cash and "\
+                    "sellable shares total #{buying_power}, and the cheapest train in the "\
+                    "Depot costs #{price}."
+
+              raise GameError, msg
+            end
+
             # next the president sells all normally allowed shares
-            player.shares_by_corporation.each do |corporation, _|
+            player.shares_by_corporation(sorted: true).each do |corporation, _|
               next unless corporation.share_price # if a corporation has not parred
               next unless (bundle = @game.sellable_bundles(player, corporation).max_by(&:price))
 
@@ -44,16 +45,15 @@ module Engine
             end
 
             # finally, the president sells all their shares, regardless of 50% and
-            # presidency restrictions
-            player.shares_by_corporation.each do |corporation, shares|
+            # presidency restrictions, not changing any share prices
+            player.shares_by_corporation(sorted: true).each do |corporation, shares|
               next unless corporation.share_price # if a corporation has not parred
               next if shares.empty?
 
               bundle = ShareBundle.new(shares)
+              @game.share_pool.sell_shares(bundle, allow_president_change: true)
 
-              @game.sell_shares_and_change_price(bundle)
-
-              if corporation.owner == player
+              if corporation.owner == player && corporation.share_price.price.positive?
                 @log << "-- #{corporation.name} enters receivership (it has no president) --"
                 corporation.owner = @game.share_pool
               end
@@ -71,6 +71,13 @@ module Engine
             @log << "#{@game.format_currency(player.cash)} is transferred from "\
                     "#{player.name} to #{corp.name}"
             player.spend(player.cash, corp) if player.cash.positive?
+
+            @game.corporations.dup.each do |corporation|
+              if corporation.share_price&.type == :close
+                @game.close_corporation(corporation)
+                corporation.close!
+              end
+            end
 
             @game.declare_bankrupt(player)
           end

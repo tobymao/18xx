@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require_relative 'assignable'
-require_relative 'connection'
 
 module Engine
   class Hex
@@ -71,8 +70,6 @@ module Engine
       @layout = layout
       @x, @y = self.class.init_x_y(@coordinates, axes)
       @neighbors = {}
-      @connections = Hash.new { |h, k| h[k] = [] }
-      @connected = false
       @location_name = location_name
       tile.location_name = location_name
       @original_tile = @tile = tile
@@ -194,30 +191,7 @@ module Engine
 
       @tile = tile
 
-      invalidate_connections
-      invalidate_connected
       @paths = nil
-    end
-
-    def invalidate_connected
-      hexes = []
-      tile.paths.each do |path|
-        path.walk do |p|
-          hexes << p.hex
-        end
-      end
-
-      hexes.uniq.each(&:invalidate_connections)
-    end
-
-    def invalidate_connections
-      @connected = false
-      @connections.clear
-    end
-
-    def connections
-      connect unless @connected
-      @connections
     end
 
     def lay_downgrade(tile)
@@ -237,10 +211,6 @@ module Engine
 
           paths
         end
-    end
-
-    def all_connections
-      connections.values.flatten.uniq.select(&:valid?)
     end
 
     def neighbor_direction(other)
@@ -273,13 +243,6 @@ module Engine
 
     def inspect
       "<#{self.class.name}: #{name}, tile: #{@tile.name}>"
-    end
-
-    private
-
-    def connect
-      @connected = true
-      Connection.connect!(self)
     end
   end
 end

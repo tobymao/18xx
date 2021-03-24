@@ -17,6 +17,8 @@ module View
 
       needs :game
 
+      PLAYER_COL_MAX_WIDTH = '4.5rem'
+
       def render
         @spreadsheet_sort_by = Lib::Storage['spreadsheet_sort_by']
         @spreadsheet_sort_order = Lib::Storage['spreadsheet_sort_order']
@@ -128,6 +130,7 @@ module View
             when 'withhold'
               ["[#{hist[x].revenue}]", '0.5']
             when 'half'
+              @halfpaid = true
               ["¦#{hist[x].revenue}¦", '0.75']
             else
               [hist[x].revenue.to_s, '1.0']
@@ -136,7 +139,6 @@ module View
           props = {
             style: {
               color: convert_hex_to_rgba(color_for(:font2), alpha),
-              padding: '0 0.15rem',
             },
           }
 
@@ -145,9 +147,9 @@ module View
                                   "Go to run #{x} of #{corporation.name}",
                                   hist[x].dividend.id - 1,
                                   { textDecoration: 'none' })
-            h(:td, props, [link_h])
+            h('td.right', props, [link_h])
           else
-            h(:td, props, revenue_text)
+            h('td.right', props, revenue_text)
           end
         else
           h(:td, '')
@@ -174,7 +176,11 @@ module View
           extra << h(:th, render_sort_link('Buying Power', :buying_power))
           extra << h(:th, render_sort_link('Interest Due', :interest))
         end
+        if (@diff_corp_sizes = @game.all_corporations.any? { |c| @game.corporation_size(c) != :small })
+          extra << h(:th, render_sort_link('Size', :corp_size))
+        end
         @extra_size = extra.size
+
         [
           h(:tr, [
             h(:th, { style: { minWidth: '5rem' } }, ''),
@@ -188,7 +194,9 @@ module View
           h(:tr, [
             h(:th, { style: { paddingBottom: '0.3rem' } }, render_sort_link('SYM', :id)),
             *@game.players.map do |p|
-              h('th.name.nowrap', p == @game.priority_deal_player ? pd_props : '', render_sort_link(p.name, p.id))
+              props = p == @game.priority_deal_player ? pd_props : { style: {} }
+              props[:style][:minWidth] = min_width(p)
+              h('th.name.nowrap', props, render_sort_link(p.name, p.id))
             end,
             h(:th, render_sort_link(@game.ipo_name, :ipo_shares)),
             h(:th, render_sort_link('Market', :market_shares)),
@@ -208,17 +216,17 @@ module View
 
       def render_sort_link(text, sort_by)
         [
+          h(:span, @spreadsheet_sort_by == sort_by ? sort_order_icon : ''),
           h(
             Link,
             href: '',
             title: 'Sort',
             click: lambda {
               mark_sort_column(sort_by)
-              toggle_sort_order
+              toggle_sort_order if @spreadsheet_sort_by == sort_by
             },
             children: text,
           ),
-          h(:span, @spreadsheet_sort_by == sort_by ? sort_order_icon : ''),
         ]
       end
 
@@ -319,7 +327,9 @@ module View
             when :order
               operating_order
             when :trains
-              corporation.floated? ? [corporation.trains.size, corporation.trains.max_by(&:name).to_s] : [-1, '']
+              ct = corporation.trains.sort_by(&:name).reverse
+              train_limit = @game.phase.train_limit(corporation)
+              corporation.floated? ? [ct.size, [Array.new(train_limit) { |i| ct[i]&.name }]] : [-1, []]
             when :tokens
               @game.count_available_tokens(corporation)
             when :loans
@@ -330,10 +340,15 @@ module View
               @game.buying_power(corporation, full: true)
             when :interest
               @game.interest_owed(corporation) if @game.total_loans.positive?
+            when :corp_size
+              @game.corporation_size(corporation)
             when :companies
               corporation.companies.size
             else
-              @game.player_by_id(@spreadsheet_sort_by)&.num_shares_of(corporation)
+              p = @game.player_by_id(@spreadsheet_sort_by)
+              n = p&.num_shares_of(corporation)
+              n += 0.01 if corporation.president?(p)
+              n.nil? || n.zero? ? -99 : n # sort shorts between longs and 0 shares
             end
           end
         end
@@ -366,7 +381,12 @@ module View
         end
 
         order_props = { style: { paddingLeft: '1.2em' } }
-        operating_order_text = "#{operating_order}#{corporation.operating_history.keys[-1] == current_round ? '*' : ''}"
+        order_props[:style][:color] =
+          if operating_order.zero?
+            'transparent'
+          elsif corporation.operating_history.keys[-1] == current_round
+            convert_hex_to_rgba(color_for(:font2), 0.5)
+          end
 
         extra = []
         extra << h(:td, "#{corporation.loans.size}/#{@game.maximum_loans(corporation)}") if @game.total_loans&.nonzero?
@@ -384,27 +404,43 @@ module View
           end
           extra << h(:td, interest_props, @game.format_currency(@game.interest_owed(corporation)).to_s)
         end
+        extra << h(:td, @game.corporation_size_name(corporation)) if @diff_corp_sizes
 
+        n_ipo_shares = num_shares_of(corporation, corporation)
+        n_market_shares = num_shares_of(@game.share_pool, corporation)
         h(:tr, tr_props, [
           h(:th, name_props, corporation.name),
           *@game.players.map do |p|
-            sold_props = { style: {} }
+            props = { style: {} }
             if @game.round.active_step&.did_sell?(corporation, p)
-              sold_props[:style][:backgroundColor] = '#9e0000'
-              sold_props[:style][:color] = 'white'
+              props[:style][:backgroundColor] = '#9e0000'
+              props[:style][:color] = 'white'
             end
+            n_shares = num_shares_of(p, corporation)
+            props[:style][:color] = 'transparent' if n_shares.zero?
             share_holding = corporation.president?(p) ? '*' : ''
-            share_holding += num_shares_of(p, corporation).to_s unless corporation.minor?
-            h('td.padded_number', sold_props, share_holding)
+            share_holding += n_shares.to_s unless corporation.minor?
+            h('td.padded_number', props, share_holding)
           end,
-          h('td.padded_number', { style: { borderLeft: border_style } }, num_shares_of(corporation, corporation).to_s),
-          h('td.padded_number', { style: { borderRight: border_style } },
-            "#{corporation.receivership? ? '*' : ''}#{num_shares_of(@game.share_pool, corporation)}"),
+          h('td.padded_number', {
+              style: {
+                borderLeft: border_style,
+                color: n_ipo_shares.zero? ? 'transparent' : 'inherit',
+              },
+            },
+            n_ipo_shares),
+          h('td.padded_number', {
+              style: {
+                borderRight: border_style,
+                color: n_market_shares.zero? ? 'transparent' : 'inherit',
+              },
+            },
+            "#{corporation.receivership? ? '*' : ''}#{n_market_shares}"),
           h('td.padded_number', corporation.par_price ? @game.format_currency(corporation.par_price.price) : ''),
           h('td.padded_number', market_props,
             corporation.share_price ? @game.format_currency(corporation.share_price.price) : ''),
           h('td.padded_number', @game.format_currency(corporation.cash)),
-          h('td.left', order_props, operating_order_text),
+          h('td.padded_number', order_props, operating_order),
           h(:td, corporation.trains.map(&:name).join(', ')),
           h(:td, @game.token_string(corporation)),
           *extra,
@@ -415,7 +451,17 @@ module View
       end
 
       def render_companies(entity)
-        h('td.padded_number', entity.companies.map(&:sym).join(', '))
+        if entity.player?
+          props = {
+            style: {
+              maxWidth: PLAYER_COL_MAX_WIDTH,
+              whiteSpace: 'normal',
+              textAlign: 'right',
+            },
+          }
+          props[:style][:minWidth] = min_width(entity)
+        end
+        h(:td, props, entity.companies.map(&:sym).join(', '))
       end
 
       def render_player_companies
@@ -503,6 +549,10 @@ module View
         return corporation.president?(entity) ? 1 : 0 if corporation.minor?
 
         entity.num_shares_of(corporation, ceil: false)
+      end
+
+      def min_width(entity)
+        PLAYER_COL_MAX_WIDTH if entity.companies.size > 1 || @game.format_currency(entity.value).size > 6
       end
     end
   end

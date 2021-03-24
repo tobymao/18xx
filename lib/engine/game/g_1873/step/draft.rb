@@ -52,11 +52,14 @@ module Engine
 
           def actions(entity)
             return [] if finished?
+            return [] if entity != current_entity
+            return %w[bid] if @game.premium_winner
 
-            entity == current_entity ? ACTIONS : []
+            ACTIONS
           end
 
           def process_bid(action)
+            @game.premium_winner = nil
             company = action.company
             player = action.entity
             price = action.price
@@ -68,7 +71,9 @@ module Engine
             if (minor = @game.get_mine(company))
               minor.owner = player
               minor.float!
+              @game.open_mine!(minor)
               company.close!
+              @game.companies.delete(company)
             else
               player.companies << company
             end
@@ -103,8 +108,8 @@ module Engine
 
             @companies.each do |c|
               if (minor = @game.get_mine(c))
-                @game.companies.delete(c)
                 @game.close_mine!(minor)
+                @game.companies.delete(c)
               end
             end
             @round.reset_entity_index!
@@ -118,6 +123,14 @@ module Engine
             return unless company
 
             company.value
+          end
+
+          def buy_str(company)
+            "Buy (#{@game.format_currency(company.value + @game.premium)})"
+          end
+
+          def show_map
+            true
           end
         end
       end

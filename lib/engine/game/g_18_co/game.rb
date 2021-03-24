@@ -292,6 +292,16 @@ module Engine
           %w[10a 10a 10a 15a 15a],
         ].freeze
 
+        # Hexes that are small towns. Used in special GJGR ability.
+        SMALL_TOWNS = %w[C9
+                         C17
+                         C21
+                         D14
+                         E7
+                         H8
+                         H14
+                         K13].freeze
+
         PHASES = [{ name: '2', train_limit: 4, tiles: [:yellow], operating_rounds: 2 },
                   {
                     name: '3',
@@ -457,29 +467,7 @@ module Engine
                 count: 1,
                 special: true,
                 tiles: %w[14 15],
-                hexes: %w[B10
-                          B22
-                          C7
-                          C9
-                          C17
-                          C21
-                          D4
-                          D14
-                          D24
-                          E5
-                          E7
-                          E11
-                          F8
-                          F12
-                          F20
-                          F24
-                          H8
-                          H12
-                          H14
-                          I21
-                          I23
-                          J6
-                          K13],
+                hexes: SMALL_TOWNS,
               },
             ],
             color: nil,
@@ -670,7 +658,7 @@ module Engine
             simple_logo: '18_co/ATSF.alt',
             tokens: [0, 40, 80, 100, 100, 100],
             coordinates: 'J26',
-            color: :"#0323ad",
+            color: :"#000e4b",
             abilities: [{ type: 'description', description: 'Par Group - B' }],
             reservation_color: nil,
           },
@@ -973,9 +961,10 @@ module Engine
             ['L4'] => 'path=a:2,b:1;path=a:3,b:1;',
             %w[L12 L18] => 'path=a:2,b:4;path=a:3,b:4;',
           },
-          yellow: { ['K5'] =>
-            'city=revenue:0;border=edge:2,type:mountain,cost:40;border=edge:3,type:mountain,cost:40;',
-   },
+          yellow: {
+            ['K5'] =>
+                        'city=revenue:0;border=edge:2,type:mountain,cost:40;border=edge:3,type:mountain,cost:40;',
+          },
         }.freeze
 
         LAYOUT = :pointy
@@ -1188,7 +1177,7 @@ module Engine
           G18CO::Step::BuyTrain,
           Engine::Step::CorporateSellShares,
           G18CO::Step::IssueShares,
-          [Engine::Step::BuyCompany, blocks: true],
+          [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 
@@ -1364,7 +1353,7 @@ module Engine
           str
         end
 
-        def upgrades_to?(from, to, special = false)
+        def upgrades_to?(from, to, special = false, selected_company: nil)
           return true if special && from.hex.tile.color == :yellow && GREEN_CITY_TILES.include?(to.name)
 
           # Green towns can't be upgraded to brown cities unless the hex has the upgrade icon
@@ -1377,7 +1366,7 @@ module Engine
           super
         end
 
-        def all_potential_upgrades(tile, tile_manifest: false)
+        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
           upgrades = super
 
           return upgrades unless tile_manifest

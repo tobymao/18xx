@@ -11,16 +11,19 @@ module Engine
             {
               non_double_tile: false,
               num_laid_track: 0,
+              laid_hexes: [],
             }
           end
 
           def setup
             @round.num_laid_track = 0
             @round.non_double_tile = false
+            @round.laid_hexes = []
           end
 
           def actions(entity)
             return [] unless entity == current_entity
+            return [] if entity.corporation? && entity.receivership?
             return [] if @game.public_mine?(entity) || @game.connected_mine?(entity) || entity == @game.mhe
             return [] if entity.company? || !can_lay_tile?(entity)
 
@@ -28,12 +31,10 @@ module Engine
           end
 
           def process_pass(action)
-            # deal with case where concession route happened to be completed
-            # before railroad even got to it's first OR
             entity = action.entity
-            if @game.concession_incomplete?(entity) && @game.concession_route_done?(entity)
-              @game.concession_complete!(entity)
-              pay_full_concession_cost!(entity)
+            if @game.concession_incomplete?(entity)
+              # can't pass if concession is incomplete
+              raise GameError, 'Must complete concession route'
             end
 
             super
@@ -42,20 +43,18 @@ module Engine
           def process_lay_tile(action)
             entity = action.entity
 
-            # deal with case where concession route happened to be completed
-            # before railroad even got to it's first OR
-            if @game.concession_incomplete?(entity) && @game.concession_route_done?(entity)
-              @game.concession_complete!(entity)
-              pay_full_concession_cost!(entity)
-            end
-
             lay_tile_action(action)
 
             # force recalculation of mine connections
             @game.mine_graph.clear if entity.corporation?
 
+            # update token/route and diesel graphs
+            @game.graph.clear
+            @game.diesel_graph.clear
+
             # check to see if concession is complete
             if @game.concession_incomplete?(entity) && @game.concession_route_done?(entity)
+              pay_remaining_concession_cost!(entity)
               @game.concession_complete!(entity)
               @round.num_laid_track = 2 # prevent any more tiles this turn
             end
@@ -75,6 +74,14 @@ module Engine
           def can_lay_tile?(entity)
             return true if abilities(entity, time: type, passive_ok: false)
             return false if entity.minor? && @round.num_laid_track.positive?
+
+            # deal with case where concession route happened to be completed
+            # before railroad even got to it's first OR
+            if @game.concession_incomplete?(entity) && @game.concession_route_done?(entity)
+              pay_remaining_concession_cost!(entity)
+              @game.concession_complete!(entity)
+            end
+
             return false if !@game.concession_incomplete?(entity) && @round.non_double_tile
 
             action = get_tile_lay(entity)
@@ -96,31 +103,34 @@ module Engine
             action
           end
 
-          def lay_tile_action(action, entity: nil, spender: nil)
+          def lay_tile_action(action)
             tile = action.tile
-            tile_lay = get_tile_lay(action.entity)
+            entity = action.entity
+            tile_lay = get_tile_lay(entity)
 
-            if !@game.double_lay?(tile) && @round.num_laid_track.positive?
+            if !@game.double_lay?(tile) && @round.num_laid_track.positive? && !@game.concession_incomplete?(entity)
               raise GameError, 'Must lay yellow or green with 2 unconnected track sections'
             end
 
-            lay_tile(action, extra_cost: tile_lay[:cost], entity: entity, spender: spender)
+            lay_tile(action, extra_cost: tile_lay[:cost], entity: entity)
             @round.num_laid_track += 1
             @round.non_double_tile = true unless @game.double_lay?(tile)
+            @round.laid_hexes << action.hex
           end
 
           def potential_tiles(entity, hex)
             return super unless @game.concession_incomplete?(entity)
 
-            if !@game.concession_hex(hex)
+            if !@game.concession_tile(hex)
               # can only lay in concession hexes
               []
             elsif @game.reserved_tiles[hex.id][:entity] == entity.name
               # can only lay reserved tile for this hex
               [@game.reserved_tiles[hex.id][:tile]]
             else
-              # can only lay concession tile of this hex
-              [@game.tiles.find { |t| t.name == @game.concession_hex(hex)[:tile] }]
+              # can only lay concession tile of this hex (but only if it isn't already there)
+              needed_tile = @game.tiles.find { |t| t.name == @game.concession_tile(hex)[:tile] }
+              hex.tile.name != needed_tile.name ? [needed_tile] : []
             end
           end
 
@@ -146,39 +156,46 @@ module Engine
           # and the concession company having to pay for previously laid tiles
           def pay_tile_cost!(entity, tile, rotation, hex, spender, cost, _extra_cost)
             reimburse = false
-            ch = @game.concession_hex(tile.hex)
-            if ch && entity.name != ch[:entity] && (tile.exits & ch[:exits]).size == ch[:exits].size
+            ch = @game.concession_tile(tile.hex)
+            ch_entity = @game.corporation_by_id(ch[:entity]) if ch
+            follows_path = @game.tile_has_path?(tile, ch[:exits]) if ch
+
+            if ch && entity.name != ch[:entity] && follows_path
               @log << "Laying tile finishes concession track in #{hex.id}"
               reimburse = true
-            elsif ch && entity.name != ch[:entity] && (tile.exits & ch[:exits]).size != ch[:exits].size
-              res_tile = @game.reserve_tile!(hex, tile)
+            elsif ch && entity.name != ch[:entity] && !follows_path
+              res_tile = @game.reserve_tile!(entity, hex, tile)
               raise GameError, 'Tile prevents concession from being completed' unless res_tile
 
               reimburse = true
-            elsif ch && (tile.exits & ch[:exits]).size != ch[:exits].size
+            elsif ch && !follows_path
               raise GameError, 'Tile must complete concession route'
-            elsif ch && cost != ch[:cost]
-              cost += ch[:cost]
-              @log << "#{entity.owner} must pay for previously reimbused tile cost"\
-                "of #{@game.format_cureency(ch[:cost])}"
             end
 
-            @game.advance_concession_phase!(ch[:entity]) if reimburse
+            @game.advance_concession_phase!(ch_entity) if reimburse && hex.id != 'D15'
 
-            super
+            spender.spend(cost, @game.bank) if cost.positive?
+
+            @log << "#{spender.name}"\
+              "#{spender == entity ? '' : " (#{entity.sym})"}"\
+              "#{cost.zero? ? '' : " spends #{@game.format_currency(cost)} and"}"\
+              " lays tile ##{tile.name}"\
+              " with rotation #{rotation} on #{hex.name}"\
+              "#{tile.location_name.to_s.empty? ? '' : " (#{tile.location_name})"}"
 
             return unless reimburse && cost.positive?
 
             @game.bank.spend(cost, entity.owner)
             @log << "#{entity.owner.name} is reimbursed for building the tile"
+            @game.reimbursed_hexes[hex] = cost
           end
 
-          def pay_full_concession_cost!(entity)
-            total_cost = @game.concession_hexes(entity).sum { |h| @game.concession_hex(h)[:cost] }
+          def pay_remaining_concession_cost!(entity)
+            total_cost = @game.concession_tile_hexes(entity).sum { |h| @game.reimbursed_hexes[h] }
             return unless total_cost.positive?
 
-            @log << "#{entity.name} had entire concession route previously built"
-            @log << "#{entity.name} pays entire concession cost of #{@game.format_currency(total_cost)}"
+            @log << "#{entity.name} had portions of concession route previously built"
+            @log << "#{entity.name} pays remaining concession cost of #{@game.format_currency(total_cost)}"
             entity.spend(total_cost, @game.bank)
           end
         end

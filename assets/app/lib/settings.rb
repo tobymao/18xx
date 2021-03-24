@@ -6,7 +6,7 @@ module Lib
   module Settings
     DARK = `window.matchMedia('(prefers-color-scheme: dark)').matches`.freeze
     # http://mkweb.bcgsc.ca/colorblind/ 12 color palette
-    ROUTE_COLORS = %i[#A40122 #008DF9 #00FCCF #FF5AAF #8400CD #FF6E3A #009F81 #FFC33B].freeze
+    ROUTE_COLORS = %i[#A40122 #008DF9 #00FCCF #FF5AAF #8400CD #FF6E3A #FFB2FD #FFC33B].freeze
 
     ENTER_GREEN = '#3CB371'
     JOIN_YELLOW = '#F0E58C'
@@ -20,8 +20,8 @@ module Lib
 
     SETTINGS = {
       notifications: true,
-      simple_logos: false,
       red_logo: false,
+      show_location_names: true,
       bg: DARK ? '#000000' : '#ffffff',
       bg2: DARK ? '#dcdcdc' : '#d3d3d3',
       font: DARK ? '#ffffff' : '#000000',
@@ -40,9 +40,16 @@ module Lib
       SETTINGS[option]
     end
 
-    def setting_for(option)
-      setting = @user&.dig(:settings, option)
-      setting.nil? ? SETTINGS[option] : setting
+    def setting_for(option, game = nil)
+      [game ? Lib::Storage["#{option}_#{game.class.title}"] : @user&.dig(:settings, option),
+       Lib::Storage[option],
+       SETTINGS[option]].compact.first
+    end
+
+    def toggle_setting(option, game = nil)
+      value = !setting_for(option, game)
+      Lib::Storage[option] = value
+      Lib::Storage["#{option}_#{game.class.title}"] = value if game
     end
 
     alias color_for setting_for
@@ -75,7 +82,11 @@ module Lib
         players = players.rotate(player_idx)
       end
 
-      players.map.with_index { |p, idx| [p, route_prop(idx, 'color')] }.to_h
+      players.map.with_index do |p, idx|
+        color = route_prop(idx % ROUTE_COLORS.size, 'color')
+        color = convert_rgba_to_hex(convert_hex_to_rgba(color, 0.5)) if idx > ROUTE_COLORS.size - 1
+        [p, color]
+      end.to_h
     end
   end
 end

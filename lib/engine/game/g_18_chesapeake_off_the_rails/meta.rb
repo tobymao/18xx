@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../meta'
+require_relative '../g_18_chesapeake/meta'
 
 module Engine
   module Game
@@ -8,7 +9,7 @@ module Engine
       module Meta
         include Game::Meta
 
-        DEV_STAGE = :beta
+        DEV_STAGE = :production
         DEPENDS_ON = '18Chesapeake'
 
         GAME_DESIGNER = 'Scott Petersen'
@@ -16,6 +17,8 @@ module Engine
         GAME_PUBLISHER = :all_aboard_games
         GAME_RULES_URL = 'https://www.dropbox.com/s/ivm4jsopnzabhru/18ChesOTR_Rules.png?dl=0'
         GAME_TITLE = '18Chesapeake: Off the Rails'
+        GAME_ALIASES = %w[OTR 18ChesapeakeOTR].freeze
+        GAME_IS_VARIANT_OF = G18Chesapeake::Meta
 
         PLAYER_RANGE = [2, 6].freeze
       end

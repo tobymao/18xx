@@ -346,7 +346,7 @@ module Engine
         SELL_AFTER = :any_time
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge('signal_end_game' => ['Signal End Game',
-                                                                    'Game Ends 3 ORs after purchase/export'\
+                                                                    'Game ends 3 ORs after purchase/export'\
                                                                     ' of first 4 train']).freeze
         def event_signal_end_game!
           @final_operating_rounds = 2
@@ -362,7 +362,7 @@ module Engine
             original_shares = @_shares.values.select { |share| share.corporation == corporation }
 
             corporation.share_holders.clear
-            shares = 5.times.map { |i| Share.new(corporation, percent: 10, index: i + 1) }
+            shares = Array.new(5) { |i| Share.new(corporation, percent: 10, index: i + 1) }
 
             original_shares.each do |share|
               share.percent = share.president ? 20 : 10

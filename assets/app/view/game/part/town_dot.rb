@@ -16,7 +16,7 @@ module View
         needs :width, default: 8
 
         REVENUE_DISPLACEMENT = 42
-        REVENUE_EDGE_DISPLACEMENT = 38
+        REVENUE_EDGE_DISPLACEMENT = 25
         REVENUE_ANGLE = -60
 
         REVENUE_REGIONS = {
@@ -84,7 +84,7 @@ module View
           x = render_location[:x]
           y = render_location[:y]
 
-          angle = layout == :pointy ? -60 : 0
+          angle = layout == :pointy ? REVENUE_ANGLE : 0
 
           displacement = @edge ? REVENUE_EDGE_DISPLACEMENT : REVENUE_DISPLACEMENT
 

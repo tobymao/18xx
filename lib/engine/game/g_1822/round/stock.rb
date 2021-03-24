@@ -7,7 +7,7 @@ module Engine
     module G1822
       module Round
         class Stock < Engine::Round::Stock
-          attr_accessor :bids, :bidders
+          attr_accessor :bids, :bidders, :bid_exceeded
 
           def setup
             super
@@ -47,7 +47,7 @@ module Engine
             end
 
             # Sort the minors first according to bid price, highest first. If a tie, lowest index first
-            float_minors.sort_by { |m| [m[0].price, minor_count - m[1]] }.reverse.each do |arr|
+            float_minors.sort_by { |m| [m[0].price, minor_count - m[1]] }.reverse_each do |arr|
               float_minor(arr[0])
             end
 
@@ -56,7 +56,9 @@ module Engine
             # This will procced the whole game
             remove_l_trains(remove_l_count) if remove_l_count.positive? && @game.depot.upcoming.first.name == 'L'
             remove_minor_and_first_train(remove_minor) if remove_minor
-            remove_first_train if !remove_minor && @game.bidbox_minors.empty?
+
+            # Refill the minors bidbox
+            @game.bidbox_minors_refill!
 
             # Increase player loans with 50% interest
             @game.add_interest_player_loans!
@@ -82,6 +84,7 @@ module Engine
 
             # Find the correct minor in the corporations
             minor = @game.find_corporation(company)
+            minor.reservation_color = :white
 
             # Get the correct par price according to phase
             current_phase = @game.phase.name.to_i
@@ -118,6 +121,11 @@ module Engine
             # Remove the proxy company for the minor
             @game.companies.delete(company)
 
+            # If there is a difference between the treasury and the price. The rest is paid to the bank.
+            price_treasury_difference = price - treasury
+            @log << "#{player.name} pays #{@game.format_currency(price_treasury_difference)} "\
+                    'to the bank' if price_treasury_difference.positive?
+
             # If there is a difference between the treasury and the money the company get from the IPO
             treasury_par_difference = treasury - (par_price * 2)
             @log << "#{minor.name} receives an additional #{@game.format_currency(treasury_par_difference)} "\
@@ -129,11 +137,18 @@ module Engine
           end
 
           def remove_l_trains(count)
-            @game.log << "#{count} minors with no bids. If available up to #{count} L trains will be removed"
+            total_count = count
+            removed_trains = 0
             while (train = @game.depot.upcoming.first).name == 'L' && count.positive?
               @game.remove_train(train)
               count -= 1
+              removed_trains += 1
             end
+            @game.log << if total_count != removed_trains
+                           "#{total_count} minors with no bids. The last #{removed_trains} L trains have been removed"
+                         else
+                           "#{total_count} minors with no bids. #{removed_trains} L trains have been removed"
+                         end
           end
 
           def remove_minor_and_first_train(company)

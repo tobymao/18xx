@@ -29,7 +29,7 @@ module Engine
             @game.stock_market.move_up(corp)
             return unless @game.option_short_squeeze?
 
-            @game.stock_market.move_up(corp) if corp.player_share_holders.values.sum > 100
+            @game.stock_market.move_up(corp) if corp.player_share_holders.values.select(&:positive?).sum > 100
           end
 
           def sold_out?(corporation)

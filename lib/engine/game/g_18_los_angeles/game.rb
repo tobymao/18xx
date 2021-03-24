@@ -405,6 +405,7 @@ module Engine
             sym: 'ELA',
             name: 'East Los Angeles & San Pedro Railroad',
             logo: '18_los_angeles/ELA',
+            simple_logo: '18_los_angeles/ELA.alt',
             tokens: [0, 80, 80, 80, 80, 80],
             abilities: [
             {
@@ -426,6 +427,7 @@ module Engine
             sym: 'LA',
             name: 'Los Angeles Railway',
             logo: '18_los_angeles/LA',
+            simple_logo: '18_los_angeles/LA.alt',
             tokens: [0, 80, 80, 80, 80],
             abilities: [
               {
@@ -447,6 +449,7 @@ module Engine
             sym: 'LAIR',
             name: 'Los Angeles and Independence Railroad',
             logo: '18_los_angeles/LAIR',
+            simple_logo: '18_los_angeles/LAIR.alt',
             tokens: [0, 80, 80, 80, 80],
             coordinates: 'A2',
             color: '#b8ffff',
@@ -459,6 +462,7 @@ module Engine
             sym: 'PER',
             name: 'Pacific Electric Railroad',
             logo: '18_los_angeles/PER',
+            simple_logo: '18_los_angeles/PER.alt',
             tokens: [0, 80, 80, 80],
             coordinates: 'F13',
             color: '#ff6a00',
@@ -471,6 +475,7 @@ module Engine
             sym: 'SF',
             name: 'Santa Fe Railroad',
             logo: '18_los_angeles/SF',
+            simple_logo: '18_los_angeles/SF.alt',
             tokens: [0, 80, 80, 80, 80],
             abilities: [
               {
@@ -493,6 +498,7 @@ module Engine
             sym: 'SP',
             name: 'Southern Pacific Railroad',
             logo: '18_los_angeles/SP',
+            simple_logo: '18_los_angeles/SP.alt',
             tokens: [0, 80, 80, 80, 80],
             abilities: [
               {
@@ -515,6 +521,7 @@ module Engine
             sym: 'UP',
             name: 'Union Pacific Railroad',
             logo: '18_los_angeles/UP',
+            simple_logo: '18_los_angeles/UP.alt',
             tokens: [0, 80, 80, 80, 80],
             coordinates: 'B11',
             color: '#727272',
@@ -528,6 +535,7 @@ module Engine
             sym: 'GT',
             name: 'Gardena Tramway',
             logo: '18_los_angeles/GT',
+            simple_logo: '18_los_angeles/GT.alt',
             tokens: [0],
             coordinates: 'D5',
             color: '#644c00',
@@ -537,6 +545,7 @@ module Engine
             sym: 'OCR',
             name: 'Orange County Railroad',
             logo: '18_los_angeles/OCR',
+            simple_logo: '18_los_angeles/OCR.alt',
             tokens: [0],
             coordinates: 'E10',
             color: '#832e9a',
@@ -654,7 +663,7 @@ module Engine
         MEAT_REVENUE_DESC = 'Citrus'
 
         EVENTS_TEXT = G1846::Game::EVENTS_TEXT.merge(
-          'remove_tokens' => ['Remove Tokens', 'Remove LA Steamship and LA Citrus tokens']
+          'remove_markers' => ['Remove Markers', 'Remove LA Steamship and LA Citrus markers']
         ).freeze
 
         include StubsAreRestricted
@@ -729,7 +738,7 @@ module Engine
             G1846::Step::Dividend,
             Engine::Step::DiscardTrain,
             G1846::Step::BuyTrain,
-            [G1846::Step::BuyCompany, blocks: true],
+            [G1846::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 
@@ -789,10 +798,10 @@ module Engine
         def east_west_bonus(stops)
           bonus = { revenue: 0 }
 
-          east = stops.find { |stop| stop.tile.label&.to_s =~ /E/ }
-          west = stops.find { |stop| stop.tile.label&.to_s =~ /W/ }
-          north = stops.find { |stop| stop.tile.label&.to_s =~ /N/ }
-          south = stops.find { |stop| stop.tile.label&.to_s =~ /S/ }
+          east = stops.find { |stop| stop.tile.label.to_s.include?('E') }
+          west = stops.find { |stop| stop.tile.label.to_s.include?('W') }
+          north = stops.find { |stop| stop.tile.label.to_s.include?('N') }
+          south = stops.find { |stop| stop.tile.label.to_s.include?('S') }
           if east && west
             bonus[:revenue] += east.tile.icons.sum { |icon| icon.name.to_i }
             bonus[:revenue] += west.tile.icons.sum { |icon| icon.name.to_i }

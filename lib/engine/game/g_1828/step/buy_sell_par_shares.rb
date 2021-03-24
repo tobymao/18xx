@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/buy_sell_par_shares'
+require_relative 'exchange'
 
 module Engine
   module Game
@@ -49,21 +50,20 @@ module Engine
             @round.acting_player = action.entity
             @round.merge_initiator = corporation
 
-            @round.last_to_act = action.entity
-            @current_actions << action
+            track_action(action, corporation)
           end
 
           def process_failed_merge(action)
             @log << "#{action.entity.name} failed to merge #{action.corporations.map(&:name).join(' and ')}"
-            @current_actions << action
+            @round.current_actions << action
           end
 
-          def can_buy_multiple?(entity, corporation)
+          def can_buy_multiple?(entity, corporation, _owner)
             super && corporation.owner == entity && num_shares_bought(corporation) < 2
           end
 
           def num_shares_bought(corporation)
-            @current_actions.count { |x| x.is_a?(Action::BuyShares) && x.bundle.corporation == corporation }
+            @round.current_actions.count { |x| x.is_a?(Action::BuyShares) && x.bundle.corporation == corporation }
           end
 
           def can_merge_any?(entity)
@@ -87,10 +87,6 @@ module Engine
 
           def get_par_prices(entity, _corp)
             @game.par_prices.select { |p| p.price * 2 <= entity.cash }
-          end
-
-          def stock_action(action)
-            @current_actions << action
           end
         end
       end

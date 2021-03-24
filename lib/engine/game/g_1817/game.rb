@@ -55,6 +55,8 @@ module Engine
 
         MUST_SELL_IN_BLOCKS = false
 
+        TILE_TYPE = :lawson
+
         TILES = {
           '5' => 'unlimited',
           '6' => 'unlimited',
@@ -256,7 +258,7 @@ module Engine
               type: 'tile_lay',
               hexes: ['F13'],
               tiles: ['X00'],
-              when: %w[special_track owning_corp_or_turn],
+              when: 'track',
               owner_type: 'corporation',
               count: 1,
             },
@@ -301,7 +303,7 @@ module Engine
                 type: 'assign_hexes',
                 hexes: %w[H3 G6 H9],
                 count: 1,
-                when: %w[owning_corp_or_turn owning_corp_or_turn],
+                when: 'owning_corp_or_turn',
                 owner_type: 'corporation',
               },
             ],
@@ -313,7 +315,7 @@ module Engine
             revenue: 0,
             desc: 'Comes with two $10 bridge token that may be placed by the '\
                   'owning corp in Louisville, Cincinnati, or Charleston, max '\
-                  'one token per city, regardless of connectivity..  Allows '\
+                  'one token per city, regardless of connectivity.  Allows '\
                   'owning corp to skip $10 river fee when placing yellow tiles.',
             sym: 'UBC',
             abilities: [
@@ -327,7 +329,7 @@ module Engine
                 type: 'assign_hexes',
                 hexes: %w[H3 G6 H9],
                 count: 2,
-                when: %w[owning_corp_or_turn owning_corp_or_turn],
+                when: 'owning_corp_or_turn',
                 owner_type: 'corporation',
               },
             ],
@@ -375,7 +377,7 @@ module Engine
                           I10],
                 tiles: %w[7 8 9],
                 free: false,
-                when: %w[special_track owning_corp_or_turn],
+                when: 'owning_corp_or_turn',
                 owner_type: 'corporation',
                 count: 1,
               },
@@ -409,7 +411,7 @@ module Engine
                           I10],
                 tiles: %w[7 8 9],
                 free: false,
-                when: %w[special_track owning_corp_or_turn],
+                when: 'owning_corp_or_turn',
                 owner_type: 'corporation',
                 count: 2,
               },
@@ -443,7 +445,7 @@ module Engine
                           I10],
                 tiles: %w[7 8 9],
                 free: false,
-                when: %w[special_track owning_corp_or_turn],
+                when: 'owning_corp_or_turn',
                 owner_type: 'corporation',
                 count: 3,
               },
@@ -935,7 +937,7 @@ module Engine
         end
 
         def available_programmed_actions
-          [Action::ProgramMergerPass]
+          [Action::ProgramMergerPass, Action::ProgramBuyShares, Action::ProgramSharePass]
         end
 
         def merge_rounds
@@ -975,7 +977,7 @@ module Engine
           @loan_value = 100
           loan_increments = ((self.class::MAX_LOAN - self.class::MIN_LOAN) / self.class::LOAN_INTEREST_INCREMENTS + 1)
           total_loans = loan_increments * self.class::LOANS_PER_INCREMENT
-          total_loans.times.map { |id| Loan.new(id, @loan_value) }
+          Array.new(total_loans) { |id| Loan.new(id, @loan_value) }
         end
 
         def future_interest_rate
@@ -1071,7 +1073,7 @@ module Engine
         end
 
         def size_corporation(corporation, size)
-          original_shares = @_shares.values.select { |share| share.corporation == corporation }
+          original_shares = shares_for_corporation(corporation)
           raise GameError, 'Can only convert 2 share corporation' unless corporation.total_shares == 2
 
           corporation.share_holders.clear
@@ -1079,10 +1081,10 @@ module Engine
           case size
           when 5
             original_shares[0].percent = 40
-            shares = 3.times.map { |i| Share.new(corporation, percent: 20, index: i + 1) }
+            shares = Array.new(3) { |i| Share.new(corporation, percent: 20, index: i + 1) }
           when 10
             original_shares[0].percent = 20
-            shares = 8.times.map { |i| Share.new(corporation, percent: 10, index: i + 1) }
+            shares = Array.new(8) { |i| Share.new(corporation, percent: 10, index: i + 1) }
           end
 
           original_shares.each { |share| corporation.share_holders[share.owner] += share.percent }
@@ -1110,11 +1112,11 @@ module Engine
           case corporation.total_shares
           when 2
             shares[0].percent = 40
-            new_shares = 3.times.map { |i| Share.new(corporation, percent: 20, index: i + 1) }
+            new_shares = Array.new(3) { |i| Share.new(corporation, percent: 20, index: i + 1) }
           when 5
             shares.each { |share| share.percent = share.percent.positive? ? 10 : -10 }
             shares[0].percent = 20
-            new_shares = 5.times.map { |i| Share.new(corporation, percent: 10, index: i + 4) }
+            new_shares = Array.new(5) { |i| Share.new(corporation, percent: 10, index: i + 4) }
           else
             raise GameError, 'Cannot convert 10 share corporation'
           end
@@ -1252,9 +1254,7 @@ module Engine
           end
 
           # Consolidate shorts with their share pair (including share pool shares)
-          @_shares
-            .values
-            .select { |share| share.corporation == corporation }
+          shares_for_corporation(corporation)
             .group_by(&:owner)
             .each do |owner, _shares_|
             shares = owner.shares_of(corporation)
@@ -1285,7 +1285,7 @@ module Engine
           price = corporation.share_price.price
           percent = corporation.share_percent
 
-          shares = @_shares.values.select { |share| share.corporation == corporation }
+          shares = shares_for_corporation(corporation)
 
           # Highest share (9 is all the potential 'normal' share certificates)
           highest_share = [shares.map(&:index).max, 9].max
@@ -1401,6 +1401,10 @@ module Engine
         def corporation_size(entity)
           # For display purposes is a corporation small, medium or large
           CORPORATION_SIZES[entity.total_shares]
+        end
+
+        def corporation_size_name(entity)
+          entity.total_shares.to_s
         end
 
         private

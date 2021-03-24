@@ -28,6 +28,7 @@ module Engine
         end
 
         buy_shares(company.owner, bundle, exchange: company)
+        @round.players_history[company.owner][bundle.corporation] << action if @round.respond_to?(:players_history)
         company.close!
       end
 
@@ -48,7 +49,7 @@ module Engine
           shares << @game.share_pool.shares_by_corporation[corporation]&.first if ability.from.include?(:market)
         end
 
-        shares.any? { |s| can_gain?(entity.owner, s&.to_bundle, exchange: true) }
+        shares.compact.any? { |s| can_gain?(entity.owner, s&.to_bundle, exchange: true) }
       end
     end
   end

@@ -353,6 +353,7 @@ module Engine
             sym: 'SR',
             name: 'Southern Railway',
             logo: '18_tn/SR',
+            simple_logo: '18_tn/SR.alt',
             tokens: [0, 40, 100, 100],
             coordinates: 'F17',
             color: 'yellow',
@@ -362,6 +363,7 @@ module Engine
             sym: 'GMO',
             name: 'Gulf, Mobile, and Ohio Railroad',
             logo: '18_tn/GMO',
+            simple_logo: '18_tn/GMO.alt',
             tokens: [0, 40, 100, 100],
             coordinates: 'G6',
             color: 'red',
@@ -371,6 +373,7 @@ module Engine
             sym: 'L&N',
             name: 'Louisville and Nashville Railroad',
             logo: '18_tn/LN',
+            simple_logo: '18_tn/LN.alt',
             tokens: [0, 40, 100, 100],
             coordinates: 'B13',
             color: 'blue',
@@ -379,6 +382,7 @@ module Engine
             sym: 'IC',
             name: 'Illinois Central Railroad',
             logo: '18_tn/IC',
+            simple_logo: '18_tn/IC.alt',
             tokens: [0, 40, 100],
             coordinates: 'D7',
             color: 'green',
@@ -387,14 +391,17 @@ module Engine
             sym: 'NC&StL',
             name: 'Nashville, Chattanooga, and St. Louis Railroad',
             logo: '18_tn/NCS',
+            simple_logo: '18_tn/NCS.alt',
             tokens: [0, 40],
             coordinates: 'H15',
             color: 'orange',
+            text_color: 'black',
           },
           {
             sym: 'TC',
             name: 'Tennessee Central Railway',
             logo: '18_tn/TC',
+            simple_logo: '18_tn/TC.alt',
             tokens: [0, 40],
             coordinates: 'F11',
             color: 'black',
@@ -536,7 +543,7 @@ module Engine
             G18TN::Step::Dividend,
             Engine::Step::DiscardTrain,
             Engine::Step::SingleDepotTrainBuy,
-            [Engine::Step::BuyCompany, blocks: true],
+            [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 
@@ -567,7 +574,7 @@ module Engine
           end
 
           if allowed_to_buy_during_operation_round_one?
-            candidates.reject! { |c| @round.company_sellers.values.include?(c.owner) }
+            candidates.reject! { |c| @round.company_sellers.value?(c.owner) }
           end
           candidates
         end
@@ -605,7 +612,7 @@ module Engine
           @lnr ||= company_by_id('LNR')
         end
 
-        def upgrades_to?(from, to, special = false)
+        def upgrades_to?(from, to, _special = false, selected_company: nil)
           # When upgrading from green to brown:
           #   If Memphis (H3), Chattanooga (H15), Nashville (F11)
           #   only brown P tile (#170) are allowed.
@@ -617,7 +624,7 @@ module Engine
           super
         end
 
-        def all_potential_upgrades(tile, tile_manifest: false)
+        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
           upgrades = super
 
           return upgrades unless tile_manifest

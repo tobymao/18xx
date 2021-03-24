@@ -330,7 +330,7 @@ module Engine
                 tiles: ['470'],
                 hexes: ['F5'],
                 count: 1,
-                when: %w[special_track track other_or],
+                when: 'track',
               },
             ],
           },
@@ -390,6 +390,7 @@ module Engine
             sym: 'CHI',
             name: 'Chihuahua Pacific Railway',
             logo: '18_mex/CHI',
+            simple_logo: '18_mex/CHI.alt',
             tokens: [0, 40, 60, 80],
             coordinates: 'E6',
             color: '#FF4136',
@@ -399,6 +400,7 @@ module Engine
             sym: 'NdM',
             name: 'National Railways of Mexico',
             logo: '18_mex/NdM',
+            simple_logo: '18_mex/NdM.alt',
             shares: [20, 10, 10, 10, 10, 10, 10, 5, 5, 10],
             tokens: [0, 40, 60, 80],
             abilities: [
@@ -425,6 +427,7 @@ module Engine
             sym: 'MC',
             name: 'Mexican Central Railway',
             logo: '18_mex/MC',
+            simple_logo: '18_mex/MC.alt',
             tokens: [0, 40],
             coordinates: 'I8',
             color: '#232b2b',
@@ -434,6 +437,7 @@ module Engine
             sym: 'FCP',
             name: 'Pacific Railroad',
             logo: '18_mex/FCP',
+            simple_logo: '18_mex/FCP.alt',
             tokens: [0, 40, 60, 80],
             abilities: [{ type: 'base', description: 'Cannot be merged into NdM' }],
             coordinates: 'B3',
@@ -445,6 +449,7 @@ module Engine
             sym: 'TM',
             name: 'Texas-Mexican Railway',
             logo: '18_mex/TM',
+            simple_logo: '18_mex/TM.alt',
             tokens: [0, 40],
             abilities: [{ type: 'base', description: 'Cannot be merged into NdM' }],
             coordinates: 'I12',
@@ -456,6 +461,7 @@ module Engine
             sym: 'MEX',
             name: 'Mexican Railway',
             logo: '18_mex/MEX',
+            simple_logo: '18_mex/MEX.alt',
             tokens: [0, 40, 60],
             coordinates: 'P13',
             color: 'darkGray',
@@ -466,6 +472,7 @@ module Engine
             sym: 'SPM',
             name: 'Southern Pacific Railroad of Mexico',
             logo: '18_mex/SPM',
+            simple_logo: '18_mex/SPM.alt',
             tokens: [0, 40, 60],
             coordinates: 'O8',
             color: '#0080FF',
@@ -475,6 +482,7 @@ module Engine
             sym: 'UdY',
             name: 'United Railways of Yucatan',
             logo: '18_mex/UdY',
+            simple_logo: '18_mex/UdY.alt',
             tokens: [0, 40],
             coordinates: 'Q14',
             color: 'darkMagenta',
@@ -486,6 +494,7 @@ module Engine
             sym: 'A',
             name: 'Interoceanic Railroad',
             logo: '18_mex/A',
+            simple_logo: '18_mex/A.alt',
             tokens: [0],
             coordinates: 'M12',
             color: 'limeGreen',
@@ -494,6 +503,7 @@ module Engine
             sym: 'B',
             name: 'Sonora-Baja Railway',
             logo: '18_mex/B',
+            simple_logo: '18_mex/B.alt',
             tokens: [0],
             coordinates: 'K6',
             color: 'darkGreen',
@@ -502,6 +512,7 @@ module Engine
             sym: 'C',
             name: 'Southeastern Railway',
             logo: '18_mex/C',
+            simple_logo: '18_mex/C.alt',
             tokens: [0],
             coordinates: 'S12',
             color: 'darkMagenta',
@@ -733,7 +744,7 @@ module Engine
             G18MEX::Step::Dividend,
             Engine::Step::DiscardTrain,
             G18MEX::Step::SingleDepotTrainBuy,
-            [Engine::Step::BuyCompany, blocks: true],
+            [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 
@@ -850,6 +861,7 @@ module Engine
         end
 
         def purchasable_companies(entity = nil)
+          return [] if entity&.minor?
           return super if @phase.current[:name] != '2' || !@optional_rules&.include?(:early_buy_of_kcmo)
           return [] unless p2_company.owner&.player?
 
@@ -1044,7 +1056,7 @@ module Engine
           @merged_cities_to_select = []
         end
 
-        def upgrades_to?(from, to, special = false)
+        def upgrades_to?(from, to, _special = false, selected_company: nil)
           # Copper Canyon cannot be upgraded
           return false if from.name == '470'
 
@@ -1056,7 +1068,7 @@ module Engine
           super
         end
 
-        def all_potential_upgrades(tile, tile_manifest: false)
+        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
           # Copper Canyon cannot be upgraded
           return [] if tile.name == '470'
 

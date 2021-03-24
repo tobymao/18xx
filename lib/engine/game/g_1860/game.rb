@@ -595,7 +595,7 @@ module Engine
             name: 'Brading Harbour Company',
             value: 30,
             revenue: 5,
-            desc: 'Can be exchanged for a share in the BHI&R pubilc company',
+            desc: 'Can be exchanged for a share in the BHI&R public company',
             sym: 'BHC',
             abilities: [
             {
@@ -670,6 +670,7 @@ module Engine
             sym: 'C&N',
             name: 'Cowes & Newport',
             logo: '1860/CN',
+            simple_logo: '1860/CN.alt',
             float_percent: 50,
             max_ownership_percent: 100,
             tokens: [0, 40, 100, 100],
@@ -682,6 +683,7 @@ module Engine
             sym: 'IOW',
             name: 'Isle of Wight',
             logo: '1860/IOW',
+            simple_logo: '1860/IOW.alt',
             float_percent: 50,
             max_ownership_percent: 100,
             tokens: [0, 40, 100, 100],
@@ -693,6 +695,7 @@ module Engine
             sym: 'IWNJ',
             name: 'Isle of Wight, Newport Junction',
             logo: '1860/IWNJ',
+            simple_logo: '1860/IWNJ.alt',
             float_percent: 50,
             max_ownership_percent: 100,
             tokens: [0, 40, 100],
@@ -704,6 +707,7 @@ module Engine
             sym: 'FYN',
             name: 'Freshwater, Yarmouth & Newport',
             logo: '1860/FYN',
+            simple_logo: '1860/FYN.alt',
             float_percent: 50,
             max_ownership_percent: 100,
             tokens: [0, 40, 100],
@@ -715,6 +719,7 @@ module Engine
             sym: 'NGStL',
             name: 'Newport, Godshill & St. Lawrence',
             logo: '1860/NGStL',
+            simple_logo: '1860/NGStL.alt',
             float_percent: 50,
             max_ownership_percent: 100,
             tokens: [0, 40],
@@ -727,6 +732,7 @@ module Engine
             sym: 'BHI&R',
             name: 'Brading Harbour Improvement & Railway',
             logo: '1860/BHIR',
+            simple_logo: '1860/BHIR.alt',
             float_percent: 50,
             max_ownership_percent: 100,
             tokens: [0, 40],
@@ -738,6 +744,7 @@ module Engine
             sym: 'S&C',
             name: 'Shanklin & Chale',
             logo: '1860/SC',
+            simple_logo: '1860/SC.alt',
             float_percent: 50,
             max_ownership_percent: 100,
             tokens: [0, 40],
@@ -749,6 +756,7 @@ module Engine
             sym: 'VYSC',
             name: 'Ventor, Yarmouth & South Coast',
             logo: '1860/VYSC',
+            simple_logo: '1860/VYSC.alt',
             float_percent: 50,
             max_ownership_percent: 100,
             tokens: [0, 40],
@@ -800,6 +808,7 @@ module Engine
         MARKET_SHARE_LIMIT = 100
         TRAIN_PRICE_MIN = 10
         TRAIN_PRICE_MULTIPLE = 10
+        MIN_PAR_AFTER_BANKRUPTCY = 40
 
         COMPANY_SALE_FEE = 30
 
@@ -907,9 +916,9 @@ module Engine
 
           new_hexes = {}
           HEXES.keys.each do |color|
-            new_map = self.class::HEXES[color].map do |coords, tile_string|
-              [coords - OPTION_REMOVE_HEXES, tile_string]
-            end.to_h
+            new_map = self.class::HEXES[color].transform_keys do |coords|
+              coords - OPTION_REMOVE_HEXES
+            end
             OPTION_ADD_HEXES.each { |coords, tile_str| new_map[coords] = tile_str } if color == :white
 
             new_hexes[color] = new_map
@@ -1201,6 +1210,7 @@ module Engine
           corp.share_price = nil
           corp.par_price = nil
           corp.ipoed = false
+          corp.min_price = MIN_PAR_AFTER_BANKRUPTCY
           corp.unfloat!
 
           # return shares to IPO
@@ -1492,7 +1502,7 @@ module Engine
           [[a.first, b.first].min, [a.last, b.last].min]
         end
 
-        def node_distance_walk(node, distance, node_distances: {}, corporation: nil, path_distances: {})
+        def node_distance_walk(node, distance, node_distances: {}, corporation: nil, path_distances: {}, &block)
           return if smaller_or_equal_distance?(node_distances[node], distance)
 
           node_distances[node] = merge_distance(node_distances[node], distance)
@@ -1516,8 +1526,8 @@ module Engine
                   distance,
                   node_distances: node_distances,
                   corporation: corporation,
-                  path_distances: path_distances,
-                ) { |p, d| yield p, d }
+                  path_distances: path_distances, &block
+                )
               end
             end
           end
@@ -1527,7 +1537,7 @@ module Engine
           lanes0 && lanes1 && lanes1[0] == lanes0[0] && lanes1[1] == (lanes0[0] - lanes0[1] - 1)
         end
 
-        def path_distance_walk(path, distance, skip: nil, jskip: nil, path_distances: {})
+        def path_distance_walk(path, distance, skip: nil, jskip: nil, path_distances: {}, &block)
           return if smaller_or_equal_distance?(path_distances[path], distance)
 
           path_distances[path] = merge_distance(path_distances[path], distance)
@@ -1536,7 +1546,7 @@ module Engine
 
           if path.junction && path.junction != jskip
             path.junction.paths.each do |jp|
-              path_distance_walk(jp, distance, jskip: @junction, path_distances: path_distances) { |p| yield p }
+              path_distance_walk(jp, distance, jskip: @junction, path_distances: path_distances, &block)
             end
           end
 
@@ -1549,7 +1559,7 @@ module Engine
             neighbor.paths[np_edge].each do |np|
               next unless lane_match?(path.exit_lanes[edge], np.exit_lanes[np_edge])
 
-              path_distance_walk(np, distance, skip: np_edge, path_distances: path_distances) { |p| yield p }
+              path_distance_walk(np, distance, skip: np_edge, path_distances: path_distances, &block)
             end
           end
         end
@@ -1606,7 +1616,7 @@ module Engine
         end
 
         # needed for custom_blocks?
-        def custom_node_walk(node, visited: nil, on: nil, corporation: nil, visited_paths: {})
+        def custom_node_walk(node, visited: nil, on: nil, corporation: nil, visited_paths: {}, &block)
           return if visited&.[](node)
 
           visited = visited&.dup || {}
@@ -1625,8 +1635,8 @@ module Engine
                   visited: visited,
                   on: on,
                   corporation: corporation,
-                  visited_paths: visited_paths.merge(vp),
-                ) { |p| yield p }
+                  visited_paths: visited_paths.merge(vp), &block
+                )
               end
             end
           end
@@ -1667,7 +1677,7 @@ module Engine
 
         # all routes must intersect each other
         def check_intersection(routes)
-          actual_routes = routes.reject { |r| r.connections.empty? }
+          actual_routes = routes.reject { |r| r.chains.empty? }
 
           # build a map of which routes intersect with each route
           intersects = Hash.new { |h, k| h[k] = [] }
@@ -1751,6 +1761,8 @@ module Engine
 
         def check_other(route)
           check_hex_reentry(route)
+          check_home_token(current_entity, route.routes)
+          check_intersection(route.routes)
         end
 
         # must stop at all towns on route or must maximize revenue
@@ -1855,7 +1867,7 @@ module Engine
         end
 
         def route_distance(route)
-          n_cities = route.stops.select { |n| n.city? || n.offboard? }.size
+          n_cities = route.stops.count { |n| n.city? || n.offboard? }
           # halts are treated like towns for leased trains (new rules)
           n_towns = if !loaner_new_rules?(route)
                       route.stops.count { |n| n.town? && !n.halt? }

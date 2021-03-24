@@ -11,6 +11,8 @@ module Engine
       LANES = [[1, 0].freeze, [1, 0].freeze].freeze
       MATCHES_BROAD = %i[broad dual].freeze
       MATCHES_NARROW = %i[narrow dual].freeze
+      LANE_INDEX = 1
+      LANE_WIDTH = 0
 
       def self.decode_lane_spec(x_lane)
         if x_lane
@@ -23,7 +25,7 @@ module Engine
       def self.make_lanes(a, b, terminal: nil, lanes: nil, a_lane: nil, b_lane: nil, track: nil)
         track ||= :broad
         if lanes
-          lanes.times.map do |index|
+          Array.new(lanes) do |index|
             a_lanes = [lanes, index]
             b_lanes = if a.edge? && b.edge?
                         [lanes, lanes - index - 1]
@@ -100,36 +102,37 @@ module Engine
         on.keys.select { |p| on[p] == 1 }
       end
 
-      # on and chain are mutually exclusive
-      def walk(skip: nil, jskip: nil, visited: nil, on: nil, chain: nil)
-        return if visited&.[](self)
+      # skip: An exit to ignore. Useful to prevent ping-ponging between adjacent hexes.
+      # jskip: An junction to ignore. May be useful on complex tiles
+      # visited: a hashset of visited Paths. Used to avoid repeating track segments.
+      # counter: a hash tracking edges and junctions to avoid reuse
+      # on: A set of Paths mapping to 1 or 0. When `on` is set. Usage is currently limited to `select` in path & node
+      # tile_type: if :lawson don't undo visited paths
+      def walk(skip: nil, jskip: nil, visited: {}, counter: Hash.new(0), on: nil, tile_type: :normal, &block)
+        return if visited[self]
+        return if @junction && counter[@junction] > 1
+        return if edges.sum { |edge| counter[edge.id] }.positive?
 
-        visited = visited&.dup || {}
         visited[self] = true
+        counter[@junction] += 1 if @junction
 
-        if chain
-          chained = chain + [self]
-          yield chained if chain.empty? ? @nodes.size == 2 : @nodes.any?
-        else
-          yield self, visited
-        end
+        yield self, visited, counter
 
         if @junction && @junction != jskip
           @junction.paths.each do |jp|
             next if on && !on[jp]
 
-            if chain
-              jp.walk(jskip: @junction, visited: visited, chain: chained) { |c| yield c }
-            else
-              jp.walk(jskip: @junction, visited: visited, on: on) { |p, v| yield p, v }
-            end
+            jp.walk(jskip: @junction, visited: visited, counter: counter, on: on, tile_type: tile_type, &block)
           end
         end
 
-        exits.each do |edge|
+        edges.each do |edge|
+          edge_id = edge.id
+          edge = edge.num
           next if edge == skip
           next unless (neighbor = hex.neighbors[edge])
 
+          counter[edge_id] += 1
           np_edge = hex.invert(edge)
 
           neighbor.paths[np_edge].each do |np|
@@ -137,19 +140,27 @@ module Engine
             next unless lane_match?(@exit_lanes[edge], np.exit_lanes[np_edge])
             next unless tracks_match?(np, dual_ok: true)
 
-            if chain
-              np.walk(skip: np_edge, visited: visited, chain: chained) { |c| yield c }
-            else
-              np.walk(skip: np_edge, visited: visited, on: on) { |p, v| yield p, v }
-            end
+            np.walk(skip: np_edge, visited: visited, counter: counter, on: on, tile_type: tile_type, &block)
           end
+
+          counter[edge_id] -= 1
         end
+
+        visited.delete(self) unless tile_type == :lawson
+        counter[@junction] -= 1 if @junction
       end
 
       # return true if facing exits on adjacent tiles match up taking lanes into account
       # TBD: support titles where lanes of different sizes can connect
       def lane_match?(lanes0, lanes1)
-        lanes0 && lanes1 && lanes1[0] == lanes0[0] && lanes1[1] == (lanes0[0] - lanes0[1] - 1)
+        lanes0 &&
+          lanes1 &&
+          lanes1[LANE_WIDTH] == lanes0[LANE_WIDTH] &&
+          lanes1[LANE_INDEX] == lane_invert(lanes0)[LANE_INDEX]
+      end
+
+      def lane_invert(lane)
+        [lane[LANE_WIDTH], lane[LANE_WIDTH] - lane[LANE_INDEX] - 1]
       end
 
       def path?
@@ -159,7 +170,7 @@ module Engine
       def node?
         return @_node if defined?(@_node)
 
-        @_node = @nodes.any?
+        @_node = !@nodes.empty?
       end
 
       def terminal?
@@ -169,7 +180,7 @@ module Engine
       def single?
         return @_single if defined?(@_single)
 
-        @_single = @lanes.first[0] == 1 && @lanes.last[0] == 1
+        @_single = @lanes.first[LANE_WIDTH] == 1 && @lanes.last[LANE_WIDTH] == 1
       end
 
       def exits
@@ -201,7 +212,7 @@ module Engine
       def gentle_curve?
         return @_gentle_curve if defined?(@_gentle_curve)
 
-        @_gentle_curve = a_num && b_num && (((d = (a_num - b_num).abs) == 2) || d == 4 || d == 2.5 || d == 3.5)
+        @_gentle_curve = a_num && b_num && [2, 2.5, 3.5, 4].include?((a_num - b_num).abs)
       end
 
       def rotate(ticks)

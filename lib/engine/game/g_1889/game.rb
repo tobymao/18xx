@@ -225,7 +225,7 @@ module Engine
             abilities: [
               {
                 type: 'tile_lay',
-                when: 'any',
+                when: %w[stock_round owning_player_or_turn or_between_turns],
                 hexes: %w[B11 G10 I12 J9],
                 tiles: ['437'],
                 owner_type: 'player',
@@ -326,6 +326,7 @@ module Engine
             sym: 'AR',
             name: 'Awa Railroad',
             logo: '1889/AR',
+            simple_logo: '1889/AR.alt',
             tokens: [0, 40],
             coordinates: 'K8',
             color: '#37383a',
@@ -336,6 +337,7 @@ module Engine
             sym: 'IR',
             name: 'Iyo Railway',
             logo: '1889/IR',
+            simple_logo: '1889/IR.alt',
             tokens: [0, 40],
             coordinates: 'E2',
             color: '#f48221',
@@ -346,6 +348,7 @@ module Engine
             sym: 'SR',
             name: 'Sanuki Railway',
             logo: '1889/SR',
+            simple_logo: '1889/SR.alt',
             tokens: [0, 40],
             coordinates: 'I2',
             color: '#76a042',
@@ -356,6 +359,7 @@ module Engine
             sym: 'KO',
             name: 'Takamatsu & Kotohira Electric Railway',
             logo: '1889/KO',
+            simple_logo: '1889/KO.alt',
             tokens: [0, 40],
             coordinates: 'K4',
             color: '#d81e3e',
@@ -366,6 +370,7 @@ module Engine
             sym: 'TR',
             name: 'Tosa Electric Railway',
             logo: '1889/TR',
+            simple_logo: '1889/TR.alt',
             tokens: [0, 40, 40],
             coordinates: 'F9',
             color: '#00a993',
@@ -376,6 +381,7 @@ module Engine
             sym: 'KU',
             name: 'Tosa Kuroshio Railway',
             logo: '1889/KU',
+            simple_logo: '1889/KU.alt',
             tokens: [0],
             coordinates: 'C10',
             color: '#0189d1',
@@ -386,6 +392,7 @@ module Engine
             sym: 'UR',
             name: 'Uwajima Railway',
             logo: '1889/UR',
+            simple_logo: '1889/UR.alt',
             tokens: [0, 40, 40],
             coordinates: 'B7',
             color: '#7b352a',
@@ -443,7 +450,7 @@ module Engine
             Engine::Step::Dividend,
             Engine::Step::DiscardTrain,
             Engine::Step::BuyTrain,
-            [Engine::Step::BuyCompany, blocks: true],
+            [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 

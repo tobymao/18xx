@@ -334,6 +334,7 @@ module Engine
             sym: 'ACL',
             name: 'Atlantic Coast Line',
             logo: '18_ga/ACL',
+            simple_logo: '18_ga/ACL.alt',
             tokens: [0, 40, 100, 100],
             coordinates: 'J12',
             color: 'black',
@@ -343,6 +344,7 @@ module Engine
             sym: 'CoG',
             name: 'Central of Georgia Railroad',
             logo: '18_ga/CoG',
+            simple_logo: '18_ga/CoG.alt',
             tokens: [0, 40, 100, 100],
             coordinates: 'F6',
             color: 'red',
@@ -352,6 +354,7 @@ module Engine
             sym: 'G&F',
             name: 'Georgia and Florida Railroad',
             logo: '18_ga/GF',
+            simple_logo: '18_ga/GF.alt',
             tokens: [0, 40],
             coordinates: 'H4',
             color: 'deepskyblue',
@@ -362,6 +365,7 @@ module Engine
             sym: 'GA',
             name: 'Georgia Railroad',
             logo: '18_ga/GA',
+            simple_logo: '18_ga/GA.alt',
             tokens: [0, 40, 100, 100],
             coordinates: 'D10',
             city: 0,
@@ -372,6 +376,7 @@ module Engine
             sym: 'W&A',
             name: 'Western and Atlantic Railroad',
             logo: '18_ga/WA',
+            simple_logo: '18_ga/WA.alt',
             tokens: [0, 40],
             coordinates: 'D4',
             color: 'purple',
@@ -381,6 +386,7 @@ module Engine
             sym: 'SAL',
             name: 'Seaboard Air Line',
             logo: '18_ga/SAL',
+            simple_logo: '18_ga/SAL.alt',
             tokens: [0, 40, 100],
             coordinates: 'G13',
             color: 'gold',
@@ -466,6 +472,7 @@ module Engine
             sym: 'N',
             name: 'Neutral',
             logo: 'open_city',
+            simple_logo: 'open_city.alt',
             tokens: [0, 0],
           )
           neutral.owner = @bank
@@ -508,11 +515,11 @@ module Engine
             Engine::Step::Dividend,
             Engine::Step::DiscardTrain,
             Engine::Step::SingleDepotTrainBuy,
-            [Engine::Step::BuyCompany, blocks: true],
+            [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 
-        def upgrades_to?(from, to, special = false)
+        def upgrades_to?(from, to, _special = false, selected_company: nil)
           # Augusta (D10) use standard tiles for yellow, and special tile for green
           return to.name == '453a' if from.color == :yellow && from.hex.name == 'D10'
 
@@ -528,7 +535,7 @@ module Engine
           super
         end
 
-        def all_potential_upgrades(tile, tile_manifest: false)
+        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
           upgrades = super
 
           return upgrades unless tile_manifest

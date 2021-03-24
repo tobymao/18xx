@@ -23,9 +23,9 @@ module Engine
     include Spender
 
     attr_accessor :ipoed, :par_via_exchange, :max_ownership_percent, :float_percent, :capitalization, :second_share,
-                  :type, :floatable, :original_par_price
-    attr_reader :companies, :min_price, :name, :full_name, :fraction_shares, :id, :needs_token_to_par,
-                :presidents_share, :reservation_color
+                  :type, :floatable, :original_par_price, :reservation_color, :min_price
+    attr_reader :companies, :name, :full_name, :fraction_shares, :id, :needs_token_to_par,
+                :presidents_share
     attr_writer :par_price, :share_price
 
     SHARES = ([20] + Array.new(8, 10)).freeze
@@ -55,7 +55,7 @@ module Engine
       @closed = false
       @float_percent = opts[:float_percent] || 60
       @float_excludes_market = opts[:float_excludes_market] || false
-      @floatable = opts[:floatable] || true
+      @floatable = opts[:floatable].nil? ? true : opts[:floatable]
       @floated = false
       @max_ownership_percent = opts[:max_ownership_percent] || 60
       @min_price = opts[:min_price]
@@ -76,12 +76,18 @@ module Engine
     end
 
     def <=>(other)
-      # corporation with higher share price, farthest on the right, and first position on the share price goes first
-      return 1 unless (sp = share_price)
-      return -1 unless (ops = other.share_price)
+      return 1 unless (self_key = sort_order_key)
+      return -1 unless (other_key = other.sort_order_key)
 
-      [ops.price, ops.coordinates.last, -ops.coordinates.first, -ops.corporations.find_index(other)] <=>
-      [sp.price, sp.coordinates.last, -sp.coordinates.first, -sp.corporations.find_index(self)]
+      other_key <=> self_key
+    end
+
+    # sort in operating order, then name: corporation with higher share price,
+    # farthest on the right, and first position on the share price goes first
+    def sort_order_key
+      return unless (sp = share_price)
+
+      [sp.price, sp.coordinates.last, -sp.coordinates.first, -(sp.corporations.find_index(self) || 0), name]
     end
 
     def counts_for_limit

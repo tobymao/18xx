@@ -11,16 +11,6 @@ module Engine
 
         CURRENCY_FORMAT_STR = '%d₽'
 
-        BANK_CASH = 15_000
-
-        CERT_LIMIT = { 3 => 21, 4 => 16, 5 => 13, 6 => 11 }.freeze
-
-        STARTING_CASH = { 3 => 420, 4 => 315, 5 => 252, 6 => 210 }.freeze
-
-        CAPITALIZATION = :incremental
-
-        MUST_SELL_IN_BLOCKS = false
-
         TILES = {
           '3' => 2,
           '4' => 4,
@@ -173,82 +163,6 @@ module Engine
           'Q3' => 'Ekaterinburg (₽80 if includes M)',
           'Q11' => 'Central Asia',
         }.freeze
-
-        MARKET = [['',
-                   '',
-                   '',
-                   '',
-                   '135',
-                   '150',
-                   '165mC',
-                   '180',
-                   '200z',
-                   '220',
-                   '245',
-                   '270',
-                   '300',
-                   '330',
-                   '360',
-                   '400',
-                   '440',
-                   '490',
-                   '540'],
-                  ['',
-                   '',
-                   '',
-                   '110',
-                   '120',
-                   '135',
-                   '150mC',
-                   '165z',
-                   '180z',
-                   '200',
-                   '220',
-                   '245',
-                   '270',
-                   '300',
-                   '330',
-                   '360',
-                   '400',
-                   '440',
-                   '490'],
-                  ['',
-                   '',
-                   '90',
-                   '100',
-                   '110',
-                   '120',
-                   '135pmC',
-                   '150z',
-                   '165',
-                   '180',
-                   '200',
-                   '220',
-                   '245',
-                   '270',
-                   '300',
-                   '330',
-                   '360',
-                   '400',
-                   '440'],
-                  ['',
-                   '70',
-                   '80',
-                   '90',
-                   '100',
-                   '110p',
-                   '120pmC',
-                   '135',
-                   '150',
-                   '165',
-                   '180',
-                   '200'],
-                  %w[60 65 70 80 90p 100p 110mC 120 135 150],
-                  %w[55 60 65 70p 80p 90 100mC 110],
-                  %w[50 55 60x 65x 70 80],
-                  %w[45 50x 55x 60 65],
-                  %w[40 45 50 55],
-                  %w[35 40 45]].freeze
 
         PHASES = [
           {
@@ -486,6 +400,7 @@ module Engine
             sym: 'NW',
             name: 'North Western Railway',
             logo: '1861/NW',
+            simple_logo: '1861/NW.alt',
             float_percent: 20,
             always_market_price: true,
             tokens: [0, 20, 40],
@@ -497,6 +412,7 @@ module Engine
             sym: 'SW',
             name: 'Southwestern Railway',
             logo: '1861/SW',
+            simple_logo: '1861/SW.alt',
             float_percent: 20,
             always_market_price: true,
             tokens: [0, 20, 40],
@@ -508,6 +424,7 @@ module Engine
             sym: 'SE',
             name: 'Southeastern Railway',
             logo: '1861/SE',
+            simple_logo: '1861/SE.alt',
             float_percent: 20,
             always_market_price: true,
             tokens: [0, 20, 40],
@@ -519,6 +436,7 @@ module Engine
             sym: 'MVR',
             name: 'Moscow, Vindava & Rybinsk Railway',
             logo: '1861/MVR',
+            simple_logo: '1861/MVR.alt',
             float_percent: 20,
             always_market_price: true,
             tokens: [0, 20, 40],
@@ -530,6 +448,7 @@ module Engine
             sym: 'MK',
             name: 'Moscow & Kazan Railway',
             logo: '1861/MK',
+            simple_logo: '1861/MK.alt',
             float_percent: 20,
             always_market_price: true,
             tokens: [0, 20, 40],
@@ -541,6 +460,7 @@ module Engine
             sym: 'GRR',
             name: 'Grand Russian Railway',
             logo: '1861/GRR',
+            simple_logo: '1861/GRR.alt',
             float_percent: 20,
             always_market_price: true,
             tokens: [0, 20, 40],
@@ -552,6 +472,7 @@ module Engine
             sym: 'MKN',
             name: 'Moscow, Kursk & Nizhnii Novgorod',
             logo: '1861/MKN',
+            simple_logo: '1861/MKN.alt',
             float_percent: 20,
             always_market_price: true,
             tokens: [0, 20, 40],
@@ -563,6 +484,7 @@ module Engine
             sym: 'MKV',
             name: 'Moscow, Kiev & Voronezh Railway',
             logo: '1861/MKV',
+            simple_logo: '1861/MKV.alt',
             float_percent: 20,
             always_market_price: true,
             tokens: [0, 20, 40],
@@ -574,6 +496,7 @@ module Engine
             sym: 'RO',
             name: 'Riga-Orel Railway',
             logo: '1861/RO',
+            simple_logo: '1861/RO.alt',
             float_percent: 100,
             always_market_price: true,
             tokens: [0],
@@ -588,6 +511,7 @@ module Engine
             sym: 'KB',
             name: 'Kiev-Brest Railway',
             logo: '1861/KB',
+            simple_logo: '1861/KB.alt',
             float_percent: 100,
             always_market_price: true,
             tokens: [0],
@@ -603,6 +527,7 @@ module Engine
             sym: 'OK',
             name: 'Odessa-Kiev Railway',
             logo: '1861/OK',
+            simple_logo: '1861/OK.alt',
             float_percent: 100,
             always_market_price: true,
             tokens: [0],
@@ -617,6 +542,7 @@ module Engine
             sym: 'KK',
             name: 'Kiev-Kursk Railway',
             logo: '1861/KK',
+            simple_logo: '1861/KK.alt',
             float_percent: 100,
             always_market_price: true,
             tokens: [0],
@@ -632,6 +558,7 @@ module Engine
             sym: 'SPW',
             name: 'St. Petersburg Warsaw',
             logo: '1861/SPW',
+            simple_logo: '1861/SPW.alt',
             float_percent: 100,
             always_market_price: true,
             tokens: [0],
@@ -647,6 +574,7 @@ module Engine
             sym: 'MB',
             name: 'Moscow-Brest Railway',
             logo: '1861/MB',
+            simple_logo: '1861/MB.alt',
             float_percent: 100,
             always_market_price: true,
             tokens: [0],
@@ -661,6 +589,7 @@ module Engine
             sym: 'KR',
             name: 'Kharkiv-Rostov Railway',
             logo: '1861/KR',
+            simple_logo: '1861/KR.alt',
             float_percent: 100,
             always_market_price: true,
             tokens: [0],
@@ -675,6 +604,7 @@ module Engine
             sym: 'N',
             name: 'Nikolaev Railway',
             logo: '1861/N',
+            simple_logo: '1861/N.alt',
             float_percent: 100,
             always_market_price: true,
             tokens: [0],
@@ -690,6 +620,7 @@ module Engine
             sym: 'Y',
             name: 'Yuzovka Railway',
             logo: '1861/Y',
+            simple_logo: '1861/Y.alt',
             float_percent: 100,
             always_market_price: true,
             tokens: [0],
@@ -704,6 +635,7 @@ module Engine
             sym: 'M-K',
             name: 'Moscow-Kursk Railway',
             logo: '1861/M-K',
+            simple_logo: '1861/M-K.alt',
             float_percent: 100,
             always_market_price: true,
             tokens: [0],
@@ -719,6 +651,7 @@ module Engine
             sym: 'MNN',
             name: 'Moscow-Nizhnii Novgorod',
             logo: '1861/MNN',
+            simple_logo: '1861/MNN.alt',
             float_percent: 100,
             always_market_price: true,
             tokens: [0],
@@ -734,6 +667,7 @@ module Engine
             sym: 'MV',
             name: 'Moscow-Voronezh Railway',
             logo: '1861/MV',
+            simple_logo: '1861/MV.alt',
             float_percent: 100,
             always_market_price: true,
             tokens: [0],
@@ -748,6 +682,7 @@ module Engine
             sym: 'V',
             name: 'Vladikavkaz Railway',
             logo: '1861/V',
+            simple_logo: '1861/V.alt',
             float_percent: 100,
             always_market_price: true,
             tokens: [0],
@@ -762,6 +697,7 @@ module Engine
             sym: 'TR',
             name: 'Tsaritsyn-Riga Railway',
             logo: '1861/TR',
+            simple_logo: '1861/TR.alt',
             float_percent: 100,
             always_market_price: true,
             tokens: [0],
@@ -776,6 +712,7 @@ module Engine
             sym: 'SV',
             name: 'Samara-Vyazma Railway',
             logo: '1861/SV',
+            simple_logo: '1861/SV.alt',
             float_percent: 100,
             always_market_price: true,
             tokens: [0],
@@ -790,6 +727,7 @@ module Engine
             sym: 'E',
             name: 'Ekaterinin Railway',
             logo: '1861/E',
+            simple_logo: '1861/E.alt',
             float_percent: 100,
             always_market_price: true,
             tokens: [0],
@@ -804,6 +742,7 @@ module Engine
             sym: 'RSR',
             name: 'Russian State Railway',
             logo: '1861/RSR',
+            simple_logo: '1861/RSR.alt',
             tokens: [0, 0, 0, 0, 0, 0, 0, 0],
             shares: [100],
             hide_shares: true,
@@ -901,6 +840,10 @@ module Engine
         BONUS_REVENUE = 'Q3'
         NATIONAL_RESERVATIONS = %w[E1 H8].freeze
 
+        def game_market
+          @optional_rules&.include?(:column_market) ? self.class::COLUMN_MARKET : self.class::GRID_MARKET
+        end
+
         def all_corporations
           corporations + [@national]
         end
@@ -916,7 +859,7 @@ module Engine
           @loan_value = 50
           # 16 minors * 2, 8 majors * 5
           # The national can take an infinite (100)
-          172.times.map { |id| Loan.new(id, @loan_value) }
+          Array.new(172) { |id| Loan.new(id, @loan_value) }
         end
 
         def home_token_locations(corporation)
@@ -925,13 +868,7 @@ module Engine
             hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) && city.tokens.none? }
           end
 
-          # @todo: this may need optimizing when changing connections for loading.
-          unconnected = open_locations.select { |hex| hex.connections.none? }
-          if unconnected.none?
-            []
-          else
-            unconnected
-          end
+          unconnected_hexes(open_locations)
         end
 
         def place_rsr_home_token
@@ -1005,11 +942,11 @@ module Engine
             G1861::Step::Route,
             G1861::Step::Dividend,
             # The blocking buy company needs to be before loan operations
-            [G1861::Step::BuyCompany, blocks: true],
+            [G1861::Step::BuyCompanyPreloan, { blocks: true }],
             G1867::Step::LoanOperations,
             Engine::Step::DiscardTrain,
             G1861::Step::BuyTrain,
-            [G1861::Step::BuyCompany, blocks: true],
+            [G1861::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 

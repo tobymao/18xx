@@ -99,7 +99,7 @@ module Engine
           end
 
           def min_player_bid
-            highest_player_bid + MIN_BID_RAISE
+            any_bids? ? highest_player_bid + MIN_BID_RAISE : 0
           end
 
           def max_player_bid(entity)
@@ -133,7 +133,7 @@ module Engine
           end
 
           def any_bids?
-            in_auction? && @bids.max_by { |_k, v| v }.last.positive?
+            in_auction? && !@bids.max_by { |_k, v| v }.last.negative?
           end
 
           def setup_auction
@@ -164,6 +164,7 @@ module Engine
             @order << player
             @game.premium = price
             @game.premium_order = @order.uniq.reverse
+            @game.premium_winner = player
           end
         end
       end

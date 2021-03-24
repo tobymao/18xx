@@ -138,7 +138,8 @@ module Engine
         cache << junction
         junction
       when 'icon'
-        Part::Icon.new(params['image'], params['name'], params['sticky'], params['blocks_lay'])
+        Part::Icon.new(params['image'], params['name'], params['sticky'], params['blocks_lay'],
+                       large: params['large'])
       when 'stub'
         Part::Stub.new(params['edge'].to_i)
       when 'partition'
@@ -324,11 +325,7 @@ module Engine
     def compute_loc(loc = nil)
       return nil unless loc && loc != 'center'
 
-      if loc.to_f == loc.to_i.to_f
-        (loc.to_i + @rotation) % 6
-      else
-        (loc.to_i + @rotation) % 6 + 0.5
-      end
+      (loc.to_f + @rotation) % 6
     end
 
     def compute_city_town_edges
