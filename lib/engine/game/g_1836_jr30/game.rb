@@ -423,12 +423,14 @@ module Engine
             ['H6'] => 'city=revenue:30;path=a:1,b:_0;path=a:_0,b:3;label=B',
             ['I3'] => 'city=revenue:30;path=a:0,b:_0;path=a:_0,b:4;label=B',
           },
-          blue: { %w[E3 G1] =>
-            'offboard=revenue:green_20|brown_30,format:+%d,groups:port,route:never;path=a:4,b:_0;path=a:5,b:_0',
-   },
-          green: { ['J2'] =>
-            'offboard=revenue:green_20|brown_30,format:+%d,groups:port,route:never;path=a:3,b:_0;path=a:4,b:_0',
-   },
+          blue: {
+            %w[E3 G1] =>
+              'offboard=revenue:green_20|brown_30,format:+%d,groups:port,route:never;path=a:4,b:_0;path=a:5,b:_0',
+          },
+          green: {
+            ['J2'] =>
+              'offboard=revenue:green_20|brown_30,format:+%d,groups:port,route:never;path=a:3,b:_0;path=a:4,b:_0',
+          },
         }.freeze
 
         LAYOUT = :pointy

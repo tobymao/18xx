@@ -618,10 +618,11 @@ module Engine
             'city=revenue:0;city=revenue:0;label=OO;upgrade=cost:40,terrain:mountain',
           },
           blue: { ['N5'] => '' },
-          gray: { ['F9'] =>
-            'town=revenue:yellow_30|brown_50|black_40;'\
-            'path=a:0,b:_0;path=a:4,b:_0;path=a:5,b:_0;icon=image:port,sticky:1',
-   },
+          gray: {
+            ['F9'] =>
+                        'town=revenue:yellow_30|brown_50|black_40;'\
+                        'path=a:0,b:_0;path=a:4,b:_0;path=a:5,b:_0;icon=image:port,sticky:1',
+          },
           white: {
             %w[H15 G12 I8 J13 D17 J11 J15 K8 O16] =>
                      'city=revenue:0',
