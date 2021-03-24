@@ -61,9 +61,6 @@ module Engine
             end
 
             resolve_bids
-
-            @game.payout_companies
-            @game.or_set_finished
         
             entities.each(&:unpass!)
           end
