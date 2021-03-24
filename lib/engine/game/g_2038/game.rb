@@ -674,13 +674,12 @@ module Engine
 
         # HACKS TO BE ABLE TO TEST FULL SR SETUP
         HOME_TOKEN_TIMING = :never
-        def or_set_finished()
+        def or_set_finished
           depot.export!
         end
 
         def operating_round(round_num)
-          Round::Operating.new(self, [
-        ], round_num: round_num)
+          Round::Operating.new(self, [], round_num: round_num)
         end
         # END HACKS
 
