@@ -4,7 +4,7 @@
 
 class String
   def truncate(truncate_at = 15, options = {})
-    return dup unless length > truncate_at
+    return to_s unless length > truncate_at
 
     omission = options[:omission] || '...'
     length_with_room_for_omission = truncate_at - omission.length
