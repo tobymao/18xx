@@ -11,7 +11,7 @@ module View
         needs :corporation
 
         def render
-          step = @game.round.active_step
+          step = @game.round.step_for(@entity, 'bid')
           min_increment = step.min_increment
 
           min_bid = step.min_bid(@corporation)
