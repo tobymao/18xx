@@ -255,7 +255,7 @@ module View
             show_rusts_inline = false
           end
 
-          train_content << h(:td, obsolete_schedule[name]&.join(', ') || '') if show_obsolete_schedule
+          train_content << h(:td, obsolete_schedule[train.name]&.join(', ') || '') if show_obsolete_schedule
           train_content << if show_rusts_inline
                              h(:td, rusts&.join(', ') || '')
                            else
