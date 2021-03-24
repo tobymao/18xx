@@ -1837,6 +1837,7 @@ module Engine
           train = train_by_id(train_id)
           @depot.remove_train(train)
           train.buyable = buyable
+          train.reserved = true
           train
         end
 

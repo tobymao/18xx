@@ -1506,7 +1506,7 @@ module Engine
           TRAINS_REMOVE_2_PLAYER.each do |train_name, count|
             trains = depot.upcoming.select { |t| t.name == train_name }.reverse.take(count)
 
-            trains.each { |t| depot.remove_train(t) }
+            trains.each { |t| depot.forget_train(t) }
           end
 
           # Standard game, remove 2 privates randomly
