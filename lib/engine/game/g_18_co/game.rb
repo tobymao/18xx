@@ -961,9 +961,10 @@ module Engine
             ['L4'] => 'path=a:2,b:1;path=a:3,b:1;',
             %w[L12 L18] => 'path=a:2,b:4;path=a:3,b:4;',
           },
-          yellow: { ['K5'] =>
-            'city=revenue:0;border=edge:2,type:mountain,cost:40;border=edge:3,type:mountain,cost:40;',
-   },
+          yellow: {
+            ['K5'] =>
+                        'city=revenue:0;border=edge:2,type:mountain,cost:40;border=edge:3,type:mountain,cost:40;',
+          },
         }.freeze
 
         LAYOUT = :pointy

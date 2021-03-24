@@ -422,9 +422,10 @@ module Engine
             ['F12'] => 'path=a:2,b:3;border=edge:3',
             ['E15'] => 'offboard=revenue:yellow_40|brown_50;path=a:1,b:_0;border=edge:1',
           },
-          gray: { ['E1'] =>
-            'city=revenue:yellow_30|brown_60,slots:2;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
-   },
+          gray: {
+            ['E1'] =>
+                        'city=revenue:yellow_30|brown_60,slots:2;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
+          },
         }.freeze
 
         LAYOUT = :pointy

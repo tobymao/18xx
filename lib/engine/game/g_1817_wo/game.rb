@@ -555,9 +555,10 @@ module Engine
             'town=revenue:yellow_10|green_20|brown_30|gray_40;path=a:2,b:_0;path=a:_0,b:4',
             ['L9'] => 'city=revenue:0',
           },
-          yellow: { ['C4'] =>
-            'city=revenue:40;city=revenue:40;path=a:2,b:_0;path=a:5,b:_1;label=NY;upgrade=cost:20',
-   },
+          yellow: {
+            ['C4'] =>
+                        'city=revenue:40;city=revenue:40;path=a:2,b:_0;path=a:5,b:_1;label=NY;upgrade=cost:20',
+          },
           red: {
             ['A2'] =>
                      'offboard=revenue:yellow_30|green_50|brown_20|gray_60;path=a:4,b:_0',
