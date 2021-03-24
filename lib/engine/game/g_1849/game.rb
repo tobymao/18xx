@@ -460,10 +460,9 @@ module Engine
           types = paths.map(&:track).uniq
           raise GameError, 'Can only change track type at station.' if types.include?(:broad) && types.include?(:narrow)
 
-          case
-          when types.include?(:narrow)
+          if types.include?(:narrow)
             :narrow
-          when types.include?(:broad)
+          elsif types.include?(:broad)
             :broad
           else
             :dual
