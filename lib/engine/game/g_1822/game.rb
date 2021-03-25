@@ -829,7 +829,7 @@ module Engine
           super
         end
 
-        def train_help(runnable_trains)
+        def train_help(_entity, runnable_trains, _routes)
           return [] if runnable_trains.empty?
 
           entity = runnable_trains.first.owner

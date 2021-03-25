@@ -869,7 +869,7 @@ module Engine
             end
         end
 
-        def train_help(runnable_trains)
+        def train_help(_entity, runnable_trains, _routes)
           trains = runnable_trains.group_by { |t| train_type(t) }
 
           help = []

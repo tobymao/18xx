@@ -76,7 +76,7 @@ module View
         trains = @game.route_trains(current_entity)
 
         train_help =
-          if (helps = @game.train_help(trains)).any?
+          if (helps = @game.train_help(current_entity, trains, @routes)).any?
             h('ul',
               { style: { 'padding-left': '20px' } },
               helps.map { |help| h('li', [h('p.small_font', help)]) })
