@@ -15,6 +15,12 @@ module Engine
             !is_minor?(company)
           end
 
+          def can_auction?(company)
+            return true if @process_round_end_auction && @bids[company].size > 1
+
+            super
+          end
+
           def min_bid(company)
             return unless company
             return company.min_bid if may_purchase?(company)
@@ -49,20 +55,34 @@ module Engine
           end
 
           def resolve_bids
-            super
-            return if @unbid_companies == nil || @unbid_companies.empty?
-            @companies.concat(@unbid_companies)
-            @unbid_companies = []
+            if @process_round_end_auction
+              @companies.dup.each do |company|
+                resolve_bids_for_company(company)
+                break if @auctioning == company
+              end
+
+              round_end_auction_complete if all_bids_processed?
+            else
+              super
+            end
           end
 
           def all_passed!
-            @companies, @unbid_companies = @companies.partition do |company|
-              !@bids[company].empty?
-            end
-
+            @process_round_end_auction = true
             resolve_bids
-        
+          end
+
+          def round_end_auction_complete
+            @process_round_end_auction = false
+
+            @game.payout_companies
+            @game.or_set_finished
+
             entities.each(&:unpass!)
+          end
+
+          def all_bids_processed?
+            @bids.values.flatten.empty?
           end
         end
       end
