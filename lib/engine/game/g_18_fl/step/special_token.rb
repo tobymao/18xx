@@ -30,6 +30,9 @@ module Engine
               connected: false,
               special_ability: ability(entity),
             )
+            action.token.city = action.city
+            action.token.used = true
+            tokener.tokens << action.token
             entity.close!
             @game.log << "#{entity.name} closes"
             @game.round.laid_token[tokener] = true
