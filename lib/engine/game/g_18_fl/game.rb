@@ -580,7 +580,6 @@ module Engine
         def stock_round
           Engine::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
-            Engine::Step::HomeToken,
             G18FL::Step::BuySellParShares,
           ])
         end
@@ -637,6 +636,19 @@ module Engine
           hotels = stops.count { |h| h.tile.icons.any? { |i| i.name == route.corporation.id } }
 
           revenue + hotels * hotel_value
+        end
+
+        def init_hexes(_companies, corporations)
+          hexes = super
+          place_home_tokens(corporations, hexes)
+          hexes
+        end
+
+        def place_home_tokens(corporations, hexes)
+          corporations.each do |corporation|
+            tile = hexes.find { |hex| hex.coordinates == corporation.coordinates }.tile
+            tile.cities[corporation.city || 0].place_token(corporation, corporation.tokens.first, free: true)
+          end
         end
 
         def hotel_value
