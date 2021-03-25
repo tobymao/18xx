@@ -54,7 +54,9 @@ module Engine
             token = action.token
 
             raise GameError, "#{hex.id} is not a town" if hex.tile.towns.empty?
-            raise GameError, "#{entity.name} already has a hotel in #{hex.tile.location_name}" if tokened(hex, entity)
+
+            tokener = hex_tokened(hex)
+            raise GameError, "#{tokener.name} already has a hotel in #{hex.tile.location_name}" if tokener
 
             cost = action.cost # We are using token_cost_override
             unless @game.loading
@@ -91,6 +93,10 @@ module Engine
             end
 
             token.price * min_distance
+          end
+
+          def hex_tokened(hex)
+            @game.corporations.find { |c| tokened(hex, c) }
           end
 
           def tokened(hex, entity)
