@@ -18,6 +18,7 @@ module View
 
       def render
         @depot = @game.depot
+        @dimmed_font_style = { style: { color: convert_hex_to_rgba(color_for(:font), 0.7) } }
 
         case @layout
         when :discarded_trains
@@ -75,7 +76,9 @@ module View
           extra << h(:td, phase[:corporation_sizes].join(', ')) if corporation_sizes
           extra << h(:td, row_events) if phases_events.any?
 
-          h(:tr, [
+          tr_props = @game.phase.available?(phase[:name]) && phase != current_phase ? @dimmed_font_style : {}
+
+          h(:tr, tr_props, [
             h(:td, (current_phase == phase ? '→ ' : '') + phase[:name]),
             h(:td, @game.info_on_trains(phase)),
             h(:td, phase[:operating_rounds]),
@@ -265,7 +268,9 @@ module View
           train_content << h(:td, discounts) if show_upgrade
           train_content << h(:td, train.available_on) if show_available
           train_content << h(:td, event_text) if event_text.any?
-          h(:tr, train_content)
+          tr_props = remaining.empty? ? @dimmed_font_style : {}
+
+          h(:tr, tr_props, train_content)
         end
 
         event_text = events.uniq.map do |sym|
