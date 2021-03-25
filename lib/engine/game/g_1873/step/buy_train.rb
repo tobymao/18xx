@@ -205,6 +205,10 @@ module Engine
               raise GameError, 'Illegal train buy from another company'
             end
 
+            if action.price > train.price * 2
+              raise GameError, "Can only spend a maximum of #{train.price * 2} for this train"
+            end
+
             if @game.concession_pending?(entity) && (entity != @game.nwe || train.distance > 1)
               @game.concession_unpend!(entity)
             end
