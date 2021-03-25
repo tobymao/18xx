@@ -2940,6 +2940,9 @@ module Engine
             },
             gray: {
               %w[
+                A18
+              ] => 'path=a:5,b:2,terminal:1',
+              %w[
                 B9
               ] => 'city=slots:2,revenue:yellow_60|green_80|brown_120|gray_150;'\
                 'path=a:1,b:_0;path=a:4,b:_0;path=a:0,b:_0,track:narrow;path=a:5,b:_0,track:narrow;'\
@@ -2971,6 +2974,9 @@ module Engine
               ] => 'city=revenue:30,slots:2;path=a:0,b:_0,track:narrow;'\
                 'path=a:1,b:_0,track:narrow;path=a:4,b:_0,track:narrow;'\
                 'icon=image:1873/SBH9_open,sticky:1,large:1',
+              %w[
+                H21
+              ] => 'path=a:2,b:5,terminal:1',
               %w[
                 I2
               ] => 'city=revenue:yellow_40|green_50|brown_80|gray_120;path=a:1,b:_0;'\
