@@ -1041,6 +1041,8 @@ module Engine
           tile_lays = super
           tile_lays += [{ lay: true, upgrade: :not_if_upgraded, cannot_reuse_same_hex: true }] if entity.system?
           (entity.system? ? entity.corporations.map(&:name) : [entity.name]).each do |corp_name|
+            next unless EXTRA_TILE_LAY_CORPS.include?(corp_name)
+
             tile_lays += [
               {
                 lay: :not_if_upgraded,
@@ -1048,7 +1050,7 @@ module Engine
                 cannot_reuse_same_hex: true,
                 cost: 40,
               },
-            ] if EXTRA_TILE_LAY_CORPS.include?(corp_name)
+            ]
           end
 
           tile_lays

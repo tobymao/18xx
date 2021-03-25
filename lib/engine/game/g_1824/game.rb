@@ -1328,10 +1328,10 @@ module Engine
               owner_type: 'player',
             },
             {
-              'type': 'exchange',
-              'corporations': %w[BK MS CL SB BH],
-              'owner_type': 'player',
-              'from': %w[ipo market],
+              type: 'exchange',
+              corporations: %w[BK MS CL SB BH],
+              owner_type: 'player',
+              from: %w[ipo market],
             },
           ],
         }.freeze

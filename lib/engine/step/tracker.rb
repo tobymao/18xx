@@ -248,8 +248,9 @@ module Engine
         end
         discount = ability&.discount || 0
 
-        @log << "#{entity.name} receives a discount of #{@game.format_currency(discount)} from "\
-          "#{ability.owner.name}" if discount.positive?
+        if discount.positive?
+          @log << "#{entity.name} receives a discount of #{@game.format_currency(discount)} from #{ability.owner.name}"
+        end
 
         discount
       end

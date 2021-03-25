@@ -386,8 +386,7 @@ module Engine
               return discard_shares(entity) unless from
 
               # Execute trade to get share(s) needed for the exchange
-              trade_share(entity, [share], from,
-                          from.shares_of(@merger).reject(&:president).take(1)) if from != entity
+              trade_share(entity, [share], from, from.shares_of(@merger).reject(&:president).take(1)) if from != entity
 
               # Exchange the share and pay the difference in cost
               payment_msg = ''

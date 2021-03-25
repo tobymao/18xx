@@ -1400,9 +1400,11 @@ module Engine
 
           @share_pool.sell_shares(bundle, allow_president_change: pres_change_ok?(corporation), swap: swap)
           if corporation == @mhe
-            bundle.num_shares.times do
-              @stock_market.move_down(corporation)
-            end unless @mhe.trains.any? { |t| t.name == '5T' }
+            unless @mhe.trains.any? { |t| t.name == '5T' }
+              bundle.num_shares.times do
+                @stock_market.move_down(corporation)
+              end
+            end
           elsif corporation.operated?
             bundle.num_shares.times { @stock_market.move_down(corporation) }
           else

@@ -360,12 +360,14 @@ module View
 
           @need_arc = !@center && @exit && !colinear?(@begin_x, @begin_y, @end_x, @end_y)
 
-          @arc_parameters = arc_parameters(
-            @begin_x,
-            @begin_y,
-            @end_x,
-            @end_y
-          ) if @need_arc
+          if @need_arc
+            @arc_parameters = arc_parameters(
+              @begin_x,
+              @begin_y,
+              @end_x,
+              @end_y
+            )
+          end
 
           return if @path.single? || !@begin_edge && !@end_edge
 
@@ -416,9 +418,11 @@ module View
             },
           }
 
-          props[:attrs][:d] = "M #{@begin_x} #{@begin_y} "\
-            "A #{@arc_parameters[:radius]} #{@arc_parameters[:radius]} "\
-            "0 0 #{@arc_parameters[:sweep]} #{@end_x} #{@end_y}" if @need_arc
+          if @need_arc
+            props[:attrs][:d] = "M #{@begin_x} #{@begin_y} "\
+              "A #{@arc_parameters[:radius]} #{@arc_parameters[:radius]} "\
+              "0 0 #{@arc_parameters[:sweep]} #{@end_x} #{@end_y}"
+          end
 
           # Calculate the correct x position of the terminal pointer
           d_width = @width.to_i / 2
@@ -433,17 +437,19 @@ module View
           point_x = (terminal_start_x + terminal_end_x) / 2
 
           # terminal tapered track only supported for centered city/town
-          props[:attrs].merge!(
-            transform: "rotate(#{rotation})",
-            d: "M #{terminal_start_x} 70 L #{terminal_start_x} 87 L #{terminal_end_x} 87 "\
-               "L #{terminal_end_x} 70 L #{point_x} 35 Z",
-            fill: @color,
-            stroke: 'none',
-            'stroke-linecap': 'butt',
-            'stroke-linejoin': 'miter',
-            'stroke-width': (@width.to_i * 0.75).to_s,
-            'stroke-dasharray': @dash,
-          ) if @terminal
+          if @terminal
+            props[:attrs].merge!(
+              transform: "rotate(#{rotation})",
+              d: "M #{terminal_start_x} 70 L #{terminal_start_x} 87 L #{terminal_end_x} 87 "\
+                 "L #{terminal_end_x} 70 L #{point_x} 35 Z",
+              fill: @color,
+              stroke: 'none',
+              'stroke-linecap': 'butt',
+              'stroke-linejoin': 'miter',
+              'stroke-width': (@width.to_i * 0.75).to_s,
+              'stroke-dasharray': @dash,
+            )
+          end
 
           children = [h(:path, props)]
           if @crossover_dash

@@ -365,10 +365,12 @@ module View
           # the space is nut just a space but a &nbsp in unicode;
           cells << h(:div, cell_props(item[:type], @game.round_counter == index),
                      [h('div.center', item[:value] || ' '), h('div.nowrap', "#{item[:type]} #{item[:name]}")])
-          cells << h(:div, cell_props(:Export), [
-            item[:exportAfterValue] ? h(:div, item[:exportAfterValue]) : nil,
-            train_export,
-          ].compact) if item[:exportAfter]
+          if item[:exportAfter]
+            cells << h(:div, cell_props(:Export), [
+              item[:exportAfterValue] ? h(:div, item[:exportAfterValue]) : nil,
+              train_export,
+            ].compact)
+          end
           cells
         end
 
@@ -401,13 +403,15 @@ module View
             color: font_color,
           },
         }
-        props[:style].merge!(
-          {
-            fontWeight: 'bold',
-            border: "4px solid #{color_for(:red)}",
-            padding: '1px 4px',
-          }
-        ) if current
+        if current
+          props[:style].merge!(
+            {
+              fontWeight: 'bold',
+              border: "4px solid #{color_for(:red)}",
+              padding: '1px 4px',
+            }
+          )
+        end
 
         props
       end

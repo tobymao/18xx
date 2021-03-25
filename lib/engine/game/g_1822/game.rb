@@ -845,18 +845,23 @@ module Engine
           mail_contracts = entity.companies.any? { |c| self.class::PRIVATE_MAIL_CONTRACTS.include?(c.id) }
 
           help = []
-          help << "L (local) trains run in a city which has a #{entity.name} token. "\
-                  'They can additionally run to a single small station, but are not required to do so. '\
-                  'They can thus be considered 1 (+1) trains. '\
-                  'Only one L train may operate on each station token.' if l_trains
+          if l_trains
+            help << "L (local) trains run in a city which has a #{entity.name} token. "\
+                    'They can additionally run to a single small station, but are not required to do so. '\
+                    'They can thus be considered 1 (+1) trains. '\
+                    'Only one L train may operate on each station token.'
+          end
 
-          help << 'When a train runs between its home station token and its destination station token it doubles the '\
-                  'value of its destination station. This only applies to one train per operating '\
-                  'turn.' if destination_token
+          if destination_token
+            help << 'When a train runs between its home station token and its destination station token it doubles '\
+                    'the value of its destination station. This only applies to one train per operating turn.'
+          end
 
-          help << 'Mail contract(s) gives a subsidy equal to one half of the base value of the start and end '\
-                  'stations from one of the trains operated. Doubled values (for E trains or destination tokens) '\
-                  'do not count.' if mail_contracts
+          if mail_contracts
+            help << 'Mail contract(s) gives a subsidy equal to one half of the base value of the start and end '\
+                    'stations from one of the trains operated. Doubled values (for E trains or destination tokens) '\
+                    'do not count.'
+          end
           help
         end
 
@@ -1435,7 +1440,7 @@ module Engine
         end
 
         def company_choices_chpr(company, time)
-          return {} if !(time == :token || time == :track) || !company.owner&.corporation?
+          return {} if !%i[token track].include?(time) || !company.owner&.corporation?
 
           choices = {}
           exchange_token_count = exchange_tokens(company.owner)

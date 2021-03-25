@@ -29,9 +29,11 @@ module Engine
           def process_place_token(action)
             raise GameError, "#{action.entity.name} cannot lay token now" if @game.round.laid_token[action.entity]
 
-            raise GameError, "#{action.entity.name} cannot afford "\
-                "#{@game.format_currency(action.cost)} to lay token in "\
-                "#{action.city.hex.tile.location_name}" if action.cost > action.entity.cash
+            if action.cost > action.entity.cash
+              raise GameError, "#{action.entity.name} cannot afford "\
+                  "#{@game.format_currency(action.cost)} to lay token in "\
+                  "#{action.city.hex.tile.location_name}"
+            end
 
             unless @game.loading
               verified_cost = token_cost_override(action.entity, action.city, action.slot, action.token)
@@ -63,8 +65,9 @@ module Engine
               verified_cost = token_cost_override(entity, hex, nil, verified_token)
               raise GameError, 'Error verifying token cost; is game out of sync?' unless cost == verified_cost
             end
-            raise GameError, "#{entity.name} cannot afford "\
-                  "#{@game.format_currency(cost)} cost to lay hotel" if cost > entity.cash
+            if cost > entity.cash
+              raise GameError, "#{entity.name} cannot afford #{@game.format_currency(cost)} cost to lay hotel"
+            end
 
             @game.log << "#{entity.name} places a hotel on #{hex.name} for #{@game.format_currency(cost)}"
             entity.spend(cost, @game.bank)
