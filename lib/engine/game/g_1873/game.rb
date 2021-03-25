@@ -110,13 +110,13 @@ module Engine
 
         STATUS_TEXT = Base::STATUS_TEXT.merge(
           'HBE_GHE_active' => ['HBE GHE available',
-                               'HBE and GHE concessions are active'],
+                               'HBE and GHE concessions become active'],
           'NWE_SHE_KEZ_may' => ['NWE SHE KEZ ?',
                                 'NWE, SHE and KEZ concessions may be activated'],
           'NWE_SHE_KEZ_active' => ['NWE SHE KEZ available, WBE ?',
-                                   'NWE, SHE and KEZ concessions are active; WBE may be activated'],
+                                   'NWE, SHE and KEZ concessions become active; WBE may be activated'],
           'WBE_QLB_active' => ['WBE QLB available',
-                               'WBE and QLB concessions are active'],
+                               'WBE and QLB concessions become active'],
           'maintenance_level_1' => ['Level 1 Maintenance',
                                     '1M, 1T: 50 ℳ'],
           'maintenance_level_2' => ['Level 2 Maintenance',
@@ -269,7 +269,8 @@ module Engine
               share_pool,
               spender: share_pool,
               receiver: @bank,
-              price: 0
+              price: 0,
+              allow_president_change: false
             )
           end
           @mhe.owner = @share_pool
@@ -348,7 +349,7 @@ module Engine
 
         def create_pool_diesel(proto)
           new_train = Train.new(name: proto.name, distance: proto.distance, price: proto.price,
-                                index: @subtrain_index[proto.name], no_local: true)
+                                index: @subtrain_index[proto.name], no_local: true, reserved: true)
           new_train.owner = nil
           @depot.trains << new_train
           @diesel_pool[new_train] = { assigned: false, used: false }
@@ -582,7 +583,7 @@ module Engine
 
         def create_duplicate_train!(train, index)
           new_train = Train.new(name: train.name, distance: train.distance, price: train.price,
-                                index: index, no_local: true)
+                                index: index, no_local: true, reserved: true)
           new_train.owner = nil
           @subtrains[train] << new_train
           @supertrains[new_train] = train
@@ -618,7 +619,8 @@ module Engine
         def new_switcher
           return unless (level = switcher_level) > 1
 
-          switcher = Train.new(name: "#{level}S", distance: level, price: switcher_price, index: @switcher_index)
+          switcher = Train.new(name: "#{level}S", distance: level, price: switcher_price,
+                               index: @switcher_index, reserved: true)
           switcher.owner = @depot
           @depot.trains << switcher # needed for train_by_id
           update_cache(:trains)
@@ -648,7 +650,8 @@ module Engine
         def replicate_machines(train, count)
           t_array = [train]
           (count - 1).times do |_i|
-            new_train = Train.new(name: train.name, distance: train.distance, price: train.price, index: @machine_index)
+            new_train = Train.new(name: train.name, distance: train.distance, price: train.price,
+                                  index: @machine_index, reserved: true)
             @machine_index += 1
             t_array << new_train
           end
@@ -932,7 +935,8 @@ module Engine
                 share_pool,
                 spender: share_pool,
                 receiver: @bank,
-                price: 0
+                price: 0,
+                allow_president_change: pres_change_ok?(corporation)
               )
           end
 
