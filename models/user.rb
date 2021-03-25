@@ -22,6 +22,7 @@ class User < Base
 
   def update_settings(params)
     self.name = params['name'] if params['name']
+    self.email = params['email'] if params['email']
     params.each do |key, value|
       settings[key] = value if SETTINGS.include?(key)
     end
