@@ -361,7 +361,7 @@ module Engine
           'E4' => 'Fakenham',
           'F3' => 'Cromer',
           'G4' => 'N Walsham',
-          'B5' => 'Wisbeach',
+          'B5' => 'Wisbech',
           'C6' => 'Downham Market',
           'D5' => 'Swaffham',
           'E6' => 'Watton',
