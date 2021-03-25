@@ -37,8 +37,6 @@ module View
         when 'all'
           Engine::Tile::ALL_EDGES
         else
-          # apparently separating rotations in URL with '+' works by passing ' '
-          # to split here
           r.split.map(&:to_i)
         end
       @location_name = Lib::Params['n']
