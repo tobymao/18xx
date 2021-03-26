@@ -1431,7 +1431,7 @@ module Engine
         end
       end
 
-      def train_help(_runnable_trains)
+      def train_help(_entity, _runnable_trains, _routes)
         []
       end
 

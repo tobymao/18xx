@@ -682,7 +682,7 @@ module Engine
           'E/W'
         end
 
-        def train_help(runnable_trains)
+        def train_help(_entity, runnable_trains, _routes)
           help = []
 
           nm_trains = runnable_trains.select { |t| t.name.include?('/') }
