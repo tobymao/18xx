@@ -16,7 +16,7 @@ module Engine
         GAME_RULES_URL = 'http://google.com'
 
         PLAYER_RANGE = [3, 7].freeze
-                OPTIONAL_RULES = [
+        OPTIONAL_RULES = [
           {
             sym: :Clemens,
             short_name: 'Clemens',
