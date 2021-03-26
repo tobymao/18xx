@@ -31,8 +31,8 @@ module Engine
         CERT_LIMIT = { 3 => 19, 4 => 15, 5 => 12, 6 => 11, 7 => 9 }.freeze
 
         STARTING_CASH = { 3 => 600, 4 => 475, 5 => 390, 6 => 340, 7 => 310 }.freeze
-
-        CAPITALIZATION = :full
+        SELL_BUY_ORDER = :sell_buy_sell
+        CAPITALIZATION = :incremental
 
         MUST_SELL_IN_BLOCKS = false
 
@@ -102,7 +102,10 @@ module Engine
           '221' => 1,
         }.freeze
 
-        LOCATION_NAMES = { 'A11' => 'Kiel', 'L14' => 'Fürth Nürnberg' }.freeze
+        LOCATION_NAMES = { 'A11' => 'Kiel', 'C11' => 'Hamburg', 'C13' => 'Schwerin', 'D6' => 'Oldenburg', 'D8' => 'Bremen', 'F10' => 'Hannover', 'L14' => 'Fürth Nürnberg',
+          'F12' => 'Braunschweig', 'F14' => 'Magdeburg', 'G3' => 'Duisburg/Essen', 'G5' => 'Dortmund', 'H2' => 'Düsseldorf', 'H16' => 'Leipzig', 'H20' => 'Dresden',
+          'J6' => 'Mainz/Wiesbaden', 'J8' => 'Frankfurt', 'L6' => 'Ludwigshafen/Mannheim','L14' => 'Fürth/Nürnberg', 'M9' => 'Stuttgart', 'N12' => 'Augsburg',
+          'O5' => 'Freiburg', 'O15' => 'München'}.freeze
 
         MARKET = [['',
                    '',
@@ -629,14 +632,12 @@ module Engine
 
         LAYOUT = :pointy
 
-        SELL_MOVEMENT = :down_per_10
+        SELL_MOVEMENT = :down_block
 
         HOME_TOKEN_TIMING = :operating_round
 
         def setup
           # 1 of each right is reserved w/ the private when it gets bought in. This leaves 2 extra to sell.
-          @available_bridge_tokens = 2
-          @available_tunnel_tokens = 2
         end
 
         def operating_round(round_num)
