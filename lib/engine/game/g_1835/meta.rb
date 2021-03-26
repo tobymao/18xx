@@ -16,6 +16,12 @@ module Engine
         GAME_RULES_URL = 'http://google.com'
 
         PLAYER_RANGE = [3, 7].freeze
+                OPTIONAL_RULES = [
+          {
+            sym: :Clemens,
+            short_name: 'Clemens',
+            desc: 'all Privates and minors are available, 4-3-2-1-1-2-3-4, Minors start when Bay 50%',
+          },        ].freeze
       end
     end
   end
