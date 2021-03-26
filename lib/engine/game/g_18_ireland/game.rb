@@ -3,6 +3,7 @@
 require_relative '../g_1849/map'
 require_relative 'meta'
 require_relative 'entities'
+require_relative 'map'
 
 module Engine
   module Game
@@ -11,6 +12,7 @@ module Engine
         include_meta(G18Ireland::Meta)
         include G18Ireland::Entities
         include G1849::Map
+        include G18Ireland::Map
 
         CAPITALIZATION = :incremental
         HOME_TOKEN_TIMING = :float
@@ -64,7 +66,7 @@ module Engine
             name: '8',
             on: '8H',
             train_limit: { minor: 1, major: 2 },
-            tiles: %i[yellow green],
+            tiles: %i[yellow green brown],
             operating_rounds: 2,
           },
           {
@@ -78,7 +80,7 @@ module Engine
             name: 'D',
             on: 'D',
             train_limit: { minor: 1, major: 2 },
-            tiles: %i[yellow green brown],
+            tiles: %i[yellow green brown gray],
             operating_rounds: 2,
           },
         ].freeze
