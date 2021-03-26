@@ -58,11 +58,11 @@ module Engine
              26i
              31i
              36i
-             40r
-             44r
-             47r
-             50r
-             52r
+             40
+             44
+             47
+             50
+             52
              54p
              56r
              58p
@@ -78,34 +78,45 @@ module Engine
              90p
              95r
              100p
-             105
-             110
-             116
-             122
-             128
-             134
-             142
-             150
-             158i
-             166i
-             174i
-             182i
-             191i
-             200i
+             105r
+             110r
+             116r
+             122r
+             128r
+             134r
+             142r
+             150r
+             158r
+             166r
+             174r
+             182r
+             191r
+             200r
              210i
              220i
-             230i
-             240i
-             250i
+             232i
+             245i
              260i
-             270i
-             280i
-             290i
-             300i
+             275i
+             292i
              310i
-             320i
              330i
-             340e],
+             350i
+             375i
+             400i
+             430i
+             495i
+             530i
+             570i
+             610i
+             655i
+             700i
+             750i
+             800i
+             850i
+             900i
+             950i
+             1000e],
            ].freeze
 
         PHASES = [{ name: '2', train_limit: 4, tiles: [:yellow], operating_rounds: 1 },
@@ -251,18 +262,16 @@ module Engine
         }.freeze
 
         MARKET_TEXT = {
-          par: 'Par values (varies by corporation)',
+          par: 'Par values for chartered corporations',
           no_cert_limit: 'UNUSED',
           unlimited: 'UNUSED',
           multiple_buy: 'UNUSED',
           close: 'Corporation bankrupts',
           endgame: 'End game trigger',
           liquidation: 'UNUSED',
-          repar: 'Par values after bankruptcy (varies by corporation)',
-          ignore_one_sale: 'Ignore first share sold when moving price',
+          repar: 'Par values for unchartered corporations',
+          ignore_one_sale: 'Ignore first share sold when moving price (except president)',
         }.freeze
-
-        HALT_SUBSIDY = 10
 
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded_or_city, upgrade: false }].freeze
 
@@ -272,11 +281,25 @@ module Engine
           SharePool.new(self, allow_president_sale: true)
         end
 
+        def init_companies(players)
+          clist = super
+
+          # create charter companies on the fly based on corporations
+          game_corporations.map do |corp|
+            description = "Parliamentary Charter for #{corp[:name]}"
+            name = "#{corp[:sym]} Charter"
+
+            clist << Company.new(sym: corp[:sym], name: name, value: 0, revenue: 0, desc: description)
+          end
+
+          clist
+        end
+
         def setup; end
 
         # FIXME
         def available_charters
-          [@companies.first]
+          @companies.reject { |c| c.name.include?('Dummy') }
         end
 
         def stock_round
