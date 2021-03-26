@@ -195,7 +195,7 @@ module Engine
             ] => 'city=revenue:0;label=Y',
             %w[
             F11
-            ] => 'city=revenue:0;label=N;border=edge:0',
+            ] => 'city=revenue:0;label=N;border=edge:0,type:impassable',
             %w[
             G12
             ] => 'city=revenue:0;border=edge:1,type:impassable',
@@ -283,11 +283,11 @@ module Engine
             %w[
             B15
             ] => 'offboard=revenue:yellow_100|green_150|brown_200,groups:London,hide:1;path=a:3,b:_0;'\
-              'border=edge:2;city=revenue:0,slots:2',
+              'border=edge:2;city=revenue:0,slots:2;border=edge:4',
             %w[
             D15
             ] => 'offboard=revenue:yellow_100|green_150|brown_200,groups:London,hide:1;path=a:3,b:_0;path=a:4,b:_0;'\
-              'border=edge:2;border=edge:4;city=revenue:0,slots:2',
+              'border=edge:2;city=revenue:0,slots:2',
           },
         }.freeze
 
