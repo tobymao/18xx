@@ -108,6 +108,10 @@ module Engine
           },
         }.freeze
 
+        EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+          'remove_locks' => ['Unlock WBE Hexes', 'Tiles may be placed on WBE concession route'],
+        ).freeze
+
         STATUS_TEXT = Base::STATUS_TEXT.merge(
           'HBE_GHE_active' => ['HBE GHE available',
                                'HBE and GHE concessions become active'],
@@ -1200,6 +1204,15 @@ module Engine
           end
         end
 
+        def event_remove_locks!
+          @hexes.each do |hex|
+            if (icon = hex.tile.icons.find { |i| i.name == 'lock' })
+              hex.tile.icons.delete(icon)
+            end
+          end
+          @log << 'WBE concession hexes unlocked'
+        end
+
         def operating_order
           open_private_mines + normal_corporations.select(&:floated?).sort + [@mhe]
         end
@@ -1353,7 +1366,7 @@ module Engine
           return false if from.label != to.label
 
           # old tile doesn't have a lock icon and it's not yet phase 3
-          return false if !@phase.tiles.include?('green') && from.icons.any? { |i| i.name.to_s == 'lock' }
+          return false if !@phase.tiles.include?(:green) && from.icons.any? { |i| i.name.to_s == 'lock' }
 
           # honors existing town/city counts?
           # 1873: towns always upgrade to cities
@@ -2708,6 +2721,7 @@ module Engine
                   price: 300,
                 },
               ],
+              events: [{ 'type' => 'remove_locks' }],
             },
             {
               name: '4T',
@@ -3022,8 +3036,8 @@ module Engine
             {
               name: '1',
               train_limit: 99,
-              tiles: [
-                'yellow',
+              tiles: %i[
+                yellow
               ],
               operating_rounds: 1,
               status: ['HBE_GHE_active'],
@@ -3032,8 +3046,8 @@ module Engine
               name: '2',
               on: '2T',
               train_limit: 99,
-              tiles: [
-                'yellow',
+              tiles: %i[
+                yellow
               ],
               operating_rounds: 1,
               status: ['NWE_SHE_KEZ_may'],
@@ -3042,7 +3056,7 @@ module Engine
               name: '3',
               on: '3T',
               train_limit: 99,
-              tiles: %w[
+              tiles: %i[
                 yellow
                 green
               ],
@@ -3053,7 +3067,7 @@ module Engine
               name: '4',
               on: '4T',
               train_limit: 99,
-              tiles: %w[
+              tiles: %i[
                 yellow
                 green
               ],
@@ -3064,7 +3078,7 @@ module Engine
               name: '5',
               on: '5T',
               train_limit: 99,
-              tiles: %w[
+              tiles: %i[
                 yellow
                 green
                 brown
@@ -3075,7 +3089,7 @@ module Engine
             {
               name: '5a',
               train_limit: 99,
-              tiles: %w[
+              tiles: %i[
                 yellow
                 green
                 brown

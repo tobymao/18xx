@@ -49,6 +49,8 @@ module Engine
             entity = action.entity
             routes = action.routes
 
+            @log << "QLB runs local train for #{@game.format_currency(@game.qlb_bonus)}" if entity == @game.qlb
+
             routes.each do |r|
               @game.use_pool_diesel(r.train, entity) if @game.diesel?(r.train)
             end
