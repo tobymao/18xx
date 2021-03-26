@@ -102,10 +102,29 @@ module Engine
           '221' => 1,
         }.freeze
 
-        LOCATION_NAMES = { 'A11' => 'Kiel', 'C11' => 'Hamburg', 'C13' => 'Schwerin', 'D6' => 'Oldenburg', 'D8' => 'Bremen', 'F10' => 'Hannover', 'L14' => 'Fürth Nürnberg',
-          'F12' => 'Braunschweig', 'F14' => 'Magdeburg', 'G3' => 'Duisburg/Essen', 'G5' => 'Dortmund', 'H2' => 'Düsseldorf', 'H16' => 'Leipzig', 'H20' => 'Dresden',
-          'J6' => 'Mainz/Wiesbaden', 'J8' => 'Frankfurt', 'L6' => 'Ludwigshafen/Mannheim','L14' => 'Fürth/Nürnberg', 'M9' => 'Stuttgart', 'N12' => 'Augsburg',
-          'O5' => 'Freiburg', 'O15' => 'München'}.freeze
+        LOCATION_NAMES = {
+          'A11' => 'Kiel',
+          'C11' => 'Hamburg',
+          'C13' => 'Schwerin',
+          'D6' => 'Oldenburg',
+          'D8' => 'Bremen',
+          'F10' => 'Hannover',
+          'F12' => 'Braunschweig',
+          'F14' => 'Magdeburg',
+          'G3' => 'Duisburg/Essen',
+          'G5' => 'Dortmund',
+          'H2' => 'Düsseldorf',
+          'H16' => 'Leipzig',
+          'H20' => 'Dresden',
+          'J6' => 'Mainz/Wiesbaden',
+          'J8' => 'Frankfurt',
+          'L6' => 'Ludwigshafen/Mannheim',
+          'L14' => 'Fürth/Nürnberg',
+          'M9' => 'Stuttgart',
+          'N12' => 'Augsburg',
+          'O5' => 'Freiburg',
+          'O15' => 'München',
+        }.freeze
 
         MARKET = [['',
                    '',
