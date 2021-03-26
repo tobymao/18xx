@@ -8,21 +8,7 @@ module Engine
   module Game
     module G1862
       module Entities
-        COMPANIES = [
-          {
-            name: 'Partition Dummy',
-            value: 0,
-            revenue: 0,
-            desc: 'Dummy company to allow partitions to work',
-            sym: 'PD',
-            abilities: [
-              {
-                type: 'blocks_partition',
-                partition_type: 'mountain',
-              },
-            ],
-          },
-        ].freeze
+        COMPANIES = [].freeze
 
         CORPORATIONS = [
           {

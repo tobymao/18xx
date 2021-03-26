@@ -27,7 +27,7 @@ module Engine
             next unless border
 
             other_hex = hex.neighbors[border.edge]
-            next if !other_hex && (border.type.nil? || border.type == :impassable)
+            next if !other_hex && (border.type.nil? || border.type == :impassable || border.type == :divider)
 
             expect(other_hex).to be_truthy,
                                  "Other hex missing from:#{hex.name}:#{border.edge}"

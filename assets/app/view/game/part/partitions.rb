@@ -40,6 +40,8 @@ module View
               :blue
             when :impassable
               :red
+            when :divider
+              :black
             end
 
           setting_for(color)
@@ -53,7 +55,7 @@ module View
           children = []
 
           @tile.partitions.each do |partition|
-            next if partition.blockers.none? do |blocker|
+            next if partition.type != :divider && partition.blockers.none? do |blocker|
               @game&.abilities(blocker, :blocks_partition)&.blocks?(partition.type)
             end
 
