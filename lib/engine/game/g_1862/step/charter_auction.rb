@@ -52,9 +52,11 @@ module Engine
           end
 
           def active_entities
-            active_auction do |_, bids|
-              return [bids.min_by(&:price).entity]
-            end if @auctioning
+            if @auctioning
+              active_auction do |_, bids|
+                return [bids.min_by(&:price).entity]
+              end
+            end
 
             super
           end
