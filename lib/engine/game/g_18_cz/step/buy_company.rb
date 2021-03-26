@@ -17,8 +17,10 @@ module Engine
                 raise GameError, "#{entity.name} can only buy #{entity.type} companies or smaller"
               end
             when :small
-              raise GameError,
-                    "#{entity.name} can only buy #{entity.type} companies" unless company.sym.include?('S')
+              unless company.sym.include?('S')
+                raise GameError,
+                      "#{entity.name} can only buy #{entity.type} companies"
+              end
             end
 
             super

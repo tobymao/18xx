@@ -2153,7 +2153,7 @@ module Engine
             reservation_color: nil,
           },
           {
-            float_percent: 50,
+            float_percent: 60,
             float_excludes_market: true,
             sym: 'BN',
             name: 'Böhmische Nordbahn',
@@ -2171,7 +2171,7 @@ module Engine
             reservation_color: nil,
           },
           {
-            float_percent: 50,
+            float_percent: 60,
             float_excludes_market: true,
             sym: 'NWB',
             name: 'Österreichische Nordwestbahn',
@@ -2189,7 +2189,7 @@ module Engine
             reservation_color: nil,
           },
           {
-            float_percent: 50,
+            float_percent: 60,
             float_excludes_market: true,
             sym: 'ATE',
             name: 'Aussig-Teplitzer Eisenbahn',
@@ -2206,7 +2206,7 @@ module Engine
             reservation_color: nil,
           },
           {
-            float_percent: 50,
+            float_percent: 60,
             float_excludes_market: true,
             sym: 'BTE',
             name: 'Buschtehrader Eisenbahn',
@@ -2223,7 +2223,7 @@ module Engine
             reservation_color: nil,
           },
           {
-            float_percent: 50,
+            float_percent: 60,
             float_excludes_market: true,
             sym: 'KFN',
             name: 'Kaiser Ferdinands Nordbahn',
@@ -2413,6 +2413,8 @@ module Engine
             'city=revenue:0;city=revenue:0;label=OO;upgrade=cost:10,terrain:water;border=edge:2,type:offboard',
           },
         }.freeze
+
+        TRACK_RESTRICTION = :permissive
 
         LAYOUT = :pointy
 

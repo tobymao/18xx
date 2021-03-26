@@ -10,12 +10,11 @@ module Engine
           def share_price_change(entity, revenue = 0)
             price = entity.share_price.price
 
-            case
-            when revenue.zero?
+            if revenue.zero?
               { share_direction: :left, share_times: 1 }
-            when revenue < price
+            elsif revenue < price
               {}
-            when revenue >= price
+            elsif revenue >= price
               { share_direction: :right, share_times: 1 }
             end
           end

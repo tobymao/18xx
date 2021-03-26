@@ -208,8 +208,10 @@ module Engine
               raise GameError, "Choose a corporation to acquire #{acquired_corp.name}"
             end
 
-            raise GameError,
-                  "Target corporation must be owned by #{@winner.entity.name}" if buyer.owner != @winner.entity
+            if buyer.owner != @winner.entity
+              raise GameError,
+                    "Target corporation must be owned by #{@winner.entity.name}"
+            end
 
             @buyer = buyer
 

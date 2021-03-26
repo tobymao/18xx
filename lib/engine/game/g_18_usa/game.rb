@@ -108,7 +108,7 @@ module Engine
             'color' => 'brown',
             'code' => 'city=revenue:70,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;label=NY',
           },
-          'X17': {
+          X17: {
             'count' => 'unlimited',
             'color' => 'gray',
             'code' => 'junction;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;',
@@ -119,7 +119,7 @@ module Engine
             'code' => 'city=revenue:80,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
             'path=a:5,b:_0;label=DFW',
           },
-          'X19': {
+          X19: {
             'count' => 1,
             'color' => 'gray',
             'code' => 'city=revenue:90,slots:4;path=a:0,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=LA',

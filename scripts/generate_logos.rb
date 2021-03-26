@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-Dir['./models/**/*.rb'].sort.each { |file| require file }
+Dir['./models/**/*.rb'].each { |file| require file }
 require './lib/engine'
 Sequel.extension :pg_json_ops
 DB.extension :pg_array, :pg_advisory_lock, :pg_json, :pg_enum

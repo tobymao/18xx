@@ -160,6 +160,10 @@ module Engine
             ch_entity = @game.corporation_by_id(ch[:entity]) if ch
             follows_path = @game.tile_has_path?(tile, ch[:exits]) if ch
 
+            if @game.concession_incomplete?(entity) && (!ch || ch_entity != entity)
+              raise GameError, 'Tile must be on concession route'
+            end
+
             if ch && entity.name != ch[:entity] && follows_path
               @log << "Laying tile finishes concession track in #{hex.id}"
               reimburse = true

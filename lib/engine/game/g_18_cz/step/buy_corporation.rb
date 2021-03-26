@@ -33,13 +33,15 @@ module Engine
             unless price.between?(price_range[0], price_range[1])
               raise GameError,
                     "#{entity.name} cannot buy #{corporation.name} for #{price} per share.
-                  The price must be between #{price_range[0]} and #{price_range[1]}"
+                    The price must be between #{price_range[0]} and #{price_range[1]}"
             end
 
             max_cost = corporation.num_player_shares * price
-            raise GameError,
-                  "#{entity.name} cannot buy #{corporation.name} for #{price} per share.
-                 #{max_cost} is needed but only #{entity.cash} available" if entity.cash < max_cost
+            if entity.cash < max_cost
+              raise GameError,
+                    "#{entity.name} cannot buy #{corporation.name} for #{price} per share.
+                    #{max_cost} is needed but only #{entity.cash} available"
+            end
 
             @game.players.each do |player|
               num = player.num_shares_of(corporation, ceil: false)

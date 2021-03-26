@@ -1610,7 +1610,7 @@ module Engine
           index_for_trigger = @players.index(@nationalization_trigger)
           # This is based off the code in 18MEX; 10 appears to be an arbitrarily large integer
           #  where the exact value doesn't really matter
-          order = Hash[@players.each_with_index.map { |p, i| i < index_for_trigger ? [p, i + 10] : [p, i] }]
+          order = @players.each_with_index.map { |p, i| i < index_for_trigger ? [p, i + 10] : [p, i] }.to_h
           floated_player_corps.sort_by! { |c| [order[c.player], @round.entities.index(c)] }
         end
 

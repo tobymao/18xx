@@ -18,6 +18,7 @@ module View
 
       def render
         @depot = @game.depot
+        @dimmed_font_style = { style: { color: convert_hex_to_rgba(color_for(:font), 0.7) } }
 
         case @layout
         when :discarded_trains
@@ -75,7 +76,9 @@ module View
           extra << h(:td, phase[:corporation_sizes].join(', ')) if corporation_sizes
           extra << h(:td, row_events) if phases_events.any?
 
-          h(:tr, [
+          tr_props = @game.phase.available?(phase[:name]) && phase != current_phase ? @dimmed_font_style : {}
+
+          h(:tr, tr_props, [
             h(:td, (current_phase == phase ? '→ ' : '') + phase[:name]),
             h(:td, @game.info_on_trains(phase)),
             h(:td, phase[:operating_rounds]),
@@ -255,7 +258,7 @@ module View
             show_rusts_inline = false
           end
 
-          train_content << h(:td, obsolete_schedule[name]&.join(', ') || '') if show_obsolete_schedule
+          train_content << h(:td, obsolete_schedule[train.name]&.join(', ') || '') if show_obsolete_schedule
           train_content << if show_rusts_inline
                              h(:td, rusts&.join(', ') || '')
                            else
@@ -265,7 +268,9 @@ module View
           train_content << h(:td, discounts) if show_upgrade
           train_content << h(:td, train.available_on) if show_available
           train_content << h(:td, event_text) if event_text.any?
-          h(:tr, train_content)
+          tr_props = remaining.empty? ? @dimmed_font_style : {}
+
+          h(:tr, tr_props, train_content)
         end
 
         event_text = events.uniq.map do |sym|
@@ -365,10 +370,12 @@ module View
           # the space is nut just a space but a &nbsp in unicode;
           cells << h(:div, cell_props(item[:type], @game.round_counter == index),
                      [h('div.center', item[:value] || ' '), h('div.nowrap', "#{item[:type]} #{item[:name]}")])
-          cells << h(:div, cell_props(:Export), [
-            item[:exportAfterValue] ? h(:div, item[:exportAfterValue]) : nil,
-            train_export,
-          ].compact) if item[:exportAfter]
+          if item[:exportAfter]
+            cells << h(:div, cell_props(:Export), [
+              item[:exportAfterValue] ? h(:div, item[:exportAfterValue]) : nil,
+              train_export,
+            ].compact)
+          end
           cells
         end
 
@@ -401,13 +408,15 @@ module View
             color: font_color,
           },
         }
-        props[:style].merge!(
-          {
-            fontWeight: 'bold',
-            border: "4px solid #{color_for(:red)}",
-            padding: '1px 4px',
-          }
-        ) if current
+        if current
+          props[:style].merge!(
+            {
+              fontWeight: 'bold',
+              border: "4px solid #{color_for(:red)}",
+              padding: '1px 4px',
+            }
+          )
+        end
 
         props
       end

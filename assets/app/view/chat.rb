@@ -13,9 +13,11 @@ module View
     needs :subscribed, default: false, store: true
 
     def render
-      @connection.subscribe('/chat', 0) do |data|
-        add_line(data)
-      end unless @subscribed
+      unless @subscribed
+        @connection.subscribe('/chat', 0) do |data|
+          add_line(data)
+        end
+      end
 
       store(:subscribed, true, skip: true)
 

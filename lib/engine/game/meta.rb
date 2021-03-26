@@ -44,7 +44,7 @@ module Engine
             begin
               parts = name.split('::')
               last = parts.last
-              part = (last == 'Game' || last == 'Meta' ? parts[-2] : last)
+              part = (%w[Game Meta].include?(last) ? parts[-2] : last)
               part.slice(1..-1)
             end
         end
@@ -58,7 +58,7 @@ module Engine
             begin
               parts = name.split('::')
               last = parts.last
-              part = (last == 'Game' || last == 'Meta' ? parts[-2] : last)
+              part = (%w[Game Meta].include?(last) ? parts[-2] : last)
               part.sub(/^G/, 'g_').gsub(/(.)([A-Z]+)/, '\1_\2').downcase
             end
         end
