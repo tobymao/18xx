@@ -306,7 +306,7 @@ module View
         },
       }
 
-      note = @game_data.dig('user_settings', 'notepad') != ''
+      note = !@game_data.dig('user_settings', 'notepad').to_s.empty?
       menu_items = [
         item('G|ame', ''),
         item('E|ntities', '#entities'),
