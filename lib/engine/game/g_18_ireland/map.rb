@@ -429,8 +429,9 @@ module Engine
 
         HEXES = {
           white: {
-            %w[I1 F2 G3 G5 H6 C7 D8 H8 E9 D10 C11 E11 G11 D14 H14 G15 F16 D18
+            %w[I1 F2 G3 G5 H6 C7 D8 H8 E9 D10 C11 E11 G11 H14 G15 F16 D18
                E19] => '',
+            %w[D14] => 'border=edge:2,type:impassable',
             ['C17'] => 'border=edge:2,type:impassable;border=edge:3,type:impassable',
             ['I3'] => 'border=edge:0,type:impassable',
             %w[I15 B20] => 'upgrade=cost:100,terrain:mountain',
@@ -449,7 +450,7 @@ module Engine
             ['B10'] => 'town=revenue:0;border=edge:3,type:impassable;upgrade=cost:100,terrain:mountain',
             %w[G1 D6 I17] => 'city=revenue:0',
             ['D6'] => 'city=revenue:0;border=edge:3,type:impassable',
-            ['C13'] => 'city=revenue:0;border=edge:0,type:impassable',
+            ['C13'] => 'city=revenue:0;border=edge:0,type:impassable;border=edge:5,type:impassable',
             ['G19'] => 'city=revenue:0;border=edge:1,type:impassable',
             %w[H2 J2 F4 F14] => 'town=revenue:0;upgrade=cost:40,terrain:mountain',
             ['B18'] => 'town=revenue:0;upgrade=cost:40,terrain:mountain;border=edge:3,type:impassable',
