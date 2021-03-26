@@ -33,6 +33,8 @@ module Engine
 
         LIMIT_TOKENS_AFTER_MERGER = 3
 
+        GAME_END_CHECK = { bankrupt: :immediate, stock_market: :current_round, bank: :full_or }.freeze
+
         MARKET = [
           ['', '62', '68', '76', '84', '92', '100p', '110', '122', '134', '148', '170', '196', '225', '260e'],
           ['', '58', '64', '70', '78', '85p', '94', '102', '112', '124', '136', '150', '172', '198'],
@@ -150,6 +152,10 @@ module Engine
         PROTECTED_COMPANIES = %w[DAR DK].freeze
         PROTECTED_CORPORATION = 'DKR'
         KEEP_COMPANIES = 5
+
+        def bankruptcy_limit_reached?
+          @players.reject(&:bankrupt).one?
+        end
 
         def setup_preround
           # Only keep 3 private companies
