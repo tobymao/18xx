@@ -90,7 +90,7 @@ module Engine
             return unless entity&.company?
 
             time = %w[special_track owning_corp_or_turn]
-            time << '%current_step%' if @round.num_laid_track.zero?
+            time << '%current_step%' if @game.tile_lays(entity.corporation)[@round.num_laid_track]
 
             abilities = @game.abilities(
               entity,
