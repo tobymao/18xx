@@ -16,8 +16,6 @@ class Api
 
         # POST '/api/user/'
         r.is do
-          halt(400, 'Invalid email address') unless /^[^@\s]+@[^@\s]+\.[^@\s]+$/.match?(r['email'])
-
           params = {
             name: r['name'],
             email: r['email'],
