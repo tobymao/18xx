@@ -2937,7 +2937,7 @@ module Engine
                 'icon=image:1873/11_open,sticky:1,large:1',
               %w[
                 G6
-              ] => 'city=revenue:40;path=a:2,b:_0,track:narrow;'\
+              ] => 'city=revenue:40;path=a:2,b:_0,track:narrow;upgrade=cost:100,terrain:mountain;'\
                 'path=a:5,b:_0,track:narrow;frame=color:#800080',
               %w[
                 G20
