@@ -2557,7 +2557,7 @@ module Engine
               city: 0,
               tokens: [
                 0,
-                0,
+                100,
                 100,
                 100,
               ],

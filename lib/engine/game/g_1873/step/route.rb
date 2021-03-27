@@ -24,7 +24,11 @@ module Engine
             end
 
             @game.update_tokens(current_entity, [])
-            return super unless @game.any_mine?(current_entity)
+            return super if !@game.any_mine?(current_entity) && current_entity != @game.qlb
+
+            if current_entity == @game.qlb
+              @log << "QLB only runs local train for #{@game.format_currency(@game.qlb_bonus)}"
+            end
 
             if @game.any_mine?(current_entity)
               @game.update_mine_revenue(@round, current_entity) if @round.routes.empty?
