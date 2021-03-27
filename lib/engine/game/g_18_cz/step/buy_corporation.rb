@@ -147,7 +147,8 @@ module Engine
 
             others = others_tokens(others).map(&:city).compact
             surviving.tokens.each do |token|
-              # after acquisition, the larger corp forfeits their $40 token
+              # after acquisition, the larger corp forfeits their $40 token; see
+              # https://boardgamegeek.com/thread/2405214/article/34514502#34514502
               token.price = @game.new_token_price
               city = token.city
               token.remove! if others.include?(city)
