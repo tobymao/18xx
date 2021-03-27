@@ -45,15 +45,19 @@ module View
         end
 
         buttons = [
-          h(:button, { on: { click: -> { store(:show_json, !@show_json) } } },
-            "#{@show_json ? 'Hide' : 'Show'} Game Data"),
-          h(:button, { on: { click: copy_data } }, 'Copy Game Data'),
+          h(:h3, 'Game Data'),
+          h(:button, {
+              on: { click: -> { store(:show_json, !@show_json) } },
+              style: { width: '4.2rem' },
+            },
+            (@show_json ? 'Hide' : 'Show').to_s),
+          h(:button, { on: { click: copy_data } }, 'Copy'),
           h('a.button_link', {
               attrs: {
                 href: "data:text/plain;charset=utf-8,#{`encodeURI(self.json)`}",
                 download: "#{@game_data[:id]}.json",
               },
-            }, 'Download Game Data'),
+            }, 'Download'),
         ]
 
         if @allow_delete
@@ -66,8 +70,8 @@ module View
         end
 
         if @allow_clone
-          buttons << h(:button, { on: { click: clone_game } }, 'Clone Game')
-          buttons << h(:label, 'Clone this game to play around in hotseat mode')
+          buttons << h(:button, { on: { click: clone_game }, style: { marginRight: '0.3rem' } }, 'Clone Game')
+          buttons << h(:label, 'to play around in hotseat mode')
         end
 
         h('div.margined', buttons)
