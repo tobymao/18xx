@@ -299,7 +299,7 @@ module Engine
 
         # FIXME
         def available_charters
-          @companies.reject { |c| c.name.include?('Dummy') }
+          @companies
         end
 
         def stock_round

@@ -446,7 +446,7 @@ module Engine
     end
 
     def revenue_to_render
-      @revenue_to_render ||= @stops.map(&:revenue_to_render)
+      @revenue_to_render ||= @revenue_stops.map(&:revenue_to_render)
     end
 
     # Used to set label for a recently placed tile
@@ -528,6 +528,9 @@ module Engine
       @nodes = @paths.flat_map(&:nodes).uniq
       @stops = @paths.flat_map(&:stops).uniq
       @edges = @paths.flat_map(&:edges).uniq
+
+      # allow offboards w/o paths to render
+      @revenue_stops = (@stops + @offboards).uniq
 
       @edges.each { |e| e.tile = self }
     end
