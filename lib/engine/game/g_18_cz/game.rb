@@ -3086,6 +3086,28 @@ module Engine
           player_order.index(entity)
         end
 
+        # extra cash available if the corporation sells a company to the bank
+        def potential_company_cash(entity)
+          if @phase.status.include?('can_buy_companies') && entity.corporation? && entity.cash.positive?
+            @companies.reduce(0) do |memo, company|
+              memo +
+                if company.owned_by_player?
+                  company.value - 1
+                elsif company.owner == entity
+                  company.value
+                else
+                  0
+                end
+            end
+          else
+            0
+          end
+        end
+
+        def token_buying_power(entity)
+          buying_power(entity) + potential_company_cash(entity)
+        end
+
         def reorder_players(order = nil, log_player_order: false)
           return super if multiplayer?
 
