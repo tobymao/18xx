@@ -163,7 +163,7 @@ module GameManager
   end
 
   def self.url(game, path = '')
-    "/game/#{game['id']}#{path}"
+    "/#{game[:mode] == :hotseat ? 'hotseat' : 'game'}/#{game['id']}#{path}"
   end
 
   def url(game, path = '')
