@@ -28,7 +28,7 @@ module View
       }.freeze
 
       # All markets
-      PAD = 5                                     # between box contents and border
+      PAD = 4                                     # between box contents and border
       BORDER = 1
       WIDTH_TOTAL = 50                            # of entire box, including border
       TOKEN_SIZE = 25
@@ -49,6 +49,7 @@ module View
       LEFT_TOKEN_POS = LEFT_MARGIN
       RIGHT_TOKEN_POS = RIGHT_MARGIN - TOKEN_SIZE # left edge of rightmost token
       MID_TOKEN_POS = (LEFT_TOKEN_POS + RIGHT_TOKEN_POS) / 2
+      TOKEN_BORDER_WIDTH = 2
 
       TOKEN_STYLE_1D = {
         textAlign: 'center',
@@ -150,6 +151,18 @@ module View
           props[:attrs][:title] = "#{corporation.name} has operated"
           props[:style][:opacity] = '0.6'
           props[:style][:clipPath] = 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)'
+          border = 'dashed'
+        end
+        if (show_player_colors = setting_for(:show_player_colors, @game))
+          border_color = if show_player_colors && (owner = corporation.owner) && @game.players.include?(owner)
+                           player_colors(@game.players)[owner]
+                         else
+                           'transparent'
+                         end
+          props[:style][:border] = "#{TOKEN_BORDER_WIDTH}px #{border || 'solid'} #{border_color}"
+          props[:style][:borderRadius] = props[:attrs][:width]
+          props[:style][:boxSizing] = 'border-box'
+          props[:style][:clipPath] = 'none'
         end
 
         props

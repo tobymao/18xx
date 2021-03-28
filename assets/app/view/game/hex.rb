@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'lib/hex'
-require 'lib/color'
 require 'lib/settings'
 require 'lib/tile_selector'
 require 'view/game/actionable'
@@ -15,7 +14,6 @@ module View
     class Hex < Snabberb::Component
       include Actionable
       include Runnable
-      include Lib::Color
       include Lib::Settings
 
       SIZE = 100

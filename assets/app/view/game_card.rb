@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'lib/color'
 require 'lib/settings'
 require 'lib/truncate'
 require 'view/game_row'
@@ -9,7 +8,6 @@ require 'view/link'
 module View
   class GameCard < Snabberb::Component
     include GameManager
-    include Lib::Color
     include Lib::Settings
 
     needs :user

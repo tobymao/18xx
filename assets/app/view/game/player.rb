@@ -9,7 +9,6 @@ module View
     class Player < Snabberb::Component
       include Lib::Settings
       include Lib::Text
-      include Lib::Color
 
       needs :player
       needs :game

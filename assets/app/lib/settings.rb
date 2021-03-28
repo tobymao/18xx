@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative 'color'
 require_relative 'hex'
 
 module Lib
@@ -34,6 +35,7 @@ module Lib
 
     def self.included(base)
       base.needs :user, default: nil, store: true
+      base.send :include, Lib::Color
     end
 
     def default_for(option)
