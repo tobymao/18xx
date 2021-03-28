@@ -42,6 +42,7 @@ module View
       title = 'Profile Settings'
       inputs = [
         render_username,
+        render_email,
         h('div#settings__options', [
           render_checkbox('Turn and Message Emails', :notifications),
           render_checkbox('Red 18xx.games Logo', :red_logo),
@@ -124,8 +125,19 @@ module View
         render_input(
           'User Name',
           id: :name,
-          attrs: { value: @user&.dig('name') || '' },
+          attrs: { value: @user[:name] },
           input_style: { width: '10.5rem' },
+        ),
+      ])
+    end
+
+    def render_email
+      h('div#settings__email', [
+        render_input(
+          'Email',
+          id: :email,
+          attrs: { value: @user[:email] },
+          input_style: { width: '13rem' },
         ),
       ])
     end
