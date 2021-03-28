@@ -4,7 +4,7 @@ require_relative 'share_price'
 
 module Engine
   class StockMarket
-    attr_reader :market, :par_prices, :has_close_cell
+    attr_reader :market, :par_prices, :has_close_cell, :zigzag
 
     def initialize(market, unlimited_types, multiple_buy_types: [], zigzag: nil)
       @par_prices = []
@@ -30,10 +30,6 @@ module Engine
 
     def one_d?
       @one_d ||= @market.one?
-    end
-
-    def zigzag?
-      !!@zigzag
     end
 
     def set_par(corporation, share_price)

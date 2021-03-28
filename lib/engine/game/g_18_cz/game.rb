@@ -268,7 +268,7 @@ module Engine
         end
 
         def init_stock_market
-          StockMarket.new(self.class::MARKET, [], zigzag: true)
+          StockMarket.new(self.class::MARKET, [], zigzag: :flip)
         end
 
         def init_player_debts

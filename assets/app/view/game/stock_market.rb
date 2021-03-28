@@ -185,7 +185,7 @@ module View
         [h(:div, { style: { width: 'max-content' } }, row)]
       end
 
-      def grid_zigzag
+      def grid_zigzag(zigzag)
         box_style = box_style_1d
 
         half_box_style = box_style_1d
@@ -216,8 +216,8 @@ module View
         shorter_row = row1.size > row0.size ? row0 : row1
         shorter_row << h(:div, style: cell_style(half_box_style, @game.stock_market.market.first.last.types))
 
-        [h(:div, { style: { width: 'max-content' } }, row0),
-         h(:div, { style: { width: 'max-content' } }, row1)]
+        rows = zigzag == :flip ? [row1, row0] : [row0, row1]
+        rows.map { |row| h(:div, { style: { width: 'max-content' } }, row) }
       end
 
       def grid_2d
@@ -266,8 +266,8 @@ module View
         )
 
         grid = if @game.stock_market.one_d?
-                 if @game.stock_market.zigzag?
-                   grid_zigzag
+                 if !!(zigzag = @game.stock_market.zigzag)
+                   grid_zigzag(zigzag)
                  else
                    grid_1d
                  end
