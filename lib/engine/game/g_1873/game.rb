@@ -3102,7 +3102,7 @@ module Engine
               name: 'D',
               on: 'D',
               train_limit: 99,
-              tiles: %w[
+              tiles: %i[
                 yellow
                 green
                 brown
