@@ -98,6 +98,11 @@ module Engine
             ' price at half bid; places a 2H-Train on the charter; places the winning bid'\
             ' in the D&KR treasury less the cost of the train and discards this card.',
             sym: 'DK',
+            abilities: [
+            { type: 'close', when: 'bought_train', corporation: 'B&O' },
+            { type: 'no_buy' },
+            { type: 'shares', shares: 'DKR_0' },
+],
           },
       ].freeze
 
