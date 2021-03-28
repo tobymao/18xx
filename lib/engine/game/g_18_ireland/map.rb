@@ -380,6 +380,11 @@ module Engine
             'code' => 'town=revenue:20;path=a:0,b:_0,track:narrow;path=a:1,b:_0;'\
             'path=a:2,b:_0,track:narrow;path=a:3,b:_0;path=a:4,b:_0,track:narrow;path=a:5,b:_0',
           },
+          'IM' => {
+            'count' => 1,
+            'color' => 'red',
+            'code' => 'offboard=revenue:green_20|brown_50|gray_0;path=a:5,b:_0',
+          },
         }.freeze
 
         LOCATION_NAMES = {
@@ -470,6 +475,9 @@ module Engine
           yellow: {
             ['I11'] => 'city=revenue:30;city=revenue:30;path=a:0,b:_0;path=a:3,b:_1;label=DUB',
             ['I13'] => 'town=revenue:10;path=a:3,b:_0;',
+          },
+          blue: { # Placeholders for Irish Mail
+            %w[F0 H0 G-1 J12 G21 H20] => '',
           },
         }.freeze
 
