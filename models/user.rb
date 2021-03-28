@@ -21,7 +21,7 @@ class User < Base
   ]).freeze
 
   def update_settings(params)
-    self.name = params['name']
+    self.name = params['name'] if params['name']
     params.each do |key, value|
       settings[key] = value if SETTINGS.include?(key)
     end
