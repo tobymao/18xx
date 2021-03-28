@@ -254,6 +254,7 @@ module Engine
           Engine::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
+            Engine::Step::HomeToken,
             G18Ireland::Step::SpecialTrack,
             Engine::Step::BuyCompany,
             Engine::Step::Track,
