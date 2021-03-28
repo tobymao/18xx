@@ -212,7 +212,7 @@ module View
                         @game.format_currency(company.revenue)
                       end
 
-        [h('div.nowrap', name_props, company.name + extra.join(',')),
+        [h('div.nowrap', name_props, extra.join(' - ') + ": " + company.name),
          @game.show_value_of_companies?(company.owner) ? h('div.right', @game.format_currency(company.value)) : '',
          h('div.padded_number', revenue_str),
          @hidden_divs[company.sym]]

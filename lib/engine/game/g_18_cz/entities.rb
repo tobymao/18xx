@@ -327,7 +327,7 @@ module Engine
 
         COMPANIES = [
             {
-              name: 'Small #1',
+              name: 'Plan - Tachau',
               value: 25,
               revenue: 5,
               sym: 'S1',
@@ -388,7 +388,7 @@ module Engine
               color: nil,
             },
             {
-              name: 'Small #2',
+              name: 'Melnik – Mscheno',
               value: 30,
               revenue: 5,
               sym: 'S2',
@@ -449,7 +449,7 @@ module Engine
               color: nil,
             },
             {
-              name: 'Small #3',
+              name: 'Zwittau – Politschka',
               value: 35,
               revenue: 5,
               sym: 'S3',
@@ -510,7 +510,7 @@ module Engine
               color: nil,
             },
             {
-              name: 'Small #4',
+              name: 'Strakonitz – Blatna – Bresnitz',
               value: 40,
               revenue: 5,
               sym: 'S4',
@@ -571,7 +571,7 @@ module Engine
               color: nil,
             },
             {
-              name: 'Small #5',
+              name: 'Martinitz – Rochlitz',
               value: 45,
               revenue: 5,
               sym: 'S5',
@@ -632,7 +632,7 @@ module Engine
               color: nil,
             },
             {
-              name: 'Small #6',
+              name: 'Martinitz – Rochlitz',
               value: 50,
               revenue: 5,
               sym: 'S6',
@@ -693,7 +693,7 @@ module Engine
               color: nil,
             },
             {
-              name: 'Medium #1',
+              name: 'Raudnitz – Kmetnowes',
               value: 40,
               revenue: 10,
               sym: 'M1',
@@ -777,7 +777,7 @@ module Engine
               color: nil,
             },
             {
-              name: 'Medium #2',
+              name: 'Schweißing – Haid',
               value: 45,
               revenue: 10,
               sym: 'M2',
@@ -861,7 +861,7 @@ module Engine
               color: nil,
             },
             {
-              name: 'Medium #3',
+              name: 'Deutschbrod – Tischnowitz',
               value: 50,
               revenue: 10,
               sym: 'M3',
@@ -945,7 +945,7 @@ module Engine
               color: nil,
             },
             {
-              name: 'Medium #4',
+              name: 'Troppau – Grätz',
               value: 55,
               revenue: 10,
               sym: 'M4',
@@ -1029,7 +1029,7 @@ module Engine
               color: nil,
             },
             {
-              name: 'Medium #5',
+              name: 'Hannsdorf – Mährisch Altstadt',
               value: 60,
               revenue: 10,
               sym: 'M5',
@@ -1113,7 +1113,7 @@ module Engine
               color: nil,
             },
             {
-              name: 'Medium #6',
+              name: 'Friedland - Bila',
               value: 65,
               revenue: 10,
               sym: 'M6',
@@ -1197,7 +1197,7 @@ module Engine
               color: nil,
             },
             {
-              name: 'Large #1',
+              name: 'Aujezd – Luhatschowitz',
               value: 55,
               revenue: 20,
               sym: 'L1',
@@ -1290,7 +1290,7 @@ module Engine
               color: nil,
             },
             {
-              name: 'Large #2',
+              name: 'Neuhaus – Wobratain',
               value: 60,
               revenue: 20,
               sym: 'L2',
@@ -1383,7 +1383,7 @@ module Engine
               color: nil,
             },
             {
-              name: 'Large #3',
+              name: 'Opočno – Dobruschka',
               value: 65,
               revenue: 20,
               sym: 'L3',
@@ -1476,7 +1476,7 @@ module Engine
               color: nil,
             },
             {
-              name: 'Large #4',
+              name: 'Wekelsdorf – Parschnitz – Trautenau',
               value: 70,
               revenue: 20,
               sym: 'L4',
@@ -1569,7 +1569,7 @@ module Engine
               color: nil,
             },
             {
-              name: 'Large #5',
+              name: 'Nezamislitz – Morkowitz',
               value: 75,
               revenue: 20,
               sym: 'L5',
@@ -1662,7 +1662,7 @@ module Engine
               color: nil,
             },
             {
-              name: 'Large #6',
+              name: 'Taus – Tachau',
               value: 80,
               revenue: 20,
               sym: 'L6',
