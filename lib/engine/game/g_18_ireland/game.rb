@@ -246,7 +246,7 @@ module Engine
 
         def event_corporations_can_merge!
           # All the corporations become available, as minors can now merge/convert to corporations
-          @corporations += @future_corporations
+          @corporations.concat(@future_corporations)
           @future_corporations = []
         end
 
