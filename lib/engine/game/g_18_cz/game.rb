@@ -2508,7 +2508,6 @@ module Engine
           # We can modify COMPANY_VALUES and OR_SETS if we want to support the shorter variant
           @last_or = COMPANY_VALUES.size
           @recently_floated = []
-          @entity_used_ability_to_track = false
           @rusted_variants = []
           @vaclavs_corporations = []
 
@@ -2754,7 +2753,6 @@ module Engine
         end
 
         def tile_lays(entity)
-          return [] if @entity_used_ability_to_track
           return super unless @recently_floated.include?(entity)
 
           floated_tile_lay = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }]
@@ -2978,15 +2976,6 @@ module Engine
             # be expanded to a list of possible classes/modules when needed
             step.is_a?(Engine::Step::Track) && !step.passed? && step.blocks?
           end
-        end
-
-        def next_turn!
-          super
-          @entity_used_ability_to_track = false
-        end
-
-        def skip_default_track
-          @entity_used_ability_to_track = true
         end
 
         def ability_usable?(ability)
