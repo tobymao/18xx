@@ -10,6 +10,8 @@ module Engine
       class Game < Game::Base
         include_meta(G1870::Meta)
 
+        attr_accessor :connection_run
+
         register_colors(black: '#37383a',
                         orange: '#f48221',
                         brightGreen: '#76a042',
@@ -624,6 +626,8 @@ module Engine
         end
 
         def setup
+          @connection_run = {}
+
           river_company.max_price = river_company.value
 
           @corporations.each do |corporation|

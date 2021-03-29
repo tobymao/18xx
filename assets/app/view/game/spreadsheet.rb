@@ -156,6 +156,32 @@ module View
         end
       end
 
+      def render_connection_run(corporation)
+        return [] unless @game.respond_to?(:connection_run)
+        return [h(:td)] unless @game.connection_run[corporation]
+
+        x, c_run = @game.connection_run[corporation]
+        revenue_text, alpha =
+          case (c_run.dividend.is_a?(Engine::Action::Dividend) ? c_run.dividend.kind : 'withhold')
+          when 'withhold'
+            ["[#{c_run.revenue}]", '0.5']
+          else
+            [c_run.revenue.to_s, '1.0']
+          end
+
+        props = {
+          style: {
+            color: convert_hex_to_rgba(color_for(:font2), alpha),
+          },
+        }
+
+        link_h = history_link(revenue_text,
+                              "Go to connection run of #{corporation.name} (in #{x})",
+                              c_run.dividend.id - 1,
+                              { textDecoration: 'none' })
+        [h('td.right', props, [link_h])]
+      end
+
       def render_titles
         th_props = lambda do |cols, border_right = true|
           props = tr_default_props
@@ -181,6 +207,9 @@ module View
         end
         @extra_size = extra.size
 
+        extra_connection_title = @game.respond_to?(:connection_run) ? [h(:th, th_props[1], 'Conn.')] : []
+        extra_connection_sub = @game.respond_to?(:connection_run) ? [h(:th, '')] : []
+
         [
           h(:tr, [
             h(:th, { style: { minWidth: '5rem' } }, ''),
@@ -189,6 +218,7 @@ module View
             h(:th, th_props[2], 'Prices'),
             h(:th, th_props[5 + extra.size, false], ['Corporation ', render_toggle_not_floated_link]),
             h(:th, ''),
+            *extra_connection_title,
             h(:th, th_props[or_history_titles.size, false], 'OR History'),
           ]),
           h(:tr, [
@@ -209,6 +239,7 @@ module View
             *extra,
             h(:th, render_sort_link('Companies', :companies)),
             h(:th, ''),
+            *extra_connection_sub,
             *or_history_titles,
           ]),
         ]
@@ -446,6 +477,7 @@ module View
           *extra,
           render_companies(corporation),
           h(:th, name_props, corporation.name),
+          *render_connection_run(corporation),
           *render_history(corporation),
         ])
       end
