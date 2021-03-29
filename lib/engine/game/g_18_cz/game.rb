@@ -252,7 +252,7 @@ module Engine
           G18CZ::Round::Operating.new(self, [
             G18CZ::Step::HomeTrack,
             G18CZ::Step::SellCompanyAndSpecialTrack,
-            Engine::Step::HomeToken,
+            G18CZ::Step::HomeToken,
             G18CZ::Step::ReduceTokens,
             G18CZ::Step::BuyCompany,
             G18CZ::Step::Track,
