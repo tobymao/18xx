@@ -2532,7 +2532,7 @@ module Engine
                 100,
                 100,
               ],
-              color: '#2E270D',
+              color: '#959490',
               text_color: 'white',
               extended: {
                 type: :railway,
