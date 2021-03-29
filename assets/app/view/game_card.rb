@@ -91,7 +91,7 @@ module View
       div_props = {
         style: {
           display: 'grid',
-          grid: '1fr / minmax(10rem, 1fr) 7.5rem',
+          grid: '1fr / 1fr auto',
           gap: '0.5rem',
           justifyContent: 'space-between',
           padding: '0.3rem 0.5rem',
@@ -102,7 +102,7 @@ module View
       buttons_props = {
         style: {
           display: 'grid',
-          grid: '1fr / 1fr 1fr',
+          grid: '1fr / auto auto',
           gap: '0.3rem 0.4rem',
           direction: 'rtl',
           height: 'max-content',
@@ -185,7 +185,6 @@ module View
     def render_body
       props = {
         style: {
-          lineHeight: '1.2rem',
           padding: '0.3rem 0.5rem',
         },
       }
