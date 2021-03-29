@@ -89,14 +89,20 @@ module View
 
         actions = @game.actions.map { |a| [a.id, a] }.to_h
 
+        emoji_mappings =
+        {
+          /train/ => '🚂',
+          /bank/ => '🏦' 
+        }
+
         log = @limit ? @game.log.last(@limit) : @game.log
-        log.map! do |l|
+        
+        log.each do |l|
           if l.message.is_a?(String)
-            l.message = l.message.sub(/train/, '🚂')
-            l.message = l.message.sub(/bank/, '🏦')
+            emoji_mappings.each { |k,v| l.message = l.message.sub(k,v) }
           end
-          l
         end
+
         the_log = log.group_by(&:action_id).flat_map do |action_id, entries|
           children = []
           action = actions[action_id] || blank_action
