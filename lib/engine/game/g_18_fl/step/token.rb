@@ -84,7 +84,7 @@ module Engine
             min_distance = INFINITE_DISTANCE
             goal_cities = entity.tokens.select(&:city).map(&:city)
 
-            node.walk(corporation: entity) do |path, visited_paths|
+            node.walk(corporation: entity) do |path, visited_paths, _visited|
               if goal_cities.include?(path.city)
                 # minus one to account for the tokened hex getting included in the count
                 distance = visited_paths.uniq { |k, _| k.hex }.size - 1

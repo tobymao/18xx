@@ -10,3 +10,5 @@ hotseat01 & hotseat02 were removed due to illegal tile lays
  hotseat04
  * 2p game
  * p1 is used
+ hotseat05
+ * for testing of token powers
