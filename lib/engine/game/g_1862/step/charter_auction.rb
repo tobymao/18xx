@@ -1,167 +1,222 @@
 # frozen_string_literal: true
 
-require_relative '../../../step/base'
-require_relative '../../../step/auctioner'
+require_relative '../../../step/buy_sell_par_shares'
+require_relative '../../../step/passable_auction'
 
 module Engine
   module Game
     module G1862
       module Step
-        class CharterAuction < Engine::Step::Base
-          include Engine::Step::Auctioner
-          ACTIONS = %w[bid pass].freeze
+        class CharterAuction < Engine::Step::BuySellParShares
+          include Engine::Step::PassableAuction
 
           attr_reader :companies
+
+          MIN_BID = 0
+          MIN_BID_INCREMENT = 5
+
+          def actions(entity)
+            return [] unless entity == current_entity
+            return @finish_action if @finish_action
+            return %w[] if @auctioning && !can_increase_bid?(entity)
+            return %w[bid pass] if @auctioning
+
+            actions = []
+            actions << 'bid' if can_start_auction?(entity)
+            actions << 'pass' if actions.any? && !actions.include?('pass')
+            actions
+          end
 
           def description
             if @auctioning
               'Bid on Selected Charter'
+            elsif @finish_action&.include?('par')
+              'Par Company'
+            elsif @finish_action
+              'Buy Additional Shares'
             else
               'Select and Bid on Charter'
             end
           end
 
-          def available
-            auctioning ? [auctioning] : @companies
+          def setup
+            @finish_action = nil
+            setup_auction
+            super
           end
 
-          def finished?
-            @companies.empty? || entities.all?(&:passed?)
+          def win_bid(winner, _company)
+            entity = winner.entity
+            corporation = winner.corporation
+            price = winner.price
+
+            @log << "#{entity.name} wins bid on #{corporation.name} for #{@game.format_currency(price)}"
+            entity.spend(price, @game.bank) if price.positive?
+
+            @finish_action = ['par']
+            @finish_corporation = corporation
+            @auctioning = nil
+
+            @game.add_obligation(entity, corporation)
+
+            @round.goto_entity!(winner.entity)
           end
 
-          def process_pass(action)
-            entity = action.entity
-
-            if auctioning
-              pass_auction(action.entity)
-            else
-              @log << "#{entity.name} passes bidding"
-              entity.pass!
-              @round.next_entity_index!
+          def can_start_auction?(entity)
+            max_bid(entity) >= MIN_BID && !@round.started_auction[entity] &&
+            @game.ipoable_railroads.any? do |c|
+              @game.can_par?(c, entity) && can_buy?(entity, c.shares.first&.to_bundle)
             end
           end
 
+          def can_bid?(entity)
+            max_bid(entity) >= MIN_BID &&
+            @game.ipoable_railroads.any? do |c|
+              @game.can_par?(c, entity) && can_buy?(entity, c.shares.first&.to_bundle)
+            end
+          end
+
+          def can_increase_bid?(entity)
+            max_bid(entity) >= highest_bid(@auctioning).price + min_increment + min_par * 3
+          end
+
+          def min_par
+            @game.stock_market.par_prices.min_by(&:price).price
+          end
+
+          def get_par_prices(entity, _corp)
+            @game.stock_market.par_prices.select { |sp| sp.price * 3 <= entity.cash }
+          end
+
+          def can_buy_multiple?(entity, corporation, _owner)
+            entity.percent_of(corporation) < 50
+          end
+
+          def ipo_type(_entity)
+            if @finish_action
+              :par
+            else
+              :bid
+            end
+          end
+
+          def auctioning_corporation
+            return @winning_bid.corporation if @winning_bid
+
+            @auctioning
+          end
+
+          def normal_pass?(_entity)
+            !@auctioning
+          end
+
+          def active_entities
+            return super unless @auctioning
+
+            [@active_bidders[(@active_bidders.index(highest_bid(@auctioning).entity) + 1) % @active_bidders.size]]
+          end
+
+          def log_pass(entity)
+            return if @auctioning
+            return super unless @finish_action
+
+            @log << "#{entity.name} passes buying additional shares"
+          end
+
+          def pass!
+            @finish_action = nil
+            return super unless @auctioning
+
+            pass_auction(current_entity)
+            resolve_bids
+          end
+
+          def process_par(action)
+            super
+
+            if action.entity.cash >= action.share_price.price
+              @finish_action = %w[buy_shares pass]
+            else
+              @log << "#{entity.name} skips buying additional shares"
+              pass!
+            end
+          end
+
+          def process_buy_shares(action)
+            super
+
+            entity = action.entity
+            corporation = action.bundle.corporation
+            return if entity.cash >= corporation.par_price.price && entity.percent_of(corporation) < 50
+
+            @log << if entity.cash < corporation.par_price.price
+                      "#{entity.name} skips buying additional shares"
+                    else
+                      "#{entity.name} finishes buying additional shares"
+                    end
+
+            pass!
+          end
+
           def process_bid(action)
-            action.entity.unpass!
+            price = action.price
+            raise GameError, "Bid must be a multiple of #{MIN_BID_INCREMENT}" if (price % MIN_BID_INCREMENT).positive?
 
             if auctioning
               add_bid(action)
             else
-              start_auction(action)
+              selection_bid(action)
+              @round.started_auction[action.entity] = true
             end
           end
 
-          def active_entities
-            if @auctioning
-              active_auction do |_, bids|
-                return [bids.min_by(&:price).entity]
-              end
-            end
+          def add_bid(action)
+            entity = action.entity
+            corporation = action.corporation
+            price = action.price
 
-            super
+            @log << if @auctioning
+                      "#{entity.name} bids #{@game.format_currency(price)} for #{corporation.name}"
+                    else
+                      "#{entity.name} auctions #{corporation.name} for #{@game.format_currency(price)}"
+                    end
+            super(action)
+
+            resolve_bids
           end
 
-          def actions(entity)
-            return [] if finished?
+          def min_bid(corporation)
+            return self.class::MIN_BID unless @auctioning
 
-            correct = false
-
-            active_auction do |_company, bids|
-              correct = bids.min_by(&:price).entity == entity
-            end
-
-            correct || entity == current_entity ? ACTIONS : []
+            highest_bid(corporation).price + min_increment
           end
 
-          def setup
-            setup_auction
-            @companies = @game.available_charters
-          end
-
-          def min_bid(company)
-            return unless company
-
-            high_bid = highest_bid(company)
-            high_bid ? high_bid.price + min_increment : company.min_bid
-          end
-
-          def may_purchase?(_company)
-            false
-          end
-
-          def committed_cash(player, _show_hidden = false)
-            bids_for_player(player).sum(&:price)
-          end
-
-          def max_bid(player, _company)
+          def max_bid(player, _corporation = nil)
             player.cash
           end
 
-          protected
-
-          def resolve_bids
-            return unless @bids[@auctioning].one?
-
-            bid = @bids[@auctioning].first
-            @auctioning = nil
-            price = bid.price
-            company = bid.company
-            player = bid.entity
-            @bids.delete(company)
-            buy_company(player, company, price)
-            @round.next_entity_index!
-          end
-
-          def active_auction
-            company = @auctioning
-            bids = @bids[company]
-            yield company, bids if bids.size.positive?
-          end
-
-          def can_auction?(company)
-            company == @companies.first && @bids[company].size > 1
-          end
-
-          def buy_company(player, company, price)
-            if (available = max_bid(player, company)) < price
-              raise GameError, "#{player.name} has #{@game.format_currency(available)} "\
-                'available and cannot spend '\
-                "#{@game.format_currency(price)}"
-            end
-
-            company.owner = player
-            player.companies << company
-            player.spend(price, @game.bank) if price.positive?
-            @companies.delete(company)
-            @log << "#{player.name} wins the auction for #{company.name} "\
-              "with a bid of #{@game.format_currency(price)}"
-          end
-
-          private
-
-          def start_auction(bid)
-            @auctioning = bid.company
-            @log << "#{@auctioning.name} goes up for auction"
-            add_bid(bid)
-            starter = bid.entity
-            start_price = bid.price
-
-            bids = @bids[@auctioning]
-
-            entities.rotate(entities.find_index(starter)).each_with_index do |player, idx|
-              next if player == starter
-              next if max_bid(player, @auctioning) <= start_price
-
-              bids << (Engine::Action::Bid.new(player,
-                                               corporation: @auctioning,
-                                               price: idx - entities.size))
+          def pass_description
+            if @auctioning
+              'Pass (Bid)'
+            else
+              super
             end
           end
 
-          def add_bid(bid)
-            super
+          def visible_corporations
+            if @finish_action
+              [@finish_corporation]
+            else
+              @game.ipoable_railroads
+            end
+          end
 
-            @log << "#{bid.entity.name} bids #{@game.format_currency(bid.price)} for #{bid.company.name}"
+          def round_state
+            super.merge(
+              {
+                started_auction: {},
+              }
+            )
           end
         end
       end
