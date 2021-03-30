@@ -200,7 +200,19 @@ module View
               h(:h3, "#{game_class.title} Map Hexes"),
               *rendered_map_hexes,
             ]),
+          render_toggle_button,
         ])
+    end
+
+    def render_toggle_button
+      toggle = lambda do
+        toggle_setting(@hide_tile_names)
+        update
+      end
+
+      h(:div, [
+        h(:'button.small', { on: { click: toggle } }, "Tile Names #{setting_for(@hide_tile_names) ? '❌' : '✅'}"),
+      ])
     end
   end
 end

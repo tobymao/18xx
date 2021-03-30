@@ -1,9 +1,12 @@
 # frozen_string_literal: true
 
+require 'lib/settings'
 require 'view/game/hex'
 
 module View
   class Tiles < Snabberb::Component
+    include Lib::Settings
+
     WIDTH = 80
     HEIGHT = 97
     LINE_PROPS = {

@@ -1,12 +1,19 @@
 # frozen_string_literal: true
 
+require 'lib/settings'
 require 'view/tiles'
 
 module View
   module Game
     class TileManifest < Tiles
+      include Lib::Settings
+
       needs :game
       needs :tile_selector, default: nil, store: true
+
+      def render
+        h(:div, [render_tile_manifest, render_toggle_button])
+      end
 
       def render_tile_selector(remaining, tile, shift: 0)
         return [] unless @tile_selector
@@ -55,7 +62,27 @@ module View
         [h(:div, parent_props, [h(:div, props, [selector])])]
       end
 
-      def render
+      def render_toggle_button
+        toggle = lambda do
+          toggle_setting(@hide_tile_names)
+          update
+        end
+
+        props = {
+          style: {
+            margin: '0 0 0 1vmin',
+          },
+          on: {
+            click: toggle,
+          },
+        }
+
+        h(:div, [
+          h(:'button.small', props, "Tile Names #{setting_for(@hide_tile_names, @game) ? '❌' : '✅'}"),
+        ])
+      end
+
+      def render_tile_manifest
         remaining = @game.tiles.group_by(&:name)
 
         if @game.tile_groups.empty?
@@ -117,6 +144,7 @@ module View
             margin: '3vmin 1vmin',
           },
         }
+
         h('div#tile_manifest', props, children)
       end
     end
