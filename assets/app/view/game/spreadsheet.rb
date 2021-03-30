@@ -118,22 +118,22 @@ module View
       end
 
       def render_history(corporation)
-        or_history(@game.all_corporations).map do |x|
-          render_or_history_row(corporation.operating_history, corporation, x)
+        or_history(@game.all_corporations).map do |turn_round|
+          render_or_history_row(corporation.operating_history, corporation, turn_round)
         end
       end
 
-      def render_or_history_row(hist, corporation, x)
-        if hist[x]
+      def render_or_history_row(hist, corporation, turn_round)
+        if hist[turn_round]
           revenue_text, alpha =
-            case (hist[x].dividend.is_a?(Engine::Action::Dividend) ? hist[x].dividend.kind : 'withhold')
+            case (hist[turn_round].dividend.is_a?(Engine::Action::Dividend) ? hist[turn_round].dividend.kind : 'withhold')
             when 'withhold'
-              ["[#{hist[x].revenue}]", '0.5']
+              ["[#{hist[turn_round].revenue}]", '0.5']
             when 'half'
               @halfpaid = true
-              ["¦#{hist[x].revenue}¦", '0.75']
+              ["¦#{hist[turn_round].revenue}¦", '0.75']
             else
-              [hist[x].revenue.to_s, '1.0']
+              [hist[turn_round].revenue.to_s, '1.0']
             end
 
           props = {
@@ -142,10 +142,10 @@ module View
             },
           }
 
-          if hist[x]&.dividend&.id&.positive?
+          if hist[turn_round]&.dividend&.id&.positive?
             link_h = history_link(revenue_text,
-                                  "Go to run #{x} of #{corporation.name}",
-                                  hist[x].dividend.id - 1,
+                                  "Go to run #{turn_round.join('.')} of #{corporation.name}",
+                                  hist[turn_round].dividend.id - 1,
                                   { textDecoration: 'none' })
             h('td.right', props, [link_h])
           else
@@ -160,14 +160,13 @@ module View
         return [] unless @game.respond_to?(:connection_run)
         return [h(:td)] unless @game.connection_run[corporation]
 
-        x, c_run = @game.connection_run[corporation]
-        revenue_text, alpha =
-          case (c_run.dividend.is_a?(Engine::Action::Dividend) ? c_run.dividend.kind : 'withhold')
-          when 'withhold'
-            ["[#{c_run.revenue}]", '0.5']
-          else
-            [c_run.revenue.to_s, '1.0']
-          end
+        turn_round, c_run = @game.connection_run[corporation]
+        
+        if c_run.dividend.kind == 'withhold'
+          revenue_text, alpha = ["[#{c_run.revenue}]", '0.5']
+        else
+          [c_run.revenue.to_s, '1.0']
+        end
 
         props = {
           style: {
@@ -176,7 +175,7 @@ module View
         }
 
         link_h = history_link(revenue_text,
-                              "Go to connection run of #{corporation.name} (in #{x})",
+                              "Go to connection run of #{corporation.name} (in #{turn_round.join('.')})",
                               c_run.dividend.id - 1,
                               { textDecoration: 'none' })
         [h('td.right', props, [link_h])]
@@ -207,8 +206,8 @@ module View
         end
         @extra_size = extra.size
 
-        extra_connection_title = @game.respond_to?(:connection_run) ? [h(:th, th_props[1], 'Conn.')] : []
-        extra_connection_sub = @game.respond_to?(:connection_run) ? [h(:th, '')] : []
+        extra_connection_column_title = @game.respond_to?(:connection_run) ? [h(:th, th_props[1], 'Conn.')] : []
+        extra_connection_column_subtitle = @game.respond_to?(:connection_run) ? [h(:th, '')] : []
 
         [
           h(:tr, [
@@ -218,7 +217,7 @@ module View
             h(:th, th_props[2], 'Prices'),
             h(:th, th_props[5 + extra.size, false], ['Corporation ', render_toggle_not_floated_link]),
             h(:th, ''),
-            *extra_connection_title,
+            *extra_connection_column_title,
             h(:th, th_props[or_history_titles.size, false], 'OR History'),
           ]),
           h(:tr, [
@@ -239,7 +238,7 @@ module View
             *extra,
             h(:th, render_sort_link('Companies', :companies)),
             h(:th, ''),
-            *extra_connection_sub,
+            *extra_connection_column_subtitle,
             *or_history_titles,
           ]),
         ]
