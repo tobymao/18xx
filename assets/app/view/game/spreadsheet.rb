@@ -123,17 +123,17 @@ module View
         end
       end
 
-      def render_or_history_row(hist, corporation, turn_round)
-        if hist[turn_round]
+      def render_or_history_row(hist, corporation, x)
+        if hist[x]
           revenue_text, alpha =
-            case (hist[turn_round].dividend.is_a?(Engine::Action::Dividend) ? hist[turn_round].dividend.kind : 'withhold')
+            case (hist[x].dividend.is_a?(Engine::Action::Dividend) ? hist[x].dividend.kind : 'withhold')
             when 'withhold'
-              ["[#{hist[turn_round].revenue}]", '0.5']
+              ["[#{hist[x].revenue}]", '0.5']
             when 'half'
               @halfpaid = true
-              ["¦#{hist[turn_round].revenue}¦", '0.75']
+              ["¦#{hist[x].revenue}¦", '0.75']
             else
-              [hist[turn_round].revenue.to_s, '1.0']
+              [hist[x].revenue.to_s, '1.0']
             end
 
           props = {
@@ -142,10 +142,10 @@ module View
             },
           }
 
-          if hist[turn_round]&.dividend&.id&.positive?
+          if hist[x]&.dividend&.id&.positive?
             link_h = history_link(revenue_text,
-                                  "Go to run #{turn_round.join('.')} of #{corporation.name}",
-                                  hist[turn_round].dividend.id - 1,
+                                  "Go to run #{x.join('.')} of #{corporation.name}",
+                                  hist[x].dividend.id - 1,
                                   { textDecoration: 'none' })
             h('td.right', props, [link_h])
           else
@@ -161,11 +161,13 @@ module View
         return [h(:td)] unless @game.connection_run[corporation]
 
         turn_round, c_run = @game.connection_run[corporation]
-        
+
         if c_run.dividend.kind == 'withhold'
-          revenue_text, alpha = ["[#{c_run.revenue}]", '0.5']
+          revenue_text = "[#{c_run.revenue}]"
+          alpha = '0.5'
         else
-          [c_run.revenue.to_s, '1.0']
+          revenue_text = c_run.revenue.to_s
+          alpha = '1.0'
         end
 
         props = {
