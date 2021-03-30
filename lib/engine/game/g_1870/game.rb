@@ -623,8 +623,8 @@ module Engine
           'Treasury'
         end
 
-        def setup
-          river_company.max_price = river_company.value
+        def init_hexes(companies, corporations)
+          hexes = super
 
           @corporations.each do |corporation|
             ability = abilities(corporation, :assign_hexes)
@@ -633,6 +633,12 @@ module Engine
             hex.assign!(corporation)
             ability.description = "Destination: #{hex.location_name} (#{hex.name})"
           end
+
+          hexes
+        end
+
+        def setup
+          river_company.max_price = river_company.value
         end
 
         def event_companies_buyable!
