@@ -431,28 +431,11 @@ module Engine
           @chartered = {}
 
           # randomize and distribute train permits
-          permit_list = %i[
-            freight
-            freight
-            freight
-            freight
-            freight
-            freight
-            express
-            express
-            express
-            express
-            express
-            local
-            local
-            local
-            local
-            local
-          ]
-          permit_list.concat(%i[express local]) if @players.size > 6
-          rand_permits = permit_list.sort_by { rand }
+          permit_list = 6.times.flat_map { %i[freight express local] }
+          permit_list.pop(2) if @players.size < 7
+          permit_list.sort_by! { rand }
           @permits = Hash.new { |h, k| h[k] = [] }
-          @corporations.each_with_index { |corp, idx| @permits[corp] << rand_permits[idx] }
+          @corporations.each_with_index { |corp, idx| @permits[corp] << permit_list[idx] }
 
           # record what phases corp become available
           @starting_phase = {}
@@ -469,11 +452,11 @@ module Engine
           end
         end
 
-        def ipoable_railroads
-          available_railroads.reject(&:ipoed)
+        def ipoable_corporations
+          ready_corporations.reject(&:ipoed)
         end
 
-        def available_railroads
+        def ready_corporations
           @offer_order.select { |corp| available_to_start?(corp) }
         end
 
@@ -621,7 +604,7 @@ module Engine
         end
 
         def corporation_available?(entity)
-          entity.corporation? && available_railroads.include?(entity)
+          entity.corporation? && ready_corporations.include?(entity)
         end
 
         # FIXME: changes from 1860?

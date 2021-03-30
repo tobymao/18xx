@@ -64,14 +64,14 @@ module Engine
 
           def can_start_auction?(entity)
             max_bid(entity) >= MIN_BID && !@round.started_auction[entity] &&
-            @game.ipoable_railroads.any? do |c|
+            @game.ipoable_corporations.any? do |c|
               @game.can_par?(c, entity) && can_buy?(entity, c.shares.first&.to_bundle)
             end
           end
 
           def can_bid?(entity)
             max_bid(entity) >= MIN_BID &&
-            @game.ipoable_railroads.any? do |c|
+            @game.ipoable_corporations.any? do |c|
               @game.can_par?(c, entity) && can_buy?(entity, c.shares.first&.to_bundle)
             end
           end
@@ -207,7 +207,7 @@ module Engine
             if @finish_action
               [@finish_corporation]
             else
-              @game.ipoable_railroads
+              @game.ipoable_corporations
             end
           end
 
