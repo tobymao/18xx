@@ -22,6 +22,7 @@ module Engine
           price
         end
       end
+      # note, a lot of behavior depends on the par prices being in descending price order
       @par_prices.sort_by! do |p|
         r, c = p.coordinates
         [p.price, c, r]
