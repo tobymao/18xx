@@ -583,6 +583,13 @@ module Engine
           'SCC' => '/icons/1870/SCC.svg',
         }.freeze
 
+        def new_auction_round
+          Engine::Round::Auction.new(self, [
+            G1870::Step::CompanyPendingPar,
+            Engine::Step::WaterfallAuction,
+          ])
+        end
+
         def stock_round
           G1870::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
