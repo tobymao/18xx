@@ -108,6 +108,12 @@ module Engine
           '8E' => :large,
         }.freeze
 
+        COMPANY_REVENUE_TO_TYPE = {
+          5 => 'Small',
+          10 => 'Medium',
+          20 => 'Large',
+        }.freeze
+
         TWO_PLAYER_CORP_TO_REMOVE = %w[OFE MW KFN PR Ug].freeze
         TWO_PLAYER_COMPANIES_TO_REMOVE = {
           5 => 40,
@@ -757,6 +763,14 @@ module Engine
                   else
                     "#{@players.first.name} has priority deal"
                   end
+        end
+
+        def company_size(company)
+          COMPANY_REVENUE_TO_TYPE[company.revenue]
+        end
+
+        def company_size_str(company)
+          COMPANY_REVENUE_TO_TYPE[company.revenue][0]
         end
       end
     end

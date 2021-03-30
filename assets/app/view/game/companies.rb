@@ -26,7 +26,7 @@ module View
         table_props = {
           style: {
             padding: '0 0.5rem 0.2rem',
-            grid: @game.show_value_of_companies?(@owner) ? 'auto / 4fr 1fr 1fr' : 'auto / 5fr 1fr',
+            grid: @game.show_value_of_companies?(@owner) ? 'auto / 1fr auto auto' : 'auto / 1fr auto',
             gap: '0 0.3rem',
           },
         }
