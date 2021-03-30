@@ -1429,6 +1429,7 @@ module Engine
           @log << "#{corporation.name} receives #{format_currency(amount)}
                    from #{company.name}"
         end
+        place_home_token(corporation) if self.class::HOME_TOKEN_TIMING == :par
       end
 
       def train_help(_entity, _runnable_trains, _routes)

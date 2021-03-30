@@ -15,7 +15,7 @@ module Engine
         include G18Ireland::Map
 
         CAPITALIZATION = :incremental
-        HOME_TOKEN_TIMING = :float
+        HOME_TOKEN_TIMING = :par
         SELL_BUY_ORDER = :sell_buy
 
         # Two lays with one being an upgrade, second tile costs 20
@@ -46,7 +46,6 @@ module Engine
           %w[0c 20y 24y 30y 38y],
         ].freeze
 
-        # @todo: these are wrong
         PHASES = [
           {
             name: '2',
@@ -168,6 +167,7 @@ module Engine
           removed_companies = companies.sort_by! { rand }.take(remove_companies)
           removed = removed_companies.map do |comp|
             @companies.delete(comp)
+            comp.close!
             comp.id
           end
           @log << "Removed #{removed.join(',')} companies"
@@ -186,6 +186,45 @@ module Engine
           corporations.delete(removed_corporation)
           corporations.unshift(protect)
           @corporations = corporations
+        end
+
+        def get_par_prices(entity, _corp)
+          @game
+            .stock_market
+            .par_prices
+            .select { |p| p.price * 2 <= entity.cash }
+        end
+
+        def after_buy_company(player, company, price)
+          abilities(company, :shares) do |ability|
+            ability.shares.each do |share|
+              if share.president
+                # DKR is pared at the highest par price below
+                corporation = share.corporation
+                par_price = price / 2
+                share_price = @stock_market.par_prices.find { |sp| sp.price <= par_price }
+
+                @stock_market.set_par(corporation, share_price)
+                @share_pool.buy_shares(player, share, exchange: :free)
+                # Receives the bid money
+                @bank.spend(price, corporation)
+                after_par(corporation)
+                # And buys a 2 train
+                train = @depot.upcoming.first
+                buy_train(corporation, train, train.price)
+              else
+                share_pool.buy_shares(player, share, exchange: :free)
+              end
+            end
+          end
+        end
+
+        def upgrades_to?(from, to, special = false, selected_company: nil)
+          # The Irish Mail
+          return true if special && from.color == :blue && to.color == :red
+
+          # Specials must observe existing rules otherwise
+          super(from, to, false, selected_company: selected_company)
         end
 
         def home_token_locations(corporation)
@@ -209,6 +248,23 @@ module Engine
             G18Ireland::Step::MergerVote,
             G18Ireland::Step::Merge,
           ], round_num: @round.round_num)
+        end
+
+        def operating_round(round_num)
+          Engine::Round::Operating.new(self, [
+            Engine::Step::Bankrupt,
+            Engine::Step::Exchange,
+            Engine::Step::HomeToken,
+            G18Ireland::Step::SpecialTrack,
+            Engine::Step::BuyCompany,
+            Engine::Step::Track,
+            Engine::Step::Token,
+            Engine::Step::Route,
+            Engine::Step::Dividend,
+            Engine::Step::DiscardTrain,
+            Engine::Step::BuyTrain,
+            [Engine::Step::BuyCompany, { blocks: true }],
+          ], round_num: round_num)
         end
 
         def new_or!
