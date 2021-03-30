@@ -6,6 +6,25 @@ module View
   class Tiles < Snabberb::Component
     WIDTH = 80
     HEIGHT = 97
+    LINE_PROPS = {
+      style: {
+        height: '0.9rem',
+        padding: '0 0.7rem 0 0.2rem',
+      },
+    }.freeze
+    TEXT_PROPS = {
+      style: {
+        float: 'left',
+        fontSize: '70%',
+      },
+    }.freeze
+    COUNT_PROPS = {
+      style: {
+        float: 'right',
+        lineHeight: '0.9rem',
+      },
+    }.freeze
+
     def render_tile_blocks(
       name,
       layout: nil,
@@ -19,7 +38,7 @@ module View
       clickable: false,
       extra_children: []
     )
-      props = {
+      block_props = {
         style: {
           width: "#{WIDTH * scale}px",
           height: "#{HEIGHT * scale}px",
@@ -35,14 +54,12 @@ module View
       rotations.map do |rotation|
         tile.rotate!(rotation)
 
-        text = tile.preprinted ? '' : '#'
-        text += name
-        text += "-#{rotation}" unless rotations == [0]
-        if tile.unlimited
-          text += ' × ∞'
-        elsif num
-          text += " × #{num}"
+        unless setting_for(@hide_tile_names)
+          text = tile.preprinted ? '' : '#'
+          text += name
+          text += "-#{rotation}" unless rotations == [0]
         end
+        count = tile.unlimited ? '∞' : num.to_s
 
         hex = Engine::Hex.new(hex_coordinates || 'A1',
                               layout: layout,
@@ -51,9 +68,12 @@ module View
         hex.x = 0
         hex.y = 0
 
-        h("div#tile_#{name}.tile__block", props, [
+        h("div#tile_#{name}.tile__block", block_props, [
             *extra_children,
-            h(:div, { style: { textAlign: 'center', fontSize: '12px' } }, text),
+            h(:div, LINE_PROPS, [
+              h(:div, TEXT_PROPS, text),
+              h(:div, COUNT_PROPS, count),
+            ]),
             h(:svg, { style: { width: '100%', height: '100%' } }, [
               h(:g, { attrs: { transform: "scale(#{scale * 0.4})" } }, [
                 h(
@@ -65,7 +85,7 @@ module View
                 ),
               ]),
             ]),
-        ])
+          ])
       end
     end
 
@@ -98,20 +118,18 @@ module View
         tile_a.rotate!(rotation)
         tile_b.rotate!(rotation)
 
-        text_a = tile_a.preprinted ? '' : '#'
-        text_a += name_a
-        text_a += "-#{rotation}" unless rotations == [0]
+        unless setting_for(@hide_tile_names)
+          text_a = tile_a.preprinted ? '' : '#'
+          text_a += name_a
+          text_a += "-#{rotation}" unless rotations == [0]
 
-        text_b = tile_b.preprinted ? '' : '#'
-        text_b += name_b
-        text_b += "-#{rotation}" unless rotations == [0]
+          text_b = tile_b.preprinted ? '' : '#'
+          text_b += name_b
+          text_b += "-#{rotation}" unless rotations == [0]
 
-        text = "#{text_a} / #{text_b}"
-        if tile_b.unlimited
-          text += ' × ∞'
-        elsif num
-          text += " × #{num}"
+          text = "#{text_a} / #{text_b}"
         end
+        count = tile_b.unlimited ? '∞' : num.to_s
 
         hex_a = Engine::Hex.new('A1',
                                 layout: layout,
@@ -128,7 +146,10 @@ module View
         h('div.tile__block', props, [
             *extra_children_a,
             *extra_children_b,
-            h(:div, { style: { textAlign: 'center', fontSize: '12px' } }, text),
+            h(:div, LINE_PROPS, [
+              h(:div, TEXT_PROPS, text),
+              h(:div, COUNT_PROPS, count),
+            ]),
             h("svg#tile_#{name_a}", { style: { width: '50%', height: '100%' } }, [
               h(:g, { attrs: { transform: "scale(#{scale * 0.4})" } }, [
                 h(
