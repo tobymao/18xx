@@ -71,8 +71,8 @@ module Engine
             %w[C17] => 'border=edge:5,type:impassable;upgrade=cost:60,terrain:mountain',
             %w[C21] => 'border=edge:0,type:water,cost:40;border=edge:2,type:impassable',
             %w[D6] => 'border=edge:4,type:water,cost:60;border=edge:5,type:water,cost:60;' \
-                      'icon=image:18_ny/canal,sticky:1',
-            %w[D10 E13] => 'icon=image:18_ny/canal,sticky:1',
+                      'icon=image:18_ny/canal',
+            %w[D10 E13] => 'icon=image:18_ny/canal',
             %w[D16] => 'border=edge:0,type:water,cost:40;border=edge:5,type:water,cost:60',
             %w[D22] => 'border=edge:1,type:water,cost:60',
             %w[E7] => 'border=edge:0,type:water,cost:40;border=edge:1,type:water,cost:60;' \
@@ -105,13 +105,13 @@ module Engine
             %w[J22] => 'town=revenue:0;border=edge:2,type:impassable;border=edge:3,type:impassable;' \
                        'icon=image:18_ny/connection_bonus,sticky:1',
             %w[D2] => 'city=revenue:0;upgrade=cost:80,terrain:water',
-            %w[D4] => 'city=revenue:0;icon=image:18_ny/canal,sticky:1',
-            %w[D14] => 'city=revenue:0;icon=image:18_ny/canal,sticky:1',
-            %w[D8] => 'city=revenue:0;border=edge:1,type:water,cost:60;icon=image:18_ny/canal,sticky:1',
-            %w[D12] => 'city=revenue:0;border=edge:3,type:impassable;icon=image:18_ny/canal,sticky:1',
+            %w[D4] => 'city=revenue:0;icon=image:18_ny/canal',
+            %w[D14] => 'city=revenue:0;icon=image:18_ny/canal',
+            %w[D8] => 'city=revenue:0;border=edge:1,type:water,cost:60;icon=image:18_ny/canal',
+            %w[D12] => 'city=revenue:0;border=edge:3,type:impassable;icon=image:18_ny/canal',
             %w[E5] => 'city=revenue:0;border=edge:4,type:water,cost:60',
             %w[E11] => 'city=revenue:0;border=edge:0,type:impassable;border=edge:1,type:impassable',
-            %w[E15] => 'city=revenue:0;border=edge:3,type:water,cost:40;icon=image:18_ny/canal,sticky:1',
+            %w[E15] => 'city=revenue:0;border=edge:3,type:water,cost:40;icon=image:18_ny/canal',
             %w[E19] => 'city=revenue:0;border=edge:4,type:water,cost:80;upgrade=cost:60,terrain:water;' \
                        'icon=image:18_ny/canal',
             %w[E21] => 'city=revenue:0;border=edge:1,type:water,cost:80;border=edge:2,type:water,cost:60',
