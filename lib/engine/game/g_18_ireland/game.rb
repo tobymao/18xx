@@ -152,8 +152,81 @@ module Engine
         PROTECTED_CORPORATION = 'DKR'
         KEEP_COMPANIES = 5
 
+        # used for laying tokens, running routes, mergers
+        def init_graph
+          Graph.new(self, skip_track: :narrow)
+        end
+
         def bankruptcy_limit_reached?
           @players.reject(&:bankrupt).one?
+        end
+
+        def narrow_connected_hexes(corporation)
+          compute_narrow(corporation) unless @narrow_connected_hexes[corporation]
+          @narrow_connected_hexes[corporation]
+        end
+
+        def compute_narrow(entity)
+          # Narrow gauge network is a separate network that is not blocked by tokens
+          hexes = Hash.new { |h, k| h[k] = {} }
+          paths = {}
+
+          @graph.connected_nodes(entity).keys.each do |node|
+            node.walk(skip_track: :broad, tile_type: self.class::TILE_TYPE) do |path, _, _|
+              next if paths[path]
+
+              # @todo: this will need revisiting for the track bonuses
+
+              paths[path] = true
+
+              hex = path.hex
+
+              path.exits.each do |edge|
+                hexes[hex][edge] = true
+                hexes[hex.neighbors[edge]][hex.invert(edge)] = true
+              end
+            end
+          end
+
+          hexes.default = nil
+          hexes.transform_values!(&:keys)
+
+          @narrow_connected_hexes[entity] = hexes
+        end
+
+        def clear_narrow_graph
+          @narrow_connected_hexes.clear
+        end
+
+        def tile_uses_broad_rules?(hex, tile)
+          # Is this tile a 'broad' gauge lay or a 'narrow' gauge lay.
+          # Broad gauge lay is if any of the new exits broad gauge?
+          old_paths = hex.tile.paths
+          new_tile_paths = tile.paths
+          new_tile_paths.any? { |path| path.track == :broad && old_paths.none? { |p| path <= p } }
+        end
+
+        def legal_tile_rotation?(corp, hex, tile)
+          connection_directions =
+            if tile_uses_broad_rules?(hex,
+                                      tile)
+              graph.connected_hexes(corp)[hex]
+            else
+              narrow_connected_hexes(corp)[hex]
+            end
+          # Must be connected for the tile to be layable
+          return false unless connection_directions
+
+          # All tile exits must match neighboring tiles
+          tile.exits.each do |dir|
+            connecting_path = tile.paths.find { |p| p.exits.include?(dir) }
+            next unless connecting_path
+
+            neighboring_tile = hex.neighbors[dir].tile
+            neighboring_path = neighboring_tile.paths.find { |p| p.exits.include?(Engine::Hex.invert(dir)) }
+            return false if neighboring_path && !connecting_path.tracks_match?(neighboring_path)
+          end
+          true
         end
 
         def setup_preround
@@ -174,6 +247,8 @@ module Engine
         end
 
         def setup
+          @narrow_connected_hexes = {}
+
           corporations, @future_corporations = @corporations.partition do |corporation|
             corporation.type == :minor
           end
@@ -257,7 +332,7 @@ module Engine
             Engine::Step::HomeToken,
             G18Ireland::Step::SpecialTrack,
             Engine::Step::BuyCompany,
-            Engine::Step::Track,
+            G18Ireland::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
             Engine::Step::Dividend,
