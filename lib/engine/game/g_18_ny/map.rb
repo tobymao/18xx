@@ -82,28 +82,28 @@ module Engine
             %w[F8] => 'border=edge:4,type:impassable;upgrade=cost:60,terrain:mountain',
             %w[H18] => 'border=edge:4,type:water,cost:80',
             %w[I21] => 'border=edge:1,type:water,cost:80',
-            %w[B12] => 'town=revenue:0;icon=image:18_ny/connection_bonus',
-            %w[C11] => 'town=revenue:0;icon=image:18_ny/connection_bonus',
-            %w[C23] => 'town=revenue:0;icon=image:18_ny/connection_bonus',
-            %w[G9] => 'town=revenue:0;icon=image:18_ny/connection_bonus',
-            %w[G13] => 'town=revenue:0;icon=image:18_ny/connection_bonus',
+            %w[B12] => 'town=revenue:0;icon=image:18_ny/connection_bonus,sticky:1',
+            %w[C11] => 'town=revenue:0;icon=image:18_ny/connection_bonus,sticky:1',
+            %w[C23] => 'town=revenue:0;icon=image:18_ny/connection_bonus,sticky:1',
+            %w[G9] => 'town=revenue:0;icon=image:18_ny/connection_bonus,sticky:1',
+            %w[G13] => 'town=revenue:0;icon=image:18_ny/connection_bonus,sticky:1',
             %w[D18] => 'town=revenue:0;border=edge:0,type:water,cost:60;border=edge:2,type:impassable;' \
-                       'icon=image:18_ny/connection_bonus',
+                       'icon=image:18_ny/connection_bonus,sticky:1',
             %w[D20] => 'town=revenue:0;border=edge:3,type:water,cost:40;border=edge:4,type:water,cost:60;' \
-                       'border=edge:5,type:water,cost:60;icon=image:18_ny/connection_bonus',
-            %w[E9] => 'town=revenue:0;border=edge:4,type:impassable;icon=image:18_ny/connection_bonus',
+                       'border=edge:5,type:water,cost:60;icon=image:18_ny/connection_bonus,sticky:1',
+            %w[E9] => 'town=revenue:0;border=edge:4,type:impassable;icon=image:18_ny/connection_bonus,sticky:1',
             %w[F10] => 'town=revenue:0;upgrade=cost:60,terrain:mountain;border=edge:1,type:impassable;' \
-                       'border=edge:3,type:impassable;icon=image:18_ny/connection_bonus',
-            %w[F12] => 'town=revenue:0;upgrade=cost:60,terrain:mountain;icon=image:18_ny/connection_bonus',
+                       'border=edge:3,type:impassable;icon=image:18_ny/connection_bonus,sticky:1',
+            %w[F12] => 'town=revenue:0;upgrade=cost:60,terrain:mountain;icon=image:18_ny/connection_bonus,sticky:1',
             %w[G19] => 'town=revenue:0;border=edge:4,type:water,cost:80;border=edge:5,type:water,cost:80;' \
-                       'icon=image:18_ny/connection_bonus',
-            %w[G21] => 'town=revenue:0;border=edge:1,type:water,cost:80;icon=image:18_ny/connection_bonus',
+                       'icon=image:18_ny/connection_bonus,sticky:1',
+            %w[G21] => 'town=revenue:0;border=edge:1,type:water,cost:80;icon=image:18_ny/connection_bonus,sticky:1',
             %w[I19] => 'town=revenue:0;border=edge:3,type:water,cost:80;border=edge:4,type:water,cost:80;' \
-                       'icon=image:18_ny/connection_bonus',
+                       'icon=image:18_ny/connection_bonus,sticky:1',
             %w[I23] => 'town=revenue:0;border=edge:0,type:impassable;border=edge:5,type:impassable;' \
-                       'icon=image:18_ny/connection_bonus',
+                       'icon=image:18_ny/connection_bonus,sticky:1',
             %w[J22] => 'town=revenue:0;border=edge:2,type:impassable;border=edge:3,type:impassable;' \
-                       'icon=image:18_ny/connection_bonus',
+                       'icon=image:18_ny/connection_bonus,sticky:1',
             %w[D2] => 'city=revenue:0;upgrade=cost:80,terrain:water',
             %w[D4] => 'city=revenue:0;icon=image:18_ny/canal,sticky:1',
             %w[D14] => 'city=revenue:0;icon=image:18_ny/canal,sticky:1',
@@ -116,10 +116,10 @@ module Engine
                        'icon=image:18_ny/canal',
             %w[E21] => 'city=revenue:0;border=edge:1,type:water,cost:80;border=edge:2,type:water,cost:60',
             %w[H14] => 'city=revenue:0',
-            %w[J18] => 'city=revenue:0',
+            %w[J18] => 'city=revenue:0;icon=image:18_ny/connection_bonus,sticky:1',
             %w[H20] => 'city=revenue:0;border=edge:0,type:water,cost:80;border=edge:1,type:water,cost:80;' \
                        'border=edge:2,type:water,cost:80',
-            %w[K19] => 'city=revenue:0;upgrade=cost:80,terrain:water',
+            %w[K19] => 'city=revenue:0;upgrade=cost:80,terrain:water;icon=image:18_ny/connection_bonus,sticky:1',
           },
           yellow: {
             %w[E3] => 'city=revenue:20,slots:2;border=edge:1,type:water,cost:80;path=a:2,b:_0;path=a:3,b:_0;' \
