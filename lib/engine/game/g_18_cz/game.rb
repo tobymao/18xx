@@ -204,9 +204,9 @@ module Engine
 
           case active_step
           when G18CZ::Step::Track
-            current_entity.type == :medium ? [players_without_vaclav[1]] : [players_without_vaclav[0]]
+            [player_for_track(current_entity)]
           when G18CZ::Step::Token
-            current_entity.type == :medium ? [players_without_vaclav[0]] : [players_without_vaclav[1]]
+            [player_for_token(current_entity)]
           else
             players_without_vaclav
           end
@@ -216,6 +216,14 @@ module Engine
           return super if multiplayer?
 
           action.entity.player == @vaclav ? active_players : super
+        end
+
+        def player_for_track(corporation)
+          corporation.type == :medium ? players_without_vaclav[1] : players_without_vaclav[0]
+        end
+
+        def player_for_token(corporation)
+          corporation.type == :medium ? players_without_vaclav[0] : players_without_vaclav[1]
         end
 
         def optional_hexes
@@ -398,6 +406,12 @@ module Engine
                          'E-'
                        end
           "#{corp.type.capitalize} / #{train_type}Trains"
+        end
+
+        def status_array(corporation)
+          return unless @vaclavs_corporations.include?(corporation) || @round.current_entity&.player?
+
+          ["Track: #{player_for_track(corporation).name}", "Token: #{player_for_token(corporation).name}"]
         end
 
         def block_lay_for_purple_tiles
