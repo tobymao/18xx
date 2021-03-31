@@ -50,7 +50,7 @@ module Engine
 
         STARTING_CORPORATIONS_OVERRIDE = {
           '15' => { coordinates: 'N29', city: 1 },
-          '16' => { coordinates: 'M30' },
+          '16' => { coordinates: 'M30', city: 0 },
           '29' => { coordinates: 'E26' },
           'LNWR' => { coordinates: 'N29', city: 0 },
         }.freeze
