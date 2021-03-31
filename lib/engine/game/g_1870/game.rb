@@ -585,6 +585,13 @@ module Engine
           'SCC' => '/icons/1870/SCC.svg',
         }.freeze
 
+        def new_auction_round
+          Engine::Round::Auction.new(self, [
+            G1870::Step::CompanyPendingPar,
+            Engine::Step::WaterfallAuction,
+          ])
+        end
+
         def stock_round
           G1870::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
@@ -625,10 +632,8 @@ module Engine
           'Treasury'
         end
 
-        def setup
-          @connection_run = {}
-
-          river_company.max_price = river_company.value
+        def init_hexes(companies, corporations)
+          hexes = super
 
           @corporations.each do |corporation|
             ability = abilities(corporation, :assign_hexes)
@@ -637,6 +642,14 @@ module Engine
             hex.assign!(corporation)
             ability.description = "Destination: #{hex.location_name} (#{hex.name})"
           end
+
+          hexes
+        end
+
+        def setup
+          @connection_run = {}
+
+          river_company.max_price = river_company.value
         end
 
         def event_companies_buyable!

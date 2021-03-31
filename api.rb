@@ -155,7 +155,7 @@ class Api < Roda
     static(
       desc: "Pin #{pin}",
       js_tags: "<script type='text/javascript' src='#{Assets::PIN_DIR}#{pin}.js'></script>",
-      attach_func: "Opal.$$.App.$attach('app', #{Snabberb.wrap(app_route: request.path, **needs)})",
+      attach_func: "Opal.App.$attach('app', #{Snabberb.wrap(app_route: request.path, **needs)})",
     )
   end
 

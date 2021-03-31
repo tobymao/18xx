@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'lib/color'
 require 'lib/settings'
 require 'lib/truncate'
 require 'view/game_row'
@@ -9,7 +8,6 @@ require 'view/link'
 module View
   class GameCard < Snabberb::Component
     include GameManager
-    include Lib::Color
     include Lib::Settings
 
     needs :user
@@ -93,7 +91,7 @@ module View
       div_props = {
         style: {
           display: 'grid',
-          grid: '1fr / minmax(10rem, 1fr) 7.5rem',
+          grid: '1fr / 1fr auto',
           gap: '0.5rem',
           justifyContent: 'space-between',
           padding: '0.3rem 0.5rem',
@@ -104,7 +102,7 @@ module View
       buttons_props = {
         style: {
           display: 'grid',
-          grid: '1fr / 1fr 1fr',
+          grid: '1fr / auto auto',
           gap: '0.3rem 0.4rem',
           direction: 'rtl',
           height: 'max-content',
@@ -187,7 +185,6 @@ module View
     def render_body
       props = {
         style: {
-          lineHeight: '1.2rem',
           padding: '0.3rem 0.5rem',
         },
       }
@@ -268,47 +265,42 @@ module View
     end
 
     def render_broken
-      button = if @confirm_delete != @gdata['id']
-                 render_button('Delete', -> { store(:confirm_delete, @gdata['id']) })
-               else
-                 render_button('Confirm', -> { delete_game(@gdata) })
-               end
+      button = h(:div, [if @gdata['mode'] == 'hotseat'
+                          if @confirm_delete != @gdata['id']
+                            render_button('Delete', -> { store(:confirm_delete, @gdata['id']) })
+                          else
+                            render_button('Confirm', -> { delete_game(@gdata) })
+                          end
+                        end])
 
       header_props = {
         style: {
-          position: 'relative',
-          padding: '0.3em 0.1rem 0 0.5rem',
+          display: 'grid',
+          grid: '1fr / 1fr auto',
+          padding: '0.3em 0.5rem',
           backgroundColor: 'salmon',
-        },
-      }
-
-      text_props = {
-        style: {
-          display: 'inline-block',
-          maxWidth: '13rem',
           color: 'black',
         },
       }
 
       body_props = {
         style: {
-          lineHeight: '1.2rem',
           padding: '0.3rem 0.5rem',
         },
       }
 
       h('div.game.card', [
         h('div.header', header_props, [
-          h(:div, text_props, [
+          h(:div, [
             h(:div, "Game: #{@gdata['title']}"),
             h('div.nowrap', 'Owner: You'),
           ]),
           button,
         ]),
         h(:div, body_props, [
-          h(:div, "Id: #{@gdata['id']}"),
-          h(:div, 'Error rendering game card:'),
-          h(:div, @gdata.to_s[0..500]),
+          h('div.bold', 'Error rendering game card'),
+          h(:div, [h('span.bold', 'Id: '), h(:span, @gdata['id'])]),
+          h(:div, [h('span.bold', 'Data: '), h(:span, [@gdata.to_s[0..300], ' […]'])]),
         ]),
       ])
     end

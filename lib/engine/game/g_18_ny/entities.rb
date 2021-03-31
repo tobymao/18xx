@@ -267,14 +267,14 @@ module Engine
           },
           {
             name: 'New York, New Haven, & Hartford Railroad',
-            sym: 'NH',
+            sym: 'NYNH',
             logo: '18_ny/nynh',
             simple_logo: '18_ny/nynh.alt',
             tokens: [0, 20, 20],
             type: 'major',
             always_market_price: true,
             coordinates: 'I25',
-            color: '#F58121',
+            color: '#E96B21',
             reservation_color: nil,
           },
           {

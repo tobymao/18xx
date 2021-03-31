@@ -1414,6 +1414,7 @@ module Engine
             train.buyable = false
             train.rusts_on = nil
             buy_train(minor, train, :free)
+            @depot.forget_train(train)
             hex = hex_by_id(minor.coordinates)
             hex.tile.cities[0].place_token(minor, minor.next_token, free: true)
           end
@@ -1452,7 +1453,7 @@ module Engine
           return unless @players.size < 5
 
           to_remove = @depot.trains.reverse.find { |train| train.name == '6' }
-          @depot.remove_train(to_remove)
+          @depot.forget_train(to_remove)
           @log << "Removing #{to_remove.name} train"
         end
 

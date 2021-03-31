@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'lib/color'
 require 'lib/settings'
 require 'view/game/actionable'
 
@@ -8,7 +7,6 @@ module View
   module Game
     class RouteSelector < Snabberb::Component
       include Actionable
-      include Lib::Color
       include Lib::Settings
 
       needs :last_entity, store: true, default: nil

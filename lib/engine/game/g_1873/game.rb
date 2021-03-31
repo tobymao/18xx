@@ -202,6 +202,7 @@ module Engine
           79
           75
           76
+          914
           956
           957
           958
@@ -395,7 +396,7 @@ module Engine
           return unless s_train
           return if @subtrains[s_train].one? # always leave one allocated per supertrain
 
-          @subtrains[s_train].each do |sub|
+          @subtrains[s_train].dup.each do |sub|
             next unless @diesel_pool[sub][:allocated] && !@diesel_pool[sub][:used] && @subtrains[s_train].size > 1
 
             @diesel_pool[sub][:allocated] = false
@@ -1842,7 +1843,7 @@ module Engine
 
             return true if r.visited_stops.include?(stop)
           end
-          true
+          false
         end
 
         # actually, first highest train on route
@@ -1850,7 +1851,7 @@ module Engine
           max = 0
           max_route = nil
           this_route.routes.each do |r|
-            if r.visited_stops.include?(stop) && r.train.distance > max
+            if r.visited_stops.include?(stop) && !diesel?(r.train) && r.train.distance > max
               max = r.train.distance
               max_route = r
             end
@@ -1997,7 +1998,7 @@ module Engine
             '957' => 2,
             '958' => 2,
             '959' => 1,
-            '960' => 1,
+            '960' => 2,
             '961' => 2,
             '100' => 4,
             '101' => 1,
@@ -2032,7 +2033,7 @@ module Engine
             '987' => 2,
             '988' => 3,
             '989' => 2,
-            '990' => 2,
+            '990' => 1,
           }
         end
 
@@ -2531,7 +2532,7 @@ module Engine
                 100,
                 100,
               ],
-              color: '#2E270D',
+              color: '#959490',
               text_color: 'white',
               extended: {
                 type: :railway,
@@ -2557,7 +2558,7 @@ module Engine
               city: 0,
               tokens: [
                 0,
-                0,
+                100,
                 100,
                 100,
               ],
@@ -3101,7 +3102,7 @@ module Engine
               name: 'D',
               on: 'D',
               train_limit: 99,
-              tiles: %w[
+              tiles: %i[
                 yellow
                 green
                 brown

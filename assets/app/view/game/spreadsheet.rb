@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'lib/color'
 require 'lib/settings'
 require 'lib/storage'
 require 'view/link'
@@ -11,7 +10,6 @@ require 'view/game/actionable'
 module View
   module Game
     class Spreadsheet < Snabberb::Component
-      include Lib::Color
       include Lib::Settings
       include Actionable
 

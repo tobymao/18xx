@@ -6,7 +6,6 @@ require 'view/game/token'
 require 'lib/settings'
 require 'lib/tile_selector'
 require 'lib/token_selector'
-require 'lib/color'
 
 module View
   module Game
@@ -15,7 +14,6 @@ module View
       class CitySlot < Base
         include Actionable
         include Lib::Settings
-        include Lib::Color
 
         needs :token
         needs :slot_index, default: 0

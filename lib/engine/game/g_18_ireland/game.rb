@@ -15,8 +15,14 @@ module Engine
         include G18Ireland::Map
 
         CAPITALIZATION = :incremental
-        HOME_TOKEN_TIMING = :float
+        HOME_TOKEN_TIMING = :par
+        SELL_BUY_ORDER = :sell_buy
 
+        # Two lays with one being an upgrade, second tile costs 20
+        TILE_LAYS = [
+          { lay: true, upgrade: true },
+          { lay: :not_if_upgraded, upgrade: false, cost: 20 },
+        ].freeze
         CURRENCY_FORMAT_STR = '£%d'
 
         BANK_CASH = 4000
@@ -26,6 +32,8 @@ module Engine
         STARTING_CASH = { 3 => 330, 4 => 250, 5 => 200, 6 => 160 }.freeze
 
         LIMIT_TOKENS_AFTER_MERGER = 3
+
+        GAME_END_CHECK = { bankrupt: :immediate, stock_market: :current_round, bank: :full_or }.freeze
 
         MARKET = [
           ['', '62', '68', '76', '84', '92', '100p', '110', '122', '134', '148', '170', '196', '225', '260e'],
@@ -38,7 +46,6 @@ module Engine
           %w[0c 20y 24y 30y 38y],
         ].freeze
 
-        # @todo: these are wrong
         PHASES = [
           {
             name: '2',
@@ -50,7 +57,7 @@ module Engine
             name: '4',
             on: '4H',
             train_limit: { minor: 2, major: 4 },
-            tiles: [:yellow],
+            tiles: %i[yellow green],
             operating_rounds: 2,
             status: ['can_buy_companies'],
           },
@@ -87,28 +94,138 @@ module Engine
 
         # @todo: how to do the opposite side
         # rusts turns them to the other side, go into the bankpool obsolete then removes completely
-        TRAINS = [{ name: '2H', num: 6, distance: 2, price: 80, obsolete_on: '8H', rusts_on: '6H' }, # 1H price:40
-                  { name: '4H', num: 5, distance: 4, price: 180, obsolete_on: 'H', rusts_on: '8H' }, # 2H price:90
-                  {
-                    name: '6H',
-                    num: 4,
-                    distance: 6,
-                    price: 300,
-                    rusts_on: '10H',
-                  }, # 3H price:150
-                  { name: '8H', num: 3, distance: 8, price: 440 },
-                  {
-                    name: '10H',
-                    num: 2,
-                    distance: 10,
-                    price: 550,
-                  },
-                  {
-                    name: 'D',
-                    num: 1,
-                    distance: 99,
-                    price: 770,
-                  }].freeze
+        TRAINS = [
+          {
+            name: '2H',
+            num: 6,
+            distance: 2,
+            price: 80,
+            obsolete_on: '8H',
+            rusts_on: '6H',
+          }, # 1H price:40
+          {
+            name: '4H',
+            num: 5,
+            distance: 4,
+            price: 180,
+            obsolete_on: '10H',
+            rusts_on: '8H',
+            events: [{ 'type' => 'corporations_can_merge' }],
+          }, # 2H price:90
+          {
+            name: '6H',
+            num: 4,
+            distance: 6,
+            price: 300,
+            rusts_on: '10H',
+          }, # 3H price:150
+          {
+            name: '8H',
+            num: 3,
+            distance: 8,
+            price: 440,
+            events: [{ 'type' => 'minors_cannot_start' }, { 'type' => 'close_companies' }],
+          },
+          {
+            name: '10H',
+            num: 2,
+            distance: 10,
+            price: 550,
+            events: [{ 'type' => 'train_trade_allowed' }],
+          },
+          {
+            name: 'D',
+            num: 1,
+            distance: 99,
+            price: 770,
+          },
+        ].freeze
+
+        EVENTS_TEXT = Base::EVENTS_TEXT.merge('corporations_can_merge' => ['Corporations can merge',
+                                                                           'Players can vote to merge corporations'],
+                                              'minors_cannot_start' => ['Minors cannot start'],
+                                              'train_trade_allowed' =>
+                                              ['Train trade in allowed',
+                                               'Trains can be traded in for face value for more powerful trains'],)
+        # Companies guaranteed to be in the game
+        PROTECTED_COMPANIES = %w[DAR DK].freeze
+        PROTECTED_CORPORATION = 'DKR'
+        KEEP_COMPANIES = 5
+
+        def bankruptcy_limit_reached?
+          @players.reject(&:bankrupt).one?
+        end
+
+        def setup_preround
+          # Only keep 3 private companies
+          remove_companies = @companies.size - self.class::KEEP_COMPANIES
+
+          companies = @companies.reject do |c|
+            self.class::PROTECTED_COMPANIES.include?(c.id)
+          end
+
+          removed_companies = companies.sort_by! { rand }.take(remove_companies)
+          removed = removed_companies.map do |comp|
+            @companies.delete(comp)
+            comp.close!
+            comp.id
+          end
+          @log << "Removed #{removed.join(',')} companies"
+        end
+
+        def setup
+          corporations, @future_corporations = @corporations.partition do |corporation|
+            corporation.type == :minor
+          end
+
+          protect = corporations.find { |c| c.id == PROTECTED_CORPORATION }
+          corporations.delete(protect)
+          corporations.sort_by! { rand }
+          removed_corporation = corporations.first
+          @log << "Removed #{removed_corporation.id} corporation"
+          corporations.delete(removed_corporation)
+          corporations.unshift(protect)
+          @corporations = corporations
+        end
+
+        def get_par_prices(entity, _corp)
+          @game
+            .stock_market
+            .par_prices
+            .select { |p| p.price * 2 <= entity.cash }
+        end
+
+        def after_buy_company(player, company, price)
+          abilities(company, :shares) do |ability|
+            ability.shares.each do |share|
+              if share.president
+                # DKR is pared at the highest par price below
+                corporation = share.corporation
+                par_price = price / 2
+                share_price = @stock_market.par_prices.find { |sp| sp.price <= par_price }
+
+                @stock_market.set_par(corporation, share_price)
+                @share_pool.buy_shares(player, share, exchange: :free)
+                # Receives the bid money
+                @bank.spend(price, corporation)
+                after_par(corporation)
+                # And buys a 2 train
+                train = @depot.upcoming.first
+                buy_train(corporation, train, train.price)
+              else
+                share_pool.buy_shares(player, share, exchange: :free)
+              end
+            end
+          end
+        end
+
+        def upgrades_to?(from, to, special = false, selected_company: nil)
+          # The Irish Mail
+          return true if special && from.color == :blue && to.color == :red
+
+          # Specials must observe existing rules otherwise
+          super(from, to, false, selected_company: selected_company)
+        end
 
         def home_token_locations(corporation)
           hexes.select do |hex|
@@ -121,7 +238,7 @@ module Engine
             Engine::Step::DiscardTrain,
             Engine::Step::Exchange,
             Engine::Step::HomeToken,
-            Engine::Step::BuySellParShares,
+            G18Ireland::Step::BuySellParShares,
           ])
         end
 
@@ -131,6 +248,23 @@ module Engine
             G18Ireland::Step::MergerVote,
             G18Ireland::Step::Merge,
           ], round_num: @round.round_num)
+        end
+
+        def operating_round(round_num)
+          Engine::Round::Operating.new(self, [
+            Engine::Step::Bankrupt,
+            Engine::Step::Exchange,
+            Engine::Step::HomeToken,
+            G18Ireland::Step::SpecialTrack,
+            Engine::Step::BuyCompany,
+            Engine::Step::Track,
+            Engine::Step::Token,
+            Engine::Step::Route,
+            Engine::Step::Dividend,
+            Engine::Step::DiscardTrain,
+            Engine::Step::BuyTrain,
+            [Engine::Step::BuyCompany, { blocks: true }],
+          ], round_num: round_num)
         end
 
         def new_or!
@@ -152,7 +286,7 @@ module Engine
               new_operating_round
             when Engine::Round::Operating
               or_round_finished
-              if phase.name.to_i > 4 # @todo: this should only be at end of round, and after phase 4
+              if @round.round_num < @operating_rounds || phase.name.to_i == 2
                 new_or!
               else
                 @log << "-- #{round_description('Merger', @round.round_num)} --"
@@ -165,6 +299,28 @@ module Engine
               new_stock_round
             end
         end
+
+        def event_corporations_can_merge!
+          # All the corporations become available, as minors can now merge/convert to corporations
+          @corporations.concat(@future_corporations)
+          @future_corporations = []
+        end
+
+        def event_minors_cannot_start!
+          @corporations, removed = @corporations.partition do |corporation|
+            corporation.owned_by_player? || corporation.type != :minor
+          end
+
+          hexes.each do |hex|
+            hex.tile.cities.each do |city|
+              city.reservations.reject! { |reservation| removed.include?(reservation) }
+            end
+          end
+
+          @log << 'Minors can no longer be started' if removed.any?
+        end
+
+        def event_train_trade_allowed!; end
       end
     end
   end

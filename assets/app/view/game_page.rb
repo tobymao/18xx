@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'game_manager'
-require 'lib/color'
 require 'lib/connection'
 require 'lib/params'
 require 'lib/settings'
@@ -10,7 +9,6 @@ require_tree './game'
 module View
   class GamePage < Snabberb::Component
     include GameManager
-    include Lib::Color
     include Lib::Settings
 
     needs :selected_company, default: nil, store: true

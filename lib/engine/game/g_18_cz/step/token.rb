@@ -7,6 +7,10 @@ module Engine
     module G18CZ
       module Step
         class Token < Engine::Step::Token
+          def buying_power(entity)
+            @game.token_buying_power(entity)
+          end
+
           def process_place_token(action)
             if action.city.tile.hex.coordinates == 'B9' &&
                       action.city.tile.cities.all? { |city| city.tokens.compact.empty? }
