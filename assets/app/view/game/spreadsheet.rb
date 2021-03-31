@@ -118,41 +118,36 @@ module View
       end
 
       def render_history(corporation)
-        or_history(@game.all_corporations).map do |turn_round|
-          render_or_history_row(corporation.operating_history, corporation, turn_round)
-        end
-      end
+        or_history(@game.all_corporations).map do |turn, round|
+          if (op_history = corporation.operating_history[[turn, round]])
+            revenue_text, alpha =
+              case (op_history.dividend.is_a?(Engine::Action::Dividend) ? op_history.dividend.kind : 'withhold')
+              when 'withhold'
+                ["[#{op_history.revenue}]", 0.5]
+              when 'half'
+                @halfpaid = true
+                ["¦#{op_history.revenue}¦", 0.75]
+              else
+                [op_history.revenue.to_s, 1]
+              end
 
-      def render_or_history_row(hist, corporation, x)
-        if hist[x]
-          revenue_text, alpha =
-            case (hist[x].dividend.is_a?(Engine::Action::Dividend) ? hist[x].dividend.kind : 'withhold')
-            when 'withhold'
-              ["[#{hist[x].revenue}]", '0.5']
-            when 'half'
-              @halfpaid = true
-              ["¦#{hist[x].revenue}¦", '0.75']
+            props = {
+              style: {
+                color: convert_hex_to_rgba(color_for(:font2), alpha),
+              },
+            }
+
+            if op_history&.dividend&.id&.positive?
+              link_h = history_link(revenue_text,
+                                    "Go to run #{@game.or_description_short(turn, round)} of #{corporation.name}",
+                                    op_history.dividend.id - 1)
+              h('td.right', props, [link_h])
             else
-              [hist[x].revenue.to_s, '1.0']
+              h('td.right', props, revenue_text)
             end
-
-          props = {
-            style: {
-              color: convert_hex_to_rgba(color_for(:font2), alpha),
-            },
-          }
-
-          if hist[x]&.dividend&.id&.positive?
-            link_h = history_link(revenue_text,
-                                  "Go to run #{x.join('.')} of #{corporation.name}",
-                                  hist[x].dividend.id - 1,
-                                  { textDecoration: 'none' })
-            h('td.right', props, [link_h])
           else
-            h('td.right', props, revenue_text)
+            h(:td, '')
           end
-        else
-          h(:td, '')
         end
       end
 
@@ -160,26 +155,19 @@ module View
         return [] unless @game.respond_to?(:connection_run)
         return [h(:td)] unless @game.connection_run[corporation]
 
-        turn_round, c_run = @game.connection_run[corporation]
-
-        if c_run.dividend.kind == 'withhold'
-          revenue_text = "[#{c_run.revenue}]"
-          alpha = '0.5'
-        else
-          revenue_text = c_run.revenue.to_s
-          alpha = '1.0'
-        end
-
+        turn, round, c_run = @game.connection_run[corporation]
+        revenue_text, alpha = c_run.dividend.kind == 'withhold' ? ["[#{c_run.revenue}]", 0.5] : [c_run.revenue, 1]
         props = {
           style: {
             color: convert_hex_to_rgba(color_for(:font2), alpha),
           },
         }
+        link_h = history_link(
+          "#{@game.or_description_short(turn, round)}: #{revenue_text}",
+          "Go to connection run of #{corporation.name} (in #{@game.or_description_short(turn, round)})",
+          c_run.dividend.id - 1
+        )
 
-        link_h = history_link(revenue_text,
-                              "Go to connection run of #{corporation.name} (in #{turn_round.join('.')})",
-                              c_run.dividend.id - 1,
-                              { textDecoration: 'none' })
         [h('td.right', props, [link_h])]
       end
 
@@ -208,8 +196,8 @@ module View
         end
         @extra_size = extra.size
 
-        extra_connection_column_title = @game.respond_to?(:connection_run) ? [h(:th, th_props[1], 'Conn.')] : []
-        extra_connection_column_subtitle = @game.respond_to?(:connection_run) ? [h(:th, '')] : []
+        connection_run_header = @game.respond_to?(:connection_run) ? [h(:th, th_props[1, false], '')] : []
+        connection_run_subheader = @game.respond_to?(:connection_run) ? [h(:th, render_sort_link('C-Run', :c_run))] : []
 
         [
           h(:tr, [
@@ -219,7 +207,7 @@ module View
             h(:th, th_props[2], 'Prices'),
             h(:th, th_props[5 + extra.size, false], ['Corporation ', render_toggle_not_floated_link]),
             h(:th, ''),
-            *extra_connection_column_title,
+            *connection_run_header,
             h(:th, th_props[or_history_titles.size, false], 'OR History'),
           ]),
           h(:tr, [
@@ -240,7 +228,7 @@ module View
             *extra,
             h(:th, render_sort_link('Companies', :companies)),
             h(:th, ''),
-            *extra_connection_column_subtitle,
+            *connection_run_subheader,
             *or_history_titles,
           ]),
         ]
@@ -376,6 +364,11 @@ module View
               @game.corporation_size(corporation)
             when :companies
               corporation.companies.size
+            when :c_run
+              if @game.respond_to?(:connection_run)
+                _turn, _round, c_run = @game.connection_run[corporation]
+                c_run&.revenue || 0
+              end
             else
               p = @game.player_by_id(@spreadsheet_sort_by)
               n = p&.num_shares_of(corporation)

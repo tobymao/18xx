@@ -163,6 +163,7 @@ module View
           children: text,
           style: {
             margin: '0',
+            textDecoration: 'none',
             **style_extra,
           },
           class: "#hist_#{hotkey}",
