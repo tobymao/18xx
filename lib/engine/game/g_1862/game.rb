@@ -466,7 +466,7 @@ module Engine
         end
 
         def add_obligation(entity, corporation)
-          charter = @companies.find { |c| c.id == corporation.id }
+          charter = company_by_id(corporation.id)
           charter.owner = entity
           entity.companies << charter
           @log << "#{entity.name} is under obligation for #{corporation.name}"
@@ -475,7 +475,7 @@ module Engine
 
         def float_corporation(corporation)
           super
-          charter = @companies.find { |c| c.id == corporation.id }
+          charter = company_by_id(corporation.id)
           return unless (entity = charter.owner)
 
           entity.companies.delete(charter)
