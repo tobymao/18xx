@@ -354,7 +354,7 @@ module Engine
           def exchange_singles(entity)
             return if entity.num_shares_of(@merger).zero? && entity.num_shares_of(@target).zero?
 
-            if @player_selection
+            if !@exchange_selection && @player_selection
               @exchange_selection = @player_selection
               @player_selection = nil
             end
