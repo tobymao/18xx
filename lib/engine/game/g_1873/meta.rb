@@ -16,7 +16,7 @@ module Engine
         GAME_PUBLISHER = :all_aboard_games
         GAME_RULES_URL = 'https://docs.google.com/viewer?a=v&pid=sites&srcid=YWxsLWFib2FyZGdhbWVzLmNvbXxhYWdsbGN8Z3g6MThhODUwM2Q3MWUyMmI2Nw'
         GAME_TITLE = 'Harzbahn 1873'
-        DROPDOWN_TITLE = 'Ticket to Ride'
+        DROPDOWN_TITLE = 'Ticket to Ryde'
 
         PLAYER_RANGE = [2, 5].freeze
       end

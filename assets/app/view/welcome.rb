@@ -17,6 +17,7 @@ module View
 
     def render_notification
       message = <<~MESSAGE
+        <p>Ticket to Ryde is now in alpha.</p>
         <p>18CZ now supports 2p Bohemia variant.</p>
         <p>18FL is now available for alpha testing</p>
         <p>Please submit problem reports and make suggestions for improvements on
