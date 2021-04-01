@@ -80,13 +80,14 @@ module View
         sorted_games = game_list.map do |game|
           @min_p[game.title], @max_p[game.title] = game::PLAYER_RANGE
 
-          title = game::DROPDOWN_TITLE || game::GAME_SUBTITLE || game::GAME_SUPERTITLE || game::GAME_LOCATION || game.title
+          title = game::DROPDOWN_TITLE || game::GAME_SUBTITLE ||
+          game::GAME_SUPERTITLE || game::GAME_LOCATION || game.title
 
           [title, game]
-        end.compact.sort_by { |t, g| t.sub(/^The /, '') }
+        end
+        sorted_games = sorted_games.compact.sort_by { |t, _g| t.sub(/^The /, '') }
 
         option_list = sorted_games.map do |title, game|
-
           attrs = { value: game.title }
           attrs[:selected] = (game.title == closest_title) ||
                              (game == Engine.meta_by_title(closest_title)::GAME_IS_VARIANT_OF)
