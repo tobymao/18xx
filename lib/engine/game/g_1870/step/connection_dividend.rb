@@ -31,6 +31,12 @@ module Engine
             kind = action.kind.to_sym
             payout = dividend_options(entity)[kind]
 
+            @game.connection_run[entity] = [
+              @game.turn,
+              @round.round_num,
+              OperatingInfo.new(routes, action, revenue, nil), # no tiles are laid in connection runs
+            ]
+
             @round.routes = []
 
             log_run_payout(entity, kind, revenue, action, payout)
