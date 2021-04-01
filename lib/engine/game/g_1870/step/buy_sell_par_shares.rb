@@ -58,6 +58,10 @@ module Engine
             entity.cash >= bundle.price && redeemable_shares(entity).include?(bundle)
           end
 
+          def can_buy_multiple?(entity, corporation, owner)
+            super && owner.share_pool?
+          end
+
           def can_sell?(entity, bundle)
             super && bundle.corporation.holding_ok?(entity, -bundle.percent)
           end
