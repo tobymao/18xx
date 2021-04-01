@@ -566,8 +566,11 @@ module Engine
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(unlimited: :green, par: :white,
                                                             ignore_one_sale: :red).freeze
 
-        EVENTS_TEXT = Base::EVENTS_TEXT.merge('remove_tokens' => ['Remove Tokens',
-                                                                  'Remove private company tokens']).freeze
+        EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+          'companies_buyable' => ['Companies become buyable', 'All companies may now be bought in by corporation'],
+          'remove_tokens' => ['Remove Tokens', 'Remove private company tokens']
+        ).freeze
+
         MARKET_TEXT = Base::MARKET_TEXT.merge(
           ignore_one_sale: 'Can only enter when 2 shares sold at the same time'
         ).freeze
