@@ -415,7 +415,7 @@ module Engine
         end
 
         def status_array(corporation)
-          return unless @vaclavs_corporations.include?(corporation) || @round.current_entity&.player?
+          return unless @vaclavs_corporations.include?(corporation) && @round.current_entity&.player?
 
           ["Track: #{player_for_track(corporation).name}", "Token: #{player_for_token(corporation).name}"]
         end
