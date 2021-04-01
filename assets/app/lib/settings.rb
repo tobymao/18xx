@@ -85,11 +85,7 @@ module Lib
         players = players.rotate(player_idx)
       end
 
-      players.map.with_index do |p, idx|
-        color = route_prop(idx % ROUTE_COLORS.size, 'color')
-        color = convert_rgba_to_hex(convert_hex_to_rgba(color, 0.5)) if idx > ROUTE_COLORS.size - 1
-        [p, color]
-      end.to_h
+      players.map.with_index { |p, idx| [p, route_prop(idx, 'color')] }.to_h
     end
   end
 end

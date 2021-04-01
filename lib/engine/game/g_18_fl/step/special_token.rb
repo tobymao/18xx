@@ -30,9 +30,6 @@ module Engine
               connected: false,
               special_ability: ability(entity),
             )
-            action.token.city = action.city
-            action.token.used = true
-            tokener.tokens << action.token
             entity.close!
             @game.log << "#{entity.name} closes"
             @game.round.laid_token[tokener] = true
@@ -44,8 +41,7 @@ module Engine
             [Engine::Token.new(@game.current_entity)]
           end
 
-          def adjust_token_price_ability!(entity, _token, _hex, _city, special_ability: nil)
-            token = Engine::Token.new(entity)
+          def adjust_token_price_ability!(_entity, token, _hex, _city, special_ability: nil)
             token.price = special_ability.teleport_price
             [token, special_ability]
           end
