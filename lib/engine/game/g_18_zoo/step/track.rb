@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/track'
+require_relative 'choose_ability_on_or'
 
 module Engine
   module Game
