@@ -5,6 +5,8 @@ require_relative '../base'
 require_relative 'entities'
 require_relative 'map'
 require_relative 'step/charter_auction'
+require_relative 'step/buy_tokens'
+require_relative 'step/buy_sell_par_shares'
 
 module Engine
   module Game
@@ -13,6 +15,8 @@ module Engine
         include_meta(G1862::Meta)
         include Entities
         include Map
+
+        attr_accessor :chartered
 
         register_colors(black: '#000000',
                         orange: '#f48221',
@@ -103,19 +107,19 @@ module Engine
              330i
              350i
              375i
-             400i
-             430i
-             495i
-             530i
-             570i
-             610i
-             655i
-             700i
-             750i
-             800i
-             850i
-             900i
-             950i
+             400j
+             430j
+             495j
+             530j
+             570j
+             610j
+             655j
+             700j
+             750j
+             800j
+             850j
+             900j
+             950j
              1000e],
            ].freeze
 
@@ -358,9 +362,10 @@ module Engine
         STOCKMARKET_COLORS = {
           par: :yellow,
           endgame: :orange,
-          close: :purple,
-          repar: :gray,
+          close: :gray,
+          repar: :peach,
           ignore_one_sale: :olive,
+          ignore_two_sales: :green,
           multiple_buy: :brown,
           unlimited: :orange,
           no_cert_limit: :yellow,
@@ -379,11 +384,15 @@ module Engine
           liquidation: 'UNUSED',
           repar: 'Par values for unchartered corporations',
           ignore_one_sale: 'Ignore first share sold when moving price (except president)',
+          ignore_two_sales: 'Ignore first 2 shares sold when moving price (except president)',
         }.freeze
 
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded_or_city, upgrade: false }].freeze
 
         GAME_END_CHECK = { stock_market: :current_or, bank: :current_or, custom: :immediate }.freeze
+
+        CHARTERED_TOKEN_COST = 60
+        UNCHARTERED_TOKEN_COST = 40
 
         def init_share_pool
           SharePool.new(self, allow_president_sale: true)
@@ -452,6 +461,14 @@ module Engine
           end
         end
 
+        def share_prices
+          repar_prices
+        end
+
+        def repar_prices
+          @repar_prices ||= stock_market.market.first.select { |p| p.type == :repar || p.type == :par }
+        end
+
         def ipoable_corporations
           ready_corporations.reject(&:ipoed)
         end
@@ -476,17 +493,42 @@ module Engine
         def float_corporation(corporation)
           super
           charter = company_by_id(corporation.id)
-          return unless (entity = charter.owner)
 
+          unless (entity = charter.owner)
+            # unchartered company
+            raise GameError, 'Player missing charter' if @chartered[corporation]
+
+            @round.buy_tokens = corporation
+            @log << "#{corporation.name} (#{corporation.owner.name}) must buy tokens"
+            @round.clear_cache!
+            return
+          end
+
+          raise GameError, 'Player has charter in error' unless @chartered[corporation]
+
+          # chartered company
           entity.companies.delete(charter)
           charter.owner = nil
           @log << "#{entity.name} has completed obligation for #{corporation.name}"
+          entity.companies.delete(charter)
+
+          # assumption: corp defaults to three tokens
+          raise GameError, 'Wrong number of tokens for Chartered Company' if corporation.tokens.size != 3
+
+          @log << "#{corporation.name} buys 3 tokens for #{format_currency(CHARTERED_TOKEN_COST * 3)}"
+          corporation.spend(CHARTERED_TOKEN_COST * 3, @bank)
+        end
+
+        def purchase_tokens!(corporation, count)
+          (count - 2).times { corporation.tokens << Token.new(corporation, price: 0) }
+          corporation.spend((cost = UNCHARTERED_TOKEN_COST * count), @bank)
+          @log << "#{corporation.name} buys #{count} tokens for #{format_currency(cost)}"
         end
 
         def stock_round
           Engine::Round::Stock.new(self, [
-            Engine::Step::DiscardTrain,
-            Engine::Step::BuySellParShares,
+            G1862::Step::BuyTokens,
+            G1862::Step::BuySellParShares,
           ])
         end
 
@@ -581,7 +623,6 @@ module Engine
           @round.force_next_entity! if @round.operating?
         end
 
-        # FIXME
         def status_array(corp)
           status = []
           status << %w[Receivership bold] if corp.receivership?
@@ -596,6 +637,14 @@ module Engine
           ipoed.sort + others.sort.sort_by { |c| @starting_phase[c] }
         end
 
+        def ipo_name(entity = nil)
+          if entity&.capitalization == :incremental
+            'Treasury'
+          else
+            'IPO'
+          end
+        end
+
         # FIXME: need to check for no trains?
         def check_bankruptcy!(entity)
           return unless entity.corporation?
@@ -607,22 +656,21 @@ module Engine
           entity.corporation? && ready_corporations.include?(entity)
         end
 
-        # FIXME: changes from 1860?
         def bundles_for_corporation(share_holder, corporation, shares: nil)
           return [] unless corporation.ipoed
 
           shares = (shares || share_holder.shares_of(corporation)).sort_by(&:price)
 
           shares.flat_map.with_index do |share, index|
-            bundle = shares.take(index + 1)
-            percent = bundle.sum(&:percent)
-            bundles = [Engine::ShareBundle.new(bundle, percent)]
+            bundle_shares = shares.take(index + 1)
+            percent = bundle_shares.sum(&:percent)
+            bundles = [Engine::ShareBundle.new(bundle_shares, percent)]
             if share.president
               normal_percent = corporation.share_percent
               difference = corporation.presidents_percent - normal_percent
               num_partial_bundles = difference / normal_percent
               (1..num_partial_bundles).each do |n|
-                bundles.insert(0, Engine::ShareBundle.new(bundle, percent - (normal_percent * n)))
+                bundles.insert(0, Engine::ShareBundle.new(bundle_shares, percent - (normal_percent * n)))
               end
             end
             bundles.each { |b| b.share_price = (b.price_per_share / 2).to_i if corporation.trains.empty? }
@@ -631,7 +679,7 @@ module Engine
         end
 
         def selling_movement?(corporation)
-          corporation.operated? && !@no_price_drop_on_sale
+          corporation.floated? && !@phase.available?('H')
         end
 
         def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
@@ -640,7 +688,10 @@ module Engine
 
           @share_pool.sell_shares(bundle, allow_president_change: allow_president_change, swap: swap)
           num_shares = bundle.num_shares
-          num_shares -= 1 if corporation.share_price.type == :ignore_one_sale
+          unless corporation.owner == bundle.owner
+            num_shares -= 1 if corporation.share_price.type == :ignore_one_sale
+            num_shares -= 2 if corporation.share_price.type == :ignore_two_sales
+          end
           num_shares.times { @stock_market.move_left(corporation) } if selling_movement?(corporation)
           log_share_price(corporation, price)
           check_bankruptcy!(corporation)

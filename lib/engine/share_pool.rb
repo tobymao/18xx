@@ -192,7 +192,8 @@ module Engine
 
       # handle selling president's share to the pool
       # if partial, move shares from pool to old president
-      if @allow_president_sale && max_shares <= 10 && bundle.presidents_share && to_entity == self
+      if @allow_president_sale && max_shares < corporation.presidents_percent && bundle.presidents_share &&
+          to_entity == self
         corporation.owner = self
         @log << "President's share sold to pool. #{corporation.name} enters receivership"
         return unless bundle.partial?
@@ -212,7 +213,7 @@ module Engine
       end
 
       # skip the rest if no player can be president yet
-      return if @allow_president_sale && max_shares <= 10
+      return if @allow_president_sale && max_shares < corporation.presidents_percent
 
       majority_share_holders = presidency_check_shares(corporation).select { |_, p| p == max_shares }.keys
 

@@ -132,6 +132,7 @@ module Engine
           end
 
           def process_par(action)
+            action.corporation.capitalization = :full # FIXME: does this need to be changed?
             super
 
             if action.entity.cash >= action.share_price.price
