@@ -30,6 +30,7 @@ module Lib
       black: '#000000',
       red: '#ec232a',
       blue: '#35A7FF',
+      lilac: '#CB99C9'
     }.freeze
 
     def self.points(scale: 1.0)
