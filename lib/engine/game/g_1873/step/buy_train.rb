@@ -252,10 +252,10 @@ module Engine
           end
 
           def scrap_mine_train(entity, new_train)
-            if @game.train_is_machine?(new_train)
-              @game.scrap_train(entity.trains.find { |t| @game.train_is_machine?(t) })
-            elsif @game.train_is_switcher?(new_train)
+            if @game.train_is_switcher?(new_train)
               @game.scrap_train(entity.trains.find { |t| @game.train_is_switcher?(t) })
+            else
+              @game.scrap_train(entity.trains.find { |t| @game.train_is_machine?(t) })
             end
           end
 
