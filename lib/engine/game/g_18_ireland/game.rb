@@ -222,7 +222,8 @@ module Engine
             connecting_path = tile.paths.find { |p| p.exits.include?(dir) }
             next unless connecting_path
 
-            neighboring_tile = hex.neighbors[dir].tile
+            neighboring_tile = hex.neighbors[dir]&.tile
+            next unless neighboring_tile
             neighboring_path = neighboring_tile.paths.find { |p| p.exits.include?(Engine::Hex.invert(dir)) }
             return false if neighboring_path && !connecting_path.tracks_match?(neighboring_path)
           end
