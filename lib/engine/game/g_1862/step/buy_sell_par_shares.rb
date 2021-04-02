@@ -46,7 +46,7 @@ module Engine
 
           def process_par(action)
             corporation = action.corporation
-            corporation.capitalization = :incremental
+            @game.convert_to_incremental!(corporation)
             corporation.tokens.pop # 3 -> 2
             raise GameError, 'Wrong number of tokens for Unchartered Company' if corporation.tokens.size != 2
 

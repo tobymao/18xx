@@ -519,6 +519,38 @@ module Engine
           corporation.spend(CHARTERED_TOKEN_COST * 3, @bank)
         end
 
+        def convert_to_full!(corporation)
+          corporation.capitalization = :full
+          corporation.ipo_owner = @bank
+          corporation.share_holders.keys.each do |sh|
+            next if sh == @bank
+
+            corporation.share_holders[sh] = 0
+            sh.shares_by_corporation[corporation].dup.each do |share|
+              share.owner = @bank
+              sh.shares_by_corporation[corporation].delete(share)
+              @bank.shares_by_corporation[corporation] << share
+              corporation.share_holders[@bank] += share.percent
+            end
+          end
+        end
+
+        def convert_to_incremental!(corporation)
+          corporation.capitalization = :incremental
+          corporation.ipo_owner = corporation
+          corporation.share_holders.keys.each do |sh|
+            next if sh == corporation
+
+            corporation.share_holders[sh] = 0
+            sh.shares_by_corporation[corporation].dup.each do |share|
+              share.owner = corporation
+              sh.shares_by_corporation[corporation].delete(share)
+              corporation.shares_by_corporation[corporation] << share
+              corporation.share_holders[corporation] += share.percent
+            end
+          end
+        end
+
         def purchase_tokens!(corporation, count)
           (count - 2).times { corporation.tokens << Token.new(corporation, price: 0) }
           corporation.spend((cost = UNCHARTERED_TOKEN_COST * count), @bank)

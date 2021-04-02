@@ -132,7 +132,7 @@ module Engine
           end
 
           def process_par(action)
-            action.corporation.capitalization = :full # FIXME: does this need to be changed?
+            @game.convert_to_full!(action.corporation)
             super
 
             if action.entity.cash >= action.share_price.price

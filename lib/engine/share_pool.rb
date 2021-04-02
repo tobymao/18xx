@@ -55,9 +55,11 @@ module Engine
       share_str = "a #{bundle.percent}% share "
       share_str += "of #{corporation.name}" unless entity == corporation
 
-      from = if bundle.owner.corporation?
-               (bundle.owner == bundle.corporation ? "the #{@game.ipo_name(corporation)}" : bundle.owner.name)
-             elsif bundle.owner.player?
+      from = if bundle.owner == corporation.ipo_owner
+               "the #{@game.ipo_name(corporation)}"
+             elsif bundle.owner.corporation? && bundle.owner == corporation
+               'the Treasury'
+             elsif bundle.owner.corporation? || bundle.owner.player?
                bundle.owner.name
              else
                'the market'
@@ -89,6 +91,7 @@ module Engine
         transfer_shares(bundle, entity)
       else
         receiver = if (%i[escrow incremental].include?(corporation.capitalization) && bundle.owner.corporation?) ||
+                       (bundle.owner.corporation? && !corporation.ipo_is_treasury?) ||
                        bundle.owner.player?
                      bundle.owner
                    else
