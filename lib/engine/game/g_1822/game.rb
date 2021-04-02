@@ -1467,7 +1467,9 @@ module Engine
           return {} if time != :token || !company.owner&.corporation?
 
           choices = {}
-          choices['exchange'] = 'Move an exchange station token to the available station token section'
+          if exchange_tokens(company.owner).positive?
+            choices['exchange'] = 'Move an exchange station token to the available station token section'
+          end
           choices
         end
 
