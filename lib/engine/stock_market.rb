@@ -4,7 +4,7 @@ require_relative 'share_price'
 
 module Engine
   class StockMarket
-    attr_reader :market, :par_prices, :has_close_cell
+    attr_reader :market, :par_prices, :has_close_cell, :zigzag
 
     def initialize(market, unlimited_types, multiple_buy_types: [], zigzag: nil)
       @par_prices = []
@@ -22,6 +22,7 @@ module Engine
           price
         end
       end
+      # note, a lot of behavior depends on the par prices being in descending price order
       @par_prices.sort_by! do |p|
         r, c = p.coordinates
         [p.price, c, r]
@@ -30,10 +31,6 @@ module Engine
 
     def one_d?
       @one_d ||= @market.one?
-    end
-
-    def zigzag?
-      !!@zigzag
     end
 
     def set_par(corporation, share_price)

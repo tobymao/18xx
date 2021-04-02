@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'lib/color'
 require 'lib/hex'
 require 'lib/settings'
 require 'view/game/part/base'
@@ -9,7 +8,6 @@ module View
   module Game
     module Part
       class Borders < Base
-        include Lib::Color
         include Lib::Settings
 
         needs :tile

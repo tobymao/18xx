@@ -36,7 +36,8 @@ module Engine
 
           def total_revenue(entity)
             return @game.mhe_income if entity == @game.mhe
-            return 0 - @round.maintenance if routes.empty? && @game.railway?(entity)
+            return 0 - @round.maintenance if routes.empty? && @game.railway?(entity) && entity != @game.qlb
+            return 0 - @round.maintenance + @game.qlb_bonus if routes.empty? && entity == @game.qlb
 
             @game.routes_revenue(routes) - @round.maintenance + (entity == @game.qlb ? @game.qlb_bonus : 0)
           end

@@ -133,7 +133,7 @@ module GameManager
 
     game_url = url(game)
     store(:game_data, game.merge(loading: true), skip: true)
-    route = game_url + `window.location.search`
+    route = game_url + `window.location.search` + `window.location.hash`
     store(:app_route, route, skip: @app_route == route)
 
     @connection.safe_get(game_url) do |data|
@@ -163,7 +163,7 @@ module GameManager
   end
 
   def self.url(game, path = '')
-    "/game/#{game['id']}#{path}"
+    "/#{game[:mode] == :hotseat ? 'hotseat' : 'game'}/#{game['id']}#{path}"
   end
 
   def url(game, path = '')

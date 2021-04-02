@@ -72,7 +72,7 @@ class Api < Roda
      map market fixture
   ].freeze
 
-  Dir['./routes/*'].sort.each { |file| require file }
+  Dir['./routes/*'].each { |file| require file }
 
   hash_routes do
     on 'api' do |hr|
@@ -155,7 +155,7 @@ class Api < Roda
     static(
       desc: "Pin #{pin}",
       js_tags: "<script type='text/javascript' src='#{Assets::PIN_DIR}#{pin}.js'></script>",
-      attach_func: "Opal.$$.App.$attach('app', #{Snabberb.wrap(app_route: request.path, **needs)})",
+      attach_func: "Opal.App.$attach('app', #{Snabberb.wrap(app_route: request.path, **needs)})",
     )
   end
 
@@ -211,7 +211,7 @@ class Api < Roda
   def publish(channel, limit = nil, **data)
     MessageBus.publish(
       channel,
-      data.merge('_client_id': request.params['_client_id']),
+      data.merge(_client_id: request.params['_client_id']),
       max_backlog_size: limit,
     )
     {}

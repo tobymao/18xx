@@ -22,8 +22,9 @@ module Engine
             @main_line_improvement = improvement if improvement
             return if (@tile_lays += 1) == 1
 
-            raise GameError, 'Second tile lay or upgrade only allowed ' \
-              'if first or second improves main lines!' unless @main_line_improvement
+            unless @main_line_improvement
+              raise GameError, 'Second tile lay or upgrade only allowed if first or second improves main lines!'
+            end
 
             @log << "#{action.entity.name} did get the 2nd tile lay/upgrade due to a main line upgrade"
           end

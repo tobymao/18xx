@@ -17,6 +17,7 @@ module Engine
         GAME_RULES_URL = 'http://dl.deepthoughtgames.com/1889-Rules.pdf'
         GAME_SUPERTITLE = 'Shikoku'
         GAME_ALIASES = ['History of Shikoku Railways'].freeze
+        GAME_DROPDOWN_TITLE = 'Shikoku: 1889'
 
         PLAYER_RANGE = [2, 6].freeze
       end

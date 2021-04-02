@@ -131,7 +131,7 @@ module View
                          }),
           ])]
 
-          form = { "corporations": corporations, "options": options }
+          form = { corporations: corporations, options: options }
 
           children << h(:div, [
             h(:p, 'Options:'),

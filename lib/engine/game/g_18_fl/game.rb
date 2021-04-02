@@ -580,7 +580,6 @@ module Engine
         def stock_round
           Engine::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
-            Engine::Step::HomeToken,
             G18FL::Step::BuySellParShares,
           ])
         end
@@ -639,6 +638,19 @@ module Engine
           revenue + hotels * hotel_value
         end
 
+        def init_hexes(_companies, corporations)
+          hexes = super
+          place_home_tokens(corporations, hexes)
+          hexes
+        end
+
+        def place_home_tokens(corporations, hexes)
+          corporations.each do |corporation|
+            tile = hexes.find { |hex| hex.coordinates == corporation.coordinates }.tile
+            tile.cities[corporation.city || 0].place_token(corporation, corporation.tokens.first, free: true)
+          end
+        end
+
         def hotel_value
           @phase.status.include?('hotels_doubled') ? 20 : 10
         end
@@ -682,7 +694,7 @@ module Engine
           key_island.lay_downgrade(key_island.original_tile)
 
           @log << 'The hurricane also destroys the hotels in Key West'
-          # TODO: Destroy Key West hotels
+          key_west.tile.icons.clear
           key_west.lay_downgrade(key_west.original_tile)
         end
 

@@ -11,19 +11,20 @@ module View
       def render_content
         return h(:div) if @game_data[:mode] != :hotseat
 
-        description = @game_data&.dig('description')
-
         h(:div, [
-          render_input('Hotseat Description:',
+          render_input('Hotseat Description',
                        placeholder: 'Add a title',
                        id: :description,
-                       attrs: { value: description }),
-          render_button('Save') { submit },
+                       attrs: {
+                         title: 'Edit hotseat description',
+                         value: @game_data[:description],
+                       },
+                       on: { change: -> { submit } }),
         ])
       end
 
       def submit
-        @game_data['description'] = params['description']
+        @game_data[:description] = params['description']
         store(:game_data, @game_data, skip: true)
 
         Lib::Storage[@game_data[:id]] = @game_data

@@ -153,7 +153,7 @@ module View
         def self.name_segments(name, max_size: 12)
           return [name] if name.size <= max_size
 
-          segments = name.split(' ')
+          segments = name.split
 
           case segments.size
           when 3

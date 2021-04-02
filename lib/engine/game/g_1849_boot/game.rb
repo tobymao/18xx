@@ -548,19 +548,19 @@ module Engine
         NEW_SMS_HEXES = %w[B14 G7 H8 J18 L12 L18 L20 N20 O9 P2].freeze
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
-          'green_par': ['144 Par Available',
-                        'Corporations may now par at 144 (in addition to 67 and 100)'],
-          'brown_par': ['216 Par Available',
-                        'Corporations may now par at 216 (in addition to 67, 100, and 144)'],
-          'earthquake': ['Avezzano Earthquake',
-                         'Avezzano (C7) loses connection to Rome, revenue reduced to 10.']
+          green_par: ['144 Par Available',
+                      'Corporations may now par at 144 (in addition to 67 and 100)'],
+          brown_par: ['216 Par Available',
+                      'Corporations may now par at 216 (in addition to 67, 100, and 144)'],
+          earthquake: ['Avezzano Earthquake',
+                       'Avezzano (C7) loses connection to Rome, revenue reduced to 10.']
         ).freeze
 
         AVZ_CODE = 'town=revenue:10;path=a:4,b:_0,track:narrow'.freeze
 
         NEW_GRAY_REVENUE_CENTERS =
           {
-            'A7':
+            A7:
               {
                 '4H': 10,
                 '6H': 10,
@@ -569,7 +569,7 @@ module Engine
                 '12H': 60,
                 '16H': 60,
               },
-            'N2':
+            N2:
              {
                '4H': 30,
                '6H': 30,
@@ -578,7 +578,7 @@ module Engine
                '12H': 80,
                '16H': 80,
              },
-            'C5':
+            C5:
              {
                '4H': 60,
                '6H': 60,
@@ -587,7 +587,7 @@ module Engine
                '12H': 120,
                '16H': 120,
              },
-            'J18':
+            J18:
              {
                '4H': 20,
                '6H': 20,
@@ -596,7 +596,7 @@ module Engine
                '12H': 40,
                '16H': 40,
              },
-            'B14':
+            B14:
              {
                '4H': 20,
                '6H': 20,
@@ -605,7 +605,7 @@ module Engine
                '12H': 40,
                '16H': 40,
              },
-            'I13':
+            I13:
              {
                '4H': 20,
                '6H': 20,
@@ -614,7 +614,7 @@ module Engine
                '12H': 40,
                '16H': 40,
              },
-            'N20':
+            N20:
              {
                '4H': 20,
                '6H': 20,

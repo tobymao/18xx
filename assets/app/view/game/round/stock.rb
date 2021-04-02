@@ -142,7 +142,13 @@ module View
 
           merging = @step.respond_to?(:merge_in_progress?) && @step.merge_in_progress?
 
-          @game.sorted_corporations.reject(&:closed?).map do |corporation|
+          corporations = if @step.respond_to?(:visible_corporations)
+                           @step.visible_corporations
+                         else
+                           @game.sorted_corporations.reject(&:closed?)
+                         end
+
+          corporations.map do |corporation|
             next if @auctioning_corporation && @auctioning_corporation != corporation
             next if @mergeable_entity && @mergeable_entity != corporation
             next if @price_protection && @price_protection.corporation != corporation
@@ -270,8 +276,9 @@ module View
           @step.sellable_companies(@current_entity).map do |company|
             children = []
             children << h(Company, company: company)
-            children << h('div.margined_bottom', { style: { width: '20rem' } },
-                          render_sell_input(company)) if @selected_company == company
+            if @selected_company == company
+              children << h('div.margined_bottom', { style: { width: '20rem' } }, render_sell_input(company))
+            end
             h(:div, props, children)
           end
         end

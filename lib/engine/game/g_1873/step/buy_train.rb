@@ -205,6 +205,10 @@ module Engine
               raise GameError, 'Illegal train buy from another company'
             end
 
+            if action.price > train.price * 2
+              raise GameError, "Can only spend a maximum of #{train.price * 2} for this train"
+            end
+
             if @game.concession_pending?(entity) && (entity != @game.nwe || train.distance > 1)
               @game.concession_unpend!(entity)
             end
@@ -248,10 +252,10 @@ module Engine
           end
 
           def scrap_mine_train(entity, new_train)
-            if @game.train_is_machine?(new_train)
-              @game.scrap_train(entity.trains.find { |t| @game.train_is_machine?(t) })
-            elsif @game.train_is_switcher?(new_train)
+            if @game.train_is_switcher?(new_train)
               @game.scrap_train(entity.trains.find { |t| @game.train_is_switcher?(t) })
+            else
+              @game.scrap_train(entity.trains.find { |t| @game.train_is_machine?(t) })
             end
           end
 

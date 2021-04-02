@@ -10,6 +10,8 @@ module Engine
       class Game < Game::Base
         include_meta(G1870::Meta)
 
+        attr_accessor :connection_run
+
         register_colors(black: '#37383a',
                         orange: '#f48221',
                         brightGreen: '#76a042',
@@ -129,10 +131,10 @@ module Engine
         }.freeze
 
         MARKET = [
-          %w[64y 68 72 76 82 90 100p 110 120 140 160 180 200 225 250 285 300 325 350 375 400],
-          %w[60y 64y 68 72 76 82 90p 100 110 120 140 160 180 200 225 250 285 300 325 350 375],
-          %w[55y 60y 64y 68 72 76 82p 90 100 110 120 140 160 180 200 225 250i 285i 300i 325i 350i],
-          %w[50o 55y 60y 64y 68 72 76p 82 90 100 110 120 140 160i 180i 200i 225i 250i 285i 300i 325i],
+          %w[64y 68 72 76 82 90 100p 110 120 140 160 180 200 225 250 275 300 325 350 375 400],
+          %w[60y 64y 68 72 76 82 90p 100 110 120 140 160 180 200 225 250 275 300 325 350 375],
+          %w[55y 60y 64y 68 72 76 82p 90 100 110 120 140 160 180 200 225 250i 275i 300i 325i 350i],
+          %w[50o 55y 60y 64y 68 72 76p 82 90 100 110 120 140 160i 180i 200i 225i 250i 275i 300i 325i],
           %w[40b 50o 55y 60y 64 68 72p 76 82 90 100 110i 120i 140i 160i 180i],
           %w[30b 40o 50o 55y 60y 64 68p 72 76 82 90i 100i 110i],
           %w[20b 30b 40o 50o 55y 60y 64 68 72 76i 82i],
@@ -564,8 +566,11 @@ module Engine
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(unlimited: :green, par: :white,
                                                             ignore_one_sale: :red).freeze
 
-        EVENTS_TEXT = Base::EVENTS_TEXT.merge('remove_tokens' => ['Remove Tokens',
-                                                                  'Remove private company tokens']).freeze
+        EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+          'companies_buyable' => ['Companies become buyable', 'All companies may now be bought in by corporation'],
+          'remove_tokens' => ['Remove Tokens', 'Remove private company tokens']
+        ).freeze
+
         MARKET_TEXT = Base::MARKET_TEXT.merge(
           ignore_one_sale: 'Can only enter when 2 shares sold at the same time'
         ).freeze
@@ -582,6 +587,13 @@ module Engine
           'GSCᶜ' => '/icons/1870/GSC_closed.svg',
           'SCC' => '/icons/1870/SCC.svg',
         }.freeze
+
+        def new_auction_round
+          Engine::Round::Auction.new(self, [
+            G1870::Step::CompanyPendingPar,
+            Engine::Step::WaterfallAuction,
+          ])
+        end
 
         def stock_round
           G1870::Round::Stock.new(self, [
@@ -623,8 +635,8 @@ module Engine
           'Treasury'
         end
 
-        def setup
-          river_company.max_price = river_company.value
+        def init_hexes(companies, corporations)
+          hexes = super
 
           @corporations.each do |corporation|
             ability = abilities(corporation, :assign_hexes)
@@ -633,6 +645,14 @@ module Engine
             hex.assign!(corporation)
             ability.description = "Destination: #{hex.location_name} (#{hex.name})"
           end
+
+          hexes
+        end
+
+        def setup
+          @connection_run = {}
+
+          river_company.max_price = river_company.value
         end
 
         def event_companies_buyable!

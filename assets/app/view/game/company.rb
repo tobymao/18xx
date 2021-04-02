@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'lib/color'
 require 'lib/settings'
 require 'lib/truncate'
 require 'view/game/actionable'
@@ -9,7 +8,6 @@ module View
   module Game
     class Company < Snabberb::Component
       include Actionable
-      include Lib::Color
       include Lib::Settings
 
       needs :company
@@ -182,14 +180,33 @@ module View
       end
 
       def render_company_on_card(company)
+        title_str = @game.respond_to?(:company_size) ? "#{@game.company_size(company)} company: " : ''
+        title_str += company.name
+        company_name_str = @game.respond_to?(:company_size_str) ? "#{@game.company_size_str(company)} " : ''
+        company_name_str += company.name
+
+        extra = []
+        if (uses = company.ability_uses)
+          extra << "#{uses[0]}/#{uses[1]}"
+          title_str += if uses[0].zero?
+                         ', ability already used'
+                       elsif uses[1] > 1
+                         ", #{uses[0]} ability use#{uses[0] > 1 ? 's' : ''} left"
+                       else
+                         ', ability still usable'
+                       end
+        end
+        extra << " #{@game.company_status_str(company)}" if @game.company_status_str(company)
+
         name_props = {
+          attrs: { title: "#{title_str}, click to toggle description" },
           style: {
-            display: 'inline-block',
             cursor: 'pointer',
+            grid: '1fr / 1fr auto',
+            gap: '0 0.2rem',
           },
           on: { click: ->(event) { toggle_desc(event, company) } },
         }
-
         hidden_props = {
           style: {
             display: 'none',
@@ -199,22 +216,14 @@ module View
             fontSize: '80%',
           },
         }
-
         @hidden_divs[company.sym] = h(:div, hidden_props, company.desc)
-
-        extra = []
-        if (uses = company.ability_uses)
-          extra << " (#{uses[0]}/#{uses[1]})"
-        end
-        extra << " #{@game.company_status_str(@company)}" if @game.company_status_str(@company)
-
         revenue_str = if @game.respond_to?(:company_revenue_str)
                         @game.company_revenue_str(company)
                       else
                         @game.format_currency(company.revenue)
                       end
 
-        [h('div.nowrap', name_props, company.name + extra.join(',')),
+        [h(:div, name_props, [h('span.nowrap', company_name_str), h(:span, extra)]),
          @game.show_value_of_companies?(company.owner) ? h('div.right', @game.format_currency(company.value)) : '',
          h('div.padded_number', revenue_str),
          @hidden_divs[company.sym]]

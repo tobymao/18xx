@@ -449,9 +449,9 @@ module Engine
             name: 'Cobourg & Peterborough Railway',
             value: 80,
             revenue: 15,
-            desc: 'Blocks/reserves Peterborough (C15) while owned by a player. Revenue $0 after auction completes. ' \
+            desc: 'Blocks/reserves Peterborough (C15) while owned by a player. ' \
                   'Owning player may place or upgrade track tiles on a route connected to Peterborough (C15). ' \
-                  'Half-pays the revenue of a 2-train route from that track tile.',
+                  'Half-pays the revenue of a 2-train route from that track tile instead of normal revenue.',
             sym: 'C&P',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['C15'] },
                         { type: 'revenue_change', revenue: 0, when: 'auction_end' }],
@@ -1041,6 +1041,8 @@ module Engine
           tile_lays = super
           tile_lays += [{ lay: true, upgrade: :not_if_upgraded, cannot_reuse_same_hex: true }] if entity.system?
           (entity.system? ? entity.corporations.map(&:name) : [entity.name]).each do |corp_name|
+            next unless EXTRA_TILE_LAY_CORPS.include?(corp_name)
+
             tile_lays += [
               {
                 lay: :not_if_upgraded,
@@ -1048,7 +1050,7 @@ module Engine
                 cannot_reuse_same_hex: true,
                 cost: 40,
               },
-            ] if EXTRA_TILE_LAY_CORPS.include?(corp_name)
+            ]
           end
 
           tile_lays
@@ -1412,6 +1414,7 @@ module Engine
             train.buyable = false
             train.rusts_on = nil
             buy_train(minor, train, :free)
+            @depot.forget_train(train)
             hex = hex_by_id(minor.coordinates)
             hex.tile.cities[0].place_token(minor, minor.next_token, free: true)
           end
@@ -1450,7 +1453,7 @@ module Engine
           return unless @players.size < 5
 
           to_remove = @depot.trains.reverse.find { |train| train.name == '6' }
-          @depot.remove_train(to_remove)
+          @depot.forget_train(to_remove)
           @log << "Removing #{to_remove.name} train"
         end
 
