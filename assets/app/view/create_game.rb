@@ -77,22 +77,17 @@ module View
       closest_title = @title && Engine.closest_title(@title)
 
       game_options = visible_games.group_by { |game| game::DEV_STAGE }.flat_map do |dev_stage, game_list|
-        sorted_games = game_list.map do |game|
+        option_list = game_list.map do |game|
           @min_p[game.title], @max_p[game.title] = game::PLAYER_RANGE
 
-          title = game::DROPDOWN_TITLE || game::GAME_SUBTITLE ||
-          game::GAME_SUPERTITLE || game::GAME_LOCATION || game.title
+          title = game.title
+          title += " (#{game::GAME_LOCATION})" if game::GAME_LOCATION
 
-          [title, game]
-        end
-        sorted_games = sorted_games.compact.sort_by { |t, _g| t.sub(/^The /, '') }
-
-        option_list = sorted_games.map do |title, game|
           attrs = { value: game.title }
           attrs[:selected] = (game.title == closest_title) ||
                              (game == Engine.meta_by_title(closest_title)::GAME_IS_VARIANT_OF)
 
-          h(:option, { attrs: attrs }, title)
+          h(:option, { attrs: attrs }, game::GAME_DROPDOWN_TITLE || title)
         end
 
         if dev_stage == :production

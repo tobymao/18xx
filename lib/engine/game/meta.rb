@@ -21,7 +21,7 @@ module Engine
       GAME_ALIASES = [].freeze
       GAME_VARIANTS = [].freeze
       GAME_IS_VARIANT_OF = nil
-      DROPDOWN_TITLE = nil
+      GAME_DROPDOWN_TITLE = nil
 
       # rules data that needs to be known to the engine without loading in the
       # full game class
