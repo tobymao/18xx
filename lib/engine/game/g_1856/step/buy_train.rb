@@ -8,7 +8,7 @@ module Engine
       module Step
         class BuyTrain < Engine::Step::BuyTrain
           def must_buy_train?(entity)
-            return super unless entity == @game.national && !@game.national_ever_owned_permanent
+            return super if entity != @game.national || @game.national_ever_owned_permanent
 
             cash = entity.cash
             # Can't use empty because the national may have a permanent train borrowed :(

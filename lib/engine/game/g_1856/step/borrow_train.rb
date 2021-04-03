@@ -34,9 +34,9 @@ module Engine
             abilites = @game.abilities(entity, :borrow_train)
             return [] unless abilites
 
-            Array(abilites).map do |a|
+            Array(abilites).flat_map do |a|
               a.train_types.map { |typ| @game.depot.depot_trains.find { |t| t.sym == typ } }.compact
-            end.flatten.uniq
+            end.uniq
           end
 
           def process_borrow_train(action)
