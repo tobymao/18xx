@@ -105,78 +105,46 @@ module View
       extra_children_a: [],
       extra_children_b: []
     )
-      props = {
+      block_props = {
         style: {
           width: "#{2 * (WIDTH * scale + 2)}px",
           height: "#{HEIGHT * scale}px",
         },
       }
 
-      tile_a ||= Engine::Tile.for(name_a)
-      tile_b ||= Engine::Tile.for(name_b)
+      text = []
+      double_sided_tiles = [[name_a, tile_a], [name_b, tile_b]].map do |name, tile|
+        tile ||= Engine::Tile.for(name)
+        tile.rotate!(0)
+        text << "##{name}" unless setting_for(@hide_tile_names)
+        hex = Engine::Hex.new('A1', layout: layout, tile: tile)
+        hex.x = 0
+        hex.y = 0
 
-      rotations = [0]
-
-      rotations.map do |rotation|
-        tile_a.rotate!(rotation)
-        tile_b.rotate!(rotation)
-
-        unless setting_for(@hide_tile_names)
-          text_a = tile_a.preprinted ? '' : '#'
-          text_a += name_a
-          text_a += "-#{rotation}" unless rotations == [0]
-
-          text_b = tile_b.preprinted ? '' : '#'
-          text_b += name_b
-          text_b += "-#{rotation}" unless rotations == [0]
-
-          text = "#{text_a} / #{text_b}"
-        end
-        count = tile_b.unlimited ? '∞' : num.to_s
-
-        hex_a = Engine::Hex.new('A1',
-                                layout: layout,
-                                tile: tile_a)
-        hex_a.x = 0
-        hex_a.y = 0
-
-        hex_b = Engine::Hex.new('A1',
-                                layout: layout,
-                                tile: tile_b)
-        hex_b.x = 0
-        hex_b.y = 0
-
-        h('div.tile__block', props, [
-            *extra_children_a,
-            *extra_children_b,
-            h(:div, LINE_PROPS, [
-              h(:div, TEXT_PROPS, text),
-              h(:div, COUNT_PROPS, count),
-            ]),
-            h("svg#tile_#{name_a}", { style: { width: '50%', height: '100%' } }, [
-              h(:g, { attrs: { transform: "scale(#{scale * 0.4})" } }, [
-                h(
-                  Game::Hex,
-                  hex: hex_a,
-                  role: :tile_page,
-                  unavailable: unavailable,
-                  clickable: clickable,
-                ),
-              ]),
-            ]),
-            h("svg#tile_#{name_b}", { style: { width: '50%', height: '100%' } }, [
-              h(:g, { attrs: { transform: "scale(#{scale * 0.4})" } }, [
-                h(
-                  Game::Hex,
-                  hex: hex_b,
-                  role: :tile_page,
-                  unavailable: unavailable,
-                  clickable: clickable,
-                ),
-              ]),
-            ]),
+        h("svg#tile_#{name}", { style: { width: '50%', height: '100%' } }, [
+          h(:g, { attrs: { transform: "scale(#{scale * 0.4})" } }, [
+            h(
+              Game::Hex,
+              hex: hex,
+              role: :tile_page,
+              unavailable: unavailable,
+              clickable: clickable,
+            ),
+          ]),
         ])
       end
+      text = text.join(' / ') unless setting_for(@hide_tile_names)
+      count = tile_b.unlimited ? '∞' : num.to_s
+
+      h('div.tile__block', block_props, [
+          *extra_children_a,
+          *extra_children_b,
+          h(:div, LINE_PROPS, [
+            h(:div, TEXT_PROPS, text),
+            h(:div, COUNT_PROPS, count),
+          ]),
+          *double_sided_tiles,
+      ])
     end
   end
 end
