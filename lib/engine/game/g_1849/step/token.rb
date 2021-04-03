@@ -13,13 +13,13 @@ module Engine
               (entity.sms_hexes || @game.graph.can_token?(entity))
           end
 
-          def place_token(entity, city, token, connected: true, extra: false, special_ability: nil)
+          def place_token(entity, city, token, connected: true, extra_action: false, special_ability: nil)
             return super unless entity.sms_hexes
 
             hex = city.hex
             raise GameError, 'Must place token on SMS hex' unless entity.sms_hexes.find { |h| hex.id == h }
 
-            super(entity, city, token, connected: false, extra: extra, special_ability: special_ability)
+            super(entity, city, token, connected: false, extra_action: extra_action, special_ability: special_ability)
           end
 
           def process_place_token(action)

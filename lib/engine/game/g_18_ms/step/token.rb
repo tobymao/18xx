@@ -9,7 +9,7 @@ module Engine
         class Token < Engine::Step::Token
           BONUS_HEX = 'I1'
 
-          def place_token(entity, city, token, connected: true, extra: false, special_ability: nil)
+          def place_token(entity, city, token, connected: true, extra_action: false, special_ability: nil)
             super
 
             return unless city.hex.name == BONUS_HEX

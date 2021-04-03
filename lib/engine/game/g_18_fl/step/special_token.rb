@@ -36,7 +36,7 @@ module Engine
           end
 
           def available_tokens(entity)
-            return super unless ability(entity)&.extra
+            return super unless ability(entity)&.extra_action
 
             [Engine::Token.new(@game.current_entity)]
           end
