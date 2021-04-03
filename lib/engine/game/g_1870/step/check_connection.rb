@@ -34,8 +34,8 @@ module Engine
 
             home_node = home.tile.cities.first # Each tile with a city has exactly one node
             max_nodes = corporation.trains.map(&:distance).max
-            destination.tile.nodes.first&.walk(corporation: corporation) do |_, _, visited|
-              return true if visited[home_node] && visited.size <= max_nodes
+            destination.tile.nodes.first&.walk(corporation: corporation) do |path, _, visited|
+              return true if path.nodes.include?(home_node) && visited.size < max_nodes
             end
 
             false

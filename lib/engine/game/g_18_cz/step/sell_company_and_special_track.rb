@@ -54,7 +54,7 @@ module Engine
               operating_info.laid_hexes = @round.laid_hexes
             end
 
-            @game.skip_default_track unless @game.purple_tile?(action.tile)
+            @round.num_laid_track += 1 unless @game.purple_tile?(action.tile)
 
             abilities = @game.abilities(action.entity, :tile_lay, time: 'any')
             abilities.each(&:use!)
