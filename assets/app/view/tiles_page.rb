@@ -179,16 +179,46 @@ module View
         )
       end
 
-      rendered_tiles = game.tiles.sort.group_by(&:name).flat_map do |name, tiles_|
-        render_tile_blocks(
-          name,
-          layout: game.layout,
-          tile: tiles_.first,
-          num: tiles_.size,
-          rotations: @rotations,
-          location_name: @location_name,
-        )
-      end
+      all_tiles = game.tiles.sort.group_by(&:name)
+      rendered_tiles =
+        if game.tile_groups.empty?
+          all_tiles.flat_map do |name, tiles_|
+            render_tile_blocks(
+              name,
+              layout: game.layout,
+              tile: tiles_.first,
+              num: tiles_.size,
+              rotations: @rotations,
+              location_name: @location_name,
+            )
+          end
+        else
+          game.tile_groups.flat_map do |group|
+            if group.one?
+              name = group.first
+              render_tile_blocks(
+                name,
+                layout: game.layout,
+                tile: all_tiles[name].first,
+                num: all_tiles[name].size,
+                rotations: @rotations,
+                location_name: @location_name,
+              )
+            else
+              name_a, name_b = group
+              tile_a = all_tiles[name_a].first
+              tile_b = all_tiles[name_b].first
+              render_tile_sides(
+                name_a,
+                name_b,
+                layout: game.layout,
+                tile_a: tile_a,
+                tile_b: tile_b,
+                num: all_tiles[name_a].size
+              )
+            end
+          end
+        end
 
       h("div#hexes_and_tiles_#{game_class.title}", [
           h(:h2, game_class.full_title),
