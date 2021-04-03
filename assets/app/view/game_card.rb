@@ -91,7 +91,7 @@ module View
       div_props = {
         style: {
           display: 'grid',
-          grid: '1fr / 1fr auto',
+          grid: '1fr / minmax(10rem, 1fr) auto',
           gap: '0.5rem',
           justifyContent: 'space-between',
           padding: '0.3rem 0.5rem',
