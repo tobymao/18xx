@@ -25,6 +25,7 @@ module View
         white: '#ffffff',
         olive: '#d1e189',
         purple: '#9a4eae',
+        peach: '#ffe5b4',
       }.freeze
 
       # All markets

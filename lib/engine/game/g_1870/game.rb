@@ -10,7 +10,7 @@ module Engine
       class Game < Game::Base
         include_meta(G1870::Meta)
 
-        attr_accessor :connection_run
+        attr_accessor :connection_run, :reissued
 
         register_colors(black: '#37383a',
                         orange: '#f48221',
@@ -651,6 +651,7 @@ module Engine
 
         def setup
           @connection_run = {}
+          @reissued = {}
 
           river_company.max_price = river_company.value
         end
@@ -806,6 +807,10 @@ module Engine
           end
 
           raise GameError, 'At least one train has to run from the home station to the destination'
+        end
+
+        def reissued?(corporation)
+          @reissued[corporation]
         end
       end
     end
