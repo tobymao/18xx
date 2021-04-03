@@ -38,6 +38,11 @@ module Engine
             short_name: 'Hard rust',
             desc: "4 trains rust when 6' train is bought",
           },
+          {
+            sym: :baja_variant,
+            short_name: 'Baja Variant (alpha)',
+            desc: 'adds a private company which provides a teleport token to a new map hex.',
+          },
         ].freeze
       end
     end
