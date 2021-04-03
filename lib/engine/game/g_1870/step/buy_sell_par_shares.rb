@@ -63,10 +63,10 @@ module Engine
           end
 
           def issue_par(corporation)
-            ISSUE_PAR_PRICES
-              .reject { |v| v > 0.75 * corporation.share_price.price }
-              .concat([corporation.par_price.price])
-              .max
+            # We're adding 1 to force it to round up. We can do this, because
+            # we know all the possible values and it is smaller than all gaps.
+            [ISSUE_PAR_PRICES.min_by { |v| (0.75 * corporation.share_price.price + 1 - v).abs },
+             corporation.par_price.price].max
           end
 
           def process_buy_shares(action)
