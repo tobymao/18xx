@@ -662,7 +662,7 @@ module Engine
         def init_bank
           return super unless optional_short_game
 
-          Engine::Bank.new(6_000, log: @log)
+          Engine::Bank.new(4_000, log: @log)
         end
 
         def new_auction_round
