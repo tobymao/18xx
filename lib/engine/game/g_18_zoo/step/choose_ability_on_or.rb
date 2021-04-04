@@ -127,7 +127,7 @@ module Engine
         # Not available for 2J / 4J, or if train has the 'Bandage'
         def choices_for_sugar(corporation)
           corporation.trains
-                     .reject { |train| %w[2J 4J].include? train.name }
+                     .reject { |train| %w[2J 4J].include?(train.name) }
                      .map { |train| [{ type: :sugar, train_id: train.id }, train.name] }
                      .to_h
         end

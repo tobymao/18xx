@@ -8,7 +8,7 @@ module Engine
           def available_hex(entity, hex)
             return unless entity.company?
             return unless entity.owner&.corporation?
-            return unless entity.owner.tokens.map { |token| token&.city&.hex&.id }.include?(hex.id)
+            return unless entity.owner.tokens.any? { |token| token&.city&.hex == hex }
             return if hex.assigned?(entity.id)
 
             @game.hex_by_id(hex.id).neighbors.keys

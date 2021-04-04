@@ -1340,7 +1340,7 @@ module Engine
 
         def can_choose_sugar?(entity, company)
           company == a_spoonful_of_sugar && entity&.corporation? && a_spoonful_of_sugar.owner == entity &&
-            entity.trains.any? { |train| !%w[2J 4J].include? train.name } &&
+            entity.trains.any? { |train| !%w[2J 4J].include?(train.name) } &&
             entity.all_abilities.none? { |a| a.type == :increase_distance_for_train }
         end
 
@@ -1377,7 +1377,7 @@ module Engine
           revenue += 30 if route.corporation.assigned?(corn.id) && stops.any? { |stop| stop.hex.assigned?(corn.id) }
 
           # Towns revenues are doubled if 'Two barrels' is in use
-          revenue += 10 * stops.count { |stop| stop.tile.towns.any? } if two_barrels_used_this_or?(route.corporation)
+          revenue += 10 * stops.count { |stop| !stop.tile.towns.empty? } if two_barrels_used_this_or?(route.corporation)
 
           revenue
         end
@@ -1439,7 +1439,7 @@ module Engine
         def subsidy_for(_route, stops)
           subsidy = 0
           # Get 1 for each town
-          subsidy += stops.count { |s| s.tile.towns.any? }
+          subsidy += stops.count { |s| !s.tile.towns.empty? }
 
           subsidy
         end
