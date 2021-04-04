@@ -42,7 +42,7 @@ module Engine
     end
 
     def price_per_share
-      share_price = @owner == corporation ? corporation.par_price : corporation.share_price
+      share_price = @owner == corporation.ipo_owner ? corporation.par_price : corporation.share_price
       share_price&.price || corporation.min_price
     end
 

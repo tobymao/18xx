@@ -40,9 +40,10 @@ module Engine
         false
       end
 
-      def place_token(entity, city, token, connected: true, extra: false, special_ability: nil, check_tokenable: true)
+      def place_token(entity, city, token, connected: true, extra_action: false,
+                      special_ability: nil, check_tokenable: true)
         hex = city.hex
-        extra ||= special_ability.extra if special_ability&.type == :token
+        extra_action ||= special_ability.extra_action if special_ability&.type == :token
 
         if !@game.loading && connected && !@game.graph.connected_nodes(entity)[city]
           city_string = hex.tile.cities.size > 1 ? " city #{city.index}" : ''
@@ -61,7 +62,7 @@ module Engine
                            "#{hex.name} (#{hex.location_name}) with teleport"
         end
 
-        raise GameError, 'Token already placed this turn' if !extra && @round.tokened
+        raise GameError, 'Token already placed this turn' if !extra_action && @round.tokened
 
         token, ability = adjust_token_price_ability!(entity, token, hex, city, special_ability: special_ability)
         tokener = entity.name
@@ -93,7 +94,7 @@ module Engine
           @log << "#{tokener} places a token on #{hex.name} (#{hex.location_name})#{price_log}"
         end
 
-        @round.tokened = true unless extra
+        @round.tokened = true unless extra_action
         @game.graph.clear
       end
 
@@ -125,20 +126,17 @@ module Engine
           next if ability.hexes.any? && !ability.hexes.include?(hex.id)
           next if ability.city && ability.city != city.index
 
-          # check if this is correct or should be a corporation
-          if ability.extra
-            if ability.neutral
-              neutral_corp = Corporation.new(
-                sym: 'N',
-                name: 'Neutral',
-                logo: 'open_city',
-                tokens: [0],
-              )
-              token = Engine::Token.new(neutral_corp, type: :neutral)
-            else
-              token = Engine::Token.new(entity)
-              entity.tokens << token
-            end
+          if ability.neutral
+            neutral_corp = Corporation.new(
+              sym: 'N',
+              name: 'Neutral',
+              logo: 'open_city',
+              tokens: [0],
+            )
+            token = Engine::Token.new(neutral_corp, type: :neutral)
+          elsif ability.owner.company? && !ability.from_owner
+            token = Engine::Token.new(entity)
+            entity.tokens << token
           end
 
           token.price = ability.teleport_price if ability.teleport_price

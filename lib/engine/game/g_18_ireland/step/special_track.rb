@@ -21,6 +21,11 @@ module Engine
             end
             super
           end
+
+          def process_lay_tile(action)
+            super
+            @game.clear_narrow_graph
+          end
         end
       end
     end

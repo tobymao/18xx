@@ -9,7 +9,9 @@ module Engine
         def move_right(corporation)
           r, c = corporation.share_price.coordinates
 
-          return move_up(corporation) if @market.dig(r, c + 1)&.type == :ignore_one_sale
+          if corporation.share_price.type != :ignore_one_sale && @market.dig(r, c + 1)&.type == :ignore_one_sale
+            return move_up(corporation)
+          end
 
           super
         end

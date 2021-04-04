@@ -14,6 +14,8 @@ module Engine
       end
 
       def process_program_buy_shares(action)
+        raise GameError, 'Until condition is unset' if !@game.loading && !action.until_condition
+
         process_program_enable(action)
       end
 
@@ -31,7 +33,6 @@ module Engine
       end
 
       def process_program_disable(action)
-        # @todo: This should only log to the player
         @game.player_log(action.entity, "Disabled programmed action due to '#{action.reason}'") if action.reason
         @game.programmed_actions.delete(action.entity)
       end

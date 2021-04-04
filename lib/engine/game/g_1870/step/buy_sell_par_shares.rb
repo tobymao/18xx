@@ -90,6 +90,7 @@ module Engine
               @log << "#{corporation.name}'s par price is now #{@game.format_currency(new_par)}"
             end
             corporation.capitalization = :incremental
+            @game.reissued[corporation] = true
 
             action.bundle.shares.each do |s|
               s.buyable = true
