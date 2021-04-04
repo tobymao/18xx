@@ -9,8 +9,7 @@ module Engine
         class Assign < Engine::Step::Assign
           def process_assign(action)
             company = action.entity
-            raise GameError,
-                  "#{company.owner.name} is not SNAR" if company != @game.south_and_north_alabama_railroad
+            raise GameError, "#{company.owner.name} is not SNAR" if company != @game.south_and_north_alabama_railroad
             raise GameError, "#{company.owner.name} owns no trains" if company.owner.trains.empty?
 
             target = action.target

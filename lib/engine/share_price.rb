@@ -15,6 +15,7 @@ module Engine
       'a' => :acquisition,
       'r' => :repar,
       'i' => :ignore_one_sale,
+      'j' => :ignore_two_sales,
       's' => :safe_par,
       'P' => :par_overlap,
       'x' => :par_1,

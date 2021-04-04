@@ -238,21 +238,20 @@ module Engine
 
       def separate_parts
         [@a, @b].each do |part|
-          case
-          when part.edge?
+          if part.edge?
             @edges << part
             @exit_lanes[part.num] = @lanes[part == @a ? 0 : 1]
-          when part.offboard?
+          elsif part.offboard?
             @offboard = part
             @stops << part
             @nodes << part
-          when part.city?
+          elsif part.city?
             @city = part
             @stops << part
             @nodes << part
-          when part.junction?
+          elsif part.junction?
             @junction = part
-          when part.town?
+          elsif part.town?
             @town = part
             @stops << part
             @nodes << part

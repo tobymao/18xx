@@ -12,11 +12,136 @@ module Engine
             desc: 'No company can build in the Wicklow hex until this company is either bought by'\
             ' any company or closed.',
             sym: 'DAR',
-            abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['G13'] }], # @todo: update to Wicklow
-            color: nil,
+            abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['J14'] }],
           },
-          # @todo: add other privates
-        ].freeze
+          {
+            name: 'Donegal Railway',
+            value: 30,
+            revenue: 7,
+            desc: 'The owning Corporation can place two connected narrow gauge yellow tiles in the Donegal'\
+            ' hex and on adjacent hex. This action closes the company.',
+            sym: 'DR',
+            abilities: [
+              {
+                type: 'tile_lay',
+                hexes: %w[F4 F2 E3 E5 G3 G5],
+                tiles: %w[IR5 77 78 79],
+                when: 'track',
+                owner_type: 'corporation',
+                count: 2,
+                must_lay_together: true,
+                must_lay_all: true,
+                closed_when_used_up: true,
+              },
+            ],
+          },
+          {
+            name: 'Board of Works',
+            value: 40,
+            revenue: 9,
+            desc: 'The owning Corporation can place a yellow tile without payment of terrain costs.'\
+            ' The company closes once this ability has been used twice.',
+            sym: 'BoW',
+          },
+          {
+            name: 'City of Dublin Steam Packet Company',
+            value: 45,
+            revenue: 10,
+            desc: 'The owning Corporation can place the +£10 token on any port.'\
+            ' This action closes the company, but the Corporation adds £10 to the' \
+            " port's revenue until the end of the game.",
+            sym: 'CDSPC',
+          },
+          {
+            name: 'Tralee & Dingle Railway',
+            value: 50,
+            revenue: 10,
+            desc: 'The owning Corporation can place two connected narrow gauge yellow tiles in the'\
+            ' Tralee and Dingle hexes. This action closes the company.',
+            sym: 'TDR',
+            abilities: [
+              {
+                type: 'tile_lay',
+                hexes: %w[A19 B18],
+                tiles: ['IR5'],
+                when: 'track',
+                owner_type: 'corporation',
+                count: 2,
+                must_lay_together: true,
+                must_lay_all: true,
+                closed_when_used_up: true,
+              },
+            ],
+          },
+          {
+            name: 'Drumglass Colliery Railway',
+            value: 60,
+            revenue: 12,
+            desc: 'No Corporation can build in the DCR hex until this company is bought by any Corporation'\
+            ' or closed. The owning Corporation can then place a yellow tile'\
+            ' in that hex without using a tile action or paying terrain costs.',
+            sym: 'DCR',
+            abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['H4'] }],
+          },
+          {
+            name: 'Trans-Atlantic Steam Packet Station',
+            value: 75,
+            revenue: 15,
+            desc: 'The owning Corporation can place the +£20 token on Galway. This action closes the company,'\
+            " but the Corporation adds £20 to the city's revenue until the end of the game.",
+            sym: 'TASPS',
+          },
+          {
+            name: 'River Shannon Shipping Co',
+            value: 80,
+            revenue: 10,
+            desc: 'The owning Corporation controls a river link between Dromod and Limerick and adds the value of the'\
+          ' other city to one train ending at either Dromod or Limerick.',
+            sym: 'RSSC',
+          },
+          {
+            name: 'William Dargan Esq.',
+            value: 90,
+            revenue: 10,
+            desc: 'The owning Corporation can upgrade a second track tile during each'\
+            " OR at a cost of £30 from the Corporation's Treasury.",
+            sym: 'WDE',
+          },
+          {
+            name: 'The Irish Mail',
+            value: 110,
+            revenue: 20,
+            desc: 'The owning Corporation can place an off-board location tile adjacent'\
+            ' to one of: Londonderry, Kingstown, or Waterford. This action closes the company,'\
+            ' but any Corporation may run to the tile for the rest of the game.',
+            sym: 'TIM',
+            abilities: [
+              {
+                type: 'tile_lay',
+                hexes: %w[F0 H0 G-1 J12 G21 H20],
+                tiles: ['IM'],
+                when: 'track',
+                owner_type: 'corporation',
+                count: 1,
+                closed_when_used_up: true,
+              },
+            ],
+          },
+          {
+            name: 'Dublin & Kingstown Railway',
+            value: 120,
+            revenue: 0,
+            desc: 'The owner of this company: Takes the D&KR directorship; sets the share'\
+            ' price at half bid; places a 2H-Train on the charter; places the winning bid'\
+            ' in the D&KR treasury less the cost of the train and discards this card.',
+            sym: 'DK',
+            abilities: [
+            { type: 'close', when: 'bought_train', corporation: 'DKR' },
+            { type: 'no_buy' },
+            { type: 'shares', shares: 'DKR_0' },
+            ],
+          },
+      ].freeze
 
         CORPORATIONS = [
           {
@@ -111,7 +236,7 @@ module Engine
             type: 'major',
             max_ownership_percent: 70,
           },
-          # @todo: home token locations
+          # minors
           {
             float_percent: 40,
             sym: 'LER',
@@ -123,6 +248,7 @@ module Engine
             color: 'red', # @todo: rouge
             reservation_color: nil,
             type: 'minor',
+            coordinates: 'G1',
           },
           {
             float_percent: 40,
@@ -135,12 +261,13 @@ module Engine
             color: 'black',
             reservation_color: nil,
             type: 'minor',
+            coordinates: 'E21',
           },
           {
             float_percent: 40,
-            sym: 'EBSR',
+            sym: 'EBS',
             name: 'Einniskillen, Bundoran & Sligo Railway',
-            logo: '18_ireland/EBSR',
+            logo: '18_ireland/EBS',
             tokens: [0],
             shares: [40, 20, 20, 20],
             always_market_price: true,
@@ -148,18 +275,20 @@ module Engine
             text_color: 'black',
             reservation_color: nil,
             type: 'minor',
+            coordinates: 'F6',
           },
           {
             float_percent: 40,
-            sym: 'SLNCR',
+            sym: 'SLNC',
             name: 'Sligo, Leitrim & Northern Counties Railway',
-            logo: '18_ireland/SLNCR',
+            logo: '18_ireland/SLNC',
             tokens: [0],
             shares: [40, 20, 20, 20],
             always_market_price: true,
             color: 'gray',
             reservation_color: nil,
             type: 'minor',
+            coordinates: 'F6',
           },
           {
             float_percent: 40,
@@ -173,6 +302,22 @@ module Engine
             text_color: 'black',
             reservation_color: nil,
             type: 'minor',
+            coordinates: 'I11',
+            city: 1,
+          },
+          {
+            float_percent: 40,
+            sym: 'DKR',
+            name: 'Dublin & Kingstown Railway',
+            logo: '18_ireland/DKR',
+            tokens: [0],
+            shares: [40, 20, 20, 20],
+            always_market_price: true,
+            color: 'purple',
+            reservation_color: nil,
+            type: 'minor',
+            coordinates: 'I11',
+            city: 0,
           },
           {
             float_percent: 40,
@@ -186,6 +331,7 @@ module Engine
             text_color: 'black',
             reservation_color: nil,
             type: 'minor',
+            coordinates: 'D6',
           },
           {
             float_percent: 40,
@@ -195,10 +341,11 @@ module Engine
             tokens: [0],
             shares: [40, 20, 20, 20],
             always_market_price: true,
-            color: 'brown', # @todo: not quite right
+            color: 'brown', # @todo: not quite right -> tan
             text_color: 'black',
             reservation_color: nil,
             type: 'minor',
+            coordinates: 'J4',
           },
           {
             float_percent: 40,
@@ -212,6 +359,7 @@ module Engine
             text_color: 'black',
             reservation_color: nil,
             type: 'minor',
+            coordinates: 'I9',
           },
           {
             float_percent: 40,
@@ -224,6 +372,7 @@ module Engine
             color: 'blue', # @todo: more navy blue
             reservation_color: nil,
             type: 'minor',
+            coordinates: 'F10',
           },
           {
             float_percent: 40,
@@ -236,6 +385,7 @@ module Engine
             color: 'blue', # @todo: light blue
             reservation_color: nil,
             type: 'minor',
+            coordinates: 'G19',
           },
           {
             float_percent: 40,
@@ -248,6 +398,7 @@ module Engine
             color: 'green',
             reservation_color: nil,
             type: 'minor',
+            coordinates: 'G13',
           },
           {
             float_percent: 40,
@@ -260,6 +411,7 @@ module Engine
             color: 'red',
             reservation_color: nil,
             type: 'minor',
+            coordinates: 'G13',
           },
           {
             float_percent: 40,
@@ -272,6 +424,7 @@ module Engine
             color: 'red',
             reservation_color: nil,
             type: 'minor',
+            coordinates: 'D16',
           },
         ].freeze
       end

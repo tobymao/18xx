@@ -32,9 +32,10 @@ module Engine
             return unless (home = @game.home_hex(corporation))
             return if corporation.trains.empty?
 
+            home_node = home.tile.cities.first # Each tile with a city has exactly one node
             max_nodes = corporation.trains.map(&:distance).max
-            destination.tile.nodes.first&.walk(corporation: corporation, max_nodes: max_nodes) do |path, _|
-              return true if path.hex.id == home.id
+            destination.tile.nodes.first&.walk(corporation: corporation) do |path, _, visited|
+              return true if path.nodes.include?(home_node) && visited.size < max_nodes
             end
 
             false

@@ -135,7 +135,7 @@ module Engine
           def form_public_mine(entity, corporation)
             corporation.owner = entity
             @round.pending_forms << { corporation: corporation, owner: entity, targets: [] }
-            @log << "Public Mining Company #{corporation.name} forms"
+            @log << "#{entity.name} forms Public Mining Company #{corporation.name}"
           end
 
           def remove_company(entity, corporation)

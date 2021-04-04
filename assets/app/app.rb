@@ -91,7 +91,7 @@ class App < Snabberb::Component
   end
 
   def render_game
-    match = @app_route.match(%r{(hotseat|game|fixture)/((18.*/)?([^?]*))})
+    match = @app_route.match(%r{(hotseat|game|fixture)/((18.*/)?([^?#]*))})
 
     if !@game_data&.any? # this is a hotseat game
       if @app_route.include?('tutorial')

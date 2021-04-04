@@ -131,7 +131,7 @@ module View
                          }),
           ])]
 
-          form = { "corporations": corporations, "options": options }
+          form = { corporations: corporations, options: options }
 
           children << h(:div, [
             h(:p, 'Options:'),
@@ -193,7 +193,7 @@ module View
             value: default_value,
             required: true,
           },
-          input_style: { width: '2.5rem' },
+          input_style: { width: '5rem' },
           container_style: { margin: '0' },
         )
 

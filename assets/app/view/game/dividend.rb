@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'lib/color'
 require 'lib/settings'
 require 'view/game/actionable'
 
@@ -8,7 +7,6 @@ module View
   module Game
     class Dividend < Snabberb::Component
       include Actionable
-      include Lib::Color
       include Lib::Settings
 
       needs :routes, store: true, default: []
@@ -101,11 +99,13 @@ module View
             ' to cover the remaining unpaid interest'
         end
         penalties = h(:span)
-        penalties = h(:div, [
-          h(:h3, 'Penalties'),
-          h(:p, corporation_penalty),
-          h(:p, player_penalty),
-        ]) if corporation_interest_penalty?(entity) || player_interest_penalty?(entity)
+        if corporation_interest_penalty?(entity) || player_interest_penalty?(entity)
+          penalties = h(:div, [
+            h(:h3, 'Penalties'),
+            h(:p, corporation_penalty),
+            h(:p, player_penalty),
+          ])
+        end
 
         h(:div, div_props, [
           penalties,

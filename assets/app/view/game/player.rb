@@ -9,7 +9,6 @@ module View
     class Player < Snabberb::Component
       include Lib::Settings
       include Lib::Text
-      include Lib::Color
 
       needs :player
       needs :game
@@ -97,23 +96,27 @@ module View
 
         if @game.active_step&.current_actions&.include?('bid')
           committed = @game.active_step.committed_cash(@player, @show_hidden)
-          trs.concat([
-            h(:tr, [
-              h(:td, 'Committed'),
-              h('td.right', @game.format_currency(committed)),
-            ]),
-            h(:tr, [
-              h(:td, 'Available'),
-              h('td.right', @game.format_currency(@player.cash - committed)),
-            ]),
-          ]) if committed.positive?
+          if committed.positive?
+            trs.concat([
+              h(:tr, [
+                h(:td, 'Committed'),
+                h('td.right', @game.format_currency(committed)),
+              ]),
+              h(:tr, [
+                h(:td, 'Available'),
+                h('td.right', @game.format_currency(@player.cash - committed)),
+              ]),
+            ])
+          end
 
-          trs.concat([
-             h(:tr, [
-               h(:td, 'Bid tokens'),
-               h('td.right', "#{@game.active_step.bidding_tokens(@player)} / #{@game.bidding_token_per_player}"),
-             ]),
-           ]) if @game.active_step.respond_to?(:bidding_tokens)
+          if @game.active_step.respond_to?(:bidding_tokens)
+            trs.concat([
+              h(:tr, [
+                h(:td, 'Bid tokens'),
+                h('td.right', "#{@game.active_step.bidding_tokens(@player)} / #{@game.bidding_token_per_player}"),
+              ]),
+            ])
+          end
         end
 
         trs.concat([

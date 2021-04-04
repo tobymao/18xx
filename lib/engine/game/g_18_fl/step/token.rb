@@ -29,9 +29,11 @@ module Engine
           def process_place_token(action)
             raise GameError, "#{action.entity.name} cannot lay token now" if @game.round.laid_token[action.entity]
 
-            raise GameError, "#{action.entity.name} cannot afford "\
-                "#{@game.format_currency(action.cost)} to lay token in "\
-                "#{action.city.hex.tile.location_name}" if action.cost > action.entity.cash
+            if action.cost > action.entity.cash
+              raise GameError, "#{action.entity.name} cannot afford "\
+                  "#{@game.format_currency(action.cost)} to lay token in "\
+                  "#{action.city.hex.tile.location_name}"
+            end
 
             unless @game.loading
               verified_cost = token_cost_override(action.entity, action.city, action.slot, action.token)
@@ -52,7 +54,9 @@ module Engine
             token = action.token
 
             raise GameError, "#{hex.id} is not a town" if hex.tile.towns.empty?
-            raise GameError, "#{entity.name} already has a hotel in #{hex.tile.location_name}" if tokened(hex, entity)
+
+            tokener = hex_tokened(hex)
+            raise GameError, "#{tokener.name} already has a hotel in #{hex.tile.location_name}" if tokener
 
             cost = action.cost # We are using token_cost_override
             unless @game.loading
@@ -63,8 +67,9 @@ module Engine
               verified_cost = token_cost_override(entity, hex, nil, verified_token)
               raise GameError, 'Error verifying token cost; is game out of sync?' unless cost == verified_cost
             end
-            raise GameError, "#{entity.name} cannot afford "\
-                  "#{@game.format_currency(cost)} cost to lay hotel" if cost > entity.cash
+            if cost > entity.cash
+              raise GameError, "#{entity.name} cannot afford #{@game.format_currency(cost)} cost to lay hotel"
+            end
 
             @game.log << "#{entity.name} places a hotel on #{hex.name} for #{@game.format_currency(cost)}"
             entity.spend(cost, @game.bank)
@@ -79,7 +84,7 @@ module Engine
             min_distance = INFINITE_DISTANCE
             goal_cities = entity.tokens.select(&:city).map(&:city)
 
-            node.walk(corporation: entity) do |path, visited_paths|
+            node.walk(corporation: entity) do |path, visited_paths, _visited|
               if goal_cities.include?(path.city)
                 # minus one to account for the tokened hex getting included in the count
                 distance = visited_paths.uniq { |k, _| k.hex }.size - 1
@@ -88,6 +93,10 @@ module Engine
             end
 
             token.price * min_distance
+          end
+
+          def hex_tokened(hex)
+            @game.corporations.find { |c| tokened(hex, c) }
           end
 
           def tokened(hex, entity)

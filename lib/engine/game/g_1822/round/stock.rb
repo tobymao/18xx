@@ -123,13 +123,15 @@ module Engine
 
             # If there is a difference between the treasury and the price. The rest is paid to the bank.
             price_treasury_difference = price - treasury
-            @log << "#{player.name} pays #{@game.format_currency(price_treasury_difference)} "\
-                    'to the bank' if price_treasury_difference.positive?
+            if price_treasury_difference.positive?
+              @log << "#{player.name} pays #{@game.format_currency(price_treasury_difference)} "\
+                      'to the bank'
+            end
 
             # If there is a difference between the treasury and the money the company get from the IPO
-            treasury_par_difference = treasury - (par_price * 2)
-            @log << "#{minor.name} receives an additional #{@game.format_currency(treasury_par_difference)} "\
-                    'from the bid' if treasury_par_difference != 0
+            return if (treasury_par_diff = treasury - (par_price * 2)).zero?
+
+            @log << "#{minor.name} receives an additional #{@game.format_currency(treasury_par_diff)} from the bid"
           end
 
           def highest_bid(company)

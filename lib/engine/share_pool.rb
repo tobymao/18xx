@@ -55,9 +55,11 @@ module Engine
       share_str = "a #{bundle.percent}% share "
       share_str += "of #{corporation.name}" unless entity == corporation
 
-      from = if bundle.owner.corporation?
-               (bundle.owner == bundle.corporation ? "the #{@game.ipo_name(corporation)}" : bundle.owner.name)
-             elsif bundle.owner.player?
+      from = if bundle.owner == corporation.ipo_owner
+               "the #{@game.ipo_name(corporation)}"
+             elsif bundle.owner.corporation? && bundle.owner == corporation
+               'the Treasury'
+             elsif bundle.owner.corporation? || bundle.owner.player?
                bundle.owner.name
              else
                'the market'
@@ -89,6 +91,7 @@ module Engine
         transfer_shares(bundle, entity)
       else
         receiver = if (%i[escrow incremental].include?(corporation.capitalization) && bundle.owner.corporation?) ||
+                       (bundle.owner.corporation? && !corporation.ipo_is_treasury?) ||
                        bundle.owner.player?
                      bundle.owner
                    else
@@ -192,7 +195,8 @@ module Engine
 
       # handle selling president's share to the pool
       # if partial, move shares from pool to old president
-      if @allow_president_sale && max_shares <= 10 && bundle.presidents_share && to_entity == self
+      if @allow_president_sale && max_shares < corporation.presidents_percent && bundle.presidents_share &&
+          to_entity == self
         corporation.owner = self
         @log << "President's share sold to pool. #{corporation.name} enters receivership"
         return unless bundle.partial?
@@ -212,7 +216,7 @@ module Engine
       end
 
       # skip the rest if no player can be president yet
-      return if @allow_president_sale && max_shares <= 10
+      return if @allow_president_sale && max_shares < corporation.presidents_percent
 
       majority_share_holders = presidency_check_shares(corporation).select { |_, p| p == max_shares }.keys
 

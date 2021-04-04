@@ -181,8 +181,10 @@ module Engine
               @game.share_pool.buy_shares(player, ShareBundle.new(bundle), exchange: :free)
             end
             # market shares, presidency will be with a player, so can just buy
-            @game.share_pool.buy_shares(@game.share_pool, ShareBundle.new(target.shares.take(market_shares)),
-                                        exchange: :free) unless market_shares.zero?
+            unless market_shares.zero?
+              @game.share_pool.buy_shares(@game.share_pool, ShareBundle.new(target.shares.take(market_shares)),
+                                          exchange: :free)
+            end
 
             move_tokens_to_surviving(target, @round.merging)
 

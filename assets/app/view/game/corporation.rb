@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'lib/color'
 require 'lib/settings'
 require 'view/game/actionable'
 require 'view/game/alternate_corporations'
@@ -11,7 +10,6 @@ module View
     class Corporation < Snabberb::Component
       include Actionable
       include AlternateCorporations
-      include Lib::Color
       include Lib::Settings
 
       needs :user, default: nil, store: true
@@ -375,12 +373,14 @@ module View
         other_corp_rows = entities_rows(@game.corporations.reject { |c| c == @corporation })
 
         num_ipo_shares = share_number_str(@corporation.num_ipo_shares - @corporation.num_ipo_reserved_shares)
-        if !num_ipo_shares.empty? && @corporation.capitalization != @game.class::CAPITALIZATION
+        if @game.respond_to?(:reissued?) && @game.reissued?(@corporation) && !num_ipo_shares.empty?
           num_ipo_shares = '* ' + num_ipo_shares
         end
         dc = @corporation.shares_of(@corporation).any?(&:double_cert)
         dc_reserved = @corporation.reserved_shares.any?(&:double_cert)
         double_cert = dc && !dc_reserved
+
+        num_treasury_shares = share_number_str(@corporation.num_treasury_shares)
 
         pool_rows = []
         if !num_ipo_shares.empty? || double_cert || @corporation.capitalization != :full
@@ -388,6 +388,14 @@ module View
             h('td.left', @game.ipo_name(@corporation)),
             h('td.right', shares_props, (double_cert ? 'd ' : '') + num_ipo_shares),
             h('td.padded_number', share_price_str(@corporation.par_price)),
+          ])
+        end
+
+        if !num_treasury_shares.empty? && !@corporation.ipo_is_treasury?
+          pool_rows << h('tr.ipo', [
+            h('td.left', 'Treasury'),
+            h('td.right', shares_props, num_treasury_shares),
+            h('td.padded_number', share_price_str(@corporation.share_price)),
           ])
         end
 
@@ -588,10 +596,12 @@ module View
         ability_props = {}
 
         ability_lines = abilities.flat_map.with_index do |ability, i|
-          ability_props = {
-            style: { cursor: 'pointer' },
-            on: { click: ->(event) { toggle_desc_detail(event, i) } },
-          } if ability.desc_detail
+          if ability.desc_detail
+            ability_props = {
+              style: { cursor: 'pointer' },
+              on: { click: ->(event) { toggle_desc_detail(event, i) } },
+            }
+          end
 
           children = [h('div.nowrap', ability_props, ability.description)]
           if ability.desc_detail

@@ -328,7 +328,7 @@ module Engine
 
             num_system_shares = total_shares / 2
             if @player_selection
-              @odd_share = @merger.name.include?(@player_selection) ? merger_share : target_share
+              @odd_share = @player_selection.include?(@merger.name) ? merger_share : target_share
               @player_selection = nil
             elsif !merger_share || entity.num_shares_of(@merger) <= num_system_shares
               @odd_share = target_share
@@ -354,7 +354,7 @@ module Engine
           def exchange_singles(entity)
             return if entity.num_shares_of(@merger).zero? && entity.num_shares_of(@target).zero?
 
-            if @player_selection
+            if !@exchange_selection && @player_selection
               @exchange_selection = @player_selection
               @player_selection = nil
             end
@@ -386,8 +386,7 @@ module Engine
               return discard_shares(entity) unless from
 
               # Execute trade to get share(s) needed for the exchange
-              trade_share(entity, [share], from,
-                          from.shares_of(@merger).reject(&:president).take(1)) if from != entity
+              trade_share(entity, [share], from, from.shares_of(@merger).reject(&:president).take(1)) if from != entity
 
               # Exchange the share and pay the difference in cost
               payment_msg = ''

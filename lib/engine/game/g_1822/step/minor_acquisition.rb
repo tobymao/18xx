@@ -222,8 +222,10 @@ module Engine
                              end
                 found_connected_city = @game.graph.connected_nodes(entity)[minor_city]
               end
-              raise GameError, "Can't acquire minor #{minor.id} "\
-                               "because it is not connected to #{entity.id}" unless found_connected_city
+              unless found_connected_city
+                raise GameError, "Can't acquire minor #{minor.id} "\
+                                 "because it is not connected to #{entity.id}"
+              end
             end
 
             @selected_minor = minor

@@ -425,11 +425,11 @@ module Engine
           },
           blue: {
             %w[E3 G1] =>
-              'offboard=revenue:green_20|brown_30,format:+%d,groups:port,route:never;path=a:4,b:_0;path=a:5,b:_0',
+            'offboard=revenue:green_20|brown_30,format:+%d,groups:port,route:never;path=a:4,b:_0;path=a:5,b:_0',
           },
           green: {
             ['J2'] =>
-              'offboard=revenue:green_20|brown_30,format:+%d,groups:port,route:never;path=a:3,b:_0;path=a:4,b:_0',
+            'offboard=revenue:green_20|brown_30,format:+%d,groups:port,route:never;path=a:3,b:_0;path=a:4,b:_0',
           },
         }.freeze
 

@@ -524,10 +524,12 @@ module Engine
 
         def operating_round(round_num)
           # For OR 1, set company buy price to face value only
-          @companies.each do |company|
-            company.min_price = company.value
-            company.max_price = company.value
-          end if @turn == 1
+          if @turn == 1
+            @companies.each do |company|
+              company.min_price = company.value
+              company.max_price = company.value
+            end
+          end
 
           # After OR 1, the company buy price is changed to 50%-150%
           setup_company_price_50_to_150_percent if @turn == 2 && round_num == 1

@@ -21,12 +21,8 @@ class User < Base
   ]).freeze
 
   def update_settings(params)
-    if params['name']
-      self.name = params['name']
-      raise 'Name cannot be empty' if name.empty?
-
-    end
-
+    self.name = params['name'] if params['name']
+    self.email = params['email'] if params['email']
     params.each do |key, value|
       settings[key] = value if SETTINGS.include?(key)
     end
@@ -67,5 +63,12 @@ class User < Base
 
   def inspect
     "#{self.class.name} - id: #{id} name: #{name}"
+  end
+
+  def validate
+    super
+    validates_unique(:name, :email, { message: 'is already registered' })
+    validates_format /^[^\s]+$/, :name, message: 'may not be empty'
+    validates_format /^[^@\s]+@[^@\s]+\.[^@\s]+$/, :email
   end
 end

@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'game_manager'
-require 'lib/color'
 require 'lib/connection'
 require 'lib/params'
 require 'lib/settings'
@@ -10,7 +9,6 @@ require_tree './game'
 module View
   class GamePage < Snabberb::Component
     include GameManager
-    include Lib::Color
     include Lib::Settings
 
     needs :selected_company, default: nil, store: true
@@ -31,7 +29,7 @@ module View
 
       # don't ask for a link for hotseat games
       action = @game.last_processed_action || 0
-      url = "#{%x(window.location.origin)}/game/#{@game_data['id']}?action=#{action - 1}"
+      url = "#{`window.location.origin`}/game/#{@game_data['id']}?action=#{action - 1}"
       game_link =
         if @game.id.is_a?(Integer)
           [
@@ -109,28 +107,30 @@ module View
 
       @connection = nil if @game_data[:mode] == :hotseat || cursor
 
-      @connection&.subscribe(game_path) do |data|
-        # make sure we're using the newest stored vars
-        # since connection is only created on the initial view
-        # and views are ephemeral
-        game = store['game']
-        game_data = store['game_data']
-        n_id = data['id']
-        o_id = game.current_action_id
+      unless @connected
+        @connection&.subscribe(game_path) do |data|
+          # make sure we're using the newest stored vars
+          # since connection is only created on the initial view
+          # and views are ephemeral
+          game = store['game']
+          game_data = store['game_data']
+          n_id = data['id']
+          o_id = game.current_action_id
 
-        if n_id == o_id + 1
-          game_data['actions'] << data
-          store(:game_data, game_data, skip: true)
-          store(:game, game.process_action(data))
-        else
-          store['connection'].get(game_path) do |new_data|
-            unless new_data['error']
-              store(:game_data, new_data, skip: true)
-              store(:game, game.clone(new_data['actions']))
+          if n_id == o_id + 1
+            game_data['actions'] << data
+            store(:game_data, game_data, skip: true)
+            store(:game, game.process_action(data))
+          else
+            store['connection'].get(game_path) do |new_data|
+              unless new_data['error']
+                store(:game_data, new_data, skip: true)
+                store(:game, game.clone(new_data['actions']))
+              end
             end
           end
         end
-      end unless @connected
+      end
 
       store(:connected, true, skip: true)
 
@@ -304,6 +304,7 @@ module View
         },
       }
 
+      note = !@game_data.dig('user_settings', 'notepad').to_s.empty?
       menu_items = [
         item('G|ame', ''),
         item('E|ntities', '#entities'),
@@ -312,7 +313,7 @@ module View
         item('I|nfo', '#info'),
         item('T|iles', '#tiles'),
         item('S|preadsheet', '#spreadsheet'),
-        item('To|ols', '#tools'),
+        item("To|ols#{' 📝' if note}", '#tools'),
       ]
 
       enabled = @game.programmed_actions[@game.player_by_id(@user['id'])] if @user

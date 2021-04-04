@@ -1436,7 +1436,7 @@ module Engine
           "#{reason_map[reason]}#{after_text}"
         end
 
-        def train_help(trains)
+        def train_help(_entity, trains, _routes)
           help = []
 
           if trains.select { |t| t.owner == @depot }.any? && !option_original_insolvency?

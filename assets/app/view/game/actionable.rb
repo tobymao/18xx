@@ -109,11 +109,11 @@ module View
           json = action.to_h
           if @game_data&.dig('settings', 'pin')
             meta = {
-              'game_result': @game_data[:result],
-              'game_status': @game_data[:status],
-              'active_players': game.active_players_id,
-              'turn': game.turn,
-              'round': game.round.name,
+              game_result: @game_data[:result],
+              game_status: @game_data[:status],
+              active_players: game.active_players_id,
+              turn: game.turn,
+              round: game.round.name,
             }
             json['meta'] = meta
           end
@@ -163,6 +163,7 @@ module View
           children: text,
           style: {
             margin: '0',
+            textDecoration: 'none',
             **style_extra,
           },
           class: "#hist_#{hotkey}",

@@ -61,8 +61,12 @@ module View
       end
 
       description = []
-      description += [h(:a, { attrs: { href: '/signup' } }, 'Signup'), ' or ',
-                      h(:a, { attrs: { href: '/login' } }, 'login'), ' to play multiplayer.'] unless @user
+      unless @user
+        description += [
+          h(:a, { attrs: { href: '/signup' } }, 'Signup'), ' or ',
+          h(:a, { attrs: { href: '/login' } }, 'login'), ' to play multiplayer.'
+        ]
+      end
       description << h(:p, 'If you are new to 18xx games then 1889, 18Chesapeake or 18MS are good games to begin with.')
       render_form('Create New Game', inputs, description)
     end
@@ -83,7 +87,7 @@ module View
           attrs[:selected] = (game.title == closest_title) ||
                              (game == Engine.meta_by_title(closest_title)::GAME_IS_VARIANT_OF)
 
-          h(:option, { attrs: attrs }, title)
+          h(:option, { attrs: attrs }, game::GAME_DROPDOWN_TITLE || title)
         end
 
         if dev_stage == :production

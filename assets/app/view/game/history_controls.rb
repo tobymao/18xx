@@ -28,8 +28,10 @@ module View
             else
               @game.round_history[-1]
             end
-          divs << history_link('<<', 'Previous Round', last_round,
-                               { gridColumnStart: '3', **style_extra }, true, 'ArrowUp') if last_round
+          if last_round
+            divs << history_link('<<', 'Previous Round', last_round,
+                                 { gridColumnStart: '3', **style_extra }, true, 'ArrowUp')
+          end
 
           prev_action =
             if @game.exception
@@ -48,8 +50,10 @@ module View
                                { gridColumnStart: '5', **style_extra }, true, 'ArrowRight')
           store(:round_history, @game.round_history, skip: true) unless @round_history
           next_round = @round_history[@game.round_history.size]
-          divs << history_link('>>', 'Next Round', next_round,
-                               { gridColumnStart: '6', **style_extra }, true, 'ArrowDown') if next_round
+          if next_round
+            divs << history_link('>>', 'Next Round', next_round,
+                                 { gridColumnStart: '6', **style_extra }, true, 'ArrowDown')
+          end
           divs << history_link('>|', 'Current Action', nil, { gridColumnStart: '7', **style_extra }, true, 'End')
         end
 

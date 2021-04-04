@@ -162,7 +162,7 @@ module Engine
         raise GameError, "#{corporation.name} cannot be parred" unless @game.can_par?(corporation, entity)
 
         @game.stock_market.set_par(corporation, share_price)
-        share = corporation.shares.first
+        share = corporation.ipo_shares.first
         buy_shares(entity, share.to_bundle)
         @game.after_par(corporation)
         track_action(action, action.corporation)
@@ -396,8 +396,9 @@ module Engine
 
           # check if end condition met
           if program.until_condition == 'float'
-            return [Action::ProgramDisable.new(entity,
-                                               reason: "#{corporation.name} is floated")] if corporation.floated?
+            if corporation.floated?
+              return [Action::ProgramDisable.new(entity, reason: "#{corporation.name} is floated")]
+            end
           elsif entity.num_shares_of(corporation, ceil: false) >= program.until_condition
             return [Action::ProgramDisable.new(entity,
                                                reason: "#{program.until_condition} share(s) bought in "\
