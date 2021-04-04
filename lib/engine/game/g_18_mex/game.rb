@@ -331,7 +331,7 @@ module Engine
                 hexes: ['H3'],
                 price: 0,
                 teleport_price: 0,
-                extra: true,
+                extra_action: true,
                 from_owner: true,
                 count: 1,
               },
@@ -636,6 +636,14 @@ module Engine
           'ndm_unavailable' => ['NdM unavailable', 'NdM shares unavailable during stock round'],
         ).freeze
 
+        def baja_variant?
+          @baja_variant ||= @optional_rules&.include?(:baja_variant)
+        end
+
+        def early_buy_of_kcmo?
+          @early_buy_of_kcmo ||= @optional_rules&.include?(:early_buy_of_kcmo)
+        end
+
         def p1_5_company
           @p1_5_company ||= company_by_id('CdB')
         end
@@ -752,21 +760,21 @@ module Engine
           change_4t_to_hardrust if @optional_rules&.include?(:hard_rust_t4)
           @minor_close = false
 
-          if @optional_rules&.include?(:early_buy_of_kcmo)
+          if early_buy_of_kcmo?
             p2_company.min_price = 1
             p2_company.max_price = p2_company.value
           end
-          p1_5_company.max_price = p1_5_company.value if @optional_rules&.include?(:baja_variant)
+          p1_5_company.max_price = p1_5_company.value if baja_variant?
         end
 
-        def init_companies
+        def init_companies(_players)
           companies = super
-          companies.reject! { |c| c.sym == 'CdB' } unless @optional_rules.include?(:baja_variant)
+          companies.reject! { |c| c.sym == 'CdB' } unless baja_variant?
           companies
         end
 
         def optional_hexes
-          return self.class::HEXES unless @optional_rules.include?(:baja_variant)
+          return self.class::HEXES unless baja_variant?
 
           new_hexes = {}
           HEXES.keys.each do |color|
@@ -913,16 +921,17 @@ module Engine
 
         def event_companies_buyable!
           setup_company_price_50_to_150_percent
-          p1_5_company.max_price = p1_5_company.value
+          p1_5_company.max_price = p1_5_company.value if baja_variant?
         end
 
         def purchasable_companies(entity = nil)
           return [] if entity&.minor?
-          return super if @phase.current[:name] != '2'
+
+          return super if @phase.current[:name] != '2' || !(early_buy_of_kcmo? || baja_variant?)
 
           companies = []
-          companies << p2_company if @optional_rules&.include?(:early_buy_of_kcmo)
-          companies << p1_5_company if @optional_rules&.include?(:baja_variant)
+          companies << p2_company if early_buy_of_kcmo?
+          companies << p1_5_company if baja_variant?
           companies.select(&:owned_by_player?)
         end
 
@@ -1114,7 +1123,7 @@ module Engine
           @merged_cities_to_select = []
         end
 
-        def upgrades_to?(from, to, special = false)
+        def upgrades_to?(from, to, _special = false, selected_company: nil)
           # Copper Canyon cannot be upgraded
           return false if from.name == '470'
 
@@ -1126,7 +1135,7 @@ module Engine
           super
         end
 
-        def all_potential_upgrades(tile, tile_manifest: false)
+        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
           # Copper Canyon cannot be upgraded
           return [] if tile.name == '470'
 

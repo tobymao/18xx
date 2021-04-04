@@ -216,7 +216,8 @@ module View
         children << h(:p,
                       'Automatically buy shares in a corporation.'\
                       ' This will deactivate itself if other players do actions that may impact you.'\
-                      ' It will also deactivate if there are multiple share sizes (5%, 10%, 20%) available for purchase.')
+                      ' It will also deactivate if there are multiple share sizes (5%, 10%, 20%)'\
+                      ' available for purchase.')
         children << h(:p,
                       [h(:a, { attrs: { href: AUTO_ACTIONS_WIKI, target: '_blank' } },
                          'Please read this for more details when it will deactivate')])

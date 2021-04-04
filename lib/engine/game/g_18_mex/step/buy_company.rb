@@ -9,10 +9,8 @@ module Engine
         class BuyCompany < Engine::Step::BuyCompany
           def can_buy_company?(entity)
             return false if entity.company?
-            return super if @game.phase.current[:name] != '2'
-            if !@game.optional_rules&.include?(:early_buy_of_kcmo) && !@game.optional_rules&.include?(:baja_variant)
-              return super
-            end
+
+            return super if @game.phase.current[:name] != '2' || !(@game.early_buy_of_kcmo? || @game.baja?)
 
             companies = @game.purchasable_companies
 
