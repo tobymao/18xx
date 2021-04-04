@@ -508,10 +508,23 @@ module View
       end
 
       def render_revenue_history
-        last_run = @corporation.operating_history[@corporation.operating_history.keys.max].revenue
+        last_run = @corporation.operating_history[@corporation.operating_history.keys.max]
+        revenue = @game.format_currency(last_run.revenue)
+        text, type =
+          case (last_run.dividend.is_a?(Engine::Action::Dividend) ? last_run.dividend.kind : 'no_run')
+          when 'no_run'
+            ["[#{revenue}]", 'did not run']
+          when 'withhold'
+            ["[#{revenue}]", 'withheld']
+          when 'half'
+            ["¦#{revenue}¦", 'half-paid']
+          else
+            [revenue, 'paid out']
+          end
+
         h(:div, { style: { display: 'inline', marginLeft: '2rem' } }, [
           'Last Run: ',
-          h('span.bold', @game.format_currency(last_run)),
+          h('span.bold', { attrs: { title: type } }, text),
         ])
       end
 
