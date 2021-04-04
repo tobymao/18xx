@@ -89,7 +89,7 @@ module View
             children << h(:path, attrs: {
                             d: d,
                             stroke: color(partition),
-                            'stroke-width': '5',
+                            'stroke-width': '8',
                           })
           end
 
