@@ -207,23 +207,19 @@ module Engine
         end
 
         def legal_tile_rotation?(corp, hex, tile)
-          connection_directions =
-            if tile_uses_broad_rules?(hex,
-                                      tile)
-              graph.connected_hexes(corp)[hex]
-            else
-              narrow_connected_hexes(corp)[hex]
-            end
+          connection_directions = if tile_uses_broad_rules?(hex, tile)
+                                    graph.connected_hexes(corp)[hex]
+                                  else
+                                    narrow_connected_hexes(corp)[hex]
+                                  end
           # Must be connected for the tile to be layable
           return false unless connection_directions
 
           # All tile exits must match neighboring tiles
           tile.exits.each do |dir|
-            connecting_path = tile.paths.find { |p| p.exits.include?(dir) }
-            next unless connecting_path
+            next unless (connecting_path = tile.paths.find { |p| p.exits.include?(dir) })
+            next unless (neighboring_tile = hex.neighbors[dir]&.tile)
 
-            neighboring_tile = hex.neighbors[dir]&.tile
-            next unless neighboring_tile
             neighboring_path = neighboring_tile.paths.find { |p| p.exits.include?(Engine::Hex.invert(dir)) }
             return false if neighboring_path && !connecting_path.tracks_match?(neighboring_path)
           end
