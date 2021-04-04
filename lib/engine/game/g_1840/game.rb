@@ -17,6 +17,7 @@ module Engine
                         orange: '#f58121',
                         black: '#110a0c',
                         blue: '#025aaa',
+                        purple: '#A79ECD',
                         lightBlue: '#8dd7f6',
                         yellow: '#ffe600',
                         green: '#32763f',
