@@ -128,13 +128,11 @@ module Engine
             %w[J20] => 'label=N;city=revenue:50;upgrade=cost:80,terrain:water;path=a:3,b:_0',
           },
           red: {
-            %w[A11] => 'offboard=revenue:yellow_10|green_20|brown_40|gray_80,groups:Ottawa;path=a:5,b:_0;' \
-                       'border=edge:4',
+            %w[A11] => 'offboard=revenue:yellow_10|green_20|brown_40|gray_80,groups:Ottawa;path=a:5,b:_0;border=edge:4',
             %w[A13] => 'offboard=revenue:yellow_10|green_20|brown_40|gray_80,groups:Ottawa,hide:1;' \
-                       'path=a:0,b:_0;path=a:5,b:_0;border=edge:1;border=edge:4,type:divider;' \
-                       'icon=image:18_ny/connection_bonus',
+                       'path=a:0,b:_0;path=a:5,b:_0;border=edge:1;icon=image:18_ny/connection_bonus',
             %w[A15] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_80,groups:Montreal,hide:1;' \
-                       'path=a:0,b:_0;path=a:5,b:_0;border=edge:4',
+                       'path=a:0,b:_0;path=a:5,b:_0;border=edge:1,type:divider;border=edge:4',
             %w[A17] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_80,groups:Montreal;' \
                        'path=a:0,b:_0;path=a:5,b:_0;border=edge:1;border=edge:4',
             %w[A19] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_80,groups:Montreal,hide:1;' \
@@ -149,18 +147,18 @@ module Engine
             %w[B26] => 'offboard=revenue:yellow_10|green_20|brown_30|gray_40,groups:Montpelier,hide:1;' \
                        'path=a:1,b:_0;border=edge:0;border=edge:2',
             %w[C25] => 'offboard=revenue:yellow_10|green_20|brown_30|gray_40,groups:Montpelier;' \
-                       'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;border=edge:3;border=edge:5,type:divider;' \
+                       'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;border=edge:3' \
                        'icon=image:18_ny/connection_bonus',
             %w[D0] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_80,groups:Toronto;' \
                       'path=a:4,b:_0;border=edge:5;icon=image:18_ny/connection_bonus',
             %w[E1] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_80,groups:Toronto,hide:1;path=a:3,b:_0;' \
-                      'path=a:4,b:_0;border=edge:0,type:divider;border=edge:2;border=edge:4,type:water,cost:80',
-            %w[D26] => 'border=edge:0',
+                      'path=a:4,b:_0;border=edge:2;border=edge:4,type:water,cost:80',
+            %w[D26] => 'border=edge:0;border=edge:2,type:divider',
             %w[E25] => 'path=a:1,b:5;path=a:2,b:5;border=edge:3;border=edge:5',
             %w[F26] => 'city=revenue:yellow_20|green_40|brown_80|gray_100,groups:Springfield,loc:2;' \
                        'path=a:1,b:_0;path=a:2,b:_0;border=edge:2',
             %w[F0] => 'offboard=revenue:yellow_10|green_20|brown_50|gray_100,groups:Jamestown,hide:1;' \
-                      'path=a:4,b:_0;border=edge:5',
+                      'path=a:4,b:_0;border=edge:3,type:divider;border=edge:5',
             %w[G1] => 'offboard=revenue:yellow_10|green_20|brown_50|gray_100,groups:Jamestown;' \
                       'path=a:3,b:_0;path=a:4,b:_0;border=edge:2;icon=image:18_ny/coal',
             %w[H2] => 'offboard=revenue:yellow_20|green_30|brown_50|gray_100,groups:Pittsburgh,hide:1;' \
@@ -172,16 +170,16 @@ module Engine
             %w[H8] => 'offboard=revenue:yellow_20|green_30|brown_50|gray_100,groups:Williamsport;' \
                       'path=a:2,b:_0;path=a:3,b:_0;border=edge:1;border=edge:4',
             %w[H10] => 'offboard=revenue:yellow_20|green_30|brown_50|gray_100,groups:Williamsport,hide:1;' \
-                       'path=a:2,b:_0;path=a:3,b:_0;border=edge:1;border=edge:4,type:divider;icon=image:18_ny/coal',
+                       'path=a:2,b:_0;path=a:3,b:_0;border=edge:1;icon=image:18_ny/coal',
             %w[H12] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_50;' \
-                       'path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;icon=image:18_ny/coal',
+                       'path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;border=edge:1,type:divider;icon=image:18_ny/coal',
             %w[G25] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_80,groups:Hartford;' \
                        'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;border=edge:3,type:divider;border=edge:5;' \
                        'icon=image:18_ny/connection_bonus',
             %w[H26] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_80,groups:Hartford,hide:1;' \
-                       'path=a:1,b:_0;border=edge:0,type:divider;border=edge:2',
+                       'path=a:1,b:_0;border=edge:2',
             %w[I25] => 'city=revenue:yellow_20|green_30|brown_40|gray_80;' \
-                       'path=a:1,b:_0;path=a:2,b:_0',
+                       'path=a:1,b:_0;path=a:2,b:_0;border=edge:3,type:divider',
             %w[J26] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_80;' \
                        'path=a:1,b:_0;border=edge:2,type:divider;icon=image:18_ny/connection_bonus',
             %w[I13] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_50,groups:Allentown,hide:1;' \
