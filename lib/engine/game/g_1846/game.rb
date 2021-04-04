@@ -509,11 +509,30 @@ module Engine
         end
 
         def event_close_companies!
-          super
-
           @minors.dup.each { |minor| close_corporation(minor) }
-
           remove_lsl_icons
+          remove_steamboat_markers! unless steamboat.owned_by_corporation?
+          super
+        end
+
+        def remove_steamboat_markers!
+          self.class::STEAMBOAT_HEXES.each do |hex_id|
+            hex = hex_by_id(hex_id)
+            if hex.assigned?(steamboat.id)
+              hex.remove_assignment!(steamboat.id)
+              @log << "-- Event: Player-owned #{steamboat.name} token removed from #{hex.name} --"
+            end
+          end
+
+          @corporations.each do |corp|
+            corp.remove_assignment!(steamboat.id) if corp.assigned?(steamboat.id)
+          end
+
+          self.class::STEAMBOAT_HEXES.uniq.each do |hex|
+            hex_by_id(hex).tile.icons.reject! do |icon|
+              %w[port].include?(icon.name)
+            end
+          end
         end
 
         def event_remove_reservations!
