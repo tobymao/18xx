@@ -73,7 +73,7 @@ module Engine
           action.city,
           token,
           connected: false,
-          extra: true,
+          extra_action: true,
         )
         @round.pending_tokens.shift
       end

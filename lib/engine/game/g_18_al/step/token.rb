@@ -7,7 +7,7 @@ module Engine
     module G18AL
       module Step
         class Token < Engine::Step::Token
-          def place_token(entity, city, token, connected: true, extra: false, special_ability: nil)
+          def place_token(entity, city, token, connected: true, extra_action: false, special_ability: nil)
             super
 
             @game.abilities(entity, :assign_hexes) do |ability|

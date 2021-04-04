@@ -27,7 +27,8 @@ module Engine
             end
 
             connected = action.entity.id != @game.class::MINOR_14_ID
-            place_token(token.corporation, city, token, connected: connected, extra: true, check_tokenable: false)
+            place_token(token.corporation, city, token, connected: connected, extra_action: true,
+                                                        check_tokenable: false)
             @round.pending_tokens.shift
             @game.after_place_pending_token(action.city)
           end

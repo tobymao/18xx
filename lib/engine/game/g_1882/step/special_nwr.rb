@@ -100,7 +100,7 @@ module Engine
               action.city,
               available_tokens(@entity)[0],
               connected: false,
-              extra: true
+              extra_action: true,
             )
             @destination = action.city.hex
 

@@ -247,11 +247,17 @@ For performance reasons, the supporting code needs to be added directly to the g
 Modified station token placement
 
 - `hexes`: Array of hex coordinates where this ability may be used
+- `city`: Index of the city on the hex where this ability may be used, if
+  multiple cities are there
 - `price`: Price for placing token
 - `teleport_price`: If present, this ability may be used to place a
   token without connectivity, for the given price.
-- `extra`: If true, this ability may be used in addition to the turn's
+- `discount`: ratio discount from the normal price, e.g., `0.25` takes 25% off
+  the token price
+- `extra_action`: If true, this ability may be used in addition to the turn's
   normal token placement step. Default false.
+- `from_owner`: If true, this ability uses a token from the owning corporation's
+  charter; if false, an additional token is created. Default false.
 - `cheater`: If an integer is given, this token will be placed into a city at
   whichever is the lowest unoccupied slot index of the following: a regular slot
   in the city; the `cheater` value; one slot higher than the city actually has,
@@ -269,6 +275,8 @@ Modified station token placement
   step); if unset or false, `Engine::Step::Tokener#adjust_token_price_ability!`
   infers that the special ability ought to be used whenever a token is being
   placed in a location that the ability is allowed to use. Default false.
+- `neutral`: If true, this ability uses a "neutral" token, which allows all
+  corporations to pass through it
 
 
 ## sell_company

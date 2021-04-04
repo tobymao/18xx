@@ -291,6 +291,7 @@ module Engine
                 teleport_price: 0,
                 when: 'owning_corp_or_turn',
                 count: 1,
+                from_owner: true,
               },
               {
                 type: 'tile_lay',
