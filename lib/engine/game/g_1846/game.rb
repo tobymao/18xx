@@ -453,6 +453,8 @@ module Engine
         end
 
         def check_special_tile_lay(action)
+          return if action.is_a?(Engine::Action::Message)
+
           company = @last_action&.entity
           return unless special_tile_lay?(@last_action)
           return unless (ability = abilities(company, :tile_lay))
