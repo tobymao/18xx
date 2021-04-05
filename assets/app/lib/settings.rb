@@ -62,7 +62,7 @@ module Lib
     end
 
     def route_prop_string(index, prop)
-      "r#{index}_#{prop}"
+      "r#{index % ROUTE_COLORS.size}_#{prop}"
     end
 
     def change_favicon(active)
