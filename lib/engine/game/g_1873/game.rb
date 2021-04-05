@@ -996,12 +996,21 @@ module Engine
           entity&.corporation? && @corporation_info[entity][:type] == :railway
         end
 
+        # determine if a token lay is blocked by the need to keep a slot open
+        # for a pending concession
         def concession_blocks?(city)
           hex = city.hex
           return false unless (exits = CONCESSION_ROUTE_EXITS[hex.id])
           return false unless concession_incomplete?(@concession_route_corporations[hex.id])
           # take care of OO tile. Only care about city along concession route
           return false if (city.exits & exits).empty?
+
+          # if there is a reserved tile that has a city with the same connections
+          # and with more slots than this tile, it doesn't block
+          unless @reserved_tiles[hex.id].empty?
+            r_city = @reserved_tiles[hex.id][:tile].cities.find { |c| !(c.exits & exits).empty? }
+            return false if r_city && r_city.slots > city.slots
+          end
 
           # must be two slots available for another RR to put a token here
           (city.slots - city.tokens.count { |c| c }) < 2
@@ -1926,6 +1935,11 @@ module Engine
 
         def corporate_card_minors(corporation)
           public_mine_mines(corporation)
+        end
+
+        def player_value(player)
+          player.value +
+            @minors.select { |m| m.owner == player }.sum { |m| mine_face_value(m) }
         end
 
         def player_card_minors(player)
