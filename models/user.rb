@@ -68,7 +68,8 @@ class User < Base
   def validate
     super
     validates_unique(:name, :email, { message: 'is already registered' })
-    validates_format /^[^\s]+$/, :name, message: 'may not be empty'
+    validates_format /^.+$/, :name, message: 'may not be empty'
+    validates_format /^[^\s].*$/, :name, message: 'may not start with a whitespace'
     validates_format /^[^@\s]+@[^@\s]+\.[^@\s]+$/, :email
   end
 end
