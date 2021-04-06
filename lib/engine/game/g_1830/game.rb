@@ -534,15 +534,6 @@ module Engine
 
         LAYOUT = :pointy
 
-        def stock_round
-          Round::Stock.new(self, [
-            Engine::Step::DiscardTrain,
-            Engine::Step::Exchange,
-            Engine::Step::SpecialTrack,
-            G1830::Step::BuySellParShares,
-          ])
-        end
-
         def operating_round(round_num)
           Round::Operating.new(self, [
             Engine::Step::Bankrupt,
@@ -559,6 +550,10 @@ module Engine
             Engine::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
+        end
+
+        def multiple_buy_only_from_market?
+          !optional_rules&.include?(:multiple_brown_from_ipo)
         end
       end
     end

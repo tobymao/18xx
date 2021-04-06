@@ -566,6 +566,8 @@ module Engine
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(unlimited: :green, par: :white,
                                                             ignore_one_sale: :red).freeze
 
+        MULTIPLE_BUY_ONLY_FROM_MARKET = true
+
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'companies_buyable' => ['Companies become buyable', 'All companies may now be bought in by corporation'],
           'remove_tokens' => ['Remove Tokens', 'Remove private company tokens']

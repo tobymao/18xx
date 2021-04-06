@@ -66,6 +66,8 @@ module Engine
           players_sold: Hash.new { |h, k| h[k] = {} },
           # Actions taken by the player on this turn
           current_actions: [],
+          # If the player has already bought some share from IPO
+          bought_from_ipo: false,
           # What the player did last turn
           players_history: Hash.new { |h, k| h[k] = Hash.new { |h2, k2| h2[k2] = [] } },
         }
@@ -82,6 +84,7 @@ module Engine
         @round.players_history[current_entity].clear
 
         @round.current_actions = []
+        @round.bought_from_ipo = false
       end
 
       # Returns if a share can be bought via a normal buy actions
@@ -146,6 +149,7 @@ module Engine
       end
 
       def process_buy_shares(action)
+        @round.bought_from_ipo = true if action.bundle.owner.corporation?
         buy_shares(action.entity, action.bundle, swap: action.swap)
         track_action(action, action.bundle.corporation)
       end
@@ -179,7 +183,12 @@ module Engine
         end
       end
 
-      def can_buy_multiple?(_entity, corporation, _owner)
+      def can_buy_multiple?(_entity, corporation, owner)
+        if @game.multiple_buy_only_from_market?
+          return false unless owner.share_pool?
+          return false if @round.bought_from_ipo
+        end
+
         corporation.buy_multiple? &&
          @round.current_actions.none? { |x| x.is_a?(Action::Par) } &&
          @round.current_actions.none? { |x| x.is_a?(Action::BuyShares) && x.bundle.corporation != corporation }
