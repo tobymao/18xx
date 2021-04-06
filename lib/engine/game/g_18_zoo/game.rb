@@ -367,7 +367,7 @@ module Engine
                 reachable: true,
                 must_lay_together: true,
                 when: 'owning_corp_or_turn',
-                tiles: %w[7 X7 8 X8 9 X9 5 6 57 201 202 621],
+                tiles: %w[],
                 hexes: [],
               },
             ],
@@ -387,10 +387,11 @@ module Engine
               {
                 type: 'token',
                 owner_type: 'corporation',
+                price: 0,
                 extra_slot: true,
                 from_owner: true,
                 when: 'owning_corp_or_turn',
-                hexes: %w[J9 K4],
+                hexes: [],
               },
             ],
           },
@@ -401,9 +402,21 @@ module Engine
             desc: 'Get 2$N / 1$N when you build on a M / MM tile.',
             abilities: [
               {
+                type: 'tile_discount',
+                discount: 2,
+                owner_type: 'corporation',
+              },
+              {
                 type: 'tile_income',
-                income: 3,
+                income: 1,
                 terrain: 'mountain',
+                owner_type: 'corporation',
+                owner_only: true,
+              },
+              {
+                type: 'tile_income',
+                income: 2,
+                terrain: 'hill',
                 owner_type: 'corporation',
                 owner_only: true,
               },
@@ -430,7 +443,7 @@ module Engine
               {
                 type: 'assign_hexes',
                 when: 'owning_corp_or_turn',
-                hexes: %w[],
+                hexes: [],
                 owner_type: 'corporation',
               },
               {
@@ -624,7 +637,7 @@ module Engine
                  L17 I18] => '',
               %w[J9 M10 J17 D15 G14] => 'city=revenue:0,slots:1',
               %w[B11 B13 E18 G10 H9 H11 I2 K14 M12 M14] => 'town=revenue:0;label=O;icon=image:river,sticky:1',
-              %w[C12 H15 I14 D17] => 'upgrade=cost:1,terrain:mountain',
+              %w[C12 H15 I14 D17] => 'upgrade=cost:1,terrain:hill',
               %w[D11 E10 F17 G18 J3 K18 M16] => 'upgrade=cost:2,terrain:mountain',
               %w[D9 F19 J15 K4] => TILE_Y,
             },
@@ -658,7 +671,7 @@ module Engine
               %w[E7 F8 F12 F18 G5 G7 G9 G13 G15 H2 H8 H18 I5 I7 I9 I11 I13 I17 I19 J12 J14 K13 K17 L12 L18] => '',
               %w[G3 H6 J10 J18 M11] => 'city=revenue:0,slots:1',
               %w[F2 F16 G1 G11 H10 H12 I3 K15 M13 M15] => 'label=O;icon=image:river,sticky:1',
-              %w[H16 I15 J6] => 'upgrade=cost:1,terrain:mountain',
+              %w[H16 I15 J6] => 'upgrade=cost:1,terrain:hill',
               %w[G19 J4 K7 K19 M17] => 'upgrade=cost:2,terrain:mountain',
               %w[F6 F20 J16 K5] => TILE_Y,
             },
@@ -690,7 +703,7 @@ module Engine
               %w[C10 C16 D11 D15 D17 E4 E14 F5 F13 F15 F17 G4 G8 G12 G14 G16 H5 H7 H9 H13 I2 I8 I18 J5 J7] => '',
               %w[D5 E16 H3 H15 I6] => 'city=revenue:0,slots:1',
               %w[C12 C14 D9 E6 F19 G2 H1 H11 I10 I12 J3] => 'label=O;icon=image:river,sticky:1',
-              %w[D13 E18 F9 I16 K6] => 'upgrade=cost:1,terrain:mountain',
+              %w[D13 E18 F9 I16 K6] => 'upgrade=cost:1,terrain:hill',
               %w[D7 E8 E12 F11 G18 H19 K4 L7] => 'upgrade=cost:2,terrain:mountain',
               %w[B11 E10 G6 G20 L5] => TILE_Y,
             },
@@ -729,7 +742,7 @@ module Engine
                  J14 K13 K17 L12 L18] => '',
               %w[D16 G3 G15 H6 J10 J18 M11] => 'city=revenue:0,slots:1',
               %w[B12 B14 E19 F2 G1 G11 H10 H12 I3 K15 M13 M15] => 'label=O;icon=image:river,sticky:1',
-              %w[C13 D18 H16 I15 J6] => 'upgrade=cost:1,terrain:mountain',
+              %w[C13 D18 H16 I15 J6] => 'upgrade=cost:1,terrain:hill',
               %w[D12 E11 F18 G19 J4 K7 K19 M17] => 'upgrade=cost:2,terrain:mountain',
               %w[D10 F6 F20 J16 K5] => TILE_Y,
             },
@@ -765,7 +778,7 @@ module Engine
               %w[D4 E5 F4 F8 F12 F14 F16 G5 G7 G9 G13 H2 H8 H18 I5 I7 I9 I11 I13 I17 I19 J12 J14 K13 K17 L12 L18] => '',
               %w[C5 G3 G15 H6 J10 J18 M11] => 'city=revenue:0,slots:1',
               %w[D6 E17 E19 F2 G1 G11 H10 H12 I3 K15 M13 M15] => 'label=O;icon=image:river,sticky:1',
-              %w[H16 I15 J6] => 'upgrade=cost:1,terrain:mountain',
+              %w[H16 I15 J6] => 'upgrade=cost:1,terrain:hill',
               %w[C7 F18 G19 J4 K7 K19 M17] => 'upgrade=cost:2,terrain:mountain',
               %w[F6 F20 J16 K5] => TILE_Y,
             },
@@ -804,7 +817,7 @@ module Engine
                  K14 L17] => '',
               %w[D5 E16 H3 H15 I6 K10 K18] => 'city=revenue:0,slots:1',
               %w[C12 C14 D9 E6 F19 G2 H1 H11 I10 I12 J3 L15 L17] => 'label=O;icon=image:river,sticky:1',
-              %w[D13 E18 F9 I16 K6] => 'upgrade=cost:1,terrain:mountain',
+              %w[D13 E18 F9 I16 K6] => 'upgrade=cost:1,terrain:hill',
               %w[D7 E8 E12 F11 G18 H19 K4 L7] => 'upgrade=cost:2,terrain:mountain',
               %w[B11 E10 G6 G20 K16 L5] => TILE_Y,
             },
@@ -985,6 +998,7 @@ module Engine
 
         ASSIGNMENT_TOKENS = {
           'CORN' => '/icons/18_zoo/corn.svg',
+          'BARREL' => '/icons/18_zoo/barrel.svg',
         }.freeze
 
         MARKET_TEXT = Base::MARKET_TEXT.merge(par_2: 'Can only enter during green phase',
@@ -1014,6 +1028,7 @@ module Engine
           @companies_for_wednesday = @companies[draw_size + 8..draw_size + 11]
 
           @available_companies.concat(@companies_for_isr)
+          @available_companies.each { |c| c.owner = @bank unless c.owner }
 
           if @all_private_visible
             @log << 'All powers visible in the future deck'
@@ -1100,7 +1115,7 @@ module Engine
             return @companies.select { |company| company.owner == @bank && !abilities(company, :no_buy) }
           end
 
-          # corporation can buy ZOOTicket only from owner, and other companies from any player
+          # entity can buy ZOOTicket only from owner, and other companies from any player
           companies_for_corporation = @companies.select do |company|
             company.owner&.player? && !abilities(company, :no_buy) &&
               (entity.owner == company.owner || !company.name.start_with?('ZOOTicket'))
@@ -1162,7 +1177,15 @@ module Engine
             return super
           end
 
-          # Stock - Bonus Track, Operating - Ancient Maps, Operating - Track
+          # Operating - Ancient Maps
+          if @round.is_a?(Engine::Round::Operating) && selected_company == @ancient_maps
+            return false unless from.color == 'white'
+
+            # TODO: fix to use selected_company
+            return super
+          end
+
+          # Stock - Bonus Track, Operating - Track
           # TODO: fix to use selected_company
 
           super
@@ -1183,10 +1206,10 @@ module Engine
 
           corporations_order = @corporations.sort_by(&:full_name).cycle(2).to_a
           if @corporations.count(&:ipoed) == 1
-            # Take the first corporation not ipoed after the one just parred
+            # Take the first entity not ipoed after the one just parred
             next_corporation = corporations_order.drop_while { |c| c.id != corporation.id }
                                                  .find { |c| !c.ipoed }
-            # Take the first corporation not ipoed before the one just parred
+            # Take the first entity not ipoed before the one just parred
             previous_corporation = corporations_order.reverse
                                                      .drop_while { |c| c.id != corporation.id }
                                                      .find { |c| !c.ipoed }
@@ -1290,10 +1313,13 @@ module Engine
           @two_barrels ||= company_by_id('TWO_BARRELS')
         end
 
+        def can_choose_two_barrels?(entity, company)
+          company == two_barrels && entity&.corporation? && two_barrels.owner == entity &&
+            !two_barrels_used_this_or?(entity)
+        end
+
         def two_barrels_used_this_or?(entity)
-          entity&.corporation? &&
-            two_barrels.owner == entity &&
-            (two_barrels.all_abilities.empty? || two_barrels.all_abilities[0].count_this_or.positive?)
+          entity&.assigned?('BARREL')
         end
 
         def a_squeeze
@@ -1310,6 +1336,12 @@ module Engine
 
         def a_spoonful_of_sugar
           @a_spoonful_of_sugar ||= company_by_id('A_SPOONFUL_OF_SUGAR')
+        end
+
+        def can_choose_sugar?(entity, company)
+          company == a_spoonful_of_sugar && entity&.corporation? && a_spoonful_of_sugar.owner == entity &&
+            entity.trains.any? { |train| !%w[2J 4J].include?(train.name) } &&
+            entity.all_abilities.none? { |a| a.type == :increase_distance_for_train }
         end
 
         def apply_custom_ability(company)
@@ -1339,13 +1371,15 @@ module Engine
         end
 
         def revenue_for(route, stops)
-          super
+          revenue = super
 
-          # TODO: Add 30$N if route contains 'Corn' and Corporation owns 'Corn'
-          # revenue += 30 if route.corporation.assigned?(corn.id) && stops.any? { |stop| stop.hex.assigned?(corn.id) }
+          # Add 30$N if route contains 'Corn' and Corporation owns 'Corn'
+          revenue += 30 if route.corporation.assigned?(corn.id) && stops.any? { |stop| stop.hex.assigned?(corn.id) }
 
-          # TODO: Towns revenues are doubled if 'Two barrels' is in use
-          # revenue += 10 * stops.count { |stop| stop.tile.towns.any? } if two_barrels_used_this_or?(route.corporation)
+          # Towns revenues are doubled if 'Two barrels' is in use
+          revenue += 10 * stops.count { |stop| !stop.tile.towns.empty? } if two_barrels_used_this_or?(route.corporation)
+
+          revenue
         end
 
         def zoo_ticket?(company)
@@ -1363,8 +1397,8 @@ module Engine
 
           # 2S, 3S, 4S, 5S
           if distance.is_a?(Numeric)
-            # TODO: Ability 'IncreaseDistanceForTrain' can change the max distance for a specific train
-            # distance += @game.abilities(route.train.owner, :increase_distance_for_train)&.distance || 0
+            # Ability 'IncreaseDistanceForTrain' can change the max distance for a specific train
+            distance += abilities(route.train.owner, :increase_distance_for_train)&.distance || 0
             raise GameError, "#{cities_visited} is too many stops for #{distance} train" if distance < cities_visited
           else
             super
@@ -1372,13 +1406,81 @@ module Engine
         end
 
         def company_header(company)
-          case company.sym
-          when 'HOLIDAY', 'MIDAS', 'TOO_MUCH_RESPONSIBILITY', 'LEPRECHAUN_POT_OF_GOLD',
-            'IT_IS_ALL_GREEK_TO_ME', 'WHATSUP'
-            'POWER (SR)'
-          else
-            'POWER (OR)'
-          end
+          type_text = @future_companies.include?(company) ? 'FUTURE POWER' : 'POWER'
+          sr_or_text = case company.sym
+                       when 'HOLIDAY', 'MIDAS', 'TOO_MUCH_RESPONSIBILITY', 'LEPRECHAUN_POT_OF_GOLD',
+                         'IT_IS_ALL_GREEK_TO_ME', 'WHATSUP'
+                         '(SR)'
+                       else
+                         '(OR)'
+                       end
+          "#{type_text} #{sr_or_text}"
+        end
+
+        def train_help(runnable_trains)
+          return [] if runnable_trains.empty?
+
+          entity = runnable_trains.first.owner
+
+          # Barrel assignment
+          barrel_assignment = entity.assigned?('BARREL')
+
+          # Corn assignment
+          corn_assignment = entity.assigned?('CORN')
+
+          help = []
+          # TODO: add logic for Bandage - trains
+
+          help << 'Routes get no subsidy at all, but every town increase route value by 10.' if barrel_assignment
+          help << 'Any train running in a city which has a Corn token increase route value by 30.' if corn_assignment
+          help
+        end
+
+        def subsidy_for(_route, stops)
+          subsidy = 0
+          # Get 1 for each town
+          subsidy += stops.count { |s| !s.tile.towns.empty? }
+
+          subsidy
+        end
+
+        def routes_subsidy(routes)
+          return 0 if routes.empty?
+
+          entity = routes.first.train.owner
+          # No subsidy if it is using 'Two Barrels'
+          return 0 if two_barrels_used_this_or?(entity)
+
+          subsidy = routes.sum(&:subsidy)
+          # 3$N additional if any subsidy and own 'A squeeze'
+          subsidy += 3 if a_squeeze.owner == entity && subsidy.positive?
+
+          subsidy
+        end
+
+        def format_currency(val)
+          # object with :revenue should not be formatted
+          val.is_a?(Integer) ? super : val[:revenue].to_s
+        end
+
+        def bonus_payout_for_share(share_price)
+          STOCKMARKET_GAIN[share_price.coordinates[0]][share_price.coordinates[1]]
+        end
+
+        def bonus_payout_for_president(share_price)
+          return 0 if share_price.coordinates[0].positive?
+
+          STOCKMARKET_OWNER_GAIN[share_price.coordinates[1]] || 0
+        end
+
+        def threshold(entity)
+          STOCKMARKET_THRESHOLD[entity.share_price.coordinates[0]][entity.share_price.coordinates[1]]
+        end
+
+        def share_price_updated(entity, revenue)
+          return stock_market.find_share_price(entity, :right) if revenue >= threshold(entity)
+
+          stock_market.find_share_price(entity, :stay)
         end
 
         private
@@ -1472,8 +1574,6 @@ module Engine
           update_current_and_future(@companies_for_tuesday, @companies_for_wednesday, 2)
           update_current_and_future(@companies_for_wednesday, nil, 3)
 
-          @available_companies.each { |c| c.owner = @bank unless c.owner }
-
           if leprechaun_pot_of_gold.owner&.player?
             bank.spend(2, leprechaun_pot_of_gold.owner, check_positive: false)
             @log << "#{leprechaun_pot_of_gold.owner.name} earns #{format_currency(2)} using
@@ -1503,8 +1603,9 @@ module Engine
 
         def operating_round(round_num)
           Engine::Game::G18ZOO::Round::Operating.new(self, [
-            # G18ZOO::Step::AssignOnOwnTokens, # TODO: check if add new step or change Assign ability
+            G18ZOO::Step::Assign,
             Engine::Step::SpecialTrack, # TODO: check if add step G18ZOO::Step::SpecialTrack or not
+            Engine::Step::SpecialToken,
             G18ZOO::Step::BuyOrUsePowerOnOr,
             G18ZOO::Step::BuyCompany,
             G18ZOO::Step::Track,
@@ -1545,7 +1646,11 @@ module Engine
         end
 
         def update_current_and_future(to_current, to_future, turn)
-          @available_companies.concat(to_current) if @turn == turn
+          if @turn == turn
+            @available_companies.concat(to_current)
+            @future_companies -= to_current
+            to_current.each { |c| c.owner = @bank unless c.owner }
+          end
           return if @all_private_visible || !to_future || @turn != turn
 
           @log << "Powers #{to_future.map { |c| "\"#{c.name}\"" }.join(', ')} added to the future deck"
