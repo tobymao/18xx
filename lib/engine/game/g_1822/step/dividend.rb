@@ -60,7 +60,7 @@ module Engine
           end
 
           def find_extra_train(entity)
-            train = entity.trains.find { |t| @game.extra_train?(t) }
+            train = entity.trains.find { |t| @game.extra_train_permanent?(t) }
             return nil unless train
 
             revenue = routes.find { |r| r.train == train }&.revenue || 0
