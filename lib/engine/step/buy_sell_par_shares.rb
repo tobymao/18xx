@@ -391,9 +391,8 @@ module Engine
 
       def activate_program_buy_shares(entity, program)
         available_actions = actions(entity)
+        corporation = program.corporation
         if available_actions.include?('buy_shares')
-          corporation = program.corporation
-
           # check if end condition met
           if program.until_condition == 'float'
             if corporation.floated?
@@ -430,7 +429,11 @@ module Engine
 
           [Action::BuyShares.new(entity, shares: share)]
         elsif bought? && available_actions.include?('pass')
-          # Buy-then-Sell games need the pass
+          # If the corporation has just been floated, don't pass
+          # as some players like to sell the last share immediately
+          return if program.until_condition == 'float' && corporation.floated?
+
+          # Buy-then-Sell games need the pass.
           [Action::Pass.new(entity)]
         end
       end
