@@ -479,7 +479,7 @@ module Engine
 
         # FIXME
         def available_to_start?(corporation)
-          @phase.available?(@starting_phase[corporation])
+          @phase.available?(@starting_phase[corporation]) && legal_to_start?(corporation)
         end
 
         def add_obligation(entity, corporation)
@@ -557,6 +557,54 @@ module Engine
           @log << "#{corporation.name} buys #{count} tokens for #{format_currency(cost)}"
         end
 
+        def place_home_token(corporation)
+          # If a corp has laid it's first token assume it's their home token
+          return if corporation.tokens.first&.used
+
+          hex = hex_by_id(corporation.coordinates)
+
+          tile = hex.tile
+          city = tile.cities.first # no OO tiles in 1862
+          if city.reserved_by?(corporation)
+            # still a reserved slot, use it
+            token = corporation.first
+            return unless city.tokenable?(corporation, tokens: token)
+
+            @log << "#{corporation.name} places a token on #{hex.name}"
+            city.place_token(corporation, token)
+          elsif upgrade_tokenable?(hex)
+            # wait for upgrade
+            @log << "#{corporation.name} must upgrade #{hex.name} in order to place a token"
+            @round.upgrade_before_token << corporation
+          else
+            # displace existing token
+            old_token = city.tokens.first # reserved slot should always be slot 0
+            old_token.remove!
+            new_token = corporation.first
+            city.exchange_token(new_token)
+            @log << "#{corporation.name} replaces #{old_token.corporation.name} token on #{hex.name}"
+          end
+        end
+
+        # determine if a legal upgrade for this hex has an additional
+        # slot
+        def upgrade_tokenable?(hex)
+          current_tile = hex.tile
+          (current_tile.color == :yellow && @phase.tiles.include?(:green)) ||
+            (current_tile.color == :green && current_tile.label.to_s == 'N' && @phase.tiles.include?(:brown))
+        end
+
+        # OK to start a corp if
+        # - there still is a slot with a reservation for it, OR
+        # - a legal upgrade has an additional slot
+        def legal_to_start?(corporation)
+          return true if corporation.tokens.first&.used
+
+          hex = hex_by_id(corporation.coordinates)
+          city = hex.tile.cities.first
+          city.reserved_by?(corporation) || upgrade_tokenable?(hex)
+        end
+
         def stock_round
           Engine::Round::Stock.new(self, [
             G1862::Step::BuyTokens,
@@ -566,12 +614,16 @@ module Engine
 
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
+            G1862::Step::HomeUpgrade,
+            #G1862::Step::Merge,
             Engine::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
             Engine::Step::Dividend,
-            Engine::Step::DiscardTrain,
+            #G1862::Step::Refinance,
             Engine::Step::BuyTrain,
+            #G1862::Step::RedeemStock,
+            #G1862::Step::Acquire,
           ], round_num: round_num)
         end
 
@@ -656,10 +708,12 @@ module Engine
         end
 
         def status_array(corp)
+          start_phase = @starting_phase[corp]
           status = []
           status << %w[Receivership bold] if corp.receivership?
           status << %w[Chartered bold] if @chartered[corp]
-          status << ["Phase available: #{@starting_phase[corp]}"] unless @phase.available?(@starting_phase[corp])
+          status << ["Phase available: #{start_phase}"] unless @phase.available?(start_phase)
+          status << ["Cannot start"] if @phase.available?(start_phase) && !legal_to_start?(corporation)
           status << ["Permits: #{@permits[corp].map(&:to_s).join(',')}"]
           status
         end
