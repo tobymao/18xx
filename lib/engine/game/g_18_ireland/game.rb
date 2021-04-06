@@ -161,6 +161,26 @@ module Engine
           @players.reject(&:bankrupt).one?
         end
 
+        def hex_edge_cost(conn)
+          conn[:paths].each_cons(2).sum do |a, b|
+            a.hex == b.hex ? 0 : 1
+          end
+        end
+
+        def route_distance(route)
+          route.chains.sum { |conn| hex_edge_cost(conn) }
+        end
+
+        def route_distance_str(route)
+          "#{route_distance(route)}H"
+        end
+
+        def check_distance(route, _visits)
+          limit = route.train.distance
+          distance = route_distance(route)
+          raise GameError, "#{distance} is too many hex edges for #{route.train.name} train" if distance > limit
+        end
+
         def narrow_connected_hexes(corporation)
           compute_narrow(corporation) unless @narrow_connected_hexes[corporation]
           @narrow_connected_hexes[corporation]
@@ -196,6 +216,12 @@ module Engine
 
         def clear_narrow_graph
           @narrow_connected_hexes.clear
+        end
+
+        def upgrade_cost(old_tile, hex, entity)
+          return 0 if hex.tile.paths.all? { |path| path.track == :narrow }
+
+          super
         end
 
         def tile_uses_broad_rules?(hex, tile)
@@ -332,7 +358,7 @@ module Engine
             G18Ireland::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
-            Engine::Step::Dividend,
+            G18Ireland::Step::Dividend,
             Engine::Step::DiscardTrain,
             Engine::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
