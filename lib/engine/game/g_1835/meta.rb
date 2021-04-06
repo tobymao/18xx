@@ -20,9 +20,9 @@ module Engine
           {
             sym: :Clemens,
             short_name: 'Clemens',
-            desc: 'all Privates and minors are available, 4-3-2-1-1-2-3-4, Minors start when Bay 50%',
-          },        
-          ].freeze
+            desc: 'all Privates and minors are available, 4-3-2-1-1-2-3-4-1-2-3-4, Minors start when Bayern floats',
+          },
+        ].freeze
       end
     end
   end
