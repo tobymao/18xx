@@ -17,7 +17,6 @@ module View
 
     def render_notification
       message = <<~MESSAGE
-        <p>You can now <a href="https://18xx.tools/tournament/4ix6/signup">sign up</a> for Season 5 of the unofficial 1846 league. Registrations will be open until 5 April (AoE) and it will start the next day, which is 4/6! If you're not interested in 1846 and want to be kept on the loop about other leagues and tournaments, you can <a href="https://18xx.tools/newsletter">subscribe to the newsletter</a> or <a href="https://discord.gg/vPfj9pw9">join our Discord Server</a>.</p>
         <p>18MEX now supports the Baja variant.</p>
         <p>18CZ now supports 2p Bohemia variant.</p>
         <p>18FL is now available for alpha testing</p>
