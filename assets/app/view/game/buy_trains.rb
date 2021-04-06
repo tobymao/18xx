@@ -271,7 +271,18 @@ module View
               end
 
               if other_owner(other) == @corporation.owner
-                buy_train.call
+                if !@corporation.loans.empty? && !@game.can_pay_interest?(@corporation, -price)
+                  # We don't support nested confirmed, it's unlikely you'll buy from another player.
+                  opts = {
+                    color: :yellow,
+                    click: buy_train,
+                    message: "Buying train at #{@game.format_currency(price)} will cause "\
+                    "#{@corporation.name} to be liquidated.",
+                  }
+                  store(:confirm_opts, opts, skip: false)
+                else
+                  buy_train.call
+                end
               else
                 check_consent(other_owner(other), buy_train)
               end
