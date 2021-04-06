@@ -333,20 +333,16 @@ module Engine
           red: {
             %w[D20 E19 E21] => '',
             ['K9'] =>
-            'path=a:5,b:2,a_lane:2.0;path=a:5,b:3,a_lane:2.1;border=edge:4;border=edge:5',
+            'offboard=revenue:yellow_30|green_40|brown_50|gray_60;path=a:2,b:_0;'\
+            'path=a:3,b:_0;path=a:4,b:_0,lanes:2;border=edge:1;city=revenue:0,slots:2;border=edge:4',
             ['K11'] =>
-            'path=a:0,b:2,a_lane:2.0;path=a:0,b:3,a_lane:2.1;border=edge:0;border=edge:1',
-            ['L10'] =>
-             'offboard=revenue:yellow_30|green_40|brown_50|gray_60;path=a:2,b:_0,lanes:2;'\
-              'path=a:3,b:_0,lanes:2;border=edge:1;city=revenue:0,slots:2;border=edge:2;border=edge:3',
+            'path=a:1,b:2,a_lane:2.0;path=a:1,b:3,a_lane:2.1;border=edge:1',
             ['K15'] =>
-            'path=a:5,b:2,a_lane:2.0;path=a:5,b:3,a_lane:2.1;border=edge:4;border=edge:5',
+            'offboard=revenue:yellow_20|green_30|brown_40|gray_50;'\
+            'path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0,lanes:2;border=edge:1;city=revenue:0,slots:2;'\
+            'border=edge:4',
             ['K17'] =>
-            'path=a:0,b:2,a_lane:2.0;path=a:0,b:3,a_lane:2.1;border=edge:0;border=edge:1',
-            ['L16'] =>
-                'offboard=revenue:yellow_20|green_30|brown_40|gray_50;'\
-                 'path=a:2,b:_0,lanes:2;path=a:3,b:_0,lanes:2;border=edge:1;city=revenue:0,slots:2;'\
-                 'border=edge:2;border=edge:3',
+            'path=a:1,b:2,a_lane:2.0;path=a:1,b:3,a_lane:2.1;border=edge:1',
             ['K27'] =>
             'offboard=revenue:yellow_20|green_30|brown_40|gray_50;'\
             'path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;city=revenue:0,slots:2;border=edge:4',
@@ -461,9 +457,8 @@ module Engine
           'J30' => 'Sankt Marx',
           'K7' => 'Schloss Schönbrunn',
           'K27' => 'Simmering',
-          'L10' => 'Liesing',
-          'L16' => 'Favoriten',
-
+          'K9' => 'Liesing',
+          'K15' => 'Favoriten',
         }.freeze
       end
     end

@@ -12,7 +12,7 @@ module Engine
             {
               name: 'a',
               train_limit: 3,
-              tiles: [:yellow],
+              tiles: %i[yellow],
             },
 
           ].freeze
