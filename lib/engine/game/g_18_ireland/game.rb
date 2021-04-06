@@ -186,6 +186,11 @@ module Engine
           @narrow_connected_hexes[corporation]
         end
 
+        def narrow_connected_paths(corporation)
+          compute_narrow(corporation) unless @narrow_connected_paths[corporation]
+          @narrow_connected_paths[corporation]
+        end
+
         def compute_narrow(entity)
           # Narrow gauge network is a separate network that is not blocked by tokens
           hexes = Hash.new { |h, k| h[k] = {} }
@@ -194,8 +199,6 @@ module Engine
           @graph.connected_nodes(entity).keys.each do |node|
             node.walk(skip_track: :broad, tile_type: self.class::TILE_TYPE) do |path, _, _|
               next if paths[path]
-
-              # @todo: this will need revisiting for the track bonuses
 
               paths[path] = true
 
@@ -212,10 +215,12 @@ module Engine
           hexes.transform_values!(&:keys)
 
           @narrow_connected_hexes[entity] = hexes
+          @narrow_connected_paths[entity] = paths
         end
 
         def clear_narrow_graph
           @narrow_connected_hexes.clear
+          @narrow_connected_paths.clear
         end
 
         def upgrade_cost(old_tile, hex, entity)
@@ -224,16 +229,16 @@ module Engine
           super
         end
 
-        def tile_uses_broad_rules?(hex, tile)
+        def tile_uses_broad_rules?(old_tile, tile)
           # Is this tile a 'broad' gauge lay or a 'narrow' gauge lay.
           # Broad gauge lay is if any of the new exits broad gauge?
-          old_paths = hex.tile.paths
+          old_paths = old_tile.paths
           new_tile_paths = tile.paths
           new_tile_paths.any? { |path| path.track == :broad && old_paths.none? { |p| path <= p } }
         end
 
         def legal_tile_rotation?(corp, hex, tile)
-          connection_directions = if tile_uses_broad_rules?(hex, tile)
+          connection_directions = if tile_uses_broad_rules?(hex.tile, tile)
                                     graph.connected_hexes(corp)[hex]
                                   else
                                     narrow_connected_hexes(corp)[hex]
@@ -271,6 +276,7 @@ module Engine
 
         def setup
           @narrow_connected_hexes = {}
+          @narrow_connected_paths = {}
 
           corporations, @future_corporations = @corporations.partition do |corporation|
             corporation.type == :minor
