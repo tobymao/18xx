@@ -9,6 +9,13 @@ module Engine
     module G1856
       module Step
         class Dividend < Engine::Step::Dividend
+          def actions(entity)
+            # National must withhold if it never owned a permanent
+            return [] if entity.corporation? && entity == @game.national && !@game.national_ever_owned_permanent
+
+            super
+          end
+
           def dividend_options(entity)
             penalty = @round.interest_penalty[entity] || 0
             revenue = @game.routes_revenue(routes) - penalty
@@ -48,6 +55,18 @@ module Engine
             change_share_price(entity, payout)
 
             pass!
+          end
+
+          def share_price_change(entity, _revenue)
+            # Share price of national does not change until it owns a permanent
+            return {} if entity == @game.national && !@game.national_ever_owned_permanent
+
+            super
+          end
+
+          def holder_for_corporation(_entity)
+            # Incremental corps DON'T get paid from IPO shares.
+            @game.share_pool
           end
 
           def log_run_payout(entity, kind, revenue, action, payout)

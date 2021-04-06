@@ -92,6 +92,12 @@ corporation.
 - `partition_type`: The name of the partition type that is to be
   blocked, akin to terrain and border types.
 
+## borrow_train
+
+May borrow a train from the Depot for running trains when trainless
+
+- `train_types`: Array of train types that are eligible for borrowing
+
 ## close
 
 Describe when the company closes, using the `when` attribute.
