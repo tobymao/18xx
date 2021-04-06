@@ -285,8 +285,7 @@ module Engine
           'full_capitalisation' =>
             ['Full capitalisation', 'Major companies now receives full capitalisation when floated'],
           'phase_revenue' =>
-            ['Phase revenue', 'Highland Railway and Canterbury & Whitstable Railway closes if not acquired by a '\
-                              'major company'],
+            ['Phase revenue', 'P15-HR and P20-C&WR closes if not acquired by a major company'],
         }.freeze
 
         STATUS_TEXT = Base::STATUS_TEXT.merge(
@@ -730,13 +729,14 @@ module Engine
         end
 
         def event_phase_revenue!
-          @log << '-- Event: Highland Railway and Canterbury & Whitstable Railway now closes and its money returned '\
-                  'to the bank --'
+          @log << '-- Event: P15-HR and P20-C&WR now closes and its money returned to the bank --'
           self.class::PRIVATE_PHASE_REVENUE.each do |company_id|
             company = @companies.find { |c| c.id == company_id }
             next if !company || company&.closed? || !@phase_revenue[company_id]
 
-            @phase_revenue[company.id].spend(@phase_revenue[company.id].cash, @bank)
+            if @phase_revenue[company.id].cash.positive?
+              @phase_revenue[company.id].spend(@phase_revenue[company.id].cash, @bank)
+            end
             @phase_revenue[company.id] = nil
             company.close!
           end
@@ -957,7 +957,7 @@ module Engine
         end
 
         def payout_companies
-          # Set the correct revenue of Highland Railway and Midland & Great Northern
+          # Set the correct revenue of P15-HR, P20-C&WR and P9-M&GNR
           @companies.each do |c|
             next unless c.owner
 
@@ -1030,7 +1030,7 @@ module Engine
 
           @log << "-- New player order: #{player_order}"
 
-          # Reset the choice for Midland & Great Northern Joint Railway
+          # Reset the choice for P9-M&GNR
           @midland_great_northern_choice = nil
         end
 
@@ -1106,7 +1106,7 @@ module Engine
           # Initialize the player depts, if player have to take an emergency loan
           @player_debts = Hash.new { |h, k| h[k] = 0 }
 
-          # Initialize a dummy player for Highland Railway and Canterbury and Whitstable Railway
+          # Initialize a dummy player for P15-HR and P20-C&WR
           # to hold the cash it generates
           @phase_revenue = {}
           self.class::PRIVATE_PHASE_REVENUE.each do |company_id|
@@ -1116,7 +1116,7 @@ module Engine
           # Initialize a dummy player for Tax haven to hold the share and the cash it generates
           @tax_haven = Engine::Player.new(-1, 'Tax Haven')
 
-          # Initialize the stock round choice for Midland & Great Northern Joint Railway
+          # Initialize the stock round choice for P9-M&GNR
           @midland_great_northern_choice = nil
 
           # Randomize and setup the companies
@@ -1797,7 +1797,7 @@ module Engine
             company.owner = @bank
           end
 
-          # Reset the choice for Midland & Great Northern Joint Railway
+          # Reset the choice for P9-M&GNR
           @midland_great_northern_choice = nil
         end
 
