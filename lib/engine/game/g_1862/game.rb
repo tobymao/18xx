@@ -7,6 +7,8 @@ require_relative 'map'
 require_relative 'step/charter_auction'
 require_relative 'step/buy_tokens'
 require_relative 'step/buy_sell_par_shares'
+require_relative 'step/home_upgrade'
+require_relative 'step/track'
 
 module Engine
   module Game
@@ -387,7 +389,8 @@ module Engine
           ignore_two_sales: 'Ignore first 2 shares sold when moving price (except president)',
         }.freeze
 
-        TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded_or_city, upgrade: false }].freeze
+        # note that the definition of an "upgrade" is extended to include "N" tiles
+        TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
 
         GAME_END_CHECK = { stock_market: :current_or, bank: :current_or, custom: :immediate }.freeze
 
@@ -567,27 +570,29 @@ module Engine
           city = tile.cities.first # no OO tiles in 1862
           if city.reserved_by?(corporation)
             # still a reserved slot, use it
-            token = corporation.first
+            token = corporation.find_token_by_type
             return unless city.tokenable?(corporation, tokens: token)
 
-            @log << "#{corporation.name} places a token on #{hex.name}"
+            @log << "#{corporation.name} places home token on #{hex.name}"
             city.place_token(corporation, token)
           elsif upgrade_tokenable?(hex)
             # wait for upgrade
-            @log << "#{corporation.name} must upgrade #{hex.name} in order to place a token"
+            @log << "#{corporation.name} must upgrade #{hex.name} in order to place home token"
             @round.upgrade_before_token << corporation
           else
             # displace existing token
             old_token = city.tokens.first # reserved slot should always be slot 0
             old_token.remove!
-            new_token = corporation.first
+            new_token = corporation.find_token_by_type
             city.exchange_token(new_token)
-            @log << "#{corporation.name} replaces #{old_token.corporation.name} token on #{hex.name}"
+            @log << "#{corporation.name} replaces #{old_token.corporation.name} token on #{hex.name} "\
+              'with home token'
           end
         end
 
         # determine if a legal upgrade for this hex has an additional
         # slot
+        # FIXME: this should check to see if an upgrade tile is available and has a legal rotation
         def upgrade_tokenable?(hex)
           current_tile = hex.tile
           (current_tile.color == :yellow && @phase.tiles.include?(:green)) ||
@@ -616,7 +621,7 @@ module Engine
           Engine::Round::Operating.new(self, [
             G1862::Step::HomeUpgrade,
             #G1862::Step::Merge,
-            Engine::Step::Track,
+            G1862::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
             Engine::Step::Dividend,
