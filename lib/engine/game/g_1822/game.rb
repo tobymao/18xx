@@ -1670,6 +1670,10 @@ module Engine
           self.class::EXTRA_TRAINS.include?(train.name)
         end
 
+        def extra_train_permanent?(train)
+          self.class::EXTRA_TRAIN_PERMANENTS.include?(train.name)
+        end
+
         def find_corporation(company)
           corporation_id = company.id[1..-1]
           corporation_by_id(corporation_id)
