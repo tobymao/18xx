@@ -337,7 +337,7 @@ module Engine
                     name: 'D',
                     distance: 999,
                     price: 1100,
-                    num: 6,
+                    num: 22,
                     available_on: '6',
                     discount: { '4' => 350, "4'" => 350, '5' => 350, "5'" => 350, '6' => 350 },
                   }].freeze
@@ -574,6 +574,22 @@ module Engine
                 face_value: true,
               },
               { type: 'description', description: '3 train limit' },
+
+              {
+                type: 'train_buy',
+                description: 'Inter train buy/sell at face value',
+                face_value: true,
+              },
+              {
+                type: 'train_limit',
+                increase: 99,
+                description: '3 train limit',
+              },
+              {
+                type: 'borrow_train',
+                train_types: %w[8 D],
+                description: 'May borrow a train when trainless*',
+              },
             ],
             reservation_color: nil,
           },
@@ -684,6 +700,7 @@ module Engine
         LAYOUT = :flat
 
         attr_reader :post_nationalization, :bankrupted
+        attr_accessor :borrowed_trains, :national_ever_owned_permanent
 
         # These plain city hexes upgrade to L tiles in brown
         LAKE_HEXES = %w[B19 C14 F17 O18 P9 N3 L13].freeze
@@ -773,7 +790,7 @@ module Engine
         end
 
         def gray_phase?
-          @phase.tiles.include?('gray')
+          @phase.tiles.include?(:gray)
         end
 
         def revenue_for(route, stops)
@@ -820,6 +837,14 @@ module Engine
 
         def national_token_limit
           10
+        end
+
+        def ultimate_train_price
+          1100
+        end
+
+        def ultimate_train_trade_in
+          750
         end
 
         def interest_owed_for_loans(loans)
@@ -918,9 +943,15 @@ module Engine
           # false: 2-share true presidency has been awarded
           @false_national_president = nil
 
+          # CGR flags
+          @national_ever_owned_permanent = false
+
           # 1 of each right is reserved w/ the private when it gets bought in. This leaves 2 extra to sell.
           @available_bridge_tokens = 2
           @available_tunnel_tokens = 2
+
+          # Corp -> Borrowed Train
+          @borrowed_trains = {}
 
           create_destinations(ALTERNATE_DESTINATIONS)
         end
@@ -977,7 +1008,16 @@ module Engine
 
         def destinated!(corp)
           @log << "-- #{corp.name} has destinated --"
+          remove_dest_icons(corp)
           release_escrow!(corp)
+        end
+
+        def remove_dest_icons(corp)
+          return unless @destinations[corp.id]
+
+          @destinations[corp.id].each do |dest|
+            Array(dest).each { |id| hex_by_id(id).tile.icons.reject! { |i| i.name == corp.id } }
+          end
         end
 
         #
@@ -1124,6 +1164,7 @@ module Engine
 
         def event_no_more_escrow_corps!
           @log << 'New corporations will be started as incremental cap corporations'
+          @corporations.reject(&:capitalization).each { |c| remove_dest_icons(c) }
         end
 
         def event_no_more_incremental_corps!
@@ -1198,11 +1239,12 @@ module Engine
             G1856::Step::Track,
             G1856::Step::Escrow,
             G1856::Step::Token,
+            G1856::Step::BorrowTrain,
             Engine::Step::Route,
             # Interest - See Loan
             G1856::Step::Dividend,
             Engine::Step::DiscardTrain,
-            Engine::Step::BuyTrain,
+            G1856::Step::BuyTrain,
             # Repay Loans - See Loan
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
@@ -1286,11 +1328,20 @@ module Engine
           end
         end
 
+        def national_bought_permanent
+          return if @national_ever_owned_permanent
+
+          @national_ever_owned_permanent = true
+          @log << "-- #{national.name} now owns a permanent train, may no longer borrow a train when trainless --"
+          national.remove_ability(national.all_abilities.find { |a| a.type == :borrow_train })
+        end
+
         def merge_major(major)
           @national_formed = true
           @log << "-- #{major.name} merges into #{national.name} --"
           # Trains are transferred
           major.trains.dup.each do |t|
+            national_bought_permanent unless t.rusts_on
             buy_train(national, t, :free)
           end
           # Leftover cash is transferred
@@ -1446,6 +1497,8 @@ module Engine
           national_share_index = 1
           players_in_order.each do |i|
             player = @players[i]
+            next unless @pre_national_percent_by_player[player]
+
             player_national_shares = (@pre_national_percent_by_player[player] / 20).to_i
             # We will distribute shares from the national starting with the second, skipping the presidency
             next unless player_national_shares.positive?
@@ -1630,10 +1683,16 @@ module Engine
           post_corp_nationalization
         end
 
-        def train_limit(entity)
-          return 3 if entity.id == 'CGR'
+        def borrow_train(action)
+          entity = action.entity
+          train = action.train
+          buy_train(entity, train, :free)
+          @borrowed_trains[entity] = train
+          @log << "#{entity.name} borrows a #{train.name}"
+        end
 
-          super
+        def train_limit(entity)
+          super + Array(abilities(entity, :train_limit)).sum(&:increase)
         end
       end
     end

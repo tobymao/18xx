@@ -1095,10 +1095,10 @@ module Engine
         send("#{type}_by_id", id)
       end
 
-      def all_companies_with_ability(ability)
+      def all_companies_with_ability(ability_type)
         @companies.each do |company|
-          if (found_ability = abilities(company, ability))
-            yield company, found_ability
+          Array(abilities(company, ability_type)).each do |ability|
+            yield company, ability
           end
         end
       end

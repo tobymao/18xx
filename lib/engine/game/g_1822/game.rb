@@ -1517,8 +1517,10 @@ module Engine
           return {} if @tax_haven.value.positive? || !company.owner&.player? || time != :stock_round
 
           choices = {}
-          @corporations.select { |c| c.floated? && c.type == :major }.each do |corporation|
+          @corporations.select { |c| c.type == :major }.each do |corporation|
             price = corporation.share_price&.price || 0
+            next unless price.positive?
+
             if corporation.num_ipo_shares.positive?
               choices["#{corporation.id}_ipo"] = "#{corporation.id} IPO (#{format_currency(price)})"
             end

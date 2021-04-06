@@ -1,0 +1,345 @@
+{
+  "status": "finished",
+  "actions": [
+    {
+      "type": "pass",
+      "entity": "Player 2",
+      "entity_type": "player",
+      "id": 1,
+      "created_at": 1616537209
+    },
+    {
+      "type": "bid",
+      "entity": "Player 1",
+      "entity_type": "player",
+      "id": 2,
+      "created_at": 1616537210,
+      "company": "A_SQUEEZE",
+      "price": 2
+    },
+    {
+      "type": "pass",
+      "entity": "Player 1",
+      "entity_type": "player",
+      "id": 3,
+      "created_at": 1616537219
+    },
+    {
+      "type": "pass",
+      "entity": "Player 2",
+      "entity_type": "player",
+      "id": 4,
+      "created_at": 1616537219
+    },
+    {
+      "type": "pass",
+      "entity": "Player 2",
+      "entity_type": "player",
+      "id": 5,
+      "created_at": 1616537220
+    },
+    {
+      "type": "pass",
+      "entity": "Player 1",
+      "entity_type": "player",
+      "id": 6,
+      "created_at": 1616537220
+    },
+    {
+      "type": "par",
+      "entity": "Player 2",
+      "entity_type": "player",
+      "id": 7,
+      "created_at": 1616537634,
+      "corporation": "GI",
+      "share_price": "6,2,1"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 8,
+      "created_at": 1616537640,
+      "hex": "J9",
+      "tile": "6-0",
+      "rotation": 1
+    },
+    {
+      "type": "pass",
+      "entity": "Player 2",
+      "entity_type": "player",
+      "id": 9,
+      "created_at": 1616537642
+    },
+    {
+      "type": "pass",
+      "entity": "Player 1",
+      "entity_type": "player",
+      "id": 10,
+      "created_at": 1616537644
+    },
+    {
+      "type": "pass",
+      "entity": "Player 2",
+      "entity_type": "player",
+      "id": 11,
+      "created_at": 1616537644
+    },
+    {
+      "type": "lay_tile",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 12,
+      "created_at": 1616537654,
+      "hex": "I10",
+      "tile": "8-0",
+      "rotation": 2
+    },
+    {
+      "type": "lay_tile",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 13,
+      "created_at": 1616537658,
+      "hex": "H9",
+      "tile": "X7-0",
+      "rotation": 5
+    },
+    {
+      "type": "buy_train",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 14,
+      "created_at": 1616537664,
+      "train": "2S-0",
+      "price": 7,
+      "variant": "2S"
+    },
+    {
+      "type": "buy_company",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 15,
+      "created_at": 1616537689,
+      "company": "A_SQUEEZE",
+      "price": 0
+    },
+    {
+      "type": "pass",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 16,
+      "created_at": 1616537691
+    },
+    {
+      "type": "lay_tile",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 17,
+      "created_at": 1616537697,
+      "hex": "K4",
+      "tile": "201-0",
+      "rotation": 5
+    },
+    {
+      "type": "lay_tile",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 18,
+      "created_at": 1616537717,
+      "hex": "H11",
+      "tile": "X7-1",
+      "rotation": 2
+    },
+    {
+      "type": "place_token",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 19,
+      "created_at": 1616538184,
+      "city": "201-0-0",
+      "slot": 0
+    },
+    {
+      "type": "run_routes",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 20,
+      "created_at": 1616538202,
+      "routes": [
+        {
+          "train": "2S-0",
+          "connections": [
+            [
+              "H9",
+              "H11"
+            ],
+            [
+              "J9",
+              "I10",
+              "H9"
+            ],
+            [
+              "K4",
+              "K6",
+              "J7",
+              "J9"
+            ]
+          ],
+          "hexes": [
+            "H11",
+            "H9",
+            "J9",
+            "K4"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 21,
+      "created_at": 1616538209,
+      "kind": "payout"
+    },
+    {
+      "type": "buy_train",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 22,
+      "created_at": 1616538212,
+      "train": "2S-1",
+      "price": 7,
+      "variant": "2S"
+    },
+    {
+      "type": "pass",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 23,
+      "created_at": 1616538215
+    },
+    {
+      "type": "lay_tile",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 24,
+      "created_at": 1616538229,
+      "hex": "G10",
+      "tile": "X8-0",
+      "rotation": 3
+    },
+    {
+      "type": "lay_tile",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 25,
+      "created_at": 1616538240,
+      "hex": "G8",
+      "tile": "8-1",
+      "rotation": 0
+    },
+    {
+      "type": "run_routes",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 26,
+      "created_at": 1616538266,
+      "routes": [
+        {
+          "train": "2S-0",
+          "connections": [
+            [
+              "H11",
+              "G10"
+            ],
+            [
+              "H9",
+              "H11"
+            ],
+            [
+              "J9",
+              "I10",
+              "H9"
+            ],
+            [
+              "K4",
+              "K6",
+              "J7",
+              "J9"
+            ]
+          ],
+          "hexes": [
+            "G10",
+            "H11",
+            "H9",
+            "J9",
+            "K4"
+          ]
+        },
+        {
+          "train": "2S-1",
+          "connections": [
+            [
+              "K4",
+              "L5"
+            ]
+          ],
+          "hexes": [
+            "L5",
+            "K4"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 27,
+      "created_at": 1616538273,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 28,
+      "created_at": 1616538274
+    }
+  ],
+  "id": "hs_gpptfzdv_1612649034",
+  "players": [
+    {
+      "name": "Player 1"
+    },
+    {
+      "name": "Player 2"
+    }
+  ],
+  "title": "18ZOO",
+  "description": "",
+  "max_players": "2",
+  "acting": [
+    "Player 1",
+    "Player 2"
+  ],
+  "created_at": "2021-03-12",
+  "loaded": true,
+  "mode": "hotseat",
+  "result": {
+    "Player 2": 110,
+    "Player 1": 98
+  },
+  "round": "Operating Round",
+  "settings": {
+    "optional_rules": []
+  },
+  "turn": 3,
+  "updated_at": 1616538274,
+  "user": {
+    "id": 0,
+    "name": "You"
+  }
+}

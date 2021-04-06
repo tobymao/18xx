@@ -1341,7 +1341,7 @@ module Engine
           },
           {
             sym: 'LNWR',
-            name: 'London and North West Railway',
+            name: 'London and North Western Railway',
             logo: '1822/LNWR',
             tokens: [0, 100],
             type: 'major',
