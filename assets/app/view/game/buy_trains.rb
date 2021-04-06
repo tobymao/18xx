@@ -271,7 +271,7 @@ module View
               end
 
               if other_owner(other) == @corporation.owner
-                if @corporation.loans.any? && !@game.can_pay_interest?(@corporation, -price)
+                if !@corporation.loans.empty? && !@game.can_pay_interest?(@corporation, -price)
                   # We don't support nested confirmed, it's unlikely you'll buy from another player.
                   opts = {
                     color: :yellow,

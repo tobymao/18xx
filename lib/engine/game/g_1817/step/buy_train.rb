@@ -10,7 +10,7 @@ module Engine
         class BuyTrain < Engine::Step::BuyTrain
           def pass_description
             text = 'Trains'
-            text += ', Liquidate' if current_entity.loans.any? && !@game.can_pay_interest?(current_entity)
+            text += ', Liquidate' if !current_entity.loans.empty? && !@game.can_pay_interest?(current_entity)
             @acted ? "Done (#{text})" : "Skip (#{text})"
           end
 
