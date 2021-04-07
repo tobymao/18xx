@@ -130,7 +130,7 @@ module Engine
             # can't ever buy machines across
             @game.train_is_machine?(train) ||
               # only RRs can have a diesel - but only one
-              @game.diesel?(train) && (@game.entity_has_diesel?(entity) || !@game.railway?(train)) ||
+              @game.diesel?(train) && (@game.entity_has_diesel?(entity) || !@game.railway?(entity)) ||
               # can't ever buy from MHE
               train.owner == @game.mhe ||
               # Indie or Public mines can't buy actual trains
@@ -328,6 +328,14 @@ module Engine
 
           def checkbox_prompt
             'Select mines to receive purchased machines or switcher using checkboxes:'
+          end
+
+          def ebuy_president_can_contribute?(_corporation)
+            false
+          end
+
+          def president_may_contribute?(_corporation, _active_shell)
+            false
           end
         end
       end

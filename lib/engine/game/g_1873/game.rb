@@ -705,13 +705,7 @@ module Engine
 
         def insolvent!(entity)
           @log << "#{entity.name} is now Insolvent and will be recapitalized"
-          # drop the price if insolvency was caused by not buying compulsory train
-          if concession_pending?(entity)
-            deferred_president_change(entity)
-            price = entity.share_price.price
-            @stock_market.move_down(entity)
-            log_share_price(entity, price)
-          end
+          deferred_president_change(entity) if concession_pending?(entity)
 
           # All stock in players' hands is returned to pool w/no compensation
           entity.player_share_holders.keys.each do |sh|
@@ -781,7 +775,7 @@ module Engine
         def sell_ipo_shares(entity)
           return if entity.ipo_shares.empty?
 
-          @log << "#{entity.ipo_shares.size} IPO share(s) of #{entity.name} are sold to share pool"
+          @log << "#{entity.ipo_shares.size} IPO share(s) of #{entity.name} are transferred to share pool"
           entity.ipo_shares.each do |share|
             @share_pool.transfer_shares(
               share.to_bundle,
@@ -1115,11 +1109,11 @@ module Engine
 
         # reorder based on cash
         def reorder_players
-          @players.sort_by!(&:cash).reverse!
+          @players.sort_by! { |p| -p.cash }
           @log << '-- New player order: --'
           @players.each.with_index do |p, idx|
-            pd = idx.zero? ? ' (Priority Deal)' : ''
-            @log << "#{p.name}#{pd}"
+            pd = idx.zero? ? ' - Priority Deal -' : ''
+            @log << "#{p.name}#{pd} (#{format_currency(p.cash)})"
           end
         end
 
