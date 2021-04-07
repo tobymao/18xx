@@ -208,7 +208,8 @@ module Engine
               },
           }.freeze
 
-        AFG_HEXES = %w[C1 H8 M9 M11 B14].freeze
+        CORP_CHOOSES_HOME = 'AFG'
+        CORP_CHOOSES_HOME_HEXES = %w[C1 H8 M9 M11 B14].freeze
         PORT_HEXES = %w[a12 A5 L14 N8].freeze
         SMS_HEXES = %w[B14 C1 C5 E1 H12 J6 M9 M13].freeze
 
@@ -327,9 +328,9 @@ module Engine
         end
 
         def home_token_locations(corporation)
-          raise NotImplementedError unless corporation == afg
+          raise NotImplementedError unless corporation.name == self.class::CORP_CHOOSES_HOME
 
-          AFG_HEXES.map { |coord| hex_by_id(coord) }.select do |hex|
+          self.class::CORP_CHOOSES_HOME_HEXES.map { |coord| hex_by_id(coord) }.select do |hex|
             hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
           end
         end
@@ -389,7 +390,7 @@ module Engine
           super
           corporation.close!
           corporation = reset_corporation(corporation)
-          @afg = corporation if corporation.id == 'AFG'
+          @afg = corporation if corporation.id == self.class::CORP_CHOOSES_HOME
           hex_by_id(corporation.coordinates).tile.add_reservation!(corporation, 0) unless corporation == afg
           @corporations << corporation
           corporation.closed_recently = true

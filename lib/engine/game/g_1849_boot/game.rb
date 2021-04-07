@@ -543,7 +543,8 @@ module Engine
 
         LAYOUT = :pointy
 
-        NEW_SFR_HEXES = %w[E11 H8 I13 I17 J18 K19 L12 L20 O9 P2].freeze
+        CORP_CHOOSES_HOME = 'SFR'
+        CORP_CHOOSES_HOME_HEXES = %w[E11 H8 I13 I17 J18 K19 L12 L20 O9 P2].freeze
         NEW_PORT_HEXES = %w[B16 G5 J20 L16].freeze
         NEW_SMS_HEXES = %w[B14 G7 H8 J18 L12 L18 L20 N20 O9 P2].freeze
 
@@ -624,14 +625,6 @@ module Engine
                '16H': 40,
              },
           }.freeze
-
-        def home_token_locations(corporation)
-          raise NotImplementedError unless corporation.name == 'SFR'
-
-          NEW_SFR_HEXES.map { |coord| hex_by_id(coord) }.select do |hex|
-            hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
-          end
-        end
 
         def check_other(route)
           return if (route.stops.map(&:hex).map(&:id) & NEW_PORT_HEXES).empty?

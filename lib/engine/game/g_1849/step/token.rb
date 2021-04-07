@@ -27,7 +27,7 @@ module Engine
 
             place_token(entity, action.city, action.token)
 
-            index = @game.corporations.index { |c| c.name == 'AFG' }
+            index = @game.corporations.index { |c| c.name == @game.class::CORP_CHOOSES_HOME }
             afg = index ? @game.corporations[index] : nil
             if afg && !afg.floated? && @game.home_token_locations(afg).empty?
               if afg.next_to_par && afg != @game.corporations.last
@@ -37,7 +37,7 @@ module Engine
               afg.slot_open = false
               @game.corporations.delete(afg)
               @game.corporations << afg
-              @log << 'AFG has no home token locations and cannot be opened until one becomes available.'
+              @log << "#{afg.name} has no home token locations and cannot be opened until one becomes available."
             end
 
             pass!
