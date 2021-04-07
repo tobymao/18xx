@@ -633,7 +633,7 @@ module Engine
             name: '5P',
             distance: 5,
             num: 1,
-            price: 0,
+            price: 500,
           },
           {
             name: 'P+',
