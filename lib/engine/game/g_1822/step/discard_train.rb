@@ -9,10 +9,13 @@ module Engine
         class DiscardTrain < Engine::Step::DiscardTrain
           def process_discard_train(action)
             train = action.train
+
             if @game.extra_train_permanent?(train)
               @game.remove_train(train)
               @log << "#{action.entity.name} discards #{train.name}, #{train.name} is removed from the game"
             else
+              # Remove any variants on the train before reclaiming it
+              train.variants.select! { |v| v == train.name }
               @game.depot.reclaim_train(train)
               @log << "#{action.entity.name} discards #{train.name}"
             end
