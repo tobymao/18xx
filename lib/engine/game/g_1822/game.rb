@@ -245,7 +245,7 @@ module Engine
             name: '5P',
             distance: 5,
             num: 1,
-            price: 0,
+            price: 500,
           },
           {
             name: 'P+',
@@ -685,7 +685,9 @@ module Engine
         def crowded_corps
           @crowded_corps ||= corporations.select do |c|
             trains = c.trains.count { |t| !extra_train?(t) }
-            trains > train_limit(c)
+            crowded = trains > train_limit(c)
+            crowded |= extra_train_permanent_count(c) > 1
+            crowded
           end
         end
 
@@ -939,7 +941,7 @@ module Engine
             G1822::Step::PendingToken,
             G1822::Step::FirstTurnHousekeeping,
             Engine::Step::AcquireCompany,
-            Engine::Step::DiscardTrain,
+            G1822::Step::DiscardTrain,
             G1822::Step::SpecialChoose,
             G1822::Step::SpecialTrack,
             G1822::Step::SpecialToken,
@@ -951,7 +953,7 @@ module Engine
             G1822::Step::BuyTrain,
             G1822::Step::MinorAcquisition,
             G1822::Step::PendingToken,
-            Engine::Step::DiscardTrain,
+            G1822::Step::DiscardTrain,
             G1822::Step::IssueShares,
           ], round_num: round_num)
         end
@@ -1672,6 +1674,10 @@ module Engine
 
         def extra_train_permanent?(train)
           self.class::EXTRA_TRAIN_PERMANENTS.include?(train.name)
+        end
+
+        def extra_train_permanent_count(corporation)
+          corporation.trains.count { |train| extra_train_permanent?(train) }
         end
 
         def find_corporation(company)
