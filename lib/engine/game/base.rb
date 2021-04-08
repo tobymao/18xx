@@ -126,6 +126,7 @@ module Engine
       CERT_LIMIT_COUNTS_BANKRUPTED = false
 
       MULTIPLE_BUY_TYPES = %i[multiple_buy].freeze
+      MULTIPLE_BUY_ONLY_FROM_MARKET = false
 
       STOCKMARKET_COLORS = {
         par: :red,
@@ -1288,6 +1289,10 @@ module Engine
       # Called by View::Game::Entities to determine if the company should be shown on entities
       def unowned_purchasable_companies(_entity)
         []
+      end
+
+      def multiple_buy_only_from_market?
+        self.class::MULTIPLE_BUY_ONLY_FROM_MARKET
       end
 
       def float_corporation(corporation)
