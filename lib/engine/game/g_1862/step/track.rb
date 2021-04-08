@@ -7,9 +7,93 @@ module Engine
     module G1862
       module Step
         class Track < Engine::Step::Track
+          def lay_tile_action(action, entity: nil, spender: nil)
+            tile_lay = get_tile_lay(action.entity)
+            if action.tile.label.to_s == 'N' && !(tile_lay && tile_lay[:upgrade])
+              raise GameError, "Cannot lay an 'N' tile now"
+            end
+
+            super
+          end
+
           def upgraded_track(action)
             # this also takes care of adding small stations, since that is never yellow to yellow
             @round.upgraded_track = true if action.tile.color != :yellow || action.tile.label.to_s == 'N'
+          end
+
+          def update_tile_lists(tile, old_tile)
+            @game.tiles.delete(tile)
+            @game.tiles << old_tile unless old_tile.preprinted
+
+            return unless tile.cities.empty? && tile.color != old_tile.color && tile.color != :yellow
+
+            # if an upgrade without cities => remove/restore base tile
+            new_base_name = @game.base_tile_name(tile)
+            new_base_tile = @game.tiles.find { |t| t.name == new_base_name }
+            @game.tiles.delete(new_base_tile)
+            @game.base_tiles << new_base_tile
+
+            return unless old_tile.color != :yellow
+
+            old_base_name = @game.base_tile_name(old_tile)
+            old_base_tile = @game.base_tiles.find { |t| t.name == old_base_name }
+            @game.base_tiles.delete(old_base_tile)
+            @game.tiles << old_base_tile
+          end
+
+          def potential_tiles(entity, hex)
+            colors = @game.phase.tiles
+            if normal_available_hex(entity, hex)
+              @game.tiles
+                .select { |tile| colors.include?(tile.color) }
+                .uniq(&:name)
+                .select { |t| @game.upgrades_to?(hex.tile, t) }
+                .reject(&:blocks_lay)
+            else
+              @game.tiles
+                .select { |tile| colors.include?(tile.color) }
+                .uniq(&:name)
+                .select { |t| @game.adding_town?(hex.tile, t) }
+                .reject(&:blocks_lay)
+            end
+          end
+
+          def legal_tile_rotation?(entity, hex, tile)
+            return super unless @game.adding_town?(hex.tile, tile)
+
+            # Here on out only used for adding towns
+            # The assupmption is that this is not performance critical
+            old_ctedges = hex.tile.city_town_edges.map(&:sort)
+            old_exits = hex.tile.exits.sort
+
+            new_exits = tile.exits.sort
+            new_ctedges = tile.city_town_edges.map(&:sort)
+
+            extra_ctedges = (new_ctedges - old_ctedges).flatten.sort
+            old_simple_exits = old_exits - old_ctedges.flatten.sort
+            new_simple_exits = new_exits - new_ctedges.flatten.sort
+
+            extra_cities = [0, new_ctedges.size - old_ctedges.size].max
+
+            new_exits.all? { |edge| hex.neighbors[edge] } &&
+              (extra_cities == 1) &&
+              ((old_ctedges & new_ctedges).size == old_ctedges.size) &&
+              extra_ctedges == (old_simple_exits - new_simple_exits)
+          end
+
+          def normal_available_hex(entity, hex)
+            color = hex.tile.color
+            connected = hex_neighbors(entity, hex)
+            return nil unless connected
+
+            tile_lay = get_tile_lay(entity)
+            return nil unless tile_lay
+
+            return nil if color == :white && !tile_lay[:lay]
+            return nil if color != :white && !tile_lay[:upgrade]
+            return nil if color != :white && tile_lay[:cannot_reuse_same_hex] && @round.laid_hexes.include?(hex)
+
+            connected
           end
 
           def available_hex(entity, hex)
