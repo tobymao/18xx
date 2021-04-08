@@ -14,7 +14,7 @@ module Engine
           end
 
           def description
-            'add token'
+            'Add Token'
           end
         end
       end
