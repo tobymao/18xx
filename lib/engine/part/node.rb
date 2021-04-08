@@ -66,7 +66,8 @@ module Engine
           next if node_path.track == skip_track
 
           node_path.walk(visited: visited_paths, counter: counter, on: on, tile_type: tile_type) do |path, vp, ct|
-            yield path, vp, visited
+            ret = yield path, vp, visited
+            next if ret == :abort
             next if path.terminal?
 
             path.nodes.each do |next_node|
