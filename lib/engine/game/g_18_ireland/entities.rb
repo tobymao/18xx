@@ -42,6 +42,17 @@ module Engine
             desc: 'The owning Corporation can place a yellow tile without payment of terrain costs.'\
             ' The company closes once this ability has been used twice.',
             sym: 'BoW',
+            abilities: [
+              {
+                type: 'tile_lay',
+                hexes: [],
+                tiles: [],
+                when: 'owning_corp_or_turn',
+                owner_type: 'corporation',
+                free: true,
+                count: 2,
+              },
+            ],
           },
           {
             name: 'City of Dublin Steam Packet Company',
@@ -81,7 +92,22 @@ module Engine
             ' or closed. The owning Corporation can then place a yellow tile'\
             ' in that hex without using a tile action or paying terrain costs.',
             sym: 'DCR',
-            abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['H4'] }],
+            abilities: [
+              {
+                type: 'blocks_hexes',
+                owner_type: 'player',
+                hexes: ['H4'],
+              },
+              {
+                type: 'tile_lay',
+                hexes: ['F4'],
+                tiles: [],
+                when: 'owning_corp_or_turn',
+                owner_type: 'corporation',
+                free: true,
+                count: 1,
+              },
+            ],
           },
           {
             name: 'Trans-Atlantic Steam Packet Station',

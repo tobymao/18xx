@@ -237,14 +237,18 @@ module Engine
           new_tile_paths.any? { |path| path.track == :broad && old_paths.none? { |p| path <= p } }
         end
 
-        def legal_tile_rotation?(corp, hex, tile)
-          connection_directions = if tile_uses_broad_rules?(hex.tile, tile)
-                                    graph.connected_hexes(corp)[hex]
-                                  else
-                                    narrow_connected_hexes(corp)[hex]
-                                  end
-          # Must be connected for the tile to be layable
-          return false unless connection_directions
+        def legal_tile_rotation?(entity, hex, tile)
+          # TIM, DR and TDR can lay irrespective of connectivity.
+          if !entity.company? || !%w[TIM DR TDR].include?(entity.id)
+            corp = entity.owner.corporation? ? entity.owner : entity
+            connection_directions = if tile_uses_broad_rules?(hex.tile, tile)
+                                      graph.connected_hexes(corp)[hex]
+                                    else
+                                      narrow_connected_hexes(corp)[hex]
+                                    end
+            # Must be connected for the tile to be layable
+            return false unless connection_directions
+          end
 
           # All tile exits must match neighboring tiles
           tile.exits.each do |dir|
