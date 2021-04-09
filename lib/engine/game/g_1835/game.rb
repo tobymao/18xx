@@ -25,14 +25,18 @@ module Engine
                         brown: '#7b352a')
 
         CURRENCY_FORMAT_STR = '%dM'
+        # game end current or, when the bank is empty
+        GAME_END_CHECK = { bank: :current_or }.freeze
+        # bankrupt is allowed, player leaves game
+        BANKRUPTCY_ALLOWED = true
 
         BANK_CASH = 12_000
 
         CERT_LIMIT = { 3 => 19, 4 => 15, 5 => 12, 6 => 11, 7 => 9 }.freeze
 
         STARTING_CASH = { 3 => 600, 4 => 475, 5 => 390, 6 => 340, 7 => 310 }.freeze
-
-        CAPITALIZATION = :full
+        # money per initial share sold
+        CAPITALIZATION = :incremental
 
         MUST_SELL_IN_BLOCKS = false
 
@@ -102,7 +106,29 @@ module Engine
           '221' => 1,
         }.freeze
 
-        LOCATION_NAMES = { 'A11' => 'Kiel', 'L14' => 'Fürth Nürnberg' }.freeze
+        LOCATION_NAMES = {
+          'A11' => 'Kiel',
+          'C11' => 'Hamburg',
+          'C13' => 'Schwerin',
+          'D6' => 'Oldenburg',
+          'D8' => 'Bremen',
+          'F10' => 'Hannover',
+          'F12' => 'Braunschweig',
+          'F14' => 'Magdeburg',
+          'G3' => 'Duisburg Essen',
+          'G5' => 'Dortmund',
+          'H2' => 'Düsseldorf',
+          'H16' => 'Leipzig',
+          'H20' => 'Dresden',
+          'J6' => 'Mainz Wiesbaden',
+          'J8' => 'Frankfurt',
+          'L6' => 'Ludwigshafen Mannheim',
+          'L14' => 'Fürth Nürnberg',
+          'M9' => 'Stuttgart',
+          'N12' => 'Augsburg',
+          'O5' => 'Freiburg',
+          'O15' => 'München',
+        }.freeze
 
         MARKET = [['',
                    '',
@@ -199,7 +225,7 @@ module Engine
           {
             name: '2.3',
             on: '4',
-            train_limit: { major: 3, minor: 1 },
+            train_limit: { prussian: 4, major: 3, minor: 1 },
             tiles: %i[yellow green],
             operating_rounds: 2,
           },
@@ -213,7 +239,7 @@ module Engine
           {
             name: '3.1',
             on: '5',
-            train_limit: { prussian: 4, major: 3, minor: 1 },
+            train_limit: { prussian: 3, major: 2 },
             tiles: %i[yellow green],
             operating_rounds: 3,
             events: { close_companies: true },
@@ -259,7 +285,7 @@ module Engine
             value: 190,
             revenue: 20,
             desc: 'Leipzig-Dresdner Bahn - Sachsen Direktor Papier',
-            abilities: [{ type: 'shares', shares: %w[SX_0 SX_1] },
+            abilities: [{ type: 'shares', shares: %w[SX_0] },
                         { type: 'no_buy' },
                         { type: 'close', when: 'bought_train', corporation: 'SX' }],
             color: nil,
@@ -280,7 +306,7 @@ module Engine
                 free: true,
                 count: 1,
               },
-              { type: 'shares', shares: 'BY_2' },
+              { type: 'shares', shares: 'BY_1' },
             ],
             color: nil,
           },
@@ -302,9 +328,10 @@ module Engine
             abilities: [
               {
                 type: 'exchange',
-                corporations: ['PR'],
+                corporations: %w[PR_1],
                 owner_type: 'player',
                 when: ['Phase 2.3', 'Phase 2.4', 'Phase 3.1'],
+                # reserved papers perhaps a option
                 from: 'ipo',
               },
             ],
@@ -324,7 +351,7 @@ module Engine
                 hexes: ['L6'],
                 tiles: %w[210 211 212 213 214 215],
               },
-              { type: 'shares', shares: 'BY_1' },
+              { type: 'shares', shares: 'BY_3' },
             ],
             color: nil,
           },
@@ -337,7 +364,7 @@ module Engine
             abilities: [
               {
                 type: 'exchange',
-                corporations: ['PR'],
+                corporations: %w[PR_2],
                 owner_type: 'player',
                 when: ['Phase 2.3', 'Phase 2.4', 'Phase 3.1'],
                 from: 'ipo',
@@ -354,18 +381,10 @@ module Engine
             logo: '1835/BY',
             simple_logo: '1835/BY.alt',
             tokens: [0, 0, 0, 0, 0],
+            float_percent: 50,
+            shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
             coordinates: 'O15',
             color: :Blue,
-            reservation_color: nil,
-          },
-          {
-            sym: 'OL',
-            name: 'Oldenburgische Eisenbahn',
-            logo: '1835/OL',
-            simple_logo: '1835/OL.alt',
-            tokens: [0, 0],
-            coordinates: 'D6',
-            color: '#6e6966',
             reservation_color: nil,
           },
           {
@@ -374,6 +393,8 @@ module Engine
             logo: '1835/SX',
             simple_logo: '1835/SX.alt',
             tokens: [0, 0, 0],
+            float_percent: 50,
+            shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
             coordinates: 'H16',
             color: '#d81e3e',
             reservation_color: nil,
@@ -384,6 +405,9 @@ module Engine
             logo: '1835/BA',
             simple_logo: '1835/BA.alt',
             tokens: [0, 0],
+            float_percent: 50,
+            shares: [20, 10, 10, 10, 10, 10, 10, 20],
+            # last_cert = true,
             coordinates: 'L6',
             color: '#7b352a',
             reservation_color: nil,
@@ -394,6 +418,10 @@ module Engine
             logo: '1835/HE',
             simple_logo: '1835/HE.alt',
             tokens: [0, 0],
+            float_percent: 50,
+            shares: [20, 10, 10, 10, 10, 10, 10, 20],
+            last_cert: %w[HE_7],
+            # last_cert = true,
             coordinates: 'J8',
             color: :green,
             reservation_color: nil,
@@ -404,6 +432,10 @@ module Engine
             logo: '1835/WT',
             simple_logo: '1835/WT.alt',
             tokens: [0, 0],
+            float_percent: 50,
+            shares: [20, 10, 10, 10, 10, 10, 10, 20],
+            last_cert: ['WT_7'],
+            # last_cert = true,
             coordinates: 'M9',
             color: :yellow,
             text_color: 'black',
@@ -415,16 +447,36 @@ module Engine
             logo: '1835/MS',
             simple_logo: '1835/MS.alt',
             tokens: [0, 0],
+            percent: 10,
+            float_percent: 60,
+            shares: [20, 10, 20, 20, 10, 10, 10],
+            # the shares order creates a 10 share company, but the first 3 sold papers are 20%
             coordinates: 'C13',
             color: :violet,
             reservation_color: nil,
           },
+          {
+            sym: 'OL',
+            name: 'Oldenburgische Eisenbahn',
+            logo: '1835/OL',
+            simple_logo: '1835/OL.alt',
+            tokens: [0, 0],
+            float_percent: 60,
+            shares: [20, 10, 20, 20, 10, 10, 10],
+            # the shares order creates a 10 share company, but the first 3 sold papers are 20%
+            coordinates: 'D6',
+            color: '#6e6966',
+            reservation_color: nil,
+          },
+
           {
             sym: 'PR',
             name: 'Preussische Eisenbahn',
             logo: '1835/PR',
             simple_logo: '1835/PR.alt',
             tokens: [0, 0, 0, 0, 0],
+            shares: [10, 10, 10, 10, 10, 10, 10, 10, 5, 5, 5, 5],
+            # shares for minors and Privates should be reserved
             coordinates: 'E19',
             color: '#37383a',
             reservation_color: nil,
@@ -438,6 +490,16 @@ module Engine
             logo: '1835/PR',
             simple_logo: '1835/PR.alt',
             tokens: [0],
+            abilities: [
+              {
+                type: 'exchange',
+                corporations: %w[PR_9],
+                owner_type: 'player',
+                when: ['Phase 2.3', 'Phase 2.4', 'Phase 3.1'],
+                # reserved papers perhaps a option
+                from: 'ipo',
+              },
+            ],
             coordinates: 'H2',
             color: '#37383a',
           },
@@ -447,6 +509,16 @@ module Engine
             logo: '1835/PR',
             simple_logo: '1835/PR.alt',
             tokens: [0],
+            abilities: [
+              {
+                type: 'exchange',
+                corporations: %w[PR_0x],
+                owner_type: 'player',
+                when: ['Phase 2.3', 'Phase 2.4', 'Phase 3.1'],
+                # reserved papers perhaps a option
+                from: 'ipo',
+              },
+            ],
             coordinates: 'E19',
             color: '#37383a',
           },
@@ -456,6 +528,16 @@ module Engine
             logo: '1835/PR',
             simple_logo: '1835/PR.alt',
             tokens: [0],
+            abilities: [
+              {
+                type: 'exchange',
+                corporations: %w[PR_10],
+                owner_type: 'player',
+                when: ['Phase 2.3', 'Phase 2.4', 'Phase 3.1'],
+                # reserved papers perhaps a option
+                from: 'ipo',
+              },
+            ],
             coordinates: 'F14',
             color: '#37383a',
           },
@@ -465,6 +547,16 @@ module Engine
             logo: '1835/PR',
             simple_logo: '1835/PR.alt',
             tokens: [0],
+            abilities: [
+              {
+                type: 'exchange',
+                corporations: %w[PR_3],
+                owner_type: 'player',
+                when: ['Phase 2.3', 'Phase 2.4', 'Phase 3.1'],
+                # reserved papers perhaps a option
+                from: 'ipo',
+              },
+            ],
             coordinates: 'G5',
             color: '#37383a',
           },
@@ -474,6 +566,16 @@ module Engine
             logo: '1835/PR',
             simple_logo: '1835/PR.alt',
             tokens: [0],
+            abilities: [
+              {
+                type: 'exchange',
+                corporations: %w[PR_11],
+                owner_type: 'player',
+                when: ['Phase 2.3', 'Phase 2.4', 'Phase 3.1'],
+                # reserved papers perhaps a option
+                from: 'ipo',
+              },
+            ],
             coordinates: 'E19',
             color: '#37383a',
           },
@@ -483,6 +585,16 @@ module Engine
             logo: '1835/PR',
             simple_logo: '1835/PR.alt',
             tokens: [0],
+            abilities: [
+              {
+                type: 'exchange',
+                corporations: %w[PR_12],
+                owner_type: 'player',
+                when: ['Phase 2.3', 'Phase 2.4', 'Phase 3.1'],
+                # reserved papers perhaps a option
+                from: 'ipo',
+              },
+            ],
             coordinates: 'C11',
             color: '#37383a',
           },
@@ -629,9 +741,9 @@ module Engine
 
         LAYOUT = :pointy
 
-        SELL_MOVEMENT = :down_per_10
+        SELL_MOVEMENT = :down_block
 
-        HOME_TOKEN_TIMING = :operating_round
+        HOME_TOKEN_TIMING = :float
 
         def setup
           # 1 of each right is reserved w/ the private when it gets bought in. This leaves 2 extra to sell.
@@ -643,7 +755,6 @@ module Engine
           Round::Operating.new(self, [
             Step::Bankrupt,
             Step::Exchange,
-            Step::BuyCompany,
             Step::SpecialTrack,
             Step::SpecialToken,
             Step::Track,
@@ -652,7 +763,6 @@ module Engine
             Step::Dividend,
             Step::DiscardTrain,
             Step::BuyTrain,
-            [Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
       end

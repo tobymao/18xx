@@ -16,6 +16,14 @@ module Engine
         GAME_RULES_URL = 'http://google.com'
 
         PLAYER_RANGE = [3, 7].freeze
+        OPTIONAL_RULES = [
+          {
+            sym: :clemens,
+            short_name: 'Clemens-Variante',
+            desc: 'all Privates and minors are available, Playerorder for the SR 4-3-2-1-1-2-3-4-1-2-3-4, '\
+                  'Minors start when Bayerische Eisenbahn floats',
+          },
+        ].freeze
       end
     end
   end
