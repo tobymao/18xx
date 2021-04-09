@@ -79,7 +79,7 @@ module Engine
             return false if !@game.concession_pending?(entity) || !entity.cash.positive?
 
             depot_trains = @depot.depot_trains.reject do |dt|
-              dt.price > entity.cash || (entity == @game.nwe && dt.distance < 2)
+              dt.price > entity.cash || (entity == @game.nwe && dt.distance < 2) || @game.diesel?(dt)
             end
 
             !depot_trains.empty?
@@ -115,7 +115,15 @@ module Engine
             (depot_trains + switchers + other_trains).compact
           end
 
+          def illegal_concession_buy?(train, entity)
+            @game.concession_pending?(entity) &&
+              (@game.train_is_switcher?(train) ||
+               @game.diesel?(train) ||
+               (train.distance < 2 && entity == @game.nwe))
+          end
+
           def illegal_depot_buy?(train, entity)
+            return true if illegal_concession_buy?(train, entity)
             return false if @game.train_is_switcher?(train)
 
             # indie mines can't buy same size machine
@@ -127,6 +135,8 @@ module Engine
           end
 
           def illegal_other_buy?(train, entity)
+            return true if illegal_concession_buy?(train, entity)
+
             # can't ever buy machines across
             @game.train_is_machine?(train) ||
               # only RRs can have a diesel - but only one
