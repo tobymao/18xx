@@ -43,67 +43,57 @@ module Engine
 
           def potential_tiles(entity, hex)
             colors = @game.phase.tiles
-            if normal_available_hex(entity, hex)
-              @game.tiles
-                .select { |tile| colors.include?(tile.color) }
-                .uniq(&:name)
-                .select { |t| @game.upgrades_to?(hex.tile, t) }
-                .reject(&:blocks_lay)
-            else
-              @game.tiles
-                .select { |tile| colors.include?(tile.color) }
-                .uniq(&:name)
-                .select { |t| @game.adding_town?(hex.tile, t) }
-                .reject(&:blocks_lay)
-            end
+            normal = normal_available_hex(entity, hex)
+
+            @game.tiles
+              .select { |tile| colors.include?(tile.color) }
+              .uniq(&:name)
+              .select { |t| normal ? @game.upgrades_to?(hex.tile, t) : @game.adding_town?(hex.tile, t) }
+              .reject(&:blocks_lay)
           end
 
           def legal_tile_rotation?(entity, hex, tile)
             return super unless @game.adding_town?(hex.tile, tile)
 
             # Here on out only used for adding towns
-            # The assupmption is that this is not performance critical
+            #
+            # Test to make sure that when a town is added it only replaces
+            # one simple path from edge to edge and does nothing else
             old_ctedges = hex.tile.city_town_edges.map(&:sort)
-            old_exits = hex.tile.exits.sort
+            old_exits = hex.tile.exits
 
-            new_exits = tile.exits.sort
+            new_exits = tile.exits
             new_ctedges = tile.city_town_edges.map(&:sort)
 
-            extra_ctedges = (new_ctedges - old_ctedges).flatten.sort
-            old_simple_exits = old_exits - old_ctedges.flatten.sort
-            new_simple_exits = new_exits - new_ctedges.flatten.sort
+            extra_ctedges = (new_ctedges - old_ctedges).flatten
+            old_simple_exits = old_exits - old_ctedges.flatten
+            new_simple_exits = new_exits - new_ctedges.flatten
+            simple_exit_diff = old_simple_exits - new_simple_exits
 
             extra_cities = [0, new_ctedges.size - old_ctedges.size].max
 
             new_exits.all? { |edge| hex.neighbors[edge] } &&
+              # only adding one new town
               (extra_cities == 1) &&
+              # all existing town paths are kept
               ((old_ctedges & new_ctedges).size == old_ctedges.size) &&
-              extra_ctedges == (old_simple_exits - new_simple_exits)
+              # new town only replaces simple paths
+              extra_ctedges.all? { |edge| simple_exit_diff.include?(edge) } &&
+              simple_exit_diff.all? { |edge| extra_ctedges.include?(edge) }
           end
 
           def normal_available_hex(entity, hex)
-            color = hex.tile.color
-            connected = hex_neighbors(entity, hex)
-            return nil unless connected
-
-            tile_lay = get_tile_lay(entity)
-            return nil unless tile_lay
-
-            return nil if color == :white && !tile_lay[:lay]
-            return nil if color != :white && !tile_lay[:upgrade]
-            return nil if color != :white && tile_lay[:cannot_reuse_same_hex] && @round.laid_hexes.include?(hex)
-
-            connected
+            available_hex(entity, hex, normal: true)
           end
 
-          def available_hex(entity, hex)
+          def available_hex(entity, hex, normal: false)
             color = hex.tile.color
             num_towns = hex.tile.towns.size
             num_cities = hex.tile.cities.size
             # allow adding towns to unconnected plain/town tiles
             connected = hex_neighbors(entity, hex) ||
-              (color == :green && num_cities.zero? && num_towns < 2) ||
-              (color == :brown && num_cities.zero? && num_towns < 3)
+              (!normal && (color == :green && num_cities.zero? && num_towns < 2)) ||
+              (!normal && (color == :brown && num_cities.zero? && num_towns < 3))
             return nil unless connected
 
             tile_lay = get_tile_lay(entity)
