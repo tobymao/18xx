@@ -41,7 +41,9 @@ module Engine
             [Engine::Token.new(@game.current_entity)]
           end
 
-          def adjust_token_price_ability!(_entity, token, _hex, _city, special_ability: nil)
+          def adjust_token_price_ability!(entity, _token, _hex, _city, special_ability: nil)
+            token = Engine::Token.new(entity)
+            entity.tokens << token
             token.price = special_ability.teleport_price
             [token, special_ability]
           end
