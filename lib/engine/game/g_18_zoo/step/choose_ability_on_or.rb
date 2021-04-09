@@ -8,7 +8,6 @@ module Engine
         def can_choose_ability_on_any_step(corporation, company)
           return true if @game.zoo_ticket?(company) && company.owner == corporation.owner
 
-          # return true if company == @game.hole && can_choose_hole?(corporation)
           # return true if company == @game.that_is_mine && can_choose_is_mine?(corporation)
           # return true if company == @game.work_in_progress && can_choose_work_in_progress?(corporation)
           # return true if company == @game.bandage && can_choose_bandage?(corporation)
@@ -32,7 +31,6 @@ module Engine
           corporation = @game.current_entity
           return choices_for_zoo_ticket(company, corporation) if @game.zoo_ticket?(company)
 
-          # return choices_for_hole?(company.owner) if company == @game.hole
           # return choices_for_is_mine(company.owner) if company == @game.that_is_mine
           # return choices_for_work_in_progress?(company.owner) if company == @game.work_in_progress
           return choices_for_two_barrels?(company.owner) if company == @game.two_barrels
@@ -46,7 +44,6 @@ module Engine
         # TODO: add all commented choice later
         def process_choose_ability(action)
           process_choose_zoo_ticket(action) if action.choice['type'] == 'sell'
-          # process_choose_hole?(action) if action.choice['type'] == 'hole'
           # process_choose_is_mine(action) if action.choice['type'] == 'that_is_mine'
           # process_choose_work_in_progress?(action) if action.choice['type'] == 'work_in_progress'
           process_choose_two_barrels?(action) if action.choice['type'] == 'two_barrels'
@@ -56,11 +53,6 @@ module Engine
         end
 
         private
-
-        # TODO: add additional logic
-        # def can_choose_hole?(entity)
-        #   @game.hole.owner == entity
-        # end
 
         # TODO: add additional logic
         # def can_choose_is_mine?(entity)
@@ -93,11 +85,6 @@ module Engine
             ]
           end.to_h
         end
-
-        # TODO: add logic
-        # def choices_for_hole?(_corporation)
-        #   {}
-        # end
 
         # TODO: add logic
         # def choices_for_is_mine(_corporation)
@@ -152,9 +139,6 @@ module Engine
 
           company.close!
         end
-
-        # TODO: add logic
-        # def process_choose_hole?(_action) end
 
         # TODO: add logic
         # def process_choose_is_mine(_action) end

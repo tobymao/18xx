@@ -90,7 +90,7 @@
       "entity_type": "corporation",
       "id": 11,
       "created_at": 1616448643,
-      "hex": "J9",
+      "hex": "K9",
       "tile": "6-0",
       "rotation": 1
     },
@@ -126,7 +126,7 @@
       "entity_type": "corporation",
       "id": 15,
       "created_at": 1616448658,
-      "hex": "K4",
+      "hex": "L4",
       "tile": "201-0",
       "rotation": 5
     },
@@ -176,15 +176,15 @@
           "train": "2S-0",
           "connections": [
             [
-              "J9",
-              "J7",
-              "K6",
-              "K4"
+              "K9",
+              "K7",
+              "L6",
+              "L4"
             ]
           ],
           "hexes": [
-            "K4",
-            "J9"
+            "L4",
+            "K9"
           ]
         }
       ]
@@ -229,15 +229,15 @@
           "train": "2S-0",
           "connections": [
             [
-              "J9",
-              "J7",
-              "K6",
-              "K4"
+              "K9",
+              "K7",
+              "L6",
+              "L4"
             ]
           ],
           "hexes": [
-            "J9",
-            "K4"
+            "K9",
+            "L4"
           ]
         }
       ]
