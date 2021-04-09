@@ -709,6 +709,8 @@ module Engine
 
           # All stock in players' hands is returned to pool w/no compensation
           entity.player_share_holders.keys.each do |sh|
+            next if sh.shares_of(entity).empty?
+
             bundle = ShareBundle.new(sh.shares_of(entity))
             @share_pool.transfer_shares(
               bundle,
