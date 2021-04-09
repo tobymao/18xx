@@ -17,7 +17,7 @@ class User < Base
     end
   end + %w[
     consent notifications red_logo bg font bg2 font2 your_turn hotseat_game
-    white yellow green brown gray red blue
+    white yellow green brown gray red blue purple
   ]).freeze
 
   def update_settings(params)
