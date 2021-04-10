@@ -15,7 +15,7 @@ module Engine
 
         CERT_LIMIT = { 3 => 19, 4 => 14, 5 => 12, 6 => 10 }.freeze
 
-        STARTING_CASH = { 3 => 500, 4 => 375, 5 => 300, 6 => 250 }.freeze
+        STARTING_CASH = { 3 => 500, 4 => 375, 5 => 330, 6 => 300 }.freeze
 
         MUST_SELL_IN_BLOCKS = true
 
@@ -260,7 +260,7 @@ module Engine
           },
         ].freeze
 
-        TRAINS = [{ name: '4H', num: 5, distance: 4, price: 100, rusts_on: '8H' },
+        TRAINS = [{ name: '4H', num: 4, distance: 4, price: 100, rusts_on: '8H' },
                   {
                     name: '6H',
                     num: 4,
