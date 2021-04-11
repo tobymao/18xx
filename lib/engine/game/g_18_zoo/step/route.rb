@@ -30,7 +30,8 @@ module Engine
           end
 
           def train_name(entity, train)
-            additional_distance = entity && @game.abilities(entity, :increase_distance_for_train)&.distance || 0
+            ability = entity && @game.abilities(entity, :increase_distance_for_train)
+            additional_distance = ability&.train == train ? ability.distance : 0
 
             train.name + (additional_distance.positive? ? " (+#{additional_distance})" : '')
           end

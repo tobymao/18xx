@@ -314,5 +314,89 @@ module Engine
         end
       end
     end
+
+    describe '18ZOO' do
+      let(:game_file) do
+        Find.find(FIXTURES_DIR).find { |f| f.end_with?("18ZOO/partial/#{described_class}.json") }
+      end
+
+      describe 2 do
+        it 'Only a single train should have "+1" inside the train name when Company "Sugar" is enabled' do
+          game = game_at_action(game_file)
+          corporation = game.round.active_entities[0]
+          trains = corporation.trains
+          expect(game.active_step.train_name(corporation, trains[0])).to eq('2S (+1)'), 'Train with Sugar must have +1'
+          expect(game.active_step.train_name(corporation, trains[1])).to eq('2S'), 'Train without Sugar must be 2S'
+          expect(game.active_step.train_name(corporation, trains[2])).to eq('3S'), 'Train without Sugar must be 3S'
+        end
+      end
+
+      describe 3 do
+        let(:game_file) do
+          Find.find(FIXTURES_DIR).find { |f| File.basename(f) == 'hs_ofmjiayq_1617902980.json' }
+        end
+
+        it 'Corporation should earn 2$N for each share in Market' do
+          game = game_at_action(game_file, 240)
+          action = {
+            'type' => 'buy_train',
+            'entity' => 'GI',
+            'entity_type' => 'corporation',
+            'train' => '4J-0',
+            'price' => 37,
+            'variant' => '2J',
+          }
+          game.process_action(action)
+
+          expect(game.log.find { |item| item.message == 'GI buys a 2J train for 37$N from The Depot' }).to_not be_nil
+          expect(game.corporation_by_id('GI').trains[0].variant[:name]).to eq('2J')
+        end
+      end
+
+      describe 4 do
+        it 'Corporation should earn 2$N for each share in Market' do
+          game = game_at_action(game_file)
+          corporation = game.corporation_by_id('GI')
+          action = {
+            'type' => 'pass',
+            'entity' => 'Player 1',
+            'entity_type' => 'player',
+          }
+          expect(corporation.cash).to eq(28)
+
+          game.process_action(action)
+
+          expect(corporation.cash).to eq(32)
+          expect(game.log[28].message).to eq('GI earns 4$N (2 certs inside kitchen)')
+        end
+      end
+
+      describe 5 do
+        it 'Log messages after buy / pass / sell' do
+          game = game_at_action(game_file)
+          expect(game.log[15].message).to_not eq('Player 1 declines to sell shares') # Buy, Pass
+          expect(game.log[16].message).to eq('Player 1 passes') # Pass
+          expect(game.log[19].message).to eq('Player 2 declines to buy shares') # Sell, Pass
+        end
+      end
+
+      describe 17 do
+        it 'Whatsup cannot be used if corporation already own maximum number of trains' do
+          game = game_at_action(game_file)
+          action = {
+            'type' => 'choose_ability',
+            'entity' => 'WHATSUP',
+            'entity_type' => 'company',
+            'choice' => {
+              'type' => 'whatsup',
+              'corporation_id' => 'GI',
+              'train_id' => '3S-2',
+            },
+          }
+          expect(game.exception).to be_nil
+          expect(game.process_action(action).exception).to be_a(GameError)
+        end
+      end
+    end
   end
 end

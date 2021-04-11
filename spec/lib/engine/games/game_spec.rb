@@ -8,7 +8,7 @@ require 'json'
 # run all games found in spec/fixtures/, verify that the engine gets the result
 # indicated in the game's "result" key in the JSON
 module Engine
-  Find.find(FIXTURES_DIR).select { |f| File.basename(f) =~ /.json/ }.each do |fixture|
+  Find.find(FIXTURES_DIR).select { |f| File.path(f) !~ /partial/ && File.basename(f) =~ /.json/ }.each do |fixture|
     game_title = File.basename(File.dirname(fixture))
     filename = File.basename(fixture)
     game_id = filename.split('.json').first

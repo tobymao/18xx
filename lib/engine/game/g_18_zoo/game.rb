@@ -122,14 +122,15 @@ module Engine
             price: 47,
             num: 99,
             events: [{ 'type' => 'new_train' }, { 'type' => 'rust_own_3s_4s' }],
-          },
-          {
-            name: '2J',
-            distance: [{ 'nodes' => %w[city offboard town], 'pay' => 2, 'multiplier' => 2 }],
-            price: 37,
-            num: 99,
-            available_on: '4J/2J',
-            events: [{ 'type' => 'new_train' }],
+            variants: [
+              {
+                name: '2J',
+                distance: [{ 'nodes' => %w[city offboard town], 'pay' => 2, 'multiplier' => 2 }],
+                price: 37,
+                num: 99,
+                events: [{ 'type' => 'new_train' }, { 'type' => 'rust_own_3s_4s' }],
+              },
+            ],
           },
         ].freeze
 
@@ -180,6 +181,8 @@ module Engine
         SELL_BUY_ORDER = :sell_buy
 
         NEXT_SR_PLAYER_ORDER = :most_cash # TODO: check if a bug
+
+        EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
 
         HOME_TOKEN_TIMING = :float
 
