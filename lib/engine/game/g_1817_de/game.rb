@@ -627,14 +627,11 @@ module Engine
                F10
                F6
                G19
-               H22
                I13
-               I9
                J14] => 'city=revenue:0',
-            %w[B14
-               D16
+            %w[ D16
 
-               H10] => 'city=revenue:0;upgrade=cost:10,terrain:water',
+                H10] => 'city=revenue:0;upgrade=cost:10,terrain:water',
 
             %w[C15 D18
                D20
