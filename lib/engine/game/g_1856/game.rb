@@ -1292,9 +1292,12 @@ module Engine
         # Nationalization Methods
 
         def event_nationalization!
+          # Bootstrap the nationalizables
+          @nationalizables = nationalizable_corporations
           @nationalization_trigger ||= @round.active_step.current_entity.owner
           @log << '-- Event: CGR merger --'
           corporations_repay_loans
+          # Now that we have determined the triggerer for nationalization we can get them in order
           @nationalizables = nationalizable_corporations
           @log << "Merge candidates: #{present_nationalizables(nationalizables)}" if nationalizables.any?
           # starting with the player who bought the 6 train, go around the table repaying loans
@@ -1655,16 +1658,20 @@ module Engine
           city.place_token(national, token, check_tokenable: false)
         end
 
-        def nationalizable_corporations
+        def nationalizable_corporations(_bootstrap = false)
           floated_player_corps = @corporations.select { |c| c.floated? && c != national }
           floated_player_corps.select! { |c| c.loans.size.positive? }
-          # Sort eligible corporations so that they are in player order
-          # starting with the player that bought the 6 train
-          index_for_trigger = @players.index(@nationalization_trigger)
-          # This is based off the code in 18MEX; 10 appears to be an arbitrarily large integer
-          #  where the exact value doesn't really matter
-          order = @players.each_with_index.map { |p, i| i < index_for_trigger ? [p, i + 10] : [p, i] }.to_h
-          floated_player_corps.sort_by! { |c| [order[c.player], @round.entities.index(c)] }
+          if @nationalization_trigger
+            # Sort eligible corporations so that they are in player order
+            # starting with the player that bought the 6 train
+            index_for_trigger = @players.index(@nationalization_trigger)
+            # This is based off the code in 18MEX; 10 appears to be an arbitrarily large integer
+            #  where the exact value doesn't really matter
+            order = @players.each_with_index.map { |p, i| i < index_for_trigger ? [p, i + 10] : [p, i] }.to_h
+            floated_player_corps.sort_by! { |c| [order[c.player], @round.entities.index(c)] }
+          else
+            floated_player_corps
+          end
         end
 
         def present_nationalizables(nationalizables)
