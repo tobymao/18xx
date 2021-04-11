@@ -23,6 +23,11 @@ module Engine
           { lay: true, upgrade: true },
           { lay: :not_if_upgraded, upgrade: false, cost: 20 },
         ].freeze
+
+        DARGAN_TILE_LAYS = [
+          { lay: true, upgrade: true },
+          { lay: :not_if_upgraded, upgrade: true, cost: 20, upgrade_cost: 30 },
+        ].freeze
         CURRENCY_FORMAT_STR = '£%d'
 
         BANK_CASH = 4000
@@ -159,6 +164,11 @@ module Engine
 
         def bankruptcy_limit_reached?
           @players.reject(&:bankrupt).one?
+        end
+
+        def tile_lays(entity)
+          super unless entity.companies.any? { |c| c.id == 'WDE' }
+          DARGAN_TILE_LAYS
         end
 
         def hex_edge_cost(conn)
