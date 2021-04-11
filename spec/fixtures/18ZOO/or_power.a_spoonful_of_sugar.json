@@ -1,0 +1,380 @@
+{
+  "status": "finished",
+  "actions": [
+    {
+      "type": "pass",
+      "entity": "Player 2",
+      "entity_type": "player",
+      "id": 1,
+      "created_at": 1616459806
+    },
+    {
+      "type": "bid",
+      "entity": "Player 1",
+      "entity_type": "player",
+      "id": 2,
+      "created_at": 1616459814,
+      "company": "A_SPOONFUL_OF_SUGAR",
+      "price": 3
+    },
+    {
+      "type": "pass",
+      "entity": "Player 1",
+      "entity_type": "player",
+      "id": 3,
+      "created_at": 1616459823
+    },
+    {
+      "type": "pass",
+      "entity": "Player 2",
+      "entity_type": "player",
+      "id": 4,
+      "created_at": 1616459823
+    },
+    {
+      "type": "pass",
+      "entity": "Player 2",
+      "entity_type": "player",
+      "id": 5,
+      "created_at": 1616459825
+    },
+    {
+      "type": "pass",
+      "entity": "Player 1",
+      "entity_type": "player",
+      "id": 6,
+      "created_at": 1616459825
+    },
+    {
+      "type": "par",
+      "entity": "Player 2",
+      "entity_type": "player",
+      "id": 7,
+      "created_at": 1616459834,
+      "corporation": "GI",
+      "share_price": "7,1,1"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 8,
+      "created_at": 1616459841,
+      "hex": "K9",
+      "tile": "6-0",
+      "rotation": 1
+    },
+    {
+      "type": "pass",
+      "entity": "Player 2",
+      "entity_type": "player",
+      "id": 9,
+      "created_at": 1616459843
+    },
+    {
+      "type": "pass",
+      "entity": "Player 1",
+      "entity_type": "player",
+      "id": 10,
+      "created_at": 1616459848
+    },
+    {
+      "type": "pass",
+      "entity": "Player 2",
+      "entity_type": "player",
+      "id": 11,
+      "created_at": 1616459851
+    },
+    {
+      "type": "lay_tile",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 12,
+      "created_at": 1616459855,
+      "hex": "L4",
+      "tile": "201-0",
+      "rotation": 5
+    },
+    {
+      "type": "lay_tile",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 13,
+      "created_at": 1616459862,
+      "hex": "J10",
+      "tile": "8-0",
+      "rotation": 2
+    },
+    {
+      "type": "pass",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 14,
+      "created_at": 1616459867
+    },
+    {
+      "type": "buy_train",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 15,
+      "created_at": 1616459868,
+      "train": "2S-0",
+      "price": 7,
+      "variant": "2S"
+    },
+    {
+      "type": "pass",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 16,
+      "created_at": 1616459904
+    },
+    {
+      "type": "buy_company",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 17,
+      "created_at": 1616459920,
+      "company": "A_SPOONFUL_OF_SUGAR",
+      "price": 3
+    },
+    {
+      "type": "pass",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 18,
+      "created_at": 1616459926
+    },
+    {
+      "type": "lay_tile",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 19,
+      "created_at": 1616459938,
+      "hex": "I9",
+      "tile": "X8-0",
+      "rotation": 5
+    },
+    {
+      "type": "lay_tile",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 20,
+      "created_at": 1616459941,
+      "hex": "H10",
+      "tile": "X7-0",
+      "rotation": 4
+    },
+    {
+      "type": "pass",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 21,
+      "created_at": 1616459945
+    },
+    {
+      "type": "choose_ability",
+      "entity": "A_SPOONFUL_OF_SUGAR",
+      "entity_type": "company",
+      "id": 22,
+      "created_at": 1616461181,
+      "choice": {
+        "type": "sugar",
+        "train_id": "2S-0"
+      }
+    },
+    {
+      "type": "run_routes",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 23,
+      "created_at": 1616461207,
+      "routes": [
+        {
+          "train": "2S-0",
+          "connections": [
+            [
+              "L4",
+              "M5"
+            ],
+            [
+              "K9",
+              "K7",
+              "L6",
+              "L4"
+            ],
+            [
+              "I9",
+              "J10",
+              "K9"
+            ],
+            [
+              "H10",
+              "I9"
+            ]
+          ],
+          "hexes": [
+            "M5",
+            "L4",
+            "K9",
+            "I9",
+            "H10"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 24,
+      "created_at": 1616461230,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 25,
+      "created_at": 1616461239
+    },
+    {
+      "type": "lay_tile",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 26,
+      "created_at": 1616461274,
+      "hex": "I11",
+      "tile": "X9-0",
+      "rotation": 2
+    },
+    {
+      "type": "lay_tile",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 27,
+      "created_at": 1616461281,
+      "hex": "J12",
+      "tile": "9-0",
+      "rotation": 2
+    },
+    {
+      "type": "pass",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 28,
+      "created_at": 1616461285
+    },
+    {
+      "type": "choose_ability",
+      "entity": "A_SPOONFUL_OF_SUGAR",
+      "entity_type": "company",
+      "id": 29,
+      "created_at": 1616461435,
+      "choice": {
+        "type": "sugar",
+        "train_id": "2S-0"
+      }
+    },
+    {
+      "type": "run_routes",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 30,
+      "created_at": 1616461463,
+      "routes": [
+        {
+          "train": "2S-0",
+          "connections": [
+            [
+              "L4",
+              "M5"
+            ],
+            [
+              "K9",
+              "K7",
+              "L6",
+              "L4"
+            ],
+            [
+              "I9",
+              "J10",
+              "K9"
+            ],
+            [
+              "H10",
+              "I9"
+            ],
+            [
+              "H10",
+              "I11"
+            ]
+          ],
+          "hexes": [
+            "M5",
+            "L4",
+            "K9",
+            "I9",
+            "H10",
+            "I11"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 31,
+      "created_at": 1616461467,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 32,
+      "created_at": 1616461469
+    },
+    {
+      "type": "pass",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 33,
+      "created_at": 1616461471
+    }
+  ],
+  "id": "hs_rykjpksq_1612654725",
+  "players": [
+    {
+      "name": "Player 1"
+    },
+    {
+      "name": "Player 2"
+    }
+  ],
+  "title": "18ZOO",
+  "description": "",
+  "max_players": "2",
+  "acting": [
+    "Player 1",
+    "Player 2"
+  ],
+  "created_at": "2021-03-12",
+  "loaded": true,
+  "mode": "hotseat",
+  "result": {
+    "Player 2": 110,
+    "Player 1": 100
+  },
+  "round": "Operating Round",
+  "settings": {
+    "optional_rules": []
+  },
+  "turn": 3,
+  "updated_at": 1616461471,
+  "user": {
+    "id": 0,
+    "name": "You"
+  }
+}

@@ -303,7 +303,7 @@ module Engine
 
               spec[:lays].each do |lay|
                 it "has #{lay[:icons]} after laying tile \"#{lay[:tile]}\"" do
-                  tile = lay[:tile] == 'original' ? hex.original_tile : Tile.for(lay[:tile])
+                  tile = lay[:tile] == 'original' ? hex.original_tile : game.tiles.find { |t| t.name == lay[:tile] }
                   tile.rotate!(lay[:rotation])
 
                   hex.lay(tile)

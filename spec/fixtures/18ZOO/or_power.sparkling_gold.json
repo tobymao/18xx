@@ -1,0 +1,341 @@
+{
+  "status": "finished",
+  "actions": [
+    {
+      "type": "pass",
+      "entity": "Player 2",
+      "entity_type": "player",
+      "id": 1,
+      "created_at": 1616539167
+    },
+    {
+      "type": "bid",
+      "entity": "Player 1",
+      "entity_type": "player",
+      "id": 2,
+      "created_at": 1616539171,
+      "company": "SPARKLING_GOLD",
+      "price": 1
+    },
+    {
+      "type": "pass",
+      "entity": "Player 1",
+      "entity_type": "player",
+      "id": 3,
+      "created_at": 1616539175
+    },
+    {
+      "type": "pass",
+      "entity": "Player 2",
+      "entity_type": "player",
+      "id": 4,
+      "created_at": 1616539175
+    },
+    {
+      "type": "pass",
+      "entity": "Player 2",
+      "entity_type": "player",
+      "id": 5,
+      "created_at": 1616539175
+    },
+    {
+      "type": "pass",
+      "entity": "Player 1",
+      "entity_type": "player",
+      "id": 6,
+      "created_at": 1616539176
+    },
+    {
+      "type": "pass",
+      "entity": "Player 2",
+      "entity_type": "player",
+      "id": 7,
+      "created_at": 1616539195
+    },
+    {
+      "type": "par",
+      "entity": "Player 1",
+      "entity_type": "player",
+      "id": 8,
+      "created_at": 1616539201,
+      "corporation": "PE",
+      "share_price": "7,1,1"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "PE",
+      "entity_type": "corporation",
+      "id": 9,
+      "created_at": 1616539206,
+      "hex": "K17",
+      "tile": "6-0",
+      "rotation": 3
+    },
+    {
+      "type": "pass",
+      "entity": "Player 1",
+      "entity_type": "player",
+      "id": 10,
+      "created_at": 1616539217
+    },
+    {
+      "type": "pass",
+      "entity": "Player 2",
+      "entity_type": "player",
+      "id": 11,
+      "created_at": 1616539220
+    },
+    {
+      "type": "pass",
+      "entity": "Player 1",
+      "entity_type": "player",
+      "id": 12,
+      "created_at": 1616539221
+    },
+    {
+      "type": "lay_tile",
+      "entity": "PE",
+      "entity_type": "corporation",
+      "id": 13,
+      "created_at": 1616539225,
+      "hex": "K15",
+      "tile": "202-0",
+      "rotation": 0
+    },
+    {
+      "type": "buy_company",
+      "entity": "PE",
+      "entity_type": "corporation",
+      "id": 14,
+      "created_at": 1616539249,
+      "company": "SPARKLING_GOLD",
+      "price": 1
+    },
+    {
+      "type": "lay_tile",
+      "entity": "PE",
+      "entity_type": "corporation",
+      "id": 15,
+      "created_at": 1616617239,
+      "hex": "L18",
+      "tile": "8-0",
+      "rotation": 2
+    },
+    {
+      "type": "pass",
+      "entity": "PE",
+      "entity_type": "corporation",
+      "id": 16,
+      "created_at": 1616617254
+    },
+    {
+      "type": "buy_train",
+      "entity": "PE",
+      "entity_type": "corporation",
+      "id": 17,
+      "created_at": 1616617256,
+      "train": "2S-0",
+      "price": 7,
+      "variant": "2S"
+    },
+    {
+      "type": "buy_train",
+      "entity": "PE",
+      "entity_type": "corporation",
+      "id": 18,
+      "created_at": 1616617257,
+      "train": "2S-1",
+      "price": 7,
+      "variant": "2S"
+    },
+    {
+      "type": "pass",
+      "entity": "PE",
+      "entity_type": "corporation",
+      "id": 19,
+      "created_at": 1616617259
+    },
+    {
+      "type": "lay_tile",
+      "entity": "PE",
+      "entity_type": "corporation",
+      "id": 20,
+      "created_at": 1616617265,
+      "hex": "J14",
+      "tile": "8-1",
+      "rotation": 5
+    },
+    {
+      "type": "lay_tile",
+      "entity": "PE",
+      "entity_type": "corporation",
+      "id": 21,
+      "created_at": 1616617272,
+      "hex": "I15",
+      "tile": "9-0",
+      "rotation": 1
+    },
+    {
+      "type": "place_token",
+      "entity": "PE",
+      "entity_type": "corporation",
+      "id": 22,
+      "created_at": 1616617275,
+      "city": "202-0-0",
+      "slot": 0
+    },
+    {
+      "type": "run_routes",
+      "entity": "PE",
+      "entity_type": "corporation",
+      "id": 23,
+      "created_at": 1616617289,
+      "routes": [
+        {
+          "train": "2S-0",
+          "connections": [
+            [
+              "K15",
+              "K17"
+            ]
+          ],
+          "hexes": [
+            "K17",
+            "K15"
+          ],
+          "revenue": 50,
+          "revenue_str": "J17-K15",
+          "subsidy": 0
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "PE",
+      "entity_type": "corporation",
+      "id": 24,
+      "created_at": 1616617291,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "PE",
+      "entity_type": "corporation",
+      "id": 25,
+      "created_at": 1616617293
+    },
+    {
+      "type": "lay_tile",
+      "entity": "PE",
+      "entity_type": "corporation",
+      "id": 26,
+      "created_at": 1616617319,
+      "hex": "G17",
+      "tile": "8-2",
+      "rotation": 4
+    },
+    {
+      "type": "lay_tile",
+      "entity": "PE",
+      "entity_type": "corporation",
+      "id": 27,
+      "created_at": 1616617324,
+      "hex": "G19",
+      "tile": "621-0",
+      "rotation": 0
+    },
+    {
+      "type": "run_routes",
+      "entity": "PE",
+      "entity_type": "corporation",
+      "id": 28,
+      "created_at": 1616617335,
+      "routes": [
+        {
+          "train": "2S-0",
+          "connections": [
+            [
+              "K15",
+              "K17"
+            ]
+          ],
+          "hexes": [
+            "K15",
+            "K17"
+          ],
+          "revenue": 50,
+          "revenue_str": "J15-K17",
+          "subsidy": 0
+        },
+        {
+          "train": "2S-1",
+          "connections": [
+            [
+              "K15",
+              "J14",
+              "I15",
+              "H16",
+              "G17",
+              "G19"
+            ]
+          ],
+          "hexes": [
+            "G19",
+            "K15"
+          ],
+          "revenue": 60,
+          "revenue_str": "G19-K15",
+          "subsidy": 0
+        }
+      ]
+    },
+    {
+      "type": "dividend",
+      "entity": "PE",
+      "entity_type": "corporation",
+      "id": 29,
+      "created_at": 1616617337,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "PE",
+      "entity_type": "corporation",
+      "id": 30,
+      "created_at": 1616617338
+    }
+  ],
+  "id": "hs_sazxgyzi_1612654581",
+  "players": [
+    {
+      "name": "Player 1"
+    },
+    {
+      "name": "Player 2"
+    }
+  ],
+  "title": "18ZOO",
+  "description": "",
+  "max_players": "2",
+  "acting": [
+    "Player 2",
+    "Player 1"
+  ],
+  "created_at": "2021-03-12",
+  "loaded": true,
+  "mode": "hotseat",
+  "result": {
+    "Player 1": 108,
+    "Player 2": 100
+  },
+  "round": "Operating Round",
+  "settings": {
+    "optional_rules": []
+  },
+  "turn": 3,
+  "updated_at": 1616617338,
+  "user": {
+    "id": 0,
+    "name": "You"
+  }
+}

@@ -1,7 +1,7 @@
-# File original exported from 18xx-maker: https://www.18xx-maker.com/
-# rubocop:disable Lint/RedundantCopDisableDirective, Layout/LineLength
 # frozen_string_literal: true
 
+require_relative 'entities'
+require_relative 'map'
 require_relative 'meta'
 require_relative '../company_price_up_to_face'
 require_relative '../base'
@@ -11,6 +11,9 @@ module Engine
     module G1846
       class Game < Game::Base
         include_meta(G1846::Meta)
+        include Entities
+        include Map
+        include CompanyPriceUpToFace
 
         register_colors(red: '#d1232a',
                         orange: '#f58121',
@@ -25,6 +28,7 @@ module Engine
         BANK_CASH = { 2 => 7000, 3 => 6500, 4 => 7500, 5 => 9000 }.freeze
 
         CERT_LIMIT = {
+          2 => { 5 => 19, 4 => 16 },
           3 => { 5 => 14, 4 => 11 },
           4 => { 6 => 12, 5 => 10, 4 => 8 },
           5 => { 7 => 11, 6 => 10, 5 => 8, 4 => 6 },
@@ -36,123 +40,10 @@ module Engine
 
         MUST_SELL_IN_BLOCKS = true
 
-        TILES = {
-          '5' => 3,
-          '6' => 4,
-          '7' => 'unlimited',
-          '8' => 'unlimited',
-          '9' => 'unlimited',
-          '14' => 4,
-          '15' => 5,
-          '16' => 2,
-          '17' => 1,
-          '18' => 1,
-          '19' => 2,
-          '20' => 2,
-          '21' => 1,
-          '22' => 1,
-          '23' => 4,
-          '24' => 4,
-          '25' => 2,
-          '26' => 1,
-          '27' => 1,
-          '28' => 1,
-          '29' => 1,
-          '30' => 1,
-          '31' => 1,
-          '39' => 1,
-          '40' => 1,
-          '41' => 2,
-          '42' => 2,
-          '43' => 2,
-          '44' => 1,
-          '45' => 2,
-          '46' => 2,
-          '47' => 2,
-          '51' => 2,
-          '57' => 4,
-          '70' => 1,
-          '290' => 1,
-          '291' => 1,
-          '292' => 1,
-          '293' => 1,
-          '294' => 2,
-          '295' => 2,
-          '296' => 1,
-          '297' => 2,
-          '298' => 1,
-          '299' => 1,
-          '300' => 1,
-          '611' => 4,
-          '619' => 3,
-        }.freeze
-
-        LOCATION_NAMES = {
-          'B8' => 'Holland',
-          'B16' => 'Port Huron',
-          'B18' => 'Sarnia',
-          'C5' => 'Chicago Connections',
-          'C9' => 'South Bend',
-          'C15' => 'Detroit',
-          'C17' => 'Windsor',
-          'D6' => 'Chicago',
-          'D14' => 'Toledo',
-          'D20' => 'Erie',
-          'D22' => 'Buffalo',
-          'E11' => 'Fort Wayne',
-          'E17' => 'Cleveland',
-          'E21' => 'Salamanca',
-          'E23' => 'Binghamton',
-          'F20' => 'Homewood',
-          'G3' => 'Springfield',
-          'G7' => 'Terre Haute',
-          'G9' => 'Indianapolis',
-          'G13' => 'Dayton',
-          'G15' => 'Columbus',
-          'G19' => 'Wheeling',
-          'G21' => 'Pittsburgh',
-          'H12' => 'Cincinnati',
-          'H20' => 'Cumberland',
-          'I1' => 'St. Louis',
-          'I5' => 'Centralia',
-          'I15' => 'Huntington',
-          'I17' => 'Charleston',
-          'J10' => 'Louisville',
-          'K3' => 'Cairo',
-        }.freeze
-
         MARKET = [
-          %w[0c
-             10
-             20
-             30
-             40p
-             50p
-             60p
-             70p
-             80p
-             90p
-             100p
-             112p
-             124p
-             137p
-             150p
-             165
-             180
-             195
-             212
-             230
-             250
-             270
-             295
-             320
-             345
-             375
-             405
-             440
-             475
-             510
-             550],
+          %w[0c 10 20 30
+             40p 50p 60p 70p 80p 90p 100p 112p 124p 137p 150p
+             165 180 195 212 230 250 270 295 320 345 375 405 440 475 510 550],
            ].freeze
 
         PHASES = [
@@ -187,526 +78,57 @@ module Engine
           },
         ].freeze
 
-        TRAINS = [{ name: '2', distance: 2, price: 80, obsolete_on: '5', rusts_on: '6' },
-                  {
-                    name: '4',
-                    distance: 4,
-                    price: 180,
-                    obsolete_on: '6',
-                    variants: [
-                      {
-                        name: '3/5',
-                        distance: [{ 'nodes' => %w[city offboard], 'pay' => 3, 'visit' => 5 }],
-                        price: 160,
-                      },
-                    ],
-                  },
-                  {
-                    name: '5',
-                    distance: 5,
-                    price: 500,
-                    variants: [
-                      {
-                        name: '4/6',
-                        distance: [{ 'nodes' => %w[city offboard], 'pay' => 4, 'visit' => 6 }],
-                        price: 450,
-                      },
-                    ],
-                    events: [{ 'type' => 'close_companies' }],
-                  },
-                  {
-                    name: '6',
-                    distance: 6,
-                    price: 800,
-                    variants: [
-                      {
-                        name: '7/8',
-                        distance: [{ 'nodes' => %w[city offboard], 'pay' => 7, 'visit' => 8 }],
-                        price: 900,
-                      },
-                    ],
-                    events: [
-                      { 'type' => 'remove_markers' },
-                      { 'type' => 'remove_reservations' },
-],
-
-                  }].freeze
-
-        COMPANIES = [
+        TRAINS = [
           {
-            name: 'Michigan Southern',
-            value: 60,
-            discount: -80,
-            revenue: 0,
-            desc: 'Starts with $60 in treasury, a 2 train, and a token in Detroit (C15). In ORs, this is the first minor to operate. Splits revenue evenly with owner. Buyer pays an extra $80 ("debt").',
-            sym: 'MS',
-            color: nil,
+            name: '2',
+            distance: 2,
+            price: 80,
+            obsolete_on: '5',
+            rusts_on: '6',
           },
           {
-            name: 'Big 4',
-            value: 40,
-            discount: -60,
-            revenue: 0,
-            desc: 'Starts with $40 in treasury, a 2 train, and a token in Indianapolis (G9). In ORs, this is the second minor to operate. Splits revenue evenly with owner. Buyer pays an extra $60 ("debt").',
-            sym: 'BIG4',
-            color: nil,
-          },
-          {
-            name: 'Chicago and Western Indiana',
-            value: 60,
-            revenue: 10,
-            desc: 'Reserves a token slot in Chicago (D6), in the city next to E7. The owning corporation may place an extra token there at no cost, with no connection needed. Once this company is purchased by a corporation, the slot that was reserved may be used by other corporations.',
-            sym: 'C&WI',
-            abilities: [
+            name: '4',
+            distance: 4,
+            price: 180,
+            obsolete_on: '6',
+            variants: [
               {
-                type: 'token',
-                when: 'owning_corp_or_turn',
-                owner_type: 'corporation',
-                hexes: ['D6'],
-                city: 3,
-                price: 0,
-                teleport_price: 0,
-                count: 1,
-                extra: true,
-              },
-              { type: 'reservation', remove: 'sold', hex: 'D6', city: 3 },
-            ],
-            color: nil,
-          },
-          {
-            name: 'Mail Contract',
-            value: 80,
-            revenue: 0,
-            desc: 'Adds $10 per location visited by any one train of the owning corporation. Never closes once purchased by a corporation.',
-            sym: 'MAIL',
-            abilities: [{ type: 'close', on_phase: 'never', owner_type: 'corporation' }],
-            color: nil,
-          },
-          {
-            name: 'Tunnel Blasting Company',
-            value: 60,
-            revenue: 20,
-            desc: 'Reduces, for the owning corporation, the cost of laying all mountain tiles and tunnel/pass hexsides by $20.',
-            sym: 'TBC',
-            abilities: [
-              {
-                type: 'tile_discount',
-                discount: 20,
-                terrain: 'mountain',
-                owner_type: 'corporation',
+                name: '3/5',
+                distance: [{ 'nodes' => %w[city offboard], 'pay' => 3, 'visit' => 5 }],
+                price: 160,
               },
             ],
-            color: nil,
           },
           {
-            name: 'Meat Packing Company',
-            value: 60,
-            revenue: 15,
-            desc: 'The owning corporation may assign the Meat Packing Company to either St. Louis (I1) or Chicago (D6), to add $30 to all routes it runs to this location.',
-            sym: 'MPC',
-            abilities: [
+            name: '5',
+            distance: 5,
+            price: 500,
+            variants: [
               {
-                type: 'assign_hexes',
-                when: 'owning_corp_or_turn',
-                hexes: %w[I1 D6],
-                count: 1,
-                owner_type: 'corporation',
-              },
-              {
-                type: 'assign_corporation',
-                when: 'sold',
-                count: 1,
-                owner_type: 'corporation',
+                name: '4/6',
+                distance: [{ 'nodes' => %w[city offboard], 'pay' => 4, 'visit' => 6 }],
+                price: 450,
               },
             ],
-            color: nil,
+            events: [{ 'type' => 'close_companies' }],
           },
           {
-            name: 'Steamboat Company',
-            value: 40,
-            revenue: 10,
-            desc: 'At the beginning of each Operating Round, the owning player may assign the Steamboat Company to a corporation/minor and to a port location (B8, C5, D14, G19, I1). Once per Operating Round, the owning corporation may assign the Steamboat Company to a port location. Add $20 per port symbol to all routes run to the assigned location by the owning/assigned corporation/minor.',
-            sym: 'SC',
-            abilities: [
+            name: '6',
+            distance: 6,
+            price: 800,
+            variants: [
               {
-                type: 'assign_hexes',
-                hexes: %w[B8 C5 D14 I1 G19],
-                count_per_or: 1,
-                when: 'or_start',
-                owner_type: 'player',
-              },
-              {
-                type: 'assign_corporation',
-                count_per_or: 1,
-                when: 'or_start',
-                owner_type: 'player',
-              },
-              {
-                type: 'assign_hexes',
-                when: 'owning_corp_or_turn',
-                hexes: %w[B8 C5 D14 I1 G19],
-                count_per_or: 1,
-                owner_type: 'corporation',
-              },
-              {
-                type: 'assign_corporation',
-                when: 'sold',
-                count: 1,
-                owner_type: 'corporation',
+                name: '7/8',
+                distance: [{ 'nodes' => %w[city offboard], 'pay' => 7, 'visit' => 8 }],
+                price: 900,
               },
             ],
-            color: nil,
-          },
-          {
-            name: 'Lake Shore Line',
-            value: 40,
-            revenue: 15,
-            desc: 'The owning corporation may make an extra $0 cost tile upgrade of either Cleveland (E17) or Toledo (D14), but not both.',
-            sym: 'LSL',
-            abilities: [
-              {
-                type: 'tile_lay',
-                when: 'owning_corp_or_turn',
-                owner_type: 'corporation',
-                free: true,
-                hexes: %w[D14 E17],
-                tiles: %w[14 15 619 294 295 296],
-                special: false,
-                count: 1,
-              },
+            events: [
+              { 'type' => 'remove_markers' },
+              { 'type' => 'remove_reservations' },
             ],
-            color: nil,
-          },
-          {
-            name: 'Michigan Central',
-            value: 40,
-            revenue: 15,
-            desc: "The owning corporation may lay up to two extra $0 cost yellow tiles in the MC's reserved hexes (B10, B12). The owning corporation does not need to be connected to those hexes. If two tiles are laid, they must connect to each other.",
-            sym: 'MC',
-            abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: %w[B10 B12] },
-                        {
-                          type: 'tile_lay',
-                          when: 'owning_corp_or_turn',
-                          owner_type: 'corporation',
-                          free: true,
-                          must_lay_together: true,
-                          hexes: %w[B10 B12],
-                          tiles: %w[7 8 9],
-                          count: 2,
-                        }],
-            color: nil,
-          },
-          {
-            name: 'Ohio & Indiana',
-            value: 40,
-            revenue: 15,
-            desc: "The owning corporation may lay up to two extra $0 cost yellow tiles in the O&I's reserved hexes (F14, F16). The owning corporation does not need to be connected to those hexes. If two tiles are laid, they must connect to each other.",
-            sym: 'O&I',
-            abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: %w[F14 F16] },
-                        {
-                          type: 'tile_lay',
-                          when: 'owning_corp_or_turn',
-                          owner_type: 'corporation',
-                          free: true,
-                          must_lay_together: true,
-                          hexes: %w[F14 F16],
-                          tiles: %w[7 8 9],
-                          count: 2,
-                        }],
-            color: nil,
           },
         ].freeze
-
-        CORPORATIONS = [
-          {
-            float_percent: 20,
-            sym: 'PRR',
-            name: 'Pennsylvania Railroad',
-            logo: '1846/PRR',
-            simple_logo: '1846/PRR.alt',
-            tokens: [0, 80, 80, 80, 80],
-            abilities: [
-            {
-              type: 'token',
-              description: 'Reserved $40/$60 Ft. Wayne (E11) token',
-              desc_detail: 'May place token in Ft. Wayne (E11) for $40 if connected, $60 otherwise. Token slot is reserved until Phase IV.',
-              hexes: ['E11'],
-              price: 40,
-              teleport_price: 60,
-            },
-            {
-              type: 'reservation',
-              hex: 'E11',
-              remove: 'IV',
-            },
-          ],
-            coordinates: 'F20',
-            color: :"#FF0000",
-            always_market_price: true,
-            reservation_color: nil,
-          },
-          {
-            float_percent: 20,
-            sym: 'NYC',
-            name: 'New York Central Railroad',
-            logo: '1846/NYC',
-            simple_logo: '1846/NYC.alt',
-            tokens: [0, 80, 80, 80],
-            coordinates: 'D20',
-            color: '#110a0c',
-            always_market_price: true,
-            reservation_color: nil,
-          },
-          {
-            float_percent: 20,
-            sym: 'B&O',
-            name: 'Baltimore & Ohio Railroad',
-            logo: '1846/BO',
-            simple_logo: '1846/BO.alt',
-            tokens: [0, 80, 80, 80],
-            abilities: [
-              {
-                type: 'token',
-                description: 'Reserved $40/$100 Cincinnati (H12) token',
-                desc_detail: 'May place token in Cincinnati (H12) for $40 if connected, $100 otherwise. Token slot is reserved until Phase IV.',
-                hexes: ['H12'],
-                price: 40,
-                count: 1,
-                teleport_price: 100,
-              },
-              {
-                type: 'reservation',
-                hex: 'H12',
-                remove: 'IV',
-              },
-            ],
-            coordinates: 'G19',
-            color: '#025aaa',
-            always_market_price: true,
-            reservation_color: nil,
-          },
-          {
-            float_percent: 20,
-            sym: 'C&O',
-            name: 'Chesapeake & Ohio Railroad',
-            logo: '1846/CO',
-            simple_logo: '1846/CO.alt',
-            tokens: [0, 80, 80, 80],
-            coordinates: 'I15',
-            color: :"#ADD8E6",
-            text_color: 'black',
-            always_market_price: true,
-            reservation_color: nil,
-          },
-          {
-            float_percent: 20,
-            sym: 'ERIE',
-            name: 'Erie Railroad',
-            logo: '1846/ERIE',
-            simple_logo: '1846/ERIE.alt',
-            tokens: [0, 80, 80, 80],
-            abilities: [
-              {
-                type: 'token',
-                description: 'Reserved $40 Erie (D20) token',
-                desc_detail: 'May place $40 token in Erie (D20) if connected. Token slot is reserved until Phase IV.',
-                hexes: ['D20'],
-                count: 1,
-                price: 40,
-              },
-              {
-                type: 'reservation',
-                hex: 'D20',
-                slot: 1,
-                remove: 'IV',
-              },
-            ],
-            coordinates: 'E21',
-            color: :"#FFF500",
-            text_color: 'black',
-            always_market_price: true,
-            reservation_color: nil,
-          },
-          {
-            float_percent: 20,
-            sym: 'GT',
-            name: 'Grand Trunk Railway',
-            logo: '1846/GT',
-            simple_logo: '1846/GT.alt',
-            tokens: [0, 80, 80],
-            coordinates: 'B16',
-            color: '#f58121',
-            always_market_price: true,
-            reservation_color: nil,
-          },
-          {
-            float_percent: 20,
-            sym: 'IC',
-            name: 'Illinois Central Railroad',
-            logo: '1846/IC',
-            simple_logo: '1846/IC.alt',
-            tokens: [0, 80, 80, 80],
-            abilities: [
-              {
-                type: 'tile_lay',
-                free: true,
-                description: 'Free tile lay: E5, F6, G5, H6, J4',
-                desc_detail: 'May lay yellow tiles for free on hexes marked with an IC-icon (E5, F6, G5, H6 and J4).',
-                passive: true,
-                when: 'track_and_token',
-                hexes: %w[E5 F6 G5 H6 J4],
-                tiles: %w[7 8 9],
-              },
-              {
-                type: 'token',
-                description: 'Reserved $40 Centralia (I5) token',
-                desc_detail: 'May place $40 token in Centralia (I5). Token slot is reserved until Phase IV.',
-                hexes: ['I5'],
-                count: 1,
-                price: 40,
-              },
-              {
-                type: 'reservation',
-                hex: 'I5',
-                remove: 'IV',
-              },
-              {
-                type: 'base',
-                description: 'Receives subsidy equal to its par price',
-                desc_detail: 'Upon being launched IC receives a subsidy equal to its par price paid by the bank into its treasury.',
-                remove: 'par',
-              },
-            ],
-            coordinates: 'K3',
-            color: '#32763f',
-            always_market_price: true,
-            reservation_color: nil,
-          },
-        ].freeze
-
-        MINORS = [
-          {
-            sym: 'MS',
-            name: 'Michigan Southern',
-            logo: '1846/MS',
-            simple_logo: '1846/MS.alt',
-            tokens: [0],
-            coordinates: 'C15',
-            color: :pink,
-            text_color: 'black',
-          },
-          {
-            sym: 'BIG4',
-            name: 'Big 4',
-            logo: '1846/B4',
-            simple_logo: '1846/B4.alt',
-            tokens: [0],
-            coordinates: 'G9',
-            color: :cyan,
-            text_color: 'black',
-          },
-        ].freeze
-
-        HEXES = {
-          white: {
-            %w[B14
-               C11
-               C13
-               D8
-               D10
-               D12
-               E7
-               E9
-               E13
-               E15
-               F4
-               F8
-               F10
-               F12
-               G11
-               H2
-               H4
-               H8
-               H10
-               I3
-               I7
-               I9
-               J8
-               D18
-               B10
-               B12
-               F14
-               F16] => '',
-            ['E19'] => 'border=edge:5,type:mountain,cost:40',
-            %w[E5 F6 G5 H6] => 'icon=image:1846/ic',
-            ['J4'] => 'border=edge:4,type:water,cost:40;icon=image:1846/ic',
-            ['J6'] => 'border=edge:1,type:water,cost:40',
-            ['I11'] => 'border=edge:3,type:water,cost:40',
-            %w[C9 E11 G3 G7 G9 G13 G15] => 'city=revenue:0',
-            ['B16'] => 'city=revenue:0;border=edge:4,type:mountain,cost:40',
-            ['D14'] =>
-                   'city=revenue:0;icon=image:port,sticky:1;icon=image:1846/lsl,sticky:1',
-            ['E17'] => 'city=revenue:0;label=Z;icon=image:1846/lsl,sticky:1',
-            ['H12'] => 'city=revenue:0;label=Z;border=edge:0,type:water,cost:40',
-            ['F18'] =>
-                   'upgrade=cost:40,terrain:mountain;border=edge:5,type:water,cost:40',
-            ['H16'] => 'upgrade=cost:40,terrain:mountain',
-            ['G17'] =>
-                   'upgrade=cost:40,terrain:mountain;border=edge:4,type:water,cost:20',
-            ['H14'] => 'upgrade=cost:60,terrain:mountain',
-          },
-          gray: {
-            %w[A15 C7] => 'path=a:0,b:5',
-            ['F20'] =>
-            'city=revenue:10;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:5,b:_0;border=edge:2,type:mountain,cost:40',
-            ['I5'] =>
-            'city=revenue:10,slots:2;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:0,b:_0',
-            ['I15'] => 'city=revenue:20;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
-            ['E21'] => 'city=revenue:10;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0',
-            ['K3'] => 'city=revenue:20;path=a:3,b:_0',
-          },
-          red: {
-            ['B8'] =>
-                     'offboard=revenue:yellow_40|brown_10;path=a:4,b:_0;icon=image:port;icon=image:port',
-            ['B18'] =>
-            'offboard=revenue:yellow_30|brown_50,groups:E;icon=image:1846/20;path=a:1,b:_0;label=E;border=edge:1,type:mountain,cost:40 ',
-            ['C5'] =>
-            'offboard=revenue:yellow_20|brown_40;icon=image:1846/50;path=a:5,b:_0;label=W;icon=image:port',
-            ['C17'] =>
-            'offboard=revenue:yellow_40|brown_60,groups:E;icon=image:1846/30;path=a:1,b:_0;label=E;border=edge:1,type:mountain,cost:60',
-            ['C21'] =>
-            'offboard=revenue:yellow_30|brown_60,hide:1,groups:E;icon=image:1846/30;path=a:0,b:_0;border=edge:5',
-            ['D22'] =>
-            'offboard=revenue:yellow_30|brown_60,groups:E;icon=image:1846/30;path=a:1,b:_0;label=E;border=edge:2',
-            ['E23'] =>
-            'offboard=revenue:yellow_20|brown_50,groups:E;icon=image:1846/30;path=a:1,b:_0;label=E',
-            ['I17'] =>
-            'offboard=revenue:yellow_20|brown_50,groups:E;icon=image:1846/20;path=a:1,b:_0;label=E',
-            ['F22'] =>
-            'offboard=revenue:yellow_30|brown_70,hide:1,groups:E;icon=image:1846/20;path=a:1,b:_0;border=edge:0',
-            ['G21'] =>
-            'offboard=revenue:yellow_30|brown_70,groups:E;border=edge:1,type:mountain,cost:20;icon=image:1846/20;path=a:1,b:_0;path=a:2,b:_0;label=E;border=edge:3',
-            ['H20'] =>
-            'offboard=revenue:yellow_20|brown_40,groups:E;icon=image:1846/30;path=a:2,b:_0;label=E',
-            ['I1'] =>
-            'offboard=revenue:yellow_50|brown_70,groups:St. Louis;path=a:3,b:_0;path=a:4,b:_0;label=W;icon=image:port;icon=image:1846/meat;icon=image:1846/20',
-            ['J10'] =>
-            'offboard=revenue:yellow_50|brown_70,groups:Louisville;path=a:2,b:_0;path=a:3,b:_0',
-          },
-          yellow: {
-            ['C15'] =>
-                     'city=revenue:40,slots:2;path=a:1,b:_0;path=a:3,b:_0;label=Z;upgrade=cost:40,terrain:water;border=edge:4,type:mountain,cost:60',
-            ['D6'] =>
-            'city=revenue:10,groups:Chicago;city=revenue:10,groups:Chicago;city=revenue:10,groups:Chicago;city=revenue:10,groups:Chicago;path=a:0,b:_0;path=a:3,b:_1;path=a:4,b:_2;path=a:5,b:_3;label=Chi;icon=image:1846/meat,sticky:1',
-            ['D20'] =>
-            'city=revenue:10,slots:2;path=a:1,b:_0;path=a:3,b:_0;path=a:0,b:_0',
-            ['G19'] =>
-            'city=revenue:10;path=a:5,b:_0;border=edge:1,type:water,cost:20;border=edge:2,type:water,cost:40;border=edge:4,type:mountain,cost:20;icon=image:port,sticky:1;icon=image:port,sticky:1',
-          },
-          blue: { ['D16'] => '' },
-        }.freeze
-
-        LAYOUT = :pointy
 
         POOL_SHARE_DROP = :one
         SELL_AFTER = :p_any_operate
@@ -792,8 +214,6 @@ module Engine
           two_player? ? 0 : players.size
         end
 
-        include CompanyPriceUpToFace
-
         def setup
           @turn = setup_turn
 
@@ -843,7 +263,8 @@ module Engine
 
         def remove_from_group!(group, entities)
           removals = group.sort_by { rand }.take(num_removals(group))
-          # This looks verbose, but it works around the fact that we can't modify code which includes rand() w/o breaking existing games
+          # This looks verbose, but it works around the fact that we can't
+          # modify code which includes rand() w/o breaking existing games
           return if removals.empty?
 
           @log << "Removing #{removals.join(', ')}"
@@ -947,10 +368,14 @@ module Engine
           end.join('-')
 
           meat = meat_packing.id
-          str += " + #{self.class::MEAT_REVENUE_DESC}" if route.corporation.assigned?(meat) && stops.any? { |stop| stop.hex.assigned?(meat) }
+          str += " + #{self.class::MEAT_REVENUE_DESC}" if route.corporation.assigned?(meat) && stops.any? do |stop|
+                                                            stop.hex.assigned?(meat)
+                                                          end
 
           steam = steamboat.id
-          str += ' + Port' if route.corporation.assigned?(steam) && (stops.map(&:hex).find { |hex| hex.assigned?(steam) })
+          str += ' + Port' if route.corporation.assigned?(steam) && (stops.map(&:hex).find do |hex|
+                                                                       hex.assigned?(steam)
+                                                                     end)
 
           bonus = east_west_bonus(stops)[:description]
           str += " + #{bonus}" if bonus
@@ -1028,6 +453,8 @@ module Engine
         end
 
         def check_special_tile_lay(action)
+          return if action.is_a?(Engine::Action::Message)
+
           company = @last_action&.entity
           return unless special_tile_lay?(@last_action)
           return unless (ability = abilities(company, :tile_lay))
@@ -1084,11 +511,30 @@ module Engine
         end
 
         def event_close_companies!
-          super
-
           @minors.dup.each { |minor| close_corporation(minor) }
-
           remove_lsl_icons
+          remove_steamboat_markers! unless steamboat.owned_by_corporation?
+          super
+        end
+
+        def remove_steamboat_markers!
+          self.class::STEAMBOAT_HEXES.each do |hex_id|
+            hex = hex_by_id(hex_id)
+            if hex.assigned?(steamboat.id)
+              hex.remove_assignment!(steamboat.id)
+              @log << "-- Event: Player-owned #{steamboat.name} token removed from #{hex.name} --"
+            end
+          end
+
+          @corporations.each do |corp|
+            corp.remove_assignment!(steamboat.id) if corp.assigned?(steamboat.id)
+          end
+
+          self.class::STEAMBOAT_HEXES.uniq.each do |hex|
+            hex_by_id(hex).tile.icons.reject! do |icon|
+              %w[port].include?(icon.name)
+            end
+          end
         end
 
         def event_remove_reservations!
@@ -1257,7 +703,7 @@ module Engine
           'E/W'
         end
 
-        def train_help(runnable_trains)
+        def train_help(_entity, runnable_trains, _routes)
           help = []
 
           nm_trains = runnable_trains.select { |t| t.name.include?('/') }
@@ -1301,6 +747,4 @@ module Engine
       end
     end
   end
-
-  # rubocop:enable Lint/RedundantCopDisableDirective, Layout/LineLength
 end

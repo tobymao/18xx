@@ -79,7 +79,7 @@ module Engine
             return false if !@game.concession_pending?(entity) || !entity.cash.positive?
 
             depot_trains = @depot.depot_trains.reject do |dt|
-              dt.price > entity.cash || (entity == @game.nwe && dt.distance < 2)
+              dt.price > entity.cash || (entity == @game.nwe && dt.distance < 2) || @game.diesel?(dt)
             end
 
             !depot_trains.empty?
@@ -115,7 +115,15 @@ module Engine
             (depot_trains + switchers + other_trains).compact
           end
 
+          def illegal_concession_buy?(train, entity)
+            @game.concession_pending?(entity) &&
+              (@game.train_is_switcher?(train) ||
+               @game.diesel?(train) ||
+               (train.distance < 2 && entity == @game.nwe))
+          end
+
           def illegal_depot_buy?(train, entity)
+            return true if illegal_concession_buy?(train, entity)
             return false if @game.train_is_switcher?(train)
 
             # indie mines can't buy same size machine
@@ -127,10 +135,12 @@ module Engine
           end
 
           def illegal_other_buy?(train, entity)
+            return true if illegal_concession_buy?(train, entity)
+
             # can't ever buy machines across
             @game.train_is_machine?(train) ||
               # only RRs can have a diesel - but only one
-              @game.diesel?(train) && (@game.entity_has_diesel?(entity) || !@game.railway?(train)) ||
+              @game.diesel?(train) && (@game.entity_has_diesel?(entity) || !@game.railway?(entity)) ||
               # can't ever buy from MHE
               train.owner == @game.mhe ||
               # Indie or Public mines can't buy actual trains
@@ -205,6 +215,10 @@ module Engine
               raise GameError, 'Illegal train buy from another company'
             end
 
+            if action.price > train.price * 2
+              raise GameError, "Can only spend a maximum of #{train.price * 2} for this train"
+            end
+
             if @game.concession_pending?(entity) && (entity != @game.nwe || train.distance > 1)
               @game.concession_unpend!(entity)
             end
@@ -248,10 +262,10 @@ module Engine
           end
 
           def scrap_mine_train(entity, new_train)
-            if @game.train_is_machine?(new_train)
-              @game.scrap_train(entity.trains.find { |t| @game.train_is_machine?(t) })
-            elsif @game.train_is_switcher?(new_train)
+            if @game.train_is_switcher?(new_train)
               @game.scrap_train(entity.trains.find { |t| @game.train_is_switcher?(t) })
+            else
+              @game.scrap_train(entity.trains.find { |t| @game.train_is_machine?(t) })
             end
           end
 
@@ -324,6 +338,14 @@ module Engine
 
           def checkbox_prompt
             'Select mines to receive purchased machines or switcher using checkboxes:'
+          end
+
+          def ebuy_president_can_contribute?(_corporation)
+            false
+          end
+
+          def president_may_contribute?(_corporation, _active_shell)
+            false
           end
         end
       end

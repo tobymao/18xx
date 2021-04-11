@@ -382,7 +382,7 @@ describe 'Assets' do
       expect(render(app_route: '/game/1#info', **needs)).to include('Trains', 'Game Phases', 'Shikoku: 1889')
       expect(render(app_route: '/game/1#tiles', **needs)).to include('492')
       expect(render(app_route: '/game/1#spreadsheet', **needs)).to include('Value')
-      expect(render(app_route: '/game/1#tools', **needs)).to include('Clone this')
+      expect(render(app_route: '/game/1#tools', **needs)).to include('Clone Game')
       expect(render(app_route: '/game/1#auto', **needs)).to include('Auto Actions')
     end
 

@@ -25,10 +25,11 @@ module View
         white: '#ffffff',
         olive: '#d1e189',
         purple: '#9a4eae',
+        peach: '#ffe5b4',
       }.freeze
 
       # All markets
-      PAD = 5                                     # between box contents and border
+      PAD = 4                                     # between box contents and border
       BORDER = 1
       WIDTH_TOTAL = 50                            # of entire box, including border
       TOKEN_SIZE = 25
@@ -49,6 +50,7 @@ module View
       LEFT_TOKEN_POS = LEFT_MARGIN
       RIGHT_TOKEN_POS = RIGHT_MARGIN - TOKEN_SIZE # left edge of rightmost token
       MID_TOKEN_POS = (LEFT_TOKEN_POS + RIGHT_TOKEN_POS) / 2
+      TOKEN_BORDER_WIDTH = 2
 
       TOKEN_STYLE_1D = {
         textAlign: 'center',
@@ -150,6 +152,18 @@ module View
           props[:attrs][:title] = "#{corporation.name} has operated"
           props[:style][:opacity] = '0.6'
           props[:style][:clipPath] = 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)'
+          border = 'dashed'
+        end
+        if (show_player_colors = setting_for(:show_player_colors, @game))
+          border_color = if show_player_colors && (owner = corporation.owner) && @game.players.include?(owner)
+                           player_colors(@game.players)[owner]
+                         else
+                           'transparent'
+                         end
+          props[:style][:border] = "#{TOKEN_BORDER_WIDTH}px #{border || 'solid'} #{border_color}"
+          props[:style][:borderRadius] = props[:attrs][:width]
+          props[:style][:boxSizing] = 'border-box'
+          props[:style][:clipPath] = 'none'
         end
 
         props
@@ -172,7 +186,7 @@ module View
         [h(:div, { style: { width: 'max-content' } }, row)]
       end
 
-      def grid_zigzag
+      def grid_zigzag(zigzag)
         box_style = box_style_1d
 
         half_box_style = box_style_1d
@@ -203,8 +217,8 @@ module View
         shorter_row = row1.size > row0.size ? row0 : row1
         shorter_row << h(:div, style: cell_style(half_box_style, @game.stock_market.market.first.last.types))
 
-        [h(:div, { style: { width: 'max-content' } }, row0),
-         h(:div, { style: { width: 'max-content' } }, row1)]
+        rows = zigzag == :flip ? [row1, row0] : [row0, row1]
+        rows.map { |row| h(:div, { style: { width: 'max-content' } }, row) }
       end
 
       def grid_2d
@@ -253,8 +267,8 @@ module View
         )
 
         grid = if @game.stock_market.one_d?
-                 if @game.stock_market.zigzag?
-                   grid_zigzag
+                 if !!(zigzag = @game.stock_market.zigzag)
+                   grid_zigzag(zigzag)
                  else
                    grid_1d
                  end

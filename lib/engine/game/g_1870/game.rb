@@ -10,6 +10,8 @@ module Engine
       class Game < Game::Base
         include_meta(G1870::Meta)
 
+        attr_accessor :connection_run, :reissued
+
         register_colors(black: '#37383a',
                         orange: '#f48221',
                         brightGreen: '#76a042',
@@ -564,8 +566,13 @@ module Engine
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(unlimited: :green, par: :white,
                                                             ignore_one_sale: :red).freeze
 
-        EVENTS_TEXT = Base::EVENTS_TEXT.merge('remove_tokens' => ['Remove Tokens',
-                                                                  'Remove private company tokens']).freeze
+        MULTIPLE_BUY_ONLY_FROM_MARKET = true
+
+        EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+          'companies_buyable' => ['Companies become buyable', 'All companies may now be bought in by corporation'],
+          'remove_tokens' => ['Remove Tokens', 'Remove private company tokens']
+        ).freeze
+
         MARKET_TEXT = Base::MARKET_TEXT.merge(
           ignore_one_sale: 'Can only enter when 2 shares sold at the same time'
         ).freeze
@@ -582,6 +589,13 @@ module Engine
           'GSCᶜ' => '/icons/1870/GSC_closed.svg',
           'SCC' => '/icons/1870/SCC.svg',
         }.freeze
+
+        def new_auction_round
+          Engine::Round::Auction.new(self, [
+            G1870::Step::CompanyPendingPar,
+            Engine::Step::WaterfallAuction,
+          ])
+        end
 
         def stock_round
           G1870::Round::Stock.new(self, [
@@ -623,8 +637,8 @@ module Engine
           'Treasury'
         end
 
-        def setup
-          river_company.max_price = river_company.value
+        def init_hexes(companies, corporations)
+          hexes = super
 
           @corporations.each do |corporation|
             ability = abilities(corporation, :assign_hexes)
@@ -633,6 +647,15 @@ module Engine
             hex.assign!(corporation)
             ability.description = "Destination: #{hex.location_name} (#{hex.name})"
           end
+
+          hexes
+        end
+
+        def setup
+          @connection_run = {}
+          @reissued = {}
+
+          river_company.max_price = river_company.value
         end
 
         def event_companies_buyable!
@@ -786,6 +809,10 @@ module Engine
           end
 
           raise GameError, 'At least one train has to run from the home station to the destination'
+        end
+
+        def reissued?(corporation)
+          @reissued[corporation]
         end
       end
     end

@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require_relative 'meta'
+require_relative 'entities'
+require_relative 'map'
 require_relative '../base'
 
 module Engine
@@ -8,6 +10,8 @@ module Engine
     module G18ZOO
       class Game < Game::Base
         include_meta(G18ZOO::Meta)
+        include G18ZOO::Entities
+        include G18ZOO::Map
 
         CURRENCY_FORMAT_STR = '%d$N'
 
@@ -23,142 +27,6 @@ module Engine
         CAPITALIZATION = :incremental
 
         MUST_SELL_IN_BLOCKS = true
-
-        TILES = {
-          '7' => 6,
-          'X7' => {
-            'count' => 6,
-            'color' => 'yellow',
-            'code' => "#{Engine::Config::Tile::YELLOW['3']};label=O;icon=image:river,sticky:1",
-          },
-          '8' => 16,
-          'X8' => {
-            'count' => 16,
-            'color' => 'yellow',
-            'code' => "#{Engine::Config::Tile::YELLOW['58']};label=O;icon=image:river,sticky:1",
-          },
-          '9' => 11,
-          'X9' => {
-            'count' => 11,
-            'color' => 'yellow',
-            'code' => "#{Engine::Config::Tile::YELLOW['4']};label=O;icon=image:river,sticky:1",
-          },
-          '5' => 2,
-          '6' => 2,
-          '57' => 2,
-          '201' => 2,
-          '202' => 2,
-          '621' => 2,
-          '19' => 1,
-          'X19' => {
-            'count' => 1,
-            'color' => 'green',
-            'code' => 'town=revenue:10;town=revenue:10;path=a:0,b:_0;path=a:_0,b:3;path=a:2,b:_1;path=a:_1,b:4;'\
-              'label=O;icon=image:river,sticky:1',
-          },
-          '23' => 2,
-          'X23' => {
-            'count' => 2,
-            'color' => 'green',
-            'code' => "#{Engine::Config::Tile::GREEN['981']};label=O;icon=image:river,sticky:1",
-          },
-          '24' => 2,
-          'X24' => {
-            'count' => 2,
-            'color' => 'green',
-            'code' => "#{Engine::Config::Tile::GREEN['991']};label=O;icon=image:river,sticky:1",
-          },
-          '25' => 2,
-          'X25' => {
-            'count' => 2,
-            'color' => 'green',
-            'code' => 'town=revenue:10;town=revenue:10;path=a:0,b:_0;path=a:_0,b:2;path=a:0,b:_1;path=a:_1,b:4;'\
-              'label=O;icon=image:river,sticky:1',
-          },
-          '26' => 2,
-          'X26' => {
-            'count' => 2,
-            'color' => 'green',
-            'code' => 'town=revenue:10;town=revenue:10;path=a:0,b:_0;path=a:_0,b:3;path=a:0,b:_1;path=a:_1,b:5;'\
-              'label=O;icon=image:river,sticky:1',
-          },
-          '27' => 2,
-          'X27' => {
-            'count' => 2,
-            'color' => 'green',
-            'code' => 'town=revenue:10;town=revenue:10;path=a:0,b:_0;path=a:_0,b:1;path=a:0,b:_1;path=a:_1,b:3;'\
-              'label=O;icon=image:river,sticky:1',
-          },
-          '28' => 1,
-          'X28' => {
-            'count' => 1,
-            'color' => 'green',
-            'code' => 'town=revenue:10;town=revenue:10;path=a:0,b:_0;path=a:_0,b:4;path=a:0,b:_1;path=a:_1,b:5;'\
-              'label=O;icon=image:river,sticky:1',
-          },
-          '29' => 1,
-          'X29' => {
-            'count' => 1,
-            'color' => 'green',
-            'code' => 'town=revenue:10;town=revenue:10;path=a:0,b:_0;path=a:_0,b:1;path=a:0,b:_1;path=a:_1,b:2;'\
-              'label=O;icon=image:river,sticky:1',
-          },
-          '30' => 1,
-          'X30' => {
-            'count' => 1,
-            'color' => 'green',
-            'code' => 'town=revenue:10;town=revenue:10;path=a:0,b:_0;path=a:_0,b:1;path=a:0,b:_1;path=a:_1,b:4;'\
-              'label=O;icon=image:river,sticky:1',
-          },
-          '31' => 1,
-          'X31' => {
-            'count' => 1,
-            'color' => 'green',
-            'code' => 'town=revenue:10;town=revenue:10;path=a:0,b:_0;path=a:_0,b:2;path=a:0,b:_1;path=a:_1,b:5;'\
-              'label=O;icon=image:river,sticky:1',
-          },
-          '14' => 2,
-          '15' => 2,
-          '619' => 2,
-          '576' => 1,
-          '577' => 1,
-          '579' => 1,
-          '792' => 1,
-          '793' => 1,
-          '40' => 1,
-          '41' => 1,
-          '42' => 1,
-          '43' => 1,
-          '45' => 1,
-          '46' => 1,
-          '611' => 3,
-          '582' => 3,
-          '455' => 3,
-          '80' => 1,
-          'X80' => {
-            'count' => 1,
-            'color' => 'green',
-            'code' => "#{Engine::Config::Tile::GREEN['143']};label=O;icon=image:river,sticky:1",
-          },
-          '81' => 1,
-          'X81' => {
-            'count' => 1,
-            'color' => 'green',
-            'code' => "#{Engine::Config::Tile::GREEN['144']};label=O;icon=image:river,sticky:1",
-          },
-          '82' => 1,
-          'X82' => {
-            'count' => 1,
-            'color' => 'green',
-            'code' => "#{Engine::Config::Tile::GREEN['141']};label=O;icon=image:river,sticky:1",
-          },
-          '83' => 1,
-          'X83' => {
-            'count' => 1,
-            'color' => 'green',
-            'code' => "#{Engine::Config::Tile::GREEN['142']};label=O;icon=image:river,sticky:1",
-          },
-        }.freeze
 
         MARKET = [
           %w[7 8 9 10 11 12 13 14 15 16 20 24e],
@@ -265,319 +133,6 @@ module Engine
           },
         ].freeze
 
-        COMPANIES = [
-          {
-            sym: 'HOLIDAY',
-            name: 'Holiday',
-            value: 3,
-            desc: 'Choose a family, its reputation mark goes one tick to the right.',
-            abilities: [{ type: 'no_buy', owner_type: 'player' }],
-          },
-          {
-            sym: 'MIDAS',
-            name: 'Midas',
-            value: 2,
-            desc: 'When turn order is appointed, seize the Priority (Squirrel 1).',
-            abilities: [{ type: 'no_buy', owner_type: 'player' }],
-          },
-          {
-            sym: 'TOO_MUCH_RESPONSIBILITY',
-            name: 'Too much responsibility',
-            value: 1,
-            desc: 'Get 3$N.',
-            abilities: [{ type: 'no_buy', owner_type: 'player' },
-                        { type: 'description', description: 'Get 3$N', when: 'any' }],
-          },
-          {
-            sym: 'LEPRECHAUN_POT_OF_GOLD',
-            name: 'Leprechaun pot of gold',
-            value: 2,
-            desc: 'Earn 2$N now, and at the start of each SR.',
-            abilities: [{ type: 'no_buy', owner_type: 'player' }],
-          },
-          {
-            sym: 'IT_IS_ALL_GREEK_TO_ME',
-            name: 'It’s all greek to me',
-            value: 2,
-            desc: 'After your action in a SR, do another one.',
-            abilities: [{ type: 'no_buy', owner_type: 'player' }],
-          },
-          {
-            sym: 'WHATSUP',
-            name: 'Whatsup',
-            value: 3,
-            desc: 'During SR, a family can buy the first available squirrel, deactivated. Reputation moves one tick.',
-            abilities: [{ type: 'no_buy', owner_type: 'player' }],
-          },
-          {
-            sym: 'RABBITS',
-            name: 'Rabbits',
-            value: 3,
-            desc: 'Two bonus upgrades, even illegal or before the phase.',
-            abilities: [
-              {
-                type: 'tile_lay',
-                owner_type: 'corporation',
-                closed_when_used_up: true,
-                connect: false,
-                count: 2,
-                special: true,
-                reachable: true,
-                must_lay_together: false,
-                when: 'owning_corp_or_turn',
-                tiles: [],
-                hexes: [],
-              },
-            ],
-          },
-          {
-            sym: 'MOLES',
-            name: 'Moles',
-            value: 3,
-            desc: '4 special tiles, that can upgrade any plain tiles, even illegal.',
-            abilities: [
-              {
-                type: 'tile_lay',
-                owner_type: 'corporation',
-                closed_when_used_up: true,
-                connect: false,
-                count: 4,
-                special: true,
-                reachable: true,
-                must_lay_together: false,
-                when: 'owning_corp_or_turn',
-                tiles: %w[80 X80 81 X81 82 X82 83 X83],
-                hexes: [],
-              },
-            ],
-          },
-          {
-            sym: 'ANCIENT_MAPS',
-            name: 'Ancient maps',
-            value: 1,
-            desc: 'Build two additional yellow tiles.',
-            abilities: [
-              {
-                type: 'tile_lay',
-                owner_type: 'corporation',
-                closed_when_used_up: true,
-                connect: false,
-                count: 2,
-                special: false,
-                reachable: true,
-                must_lay_together: true,
-                when: 'owning_corp_or_turn',
-                tiles: %w[7 X7 8 X8 9 X9 5 6 57 201 202 621],
-                hexes: [],
-              },
-            ],
-          },
-          {
-            sym: 'HOLE',
-            name: 'Hole',
-            value: 2,
-            desc: 'Mark two R areas anywhere on the map, so they are connected.',
-          },
-          {
-            sym: 'ON_DIET',
-            name: 'On diet',
-            value: 3,
-            desc: 'Put a depot in addition to the allowed spaces.',
-            abilities: [
-              {
-                type: 'token',
-                owner_type: 'corporation',
-                extra_slot: true,
-                from_owner: true,
-                when: 'owning_corp_or_turn',
-                hexes: %w[J9 K4],
-              },
-            ],
-          },
-          {
-            sym: 'SPARKLING_GOLD',
-            name: 'Sparkling gold',
-            value: 1,
-            desc: 'Get 2$N / 1$N when you build on a M / MM tile.',
-            abilities: [
-              {
-                type: 'tile_income',
-                income: 3,
-                terrain: 'mountain',
-                owner_type: 'corporation',
-                owner_only: true,
-              },
-            ],
-          },
-          {
-            sym: 'THAT_IS_MINE',
-            name: "That's mine!",
-            value: 2,
-            desc: 'Book anywhere an open place for a station tile.',
-          },
-          {
-            sym: 'WORK_IN_PROGRESS',
-            name: 'Work in progress',
-            value: 2,
-            desc: 'Block anywhere a free place of a station tile.',
-          },
-          {
-            sym: 'CORN',
-            name: 'Corn',
-            value: 2,
-            desc: 'Chooses a tile with its own depot; the station worths +30.',
-            abilities: [
-              {
-                type: 'assign_hexes',
-                when: 'owning_corp_or_turn',
-                hexes: %w[],
-                owner_type: 'corporation',
-              },
-              {
-                type: 'assign_corporation',
-                when: 'sold',
-                owner_type: 'corporation',
-              },
-            ],
-          },
-          {
-            sym: 'TWO_BARRELS',
-            name: 'Two barrels',
-            value: 2,
-            desc: 'Use twice, to double the value of all O tiles – don’t collect the O in treasury.',
-            abilities: [
-              {
-                type: 'description',
-                description: 'Double O tiles',
-                owner_type: 'corporation',
-                count: 2,
-                when: 'route',
-                count_per_or: 1,
-              },
-            ],
-          },
-          {
-            sym: 'A_SQUEEZE',
-            name: 'A squeeze',
-            value: 2,
-            desc: 'Take an additional 3$N if at least one squirrel runs an O.',
-          },
-          {
-            sym: 'BANDAGE',
-            name: 'Bandage',
-            value: 1,
-            desc: 'Mark a squirrel – it runs as a 1S. It cannot be sold; but can be dismissed'\
-            ' (otherwise family cannot purchase new squirrel).',
-          },
-          {
-            sym: 'WINGS',
-            name: 'Wings',
-            value: 2,
-            desc: 'During the run, a squirrel at will can skip a tokened-out station.',
-          },
-          {
-            sym: 'A_SPOONFUL_OF_SUGAR',
-            name: 'A spoonful of sugar',
-            value: 3,
-            desc: 'A squirrel at will runs one more station - not applicable to 4J or 2J.',
-          },
-        ].freeze
-
-        CORPORATIONS = [
-          {
-            sym: 'CR',
-            float_percent: 20,
-            name: '(H1) CROCODILES',
-            logo: '18_zoo/crocodile',
-            shares: [40, 20, 20, 20, 20],
-            max_ownership_percent: 120,
-            always_market_price: true,
-            tokens: [0, 2, 4, 4],
-            color: '#00af14',
-          },
-          {
-            sym: 'GI',
-            float_percent: 20,
-            name: '(H2) GIRAFFES',
-            logo: '18_zoo/giraffe',
-            shares: [40, 20, 20, 20, 20],
-            max_ownership_percent: 120,
-            always_market_price: true,
-            tokens: [0, 2],
-            color: '#fff793',
-            text_color: 'black',
-          },
-          {
-            sym: 'PB',
-            float_percent: 20,
-            name: '(H3) POLAR BEARS',
-            logo: '18_zoo/polar-bear',
-            shares: [40, 20, 20, 20, 20],
-            max_ownership_percent: 120,
-            always_market_price: true,
-            tokens: [0, 2, 4, 4],
-            color: '#efebeb',
-            text_color: 'black',
-          },
-          {
-            sym: 'PE',
-            float_percent: 20,
-            name: '(H4) PENGUINS',
-            logo: '18_zoo/penguin',
-            shares: [40, 20, 20, 20, 20],
-            max_ownership_percent: 120,
-            always_market_price: true,
-            tokens: [0, 2, 4, 4],
-            color: '#55b7b7',
-            text_color: 'black',
-          },
-          {
-            sym: 'LI',
-            float_percent: 20,
-            name: '(H5) LIONS',
-            logo: '18_zoo/lion',
-            shares: [40, 20, 20, 20, 20],
-            max_ownership_percent: 120,
-            always_market_price: true,
-            tokens: [0, 2, 4],
-            color: '#df251a',
-          },
-          {
-            sym: 'TI',
-            float_percent: 20,
-            name: '(H6) TIGERS',
-            logo: '18_zoo/tiger',
-            shares: [40, 20, 20, 20, 20],
-            max_ownership_percent: 120,
-            always_market_price: true,
-            tokens: [0, 2],
-            color: '#ffa023',
-            text_color: 'black',
-          },
-          {
-            sym: 'BB',
-            float_percent: 20,
-            name: '(H7) BROWN BEAR',
-            logo: '18_zoo/brown-bear',
-            shares: [40, 20, 20, 20, 20],
-            max_ownership_percent: 120,
-            always_market_price: true,
-            tokens: [0, 2, 4],
-            color: '#ae6d1d',
-          },
-          {
-            sym: 'EL',
-            float_percent: 20,
-            name: '(H8) ELEPHANT',
-            logo: '18_zoo/elephant',
-            shares: [40, 20, 20, 20, 20],
-            max_ownership_percent: 120,
-            always_market_price: true,
-            tokens: [0, 2, 4],
-            color: '#858585',
-          },
-        ].freeze
-
         LAYOUT = :flat
 
         # Game end after the ORs in the third turn, of if any company reach 24
@@ -588,228 +143,6 @@ module Engine
         STARTING_CASH_SMALL_MAP = { 2 => 40, 3 => 28, 4 => 23, 5 => 22 }.freeze
 
         STARTING_CASH_BIG_MAP = { 2 => 48, 3 => 32, 4 => 27, 5 => 22 }.freeze
-
-        TILE_Y = 'label=Y;city=revenue:yellow_30|green_40|brown_50,slots:1;offboard=revenue:yellow_20|brown_40,hide:1'
-        HEXES_BY_MAP = {
-          map_a: {
-            gray: {
-              %w[B9 C8 J5 L13] => '',
-              %w[M8] => 'path=a:0,b:1',
-              %w[F9] => 'path=a:0,b:3',
-              %w[H3] => 'path=a:0,b:4',
-              %w[A10] => 'path=a:0,b:5',
-              %w[K6] => 'path=a:1,b:3',
-              %w[G20] => 'path=a:2,b:3',
-              %w[J19] => 'path=a:2,b:4',
-              %w[A12] => 'path=a:3,b:5',
-              %w[G16] => 'path=a:1,b:4;path=a:3,b:5',
-              %w[L15] => 'path=a:0,b:4;path=a:1,b:4',
-              %w[J7] => 'path=a:0,b:4;path=a:4,b:5',
-              %w[D7] => 'offboard=revenue:0,hide:1;path=a:0,b:_0',
-              %w[L3 N9] => 'offboard=revenue:0,hide:1;path=a:1,b:_0',
-              %w[I6 K10] => 'offboard=revenue:0,hide:1;path=a:2,b:_0',
-              %w[F21] => 'offboard=revenue:0,hide:1;path=a:3,b:_0',
-              %w[L9] => 'offboard=revenue:0,hide:1;path=a:5,b:_0;path=a:2,b:4',
-              %w[K8] => 'offboard=revenue:0,hide:1;path=a:1,b:_0;path=a:2,b:5',
-              %w[H13] => 'offboard=revenue:0,hide:1;path=a:1,b:_0;path=a:0,b:4',
-            },
-            red: {
-              %w[L5 M18] => 'offboard=revenue:yellow_30|brown_60;path=a:2,b:_0;label=R',
-              %w[E8] => 'offboard=revenue:yellow_30|brown_60;path=a:4,b:_0;label=R',
-              %w[B17] => 'offboard=revenue:yellow_30|brown_60;path=a:3,b:_0;path=a:4,b:_0;label=R',
-              %w[H19] => 'offboard=revenue:yellow_30|brown_60;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=R',
-            },
-            white: {
-              %w[I4 H5 F7 H7 G8 I8 C10 I10 F11 J11 L11 E12 G12 I12 K12 D13 F13 J13 C14 E14 B15 F15 C16 E16 I16 K16 H17
-                 L17 I18] => '',
-              %w[J9 M10 J17 D15 G14] => 'city=revenue:0,slots:1',
-              %w[B11 B13 E18 G10 H9 H11 I2 K14 M12 M14] => 'town=revenue:0;label=O;icon=image:river,sticky:1',
-              %w[C12 H15 I14 D17] => 'upgrade=cost:1,terrain:mountain',
-              %w[D11 E10 F17 G18 J3 K18 M16] => 'upgrade=cost:2,terrain:mountain',
-              %w[D9 F19 J15 K4] => TILE_Y,
-            },
-          },
-          map_b: {
-            gray: {
-              %w[F14 L14] => '',
-              %w[F4 H0 M9] => 'path=a:0,b:1',
-              %w[F10] => 'path=a:0,b:3',
-              %w[F0] => 'path=a:0,b:5',
-              %w[H14] => 'path=a:1,b:4',
-              %w[G21] => 'path=a:2,b:3',
-              %w[J20] => 'path=a:2,b:4',
-              %w[E5] => 'path=a:4,b:5',
-              %w[L16] => 'path=a:0,b:4;path=a:1,b:4',
-              %w[G17] => 'path=a:1,b:4;path=a:3,b:5',
-              %w[J8] => 'path=a:0,b:4;path=a:4,b:5',
-              %w[H4] => 'junction;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0',
-              %w[L4 N10] => 'offboard=revenue:0,hide:1;path=a:1,b:_0',
-              %w[K11] => 'offboard=revenue:0,hide:1;path=a:2,b:_0',
-              %w[F22] => 'offboard=revenue:0,hide:1;path=a:3,b:_0',
-              %w[K9] => 'offboard=revenue:0,hide:1;path=a:1,b:_0;path=a:2,b:5',
-              %w[L10] => 'offboard=revenue:0,hide:1;path=a:5,b:_0;path=a:2,b:4',
-            },
-            red: {
-              %w[L6] => 'offboard=revenue:yellow_30|brown_60;path=a:1,b:_0;path=a:2,b:_0;label=R',
-              %w[M19] => 'offboard=revenue:yellow_30|brown_60;path=a:2,b:_0;label=R',
-              %w[H20] => 'offboard=revenue:yellow_30|brown_60;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=R',
-            },
-            white: {
-              %w[E7 F8 F12 F18 G5 G7 G9 G13 G15 H2 H8 H18 I5 I7 I9 I11 I13 I17 I19 J12 J14 K13 K17 L12 L18] => '',
-              %w[G3 H6 J10 J18 M11] => 'city=revenue:0,slots:1',
-              %w[F2 F16 G1 G11 H10 H12 I3 K15 M13 M15] => 'label=O;icon=image:river,sticky:1',
-              %w[H16 I15 J6] => 'upgrade=cost:1,terrain:mountain',
-              %w[G19 J4 K7 K19 M17] => 'upgrade=cost:2,terrain:mountain',
-              %w[F6 F20 J16 K5] => TILE_Y,
-            },
-          },
-          map_c: {
-            gray: {
-              %w[F3] => '',
-              %w[D3 I0] => 'path=a:0,b:1',
-              %w[F7] => 'path=a:1,b:4',
-              %w[G10] => 'path=a:0,b:3',
-              %w[G0] => 'path=a:0,b:5',
-              %w[H21] => 'path=a:2,b:3',
-              %w[B13] => 'path=a:3,b:5',
-              %w[C4] => 'path=a:4,b:5',
-              %w[H17] => 'path=a:1,b:4;path=a:3,b:5',
-              %w[I4] => 'junction;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0',
-              %w[A10] => 'offboard=revenue:0,hide:1;path=a:5,b:_0',
-              %w[M4] => 'offboard=revenue:0,hide:1;path=a:1,b:_0',
-              %w[G22] => 'offboard=revenue:0,hide:1;path=a:3,b:_0',
-              %w[I14] => 'offboard=revenue:0,hide:1;path=a:1,b:_0;path=a:0,b:4',
-            },
-            red: {
-              %w[M6] => 'offboard=revenue:yellow_30|brown_60;path=a:1,b:_0;path=a:2,b:_0;label=R',
-              %w[E2] => 'offboard=revenue:yellow_30|brown_60;path=a:0,b:_0;label=R',
-              %w[C18] => 'offboard=revenue:yellow_30|brown_60;path=a:3,b:_0;path=a:4,b:_0;label=R',
-              %w[I20] => 'offboard=revenue:yellow_30|brown_60;path=a:2,b:_0;path=a:3,b:_0;label=R',
-            },
-            white: {
-              %w[C10 C16 D11 D15 D17 E4 E14 F5 F13 F15 F17 G4 G8 G12 G14 G16 H5 H7 H9 H13 I2 I8 I18 J5 J7] => '',
-              %w[D5 E16 H3 H15 I6] => 'city=revenue:0,slots:1',
-              %w[C12 C14 D9 E6 F19 G2 H1 H11 I10 I12 J3] => 'label=O;icon=image:river,sticky:1',
-              %w[D13 E18 F9 I16 K6] => 'upgrade=cost:1,terrain:mountain',
-              %w[D7 E8 E12 F11 G18 H19 K4 L7] => 'upgrade=cost:2,terrain:mountain',
-              %w[B11 E10 G6 G20 L5] => TILE_Y,
-            },
-          },
-          map_d: {
-            gray: {
-              %w[B10 C9 D6 L14] => '',
-              %w[F4 H0 M9] => 'path=a:0,b:1',
-              %w[F10] => 'path=a:0,b:3',
-              %w[A11 F0] => 'path=a:0,b:5',
-              %w[G21] => 'path=a:2,b:3',
-              %w[J20] => 'path=a:2,b:4',
-              %w[A13] => 'path=a:3,b:5',
-              %w[E5] => 'path=a:4,b:5',
-              %w[L16] => 'path=a:0,b:4;path=a:1,b:4',
-              %w[G17] => 'path=a:1,b:4;path=a:3,b:5',
-              %w[J8] => 'path=a:0,b:4;path=a:4,b:5',
-              %w[H4] => 'junction;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0',
-              %w[L4 N10] => 'offboard=revenue:0,hide:1;path=a:1,b:_0',
-              %w[D8] => 'offboard=revenue:0,hide:1;path=a:0,b:_0',
-              %w[K11] => 'offboard=revenue:0,hide:1;path=a:2,b:_0',
-              %w[F22] => 'offboard=revenue:0,hide:1;path=a:3,b:_0',
-              %w[K9] => 'offboard=revenue:0,hide:1;path=a:1,b:_0;path=a:2,b:5',
-              %w[L10] => 'offboard=revenue:0,hide:1;path=a:5,b:_0;path=a:2,b:4',
-              %w[H14] => 'offboard=revenue:0,hide:1;path=a:1,b:_0;path=a:0,b:4',
-            },
-            red: {
-              %w[L6] => 'offboard=revenue:yellow_30|brown_60;path=a:1,b:_0;path=a:2,b:_0;label=R',
-              %w[M19] => 'offboard=revenue:yellow_30|brown_60;path=a:2,b:_0;label=R',
-              %w[E9] => 'offboard=revenue:yellow_30|brown_60;path=a:4,b:_0;label=R',
-              %w[B18] => 'offboard=revenue:yellow_30|brown_60;path=a:3,b:_0;path=a:4,b:_0;label=R',
-              %w[H20] => 'offboard=revenue:yellow_30|brown_60;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=R',
-            },
-            white: {
-              %w[B16 C11 C15 C17 D14 E7 E13 E15 E17 F8 F12 F14 F16 G5 G7 G9 G13 H2 H8 H18 I5 I7 I9 I11 I13 I17 I19 J12
-                 J14 K13 K17 L12 L18] => '',
-              %w[D16 G3 G15 H6 J10 J18 M11] => 'city=revenue:0,slots:1',
-              %w[B12 B14 E19 F2 G1 G11 H10 H12 I3 K15 M13 M15] => 'label=O;icon=image:river,sticky:1',
-              %w[C13 D18 H16 I15 J6] => 'upgrade=cost:1,terrain:mountain',
-              %w[D12 E11 F18 G19 J4 K7 K19 M17] => 'upgrade=cost:2,terrain:mountain',
-              %w[D10 F6 F20 J16 K5] => TILE_Y,
-            },
-          },
-          map_e: {
-            gray: {
-              %w[D6 E3 E15 L14] => '',
-              %w[C3 H0 M9] => 'path=a:0,b:1',
-              %w[F10] => 'path=a:0,b:3',
-              %w[F0] => 'path=a:0,b:5',
-              %w[G21] => 'path=a:2,b:3',
-              %w[J20] => 'path=a:2,b:4',
-              %w[L16] => 'path=a:0,b:4;path=a:1,b:4',
-              %w[B4] => 'path=a:4,b:5',
-              %w[G17] => 'path=a:1,b:4;path=a:3,b:5',
-              %w[J8] => 'path=a:0,b:4;path=a:4,b:5',
-              %w[H4] => 'junction;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0',
-              %w[L4 N10] => 'offboard=revenue:0,hide:1;path=a:1,b:_0',
-              %w[K11] => 'offboard=revenue:0,hide:1;path=a:2,b:_0',
-              %w[F22] => 'offboard=revenue:0,hide:1;path=a:3,b:_0',
-              %w[E7] => 'offboard=revenue:0,hide:1;path=a:4,b:_0',
-              %w[K9] => 'offboard=revenue:0,hide:1;path=a:1,b:_0;path=a:2,b:5',
-              %w[L10] => 'offboard=revenue:0,hide:1;path=a:5,b:_0;path=a:2,b:4',
-              %w[H14] => 'offboard=revenue:0,hide:1;path=a:1,b:_0;path=a:0,b:4',
-            },
-            red: {
-              %w[L6] => 'offboard=revenue:yellow_30|brown_60;path=a:1,b:_0;path=a:2,b:_0;label=R',
-              %w[M19] => 'offboard=revenue:yellow_30|brown_60;path=a:2,b:_0;label=R',
-              %w[D2] => 'offboard=revenue:yellow_30|brown_60;path=a:0,b:_0;label=R',
-              %w[H20] => 'offboard=revenue:yellow_30|brown_60;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=R',
-            },
-            white: {
-              %w[D4 E5 F4 F8 F12 F14 F16 G5 G7 G9 G13 H2 H8 H18 I5 I7 I9 I11 I13 I17 I19 J12 J14 K13 K17 L12 L18] => '',
-              %w[C5 G3 G15 H6 J10 J18 M11] => 'city=revenue:0,slots:1',
-              %w[D6 E17 E19 F2 G1 G11 H10 H12 I3 K15 M13 M15] => 'label=O;icon=image:river,sticky:1',
-              %w[H16 I15 J6] => 'upgrade=cost:1,terrain:mountain',
-              %w[C7 F18 G19 J4 K7 K19 M17] => 'upgrade=cost:2,terrain:mountain',
-              %w[F6 F20 J16 K5] => TILE_Y,
-            },
-          },
-          map_f: {
-            gray: {
-              %w[F3] => '',
-              %w[D3 I0] => 'path=a:0,b:1',
-              %w[L11] => 'path=a:0,b:2;path=a:0,b:3',
-              %w[G10 L13] => 'path=a:0,b:3',
-              %w[G0 J15] => 'path=a:0,b:5',
-              %w[K12] => 'path=a:1,b:3',
-              %w[F7] => 'path=a:1,b:4',
-              %w[J13] => 'path=a:1,b:4',
-              %w[H21] => 'path=a:2,b:3',
-              %w[B13] => 'path=a:3,b:5',
-              %w[C4] => 'path=a:4,b:5',
-              %w[H17] => 'path=a:1,b:4;path=a:3,b:5',
-              %w[I4] => 'junction;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0',
-              %w[M4] => 'offboard=revenue:0,hide:1;path=a:1,b:_0',
-              %w[L19] => 'offboard=revenue:0,hide:1;path=a:2,b:_0',
-              %w[G22] => 'offboard=revenue:0,hide:1;path=a:3,b:_0',
-              %w[J11] => 'offboard=revenue:0,hide:1;path=a:4,b:_0',
-              %w[A10] => 'offboard=revenue:0,hide:1;path=a:5,b:_0',
-              %w[L9] => 'offboard=revenue:0,hide:1;path=a:1,b:2;path=a:2,b:0',
-              %w[I14] => 'offboard=revenue:0,hide:1;path=a:1,b:_0;path=a:0,b:4',
-            },
-            red: {
-              %w[M6] => 'offboard=revenue:yellow_30|brown_60;path=a:1,b:_0;path=a:2,b:_0;label=R',
-              %w[E2] => 'offboard=revenue:yellow_30|brown_60;path=a:0,b:_0;label=R',
-              %w[C18] => 'offboard=revenue:yellow_30|brown_60;path=a:3,b:_0;path=a:4,b:_0;label=R',
-              %w[I20] => 'offboard=revenue:yellow_30|brown_60;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=R',
-            },
-            white: {
-              %w[C10 C16 D11 D15 D17 E4 E14 F5 F13 F15 F17 G4 G8 G12 G14 G16 H5 H7 H9 H13 I2 I8 I18 J5 J7 J9 J17 J19 K8
-                 K14 L17] => '',
-              %w[D5 E16 H3 H15 I6 K10 K18] => 'city=revenue:0,slots:1',
-              %w[C12 C14 D9 E6 F19 G2 H1 H11 I10 I12 J3 L15 L17] => 'label=O;icon=image:river,sticky:1',
-              %w[D13 E18 F9 I16 K6] => 'upgrade=cost:1,terrain:mountain',
-              %w[D7 E8 E12 F11 G18 H19 K4 L7] => 'upgrade=cost:2,terrain:mountain',
-              %w[B11 E10 G6 G20 K16 L5] => TILE_Y,
-            },
-          },
-        }.freeze
 
         SMALL_MAP = %i[map_a map_b map_c].freeze
 
@@ -848,131 +181,6 @@ module Engine
 
         NEXT_SR_PLAYER_ORDER = :most_cash # TODO: check if a bug
 
-        CORPORATIONS_BY_MAP = {
-          map_a: %w[GI PB PE LI TI],
-          map_b: %w[CR GI PB PE BB],
-          map_c: %w[CR LI TI BB EL],
-          map_d: %w[CR GI PB PE LI TI BB],
-          map_e: %w[CR GI PB PE TI BB EL],
-          map_f: %w[CR GI PE LI TI BB EL],
-        }.freeze
-
-        CORPORATION_COORDINATES_BY_MAP = {
-          map_a: { 'GI' => 'J9', 'PB' => 'M10', 'PE' => 'J17', 'LI' => 'D15', 'TI' => 'G14' },
-          map_b: { 'CR' => 'G3', 'GI' => 'J10', 'PB' => 'M11', 'PE' => 'J18', 'BB' => 'H6' },
-          map_c: { 'CR' => 'H3', 'LI' => 'E16', 'TI' => 'H15', 'BB' => 'I6', 'EL' => 'D5' },
-          map_d: {
-            'CR' => 'G3',
-            'GI' => 'J10',
-            'PB' => 'M11',
-            'PE' => 'J18',
-            'LI' => 'D16',
-            'TI' => 'G15',
-            'BB' => 'H6',
-          },
-          map_e: {
-            'CR' => 'G3',
-            'GI' => 'J10',
-            'PB' => 'M11',
-            'PE' => 'J18',
-            'TI' => 'G15',
-            'BB' => 'H6',
-            'EL' => 'C5',
-          },
-          map_f: {
-            'CR' => 'H3',
-            'GI' => 'K10',
-            'PE' => 'K18',
-            'LI' => 'E16',
-            'TI' => 'H15',
-            'BB' => 'I6',
-            'EL' => 'D5',
-          },
-        }.freeze
-
-        LOCATION_NAMES_BY_MAP = {
-          map_a: {
-            D11: 'MM',
-            E10: 'MM',
-            F17: 'MM',
-            G18: 'MM',
-            J3: 'MM',
-            K18: 'MM',
-            M16: 'MM',
-            C12: 'M',
-            H15: 'M',
-            I14: 'M',
-            D17: 'M',
-          },
-          map_b: {
-            H16: 'M',
-            I15: 'M',
-            J6: 'M',
-            G19: 'MM',
-            J4: 'MM',
-            K7: 'MM',
-            K19: 'MM',
-            M17: 'MM',
-          },
-          map_c: {
-            D13: 'M',
-            E18: 'M',
-            F9: 'M',
-            I16: 'M',
-            K6: 'M',
-            D7: 'MM',
-            E8: 'MM',
-            E12: 'MM',
-            F11: 'MM',
-            G18: 'MM',
-            H19: 'MM',
-            K4: 'MM',
-            L7: 'MM',
-          },
-          map_d: {
-            C13: 'M',
-            D18: 'M',
-            H16: 'M',
-            I15: 'M',
-            J6: 'M',
-            D12: 'MM',
-            E11: 'MM',
-            F18: 'MM',
-            G19: 'MM',
-            J4: 'MM',
-            K7: 'MM',
-            K19: 'MM',
-            M17: 'MM',
-          },
-          map_e: {
-            H16: 'M',
-            I15: 'M',
-            J6: 'M',
-            C7: 'MM',
-            F18: 'MM',
-            G19: 'MM',
-            J4: 'MM',
-            K7: 'MM',
-            K19: 'MM',
-            M17: 'MM',
-          },
-          map_f: {
-            D13: 'M',
-            E18: 'M',
-            F9: 'M',
-            I16: 'M',
-            K6: 'M',
-            D7: 'MM',
-            E8: 'MM',
-            E12: 'MM',
-            F11: 'MM',
-            G18: 'MM',
-            H19: 'MM',
-            K4: 'MM',
-            L7: 'MM',
-          },
-        }.freeze
-
         HOME_TOKEN_TIMING = :float
 
         MUST_BUY_TRAIN = :always
@@ -985,6 +193,8 @@ module Engine
 
         ASSIGNMENT_TOKENS = {
           'CORN' => '/icons/18_zoo/corn.svg',
+          'BARREL' => '/icons/18_zoo/barrel.svg',
+          'HOLE' => '/icons/18_zoo/hole.svg',
         }.freeze
 
         MARKET_TEXT = Base::MARKET_TEXT.merge(par_2: 'Can only enter during green phase',
@@ -1004,6 +214,8 @@ module Engine
         def setup
           @operating_rounds = 2 # 2 ORs on first and second round
 
+          @holes = []
+
           @available_companies = []
           @future_companies = []
 
@@ -1014,6 +226,7 @@ module Engine
           @companies_for_wednesday = @companies[draw_size + 8..draw_size + 11]
 
           @available_companies.concat(@companies_for_isr)
+          @available_companies.each { |c| c.owner = @bank unless c.owner }
 
           if @all_private_visible
             @log << 'All powers visible in the future deck'
@@ -1100,7 +313,7 @@ module Engine
             return @companies.select { |company| company.owner == @bank && !abilities(company, :no_buy) }
           end
 
-          # corporation can buy ZOOTicket only from owner, and other companies from any player
+          # entity can buy ZOOTicket only from owner, and other companies from any player
           companies_for_corporation = @companies.select do |company|
             company.owner&.player? && !abilities(company, :no_buy) &&
               (entity.owner == company.owner || !company.name.start_with?('ZOOTicket'))
@@ -1162,7 +375,15 @@ module Engine
             return super
           end
 
-          # Stock - Bonus Track, Operating - Ancient Maps, Operating - Track
+          # Operating - Ancient Maps
+          if @round.is_a?(Engine::Round::Operating) && selected_company == @ancient_maps
+            return false unless from.color == 'white'
+
+            # TODO: fix to use selected_company
+            return super
+          end
+
+          # Stock - Bonus Track, Operating - Track
           # TODO: fix to use selected_company
 
           super
@@ -1183,10 +404,10 @@ module Engine
 
           corporations_order = @corporations.sort_by(&:full_name).cycle(2).to_a
           if @corporations.count(&:ipoed) == 1
-            # Take the first corporation not ipoed after the one just parred
+            # Take the first entity not ipoed after the one just parred
             next_corporation = corporations_order.drop_while { |c| c.id != corporation.id }
                                                  .find { |c| !c.ipoed }
-            # Take the first corporation not ipoed before the one just parred
+            # Take the first entity not ipoed before the one just parred
             previous_corporation = corporations_order.reverse
                                                      .drop_while { |c| c.id != corporation.id }
                                                      .find { |c| !c.ipoed }
@@ -1290,10 +511,13 @@ module Engine
           @two_barrels ||= company_by_id('TWO_BARRELS')
         end
 
+        def can_choose_two_barrels?(entity, company)
+          company == two_barrels && entity&.corporation? && two_barrels.owner == entity &&
+            !two_barrels_used_this_or?(entity)
+        end
+
         def two_barrels_used_this_or?(entity)
-          entity&.corporation? &&
-            two_barrels.owner == entity &&
-            (two_barrels.all_abilities.empty? || two_barrels.all_abilities[0].count_this_or.positive?)
+          entity&.assigned?('BARREL')
         end
 
         def a_squeeze
@@ -1310,6 +534,12 @@ module Engine
 
         def a_spoonful_of_sugar
           @a_spoonful_of_sugar ||= company_by_id('A_SPOONFUL_OF_SUGAR')
+        end
+
+        def can_choose_sugar?(entity, company)
+          company == a_spoonful_of_sugar && entity&.corporation? && a_spoonful_of_sugar.owner == entity &&
+            entity.trains.any? { |train| !%w[2J 4J].include?(train.name) } &&
+            entity.all_abilities.none? { |a| a.type == :increase_distance_for_train }
         end
 
         def apply_custom_ability(company)
@@ -1339,13 +569,20 @@ module Engine
         end
 
         def revenue_for(route, stops)
-          super
+          revenue = super
 
-          # TODO: Add 30$N if route contains 'Corn' and Corporation owns 'Corn'
-          # revenue += 30 if route.corporation.assigned?(corn.id) && stops.any? { |stop| stop.hex.assigned?(corn.id) }
+          # Add 30$N if route contains 'Corn' and Corporation owns 'Corn'
+          revenue += 30 if route.corporation.assigned?(corn.id) && stops.any? { |stop| stop.hex.assigned?(corn.id) }
 
-          # TODO: Towns revenues are doubled if 'Two barrels' is in use
-          # revenue += 10 * stops.count { |stop| stop.tile.towns.any? } if two_barrels_used_this_or?(route.corporation)
+          # Towns revenues are doubled if 'Two barrels' is in use
+          revenue += 10 * stops.count { |stop| !stop.tile.towns.empty? } if two_barrels_used_this_or?(route.corporation)
+
+          # Add Hole off-board revenue when passing through
+          if !@holes.empty? && (@holes & route.all_hexes).size == 2
+            revenue += @holes[0].tile.offboards[0].route_revenue(route.phase, route.train)
+          end
+
+          revenue
         end
 
         def zoo_ticket?(company)
@@ -1359,26 +596,146 @@ module Engine
         def check_distance(route, visits)
           distance = route.train.distance
           cities_visited = visits.count { |v| v.city? || (v.offboard? && v.revenue[:yellow].positive?) }
+
+          # Passing through Hole count as a stop
+          cities_visited += 1 if !@holes.empty? && (@holes & route.all_hexes).size == 2
           raise GameError, 'Water and external gray don\'t count as city/offboard.' if cities_visited < 2
 
           # 2S, 3S, 4S, 5S
           if distance.is_a?(Numeric)
-            # TODO: Ability 'IncreaseDistanceForTrain' can change the max distance for a specific train
-            # distance += @game.abilities(route.train.owner, :increase_distance_for_train)&.distance || 0
+            # Ability 'IncreaseDistanceForTrain' can change the max distance for a specific train
+            distance += abilities(route.train.owner, :increase_distance_for_train)&.distance || 0
             raise GameError, "#{cities_visited} is too many stops for #{distance} train" if distance < cities_visited
           else
             super
           end
         end
 
+        def check_other(route)
+          super
+
+          return if @holes.empty?
+
+          # Route cannot use Hole as off-board and as pass-through, or used twice
+          holes_in_route = route.paths.map(&:tile).count { |tile| @holes.include?(tile.hex) }
+          raise GameError, 'Hole cannot be a terminal or used multiple times if used as tunnel.' if holes_in_route > 2
+        end
+
         def company_header(company)
-          case company.sym
-          when 'HOLIDAY', 'MIDAS', 'TOO_MUCH_RESPONSIBILITY', 'LEPRECHAUN_POT_OF_GOLD',
-            'IT_IS_ALL_GREEK_TO_ME', 'WHATSUP'
-            'POWER (SR)'
-          else
-            'POWER (OR)'
+          type_text = @future_companies.include?(company) ? 'FUTURE POWER' : 'POWER'
+          sr_or_text = case company.sym
+                       when 'HOLIDAY', 'MIDAS', 'TOO_MUCH_RESPONSIBILITY', 'LEPRECHAUN_POT_OF_GOLD',
+                         'IT_IS_ALL_GREEK_TO_ME', 'WHATSUP'
+                         '(SR)'
+                       else
+                         '(OR)'
+                       end
+          "#{type_text} #{sr_or_text}"
+        end
+
+        def train_help(entity, runnable_trains, _routes)
+          return [] if runnable_trains.empty?
+
+          # Barrel assignment
+          barrel_assignment = entity.assigned?('BARREL')
+
+          # Corn assignment
+          corn_assignment = entity.assigned?('CORN')
+
+          # Holes assignment
+          holes_assignment = !@holes.empty?
+
+          help = []
+          # TODO: add logic for Bandage - trains
+
+          help << 'Routes get no subsidy at all, but every town increase route value by 10.' if barrel_assignment
+          if holes_assignment
+            help << "Off-boards (#{@holes.map(&:coordinates)}) are special: they can used as terminal (as usual); "\
+                    'Any route passing through them must go to the other side, and a single route cannot use it twice.'
           end
+          help << 'Any train running in a city which has a Corn token increase route value by 30.' if corn_assignment
+          help
+        end
+
+        def subsidy_for(_route, stops)
+          subsidy = 0
+          # Get 1 for each town
+          subsidy += stops.count { |s| !s.tile.towns.empty? }
+
+          subsidy
+        end
+
+        def routes_subsidy(routes)
+          return 0 if routes.empty?
+
+          entity = routes.first.train.owner
+          # No subsidy if it is using 'Two Barrels'
+          return 0 if two_barrels_used_this_or?(entity)
+
+          subsidy = routes.sum(&:subsidy)
+          # 3$N additional if any subsidy and own 'A squeeze'
+          subsidy += 3 if a_squeeze.owner == entity && subsidy.positive?
+
+          subsidy
+        end
+
+        def format_currency(val)
+          # object with :revenue should not be formatted
+          val.is_a?(Integer) ? super : val[:revenue].to_s
+        end
+
+        def bonus_payout_for_share(share_price)
+          STOCKMARKET_GAIN[share_price.coordinates[0]][share_price.coordinates[1]]
+        end
+
+        def bonus_payout_for_president(share_price)
+          return 0 if share_price.coordinates[0].positive?
+
+          STOCKMARKET_OWNER_GAIN[share_price.coordinates[1]] || 0
+        end
+
+        def threshold(entity)
+          STOCKMARKET_THRESHOLD[entity.share_price.coordinates[0]][entity.share_price.coordinates[1]]
+        end
+
+        def share_price_updated(entity, revenue)
+          return stock_market.find_share_price(entity, :right) if revenue >= threshold(entity)
+
+          stock_market.find_share_price(entity, :stay)
+        end
+
+        def route_distance(route)
+          distance = route.visited_stops.sum(&:visit_cost)
+          return distance if @holes.empty?
+
+          distance + ((@holes & route.all_hexes).size == 2 ? 1 : 0)
+        end
+
+        def assign_hole(entity, target)
+          @holes << target
+
+          return unless entity.all_abilities.empty?
+
+          items = @holes.map(&:coordinates).sort.join('-')
+          hole_to_convert = self.class::HOLE_BY_MAP[@map]
+          hole_to_convert[items].each do |coordinates_list, new_tile_code|
+            coordinates_list.each do |coordinates|
+              hex_by_id(coordinates).lay(Engine::Tile.from_code(coordinates, :red, new_tile_code))
+            end
+          end
+
+          coordinates_to_convert = hole_to_convert["#{items}-tiles"]
+
+          hole_to_convert['tiles'].each do |coordinates_list, new_tile_code|
+            coordinates_list&.each do |coordinates|
+              next unless coordinates_to_convert.include?(coordinates)
+
+              hex_by_id(coordinates).lay(Engine::Tile.from_code(coordinates, :red, new_tile_code))
+            end
+          end
+
+          graph.clear_graph_for(entity.owner)
+          connect_hexes
         end
 
         private
@@ -1472,8 +829,6 @@ module Engine
           update_current_and_future(@companies_for_tuesday, @companies_for_wednesday, 2)
           update_current_and_future(@companies_for_wednesday, nil, 3)
 
-          @available_companies.each { |c| c.owner = @bank unless c.owner }
-
           if leprechaun_pot_of_gold.owner&.player?
             bank.spend(2, leprechaun_pot_of_gold.owner, check_positive: false)
             @log << "#{leprechaun_pot_of_gold.owner.name} earns #{format_currency(2)} using
@@ -1503,8 +858,9 @@ module Engine
 
         def operating_round(round_num)
           Engine::Game::G18ZOO::Round::Operating.new(self, [
-            # G18ZOO::Step::AssignOnOwnTokens, # TODO: check if add new step or change Assign ability
+            G18ZOO::Step::Assign,
             Engine::Step::SpecialTrack, # TODO: check if add step G18ZOO::Step::SpecialTrack or not
+            Engine::Step::SpecialToken,
             G18ZOO::Step::BuyOrUsePowerOnOr,
             G18ZOO::Step::BuyCompany,
             G18ZOO::Step::Track,
@@ -1545,7 +901,11 @@ module Engine
         end
 
         def update_current_and_future(to_current, to_future, turn)
-          @available_companies.concat(to_current) if @turn == turn
+          if @turn == turn
+            @available_companies.concat(to_current)
+            @future_companies -= to_current
+            to_current.each { |c| c.owner = @bank unless c.owner }
+          end
           return if @all_private_visible || !to_future || @turn != turn
 
           @log << "Powers #{to_future.map { |c| "\"#{c.name}\"" }.join(', ')} added to the future deck"

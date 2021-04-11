@@ -19,9 +19,6 @@ module Engine
 
             # PSM loses it's special if something else goes on F13
             psm = @game.company_by_id(@game.class::PITTSBURGH_PRIVATE_NAME)
-            return unless (ability = @game.abilities(psm, :tile_lay))
-
-            psm.remove_ability(ability)
             @game.log << "#{psm.name} closes as it can no longer be used"
             psm.close!
           end

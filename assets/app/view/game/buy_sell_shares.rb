@@ -19,6 +19,13 @@ module View
         @ipo_shares = @corporation.ipo_shares.group_by(&:percent).values
           .map(&:first).sort_by(&:percent).reverse
 
+        @treasury_shares = if @corporation.ipo_is_treasury?
+                             []
+                           else
+                             @corporation.treasury_shares.group_by(&:percent).values
+                               .map(&:first).sort_by(&:percent).reverse
+                           end
+
         @pool_shares = if @step.respond_to?(:pool_shares)
                          @step.pool_shares(@corporation)
                        else
@@ -49,6 +56,7 @@ module View
         children = []
 
         children.concat(render_ipo_shares)
+        children.concat(render_treasury_shares)
         children.concat(render_market_shares)
         children.concat(render_corporate_shares)
         children.concat(render_price_protection)
@@ -83,6 +91,18 @@ module View
             entity: @current_entity,
             percentages_available: @ipo_shares.size,
             source: @game.ipo_name(share.corporation))
+        end
+      end
+
+      def render_treasury_shares
+        @treasury_shares.map do |share|
+          next unless @step.can_buy?(@current_entity, share)
+
+          h(Button::BuyShare,
+            share: share,
+            entity: @current_entity,
+            percentages_available: @treasury_shares.size,
+            source: 'Treasury')
         end
       end
 

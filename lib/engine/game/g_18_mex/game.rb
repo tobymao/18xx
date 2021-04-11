@@ -139,6 +139,7 @@ module Engine
           'F5' => 'Copper Canyon',
           'D11' => 'San Antonio',
           'G10' => 'Nuevo Laredo',
+          'H3' => 'Santa Rosalia',
           'I4' => 'Los Mochis',
           'I8' => 'Torreón',
           'I10' => 'Monterrey',
@@ -315,6 +316,26 @@ module Engine
             value: 20,
             revenue: 5,
             desc: 'No special abilities.',
+          },
+          {
+            sym: 'CdB',
+            name: 'Compagnie Du Boleo',
+            value: 30,
+            revenue: 5,
+            desc: 'May play token in Santa Rosalia at no cost and in addition to regular token lay.',
+            abilities: [
+              {
+                type: 'token',
+                when: 'owning_corp_or_turn',
+                owner_type: 'corporation',
+                hexes: ['H3'],
+                price: 0,
+                teleport_price: 0,
+                extra_action: true,
+                from_owner: true,
+                count: 1,
+              },
+            ],
           },
           {
             sym: 'KCMO',
@@ -590,6 +611,12 @@ module Engine
 
         TRACK_RESTRICTION = :city_permissive
 
+        OPTION_REMOVE_HEXES = ['I4'].freeze
+        OPTION_ADD_HEXES = {
+          gray: { ['H3'] => 'city=revenue:30,loc:center;town=revenue:20,loc:3;path=a:5,b:_0;path=a:_0,b:_1;' },
+          red: { ['I4'] => 'city=revenue:yellow_30|brown_40;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0' },
+        }.freeze
+
         STANDARD_GREEN_CITY_TILES = %w[14 15 619].freeze
         CURVED_YELLOW_CITY = %w[5 6].freeze
 
@@ -608,6 +635,18 @@ module Engine
         ).merge(
           'ndm_unavailable' => ['NdM unavailable', 'NdM shares unavailable during stock round'],
         ).freeze
+
+        def baja_variant?
+          @baja_variant ||= @optional_rules&.include?(:baja_variant)
+        end
+
+        def early_buy_of_kcmo?
+          @early_buy_of_kcmo ||= @optional_rules&.include?(:early_buy_of_kcmo)
+        end
+
+        def p1_5_company
+          @p1_5_company ||= company_by_id('CdB')
+        end
 
         def p2_company
           @p2_company ||= company_by_id('KCMO')
@@ -720,10 +759,33 @@ module Engine
           @recently_floated = []
           change_4t_to_hardrust if @optional_rules&.include?(:hard_rust_t4)
           @minor_close = false
-          return unless @optional_rules&.include?(:early_buy_of_kcmo)
 
-          p2_company.min_price = 1
-          p2_company.max_price = p2_company.value
+          if early_buy_of_kcmo?
+            p2_company.min_price = 1
+            p2_company.max_price = p2_company.value
+          end
+          p1_5_company.max_price = p1_5_company.value if baja_variant?
+        end
+
+        def init_companies(_players)
+          companies = super
+          companies.reject! { |c| c.sym == 'CdB' } unless baja_variant?
+          companies
+        end
+
+        def optional_hexes
+          return self.class::HEXES unless baja_variant?
+
+          new_hexes = {}
+          HEXES.keys.each do |color|
+            new_map = self.class::HEXES[color].transform_keys do |coords|
+              coords - OPTION_REMOVE_HEXES
+            end
+            OPTION_ADD_HEXES[color]&.each { |coords, tile_str| new_map[coords] = tile_str }
+            new_hexes[color] = new_map
+          end
+
+          new_hexes
         end
 
         def init_share_pool
@@ -734,6 +796,7 @@ module Engine
           Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             G18MEX::Step::Assign,
+            Engine::Step::SpecialToken,
             G18MEX::Step::BuyCompany,
             Engine::Step::HomeToken,
             G18MEX::Step::Merge,
@@ -858,14 +921,18 @@ module Engine
 
         def event_companies_buyable!
           setup_company_price_50_to_150_percent
+          p1_5_company.max_price = p1_5_company.value if baja_variant?
         end
 
         def purchasable_companies(entity = nil)
           return [] if entity&.minor?
-          return super if @phase.current[:name] != '2' || !@optional_rules&.include?(:early_buy_of_kcmo)
-          return [] unless p2_company.owner&.player?
 
-          [p2_company]
+          return super if @phase.current[:name] != '2' || !(early_buy_of_kcmo? || baja_variant?)
+
+          companies = []
+          companies << p2_company if early_buy_of_kcmo?
+          companies << p1_5_company if baja_variant?
+          companies.select(&:owned_by_player?)
         end
 
         def event_minors_closed!

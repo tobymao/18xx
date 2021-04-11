@@ -60,7 +60,7 @@ module Engine
               add_bid(action)
             else
               selection_bid(action)
-              next_entity!
+              next_entity! if auctioning
             end
           end
 

@@ -13,13 +13,13 @@ module Engine
               (entity.sms_hexes || @game.graph.can_token?(entity))
           end
 
-          def place_token(entity, city, token, connected: true, extra: false, special_ability: nil)
+          def place_token(entity, city, token, connected: true, extra_action: false, special_ability: nil)
             return super unless entity.sms_hexes
 
             hex = city.hex
             raise GameError, 'Must place token on SMS hex' unless entity.sms_hexes.find { |h| hex.id == h }
 
-            super(entity, city, token, connected: false, extra: extra, special_ability: special_ability)
+            super(entity, city, token, connected: false, extra_action: extra_action, special_ability: special_ability)
           end
 
           def process_place_token(action)
@@ -27,7 +27,7 @@ module Engine
 
             place_token(entity, action.city, action.token)
 
-            index = @game.corporations.index { |c| c.name == 'AFG' }
+            index = @game.corporations.index { |c| c.name == @game.class::CORP_CHOOSES_HOME }
             afg = index ? @game.corporations[index] : nil
             if afg && !afg.floated? && @game.home_token_locations(afg).empty?
               if afg.next_to_par && afg != @game.corporations.last
@@ -37,7 +37,7 @@ module Engine
               afg.slot_open = false
               @game.corporations.delete(afg)
               @game.corporations << afg
-              @log << 'AFG has no home token locations and cannot be opened until one becomes available.'
+              @log << "#{afg.name} has no home token locations and cannot be opened until one becomes available."
             end
 
             pass!

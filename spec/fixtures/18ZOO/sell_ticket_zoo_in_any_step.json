@@ -58,7 +58,7 @@
       "entity_type": "corporation",
       "id": 8,
       "created_at": 1616317187,
-      "hex": "J9",
+      "hex": "K9",
       "tile": "5-0",
       "rotation": 2
     },
@@ -68,7 +68,7 @@
       "entity_type": "corporation",
       "id": 9,
       "created_at": 1616317190,
-      "hex": "K4",
+      "hex": "L4",
       "tile": "201-0",
       "rotation": 5
     },
@@ -261,18 +261,16 @@
           "train": "2S-0",
           "connections": [
             [
-              "K4",
-              "K6",
-              "J7",
-              "J9"
+              "L4",
+              "L6",
+              "K7",
+              "K9"
             ]
           ],
           "hexes": [
-            "J9",
-            "K4"
-          ],
-          "revenue": 50,
-          "revenue_str": "J9-K4"
+            "K9",
+            "L4"
+          ]
         }
       ]
     },
@@ -328,18 +326,16 @@
           "train": "2S-0",
           "connections": [
             [
-              "K4",
-              "K6",
-              "J7",
-              "J9"
+              "L4",
+              "L6",
+              "K7",
+              "K9"
             ]
           ],
           "hexes": [
-            "K4",
-            "J9"
-          ],
-          "revenue": 50,
-          "revenue_str": "K4-J9"
+            "L4",
+            "K9"
+          ]
         }
       ]
     },
@@ -397,18 +393,16 @@
           "train": "2S-0",
           "connections": [
             [
-              "K4",
-              "K6",
-              "J7",
-              "J9"
+              "L4",
+              "L6",
+              "K7",
+              "K9"
             ]
           ],
           "hexes": [
-            "K4",
-            "J9"
-          ],
-          "revenue": 50,
-          "revenue_str": "K4-J9"
+            "L4",
+            "K9"
+          ]
         }
       ]
     },
@@ -452,18 +446,16 @@
           "train": "2S-0",
           "connections": [
             [
-              "K4",
-              "K6",
-              "J7",
-              "J9"
+              "L4",
+              "L6",
+              "K7",
+              "K9"
             ]
           ],
           "hexes": [
-            "K4",
-            "J9"
-          ],
-          "revenue": 50,
-          "revenue_str": "K4-J9"
+            "L4",
+            "K9"
+          ]
         }
       ]
     },
@@ -507,18 +499,16 @@
           "train": "2S-0",
           "connections": [
             [
-              "K4",
-              "K6",
-              "J7",
-              "J9"
+              "L4",
+              "L6",
+              "K7",
+              "K9"
             ]
           ],
           "hexes": [
-            "K4",
-            "J9"
-          ],
-          "revenue": 50,
-          "revenue_str": "K4-J9"
+            "L4",
+            "K9"
+          ]
         }
       ]
     },

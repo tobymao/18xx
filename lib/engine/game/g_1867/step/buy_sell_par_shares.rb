@@ -1,81 +1,15 @@
 # frozen_string_literal: true
 
-require_relative '../../../step/buy_sell_par_shares'
-require_relative '../../../step/passable_auction'
+require_relative '../../../step/buy_sell_par_shares_via_bid'
 
 module Engine
   module Game
     module G1867
       module Step
-        class BuySellParShares < Engine::Step::BuySellParShares
-          include Engine::Step::PassableAuction
-          TOKEN_COST = 50
+        class BuySellParShares < Engine::Step::BuySellParSharesViaBid
           MIN_BID = 100
           MAX_MINOR_PAR = 135
           MAJOR_PHASE = 4
-
-          def actions(entity)
-            return [] unless entity == current_entity
-            return %w[bid pass] if @auctioning
-
-            actions = super
-            actions << 'bid' if !bought? && can_bid?(entity)
-            actions << 'pass' if actions.any? && !actions.include?('pass')
-            actions
-          end
-
-          def auctioning_corporation
-            return @winning_bid.corporation if @winning_bid
-
-            @auctioning
-          end
-
-          def normal_pass?(_entity)
-            !@auctioning
-          end
-
-          def active_entities
-            return super unless @auctioning
-
-            [@active_bidders[(@active_bidders.index(highest_bid(@auctioning).entity) + 1) % @active_bidders.size]]
-          end
-
-          def log_pass(entity)
-            return if @auctioning
-
-            super
-          end
-
-          def pass!
-            return super unless @auctioning
-
-            pass_auction(current_entity)
-            resolve_bids
-          end
-
-          def process_bid(action)
-            if auctioning
-              add_bid(action)
-            else
-              selection_bid(action)
-            end
-          end
-
-          def add_bid(action)
-            entity = action.entity
-            corporation = action.corporation
-            price = action.price
-
-            if @auctioning
-              @log << "#{entity.name} bids #{@game.format_currency(price)} for #{corporation.name}"
-            else
-              @log << "#{entity.name} auctions #{corporation.name} for #{@game.format_currency(price)}"
-              @game.place_home_token(action.corporation)
-            end
-            super(action)
-
-            resolve_bids
-          end
 
           def win_bid(winner, _company)
             entity = winner.entity
@@ -120,24 +54,6 @@ module Engine
             end
           end
 
-          def min_bid(corporation)
-            return MIN_BID unless @auctioning
-
-            highest_bid(corporation).price + min_increment
-          end
-
-          def max_bid(player, _corporation = nil)
-            player.cash
-          end
-
-          def pass_description
-            if @auctioning
-              'Pass (Bid)'
-            else
-              super
-            end
-          end
-
           def get_all_par_prices(corp)
             types = corp.type == :major ? %i[par_2 par] : %i[par_1 par]
             @game.stock_market.share_prices_with_types(types)
@@ -159,11 +75,6 @@ module Engine
             else
               :bid
             end
-          end
-
-          def setup
-            setup_auction
-            super
           end
         end
       end

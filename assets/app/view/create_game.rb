@@ -87,7 +87,7 @@ module View
           attrs[:selected] = (game.title == closest_title) ||
                              (game == Engine.meta_by_title(closest_title)::GAME_IS_VARIANT_OF)
 
-          h(:option, { attrs: attrs }, title)
+          h(:option, { attrs: attrs }, game::GAME_DROPDOWN_TITLE || title)
         end
 
         if dev_stage == :production

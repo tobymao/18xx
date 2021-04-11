@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'game_manager'
-require 'lib/color'
 require 'lib/connection'
 require 'lib/params'
 require 'lib/settings'
@@ -10,7 +9,6 @@ require_tree './game'
 module View
   class GamePage < Snabberb::Component
     include GameManager
-    include Lib::Color
     include Lib::Settings
 
     needs :selected_company, default: nil, store: true
@@ -306,6 +304,7 @@ module View
         },
       }
 
+      note = !@game_data.dig('user_settings', 'notepad').to_s.empty?
       menu_items = [
         item('G|ame', ''),
         item('E|ntities', '#entities'),
@@ -314,7 +313,7 @@ module View
         item('I|nfo', '#info'),
         item('T|iles', '#tiles'),
         item('S|preadsheet', '#spreadsheet'),
-        item('To|ols', '#tools'),
+        item("To|ols#{' 📝' if note}", '#tools'),
       ]
 
       enabled = @game.programmed_actions[@game.player_by_id(@user['id'])] if @user

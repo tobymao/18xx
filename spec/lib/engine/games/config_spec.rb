@@ -27,7 +27,7 @@ module Engine
             next unless border
 
             other_hex = hex.neighbors[border.edge]
-            next if !other_hex && (border.type.nil? || border.type == :impassable)
+            next if !other_hex && (border.type.nil? || border.type == :impassable || border.type == :divider)
 
             expect(other_hex).to be_truthy,
                                  "Other hex missing from:#{hex.name}:#{border.edge}"
@@ -43,6 +43,15 @@ module Engine
                                    " other:#{other_hex.name}:#{Hex.invert(border.edge)}"
           end
         end
+      end
+
+      it 'has no duplicates in HEXES' do
+        hex_ids = Engine.game_by_title(game_meta.title)::HEXES.values.map(&:keys).flatten
+        counts = hex_ids.each_with_object(Hash.new(0)) do |hex_id, memo|
+          memo[hex_id] += 1
+        end
+        dups = counts.select { |_, count| count > 1 }.keys
+        expect(dups).to eq([])
       end
     end
   end

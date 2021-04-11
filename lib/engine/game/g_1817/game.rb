@@ -1359,6 +1359,28 @@ module Engine
           @stock_market.move(corporation, 0, 0, force: true)
         end
 
+        def train_help(_entity, _runnable_trains, routes)
+          all_hexes = {}
+          @companies.each do |company|
+            abilities(company, :assign_hexes)&.hexes&.each do |hex|
+              all_hexes[hex] = company
+            end
+          end
+          warnings = []
+          unless hexes.empty?
+
+            routes.each do |route|
+              route.stops.each do |stop|
+                if (company = all_hexes[stop.hex.id])
+                  warnings << "Using #{company.name} on #{stop.hex.id} will improve revenue"
+                end
+              end
+            end
+          end
+
+          warnings
+        end
+
         def revenue_for(route, stops)
           revenue = super
 

@@ -126,6 +126,7 @@ module Engine
       CERT_LIMIT_COUNTS_BANKRUPTED = false
 
       MULTIPLE_BUY_TYPES = %i[multiple_buy].freeze
+      MULTIPLE_BUY_ONLY_FROM_MARKET = false
 
       STOCKMARKET_COLORS = {
         par: :red,
@@ -1095,10 +1096,10 @@ module Engine
         send("#{type}_by_id", id)
       end
 
-      def all_companies_with_ability(ability)
+      def all_companies_with_ability(ability_type)
         @companies.each do |company|
-          if (found_ability = abilities(company, ability))
-            yield company, found_ability
+          Array(abilities(company, ability_type)).each do |ability|
+            yield company, ability
           end
         end
       end
@@ -1290,6 +1291,10 @@ module Engine
         []
       end
 
+      def multiple_buy_only_from_market?
+        self.class::MULTIPLE_BUY_ONLY_FROM_MARKET
+      end
+
       def float_corporation(corporation)
         @log << "#{corporation.name} floats"
 
@@ -1429,9 +1434,10 @@ module Engine
           @log << "#{corporation.name} receives #{format_currency(amount)}
                    from #{company.name}"
         end
+        place_home_token(corporation) if self.class::HOME_TOKEN_TIMING == :par
       end
 
-      def train_help(_runnable_trains)
+      def train_help(_entity, _runnable_trains, _routes)
         []
       end
 

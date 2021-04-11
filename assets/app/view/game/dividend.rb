@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'lib/color'
 require 'lib/settings'
 require 'view/game/actionable'
 
@@ -8,7 +7,6 @@ module View
   module Game
     class Dividend < Snabberb::Component
       include Actionable
-      include Lib::Color
       include Lib::Settings
 
       needs :routes, store: true, default: []

@@ -1,12 +1,14 @@
 # frozen_string_literal: true
 
+require_relative 'color'
 require_relative 'hex'
 
 module Lib
   module Settings
     DARK = `window.matchMedia('(prefers-color-scheme: dark)').matches`.freeze
-    # http://mkweb.bcgsc.ca/colorblind/ 12 color palette
-    ROUTE_COLORS = %i[#A40122 #008DF9 #00FCCF #FF5AAF #8400CD #FF6E3A #FFB2FD #FFC33B].freeze
+    # http://mkweb.bcgsc.ca/colorblind/ 15 color palette, with some substitutions + 1 additional
+    ROUTE_COLORS = %i[ #A40122 #099FFA #00DCB5 #FF5AAF #9400E6 #FF6E3A #009581 #FFDC3D
+                       #EF0096 #7CFFFA #005FCC #F60239 #00E307 #FFCFE2 #AFFF2A #E8D2AB ].freeze
 
     ENTER_GREEN = '#3CB371'
     JOIN_YELLOW = '#F0E58C'
@@ -34,6 +36,7 @@ module Lib
 
     def self.included(base)
       base.needs :user, default: nil, store: true
+      base.send :include, Lib::Color
     end
 
     def default_for(option)
@@ -59,7 +62,7 @@ module Lib
     end
 
     def route_prop_string(index, prop)
-      "r#{index}_#{prop}"
+      "r#{index % ROUTE_COLORS.size}_#{prop}"
     end
 
     def change_favicon(active)
@@ -82,11 +85,7 @@ module Lib
         players = players.rotate(player_idx)
       end
 
-      players.map.with_index do |p, idx|
-        color = route_prop(idx % ROUTE_COLORS.size, 'color')
-        color = convert_rgba_to_hex(convert_hex_to_rgba(color, 0.5)) if idx > ROUTE_COLORS.size - 1
-        [p, color]
-      end.to_h
+      players.map.with_index { |p, idx| [p, route_prop(idx, 'color')] }.to_h
     end
   end
 end

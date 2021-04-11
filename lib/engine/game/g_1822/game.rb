@@ -245,7 +245,7 @@ module Engine
             name: '5P',
             distance: 5,
             num: 1,
-            price: 0,
+            price: 500,
           },
           {
             name: 'P+',
@@ -285,8 +285,7 @@ module Engine
           'full_capitalisation' =>
             ['Full capitalisation', 'Major companies now receives full capitalisation when floated'],
           'phase_revenue' =>
-            ['Phase revenue', 'Highland Railway and Canterbury & Whitstable Railway closes if not acquired by a '\
-                              'major company'],
+            ['Phase revenue', 'P15-HR and P20-C&WR closes if not acquired by a major company'],
         }.freeze
 
         STATUS_TEXT = Base::STATUS_TEXT.merge(
@@ -686,7 +685,9 @@ module Engine
         def crowded_corps
           @crowded_corps ||= corporations.select do |c|
             trains = c.trains.count { |t| !extra_train?(t) }
-            trains > train_limit(c)
+            crowded = trains > train_limit(c)
+            crowded |= extra_train_permanent_count(c) > 1
+            crowded
           end
         end
 
@@ -730,13 +731,14 @@ module Engine
         end
 
         def event_phase_revenue!
-          @log << '-- Event: Highland Railway and Canterbury & Whitstable Railway now closes and its money returned '\
-                  'to the bank --'
+          @log << '-- Event: P15-HR and P20-C&WR now closes and its money returned to the bank --'
           self.class::PRIVATE_PHASE_REVENUE.each do |company_id|
             company = @companies.find { |c| c.id == company_id }
             next if !company || company&.closed? || !@phase_revenue[company_id]
 
-            @phase_revenue[company.id].spend(@phase_revenue[company.id].cash, @bank)
+            if @phase_revenue[company.id].cash.positive?
+              @phase_revenue[company.id].spend(@phase_revenue[company.id].cash, @bank)
+            end
             @phase_revenue[company.id] = nil
             company.close!
           end
@@ -829,7 +831,7 @@ module Engine
           super
         end
 
-        def train_help(runnable_trains)
+        def train_help(_entity, runnable_trains, _routes)
           return [] if runnable_trains.empty?
 
           entity = runnable_trains.first.owner
@@ -939,7 +941,7 @@ module Engine
             G1822::Step::PendingToken,
             G1822::Step::FirstTurnHousekeeping,
             Engine::Step::AcquireCompany,
-            Engine::Step::DiscardTrain,
+            G1822::Step::DiscardTrain,
             G1822::Step::SpecialChoose,
             G1822::Step::SpecialTrack,
             G1822::Step::SpecialToken,
@@ -951,13 +953,13 @@ module Engine
             G1822::Step::BuyTrain,
             G1822::Step::MinorAcquisition,
             G1822::Step::PendingToken,
-            Engine::Step::DiscardTrain,
+            G1822::Step::DiscardTrain,
             G1822::Step::IssueShares,
           ], round_num: round_num)
         end
 
         def payout_companies
-          # Set the correct revenue of Highland Railway and Midland & Great Northern
+          # Set the correct revenue of P15-HR, P20-C&WR and P9-M&GNR
           @companies.each do |c|
             next unless c.owner
 
@@ -1030,7 +1032,7 @@ module Engine
 
           @log << "-- New player order: #{player_order}"
 
-          # Reset the choice for Midland & Great Northern Joint Railway
+          # Reset the choice for P9-M&GNR
           @midland_great_northern_choice = nil
         end
 
@@ -1106,7 +1108,7 @@ module Engine
           # Initialize the player depts, if player have to take an emergency loan
           @player_debts = Hash.new { |h, k| h[k] = 0 }
 
-          # Initialize a dummy player for Highland Railway and Canterbury and Whitstable Railway
+          # Initialize a dummy player for P15-HR and P20-C&WR
           # to hold the cash it generates
           @phase_revenue = {}
           self.class::PRIVATE_PHASE_REVENUE.each do |company_id|
@@ -1116,7 +1118,7 @@ module Engine
           # Initialize a dummy player for Tax haven to hold the share and the cash it generates
           @tax_haven = Engine::Player.new(-1, 'Tax Haven')
 
-          # Initialize the stock round choice for Midland & Great Northern Joint Railway
+          # Initialize the stock round choice for P9-M&GNR
           @midland_great_northern_choice = nil
 
           # Randomize and setup the companies
@@ -1467,7 +1469,9 @@ module Engine
           return {} if time != :token || !company.owner&.corporation?
 
           choices = {}
-          choices['exchange'] = 'Move an exchange station token to the available station token section'
+          if exchange_tokens(company.owner).positive?
+            choices['exchange'] = 'Move an exchange station token to the available station token section'
+          end
           choices
         end
 
@@ -1515,8 +1519,10 @@ module Engine
           return {} if @tax_haven.value.positive? || !company.owner&.player? || time != :stock_round
 
           choices = {}
-          @corporations.select { |c| c.floated? && c.type == :major }.each do |corporation|
+          @corporations.select { |c| c.type == :major }.each do |corporation|
             price = corporation.share_price&.price || 0
+            next unless price.positive?
+
             if corporation.num_ipo_shares.positive?
               choices["#{corporation.id}_ipo"] = "#{corporation.id} IPO (#{format_currency(price)})"
             end
@@ -1666,6 +1672,14 @@ module Engine
           self.class::EXTRA_TRAINS.include?(train.name)
         end
 
+        def extra_train_permanent?(train)
+          self.class::EXTRA_TRAIN_PERMANENTS.include?(train.name)
+        end
+
+        def extra_train_permanent_count(corporation)
+          corporation.trains.count { |train| extra_train_permanent?(train) }
+        end
+
         def find_corporation(company)
           corporation_id = company.id[1..-1]
           corporation_by_id(corporation_id)
@@ -1793,7 +1807,7 @@ module Engine
             company.owner = @bank
           end
 
-          # Reset the choice for Midland & Great Northern Joint Railway
+          # Reset the choice for P9-M&GNR
           @midland_great_northern_choice = nil
         end
 

@@ -36,13 +36,14 @@ module Engine
           end
 
           def available_tokens(entity)
-            return super unless ability(entity)&.extra
+            return super unless ability(entity)&.extra_action
 
             [Engine::Token.new(@game.current_entity)]
           end
 
           def adjust_token_price_ability!(entity, _token, _hex, _city, special_ability: nil)
             token = Engine::Token.new(entity)
+            entity.tokens << token
             token.price = special_ability.teleport_price
             [token, special_ability]
           end

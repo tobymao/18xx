@@ -54,7 +54,7 @@ module Engine
               operating_info.laid_hexes = @round.laid_hexes
             end
 
-            @game.skip_default_track unless @game.purple_tile?(action.tile)
+            @round.num_laid_track += 1 unless @game.purple_tile?(action.tile)
 
             abilities = @game.abilities(action.entity, :tile_lay, time: 'any')
             abilities.each(&:use!)
@@ -90,7 +90,7 @@ module Engine
             return unless entity&.company?
 
             time = %w[special_track owning_corp_or_turn]
-            time << '%current_step%' if @round.num_laid_track.zero?
+            time << '%current_step%' if @game.tile_lays(entity.corporation)[@round.num_laid_track]
 
             abilities = @game.abilities(
               entity,

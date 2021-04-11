@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'lib/color'
 require 'lib/settings'
 require 'lib/publisher'
 require 'lib/text'
@@ -9,7 +8,6 @@ require 'view/game/game_meta'
 module View
   module Game
     class GameInfo < Snabberb::Component
-      include Lib::Color
       include Lib::Settings
       include Lib::Text
 

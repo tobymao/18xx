@@ -9,7 +9,11 @@ module Engine
         class Token < Engine::Step::Token
           def actions(entity)
             actions = super.dup
-            actions << 'choose_ability' unless choices_ability(entity).empty?
+            if (!choices_ability(entity).empty? || (actions.empty? && ability_lcdr?(entity))) &&
+              !actions.include?('choose_ability')
+              actions << 'choose_ability'
+            end
+            actions << 'pass' if !actions.empty? && !actions.include?('pass')
             actions
           end
 
@@ -23,8 +27,15 @@ module Engine
             entity.tokens_by_type.reject { |t| t.type == :destination }
           end
 
+          def ability_lcdr?(entity)
+            return unless entity.corporation?
+
+            # Special case if corporation have no tokens available and have LCDR. Make sure we are stopping on this step
+            entity.companies.any? { |c| c.id == @game.class::COMPANY_LCDR }
+          end
+
           def can_place_token?(entity)
-            return true if @game.abilities(entity, :token) && !@round.tokened
+            return true if @game.abilities(entity, :token) && !@round.tokened && !available_tokens(entity).empty?
 
             super
           end
