@@ -114,6 +114,9 @@ module Engine
                 'withhold'
               when 'half'
                 'half pay'
+              else
+                @extra_train_choice = 'payout'
+                'pay out'
               end
             @log << "#{current_entity.id} chooses to #{text} with the #{find_extra_train(entity).name} train"
           end
