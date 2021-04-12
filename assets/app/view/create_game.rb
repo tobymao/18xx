@@ -40,6 +40,7 @@ module View
         if selected_game_or_variant::AUTOROUTE
           inputs << render_input('Auto Routing', id: 'auto_routing', type: :checkbox, siblings: [auto_route_whats_this])
         end
+        inputs << render_input('Show Clock', id: 'show_clock', type: :checkbox)
         inputs << h(:p, [render_input('Random Seed', id: :seed, placeholder: 'Optional random seed', label_style: @label_style)])
         inputs << render_game_info
       when :hotseat

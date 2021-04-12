@@ -177,6 +177,7 @@ class Api
               unlisted: r['unlisted'],
               optional_rules: r['optional_rules'],
               auto_routing: r['auto_routing'],
+              show_clock: r['show_clock'],
               is_async: r['async'],
             },
             title: title,

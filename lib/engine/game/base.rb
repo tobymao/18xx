@@ -34,7 +34,7 @@ require_relative 'meta'
 
 module Engine
   module Game
-    def self.load(data, at_action: nil, actions: nil, pin: nil, optional_rules: nil, user: nil, **kwargs)
+    def self.load(data, at_action: nil, actions: nil, pin: nil, optional_rules: nil, user: nil, created_at: nil, **kwargs)
       case data
       when String
         parsed_data = JSON.parse(File.exist?(data) ? File.read(data) : data)
@@ -44,6 +44,7 @@ module Engine
                     pin: pin,
                     optional_rules: optional_rules,
                     user: user,
+                    created_at: created_at,
                     **kwargs)
       when Hash
         title = data['title']
@@ -52,6 +53,7 @@ module Engine
         actions ||= data['actions'] || []
         pin ||= data.dig('settings', 'pin')
         optional_rules ||= data.dig('settings', 'optional_rules') || []
+        created_at ||= data['created_at'] || Time.now
       when Integer
         return load(::Game[data],
                     at_action: at_action,
@@ -59,6 +61,7 @@ module Engine
                     pin: pin,
                     optional_rules: optional_rules,
                     user: user,
+                    created_at: created_at,
                     **kwargs)
       when ::Game
         title = data.title
@@ -67,10 +70,12 @@ module Engine
         actions ||= data.actions.map(&:to_h)
         pin ||= data.settings['pin']
         optional_rules ||= data.settings['optional_rules'] || []
+        created_at ||= data.created_at || Time.now
       end
 
       Engine.game_by_title(title).new(
-        names, id: id, actions: actions, at_action: at_action, pin: pin, optional_rules: optional_rules, user: user, **kwargs
+        names, id: id, actions: actions, at_action: at_action, pin: pin,
+               optional_rules: optional_rules, user: user, created_at: created_at, **kwargs
       )
     end
 
@@ -83,7 +88,7 @@ module Engine
                   :tiles, :turn, :total_loans, :undo_possible, :redo_possible, :round_history, :all_tiles,
                   :optional_rules, :exception, :last_processed_action, :broken_action,
                   :turn_start_action_id, :last_turn_start_action_id, :programmed_actions, :round_counter,
-                  :manually_ended
+                  :manually_ended, :created_at
 
       # Game end check is described as a dictionary
       # with reason => after
@@ -447,8 +452,11 @@ module Engine
         true
       end
 
-      def initialize(names, id: 0, actions: [], at_action: nil, pin: nil, strict: false, optional_rules: [], user: nil)
+      def initialize(
+        names, id: 0, actions: [], at_action: nil, pin: nil, strict: false, optional_rules: [], user: nil, created_at: nil
+      )
         @id = id
+        @created_at = created_at.is_a?(Time) ? created_at : Time.now
         @turn = 1
         @final_turn = nil
         @loading = false
@@ -701,6 +709,11 @@ module Engine
         @raw_actions << action.to_h
         return clone(@raw_actions) if action.is_a?(Action::Undo) || action.is_a?(Action::Redo)
 
+        previous_action = @actions[-1]&.created_at || @created_at
+        if action.entity.player && previous_action
+          action.entity.player.time_spent += action.created_at.to_i - previous_action.to_i
+        end
+
         @actions << action
 
         # Process the main action we came here to do first
@@ -862,7 +875,7 @@ module Engine
       end
 
       def clone(actions)
-        self.class.new(@names, id: @id, pin: @pin, actions: actions, optional_rules: @optional_rules)
+        self.class.new(@names, id: @id, pin: @pin, actions: actions, optional_rules: @optional_rules, created_at: @created_at)
       end
 
       def trains

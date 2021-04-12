@@ -97,7 +97,7 @@ module View
         # Create a fake action zero, so special handling isn't required throughout
         blank_action = Engine::Action::Base.new(@game.players.first)
         blank_action.id = 0
-        blank_action.created_at = @game.actions[0]&.created_at || Time.now
+        blank_action.created_at = @game.created_at
 
         last_action = nil
 

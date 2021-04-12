@@ -235,6 +235,7 @@ module View
       if @gdata['status'] == 'new'
         children << h(:div, [h(:i, 'Invite only game')]) if @gdata.dig('settings', 'unlisted')
         children << h(:div, [h(:i, ['Auto Routing', auto_route_whats_this])]) if @gdata.dig('settings', 'auto_routing')
+        children << h(:div, [h(:i, 'Show Clock')]) if @gdata.dig('settings', 'show_clock')
       end
       children << h(:div, [h(:strong, 'Description: '), @gdata['description']]) unless @gdata['description'].empty?
 

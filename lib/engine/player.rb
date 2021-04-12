@@ -12,13 +12,14 @@ module Engine
     include ShareHolder
     include Spender
 
-    attr_accessor :bankrupt
+    attr_accessor :bankrupt, :time_spent
     attr_reader :name, :companies, :id, :history, :unsold_companies
 
     def initialize(id, name)
       @id = id
       @name = name
       @cash = 0
+      @time_spent = 0
       @companies = []
       @history = []
       @unsold_companies = []

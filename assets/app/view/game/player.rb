@@ -2,10 +2,13 @@
 
 require 'lib/settings'
 require 'lib/text'
+require 'lib/params'
 require 'lib/profile_link'
 require 'view/game/companies'
 require 'view/game/unsold_companies'
 require 'view/share_calculation'
+require 'view/game/clock'
+require 'view/game/actionable'
 
 module View
   module Game
@@ -14,6 +17,7 @@ module View
       include Lib::Text
       include Lib::ProfileLink
       include View::ShareCalculation
+      include Actionable
 
       needs :player
       needs :game
@@ -178,6 +182,19 @@ module View
                                                        @player == @game.priority_deal_player
         trs << render_next_sr_position(priority_props) if %i[first_to_pass most_cash least_cash].include?(order) &&
                                                           @game.next_sr_position(@player)
+
+        if @game_data.dig('settings', 'show_clock')
+          trs.concat([
+            h(:tr, [
+              h('td.center',
+                { attrs: { colSpan: 2 } },
+                [h(Clock,
+                   time_spent: @player.time_spent,
+                   counting: @game.active_players.include?(@player) && !@game.finished && !Lib::Params['action'],
+                   last_action: @game.actions[-1]&.created_at || @game_data[:created_at])]),
+            ]),
+          ])
+        end
 
         h(:table, trs)
       end
