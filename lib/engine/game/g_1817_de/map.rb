@@ -31,7 +31,6 @@ module Engine
           '597' => 'unlimited',
           '611' => 'unlimited',
           '619' => 'unlimited',
-
           'X1' =>
             {
               'count' => 'unlimited',
@@ -39,23 +38,18 @@ module Engine
               'code' =>
               'city=revenue:80,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=B-V',
             },
-
         }.freeze
 
         LOCATION_NAMES = {
           'E1' => 'Copenhagen',
           'A15' => 'Brussels',
-
           'B20' => 'Paris',
           'C25' => 'Bern',
           'J22' => 'Vienna',
           'J16' => 'Prague',
           'B8' => 'Amsterdam',
-
           'E7' => 'Bremen',
-
           'F6' => 'Hamburg',
-
           'D10' => 'Osnabrück',
           'I9' => 'Berlin',
           'F10' => 'Hannover',
@@ -68,7 +62,6 @@ module Engine
           'E21' => 'Stuttgart',
           'H22' => 'Munich',
           'K7' => 'Warsaw',
-
         }.freeze
 
         HEXES = {
@@ -141,10 +134,8 @@ module Engine
                G19
                I13
                J14] => 'city=revenue:0',
-            %w[ D16
-
-                H10] => 'city=revenue:0;upgrade=cost:10,terrain:water',
-
+            %w[D16
+               H10] => 'city=revenue:0;upgrade=cost:10,terrain:water',
             %w[C15 D18
                D20
                E17
@@ -157,11 +148,10 @@ module Engine
                H8
                I21
                J20] => 'upgrade=cost:10,terrain:water',
-
           },
           red: {
             ['B20'] =>
-                     'offboard=revenue:yellow_20|green_30|brown_40|gray_60;path=a:3,b:_0',
+         'offboard=revenue:yellow_20|green_30|brown_40|gray_60;path=a:3,b:_0',
             ['C25'] =>
          'offboard=revenue:yellow_10|green_20|brown_30|gray_40;path=a:4,b:_0;path=a:3,b:_0',
             ['J22'] =>
@@ -174,27 +164,22 @@ module Engine
          'offboard=revenue:yellow_10|green_20|brown_30|gray_40;path=a:4,b:_0;path=a:5,b:_0',
             ['E1'] =>
          'offboard=revenue:yellow_10|green_20|brown_30|gray_40;path=a:0,b:_0',
-
             ['A15'] =>
          'offboard=revenue:yellow_10|green_20|brown_30|gray_40;path=a:4,b:_0;path=a:5,b:_0',
-
           },
-
           yellow: {
             ['I9'] =>
-                     'city=revenue:30;city=revenue:30;city=revenue:30;path=a:2,b:_0;path=a:_1,b:0;path=a:_2,b:4;label=B-V',
+        'city=revenue:30;city=revenue:30;city=revenue:30;path=a:2,b:_0;path=a:_1,b:0;path=a:_2,b:4;label=B-V',
             ['H22'] =>
         'city=revenue:30;path=a:2,b:_0;path=a:_0,b:4;label=B',
             ['B14'] =>
         'city=revenue:30;path=a:3,b:_0;path=a:_0,b:5;label=B',
-
           },
-
         }.freeze
-
         LAYOUT = :flat
       end
     end
   end
 end
+
 # rubocop:enable Layout/LineLength
