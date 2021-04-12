@@ -1588,6 +1588,7 @@ module Engine
         # update round structure with fake route for mines (both independent and public)
         # update maintenance costs
         def update_mine_revenue(round, entity)
+          puts "update_mine_revenue for #{entity.name}"
           revenue = mine_revenue(entity)
           @routes = []
           @routes << Engine::Route.new(

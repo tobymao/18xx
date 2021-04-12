@@ -14,6 +14,12 @@ module Engine
             super
           end
 
+          def setup
+            @round.routes = []
+            @round.maintenance = 0
+            super
+          end
+
           def skip!
             return pass! if current_entity == @game.mhe
 
