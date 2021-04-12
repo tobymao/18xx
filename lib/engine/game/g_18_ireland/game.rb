@@ -326,8 +326,10 @@ module Engine
           corporations.sort_by! { rand }
           removed_corporation = corporations.first
           @log << "Removed #{removed_corporation.id} corporation"
+          close_corporation(removed_corporation)
           corporations.delete(removed_corporation)
           corporations.unshift(protect)
+
           @corporations = corporations
         end
 
@@ -362,6 +364,13 @@ module Engine
           end
         end
 
+        def close_dkr_if_unpurchased!
+          protect = corporations.find { |c| c.id == PROTECTED_CORPORATION }
+          return if protect&.owner&.player?
+
+          close_corporation(protect)
+        end
+
         def upgrades_to?(from, to, special = false, selected_company: nil)
           # The Irish Mail
           return true if special && from.color == :blue && to.color == :red
@@ -374,6 +383,12 @@ module Engine
           hexes.select do |hex|
             hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
           end
+        end
+
+        def new_auction_round
+          Engine::Round::Auction.new(self, [
+            G18Ireland::Step::WaterfallAuction,
+          ])
         end
 
         def stock_round
@@ -438,6 +453,7 @@ module Engine
             when G18Ireland::Round::Merger
               new_or!
             when init_round.class
+              close_dkr_if_unpurchased!
               reorder_players
               new_stock_round
             end
