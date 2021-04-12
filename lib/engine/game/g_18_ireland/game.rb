@@ -181,6 +181,35 @@ module Engine
           raise GameError, "#{distance} is too many hex edges for #{route.train.name} train" if distance > limit
         end
 
+        def revenue_for(route, stops)
+          revenue = super
+          # Bonus for connected narrow gauges directly connected
+          # via narrow gauge without being connected to broad gauge.
+          revenue += stops.sum do |stop|
+            bonus = 0
+            nodes = { stop => true }
+
+            stop.walk(skip_track: :broad, tile_type: self.class::TILE_TYPE) do |path, _, _|
+              abort = nil
+              path.nodes.each do |p_node|
+                next if nodes[p_node]
+
+                # only counts if all paths connected to this node is narrow gauge
+                nodes[p_node] = true
+                if p_node.paths.all? { |p| p.track == :narrow }
+                  bonus += p_node.route_revenue(route.phase, route.train)
+                else
+                  # if not entirely on narrow gauge, abort path walking!
+                  abort = :abort
+                end
+              end
+              abort
+            end
+            bonus
+          end
+          revenue
+        end
+
         def narrow_connected_hexes(corporation)
           compute_narrow(corporation) unless @narrow_connected_hexes[corporation]
           @narrow_connected_hexes[corporation]
