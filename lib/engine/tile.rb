@@ -66,7 +66,7 @@ module Engine
       when 'path'
         params = params.map do |k, v|
           case k
-          when 'terminal', 'a_lane', 'b_lane'
+          when 'terminal', 'a_lane', 'b_lane', 'ignore'
             [k, v]
           when 'lanes'
             [k, v.to_i]
@@ -85,7 +85,8 @@ module Engine
         Part::Path.make_lanes(params['a'], params['b'], terminal: params['terminal'],
                                                         lanes: params['lanes'], a_lane: params['a_lane'],
                                                         b_lane: params['b_lane'],
-                                                        track: params['track'])
+                                                        track: params['track'],
+                                                        ignore: params['ignore'])
       when 'city'
         city = Part::City.new(params['revenue'],
                               slots: params['slots'],
