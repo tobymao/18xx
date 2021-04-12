@@ -321,7 +321,7 @@ module Engine
       end
 
       describe 2 do
-        it 'Only a single train should have "+1" inside the train name when Company "Sugar" is enabled' do
+        it 'only a single train should have "+1" inside the train name when Company "Sugar" is enabled' do
           game = game_at_action(game_file)
           corporation = game.round.active_entities[0]
           trains = corporation.trains
@@ -338,8 +338,8 @@ module Engine
           Find.find(FIXTURES_DIR).find { |f| File.basename(f) == 'hs_ofmjiayq_1617902980.json' }
         end
 
-        it 'Corporation should earn 2$N for each share in Market' do
-          game = game_at_action(game_file, 240)
+        it 'train 2J must be available as first 2J/4J train' do
+          game = game_at_action(game_file, 212)
           action = {
             'type' => 'buy_train',
             'entity' => 'GI',
@@ -356,7 +356,7 @@ module Engine
       end
 
       describe 4 do
-        it 'Corporation should earn 2$N for each share in Market' do
+        it 'corporation should earn 2$N for each share in Market' do
           game = game_at_action(game_file)
           corporation = game.corporation_by_id('GI')
           action = {
@@ -374,7 +374,7 @@ module Engine
       end
 
       describe 5 do
-        it 'Log messages after buy / pass / sell' do
+        it 'log messages after buy / pass / sell' do
           game = game_at_action(game_file)
           expect(game.log[15].message).to_not eq('Player 1 declines to sell shares') # Buy, Pass
           expect(game.log[16].message).to eq('Player 1 passes') # Pass
@@ -383,7 +383,7 @@ module Engine
       end
 
       describe 17 do
-        it 'Whatsup cannot be used if corporation already own maximum number of trains' do
+        it 'whatsup cannot be used if corporation already own maximum number of trains' do
           game = game_at_action(game_file)
           action = {
             'type' => 'choose_ability',

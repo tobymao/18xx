@@ -128,7 +128,6 @@ module Engine
                 distance: [{ 'nodes' => %w[city offboard town], 'pay' => 2, 'multiplier' => 2 }],
                 price: 37,
                 num: 99,
-                events: [{ 'type' => 'new_train' }, { 'type' => 'rust_own_3s_4s' }],
               },
             ],
           },
@@ -212,6 +211,7 @@ module Engine
           4 => { 0 => 20 },
         }.freeze
 
+        attr_accessor :first_train_of_new_phase
         attr_reader :available_companies, :future_companies
 
         def setup
@@ -934,7 +934,7 @@ module Engine
         end
 
         def event_new_train!
-          @round.new_train_brought = true if @round.is_a?(Engine::Round::Operating)
+          @first_train_of_new_phase = true if @round.is_a?(Engine::Round::Operating)
         end
 
         def event_rust_own_3s_4s!
