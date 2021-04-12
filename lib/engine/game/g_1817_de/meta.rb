@@ -27,7 +27,7 @@ module Engine
           {
             sym: :modern_trains,
             short_name: 'Modern Trains',
-            desc: '7 & 8 trains earn $10 & $20 respectively for each station marker of the corporation',
+            desc: '7 & 8 trains earn 10 ℳ & 20 ℳ respectively for each station marker of the corporation',
           },
         ].freeze
       end
