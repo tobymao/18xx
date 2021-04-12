@@ -328,6 +328,8 @@ module Engine
           expect(game.active_step.train_name(corporation, trains[0])).to eq('2S (+1)'), 'Train with Sugar must have +1'
           expect(game.active_step.train_name(corporation, trains[1])).to eq('2S'), 'Train without Sugar must be 2S'
           expect(game.active_step.train_name(corporation, trains[2])).to eq('3S'), 'Train without Sugar must be 3S'
+          log = game.log.find { |item| item.message == '2S gets a boost from \'A spoonful of sugar\' for this round' }
+          expect(log).to_not be_nil
         end
       end
 
