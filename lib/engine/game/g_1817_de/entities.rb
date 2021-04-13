@@ -29,7 +29,7 @@ module Engine
         value: 80,
         revenue: 0,
         desc: 'Comes with two 10 ℳ bridge token that may be placed by the owning corp '\
-              'in Magdeburg, Frankfurt and/or Dresden, max one token per city, regardless of '\
+              'in Magdeburg, Frankfurt, and/or Dresden, max one token per city, regardless of '\
               'connectivity. Allows owning corp to skip 10 ℳ river fee when '\
               'placing yellow tiles.',
         sym: 'UBC',
