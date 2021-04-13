@@ -142,8 +142,15 @@ module Engine
                     events: [{ 'type' => 'signal_end_game' }],
                   }].freeze
 
-        def available_shorts(_corporation)
-          [0, 0]
+        def stock_round
+          close_bank_shorts
+          @interest_fixed = nil
+
+          G1817::Round::Stock.new(self, [
+            Engine::Step::DiscardTrain,
+            Engine::Step::HomeToken,
+            G1817DE::Step::BuySellParShares,
+          ])
         end
 
         SEED_MONEY = 150
