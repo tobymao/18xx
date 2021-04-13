@@ -67,16 +67,16 @@ module Engine
             end
 
             companies = @game.transfer(:companies, from, to).map(&:name)
-            receiving << "companies (#{companies.join(', ')})" if !companies.empty?
+            receiving << "companies (#{companies.join(', ')})" unless companies.empty?
 
             loans = @game.transfer(:loans, from, to).size
             receiving << "loans (#{loans})" if loans.positive?
 
             trains = @game.transfer(:trains, from, to).map(&:name)
-            receiving << "trains (#{trains})" if !trains.empty?
+            receiving << "trains (#{trains})" unless trains.empty?
 
             to.assignments.merge!(from.assignments)
-            receiving << "assignments (#{from.assignments.keys})" if !from.assignments.empty?
+            receiving << "assignments (#{from.assignments.keys})" unless from.assignments.empty?
 
             receiving
           end

@@ -231,13 +231,9 @@ module Engine
 
           # Bonus for assignments
           tasps = tasps_company.id
-          if route.corporation.assigned?(tasps) && (stops.map(&:hex).find { |hex| hex.assigned?(tasps) })
-            revenue += 20
-          end
+          revenue += 20 if route.corporation.assigned?(tasps) && (stops.map(&:hex).find { |hex| hex.assigned?(tasps) })
           cdspc = cdspc_company.id
-          if route.corporation.assigned?(cdspc) && (stops.map(&:hex).find { |hex| hex.assigned?(cdspc) })
-            revenue += 10
-          end
+          revenue += 10 if route.corporation.assigned?(cdspc) && (stops.map(&:hex).find { |hex| hex.assigned?(cdspc) })
 
           revenue
         end
