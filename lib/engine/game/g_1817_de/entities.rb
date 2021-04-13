@@ -300,6 +300,19 @@ module Engine
               },
               {
                 float_percent: 20,
+                sym: 'MB',
+                name: 'Magdeburger-Bahn',
+                logo: '1817_de/MB',
+                shares: [100],
+                max_ownership_percent: 100,
+                tokens: [0],
+                always_market_price: true,
+                color: 'Burlywood',
+                text_color: 'black',
+                reservation_color: nil,
+              },
+              {
+                float_percent: 20,
                 sym: 'NF',
                 name: 'Nürnberg-Fürth',
                 logo: '1817_de/NF',
@@ -310,7 +323,6 @@ module Engine
                 color: '#e48329',
                 reservation_color: nil,
               },
-
               {
                 float_percent: 20,
                 sym: 'OB',
@@ -322,20 +334,6 @@ module Engine
                 always_market_price: true,
                 text_color: 'black',
                 color: '#bedb86',
-                reservation_color: nil,
-              },
-
-              {
-                float_percent: 20,
-                sym: 'MB',
-                name: 'Magdeburger-Bahn',
-                logo: '1817_de/MB',
-                shares: [100],
-                max_ownership_percent: 100,
-                tokens: [0],
-                always_market_price: true,
-                color: 'Burlywood',
-                text_color: 'black',
                 reservation_color: nil,
               }
           ].freeze
