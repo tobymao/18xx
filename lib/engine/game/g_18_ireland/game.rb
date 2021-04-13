@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require_relative '../g_1849/map'
 require_relative 'meta'
 require_relative 'entities'
 require_relative 'map'
@@ -11,12 +10,16 @@ module Engine
       class Game < Game::Base
         include_meta(G18Ireland::Meta)
         include G18Ireland::Entities
-        include G1849::Map
         include G18Ireland::Map
 
         CAPITALIZATION = :incremental
         HOME_TOKEN_TIMING = :par
         SELL_BUY_ORDER = :sell_buy
+
+        ASSIGNMENT_TOKENS = {
+          'CDSPC' => '/icons/18_ireland/port_token.svg',
+          'TASPS' => '/icons/18_ireland/ship_token.svg',
+        }.freeze
 
         # Two lays with one being an upgrade, second tile costs 20
         TILE_LAYS = [
@@ -191,6 +194,14 @@ module Engine
           raise GameError, "#{distance} is too many hex edges for #{route.train.name} train" if distance > limit
         end
 
+        def tasps_company
+          company_by_id('TASPS')
+        end
+
+        def cdspc_company
+          company_by_id('CDSPC')
+        end
+
         def revenue_for(route, stops)
           revenue = super
           # Bonus for connected narrow gauges directly connected
@@ -217,6 +228,13 @@ module Engine
             end
             bonus
           end
+
+          # Bonus for assignments
+          tasps = tasps_company.id
+          revenue += 20 if route.corporation.assigned?(tasps) && (stops.map(&:hex).find { |hex| hex.assigned?(tasps) })
+          cdspc = cdspc_company.id
+          revenue += 10 if route.corporation.assigned?(cdspc) && (stops.map(&:hex).find { |hex| hex.assigned?(cdspc) })
+
           revenue
         end
 
@@ -396,6 +414,7 @@ module Engine
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
+            G18Ireland::Step::Assign,
             Engine::Step::Exchange,
             Engine::Step::HomeToken,
             G18Ireland::Step::SpecialTrack,
