@@ -83,7 +83,7 @@ module Engine
           'D16' => 'Frankfurt',
           'G19' => 'Nürnberg',
           'E21' => 'Stuttgart',
-          'H22' => 'Munich',
+          'H22' => 'München',
           'K7' => 'Warsaw',
         }.freeze
 
