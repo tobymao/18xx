@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require_relative '../g_1849/map'
 require_relative 'meta'
 require_relative 'entities'
 require_relative 'map'
@@ -11,17 +10,26 @@ module Engine
       class Game < Game::Base
         include_meta(G18Ireland::Meta)
         include G18Ireland::Entities
-        include G1849::Map
         include G18Ireland::Map
 
         CAPITALIZATION = :incremental
         HOME_TOKEN_TIMING = :par
         SELL_BUY_ORDER = :sell_buy
 
+        ASSIGNMENT_TOKENS = {
+          'CDSPC' => '/icons/18_ireland/port_token.svg',
+          'TASPS' => '/icons/18_ireland/ship_token.svg',
+        }.freeze
+
         # Two lays with one being an upgrade, second tile costs 20
         TILE_LAYS = [
           { lay: true, upgrade: true },
           { lay: :not_if_upgraded, upgrade: false, cost: 20 },
+        ].freeze
+
+        DARGAN_TILE_LAYS = [
+          { lay: true, upgrade: true },
+          { lay: :not_if_upgraded, upgrade: true, cost: 20, upgrade_cost: 30 },
         ].freeze
         CURRENCY_FORMAT_STR = '£%d'
 
@@ -161,6 +169,11 @@ module Engine
           @players.reject(&:bankrupt).one?
         end
 
+        def tile_lays(entity)
+          super unless entity.companies.any? { |c| c.id == 'WDE' }
+          DARGAN_TILE_LAYS
+        end
+
         def hex_edge_cost(conn)
           conn[:paths].each_cons(2).sum do |a, b|
             a.hex == b.hex ? 0 : 1
@@ -179,6 +192,50 @@ module Engine
           limit = route.train.distance
           distance = route_distance(route)
           raise GameError, "#{distance} is too many hex edges for #{route.train.name} train" if distance > limit
+        end
+
+        def tasps_company
+          company_by_id('TASPS')
+        end
+
+        def cdspc_company
+          company_by_id('CDSPC')
+        end
+
+        def revenue_for(route, stops)
+          revenue = super
+          # Bonus for connected narrow gauges directly connected
+          # via narrow gauge without being connected to broad gauge.
+          revenue += stops.sum do |stop|
+            bonus = 0
+            nodes = { stop => true }
+
+            stop.walk(skip_track: :broad, tile_type: self.class::TILE_TYPE) do |path, _, _|
+              abort = nil
+              path.nodes.each do |p_node|
+                next if nodes[p_node]
+
+                # only counts if all paths connected to this node is narrow gauge
+                nodes[p_node] = true
+                if p_node.paths.all? { |p| p.track == :narrow }
+                  bonus += p_node.route_revenue(route.phase, route.train)
+                else
+                  # if not entirely on narrow gauge, abort path walking!
+                  abort = :abort
+                end
+              end
+              abort
+            end
+            bonus
+          end
+
+          # Bonus for assignments
+          tasps = tasps_company.id
+          revenue += 20 if route.corporation.assigned?(tasps) && (stops.map(&:hex).find { |hex| hex.assigned?(tasps) })
+          cdspc = cdspc_company.id
+          revenue += 10 if route.corporation.assigned?(cdspc) && (stops.map(&:hex).find { |hex| hex.assigned?(cdspc) })
+
+          revenue
         end
 
         def narrow_connected_hexes(corporation)
@@ -287,8 +344,10 @@ module Engine
           corporations.sort_by! { rand }
           removed_corporation = corporations.first
           @log << "Removed #{removed_corporation.id} corporation"
+          close_corporation(removed_corporation)
           corporations.delete(removed_corporation)
           corporations.unshift(protect)
+
           @corporations = corporations
         end
 
@@ -323,6 +382,13 @@ module Engine
           end
         end
 
+        def close_dkr_if_unpurchased!
+          protect = corporations.find { |c| c.id == PROTECTED_CORPORATION }
+          return if protect&.owner&.player?
+
+          close_corporation(protect)
+        end
+
         def upgrades_to?(from, to, special = false, selected_company: nil)
           # The Irish Mail
           return true if special && from.color == :blue && to.color == :red
@@ -335,6 +401,12 @@ module Engine
           hexes.select do |hex|
             hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
           end
+        end
+
+        def new_auction_round
+          Engine::Round::Auction.new(self, [
+            G18Ireland::Step::WaterfallAuction,
+          ])
         end
 
         def stock_round
@@ -357,6 +429,7 @@ module Engine
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
+            G18Ireland::Step::Assign,
             Engine::Step::Exchange,
             Engine::Step::HomeToken,
             G18Ireland::Step::SpecialTrack,
@@ -399,6 +472,7 @@ module Engine
             when G18Ireland::Round::Merger
               new_or!
             when init_round.class
+              close_dkr_if_unpurchased!
               reorder_players
               new_stock_round
             end
