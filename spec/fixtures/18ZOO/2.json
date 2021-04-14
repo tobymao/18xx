@@ -1,5 +1,5 @@
 {
-  "status": "active",
+  "status": "finished",
   "actions": [
     {
       "type": "pass",
@@ -212,6 +212,13 @@
         "type": "sugar",
         "train_id": "2S-0"
       }
+    },
+    {
+      "type": "end_game",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 25,
+      "created_at": 1618386485
     }
   ],
   "id": "hs_tpwzaywe_1617902980",
@@ -236,11 +243,14 @@
   },
   "created_at": "2021-04-08",
   "loaded": true,
-  "result": {},
+  "result": {
+    "Player 1": 101,
+    "Player 2": 62
+  },
   "turn": 1,
   "round": "Operating Round",
   "acting": [
     "Player 2"
   ],
-  "updated_at": 1618165146
+  "updated_at": 1618386485
 }

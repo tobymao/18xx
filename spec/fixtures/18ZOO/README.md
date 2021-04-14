@@ -19,12 +19,6 @@
   * GI sells on G18ZOO::Step::Dividend
 
 ```
-Flows:
-
-- sell_ticket_zoo_in_any_phase.json - player and corporation can sell tickets in each SR / OR
-```
-
-```
 URLs: http://localhost:9292/fixture/18ZOO/{name}
 
 Working:

@@ -316,13 +316,9 @@ module Engine
     end
 
     describe '18ZOO' do
-      let(:game_file) do
-        Find.find(FIXTURES_DIR).find { |f| f.end_with?("18ZOO/partial/#{described_class}.json") }
-      end
-
       describe 2 do
         it 'only a single train should have "+1" inside the train name when Company "Sugar" is enabled' do
-          game = game_at_action(game_file)
+          game = game_at_action(game_file, 24)
           corporation = game.round.active_entities[0]
           trains = corporation.trains
           expect(game.active_step.train_name(corporation, trains[0])).to eq('2S (+1)'), 'Train with Sugar must have +1'
@@ -357,7 +353,7 @@ module Engine
 
       describe 4 do
         it 'corporation should earn 2$N for each share in Market' do
-          game = game_at_action(game_file)
+          game = game_at_action(game_file, 14)
           corporation = game.corporation_by_id('GI')
           action = {
             'type' => 'pass',
@@ -375,7 +371,7 @@ module Engine
 
       describe 5 do
         it 'log messages after buy / pass / sell' do
-          game = game_at_action(game_file)
+          game = game_at_action(game_file, 10)
           expect(game.log[15].message).to_not eq('Player 1 declines to sell shares') # Buy, Pass
           expect(game.log[16].message).to eq('Player 1 passes') # Pass
           expect(game.log[19].message).to eq('Player 2 declines to buy shares') # Sell, Pass
@@ -384,7 +380,7 @@ module Engine
 
       describe 17 do
         it 'whatsup cannot be used if corporation already own maximum number of trains' do
-          game = game_at_action(game_file)
+          game = game_at_action(game_file, 23)
           action = {
             'type' => 'choose_ability',
             'entity' => 'WHATSUP',
@@ -402,7 +398,7 @@ module Engine
 
       describe 18 do
         it 'buying a new train after whatsup (on first train on new phase) must not give "new-phase" bonus' do
-          game = game_at_action(game_file)
+          game = game_at_action(game_file, 26)
           corporation = game.corporation_by_id('GI')
           action = {
             'type' => 'buy_train',

@@ -45,210 +45,11 @@
       }
     },
     {
-      "type": "pass",
+      "type": "end_game",
       "entity": "Player 1",
       "entity_type": "player",
       "id": 6,
-      "created_at": 1616084040
-    },
-    {
-      "type": "pass",
-      "entity": "Player 2",
-      "entity_type": "player",
-      "id": 7,
-      "created_at": 1616084040
-    },
-    {
-      "type": "pass",
-      "entity": "Player 1",
-      "entity_type": "player",
-      "id": 8,
-      "created_at": 1616084040
-    },
-    {
-      "type": "pass",
-      "entity": "GI",
-      "entity_type": "corporation",
-      "id": 9,
-      "created_at": 1616084043
-    },
-    {
-      "type": "buy_train",
-      "entity": "GI",
-      "entity_type": "corporation",
-      "id": 10,
-      "created_at": 1616084044,
-      "train": "2S-0",
-      "price": 7,
-      "variant": "2S"
-    },
-    {
-      "type": "pass",
-      "entity": "GI",
-      "entity_type": "corporation",
-      "id": 11,
-      "created_at": 1616084045
-    },
-    {
-      "type": "pass",
-      "entity": "GI",
-      "entity_type": "corporation",
-      "id": 12,
-      "created_at": 1616084046
-    },
-    {
-      "type": "pass",
-      "entity": "GI",
-      "entity_type": "corporation",
-      "id": 13,
-      "created_at": 1616084047
-    },
-    {
-      "type": "pass",
-      "entity": "GI",
-      "entity_type": "corporation",
-      "id": 14,
-      "created_at": 1616084048
-    },
-    {
-      "type": "pass",
-      "entity": "GI",
-      "entity_type": "corporation",
-      "id": 15,
-      "created_at": 1616084048
-    },
-    {
-      "type": "pass",
-      "entity": "Player 2",
-      "entity_type": "player",
-      "id": 16,
-      "created_at": 1616084049
-    },
-    {
-      "type": "pass",
-      "entity": "Player 1",
-      "entity_type": "player",
-      "id": 17,
-      "created_at": 1616084050
-    },
-    {
-      "type": "pass",
-      "entity": "GI",
-      "entity_type": "corporation",
-      "id": 18,
-      "created_at": 1616084051
-    },
-    {
-      "type": "pass",
-      "entity": "GI",
-      "entity_type": "corporation",
-      "id": 19,
-      "created_at": 1616084052
-    },
-    {
-      "type": "pass",
-      "entity": "GI",
-      "entity_type": "corporation",
-      "id": 20,
-      "created_at": 1616084052
-    },
-    {
-      "type": "pass",
-      "entity": "GI",
-      "entity_type": "corporation",
-      "id": 21,
-      "created_at": 1616084053
-    },
-    {
-      "type": "pass",
-      "entity": "GI",
-      "entity_type": "corporation",
-      "id": 22,
-      "created_at": 1616084054
-    },
-    {
-      "type": "pass",
-      "entity": "GI",
-      "entity_type": "corporation",
-      "id": 23,
-      "created_at": 1616084054
-    },
-    {
-      "type": "pass",
-      "entity": "Player 2",
-      "entity_type": "player",
-      "id": 24,
-      "created_at": 1616084056
-    },
-    {
-      "type": "pass",
-      "entity": "Player 1",
-      "entity_type": "player",
-      "id": 25,
-      "created_at": 1616084056
-    },
-    {
-      "type": "pass",
-      "entity": "GI",
-      "entity_type": "corporation",
-      "id": 26,
-      "created_at": 1616084058
-    },
-    {
-      "type": "pass",
-      "entity": "GI",
-      "entity_type": "corporation",
-      "id": 27,
-      "created_at": 1616084059
-    },
-    {
-      "type": "pass",
-      "entity": "GI",
-      "entity_type": "corporation",
-      "id": 28,
-      "created_at": 1616084059
-    },
-    {
-      "type": "pass",
-      "entity": "GI",
-      "entity_type": "corporation",
-      "id": 29,
-      "created_at": 1616084060
-    },
-    {
-      "type": "pass",
-      "entity": "GI",
-      "entity_type": "corporation",
-      "id": 30,
-      "created_at": 1616084061
-    },
-    {
-      "type": "pass",
-      "entity": "GI",
-      "entity_type": "corporation",
-      "id": 31,
-      "created_at": 1616084061
-    },
-    {
-      "type": "pass",
-      "entity": "GI",
-      "entity_type": "corporation",
-      "id": 32,
-      "created_at": 1616084062
-    },
-    {
-      "type": "pass",
-      "entity": "GI",
-      "entity_type": "corporation",
-      "id": 33,
-      "created_at": 1616084063
-    },
-    {
-      "type": "pass",
-      "entity": "GI",
-      "entity_type": "corporation",
-      "id": 34,
-      "created_at": 1616084063
+      "created_at": 1618390441
     }
   ],
   "id": "hs_cvhtuwbd_1612649245",
@@ -264,7 +65,6 @@
   "description": "",
   "max_players": "2",
   "acting": [
-    "Player 2",
     "Player 1"
   ],
   "created_at": "2021-03-18",
@@ -272,14 +72,14 @@
   "mode": "hotseat",
   "result": {
     "Player 2": 100,
-    "Player 1": 87
+    "Player 1": 99
   },
-  "round": "Operating Round",
+  "round": "Stock Round",
   "settings": {
     "optional_rules": []
   },
-  "turn": 3,
-  "updated_at": 1616084063,
+  "turn": 1,
+  "updated_at": 1618390441,
   "user": {
     "id": 0,
     "name": "You"

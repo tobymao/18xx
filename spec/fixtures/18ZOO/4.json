@@ -1,26 +1,26 @@
 {
-  "status": "active",
+  "status": "finished",
   "actions": [
     {
       "type": "pass",
       "entity": "Player 2",
       "entity_type": "player",
       "id": 1,
-      "created_at": 1618163688
+      "created_at": 1618165940
     },
     {
       "type": "pass",
       "entity": "Player 1",
       "entity_type": "player",
       "id": 2,
-      "created_at": 1618163690
+      "created_at": 1618165941
     },
     {
       "type": "par",
       "entity": "Player 1",
       "entity_type": "player",
       "id": 3,
-      "created_at": 1618163697,
+      "created_at": 1618165947,
       "corporation": "GI",
       "share_price": "7,1,1"
     },
@@ -29,21 +29,21 @@
       "entity": "GI",
       "entity_type": "corporation",
       "id": 4,
-      "created_at": 1618163699
+      "created_at": 1618165948
     },
     {
       "type": "pass",
       "entity": "Player 1",
       "entity_type": "player",
       "id": 5,
-      "created_at": 1618163701
+      "created_at": 1618165950
     },
     {
       "type": "buy_shares",
       "entity": "Player 2",
       "entity_type": "player",
       "id": 6,
-      "created_at": 1618163715,
+      "created_at": 1618165952,
       "shares": [
         "GI_1"
       ],
@@ -54,21 +54,32 @@
       "entity": "Player 2",
       "entity_type": "player",
       "id": 7,
-      "created_at": 1618163717
+      "created_at": 1618165954
+    },
+    {
+      "type": "buy_shares",
+      "entity": "Player 1",
+      "entity_type": "player",
+      "id": 8,
+      "created_at": 1618165956,
+      "shares": [
+        "GI_2"
+      ],
+      "percent": 20
     },
     {
       "type": "pass",
       "entity": "Player 1",
       "entity_type": "player",
-      "id": 8,
-      "created_at": 1618163720
+      "id": 9,
+      "created_at": 1618165957
     },
     {
       "type": "sell_shares",
       "entity": "Player 2",
       "entity_type": "player",
-      "id": 9,
-      "created_at": 1618163725,
+      "id": 10,
+      "created_at": 1618165959,
       "shares": [
         "GI_1"
       ],
@@ -78,8 +89,40 @@
       "type": "pass",
       "entity": "Player 2",
       "entity_type": "player",
-      "id": 10,
-      "created_at": 1618163729
+      "id": 11,
+      "created_at": 1618165960
+    },
+    {
+      "type": "sell_shares",
+      "entity": "Player 1",
+      "entity_type": "player",
+      "id": 12,
+      "created_at": 1618165966,
+      "shares": [
+        "GI_2"
+      ],
+      "percent": 20
+    },
+    {
+      "type": "pass",
+      "entity": "Player 1",
+      "entity_type": "player",
+      "id": 13,
+      "created_at": 1618165968
+    },
+    {
+      "type": "pass",
+      "entity": "Player 2",
+      "entity_type": "player",
+      "id": 14,
+      "created_at": 1618165968
+    },
+    {
+      "type": "end_game",
+      "entity": "Player 1",
+      "entity_type": "player",
+      "id": 15,
+      "created_at": 1618386631
     }
   ],
   "id": "hs_tpwzaywe_1617902980",
@@ -104,11 +147,14 @@
   },
   "created_at": "2021-04-08",
   "loaded": true,
-  "result": {},
+  "result": {
+    "Player 2": 100,
+    "Player 1": 95
+  },
   "turn": 1,
   "round": "Stock Round",
   "acting": [
     "Player 1"
   ],
-  "updated_at": 1618163729
+  "updated_at": 1618386631
 }
