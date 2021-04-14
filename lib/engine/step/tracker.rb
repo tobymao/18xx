@@ -36,6 +36,7 @@ module Engine
         action[:lay] = !@round.upgraded_track if action[:lay] == :not_if_upgraded
         action[:upgrade] = !@round.upgraded_track if action[:upgrade] == :not_if_upgraded
         action[:cost] = action[:cost] || 0
+        action[:upgrade_cost] = action[:upgrade_cost] || action[:cost]
         action[:cannot_reuse_same_hex] = action[:cannot_reuse_same_hex] || false
         action
       end
@@ -49,7 +50,9 @@ module Engine
           raise GameError, "#{action.hex.id} cannot be layed as this hex was already layed on this turn"
         end
 
-        lay_tile(action, extra_cost: tile_lay[:cost], entity: entity, spender: spender)
+        extra_cost = tile.color == :yellow ? tile_lay[:cost] : tile_lay[:upgrade_cost]
+
+        lay_tile(action, extra_cost: extra_cost, entity: entity, spender: spender)
         upgraded_track(action)
         @round.num_laid_track += 1
         @round.laid_hexes << action.hex

@@ -62,6 +62,21 @@ module Engine
             ' This action closes the company, but the Corporation adds £10 to the' \
             " port's revenue until the end of the game.",
             sym: 'CDSPC',
+            abilities: [
+              {
+                type: 'assign_hexes',
+                when: 'owning_corp_or_turn',
+                hexes: %w[J4 G1 I19],
+                count: 1,
+                owner_type: 'corporation',
+              },
+              {
+                type: 'assign_corporation',
+                when: 'any',
+                count: 1,
+                owner_type: 'corporation',
+              },
+            ],
           },
           {
             name: 'Tralee & Dingle Railway',
@@ -116,6 +131,21 @@ module Engine
             desc: 'The owning Corporation can place the +£20 token on Galway. This action closes the company,'\
             " but the Corporation adds £20 to the city's revenue until the end of the game.",
             sym: 'TASPS',
+            abilities: [
+              {
+                type: 'assign_hexes',
+                when: 'owning_corp_or_turn',
+                hexes: %w[C13],
+                count: 1,
+                owner_type: 'corporation',
+              },
+              {
+                type: 'assign_corporation',
+                when: 'any',
+                count: 1,
+                owner_type: 'corporation',
+              },
+            ],
           },
           {
             name: 'River Shannon Shipping Co',

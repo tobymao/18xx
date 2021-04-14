@@ -609,6 +609,11 @@ module Engine
           ], round_num: round_num)
         end
 
+        def init_stock_market
+          G18FL::StockMarket.new(game_market, self.class::CERT_LIMIT_TYPES,
+                                 multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
+        end
+
         def steamboat
           @steamboat ||= company_by_id('POSC')
         end

@@ -6,7 +6,7 @@ module Engine
   module Part
     class Path < Base
       attr_reader :a, :b, :city, :edges, :exit_lanes, :junction,
-                  :lanes, :nodes, :offboard, :stops, :terminal, :town, :track
+                  :lanes, :nodes, :offboard, :stops, :terminal, :town, :track, :ignore
 
       LANES = [[1, 0].freeze, [1, 0].freeze].freeze
       MATCHES_BROAD = %i[broad dual].freeze
@@ -22,7 +22,7 @@ module Engine
         end
       end
 
-      def self.make_lanes(a, b, terminal: nil, lanes: nil, a_lane: nil, b_lane: nil, track: nil)
+      def self.make_lanes(a, b, terminal: nil, lanes: nil, a_lane: nil, b_lane: nil, track: nil, ignore: nil)
         track ||= :broad
         if lanes
           Array.new(lanes) do |index|
@@ -35,17 +35,19 @@ module Engine
             Path.new(a, b,
                      terminal: terminal,
                      lanes: [a_lanes, b_lanes],
-                     track: track)
+                     track: track,
+                     ignore: ignore)
           end
         else
           Path.new(a, b,
                    terminal: terminal,
                    lanes: [decode_lane_spec(a_lane), decode_lane_spec(b_lane)],
-                   track: track)
+                   track: track,
+                   ignore: ignore)
         end
       end
 
-      def initialize(a, b, terminal: nil, lanes: LANES, track: :broad)
+      def initialize(a, b, terminal: nil, lanes: LANES, track: :broad, ignore: nil)
         @a = a
         @b = b
         @terminal = terminal
@@ -55,6 +57,7 @@ module Engine
         @nodes = []
         @exit_lanes = {}
         @track = track
+        @ignore = ignore
 
         separate_parts
       end
@@ -173,6 +176,10 @@ module Engine
         @_node = !@nodes.empty?
       end
 
+      def ignore?
+        !!@ignore
+      end
+
       def terminal?
         !!@terminal
       end
@@ -219,7 +226,8 @@ module Engine
         path = Path.new(@a.rotate(ticks), @b.rotate(ticks),
                         terminal: @terminal,
                         lanes: @lanes,
-                        track: @track)
+                        track: @track,
+                        ignore: @ignore)
         path.index = index
         path.tile = @tile
         path

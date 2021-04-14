@@ -114,6 +114,12 @@ module Engine
               .select { |p| p.price * share_multiplier <= available_cash }
           end
 
+          def must_sell?(entity)
+            return false unless can_sell_any?(entity)
+
+            @game.num_certs(entity) > @game.cert_limit
+          end
+
           def pass!
             store_bids!
             super

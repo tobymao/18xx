@@ -545,10 +545,6 @@ module Engine
           entity.cash
         end
 
-        def can_hold_above_limit?(_entity)
-          true
-        end
-
         def can_par?(corporation, parrer)
           return false if corporation.type == :minor ||
             !(@phase.status.include?('can_convert_concessions') || @phase.status.include?('can_par'))

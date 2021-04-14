@@ -7,6 +7,9 @@ require_relative 'map'
 require_relative 'step/charter_auction'
 require_relative 'step/buy_tokens'
 require_relative 'step/buy_sell_par_shares'
+require_relative 'step/home_upgrade'
+require_relative 'step/track'
+require_relative 'step/token'
 
 module Engine
   module Game
@@ -16,7 +19,7 @@ module Engine
         include Entities
         include Map
 
-        attr_accessor :chartered
+        attr_accessor :chartered, :base_tiles
 
         register_colors(black: '#000000',
                         orange: '#f48221',
@@ -357,6 +360,8 @@ module Engine
         TRAIN_PRICE_MIN = 10
         TRAIN_PRICE_MULTIPLE = 10
 
+        TRACK_RESTRICTION = :permissive
+
         SOLD_OUT_INCREASE = false
 
         STOCKMARKET_COLORS = {
@@ -387,7 +392,8 @@ module Engine
           ignore_two_sales: 'Ignore first 2 shares sold when moving price (except president)',
         }.freeze
 
-        TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded_or_city, upgrade: false }].freeze
+        # NOTE: that the definition of an "upgrade" is extended to include "N" tiles
+        TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
 
         GAME_END_CHECK = { stock_market: :current_or, bank: :current_or, custom: :immediate }.freeze
 
@@ -415,6 +421,11 @@ module Engine
         def setup; end
 
         def setup_preround
+          @base_tiles = []
+
+          # remove reservations (nice to have in starting map)
+          @corporations.each { |corp| remove_reservation(corp) }
+
           @double_parliament = true
 
           # randomize order of corporations, then remove some based on player count
@@ -431,11 +442,13 @@ module Engine
           removed.each do |corp|
             @offer_order.delete(corp)
             @corporations.delete(corp)
-            remove_reservation(corp)
             @companies.delete(@companies.find { |c| c.id == corp.id })
 
             @log << "Removing #{corp.name} from game"
           end
+
+          # add markers for remaining companies
+          @corporations.each { |corp| add_marker(corp) }
 
           @chartered = {}
 
@@ -454,11 +467,23 @@ module Engine
         end
 
         def remove_reservation(corporation)
-          hexes.each do |hex|
-            hex.tile.cities.each do |city|
-              city.reservations.delete(corporation) if city.reserved_by?(corporation)
-            end
+          hex = @hexes.find { |h| h.id == corporation.coordinates } # hex_by_id doesn't work here
+          hex.tile.cities.each do |city|
+            city.reservations.delete(corporation) if city.reserved_by?(corporation)
           end
+        end
+
+        def add_marker(corporation)
+          hex = @hexes.find { |h| h.id == corporation.coordinates } # hex_by_id doesn't work here
+          image = "1862/#{corporation.id}".upcase.delete('&')
+          marker = Part::Icon.new(image, nil, true, nil, hex.tile.preprinted, large: true, owner: nil)
+          hex.tile.icons << marker
+        end
+
+        def remove_marker(corporation)
+          hex = hex_by_id(corporation.coordinates)
+          marker = hex.tile.icons.find(&:large)
+          hex.tile.icons.delete(marker)
         end
 
         def share_prices
@@ -479,7 +504,7 @@ module Engine
 
         # FIXME
         def available_to_start?(corporation)
-          @phase.available?(@starting_phase[corporation])
+          @phase.available?(@starting_phase[corporation]) && legal_to_start?(corporation)
         end
 
         def add_obligation(entity, corporation)
@@ -557,6 +582,78 @@ module Engine
           @log << "#{corporation.name} buys #{count} tokens for #{format_currency(cost)}"
         end
 
+        def place_home_token(corporation)
+          # If a corp has laid it's first token assume it's their home token
+          return if corporation.tokens.first&.used
+
+          hex = hex_by_id(corporation.coordinates)
+
+          tile = hex.tile
+          city = tile.cities.first # no OO tiles in 1862
+          if city.tokenable?(corporation, free: true)
+            # still a slot, use it
+            token = corporation.find_token_by_type
+            city.place_token(corporation, token)
+            remove_marker(corporation)
+            graph.clear
+            @log << "#{corporation.name} places home token on #{hex.name}"
+          elsif upgrade_tokenable?(hex)
+            # wait for upgrade
+            @log << "#{corporation.name} must upgrade #{hex.name} in order to place home token"
+            @round.upgrade_before_token << corporation
+            @round.clear_cache!
+          else
+            # displace existing token
+            old_token = city.tokens.last
+            old_token.remove!
+            new_token = corporation.find_token_by_type
+            city.exchange_token(new_token)
+            remove_marker(corporation)
+            graph.clear
+            @log << "#{corporation.name} replaces #{old_token.corporation.name} token on #{hex.name} "\
+              'with home token'
+          end
+        end
+
+        # determine if a legal upgrade for this hex has an additional
+        # slot
+        # FIXME: this should check to see if an upgrade tile is available and has a legal rotation
+        def upgrade_tokenable?(hex)
+          current_tile = hex.tile
+          (current_tile.color == :yellow && @phase.tiles.include?(:green)) ||
+            (current_tile.color == :green && current_tile.label.to_s == 'N' && @phase.tiles.include?(:brown))
+        end
+
+        # OK to start a corp if
+        # - there still is a slot available, OR
+        # - a legal upgrade has an additional slot
+        def legal_to_start?(corporation)
+          return true if corporation.tokens.first&.used
+
+          hex = hex_by_id(corporation.coordinates)
+          city = hex.tile.cities.first
+          city.tokenable?(corporation, free: true) || upgrade_tokenable?(hex)
+        end
+
+        def base_tile_name(tile)
+          return tile.name unless tile.name.include?('_')
+
+          tile.name.slice(0..(tile.name.index('_') - 1))
+        end
+
+        def adding_town?(from, to)
+          return false if from.towns.empty? || to.towns.empty?
+          return false unless base_tile_name(from) == base_tile_name(to)
+
+          to.towns.size == from.towns.size + 1
+        end
+
+        def upgrades_to?(from, to, special = false, selected_company: nil)
+          return true if adding_town?(from, to)
+
+          super
+        end
+
         def stock_round
           Engine::Round::Stock.new(self, [
             G1862::Step::BuyTokens,
@@ -566,12 +663,16 @@ module Engine
 
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
-            Engine::Step::Track,
-            Engine::Step::Token,
+            G1862::Step::HomeUpgrade,
+            # G1862::Step::Merge,
+            G1862::Step::Track,
+            G1862::Step::Token,
             Engine::Step::Route,
             Engine::Step::Dividend,
-            Engine::Step::DiscardTrain,
+            # G1862::Step::Refinance,
             Engine::Step::BuyTrain,
+            # G1862::Step::RedeemStock,
+            # G1862::Step::Acquire,
           ], round_num: round_num)
         end
 
@@ -656,10 +757,12 @@ module Engine
         end
 
         def status_array(corp)
+          start_phase = @starting_phase[corp]
           status = []
           status << %w[Receivership bold] if corp.receivership?
           status << %w[Chartered bold] if @chartered[corp]
-          status << ["Phase available: #{@starting_phase[corp]}"] unless @phase.available?(@starting_phase[corp])
+          status << ["Phase available: #{start_phase}"] unless @phase.available?(start_phase)
+          status << ['Cannot start'] if @phase.available?(start_phase) && !legal_to_start?(corp)
           status << ["Permits: #{@permits[corp].map(&:to_s).join(',')}"]
           status
         end

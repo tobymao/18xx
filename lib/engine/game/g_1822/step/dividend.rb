@@ -114,6 +114,8 @@ module Engine
                 'withhold'
               when 'half'
                 'half pay'
+              else
+                raise GameError, "#{action.choice} is an illegal choice"
               end
             @log << "#{current_entity.id} chooses to #{text} with the #{find_extra_train(entity).name} train"
           end

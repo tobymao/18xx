@@ -44,6 +44,15 @@ module Engine
           end
         end
       end
+
+      it 'has no duplicates in HEXES' do
+        hex_ids = Engine.game_by_title(game_meta.title)::HEXES.values.map(&:keys).flatten
+        counts = hex_ids.each_with_object(Hash.new(0)) do |hex_id, memo|
+          memo[hex_id] += 1
+        end
+        dups = counts.select { |_, count| count > 1 }.keys
+        expect(dups).to eq([])
+      end
     end
   end
 end
