@@ -76,6 +76,8 @@ module Engine
           'I9' => 'Berlin',
           'F10' => 'Hannover',
           'H10' => 'Magdeburg',
+          'G11' => 'Harz Mountains',
+          'G15' => 'Weimar',
           'B14' => 'Köln and Düsseldorf',
           'C13' => 'Essen and Dortmund',
           'I13' => 'Leipzig',
@@ -96,7 +98,7 @@ module Engine
                E15
                G11
                G13
-               G15] => 'upgrade=cost:15,terrain:mountain',
+               G17] => 'upgrade=cost:15,terrain:mountain',
             %w[B12
                B16
                B18
@@ -124,7 +126,6 @@ module Engine
                F22
                F24
                F8
-               G17
                G23
                G7
                G9
@@ -151,6 +152,7 @@ module Engine
             %w[D10
                E21
                F10
+               G15
                G19
                I13] => 'city=revenue:0',
             %w[D16
