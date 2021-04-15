@@ -39,7 +39,7 @@ module View
 
         return false if revenue.uniq.size > 1
 
-        # avoid obcsuring track with revenues
+        # avoid obscuring track with revenues
         return true if @tile.cities.empty? && @tile.city_towns.size == 2 && @tile.exits.size > 4
 
         return false if @tile.cities.sum(&:slots) < 3 && @tile.city_towns.size == 2
