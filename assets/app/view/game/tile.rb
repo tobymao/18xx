@@ -39,6 +39,9 @@ module View
 
         return false if revenue.uniq.size > 1
 
+        # avoid obscuring track with revenues
+        return true if @tile.cities.empty? && @tile.city_towns.size == 2 && @tile.exits.size > 4
+
         return false if @tile.cities.sum(&:slots) < 3 && @tile.city_towns.size == 2
 
         true
@@ -55,7 +58,10 @@ module View
         render_revenue = should_render_revenue?
         children << render_tile_part(Part::Track, routes: @routes) if !@tile.paths.empty? || !@tile.stubs.empty?
         children << render_tile_part(Part::Cities, show_revenue: !render_revenue) unless @tile.cities.empty?
-        children << render_tile_part(Part::Towns, routes: @routes) unless @tile.towns.empty?
+
+        unless @tile.towns.empty?
+          children << render_tile_part(Part::Towns, routes: @routes, show_revenue: !render_revenue)
+        end
 
         borders = render_tile_part(Part::Borders) if @tile.borders.any?(&:type)
         # OO tiles have different rules...

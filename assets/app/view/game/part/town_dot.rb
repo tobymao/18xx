@@ -14,6 +14,7 @@ module View
         needs :tile
         needs :town
         needs :width, default: 8
+        needs :show_revenue
 
         REVENUE_DISPLACEMENT = 42
         REVENUE_EDGE_DISPLACEMENT = 25
@@ -114,7 +115,7 @@ module View
                           'stroke-width': 4,
                         })]
 
-          children << render_revenue
+          children << render_revenue if @show_revenue
           children << h(HitBox, click: -> { touch_node(@town) }, transform: translate) unless @town.solo?
           h(:g, { key: "#{@town.id}-d" }, children)
         end
