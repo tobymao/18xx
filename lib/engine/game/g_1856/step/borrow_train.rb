@@ -9,6 +9,7 @@ module Engine
         class BorrowTrain < Engine::Step::Base
           ACTIONS = %w[borrow_train pass].freeze
           def actions(entity)
+            return [] unless entity.corporation?
             return [] unless can_borrow_train?(entity)
 
             ACTIONS
@@ -27,7 +28,7 @@ module Engine
           end
 
           def can_borrow_train?(entity)
-            !borrowable_trains(entity).empty?
+            !borrowable_trains(entity).empty? && entity.trains.empty?
           end
 
           def borrowable_trains(entity)
