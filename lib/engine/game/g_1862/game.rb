@@ -400,6 +400,11 @@ module Engine
         CHARTERED_TOKEN_COST = 60
         UNCHARTERED_TOKEN_COST = 40
 
+        LONDON_HEXES = %w[
+            B15
+            D15
+        ].freeze
+
         def init_share_pool
           SharePool.new(self, allow_president_sale: true)
         end
@@ -576,6 +581,10 @@ module Engine
           end
         end
 
+        def london_link?(entity)
+          LONDON_HEXES.any? { |hexid| hex_by_id(hexid).tile.cities.any? { |c| c.tokened_by?(entity) } }
+        end
+
         def purchase_tokens!(corporation, count)
           (count - 2).times { corporation.tokens << Token.new(corporation, price: 0) }
           corporation.spend((cost = UNCHARTERED_TOKEN_COST * count), @bank)
@@ -652,6 +661,12 @@ module Engine
           return true if adding_town?(from, to)
 
           super
+        end
+
+        def upgrades_to_correct_label?(from, to)
+          (from.label == to.label) ||
+            (from.label.to_s == 'N' && to.label.to_s == 'I') ||
+            (from.label.to_s == 'Y' && to.label.to_s == 'H')
         end
 
         def stock_round
