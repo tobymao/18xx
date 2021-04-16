@@ -100,33 +100,55 @@ module Engine
           },
         ].freeze
 
-        # @todo: how to do the opposite side
-        # rusts turns them to the other side, go into the bankpool obsolete then removes completely
+        # The ' trains are the opposite sides of the physical cards which
+        # get added into the bankpool when their equivilent rusts
         TRAINS = [
           {
             name: '2H',
             num: 6,
             distance: 2,
             price: 80,
-            obsolete_on: '8H',
+            rusts_on: '4H',
+          },
+          {
+            name: "1H'",
+            num: 6,
+            distance: 1,
+            price: 40,
             rusts_on: '6H',
-          }, # 1H price:40
+            reserved: true,
+          },
           {
             name: '4H',
             num: 5,
             distance: 4,
             price: 180,
-            obsolete_on: '10H',
             rusts_on: '8H',
             events: [{ 'type' => 'corporations_can_merge' }],
-          }, # 2H price:90
+          },
+          {
+            name: "2H'",
+            num: 5,
+            distance: 2,
+            price: 90,
+            rusts_on: '10H',
+            reserved: true,
+          },
           {
             name: '6H',
             num: 4,
             distance: 6,
             price: 300,
             rusts_on: '10H',
-          }, # 3H price:150
+          },
+          {
+            name: "3H'",
+            num: 4,
+            distance: 3,
+            price: 150,
+            rusts_on: 'D',
+            reserved: true,
+          },
           {
             name: '8H',
             num: 3,
@@ -140,12 +162,20 @@ module Engine
             distance: 10,
             price: 550,
             events: [{ 'type' => 'train_trade_allowed' }],
+            discount: {
+              "3H'" => 150,
+              '8H' => 440,
+            },
           },
           {
             name: 'D',
             num: 1,
             distance: 99,
             price: 770,
+            discount: {
+              '8H' => 440,
+              '10H' => 550,
+            },
           },
         ].freeze
 
@@ -340,6 +370,10 @@ module Engine
             corporation.type == :minor
           end
 
+          @reserved_trains = depot.upcoming.select(&:reserved)
+          @all_reserved_trains = @reserved_trains.dup
+          @reserved_trains.each { |train| depot.remove_train(train) }
+
           protect = corporations.find { |c| c.id == PROTECTED_CORPORATION }
           corporations.delete(protect)
           corporations.sort_by! { rand }
@@ -350,6 +384,28 @@ module Engine
           corporations.unshift(protect)
 
           @corporations = corporations
+        end
+
+        def rust(train)
+          unless @all_reserved_trains.include?(train)
+            new_distance = train.distance / 2
+            new_train = @reserved_trains.find { |t| t.distance == new_distance }
+            new_train.reserved = false
+            @reserved_trains.delete(new_train)
+            @depot.reclaim_train(new_train)
+            @extra_trains << new_train.name
+          end
+
+          super
+        end
+
+        def rust_trains!(train, _entity)
+          @extra_trains = []
+          super
+          return if @extra_trains.empty?
+
+          @log << "-- Event: Rusted trains become #{@extra_trains.uniq.join(', ')},"\
+          ' and are available from the bank pool'
         end
 
         def get_par_prices(entity, _corp)
@@ -440,7 +496,7 @@ module Engine
             Engine::Step::Route,
             G18Ireland::Step::Dividend,
             Engine::Step::DiscardTrain,
-            Engine::Step::BuyTrain,
+            G18Ireland::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
