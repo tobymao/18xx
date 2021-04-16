@@ -15,6 +15,7 @@ module Engine
         CAPITALIZATION = :incremental
         HOME_TOKEN_TIMING = :par
         SELL_BUY_ORDER = :sell_buy
+        MUST_BUY_TRAIN = :always
 
         ASSIGNMENT_TOKENS = {
           'CDSPC' => '/icons/18_ireland/port_token.svg',
@@ -404,6 +405,22 @@ module Engine
           end
         end
 
+        def issuable_shares(entity)
+          return [] unless entity.corporation?
+          return [] unless entity.num_ipo_shares
+
+          # Can only issue 1
+          bundles_for_corporation(entity, entity)
+            .select { |bundle| @share_pool.fit_in_bank?(bundle) }.take(1)
+        end
+
+        def redeemable_shares(entity)
+          return [] unless entity.corporation?
+
+          # Can only redeem 1
+          bundles_for_corporation(@share_pool, entity).reject { |bundle| entity.cash < bundle.price }.take(1)
+        end
+
         def new_auction_round
           Engine::Round::Auction.new(self, [
             G18Ireland::Step::WaterfallAuction,
@@ -435,6 +452,7 @@ module Engine
             Engine::Step::HomeToken,
             G18Ireland::Step::SpecialTrack,
             Engine::Step::BuyCompany,
+            G18Ireland::Step::IssueShares,
             G18Ireland::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
