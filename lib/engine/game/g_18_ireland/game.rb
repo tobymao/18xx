@@ -170,7 +170,8 @@ module Engine
         end
 
         def tile_lays(entity)
-          super unless entity.companies.any? { |c| c.id == 'WDE' }
+          return super unless entity.companies.any? { |c| c.id == 'WDE' }
+
           DARGAN_TILE_LAYS
         end
 
@@ -230,9 +231,9 @@ module Engine
           end
 
           # Bonus for assignments
-          tasps = tasps_company.id
+          tasps = tasps_company&.id
           revenue += 20 if route.corporation.assigned?(tasps) && (stops.map(&:hex).find { |hex| hex.assigned?(tasps) })
-          cdspc = cdspc_company.id
+          cdspc = cdspc_company&.id
           revenue += 10 if route.corporation.assigned?(cdspc) && (stops.map(&:hex).find { |hex| hex.assigned?(cdspc) })
 
           revenue
