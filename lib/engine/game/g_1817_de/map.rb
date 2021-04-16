@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# rubocop:disable Layout/LineLength
+
 module Engine
   module Game
     module G1817DE
@@ -188,3 +190,4 @@ module Engine
     end
   end
 end
+# rubocop:enable Layout/LineLength

@@ -142,7 +142,6 @@ module Engine
                     events: [{ 'type' => 'signal_end_game' }],
                   }].freeze
 
-
         def operating_round(round_num)
           @interest_fixed = nil
           @interest_fixed = interest_rate
