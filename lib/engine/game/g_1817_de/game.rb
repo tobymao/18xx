@@ -160,7 +160,6 @@ module Engine
             G1817::Step::Loan,
             G1817::Step::SpecialTrack,
             G1817::Step::Assign,
-            Engine::Step::SpecialToken,
             Engine::Step::HomeToken,
             G1817::Step::Track,
             Engine::Step::Token,
