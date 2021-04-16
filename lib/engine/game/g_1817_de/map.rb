@@ -39,7 +39,6 @@ module Engine
             'count' => 3,
             'color' => 'gray',
             'code' => 'city=revenue:70;city=revenue:70;path=a:0,b:_0;path=a:_0,b:1;path=a:2,b:_1;path=a:_1,b:3;path=a:4,b:_0;path=a:5,b:_1;label=OO',
-
           },
         }.freeze
 
