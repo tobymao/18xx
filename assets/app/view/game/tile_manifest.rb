@@ -90,6 +90,7 @@ module View
             num = remaining[name]&.size || 0
             unavailable = num.positive? ? nil : 'None Left'
             tile = tiles.first
+            next if tile.hidden
 
             render_tile_blocks(name,
                                tile: tile,
@@ -98,7 +99,7 @@ module View
                                layout: @game.layout,
                                clickable: true,
                                extra_children: render_tile_selector(remaining, tile))
-          end
+          end.compact
         else
           all_tiles = @game.all_tiles.sort.group_by(&:name)
           children = @game.tile_groups.flat_map do |group|
@@ -107,6 +108,7 @@ module View
               num = remaining[name]&.size || 0
               unavailable = num.positive? ? nil : 'None Left'
               tile = all_tiles[name].first
+              next if tile.hidden
 
               render_tile_blocks(name,
                                  tile: tile,
@@ -124,6 +126,8 @@ module View
               tile_a = all_tiles[name_a].first
               tile_b = all_tiles[name_b].first
 
+              next if tile_a.hidden && tile_b.hidden # can't hide one side of tile
+
               render_tile_sides(name_a,
                                 name_b,
                                 tile_a: tile_a,
@@ -136,7 +140,7 @@ module View
                                 extra_children_b: render_tile_selector(remaining, tile_b, shift: 1))
 
             end
-          end
+          end.compact
         end
 
         props = {

@@ -13,7 +13,7 @@ module Engine
         GAME_DESIGNER = 'Mark Derrick'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18GA'
         GAME_LOCATION = 'Georgia, USA'
-        GAME_RULES_URL = 'http://www.diogenes.sacramento.ca.us/18GA_Rules_v3_26.pdf'
+        GAME_RULES_URL = 'http://www.18xx.net/18GA/18GAr.txt'
 
         PLAYER_RANGE = [3, 5].freeze
       end

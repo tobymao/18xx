@@ -1872,6 +1872,7 @@ module Engine
           count = val['count'] == 'unlimited' ? 1 : val['count']
           color = val['color']
           code = val['code']
+          hidden = !!val['hidden']
           Array.new(count) do |i|
             Tile.from_code(
               name,
@@ -1879,7 +1880,8 @@ module Engine
               code,
               index: i,
               reservation_blocks: self.class::TILE_RESERVATION_BLOCKS_OTHERS,
-              unlimited: val['count'] == 'unlimited'
+              unlimited: val['count'] == 'unlimited',
+              hidden: hidden
             )
           end
         end
