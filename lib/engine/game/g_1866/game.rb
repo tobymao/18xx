@@ -214,6 +214,31 @@ module Engine
 
         SELL_BUY_ORDER = :sell_buy
 
+        REGION_HEXES = {
+          'GERMANY_BAVARIA' => %w[I17 I19 J16 J18 J20 K17 K19 K21],
+          'GERMANY_HANNOVER' => %w[D18 E15 E17 E19 E21 F16 F18],
+          'GERMANY_PRUSSIA' => %w[E23 E25 F20 F22 F24 F26 G15 G17 G19 G21 G23 G25 H14 H16 H18 H24 H26 I25],
+          'GERMANY_SAXONY' => %w[H20 H22 I21 I23],
+          'GERMANY_WURTTEMBURG' => %w[I13 I15 J14 K15],
+          'ITALY_KGDM_2_SICILIES' => %w[S21 S23 T20 T22 T24 U21 V18 V20 W19],
+          'ITALY_PAPAL_STATES' => %w[Q19 R18 R20 S19],
+          'ITALY_SARDINIA' => %w[N12 O13 O15 S13 T12],
+          'ITALY_TUSCANY' => %w[P16 Q17],
+          'ITALY_LOM_VENETIA' => %w[M17 N14 N16 N18 N20 O17 P18],
+          'LUXEMBOURG' => %w[I11],
+          'ASTRO_HUNGARY' => %w[J22 J24 J26 K23 K25 L18 L20 L22 L24 L26 M19 M21 M23 M25 N22 N24 N26 O21 O23 O25
+                                P22 P24 P26 Q23 Q25 R24],
+          'BELGIUM' => %w[G9 G11 H10 H12],
+          'FRANCE' => %w[H6 H8 I1 I3 I5 I7 I9 J0 J2 J4 J6 J8 J10 J12 K1 K3 K5 K7 K9 K11 K13 L2 L4 L6 L8 L10
+                         M3 M5 M7 M9 M11 N2 N4 N6 N8 N10 O3 O5 O7 O9 O11 P6 P8 P10 P12 Q13],
+          'GREAT_BRITAIN' => %w[A3 B2 B4 C3 C5 D2 D4 D6 E1 E3 E5 E7 F2 F4 F6 G1 G3 G5],
+          'NETHERLANDS' => %w[E13 F10 F12 F14 G13],
+          'SPAIN' => %w[O1 P0 P2 P4 Q1 Q3 Q5 R0 R2 S1],
+          'SWITZERLAND' => %w[L12 L14 L16 M13 M15],
+          'AFRICA' => %w[W9],
+          'AMERICA' => %w[A11],
+        }.freeze
+
         STOCK_TOKENS = {
           '3': 5,
           '4': 4,
@@ -221,6 +246,10 @@ module Engine
           '6': 3,
           '7': 2,
         }.freeze
+
+        def ipo_name(_entity = nil)
+          'Treasury'
+        end
       end
     end
   end
