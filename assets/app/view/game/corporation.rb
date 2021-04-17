@@ -281,7 +281,7 @@ module View
             if i.zero? && @corporation.coordinates
               @corporation.coordinates.is_a?(Array) ? @corporation.coordinates.join('/') : @corporation.coordinates
             else
-              token.city ? token.city.hex.name : token.price
+              token.hex ? token.hex.name : token.price
             end
           [logo_for_user(token), token.used, token_text]
         end
