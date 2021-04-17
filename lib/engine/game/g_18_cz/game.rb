@@ -536,7 +536,6 @@ module Engine
             owners[t.owner.name] += 1 if t.owner
             rust(t)
           end
-          return if rusted_trains.none?
 
           all_varians = trains.flat_map do |item|
             item.variants.values
@@ -546,9 +545,14 @@ module Engine
           end
           all_rusted_names = all_rusted_variants.map { |item| item[:name] }.uniq
 
-          @rusted_variants.concat(all_rusted_names)
-          @log << "-- Event: #{rusted_trains.uniq.join(', ')} trains rust " \
-            "( #{owners.map { |c, t| "#{c} x#{t}" }.join(', ')}) --"
+          new_rusted = all_rusted_names - @rusted_variants
+          return if new_rusted.none?
+
+          @rusted_variants.concat(new_rusted)
+          message = "Event: #{new_rusted.uniq.join(', ')} trains rust"
+          message += " ( #{owners.map { |c, t| "#{c} x#{t}" }.join(', ')})" unless owners.none?
+
+          @log << "-- #{message} --"
         end
 
         def revenue_for(route, stops)
