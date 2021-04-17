@@ -81,7 +81,9 @@ module Engine
             hexes: %w[D14
                       D22
                       E15
-                      G11],
+                      G11
+                      G13
+                      G17],
             tiles: %w[7 8 9],
             free: false,
             when: 'owning_corp_or_turn',
@@ -107,7 +109,9 @@ module Engine
             hexes: %w[D14
                       D22
                       E15
-                      G11],
+                      G11
+                      G13
+                      G17],
             tiles: %w[7 8 9],
             free: false,
             when: 'owning_corp_or_turn',
