@@ -31,7 +31,7 @@ module Engine
           def place_token(entity, city, token, connected: true, extra_action: false,
                           special_ability: nil, check_tokenable: true)
             hex = city.hex
-            return super unless @game.class::LONDON_HEXES.include?(hex.id)
+            return super unless @game.class::LONDON_TOKEN_HEXES.include?(hex.id)
 
             raise GameError, 'Cannot build rail link after laying track' unless @round.num_laid_track.zero?
             raise GameError, 'Token/rail link already placed this turn' if @round.tokened
@@ -47,7 +47,7 @@ module Engine
 
           def available_hex(entity, hex)
             @game.graph.reachable_hexes(entity)[hex] ||
-              (@game.class::LONDON_HEXES.include?(hex.id) && can_token_london?(entity))
+              (@game.class::LONDON_TOKEN_HEXES.include?(hex.id) && can_token_london?(entity))
           end
         end
       end
