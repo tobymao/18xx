@@ -230,7 +230,7 @@ module View
             end
           end
           event_text = event_text.flat_map { |e| [h('span.nowrap', e), ', '] }[0..-2]
-          name = (train.name == first_train.name ? '→ ' : '') + names_to_prices.keys.join(', ')
+          name = (train.name == first_train&.name ? '→ ' : '') + names_to_prices.keys.join(', ')
 
           train_content = [
             h(:td, name),
