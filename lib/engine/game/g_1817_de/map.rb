@@ -55,7 +55,6 @@ module Engine
           'D10' => 'Osnabrück',
           'I9' => 'Berlin',
           'F10' => 'Hannover',
-          'H10' => 'Magdeburg',
           'G11' => 'Harz Mountains',
           'G15' => 'Weimar',
           'B14' => 'Köln and Düsseldorf',
@@ -122,7 +121,6 @@ module Engine
                I19
                I23
                J10
-               J12
                J4
                J6
                J8
@@ -133,10 +131,9 @@ module Engine
                E21
                F10
                G15
-               G19
                I13] => 'city=revenue:0',
+            %w[G19] => 'city=revenue:0;upgrade=cost:15,terrain:mountain',
             %w[D16
-               H10
                J14] => 'city=revenue:0;upgrade=cost:10,terrain:water',
             %w[C15 D18
                D20
@@ -146,8 +143,10 @@ module Engine
                H20
                H6
                H8
+               H10
                I21
                I11
+               J12
                J20] => 'upgrade=cost:10,terrain:water',
           },
           red: {
@@ -182,6 +181,10 @@ module Engine
         'city=revenue:30;city=revenue:30;path=a:1,b:_0;path=a:5,b:_1;label=OO',
             ['E7'] =>
         'city=revenue:20;path=a:4,b:_0',
+          },
+          gray: {
+            ['A13'] =>
+        'path=a:0,b:5',
           },
         }.freeze
         LAYOUT = :flat
