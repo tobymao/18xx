@@ -970,7 +970,6 @@ module Engine
         # Brute force it. Theoretical max combos is 729, but realistic max is order of magnitude lower
         def global_optimize(routes)
           route_stops = routes.map { |r| revenue_stop_options(r) }
-          p route_stops
           possibilities = if routes.one?
                             route_stops[0].product
                           else
@@ -1138,7 +1137,6 @@ module Engine
         # train if it exists
         def check_freight_intersections(routes)
           freight_sets = freight_sets(routes)
-          p freight_sets
           # only one set can have non-perms
           if freight_sets.count { |set| set.any? { |r| nonpermanent_freight?(r.train) } } > 1
             raise GameError, 'All non-permanent freight trains need to connect end-to-end'
