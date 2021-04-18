@@ -165,7 +165,7 @@ module Engine
             ['E1'] =>
          'offboard=revenue:yellow_10|green_20|brown_30|gray_40;path=a:0,b:_0',
             ['A15'] =>
-         'offboard=revenue:yellow_10|green_20|brown_30|gray_40;path=a:4,b:_0;path=a:5,b:_0',
+         'offboard=revenue:yellow_10|green_20|brown_30|gray_40;path=a:4,b:_0;path=a:5,b:_0;path=a:3,b:_0',
           },
           yellow: {
             ['I9'] =>
@@ -176,7 +176,6 @@ module Engine
         'city=revenue:0;city=revenue:0;label=OO',
             ['C13'] =>
         'city=revenue:0;city=revenue:0;label=OO',
-
             ['F6'] =>
         'city=revenue:30;city=revenue:30;path=a:1,b:_0;path=a:5,b:_1;label=OO',
             ['E7'] =>
