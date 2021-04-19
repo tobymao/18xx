@@ -18,77 +18,19 @@
       "price": 3
     },
     {
-      "type": "choose_ability",
-      "entity": "ZOOTicket 1 - Player 1",
-      "entity_type": "company",
-      "id": 3,
-      "created_at": 1616448341,
-      "choice": {
-        "type": "sell"
-      }
-    },
-    {
-      "type": "choose_ability",
-      "entity": "ZOOTicket 2 - Player 1",
-      "entity_type": "company",
-      "id": 4,
-      "created_at": 1616448342,
-      "choice": {
-        "type": "sell"
-      }
-    },
-    {
-      "type": "choose_ability",
-      "entity": "ZOOTicket 3 - Player 1",
-      "entity_type": "company",
-      "id": 5,
-      "created_at": 1616448344,
-      "choice": {
-        "type": "sell"
-      }
-    },
-    {
-      "type": "pass",
-      "entity": "Player 1",
-      "entity_type": "player",
-      "id": 6,
-      "created_at": 1616448350
-    },
-    {
-      "type": "pass",
-      "entity": "Player 2",
-      "entity_type": "player",
-      "id": 7,
-      "created_at": 1616448351
-    },
-    {
-      "type": "pass",
-      "entity": "Player 1",
-      "entity_type": "player",
-      "id": 8,
-      "created_at": 1616448352
-    },
-    {
-      "type": "pass",
-      "entity": "Player 2",
-      "entity_type": "player",
-      "id": 9,
-      "created_at": 1616448354
-    },
-    {
       "type": "par",
       "entity": "Player 1",
       "entity_type": "player",
-      "id": 10,
+      "id": 3,
       "created_at": 1616448638,
       "corporation": "GI",
-      "share_price": "7,1,1"
+      "share_price": "5,3,1"
     },
     {
       "type": "lay_tile",
       "entity": "GI",
       "entity_type": "corporation",
-      "id": 11,
+      "id": 4,
       "created_at": 1616448643,
       "hex": "K9",
       "tile": "6-0",
@@ -98,7 +40,7 @@
       "type": "choose_ability",
       "entity": "WHATSUP",
       "entity_type": "company",
-      "id": 12,
+      "id": 5,
       "created_at": 1616448646,
       "choice": {
         "type": "whatsup",
@@ -108,23 +50,30 @@
     },
     {
       "type": "pass",
+      "entity": "Player 1",
+      "entity_type": "player",
+      "id": 6,
+      "created_at": 1616448649
+    },
+    {
+      "type": "pass",
       "entity": "Player 2",
       "entity_type": "player",
-      "id": 13,
+      "id": 7,
       "created_at": 1616448649
     },
     {
       "type": "pass",
       "entity": "Player 1",
       "entity_type": "player",
-      "id": 14,
+      "id": 8,
       "created_at": 1616448651
     },
     {
       "type": "lay_tile",
       "entity": "GI",
       "entity_type": "corporation",
-      "id": 15,
+      "id": 9,
       "created_at": 1616448658,
       "hex": "L4",
       "tile": "201-0",
@@ -134,105 +83,52 @@
       "type": "pass",
       "entity": "GI",
       "entity_type": "corporation",
-      "id": 16,
+      "id": 10,
       "created_at": 1616448659
     },
     {
       "type": "pass",
       "entity": "GI",
       "entity_type": "corporation",
-      "id": 17,
+      "id": 11,
       "created_at": 1616448661
     },
     {
       "type": "pass",
       "entity": "GI",
       "entity_type": "corporation",
-      "id": 18,
-      "created_at": 1616448671
+      "id": 12,
+      "created_at": 1618390929
     },
     {
       "type": "pass",
       "entity": "GI",
       "entity_type": "corporation",
-      "id": 19,
-      "created_at": 1616448677
+      "id": 13,
+      "created_at": 1618390930
     },
     {
       "type": "pass",
       "entity": "GI",
       "entity_type": "corporation",
-      "id": 20,
-      "created_at": 1616448678
+      "id": 14,
+      "created_at": 1618390931
     },
     {
       "type": "run_routes",
       "entity": "GI",
       "entity_type": "corporation",
-      "id": 21,
-      "created_at": 1616448683,
+      "id": 15,
+      "created_at": 1618390942,
       "routes": [
         {
           "train": "2S-0",
           "connections": [
             [
-              "K9",
-              "K7",
+              "L4",
               "L6",
-              "L4"
-            ]
-          ],
-          "hexes": [
-            "L4",
-            "K9"
-          ]
-        }
-      ]
-    },
-    {
-      "type": "dividend",
-      "entity": "GI",
-      "entity_type": "corporation",
-      "id": 22,
-      "created_at": 1616448697,
-      "kind": "payout"
-    },
-    {
-      "type": "pass",
-      "entity": "GI",
-      "entity_type": "corporation",
-      "id": 23,
-      "created_at": 1616448712
-    },
-    {
-      "type": "pass",
-      "entity": "GI",
-      "entity_type": "corporation",
-      "id": 24,
-      "created_at": 1616448713
-    },
-    {
-      "type": "pass",
-      "entity": "GI",
-      "entity_type": "corporation",
-      "id": 25,
-      "created_at": 1616448713
-    },
-    {
-      "type": "run_routes",
-      "entity": "GI",
-      "entity_type": "corporation",
-      "id": 26,
-      "created_at": 1616448715,
-      "routes": [
-        {
-          "train": "2S-0",
-          "connections": [
-            [
-              "K9",
               "K7",
-              "L6",
-              "L4"
+              "K9"
             ]
           ],
           "hexes": [
@@ -246,16 +142,16 @@
       "type": "dividend",
       "entity": "GI",
       "entity_type": "corporation",
-      "id": 27,
-      "created_at": 1616448716,
+      "id": 16,
+      "created_at": 1618390944,
       "kind": "payout"
     },
     {
-      "type": "pass",
+      "type": "end_game",
       "entity": "GI",
       "entity_type": "corporation",
-      "id": 28,
-      "created_at": 1616448717
+      "id": 17,
+      "created_at": 1618390949
     }
   ],
   "id": "hs_ccmirpdg_1612649034",
@@ -271,7 +167,6 @@
   "description": "",
   "max_players": "2",
   "acting": [
-    "Player 2",
     "Player 1"
   ],
   "created_at": "2021-03-18",
@@ -279,14 +174,14 @@
   "mode": "hotseat",
   "result": {
     "Player 2": 100,
-    "Player 1": 53
+    "Player 1": 99
   },
   "round": "Operating Round",
   "settings": {
     "optional_rules": []
   },
-  "turn": 3,
-  "updated_at": 1616448717,
+  "turn": 1,
+  "updated_at": 1618390949,
   "user": {
     "id": 0,
     "name": "You"

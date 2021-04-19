@@ -168,6 +168,7 @@ module Engine
             description: "Train #{train.name} can do 1 step more"
           )
           corporation.add_ability(ability)
+          @log << "#{train.name} gets a boost from '#{@game.a_spoonful_of_sugar.name}' for this round"
         end
       end
     end
