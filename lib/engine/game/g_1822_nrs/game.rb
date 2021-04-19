@@ -262,21 +262,21 @@ module Engine
                 'city=revenue:50,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
                 'path=a:4,b:_0;label=BM',
             },
-          '145' =>
+          '768' =>
             {
               'count' => 3,
               'color' => 'brown',
               'code' =>
                 'town=revenue:10;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0',
             },
-          '146' =>
+          '767' =>
             {
               'count' => 3,
               'color' => 'brown',
               'code' =>
                 'town=revenue:10;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0',
             },
-          '147' =>
+          '769' =>
             {
               'count' => 4,
               'color' => 'brown',

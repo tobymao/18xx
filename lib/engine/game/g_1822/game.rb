@@ -512,7 +512,7 @@ module Engine
         TOKEN_PRICE = 100
 
         TRACK_PLAIN = %w[7 8 9 80 81 82 83 544 545 546 60 169].freeze
-        TRACK_TOWN = %w[3 4 58 141 142 143 144 145 146 147 X17].freeze
+        TRACK_TOWN = %w[3 4 58 141 142 143 144 767 768 769 X17].freeze
 
         UPGRADABLE_S_YELLOW_CITY_TILE = '57'
         UPGRADABLE_S_YELLOW_ROTATIONS = [2, 5].freeze
