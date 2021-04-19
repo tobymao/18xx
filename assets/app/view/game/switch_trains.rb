@@ -10,7 +10,7 @@ module View
       include AlternateCorporations
 
       def render
-        step = @game.round.active_step
+        @step = @game.round.active_step
         @corporation = @game.current_entity
 
         click = lambda do
@@ -26,11 +26,11 @@ module View
 
         children = []
 
-        children << h(:h3, step.help_text) if step.respond_to?(:help_text)
-        children << h('button', props, step.description)
+        children << h(:h3, @step.help_text) if @step.respond_to?(:help_text)
+        children << h('button', props, @step.description)
 
         @slot_checkboxes = {}
-        if step.respond_to?(:slot_view) && (view = step.slot_view(@corporation))
+        if @step.respond_to?(:slot_view) && (view = @step.slot_view(@corporation))
           children << send("render_#{view}")
         end
 
@@ -44,6 +44,43 @@ module View
         @slot_checkboxes.keys.map do |k|
           k if Native(@slot_checkboxes[k]).elm.checked
         end.compact
+      end
+
+      def render_trains
+        possible_corporations = @step.target_corporations(@corporation)
+        children = @step.trains(@corporation).map do |train|
+          inner = []
+          inner << h(:span, train.name)
+          inner << h(:span, '-->')
+          # train Name
+          # train owner
+          possible_corporations.each do |corp|
+            attrs = {
+              type: 'radio',
+              id: "train_#{train.id}_corp_#{corp.id}",
+              name: "train_#{train.id}",
+            }
+
+            attrs[:checked] = 'checked' if train.owner == corp
+
+            checkbox = h(
+              'input.no_margin',
+              style: {
+                width: '1rem',
+                height: '1rem',
+                padding: '0 0 0 0.2rem',
+              },
+              attrs: attrs
+            )
+            @slot_checkboxes["train_#{train.id}_corp_#{corp.id}"] = checkbox
+            inner << h(:label, [checkbox, corp.name])
+          end
+          # -> checkbox for new corporations
+
+          h(:div, inner)
+        end
+
+        h(:div, children)
       end
     end
   end

@@ -14,20 +14,109 @@ module Engine
 
         PHASES = [
             {
-              name: 'a',
+              name: '1',
               train_limit: 3,
               tiles: %i[yellow],
+            },
+            {
+              name: '2',
+              train_limit: 3,
+              tiles: %i[yellow green],
+              status: ['can_buy_companies'],
+            },
+            {
+              name: '3',
+              train_limit: 3,
+              tiles: %i[yellow green brown],
+              status: ['can_buy_companies'],
+            },
+            {
+              name: '4',
+              train_limit: 3,
+              tiles: %i[yellow green brown gray],
+              status: ['can_buy_companies'],
             },
 
           ].freeze
 
         TRAINS = [
             {
-              name: '2a',
-              distance: 2,
-              price: 70,
-              rusts_on: '3',
+              name: 'Y1',
+              distance: 99,
+              price: 100,
               num: 5,
+              variants: [
+                {
+                  name: 'Y2',
+                  price: 50,
+                },
+              ],
+            },
+            {
+              name: 'O1',
+              distance: 99,
+              price: 300,
+              num: 5,
+              variants: [
+                {
+                  name: 'O2',
+                  price: 200,
+                },
+                {
+                  name: 'O3',
+                  price: 100,
+                },
+              ],
+            },
+            {
+              name: 'R1',
+              distance: 99,
+              price: 500,
+              num: 5,
+              variants: [
+                {
+                  name: 'R2',
+                  price: 400,
+                },
+                {
+                  name: 'R3',
+                  price: 300,
+                },
+              ],
+            },
+            {
+              name: 'Pi1',
+              distance: 99,
+              price: 600,
+              num: 5,
+              variants: [
+                {
+                  name: 'Pi2',
+                  price: 500,
+                },
+                {
+                  name: 'Pi2',
+                  price: 400,
+                },
+              ],
+            },
+            {
+              name: 'Pu1',
+              distance: 99,
+              price: 800,
+              num: 5,
+              variants: [
+                {
+                  name: 'Pu2',
+                  price: 600,
+                },
+              ],
+            },
+            {
+              name: 'City',
+              distance: 99,
+              price: 0,
+              num: 4,
             },
           ].freeze
 

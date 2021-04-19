@@ -85,13 +85,23 @@ module Engine
           ],
         }.freeze
 
+        attr_reader :tram_corporations, :major_corporations, :tram_owned_by_corporation
+
         def setup
+          @cr_counter = 0
           @first_stock_round = true
-          @tram_corporations = @corporations.select { |item| item.type == :minor }
+          @all_tram_corporations = @corporations.select { |item| item.type == :minor }
+          @tram_corporations = @all_tram_corporations.reject { |item| item.id == '2' }.sort_by do
+            rand
+          end.first(@players.size + 1)
           @city_corporations = @corporations.select { |item| item.type == :city }
           @major_corporations = @corporations.select { |item| item.type == :major }
                                 .sort_by { rand }.first(@players.size)
 
+          @tram_owned_by_corporation = {}
+          @major_corporations.each do |item|
+            @tram_owned_by_corporation[item] = []
+          end
           @city_corporations.each do |corporation|
             par_value = INITIAL_CITY_PAR[corporation.id]
             price = @stock_market.par_prices.find { |p| p.price == par_value }
@@ -106,11 +116,17 @@ module Engine
               hex_by_id(info[:coordinate]).tile.cities[city_index].place_token(corporation, token,
                                                                                check_tokenable: false)
             end
+            corporation.owner = @share_pool
+            train = @depot.upcoming.find { |item| item.name == 'City' }
+            @depot.remove_train(train)
+            train.owner = corporation
+            corporation.trains << train
           end
 
           @corporations.clear
           @corporations.concat(@major_corporations)
           @corporations.concat(@city_corporations)
+          @corporations.concat(@tram_corporations)
         end
 
         def new_auction_round
@@ -128,6 +144,38 @@ module Engine
           Engine::Round::Stock.new(self, [
             G1840::Step::BuySellParShares,
           ])
+        end
+
+        def new_company_operating_round(round_num)
+          G1840::Round::CompanyOperating.new(self, [
+            # dividend
+            G1840::Step::Route,
+            G1840::Step::Dividend,
+            # corporation auction
+          ], round_num: round_num, no_city: false)
+        end
+
+        def new_company_operating_round2(round_num)
+          G1840::Round::CompanyOperating.new(self, [
+            # dividend
+            G1840::Step::BuyTrain,
+            # corporation auction
+          ], round_num: round_num, no_city: true)
+        end
+
+        def new_company_operating_auction_round
+          G1840::Round::Acquisition.new(self, [
+            G1840::Step::InterruptingBuyTrain,
+            G1840::Step::AcquisitionAuction,
+          ])
+        end
+
+        def new_company_operating_switch_trains(round_num)
+          G1840::Round::CompanyOperating.new(self, [
+            # dividend
+            G1840::Step::ReassignTrains,
+            # corporation auction
+          ], round_num: round_num, no_city: true)
         end
 
         def operating_round(round_num)
@@ -148,6 +196,44 @@ module Engine
           ], round_num: round_num)
         end
 
+        def next_round!
+          @round =
+            case @round
+            when Engine::Round::Stock
+              # After first SR comes CR else LR
+              # @operating_rounds = OR_SETS[@turn - 1]
+              # reorder_players(log_player_order: true)
+              @cr_counter += 1
+              new_company_operating_round
+            when new_company_operating_round.class
+              @cr_counter += 1
+
+              if @cr_counter <= 2
+                new_company_operating_round2
+              else
+                new_company_operating_auction_round
+              end
+            when new_company_operating_auction_round.class
+              new_company_operating_switch_trains
+            when Engine::Round::Operating
+              # after LR is always CR
+              # after first CR comes LR else SR, after CR6 game ends
+              # After OR is either CR or LR or SR ;)
+              # if @round.round_num < @operating_rounds
+              #   or_round_finished
+              #   new_operating_round(@round.round_num + 1)
+              # else
+              #   @turn += 1
+              #   or_round_finished
+              #   or_set_finished
+              #   new_stock_round
+              # end
+            when init_round.class
+              init_round_finished
+              new_stock_round
+            end
+        end
+
         def par_prices(corp)
           par_nodes = stock_market.par_prices
           available_par_prices = PAR_RANGE[corp.type]
@@ -160,6 +246,72 @@ module Engine
 
         def can_par?(corporation, parrer)
           super && corporation.type == :major
+        end
+
+        def show_progress_bar?
+          true
+        end
+
+        def progress_information
+          [
+            { type: :PRE },
+            { type: :SR, name: '1' },
+            { type: :CR, name: '1', value: '1x' },
+            { type: :LR, name: '1a' },
+            { type: :LR, name: '1b' },
+            { type: :CR, name: '2', value: '1x' },
+            { type: :SR, name: '2' },
+            { type: :LR, name: '2a' },
+            { type: :LR, name: '2b' },
+            { type: :CR, name: '3', value: '1x' },
+            { type: :SR, name: '3', value: '1x' },
+            { type: :LR, name: '3a' },
+            { type: :LR, name: '3b' },
+            { type: :CR, name: '4', value: '2x' },
+            { type: :SR, name: '4', value: '1x' },
+            { type: :LR, name: '4a' },
+            { type: :LR, name: '4b' },
+            { type: :CR, name: '5', value: '3x' },
+            { type: :SR, name: '5', value: '1x' },
+            { type: :LR, name: '5a' },
+            { type: :LR, name: '5b' },
+            { type: :LR, name: '5c' },
+            { type: :CR, name: '6', value: '10x' },
+            { type: :End },
+          ]
+        end
+
+        def corporate_card_minors(corporation)
+          @tram_owned_by_corporation[corporation] || []
+        end
+
+        def buy_tram_corporation(buying_corporation, tram_corporation)
+          tram_corporation.ipoed = true
+          tram_corporation.ipo_shares.each do |share|
+            @share_pool.transfer_shares(
+              share.to_bundle,
+              share_pool,
+              spender: share_pool,
+              receiver: buying_corporation,
+              price: 0,
+              allow_president_change: false
+            )
+          end
+          tram_corporation.owner = buying_corporation.owner
+          @tram_owned_by_corporation[buying_corporation] << tram_corporation
+        end
+
+        def round_description(name, round_number = nil)
+          round_number ||= @round.round_num
+          description = "#{@round.name} "
+
+          total = total_rounds(name)
+
+          description += @turn.to_s unless @turn.zero?
+          description += '.' if total && !@turn.zero?
+          description += "#{round_number} (of #{total})" if total
+
+          description.strip
         end
       end
     end
