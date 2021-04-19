@@ -438,7 +438,7 @@ module Engine
             60
           end
 
-          def action_is_shenanigan?(entity, action, corporation, corp_buying)
+          def action_is_shenanigan?(entity, other_entity, action, corporation, corp_buying)
             if action.is_a?(Action::Short)
               'Short bought'
             else

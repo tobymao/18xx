@@ -244,7 +244,7 @@ module Engine
             super
           end
 
-          def action_is_shenanigan?(entity, action, corporation, share_to_buy)
+          def action_is_shenanigan?(entity, other_entity, action, corporation, share_to_buy)
             # Bid is done in should_stop_applying_program
             return if action.is_a?(Action::Bid)
 
