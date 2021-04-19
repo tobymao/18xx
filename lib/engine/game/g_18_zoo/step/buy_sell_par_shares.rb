@@ -49,7 +49,10 @@ module Engine
           end
 
           def log_pass(entity)
-            super # TODO: add log logic to handle sell / par / buy / sell company / use power
+            return @log << "#{entity.name} passes" if @round.current_actions.empty?
+            return if bought? || !sold?
+
+            @log << "#{entity.name} declines to buy shares"
           end
 
           def purchasable_companies(_entity)

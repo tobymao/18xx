@@ -24,6 +24,7 @@ module Engine
       @node_chains = {}
       @connection_data = nil
       @last_node = nil
+      @last_offboard = []
       @stops = nil
     end
 
@@ -42,6 +43,7 @@ module Engine
       @halts = nil
       @connection_data = nil
       @last_node = nil
+      @last_offboard = []
     end
 
     def cycle_halts
@@ -161,6 +163,37 @@ module Engine
 
       @halts = nil
       @routes.each { |r| r.clear_cache!(all: true) }
+    end
+
+    # hex with multiple offboards was clicked - determine which one to
+    # connect to the route
+    #
+    # we pick the one next to the first/last node in connected_data
+    # If both nodes could connect, cycle through them
+    def disambiguate_node(nodes)
+      onodes = nodes.select(&:offboard?)
+
+      # find first and last nodes in current route
+      list = connection_data.empty? ? [@last_node].compact : [head[:left], tail[:right]]
+      return if list.empty?
+
+      # if those match either of the nodes in the tile, use it and remember it
+      if (match = onodes.find { |n| list.include?(n) })
+        touch_node(match)
+        @last_offboard = [match]
+        return
+      end
+
+      # otherwise use a node on the tile that connects to the current route
+      # if multiple, ignore the most recently used one
+      candidates = onodes.select { |node| list.any? { |last| select(last, node)[0] } }
+      if candidates.size > 1
+        touch_node((candidates - @last_offboard)[0])
+        @last_offboard = []
+      elsif candidates.one?
+        touch_node(candidates[0])
+        @last_offboard = []
+      end
     end
 
     def paths

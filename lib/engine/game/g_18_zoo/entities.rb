@@ -175,12 +175,28 @@ module Engine
             name: "That's mine!",
             value: 2,
             desc: 'Book anywhere an open place for a station tile.',
+            abilities: [
+              {
+                type: 'assign_hexes',
+                when: 'owning_corp_or_turn',
+                hexes: [],
+                owner_type: 'corporation',
+              },
+            ],
           },
           {
             sym: 'WORK_IN_PROGRESS',
             name: 'Work in progress',
             value: 2,
             desc: 'Block anywhere a free place of a station tile.',
+            abilities: [
+              {
+                type: 'assign_hexes',
+                when: 'owning_corp_or_turn',
+                hexes: [],
+                owner_type: 'corporation',
+              },
+            ],
           },
           {
             sym: 'CORN',
@@ -235,6 +251,13 @@ module Engine
             name: 'Wings',
             value: 2,
             desc: 'During the run, a squirrel at will can skip a tokened-out station.',
+            abilities: [
+              {
+                type: 'assign_corporation',
+                when: 'sold',
+                owner_type: 'corporation',
+              },
+            ],
           },
           {
             sym: 'A_SPOONFUL_OF_SUGAR',

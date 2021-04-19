@@ -60,46 +60,11 @@
       "created_at": 1616074748
     },
     {
-      "type": "pass",
+      "type": "end_game",
       "entity": "Player 2",
       "entity_type": "player",
       "id": 8,
-      "created_at": 1616074749
-    },
-    {
-      "type": "pass",
-      "entity": "Player 1",
-      "entity_type": "player",
-      "id": 9,
-      "created_at": 1616074749
-    },
-    {
-      "type": "pass",
-      "entity": "Player 2",
-      "entity_type": "player",
-      "id": 10,
-      "created_at": 1616074750
-    },
-    {
-      "type": "pass",
-      "entity": "Player 1",
-      "entity_type": "player",
-      "id": 11,
-      "created_at": 1616074750
-    },
-    {
-      "type": "pass",
-      "entity": "Player 2",
-      "entity_type": "player",
-      "id": 12,
-      "created_at": 1616074750
-    },
-    {
-      "type": "pass",
-      "entity": "Player 1",
-      "entity_type": "player",
-      "id": 13,
-      "created_at": 1616074750
+      "created_at": 1618390525
     }
   ],
   "id": "hs_cxpupwbi_1612654521",
@@ -115,8 +80,7 @@
   "description": "",
   "max_players": "2",
   "acting": [
-    "Player 2",
-    "Player 1"
+    "Player 2"
   ],
   "created_at": "2021-03-18",
   "loaded": true,
@@ -125,12 +89,12 @@
     "Player 2": 100,
     "Player 1": 95
   },
-  "round": "Operating Round",
+  "round": "Stock Round",
   "settings": {
     "optional_rules": []
   },
-  "turn": 3,
-  "updated_at": 1616074750,
+  "turn": 1,
+  "updated_at": 1618390525,
   "user": {
     "id": 0,
     "name": "You"

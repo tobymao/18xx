@@ -15,6 +15,7 @@ module Engine
         CAPITALIZATION = :incremental
         HOME_TOKEN_TIMING = :par
         SELL_BUY_ORDER = :sell_buy
+        MUST_BUY_TRAIN = :always
 
         ASSIGNMENT_TOKENS = {
           'CDSPC' => '/icons/18_ireland/port_token.svg',
@@ -100,33 +101,55 @@ module Engine
           },
         ].freeze
 
-        # @todo: how to do the opposite side
-        # rusts turns them to the other side, go into the bankpool obsolete then removes completely
+        # The ' trains are the opposite sides of the physical cards which
+        # get added into the bankpool when their equivilent rusts
         TRAINS = [
           {
             name: '2H',
             num: 6,
             distance: 2,
             price: 80,
-            obsolete_on: '8H',
+            rusts_on: '4H',
+          },
+          {
+            name: "1H'",
+            num: 6,
+            distance: 1,
+            price: 40,
             rusts_on: '6H',
-          }, # 1H price:40
+            reserved: true,
+          },
           {
             name: '4H',
             num: 5,
             distance: 4,
             price: 180,
-            obsolete_on: '10H',
             rusts_on: '8H',
             events: [{ 'type' => 'corporations_can_merge' }],
-          }, # 2H price:90
+          },
+          {
+            name: "2H'",
+            num: 5,
+            distance: 2,
+            price: 90,
+            rusts_on: '10H',
+            reserved: true,
+          },
           {
             name: '6H',
             num: 4,
             distance: 6,
             price: 300,
             rusts_on: '10H',
-          }, # 3H price:150
+          },
+          {
+            name: "3H'",
+            num: 4,
+            distance: 3,
+            price: 150,
+            rusts_on: 'D',
+            reserved: true,
+          },
           {
             name: '8H',
             num: 3,
@@ -140,12 +163,20 @@ module Engine
             distance: 10,
             price: 550,
             events: [{ 'type' => 'train_trade_allowed' }],
+            discount: {
+              "3H'" => 150,
+              '8H' => 440,
+            },
           },
           {
             name: 'D',
             num: 1,
             distance: 99,
             price: 770,
+            discount: {
+              '8H' => 440,
+              '10H' => 550,
+            },
           },
         ].freeze
 
@@ -170,7 +201,8 @@ module Engine
         end
 
         def tile_lays(entity)
-          super unless entity.companies.any? { |c| c.id == 'WDE' }
+          return super unless entity.companies.any? { |c| c.id == 'WDE' }
+
           DARGAN_TILE_LAYS
         end
 
@@ -230,9 +262,9 @@ module Engine
           end
 
           # Bonus for assignments
-          tasps = tasps_company.id
+          tasps = tasps_company&.id
           revenue += 20 if route.corporation.assigned?(tasps) && (stops.map(&:hex).find { |hex| hex.assigned?(tasps) })
-          cdspc = cdspc_company.id
+          cdspc = cdspc_company&.id
           revenue += 10 if route.corporation.assigned?(cdspc) && (stops.map(&:hex).find { |hex| hex.assigned?(cdspc) })
 
           revenue
@@ -343,6 +375,10 @@ module Engine
             corporation.type == :minor
           end
 
+          @reserved_trains = depot.upcoming.select(&:reserved)
+          @all_reserved_trains = @reserved_trains.dup
+          @reserved_trains.each { |train| depot.remove_train(train) }
+
           protect = corporations.find { |c| c.id == PROTECTED_CORPORATION }
           corporations.delete(protect)
           corporations.sort_by! { rand }
@@ -353,6 +389,28 @@ module Engine
           corporations.unshift(protect)
 
           @corporations = corporations
+        end
+
+        def rust(train)
+          unless @all_reserved_trains.include?(train)
+            new_distance = train.distance / 2
+            new_train = @reserved_trains.find { |t| t.distance == new_distance }
+            new_train.reserved = false
+            @reserved_trains.delete(new_train)
+            @depot.reclaim_train(new_train)
+            @extra_trains << new_train.name
+          end
+
+          super
+        end
+
+        def rust_trains!(train, _entity)
+          @extra_trains = []
+          super
+          return if @extra_trains.empty?
+
+          @log << "-- Event: Rusted trains become #{@extra_trains.uniq.join(', ')},"\
+          ' and are available from the bank pool'
         end
 
         def get_par_prices(entity, _corp)
@@ -407,6 +465,22 @@ module Engine
           end
         end
 
+        def issuable_shares(entity)
+          return [] unless entity.corporation?
+          return [] unless entity.num_ipo_shares
+
+          # Can only issue 1
+          bundles_for_corporation(entity, entity)
+            .select { |bundle| @share_pool.fit_in_bank?(bundle) }.take(1)
+        end
+
+        def redeemable_shares(entity)
+          return [] unless entity.corporation?
+
+          # Can only redeem 1
+          bundles_for_corporation(@share_pool, entity).reject { |bundle| entity.cash < bundle.price }.take(1)
+        end
+
         def new_auction_round
           Engine::Round::Auction.new(self, [
             G18Ireland::Step::WaterfallAuction,
@@ -438,12 +512,13 @@ module Engine
             Engine::Step::HomeToken,
             G18Ireland::Step::SpecialTrack,
             Engine::Step::BuyCompany,
+            G18Ireland::Step::IssueShares,
             G18Ireland::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
             G18Ireland::Step::Dividend,
             Engine::Step::DiscardTrain,
-            Engine::Step::BuyTrain,
+            G18Ireland::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end

@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# rubocop:disable Layout/LineLength
+
 module Engine
   module Game
     module G1817DE
@@ -13,14 +15,17 @@ module Engine
           '14' => 'unlimited',
           '15' => 'unlimited',
           '57' => 'unlimited',
+          '59' => 3,
           '63' => 'unlimited',
+          '64' => 1,
+          '65' => 1,
+          '66' => 1,
+          '67' => 1,
+          '68' => 1,
           '80' => 'unlimited',
           '81' => 'unlimited',
           '82' => 'unlimited',
           '83' => 'unlimited',
-          '217' => 1,
-          '218' => 1,
-          '219' => 1,
           '448' => 'unlimited',
           '544' => 'unlimited',
           '545' => 'unlimited',
@@ -30,35 +35,10 @@ module Engine
           '597' => 'unlimited',
           '611' => 'unlimited',
           '619' => 'unlimited',
-          '210' => {
-            'count' => 1,
-            'color' => 'green',
-            'code' => 'city=revenue:30;city=revenue:30;path=a:0,b:_0;path=a:3,b:_0;path=a:5,b:_1;path=a:4,b:_1;label=X',
-          },
-          '211X' => {
-            'count' => 1,
-            'color' => 'green',
-            'code' => 'city=revenue:30;city=revenue:30;path=a:2,b:_0;path=a:3,b:_0;path=a:0,b:_1;path=a:1,b:_1;label=X',
-          },
-          '212X' => {
-            'count' => 1,
-            'color' => 'green',
-            'code' => 'city=revenue:30;city=revenue:30;path=a:2,b:_0;path=a:3,b:_0;path=a:0,b:_1;path=a:5,b:_1;label=X',
-          },
-          '213X' => {
-            'count' => 1,
-            'color' => 'green',
-            'code' => 'city=revenue:30;city=revenue:30;path=a:2,b:_0;path=a:3,b:_0;path=a:0,b:_1;path=a:4,b:_1;label=X',
-          },
-          '214X' => {
-            'count' => 1,
-            'color' => 'green',
-            'code' => 'city=revenue:30;city=revenue:30;path=a:4,b:_0;path=a:3,b:_0;path=a:0,b:_1;path=a:2,b:_1;label=X',
-          },
-          '215X' => {
-            'count' => 1,
-            'color' => 'green',
-            'code' => 'city=revenue:30;city=revenue:30;path=a:1,b:_0;path=a:3,b:_0;path=a:0,b:_1;path=a:4,b:_1;label=X',
+          'OO167' => {
+            'count' => 3,
+            'color' => 'gray',
+            'code' => 'city=revenue:70;city=revenue:70;path=a:0,b:_0;path=a:_0,b:1;path=a:2,b:_1;path=a:_1,b:3;path=a:4,b:_0;path=a:5,b:_1;label=OO',
           },
         }.freeze
 
@@ -75,7 +55,8 @@ module Engine
           'D10' => 'Osnabrück',
           'I9' => 'Berlin',
           'F10' => 'Hannover',
-          'H10' => 'Magdeburg',
+          'G11' => 'Harz Mountains',
+          'G15' => 'Weimar',
           'B14' => 'Köln and Düsseldorf',
           'C13' => 'Essen and Dortmund',
           'I13' => 'Leipzig',
@@ -96,7 +77,7 @@ module Engine
                E15
                G11
                G13
-               G15] => 'upgrade=cost:15,terrain:mountain',
+               G17] => 'upgrade=cost:15,terrain:mountain',
             %w[B12
                B16
                B18
@@ -124,7 +105,6 @@ module Engine
                F22
                F24
                F8
-               G17
                G23
                G7
                G9
@@ -141,7 +121,6 @@ module Engine
                I19
                I23
                J10
-               J12
                J4
                J6
                J8
@@ -151,10 +130,10 @@ module Engine
             %w[D10
                E21
                F10
-               G19
+               G15
                I13] => 'city=revenue:0',
+            %w[G19] => 'city=revenue:0;upgrade=cost:15,terrain:mountain',
             %w[D16
-               H10
                J14] => 'city=revenue:0;upgrade=cost:10,terrain:water',
             %w[C15 D18
                D20
@@ -164,8 +143,10 @@ module Engine
                H20
                H6
                H8
+               H10
                I21
                I11
+               J12
                J20] => 'upgrade=cost:10,terrain:water',
           },
           red: {
@@ -184,7 +165,7 @@ module Engine
             ['E1'] =>
          'offboard=revenue:yellow_10|green_20|brown_30|gray_40;path=a:0,b:_0',
             ['A15'] =>
-         'offboard=revenue:yellow_10|green_20|brown_30|gray_40;path=a:4,b:_0;path=a:5,b:_0',
+         'offboard=revenue:yellow_10|green_20|brown_30|gray_40;path=a:4,b:_0;path=a:5,b:_0;path=a:3,b:_0',
           },
           yellow: {
             ['I9'] =>
@@ -192,14 +173,17 @@ module Engine
             ['H22'] =>
         'city=revenue:30;path=a:2,b:_0;path=a:_0,b:4;label=B',
             ['B14'] =>
-        'city=revenue:0;city=revenue:0;label=X',
+        'city=revenue:0;city=revenue:0;label=OO',
             ['C13'] =>
-        'city=revenue:0;city=revenue:0;label=X',
-
+        'city=revenue:0;city=revenue:0;label=OO',
             ['F6'] =>
-        'city=revenue:20;city=revenue:20;path=a:1,b:_0;path=a:5,b:_1;label=X',
+        'city=revenue:30;city=revenue:30;path=a:1,b:_0;path=a:5,b:_1;label=OO',
             ['E7'] =>
         'city=revenue:20;path=a:4,b:_0',
+          },
+          gray: {
+            ['A13'] =>
+        'path=a:0,b:5',
           },
         }.freeze
         LAYOUT = :flat
@@ -207,3 +191,4 @@ module Engine
     end
   end
 end
+# rubocop:enable Layout/LineLength

@@ -19,7 +19,7 @@ module Engine
 
         CERT_LIMIT = { 2 => 21, 3 => 16, 4 => 13, 5 => 11, 6 => 9 }.freeze
 
-        STARTING_CASH = { 2 => 420, 3 => 315, 4 => 252, 5 => 210, 6 => 180 }.freeze
+        STARTING_CASH = { 2 => 630, 3 => 420, 4 => 315, 5 => 252, 6 => 210 }.freeze
 
         CAPITALIZATION = :incremental
 
@@ -142,6 +142,34 @@ module Engine
                     events: [{ 'type' => 'signal_end_game' }],
                   }].freeze
 
+        def operating_round(round_num)
+          @interest_fixed = nil
+          @interest_fixed = interest_rate
+          # Revaluate if private companies are owned by corps with trains
+          @companies.each do |company|
+            next unless company.owner
+
+            abilities(company, :revenue_change, time: 'has_train') do |ability|
+              company.revenue = company.owner.trains.any? ? ability.revenue : 0
+            end
+          end
+
+          G1817::Round::Operating.new(self, [
+            G1817::Step::Bankrupt,
+            G1817::Step::CashCrisis,
+            G1817::Step::Loan,
+            G1817::Step::SpecialTrack,
+            G1817::Step::Assign,
+            Engine::Step::HomeToken,
+            G1817::Step::Track,
+            Engine::Step::Token,
+            Engine::Step::Route,
+            G1817::Step::Dividend,
+            Engine::Step::DiscardTrain,
+            G1817::Step::BuyTrain,
+          ], round_num: round_num)
+        end
+
         def stock_round
           close_bank_shorts
           @interest_fixed = nil
@@ -154,7 +182,7 @@ module Engine
         end
 
         SEED_MONEY = 150
-        LOANS_PER_INCREMENT = 4
+        LOANS_PER_INCREMENT = 5
       end
     end
   end

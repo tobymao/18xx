@@ -152,7 +152,7 @@ module View
         def town_rotation_angles(tile, town, edges)
           edge_a, = edges
 
-          if town.exits.size == 2 && tile.stops.one?
+          if center_town?(tile, town)
             case town_track_type(edges)
             when :straight
               [min_edge(edges) * 60]
@@ -194,11 +194,16 @@ module View
           end
         end
 
+        # center two-exit town on the track if there isn't any more track on the tile
+        def center_town?(tile, town)
+          town.exits.size == 2 && tile.exits.size == 2
+        end
+
         # Returns an array of weights, location and rotations
         def town_position(tile, town, edges)
           edge_a, = edges
 
-          if town.exits.size == 2 && tile.stops.one?
+          if center_town?(tile, town)
             angles, positions = case town_track_type(edges)
                                 when :straight
                                   [[edge_a * 60], [0]]

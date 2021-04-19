@@ -15,6 +15,12 @@ module Engine
             super
           end
 
+          def available_hex(entity, hex)
+            return true if entity.assigned?(@game.wings.id)
+
+            super
+          end
+
           def process_run_routes(action)
             super
 
@@ -30,9 +36,12 @@ module Engine
           end
 
           def train_name(entity, train)
-            additional_distance = entity && @game.abilities(entity, :increase_distance_for_train)&.distance || 0
+            text = ''
 
-            train.name + (additional_distance.positive? ? " (+#{additional_distance})" : '')
+            ability_for_distance = entity && @game.abilities(entity, :increase_distance_for_train)
+            text = " (+#{ability_for_distance.distance})" if ability_for_distance&.train == train
+
+            train.name + text
           end
 
           def chart(entity)
