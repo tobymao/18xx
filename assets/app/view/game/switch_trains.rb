@@ -35,7 +35,6 @@ module View
         if @step.respond_to?(:slot_view) && (view = @step.slot_view(@corporation))
           children << send("render_#{view}")
         end
-
         h(:div, children)
       end
 
@@ -64,16 +63,15 @@ module View
               id: "train_#{train.id}-corp_#{corp.id}",
               name: "train_#{train.id}-corp_#{@corporation.id}",
             }
-            puts train.owner.name, corp.name, train.owner == corp
             attrs[:checked] = 'checked' if train.owner == corp
             puts attrs
             checkbox = h(
-              :input,
+              "input.train_#{train.id}-corp_#{corp.id}",
               style: {
                 marginLeft: '1rem',
                 marginRight: '3px',
               },
-              attrs: attrs
+              props: attrs
             )
             @slot_checkboxes["#{train.id};#{corp.id}"] = checkbox
 
@@ -88,12 +86,9 @@ module View
               },
             }
             logo = h(:img, logo_props)
-puts logo_props
             inner << h(:label, { style: center_style_props }, [checkbox, logo])
-            inner << h(:label, { style: center_style_props }, [checkbox, logo])
-          
           end
-          
+
           h(:div, { style: center_style_props }, inner)
         end
 
