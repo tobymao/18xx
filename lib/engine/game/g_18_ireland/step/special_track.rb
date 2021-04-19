@@ -41,7 +41,7 @@ module Engine
           end
 
           def hex_neighbors(entity, hex)
-            operator = entity.owner.corporation? ? entity.owner : entity
+            operator = entity.corporation
             if entity.id == 'DR'
               return unless (ability = abilities(entity))
               return if ability.count == 2 && hex.id != 'F4'
