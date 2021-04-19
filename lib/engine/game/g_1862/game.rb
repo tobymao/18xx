@@ -1082,10 +1082,6 @@ module Engine
           set.compact.uniq
         end
 
-        def remove_stops(stops, sets)
-          sets.each { |set| set.each { |r| stops.delete(r) } }
-        end
-
         def freight_sets(routes)
           @cached_freight_sets ||= build_freight_sets(routes)
         end
@@ -1102,14 +1098,10 @@ module Engine
           # always start with non-perm trains
           if (first_nonperm = stops.keys.find { |r| nonpermanent_freight?(r.train) })
             set_list << create_set(first_nonperm, [], stops)
-            remove_stops(stops, set_list)
           end
 
           # continue to find sets
-          until stops.empty?
-            set_list << create_set(stops.keys.first, [], stops)
-            remove_stops(stops, set_list)
-          end
+          set_list << create_set(stops.keys.first, [], stops) until stops.empty?
           set_list
         end
 
