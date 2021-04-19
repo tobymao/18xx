@@ -197,6 +197,7 @@ module Engine
           'CORN' => '/icons/18_zoo/corn.svg',
           'BARREL' => '/icons/18_zoo/barrel.svg',
           'HOLE' => '/icons/18_zoo/hole.svg',
+          'WINGS' => '/icons/18_zoo/wings.svg',
         }.freeze
 
         MARKET_TEXT = Base::MARKET_TEXT.merge(par_2: 'Can only enter during green phase',
@@ -502,6 +503,15 @@ module Engine
           @that_is_mine ||= company_by_id('THAT_IS_MINE')
         end
 
+        def can_choose_is_mine?(entity, company)
+          company == that_is_mine && entity&.corporation? && that_is_mine.owner == entity &&
+            !@round.tokened &&
+            !entity.unplaced_tokens.empty? &&
+            entity.unplaced_tokens.first.price <= buying_power(entity) &&
+            that_is_mine.all_abilities[0].is_a?(Ability::Reservation) &&
+            graph.reachable_hexes(entity)[that_is_mine.all_abilities[0].hex]
+        end
+
         def work_in_progress
           @work_in_progress ||= company_by_id('WORK_IN_PROGRESS')
         end
@@ -585,6 +595,17 @@ module Engine
             revenue += @holes[0].tile.offboards[0].route_revenue(route.phase, route.train)
           end
 
+          # City skipped by Wings worth 0
+          visits = route.visited_stops
+          if visits.size > 2
+            corporation = route.corporation
+            visits[1..-2].each do |node|
+              next if !node.city? || !node.blocks?(corporation)
+
+              revenue -= node.hex.tile.cities.first.route_revenue(route.phase, route.train)
+            end
+          end
+
           revenue
         end
 
@@ -602,6 +623,16 @@ module Engine
 
           # Passing through Hole count as a stop
           cities_visited += 1 if !@holes.empty? && (@holes & route.all_hexes).size == 2
+
+          # Passing through City with Wings doesn't count
+          visits = route.visited_stops
+          if visits.size > 2
+            corporation = route.corporation
+            visits[1..-2].each do |node|
+              cities_visited -= 1 if node.city? && node.blocks?(corporation)
+            end
+          end
+
           raise GameError, 'Water and external gray don\'t count as city/offboard.' if cities_visited < 2
 
           # 2S, 3S, 4S, 5S
@@ -622,6 +653,29 @@ module Engine
           # Route cannot use Hole as off-board and as pass-through, or used twice
           holes_in_route = route.paths.map(&:tile).count { |tile| @holes.include?(tile.hex) }
           raise GameError, 'Hole cannot be a terminal or used multiple times if used as tunnel.' if holes_in_route > 2
+        end
+
+        def check_connected(route, _token)
+          blocked = nil
+          blocked_by = nil
+
+          route.routes.each_with_index do |current_route, index|
+            visits = current_route.visited_stops
+
+            next unless visits.size > 2
+
+            corporation = route.corporation
+            visits[1..-2].each do |node|
+              next if !node.city? || !node.blocks?(corporation)
+              raise GameError, "City with only '#{work_in_progress.name}' slot cannot be bypassed" if node.city? &&
+                node.slots(all: true) == 1 && node.tokens.first.type == :blocking
+              raise GameError, 'Only one train can bypass a tokened-out city' if blocked && blocked_by != index
+              raise GameError, 'Route can only bypass one tokened-out city' if blocked
+
+              blocked = node
+              blocked_by = index
+            end
+          end
         end
 
         def company_header(company)
@@ -709,6 +763,15 @@ module Engine
 
         def route_distance(route)
           distance = route.visited_stops.sum(&:visit_cost)
+
+          visits = route.visited_stops
+          if visits.size > 2
+            corporation = route.corporation
+            visits[1..-2].each do |node|
+              distance -= 1 if node.city? && node.blocks?(corporation)
+            end
+          end
+
           return distance if @holes.empty?
 
           distance + ((@holes & route.all_hexes).size == 2 ? 1 : 0)
@@ -863,7 +926,7 @@ module Engine
           Engine::Game::G18ZOO::Round::Operating.new(self, [
             G18ZOO::Step::Assign,
             Engine::Step::SpecialTrack, # TODO: check if add step G18ZOO::Step::SpecialTrack or not
-            Engine::Step::SpecialToken,
+            G18ZOO::Step::SpecialToken,
             G18ZOO::Step::BuyOrUsePowerOnOr,
             G18ZOO::Step::BuyCompany,
             G18ZOO::Step::Track,
