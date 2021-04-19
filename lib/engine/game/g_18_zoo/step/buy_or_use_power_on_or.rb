@@ -18,7 +18,7 @@ module Engine
             return [] unless blocks?
 
             actions = []
-            actions << 'choose_ability' if entity.corporation? && can_choose_any_ability_on_any_step?(entity)
+            actions << 'choose_ability' if can_choose_any_ability_on_any_step?(entity)
             actions << 'pass' unless actions.empty?
             actions.uniq
           end
