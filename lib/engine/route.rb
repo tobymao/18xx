@@ -174,7 +174,7 @@ module Engine
       onodes = nodes.select(&:offboard?)
 
       # find first and last nodes in current route
-      list = connection_data.any? ? [head[:left], tail[:right]] : [@last_node]
+      list = connection_data.empty? ? [@last_node].compact : [head[:left], tail[:right]]
       return if list.empty?
 
       # if those match either of the nodes in the tile, use it and remember it
