@@ -31,7 +31,8 @@ module Engine
 
           def process_switch_trains(action)
             slots = action.slots
-
+            entity = action.entity
+            reassignments = []
             slots.each do |slot|
               train_id, corp_id = slot.split(';')
               train = @game.train_by_id(train_id)
@@ -44,7 +45,11 @@ module Engine
 
               train.owner = new_corporation
               new_corporation.trains << train
+
+              reassignments << "#{train.name} ➝ #{new_corporation.name}"
             end
+
+            @log << "#{entity.owner.name} reassignes trains: #{reassignments.join(', ')}"
           end
 
           def trains(entity)

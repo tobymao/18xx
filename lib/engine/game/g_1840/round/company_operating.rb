@@ -24,6 +24,7 @@ module Engine
 
           def select_entities
             entites = @game.operating_order
+            entites = entites.reject { |item| item.type == :minor }
             entites = entites.reject { |item| item.type == :city } if @no_city
 
             entites

@@ -146,20 +146,17 @@ module Engine
           ])
         end
 
-        def new_company_operating_round(round_num)
+        def new_company_operating_route_round(round_num)
           G1840::Round::CompanyOperating.new(self, [
-            # dividend
             G1840::Step::Route,
             G1840::Step::Dividend,
-            # corporation auction
+            # TODO: Divident of major corporations
           ], round_num: round_num, no_city: false)
         end
 
-        def new_company_operating_round2(round_num)
+        def new_company_operating_buy_train_round(round_num)
           G1840::Round::CompanyOperating.new(self, [
-            # dividend
             G1840::Step::BuyTrain,
-            # corporation auction
           ], round_num: round_num, no_city: true)
         end
 
@@ -204,12 +201,11 @@ module Engine
               # @operating_rounds = OR_SETS[@turn - 1]
               # reorder_players(log_player_order: true)
               @cr_counter += 1
-              new_company_operating_round
-            when new_company_operating_round.class
+              new_company_operating_route_round
+            when new_company_operating_route_round.class
               @cr_counter += 1
-
               if @cr_counter <= 2
-                new_company_operating_round2
+                new_company_operating_buy_train_round
               else
                 new_company_operating_auction_round
               end

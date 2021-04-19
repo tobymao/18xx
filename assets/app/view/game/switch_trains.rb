@@ -60,13 +60,12 @@ module View
           possible_corporations.each do |corp|
             attrs = {
               type: 'radio',
-              id: "train_#{train.id}-corp_#{corp.id}",
               name: "train_#{train.id}-corp_#{@corporation.id}",
             }
             attrs[:checked] = 'checked' if train.owner == corp
             puts attrs
             checkbox = h(
-              "input.train_#{train.id}-corp_#{corp.id}",
+              "input#train_#{train.id}-corp_#{corp.id}",
               style: {
                 marginLeft: '1rem',
                 marginRight: '3px',

@@ -22,7 +22,7 @@ module Engine
           end
 
           def select_entities
-            @game.major_corporations
+            @game.operating_order.select { |item| item.type == :major }
           end
         end
       end
