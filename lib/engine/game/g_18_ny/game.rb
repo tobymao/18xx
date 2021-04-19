@@ -22,7 +22,7 @@ module Engine
         CERT_LIMIT = { 2 => 28, 3 => 20, 4 => 16, 5 => 13, 6 => 11 }.freeze
 
         STARTING_CASH = { 2 => 900, 3 => 600, 4 => 450, 5 => 360, 6 => 300 }.freeze
-        
+
         MIN_BID_INCREMENT = 5
         MUST_BID_INCREMENT_MULTIPLE = true
 
@@ -137,15 +137,18 @@ module Engine
         end
 
         def issuable_shares(entity)
-          return [] unless entity.corporation?
+          return [] if !entity.corporation? || entity.type != :major
 
-          entity.shares_of(entity)
+          max_issuable = entity.num_player_shares - entity.num_market_shares
+          return [] unless max_issuable.positive?
+
+          bundles_for_corporation(entity, entity, shares: entity.shares_of(entity).first(max_issuable))
         end
 
         def redeemable_shares(entity)
-          return [] unless entity.corporation?
+          return [] if !entity.corporation? || entity.type != :major
 
-          @share_pool.shares_of(entity).select { |s| s.price <= entity.cash }
+          [@share_pool.shares_of(entity).find { |s| s.price <= entity.cash }&.to_bundle].compact
         end
       end
     end
