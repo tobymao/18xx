@@ -51,6 +51,7 @@ module Engine
                 owner_type: 'corporation',
                 free: true,
                 count: 2,
+                closed_when_used_up: true,
               },
             ],
           },

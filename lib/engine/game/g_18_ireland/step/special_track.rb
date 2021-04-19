@@ -21,8 +21,15 @@ module Engine
             super
           end
 
+          def bow_lay_tile(action)
+            lay_tile_action(action, spender: action.entity.owner)
+            ability = abilities(action.entity)
+            ability.use!
+            ability.owner.close! unless ability.count.positive? || !ability.closed_when_used_up
+          end
+
           def process_lay_tile(action)
-            return lay_tile_action(action, spender: action.entity.owner) if action.entity.id == 'BoW'
+            return bow_lay_tile(action) if action.entity.id == 'BoW'
 
             super
           end

@@ -201,7 +201,7 @@ module Engine
         end
 
         def tile_lays(entity)
-          return super unless entity.companies.any? { |c| c.id == 'WDE' }
+          return super if !entity.corporation? || entity.companies.none? { |c| c.id == 'WDE' }
 
           DARGAN_TILE_LAYS
         end
@@ -329,7 +329,7 @@ module Engine
         def legal_tile_rotation?(entity, hex, tile)
           # TIM, DR and TDR can lay irrespective of connectivity.
           if !entity.company? || !%w[TIM DR TDR].include?(entity.id)
-            corp = entity.owner.corporation? ? entity.owner : entity
+            corp = entity.corporation
             connection_directions = if tile_uses_broad_rules?(hex.tile, tile)
                                       graph.connected_hexes(corp)[hex]
                                     else
