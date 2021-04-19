@@ -16,6 +16,7 @@ module View
         needs :town
         needs :color, default: 'black'
         needs :width, default: 8
+        needs :show_revenue
 
         # bias away from top and bottom if possible
         EDGE_TOWN_REVENUE_REGIONS = {
@@ -80,6 +81,8 @@ module View
         end
 
         def render_revenue
+          return unless @show_revenue
+
           revenues = @town.uniq_revenues
           return if revenues.size > 1
 
@@ -96,7 +99,7 @@ module View
           edges = normalized_edges(@edge, @town.exits)
 
           if @town.exits.size == 2
-            if @num_cts == 1
+            if center_town?(@tile, @town)
               angle = town_rotation_angles(@tile, @town, edges)[0]
               reverse_side = town_track_type(edges) == :sharp
 
