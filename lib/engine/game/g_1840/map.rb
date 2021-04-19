@@ -312,7 +312,7 @@ module Engine
           white: {
             %w[B4 B6 B8 B18 B24 C3 C5 C11 C19 C23 C25 C27 D8 D10 D14 D16 E5 E9 E25 E27 F4 F16 F26 G7 G9 G13 G27 G29
                H4 H6 H8 H14 H18 H24 H26 I17 I19 I23 I25 I29 J6 J8 J12 J14 J18 J20 J24] => '',
-            %w[B12 C15 D4 D2 D24 D26 E3 E11 E15 F14 F18 F20 F22 F28 G15 G25 H20 H28 I21 J10 J16 J26 J28] =>
+            %w[B12 C15 D4 D24 D26 E3 E11 E15 F14 F18 F20 F22 F28 G15 G25 H20 H28 I21 J10 J16 J26 J28] =>
             'city=revenue:0',
             ['B28'] => 'upgrade=cost:40,terrain:water',
             %w[H10 D18 E17] =>
@@ -353,7 +353,7 @@ module Engine
                 'path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;city=revenue:0,slots:2',
             ['A29'] =>
                 'offboard=revenue:yellow_30|green_40|brown_60|gray_70;'\
-                 'path=a:0,b:_0',
+                 'path=a:0,b:_0;city=revenue:0,slots:2',
             ['A21'] =>
             'offboard=revenue:yellow_20|green_30|brown_40|gray_50;'\
             'path=a:0,b:_0;path=a:4,b:_0;border=edge:4;city=revenue:0,slots:2',
@@ -451,7 +451,7 @@ module Engine
           'I27' => 'Aspangbahnhof',
           'J4' => 'Hietzing',
           'J10' => 'Meidling',
-          'J18' => 'Matzleinsdorf',
+          'J16' => 'Matzleinsdorf',
           'J22' => 'Südbahnhof',
           'J28' => 'Arsenal',
           'J30' => 'Sankt Marx',
