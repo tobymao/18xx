@@ -29,7 +29,7 @@ module Engine
         value: 80,
         revenue: 0,
         desc: 'Comes with two 10 ℳ bridge token that may be placed by the owning corp '\
-              'in Magdeburg, Frankfurt, and/or Dresden, max one token per city, regardless of '\
+              'in Frankfurt and Dresden, max one token per city, regardless of '\
               'connectivity. Allows owning corp to skip 10 ℳ river fee when '\
               'placing yellow tiles.',
         sym: 'UBC',
@@ -42,7 +42,7 @@ module Engine
           },
           {
             type: 'assign_hexes',
-            hexes: %w[H10 D16 J14],
+            hexes: %w[D16 J14],
             count: 2,
             when: 'owning_corp_or_turn',
             owner_type: 'corporation',
