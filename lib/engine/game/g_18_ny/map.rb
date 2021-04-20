@@ -4,6 +4,9 @@ module Engine
   module Game
     module G18NY
       module Map
+        LAYOUT = :pointy
+        AXES = { x: :number, y: :letter }.freeze
+
         TILES = {
         }.freeze
 
@@ -195,10 +198,6 @@ module Engine
             %w[B10 C1 C3 C5 C7 C9 K23 K25] => '',
           },
         }.freeze
-
-        LAYOUT = :pointy
-
-        AXES = { x: :number, y: :letter }.freeze
       end
     end
   end
