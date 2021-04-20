@@ -8,6 +8,117 @@ module Engine
         AXES = { x: :number, y: :letter }.freeze
 
         TILES = {
+          '3' => 5,
+          '4' => 5,
+          '5' => 5,
+          '6' => 5,
+          '7' => 5,
+          '8' => 12,
+          '9' => 12,
+          '57' => 6,
+          '58' => 5,
+          'X10' => {
+            'count' => 1,
+            'color' => 'green',
+            'code' => 'city=revenue:50,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:5,b:_0;label=A',
+          },
+          'X11' => {
+            'count' => 1,
+            'color' => 'green',
+            'code' => 'city=revenue:70,slots:2;path=a:2,b:_0;path=a:3,b:_0;label=N;upgrade=cost:80,terrain:water',
+          },
+          'X13' => {
+            'count' => 1,
+            'color' => 'green',
+            'code' => 'city=revenue:30,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;label=R',
+          },
+          '14' => 4,
+          '15' => 8,
+          '16' => 2,
+          '17' => 2,
+          '18' => 2,
+          '19' => 2,
+          '20' => 2,
+          '21' => 1,
+          '22' => 1,
+          '23' => 4,
+          '24' => 4,
+          '25' => 2,
+          '26' => 2,
+          '27' => 2,
+          '28' => 2,
+          '29' => 2,
+          '30' => 1,
+          '31' => 1,
+          '619' => 4,
+          'X20' => {
+            'count' => 1,
+            'color' => 'brown',
+            'code' => 'city=revenue:60,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;' \
+                      'path=a:4,b:_0;path=a:5,b:_0;label=A',
+          },
+          'X21' => {
+            'count' => 1,
+            'color' => 'brown',
+            'code' => 'city=revenue:50,slots:2;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=Br',
+          },
+          'X22' => {
+            'count' => 1,
+            'color' => 'brown',
+            'code' => 'city=revenue:100,slots:3;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=N;' \
+                      'upgrade=cost:80,terrain:water',
+          },
+          'X23' => {
+            'count' => 1,
+            'color' => 'brown',
+            'code' => 'city=revenue:40,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:5,b:_0;label=R',
+          },
+          'X24' => {
+            'count' => 1,
+            'color' => 'brown',
+            'code' => 'city=revenue:40,slots:2;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;' \
+                      'label=S',
+          },
+          '39' => 2,
+          '40' => 2,
+          '41' => 2,
+          '42' => 2,
+          '43' => 2,
+          '44' => 2,
+          '45' => 2,
+          '46' => 2,
+          '47' => 2,
+          '63' => 6,
+          '70' => 2,
+          'X31' => {
+            'count' => 1,
+            'color' => 'gray',
+            'code' => 'city=revenue:80,slots:3;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=Br',
+          },
+          'X32' => {
+            'count' => 1,
+            'color' => 'gray',
+            'code' => 'city=revenue:120,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;' \
+                      'path=a:4,b:_0;label=N',
+          },
+          'X33' => {
+            'count' => 1,
+            'color' => 'gray',
+            'code' => 'city=revenue:70,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:5,b:_0;label=R',
+          },
+          'X34' => {
+            'count' => 1,
+            'color' => 'gray',
+            'code' => 'city=revenue:70,slots:3;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;' \
+                      'label=S',
+          },
+          'X35' => {
+            'count' => 1,
+            'color' => 'gray',
+            'code' => 'city=revenue:80,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;' \
+                      'path=a:5,b:_0;label=Bu',
+          },
+          '455' => 2,
         }.freeze
 
         LOCATION_NAMES = {
