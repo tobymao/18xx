@@ -74,6 +74,13 @@ module Engine
             @auctioning = nil
           end
 
+          def can_gain?(entity, bundle, exchange: false)
+            # Can buy above the share limit if from the share pool
+            return true if bundle.owner == @game.share_pool && @game.num_certs(entity) < @game.cert_limit
+
+            super
+          end
+
           def get_all_par_prices(corp)
             types = corp.type == :major ? %i[par] : %i[par_1]
             @game.stock_market.share_prices_with_types(types)

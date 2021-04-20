@@ -162,6 +162,10 @@ module Engine
 
           super
         end
+
+        def can_hold_above_limit?(_entity)
+          true
+        end
       end
     end
   end
