@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'lib/settings'
 require 'view/game/actionable'
 require 'view/game/alternate_corporations'
 
@@ -8,6 +9,7 @@ module View
     class SwitchTrains < Snabberb::Component
       include Actionable
       include AlternateCorporations
+      include Lib::Settings
 
       def render
         @step = @game.round.active_step
@@ -47,40 +49,59 @@ module View
       end
 
       def render_trains
+        center_style_props = {
+          display: 'flex',
+          alignItems: 'center',
+        }
+
         possible_corporations = @step.target_corporations(@corporation)
         children = @step.trains(@corporation).map do |train|
           inner = []
-          inner << h(:span, train.name)
-          inner << h(:span, '-->')
-          # train Name
-          # train owner
+          inner << h(:span, "#{train.name}:")
           possible_corporations.each do |corp|
             attrs = {
               type: 'radio',
-              id: "train_#{train.id}_corp_#{corp.id}",
-              name: "train_#{train.id}",
+              id: "train_#{train.id}-corp_#{corp.id}",
+              name: "train_#{train.id}-corp_#{@corporation.id}",
             }
-
+            puts train.owner.name, corp.name, train.owner == corp
             attrs[:checked] = 'checked' if train.owner == corp
-
+            puts attrs
             checkbox = h(
-              'input.no_margin',
+              :input,
               style: {
-                width: '1rem',
-                height: '1rem',
-                padding: '0 0 0 0.2rem',
+                marginLeft: '1rem',
+                marginRight: '3px',
               },
               attrs: attrs
             )
-            @slot_checkboxes["train_#{train.id}_corp_#{corp.id}"] = checkbox
-            inner << h(:label, [checkbox, corp.name])
-          end
-          # -> checkbox for new corporations
+            @slot_checkboxes["#{train.id};#{corp.id}"] = checkbox
 
-          h(:div, inner)
+            logo_props = {
+              attrs: { src: logo_for_user(corp) },
+              style: {
+                height: '1.6rem',
+                width: '1.6rem',
+                padding: '1px',
+                border: '2px solid currentColor',
+                borderRadius: '0.5rem',
+              },
+            }
+            logo = h(:img, logo_props)
+puts logo_props
+            inner << h(:label, { style: center_style_props }, [checkbox, logo])
+            inner << h(:label, { style: center_style_props }, [checkbox, logo])
+          
+          end
+          
+          h(:div, { style: center_style_props }, inner)
         end
 
-        h(:div, children)
+        h(:div, { style: { marginTop: '1rem' } }, children)
+      end
+
+      def logo_for_user(entity)
+        setting_for(:simple_logos, @game) ? entity.simple_logo : entity.logo
       end
     end
   end

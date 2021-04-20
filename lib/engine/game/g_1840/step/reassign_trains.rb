@@ -30,18 +30,20 @@ module Engine
           end
 
           def process_switch_trains(action)
-            entity = action.entity
             slots = action.slots
 
             slots.each do |slot|
-              puts slot
-              train_id, corp_id = slot.split('-')
-              puts train_id
-              puts corp_id
-              puts @game.train_by_id(train_id)
-              p @game.corporation_by_id(corp_id)
+              train_id, corp_id = slot.split(';')
+              train = @game.train_by_id(train_id)
+              new_corporation = @game.corporation_by_id(corp_id)
 
+              next if new_corporation == train.owner
 
+              old_owner = train.owner
+              old_owner.trains.delete(train)
+
+              train.owner = new_corporation
+              new_corporation.trains << train
             end
           end
 
