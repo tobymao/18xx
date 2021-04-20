@@ -223,6 +223,9 @@ remains open but the discount can no longer be used. Default false.
 - `must_lay_all`: If true and `count` is greater than 1 and `must_lay_together`
   is true, all the tile lays must be used; if false, then some tile lays may be
   forfeited. Default false.
+- `consume_tile_lay`: If true, using this private counts as a corporations tile lay
+  and must follow lay/upgrade rules. Upgrade's also count towards the corporations 'upgrade' lays.
+  Default false.
 
 ## train_buy
 
