@@ -10,6 +10,8 @@ require_relative 'step/buy_sell_par_shares'
 require_relative 'step/home_upgrade'
 require_relative 'step/track'
 require_relative 'step/token'
+require_relative 'step/route'
+require_relative 'step/dividend'
 
 module Engine
   module Game
@@ -702,8 +704,8 @@ module Engine
             # G1862::Step::Merge,
             G1862::Step::Track,
             G1862::Step::Token,
-            Engine::Step::Route,
-            Engine::Step::Dividend,
+            G1862::Step::Route,
+            G1862::Step::Dividend,
             # G1862::Step::Refinance,
             Engine::Step::BuyTrain,
             # G1862::Step::RedeemStock,
