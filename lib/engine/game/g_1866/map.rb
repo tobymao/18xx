@@ -339,7 +339,7 @@ module Engine
 
         LOCATION_NAMES = {
           'A3' => 'Scotland',
-          'A11' => 'America',
+          'C0' => 'America',
           'D2' => 'Liverpool',
           'D4' => 'Manchester',
           'D6' => 'York',
@@ -739,7 +739,7 @@ module Engine
               'city=revenue:yellow_30|green_50|brown_70|gray_100,slots:4;frame=color:#a67c52',
 
             # America
-            ['A11'] =>
+            ['C0'] =>
               'city=revenue:yellow_30|green_50|brown_70|gray_100,slots:4;frame=color:#a67c52',
           },
           blue: {
@@ -750,8 +750,10 @@ module Engine
               'junction;path=a:1,b:_0,terminal:1',
             %w[T2 U13] =>
               'junction;path=a:2,b:_0,terminal:1',
-            %w[F0 H0 S17 Q11 W17] =>
+            %w[F0 H0 Q11 W17] =>
               'junction;path=a:3,b:_0,terminal:1',
+            ['R16'] =>
+              'junction;path=a:4,b:_0,terminal:1',
             %w[D24 M1 R22 S11] =>
               'junction;path=a:5,b:_0,terminal:1',
             ['H2'] =>
@@ -761,14 +763,14 @@ module Engine
             ['P14'] =>
               'path=a:2,b:5;border=edge:5',
             ['Q15'] =>
-              'path=a:0,b:2;border=edge:0;border=edge:2;border=edge:5',
+              'path=a:0,b:2;border=edge:0;border=edge:2',
             ['R12'] =>
               'path=a:3,b:5',
             ['R14'] =>
-              'junction;path=a:0,b:_0;path=a:3,b:_0;path=a:4,b:_0;border=edge:3;border=edge:4',
-            ['R16'] =>
-              'path=a:1,b:4;border=edge:1;border=edge:2',
-            ['T14'] =>
+              'path=a:0,b:3;border=edge:3',
+            ['S17'] =>
+              'path=a:1,b:3;border=edge:1',
+            %w[S15 T14] =>
               'path=a:1,b:4;border=edge:4',
             ['T16'] =>
               'path=a:1,b:4;border=edge:1;border=edge:4',
