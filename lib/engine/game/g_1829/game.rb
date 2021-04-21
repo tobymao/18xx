@@ -1,12 +1,14 @@
 # frozen_string_literal: true
 
-# todo
-# static order in operating round
-# steam as private componies not closed and not initial
-# Upgrade tile 3,4 to 12,14,15
-# graybrown tile (67)
-# income without tokened citys
-# player can hold 100% of a company
+# todos
+# upgrade tile 3,4,1,2,55 to 12,13,14,15
+# graybrown tile
+# foreign tokened cities do not count for dividends
+# survey party implentation
+# steamship
+# close privates voluntary
+# fixed par price and fixed order in OR
+
 require_relative 'meta'
 require_relative '../base'
 
@@ -26,16 +28,14 @@ module Engine
                         brightGreen: '#6ec037')
         TRACK_RESTRICTION = :permissive
         SELL_BUY_ORDER = :sell_buy_sell
-        CURRENCY_FORMAT_STR = '$%d'
+        CURRENCY_FORMAT_STR = '$%dP'
         GAME_END_CHECK = { bank: :immediate }.freeze
-        BANK_CASH = 20_000
-        MARKET_SHARE_LIMIT = 100
 
-        SOLD_OUT_INCREASE = false
+        BANK_CASH = 20_000
 
         CERT_LIMIT = { 3 => 18, 4 => 18, 5 => 17, 6 => 14, 7 => 12, 8 => 10, 9 => 9 }.freeze
 
-        STARTING_CASH = { 3 => 840, 4 => 630, 5 => 504, 6 => 420, 7 => 360, 8 => 315, 9 => 280 }.freeze
+        STARTING_CASH = { 3 => 840, 4 => 630, 5 => 1504, 6 => 420, 7 => 360, 8 => 315, 9 => 280 }.freeze
 
         TILES = {
           '1' => 2,
@@ -130,16 +130,16 @@ module Engine
              350],
         ].freeze
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
-          init1: :brown,
+          init1: :red,
           init2: :green,
-          init3: :red,
-          init4: :darkgreen,
-          init5: :lightgreen,
-          init6: :darkyellow,
-          init7: :lightred,
-          init8: :darkred,
+          init3: :orange,
+          init4: :brightgreen,
+          init5: :lightblue,
+          init6: :yellow,
+          init7: :orange,
+          init8: :red,
           init9: :blue,
-          init10: :darkblue,
+          init10: :orange,
         ).freeze
 
         PAR_RANGE = {
@@ -206,7 +206,7 @@ module Engine
                     distance: 7,
                     price: 720,
                     num: 4,
-                    events: [{ 'type' => 'privates Companies Closed' }],
+                    events: [{ 'type' => 'close_companies' }, { 'type' => 'private' }],
                   }].freeze
 
         COMPANIES = [
@@ -292,7 +292,7 @@ module Engine
             float_percent: 60,
             sym: 'LSWR',
             name: 'London & South Western',
-            logo: '1829/LNWR',
+            logo: '1822/5',
             simple_logo: '1829/LSWR.alt',
             tokens: [0, 40, 100, 100, 100],
             coordinates: 'J17',
@@ -305,7 +305,7 @@ module Engine
             float_percent: 60,
             sym: 'GNR',
             name: 'Great Northern',
-            logo: '1829/GNR',
+            logo: '1822/6',
             simple_logo: '1829/GNR.alt',
             tokens: [0, 40, 100, 100],
             coordinates: 'C14',
@@ -329,7 +329,7 @@ module Engine
             float_percent: 60,
             sym: 'GER',
             name: 'Great Eastern',
-            logo: '1829/GER',
+            logo: '1822/7',
             simple_logo: '1829/GER.alt',
             tokens: [0, 40, 100, 100],
             coordinates: 'J17',
@@ -342,7 +342,7 @@ module Engine
             float_percent: 60,
             sym: 'GCR',
             name: 'Great Central',
-            logo: '1829/GCR',
+            logo: '1822/8',
             simple_logo: '1829/GCR.alt',
             tokens: [0, 40, 100, 100],
             coordinates: 'C12',
@@ -380,7 +380,7 @@ module Engine
 
         HEXES = {
           white: {
-            %w[B7] => 'city=revenue:0;upgrade=cost:40,terrain:water;label=Preston',
+            %w[B7] => 'city=revenue:0;upgrade=cost:40,terrain:water',
             %w[D15 E2 E10 F7 F13 H13 H17 H21 I18 J13 K20] => 'town',
             %w[D17
                E6
@@ -439,13 +439,13 @@ module Engine
             %w[L13 F9 D13 B11] => 'city=revenue:0;city=revenue:0;label=OO',
           },
           green: {
-            ['C6'] => 'city=revenue:40;city=revenue:40;path=a:5,b:_0;path=a:3,b:_1;label=L&M/L',
-            ['C8'] => 'city=revenue:40;city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:2,b:_1;path=a:4,b:_2;
-                      label=L&M/BM',
-            ['G10'] => 'city=revenue:40;city=revenue:40;city=revenue:40;path=a:1,b:_0;path=a:3,b:_1;path=a:5,b:_2;
-                      label=BM',
-            ['J17'] => 'city=revenue:50;city=revenue:50;city=revenue:50;path=a:0,b:_0;path=a:2,b:_1;path=a:4,b:_2;
-                       label=L;upgrade=cost:40,terrain:water',
+            ['C6'] => 'city=revenue:40;city=revenue:40;path=a:5,b:_0;path=a:3,b:_1;label=L',
+            ['C8'] => 'city=revenue:40;city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:2,b:_1;path=a:4,b:_2
+                      ;label=BGM',
+            ['G10'] => 'city=revenue:40;city=revenue:40;city=revenue:40;path=a:1,b:_0;path=a:3,b:_1;path=a:5,b:_2
+                       ;label=BGM',
+            ['J17'] => 'city=revenue:50;city=revenue:50;city=revenue:50;path=a:0,b:_0;path=a:2,b:_1;path=a:4,b:_2
+                       ;upgrade=cost:40,terrain:water;label=LD',
           },
           brown: {
             ['A6'] => 'path=a:4,b:5',
@@ -478,6 +478,7 @@ module Engine
         def operating_round(round_num)
           Round::Operating.new(self, [
             Engine::Step::Bankrupt,
+            Engine::Step::CloseCompany,
             Engine::Step::Exchange,
             Engine::Step::HomeToken,
             Engine::Step::Track,
@@ -486,7 +487,7 @@ module Engine
             Engine::Step::Dividend,
             Engine::Step::DiscardTrain,
             Engine::Step::BuyTrain,
-            [Engine::Step::BuyCompany, { blocks: true }],
+            [Engine::Step::BuyCompany, { blocks: false }],
           ], round_num: round_num)
         end
       end
