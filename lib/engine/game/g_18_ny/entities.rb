@@ -13,6 +13,16 @@ module Engine
             desc: 'Owning corporation may exchange this company for up to $80 off ' \
                   'a single bridge purchase or bridge tile upgrade.',
             color: nil,
+            abilities: [
+              {
+                type: 'tile_discount',
+                owner_type: 'corporation',
+                terrain: 'water',
+                discount: 80,
+                count: 1,
+                # TODO: only use on activation. Close on use.
+              },
+            ],
           },
           {
             name: 'Albany-Schenectady Stagecoach Line',
@@ -23,6 +33,20 @@ module Engine
                   'This token is removed when the first 12H is purchased, ' \
                   'but may be exchaned for an available company token at that point.',
             color: nil,
+            abilities: [
+              {
+                type: 'token',
+                when: 'owning_corp_or_turn',
+                owner_type: 'corporation',
+                hexes: ['F20'],
+                price: 0,
+                teleport_price: 0,
+                count: 1,
+                extra_action: true,
+                # TODO: Use Stagecoach token logo
+                # TODO : Token can be exchanged for corporation token when 12H is purchased; otherwise remove
+              },
+            ],
           },
           {
             name: 'West Point Foundry',
@@ -32,6 +56,24 @@ module Engine
             desc: 'Owning corporation may exchange this company for half off a trian purchase ' \
                   '(up to a maximimum of $200) from the bank or Bank Pool.',
             color: nil,
+            abilities: [
+              {
+                type: 'train_discount',
+                owner_type: 'corporation',
+                discount: 0.5,
+                trains: %w[2H 4H 6H],
+                count: 1,
+                closed_when_used_up: true,
+              },
+              {
+                type: 'train_discount',
+                owner_type: 'corporation',
+                discount: 200,
+                trains: %w[12H],
+                count: 1,
+                closed_when_used_up: true,
+              },
+            ],
           },
           {
             name: 'Pennsylvania Coal Fields',
@@ -40,6 +82,7 @@ module Engine
             revenue: 20,
             desc: 'Owning corporation has exclusive rights to claim coal tokens.',
             color: nil,
+            # TODO: Claim coal tokens if corporation has route to them
           },
           {
             name: 'Erie Canal',
@@ -49,6 +92,8 @@ module Engine
                   'May not be sold. Closes when the last canal hex is improved or with the purchase of the ' \
                   'first 12H train.',
             color: nil,
+            abilities: [{ type: 'no_buy' }],
+            # TODO: reduce value whenever erie canal tile covered up
           },
           {
             name: 'D&H Private Company',
@@ -60,6 +105,9 @@ module Engine
                   'twice the starting stock price to its treasury. The company closes when the D&H ' \
                   'buys a train or with the purchase of the first 12H train.',
             color: nil,
+            abilities: [{ type: 'shares', shares: %w[D&H_0] },
+                        { type: 'no_buy' },
+                        { type: 'close', when: 'bought_train', corporation: 'D&H' }],
           },
         ].freeze
 
