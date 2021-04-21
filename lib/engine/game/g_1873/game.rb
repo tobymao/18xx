@@ -743,7 +743,7 @@ module Engine
             @log << "Bank pays #{format_currency(diff)} to #{entity.name}"
             price = entity.share_price.price
             if diff > price
-              @stock_market.move_up(entity)
+              [(diff / price).to_i, 3].min.times { @stock_market.move_up(entity) }
               log_share_price(entity, price)
             end
           end
