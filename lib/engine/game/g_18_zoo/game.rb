@@ -341,14 +341,7 @@ module Engine
           super
         end
 
-        # TODO: check if needed
         def tile_lays(entity)
-          # Operating - Ancient Maps
-          return [{ lay: true, upgrade: false }, { lay: true, upgrade: false }] if entity == ancient_maps
-          # Operating - Rabbits
-          return [{ lay: false, upgrade: true }] if entity == rabbits
-          # Operating - Moles
-          return [{ lay: false, upgrade: true }] if entity == moles
           # Operating - Track
           return super if @round.is_a?(Engine::Round::Operating)
 
@@ -368,27 +361,20 @@ module Engine
           end
 
           # Operating - Rabbits
-          if @round.is_a?(Engine::Round::Operating) && selected_company == :rabbits
-            # TODO: fix to use selected_company
-            return super
+          if @round.is_a?(Engine::Round::Operating) && selected_company == rabbits
+            return super && (upgrades_to_correct_label?(from, to) ||
+              (%w[M MM].include?(from.hex.location_name) && from.color == :yellow))
           end
 
           # Operating - Moles
-          if @round.is_a?(Engine::Round::Operating) && selected_company == :moles
-            # TODO: fix to use selected_company
-            return super
+          if @round.is_a?(Engine::Round::Operating) && selected_company == moles
+            return super(from, to, true, selected_company: selected_company)
           end
 
           # Operating - Ancient Maps
-          if @round.is_a?(Engine::Round::Operating) && selected_company == @ancient_maps
-            return false unless from.color == 'white'
-
-            # TODO: fix to use selected_company
-            return super
+          if @round.is_a?(Engine::Round::Operating) && selected_company == ancient_maps && from.color != :white
+            return false
           end
-
-          # Stock - Bonus Track, Operating - Track
-          # TODO: fix to use selected_company
 
           super
         end
@@ -925,7 +911,7 @@ module Engine
         def operating_round(round_num)
           Engine::Game::G18ZOO::Round::Operating.new(self, [
             G18ZOO::Step::Assign,
-            Engine::Step::SpecialTrack, # TODO: check if add step G18ZOO::Step::SpecialTrack or not
+            G18ZOO::Step::SpecialTrack,
             G18ZOO::Step::SpecialToken,
             G18ZOO::Step::BuyOrUsePowerOnOr,
             G18ZOO::Step::BuyCompany,
@@ -1003,6 +989,46 @@ module Engine
         def event_rust_own_3s_4s!
           @log << '-- Event: "3S long" and "4S" owned by current player are rusted! --' # TODO: only if any owned
           # TODO: remove the 3S long and 4S owned by current player
+        end
+
+        def all_potential_upgrades(tile, tile_manifest: nil, selected_company: nil)
+          if selected_company == rabbits
+            return all_potential_upgrades_for_rabbits(tile, tile_manifest,
+                                                      selected_company)
+          end
+          return all_potential_upgrades_for_moles(tile, tile_manifest, selected_company) if selected_company == moles
+
+          super
+            .reject { |t| %w[80 X80 81 X81 82 X82 83 X83].include?(t.name) }
+        end
+
+        RABBITS_UPGRADES = {
+          'X7' => %w[X26 X27 X28 X29 X30 X31],
+          'X8' => %w[X19 X23 X24 X25 X28 X29 X30 X31],
+          'X9' => %w[X23 X24 X26 X27],
+        }.freeze
+
+        def all_potential_upgrades_for_rabbits(tile, _tile_manifest, company)
+          @all_tiles
+            .uniq(&:name)
+            .select { |t| (RABBITS_UPGRADES[tile.name] || []).include?(t.name) }
+            .select { |t| upgrades_to?(tile, t, true, selected_company: company) }
+        end
+
+        MOLES_UPGRADES = {
+          '7' => %w[80 82 83],
+          'X7' => %w[X80 X82 X83],
+          '8' => %w[80 81 82 83],
+          'X8' => %w[X80 X81 X82 X83],
+          '9' => %w[82 83],
+          'X9' => %w[X82 X83],
+        }.freeze
+
+        def all_potential_upgrades_for_moles(tile, _tile_manifest, company)
+          @all_tiles
+            .uniq(&:name)
+            .select { |t| (MOLES_UPGRADES[tile.name] || []).include?(t.name) }
+            .select { |t| upgrades_to?(tile, t, selected_company: company) }
         end
       end
     end

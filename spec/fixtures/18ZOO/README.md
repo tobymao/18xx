@@ -30,22 +30,22 @@ SR powers:
 - sr_power.too_much_responsibility.json
 - sr_power.whatsup.json
 OR powers:
+- or_power.ancient_maps
 - or_power.a_spoonful_of_sugar
 - or_power.a_squeeze
 - or_power.corn
 - or_power.hole
+- or_power.moles
 - or_power.on_diet
+- or_power.rabbits
 - or_power.sparkling_gold
 - or_power.two_barrels
+- or_power.that_is_mine
+- or_power.wings
+- or_power.work_in_progress
 ```
 
 ```
 Not working:
-- or_power.ancient_maps.not_yet_working - M / MM cannot be laid
 - or_power.bandage.not_yet_working
-- or_power.moles.not_yet_working
-- or_power.rabbits.not_yet_working
-- or_power.that_is_mine.not_yet_working
-- or_power.wings.not_yet_working
-- or_power.work_in_progress.not_yet_working
 ```

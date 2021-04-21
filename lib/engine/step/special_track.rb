@@ -117,7 +117,10 @@ module Engine
         special = tile_ability.special if tile_ability.type == :tile_lay
         tiles
           .compact
-          .select { |t| @game.phase.tiles.include?(t.color) && @game.upgrades_to?(hex.tile, t, special) }
+          .select do |t|
+          @game.phase.tiles.include?(t.color) && @game.upgrades_to?(hex.tile, t, special,
+                                                                    selected_company: entity)
+        end
       end
 
       def abilities(entity, **kwargs, &block)
