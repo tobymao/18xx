@@ -178,7 +178,7 @@ module Engine
 
       def pay_terrain_tile_income(company, ability, terrain, entity, spender)
         return unless terrain.include?(ability.terrain)
-        return if ability.owner_only && (company.owner != entity && company.owner != spender)
+        return if ability.owner_only && company.owner != entity && company.owner != spender
 
         # If multiple borders are connected bonus counts each individually
         income = ability.income * terrain.count { |t| t == ability.terrain }
