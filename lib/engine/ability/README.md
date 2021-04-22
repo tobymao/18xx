@@ -21,6 +21,10 @@ These attributes may be set for all ability types
 - `count_per_or`: The number of times the ability may be used in each OR; the
   property `count_this_or` is reset to 0 at the start of each OR and increments
   each time the ability is used
+- `use_across_ors`: If `count` is more than 1 and this is `false`, then the
+  ability may only be used within one OR; if an OR starts and the ability has
+  been used at least once, but there is still `count` remaining, the ability
+  gets used up and removed. Default `true`.
 - `on_phase`: The phase when this ability is active
 - `when`: (string or array of strings) The game steps or special time descriptor
   when this ability is active. If no values are provided, this ability is
