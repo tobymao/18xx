@@ -12,6 +12,7 @@ require_relative 'step/track'
 require_relative 'step/token'
 require_relative 'step/route'
 require_relative 'step/dividend'
+require_relative 'step/buy_train'
 
 module Engine
   module Game
@@ -21,7 +22,7 @@ module Engine
         include Entities
         include Map
 
-        attr_accessor :chartered, :base_tiles
+        attr_accessor :chartered, :base_tiles, :deferred_rust
 
         register_colors(black: '#000000',
                         orange: '#f48221',
@@ -131,78 +132,92 @@ module Engine
         PHASES = [
           {
             name: 'A',
-            train_limit: 9, # 3 per type
+            train_limit: 3, # per type
             tiles: [:yellow],
             operating_rounds: 1,
+            status: ['three_per'],
           },
           {
             name: 'B',
-            on: '2F',
-            train_limit: 9, # 3 per type
+            on: 'B',
+            train_limit: 3, # 3 type
             tiles: %i[yellow green],
             operating_rounds: 2,
+            status: ['three_per'],
           },
           {
             name: 'C',
-            on: '3F',
-            train_limit: 9, # 3 per type
+            on: 'C',
+            train_limit: 3, # per type
             tiles: %i[yellow green],
             operating_rounds: 2,
+            status: ['three_per'],
           },
           {
             name: 'D',
-            on: '5F',
-            train_limit: 9, # 3 per type
+            on: 'D',
+            train_limit: 3, # per type
             tiles: %i[yellow green brown],
             operating_rounds: 3,
+            status: ['three_per'],
           },
           {
             name: 'E',
-            on: '6F',
-            train_limit: 6, # 2 per type
+            on: 'E',
+            train_limit: 2, # per type
             tiles: %i[yellow green brown],
             operating_rounds: 3,
+            status: ['two_per'],
           },
           {
             name: 'F',
-            on: '7F',
-            train_limit: 6, # 2 per type
+            on: 'F',
+            train_limit: 2, # per type
             tiles: %i[yellow green brown],
             operating_rounds: 3,
+            status: ['two_per'],
           },
           {
             name: 'G',
-            on: '8F',
-            train_limit: 3, # FIXME: 3 across all types
+            on: 'G',
+            train_limit: 3, # across all types
             tiles: %i[yellow green brown],
             operating_rounds: 3,
+            status: ['three_total'],
           },
           {
             name: 'H',
-            on: '9F',
-            train_limit: 3, # FIXME: 3 across all types
+            on: 'H',
+            train_limit: 3, # across all types
             tiles: %i[yellow green brown],
             operating_rounds: 3,
+            status: %w[three_total end_game],
           },
         ].freeze
 
         TRAINS = [
           {
-            name: '1F',
-            distance: 1,
+            name: 'A',
+            distance: 99,
             price: 100,
-            rusts_on: '3F',
+            rusts_on: 'C',
             num: 7,
             no_local: true,
             variants: [
               {
-                name: '2L',
+                name: '1F*',
+                distance: 1,
+                price: 100,
+                no_local: true,
+              },
+              {
+                name: '2L*',
                 distance: [{ 'nodes' => %w[city], 'pay' => 2, 'visit' => 2 },
                            { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
                 price: 100,
               },
               {
-                name: '2E',
+                name: '2E*',
                 distance: [{ 'nodes' => %w[city offboard], 'pay' => 2, 'visit' => 2 },
                            { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
                 price: 100,
@@ -210,12 +225,17 @@ module Engine
             ],
           },
           {
-            name: '2F',
-            distance: 2,
+            name: 'B',
+            distance: 99,
             price: 200,
-            rusts_on: '6F',
+            rusts_on: 'E',
             num: 6,
             variants: [
+              {
+                name: '2F',
+                distance: 2,
+                price: 200,
+              },
               {
                 name: '2/3L',
                 distance: [{ 'nodes' => %w[city], 'pay' => 2, 'visit' => 3 },
@@ -231,12 +251,17 @@ module Engine
             ],
           },
           {
-            name: '3F',
-            distance: 3,
+            name: 'C',
+            distance: 99,
             price: 280,
-            rusts_on: '7F',
+            rusts_on: 'F',
             num: 4,
             variants: [
+              {
+                name: '3F',
+                distance: 3,
+                price: 280,
+              },
               {
                 name: '3L',
                 distance: [{ 'nodes' => %w[city], 'pay' => 3, 'visit' => 3 },
@@ -252,20 +277,25 @@ module Engine
             ],
           },
           {
-            name: '5F',
-            distance: 5,
+            name: 'D',
+            distance: 99,
             price: 360,
-            rusts_on: '8F',
+            rusts_on: 'G',
             num: 3,
             variants: [
               {
-                name: '4L',
+                name: '5F*',
+                distance: 5,
+                price: 360,
+              },
+              {
+                name: '4L*',
                 distance: [{ 'nodes' => %w[city], 'pay' => 4, 'visit' => 4 },
                            { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
                 price: 360,
               },
               {
-                name: '4E',
+                name: '4E*',
                 distance: [{ 'nodes' => %w[city offboard], 'pay' => 4, 'visit' => 4 },
                            { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
                 price: 360,
@@ -273,11 +303,16 @@ module Engine
             ],
           },
           {
-            name: '6F',
-            distance: 6,
+            name: 'E',
+            distance: 99,
             price: 500,
             num: 3,
             variants: [
+              {
+                name: '6F',
+                distance: 6,
+                price: 500,
+              },
               {
                 name: '4/5L',
                 distance: [{ 'nodes' => %w[city], 'pay' => 4, 'visit' => 5 },
@@ -293,11 +328,16 @@ module Engine
             ],
           },
           {
-            name: '7F',
-            distance: 7,
+            name: 'F',
+            distance: 99,
             price: 600,
             num: 2,
             variants: [
+              {
+                name: '7F',
+                distance: 7,
+                price: 600,
+              },
               {
                 name: '5L',
                 distance: [{ 'nodes' => %w[city], 'pay' => 5, 'visit' => 5 },
@@ -313,11 +353,16 @@ module Engine
             ],
           },
           {
-            name: '8F',
-            distance: 8,
+            name: 'G',
+            distance: 99,
             price: 700,
             num: 1,
             variants: [
+              {
+                name: '8F',
+                distance: 8,
+                price: 700,
+              },
               {
                 name: '5/6L',
                 distance: [{ 'nodes' => %w[city], 'pay' => 5, 'visit' => 6 },
@@ -333,11 +378,16 @@ module Engine
             ],
           },
           {
-            name: '9F',
-            distance: 9,
+            name: 'H',
+            distance: 99,
             price: 800,
             num: 99,
             variants: [
+              {
+                name: '9F',
+                distance: 9,
+                price: 800,
+              },
               {
                 name: '6L',
                 distance: [{ 'nodes' => %w[city], 'pay' => 6, 'visit' => 6 },
@@ -400,6 +450,13 @@ module Engine
 
         GAME_END_CHECK = { stock_market: :current_or, bank: :current_or, custom: :immediate }.freeze
 
+        STATUS_TEXT = Base::STATUS_TEXT.merge(
+          'three_per' => ['3 per kind', 'Limit of 3 trains of each kind (Freight/Local/Express)'],
+          'two_per' => ['2 per kind', 'Limit of 2 trains of each kind (Freight/Local/Express)'],
+          'three_total' => ['3 total', 'Limit of 3 trains total'],
+          'end_game' => ['Game end trigger', 'LNER forms at end of OR set'],
+        ).freeze
+
         CHARTERED_TOKEN_COST = 60
         UNCHARTERED_TOKEN_COST = 40
 
@@ -445,6 +502,7 @@ module Engine
         def setup
           @cached_freight_sets = nil
           @global_stops = nil
+          @deferred_rust = []
         end
 
         def setup_preround
@@ -707,7 +765,7 @@ module Engine
             G1862::Step::Route,
             G1862::Step::Dividend,
             # G1862::Step::Refinance,
-            Engine::Step::BuyTrain,
+            G1862::Step::BuyTrain,
             # G1862::Step::RedeemStock,
             # G1862::Step::Acquire,
           ], round_num: round_num)
@@ -869,15 +927,19 @@ module Engine
           check_bankruptcy!(corporation)
         end
 
-        def train_type(train)
-          case train.name
-          when /F$/
+        def train_type_by_name(name)
+          case name
+          when /F\**$/
             :freight
-          when /L$/
+          when /L\**$/
             :local
-          when /E$/
+          when /E\**$/
             :express
           end
+        end
+
+        def train_type(train)
+          train_type_by_name(train.name)
         end
 
         def legal_route?(entity)
@@ -1364,6 +1426,57 @@ module Engine
         # routes from different trains are allowed to overlap
         def compute_other_paths(_routes, _route)
           []
+        end
+
+        def train_limit(entity)
+          @phase.train_limit(entity) * (@phase.available?('G') ? 1 : 3)
+        end
+
+        def train_limit_by_type(entity)
+          @phase.train_limit(entity)
+        end
+
+        def used_train_price(train)
+          train.sym == @phase.name ? train.price : (train.price / 2).to_i
+        end
+
+        def info_train_name(train)
+          train.names_to_prices.keys.find { |n| /^[A-H]$/ =~ n } + ': ' +
+            train.names_to_prices.keys.reject { |n| /^[A-H]$/ =~ n }.join(', ')
+        end
+
+        def info_train_price(train)
+          format_currency(train.names_to_prices.values[0])
+        end
+
+        def rust_trains!(train, _entity)
+          rusted_trains = []
+          owners = Hash.new(0)
+
+          trains.each do |t|
+            next if @deferred_rust.include?(t) || !t.name.include?('*') || t.rusts_on != train.sym
+
+            @deferred_rust << t
+          end
+
+          trains.each do |t|
+            next if t.rusted || @deferred_rust.include?(t)
+
+            should_rust = t.rusts_on == train.sym
+            next unless should_rust
+            next unless rust?(t)
+
+            rusted_trains << t.name
+            owners[t.owner.name] += 1
+            rust(t)
+          end
+
+          @crowded_corps = nil
+
+          return unless rusted_trains.any?
+
+          @log << "-- Event: #{rusted_trains.uniq.join(', ')} trains rust " \
+            "( #{owners.map { |c, t| "#{c} x#{t}" }.join(', ')}) --"
         end
       end
     end

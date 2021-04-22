@@ -56,6 +56,8 @@ module Engine
             kind = action.kind.to_sym
             payout = dividend_options(entity)[kind]
 
+            handle_warranties!(entity)
+
             entity.operating_history[[@game.turn, @round.round_num]] = OperatingInfo.new(
               routes,
               action,
@@ -134,6 +136,18 @@ module Engine
 
           def movement_str(times, dir)
             "#{times / 2} #{dir}"
+          end
+
+          def handle_warranties!(entity)
+            # remove one warranty from each train and see if it rusts
+            entity.trains.each do |train|
+              train.name = train.name[0..-2] if train.name.include?('*')
+              next unless @game.deferred_rust.include?(train) && !train.name.include?('*')
+
+              @log << "#{train.name} rusts after warranty expired"
+              @game.deferred_rust.delete(train)
+              @game.rust(train)
+            end
           end
         end
       end
