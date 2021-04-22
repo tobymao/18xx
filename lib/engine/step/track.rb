@@ -39,7 +39,7 @@ module Engine
       end
 
       def available_hex(entity, hex)
-        base_available_hex(entity, hex)
+        tracker_available_hex(entity, hex)
       end
     end
   end

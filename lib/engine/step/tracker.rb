@@ -30,7 +30,8 @@ module Engine
       end
 
       def get_tile_lay(entity)
-        action = @game.tile_lays(entity)[@round.num_laid_track]&.clone
+        corporation = entity.company? ? entity.owner : entity
+        action = @game.tile_lays(corporation)[@round.num_laid_track]&.clone
         return unless action
 
         action[:lay] = !@round.upgraded_track if action[:lay] == :not_if_upgraded
@@ -361,7 +362,7 @@ module Engine
         end
       end
 
-      def base_available_hex(entity, hex)
+      def tracker_available_hex(entity, hex)
         connected = hex_neighbors(entity, hex)
         return nil unless connected
 
