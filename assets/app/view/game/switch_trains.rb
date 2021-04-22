@@ -63,7 +63,6 @@ module View
               name: "train_#{train.id}-corp_#{@corporation.id}",
             }
             attrs[:checked] = 'checked' if train.owner == corp
-            puts attrs
             checkbox = h(
               "input#train_#{train.id}-corp_#{corp.id}",
               style: {

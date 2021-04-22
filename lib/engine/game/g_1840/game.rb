@@ -146,6 +146,13 @@ module Engine
           ])
         end
 
+        def init_company_round
+          @round_counter += 1
+          @cr_counter += 1
+          @log << "-- #{round_description('Company', nil, false)} --"
+          new_company_operating_route_round
+        end
+
         def new_company_operating_route_round(round_num)
           G1840::Round::CompanyOperating.new(self, [
             G1840::Step::Route,
@@ -169,12 +176,11 @@ module Engine
 
         def new_company_operating_switch_trains(round_num)
           G1840::Round::CompanyOperating.new(self, [
-            # dividend
             G1840::Step::ReassignTrains,
-            # corporation auction
           ], round_num: round_num, no_city: true)
         end
 
+        # TODO: Line Round
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
@@ -197,11 +203,7 @@ module Engine
           @round =
             case @round
             when Engine::Round::Stock
-              # After first SR comes CR else LR
-              # @operating_rounds = OR_SETS[@turn - 1]
-              # reorder_players(log_player_order: true)
-              @cr_counter += 1
-              new_company_operating_route_round
+              init_company_round
             when new_company_operating_route_round.class
               @cr_counter += 1
               if @cr_counter <= 2
@@ -297,17 +299,16 @@ module Engine
           @tram_owned_by_corporation[buying_corporation] << tram_corporation
         end
 
-        def round_description(name, round_number = nil)
-          round_number ||= @round.round_num
-          description = "#{@round.name} "
+        def round_description(name, round_number = nil, use_round = true)
+          name = @round.name.sub(' Round', '') if use_round
 
-          total = total_rounds(name)
+          super
+        end
 
-          description += @turn.to_s unless @turn.zero?
-          description += '.' if total && !@turn.zero?
-          description += "#{round_number} (of #{total})" if total
+        def payout_companies
+          return unless @cr_counter.zero?
 
-          description.strip
+          super
         end
       end
     end
