@@ -21,7 +21,7 @@ module View
 
         store(:routes, @step.routes, skip: true)
 
-        payout_options = @step.dividend_types.map do |type|
+        payout_options = options.keys.map do |type|
           option = options[type]
           text =
             case type
@@ -32,7 +32,7 @@ module View
             when :half
               'Half Pay'
             else
-              type
+              @step.respond_to?(:dividend_name) ? @step.dividend_name(type) : type
             end
 
           corp_income = option[:corporation] + option[:divs_to_corporation]
