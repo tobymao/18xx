@@ -19,6 +19,7 @@ module Engine
                         brightGreen: '#6ec037')
         TRACK_RESTRICTION = :permissive
         SELL_BUY_ORDER = :sell_buy_sell
+        TILE_RESERVATION_BLOCKS_OTHERS = true
         CURRENCY_FORMAT_STR = '$%d'
 
         BANK_CASH = 12_000
