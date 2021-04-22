@@ -271,10 +271,6 @@ module Engine
           .select { |p| p.price * 2 <= entity.cash }
       end
 
-      def par_price_str(share_price)
-        @game.format_currency(share_price.price)
-      end
-
       def sell_shares(entity, shares, swap: nil)
         raise GameError, "Cannot sell shares of #{shares.corporation.name}" if !can_sell?(entity, shares) && !swap
 

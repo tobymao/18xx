@@ -24,7 +24,7 @@ module Engine
 
             choices = {}
             get_par_prices(entity.owner, nil).reverse_each do |p|
-              par_str = par_price_str(p)
+              par_str = @game.par_price_str(p)
               choices[par_str] = par_str
             end
             choices
@@ -46,16 +46,12 @@ module Engine
             end
           end
 
-          def par_price_str(share_price)
-            @game.par_price_str(share_price)
-          end
-
           def process_choose_ability(action)
             entity = action.entity
             choice = action.choice
             share_price = nil
             get_par_prices(entity.owner, nil).each do |p|
-              next unless choice == par_price_str(p)
+              next unless choice == @game.par_price_str(p)
 
               share_price = p
             end
