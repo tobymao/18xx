@@ -719,7 +719,7 @@ module Engine
           []
         end
 
-        def can_hold_above_limit?(_entity)
+        def can_hold_above_corp_limit?(_entity)
           true
         end
 
