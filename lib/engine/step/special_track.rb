@@ -55,7 +55,8 @@ module Engine
                 else
                   @game.current_entity
                 end
-        if ability.type == :teleport
+        if ability.type == :teleport ||
+           (ability.type == :tile_lay && ability.consume_tile_lay)
           lay_tile_action(action, spender: owner)
         else
           lay_tile(action, spender: owner)

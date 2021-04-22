@@ -1596,7 +1596,7 @@ module Engine
         @last_game_action_id == @round_history.last
       end
 
-      def can_hold_above_limit?(_entity)
+      def can_hold_above_corp_limit?(_entity)
         false
       end
 

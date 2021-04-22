@@ -18,7 +18,6 @@ module View
           h(:p, 'Auto actions allow you to preprogram your moves ahead of time. '\
                 'On asynchronous games this can shorten a game considerably.'),
           h(:p, 'Please note, these are not secret from other players.'),
-          h(:p, 'This feature is presently under development.'),
         ]
 
         if @game.players.find { |p| p.name == @user&.dig('name') }

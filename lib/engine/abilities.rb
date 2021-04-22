@@ -46,7 +46,11 @@ module Engine
     end
 
     def reset_ability_count_this_or!
-      @abilities.each { |a| a.count_this_or = 0 }
+      @abilities.each do |ability|
+        ability.count_this_or = 0
+
+        ability.use_up! if ability.used? && !ability.use_across_ors
+      end
     end
 
     def ability_uses
