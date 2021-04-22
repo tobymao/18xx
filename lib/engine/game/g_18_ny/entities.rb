@@ -93,7 +93,6 @@ module Engine
                   'first 12H train.',
             color: nil,
             abilities: [{ type: 'no_buy' }],
-            # TODO: reduce value whenever erie canal tile covered up
           },
           {
             name: 'D&H Private Company',

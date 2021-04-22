@@ -130,10 +130,30 @@ module Engine
                   },
                   { name: 'D', num: 20, distance: 99, price: 1000 }].freeze
 
+        ERIE_CANAL_ICON = 'canal'
+
+        def setup
+          @erie_canal_private = @companies.find { |c| c.id == 'EC' }
+        end
+
         def stock_round
           Round::Stock.new(self, [
             G18NY::Step::BuySellParShares,
           ])
+        end
+
+        def operating_round(round_num)
+          Round::Operating.new(self, [
+            Step::BuyCompany,
+            Step::SpecialTrack,
+            Step::Track,
+            Step::Token,
+            Step::Route,
+            Step::Dividend,
+            Step::DiscardTrain,
+            Step::BuyTrain,
+            [Step::BuyCompany, { blocks: true }],
+          ], round_num: round_num)
         end
 
         def issuable_shares(entity)
@@ -165,6 +185,22 @@ module Engine
 
         def can_hold_above_limit?(_entity)
           true
+        end
+
+        def preprocess_action(action)
+          super
+
+          check_erie_canal_tile_lay(action.hex) if action.is_a?(Engine::Action::LayTile)
+        end
+
+        def check_erie_canal_tile_lay(hex)
+          return if hex.tile.icons.empty? { |icon| icon.name == ERIE_CANAL_ICON }
+
+          @erie_canal_private.revenue -= 10
+          return unless @erie_canal_private.revenue.zero?
+
+          @log << 'Erie Canal company closes'
+          @erie_canal_private.close!
         end
       end
     end
