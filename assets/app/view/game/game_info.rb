@@ -229,7 +229,7 @@ module View
             end
           end
           event_text = event_text.flat_map { |e| [h('span.nowrap', e), ', '] }[0..-2]
-          name = (train.name == first_train&.name ? '→ ' : '') + @game.info_train_name(train)
+          name = (train.sym == first_train&.sym ? '→ ' : '') + @game.info_train_name(train)
 
           train_content = [
             h(:td, name),
