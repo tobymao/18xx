@@ -14,7 +14,7 @@ module Engine
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18Neb'
         GAME_LOCATION = 'Nebraska, USA'
         GAME_PUBLISHER = :deepthoughtgames
-        GAME_RULES_URL = 'http://sites.google.com/a/dl.deepthoughtgames.com/www/18Neb-rules.pdf?d=1'
+        GAME_RULES_URL = 'https://www.scribd.com/document/58813972/18Neb-Rules'
 
         PLAYER_RANGE = [2, 4].freeze
       end
