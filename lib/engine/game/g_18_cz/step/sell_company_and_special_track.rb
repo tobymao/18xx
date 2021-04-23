@@ -81,8 +81,8 @@ module Engine
 
             all_possible_tiles = abilities_for_hex.flat_map(&:tiles)
 
-            all_possible_tiles.map { |name| @game.tiles.find { |t| t.name == name } }
-              .compact
+            all_possible_tiles
+              .filter_map { |name| @game.tiles.find { |t| t.name == name } }
               .select { |t| @game.phase.tiles.include?(t.color) && @game.upgrades_to?(hex.tile, t, false) }
           end
 

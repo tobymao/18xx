@@ -148,7 +148,7 @@ module View
                            @game.sorted_corporations.reject(&:closed?)
                          end
 
-          corporations.map do |corporation|
+          corporations.filter_map do |corporation|
             next if @auctioning_corporation && @auctioning_corporation != corporation
             next if @mergeable_entity && @mergeable_entity != corporation
             next if @price_protection && @price_protection.corporation != corporation
@@ -164,7 +164,7 @@ module View
             children << choose if choose
 
             h(:div, props, children)
-          end.compact
+          end
         end
 
         def render_input(corporation)

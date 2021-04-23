@@ -10,7 +10,7 @@ module Engine
       end
 
       def tokens_above_limits?(surviving, others)
-        tokens = surviving.tokens.map { |t| t.city&.hex }.compact
+        tokens = surviving.tokens.filter_map { |t| t.city&.hex }
 
         tokens.uniq.size != tokens.size ||
         tokens_in_same_hex(surviving, others) ||
@@ -27,7 +27,7 @@ module Engine
         # surviving company must remove one and place it on its charter.
         # In the case of NY tiles this is ambigious and must be solved by the user
 
-        others = others_tokens(others).map(&:city).compact
+        others = others_tokens(others).filter_map(&:city)
         surviving.tokens.each do |token|
           city = token.city
           token.remove! if others.include?(city)

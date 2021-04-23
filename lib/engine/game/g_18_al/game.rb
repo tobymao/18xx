@@ -662,25 +662,25 @@ module Engine
         private
 
         def bonuses_for_hex_on_route(ability, stops)
-          stops.map do |stop|
+          stops.filter_map do |stop|
             next unless ability.hexes.include?(stop.hex.id)
 
             { revenue: ability.amount, description: "Coal(#{stop.hex.name})" }
-          end.compact
+          end
         end
 
         def bonuses_for_routes(routes)
           return [] if routes.empty?
 
-          route_bonuses.map do |type, _description|
+          route_bonuses.filter_map do |type, _description|
             next unless abilities(routes.first.corporation, type)
 
-            possible_bonuses = routes.map { |r| bonus_for_route(r, type) }.compact
+            possible_bonuses = routes.filter_map { |r| bonus_for_route(r, type) }
             best_bonus = possible_bonuses.max { |b| b[:revenue] }
             next unless best_bonus
 
             best_bonus
-          end.compact
+          end
         end
 
         def bonus_for_route(route, type)

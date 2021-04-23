@@ -66,7 +66,7 @@ module Engine
     end
 
     def update_start_counter!
-      @start_count = @abilities.map(&:start_count).compact.max
+      @start_count = @abilities.filter_map(&:start_count).max
     end
   end
 end

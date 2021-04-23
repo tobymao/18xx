@@ -466,14 +466,14 @@ module Engine
       edges ||= ALL_EDGES
 
       # Re-add borders that are in the edge list returning those that are missing
-      missing = edges.map do |edge|
+      missing = edges.filter_map do |edge|
         original = @original_borders.find { |e| e.edge == edge }
         next unless original
         next if @borders.include?(original)
 
         @borders << original
         edge
-      end.compact
+      end
 
       missing.each do |edge|
         neighbor = @hex.neighbors[edge]&.tile

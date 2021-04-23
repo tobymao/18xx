@@ -493,17 +493,17 @@ module Engine
         end
 
         def init_companies(players)
-          game_companies.map do |company|
+          game_companies.filter_map do |company|
             next if players.size < (company[:min_players] || 0)
             next unless starting_companies.include?(company[:sym])
 
             opts = self.class::STARTING_COMPANIES_OVERRIDE[company[:sym]] || {}
             Company.new(**company.merge(opts))
-          end.compact
+          end
         end
 
         def init_corporations(stock_market)
-          game_corporations.map do |corporation|
+          game_corporations.filter_map do |corporation|
             next unless self.class::STARTING_CORPORATIONS.include?(corporation[:sym])
 
             opts = self.class::STARTING_CORPORATIONS_OVERRIDE[corporation[:sym]] || {}
@@ -512,7 +512,7 @@ module Engine
               capitalization: self.class::CAPITALIZATION,
               **corporation.merge(opts),
             )
-          end.compact
+          end
         end
       end
     end
