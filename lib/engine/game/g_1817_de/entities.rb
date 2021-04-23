@@ -80,6 +80,7 @@ module Engine
             type: 'tile_lay',
             hexes: %w[D14
                       D22
+                      D24
                       E15
                       G11
                       G13
@@ -111,6 +112,7 @@ module Engine
             type: 'tile_lay',
             hexes: %w[D14
                       D22
+                      D24
                       E15
                       G11
                       G13
