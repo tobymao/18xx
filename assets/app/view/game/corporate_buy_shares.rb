@@ -27,7 +27,7 @@ module View
           },
         }
 
-        @step.source_list(@entity).filter_map do |source|
+        @step.source_list(@entity).map do |source|
           next if source.corporation? && !@game.corporation_available?(source)
 
           children = []
@@ -39,16 +39,16 @@ module View
             children << render_corporation_input(source)
           end
           h(:div, props, children)
-        end
+        end.compact
       end
 
       def render_player_input(player)
         return unless @step.current_actions.include?('corporate_buy_shares')
 
-        input = player.shares.group_by(&:corporation).values.filter_map do |corp_shares|
+        input = player.shares.group_by(&:corporation).values.map do |corp_shares|
           render_buttons(corp_shares.reject(&:president).group_by(&:percent).values.map(&:first),
                          source: corp_shares.first.corporation.name)
-        end
+        end.compact
 
         h('div.margined_bottom', { style: { width: '20rem' } }, input) if input.any?
       end
@@ -63,7 +63,7 @@ module View
       end
 
       def render_buttons(shares, source: 'Market')
-        children = shares.filter_map do |share|
+        children = shares.map do |share|
           next unless @step.can_buy?(@entity, share.to_bundle)
 
           h(Button::BuyShare,
@@ -72,7 +72,7 @@ module View
             source: source,
             percentages_available: shares.size,
             action: Engine::Action::CorporateBuyShares)
-        end
+        end.compact
 
         h(:div, children) if children.any?
       end

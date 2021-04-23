@@ -59,22 +59,22 @@ module Engine
         def new_exit_junctions(old_tile, new_tile)
           brand_new_paths = new_tile.paths.reject { |path| old_tile.paths.find { |p| path <= p } }
 
-          brand_new_paths.filter_map do |bnp|
+          brand_new_paths.map do |bnp|
             new_exit_junctions = bnp.exits & old_tile.exits
             next if new_exit_junctions.empty?
 
             [bnp, new_exit_junctions]
-          end
+          end.compact
         end
 
         def prior_connected_paths(entity, old_tile)
           return [] if @game.loading
 
-          @game.graph.connected_paths(entity).filter_map do |connected_path, _b|
+          @game.graph.connected_paths(entity).map do |connected_path, _b|
             next unless connected_path.hex == old_tile.hex
 
             old_tile.paths.find { |op| op <= connected_path }
-          end
+          end.compact
         end
 
         def all_prior_paths_accessible?(old_paths, old_connected_paths)

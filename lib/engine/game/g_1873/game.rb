@@ -327,7 +327,7 @@ module Engine
             Company.new(sym: gm[:sym], name: "#{gm[:sym]} #{gm[:name]}", value: gm[:extended][:value],
                         revenue: revenue, desc: description)
           end
-          corp_comps = game_corporations.filter_map do |gc|
+          corp_comps = game_corporations.map do |gc|
             next if gc[:sym] == 'MHE'
 
             if gc[:extended][:type] == :railway
@@ -339,7 +339,7 @@ module Engine
               name = "#{gc[:sym]} Purchase Option"
             end
             Company.new(sym: gc[:sym], name: name, value: RAILWAY_MIN_BID, revenue: 'NA', desc: description)
-          end
+          end.compact
           mine_comps + corp_comps
         end
 

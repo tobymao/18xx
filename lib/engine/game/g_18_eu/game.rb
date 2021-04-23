@@ -974,12 +974,12 @@ module Engine
         # The player will swap one of their minors tokens for the major home token
         # This gets the list of cities where their minors have tokens
         def all_minor_cities(corporation)
-          @minors.filter_map do |minor|
+          @minors.map do |minor|
             next unless minor.owner == corporation.owner
 
             # only need to use first since minors have one token
             minor.tokens.first.city
-          end
+          end.compact
         end
 
         def all_minor_hexes(corporation)

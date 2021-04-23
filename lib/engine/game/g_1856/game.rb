@@ -1632,7 +1632,7 @@ module Engine
           # surviving company must remove one and place it on its charter.
           # In the case of OO and Toronto tiles this is ambigious and must be solved by the user
 
-          cities = Array(corp).flat_map(&:tokens).filter_map(&:city)
+          cities = Array(corp).flat_map(&:tokens).map(&:city).compact
           @national.tokens.each do |token|
             city = token.city
             token.remove! if cities.include?(city)

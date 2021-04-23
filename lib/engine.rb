@@ -12,11 +12,11 @@ end
 module Engine
   @games = {}
 
-  GAME_META_BY_TITLE = Game.constants.sort.filter_map do |c|
+  GAME_META_BY_TITLE = Game.constants.sort.map do |c|
     const = Game.const_get(c)
     game_meta = const::Meta if const.constants.include?(:Meta)
     [game_meta.title, game_meta] if game_meta
-  end.to_h
+  end.compact.to_h
 
   GAME_TITLES = GAME_META_BY_TITLE.keys
   @fuzzy_titles = GAME_TITLES.map { |t| [t, t] }.to_h
@@ -30,19 +30,19 @@ module Engine
   def self.game_by_title(title)
     title = closest_title(title)
 
-    @games[title] ||= Engine::Game.constants.filter_map do |c|
+    @games[title] ||= Engine::Game.constants.map do |c|
       const = Game.const_get(c)
       game = const::Game if const.constants.include?(:Game)
       game if game&.title == title
-    end.first
+    end.compact.first
   end
 
   def self.all_game_titles
-    Engine::Game.constants.sort.filter_map do |c|
+    Engine::Game.constants.sort.map do |c|
       const = Game.const_get(c)
       game = const::Game if const.constants.include?(:Game)
       game&.title
-    end
+    end.compact
   end
 
   def self.meta_by_title(title)

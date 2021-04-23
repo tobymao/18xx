@@ -57,11 +57,11 @@ module View
       def render_optional_rules
         return [] if @game.optional_rules.empty?
 
-        used_optional_rules = @game.meta::OPTIONAL_RULES.filter_map do |o_r|
+        used_optional_rules = @game.meta::OPTIONAL_RULES.map do |o_r|
           next unless @game.optional_rules.include?(o_r[:sym])
 
           h(:p, " * #{o_r[:short_name]}: #{o_r[:desc]}")
-        end
+        end.compact
         return [] if used_optional_rules.empty?
 
         [h(:h3, 'Optional Rules Used'), *used_optional_rules]

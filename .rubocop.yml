@@ -102,6 +102,10 @@ Performance/ChainArrayAllocation:
 Performance/CollectionLiteralInLoop:
   Enabled: false
 
+
+Performance/MapCompact:
+  Enabled: false
+
 # works fine for numbers, might be problematic for strings
 # http://www.albertoalmagro.com/ruby-rangeinclude-vs-rangecover/
 Performance/RangeInclude:

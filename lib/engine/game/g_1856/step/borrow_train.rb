@@ -36,7 +36,7 @@ module Engine
             return [] unless abilites
 
             Array(abilites).flat_map do |a|
-              a.train_types.filter_map { |typ| @game.depot.depot_trains.find { |t| t.sym == typ } }
+              a.train_types.map { |typ| @game.depot.depot_trains.find { |t| t.sym == typ } }.compact
             end.uniq
           end
 
