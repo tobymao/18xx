@@ -22,7 +22,7 @@ module Engine
           '1817 Rules' =>
                 'https://drive.google.com/file/d/0B1SWz2pNe2eAbnI4NVhpQXV4V0k/view',
         }.freeze
-        GAME_TITLE = '1817DE'
+        GAME_TITLE = '18DE'
 
         PLAYER_RANGE = [2, 6].freeze
         OPTIONAL_RULES = [

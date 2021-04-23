@@ -305,7 +305,8 @@ module Engine
                 max_ownership_percent: 100,
                 tokens: [0],
                 always_market_price: true,
-                color: '#984573',
+                color: :"#ADD8E6",
+                text_color: 'black',
                 reservation_color: nil,
               },
               {
