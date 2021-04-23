@@ -8,7 +8,7 @@ module Engine
       module Meta
         include Game::Meta
 
-        DEV_STAGE = :alpha
+        DEV_STAGE = :beta
 
         GAME_SUBTITLE = 'The Railways of Great Britain'
         GAME_DESIGNER = 'Simon Cutforth'
