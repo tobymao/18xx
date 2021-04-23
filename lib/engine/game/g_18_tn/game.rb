@@ -632,7 +632,7 @@ module Engine
           return upgrades unless tile_manifest
 
           # Tile manifest for yellow standard cities should show N tile (TN1) as an option
-          upgrades |= [@green_nashville_tile] if is_green_nashville_upgrade?(tile)
+          upgrades |= [@green_nashville_tile] if green_nashville_upgrade?(tile)
 
           # Tile manifest for green cities should show P tile as an option
           upgrades |= [@brown_p_tile] if @brown_p_tile && GREEN_CITY_TILES.include?(tile.name)

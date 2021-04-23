@@ -23,7 +23,22 @@ module Engine
 
         STARTING_CASH = { 2 => 900, 3 => 600, 4 => 450, 5 => 360, 6 => 300 }.freeze
 
+        MIN_BID_INCREMENT = 5
+        MUST_BID_INCREMENT_MULTIPLE = true
+
         SELL_BUY_ORDER = :sell_buy
+
+        GAME_END_CHECK = { bank: :full_or, custom: :immediate }.freeze
+
+        ALL_COMPANIES_ASSIGNABLE = true
+
+        # Two lays with one being an upgrade. Tile lays cost 20
+        TILE_LAYS = [
+          { lay: true, upgrade: true, cost: 20, cannot_reuse_same_hex: true },
+          { lay: true, upgrade: :not_if_upgraded, cost: 20, cannot_reuse_same_hex: true },
+        ].freeze
+
+        TRACK_RESTRICTION = :permissive
 
         MARKET = [
           %w[70 75 80 90 100p 110 125 150 175 200 230 260 300 350 400
@@ -117,8 +132,39 @@ module Engine
 
         def stock_round
           Round::Stock.new(self, [
-            Engine::Step::BuySellParShares,
+            G18NY::Step::BuySellParShares,
           ])
+        end
+
+        def issuable_shares(entity)
+          return [] if !entity.corporation? || entity.type != :major
+
+          max_issuable = entity.num_player_shares - entity.num_market_shares
+          return [] unless max_issuable.positive?
+
+          bundles_for_corporation(entity, entity, shares: entity.shares_of(entity).first(max_issuable))
+        end
+
+        def redeemable_shares(entity)
+          return [] if !entity.corporation? || entity.type != :major
+
+          [@share_pool.shares_of(entity).find { |s| s.price <= entity.cash }&.to_bundle].compact
+        end
+
+        def check_sale_timing(_entity, corporation)
+          return true if corporation.name == 'NYC'
+
+          super
+        end
+
+        def can_par?(corporation, _parrer)
+          return false if corporation.name == 'NYC'
+
+          super
+        end
+
+        def can_hold_above_limit?(_entity)
+          true
         end
       end
     end

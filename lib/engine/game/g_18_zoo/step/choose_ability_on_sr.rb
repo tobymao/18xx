@@ -59,7 +59,10 @@ module Engine
         end
 
         def can_choose_whatsup?(player)
-          player.presidencies.any? { |c| c.cash >= @game.depot.depot_trains&.first&.price }
+          player.presidencies.any? do |corp|
+            corp.cash >= @game.depot.depot_trains&.first&.price &&
+              corp.trains.count { |t| !t.obsolete } < @game.phase.train_limit(corp)
+          end
         end
 
         def can_choose_greek?(_player)

@@ -262,21 +262,21 @@ module Engine
                 'city=revenue:50,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
                 'path=a:4,b:_0;label=BM',
             },
-          '145' =>
+          '768' =>
             {
               'count' => 3,
               'color' => 'brown',
               'code' =>
                 'town=revenue:10;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0',
             },
-          '146' =>
+          '767' =>
             {
               'count' => 3,
               'color' => 'brown',
               'code' =>
                 'town=revenue:10;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0',
             },
-          '147' =>
+          '769' =>
             {
               'count' => 4,
               'color' => 'brown',
@@ -493,17 +493,17 @@ module Engine
         end
 
         def init_companies(players)
-          game_companies.map do |company|
+          game_companies.filter_map do |company|
             next if players.size < (company[:min_players] || 0)
             next unless starting_companies.include?(company[:sym])
 
             opts = self.class::STARTING_COMPANIES_OVERRIDE[company[:sym]] || {}
             Company.new(**company.merge(opts))
-          end.compact
+          end
         end
 
         def init_corporations(stock_market)
-          game_corporations.map do |corporation|
+          game_corporations.filter_map do |corporation|
             next unless self.class::STARTING_CORPORATIONS.include?(corporation[:sym])
 
             opts = self.class::STARTING_CORPORATIONS_OVERRIDE[corporation[:sym]] || {}
@@ -512,7 +512,7 @@ module Engine
               capitalization: self.class::CAPITALIZATION,
               **corporation.merge(opts),
             )
-          end.compact
+          end
         end
       end
     end

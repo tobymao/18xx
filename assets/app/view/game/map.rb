@@ -84,7 +84,7 @@ module View
               tiles = step.upgradeable_tiles(current_entity, @tile_selector.hex)
               all_upgrades = @game.all_potential_upgrades(@tile_selector.hex.tile, selected_company: @selected_company)
 
-              select_tiles = all_upgrades.map do |tile|
+              select_tiles = all_upgrades.filter_map do |tile|
                 real_tile = tiles.find { |t| t.name == tile.name }
                 if real_tile
                   tiles.delete(real_tile)
@@ -94,7 +94,7 @@ module View
                 elsif @game.tiles.none? { |t| t.name == tile.name }
                   [tile, 'None Left']
                 end
-              end.compact
+              end
 
               # Add tiles that aren't part of all_upgrades (Mitsubishi ferry)
               select_tiles.append(*tiles.map { |t| [t, nil] })

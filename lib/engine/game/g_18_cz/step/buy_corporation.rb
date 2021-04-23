@@ -78,9 +78,9 @@ module Engine
                                                             check_tokenable: false)
             end
             receiving <<
-                "and tokens (#{corporation.tokens.size}: hexes #{corporation.tokens.map do |token|
+                "and tokens (#{corporation.tokens.size}: hexes #{corporation.tokens.filter_map do |token|
                                                                    token.city&.hex&.id
-                                                                 end.compact.uniq})"
+                                                                 end.uniq})"
 
             @log << "#{entity.name} buys #{corporation.name}
           for #{@game.format_currency(price)} per share receiving #{receiving.join(', ')}"
@@ -145,7 +145,7 @@ module Engine
             # If there are 2 station markers on the same city the
             # surviving company must remove one and place it on its charter.
 
-            others = others_tokens(others).map(&:city).compact
+            others = others_tokens(others).filter_map(&:city)
             surviving.tokens.each do |token|
               # after acquisition, the larger corp forfeits their $40 token; see
               # https://boardgamegeek.com/thread/2405214/article/34514502#34514502

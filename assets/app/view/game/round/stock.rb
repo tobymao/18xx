@@ -148,7 +148,7 @@ module View
                            @game.sorted_corporations.reject(&:closed?)
                          end
 
-          corporations.map do |corporation|
+          corporations.filter_map do |corporation|
             next if @auctioning_corporation && @auctioning_corporation != corporation
             next if @mergeable_entity && @mergeable_entity != corporation
             next if @price_protection && @price_protection.corporation != corporation
@@ -164,7 +164,7 @@ module View
             children << choose if choose
 
             h(:div, props, children)
-          end.compact
+          end
         end
 
         def render_input(corporation)
@@ -172,7 +172,9 @@ module View
             corporation.ipoed ? h(BuySellShares, corporation: corporation) : render_pre_ipo(corporation),
             render_loan(corporation),
           ]
-          inputs << h(IssueShares, entity: corporation) if @step.actions(corporation).include?('buy_shares')
+          unless (@step.actions(corporation) & %w[buy_shares sell_shares]).empty?
+            inputs << h(IssueShares, entity: corporation)
+          end
           inputs << h(BuyTrains, corporation: corporation) if @step.actions(corporation).include?('buy_train')
           inputs = inputs.compact
           h('div.margined_bottom', { style: { width: '20rem' } }, inputs) if inputs.any?

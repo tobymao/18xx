@@ -16,6 +16,14 @@ module Engine
             ACTIONS
           end
 
+          def auto_actions(entity)
+            return [Engine::Action::Pass.new(entity)] unless destination_node_check?(entity)
+
+            [Engine::Action::HexToken.new(entity,
+                                          hex: @game.hex_by_id(destination(entity)),
+                                          token: available_tokens(entity).first.type)]
+          end
+
           def available_tokens(entity)
             destination_token = entity.find_token_by_type(:destination)
             return [] unless destination_token
@@ -38,11 +46,15 @@ module Engine
           end
 
           def available_hex(entity, hex)
-            @game.class::DESTINATIONS[entity.id] == hex.name
+            destination(entity) == hex.name
+          end
+
+          def destination(entity)
+            @game.class::DESTINATIONS[entity.id]
           end
 
           def destination_node_check?(entity)
-            destination_hex = @game.class::DESTINATIONS[entity.id]
+            destination_hex = destination(entity)
             node_keys = @game.graph.connected_nodes(entity).keys
             node_keys.select(&:city?).any? { |c| c.hex.id == destination_hex }
           end

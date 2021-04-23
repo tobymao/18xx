@@ -10,6 +10,8 @@ require_relative 'step/buy_sell_par_shares'
 require_relative 'step/home_upgrade'
 require_relative 'step/track'
 require_relative 'step/token'
+require_relative 'step/route'
+require_relative 'step/dividend'
 
 module Engine
   module Game
@@ -191,6 +193,7 @@ module Engine
             price: 100,
             rusts_on: '3F',
             num: 7,
+            no_local: true,
             variants: [
               {
                 name: '2L',
@@ -400,10 +403,26 @@ module Engine
         CHARTERED_TOKEN_COST = 60
         UNCHARTERED_TOKEN_COST = 40
 
-        LONDON_HEXES = %w[
+        LONDON_TOKEN_HEXES = %w[
             B15
             D15
         ].freeze
+
+        LONDON_FULL_HEXES = %w[
+            A14
+            B15
+            C14
+            D15
+        ].freeze
+
+        LONDON_HALF_HEX = 'A12'
+        LONDON_HALF_EXIT = 5
+
+        IPSWITCH_HEX = 'F11'
+        HARWICH_HEX = 'F13'
+
+        FREIGHT_BONUS = 20
+        PORT_FREIGHT_BONUS = 30
 
         def init_share_pool
           SharePool.new(self, allow_president_sale: true)
@@ -423,7 +442,10 @@ module Engine
           clist
         end
 
-        def setup; end
+        def setup
+          @cached_freight_sets = nil
+          @global_stops = nil
+        end
 
         def setup_preround
           @base_tiles = []
@@ -582,7 +604,7 @@ module Engine
         end
 
         def london_link?(entity)
-          LONDON_HEXES.any? { |hexid| hex_by_id(hexid).tile.cities.any? { |c| c.tokened_by?(entity) } }
+          LONDON_TOKEN_HEXES.any? { |hexid| hex_by_id(hexid).tile.cities.any? { |c| c.tokened_by?(entity) } }
         end
 
         def purchase_tokens!(corporation, count)
@@ -665,8 +687,8 @@ module Engine
 
         def upgrades_to_correct_label?(from, to)
           (from.label == to.label) ||
-            (from.label.to_s == 'N' && to.label.to_s == 'I') ||
-            (from.label.to_s == 'Y' && to.label.to_s == 'H')
+            (from.label.to_s == 'N' && to.label.to_s == 'I' && from.hex.id == IPSWITCH_HEX) ||
+            (from.label.to_s == 'Y' && to.label.to_s == 'H' && from.hex.id == HARWICH_HEX)
         end
 
         def stock_round
@@ -682,8 +704,8 @@ module Engine
             # G1862::Step::Merge,
             G1862::Step::Track,
             G1862::Step::Token,
-            Engine::Step::Route,
-            Engine::Step::Dividend,
+            G1862::Step::Route,
+            G1862::Step::Dividend,
             # G1862::Step::Refinance,
             Engine::Step::BuyTrain,
             # G1862::Step::RedeemStock,
@@ -847,8 +869,35 @@ module Engine
           check_bankruptcy!(corporation)
         end
 
+        def train_type(train)
+          case train.name
+          when /F$/
+            :freight
+          when /L$/
+            :local
+          when /E$/
+            :express
+          end
+        end
+
         def legal_route?(entity)
           @graph.route_info(entity)&.dig(:route_train_purchase)
+        end
+
+        def route_trains(entity)
+          entity.runnable_trains.select { |t| @permits[entity].include?(train_type(t)) }
+        end
+
+        def get_token_cities(corporation)
+          tokens = []
+          hexes.each do |hex|
+            hex.tile.cities.each do |city|
+              next unless city.tokened_by?(corporation)
+
+              tokens << city
+            end
+          end
+          tokens
         end
 
         # at least one route must include home token
@@ -887,6 +936,434 @@ module Engine
           visit_route(0, intersects, visited)
 
           raise GameError, 'Routes must intersect with each other' if visited.size != actual_routes.size
+        end
+
+        def mn_train?(train)
+          return false if train_type(train) == :freight
+
+          train.distance[0]['pay'] != train.distance[0]['visit']
+        end
+
+        def freight_revenue_stops(route, visits)
+          route_set = freight_sets(route.routes).find { |set| set.include?(route) }
+          freight_set_ends(route_set) & [visits.first, visits.last]
+        end
+
+        # returns list of combinations of stops
+        def revenue_stop_options(route)
+          visits = route.visited_stops
+
+          if train_type(route.train) == :freight
+            [freight_revenue_stops(route, visits)]
+          else
+            # OK, since local trains won't have offboards
+            all_stops = visits.select { |n| n.city? || n.offboard? }
+            stop_options = []
+            all_stops.combination(route.train.distance[0]['pay']) { |c| stop_options << c }
+            stop_options = [[]] if stop_options.empty?
+            stop_options
+          end
+        end
+
+        def stop_revenues(stops, route)
+          stops.sum { |stop| stop.route_revenue(route.phase, route.train) }
+        end
+
+        # Brute force it. Theoretical max combos is 729, but realistic max is order of magnitude lower
+        def global_optimize(routes)
+          route_stops = routes.map { |r| revenue_stop_options(r) }
+          possibilities = if routes.one?
+                            route_stops[0].product
+                          else
+                            route_stops[0].product(*route_stops[1..-1])
+                          end
+          max_rev = -1
+          max_stops = nil
+          possibilities.each do |p|
+            rev = stop_revenues(p.flatten.uniq, routes[0]) # any route will do here
+            if rev > max_rev
+              max_rev = rev
+              max_stops = p
+            end
+          end
+          max_stops
+        end
+
+        def optimize_stops(route, _num_pay, _total_stops)
+          @global_stops ||= global_optimize(route.routes)
+
+          @global_stops[route.routes.index(route)]
+        end
+
+        def compute_local_stops(route, visits)
+          if mn_train?(route.train)
+            towns = visits.select(&:town?)
+            optimize_stops(route) + towns
+          else
+            visits
+          end
+        end
+
+        def compute_express_stops(route, visits)
+          if mn_train?(route.train)
+            optimize_stops(route)
+          else
+            visits.select { |n| n.city? || n.offboard? }
+          end
+        end
+
+        def compute_stops(route)
+          @cached_freight_sets = nil
+          @global_stops = nil
+          visits = route.visited_stops
+          case train_type(route.train)
+          when :local
+            compute_local_stops(route, visits)
+          when :express
+            compute_express_stops(route, visits)
+          else
+            [visits.first, visits.last]
+          end
+        end
+
+        # FIXME: take options into account
+        def nonpermanent_freight?(train)
+          train.distance < 6
+        end
+
+        # given a route, and a list of available stops,
+        # recursively find a set of other routes that connect to it end-to-end
+        # when faced with a branch, choose:
+        # 1. the branch containing non-permanent trains, then
+        # 2. the longest branch
+        #
+        def get_set_node(node, route, stops)
+          return [] unless stops
+
+          stops.delete(route)
+          return [] if stops.empty? # no stops left, we're done
+
+          routes = stops.keys.select { |r| stops[r].include?(node) }
+          if routes.size == 1
+            # no branching, continue recursing
+            create_oneway_set(node, routes[0], [routes[0]], stops)
+          elsif routes.size > 1
+            # branching, recurse on all branches and pick
+            branches = []
+            routes.each do |r|
+              new_stops = stops.dup
+              branches << create_oneway_set(node, r, [], new_stops)
+            end
+            branch = if (nonperm_set = branches.find { |s| s.any? { |r| nonpermanent_freight?(r.train) } })
+                       nonperm_set
+                     else
+                       branches.max_by(&:size)
+                     end
+            branch.each { |r| stops.delete(r) }
+          else
+            # no other routes match, we're done
+            []
+          end
+        end
+
+        def create_oneway_set(visited, route, set, stops)
+          set << route
+          end_a = stops[route].first
+          end_b = stops[route].last
+          set.concat(get_set_node(end_a, route, stops)) if end_a != visited
+          set.concat(get_set_node(end_b, route, stops)) if end_b != visited
+          set.compact.uniq
+        end
+
+        def create_set(route, set, stops)
+          set << route
+          end_a = stops[route].first
+          end_b = stops[route].last
+          set.concat(get_set_node(end_a, route, stops))
+          set.concat(get_set_node(end_b, route, stops))
+          set.compact.uniq
+        end
+
+        def freight_sets(routes)
+          @cached_freight_sets ||= build_freight_sets(routes)
+        end
+
+        # return sets of end-to-end connected freight trains
+        def build_freight_sets(routes)
+          stops = {}
+          routes.select { |r| train_type(r.train) == :freight && !r.chains.empty? }.each do |r|
+            visits = r.visited_stops
+            stops[r] = [visits.first, visits.last]
+          end
+
+          set_list = []
+          # always start with non-perm trains
+          if (first_nonperm = stops.keys.find { |r| nonpermanent_freight?(r.train) })
+            set_list << create_set(first_nonperm, [], stops)
+          end
+
+          # continue to find sets
+          set_list << create_set(stops.keys.first, [], stops) until stops.empty?
+          set_list
+        end
+
+        # given a set of routes that connect end-to-end
+        # find the start and stop
+        def freight_set_ends(set)
+          ends = []
+          nodes = Hash.new { |h, k| h[k] = [] }
+          set.each do |r|
+            visits = r.visited_stops
+            nodes[visits.first] << r
+            nodes[visits.last] << r
+          end
+          nodes.keys.each { |n| ends << n if nodes[n].one? }
+          raise GameError, 'Logic error: freight set with only one end' if ends.one?
+
+          # if no ends, we have a loop: pick first node
+          # FIXME: pick the highest revenue node
+          ends = [nodes.keys.first, nodes.keys.first] if ends.empty?
+          ends
+        end
+
+        # Every non-permanent freight train needs to share it's start and/or end
+        # with another non-permanent freight trains and one permanent freight
+        # train if it exists
+        def check_freight_intersections(routes)
+          freight_sets = freight_sets(routes)
+          # only one set can have non-perms
+          if freight_sets.count { |set| set.any? { |r| nonpermanent_freight?(r.train) } } > 1
+            raise GameError, 'All non-permanent freight trains need to connect end-to-end'
+          end
+          # if a set has non-perms, it either must have perms too, or be the only set
+          if (nonperm_set = freight_sets.find { |set| set.any? { |r| nonpermanent_freight?(r.train) } }) &&
+              nonperm_set.all? { |r| nonpermanent_freight?(r.train) } &&
+              freight_sets.size > 1
+            raise GameError, 'Non-permanent freight trains must connect to permanent trains'
+          end
+        end
+
+        # Can reuse track between routes, but not within a route, so this method
+        # doesn't check track reuse, but instead checks:
+        # - home token requirement
+        # - route intersection requirement
+        # - freight track end-to-end requirements
+        def check_overlap(routes)
+          check_home_token(current_entity, routes)
+          check_intersection(routes)
+          check_freight_intersections(routes)
+        end
+
+        # This checks track reuse within a route
+        def check_overlap_single(route)
+          tracks = []
+
+          route.paths.each do |path|
+            a = path.a
+            b = path.b
+
+            tracks << [path.hex, a.num, path.lanes[0][1]] if a.edge?
+            tracks << [path.hex, b.num, path.lanes[1][1]] if b.edge?
+
+            # check track between edges and towns not in center
+            # (essentially, that town needs to act like an edge for this purpose)
+            if b.edge? && a.town? && (nedge = a.tile.preferred_city_town_edges[a]) && nedge != b.num
+              tracks << [path.hex, a, path.lanes[0][1]]
+            end
+            if a.edge? && b.town? && (nedge = b.tile.preferred_city_town_edges[b]) && nedge != a.num
+              tracks << [path.hex, b, path.lanes[1][1]]
+            end
+          end
+
+          tracks.group_by(&:itself).each do |k, v|
+            raise GameError, "Route cannot reuse track on #{k[0].id}" if v.size > 1
+          end
+        end
+
+        def route_distance(route)
+          case train_type(route.train)
+          when :local
+            "#{route.visited_stops.count(&:city?)}+#{route.visited_stops.count(&:town?)}"
+          when :express
+            route.visited_stops.count { |n| n.city? || n.offboard? }
+          else
+            hex_route_distance(route)
+          end
+        end
+
+        def london_hex?(stop)
+          return true if LONDON_FULL_HEXES.include?(stop.hex.id)
+          return false unless LONDON_HALF_HEX == stop.hex.id
+
+          stop.exits.include?(LONDON_HALF_EXIT)
+        end
+
+        def check_london(visits)
+          return unless london_hex?(visits.first) || london_hex?(visits.last)
+
+          raise GameError, 'Train cannot visit London w/o link' unless london_link?(current_entity)
+        end
+
+        def hex_route_distance(route)
+          route.chains.sum do |conn|
+            conn[:paths].each_cons(2).sum do |a, b|
+              a.hex == b.hex ? 0 : 1
+            end
+          end
+        end
+
+        def check_distance(route, visits)
+          raise GameError, 'Route cannot begin/end in a town' if visits.first.town? || visits.last.town?
+          # could let super handle this, but this is a better error message
+          if train_type(route.train) == :local && visits.any?(&:offboard?)
+            raise GameError, 'Local train cannot visit an offboard'
+          end
+          if (visits.first.tile.color == :red && visits.last.tile.color == :red) ||
+            (visits.first.tile.color == :blue && visits.last.tile.color == :blue)
+            raise GameError, 'Route cannot visit two red offboards or two ports'
+          end
+
+          check_london(visits)
+
+          return super if train_type(route.train) != :freight
+          return if (distance = route.train.distance) >= hex_route_distance(route)
+
+          raise GameError, "#{distance} is too many hexes for a #{route.train.name} train"
+        end
+
+        def check_other(route)
+          check_overlap_single(route)
+        end
+
+        def stop_on_other_route?(this_route, stop)
+          this_route.routes.each do |r|
+            return false if r == this_route
+
+            return true if r.visited_stops.include?(stop)
+            return true unless (r.visited_stops.flat_map(&:groups) & stop.groups).empty?
+          end
+          false
+        end
+
+        # adjust end of set of routes to neighbor node if end is an offboard
+        def adjust_end(set, setend)
+          return setend unless setend.offboard?
+
+          # find route in set that has this end
+          end_route = set.find { |r| r.visited_stops.include?(setend) }
+          # find chain in route that has this end
+          end_chain = end_route.chains.find { |c| c[:nodes].include?(setend) }
+          # return other node in chain
+          end_chain[:nodes].find { |n| n != setend }
+        end
+
+        # from https://www.redblobgames.com/grids/hexagons
+        def doubleheight_coordinates(hex)
+          [hex.id[0].ord - 'A'.ord, hex.id[1..-1].to_i]
+        end
+
+        # given a freight route set, find number of intervening hexes
+        # between ends. If an end is an offboard, calculate distance as if end
+        # is last hex before offboard and add 1
+        def hex_crow_distance(set, setend_a, setend_b)
+          end_a = adjust_end(set, setend_a)
+          end_b = adjust_end(set, setend_b)
+
+          x_a, y_a = doubleheight_coordinates(end_a.hex)
+          x_b, y_b = doubleheight_coordinates(end_b.hex)
+
+          # from https://www.redblobgames.com/grids/hexagons#distances
+          # this game essentially uses double-height coordinates
+          dx = (x_a - x_b).abs
+          dy = (y_a - y_b).abs
+          distance = [0, dx + [0, (dy - dx) / 2].max - 1].max
+
+          # adjust for offboards
+          distance += 1 if end_a != setend_a
+          distance += 1 if end_b != setend_b
+
+          distance
+        end
+
+        def freight_bonus(set)
+          if freight_set_ends(set).any? { |n| n.tile.color == :blue }
+            PORT_FREIGHT_BONUS
+          else
+            FREIGHT_BONUS
+          end
+        end
+
+        # freight trains only count set ends, but add in hex distance bonus - allocate to first train in set
+        def freight_revenue(route, stops)
+          return 0 if route.chains.empty?
+
+          route_set = freight_sets(route.routes).find { |set| set.include?(route) }
+          ends = (set_ends = freight_set_ends(route_set)) & stops
+          rev = 0
+          unless ends.empty?
+            rev = ends.sum do |stop|
+              stop_on_other_route?(route, stop) ? 0 : stop.route_revenue(route.phase, route.train)
+            end
+          end
+          return rev unless route == route_set.first
+
+          rev + (hex_crow_distance(route_set, set_ends.first, set_ends.last) * freight_bonus(route_set))
+        end
+
+        # only count revenue locations once
+        def revenue_for(route, stops)
+          return freight_revenue(route, stops) if train_type(route.train) == :freight
+
+          stops.sum { |stop| stop_on_other_route?(route, stop) ? 0 : stop.route_revenue(route.phase, route.train) }
+        end
+
+        def hex_on_other_route?(this_route, hex)
+          this_route.routes.each do |r|
+            return false if r == this_route
+            return false unless train_type(r.train) == :local
+
+            return true if r.all_hexes.include?(hex)
+          end
+          false
+        end
+
+        def subsidy_for(route, _stops)
+          return 0 unless train_type(route.train) == :local
+
+          route.all_hexes.count { |h| !hex_on_other_route?(route, h) } * 10
+        end
+
+        # FIXME
+        def routes_subsidy(routes)
+          routes.sum(&:subsidy)
+        end
+
+        # find which stop was left out of an M/N train route
+        def missing_stop(route)
+          @global_stops ||= global_optimize(route.routes)
+
+          used_stops = @global_stops[route.routes.index(route)]
+          all_stops = route.visited_stops.select { |n| n.city? || n.offboard? }
+          (all_stops - used_stops).first if all_stops != used_stops
+        end
+
+        def revenue_str(route)
+          if mn_train?(route.train)
+            route.hexes.map do |h|
+              if missing_stop(route)&.hex == h
+                "[#{h.name}]"
+              else
+                h.name
+              end
+            end.join('-')
+          else
+            route.hexes.map(&:name).join('-')
+          end
+        end
+
+        # routes from different trains are allowed to overlap
+        def compute_other_paths(_routes, _route)
+          []
         end
       end
     end

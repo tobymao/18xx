@@ -42,14 +42,14 @@ module Engine
         end
 
         def bids_for_player(player, only_committed_bids: false)
-          @bids.values.map do |bids|
+          @bids.values.filter_map do |bids|
             if only_committed_bids
               highest_bid = bids.max_by(&:price)
               highest_bid if highest_bid&.entity == player
             else
               bids.find { |bid| bid.entity == player }
             end
-          end.compact
+          end
         end
       end
     end

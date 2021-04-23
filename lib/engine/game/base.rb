@@ -477,7 +477,7 @@ module Engine
       end
 
       def active_players
-        players_ = @round.active_entities.map(&:player).compact
+        players_ = @round.active_entities.filter_map(&:player)
 
         players_.empty? ? @players.reject(&:bankrupt) : players_
       end
@@ -1060,7 +1060,7 @@ module Engine
 
         max_num_stops.downto(1) do |num_stops|
           # to_i to work around Opal bug
-          stops, revenue = visits.combination(num_stops.to_i).map do |stops|
+          stops, revenue = visits.combination(num_stops.to_i).filter_map do |stops|
             # Make sure this set of stops is legal
             # 1) At least one stop must have a token
             next if stops.none? { |stop| stop.tokened_by?(route.corporation) }
@@ -1078,7 +1078,7 @@ module Engine
             end
 
             [stops, revenue_for(route, stops)]
-          end.compact.max_by(&:last)
+          end.max_by(&:last)
 
           revenue ||= 0
 
@@ -1596,7 +1596,7 @@ module Engine
         @last_game_action_id == @round_history.last
       end
 
-      def can_hold_above_limit?(_entity)
+      def can_hold_above_corp_limit?(_entity)
         false
       end
 
@@ -1700,11 +1700,11 @@ module Engine
       end
 
       def init_companies(players)
-        game_companies.map do |company|
+        game_companies.filter_map do |company|
           next if players.size < (company[:min_players] || 0)
 
           Company.new(**company)
-        end.compact
+        end
       end
 
       def game_companies

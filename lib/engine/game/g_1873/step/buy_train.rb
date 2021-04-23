@@ -188,7 +188,7 @@ module Engine
               [@game.switcher(entity)].compact
             elsif @game.public_mine?(entity)
               # public mines can only voluntarily scrap switchers
-              @game.public_mine_mines(entity).map { |m| @game.switcher(m) }.compact
+              @game.public_mine_mines(entity).filter_map { |m| @game.switcher(m) }
             else
               # RRs can voluntarily scrap switchers
               # and any trains if they have at least two (the NWE can't scrap a train

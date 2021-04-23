@@ -20,7 +20,7 @@ module Engine
       end
 
       def can_lay_tile?(entity)
-        return true if abilities(entity, time: type, passive_ok: false)
+        return true if tile_lay_abilities_should_block?(entity)
         return true if can_buy_tile_laying_company?(entity, time: type)
 
         action = get_tile_lay(entity)
@@ -60,6 +60,10 @@ module Engine
 
       def upgraded_track(action)
         @round.upgraded_track = true if action.tile.color != :yellow
+      end
+
+      def tile_lay_abilities_should_block?(entity)
+        Array(abilities(entity, time: type, passive_ok: false)).any? { |a| !a.consume_tile_lay }
       end
 
       def abilities(entity, **kwargs, &block)
@@ -160,7 +164,7 @@ module Engine
             pay_all_tile_income(company, ability)
           else
             # company with tile income for specific terrain
-            pay_terrain_tile_income(company, ability, terrain, entity)
+            pay_terrain_tile_income(company, ability, terrain, entity, spender)
           end
         end
       end
@@ -172,9 +176,9 @@ module Engine
             " for the tile built by #{company.name}"
       end
 
-      def pay_terrain_tile_income(company, ability, terrain, entity)
+      def pay_terrain_tile_income(company, ability, terrain, entity, spender)
         return unless terrain.include?(ability.terrain)
-        return if ability.owner_only && company.owner != entity
+        return if ability.owner_only && company.owner != entity && company.owner != spender
 
         # If multiple borders are connected bonus counts each individually
         income = ability.income * terrain.count { |t| t == ability.terrain }
@@ -301,14 +305,14 @@ module Engine
       end
 
       def upgradeable_tiles(entity, hex)
-        potential_tiles(entity, hex).map do |tile|
+        potential_tiles(entity, hex).filter_map do |tile|
           tile.rotate!(0) # reset tile to no rotation since calculations are absolute
           tile.legal_rotations = legal_tile_rotations(entity, hex, tile)
           next if tile.legal_rotations.empty?
 
           tile.rotate! # rotate it to the first legal rotation
           tile
-        end.compact
+        end
       end
 
       def legal_tile_rotation?(entity, hex, tile)

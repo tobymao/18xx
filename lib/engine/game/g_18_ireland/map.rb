@@ -430,6 +430,7 @@ module Engine
           'C21' => 'Bantry',
           'D22' => 'Clonakilty',
           'C23' => 'Baltimore',
+          'E21' => 'Cork',
         }.freeze
 
         HEXES = {

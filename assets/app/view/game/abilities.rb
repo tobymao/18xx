@@ -52,7 +52,7 @@ module View
       end
 
       def render_companies(companies)
-        companies.map do |company|
+        companies.filter_map do |company|
           props = {
             on: {
               click: lambda do
@@ -69,7 +69,7 @@ module View
           owner_name = company.owner.name.truncate
 
           h(:button, props, "#{company_name} (#{owner_name})")
-        end.compact
+        end
       end
 
       def render_actions

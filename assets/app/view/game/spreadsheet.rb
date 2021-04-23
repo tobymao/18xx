@@ -93,7 +93,7 @@ module View
       def render_player_or_history
         # OR history should exist in all
         last_values = nil
-        @game.players.first.history.map do |h|
+        @game.players.first.history.filter_map do |h|
           values = @game.players.map do |p|
             p.history.find { |h2| h2.round == h.round }.value
           end
@@ -112,7 +112,7 @@ module View
             h('th.left', h.round),
             *row_content,
           ])
-        end.compact.reverse
+        end.reverse
       end
 
       def render_history(corporation)

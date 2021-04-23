@@ -950,7 +950,7 @@ module Engine
            bergslagen_bonus(icons),
            orefields_bonus(icons),
            sveabolaget_bonus(route),
-           gkb_bonus(route)].map { |b| b[:description] }.compact.each { |d| str += " + #{d}" }
+           gkb_bonus(route)].filter_map { |b| b[:description] }.each { |d| str += " + #{d}" }
 
           str
         end
@@ -1031,7 +1031,7 @@ module Engine
         # If there are 2 station markers on the same city the
         # merged corporation must remove one and return it to its charter.
         def remove_duplicate_tokens(target, merged)
-          merged_tokens = merged.tokens.map(&:city).compact
+          merged_tokens = merged.tokens.filter_map(&:city)
           target.tokens.each do |token|
             city = token.city
             token.remove! if merged_tokens.include?(city)
