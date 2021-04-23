@@ -235,9 +235,9 @@ module View
       def slots
         return if @slot_checkboxes.empty?
 
-        @slot_checkboxes.keys.filter_map do |k|
+        @slot_checkboxes.keys.map do |k|
           k if Native(@slot_checkboxes[k]).elm.checked
-        end
+        end.compact
       end
 
       def other_trains(other_corp_trains)

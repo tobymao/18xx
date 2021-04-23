@@ -298,13 +298,13 @@ module View
 
           @selected_corporation = @step.auctioning if @step.auctioning
 
-          @step.available.select(&:corporation?).filter_map do |corporation|
+          @step.available.select(&:corporation?).map do |corporation|
             children = []
             children << h(Corporation, corporation: corporation)
             children << render_ipo_input if @selected_corporation == corporation && !corporation.ipoed
             children << render_corp_choose_input if @selected_corporation == corporation && corporation.ipoed
             h(:div, props, children)
-          end
+          end.compact
         end
 
         def render_ipo_input

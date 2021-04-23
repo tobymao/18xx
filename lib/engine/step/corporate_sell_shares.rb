@@ -61,11 +61,11 @@ module Engine
       end
 
       def source_list(entity)
-        entity.corporate_shares.filter_map do |share|
+        entity.corporate_shares.map do |share|
           next if bought?(entity, share.corporation)
 
           share.corporation
-        end.uniq
+        end.compact.uniq
       end
 
       def bought?(entity, corporation)

@@ -1353,14 +1353,14 @@ module Engine
           # Allocate optional stops, combination returns nothing if stops doesn't cover the remaining stops
           combinations = optional_stops.combination(remaining_stops.to_i).to_a
           combinations = [optional_stops] if combinations.empty?
-          stops, revenue = combinations.filter_map do |stops|
+          stops, revenue = combinations.map do |stops|
             # Make sure this set of stops is legal
             # 1) At least one stop must have a token (for 5+5E train)
             next if need_token && stops.none? { |stop| stop.tokened_by?(route.corporation) }
 
             all_stops = mandatory_stops + stops
             [all_stops, revenue_for(route, all_stops)]
-          end.max_by(&:last)
+          end.compact.max_by(&:last)
 
           revenue ||= 0
 

@@ -54,7 +54,7 @@ module Engine
           end
 
           def available_cities
-            taken_entity.tokens.filter_map(&:city)
+            taken_entity.tokens.map(&:city).compact
           end
 
           def available_city(_entity, city)
@@ -156,7 +156,7 @@ module Engine
             return if source.placed_tokens.empty?
             return if destination.unplaced_tokens.empty?
 
-            destination_hexes = destination.tokens.filter_map { |token| token&.city&.hex }
+            destination_hexes = destination.tokens.map { |token| token&.city&.hex }.compact
 
             source.tokens.each do |token|
               next unless token.used
@@ -214,7 +214,7 @@ module Engine
           def payout_shareholders(source, payout)
             share_percent = source.share_percent
 
-            payouts = source.share_holders.filter_map do |s_h|
+            payouts = source.share_holders.map do |s_h|
               entity, percent = s_h
               next if source == entity
 
@@ -225,7 +225,7 @@ module Engine
 
               source.spend(total_payout, entity)
               "#{@game.format_currency(total_payout)} to #{entity.name}"
-            end
+            end.compact
 
             @game.log << "#{source.name} distributes #{payouts.join(', ')}" if payouts.any?
           end

@@ -105,10 +105,10 @@ module Engine
 
           def finish_merge
             players = @game.players.rotate(@game.players.index(current_entity))
-            @round.to_vote = players.filter_map do |player|
+            @round.to_vote = players.map do |player|
               shares = @round.merging.sum { |corp| player.num_shares_of(corp,) }
               [player, shares] unless shares.zero?
-            end
+            end.compact
 
             new_price = new_share_price
             @round.votes_for = 0
@@ -153,10 +153,10 @@ module Engine
 
             # 'Buy' shares in player order, which will result in the presidency ended up in the right place.
             players = @game.players.rotate(@game.players.index(initiator))
-            player_shares = players.filter_map do |player|
+            player_shares = players.map do |player|
               shares = @round.merging.sum { |corp| player.num_shares_of(corp,) }
               [player, shares] unless shares.zero?
-            end
+            end.compact
 
             market_shares = @round.merging.sum { |corp| @game.share_pool.num_shares_of(corp) }
 

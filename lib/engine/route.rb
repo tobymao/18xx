@@ -221,7 +221,8 @@ module Engine
         .chunk(&:itself)
         .to_a # opal has a bug that needs this conversion from enum
         .map(&:first)
-        .filter_map(&:hex)
+        .map(&:hex)
+        .compact
     end
 
     def all_hexes

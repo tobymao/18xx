@@ -146,14 +146,14 @@ module Engine
           end
 
           def moveable_bids(player, company)
-            @bids.filter_map do |cmp, company_bids|
+            @bids.map do |cmp, company_bids|
               next if cmp == company
 
               player_bids = company_bids.select { |bid| bid.entity == player }
               next if player_bids.empty?
 
               [cmp, player_bids]
-            end.to_h
+            end.compact.to_h
           end
 
           protected

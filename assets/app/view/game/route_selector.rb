@@ -32,7 +32,7 @@ module View
         return [] if @abilities&.any?
 
         halts = operating[operating.keys.max]&.halts
-        last_run.filter_map do |train, connection_hexes|
+        last_run.map do |train, connection_hexes|
           next unless trains.include?(train)
 
           # A future enhancement to this could be to find trains and move the routes over
@@ -44,7 +44,7 @@ module View
             routes: @routes,
             halts: halts[train],
           )
-        end
+        end.compact
       end
 
       def render

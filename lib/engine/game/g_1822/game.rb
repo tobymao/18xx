@@ -864,12 +864,12 @@ module Engine
         end
 
         def init_companies(players)
-          game_companies.filter_map do |company|
+          game_companies.map do |company|
             next if players.size < (company[:min_players] || 0)
             next unless starting_companies.include?(company[:sym])
 
             Company.new(**company)
-          end
+          end.compact
         end
 
         def init_company_abilities
@@ -890,7 +890,7 @@ module Engine
                                   else
                                     self.class::STARTING_CORPORATIONS
                                   end
-          game_corporations.filter_map do |corporation|
+          game_corporations.map do |corporation|
             next unless starting_corporations.include?(corporation[:sym])
 
             Corporation.new(
@@ -898,7 +898,7 @@ module Engine
               capitalization: self.class::CAPITALIZATION,
               **corporation.merge(corporation_opts),
             )
-          end
+          end.compact
         end
 
         def init_hexes(_companies, _corporations)
@@ -1189,13 +1189,13 @@ module Engine
 
         def timeline_companies_plus(prefix, bidbox)
           first = true
-          bank_companies(prefix).filter_map do |company|
+          bank_companies(prefix).map do |company|
             next unless bidbox.include?(company.id)
 
             company_str = "#{self.class::COMPANY_SHORT_NAMES[company.id]}#{'*' if first}"
             first = false
             company_str
-          end
+          end.compact
         end
 
         def unowned_purchasable_companies(_entity)
@@ -1647,7 +1647,7 @@ module Engine
 
           # If multiple routes gets destination bonus, get the biggest one. If we got E trains
           # this is bigger then normal train.
-          destination_bonus = routes.filter_map { |r| calculate_destination_bonus(r) }
+          destination_bonus = routes.map { |r| calculate_destination_bonus(r) }.compact
           destination_bonus.sort_by { |v| v[:revenue] }.reverse&.first
         end
 
@@ -1693,14 +1693,14 @@ module Engine
           mail_contracts = entity.companies.count { |c| self.class::PRIVATE_MAIL_CONTRACTS.include?(c.id) }
           return [] unless mail_contracts.positive?
 
-          mail_bonuses = routes.filter_map do |r|
+          mail_bonuses = routes.map do |r|
             stops = r.visited_stops
             next if stops.size < 2
 
             first = stops.first.route_base_revenue(r.phase, r.train) / 2
             last = stops.last.route_base_revenue(r.phase, r.train) / 2
             { route: r, subsidy: first + last }
-          end
+          end.compact
           mail_bonuses.sort_by { |v| v[:subsidy] }.reverse.take(mail_contracts)
         end
 
@@ -1882,9 +1882,9 @@ module Engine
           # If have have activated 1822+, 3 companies will be removed from the game
           if optional_plus_expansion?
             # Make sure we have correct order of the bidboxes
-            bid_box_1 = privates.filter_map { |c| c if self.class::PLUS_EXPANSION_BIDBOX_1.include?(c.id) }
-            bid_box_2 = privates.filter_map { |c| c if self.class::PLUS_EXPANSION_BIDBOX_2.include?(c.id) }
-            bid_box_3 = privates.filter_map { |c| c if self.class::PLUS_EXPANSION_BIDBOX_3.include?(c.id) }
+            bid_box_1 = privates.map { |c| c if self.class::PLUS_EXPANSION_BIDBOX_1.include?(c.id) }.compact
+            bid_box_2 = privates.map { |c| c if self.class::PLUS_EXPANSION_BIDBOX_2.include?(c.id) }.compact
+            bid_box_3 = privates.map { |c| c if self.class::PLUS_EXPANSION_BIDBOX_3.include?(c.id) }.compact
             privates = bid_box_1 + bid_box_2 + bid_box_3
 
             # Remove one of the bidbid 2 privates, except London, Chatham and Dover Railway

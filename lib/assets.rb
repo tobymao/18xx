@@ -160,13 +160,13 @@ class Assets
     output = "#{@out_path}/#{name || game}.js"
     metadata = lib_metadata(ns || name, lib_path, game: game)
 
-    compilers = metadata.filter_map do |file, opts|
+    compilers = metadata.map do |file, opts|
       FileUtils.mkdir_p(opts[:build_path])
       js_path = opts[:js_path]
       next if @cache && File.exist?(js_path) && File.mtime(js_path) >= opts[:mtime]
 
       Opal::Compiler.new(File.read(opts[:path]), file: file, requirable: true)
-    end
+    end.compact
 
     return output if compilers.empty?
 
