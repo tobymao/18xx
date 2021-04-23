@@ -21,7 +21,7 @@ module Engine
 
             [Engine::Action::HexToken.new(entity,
                                           hex: @game.hex_by_id(destination(entity)),
-                                          token: available_tokens(entity).first.type)]
+                                          token_type: available_tokens(entity).first.type)]
           end
 
           def available_tokens(entity)
@@ -62,7 +62,9 @@ module Engine
           def process_hex_token(action)
             entity = action.entity
             hex = action.hex
-            token = action.token
+            # This ignores the token on the action, as for a few games it was incorrectly set to a 'normal' token
+            token = available_tokens(entity).first
+            raise GameError, 'Corporation does not have a destination token unused' unless token
 
             if !@game.loading && !destination_node_check?(entity)
               raise GameError, "Can't place the destination token on #{hex.name} "\
