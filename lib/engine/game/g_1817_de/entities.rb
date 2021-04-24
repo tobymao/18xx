@@ -80,6 +80,7 @@ module Engine
             type: 'tile_lay',
             hexes: %w[D14
                       D22
+                      D24
                       E15
                       G11
                       G13
@@ -111,6 +112,7 @@ module Engine
             type: 'tile_lay',
             hexes: %w[D14
                       D22
+                      D24
                       E15
                       G11
                       G13
@@ -305,7 +307,8 @@ module Engine
                 max_ownership_percent: 100,
                 tokens: [0],
                 always_market_price: true,
-                color: '#984573',
+                color: '#ADD8E6',
+                text_color: 'black',
                 reservation_color: nil,
               },
               {
