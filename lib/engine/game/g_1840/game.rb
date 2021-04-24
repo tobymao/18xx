@@ -156,12 +156,6 @@ module Engine
           new_company_operating_route_round
         end
 
-        def new_operating_round(round_num = 1)
-          @log << "-- #{round_description(self.class::OPERATING_ROUND_NAME, round_num)} --"
-          @round_counter += 1
-          operating_round(round_num)
-        end
-
         def new_company_operating_route_round(round_num)
           G1840::Round::CompanyOperating.new(self, [
             G1840::Step::Route,
