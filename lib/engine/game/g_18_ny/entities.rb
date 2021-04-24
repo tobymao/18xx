@@ -53,7 +53,7 @@ module Engine
             sym: 'WPF',
             value: 60,
             revenue: 15,
-            desc: 'Owning corporation may exchange this company for half off a trian purchase ' \
+            desc: 'Owning corporation may exchange this company for half off a train purchase ' \
                   '(up to a maximimum of $200) from the bank or Bank Pool.',
             color: nil,
             abilities: [

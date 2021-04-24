@@ -120,7 +120,7 @@ module Engine
                     num: 2,
                     distance: 12,
                     price: 600,
-                    events: [{ type: 'remove_corporations' }, { type: 'nyc_formation' }],
+                    events: [{ type: 'close_companies' }, { type: 'nyc_formation' }],
                   },
                   { name: '12H', num: 1, distance: 12, price: 600, events: [{ type: 'capitalization_round' }] },
                   {
@@ -160,6 +160,7 @@ module Engine
             Engine::Step::Route,
             Engine::Step::Dividend,
             Engine::Step::DiscardTrain,
+            Engine::Step::SpecialBuyTrain,
             Engine::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
