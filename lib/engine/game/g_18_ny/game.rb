@@ -137,6 +137,13 @@ module Engine
           @erie_canal_private = @companies.find { |c| c.id == 'EC' }
         end
 
+        def new_auction_round
+          Round::Auction.new(self, [
+            G18NY::Step::CompanyPendingPar,
+            Engine::Step::WaterfallAuction,
+          ])
+        end
+
         def stock_round
           Round::Stock.new(self, [
             G18NY::Step::BuySellParShares,
