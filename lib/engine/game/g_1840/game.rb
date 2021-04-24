@@ -94,6 +94,7 @@ module Engine
           @tram_corporations = @all_tram_corporations.reject { |item| item.id == '2' }.sort_by do
             rand
           end.first(@players.size + 1)
+          @unavailable_tram_corporations = @all_tram_corporations - @tram_corporations
           @city_corporations = @corporations.select { |item| item.type == :city }
           @major_corporations = @corporations.select { |item| item.type == :major }
                                 .sort_by { rand }.first(@players.size)
@@ -180,9 +181,8 @@ module Engine
           ], round_num: round_num, no_city: true)
         end
 
-        # TODO: Line Round
         def operating_round(round_num)
-          Engine::Round::Operating.new(self, [
+          G1840::Round::LineOperating.new(self, [
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
             Engine::Step::SpecialTrack,
@@ -206,10 +206,12 @@ module Engine
               init_company_round
             when new_company_operating_route_round.class
               @cr_counter += 1
-              if @cr_counter <= 2
+              if @cr_counter < 3
                 new_company_operating_buy_train_round
-              else
+              elsif @cr_counter < 4
                 new_company_operating_auction_round
+              else
+                new_operating_round(@round.round_num + 1)
               end
             when new_company_operating_auction_round.class
               new_company_operating_switch_trains
@@ -297,6 +299,17 @@ module Engine
           end
           tram_corporation.owner = buying_corporation.owner
           @tram_owned_by_corporation[buying_corporation] << tram_corporation
+          @tram_corporations.delete(tram_corporation)
+        end
+
+        def restock_tram_corporations
+          count_new_tram_corporations = @players.size + 1 - @tram_corporations.size
+          return if count_new_tram_corporations.zero?
+
+          new_tram_corporations = @unavailable_tram_corporations.sort_by { rand }.first(count_new_tram_corporations)
+          @tram_corporations.concat(new_tram_corporations)
+          @corporations.concat(new_tram_corporations)
+          @unavailable_tram_corporations -= new_tram_corporations
         end
 
         def round_description(name, round_number = nil, use_round = true)

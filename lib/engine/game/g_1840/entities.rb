@@ -17,24 +17,28 @@ module Engine
               name: '1',
               train_limit: 3,
               tiles: %i[yellow],
+              operating_rounds: 2,
             },
             {
               name: '2',
               train_limit: 3,
               tiles: %i[yellow green],
               status: ['can_buy_companies'],
+              operating_rounds: 2,
             },
             {
               name: '3',
               train_limit: 3,
               tiles: %i[yellow green brown],
               status: ['can_buy_companies'],
+              operating_rounds: 2,
             },
             {
               name: '4',
               train_limit: 3,
               tiles: %i[yellow green brown gray],
               status: ['can_buy_companies'],
+              operating_rounds: 2,              
             },
 
           ].freeze

@@ -210,6 +210,7 @@ module Engine
                 entity: item,
               }
             end
+            @game.restock_tram_corporations
             pass!
           end
         end
