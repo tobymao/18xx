@@ -30,7 +30,8 @@ module Engine
       end
 
       def get_tile_lay(entity)
-        action = @game.tile_lays(entity)[@round.num_laid_track]&.clone
+        corporation = entity.company? ? entity.owner : entity
+        action = @game.tile_lays(corporation)[@round.num_laid_track]&.clone
         return unless action
 
         action[:lay] = !@round.upgraded_track if action[:lay] == :not_if_upgraded
@@ -111,7 +112,8 @@ module Engine
 
         abilities(entity) do |ability|
           next if ability.owner != entity
-          next if !ability.hexes.empty? && (!ability.hexes.include?(hex.id) || !ability.tiles.include?(tile.name))
+          next if !ability.hexes.empty? && !ability.hexes.include?(hex.id)
+          next if !ability.tiles.empty? && !ability.tiles.include?(tile.name)
 
           ability_found = true
           if ability.type == :teleport
@@ -358,6 +360,21 @@ module Engine
 
           company.all_abilities.any? { |a| a.type == :tile_lay && a.when?(time) }
         end
+      end
+
+      def tracker_available_hex(entity, hex)
+        connected = hex_neighbors(entity, hex)
+        return nil unless connected
+
+        tile_lay = get_tile_lay(entity)
+        return nil unless tile_lay
+
+        color = hex.tile.color
+        return nil if color == :white && !tile_lay[:lay]
+        return nil if color != :white && !tile_lay[:upgrade]
+        return nil if color != :white && tile_lay[:cannot_reuse_same_hex] && @round.laid_hexes.include?(hex)
+
+        connected
       end
     end
   end

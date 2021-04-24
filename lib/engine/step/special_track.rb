@@ -96,6 +96,9 @@ module Engine
       end
 
       def available_hex(entity, hex)
+        return unless (ability = abilities(entity))
+        return tracker_available_hex(entity, hex) if ability.hexes&.empty? && ability.consume_tile_lay
+
         hex_neighbors(entity, hex)
       end
 

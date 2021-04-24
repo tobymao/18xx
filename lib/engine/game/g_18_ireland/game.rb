@@ -201,7 +201,7 @@ module Engine
         end
 
         def tile_lays(entity)
-          return super unless entity.companies.any? { |c| c.id == 'WDE' }
+          return super if !entity.corporation? || entity.companies.none? { |c| c.id == 'WDE' }
 
           DARGAN_TILE_LAYS
         end
@@ -323,17 +323,21 @@ module Engine
           # Broad gauge lay is if any of the new exits broad gauge?
           old_paths = old_tile.paths
           new_tile_paths = tile.paths
-          new_tile_paths.any? { |path| path.track == :broad && old_paths.none? { |p| path <= p } }
+          new_tile_paths.all? { |path| path.track == :broad || old_paths.any? { |p| path <= p } }
         end
 
-        def legal_tile_rotation?(corp, hex, tile)
-          connection_directions = if tile_uses_broad_rules?(hex.tile, tile)
-                                    graph.connected_hexes(corp)[hex]
-                                  else
-                                    narrow_connected_hexes(corp)[hex]
-                                  end
-          # Must be connected for the tile to be layable
-          return false unless connection_directions
+        def legal_tile_rotation?(entity, hex, tile)
+          # TIM, DR and TDR can lay irrespective of connectivity.
+          if !entity.company? || !%w[TIM DR TDR].include?(entity.id)
+            corp = entity.corporation
+            connection_directions = if tile_uses_broad_rules?(hex.tile, tile)
+                                      graph.connected_hexes(corp)[hex]
+                                    else
+                                      narrow_connected_hexes(corp)[hex] | graph.connected_hexes(corp)[hex]
+                                    end
+            # Must be connected for the tile to be layable
+            return false unless connection_directions
+          end
 
           # All tile exits must match neighboring tiles
           tile.exits.each do |dir|
