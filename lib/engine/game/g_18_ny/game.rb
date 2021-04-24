@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
-require_relative 'map'
 require_relative 'meta'
+require_relative '../base'
+require_relative 'map'
 require_relative 'entities'
 
 module Engine
@@ -144,15 +145,16 @@ module Engine
 
         def operating_round(round_num)
           Round::Operating.new(self, [
-            Step::BuyCompany,
+            Engine::Step::BuyCompany,
             G18NY::Step::SpecialTrack,
             G18NY::Step::Track,
-            Step::Token,
-            Step::Route,
-            Step::Dividend,
-            Step::DiscardTrain,
-            Step::BuyTrain,
-            [Step::BuyCompany, { blocks: true }],
+            G18NY::Step::SpecialToken,
+            Engine::Step::Token,
+            Engine::Step::Route,
+            Engine::Step::Dividend,
+            Engine::Step::DiscardTrain,
+            Engine::Step::BuyTrain,
+            [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 
