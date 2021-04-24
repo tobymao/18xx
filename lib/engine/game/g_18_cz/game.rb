@@ -50,6 +50,8 @@ module Engine
         EBUY_OTHER_VALUE = false # allow ebuying other corp trains for up to face
         EBUY_CAN_SELL_SHARES = false # player cannot sell shares
 
+        AVAILABLE_CORP_COLOR = '#c6e9af'
+
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
           par: :red,
           par_2: :green,
@@ -145,7 +147,7 @@ module Engine
 
           # Only small companies are available until later phases
           @corporations, @future_corporations = @corporations.partition { |corporation| corporation.type == :small }
-
+          @corporations.each { |corp| corp.reservation_color = self.class::AVAILABLE_CORP_COLOR }
           new_corporation_for_vaclav(:small) unless multiplayer?
 
           block_lay_for_purple_tiles
@@ -323,6 +325,7 @@ module Engine
           medium_corps, @future_corporations = @future_corporations.partition do |corporation|
             corporation.type == :medium
           end
+          medium_corps.each { |corp| corp.reservation_color = self.class::AVAILABLE_CORP_COLOR }
           @corporations.concat(medium_corps)
           @log << '-- Medium corporations now available --'
 
