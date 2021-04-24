@@ -12,12 +12,12 @@ module Engine
         DEPENDS_ON = '1817'
 
         GAME_DESIGNER = 'Scott Petersen'
-        GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1817DE'
+        GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18DE'
         GAME_LOCATION = 'Germany'
         GAME_RULES_URL = {
-          '1817DE Rule Differences' =>
+          '18DE Rule Differences' =>
                           'https://docs.google.com/document/d/1lH3TcQc6etptZDWMbX1oZe7ne2VbbinAYkX8W_lpu-c/edit',
-          '1817DE Playtest Feedback (BGG)' =>
+          '18DE Playtest Feedback (BGG)' =>
                           'https://boardgamegeek.com/thread/2640741/article/37490722',
           '1817 Rules' =>
                 'https://drive.google.com/file/d/0B1SWz2pNe2eAbnI4NVhpQXV4V0k/view',
