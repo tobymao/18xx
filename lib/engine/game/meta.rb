@@ -74,7 +74,7 @@ module Engine
 
         def game_variants
           @game_variants ||= self::GAME_VARIANTS.map do |v|
-            [v[:sym], v.merge({ meta: GAME_META_BY_TITLE[v[:title]] })]
+            [v[:sym], v.merge({ meta: Engine.meta_by_title(v[:title]) })]
           end.to_h
         end
       end
