@@ -37,6 +37,8 @@ module Engine
 
         OPERATING_ROUND_NAME = 'Line'
 
+        AVAILABLE_CORP_COLOR = '#c6e9af'
+
         MARKET_TEXT = {
           par: 'City Corporation Par',
           par_2: 'Major Corporation Par',
@@ -96,6 +98,7 @@ module Engine
           @tram_corporations = @all_tram_corporations.reject { |item| item.id == '2' }.sort_by do
             rand
           end.first(@players.size + 1)
+          @tram_corporations.each { |corp| corp.reservation_color = self.class::AVAILABLE_CORP_COLOR }
           @unavailable_tram_corporations = @all_tram_corporations - @tram_corporations
           @city_corporations = @corporations.select { |item| item.type == :city }
           @major_corporations = @corporations.select { |item| item.type == :major }
@@ -309,6 +312,7 @@ module Engine
           return if count_new_tram_corporations.zero?
 
           new_tram_corporations = @unavailable_tram_corporations.sort_by { rand }.first(count_new_tram_corporations)
+          new_tram_corporations.each { |corp| corp.reservation_color = self.class::AVAILABLE_CORP_COLOR }
           @tram_corporations.concat(new_tram_corporations)
           @corporations.concat(new_tram_corporations)
           @unavailable_tram_corporations -= new_tram_corporations
