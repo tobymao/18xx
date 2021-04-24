@@ -250,6 +250,8 @@ module Engine
         ignore_one_sale: 'Ignore first share sold when moving price',
       }.freeze
 
+      OPERATING_ROUND_NAME = 'Operating'
+
       MARKET_SHARE_LIMIT = 50 # percent
       ALL_COMPANIES_ASSIGNABLE = false
       OBSOLETE_TRAINS_COUNT_FOR_LIMIT = false
@@ -1949,7 +1951,7 @@ module Engine
 
       def total_rounds(name)
         # Return the total number of rounds for those with more than one.
-        @operating_rounds if name == 'Operating'
+        @operating_rounds if name == self.class::OPERATING_ROUND_NAME
       end
 
       def next_round!
@@ -2156,7 +2158,7 @@ module Engine
       end
 
       def new_operating_round(round_num = 1)
-        @log << "-- #{round_description('Operating', round_num)} --"
+        @log << "-- #{round_description(self.class::OPERATING_ROUND_NAME, round_num)} --"
         @round_counter += 1
         operating_round(round_num)
       end

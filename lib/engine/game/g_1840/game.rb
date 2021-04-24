@@ -35,6 +35,8 @@ module Engine
 
         ADDITIONAL_CASH = 350
 
+        OPERATING_ROUND_NAME = 'Line'
+
         MARKET_TEXT = {
           par: 'City Corporation Par',
           par_2: 'Major Corporation Par',
@@ -150,8 +152,14 @@ module Engine
         def init_company_round
           @round_counter += 1
           @cr_counter += 1
-          @log << "-- #{round_description('Company', nil, false)} --"
+          @log << "-- #{round_description('Company', nil)} --"
           new_company_operating_route_round
+        end
+
+        def new_operating_round(round_num = 1)
+          @log << "-- #{round_description(self.class::OPERATING_ROUND_NAME, round_num)} --"
+          @round_counter += 1
+          operating_round(round_num)
         end
 
         def new_company_operating_route_round(round_num)
@@ -310,12 +318,6 @@ module Engine
           @tram_corporations.concat(new_tram_corporations)
           @corporations.concat(new_tram_corporations)
           @unavailable_tram_corporations -= new_tram_corporations
-        end
-
-        def round_description(name, round_number = nil, use_round = true)
-          name = @round.name.sub(' Round', '') if use_round
-
-          super
         end
 
         def payout_companies

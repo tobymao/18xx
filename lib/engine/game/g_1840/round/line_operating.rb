@@ -10,6 +10,14 @@ module Engine
           def select_entities
             @game.operating_order.select { |item| item.type == :minor }
           end
+
+          def self.short_name
+            'LR'
+          end
+
+          def name
+            'Line Round'
+          end
         end
       end
     end

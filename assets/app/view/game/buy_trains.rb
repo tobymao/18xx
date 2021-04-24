@@ -182,6 +182,7 @@ module View
                               "#{@game.format_currency(issuable_cash)} (the corporation "\
                               'must issue shares before the president may contribute).')
         end
+
         if (@must_buy_train && step.ebuy_president_can_contribute?(@corporation)) ||
            step.president_may_contribute?(@corporation, @active_shell)
           children.concat(render_president_contributions)
