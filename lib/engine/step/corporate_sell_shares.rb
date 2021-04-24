@@ -42,6 +42,7 @@ module Engine
 
       def can_sell?(entity, bundle)
         return unless bundle
+        return false if entity != bundle.owner
 
         entity != bundle.corporation && !bought?(entity, bundle.corporation)
       end
