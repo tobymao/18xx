@@ -206,7 +206,7 @@ module Engine
             case @round
             when Engine::Round::Stock
               init_company_round
-            when new_company_operating_route_round.class
+            when G1840::Round::CompanyOperating
               @cr_counter += 1
               if @cr_counter < 3
                 new_company_operating_buy_train_round
