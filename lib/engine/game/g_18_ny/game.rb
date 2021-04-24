@@ -145,8 +145,8 @@ module Engine
         def operating_round(round_num)
           Round::Operating.new(self, [
             Step::BuyCompany,
-            Step::SpecialTrack,
-            Step::Track,
+            G18NY::Step::SpecialTrack,
+            G18NY::Step::Track,
             Step::Token,
             Step::Route,
             Step::Dividend,
@@ -187,14 +187,8 @@ module Engine
           true
         end
 
-        def preprocess_action(action)
-          super
-
-          check_erie_canal_tile_lay(action.hex) if action.is_a?(Engine::Action::LayTile)
-        end
-
-        def check_erie_canal_tile_lay(hex)
-          return if hex.tile.icons.empty? { |icon| icon.name == ERIE_CANAL_ICON }
+        def tile_lay(_hex, old_tile, _new_tile)
+          return if old_tile.icons.empty? { |icon| icon.name == ERIE_CANAL_ICON }
 
           @erie_canal_private.revenue -= 10
           return unless @erie_canal_private.revenue.zero?
