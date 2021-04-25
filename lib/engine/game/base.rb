@@ -2264,6 +2264,10 @@ module Engine
 
       def status_array(_corporation); end
 
+      def par_price_str(share_price)
+        format_currency(share_price.price)
+      end
+
       # Override this, and add elements (paragraphs of text) here to display it on Info page.
       def timeline
         []

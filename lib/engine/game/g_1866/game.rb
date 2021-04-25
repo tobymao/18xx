@@ -29,24 +29,34 @@ module Engine
         TILE_TYPE = :lawson
         LAYOUT = :pointy
 
-        HOME_TOKEN_TIMING = :init
+        HOME_TOKEN_TIMING = :operate
         MUST_BID_INCREMENT_MULTIPLE = true
         MUST_BUY_TRAIN = :always
-        NEXT_SR_PLAYER_ORDER = :most_cash
+        NEXT_SR_PLAYER_ORDER = :least_cash
 
         MUST_SELL_IN_BLOCKS = false
-        SELL_AFTER = :operate
+        SELL_AFTER = :first
         SELL_BUY_ORDER = :sell_buy
         SELL_MOVEMENT = :down_share
 
         MARKET = [
-          %w[0 5 10 15 20 25 30 35 40 45 50 55 60 65 70 75 80 90 100 110 120 135 150 165 180 200 220 240 260 280 300
-             330 360 390 420 460 500 540 580 630 680],
-          %w[0 5 10 15 20 25 30 35 40 45 50 55 60 65 70 75 80 90 100 110 120 135 150 165 180 200 220 240 260 280 300
-             330 360 390 420 460 500 540 580 630 680],
-          %w[0 5 10 15 20 25 30 35 40 45 50 55 60 65 70 75 80 90 100 110 120 135 150 165 180 200 220 240 260 280 300
-             330 360 390 420 460 500 540 580 630 680],
+          %w[0 5 10 15 20 25 30p 35p 40p 45p 50p 55p 60x 65x 70x 75x 80x 90x 100z 110z 120z 135z 150w 165w 180
+             200 220 240 260 280 300 330 360 390 420 460 500 540 580 630 680],
+          %w[0 5 10 15 20 25 30p 35p 40p 45p 50p 55p 60p 65p 70p 75p 80x 90x 100x 110x 120z 135z 150z 165w 180w
+             200 220 240 260 280 300 330 360 390 420 460 500 540 580 630 680],
+          %w[0 5 10 15 20 25 30 35 40 45 50 55 60p 65p 70p 75p 80p 90p 100p 110x 120x 135x 150z 165z 180w
+             200pxzw 220 240 260 280 300 330 360 390 420 460 500 540 580 630 680],
         ].freeze
+
+        MARKET_TEXT = Base::MARKET_TEXT.merge(par: 'Yellow phase (L/2) par',
+                                              par_1: 'Green phase (3/4) par',
+                                              par_2: 'Brown phase (5/6) par',
+                                              par_3: 'Gray phase (8/10) par').freeze
+
+        STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(par: :yellow,
+                                                            par_1: :green,
+                                                            par_2: :brown,
+                                                            par_3: :gray)
 
         PHASES = [
           {
@@ -230,7 +240,18 @@ module Engine
           'SWMN' => %w[L12 L14 L16 M13 M15],
           'LUXEMBOURG' => %w[I11],
           'AFRICA' => %w[W9],
-          'AMERICA' => %w[A11],
+          'AMERICA' => %w[C0],
+        }.freeze
+
+        PHASE_PAR_TYPES = {
+          '1' => :par,
+          '2' => :par,
+          '3' => :par_1,
+          '4' => :par_1,
+          '5' => :par_2,
+          '6' => :par_2,
+          '8' => :par_3,
+          '10' => :par_3,
         }.freeze
 
         REGION_CORPORATIONS = {
@@ -241,7 +262,8 @@ module Engine
           'ITALY' => %w[SSFL IFT SFAI],
         }.freeze
 
-        STOCK_TOKENS = {
+        STOCK_TURN_TOKEN_PREFIX = 'ST'
+        STOCK_TURN_TOKENS = {
           '3': 5,
           '4': 4,
           '5': 3,
@@ -249,25 +271,159 @@ module Engine
           '7': 2,
         }.freeze
 
+        # Corporations which will be able to float on which turn
+        TURN_CORPORATIONS = {
+          'ISR' => %w[ASC MSC GBN FN AHN LNWR GWR NBR PLM MIDI OU],
+          'OR1' => %w[ASC MSC GBN FN AHN BMN NMN G1 G2 G3 G4 G5 I1 I2 I3 I4 I5 LNWR GWR NBR PLM MIDI OU KPS BY KHS
+                      B GL NRS],
+        }.freeze
+
+        attr_accessor :current_turn
+
+        def entity_can_use_company?(entity, company)
+          entity == company.owner
+        end
+
         def format_currency(val)
           return super if (val % 1).zero?
 
           format('£%.1<val>f', val: val)
         end
 
+        def init_company_abilities
+          @companies.each do |company|
+            next unless (ability = abilities(company, :exchange))
+            next unless ability.from.include?(:par)
+
+            exchange_corporations(ability).first.par_via_exchange = company
+          end
+
+          super
+        end
+
         def ipo_name(_entity = nil)
           'Treasury'
         end
 
+        def next_round!
+          @round =
+            case @round
+            when Round::Stock
+              @operating_rounds = @phase.operating_rounds
+              reorder_players
+              new_operating_round
+            when Round::Operating
+              if @round.round_num < @operating_rounds
+                or_round_finished
+                new_operating_round(@round.round_num + 1)
+              else
+                @turn += 1
+                or_round_finished
+                or_set_finished
+                new_stock_round
+              end
+            when init_round.class
+              reorder_players_isr!
+              stock_round_isr
+            end
+        end
+
+        def new_auction_round
+          Round::Auction.new(self, [
+            G1866::Step::SelectionAuction,
+          ])
+        end
+
         def setup
+          @stock_turn_token_per_player = self.class::STOCK_TURN_TOKENS[@players.size.to_s]
+          @stock_turn_token_in_play = {}
+          @player_setup_order = @players.dup
+          @player_setup_order.each_with_index do |player, index|
+            @log << "#{player.name} have stock turn tokens with number #{index + 1}"
+            @stock_turn_token_in_play[player] = []
+          end
+
+          @current_turn = 'ISR'
+
           # Randomize and setup the corporations
           setup_corporations
+
+          # Remove the stock turn
+          setup_stock_turn_token
+        end
+
+        def sorted_corporations
+          turn_corporations = self.class::TURN_CORPORATIONS[@current_turn]
+          ipoed, others = if turn_corporations
+                            @corporations.select { |c| turn_corporations.include?(c.name) }.partition(&:ipoed)
+                          else
+                            @corporations.partition(&:ipoed)
+                          end
+          ipoed.sort + others
+        end
+
+        def par_price_str(share_price)
+          row, = share_price.coordinates
+          row_str = case row
+                    when 0
+                      'T'
+                    when 1
+                      'M'
+                    else
+                      'B'
+                    end
+          "#{format_currency(share_price.price)}#{row_str}"
+        end
+
+        def phase_par_type
+          self.class::PHASE_PAR_TYPES[@phase.name]
         end
 
         def place_starting_token(corporation, token, hex_coordinates)
           hex = hex_by_id(hex_coordinates)
           city = hex.tile.cities.first
           city.place_token(corporation, token, free: true, check_tokenable: false)
+        end
+
+        def purchase_stock_turn_token(player, share_price)
+          index = @player_setup_order.find_index(player)
+          corporation = Corporation.new(
+            sym: 'ST',
+            name: 'Stock Turn Token',
+            logo: "1866/#{index + 1}",
+            tokens: [],
+            type: 'stock_turn_corporation',
+            float_percent: 100,
+            max_ownership_percent: 100,
+            shares: [100],
+            always_market_price: true,
+            color: 'black',
+            text_color: 'white',
+            reservation_color: nil,
+            capitalization: self.class::CAPITALIZATION,
+          )
+
+          @stock_market.set_par(corporation, share_price)
+          player.spend(share_price.price, @bank)
+          @stock_turn_token_in_play[player] << corporation
+          @log << "#{player.name} buys a stock turn token at #{format_currency(share_price.price)}"
+        end
+
+        def reorder_players_isr!
+          current_order = @players.dup
+
+          # Sort on least amount of money
+          @players.sort_by! { |p| [p.cash, current_order.index(p)] }
+
+          # The player holding the P1 will become priority dealer
+          p1 = @companies.find { |c| c.id == 'P1' }
+          if p1
+            @players.delete(p1.owner)
+            @players.unshift(p1.owner)
+            p1.close!
+            @log << "#{p1.name} closes"
+          end
+          @log << "-- Priority order: #{@players.map(&:name).join(', ')}"
         end
 
         def setup_corporations
@@ -293,13 +449,6 @@ module Engine
             end
           end
 
-          # Put the home tokens of the starting corporations
-          starting_corps.each do |corp|
-            Array(corp.coordinates).each do |coord|
-              place_starting_token(corp, corp.find_token_by_type, coord)
-            end
-          end
-
           # Put down the home tokens of all the removed corporations
           @removed_corporations.each do |corp|
             Array(corp.coordinates).each do |coord|
@@ -311,6 +460,34 @@ module Engine
             end
             @log << "#{corp.name} - #{corp.full_name} is removed from the game"
           end
+        end
+
+        def setup_stock_turn_token
+          # Give each player a stock turn company
+          @players.each_with_index do |player, index|
+            company = @companies.find { |c| c.id == "#{self.class::STOCK_TURN_TOKEN_PREFIX}#{index + 1}" }
+            company.owner = player
+            player.companies << company
+          end
+
+          # Remove the unused stock turn companies
+          @companies.dup.each do |company|
+            next if !stock_turn_token_company?(company) || company.owner
+
+            @companies.delete(company)
+          end
+        end
+
+        def stock_round_isr
+          @log << '-- Initial Stock Round --'
+          @round_counter += 1
+          Round::Stock.new(self, [
+            G1866::Step::BuySellParShares,
+          ])
+        end
+
+        def stock_turn_token_company?(company)
+          company.id[0..1] == self.class::STOCK_TURN_TOKEN_PREFIX
         end
       end
     end
