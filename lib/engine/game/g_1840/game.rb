@@ -289,6 +289,10 @@ module Engine
           @tram_owned_by_corporation[corporation] || []
         end
 
+        def owning_major_corporation(corporation)
+          @tram_owned_by_corporation.find { |_k, v| v.find { |item| item == corporation } }.first
+        end
+
         def buy_tram_corporation(buying_corporation, tram_corporation)
           tram_corporation.ipoed = true
           tram_corporation.ipo_shares.each do |share|
@@ -321,6 +325,18 @@ module Engine
           return unless @cr_counter.zero?
 
           super
+        end
+
+        def place_home_token(corporation)
+          super
+          @graph.clear
+        end
+
+        def buying_power(entity, **)
+          return 0 if entity.type == :city
+          return entity.cash if entity.type == :major
+
+          owning_major_corporation(entity).cash
         end
       end
     end

@@ -9,7 +9,6 @@ module Engine
         class Dividend < Engine::Step::Dividend
 
           def change_share_price(entity, payout)
-            puts entity.type
             return if entity.type == :minor
 
             super

@@ -149,9 +149,8 @@ module Engine
 
       def change_share_price(entity, payout)
         return unless payout[:share_direction]
-puts "hier"
+
         prev = entity.share_price.price
-puts "nicht mehr"
         Array(payout[:share_times]).zip(Array(payout[:share_direction])).each do |share_times, direction|
           share_times.times do
             case direction

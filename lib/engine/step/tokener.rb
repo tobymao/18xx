@@ -41,7 +41,7 @@ module Engine
       end
 
       def place_token(entity, city, token, connected: true, extra_action: false,
-                      special_ability: nil, check_tokenable: true)
+                      special_ability: nil, check_tokenable: true, spender: nil)
         hex = city.hex
         extra_action ||= special_ability.extra_action if special_ability&.type == :token
 
@@ -79,9 +79,9 @@ module Engine
           extra_slot = ability.extra_slot
         end
         city.place_token(entity, token, free: free, check_tokenable: check_tokenable,
-                                        cheater: cheater, extra_slot: extra_slot)
+                                        cheater: cheater, extra_slot: extra_slot, spender: spender)
         unless free
-          pay_token_cost(entity, token.price)
+          pay_token_cost(spender || entity, token.price)
           price_log = " for #{@game.format_currency(token.price)}"
         end
 
