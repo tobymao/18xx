@@ -111,35 +111,30 @@ module Engine
       @type != :liquidation
     end
 
-    def report_last_move()
+    def report_last_move
       r0, c0 = @last_reported
       r1, c1 = @coordinates
 
-      if @limit_hit == nil && r0 == r1 && c0 == c1
-        return nil
-      end
+      return nil if @limit_hit.nil? && r0 == r1 && c0 == c1
 
-      msg = ""
+      msg = ''
 
       if r0 != r1 || c0 != c1
-        msg += "moves "
+        msg += 'moves '
         if r0 != r1
-          msg += "#{(r1-r0).abs} #{r1 < r0 ? 'up' : 'down'} "
+          msg += "#{(r1 - r0).abs} #{r1 < r0 ? 'up' : 'down'} "
         end
         if c0 != c1
-          if r0 != r1
-            msg += "and "
-          end
-          msg += "#{(c1-c0).abs} #{c1 < c0 ? 'left' : 'right'} "
+          msg += 'and ' if r0 != r1
+          msg += "#{(c1 - c0).abs} #{c1 < c0 ? 'left' : 'right'} "
         end
       elsif @limit_hit
-          msg += "is #{@limit_hit == :ledge ? 'ledged' : 'at ceiling'} "
+        msg += "is #{@limit_hit == :ledge ? 'ledged' : 'at ceiling'} "
       end
 
       @last_reported = @coordinates
       @limit_hit = nil
-      return msg
+      msg
     end
-
   end
 end

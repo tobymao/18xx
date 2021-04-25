@@ -55,8 +55,7 @@ module Engine
       return move_right(corporation) if one_d?
 
       r, c = corporation.share_price.coordinates
-      
-      if r - 1 < 0
+      if r.zero?
         corporation.share_price.limit_hit = :ceiling
       else
         r -= 1
@@ -70,7 +69,7 @@ module Engine
 
       r, c = corporation.share_price.coordinates
       if r + 1 < @market.size && share_price(r + 1, c)
-        r += 1 
+        r += 1
       else
         corporation.share_price.limit_hit = :ledge
       end
