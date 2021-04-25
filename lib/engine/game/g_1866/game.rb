@@ -243,6 +243,17 @@ module Engine
           'AMERICA' => %w[C0],
         }.freeze
 
+        PHASE_PAR_TYPES = {
+          '1' => :par,
+          '2' => :par,
+          '3' => :par_1,
+          '4' => :par_1,
+          '5' => :par_2,
+          '6' => :par_2,
+          '8' => :par_3,
+          '10' => :par_3,
+        }.freeze
+
         REGION_CORPORATIONS = {
           'GREAT_BRITAIN' => %w[LNWR GWR NBR],
           'FRANCE' => %w[PLM MIDI OU],
@@ -365,17 +376,7 @@ module Engine
         end
 
         def phase_par_type
-          par_types = {
-            '1' => :par,
-            '2' => :par,
-            '3' => :par_1,
-            '4' => :par_1,
-            '5' => :par_2,
-            '6' => :par_2,
-            '8' => :par_3,
-            '10' => :par_3,
-          }
-          par_types[@phase.name]
+          self.class::PHASE_PAR_TYPES[@phase.name]
         end
 
         def place_starting_token(corporation, token, hex_coordinates)
