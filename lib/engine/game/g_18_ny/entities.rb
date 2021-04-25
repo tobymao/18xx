@@ -26,7 +26,7 @@ module Engine
           },
           {
             name: 'Albany-Schenectady Stagecoach Line',
-            sym: 'ASL',
+            sym: 'SC',
             value: 40,
             revenue: 10,
             desc: 'Owning corporation may exchange this company for a stagecoach token in Albany. ' \
@@ -43,9 +43,9 @@ module Engine
                 teleport_price: 0,
                 count: 1,
                 extra_action: true,
-                # TODO: Use Stagecoach token logo
                 # TODO : Token can be exchanged for corporation token when 12H is purchased; otherwise remove
               },
+              { type: 'reservation', remove: 'close', hex: 'F20', slot: 1 },
             ],
           },
           {

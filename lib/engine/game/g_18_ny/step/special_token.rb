@@ -8,11 +8,16 @@ module Engine
       module Step
         class SpecialToken < Engine::Step::SpecialToken
           def process_place_token(action)
-            corporation = action.token.corporation
-            token = Token.new(corporation, logo: 'stagecoach', simple_logo: 'stagecoach.alt')
-            action.token = token
+            super
 
-            super(action)
+            company = action.entity
+
+            token = company.owner.tokens.find { |token| token.hex&.id == 'F20' }
+            token.logo = '/logos/18_ny/stagecoach.svg'
+            token.simple_logo = '/logos/18_ny/stagecoach.alt.svg'
+
+            puts "#{company.name} company closes"
+            company.close!
           end
         end
       end
