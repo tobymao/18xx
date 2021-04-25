@@ -55,7 +55,13 @@ module Engine
       return move_right(corporation) if one_d?
 
       r, c = corporation.share_price.coordinates
-      r -= 1 if r - 1 >= 0
+      
+      if r - 1 < 0
+        corporation.share_price.limit_hit = :ceiling
+      else
+        r -= 1
+      end
+
       move(corporation, r, c)
     end
 
@@ -63,7 +69,12 @@ module Engine
       return move_left(corporation) if one_d?
 
       r, c = corporation.share_price.coordinates
-      r += 1 if r + 1 < @market.size && share_price(r + 1, c)
+      if r + 1 < @market.size && share_price(r + 1, c)
+        r += 1 
+      else
+        corporation.share_price.limit_hit = :ledge
+      end
+
       move(corporation, r, c)
     end
 
@@ -117,6 +128,7 @@ module Engine
       return if !force && !share_price.normal_movement?
 
       corporation.share_price.corporations.delete(corporation)
+      share_price.last_reported = corporation.share_price.last_reported
       corporation.share_price = share_price
       @max_reached = true if share_price.end_game_trigger?
       share_price.corporations << corporation

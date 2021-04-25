@@ -3,6 +3,7 @@
 module Engine
   class SharePrice
     attr_reader :coordinates, :price, :corporations, :can_par, :type, :types
+    attr_accessor :last_reported, :limit_hit
 
     TYPE_MAP = {
       'p' => :par,
@@ -60,6 +61,8 @@ module Engine
       @corporations = []
       @can_buy_multiple = multiple_buy_types.include?(type)
       @limited = !unlimited_types.include?(type)
+      @last_reported = coordinates
+      @limit_hit = nil
     end
 
     def ==(other)
@@ -107,5 +110,36 @@ module Engine
       # Can be moved into normally, rather than something custom such as not owning a train.
       @type != :liquidation
     end
+
+    def report_last_move()
+      r0, c0 = @last_reported
+      r1, c1 = @coordinates
+
+      if @limit_hit == nil && r0 == r1 && c0 == c1
+        return nil
+      end
+
+      msg = ""
+
+      if r0 != r1 || c0 != c1
+        msg += "moves "
+        if r0 != r1
+          msg += "#{(r1-r0).abs} #{r1 < r0 ? 'up' : 'down'} "
+        end
+        if c0 != c1
+          if r0 != r1
+            msg += "and "
+          end
+          msg += "#{(c1-c0).abs} #{c1 < c0 ? 'left' : 'right'} "
+        end
+      elsif @limit_hit
+          msg += "is #{@limit_hit == :ledge ? 'ledged' : 'at ceiling'} "
+      end
+
+      @last_reported = @coordinates
+      @limit_hit = nil
+      return msg
+    end
+
   end
 end

@@ -896,11 +896,19 @@ module Engine
       end
 
       def log_share_price(entity, from)
-        to = entity.share_price.price
-        return unless from != to
+        msg = entity.share_price.report_last_move()
 
-        @log << "#{entity.name}'s share price changes from #{format_currency(from)} "\
-          "to #{format_currency(to)}"
+        if msg
+          msg = "#{entity.name}'s share price " + msg
+          to = entity.share_price.price
+          if from != to
+            msg += "from #{format_currency(from)} "\
+              "to #{format_currency(to)}"
+          else
+            msg += "and stays at #{format_currency(from)}"
+          end
+          @log << msg
+        end
       end
 
       def can_run_route?(entity)
