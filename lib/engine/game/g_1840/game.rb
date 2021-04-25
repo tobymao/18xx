@@ -54,6 +54,8 @@ module Engine
           major: [70, 80, 90, 100],
         }.freeze
 
+        TILE_COST = 0
+
         INITIAL_CITY_PAR = {
           'W' => 95,
           'V' => 85,
@@ -215,18 +217,13 @@ module Engine
 
         def operating_round(round_num)
           G1840::Round::LineOperating.new(self, [
-            Engine::Step::Bankrupt,
-            Engine::Step::Exchange,
             Engine::Step::SpecialTrack,
             Engine::Step::SpecialToken,
             Engine::Step::BuyCompany,
             Engine::Step::HomeToken,
-            Engine::Step::Track,
-            Engine::Step::Token,
+            G1840::Step::TrackAndToken,
             Engine::Step::Route,
-            Engine::Step::Dividend,
-            Engine::Step::DiscardTrain,
-            Engine::Step::BuyTrain,
+            G1840::Step::Dividend,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
