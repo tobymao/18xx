@@ -7,7 +7,7 @@ module Engine
     module G1840
       module Step
         class ReassignTrains < Engine::Step::Base
-          BUY_ACTIONS = %w[switch_trains pass].freeze
+          BUY_ACTIONS = %w[reassign_trains pass].freeze
 
           def actions(_entity)
             BUY_ACTIONS
@@ -25,19 +25,13 @@ module Engine
             'Select new corporations for each train'
           end
 
-          def slot_view(_entity)
-            'trains'
-          end
-
-          def process_switch_trains(action)
-            slots = action.slots
+          def process_reassign_trains(action)
+            assignments = action.assignments
             entity = action.entity
             reassignments = []
-            slots.each do |slot|
-              train_id, corp_id = slot.split(';')
-              train = @game.train_by_id(train_id)
-              new_corporation = @game.corporation_by_id(corp_id)
-
+            assignments.each do |assignment|
+              train = assignment[:train]
+              new_corporation = assignment[:corporation]
               next if new_corporation == train.owner
 
               old_owner = train.owner
@@ -49,7 +43,7 @@ module Engine
               reassignments << "#{train.name} ➝ #{new_corporation.name}"
             end
 
-            @log << "#{entity.owner.name} reassignes trains: #{reassignments.join(', ')}"
+            @log << "#{entity.owner.name} reassignes trains: #{reassignments.join(', ')}" unless reassignments.empty?
           end
 
           def trains(entity)

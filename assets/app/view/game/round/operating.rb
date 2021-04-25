@@ -7,6 +7,7 @@ require 'view/game/buy_trains'
 require 'view/game/borrow_train'
 require 'view/game/convert'
 require 'view/game/switch_trains'
+require 'view/game/reassign_trains'
 require 'view/game/company'
 require 'view/game/corporation'
 require 'view/game/player'
@@ -38,6 +39,7 @@ module View
           left << h(Dividend) if @current_actions.include?('dividend')
           left << h(Convert) if @current_actions.include?('convert')
           left << h(SwitchTrains) if @current_actions.include?('switch_trains')
+          left << h(ReassignTrains) if @current_actions.include?('reassign_trains')
           if @current_actions.include?('buy_train') || @current_actions.include?('scrap_train')
             left << h(IssueShares) if @current_actions.include?('sell_shares')
             left << h(BuyTrains)

@@ -14,11 +14,7 @@ module Engine
 
       def self.h_to_args(h, _game)
         {
-          slots: h['slots']&.map do |m|
-            Integer(m)
-          rescue StandardError
-            m
-          end,
+          slots: h['slots']&.map { |m| m.to_i },
         }
       end
 

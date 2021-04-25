@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'lib/settings'
 require 'view/game/actionable'
 require 'view/game/alternate_corporations'
 
@@ -9,7 +8,6 @@ module View
     class SwitchTrains < Snabberb::Component
       include Actionable
       include AlternateCorporations
-      include Lib::Settings
 
       def render
         @step = @game.round.active_step
@@ -45,56 +43,6 @@ module View
         @slot_checkboxes.keys.map do |k|
           k if Native(@slot_checkboxes[k]).elm.checked
         end.compact
-      end
-
-      def render_trains
-        center_style_props = {
-          display: 'flex',
-          alignItems: 'center',
-        }
-
-        possible_corporations = @step.target_corporations(@corporation)
-        children = @step.trains(@corporation).map do |train|
-          inner = []
-          inner << h(:span, "#{train.name}:")
-          possible_corporations.each do |corp|
-            attrs = {
-              type: 'radio',
-              name: "train_#{train.id}-corp_#{@corporation.id}",
-            }
-            attrs[:checked] = 'checked' if train.owner == corp
-            checkbox = h(
-              "input#train_#{train.id}-corp_#{corp.id}",
-              style: {
-                marginLeft: '1rem',
-                marginRight: '3px',
-              },
-              props: attrs
-            )
-            @slot_checkboxes["#{train.id};#{corp.id}"] = checkbox
-
-            logo_props = {
-              attrs: { src: logo_for_user(corp) },
-              style: {
-                height: '1.6rem',
-                width: '1.6rem',
-                padding: '1px',
-                border: '2px solid currentColor',
-                borderRadius: '0.5rem',
-              },
-            }
-            logo = h(:img, logo_props)
-            inner << h(:label, { style: center_style_props }, [checkbox, logo])
-          end
-
-          h(:div, { style: center_style_props }, inner)
-        end
-
-        h(:div, { style: { marginTop: '1rem' } }, children)
-      end
-
-      def logo_for_user(entity)
-        setting_for(:simple_logos, @game) ? entity.simple_logo : entity.logo
       end
     end
   end
