@@ -75,7 +75,8 @@ module Engine
         true
       end
 
-      def tokenable?(corporation, free: false, tokens: corporation.tokens_by_type, cheater: false, extra_slot: false, spender: nil)
+      def tokenable?(corporation, free: false, tokens: corporation.tokens_by_type, cheater: false,
+                     extra_slot: false, spender: nil)
         tokens = Array(tokens)
         return false if !extra_slot && tokens.empty?
 
@@ -104,7 +105,8 @@ module Engine
         reservation || open_slot
       end
 
-      def place_token(corporation, token, free: false, check_tokenable: true, cheater: false, extra_slot: false, spender: nil)
+      def place_token(corporation, token, free: false, check_tokenable: true, cheater: false,
+                      extra_slot: false, spender: nil)
         if check_tokenable && !tokenable?(
             corporation, free: free, tokens: token, cheater: cheater, extra_slot: extra_slot, spender: spender
           )
