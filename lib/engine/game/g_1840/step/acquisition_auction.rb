@@ -32,7 +32,7 @@ module Engine
 
           def log_pass(entity)
             message = "#{entity.name} passes bidding"
-            message += "on #{@auctioning.name}" if @auctioning
+            message << "on #{@auctioning.name}" if @auctioning
             @log << message
           end
 
@@ -43,11 +43,11 @@ module Engine
           def process_bid(action)
             corporation = action.corporation
 
-            if @bids[corporation].any?
-              add_bid(action)
-            else
+            if @bids[corporation].empty?
               @available_corporations.delete(corporation)
               selection_bid(action)
+            else
+              add_bid(action)
             end
           end
 
@@ -109,7 +109,7 @@ module Engine
           def min_bid(company)
             return unless company
 
-            return starting_bid(company) unless @bids[company].any?
+            return starting_bid(company) if @bids[company].empty?
 
             high_bid = highest_bid(company)
             (high_bid.price || company.min_bid) + min_increment

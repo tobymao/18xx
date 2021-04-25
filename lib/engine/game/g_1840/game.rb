@@ -89,6 +89,33 @@ module Engine
           ],
         }.freeze
 
+        PROGRESS_INFORMATION = [
+          { type: :PRE },
+          { type: :SR, name: '1' },
+          { type: :CR, name: '1', value: '1x' },
+          { type: :LR, name: '1a' },
+          { type: :LR, name: '1b' },
+          { type: :CR, name: '2', value: '1x' },
+          { type: :SR, name: '2' },
+          { type: :LR, name: '2a' },
+          { type: :LR, name: '2b' },
+          { type: :CR, name: '3', value: '1x' },
+          { type: :SR, name: '3', value: '1x' },
+          { type: :LR, name: '3a' },
+          { type: :LR, name: '3b' },
+          { type: :CR, name: '4', value: '2x' },
+          { type: :SR, name: '4', value: '1x' },
+          { type: :LR, name: '4a' },
+          { type: :LR, name: '4b' },
+          { type: :CR, name: '5', value: '3x' },
+          { type: :SR, name: '5', value: '1x' },
+          { type: :LR, name: '5a' },
+          { type: :LR, name: '5b' },
+          { type: :LR, name: '5c' },
+          { type: :CR, name: '6', value: '10x' },
+          { type: :End },
+        ].freeze
+
         attr_reader :tram_corporations, :major_corporations, :tram_owned_by_corporation
 
         def setup
@@ -258,32 +285,7 @@ module Engine
         end
 
         def progress_information
-          [
-            { type: :PRE },
-            { type: :SR, name: '1' },
-            { type: :CR, name: '1', value: '1x' },
-            { type: :LR, name: '1a' },
-            { type: :LR, name: '1b' },
-            { type: :CR, name: '2', value: '1x' },
-            { type: :SR, name: '2' },
-            { type: :LR, name: '2a' },
-            { type: :LR, name: '2b' },
-            { type: :CR, name: '3', value: '1x' },
-            { type: :SR, name: '3', value: '1x' },
-            { type: :LR, name: '3a' },
-            { type: :LR, name: '3b' },
-            { type: :CR, name: '4', value: '2x' },
-            { type: :SR, name: '4', value: '1x' },
-            { type: :LR, name: '4a' },
-            { type: :LR, name: '4b' },
-            { type: :CR, name: '5', value: '3x' },
-            { type: :SR, name: '5', value: '1x' },
-            { type: :LR, name: '5a' },
-            { type: :LR, name: '5b' },
-            { type: :LR, name: '5c' },
-            { type: :CR, name: '6', value: '10x' },
-            { type: :End },
-          ]
+          self.class::PROGRESS_INFORMATION
         end
 
         def corporate_card_minors(corporation)

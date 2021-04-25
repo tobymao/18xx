@@ -38,7 +38,7 @@ module Engine
               train_limit: 3,
               tiles: %i[yellow green brown gray],
               status: ['can_buy_companies'],
-              operating_rounds: 2,
+              operating_rounds: 3,
             },
 
           ].freeze

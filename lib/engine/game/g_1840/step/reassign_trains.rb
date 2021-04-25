@@ -53,11 +53,11 @@ module Engine
           end
 
           def trains(entity)
-            entity.trains + @game.tram_owned_by_corporation[entity].flat_map(&:trains)
+            @game.tram_owned_by_corporation[entity].flat_map(&:trains).concat(entity.trains)
           end
 
           def target_corporations(entity)
-            [entity] + @game.tram_owned_by_corporation[entity]
+            [entity].concat(@game.tram_owned_by_corporation[entity])
           end
         end
       end

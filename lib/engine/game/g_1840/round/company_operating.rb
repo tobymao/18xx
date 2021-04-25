@@ -24,22 +24,10 @@ module Engine
 
           def select_entities
             entites = @game.operating_order
-            entites = entites.reject { |item| item.type == :minor }
-            entites = entites.reject { |item| item.type == :city } if @no_city
+            entites.reject! { |item| item.type == :minor }
+            entites.reject! { |item| item.type == :city } if @no_city
 
             entites
-          end
-
-          def start_operating
-            entity = @entities[@entity_index]
-            @current_operator = entity
-            @current_operator_acted = false
-            entity.trains.each { |train| train.operated = false }
-
-            @log << "#{entity&.owner&.name || 'Computer'} operates #{entity.name}" unless finished?
-            @game.place_home_token(entity) if @home_token_timing == :operate
-            skip_steps
-            next_entity! if finished?
           end
 
           def laid_hexes
