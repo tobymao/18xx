@@ -1441,8 +1441,7 @@ module Engine
         end
 
         def info_train_name(train)
-          train.names_to_prices.keys.find { |n| /^[A-H]$/ =~ n } + ': ' +
-            train.names_to_prices.keys.reject { |n| /^[A-H]$/ =~ n }.join(', ')
+          train.sym + ': ' + train.names_to_prices.keys.reject { |n| n == train.sym }.join(', ')
         end
 
         def info_train_price(train)

@@ -53,7 +53,7 @@ module Engine
             variants = train.variants.values
             return variants if train.owned_by_corporation?
 
-            variants.reject! { |v| /^[A-H]$/ =~ v[:name] }
+            variants.reject! { |v| v[:name] == train.sym }
             variants.select! { |v| room_for_type?(entity, @game.train_type_by_name(v[:name])) }
             variants
           end
@@ -99,11 +99,15 @@ module Engine
           end
 
           def warranty_max
-            /A|D/.match?(@depot.depot_trains.first.sym) ? 2 : 3
+            warranty_limit(@depot.depot_trains.first)
           end
 
           def warranty_limit(train)
-            /A|D/.match?(train.sym) ? 2 : 3
+            if train.sym.include?('A') || train.sym.include?('D')
+              2
+            else
+              3
+            end
           end
 
           def warranty_cost
