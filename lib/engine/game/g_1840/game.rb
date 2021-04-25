@@ -120,6 +120,41 @@ module Engine
           { type: :End },
         ].freeze
 
+        CITY_TRACK_EXITS = {
+          # G
+          'B16' => [1, 3],
+          'B14' => [0, 4],
+          'C13' => [0, 3],
+          'D12' => [5, 3],
+          'E13' => [0, 2],
+          'F12' => [0, 3],
+          'H12' => [0, 2],
+          # V
+          'B10' => [0, 3],
+          'C9' => [1, 3],
+          'D6' => [5, 3],
+          'E7' => [0, 2],
+          'F6' => [0, 3],
+          'G5' => [1, 3],
+          # D
+          'B20' => [2, 5],
+          'C21' => [2, 5],
+          'D22' => [2, 5],
+          'E23' => [2, 5],
+          # W
+          'G23' => [1, 3],
+          'G21' => [1, 4],
+          'G19' => [1, 4],
+          'G17' => [0, 4],
+          'H16' => [0, 3],
+          'I15' => [1, 3],
+          'I13' => [1, 4],
+          'I9' => [1, 4],
+          'I7' => [1, 4],
+          'I5' => [1, 4],
+          'I3' => [1, 4],
+        }.freeze
+
         attr_reader :tram_corporations, :major_corporations, :tram_owned_by_corporation
 
         def setup
@@ -360,13 +395,20 @@ module Engine
         end
 
         def upgrades_to?(from, to, special = false, selected_company: nil)
-          return true if from.towns.empty? && !to.towns.empty? && from.color == :white && to.color == :yellow
+          if from.towns.empty? && from.cities.empty? && !to.towns.empty? && to.cities.empty? &&
+            from.color == :white && to.color == :yellow
+            return true
+          end
           if orange_framed?(from) && from.towns.size == 1 &&
              to.towns.size == 2 && from.color == :yellow && to.color == :green
             return true
           end
 
           super
+        end
+
+        def needed_exits_for_hex(hex)
+          CITY_TRACK_EXITS[hex.id]
         end
       end
     end

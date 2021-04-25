@@ -50,8 +50,10 @@ module Engine
           end
 
           def legal_tile_rotation?(_entity, hex, tile)
-            # this if of course not yet correct ;)
-            return true if @game.orange_framed?(hex.tile)
+            if @game.orange_framed?(hex.tile) && tile.color == :yellow
+              needed_exits = @game.needed_exits_for_hex(hex)
+              return (tile.exits & needed_exits).size == needed_exits.size
+            end
 
             super
           end
