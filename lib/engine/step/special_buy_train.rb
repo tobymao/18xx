@@ -35,7 +35,7 @@ module Engine
           ability.discounted_price(action.train, action.train.price) == action.price
         if closes_company && !action.entity.closed?
           action.entity.close!
-          @log << "#{company.name} company closes"
+          @log << "#{company.name} closes"
         end
 
         pass! unless can_buy_train?(corporation)

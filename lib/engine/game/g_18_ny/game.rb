@@ -212,7 +212,7 @@ module Engine
           @erie_canal_private.revenue -= 10
           return unless @erie_canal_private.revenue.zero?
 
-          @log << 'Erie Canal company closes'
+          @log << 'Erie Canal closes'
           @erie_canal_private.close!
         end
       end

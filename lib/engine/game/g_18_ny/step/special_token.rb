@@ -16,7 +16,7 @@ module Engine
             token.logo = '/logos/18_ny/stagecoach.svg'
             token.simple_logo = '/logos/18_ny/stagecoach.alt.svg'
 
-            @log << "#{company.name} company closes"
+            @log << "#{company.name} closes"
             company.close!
           end
         end
