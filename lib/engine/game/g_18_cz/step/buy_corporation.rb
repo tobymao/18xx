@@ -89,6 +89,8 @@ module Engine
 
             @game.close_corporation(corporation)
             corporation.close!
+
+            @game.remove_ate_reservation if corporation.id == 'ATE'
           end
 
           def pass_description
