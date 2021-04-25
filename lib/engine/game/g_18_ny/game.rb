@@ -154,8 +154,8 @@ module Engine
           Round::Operating.new(self, [
             Engine::Step::BuyCompany,
             G18NY::Step::SpecialTrack,
-            G18NY::Step::Track,
             G18NY::Step::SpecialToken,
+            G18NY::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
             Engine::Step::Dividend,
@@ -165,6 +165,8 @@ module Engine
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
+
+        # Stock round logic
 
         def issuable_shares(entity)
           return [] if !entity.corporation? || entity.type != :major
@@ -195,6 +197,13 @@ module Engine
 
         def can_hold_above_limit?(_entity)
           true
+        end
+
+        # Operating round logic
+
+        def operating_order
+          minors, majors = @corporations.select(&:floated?).sort.partition { |c| c.type == :minor }
+          minors + majors
         end
 
         def tile_lay(_hex, old_tile, _new_tile)
