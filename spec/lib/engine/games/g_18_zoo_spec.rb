@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'find'
-
 require './spec/spec_helper'
 
 module Engine
@@ -208,7 +207,7 @@ module Engine
 
             it 'should have only valid location names' do
               game.class::LOCATION_NAMES_BY_MAP[variant.to_sym].each do |coordinate, _name|
-                expect(game.hexes.map(&:coordinates)).to include(coordinate.to_s)
+                expect(game.hexes.map(&:coordinates)).to include(coordinate)
               end
             end
           end
@@ -637,6 +636,116 @@ module Engine
           }
           expect { game.process_action(action) }.to raise_error(TypeError)
         end
+      end
+    end
+
+    describe 'Ancient Maps' do
+      let(:game_file_name) { 'or_power.ancient_maps' }
+
+      it 'can be used for M' do
+        game = Engine::Game.load(game_file, at_action: 21)
+        action = {
+          'type' => 'lay_tile',
+          'entity' => 'ANCIENT_MAPS',
+          'entity_type' => 'company',
+          'hex' => 'J14',
+          'tile' => '8-0',
+          'rotation' => 3,
+        }
+
+        game.process_action(action).maybe_raise!
+
+        hex = game.hex_by_id('J14')
+        expect(hex.tile.label.to_s).to eq('M')
+        expect(hex.tile.upgrades).to be_empty
+
+        icon = hex.tile.icons[0]
+        expect(icon.image).to eq('/icons/18_zoo/mountain.svg')
+        expect(icon.sticky).to be_truthy
+        expect(icon.blocks_lay?).to be_truthy
+      end
+
+      it 'can be used for MM' do
+        game = Engine::Game.load(game_file, at_action: 21)
+        action = {
+          'type' => 'lay_tile',
+          'entity' => 'ANCIENT_MAPS',
+          'entity_type' => 'company',
+          'hex' => 'L18',
+          'tile' => '8-0',
+          'rotation' => 2,
+        }
+        game.process_action(action).maybe_raise!
+
+        hex = game.hex_by_id('L18')
+        expect(hex.tile.label.to_s).to eq('MM')
+        expect(hex.tile.upgrades).to be_empty
+
+        icon = hex.tile.icons[0]
+        expect(icon.image).to eq('/icons/18_zoo/mountain.svg')
+        expect(icon.sticky).to be_truthy
+        expect(icon.blocks_lay?).to be_truthy
+      end
+
+      it 'can be used for Y' do
+        game = Engine::Game.load(game_file, at_action: 20)
+        action = {
+          'type' => 'lay_tile',
+          'entity' => 'ANCIENT_MAPS',
+          'entity_type' => 'company',
+          'hex' => 'K15',
+          'tile' => '202-0',
+          'rotation' => 0,
+        }
+        game.process_action(action)
+
+        hex = game.hex_by_id('K15')
+        expect(hex.tile.label.to_s).to eq('Y')
+      end
+    end
+
+    describe 'Moles' do
+      let(:game_file_name) { 'or_power.moles' }
+
+      it 'can be used for M' do
+        game = Engine::Game.load(game_file, at_action: 18)
+
+        hex = game.hex_by_id('E17')
+        expect(hex.tile.label.to_s).to eq('M')
+        expect(hex.tile.color).to eq(:green)
+        expect(hex.tile.upgrades).to be_empty
+
+        icon = hex.tile.icons[0]
+        expect(icon.image).to eq('/icons/18_zoo/mountain.svg')
+        expect(icon.sticky).to be_truthy
+        expect(icon.blocks_lay?).to be_truthy
+      end
+
+      it 'can be used for MM' do
+        game = Engine::Game.load(game_file, at_action: 25)
+
+        hex = game.hex_by_id('G17')
+        expect(hex.tile.label.to_s).to eq('MM')
+        expect(hex.tile.color).to eq(:green)
+        expect(hex.tile.upgrades).to be_empty
+
+        icon = hex.tile.icons[0]
+        expect(icon.image).to eq('/icons/18_zoo/mountain.svg')
+        expect(icon.sticky).to be_truthy
+        expect(icon.blocks_lay?).to be_truthy
+      end
+
+      it 'can be used for O' do
+        game = Engine::Game.load(game_file, at_action: 17)
+
+        hex = game.hex_by_id('F18')
+        expect(hex.tile.label.to_s).to eq('O')
+        expect(hex.tile.color).to eq(:green)
+
+        icon = hex.tile.icons[0]
+        expect(icon.image).to eq('/icons/river.svg')
+        expect(icon.sticky).to be_truthy
+        expect(icon.blocks_lay?).to be_falsy
       end
     end
   end

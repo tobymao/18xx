@@ -106,7 +106,7 @@ module Engine
                 reachable: true,
                 must_lay_together: true,
                 when: 'owning_corp_or_turn',
-                tiles: %w[],
+                tiles: %w[7 X7 8 X8 9 X9 5 6 57 201 202 621],
                 hexes: [],
               },
             ],
