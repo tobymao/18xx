@@ -18,6 +18,15 @@ module Engine
           def name
             'Line Round'
           end
+
+          def after_process(action)
+            entity = @entities[@entity_index]
+            case action
+            when Engine::Action::RunRoutes
+              process_action(Engine::Action::Dividend.new(entity, kind: 'payout')) unless action.routes.empty?
+            end
+            super
+          end
         end
       end
     end
