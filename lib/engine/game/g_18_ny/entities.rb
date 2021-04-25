@@ -88,6 +88,7 @@ module Engine
             name: 'Erie Canal',
             sym: 'EC',
             value: 140,
+            revenue: 100,
             desc: 'Pays $10 per operating round for every unimproved canal hex (marked on the map with an E). ' \
                   'May not be sold. Closes when the last canal hex is improved or with the purchase of the ' \
                   'first 12H train.',

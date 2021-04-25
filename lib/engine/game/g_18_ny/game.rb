@@ -198,7 +198,7 @@ module Engine
         end
 
         def tile_lay(_hex, old_tile, _new_tile)
-          return if old_tile.icons.empty? { |icon| icon.name == ERIE_CANAL_ICON }
+          return unless old_tile.icons.any? { |icon| icon.name == ERIE_CANAL_ICON }
 
           @erie_canal_private.revenue -= 10
           return unless @erie_canal_private.revenue.zero?
