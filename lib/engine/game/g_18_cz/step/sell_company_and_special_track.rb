@@ -86,6 +86,10 @@ module Engine
               .select { |t| @game.phase.tiles.include?(t.color) && @game.upgrades_to?(hex.tile, t, false) }
           end
 
+          def available_hex(entity, hex)
+            hex_neighbors(entity, hex)
+          end
+
           def abilities(entity, **kwargs, &block)
             return unless entity&.company?
 
