@@ -2298,6 +2298,14 @@ module Engine
         corporations.sort_by(&:name)
       end
 
+      def info_train_name(train)
+        train.names_to_prices.keys.join(', ')
+      end
+
+      def info_train_price(train)
+        train.names_to_prices.values.map { |p| format_currency(p) }.join(', ')
+      end
+
       def info_on_trains(phase)
         Array(phase[:on]).first
       end
