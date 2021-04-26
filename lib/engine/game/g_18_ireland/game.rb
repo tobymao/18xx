@@ -404,6 +404,30 @@ module Engine
           super
         end
 
+        def close_corporation(corporation, quiet: false)
+          # Share holders gain the final value of shares on corporations from bankrupt players
+          if corporation.share_price&.price&.positive? && corporation.owner&.bankrupt
+            payouts = {}
+            per_share = corporation.share_price.price
+            @players.each do |holder|
+              next if holder.bankrupt
+
+              amount = holder.num_shares_of(corporation, ceil: false) * per_share
+              next unless amount.positive?
+
+              payouts[holder] = amount
+              @bank.spend(amount, holder)
+            end
+            receivers = payouts
+            .sort_by { |_r, c| -c }
+            .map { |receiver, cash| "#{format_currency(cash)} to #{receiver.name}" }.join(', ')
+
+            @log << "Bank settles for #{corporation.name} #{format_currency(per_share)} per share = #{receivers}"
+          end
+
+          super
+        end
+
         def rust_trains!(train, _entity)
           @extra_trains = []
           super
@@ -506,7 +530,7 @@ module Engine
 
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
-            Engine::Step::Bankrupt,
+            G18Ireland::Step::Bankrupt,
             G18Ireland::Step::Assign,
             Engine::Step::Exchange,
             Engine::Step::HomeToken,
