@@ -803,6 +803,27 @@ module Engine
           super + tickets.select { |company| company.name.start_with?('ZOOTicket') }.sum(&:value)
         end
 
+        def show_progress_bar?
+          true
+        end
+
+        def progress_information
+          [
+            { type: :PRE },
+            { type: :SR, value: '4', name: '1' },
+            { type: :OR, value: '5', name: '1.1' },
+            { type: :OR, value: '6', name: '1.2' },
+            { type: :SR, value: '7', name: '2' },
+            { type: :OR, value: '8', name: '2.1' },
+            { type: :OR, value: '9', name: '2.2' },
+            { type: :SR, value: '10', name: '3' },
+            { type: :OR, value: '12', name: '3.1' },
+            { type: :OR, value: '15', name: '3.2' },
+            { type: :OR, value: '18', name: '3.3' },
+            { type: :End, value: '20' },
+          ]
+        end
+
         private
 
         def init_round
