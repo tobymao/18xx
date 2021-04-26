@@ -232,6 +232,7 @@ module Engine
             maint_due = @game.train_maintenance(train.name)
             if maint_due.positive? && action.extra_due
               # seller must pay maintenance
+              old_owner = old_owner.owner if @game.public_mine?(old_owner.owner)
               raise GameError, 'Seller has insufficient funds to pay maintenance' if old_owner.cash < maint_due
 
               old_owner.spend(maint_due, @game.bank)
