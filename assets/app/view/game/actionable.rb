@@ -39,7 +39,7 @@ module View
         opts = {
           color: :yellow,
           click: click,
-          message: "This action requires consent from #{player.name}!",
+          message: "Click confirm if #{player.name} has already consented to this action.",
         }
         store(:confirm_opts, opts, skip: false)
       end
