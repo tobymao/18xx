@@ -29,11 +29,15 @@ module Engine
             ACQUIRE_ACTIONS
           end
 
+          def auto_actions(entity)
+            return [Engine::Action::Pass.new(entity)] if mergeable(entity).empty?
+          end
+
           def can_acquire?(entity)
             return false if !entity.corporation? || (entity.corporation? && entity.type != :major)
             return false unless entity.operating_history.size > 1
 
-            !mergeable(entity).empty?
+            !potentially_mergeable(entity).empty?
           end
 
           def choice_name
@@ -57,6 +61,11 @@ module Engine
           end
 
           def mergeable(entity)
+            potentially_mergeable(entity).select { |minor| entity_connects?(entity, minor) }
+          end
+
+          def potentially_mergeable(entity)
+            # Mergable ignoring connections
             corporations = @game.corporations.select do |minor|
               minor.type == :minor && minor.floated? && minor.operating_history.size > 1 &&
                 !pay_choices(entity, minor).empty?
@@ -196,36 +205,38 @@ module Engine
             end
           end
 
+          def entity_connects?(entity, minor)
+            if (!minor.owner || minor.owner == @bank) && minor.id == @game.class::MINOR_14_ID
+              # Trying to acquire minor 14 from the bank. You still have to have connection to london.
+              # You have a option to place a "cheater" token in one of the cities you have connection to.
+              # A small note, if a corporation already have a token in london and no clear path to another node.
+              # They can still choose to acquire and still gets both options of place or exchange. We dont want
+              # to an extra check of connected_nodes. This is very costly.
+              # Try all 6 cities in london to see if there is atleast one connection
+              connected_nodes = @game.graph.connected_nodes(entity)
+              found_connected_city = @game.hex_by_id(@game.class::LONDON_HEX).tile.cities.any? do |c|
+                connected_nodes[c]
+              end
+            else
+              minor_city = if !minor.owner || minor.owner == @bank
+                             # Trying to acquire a bidbox minor. Trace route to its hometokenplace
+                             @game.hex_by_id(minor.coordinates).tile.cities[minor.city || 0]
+                           else
+                             # Minors only have one token, check if its connected
+                             minor.tokens.first.city
+                           end
+              found_connected_city = @game.graph.connected_nodes(entity)[minor_city]
+            end
+            found_connected_city
+          end
+
           def process_merge(action)
             entity = action.entity
             minor = action.corporation
 
-            unless @game.loading
-              if (!minor.owner || minor.owner == @bank) && minor.id == @game.class::MINOR_14_ID
-                # Trying to acquire minor 14 from the bank. You still have to have connection to london.
-                # You have a option to place a "cheater" token in one of the cities you have connection to.
-                # A small note, if a corporation already have a token in london and no clear path to another node.
-                # They can still choose to acquire and still gets both options of place or exchange. We dont want
-                # to an extra check of connected_nodes. This is very costly.
-                # Try all 6 cities in london to see if there is atleast one connection
-                connected_nodes = @game.graph.connected_nodes(entity)
-                found_connected_city = @game.hex_by_id(@game.class::LONDON_HEX).tile.cities.any? do |c|
-                  connected_nodes[c]
-                end
-              else
-                minor_city = if !minor.owner || minor.owner == @bank
-                               # Trying to acquire a bidbox minor. Trace route to its hometokenplace
-                               @game.hex_by_id(minor.coordinates).tile.cities[minor.city || 0]
-                             else
-                               # Minors only have one token, check if its connected
-                               minor.tokens.first.city
-                             end
-                found_connected_city = @game.graph.connected_nodes(entity)[minor_city]
-              end
-              unless found_connected_city
-                raise GameError, "Can't acquire minor #{minor.id} "\
-                                 "because it is not connected to #{entity.id}"
-              end
+            if !@game.loading && !entity_connects?(entity, minor)
+              raise GameError, "Can't acquire minor #{minor.id} "\
+                               "because it is not connected to #{entity.id}"
             end
 
             @selected_minor = minor
