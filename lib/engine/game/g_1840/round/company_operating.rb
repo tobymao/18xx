@@ -38,9 +38,9 @@ module Engine
             entity = @entities[@entity_index]
             return super if entity.type != :city
 
-            case action
-            when Engine::Action::RunRoutes
-              process_action(Engine::Action::Dividend.new(entity, kind: 'payout')) unless action.routes.empty?
+            if action.is_a?(Engine::Action::RunRoutes) && !action.routes.empty?
+              process_action(Engine::Action::Dividend.new(entity,
+                                                          kind: 'payout'))
             end
             super
           end
