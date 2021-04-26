@@ -30,7 +30,7 @@ module Engine
 
         CERT_LIMIT = { 3 => 18, 4 => 18, 5 => 17, 6 => 14, 7 => 12, 8 => 10, 9 => 9 }.freeze
 
-        STARTING_CASH = { 3 => 840, 4 => 630, 5 => 1504, 6 => 420, 7 => 360, 8 => 315, 9 => 280 }.freeze
+        STARTING_CASH = { 3 => 840, 4 => 630, 5 => 504, 6 => 420, 7 => 360, 8 => 315, 9 => 280 }.freeze
 
         LOCATION_NAMES = {
         }.freeze
@@ -154,26 +154,26 @@ module Engine
           return false unless Engine::Tile::COLORS.index(to.color) == (Engine::Tile::COLORS.index(from.color) + 1)
           # honors pre-existing track?
           return false unless from.paths_are_subset_of?(to.paths)
-  
+
           # If special ability then remaining checks is not applicable
           return true if special
-  
+
           # correct label?
           return false unless upgrades_to_correct_label?(from, to)
-  
+
           # honors existing town/city counts?
           # - allow labelled cities to upgrade regardless of count; they're probably
           #   fine (e.g., 18Chesapeake's OO cities merge to one city in brown)
           # - TODO: account for games that allow double dits to upgrade to one town
           return false if from.towns.size != to.towns.size
           return false if !from.label && from.cities.size != to.cities.size
-  
+
           # handle case where we are laying a yellow OO tile and want to exclude single-city tiles
           return false if (from.color == :white) && from.label.to_s == 'OO' && from.cities.size != to.cities.size
-  
+
           true
         end
-  
+
         def operating_round(round_num)
           Round::Operating.new(self, [
             Engine::Step::Bankrupt,

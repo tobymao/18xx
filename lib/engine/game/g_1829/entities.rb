@@ -57,7 +57,6 @@ module Engine
             simple_logo: '1829/LNWR.alt',
             tokens: [0, 40, 100, 100, 100],
             max_ownership_percent: 100,
-                teleport: 'true',
             city: 1,
             coordinates: 'E8',
             type: 'init1',
