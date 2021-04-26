@@ -9,12 +9,93 @@ module Engine
         class BuyTrain < Engine::Step::BuyTrain
           WARRANTY_COST = 50
 
+          def round_state
+            super.merge(
+              {
+                emergency_buy: false,
+              }
+            )
+          end
+
+          def setup
+            @round.emergency_buy = false
+            super
+          end
+
           def actions(entity)
-            return [] if entity != current_entity || buyable_trains(entity).empty?
+            return [] if entity != current_entity
+            return [] if buyable_trains(entity).empty? && !must_buy_train?(entity)
             return [] if entity.share_price&.type == :close
-            return %w[buy_train] if must_buy_train?(entity)
+            return %w[buy_train] if can_buy_depot_train?(entity) && must_buy_train?(entity)
+            return %w[buy_train pass] unless buyable_trains(entity).empty?
+
+            []
+          end
+
+          def log_pass(entity)
+            super unless must_ebuy?(entity)
+          end
+
+          def log_skip(entity)
+            super unless must_ebuy?(entity)
+          end
+
+          def pass!
+            return ebuy(current_entity) if must_ebuy?(current_entity)
 
             super
+          end
+
+          def must_ebuy?(entity)
+            @game.must_buy_train?(entity)
+          end
+
+          # corp can afford depot train
+          def can_buy_depot_train?(entity)
+            entity.cash >= @depot.upcoming.first.price
+          end
+
+          def delta_cash(entity)
+            @depot.upcoming.first.price - entity.cash
+          end
+
+          def can_sell_stock?(entity, delta)
+            entity.num_shares_of(entity) * entity.share_price.price >= delta
+          end
+
+          def can_refinance?(entity, delta)
+            entity.original_par_price.price * 10 >= delta
+          end
+
+          def pass_description
+            if @acted
+              'Done (Trains)'
+            elsif must_ebuy?(current_entity) && can_sell_stock?(current_entity, (delta = delta_cash(current_entity)))
+              'Sell Stock for Forced Purchase'
+            elsif must_ebuy?(current_entity) && can_refinance?(current_entity, delta)
+              'Refinance for Forced Purchase'
+            elsif must_ebuy?(current_entity)
+              'Enter Bankruptcy (Forced Purchase)'
+            else
+              'Skip (Trains)'
+            end
+          end
+
+          def ebuy(entity)
+            delta = delta_cash(entity)
+            @log << "#{entity.name} must buy a train and is short #{@game.format_currency(delta)}"
+            @round.emergency_buy = true
+            if can_sell_stock?(entity, delta)
+              @log << "#{entity.name} will sell treasury shares"
+              @game.raise_money!(entity, delta)
+            elsif can_refinance?(entity, delta)
+              @log << "#{entity.name} will refinance"
+              @game.refinance!(entity)
+            else
+              @log << "#{entity.name} will enter bankruptcy"
+              @game.enter_bankruptcy!(entity)
+              @pass = true
+            end
           end
 
           def room?(entity, _shell = nil)
@@ -36,15 +117,13 @@ module Engine
           end
 
           def buyable_trains(entity)
-            depot_trains = @depot.depot_trains
+            depot_trains = @depot.depot_trains.reject { |t| entity.cash < t.price }
             other_trains = @depot.other_trains(entity)
-
-            depot_trains = [@depot.min_depot_train] if entity.cash < @depot.min_depot_price
 
             other_trains.reject! { |t| entity.cash < @game.used_train_price(t) }
             other_trains.select! { |t| room_for_type?(entity, @game.train_type(t)) }
 
-            depot_trains + other_trains
+            @round.emergency_buy ? depot_trains : depot_trains + other_trains
           end
 
           def buyable_train_variants(train, entity)
@@ -67,6 +146,7 @@ module Engine
           end
 
           def buy_train_action(action)
+            @round.emergency_buy = false
             entity = action.entity
             train = action.train
             warranties = action.warranties || 0

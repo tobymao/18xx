@@ -81,6 +81,10 @@ module Engine
             pass!
           end
 
+          def holder_for_corporation(entity)
+            entity
+          end
+
           def log_run_payout(entity, kind, revenue, subsidy, action, payout)
             unless HUDSON_TYPES.include?(kind)
               @log << "#{entity.name} runs for #{@game.format_currency(revenue)} and pays #{action.kind}"
