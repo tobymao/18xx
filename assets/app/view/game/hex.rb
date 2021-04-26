@@ -160,6 +160,7 @@ module View
 
         if @actions.include?('run_routes')
           touch_node(nodes[0]) if nodes.one?
+          disambiguate_node(nodes) if nodes.count(&:offboard?) > 1
           return
         end
 

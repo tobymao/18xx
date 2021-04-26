@@ -1596,7 +1596,7 @@ module Engine
         @last_game_action_id == @round_history.last
       end
 
-      def can_hold_above_limit?(_entity)
+      def can_hold_above_corp_limit?(_entity)
         false
       end
 
@@ -1872,6 +1872,7 @@ module Engine
           count = val['count'] == 'unlimited' ? 1 : val['count']
           color = val['color']
           code = val['code']
+          hidden = !!val['hidden']
           Array.new(count) do |i|
             Tile.from_code(
               name,
@@ -1879,7 +1880,8 @@ module Engine
               code,
               index: i,
               reservation_blocks: self.class::TILE_RESERVATION_BLOCKS_OTHERS,
-              unlimited: val['count'] == 'unlimited'
+              unlimited: val['count'] == 'unlimited',
+              hidden: hidden
             )
           end
         end
@@ -2262,6 +2264,10 @@ module Engine
 
       def status_array(_corporation); end
 
+      def par_price_str(share_price)
+        format_currency(share_price.price)
+      end
+
       # Override this, and add elements (paragraphs of text) here to display it on Info page.
       def timeline
         []
@@ -2290,6 +2296,14 @@ module Engine
 
       def bank_sort(corporations)
         corporations.sort_by(&:name)
+      end
+
+      def info_train_name(train)
+        train.names_to_prices.keys.join(', ')
+      end
+
+      def info_train_price(train)
+        train.names_to_prices.values.map { |p| format_currency(p) }.join(', ')
       end
 
       def info_on_trains(phase)

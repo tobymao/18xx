@@ -87,14 +87,16 @@ module Engine
           {
             'count' => 1,
             'color' => 'green',
-            'code' => 'city=revenue:40;city=revenue:40;city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:_0,b:2;'\
+            'code' => 'city=revenue:40,groups:Stockholm;city=revenue:40,groups:Stockholm;'\
+              'city=revenue:40,groups:Stockholm;city=revenue:40,groups:Stockholm;path=a:0,b:_0;path=a:_0,b:2;'\
               'path=a:3,b:_1;path=a:_1,b:2;path=a:4,b:_2;path=a:_2,b:2;path=a:5,b:_3;path=a:_3,b:2;label=S',
           },
           '299SJ' =>
           {
             'count' => 1,
             'color' => 'brown',
-            'code' => 'city=revenue:70;city=revenue:70;city=revenue:70;city=revenue:70;path=a:0,b:_0;path=a:_0,b:2;'\
+            'code' => 'city=revenue:70,groups:Stockholm;city=revenue:70,groups:Stockholm;'\
+              'city=revenue:70,groups:Stockholm;city=revenue:70,groups:Stockholm;path=a:0,b:_0;path=a:_0,b:2;'\
               'path=a:3,b:_1;path=a:_1,b:2;path=a:4,b:_2;path=a:_2,b:2;path=a:5,b:_3;path=a:_3,b:2;label=S',
           },
           '440' =>
@@ -623,7 +625,8 @@ module Engine
             ['D19'] =>
               'city=revenue:20;path=a:5,b:_0;path=a:0,b:_0;icon=image:18_sj/B,sticky:1',
             ['G10'] =>
-              'city=revenue:20;city=revenue:20;city=revenue:20;city=revenue:20;path=a:1,b:_0;path=a:2,b:_1;'\
+              'city=revenue:20,groups:Stockholm;city=revenue:20,groups:Stockholm;'\
+              'city=revenue:20,groups:Stockholm;city=revenue:20,groups:Stockholm;path=a:1,b:_0;path=a:2,b:_1;'\
               'path=a:3,b:_2;path=a:4,b:_3;label=S;icon=image:18_sj/S,sticky:1',
           },
         }.freeze

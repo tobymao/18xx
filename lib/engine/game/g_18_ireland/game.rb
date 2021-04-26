@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require_relative '../g_1849/map'
 require_relative 'meta'
 require_relative 'entities'
 require_relative 'map'
@@ -11,17 +10,27 @@ module Engine
       class Game < Game::Base
         include_meta(G18Ireland::Meta)
         include G18Ireland::Entities
-        include G1849::Map
         include G18Ireland::Map
 
         CAPITALIZATION = :incremental
         HOME_TOKEN_TIMING = :par
         SELL_BUY_ORDER = :sell_buy
+        MUST_BUY_TRAIN = :always
+
+        ASSIGNMENT_TOKENS = {
+          'CDSPC' => '/icons/18_ireland/port_token.svg',
+          'TASPS' => '/icons/18_ireland/ship_token.svg',
+        }.freeze
 
         # Two lays with one being an upgrade, second tile costs 20
         TILE_LAYS = [
           { lay: true, upgrade: true },
           { lay: :not_if_upgraded, upgrade: false, cost: 20 },
+        ].freeze
+
+        DARGAN_TILE_LAYS = [
+          { lay: true, upgrade: true },
+          { lay: :not_if_upgraded, upgrade: true, cost: 20, upgrade_cost: 30 },
         ].freeze
         CURRENCY_FORMAT_STR = '£%d'
 
@@ -92,33 +101,55 @@ module Engine
           },
         ].freeze
 
-        # @todo: how to do the opposite side
-        # rusts turns them to the other side, go into the bankpool obsolete then removes completely
+        # The ' trains are the opposite sides of the physical cards which
+        # get added into the bankpool when their equivilent rusts
         TRAINS = [
           {
             name: '2H',
             num: 6,
             distance: 2,
             price: 80,
-            obsolete_on: '8H',
+            rusts_on: '4H',
+          },
+          {
+            name: "1H'",
+            num: 6,
+            distance: 1,
+            price: 40,
             rusts_on: '6H',
-          }, # 1H price:40
+            reserved: true,
+          },
           {
             name: '4H',
             num: 5,
             distance: 4,
             price: 180,
-            obsolete_on: '10H',
             rusts_on: '8H',
             events: [{ 'type' => 'corporations_can_merge' }],
-          }, # 2H price:90
+          },
+          {
+            name: "2H'",
+            num: 5,
+            distance: 2,
+            price: 90,
+            rusts_on: '10H',
+            reserved: true,
+          },
           {
             name: '6H',
             num: 4,
             distance: 6,
             price: 300,
             rusts_on: '10H',
-          }, # 3H price:150
+          },
+          {
+            name: "3H'",
+            num: 4,
+            distance: 3,
+            price: 150,
+            rusts_on: 'D',
+            reserved: true,
+          },
           {
             name: '8H',
             num: 3,
@@ -132,12 +163,20 @@ module Engine
             distance: 10,
             price: 550,
             events: [{ 'type' => 'train_trade_allowed' }],
+            discount: {
+              "3H'" => 150,
+              '8H' => 440,
+            },
           },
           {
             name: 'D',
             num: 1,
             distance: 99,
             price: 770,
+            discount: {
+              '8H' => 440,
+              '10H' => 550,
+            },
           },
         ].freeze
 
@@ -161,6 +200,12 @@ module Engine
           @players.reject(&:bankrupt).one?
         end
 
+        def tile_lays(entity)
+          return super if !entity.corporation? || entity.companies.none? { |c| c.id == 'WDE' }
+
+          DARGAN_TILE_LAYS
+        end
+
         def hex_edge_cost(conn)
           conn[:paths].each_cons(2).sum do |a, b|
             a.hex == b.hex ? 0 : 1
@@ -179,6 +224,50 @@ module Engine
           limit = route.train.distance
           distance = route_distance(route)
           raise GameError, "#{distance} is too many hex edges for #{route.train.name} train" if distance > limit
+        end
+
+        def tasps_company
+          company_by_id('TASPS')
+        end
+
+        def cdspc_company
+          company_by_id('CDSPC')
+        end
+
+        def revenue_for(route, stops)
+          revenue = super
+          # Bonus for connected narrow gauges directly connected
+          # via narrow gauge without being connected to broad gauge.
+          revenue += stops.sum do |stop|
+            bonus = 0
+            nodes = { stop => true }
+
+            stop.walk(skip_track: :broad, tile_type: self.class::TILE_TYPE) do |path, _, _|
+              abort = nil
+              path.nodes.each do |p_node|
+                next if nodes[p_node]
+
+                # only counts if all paths connected to this node is narrow gauge
+                nodes[p_node] = true
+                if p_node.paths.all? { |p| p.track == :narrow }
+                  bonus += p_node.route_revenue(route.phase, route.train)
+                else
+                  # if not entirely on narrow gauge, abort path walking!
+                  abort = :abort
+                end
+              end
+              abort
+            end
+            bonus
+          end
+
+          # Bonus for assignments
+          tasps = tasps_company&.id
+          revenue += 20 if route.corporation.assigned?(tasps) && (stops.map(&:hex).find { |hex| hex.assigned?(tasps) })
+          cdspc = cdspc_company&.id
+          revenue += 10 if route.corporation.assigned?(cdspc) && (stops.map(&:hex).find { |hex| hex.assigned?(cdspc) })
+
+          revenue
         end
 
         def narrow_connected_hexes(corporation)
@@ -234,17 +323,21 @@ module Engine
           # Broad gauge lay is if any of the new exits broad gauge?
           old_paths = old_tile.paths
           new_tile_paths = tile.paths
-          new_tile_paths.any? { |path| path.track == :broad && old_paths.none? { |p| path <= p } }
+          new_tile_paths.all? { |path| path.track == :broad || old_paths.any? { |p| path <= p } }
         end
 
-        def legal_tile_rotation?(corp, hex, tile)
-          connection_directions = if tile_uses_broad_rules?(hex.tile, tile)
-                                    graph.connected_hexes(corp)[hex]
-                                  else
-                                    narrow_connected_hexes(corp)[hex]
-                                  end
-          # Must be connected for the tile to be layable
-          return false unless connection_directions
+        def legal_tile_rotation?(entity, hex, tile)
+          # TIM, DR and TDR can lay irrespective of connectivity.
+          if !entity.company? || !%w[TIM DR TDR].include?(entity.id)
+            corp = entity.corporation
+            connection_directions = if tile_uses_broad_rules?(hex.tile, tile)
+                                      graph.connected_hexes(corp)[hex]
+                                    else
+                                      narrow_connected_hexes(corp)[hex] | graph.connected_hexes(corp)[hex]
+                                    end
+            # Must be connected for the tile to be layable
+            return false unless connection_directions
+          end
 
           # All tile exits must match neighboring tiles
           tile.exits.each do |dir|
@@ -282,14 +375,42 @@ module Engine
             corporation.type == :minor
           end
 
+          @reserved_trains = depot.upcoming.select(&:reserved)
+          @all_reserved_trains = @reserved_trains.dup
+          @reserved_trains.each { |train| depot.remove_train(train) }
+
           protect = corporations.find { |c| c.id == PROTECTED_CORPORATION }
           corporations.delete(protect)
           corporations.sort_by! { rand }
           removed_corporation = corporations.first
           @log << "Removed #{removed_corporation.id} corporation"
+          close_corporation(removed_corporation)
           corporations.delete(removed_corporation)
           corporations.unshift(protect)
+
           @corporations = corporations
+        end
+
+        def rust(train)
+          unless @all_reserved_trains.include?(train)
+            new_distance = train.distance / 2
+            new_train = @reserved_trains.find { |t| t.distance == new_distance }
+            new_train.reserved = false
+            @reserved_trains.delete(new_train)
+            @depot.reclaim_train(new_train)
+            @extra_trains << new_train.name
+          end
+
+          super
+        end
+
+        def rust_trains!(train, _entity)
+          @extra_trains = []
+          super
+          return if @extra_trains.empty?
+
+          @log << "-- Event: Rusted trains become #{@extra_trains.uniq.join(', ')},"\
+          ' and are available from the bank pool'
         end
 
         def get_par_prices(entity, _corp)
@@ -323,6 +444,13 @@ module Engine
           end
         end
 
+        def close_dkr_if_unpurchased!
+          protect = corporations.find { |c| c.id == PROTECTED_CORPORATION }
+          return if protect&.owner&.player?
+
+          close_corporation(protect)
+        end
+
         def upgrades_to?(from, to, special = false, selected_company: nil)
           # The Irish Mail
           return true if special && from.color == :blue && to.color == :red
@@ -335,6 +463,28 @@ module Engine
           hexes.select do |hex|
             hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
           end
+        end
+
+        def issuable_shares(entity)
+          return [] unless entity.corporation?
+          return [] unless entity.num_ipo_shares
+
+          # Can only issue 1
+          bundles_for_corporation(entity, entity)
+            .select { |bundle| @share_pool.fit_in_bank?(bundle) }.take(1)
+        end
+
+        def redeemable_shares(entity)
+          return [] unless entity.corporation?
+
+          # Can only redeem 1
+          bundles_for_corporation(@share_pool, entity).reject { |bundle| entity.cash < bundle.price }.take(1)
+        end
+
+        def new_auction_round
+          Engine::Round::Auction.new(self, [
+            G18Ireland::Step::WaterfallAuction,
+          ])
         end
 
         def stock_round
@@ -357,16 +507,18 @@ module Engine
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
+            G18Ireland::Step::Assign,
             Engine::Step::Exchange,
             Engine::Step::HomeToken,
             G18Ireland::Step::SpecialTrack,
             Engine::Step::BuyCompany,
+            G18Ireland::Step::IssueShares,
             G18Ireland::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
             G18Ireland::Step::Dividend,
             Engine::Step::DiscardTrain,
-            Engine::Step::BuyTrain,
+            G18Ireland::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
@@ -399,6 +551,7 @@ module Engine
             when G18Ireland::Round::Merger
               new_or!
             when init_round.class
+              close_dkr_if_unpurchased!
               reorder_players
               new_stock_round
             end

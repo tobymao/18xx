@@ -39,18 +39,7 @@ module Engine
       end
 
       def available_hex(entity, hex)
-        connected = hex_neighbors(entity, hex)
-        return nil unless connected
-
-        tile_lay = get_tile_lay(entity)
-        return nil unless tile_lay
-
-        color = hex.tile.color
-        return nil if color == :white && !tile_lay[:lay]
-        return nil if color != :white && !tile_lay[:upgrade]
-        return nil if color != :white && tile_lay[:cannot_reuse_same_hex] && @round.laid_hexes.include?(hex)
-
-        connected
+        tracker_available_hex(entity, hex)
       end
     end
   end

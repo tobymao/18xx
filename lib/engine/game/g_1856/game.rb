@@ -700,7 +700,7 @@ module Engine
         LAYOUT = :flat
 
         attr_reader :post_nationalization, :bankrupted
-        attr_accessor :borrowed_trains, :national_ever_owned_permanent
+        attr_accessor :borrowed_trains, :national_ever_owned_permanent, :false_national_president
 
         # These plain city hexes upgrade to L tiles in brown
         LAKE_HEXES = %w[B19 C14 F17 O18 P9 N3 L13].freeze
@@ -784,7 +784,10 @@ module Engine
                                             'Does not affect corporations which have already been parred'],
           }
         ).freeze
-
+        FALSE_PRESIDENCY_ABILITY = Ability::Description.new(
+          type: 'description',
+          description: '(Temporary) 1-Share presidency'
+        )
         def national
           @national ||= corporation_by_id('CGR')
         end
@@ -939,8 +942,7 @@ module Engine
           # exchange (1 share tops) to steal the presidency in the SR because
           # they'd have to buy 2 shares in one action which is a no-no
           # nil: Presidency not awarded yet at all
-          # true: 1-share false presidency has been awarded
-          # false: 2-share true presidency has been awarded
+          # not-nl: 1-share false presidency has been awarded to the player (value of var)
           @false_national_president = nil
 
           # CGR flags
@@ -1058,6 +1060,8 @@ module Engine
         end
 
         def can_par?(corporation, parrer)
+          return false if @false_national_president && parrer == @false_national_president
+
           corporation == national ? national.ipoed : super
         end
 
@@ -1292,9 +1296,10 @@ module Engine
         # Nationalization Methods
 
         def event_nationalization!
-          @nationalization_trigger ||= @round.active_step.current_entity.owner
+          @nationalization_trigger ||= train_by_id('6-0').owner.owner
           @log << '-- Event: CGR merger --'
           corporations_repay_loans
+          # Now that we have determined the triggerer for nationalization we can get them in order
           @nationalizables = nationalizable_corporations
           @log << "Merge candidates: #{present_nationalizables(nationalizables)}" if nationalizables.any?
           # starting with the player who bought the 6 train, go around the table repaying loans
@@ -1459,7 +1464,7 @@ module Engine
           index_for_trigger = @players.index(@nationalization_trigger)
           # This is based off the code in 18MEX; 10 appears to be an arbitrarily large integer
           #  where the exact value doesn't really matter
-          players_in_order = (0..@players.count - 1).to_a.sort { |i| i < index_for_trigger ? i + 10 : i }
+          players_in_order = (0..@players.count - 1).to_a.sort_by { |i| i < index_for_trigger ? i + 10 : i }
           # Determine the president before exchanging shares for ease of distribution
           shares_left_to_distribute = max_national_shares
           president_shares = 0
@@ -1480,11 +1485,13 @@ module Engine
             if shares_awarded == 1
               @log << "#{player.name} will need to buy the 2nd share of the #{national.name} "\
                 "president's cert in the next SR unless a new president is found"
-              @false_national_president = true
+              @false_national_president = player
+              national.add_ability(FALSE_PRESIDENCY_ABILITY)
             elsif @false_national_president
               @log << "Since #{president.name} is no longer president of the #{national.name} "\
                 ' and is no longer obligated to buy a second share in the following SR'
-              @false_national_president = false
+              @false_national_president = nil
+              national.remove_ability(FALSE_PRESIDENCY_ABILITY)
             end
             president_shares = shares_awarded
             president = player
@@ -1664,7 +1671,7 @@ module Engine
           # This is based off the code in 18MEX; 10 appears to be an arbitrarily large integer
           #  where the exact value doesn't really matter
           order = @players.each_with_index.map { |p, i| i < index_for_trigger ? [p, i + 10] : [p, i] }.to_h
-          floated_player_corps.sort_by! { |c| [order[c.player], @round.entities.index(c)] }
+          floated_player_corps.sort_by { |c| [order[c.player], @round.entities.index(c)] }
         end
 
         def present_nationalizables(nationalizables)
@@ -1674,7 +1681,7 @@ module Engine
         end
 
         def nationalization_president_payoff(major, owed)
-          major.spend(major.cash, @bank)
+          major.spend(major.cash, @bank) if major.cash.positive?
           major.owner.spend(owed, @bank)
           @loans << major.loans.pop(major.loans.size)
           @log << "#{major.name} spends the remainder of its cash towards repaying loans"

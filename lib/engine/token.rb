@@ -3,7 +3,7 @@
 module Engine
   class Token
     attr_reader :corporation, :logo, :simple_logo
-    attr_accessor :city, :price, :type, :used, :status
+    attr_accessor :city, :price, :type, :used, :status, :hex
 
     def initialize(corporation, price: 0, logo: nil, simple_logo: nil, type: :normal)
       @corporation = corporation
@@ -13,6 +13,7 @@ module Engine
       @used = false
       @type = type
       @city = nil
+      @hex = nil
       @status = nil
     end
 
@@ -24,6 +25,7 @@ module Engine
     def remove!
       @city&.tokens&.map! { |t| t == self ? nil : t }
       @city = nil
+      @hex = nil
       @used = false
     end
 
@@ -42,9 +44,10 @@ module Engine
       new_city.place_token(@corporation, self, free: true)
     end
 
-    def place(city)
+    def place(city, hex: nil)
       @used = true
       @city = city
+      @hex = hex || city.hex
     end
   end
 end

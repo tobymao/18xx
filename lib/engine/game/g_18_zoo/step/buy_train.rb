@@ -13,11 +13,10 @@ module Engine
             super
 
             @round.any_train_brought = false
-            @round.new_train_brought = false
           end
 
           def round_state
-            super.merge({ any_train_brought: false, new_train_brought: false })
+            super.merge({ any_train_brought: false })
           end
 
           def process_buy_train(action)
@@ -33,12 +32,12 @@ module Engine
               @round.any_train_brought = true
             end
 
-            return unless @round.new_train_brought
+            return unless @game.first_train_of_new_phase
 
             prev = entity.share_price.price
             @game.stock_market.move_right(entity)
             @game.log_share_price(entity, prev, '(new-phase bonus)')
-            @round.new_train_brought = false
+            @game.first_train_of_new_phase = false
           end
         end
       end

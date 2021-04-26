@@ -46,7 +46,7 @@ module View
             flags += " / #{@game.total_shares_to_float(@corporation, share_price.price)}"
           end
 
-          text = "#{@game.format_currency(share_price.price)} (#{purchasable_shares}#{flags})"
+          text = "#{@game.par_price_str(share_price)} (#{purchasable_shares}#{flags})"
           h('button.small.par_price', props, text)
         end
 

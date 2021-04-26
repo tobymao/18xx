@@ -122,14 +122,14 @@ module Engine
             price: 47,
             num: 99,
             events: [{ 'type' => 'new_train' }, { 'type' => 'rust_own_3s_4s' }],
-          },
-          {
-            name: '2J',
-            distance: [{ 'nodes' => %w[city offboard town], 'pay' => 2, 'multiplier' => 2 }],
-            price: 37,
-            num: 99,
-            available_on: '4J/2J',
-            events: [{ 'type' => 'new_train' }],
+            variants: [
+              {
+                name: '2J',
+                distance: [{ 'nodes' => %w[city offboard town], 'pay' => 2, 'multiplier' => 2 }],
+                price: 37,
+                num: 99,
+              },
+            ],
           },
         ].freeze
 
@@ -181,6 +181,8 @@ module Engine
 
         NEXT_SR_PLAYER_ORDER = :most_cash # TODO: check if a bug
 
+        EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
+
         HOME_TOKEN_TIMING = :float
 
         MUST_BUY_TRAIN = :always
@@ -195,6 +197,7 @@ module Engine
           'CORN' => '/icons/18_zoo/corn.svg',
           'BARREL' => '/icons/18_zoo/barrel.svg',
           'HOLE' => '/icons/18_zoo/hole.svg',
+          'WINGS' => '/icons/18_zoo/wings.svg',
         }.freeze
 
         MARKET_TEXT = Base::MARKET_TEXT.merge(par_2: 'Can only enter during green phase',
@@ -209,6 +212,7 @@ module Engine
           4 => { 0 => 20 },
         }.freeze
 
+        attr_accessor :first_train_of_new_phase
         attr_reader :available_companies, :future_companies
 
         def setup
@@ -337,14 +341,7 @@ module Engine
           super
         end
 
-        # TODO: check if needed
         def tile_lays(entity)
-          # Operating - Ancient Maps
-          return [{ lay: true, upgrade: false }, { lay: true, upgrade: false }] if entity == ancient_maps
-          # Operating - Rabbits
-          return [{ lay: false, upgrade: true }] if entity == rabbits
-          # Operating - Moles
-          return [{ lay: false, upgrade: true }] if entity == moles
           # Operating - Track
           return super if @round.is_a?(Engine::Round::Operating)
 
@@ -364,27 +361,20 @@ module Engine
           end
 
           # Operating - Rabbits
-          if @round.is_a?(Engine::Round::Operating) && selected_company == :rabbits
-            # TODO: fix to use selected_company
-            return super
+          if @round.is_a?(Engine::Round::Operating) && selected_company == rabbits
+            return super && (upgrades_to_correct_label?(from, to) ||
+              (%w[M MM].include?(from.hex.location_name) && from.color == :yellow))
           end
 
           # Operating - Moles
-          if @round.is_a?(Engine::Round::Operating) && selected_company == :moles
-            # TODO: fix to use selected_company
-            return super
+          if @round.is_a?(Engine::Round::Operating) && selected_company == moles
+            return super(from, to, true, selected_company: selected_company)
           end
 
           # Operating - Ancient Maps
-          if @round.is_a?(Engine::Round::Operating) && selected_company == @ancient_maps
-            return false unless from.color == 'white'
-
-            # TODO: fix to use selected_company
-            return super
+          if @round.is_a?(Engine::Round::Operating) && selected_company == ancient_maps && from.color != :white
+            return false
           end
-
-          # Stock - Bonus Track, Operating - Track
-          # TODO: fix to use selected_company
 
           super
         end
@@ -499,6 +489,15 @@ module Engine
           @that_is_mine ||= company_by_id('THAT_IS_MINE')
         end
 
+        def can_choose_is_mine?(entity, company)
+          company == that_is_mine && entity&.corporation? && that_is_mine.owner == entity &&
+            !@round.tokened &&
+            !entity.unplaced_tokens.empty? &&
+            entity.unplaced_tokens.first.price <= buying_power(entity) &&
+            that_is_mine.all_abilities[0].is_a?(Ability::Reservation) &&
+            graph.reachable_hexes(entity)[that_is_mine.all_abilities[0].hex]
+        end
+
         def work_in_progress
           @work_in_progress ||= company_by_id('WORK_IN_PROGRESS')
         end
@@ -582,6 +581,17 @@ module Engine
             revenue += @holes[0].tile.offboards[0].route_revenue(route.phase, route.train)
           end
 
+          # City skipped by Wings worth 0
+          visits = route.visited_stops
+          if visits.size > 2
+            corporation = route.corporation
+            visits[1..-2].each do |node|
+              next if !node.city? || !node.blocks?(corporation)
+
+              revenue -= node.hex.tile.cities.first.route_revenue(route.phase, route.train)
+            end
+          end
+
           revenue
         end
 
@@ -599,6 +609,16 @@ module Engine
 
           # Passing through Hole count as a stop
           cities_visited += 1 if !@holes.empty? && (@holes & route.all_hexes).size == 2
+
+          # Passing through City with Wings doesn't count
+          visits = route.visited_stops
+          if visits.size > 2
+            corporation = route.corporation
+            visits[1..-2].each do |node|
+              cities_visited -= 1 if node.city? && node.blocks?(corporation)
+            end
+          end
+
           raise GameError, 'Water and external gray don\'t count as city/offboard.' if cities_visited < 2
 
           # 2S, 3S, 4S, 5S
@@ -619,6 +639,29 @@ module Engine
           # Route cannot use Hole as off-board and as pass-through, or used twice
           holes_in_route = route.paths.map(&:tile).count { |tile| @holes.include?(tile.hex) }
           raise GameError, 'Hole cannot be a terminal or used multiple times if used as tunnel.' if holes_in_route > 2
+        end
+
+        def check_connected(route, _token)
+          blocked = nil
+          blocked_by = nil
+
+          route.routes.each_with_index do |current_route, index|
+            visits = current_route.visited_stops
+
+            next unless visits.size > 2
+
+            corporation = route.corporation
+            visits[1..-2].each do |node|
+              next if !node.city? || !node.blocks?(corporation)
+              raise GameError, "City with only '#{work_in_progress.name}' slot cannot be bypassed" if node.city? &&
+                node.slots(all: true) == 1 && node.tokens.first.type == :blocking
+              raise GameError, 'Only one train can bypass a tokened-out city' if blocked && blocked_by != index
+              raise GameError, 'Route can only bypass one tokened-out city' if blocked
+
+              blocked = node
+              blocked_by = index
+            end
+          end
         end
 
         def company_header(company)
@@ -706,6 +749,15 @@ module Engine
 
         def route_distance(route)
           distance = route.visited_stops.sum(&:visit_cost)
+
+          visits = route.visited_stops
+          if visits.size > 2
+            corporation = route.corporation
+            visits[1..-2].each do |node|
+              distance -= 1 if node.city? && node.blocks?(corporation)
+            end
+          end
+
           return distance if @holes.empty?
 
           distance + ((@holes & route.all_hexes).size == 2 ? 1 : 0)
@@ -859,8 +911,8 @@ module Engine
         def operating_round(round_num)
           Engine::Game::G18ZOO::Round::Operating.new(self, [
             G18ZOO::Step::Assign,
-            Engine::Step::SpecialTrack, # TODO: check if add step G18ZOO::Step::SpecialTrack or not
-            Engine::Step::SpecialToken,
+            G18ZOO::Step::SpecialTrack,
+            G18ZOO::Step::SpecialToken,
             G18ZOO::Step::BuyOrUsePowerOnOr,
             G18ZOO::Step::BuyCompany,
             G18ZOO::Step::Track,
@@ -931,12 +983,52 @@ module Engine
         end
 
         def event_new_train!
-          @round.new_train_brought = true if @round.is_a?(Engine::Round::Operating)
+          @first_train_of_new_phase = true if @round.is_a?(Engine::Round::Operating)
         end
 
         def event_rust_own_3s_4s!
           @log << '-- Event: "3S long" and "4S" owned by current player are rusted! --' # TODO: only if any owned
           # TODO: remove the 3S long and 4S owned by current player
+        end
+
+        def all_potential_upgrades(tile, tile_manifest: nil, selected_company: nil)
+          if selected_company == rabbits
+            return all_potential_upgrades_for_rabbits(tile, tile_manifest,
+                                                      selected_company)
+          end
+          return all_potential_upgrades_for_moles(tile, tile_manifest, selected_company) if selected_company == moles
+
+          super
+            .reject { |t| %w[80 X80 81 X81 82 X82 83 X83].include?(t.name) }
+        end
+
+        RABBITS_UPGRADES = {
+          'X7' => %w[X26 X27 X28 X29 X30 X31],
+          'X8' => %w[X19 X23 X24 X25 X28 X29 X30 X31],
+          'X9' => %w[X23 X24 X26 X27],
+        }.freeze
+
+        def all_potential_upgrades_for_rabbits(tile, _tile_manifest, company)
+          @all_tiles
+            .uniq(&:name)
+            .select { |t| (RABBITS_UPGRADES[tile.name] || []).include?(t.name) }
+            .select { |t| upgrades_to?(tile, t, true, selected_company: company) }
+        end
+
+        MOLES_UPGRADES = {
+          '7' => %w[80 82 83],
+          'X7' => %w[X80 X82 X83],
+          '8' => %w[80 81 82 83],
+          'X8' => %w[X80 X81 X82 X83],
+          '9' => %w[82 83],
+          'X9' => %w[X82 X83],
+        }.freeze
+
+        def all_potential_upgrades_for_moles(tile, _tile_manifest, company)
+          @all_tiles
+            .uniq(&:name)
+            .select { |t| (MOLES_UPGRADES[tile.name] || []).include?(t.name) }
+            .select { |t| upgrades_to?(tile, t, selected_company: company) }
         end
       end
     end

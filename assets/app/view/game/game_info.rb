@@ -172,12 +172,11 @@ module View
 
         rust_schedule, obsolete_schedule = rust_obsolete_schedule
         trs = @game.depot.upcoming.group_by(&:name).map do |name, trains|
-          names_to_prices = trains.first.names_to_prices
           events = []
           events << h('div.left', "rusts #{rust_schedule[name].join(', ')}") if rust_schedule[name]
           events << h('div.left', "obsoletes #{obsolete_schedule[name].join(', ')}") if obsolete_schedule[name]
-          tds = [h(:td, names_to_prices.keys.join(', ')),
-                 h("td#{price_str_class}", names_to_prices.values.map { |p| @game.format_currency(p) }.join(', ')),
+          tds = [h(:td, @game.info_train_name(trains.first)),
+                 h("td#{price_str_class}", @game.info_train_price(trains.first)),
                  h('td.right', "×#{trains.size}")]
           tds << h('td.right', events) if events.size.positive?
 
@@ -230,11 +229,11 @@ module View
             end
           end
           event_text = event_text.flat_map { |e| [h('span.nowrap', e), ', '] }[0..-2]
-          name = (train.name == first_train.name ? '→ ' : '') + names_to_prices.keys.join(', ')
+          name = (train.sym == first_train&.sym ? '→ ' : '') + @game.info_train_name(train)
 
           train_content = [
             h(:td, name),
-            h("td#{price_str_class}", names_to_prices.values.map { |p| @game.format_currency(p) }.join(', ')),
+            h("td#{price_str_class}", @game.info_train_price(train)),
             h('td.center', "#{remaining.size} / #{trains.size}"),
           ]
 

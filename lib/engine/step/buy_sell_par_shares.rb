@@ -101,15 +101,16 @@ module Engine
       end
 
       def must_sell?(entity)
-        return false if @game.can_hold_above_limit?(entity)
         return false unless can_sell_any?(entity)
+        return true if @game.num_certs(entity) > @game.cert_limit
 
-        @game.num_certs(entity) > @game.cert_limit ||
-          !@game.corporations.all? { |corp| corp.holding_ok?(entity) }
+        !@game.can_hold_above_corp_limit?(entity) &&
+          @game.corporations.any? { |corp| !corp.holding_ok?(entity) }
       end
 
       def can_sell?(entity, bundle)
         return unless bundle
+        return false if entity != bundle.owner
 
         corporation = bundle.corporation
 
@@ -319,7 +320,7 @@ module Engine
         (corporation.owner.percent_of(corporation)) >= corporation_secure_percent
       end
 
-      def action_is_shenanigan?(entity, action, corporation, share_to_buy)
+      def action_is_shenanigan?(entity, other_entity, action, corporation, share_to_buy)
         corp_buying = share_to_buy&.corporation
 
         case action
@@ -333,7 +334,7 @@ module Engine
             return if corporation_secure?(corporation) # Don't care...
 
             unless corporation == corp_buying
-              return "#{action.entity.player.name} bought on corporation #{corporation.name} and is unsecure"
+              return "#{other_entity.name} bought on corporation #{corporation.name} and is unsecure"
             end
 
             percentage = corporation.owner.percent_of(corporation) + share_to_buy.percent
@@ -373,7 +374,7 @@ module Engine
 
           corporations.each do |corporation, actions|
             actions.each do |action|
-              reason = action_is_shenanigan?(entity, action, corporation, share_to_buy)
+              reason = action_is_shenanigan?(entity, other_entity, action, corporation, share_to_buy)
               return reason if reason
             end
           end

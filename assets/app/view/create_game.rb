@@ -98,7 +98,7 @@ module View
       end
 
       title_change = lambda do
-        @selected_game = Engine::GAME_META_BY_TITLE[Native(@inputs[:title]).elm&.value]
+        @selected_game = Engine.meta_by_title(Native(@inputs[:title]).elm&.value)
 
         uncheck_game_variant
         @selected_variant = nil
@@ -319,7 +319,7 @@ module View
 
       params['title'] = @selected_variant[:title] if @selected_variant
 
-      game = Engine::GAME_META_BY_TITLE[params['title']]
+      game = Engine.meta_by_title(params['title'])
       params[:optional_rules] = game::OPTIONAL_RULES
                                   .map { |o_r| o_r[:sym] }
                                   .select { |rule| params.delete(rule) }
@@ -346,7 +346,7 @@ module View
         end
       end
 
-      @selected_game = Engine::GAME_META_BY_TITLE[title]
+      @selected_game = Engine.meta_by_title(title)
     end
 
     def selected_game_or_variant

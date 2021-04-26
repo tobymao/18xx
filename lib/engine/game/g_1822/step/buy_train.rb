@@ -20,6 +20,7 @@ module Engine
             if action.exchange
               upgrade_train_action(action)
             else
+              check_e_train(action)
               buy_train_action(action)
             end
             pass! unless can_buy_train?(action.entity)
@@ -51,6 +52,15 @@ module Engine
             @game.take_player_loan(entity, difference)
             @log << "#{entity.name} takes a loan of #{@game.format_currency(difference)} with "\
                     "#{@game.format_currency(@game.player_loan_interest(difference))} in interest"
+          end
+
+          def check_e_train(action)
+            return if !action.variant || (action.variant && action.variant != @game.class::E_TRAIN)
+
+            corporation = action.entity
+            return if corporation.trains.none? { |t| t.name == @game.class::E_TRAIN }
+
+            raise GameError, "#{corporation.id} can only own one E-train"
           end
 
           def must_take_loan?(entity)

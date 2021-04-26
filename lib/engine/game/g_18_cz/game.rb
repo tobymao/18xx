@@ -50,6 +50,8 @@ module Engine
         EBUY_OTHER_VALUE = false # allow ebuying other corp trains for up to face
         EBUY_CAN_SELL_SHARES = false # player cannot sell shares
 
+        AVAILABLE_CORP_COLOR = '#c6e9af'
+
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
           par: :red,
           par_2: :green,
@@ -145,7 +147,7 @@ module Engine
 
           # Only small companies are available until later phases
           @corporations, @future_corporations = @corporations.partition { |corporation| corporation.type == :small }
-
+          @corporations.each { |corp| corp.reservation_color = self.class::AVAILABLE_CORP_COLOR }
           new_corporation_for_vaclav(:small) unless multiplayer?
 
           block_lay_for_purple_tiles
@@ -323,6 +325,7 @@ module Engine
           medium_corps, @future_corporations = @future_corporations.partition do |corporation|
             corporation.type == :medium
           end
+          medium_corps.each { |corp| corp.reservation_color = self.class::AVAILABLE_CORP_COLOR }
           @corporations.concat(medium_corps)
           @log << '-- Medium corporations now available --'
 
@@ -534,7 +537,6 @@ module Engine
             owners[t.owner.name] += 1 if t.owner
             rust(t)
           end
-          return if rusted_trains.none?
 
           all_varians = trains.flat_map do |item|
             item.variants.values
@@ -544,9 +546,14 @@ module Engine
           end
           all_rusted_names = all_rusted_variants.map { |item| item[:name] }.uniq
 
-          @rusted_variants.concat(all_rusted_names)
-          @log << "-- Event: #{rusted_trains.uniq.join(', ')} trains rust " \
-            "( #{owners.map { |c, t| "#{c} x#{t}" }.join(', ')}) --"
+          new_rusted = all_rusted_names - @rusted_variants
+          return if new_rusted.none?
+
+          @rusted_variants.concat(new_rusted)
+          message = "Event: #{new_rusted.uniq.join(', ')} trains rust"
+          message += " ( #{owners.map { |c, t| "#{c} x#{t}" }.join(', ')})" unless owners.none?
+
+          @log << "-- #{message} --"
         end
 
         def revenue_for(route, stops)

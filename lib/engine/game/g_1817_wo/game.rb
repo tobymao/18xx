@@ -226,6 +226,9 @@ module Engine
               when: 'track',
               owner_type: 'corporation',
               count: 1,
+              closed_when_used_up: true,
+              consume_tile_lay: true,
+              special: true,
             },
           ],
             color: nil,
@@ -305,7 +308,10 @@ module Engine
                 hexes: %w[B7 E4 E2 F9 I8 K6 L5],
                 tiles: %w[7 8 9],
                 free: false,
-                when: 'owning_corp_or_turn',
+                when: 'track',
+                discount: 15,
+                consume_tile_lay: true,
+                closed_when_used_up: true,
                 owner_type: 'corporation',
                 count: 1,
               },
@@ -328,7 +334,10 @@ module Engine
                 hexes: %w[B7 E4 E2 F9 I8 K6 L5],
                 tiles: %w[7 8 9],
                 free: false,
-                when: 'owning_corp_or_turn',
+                when: 'track',
+                discount: 15,
+                consume_tile_lay: true,
+                closed_when_used_up: true,
                 owner_type: 'corporation',
                 count: 2,
               },
@@ -606,15 +615,6 @@ module Engine
 
         def corp_has_new_zealand?(corporation)
           corporation.tokens.any? { |token| token.city == @new_zealand_city }
-        end
-
-        # This must be overridden to use 1817WO step
-        def redeemable_shares(entity)
-          return [] unless entity.corporation?
-          return [] unless round.steps.find { |step| step.instance_of?(G1817WO::Step::BuySellParShares) }.active?
-
-          bundles_for_corporation(share_pool, entity)
-            .reject { |bundle| entity.cash < bundle.price }
         end
 
         def tokenable_location_exists?

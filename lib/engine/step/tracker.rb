@@ -20,7 +20,7 @@ module Engine
       end
 
       def can_lay_tile?(entity)
-        return true if abilities(entity, time: type, passive_ok: false)
+        return true if tile_lay_abilities_should_block?(entity)
         return true if can_buy_tile_laying_company?(entity, time: type)
 
         action = get_tile_lay(entity)
@@ -30,12 +30,14 @@ module Engine
       end
 
       def get_tile_lay(entity)
-        action = @game.tile_lays(entity)[@round.num_laid_track]&.clone
+        corporation = entity.company? ? entity.owner : entity
+        action = @game.tile_lays(corporation)[@round.num_laid_track]&.clone
         return unless action
 
         action[:lay] = !@round.upgraded_track if action[:lay] == :not_if_upgraded
         action[:upgrade] = !@round.upgraded_track if action[:upgrade] == :not_if_upgraded
         action[:cost] = action[:cost] || 0
+        action[:upgrade_cost] = action[:upgrade_cost] || action[:cost]
         action[:cannot_reuse_same_hex] = action[:cannot_reuse_same_hex] || false
         action
       end
@@ -49,7 +51,9 @@ module Engine
           raise GameError, "#{action.hex.id} cannot be layed as this hex was already layed on this turn"
         end
 
-        lay_tile(action, extra_cost: tile_lay[:cost], entity: entity, spender: spender)
+        extra_cost = tile.color == :yellow ? tile_lay[:cost] : tile_lay[:upgrade_cost]
+
+        lay_tile(action, extra_cost: extra_cost, entity: entity, spender: spender)
         upgraded_track(action)
         @round.num_laid_track += 1
         @round.laid_hexes << action.hex
@@ -57,6 +61,10 @@ module Engine
 
       def upgraded_track(action)
         @round.upgraded_track = true if action.tile.color != :yellow
+      end
+
+      def tile_lay_abilities_should_block?(entity)
+        Array(abilities(entity, time: type, passive_ok: false)).any? { |a| !a.consume_tile_lay }
       end
 
       def abilities(entity, **kwargs, &block)
@@ -104,7 +112,8 @@ module Engine
 
         abilities(entity) do |ability|
           next if ability.owner != entity
-          next if !ability.hexes.empty? && (!ability.hexes.include?(hex.id) || !ability.tiles.include?(tile.name))
+          next if !ability.hexes.empty? && !ability.hexes.include?(hex.id)
+          next if !ability.tiles.empty? && !ability.tiles.include?(tile.name)
 
           ability_found = true
           if ability.type == :teleport
@@ -157,7 +166,7 @@ module Engine
             pay_all_tile_income(company, ability)
           else
             # company with tile income for specific terrain
-            pay_terrain_tile_income(company, ability, terrain, entity)
+            pay_terrain_tile_income(company, ability, terrain, entity, spender)
           end
         end
       end
@@ -169,9 +178,9 @@ module Engine
             " for the tile built by #{company.name}"
       end
 
-      def pay_terrain_tile_income(company, ability, terrain, entity)
+      def pay_terrain_tile_income(company, ability, terrain, entity, spender)
         return unless terrain.include?(ability.terrain)
-        return if ability.owner_only && company.owner != entity
+        return if ability.owner_only && company.owner != entity && company.owner != spender
 
         # If multiple borders are connected bonus counts each individually
         income = ability.income * terrain.count { |t| t == ability.terrain }
@@ -351,6 +360,21 @@ module Engine
 
           company.all_abilities.any? { |a| a.type == :tile_lay && a.when?(time) }
         end
+      end
+
+      def tracker_available_hex(entity, hex)
+        connected = hex_neighbors(entity, hex)
+        return nil unless connected
+
+        tile_lay = get_tile_lay(entity)
+        return nil unless tile_lay
+
+        color = hex.tile.color
+        return nil if color == :white && !tile_lay[:lay]
+        return nil if color != :white && !tile_lay[:upgrade]
+        return nil if color != :white && tile_lay[:cannot_reuse_same_hex] && @round.laid_hexes.include?(hex)
+
+        connected
       end
     end
   end

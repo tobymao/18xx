@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'find'
 require './spec/spec_helper'
 
 module Engine
@@ -206,7 +207,7 @@ module Engine
 
             it 'should have only valid location names' do
               game.class::LOCATION_NAMES_BY_MAP[variant.to_sym].each do |coordinate, _name|
-                expect(game.hexes.map(&:coordinates)).to include(coordinate.to_s)
+                expect(game.hexes.map(&:coordinates)).to include(coordinate)
               end
             end
           end
@@ -447,6 +448,304 @@ module Engine
 
         [3].each { |index| expect(game.corporation_available?(game.corporations[index])).to be_truthy }
         [1, 2].each { |index| expect(game.corporation_available?(game.corporations[index])).to be_falsy }
+      end
+    end
+
+    let(:game_file) do
+      Find.find(FIXTURES_DIR).find { |f| File.basename(f) == "#{game_file_name}.json" }
+    end
+
+    describe 'That is mine!' do
+      context 'corporation already put a token' do
+        let(:game_file_name) { 'or_power.that_is_mine.cannot_convert_if_already_tokened' }
+
+        it 'cannot convert' do
+          game = Engine::Game.load(game_file, at_action: 32)
+          action = {
+            'type' => 'place_token',
+            'entity' => 'THAT_IS_MINE',
+            'entity_type' => 'company',
+            'city' => '619-0-0',
+            'slot' => 1,
+          }
+          expect(game.exception).to be_nil
+          expect(game.process_action(action).exception).to be_a(GameError)
+        end
+      end
+
+      context 'corporation has no token' do
+        let(:game_file_name) { 'or_power.that_is_mine.cannot_convert_if_no_token' }
+
+        it 'cannot convert' do
+          game = Engine::Game.load(game_file, at_action: 16)
+          action = {
+            'type' => 'place_token',
+            'entity' => 'THAT_IS_MINE',
+            'entity_type' => 'company',
+            'city' => '201-0-0',
+            'slot' => 0,
+          }
+          expect(game.exception).to be_nil
+          expect(game.process_action(action).exception).to be_a(GameError)
+        end
+      end
+
+      context 'corporation has no money' do
+        let(:game_file_name) { 'or_power.that_is_mine.cannot_convert_if_no_money' }
+
+        it 'cannot convert' do
+          game = Engine::Game.load(game_file, at_action: 16)
+          action = {
+            'type' => 'place_token',
+            'entity' => 'THAT_IS_MINE',
+            'entity_type' => 'company',
+            'city' => '201-0-0',
+            'slot' => 0,
+          }
+          expect(game.exception).to be_nil
+          expect(game.process_action(action).exception).to be_a(GameError)
+        end
+      end
+
+      context 'reserved hex is not reachable' do
+        let(:game_file_name) { 'or_power.that_is_mine' }
+
+        it 'cannot convert' do
+          game = Engine::Game.load(game_file, at_action: 10)
+          action = {
+            'type' => 'place_token',
+            'entity' => 'THAT_IS_MINE',
+            'entity_type' => 'company',
+            'city' => 'L4-3-1',
+            'slot' => 0,
+          }
+          expect(game.exception).to be_nil
+          expect(game.process_action(action).exception).to be_a(GameError)
+        end
+      end
+    end
+
+    describe 'Wings' do
+      context 'fly over two cities' do
+        let(:game_file_name) { 'or_power.wings' }
+
+        it 'is not possible' do
+          game = Engine::Game.load(game_file, at_action: 58)
+          action = {
+            'type' => 'run_routes',
+            'entity' => 'GI',
+            'entity_type' => 'corporation',
+            'routes' => [
+              {
+                'train' => '3S-0',
+                'connections' => [
+                  %w[L4 M5],
+                  %w[K9 K7 L6 L4],
+                  %w[K15 K13 K11 K9],
+                  %w[K15 K17],
+                  %w[K17 L16 M15 N14],
+                  %w[N14 N12],
+                ],
+                'hexes' => %w[M5 L4 K9 K15 K17 N14 N12],
+              },
+            ],
+          }
+          expect do
+            game.process_action(action)
+          end.to raise_error(Engine::GameError, 'Route can only bypass one tokened-out city')
+        end
+      end
+
+      context 'two different train use wings' do
+        let(:game_file_name) { 'or_power.wings' }
+
+        it 'is not possible' do
+          game = Engine::Game.load(game_file, at_action: 58)
+          action = {
+            'type' => 'run_routes',
+            'entity' => 'GI',
+            'entity_type' => 'corporation',
+            'routes' => [
+              {
+                'train' => '2S-1',
+                'connections' => [
+                  %w[L4 M5],
+                  %w[K9 K7 L6 L4],
+                ],
+                'hexes' => %w[M5 L4 K9],
+              },
+              {
+                'train' => '3S-0',
+                'connections' => [
+                  %w[K15 K13 K11 K9],
+                  %w[K15 K17],
+                  %w[K17 L16 M15 N14],
+                  %w[N14 N12],
+                ],
+                'hexes' => %w[K15 K17 N14 N12],
+              },
+            ],
+          }
+          expect do
+            game.process_action(action)
+          end.to raise_error(Engine::GameError, 'Only one train can bypass a tokened-out city')
+        end
+      end
+
+      context 'City with "Work in progress"' do
+        let(:game_file_name) { 'or_power.work_in_progress.cannot_ignore_with_wings' }
+
+        it 'cannot be pass-through' do
+          game = Engine::Game.load(game_file, at_action: 17)
+          action = {
+            'type' => 'run_routes',
+            'entity' => 'GI',
+            'entity_type' => 'corporation',
+            'routes' => [
+              {
+                'train' => '2S-0',
+                'connections' => [
+                  %w[L4 M5],
+                  %w[K9 K7 L6 L4],
+                ],
+                'hexes' => %w[M5 L4 K9],
+              },
+            ],
+          }
+          expect do
+            game.process_action(action)
+          end.to raise_error(Engine::GameError,
+                             'City with only \'Work in progress\' slot cannot be bypassed')
+        end
+      end
+    end
+
+    describe 'Work in progress' do
+      context 'token on single-slot city' do
+        let(:game_file_name) { 'or_power.work_in_progress' }
+
+        it 'block path' do
+          game = Engine::Game.load(game_file, at_action: 14)
+          action = {
+            'type' => 'lay_tile',
+            'entity' => 'PB',
+            'entity_type' => 'corporation',
+            'hex' => 'J4',
+            'tile' => '9-0',
+            'rotation' => 1,
+          }
+          expect { game.process_action(action) }.to raise_error(TypeError)
+        end
+      end
+    end
+
+    describe 'Ancient Maps' do
+      let(:game_file_name) { 'or_power.ancient_maps' }
+
+      it 'can be used for M' do
+        game = Engine::Game.load(game_file, at_action: 21)
+        action = {
+          'type' => 'lay_tile',
+          'entity' => 'ANCIENT_MAPS',
+          'entity_type' => 'company',
+          'hex' => 'J14',
+          'tile' => '8-0',
+          'rotation' => 3,
+        }
+
+        game.process_action(action).maybe_raise!
+
+        hex = game.hex_by_id('J14')
+        expect(hex.tile.label.to_s).to eq('M')
+        expect(hex.tile.upgrades).to be_empty
+
+        icon = hex.tile.icons[0]
+        expect(icon.image).to eq('/icons/18_zoo/mountain.svg')
+        expect(icon.sticky).to be_truthy
+        expect(icon.blocks_lay?).to be_truthy
+      end
+
+      it 'can be used for MM' do
+        game = Engine::Game.load(game_file, at_action: 21)
+        action = {
+          'type' => 'lay_tile',
+          'entity' => 'ANCIENT_MAPS',
+          'entity_type' => 'company',
+          'hex' => 'L18',
+          'tile' => '8-0',
+          'rotation' => 2,
+        }
+        game.process_action(action).maybe_raise!
+
+        hex = game.hex_by_id('L18')
+        expect(hex.tile.label.to_s).to eq('MM')
+        expect(hex.tile.upgrades).to be_empty
+
+        icon = hex.tile.icons[0]
+        expect(icon.image).to eq('/icons/18_zoo/mountain.svg')
+        expect(icon.sticky).to be_truthy
+        expect(icon.blocks_lay?).to be_truthy
+      end
+
+      it 'can be used for Y' do
+        game = Engine::Game.load(game_file, at_action: 20)
+        action = {
+          'type' => 'lay_tile',
+          'entity' => 'ANCIENT_MAPS',
+          'entity_type' => 'company',
+          'hex' => 'K15',
+          'tile' => '202-0',
+          'rotation' => 0,
+        }
+        game.process_action(action)
+
+        hex = game.hex_by_id('K15')
+        expect(hex.tile.label.to_s).to eq('Y')
+      end
+    end
+
+    describe 'Moles' do
+      let(:game_file_name) { 'or_power.moles' }
+
+      it 'can be used for M' do
+        game = Engine::Game.load(game_file, at_action: 18)
+
+        hex = game.hex_by_id('E17')
+        expect(hex.tile.label.to_s).to eq('M')
+        expect(hex.tile.color).to eq(:green)
+        expect(hex.tile.upgrades).to be_empty
+
+        icon = hex.tile.icons[0]
+        expect(icon.image).to eq('/icons/18_zoo/mountain.svg')
+        expect(icon.sticky).to be_truthy
+        expect(icon.blocks_lay?).to be_truthy
+      end
+
+      it 'can be used for MM' do
+        game = Engine::Game.load(game_file, at_action: 25)
+
+        hex = game.hex_by_id('G17')
+        expect(hex.tile.label.to_s).to eq('MM')
+        expect(hex.tile.color).to eq(:green)
+        expect(hex.tile.upgrades).to be_empty
+
+        icon = hex.tile.icons[0]
+        expect(icon.image).to eq('/icons/18_zoo/mountain.svg')
+        expect(icon.sticky).to be_truthy
+        expect(icon.blocks_lay?).to be_truthy
+      end
+
+      it 'can be used for O' do
+        game = Engine::Game.load(game_file, at_action: 17)
+
+        hex = game.hex_by_id('F18')
+        expect(hex.tile.label.to_s).to eq('O')
+        expect(hex.tile.color).to eq(:green)
+
+        icon = hex.tile.icons[0]
+        expect(icon.image).to eq('/icons/river.svg')
+        expect(icon.sticky).to be_truthy
+        expect(icon.blocks_lay?).to be_falsy
       end
     end
   end

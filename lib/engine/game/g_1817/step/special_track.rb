@@ -8,28 +8,13 @@ module Engine
       module Step
         class SpecialTrack < Engine::Step::SpecialTrack
           def process_lay_tile(action)
-            step = @round.active_step
-            raise 'Can only be laid as part of lay track' unless step.is_a?(Engine::Step::Track)
+            tile = action.tile
+            owner = action.entity.owner
+            super
+            return if action.entity.id == @game.class::PITTSBURGH_PRIVATE_NAME
 
-            if action.entity.id == @game.class::PITTSBURGH_PRIVATE_NAME
-              super
-              action.entity.close!
-            else # Mine
-              owner = action.entity.owner
-              tile_lay = step.get_tile_lay(owner)
-              tile = action.tile
-              raise GameError, 'Cannot lay an yellow now' if tile.color == :yellow && !tile_lay[:lay]
-
-              # Subtract 15 from the cost cancelling the terrain cost
-              lay_tile(action, extra_cost: tile_lay[:cost] - 15, entity: owner, spender: owner)
-              @round.laid_hexes << action.hex
-              tile.hex.assign!('mine')
-              @game.log << "#{owner.name} adds mine to #{tile.hex.name}"
-              ability = abilities(action.entity)
-              ability.use!
-              action.entity.close! if ability.count.zero?
-            end
-            @round.num_laid_track = @round.num_laid_track + 1
+            tile.hex.assign!('mine')
+            @game.log << "#{owner.name} adds mine to #{tile.hex.name}"
           end
 
           def hex_neighbors(entity, hex)

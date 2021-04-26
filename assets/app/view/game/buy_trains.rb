@@ -130,6 +130,7 @@ module View
           children << h(:h3, 'Available Trains')
           children << h(:div, div_props, [
             *from_depot(depot_trains),
+            *render_warranty(depot_trains),
             *other_corp_trains.any? ? other_trains(other_corp_trains) : '',
           ])
         end
@@ -218,6 +219,7 @@ module View
                 variant: name,
                 shell: @active_shell,
                 slots: slots,
+                warranties: warranties,
               ))
             end
 
@@ -231,6 +233,34 @@ module View
         end
       end
 
+      def render_warranty(depot_trains)
+        @warranty_input = nil
+        step = @game.round.active_step
+        return if depot_trains.empty? || !step.respond_to?(:warranty_max)
+
+        @warranty_input =
+          h(
+            'input.no_margin',
+            style: {
+              height: '1.2rem',
+              width: '3rem',
+              padding: '0 0 0 0.2rem',
+            },
+            attrs: {
+              type: 'number',
+              min: 0,
+              max: step.warranty_max,
+              value: 0,
+              size: 1,
+            }
+          )
+
+        [h(:div, ''),
+         h(:div, step.warranty_text),
+         h(:div, step.warranty_cost),
+         @warranty_input]
+      end
+
       # return checkbox values for slots (if any)
       def slots
         return if @slot_checkboxes.empty?
@@ -240,24 +270,35 @@ module View
         end.compact
       end
 
+      def warranties
+        return unless @warranty_input
+
+        @warranty_input.JS['elm'].JS['value'].to_i
+      end
+
       def other_trains(other_corp_trains)
         step = @game.round.active_step
         hidden_trains = false
         trains_to_buy = other_corp_trains.flat_map do |other, trains|
           trains.group_by(&:name).flat_map do |name, group|
-            input = h(
-              'input.no_margin',
-              style: {
-                height: '1.2rem',
-                width: '3rem',
-                padding: '0 0 0 0.2rem',
-              },
-              attrs: price_range(group[0]),
-            )
+            fixed_price = step.respond_to?(:fixed_price) && step.fixed_price(group[0])
+            input = if fixed_price
+                      h('div.right', @game.format_currency(fixed_price))
+                    else
+                      h(
+                        'input.no_margin',
+                        style: {
+                          height: '1.2rem',
+                          width: '3rem',
+                          padding: '0 0 0 0.2rem',
+                        },
+                        attrs: price_range(group[0]),
+                      )
+                    end
 
             extra_due_checkbox = nil
             buy_train_click = lambda do
-              price = input.JS['elm'].JS['value'].to_i
+              price = fixed_price || input.JS['elm'].JS['value'].to_i
               extra_due = extra_due_checkbox && Native(extra_due_checkbox).elm.checked
               buy_train = lambda do
                 process_action(Engine::Action::BuyTrain.new(
@@ -403,9 +444,8 @@ module View
         }
 
         rows = @depot.upcoming.group_by(&:name).flat_map do |_, trains|
-          names_to_prices = trains.first.names_to_prices
-          [h(:div, names_to_prices.keys.join(', ')),
-           h(:div, names_to_prices.values.map { |p| @game.format_currency(p) }.join(', ')),
+          [h(:div, @game.info_train_name(trains.first)),
+           h(:div, @game.info_train_price(trains.first)),
            h(:div, trains.size)]
         end
 

@@ -214,7 +214,7 @@ module Engine
                 reachable: true,
                 closed_when_used_up: true,
                 hexes: [],
-                tiles: %w[80 81 82 83 544 545 546 60 169 141 142 143 144 145 146 147 X17],
+                tiles: %w[80 81 82 83 544 545 546 60 169 141 142 143 144 767 768 769 X17],
               },
             ],
             color: nil,

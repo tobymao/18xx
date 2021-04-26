@@ -92,21 +92,21 @@ module Engine
                 'path=a:0,b:_0;path=a:1,b:_1;path=a:2,b:_2;path=a:3,b:_3;path=a:4,b:_4;path=a:5,b:_5;'\
                 'upgrade=cost:20;label=L',
             },
-          '145' =>
+          '768' =>
             {
               'count' => 4,
               'color' => 'brown',
               'code' =>
                 'town=revenue:10;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0',
             },
-          '146' =>
+          '767' =>
             {
               'count' => 4,
               'color' => 'brown',
               'code' =>
                 'town=revenue:10;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0',
             },
-          '147' =>
+          '769' =>
             {
               'count' => 6,
               'color' => 'brown',
@@ -200,7 +200,7 @@ module Engine
               'count' => 1,
               'color' => 'gray',
               'code' =>
-                'city=revenue:60,slots:2;path=a:1,b:_0;path=a:4,b:_0;label=S',
+                'city=revenue:60,slots:3;path=a:1,b:_0;path=a:4,b:_0;label=S',
             },
           'X15' =>
             {
@@ -483,7 +483,7 @@ module Engine
               'path=a:0,b:5',
             ['E34'] =>
               'city=revenue:yellow_30|green_40|brown_30|gray_10,slots:2,loc:0;path=a:3,b:_0;'\
-              'path=a:4,b:_0,terminal:1;path=a:5,b:_0',
+              'path=a:4,b:_0,terminal:1,ignore:1;path=a:5,b:_0',
             ['F23'] =>
               'city=revenue:yellow_20|green_20|brown_30|gray_40,slots:2;path=a:5,b:_0,terminal:1',
             %w[F25 F27] =>
@@ -491,8 +491,8 @@ module Engine
             %w[F29 F31] =>
               'path=a:2,b:4,a_lane:2.0;path=a:2,b:5,a_lane:2.1',
             ['F33'] =>
-              'city=revenue:yellow_20|green_40|brown_30|gray_10,slots:2,loc:4;path=a:1,b:_0;path=a:2,b:_0,terminal:1;'\
-              'path=a:5,b:_0',
+              'city=revenue:yellow_20|green_40|brown_30|gray_10,slots:2,loc:4;path=a:1,b:_0;'\
+              'path=a:2,b:_0,terminal:1,ignore:1;path=a:5,b:_0',
             ['H1'] =>
               'city=revenue:yellow_30|green_40|brown_50|gray_60,slots:2;path=a:0,b:_0,terminal:1;'\
               'path=a:1,b:_0,terminal:1',

@@ -55,7 +55,8 @@ module Engine
                 else
                   @game.current_entity
                 end
-        if ability.type == :teleport
+        if ability.type == :teleport ||
+           (ability.type == :tile_lay && ability.consume_tile_lay)
           lay_tile_action(action, spender: owner)
         else
           lay_tile(action, spender: owner)
@@ -95,6 +96,9 @@ module Engine
       end
 
       def available_hex(entity, hex)
+        return unless (ability = abilities(entity))
+        return tracker_available_hex(entity, hex) if ability.hexes&.empty? && ability.consume_tile_lay
+
         hex_neighbors(entity, hex)
       end
 
@@ -117,7 +121,10 @@ module Engine
         special = tile_ability.special if tile_ability.type == :tile_lay
         tiles
           .compact
-          .select { |t| @game.phase.tiles.include?(t.color) && @game.upgrades_to?(hex.tile, t, special) }
+          .select do |t|
+          @game.phase.tiles.include?(t.color) && @game.upgrades_to?(hex.tile, t, special,
+                                                                    selected_company: entity)
+        end
       end
 
       def abilities(entity, **kwargs, &block)

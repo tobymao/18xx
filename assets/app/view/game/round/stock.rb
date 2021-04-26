@@ -172,7 +172,9 @@ module View
             corporation.ipoed ? h(BuySellShares, corporation: corporation) : render_pre_ipo(corporation),
             render_loan(corporation),
           ]
-          inputs << h(IssueShares, entity: corporation) if @step.actions(corporation).include?('buy_shares')
+          unless (@step.actions(corporation) & %w[buy_shares sell_shares]).empty?
+            inputs << h(IssueShares, entity: corporation)
+          end
           inputs << h(BuyTrains, corporation: corporation) if @step.actions(corporation).include?('buy_train')
           inputs = inputs.compact
           h('div.margined_bottom', { style: { width: '20rem' } }, inputs) if inputs.any?
