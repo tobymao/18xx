@@ -790,6 +790,19 @@ module Engine
           connect_hexes
         end
 
+        def buying_power(entity, use_tickets: false, **)
+          return super unless use_tickets
+
+          tickets = if entity.player?
+                      entity.companies || []
+                    elsif entity.corporation?
+                      entity.owner&.companies || []
+                    else
+                      []
+                    end
+          super + tickets.select { |company| company.name.start_with?('ZOOTicket') }.sum(&:value)
+        end
+
         private
 
         def init_round

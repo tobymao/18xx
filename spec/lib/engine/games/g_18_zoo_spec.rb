@@ -460,7 +460,7 @@ module Engine
         let(:game_file_name) { 'or_power.that_is_mine.cannot_convert_if_already_tokened' }
 
         it 'cannot convert' do
-          game = Engine::Game.load(game_file, at_action: 32)
+          game = Engine::Game.load(game_file, at_action: 33)
           action = {
             'type' => 'place_token',
             'entity' => 'THAT_IS_MINE',
@@ -530,7 +530,7 @@ module Engine
         let(:game_file_name) { 'or_power.wings' }
 
         it 'is not possible' do
-          game = Engine::Game.load(game_file, at_action: 58)
+          game = Engine::Game.load(game_file, at_action: 59)
           action = {
             'type' => 'run_routes',
             'entity' => 'GI',
@@ -560,7 +560,7 @@ module Engine
         let(:game_file_name) { 'or_power.wings' }
 
         it 'is not possible' do
-          game = Engine::Game.load(game_file, at_action: 58)
+          game = Engine::Game.load(game_file, at_action: 59)
           action = {
             'type' => 'run_routes',
             'entity' => 'GI',
@@ -625,7 +625,7 @@ module Engine
         let(:game_file_name) { 'or_power.work_in_progress' }
 
         it 'block path' do
-          game = Engine::Game.load(game_file, at_action: 14)
+          game = Engine::Game.load(game_file, at_action: 15)
           action = {
             'type' => 'lay_tile',
             'entity' => 'PB',
@@ -722,7 +722,7 @@ module Engine
       end
 
       it 'can be used for MM' do
-        game = Engine::Game.load(game_file, at_action: 25)
+        game = Engine::Game.load(game_file, at_action: 26)
 
         hex = game.hex_by_id('G17')
         expect(hex.tile.label.to_s).to eq('MM')

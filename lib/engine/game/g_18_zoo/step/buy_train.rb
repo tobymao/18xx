@@ -19,6 +19,17 @@ module Engine
             super.merge({ any_train_brought: false })
           end
 
+          def can_buy_train?(entity = nil, _shell = nil)
+            entity ||= current_entity
+
+            can_buy_normal = room?(entity) &&
+              @game.buying_power(entity, use_tickets: true) >= @depot.min_price(entity)
+
+            can_buy_normal || (discountable_trains_allowed?(entity) && @game
+             .discountable_trains_for(entity)
+             .any? { |_, _, _, price| @game.buying_power(entity, use_tickets: true) >= price })
+          end
+
           def process_buy_train(action)
             entity ||= action.entity
             old_train = action.train.owned_by_corporation?

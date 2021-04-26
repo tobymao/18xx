@@ -115,6 +115,13 @@
       "created_at": 1618390931
     },
     {
+      "type": "pass",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 14,
+      "created_at": 1618390931
+    },
+    {
       "type": "run_routes",
       "entity": "GI",
       "entity_type": "corporation",
