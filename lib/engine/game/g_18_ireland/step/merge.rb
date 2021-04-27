@@ -248,10 +248,14 @@ module Engine
           def merge_possible?(corporations, new_corporation)
             return false if corporations.include?(new_corporation)
 
+            # Minors only have one token
+            new_home = new_corporation.tokens.first.city
             # @todo: connected via broad-gauge track
 
+            return false unless corporations.any? { |c| @game.graph.connected_nodes(c)[new_home] }
+
             # Don't share tokens (minors only have one token)
-            return false if corporations.any? { |c| c.tokens.first.city.tile == new_corporation.tokens.first.city.tile }
+            return false if corporations.any? { |c| c.tokens.first.city.tile == new_home.tile }
 
             all_corporations = corporations + [new_corporation]
             # No more than 10 shares issued between players and the market (5 share corporation...)
