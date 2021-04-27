@@ -217,7 +217,7 @@ module View
       end
 
       def render_log_choices
-        h(:div, { style: { marginBottom: '0.3rem' } }, [
+        h(:div, { style: { marginBottom: '0.3rem', textAlign: 'right' } }, [
             h(:button,
               {
                 style: { marginTop: '0' },
