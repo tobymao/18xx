@@ -204,6 +204,10 @@ module Engine
       MUST_EMERGENCY_ISSUE_BEFORE_EBUY = false # corporation must issue shares before ebuy (if possible)
       EBUY_SELL_MORE_THAN_NEEDED = false # true if corporation may continue to sell shares even though enough funds
       EBUY_CAN_SELL_SHARES = true # true if a player can sell shares for ebuy
+
+      # if sold more than needed then cannot then buy a cheaper train in the depot.
+      EBUY_SELL_MORE_THAN_NEEDED_LIMITS_DEPOT_TRAIN = false
+
       # when is the home token placed? on...
       # operate
       # float
@@ -864,7 +868,7 @@ module Engine
       end
 
       def sellable_turn?
-        self.class::SELL_AFTER == :first ? @turn > 1 : true
+        self.class::SELL_AFTER == :first ? (@turn > 1 || !@round.stock?) : true
       end
 
       def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)

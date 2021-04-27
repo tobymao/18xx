@@ -114,6 +114,12 @@ module Engine
         if entity.cash < @depot.min_depot_price
           depot_trains = [@depot.min_depot_train] if @game.class::EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST
 
+          if @game.class::EBUY_SELL_MORE_THAN_NEEDED_LIMITS_DEPOT_TRAIN
+            depot_trains.reject! do |t|
+              t.price < spend_minmax(entity, t).first
+            end
+          end
+
           if @last_share_sold_price
             if @game.class::EBUY_OTHER_VALUE
               other_trains.reject! { |t| t.price < spend_minmax(entity, t).first }
