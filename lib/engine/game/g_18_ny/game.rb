@@ -38,6 +38,7 @@ module Engine
           { lay: true, upgrade: true, cost: 20, cannot_reuse_same_hex: true },
           { lay: true, upgrade: :not_if_upgraded, cost: 20, cannot_reuse_same_hex: true },
         ].freeze
+        TILE_COST = 20
 
         TRACK_RESTRICTION = :permissive
 
@@ -216,17 +217,21 @@ module Engine
           @erie_canal_private.close!
         end
 
-        # Tile discount ability closes P1. Do not use implicitly.
         def upgrade_cost(tile, _hex, entity, spender)
-          return super if entity.company?
+          terrain_cost = tile.upgrades.sum(&:cost)
+          discounts = 0
 
-          tile.upgrades.sum(&:cost)
-        end
+          # Tile discounts must be activated
+          if entity.company? && ability = entity.all_abilities.find { |a| a.type == :tile_discount }
+            discounts = tile.upgrades.sum do |upgrade|
+              discount = upgrade.terrains.uniq == [ability.terrain] ? ability.discount : 0
+              log_cost_discount(spender, ability, discount) if discount.positive?
+              discount
+            end
+          end
 
-        def tile_cost_with_discount(_tile, _hex, entity, spender, cost)
-          return super if entity.company?
-
-          cost
+          terrain_cost -= TILE_COST if terrain_cost.positive?
+          terrain_cost - discounts
         end
       end
     end
