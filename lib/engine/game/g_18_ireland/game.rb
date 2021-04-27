@@ -189,6 +189,8 @@ module Engine
         # Companies guaranteed to be in the game
         PROTECTED_COMPANIES = %w[DAR DK].freeze
         PROTECTED_CORPORATION = 'DKR'
+        SHANNON_COMPANY = 'RSSC'
+        SHANNON_HEXES = %w[F10 D16].freeze
         KEEP_COMPANIES = 5
 
         # used for laying tokens, running routes, mergers
@@ -234,11 +236,40 @@ module Engine
           company_by_id('CDSPC')
         end
 
-        def revenue_for(route, stops)
-          revenue = super
-          # Bonus for connected narrow gauges directly connected
-          # via narrow gauge without being connected to broad gauge.
-          revenue += stops.sum do |stop|
+        def calculate_shannon_revenue(route, revenues)
+          shannon_hexes = self.class::SHANNON_HEXES.map { |hex| hex_by_id(hex) }
+          shannon_options = []
+          route.visited_stops.each do |stop|
+            next unless stop.city?
+
+            next unless shannon_hexes.include?(stop.hex)
+
+            other_hex = (shannon_hexes - [stop.hex]).first
+            # Avoid calculating this multiple times
+            unless revenues[other_hex]
+              # Tiles only ever contain one city
+              other_city = other_hex.tile.cities.first
+              revenue = other_city.route_revenue(route.phase, route.train)
+              revenue += narrow_gauge_revenue(route, [other_city])
+              revenues[other_hex] = revenue
+            end
+            shannon_options << revenues[other_hex]
+          end
+          { route: route, revenue: shannon_options.max }
+        end
+
+        def shannon_revenue(routes)
+          entity = routes.first.train.owner
+          return nil unless entity.companies.any? { |c| c.id == self.class::SHANNON_COMPANY }
+
+          revenues = {}
+
+          destination_bonus = routes.map { |r| calculate_shannon_revenue(r, revenues) }.compact
+          destination_bonus.sort_by { |v| v[:revenue] }.reverse&.first
+        end
+
+        def narrow_gauge_revenue(route, stops)
+          stops.sum do |stop|
             bonus = 0
             nodes = { stop => true }
 
@@ -260,6 +291,17 @@ module Engine
             end
             bonus
           end
+        end
+
+        def revenue_for(route, stops)
+          revenue = super
+          # Bonus for connected narrow gauges directly connected
+          # via narrow gauge without being connected to broad gauge.
+          revenue += narrow_gauge_revenue(route, stops)
+
+          shannon_revenue = shannon_revenue(route.routes)
+
+          revenue += shannon_revenue[:revenue] if shannon_revenue && shannon_revenue[:route] == route
 
           # Bonus for assignments
           tasps = tasps_company&.id
@@ -268,6 +310,38 @@ module Engine
           revenue += 10 if route.corporation.assigned?(cdspc) && (stops.map(&:hex).find { |hex| hex.assigned?(cdspc) })
 
           revenue
+        end
+
+        def train_help(_entity, runnable_trains, _routes)
+          return [] if runnable_trains.empty?
+
+          entity = runnable_trains.first.owner
+
+          # Shannon
+          shannon = entity.companies.any? { |c| c.id == self.class::SHANNON_COMPANY }
+
+          help = ['Trains only use broad gauge.'\
+          'Narrow gauge track is automatically added to connected revenue centers.']
+
+          if shannon
+            help << "#{self.class::SHANNON_COMPANY} automatically adds the value (including Narrow Gauge) of"\
+            ' Dromod or Limerick to the other city for one train.'
+          end
+          help
+        end
+
+        def revenue_str(route)
+          str = super
+
+          ng_revenue = narrow_gauge_revenue(route, route.stops)
+          str += " (Narrow: #{format_currency(ng_revenue)})" if ng_revenue.positive?
+
+          shannon_revenue = shannon_revenue(route.routes)
+          if shannon_revenue && shannon_revenue[:route] == route
+            str += " (#{self.class::SHANNON_COMPANY}:#{format_currency(shannon_revenue[:revenue])})"
+          end
+
+          str
         end
 
         def narrow_connected_hexes(corporation)
@@ -333,7 +407,7 @@ module Engine
             connection_directions = if tile_uses_broad_rules?(hex.tile, tile)
                                       graph.connected_hexes(corp)[hex]
                                     else
-                                      narrow_connected_hexes(corp)[hex] | graph.connected_hexes(corp)[hex]
+                                      narrow_connected_hexes(corp)[hex] || graph.connected_hexes(corp)[hex]
                                     end
             # Must be connected for the tile to be layable
             return false unless connection_directions
