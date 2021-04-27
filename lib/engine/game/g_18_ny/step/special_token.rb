@@ -11,10 +11,14 @@ module Engine
             super
 
             company = action.entity
+            corporation = company.owner
 
-            token = company.owner.tokens.find { |token| token.hex&.id == 'F20' }
-            token.logo = '/logos/18_ny/stagecoach.svg'
-            token.simple_logo = '/logos/18_ny/stagecoach.alt.svg'
+            @game.stagecoach_token.corporation = corporation
+            corporation.tokens << @game.stagecoach_token
+
+            token = corporation.tokens.find { |token| token.hex&.id == 'F20' }
+            token.swap!(@game.stagecoach_token)
+            token.destroy!
 
             @log << "#{company.name} closes"
             company.close!

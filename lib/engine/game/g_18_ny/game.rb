@@ -13,6 +13,9 @@ module Engine
         include G18NY::Entities
         include G18NY::Map
 
+        attr_reader :privates_closed
+        attr_accessor :stagecoach_token
+
         CAPITALIZATION = :incremental
         HOME_TOKEN_TIMING = :operate
 
@@ -136,6 +139,8 @@ module Engine
 
         def setup
           @erie_canal_private = @companies.find { |c| c.id == 'EC' }
+          @stagecoach_token =
+            Token.new(nil, logo: '/logos/18_ny/stagecoach.svg', simple_logo: '/logos/18_ny/stagecoach.alt.svg')
         end
 
         def new_auction_round
@@ -153,6 +158,7 @@ module Engine
 
         def operating_round(round_num)
           Round::Operating.new(self, [
+            G18NY::Step::StagecoachExchange,
             Engine::Step::BuyCompany,
             G18NY::Step::SpecialTrack,
             G18NY::Step::SpecialToken,
@@ -165,6 +171,13 @@ module Engine
             Engine::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
+        end
+
+        # Events
+
+        def event_close_companies!
+          super
+          @privates_closed = true
         end
 
         # Stock round logic
