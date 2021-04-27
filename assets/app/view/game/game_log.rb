@@ -217,12 +217,18 @@ module View
       end
 
       def render_log_choices
-        h(:div, { style: { 'margin-bottom': '1vmin' } }, [
+        h(:div, { style: { marginBottom: '0.3rem' } }, [
             h(:button,
-              { on: { click: -> { store(:show_log, !@show_log) } } },
+              {
+                style: { marginTop: '0' },
+                on: { click: -> { store(:show_log, !@show_log) } },
+              },
               "Log #{@show_log ? '✅' : '❌'}"),
             h(:button,
-              { on: { click: -> { store(:show_chat, !@show_chat) } } },
+              {
+                style: { marginTop: '0' },
+                on: { click: -> { store(:show_chat, !@show_chat) } },
+              },
               "Chat #{@show_chat ? '✅' : '❌'}"),
           ])
       end
