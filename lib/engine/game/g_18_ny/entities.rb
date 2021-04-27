@@ -20,8 +20,18 @@ module Engine
                 terrain: 'water',
                 discount: 80,
                 count: 1,
-                # TODO: only use on activation. Close on use.
               },
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                tiles: [],
+                hexes: [],
+                reachable: true,
+                special: false,
+                consume_tile_lay: true,
+                count: 1,
+                closed_when_used_up: true,
+              }
             ],
           },
           {

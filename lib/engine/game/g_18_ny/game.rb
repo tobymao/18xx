@@ -215,6 +215,19 @@ module Engine
           @log << "#{@erie_canal_private.name} closes"
           @erie_canal_private.close!
         end
+
+        # Tile discount ability closes P1. Do not use implicitly.
+        def upgrade_cost(tile, _hex, entity, spender)
+          return super if entity.company?
+
+          tile.upgrades.sum(&:cost)
+        end
+
+        def tile_cost_with_discount(_tile, _hex, entity, spender, cost)
+          return super if entity.company?
+
+          cost
+        end
       end
     end
   end

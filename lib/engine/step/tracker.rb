@@ -146,14 +146,14 @@ module Engine
         cost =
           if free
             # call for the side effect of deleting a completed border cost
-            remove_border_calculate_cost!(tile, entity)
+            remove_border_calculate_cost!(tile, entity, spender)
 
             extra_cost
           else
-            border, border_types = remove_border_calculate_cost!(tile, entity)
+            border, border_types = remove_border_calculate_cost!(tile, entity, spender)
             terrain += border_types if border.positive?
-            base_cost = @game.upgrade_cost(old_tile, hex, entity) + border + extra_cost - discount
-            @game.tile_cost_with_discount(tile, hex, entity, base_cost)
+            base_cost = @game.upgrade_cost(old_tile, hex, entity, spender) + border + extra_cost - discount
+            @game.tile_cost_with_discount(tile, hex, entity, spender, base_cost)
           end
 
         pay_tile_cost!(entity, tile, rotation, hex, spender, cost, extra_cost)
@@ -228,7 +228,7 @@ module Engine
         end
       end
 
-      def remove_border_calculate_cost!(tile, entity)
+      def remove_border_calculate_cost!(tile, entity, spender)
         hex = tile.hex
         types = []
 
@@ -243,12 +243,12 @@ module Engine
           tile.borders.delete(border)
           neighbor.tile.borders.map! { |nb| nb.edge == hex.invert(edge) ? nil : nb }.compact!
 
-          cost - border_cost_discount(entity, border, hex)
+          cost - border_cost_discount(entity, spender, border, hex)
         end
         [total_cost, types]
       end
 
-      def border_cost_discount(entity, border, hex)
+      def border_cost_discount(entity, spender, border, hex)
         ability = entity.all_abilities.find do |a|
           (a.type == :tile_discount) &&
             a.terrain &&
@@ -258,7 +258,7 @@ module Engine
         discount = ability&.discount || 0
 
         if discount.positive?
-          @log << "#{entity.name} receives a discount of #{@game.format_currency(discount)} from #{ability.owner.name}"
+          @log << "#{spender.name} receives a discount of #{@game.format_currency(discount)} from #{ability.owner.name}"
         end
 
         discount

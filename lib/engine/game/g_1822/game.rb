@@ -1205,7 +1205,7 @@ module Engine
           minors + concessions + privates
         end
 
-        def upgrade_cost(tile, hex, entity)
+        def upgrade_cost(tile, hex, entity, spender)
           operator = entity.company? ? entity.owner : entity
           abilities = operator.all_abilities.select do |a|
             a.type == :tile_discount && (!a.hexes || a.hexes.include?(hex.name))

@@ -674,7 +674,7 @@ module Engine
           !corp.ipoed && corp.next_to_par && !corp.closed_recently && corp.slot_open
         end
 
-        def upgrade_cost(tile, hex, entity)
+        def upgrade_cost(tile, hex, entity, spender)
           return 0 if tile.upgrades.empty?
 
           upgrade = tile.upgrades[0]
