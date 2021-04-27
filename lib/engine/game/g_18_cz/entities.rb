@@ -152,8 +152,8 @@ module Engine
                 {
                   name: '2+2b',
                   rusts_on: ['4+4f', '4+4g', '5+5h', '5+5i', '5+5j'],
-                  distance: [{ 'nodes' => %w[city offboard], 'pay' => 2, 'visit' => 2 },
-                             { 'nodes' => ['town'], 'pay' => 2, 'visit' => 2 }],
+                  distance: [{ 'nodes' => ['town'], 'pay' => 2, 'visit' => 2 },
+                             { 'nodes' => %w[city offboard town], 'pay' => 2, 'visit' => 2 }],
                   price: 80,
                 },
               ],
@@ -169,8 +169,8 @@ module Engine
                 {
                   name: '2+2c',
                   rusts_on: ['4+4f', '4+4g', '5+5h', '5+5i', '5+5j'],
-                  distance: [{ 'nodes' => %w[city offboard], 'pay' => 2, 'visit' => 2 },
-                             { 'nodes' => ['town'], 'pay' => 2, 'visit' => 2 }],
+                  distance: [{ 'nodes' => ['town'], 'pay' => 2, 'visit' => 2 },
+                             { 'nodes' => %w[city offboard town], 'pay' => 2, 'visit' => 2 }],
                   price: 80,
                 },
               ],
@@ -185,8 +185,8 @@ module Engine
                 {
                   name: '3+3d',
                   rusts_on: ['5+5h', '5+5i', '5+5j'],
-                  distance: [{ 'nodes' => %w[city offboard], 'pay' => 3, 'visit' => 3 },
-                             { 'nodes' => ['town'], 'pay' => 3, 'visit' => 3 }],
+                  distance: [{ 'nodes' => ['town'], 'pay' => 3, 'visit' => 3 },
+                             { 'nodes' => %w[city offboard town], 'pay' => 3, 'visit' => 3 }],
                   price: 180,
                 },
                 {
@@ -208,8 +208,8 @@ module Engine
                 {
                   name: '3+3e',
                   rusts_on: ['5+5h', '5+5i', '5+5j'],
-                  distance: [{ 'nodes' => %w[city offboard], 'pay' => 3, 'visit' => 3 },
-                             { 'nodes' => ['town'], 'pay' => 3, 'visit' => 3 }],
+                  distance: [{ 'nodes' => ['town'], 'pay' => 3, 'visit' => 3 },
+                             { 'nodes' => %w[city offboard town], 'pay' => 3, 'visit' => 3 }],
                   price: 180,
                 },
                 {
@@ -229,8 +229,8 @@ module Engine
               variants: [
                 {
                   name: '4+4f',
-                  distance: [{ 'nodes' => %w[city offboard], 'pay' => 4, 'visit' => 4 },
-                             { 'nodes' => ['town'], 'pay' => 4, 'visit' => 4 }],
+                  distance: [{ 'nodes' => ['town'], 'pay' => 4, 'visit' => 4 },
+                             { 'nodes' => %w[city offboard town], 'pay' => 4, 'visit' => 4 }],
                   price: 400,
                 },
                 {
@@ -250,8 +250,8 @@ module Engine
               variants: [
                 {
                   name: '4+4g',
-                  distance: [{ 'nodes' => %w[city offboard], 'pay' => 4, 'visit' => 4 },
-                             { 'nodes' => ['town'], 'pay' => 4, 'visit' => 4 }],
+                  distance: [{ 'nodes' => ['town'], 'pay' => 4, 'visit' => 4 },
+                             { 'nodes' => %w[city offboard town], 'pay' => 4, 'visit' => 4 }],
                   price: 400,
                 },
                 {
@@ -271,8 +271,8 @@ module Engine
               variants: [
                 {
                   name: '5+5h',
-                  distance: [{ 'nodes' => %w[city offboard], 'pay' => 5, 'visit' => 5 },
-                             { 'nodes' => ['town'], 'pay' => 5, 'visit' => 5 }],
+                  distance: [{ 'nodes' => ['town'], 'pay' => 5, 'visit' => 5 },
+                             { 'nodes' => %w[city offboard town], 'pay' => 5, 'visit' => 5 }],
                   price: 500,
                 },
                 {
@@ -291,8 +291,8 @@ module Engine
               variants: [
                 {
                   name: '5+5i',
-                  distance: [{ 'nodes' => %w[city offboard], 'pay' => 5, 'visit' => 5 },
-                             { 'nodes' => ['town'], 'pay' => 5, 'visit' => 5 }],
+                  distance: [{ 'nodes' => ['town'], 'pay' => 5, 'visit' => 5 },
+                             { 'nodes' => %w[city offboard town], 'pay' => 5, 'visit' => 5 }],
                   price: 500,
                 },
                 {
@@ -311,8 +311,8 @@ module Engine
               variants: [
                 {
                   name: '5+5j',
-                  distance: [{ 'nodes' => %w[city offboard], 'pay' => 5, 'visit' => 5 },
-                             { 'nodes' => ['town'], 'pay' => 5, 'visit' => 5 }],
+                  distance: [{ 'nodes' => ['town'], 'pay' => 5, 'visit' => 5 },
+                             { 'nodes' => %w[city offboard town], 'pay' => 5, 'visit' => 5 }],
                   price: 500,
                 },
                 {
