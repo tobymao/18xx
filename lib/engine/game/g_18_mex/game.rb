@@ -322,7 +322,8 @@ module Engine
             name: 'Compagnie Du Boleo',
             value: 30,
             revenue: 5,
-            desc: 'May play token in Santa Rosalia at no cost and in addition to regular token lay.',
+            desc: 'May play token in Santa Rosalia at no cost and in addition to regular '\
+                  'token lay. May be purchased by a corporation for $15-$30, from Phase 2.',
             abilities: [
               {
                 type: 'token',
