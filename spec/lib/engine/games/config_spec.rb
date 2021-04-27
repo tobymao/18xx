@@ -29,6 +29,8 @@ module Engine
             other_hex = hex.neighbors[border.edge]
             next if !other_hex && (border.type.nil? || border.type == :impassable || border.type == :divider)
 
+            other_hex ||= game.hex_neighbor(hex, border.edge)
+
             expect(other_hex).to be_truthy,
                                  "Other hex missing from:#{hex.name}:#{border.edge}"
             other_border = other_hex.tile.borders.find { |b| b.edge == Hex.invert(border.edge) }

@@ -82,6 +82,7 @@ module View
               lake: svg(delta_x: delta_x, delta_y: delta_y, icon: 'lake'),
               river: svg(delta_x: delta_x, delta_y: delta_y, icon: 'river'),
               hill: svg(delta_x: delta_x, delta_y: delta_y, icon: 'hill'),
+              cow_skull: svg(delta_x: delta_x, delta_y: delta_y, icon: 'cow_skull'),
             }[t]
           end
 

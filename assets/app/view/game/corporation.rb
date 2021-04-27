@@ -156,7 +156,7 @@ module View
             padding: '0.2rem 0.35rem',
             background: @corporation.color,
             color: @corporation.text_color,
-            height: '2.4rem',
+            'min-height': '2.4rem',
           },
         }
         logo_props = {

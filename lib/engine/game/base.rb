@@ -314,6 +314,41 @@ module Engine
         self.class::HEXES
       end
 
+      def hex_neighbor(hex, edge)
+        return hex.neighbors[edge] if hex.neighbors[edge]
+
+        letter = hex.id.match(Engine::Hex::COORD_LETTER)[1]
+        number = hex.id.match(Engine::Hex::COORD_NUMBER)[1].to_i
+
+        flip_axes = case [layout, axes]
+                    when [:flat, { x: :number, y: :letter }]
+                      true
+                    else
+                      false
+                    end
+
+        d_letter, d_number = case [layout, edge]
+                             when [:flat, 0], [:pointy, 4]
+                               [0, 2]
+                             when [:flat, 1], [:pointy, 3]
+                               [-1, 1]
+                             when [:flat, 2], [:pointy, 2]
+                               [-1, -1]
+                             when [:flat, 3], [:pointy, 1]
+                               [0, -2]
+                             when [:flat, 4], [:pointy, 0]
+                               [1, -1]
+                             when [:flat, 5], [:pointy, 5]
+                               [1, 1]
+                             end
+        d_letter, d_number = [d_number, d_letter] if flip_axes
+
+        letter = Engine::Hex::LETTERS[Engine::Hex::LETTERS.index(letter) + d_letter]
+        number += d_number
+
+        hex_by_id("#{letter}#{number}")
+      end
+
       # use to modify location names based on optional rules
       def location_name(coord)
         self.class::LOCATION_NAMES[coord]
