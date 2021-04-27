@@ -368,7 +368,7 @@ module View
       game_end = @game.game_ending_description
       description += " - #{game_end}" if game_end
       description += " - Pinned to Version: #{@pin}" if @pin
-      h(:div, { style: { fontWeight: 'bold', margin: '2vmin 0' } }, description)
+      h(:h4, description)
     end
 
     def render_action
