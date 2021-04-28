@@ -243,25 +243,27 @@ module Engine
           tile.borders.delete(border)
           neighbor.tile.borders.map! { |nb| nb.edge == hex.invert(edge) ? nil : nb }.compact!
 
-          cost - border_cost_discount(entity, spender, border, hex)
+          cost - border_cost_discount(entity, spender, border, cost, hex)
         end
         [total_cost, types]
       end
 
-      def border_cost_discount(entity, spender, border, hex)
-        ability = entity.all_abilities.find do |a|
-          (a.type == :tile_discount) &&
-            a.terrain &&
-            (border.type == a.terrain) &&
-            (!a.hexes || a.hexes.include?(hex.name))
-        end
-        discount = ability&.discount || 0
+      def border_cost_discount(entity, spender, border, cost, hex)
+        entity.all_abilities.each do |a|
+          next if (a.type != :tile_discount) ||
+            a.terrain.nil? ||
+            (border.type != a.terrain) ||
+            (a.hexes && !a.hexes.include?(hex.name))
 
-        if discount.positive?
-          @log << "#{spender.name} receives a discount of #{@game.format_currency(discount)} from #{ability.owner.name}"
+          discount = [a.discount, cost].min
+          if discount.positive?
+            @log << "#{spender.name} receives a discount of #{@game.format_currency(discount)} from" \
+                    " #{a.owner.name}"
+          end
+          return discount
         end
 
-        discount
+        0
       end
 
       def check_track_restrictions!(entity, old_tile, new_tile)

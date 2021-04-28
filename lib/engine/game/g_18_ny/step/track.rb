@@ -13,8 +13,8 @@ module Engine
             @game.tile_lay(action.hex, old_tile, action.tile)
           end
 
-          # Tile discount ability closes P1. Do not use implicitly.
-          def border_cost_discount(_entity, _border, _hex)
+          # Prevent terrain discounts from being applied implicitly.
+          def border_cost_discount(_entity, _spender, _border, _cost, _hex)
             0
           end
         end
