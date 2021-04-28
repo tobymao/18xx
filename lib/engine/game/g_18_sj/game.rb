@@ -373,7 +373,6 @@ module Engine
                 owner_type: 'corporation',
                 trains: %w[3 4 5],
                 count: 1,
-                closed_when_used_up: false,
                 when: 'buying_train',
               },
             ],

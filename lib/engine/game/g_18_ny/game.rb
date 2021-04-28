@@ -223,6 +223,8 @@ module Engine
         def tile_lay(_hex, old_tile, _new_tile)
           return unless old_tile.icons.any? { |icon| icon.name == ERIE_CANAL_ICON }
 
+          @log << "#{@erie_canal_private.name}'s revenue reduced from #{format_currency(@erie_canal_private.revenue)}" \
+                  " to #{format_currency(@erie_canal_private.revenue - 10)}"
           @erie_canal_private.revenue -= 10
           return unless @erie_canal_private.revenue.zero?
 
