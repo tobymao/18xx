@@ -394,6 +394,20 @@ module Engine
           super
         end
 
+        def unstarted_corporation_summary
+          unipoed = @corporations.reject(&:ipoed)
+          minor = unipoed.select { |c| c.type == :minor }
+          major = unipoed.select { |c| c.type == :major }
+          ["#{major.size} major", minor]
+        end
+
+        def timeline
+          timeline = []
+          minors = @corporations.reject(&:ipoed).select { |c| c.type == :minor }.map(&:name)
+          timeline << "Minors: #{minors.join(', ')}" unless minors.empty?
+          timeline
+        end
+
         def tile_uses_broad_rules?(old_tile, tile)
           # Is this tile a 'broad' gauge lay or a 'narrow' gauge lay.
           # Broad gauge lay is if any of the new exits broad gauge?
