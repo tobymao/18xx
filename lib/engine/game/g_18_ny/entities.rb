@@ -31,7 +31,7 @@ module Engine
                 consume_tile_lay: true,
                 count: 1,
                 closed_when_used_up: true,
-              }
+              },
             ],
           },
           {

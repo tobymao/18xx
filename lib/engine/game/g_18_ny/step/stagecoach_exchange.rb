@@ -7,12 +7,11 @@ module Engine
     module G18NY
       module Step
         class StagecoachExchange < Engine::Step::Base
-
           def description
             'Exchange Token for Stagecoach Token'
           end
 
-          def actions(entity)
+          def actions(_entity)
             return %w[choose pass] if active?
 
             []
@@ -24,9 +23,7 @@ module Engine
 
             corporation = @game.stagecoach_token&.corporation
             # Remove token if privates are closed and it can't be exchanged
-            if @game.privates_closed && (corporation.nil? || !corporation.next_token)
-              remove_stagecoach_token
-            end
+            remove_stagecoach_token if @game.privates_closed && (corporation.nil? || !corporation.next_token)
 
             (@game.stagecoach_token && @game.privates_closed) ||
               (corporation == @game.round.current_operator && corporation.next_token)

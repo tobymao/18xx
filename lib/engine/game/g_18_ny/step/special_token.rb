@@ -16,7 +16,7 @@ module Engine
             @game.stagecoach_token.corporation = corporation
             corporation.tokens << @game.stagecoach_token
 
-            token = corporation.tokens.find { |token| token.hex&.id == 'F20' }
+            token = corporation.tokens.find { |t| t.hex&.id == 'F20' }
             token.swap!(@game.stagecoach_token)
             token.destroy!
 

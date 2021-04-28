@@ -235,7 +235,7 @@ module Engine
           discounts = 0
 
           # Tile discounts must be activated
-          if entity.company? && ability = entity.all_abilities.find { |a| a.type == :tile_discount }
+          if entity.company? && (ability = entity.all_abilities.find { |a| a.type == :tile_discount })
             discounts = tile.upgrades.sum do |upgrade|
               discount = upgrade.terrains.uniq == [ability.terrain] ? ability.discount : 0
               log_cost_discount(spender, ability, discount) if discount.positive?
