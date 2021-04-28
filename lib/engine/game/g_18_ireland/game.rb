@@ -531,12 +531,19 @@ module Engine
 
                 @stock_market.set_par(corporation, share_price)
                 @share_pool.buy_shares(player, share, exchange: :free)
+
+                after_par(corporation)
+
+                # Clear the corporation of money
+                corporation.spend(corporation.cash, @bank)
                 # Receives the bid money
                 @bank.spend(price, corporation)
-                after_par(corporation)
                 # And buys a 2 train
                 train = @depot.upcoming.first
+                @log << "#{corporation.name} buys a #{train.name} train for "\
+                "#{format_currency(train.price)} from #{train.owner.name}"
                 buy_train(corporation, train, train.price)
+
               else
                 share_pool.buy_shares(player, share, exchange: :free)
               end
