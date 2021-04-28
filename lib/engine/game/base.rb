@@ -2437,6 +2437,8 @@ module Engine
             end
           return true unless corporation
 
+          return false unless token_ability_from_owner_usable?(ability, corporation)
+
           tokened_hexes = []
 
           corporation.tokens.each do |token|
@@ -2447,6 +2449,10 @@ module Engine
         else
           true
         end
+      end
+
+      def token_ability_from_owner_usable?(ability, corporation)
+        ability.from_owner ? corporation.find_token_by_type : true
       end
     end
   end

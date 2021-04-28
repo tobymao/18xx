@@ -724,6 +724,10 @@ module Engine
         def token_note
           'N = neutral token'
         end
+
+        def token_ability_from_owner_usable?(_ability, _corporation)
+          true
+        end
       end
     end
   end
