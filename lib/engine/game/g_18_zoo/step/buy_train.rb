@@ -13,13 +13,16 @@ module Engine
             super
 
             @round.any_train_brought = false
+            @round.president_helped = false
           end
 
           def round_state
-            super.merge({ any_train_brought: false })
+            super.merge({ any_train_brought: false, president_helped: false })
           end
 
           def can_buy_train?(entity = nil, _shell = nil)
+            return false if @round.president_helped
+
             entity ||= current_entity
 
             can_buy_normal = room?(entity) &&
@@ -49,6 +52,27 @@ module Engine
             @game.stock_market.move_right(entity)
             @game.log_share_price(entity, prev, '(new-phase bonus)')
             @game.first_train_of_new_phase = false
+          end
+
+          private
+
+          def try_take_player_loan(entity, cost)
+            @round.president_helped = true
+
+            return unless cost.positive?
+            return unless cost > entity.cash
+
+            if sellable_shares?(entity)
+              raise GameError, "#{entity.name} still need to sell shares before a loan can be granted"
+            end
+
+            difference = (cost - entity.cash)
+            @game.take_player_loan(entity, difference)
+            @log << "#{entity.name} takes a debt of #{@game.format_currency(difference)}"
+          end
+
+          def sellable_shares?(player)
+            (@game.liquidity(player, emergency: true) - player.cash).positive?
           end
         end
       end

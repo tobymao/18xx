@@ -335,7 +335,7 @@ module Engine
         end
 
         it 'train 2J must be available as first 2J/4J train' do
-          game = game_at_action(game_file, 217)
+          game = game_at_action(game_file, 215)
           action = {
             'type' => 'buy_train',
             'entity' => 'GI',

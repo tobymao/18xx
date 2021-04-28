@@ -13,6 +13,8 @@ module Engine
           ACTIONS = %w[choose_ability].freeze
 
           def actions(entity)
+            return [] if @round.president_helped
+
             # TODO: change to something like this: @game.abilities(entity, :assign_hexes) ||
             return can_choose_ability?(entity) ? ACTIONS : [] if entity.company?
             return [] unless blocks?

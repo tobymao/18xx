@@ -200,6 +200,13 @@ module Engine
           'WINGS' => '/icons/18_zoo/wings.svg',
         }.freeze
 
+        EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+          'new_train' => ['First train bonus',
+                          'Corporation moves on the right buying the first train of this type'],
+          'rust_own_3s_4s' => ['First train buyer rust 3S Long and 4S',
+                               'Corporation buying the first train of this type rust immediately 3S Long and 4S'],
+        ).freeze
+
         MARKET_TEXT = Base::MARKET_TEXT.merge(par_2: 'Can only enter during green phase',
                                               par_3: 'Can only enter during brown phase').freeze
 
@@ -222,6 +229,9 @@ module Engine
 
           @available_companies = []
           @future_companies = []
+
+          # Initialize the player depts, if player have to take an emergency debt
+          @player_debts = Hash.new { |h, k| h[k] = 0 }
 
           draw_size = @players.size == 5 ? 6 : 4
           @companies_for_isr = @companies.first(draw_size)
@@ -330,7 +340,8 @@ module Engine
 
         def player_value(player)
           player.cash + player.shares.select { |s| s.corporation.ipoed }.sum(&:price) +
-            player.companies.select { |company| company.name.start_with?('ZOOTicket') }.sum(&:value)
+            player.companies.select { |company| company.name.start_with?('ZOOTicket') }.sum(&:value) -
+            @player_debts[player] * 2
         end
 
         def end_game!
@@ -822,6 +833,13 @@ module Engine
             { type: :OR, value: '18', name: '3.3' },
             { type: :End, value: '20' },
           ]
+        end
+
+        def take_player_loan(player, debt)
+          # Give the player the money. The money for loans is outside money, doesnt count towards the normal bank money.
+          player.cash += debt
+
+          @player_debts[player] += debt
         end
 
         private

@@ -1303,20 +1303,6 @@
       "variant": "4S"
     },
     {
-      "type": "pass",
-      "entity": "PB",
-      "entity_type": "corporation",
-      "id": 123,
-      "created_at": 1617904232
-    },
-    {
-      "type": "pass",
-      "entity": "PB",
-      "entity_type": "corporation",
-      "id": 124,
-      "created_at": 1617904232
-    },
-    {
       "type": "lay_tile",
       "entity": "GI",
       "entity_type": "corporation",
