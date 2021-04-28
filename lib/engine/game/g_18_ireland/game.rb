@@ -16,6 +16,8 @@ module Engine
         HOME_TOKEN_TIMING = :par
         SELL_BUY_ORDER = :sell_buy
         MUST_BUY_TRAIN = :always
+        EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
+        EBUY_SELL_MORE_THAN_NEEDED_LIMITS_DEPOT_TRAIN = true
 
         ASSIGNMENT_TOKENS = {
           'CDSPC' => '/icons/18_ireland/port_token.svg',
@@ -109,14 +111,14 @@ module Engine
             num: 6,
             distance: 2,
             price: 80,
-            rusts_on: '4H',
+            rusts_on: '6H',
           },
           {
             name: "1H'",
             num: 6,
             distance: 1,
             price: 40,
-            rusts_on: '6H',
+            rusts_on: '8H',
             reserved: true,
           },
           {
@@ -561,6 +563,11 @@ module Engine
           hexes.select do |hex|
             hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
           end
+        end
+
+        def buying_power(entity, **)
+          # Cannot issue shares to buy trains
+          entity.cash
         end
 
         def issuable_shares(entity)
