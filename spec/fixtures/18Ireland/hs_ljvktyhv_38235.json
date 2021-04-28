@@ -2786,11 +2786,33 @@
       "message": "thanks. it's coming along well!"
     },
     {
+      "type": "merge",
+      "entity": 1395,
+      "entity_type": "player",
+      "id": 284,
+      "created_at": 1619625881,
+      "auto_actions": [
+        {
+          "type": "pass",
+          "entity": 671,
+          "entity_type": "player",
+          "created_at": 1619625881
+        },
+        {
+          "type": "pass",
+          "entity": 1027,
+          "entity_type": "player",
+          "created_at": 1619625881
+        }
+      ],
+      "corporation": "GSWR"
+    },
+    {
       "type": "end_game",
       "entity": 671,
       "entity_type": "player",
-      "id": 284,
-      "created_at": 1619594948
+      "id": 285,
+      "created_at": 1619627742
     }
   ],
   "id": "hs_ljvktyhv_38235",
@@ -2827,9 +2849,9 @@
     1395
   ],
   "result": {
-    "JenFreeman": 716,
-    "LenaC": 579,
-    "TIE53 (he/him)": 447
+    "JenFreeman": 710,
+    "LenaC": 577,
+    "TIE53 (he/him)": 445
   },
   "loaded": true,
   "created_at": "2021-04-28",

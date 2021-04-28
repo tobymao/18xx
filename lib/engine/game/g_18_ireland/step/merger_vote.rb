@@ -36,7 +36,7 @@ module Engine
             votes = current_voter.last
             raise GameError, 'Not players turn' unless entity == current_voter.first
 
-            if vote == :for
+            if vote == 'for'
               @round.votes_for += votes
             else
               @round.votes_against += votes
