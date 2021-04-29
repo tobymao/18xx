@@ -733,7 +733,7 @@ module Engine
             next if !company || company&.closed? || !@phase_revenue[company_id]
 
             @log << "#{company.name} closes"
-              # "(#{format_currency(@phase_revenue[company_id].cash)}, #{company.owner.name}) "
+            # "(#{format_currency(@phase_revenue[company_id].cash)}, #{company.owner.name}) "
             if @phase_revenue[company.id].cash.positive?
               @phase_revenue[company.id].spend(@phase_revenue[company.id].cash, @bank)
             end
