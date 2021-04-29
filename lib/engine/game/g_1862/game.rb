@@ -13,6 +13,7 @@ require_relative 'step/token'
 require_relative 'step/route'
 require_relative 'step/dividend'
 require_relative 'step/buy_train'
+require_relative 'step/redeem_share'
 
 module Engine
   module Game
@@ -600,6 +601,14 @@ module Engine
           @chartered[corporation] = true
         end
 
+        def after_par(corporation)
+          return if @chartered[corporation]
+
+          # find closest chartered par
+          par = corporation.original_par_price.price
+          corporation.original_par_price = @stock_market.par_prices.max_by { |p| p.price < par ? p.price : 0 }
+        end
+
         def float_corporation(corporation)
           super
           charter = company_by_id(corporation.id)
@@ -759,14 +768,14 @@ module Engine
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
             G1862::Step::HomeUpgrade,
+            # G1862::Step::HalfShare,
             # G1862::Step::Merge,
             G1862::Step::Track,
             G1862::Step::Token,
             G1862::Step::Route,
             G1862::Step::Dividend,
-            # G1862::Step::Refinance,
             G1862::Step::BuyTrain,
-            # G1862::Step::RedeemStock,
+            G1862::Step::RedeemShare,
             # G1862::Step::Acquire,
           ], round_num: round_num)
         end
@@ -817,7 +826,7 @@ module Engine
             end
         end
 
-        def make_bankrupt!(corp)
+        def enter_bankruptcy!(corp)
           return if bankrupt?(corp)
 
           @bankrupt_corps << corp
@@ -875,15 +884,24 @@ module Engine
           end
         end
 
-        # FIXME: need to check for no trains?
         def check_bankruptcy!(entity)
           return unless entity.corporation?
 
-          make_bankrupt!(entity) if entity.share_price&.type == :close
+          enter_bankruptcy!(entity) if entity.share_price&.type == :close
         end
 
         def corporation_available?(entity)
           entity.corporation? && ready_corporations.include?(entity)
+        end
+
+        def redeemable_shares(entity)
+          return [] unless entity.corporation?
+          return [] if entity.receivership?
+
+          shares = @share_pool.shares_by_corporation[entity].take(1)
+          return [] if shares.empty?
+
+          [Engine::ShareBundle.new(shares)]
         end
 
         def bundles_for_corporation(share_holder, corporation, shares: nil)
@@ -1477,6 +1495,26 @@ module Engine
           @log << "-- Event: #{rusted_trains.uniq.join(', ')} trains rust " \
             "( #{owners.map { |c, t| "#{c} x#{t}" }.join(', ')}) --"
         end
+
+        def must_buy_train?(entity)
+          entity.trains.empty?
+        end
+
+        # Sell treasury stock to raise money
+        def raise_money!(entity, amount)
+          num_shares = (amount.to_f / entity.share_price.price).ceil
+          shares = entity.shares.take(num_shares)
+          bundle = ShareBundle.new(shares)
+          @share_pool.sell_shares(bundle)
+          price = entity.share_price.price
+          num_shares.times { @stock_market.move_left(entity) }
+          log_share_price(entity, price)
+          check_bankruptcy!(entity)
+        end
+
+        # FIXME
+        # Refinance via merger algorithm
+        def refinance!(entity); end
       end
     end
   end

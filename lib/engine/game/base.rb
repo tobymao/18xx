@@ -204,6 +204,10 @@ module Engine
       MUST_EMERGENCY_ISSUE_BEFORE_EBUY = false # corporation must issue shares before ebuy (if possible)
       EBUY_SELL_MORE_THAN_NEEDED = false # true if corporation may continue to sell shares even though enough funds
       EBUY_CAN_SELL_SHARES = true # true if a player can sell shares for ebuy
+
+      # if sold more than needed then cannot then buy a cheaper train in the depot.
+      EBUY_SELL_MORE_THAN_NEEDED_LIMITS_DEPOT_TRAIN = false
+
       # when is the home token placed? on...
       # operate
       # float
@@ -249,6 +253,8 @@ module Engine
         repar: 'Par value after bankruptcy',
         ignore_one_sale: 'Ignore first share sold when moving price',
       }.freeze
+
+      OPERATING_ROUND_NAME = 'Operating'
 
       MARKET_SHARE_LIMIT = 50 # percent
       ALL_COMPANIES_ASSIGNABLE = false
@@ -310,6 +316,41 @@ module Engine
 
       def game_hexes
         self.class::HEXES
+      end
+
+      def hex_neighbor(hex, edge)
+        return hex.neighbors[edge] if hex.neighbors[edge]
+
+        letter = hex.id.match(Engine::Hex::COORD_LETTER)[1]
+        number = hex.id.match(Engine::Hex::COORD_NUMBER)[1].to_i
+
+        flip_axes = case [layout, axes]
+                    when [:flat, { x: :number, y: :letter }]
+                      true
+                    else
+                      false
+                    end
+
+        d_letter, d_number = case [layout, edge]
+                             when [:flat, 0], [:pointy, 4]
+                               [0, 2]
+                             when [:flat, 1], [:pointy, 3]
+                               [-1, 1]
+                             when [:flat, 2], [:pointy, 2]
+                               [-1, -1]
+                             when [:flat, 3], [:pointy, 1]
+                               [0, -2]
+                             when [:flat, 4], [:pointy, 0]
+                               [1, -1]
+                             when [:flat, 5], [:pointy, 5]
+                               [1, 1]
+                             end
+        d_letter, d_number = [d_number, d_letter] if flip_axes
+
+        letter = Engine::Hex::LETTERS[Engine::Hex::LETTERS.index(letter) + d_letter]
+        number += d_number
+
+        hex_by_id("#{letter}#{number}")
       end
 
       # use to modify location names based on optional rules
@@ -864,7 +905,7 @@ module Engine
       end
 
       def sellable_turn?
-        self.class::SELL_AFTER == :first ? @turn > 1 : true
+        self.class::SELL_AFTER == :first ? (@turn > 1 || !@round.stock?) : true
       end
 
       def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
@@ -1949,7 +1990,7 @@ module Engine
 
       def total_rounds(name)
         # Return the total number of rounds for those with more than one.
-        @operating_rounds if name == 'Operating'
+        @operating_rounds if name == self.class::OPERATING_ROUND_NAME
       end
 
       def next_round!
@@ -2156,7 +2197,7 @@ module Engine
       end
 
       def new_operating_round(round_num = 1)
-        @log << "-- #{round_description('Operating', round_num)} --"
+        @log << "-- #{round_description(self.class::OPERATING_ROUND_NAME, round_num)} --"
         @round_counter += 1
         operating_round(round_num)
       end
@@ -2400,6 +2441,8 @@ module Engine
             end
           return true unless corporation
 
+          return false unless token_ability_from_owner_usable?(ability, corporation)
+
           tokened_hexes = []
 
           corporation.tokens.each do |token|
@@ -2410,6 +2453,10 @@ module Engine
         else
           true
         end
+      end
+
+      def token_ability_from_owner_usable?(ability, corporation)
+        ability.from_owner ? corporation.find_token_by_type : true
       end
     end
   end

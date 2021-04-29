@@ -68,6 +68,12 @@ module View
             inner << h(Corporation, corporation: auctioning_corporation || corporation_to_merge_into, selectable: false)
             inner << h(Bid, entity: entity, corporation: auctioning_corporation) if actions.include?('bid')
             children << h(:div, props, inner)
+
+            if @step.respond_to?(:show_bidding_corporation?) && @step.show_bidding_corporation?
+              children << h(:div, props,
+                            [h(Corporation, corporation: entity, selectable: false)])
+            end
+
           elsif merge_entity&.corporation?
             children << h(:div, props, [h(Corporation, corporation: merge_entity, selectable: false)])
           end

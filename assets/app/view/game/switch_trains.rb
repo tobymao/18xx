@@ -10,7 +10,7 @@ module View
       include AlternateCorporations
 
       def render
-        step = @game.round.active_step
+        @step = @game.round.active_step
         @corporation = @game.current_entity
 
         click = lambda do
@@ -26,14 +26,13 @@ module View
 
         children = []
 
-        children << h(:h3, step.help_text) if step.respond_to?(:help_text)
-        children << h('button', props, step.description)
+        children << h(:h3, @step.help_text) if @step.respond_to?(:help_text)
+        children << h('button', props, @step.description)
 
         @slot_checkboxes = {}
-        if step.respond_to?(:slot_view) && (view = step.slot_view(@corporation))
+        if @step.respond_to?(:slot_view) && (view = @step.slot_view(@corporation))
           children << send("render_#{view}")
         end
-
         h(:div, children)
       end
 

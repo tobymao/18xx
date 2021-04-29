@@ -687,7 +687,9 @@ module Engine
           return n_cities if train_of_size?(route.train, :large)
 
           n_towns = route.stops.count(&:town?)
-          "#{n_cities}+#{n_towns}"
+          max_towns = route.train.distance.find { |d| d['nodes'] == ['town'] }['pay']
+          towns_as_cities = [0, n_towns - max_towns].max
+          "#{n_cities + towns_as_cities}+#{n_towns - towns_as_cities}"
         end
 
         def can_par?(corporation, parrer)
