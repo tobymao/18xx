@@ -727,13 +727,12 @@ module Engine
         end
 
         def event_phase_revenue!
-          @log << '-- Event: P15-HR and P20-C&WR now close with money returned to the bank --'
+          @log << '-- Event: Phase revenue companies now close with money returned to the bank --'
           self.class::PRIVATE_PHASE_REVENUE.each do |company_id|
             company = @companies.find { |c| c.id == company_id }
             next if !company || company&.closed? || !@phase_revenue[company_id]
 
             @log << "#{company.name} closes"
-            # "(#{format_currency(@phase_revenue[company_id].cash)}, #{company.owner.name}) "
             if @phase_revenue[company.id].cash.positive?
               @phase_revenue[company.id].spend(@phase_revenue[company.id].cash, @bank)
             end
