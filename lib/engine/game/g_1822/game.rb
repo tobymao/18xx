@@ -732,7 +732,7 @@ module Engine
             company = @companies.find { |c| c.id == company_id }
             next if !company || company&.closed? || !@phase_revenue[company_id]
 
-            @log << "#{company.name} (#{format_currency(@phase_revenue[company.id].cash)}, #{company.owner.name}) closes"
+            @log << "#{company.name} (#{format_currency(@phase_revenue[company_id].cash)}, #{company.owner.name}) closes"
             if @phase_revenue[company.id].cash.positive?
               @phase_revenue[company.id].spend(@phase_revenue[company.id].cash, @bank)
             end
