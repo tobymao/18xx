@@ -35,6 +35,7 @@ module Engine
 
             @auctioning = nil
 
+            @round.minor_started = true
             # Player to the right of the winner is the new player
             @round.goto_entity!(winner.entity)
             pass!
@@ -68,6 +69,12 @@ module Engine
             else
               'Minor is not the first available minor'
             end
+          end
+
+          def round_state
+            super.merge({
+                          minor_started: false,
+                        })
           end
         end
       end
