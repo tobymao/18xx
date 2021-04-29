@@ -396,14 +396,13 @@ module Engine
 
         def unstarted_corporation_summary
           unipoed = @corporations.reject(&:ipoed)
-          minor = unipoed.select { |c| c.type == :minor }
-          major = unipoed.select { |c| c.type == :major }
+          minor, major = unipoed.partition { |c| c.type == :minor }
           ["#{major.size} major", minor]
         end
 
         def timeline
           timeline = []
-          minors = @corporations.reject(&:ipoed).select { |c| c.type == :minor }.map(&:name)
+          minors = @corporations.select { |c| !c.ipoed && c.type == :minor }.map(&:name)
           timeline << "Minors: #{minors.join(', ')}" unless minors.empty?
           timeline
         end
