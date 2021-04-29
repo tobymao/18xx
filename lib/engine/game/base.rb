@@ -2017,6 +2017,10 @@ module Engine
           end
       end
 
+      def clear_programmed_actions
+        @programmed_actions.clear
+      end
+
       def check_programmed_actions
         @programmed_actions.reject! do |entity, action|
           if action&.disable?(self)

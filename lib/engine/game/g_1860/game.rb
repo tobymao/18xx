@@ -1245,6 +1245,7 @@ module Engine
 
           # restart stock round if in middle of one
           @round.clear_cache!
+          clear_programmed_actions
           @log << 'Restarting Stock Round'
           @round.entities.each(&:unpass!)
           @round = stock_round
