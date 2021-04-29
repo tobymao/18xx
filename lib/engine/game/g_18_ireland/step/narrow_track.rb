@@ -48,6 +48,30 @@ module Engine
               raise
             end
           end
+
+          def legal_tile_rotation?(entity, hex, tile)
+            return false unless @game.legal_tile_rotation?(entity, hex, tile)
+
+            # this is the same as the base definition but with the 1867 check removed
+            # this seems to have a problem with the DD tile.
+            # @todo: fix the base defintion.
+
+            old_paths = hex.tile.paths
+            old_ctedges = hex.tile.city_town_edges
+
+            new_paths = tile.paths
+            new_exits = tile.exits
+            new_ctedges = tile.city_town_edges
+            extra_cities = [0, new_ctedges.size - old_ctedges.size].max
+
+            new_exits.all? { |edge| hex.neighbors[edge] } &&
+              !(new_exits & hex_neighbors(entity, hex)).empty? &&
+              old_paths.all? { |path| new_paths.any? { |p| path <= p } } &&
+              # Count how many cities on the new tile that aren't included by any of the old tile.
+              # Make sure this isn't more than the number of new cities added.
+              # 1836jr30 D6 -> 54 adds more cities
+              extra_cities >= new_ctedges.count { |newct| old_ctedges.all? { |oldct| (newct & oldct).none? } }
+          end
         end
       end
     end
