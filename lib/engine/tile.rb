@@ -131,7 +131,7 @@ module Engine
       when 'label'
         Part::Label.new(params)
       when 'upgrade'
-        Part::Upgrade.new(params['cost'], params['terrain']&.split('|'))
+        Part::Upgrade.new(params['cost'], params['terrain']&.split('|'), params['size'])
       when 'border'
         Part::Border.new(params['edge'], params['type'], params['cost'])
       when 'junction'

@@ -18,6 +18,7 @@ module View
               cost: upgrade.cost,
               terrains: upgrade.terrains,
               tile: @tile,
+              size: upgrade.size,
             )
           end
         end
