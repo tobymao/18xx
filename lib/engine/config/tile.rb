@@ -30,7 +30,6 @@ module Engine
         '56' => 'town=revenue:10;town=revenue:10;path=a:0,b:_0;path=a:_0,b:2;path=a:1,b:_1;path=a:_1,b:3',
         '57' => 'city=revenue:20;path=a:0,b:_0;path=a:_0,b:3',
         '58' => 'town=revenue:10;path=a:0,b:_0;path=a:_0,b:2',
-        '59s' => 'city=revenue:20;path=a:0,b:_0',
         '69' => 'town=revenue:10;town=revenue:10;path=a:0,b:_0;path=a:_0,b:3;path=a:2,b:_1;path=a:_1,b:4',
         # '71' => 'town=revenue:10;town=revenue:10;path=a:0,b:_0,track:narrow;path=a:_0,b:2,track:narrow',
         '72' => 'town=revenue:10;path=a:0,b:_0,track:narrow;path=a:_0,b:1,track:narrow',
@@ -73,9 +72,8 @@ module Engine
       }.freeze
 
       GREEN = {
-        '10' => 'city=revenue:30;city=revenue:30;path=a:0,b:_0;path=a:3,b:_1;label=OO',
+        '10' => 'city=revenue:30;city=revenue:30;path=a:0,b:_0;path=a:3,b:_1',
         '11' => 'town=revenue:10;path=a:0,b:_0;path=a:_0,b:2;path=a:2,b:_0;path=a:_0,b:4;path=a:0,b:_0;path=a:_0,b:4;label=HALT',
-        '11s' => 'town=revenue:10;path=a:0,b:_0;path=a:_0,b:2;path=a:2,b:4;path=a:0,b:4',
         '12' => 'city=revenue:30;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0',
         '13' => 'city=revenue:30;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0',
         '14' => 'city=revenue:30,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0',
@@ -293,15 +291,12 @@ module Engine
       }.freeze
 
       BROWN = {
-        '32' => 'city=revenue:70;city=revenue:70;city=revenue:70;city=revenue:70;city=revenue:70;city=revenue:70;path=a:0,b:_0;path=a:1,b:_1;path=a:2,b:_2
-                ;path=a:3,b:_3;path=a:4,b:_4;path=a:5,b:_5;label=LD',
+        '32' => 'city=revenue:70;city=revenue:70;city=revenue:70;city=revenue:70;city=revenue:70;city=revenue:70',
         '33' => 'city=revenue:50;city=revenue:50;city=revenue:50;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;label=L',
-        '33s' => 'city=revenue:50;city=revenue:50;city=revenue:50;path=a:0,b:_0;path=a:1,b:_1;path=a:2,b:_2;label=L',
         '34' => 'city=revenue:50,loc:1.5;city=revenue:50,loc:4.5;city=revenue:50,loc:3;path=a:0,b:_2;path=a:_2,b:3;path=a:2,b:_0;path=a:4,b:_1;label=BGM',
-        '35' => 'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:_0,b:2;path=a:1,b:_1;path=a:_1,b:3;label=OO',
-        '36' => 'city=revenue:40;city=revenue:40;path=a:1,b:_0;path=a:_0,b:3;path=a:0,b:_1;path=a:_1,b:4;label=OO',
-        '37' => 'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:_0,b:3;path=a:3,b:_1;path=a:0,b:_0;label=OO',
-        '37s' => 'city=revenue:40,loc:1.5;city=revenue:40,loc:4.5;path=a:0,b:_0;path=a:3,b:_1;path=a:0,b:3;label=OO',
+        '35' => 'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:_0,b:2;path=a:1,b:_1;path=a:_1,b:3',
+        '36' => 'city=revenue:40;city=revenue:40;path=a:1,b:_0;path=a:_0,b:3;path=a:0,b:_1;path=a:_1,b:4',
+        '37' => 'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:_0,b:3;path=a:3,b:_1;path=a:0,b:_0',
         '38' => 'city=revenue:40,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
         '39' => 'path=a:0,b:2;path=a:0,b:1;path=a:1,b:2',
         '40' => 'path=a:0,b:2;path=a:2,b:4;path=a:0,b:4',
@@ -439,11 +434,9 @@ module Engine
       }.freeze
 
       GRAY = {
-        '48' => 'city=revenue:100;city=revenue:100;city=revenue:100;city=revenue:100;city=revenue:100;city=revenue:100;path=a:0,b:_0;path=a:1,b:_1;path=a:2,b:_2
-                ;path=a:3,b:_3;path=a:4,b:_4;path=a:5,b:_5;label=LD',
+        '48' => 'city=revenue:100;city=revenue:100;city=revenue:100;city=revenue:100;city=revenue:100;city=revenue:100',
         '49' => 'city=revenue:70,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;label=L',
         '50' => 'city=revenue:70;city=revenue:70;city=revenue:70;path=a:0,b:_0;path=a:_0,b:3;path=a:1,b:_0;path=a:_0,b:2;path=a:4,b:_0;path=a:_0,b:5;label=BGM',
-        '50s' => 'city=revenue:70;city=revenue:70;city=revenue:70;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_1;path=a:5,b:_1;path=a:0,b:_2;path=a:3,b:_2;label=BGM',
         '51' => 'city=revenue:50,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
         '60' => 'junction;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
         '109' => 'city=revenue:50,slots:2;path=a:0,b:_0,track:dual;path=a:1,b:_0,track:dual;path=a:2,b:_0,track:dual;path=a:3,b:_0,track:dual;path=a:4,b:_0,track:dual',
@@ -493,7 +486,6 @@ module Engine
       }.freeze
 
       BROWNGRAY = {
-        '67s' => 'city=revenue:40,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
         '166' => 'city=revenue:40,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
         '1200' => 'city=revenue:10;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:5,b:_0',
       }.freeze
@@ -504,7 +496,7 @@ module Engine
         '469' => 'path=a:0,b:1,track:narrow',
       }.freeze
 
-      COLORS = %i[white yellow green brown gray blue greenbrown browngray none red].freeze
+      COLORS = %i[white yellow green brown gray blue greenbrown browngray none red purple].freeze
     end
   end
 end
