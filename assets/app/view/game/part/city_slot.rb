@@ -56,6 +56,7 @@ module View
 
           children = [h(:circle, attrs: { r: @radius, fill: color })]
           children << reservation if @reservation && !@token
+          children << render_boom if @city&.boom
           children << h(Token, token: @token, radius: radius, game: @game) if @token
 
           props = {
@@ -142,6 +143,16 @@ module View
                     Lib::TokenSelector.new(@tile.hex, coords, @city, @slot_index))
             end
           end
+        end
+
+        def render_boom
+          h(:circle, attrs: {
+              transform: translate.to_s,
+              stroke: @color,
+              r: @boom_radius ||= 10 * (0.8 + route_prop(0, :width).to_i / 40),
+              'stroke-width': 2,
+              'stroke-dasharray': 6,
+            })
         end
       end
     end

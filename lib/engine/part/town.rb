@@ -5,12 +5,13 @@ require_relative 'revenue_center'
 module Engine
   module Part
     class Town < RevenueCenter
-      attr_reader :to_city
+      attr_reader :to_city, :boom
 
       def initialize(revenue, **opts)
         super
 
         @to_city = opts[:to_city]
+        @boom = opts[:boom]
       end
 
       def <=(other)
