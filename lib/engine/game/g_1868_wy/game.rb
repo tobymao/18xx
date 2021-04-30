@@ -33,6 +33,18 @@ module Engine
           %w[20b 30b 40o 50o 55y 60y 64 68 72],
           ['', '20b', '30b', '40o', '50o', '55y', '60y'],
         ].freeze
+
+        def init_tiles
+          super.each do |tile|
+            tile.towns.each { |town| town.style = :dot }
+          end
+        end
+
+        def init_hexes(companies, corporations)
+          super.each do |hex|
+            hex.tile.towns.each { |town| town.style = :dot }
+          end
+        end
       end
     end
   end
