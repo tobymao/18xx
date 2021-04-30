@@ -138,6 +138,10 @@ module Engine
         # Game end after the ORs in the third turn, of if any company reach 24
         GAME_END_CHECK = { stock_market: :current_or, custom: :full_or }.freeze
 
+        GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
+          custom: 'End of Turn 3'
+        )
+
         BANKRUPTCY_ALLOWED = false
 
         STARTING_CASH_SMALL_MAP = { 2 => 40, 3 => 28, 4 => 23, 5 => 22 }.freeze

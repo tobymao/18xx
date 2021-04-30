@@ -952,7 +952,7 @@ module Engine
         SELL_AFTER = :operate
         SELL_BUY_ORDER = :sell_buy
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
-        GAME_END_CHECK = { bank: :current_or, custom: :one_more_full_or_set }.freeze
+        GAME_END_CHECK = { bank: :current_or, final_phase: :one_more_full_or_set }.freeze
 
         HEX_WITH_O_LABEL = %w[J12].freeze
         HEX_UPGRADES_FOR_O = %w[201 202 203 207 208 621 622 623 801 X8].freeze
@@ -1462,10 +1462,6 @@ module Engine
           return Engine::Round::Operating if phase.name.to_i >= 8
 
           G1867::Round::Merger
-        end
-
-        def custom_end_game_reached?
-          @final_operating_rounds
         end
 
         def final_operating_rounds

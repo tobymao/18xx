@@ -125,6 +125,14 @@ module Engine
 
         BANKRUPTCY_ALLOWED = true
 
+        BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
+
+        GAME_END_CHECK = { bankrupt: :immediate, bank: :full_or, stock_market: :after_max_operates }.freeze
+
+        GAME_END_REASONS_TIMING_TEXT = Base::GAME_END_REASONS_TIMING_TEXT.merge(
+          after_max_operates: 'After corporation finishes operating'
+        ).freeze
+
         CLOSED_CORP_RESERVATIONS_REMOVED = false
 
         EBUY_OTHER_VALUE = false
@@ -252,7 +260,7 @@ module Engine
         end
 
         def game_end_check
-          return %i[custom after_max_operates] if @max_value_reached
+          return %i[stock_market after_max_operates] if @max_value_reached
 
           return %i[bank full_or] if @bank.broken?
 

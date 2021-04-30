@@ -66,18 +66,6 @@ module Engine
         expect(erie_home_tile.cities[0].available_slots).to eq(0)
         expect(erie_home_tile.cities[1].available_slots).to eq(0)
       end
-
-      it 'should trigger end game at purple phase' do
-        player_1.cash = 10_000
-        stock_market.set_par(corporation, game.par_prices.first)
-        5.times { game.share_pool.buy_shares(player_1, corporation.shares.first) }
-
-        next_or!
-        %w[3 5 3+D 6 8E D].each do |train_name|
-          phase.buying_train!(corporation, game.trains.find { |t| t.name == train_name })
-        end
-        expect(game.custom_end_game_reached?).to be_truthy
-      end
     end
 
     context 'VA Coalfields' do

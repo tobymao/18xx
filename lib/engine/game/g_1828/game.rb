@@ -921,7 +921,11 @@ module Engine
 
         TILE_RESERVATION_BLOCKS_OTHERS = true
 
-        GAME_END_CHECK = { bankrupt: :immediate, stock_market: :current_round, custom: :one_more_full_or_set }.freeze
+        GAME_END_CHECK = {
+          bankrupt: :immediate,
+          stock_market: :current_round,
+          final_phase: :one_more_full_or_set,
+        }.freeze
 
         SELL_BUY_ORDER = :sell_buy_sell
 
@@ -1103,10 +1107,6 @@ module Engine
         def event_remove_corporations!
           @log << "-- Event: #{EVENTS_TEXT['remove_corporations'][1]}. --"
           @log << 'Unparred corporations will be removed at the beginning of the next stock round'
-        end
-
-        def custom_end_game_reached?
-          @phase.current[:name] == 'Purple'
         end
 
         def new_stock_round
