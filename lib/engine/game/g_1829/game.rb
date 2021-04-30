@@ -25,8 +25,15 @@ module Engine
         CURRENCY_FORMAT_STR = '$%dP'
         GAME_END_CHECK = { bank: :immediate }.freeze
         MARKET_SHARE_LIMIT = 100
-
+        SELL_MOVEMENT = :none
         BANK_CASH = 20_000
+        MUST_BUY_TRAIN = :never
+        POOL_SHARE_DROP = :none
+        SOLD_OUT_INCREASE = false
+        BROWN_CITIES = %w[48].freeze
+        GRAY_CITIES = %w[51].freeze
+        GREEN_CITIES = %w[12 13 14 15].freeze
+        YELLOW_TOWNS = %w[1a 2a 3a 4a 55a].freeze
 
         CERT_LIMIT = { 3 => 18, 4 => 18, 5 => 17, 6 => 14, 7 => 12, 8 => 10, 9 => 9 }.freeze
 
@@ -149,29 +156,20 @@ module Engine
 
         LAYOUT = :pointy
 
-        def upgrades_to?(from, to, special = false, selected_company: nil)
-          # correct color progression?
-          return false unless Engine::Tile::COLORS.index(to.color) == (Engine::Tile::COLORS.index(from.color) + 1)
-          # honors pre-existing track?
-          return false unless from.paths_are_subset_of?(to.paths)
+        def upgrades_to?(from, to, _special = false, selected_company: nil)
+          return GREEN_CITIES.include?(to.name) if YELLOW_TOWNS.include? from.hex.tile.name
+          return BROWN_CITIES.include?(to.name) if GREEN_CITIES.include? from.hex.tile.name
+          return GRAY_CITIES.include?(to.name) if BROWN_CITIES.include? from.hex.tile.name
 
-          # If special ability then remaining checks is not applicable
-          return true if special
+          super
+        end
 
-          # correct label?
-          return false unless upgrades_to_correct_label?(from, to)
+        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
+          upgrades = super
+          return upgrades unless tile_manifest
 
-          # honors existing town/city counts?
-          # - allow labelled cities to upgrade regardless of count; they're probably
-          #   fine (e.g., 18Chesapeake's OO cities merge to one city in brown)
-          # - TODO: account for games that allow double dits to upgrade to one town
-          return false if from.towns.size != to.towns.size
-          return false if !from.label && from.cities.size != to.cities.size
-
-          # handle case where we are laying a yellow OO tile and want to exclude single-city tiles
-          return false if (from.color == :white) && from.label.to_s == 'OO' && from.cities.size != to.cities.size
-
-          true
+          upgrades |= GREEN_CITIES if YELLOW_TOWNS.include?(tile.name)
+          upgrades
         end
 
         def operating_round(round_num)

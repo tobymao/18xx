@@ -5,16 +5,64 @@ module Engine
     module G1829
       module Map
         TILES = {
-          '1' => 2,
+          # Yellow
+          '1a' =>
+          {
+            'count' => 2,
+            'color' => 'yellow',
+            'code' => 'town=revenue:10;town=revenue:10;path=a:1,b:_0;path=a:_0,b:3;path=a:0,b:_1;path=a:_1,b:4',
+          },
+          '2a' =>
+          {
+            'count' => 2,
+            'color' => 'yellow',
+            'code' => 'town=revenue:10;town=revenue:10;path=a:0,b:_0;path=a:_0,b:3;path=a:1,b:_1;path=a:_1,b:2',
+          },
           '2' => 2,
-          '3' => 2,
-          '4' => 6,
+          '3a' =>
+          {
+            'count' => 2,
+            'color' => 'yellow',
+            'code' => 'town=revenue:10,to_city:1;path=a:0,b:_0;path=a:_0,b:1',
+          },
+          '4a' =>
+          {
+            'count' => 6,
+            'color' => 'yellow',
+            'code' => 'town=revenue:10,to_city:1;path=a:0,b:_0;path=a:_0,b:3',
+          },
           '5' => 4,
           '6' => 4,
           '7' => 4,
           '8' => 8,
           '9' => 10,
-          '10' => 3,
+          '55a' =>
+          {
+            'count' => 2,
+            'color' => 'yellow',
+            'code' => 'town=revenue:10;town=revenue:10;path=a:0,b:_0;path=a:_0,b:3;path=a:1,b:_1;path=a:_1,b:4',
+          },
+          '59s' =>
+          {
+            'count' => 2,
+            'color' => 'yellow',
+            'code' =>
+              'city=revenue:20;path=a:0,b:_0',
+          },
+          # green
+          '10' =>
+          {
+            'count' => 1,
+            'color' => 'green',
+            'code' => 'city=revenue:30;city=revenue:30;path=a:0,b:_0;path=a:3,b:_1;label=OO',
+          },
+          '11s' =>
+              {
+                'count' => 1,
+                'color' => 'green',
+                'code' =>
+                  'town=revenue:10;path=a:0,b:_0;path=a:_0,b:2;path=a:2,b:4;path=a:0,b:4',
+              },
           '12' => 3,
           '13' => 3,
           '14' => 3,
@@ -35,10 +83,34 @@ module Engine
           '29' => 1,
           '30' => 1,
           '31' => 1,
-          '32' => 1,
+          # brown
+          '32' =>
+          {
+            'count' => 1,
+            'color' => 'brown',
+            'code' =>
+            'city=revenue:70;city=revenue:70;city=revenue:70;city=revenue:70;city=revenue:70;city=revenue:70' \
+            ';path=a:0,b:_0;path=a:1,b:_1;path=a:2,b:_2;path=a:3,b:_3;path=a:4,b:_4;path=a:5,b:_5;label=LD',
+          },
+          '33s' =>
+              {
+                'count' => 1,
+                'color' => 'brown',
+                'code' =>
+                  'city=revenue:50;city=revenue:50;city=revenue:50;path=a:0,b:_0;path=a:1,b:_1'\
+                  ';path=a:2,b:_2;label=L',
+              },
           '34' => 1,
           '35' => 1,
           '36' => 1,
+          '37s' =>
+              {
+                'count' => 1,
+                'color' => 'brown',
+                'code' =>
+                  'city=revenue:40,loc:1.5;city=revenue:40,loc:4.5;path=a:0,b:_0;path=a:3,b:_1'\
+                  ';path=a:0,b:3;label=OO',
+              },
           '38' => 6,
           '39' => 1,
           '40' => 1,
@@ -49,42 +121,18 @@ module Engine
           '45' => 2,
           '46' => 2,
           '47' => 1,
-          '48' => 1,
+          # gray
+          '48' =>
+          {
+            'count' => 1,
+            'color' => 'gray',
+            'code' =>
+            'city=revenue:100;city=revenue:100;city=revenue:100;city=revenue:100;city=revenue:100;city=revenue:100' \
+            ';path=a:0,b:_0;path=a:1,b:_1;path=a:2,b:_2;path=a:3,b:_3;path=a:4,b:_4;path=a:5,b:_5;label=LD',
+          },
           '49' => 1,
           '51' => 3,
-          '55' => 2,
           '60' => 2,
-          '88' => 1,
-          '59s' =>
-              {
-                'count' => 2,
-                'color' => 'yellow',
-                'code' =>
-                  'city=revenue:20;path=a:0,b:_0',
-              },
-          '11s' =>
-              {
-                'count' => 1,
-                'color' => 'green',
-                'code' =>
-                  'town=revenue:10;path=a:0,b:_0;path=a:_0,b:2;path=a:2,b:4;path=a:0,b:4',
-              },
-          '33s' =>
-              {
-                'count' => 1,
-                'color' => 'brown',
-                'code' =>
-                  'city=revenue:50;city=revenue:50;city=revenue:50;path=a:0,b:_0;path=a:1,b:_1'\
-                  ';path=a:2,b:_2;label=L',
-              },
-          '37s' =>
-              {
-                'count' => 1,
-                'color' => 'brown',
-                'code' =>
-                  'city=revenue:40,loc:1.5;city=revenue:40,loc:4.5;path=a:0,b:_0;path=a:3,b:_1'\
-                  ';path=a:0,b:3;label=OO',
-              },
           '50s' =>
               {
                 'count' => 1,
@@ -93,7 +141,6 @@ module Engine
                   'city=revenue:70;city=revenue:70;city=revenue:70;path=a:1,b:_0;path=a:2,b:_0'\
                   ';path=a:4,b:_1;path=a:5,b:_1;path=a:0,b:_2;path=a:3,b:_2;label=BGM',
               },
-          # '166' => 4
         }.freeze
         HEXES = {
           white: {
@@ -152,7 +199,7 @@ module Engine
           },
           yellow: {
             %w[J7] =>
-                     'city=revenue:0;city=revenue:0;label=OO;upgrade=cost:40,terrain:water',
+                     'city=revenue:0;city=revenue:0;label=OO;upgrade=cost:40,terrain:water;label=OO',
             %w[L13 F9 D13 B11] => 'city=revenue:0;city=revenue:0;label=OO',
           },
           green: {
