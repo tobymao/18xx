@@ -1719,7 +1719,7 @@ module Engine
         when :one
           @players.any?(&:bankrupt)
         when :all_but_one
-          @players.reject(&:bankrupt).one?
+          @players.count { |p| !p.bankrupt } == 1
         end
       end
 
