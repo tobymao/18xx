@@ -325,10 +325,12 @@ module View
       end
 
       def discarded_trains
-        rows = @depot.discarded.map do |train|
+        rows = @depot.discarded.group_by(&:name).map do |_sym, trains|
+          train = trains.first
           h(:tr, [
             h(:td, train.name),
             h(:td, @game.format_currency(train.price)),
+            h('td.right', trains.size),
           ])
         end
 
@@ -337,6 +339,7 @@ module View
             h(:tr, [
               h(:th, 'Type'),
               h(:th, 'Price'),
+              h(:th, 'Available'),
             ]),
           ]),
           h(:tbody, rows),
