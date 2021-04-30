@@ -11,7 +11,7 @@ module Engine
             unless @minor_started
               first_minor = @game.corporations.find { |c| c.type == :minor && c.ipoed == false }
               if first_minor
-                @game.log << "No minor started during SR, closing #{first_minor.name}"
+                @game.log << "No minor started during stock round, closing #{first_minor.name}"
                 @game.close_corporation(first_minor, quiet: true)
               end
             end

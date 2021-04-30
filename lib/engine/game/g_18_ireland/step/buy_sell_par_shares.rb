@@ -72,9 +72,7 @@ module Engine
           end
 
           def round_state
-            super.merge({
-                          minor_started: false,
-                        })
+            super.merge(minor_started: false)
           end
         end
       end
