@@ -5,11 +5,12 @@ require_relative 'base'
 module Engine
   module Part
     class Upgrade < Base
-      attr_reader :cost, :terrains
+      attr_reader :cost, :terrains, :size
 
-      def initialize(cost, terrains = nil)
+      def initialize(cost, terrains = nil, size = nil)
         @cost = cost.to_i
         @terrains = terrains&.map(&:to_sym) || []
+        @size = size&.to_i
       end
 
       def upgrade?
