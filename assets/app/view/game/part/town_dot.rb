@@ -2,6 +2,7 @@
 
 require 'view/game/hit_box'
 require 'view/game/part/base'
+require 'view/game/part/city'
 require 'view/game/runnable'
 
 module View
@@ -115,9 +116,20 @@ module View
                           'stroke-width': 4,
                         })]
 
+          children << render_boom if @town.boom
           children << render_revenue if @show_revenue
           children << h(HitBox, click: -> { touch_node(@town) }, transform: translate) unless @town.solo?
           h(:g, { key: "#{@town.id}-d" }, children)
+        end
+
+        def render_boom(transform: nil)
+          h(:circle, attrs: {
+              transform: transform || translate.to_s,
+              stroke: @color,
+              r: Part::City::SLOT_RADIUS,
+              'stroke-width': 2,
+              'stroke-dasharray': 6,
+            })
         end
       end
     end
