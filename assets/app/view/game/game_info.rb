@@ -33,6 +33,7 @@ module View
         children.concat(discarded_trains) if @depot.discarded.any?
         children.concat(phases)
         children.concat(timeline) if timeline
+        children.concat(endgame)
         children << h(GameMeta, game: @game)
       end
 
@@ -419,6 +420,38 @@ module View
         end
 
         props
+      end
+
+      def endgame
+        rows = @game.class::GAME_END_CHECK.map do |reason, timing|
+          reason_str = @game.class::GAME_END_REASONS_TEXT[reason]
+          if reason == :bankrupt
+            reason_str = case @game.class::BANKRUPTCY_ENDS_GAME_AFTER
+                         when :one
+                           'Any '
+                         when :all_but_one
+                           'All but one '
+                         end + reason_str
+          end
+          h(:tr, [
+            h(:td, reason_str),
+            h(:td, @game.class::GAME_END_REASONS_TIMING_TEXT[timing]),
+          ])
+        end
+
+        table = h(:table, [
+          h(:thead, [
+            h(:tr, [
+              h(:th, 'Reason'),
+              h(:th, 'Timing'),
+            ]),
+          ]),
+          h(:tbody, rows),
+        ])
+        [
+         h(:h3, 'Reasons for End of Game'),
+         table,
+        ]
       end
     end
   end

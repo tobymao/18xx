@@ -61,6 +61,10 @@ module Engine
 
         GAME_END_CHECK = { stock_market: :current_or, custom: :one_more_full_or_set }.freeze
 
+        GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
+          custom: 'Phase 5 is entered'
+        )
+
         RAILWAY_MIN_BID = 100
         MIN_BID_INCREMENT = 10
         MHE_START_PRICE = 120

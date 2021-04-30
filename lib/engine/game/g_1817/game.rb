@@ -895,13 +895,14 @@ module Engine
         ALL_COMPANIES_ASSIGNABLE = true
         SELL_AFTER = :after_ipo
         OBSOLETE_TRAINS_COUNT_FOR_LIMIT = true
+        BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
 
         ASSIGNMENT_TOKENS = {
           'bridge' => '/icons/1817/bridge_token.svg',
           'mine' => '/icons/1817/mine_token.svg',
         }.freeze
 
-        GAME_END_CHECK = { bankrupt: :immediate, custom: :one_more_full_or_set }.freeze
+        GAME_END_CHECK = { bankrupt: :immediate, final_phase: :one_more_full_or_set }.freeze
 
         CERT_LIMIT_CHANGE_ON_BANKRUPTCY = true
 
@@ -979,10 +980,6 @@ module Engine
         def init_stock_market
           @owner_when_liquidated = {}
           super
-        end
-
-        def bankruptcy_limit_reached?
-          @players.reject(&:bankrupt).one?
         end
 
         def init_loans
@@ -1540,10 +1537,6 @@ module Engine
 
         def round_end
           G1817::Round::Acquisition
-        end
-
-        def custom_end_game_reached?
-          @final_operating_rounds
         end
 
         def final_operating_rounds

@@ -856,6 +856,9 @@ module Engine
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded_or_city, upgrade: false }].freeze
 
         GAME_END_CHECK = { stock_market: :current_or, bank: :current_or, custom: :immediate }.freeze
+        GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
+          custom: 'Nationalization complete'
+        )
 
         PAR_RANGE = {
           1 => [74, 100],

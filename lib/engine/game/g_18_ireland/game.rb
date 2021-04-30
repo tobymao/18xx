@@ -196,14 +196,11 @@ module Engine
         SHANNON_COMPANY = 'RSSC'
         SHANNON_HEXES = %w[F10 D16].freeze
         KEEP_COMPANIES = 5
+        BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
 
         # used for laying tokens, running routes, mergers
         def init_graph
           Graph.new(self, skip_track: :narrow)
-        end
-
-        def bankruptcy_limit_reached?
-          @players.reject(&:bankrupt).one?
         end
 
         def tile_lays(entity)
