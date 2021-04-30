@@ -7,7 +7,7 @@ module Engine
     include Assignable
 
     attr_accessor :x, :y, :ignore_for_axes, :location_name
-    attr_reader :coordinates, :empty, :layout, :neighbors, :tile, :original_tile
+    attr_reader :coordinates, :empty, :layout, :neighbors, :all_neighbors, :tile, :original_tile
 
     DIRECTIONS = {
       flat: {
@@ -70,6 +70,7 @@ module Engine
       @layout = layout
       @x, @y = self.class.init_x_y(@coordinates, axes)
       @neighbors = {}
+      @all_neighbors = {}
       @location_name = location_name
       tile.location_name = location_name
       @original_tile = @tile = tile

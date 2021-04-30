@@ -1980,6 +1980,8 @@ module Engine
             x, y = xy
             neighbor = coordinates[[hex.x + x, hex.y + y]]
             next unless neighbor
+
+            hex.all_neighbors[direction] = neighbor
             next if self.class::IMPASSABLE_HEX_COLORS.include?(neighbor.tile.color) && !neighbor.targeting?(hex)
             next if hex.tile.borders.any? { |border| border.edge == direction && border.type == :impassable }
 
