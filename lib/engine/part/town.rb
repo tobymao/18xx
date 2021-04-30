@@ -6,7 +6,7 @@ module Engine
   module Part
     class Town < RevenueCenter
       attr_accessor :style
-      attr_reader :to_city, :boom
+      attr_reader :to_city, :boom, :double
 
       def initialize(revenue, **opts)
         super
@@ -14,6 +14,7 @@ module Engine
         @to_city = opts[:to_city]
         @boom = opts[:boom]
         @style = opts[:style]&.to_sym
+        @double = !!opts[:double]
       end
 
       def <=(other)

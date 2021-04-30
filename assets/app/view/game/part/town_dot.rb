@@ -108,15 +108,43 @@ module View
         end
 
         def render_part
-          children = [h(:circle, attrs: {
-                          transform: translate.to_s,
-                          r: 10 * (0.8 + @width.to_i / 40),
-                          fill: (@town.halt? ? 'gray' : @color),
-                          stroke: (@town.halt? ? @color : 'none'),
-                          'stroke-width': 4,
-                        })]
+          radius = 10 * (0.8 + @width.to_i / 40)
 
-          children << render_boom if @town&.boom
+          dot_attrs = {
+            transform: translate.to_s,
+            r: radius,
+            fill: (@town.halt? ? 'gray' : @color),
+            stroke: (@town.halt? ? @color : 'none'),
+            'stroke-width': 4,
+          }
+
+          children = []
+
+          if @town.double
+            x = radius
+            y = 0
+            angle = layout == :pointy ? -30 : 0
+
+            double_children = []
+            if @town.boom
+              double_children.concat(
+                [
+                  render_boom(transform: "translate(#{-x} #{y})"),
+                  render_boom(transform: "translate(#{x} #{y})"),
+                ]
+              )
+            end
+            double_children.concat([
+              h(:circle, attrs: dot_attrs.merge(transform: "translate(#{-x} #{y})")),
+              h(:circle, attrs: dot_attrs.merge(transform: "translate(#{x} #{y})")),
+            ])
+
+            children << h(:g, { attrs: { transform: "#{translate} rotate(#{angle})" } }, double_children)
+          else
+            children << h(:circle, attrs: dot_attrs)
+            children << render_boom if @town.boom
+          end
+
           children << render_revenue if @show_revenue
           children << h(HitBox, click: -> { touch_node(@town) }, transform: translate) unless @town.solo?
           h(:g, { key: "#{@town.id}-d" }, children)
