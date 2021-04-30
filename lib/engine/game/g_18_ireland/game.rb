@@ -143,6 +143,7 @@ module Engine
             distance: 6,
             price: 300,
             rusts_on: '10H',
+            events: [{ 'type' => 'majors_can_ipo' }],
           },
           {
             name: "3H'",
@@ -185,6 +186,7 @@ module Engine
         EVENTS_TEXT = Base::EVENTS_TEXT.merge('corporations_can_merge' => ['Corporations can merge',
                                                                            'Players can vote to merge corporations'],
                                               'minors_cannot_start' => ['Minors cannot start'],
+                                              'majors_can_ipo' => ['Majors can be ipoed'],
                                               'train_trade_allowed' =>
                                               ['Train trade in allowed',
                                                'Trains can be traded in for face value for more powerful trains'],)
@@ -407,6 +409,15 @@ module Engine
           timeline
         end
 
+        def sorted_corporations
+          # Corporations sorted by some potential game rules
+          ipoed, others = corporations.partition(&:ipoed)
+
+          # hide non-ipoed majors until phase 4
+          others.reject! { |c| c.type == :major } unless @show_majors
+          ipoed.sort + others
+        end
+
         def tile_uses_broad_rules?(old_tile, tile)
           # Is this tile a 'broad' gauge lay or a 'narrow' gauge lay.
           # Broad gauge lay is if any of the new exits broad gauge?
@@ -478,6 +489,7 @@ module Engine
           corporations.unshift(protect)
 
           @corporations = corporations
+          @show_majors = false
         end
 
         def rust(train)
@@ -613,7 +625,7 @@ module Engine
         end
 
         def stock_round
-          Engine::Round::Stock.new(self, [
+          G18Ireland::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
             Engine::Step::Exchange,
             Engine::Step::HomeToken,
@@ -700,6 +712,11 @@ module Engine
           end
 
           @log << 'Minors can no longer be started' if removed.any?
+        end
+
+        def event_majors_can_ipo!
+          @log << 'Majors can now be started via IPO'
+          @show_majors = true
         end
 
         def event_train_trade_allowed!; end
