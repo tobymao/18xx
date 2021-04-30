@@ -116,7 +116,7 @@ module View
                           'stroke-width': 4,
                         })]
 
-          children << render_boom if @town.boom
+          children << render_boom if @town&.boom
           children << render_revenue if @show_revenue
           children << h(HitBox, click: -> { touch_node(@town) }, transform: translate) unless @town.solo?
           h(:g, { key: "#{@town.id}-d" }, children)
