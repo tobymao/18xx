@@ -114,7 +114,7 @@ module View
             transform: translate.to_s,
             r: radius,
             fill: (@town.halt? ? 'gray' : @color),
-            stroke: (@town.halt? ? @color : 'none'),
+            stroke: (@town.halt? ? @color : 'white'),
             'stroke-width': 4,
           }
 
