@@ -12,6 +12,7 @@ module Engine
             available_actions = []
             return available_actions unless entity.corporation?
             return available_actions if entity != current_entity
+            return available_actions if @game.skip_round[entity]
 
             available_actions << 'buy_shares' unless redeemable_shares(entity).empty?
             available_actions << 'pass' if blocks? && !available_actions.empty?
@@ -20,7 +21,7 @@ module Engine
           end
 
           def log_skip(entity)
-            super if entity.type == :major
+            super unless @game.skip_round[entity]
           end
 
           def description

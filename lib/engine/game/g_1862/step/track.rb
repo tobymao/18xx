@@ -7,6 +7,16 @@ module Engine
     module G1862
       module Step
         class Track < Engine::Step::Track
+          def actions(entity)
+            return [] if @game.skip_round[entity]
+
+            super
+          end
+
+          def log_skip(entity)
+            super unless @game.skip_round[entity]
+          end
+
           def lay_tile_action(action, entity: nil, spender: nil)
             tile_lay = get_tile_lay(action.entity)
             if action.tile.label.to_s == 'N' && !(tile_lay && tile_lay[:upgrade])

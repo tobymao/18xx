@@ -24,6 +24,7 @@ module Engine
 
           def actions(entity)
             return [] if entity != current_entity
+            return [] if @game.skip_round[entity]
             return [] if buyable_trains(entity).empty? && !must_buy_train?(entity)
             return [] if entity.share_price&.type == :close
             return %w[buy_train] if can_buy_depot_train?(entity) && must_buy_train?(entity)
@@ -37,7 +38,7 @@ module Engine
           end
 
           def log_skip(entity)
-            super unless must_ebuy?(entity)
+            super if !must_ebuy?(entity) && !@game.skip_round[entity]
           end
 
           def pass!

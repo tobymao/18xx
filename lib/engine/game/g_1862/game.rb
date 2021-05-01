@@ -8,6 +8,9 @@ require_relative 'step/charter_auction'
 require_relative 'step/buy_tokens'
 require_relative 'step/buy_sell_par_shares'
 require_relative 'step/home_upgrade'
+require_relative 'step/option_share'
+require_relative 'step/remove_tokens'
+require_relative 'step/merge'
 require_relative 'step/track'
 require_relative 'step/token'
 require_relative 'step/route'
@@ -23,7 +26,7 @@ module Engine
         include Entities
         include Map
 
-        attr_accessor :chartered, :base_tiles, :deferred_rust
+        attr_accessor :chartered, :base_tiles, :deferred_rust, :skip_round
 
         register_colors(black: '#000000',
                         orange: '#f48221',
@@ -504,10 +507,12 @@ module Engine
           @cached_freight_sets = nil
           @global_stops = nil
           @deferred_rust = []
+          @merging = nil
         end
 
         def setup_preround
           @base_tiles = []
+          @skip_round = {}
 
           # remove reservations (nice to have in starting map)
           @corporations.each { |corp| remove_reservation(corp) }
@@ -543,7 +548,9 @@ module Engine
           permit_list.pop(2) if @players.size < 7
           permit_list.sort_by! { rand }
           @permits = Hash.new { |h, k| h[k] = [] }
+          @original_permits = Hash.new { |h, k| h[k] = [] }
           @corporations.each_with_index { |corp, idx| @permits[corp] << permit_list[idx] }
+          @corporations.each_with_index { |corp, idx| @original_permits[corp] << permit_list[idx] }
 
           # record what phases corp become available
           @starting_phase = {}
@@ -588,7 +595,6 @@ module Engine
           @offer_order.select { |corp| available_to_start?(corp) }
         end
 
-        # FIXME
         def available_to_start?(corporation)
           @phase.available?(@starting_phase[corporation]) && legal_to_start?(corporation)
         end
@@ -605,8 +611,7 @@ module Engine
           return if @chartered[corporation]
 
           # find closest chartered par
-          par = corporation.original_par_price.price
-          corporation.original_par_price = @stock_market.par_prices.max_by { |p| p.price < par ? p.price : 0 }
+          corporation.original_par_price = find_valid_par_price(corporation.original_par_price.price)
         end
 
         def float_corporation(corporation)
@@ -626,7 +631,6 @@ module Engine
           raise GameError, 'Player has charter in error' unless @chartered[corporation]
 
           # chartered company
-          entity.companies.delete(charter)
           charter.owner = nil
           @log << "#{entity.name} has completed obligation for #{corporation.name}"
           entity.companies.delete(charter)
@@ -640,22 +644,18 @@ module Engine
 
         def convert_to_full!(corporation)
           corporation.capitalization = :full
+          corporation.always_market_price = false
           corporation.ipo_owner = @bank
           corporation.share_holders.keys.each do |sh|
             next if sh == @bank
 
-            corporation.share_holders[sh] = 0
-            sh.shares_by_corporation[corporation].dup.each do |share|
-              share.owner = @bank
-              sh.shares_by_corporation[corporation].delete(share)
-              @bank.shares_by_corporation[corporation] << share
-              corporation.share_holders[@bank] += share.percent
-            end
+            sh.shares_by_corporation[corporation].dup.each { |share| transfer_share(share, @bank) }
           end
         end
 
         def convert_to_incremental!(corporation)
           corporation.capitalization = :incremental
+          corporation.always_market_price = true
           corporation.ipo_owner = corporation
           corporation.share_holders.keys.each do |sh|
             next if sh == corporation
@@ -713,13 +713,32 @@ module Engine
           end
         end
 
-        # determine if a legal upgrade for this hex has an additional
-        # slot
-        # FIXME: this should check to see if an upgrade tile is available and has a legal rotation
+        # Determine if an available legal upgrade for this hex has an additional slot
+        # Do this without referencing graph
+        #
         def upgrade_tokenable?(hex)
-          current_tile = hex.tile
-          (current_tile.color == :yellow && @phase.tiles.include?(:green)) ||
-            (current_tile.color == :green && current_tile.label.to_s == 'N' && @phase.tiles.include?(:brown))
+          from = hex.tile
+
+          return false if from.color == :yellow && !@phase.tiles.include?(:green)
+          return false if from.color == :green && (from.label.to_s != 'N' || !@phase.tiles.include?(:brown))
+          return false if from.color == :brown
+
+          from_exits = from_tile.exits
+          legal_exits = Engine::Tile::ALL_EDGES.select { |e| from.hex.neighbors[e] }
+          @tiles.each do |to|
+            next unless Engine::Tile::COLORS.index(to.color) == (Engine::Tile::COLORS.index(from.color) + 1)
+            next unless upgrades_to_correct_label?(from, to)
+
+            to_exits = to.exits
+            return true if Engine::Tile::ALL_EDGES.any? { |rot| exits_match?(to_exits, rot, from_exits, legal_exits) }
+          end
+          false
+        end
+
+        def exits_match?(exits, rotation, from_exits, legal_exits)
+          exits = exits.map { |e| (e + rotation) % 6 }
+          from_exits.all? { |e| exits.include?(e) } # every exit on old tile appears on new tile
+          exits.all? { |e| legal_exits.include?(e) } # every exit on new tile is legal
         end
 
         # OK to start a corp if
@@ -768,15 +787,16 @@ module Engine
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
             G1862::Step::HomeUpgrade,
-            # G1862::Step::HalfShare,
-            # G1862::Step::Merge,
+            G1862::Step::OptionShare,
+            G1862::Step::RemoveTokens,
+            G1862::Step::Merge,
             G1862::Step::Track,
             G1862::Step::Token,
             G1862::Step::Route,
             G1862::Step::Dividend,
             G1862::Step::BuyTrain,
             G1862::Step::RedeemShare,
-            # G1862::Step::Acquire,
+            G1862::Step::Acquire,
           ], round_num: round_num)
         end
 
@@ -797,6 +817,7 @@ module Engine
         end
 
         def next_round!
+          @skip_round.clear
           @round =
             case @round
             when G1862::Round::Parliament
@@ -827,37 +848,28 @@ module Engine
         end
 
         def enter_bankruptcy!(corp)
-          return if bankrupt?(corp)
-
-          @bankrupt_corps << corp
           @log << "#{corp.name} enters Bankruptcy"
 
-          # un-IPO the corporation
-          corp.share_price.corporations.delete(corp)
-          corp.share_price = nil
-          corp.par_price = nil
-          corp.ipoed = false
-          corp.unfloat!
-
-          # return shares to IPO
-          # FIXME: compensate former owners of shares if share price is not zero
+          # compensate former owners of shares if share price is not zero
+          share_value = corp.trains.empty? ? corp.share_price.price / 2 : corp.share_price.price
           corp.share_holders.keys.each do |share_holder|
-            next if share_holder == corp
+            next unless share_holder.player?
 
-            shares = share_holder.shares_by_corporation[corp].compact
-            corp.share_holders.delete(share_holder)
-            shares.each do |share|
-              share_holder.shares_by_corporation[corp].delete(share)
-              share.owner = corp
-              corp.shares_by_corporation[corp] << share
+            percent = share_holder.shares_of(corp).sum(&:percent)
+            total = share_value * percent / 10
+            if total.positive?
+              @bank.spend(total, share_holder)
+              @log << "#{share_holder.name} receives #{format_currency(total)} for shares"
             end
           end
-          corp.shares_by_corporation[corp].sort_by!(&:index)
-          corp.share_holders[corp] = 100
-          corp.owner = nil
 
-          # FIXME: is there a better way to do this?
-          @round.force_next_entity! if @round.operating?
+          # move cash to bank
+          corp.spend(corp.cash, @bank) if corp.cash.positive?
+
+          # make it available to restart
+          reset_corporation(corp)
+
+          @skip_round[corp] = true
         end
 
         def status_array(corp)
@@ -1201,7 +1213,7 @@ module Engine
           raise GameError, 'Logic error: freight set with only one end' if ends.one?
 
           # if no ends, we have a loop: pick first node
-          # FIXME: pick the highest revenue node
+          # FIXME: pick the highest revenue node? Pathological case.
           ends = [nodes.keys.first, nodes.keys.first] if ends.empty?
           ends
         end
@@ -1413,7 +1425,6 @@ module Engine
           route.all_hexes.count { |h| !hex_on_other_route?(route, h) } * 10
         end
 
-        # FIXME
         def routes_subsidy(routes)
           routes.sum(&:subsidy)
         end
@@ -1512,9 +1523,502 @@ module Engine
           check_bankruptcy!(entity)
         end
 
-        # FIXME
         # Refinance via merger algorithm
-        def refinance!(entity); end
+        def refinance!(entity)
+          start_merge(entity, entity, nil, :refinance)
+        end
+
+        def share_holder_list(originator, corps)
+          plist = @players.rotate(@players.index(originator.owner)).select do |p|
+            corps.any? do |c|
+              !p.shares_of(c).empty?
+            end
+          end
+          plist + [originator]
+        end
+
+        def effective_price(corporation)
+          corporation.trains.empty? ? corporation.share_price.price / 2 : corporation.share_price.price
+        end
+
+        def find_valid_par_price(price)
+          @stock_market.par_prices.max_by { |p| p.price <= price ? p.price : 0 }
+        end
+
+        def find_valid_share_price(price)
+          # only works with 1D market
+          @stock_market.market.first.max_by { |p| p.price <= price ? p.price : 0 }
+        end
+
+        def compute_merger_share_price(corpa, corpb)
+          prices = [effective_price(corpa), effective_price(corpb)].sort
+          find_valid_share_price(prices.first + prices.last / 2.0)
+        end
+
+        # just a basic share move without payment or president change
+        #
+        def transfer_share(share, new_owner)
+          corp = share.corporation
+          corp.share_holders[share.owner] -= share.percent
+          corp.share_holders[new_owner] += share.percent
+          @share_pool.move_share(share, new_owner)
+        end
+
+        def start_merge(originator, survivor, nonsurvivor, merge_type)
+          corps = merge_type == :refinance ? [survivor] : [survivor, nonsurvivor]
+          @merge_data = {
+            originator: originator,
+            type: merge_type,
+            corps: corps,
+            holders: share_holder_list(originator, corps),
+            stage: nil,
+            price: originator.share_price,
+            skip: nil,
+          }
+
+          # 1. (M/A): Find new share price and par price
+          if merge_type != :refinance
+            old_price = survivor.share_price
+            new_price = compute_merger_share_price(survivor, nonsurvivor)
+            new_par_price = find_valid_par_price(new_price.price)
+            @log << "New share price: #{format_currency(new_price.price)} "\
+              "(par: #{format_currency(new_par_price.price)})"
+            @merge_data[:price] = new_price
+            @merge_data[:par] = new_par_price
+            old_price.corporations.delete(survivor)
+            new_price.corporations << survivor
+            survivor.share_price = new_price
+            survivor.par_price = new_par_price
+            survivor.original_par_price = new_par_price
+          end
+
+          # 2. move any chartered IPO shares to market
+          corps.each do |corp|
+            if @chartered[corp] && !(ipo_shares = corp.ipo_shares).empty?
+              ipo_shares.each { |s| transfer_share(s, @share_pool) }
+              @log << "Moved #{ipo_shares.size} shares from #{corp.name} IPO to market"
+            end
+          end
+
+          # 3. move all treasury shares to originator
+          corps.each do |corp|
+            next if corp == originator
+
+            corp.shares_of(corp).dup.each { |s| transfer_share(s, originator) }
+          end
+
+          # 4. return half of shares, possibly offer to redeem or sell options (half-shares)
+          return if @merge_data[:holders].any? { |holder| return_half_and_swap(holder) }
+
+          merge_post_shares # no need to ask player
+        end
+
+        # called by step after player makes choice about option
+        def continue_merge_option(entity)
+          remaining_holders = @merge_data[:holders][(@merge_data[:holders].index(entity) + 1)..-1]
+          return if remaining_holders.any? { |holder| return_half_and_swap(holder) }
+
+          merge_post_shares # no need to ask player
+        end
+
+        # always return survivor shares first and director's first within those
+        def affected_shares(entity, corps)
+          affected = entity.shares.select { |s| s.corporation == corps.first }.sort_by(&:percent).reverse
+          unless corps.one?
+            affected.concat(entity.shares.select { |s| s.corporation == corps.last }.sort_by(&:percent).reverse)
+          end
+          affected
+        end
+
+        # reorder shares
+        # 1. nonsurviving director cert
+        # 2. nonsurviving plain certs
+        # 3. surviving plain certs
+        # 4. surviving director cert
+        def reorder_shares(shares, corps)
+          if corps.one?
+            shares.select { |s| s.corporation == corps.first }.sort_by(&:percent)
+          else
+            shares.select { |s| s.corporation == corps.last }.sort_by(&:percent).reverse +
+              shares.select { |s| s.corporation == corps.first }.sort_by(&:percent)
+          end
+        end
+
+        # look for next entity that has needed share
+        def find_donor_share(entity, corp, holders, percent)
+          return nil if entity.corporation?
+
+          donors = [@share_pool] + holders[(holders.find_index(entity) + 1)..-1]
+
+          donors.each do |holder|
+            match = holder.shares_of(corp).find { |s| s.percent == percent }
+            return match if match
+          end
+          nil
+        end
+
+        # called only once per entity
+        def return_half_and_swap(entity)
+          #
+          # Deal with directors with less than 60% across affected corps
+          #
+          entity_shares = affected_shares(entity, @merge_data[:corps])
+          pres_option_percent = nil
+          odd_share = nil
+
+          if entity_shares.any?(&:president) && entity_shares.sum(&:percent) < 60
+            # we know entity is only director of one corp
+            # try to swap director cert for 3 normal certs from market
+            pres_share = entity_shares.find(&:president)
+            swap_corp = pres_share.corporation
+            market_plain_shares = affected_shares(@share_pool, @merge_data[:corps]).reject(&:president)
+
+            if market_plain_shares.sum(&:percent) >= 30
+              # market has enough shares: swap pres cert for 3 plain ones (of either corp)
+              #
+              market_plain_shares.take(3).each { |s| transfer_share(s, entity) }
+              transfer_share(pres_share, @share_pool)
+              entity_shares = affected_shares(entity, @merge_data[:corps]) # recalculate
+              @log << "#{entity.name} swaps #{swap_corp.name} director's certificate for 3 shares"
+            else
+              # not enough in market: move non-president shares to market and mark as an option
+              #
+              pres_option_percent = entity_shares.sum(&:percent)
+              odd_share = pres_share
+              plain_shares = entity_shares.reject(&:president)
+              plain_shares.each { |s| transfer_share(s, @share_pool) }
+              @log << "#{entity.name} cannot return #{swap_corp.name} director's certificate to market. "\
+                "#{entity.name} moves #{plain_shares.size} normal shares to market and director's certificate "\
+                'will be used as an option certificate.'
+            end
+          end
+
+          #
+          # return half of remaining shares starting with nonsurviving company
+          #
+          unless pres_option_percent
+            total_percent = entity_shares.sum(&:percent)
+            return_percent = (total_percent / 20).to_i * 10
+            reordered = reorder_shares(entity_shares, @merge_data[:corps])
+            returned = 0
+            while returned < return_percent
+              share = reordered.shift
+              returned += share.percent
+              transfer_share(share, @share_pool)
+              @log << "#{entity.name} returns a #{share.percent}% share of #{share.corporation.name} to the market"
+
+              if share.president && share.corporation == @merge_data[:corps].first
+                raise GameError, 'returning incorrect presidents share'
+              end
+            end
+            odd_share = total_percent != return_percent * 2 && reordered.first
+          end
+
+          #
+          # swap remaining nonsurvivor shares for survivor shares if possible
+          # otherwise must sell
+          #
+          if @merge_data[:type] != :refinance && pres_option_percent && swap_corp == @merge_data[:corps].last
+
+            # Handle president share option specially
+            #
+            # try to swap. If not possible, sell
+            old_share = entity_shares.find(&:president)
+            if (swap_share = find_donor_share(entity, @merge_data[:corps].first, @merge_data[:holders], 30))
+              donor = swap_share.owner
+              transfer_share(old_share, donor)
+              transfer_share(swap_share, entity)
+              odd_share = swap_share
+              @log << "#{entity.name} swaps director's certificate with #{donor.name}"
+            else
+              price = case pres_option_percent
+                      when 50
+                        @merge_data[:price].price * 2.5
+                      when 40
+                        @merge_data[:price].price * 2
+                      else
+                        @merge_data[:price].price * 1.5
+                      end.to_i
+              transfer_share(old_share, @share_pool)
+              @bank.spend(price, entity)
+              @log << "#{entity.name} unable to trade for #{@merge_data[:corps].first.name} director certificate."
+              @log << "#{entity.name} sells non-survivor director certificate option for #{format_currency(price)}"
+              odd_share = nil
+            end
+          elsif @merge_data[:type] != :refinance && !pres_option_percent &&
+            !(old_shares = reordered.reverse.select { |s| s.corporation == @merge_data[:corps].last }).empty?
+
+            # normal shares and options
+            #
+            # try to swap. If not possible, sell
+            #
+            old_shares.each do |os|
+              raise GameError, 'Found pres share when swapping' if os.percent != 10
+
+              if (swap_share = find_donor_share(entity, @merge_data[:corps].first, @merge_data[:holders], 10))
+                donor = swap_share.owner
+                transfer_share(os, donor)
+                transfer_share(swap_share, entity)
+                @log << "#{entity.name} swaps a #{@merge_data[:corps].last.name} share for a "\
+                  "#{@merge_data[:corps].first.name} share from #{donor.name}"
+                odd_share = swap_share if os == odd_share
+              else
+                price = os == odd_share ? @merge_data[:price].price / 2 : @merge_data[:price].price
+                transfer_share(os, @share_pool)
+                @bank.spend(price, entity)
+                @log << "#{entity.name} unable to trade for #{@merge_data[:corps].first.name} share."
+                if os == odd_share
+                  @log << "#{entity.name} sells non-survivor option share for #{format_currency(price)}"
+                  odd_share = nil
+                else
+                  @log << "#{entity.name} sells non-survivor share for #{format_currency(price)}"
+                end
+              end
+            end
+          end
+
+          #
+          # Deal with option (odd) share or option president cert
+          #
+          # if they can pay, will ask player
+          #
+          if odd_share
+            if pres_option_percent
+              sell_price = @merge_data[:corps].first.share_price.price * pres_option_percent / 20
+              redeem_price = @merge_data[:corps].first.share_price.price * (60 - pres_option_percent) / 20
+              percent = pres_option_percent
+            else
+              sell_price = @merge_data[:corps].first.share_price.price / 2
+              redeem_price = sell_price
+              percent = 10
+            end
+
+            # only ask if they can afford to buy
+            #
+            if @merge_data[:originator] == entity
+              # need to use combined cash for corps
+              other = @merge_data[:corps].find { |c| c != entity }
+              other.spend(other.cash, entity) if other.cash.positive?
+            end
+            if entity.cash >= redeem_price
+              @round.pending_options << {
+                entity: entity,
+                share: odd_share,
+                percent: percent,
+                sell_price: sell_price,
+                redeem_price: redeem_price,
+              }
+              return true
+            end
+
+            # otherwise, sell
+            #
+            @bank.spend(sell_price, entity)
+            transfer_share(odd_share, @share_pool)
+            @log << "#{entity.name} must sell #{percent}% option share for #{format_currency(sell_price)}"
+          end
+          false
+        end
+
+        def merge_sanity_check
+          # 100% of non-survivor shares should be in market
+          if @merge_data[:type] != :refinance && @share_pool.shares_of(@merge_data[:corps].last).sum(&:percent) != 100
+            raise GameError, "market shares of #{@merge_data[:corps].last.name} not 100%"
+          end
+          # survivor shares should total 100%
+          return unless @merge_data[:corps].first.share_holders.values.sum != 100
+
+          raise GameError, "total shares of #{@merge_data[:corps].first.name} not 100%"
+        end
+
+        def transfer_pres_share(corporation, owner)
+          return if owner.shares_of(corporation).any?(&:president)
+
+          # the pres share must be in market
+          pres_share = @share_pool.shares_of(corporation).find(&:president)
+          raise GameError, "Pres share of #{corporation.name} not in market" unless pres_share
+
+          owner.shares_of(corporation).take(3).each { |s| transfer_share(s, @share_pool) }
+          transfer_share(pres_share, owner)
+        end
+
+        def adjust_president(corporation, holders)
+          old_owner = corporation.owner
+          majority_holder = holders.reject(&:corporation?).max_by { |h| h.shares_of(corporation).sum(&:percent) }
+          majority_amount = majority_holder.shares_of(corporation).sum(&:percent)
+
+          if majority_amount >= 30 && old_owner == majority_holder
+            @log << "#{old_owner.name} retains presidency of #{corporation.name}"
+            transfer_pres_share(corporation, old_owner)
+          elsif majority_amount >= 30
+            @log << "#{majority_holder.name} becomes new president of #{corporation.name}"
+            transfer_pres_share(corporation, majority_holder)
+            corporation.owner = majority_holder
+          else
+            @log << "#{corporation.name} has no president and enters receivership"
+            corporation.owner = nil
+          end
+        end
+
+        def move_assets(survivor, nonsurvivor)
+          # cash
+          nonsurvivor.spend(nonsurvivor.cash, survivor) if nonsurvivor.cash.positive?
+          # trains
+          survivor.trains.concat(nonsurvivor.trains)
+          nonsurvivor.trains.clear
+          # permits
+          @permits[survivor].concat(@permits[nonsurvivor])
+          @permits[survivor].uniq!
+          @permits[nonsurvivor] = @original_permits[nonsurvivor]
+          # charter flag
+          @chartered.delete(survivor)
+          @chartered.delete(nonsurvivor)
+          @log << "Moved assets from #{nonsurvivor.name} to #{survivor.name}"
+        end
+
+        def adjust_round_entities(originator, survivor, nonsurvivor)
+          s_index = @round.entities.find_index(survivor)
+          ns_index = @round.entities.find_index(nonsurvivor)
+
+          if originator == survivor && ns_index > s_index
+            # Non-survivor hasn't run yet.
+            # Remove it.
+            @round.entities.delete(nonsurvivor)
+          elsif originator == survivor && ns_index < s_index
+            # Non-survivor has run.
+            # Maker sure survivor ends turn
+            @merge_data[:skip] = true
+          elsif originator == nonsurvivor && ns_index > s_index
+            # Survivor has run
+            # make sure survivor ends turn
+            @merge_data[:skip] = true
+            # overwrite this spot with survivor
+            @round.entities[ns_index] = survivor
+          else
+            # Survivor hasn't run
+            # overwrite this spot with survivor
+            @round.entities[ns_index] = survivor
+            # delete old survivor spot
+            @round.entities.delete_at(s_index)
+          end
+        end
+
+        def merge_post_shares
+          merge_sanity_check
+          adjust_president(@merge_data[:corps].first, @merge_data[:holders])
+
+          if @merge_data[:type] == :refinance
+            @bank.spend((payment = @merge_data[:corps].first.original_par_price.price * 10), @merge_data[:corps].first)
+            @log << "#{@merge_data[:corps].first.name} is reorganized and receives #{format_currency(payment)}"
+            return
+          end
+
+          move_assets(@merge_data[:corps].first, @merge_data[:corps].last)
+          adjust_round_entities(@merge_data[:originator], @merge_data[:corps].first, @merge_data[:corps].last)
+
+          finish_merge unless move_tokens
+        end
+
+        def remove_colocated_tokens(survivor, nonsurvivor)
+          @hexes.each do |hex|
+            hex.tile.cities.each do |city|
+              next unless (city.tokened_by?(survivor) && city.tokened_by?(nonsurvivor)) ||
+                  (city.tokened_by?(nonsurvivor) && london_link?(survivor) && LONDON_TOKEN_HEXES.include?(hex.id))
+
+              token = city.tokens.find { |t| t&.corporation == nonsurvivor }
+              token.destroy!
+              @log << "Removed co-located #{nonsurvivor.name} token in #{hex.id} (#{hex.location_name})"
+            end
+          end
+        end
+
+        def merge_hex_list(corps)
+          corps.first.placed_tokens.reject { |t| t.city.hex.id == corps.first.coordinates }.map { |t| t.city.hex } +
+            corps.last.placed_tokens.map { |t| t.city.hex }
+        end
+
+        def move_tokens
+          # first completely delete non-survivor tokens co-located with survivor tokens
+          remove_colocated_tokens(@merge_data[:corps].first, @merge_data[:corps].last)
+
+          s_placed = @merge_data[:corps].first.placed_tokens.size
+          ns_placed = @merge_data[:corps].last.placed_tokens.size
+
+          if s_placed + ns_placed > 7
+            # player needs to remove excess tokens
+            @round.pending_removals << {
+              survivor: @merge_data[:corps].first,
+              nonsurvivor: @merge_data[:corps].last,
+              count: (s_placed + ns_placed) - 7,
+              hexes: merge_hex_list(@merge_data[:corps]),
+            }
+            return true
+          end
+          nil
+        end
+
+        def swap_token(survivor, nonsurvivor, old_token)
+          new_token = survivor.next_token
+          city = old_token.city
+          @log << "Replaced #{nonsurvivor.name} token in #{city.hex.id} with #{survivor.name} token"
+          new_token.place(city)
+          city.tokens[city.tokens.find_index(old_token)] = new_token
+          nonsurvivor.tokens.delete(old_token)
+        end
+
+        def reset_corporation!(corporation)
+          # un-IPO the corporation
+          corporation.share_price.corporations.delete(corporation)
+          corporation.share_price = nil
+          corporation.par_price = nil
+          corporation.ipoed = false
+          corporation.unfloat!
+          corporation.owner = nil
+
+          # get back to 3 tokens
+          corporation.tokens.clear
+          3.times { |_t| corporation.tokens << Token.new(corporation, price: 0) }
+
+          # remove trains
+          corporation.trains.clear
+
+          convert_to_full!(corporation)
+        end
+
+        def finish_merge
+          survivor = @merge_data[:corps].first
+          nonsurvivor = @merge_data[:corps].last
+          s_placed = survivor.placed_tokens
+          s_unplaced = survivor.unplaced_tokens
+          ns_placed = nonsurvivor.placed_tokens
+          ns_unplaced = nonsurvivor.unplaced_tokens
+
+          num_placed = s_placed.size + ns_placed.size
+          num_unplaced = [7 - num_placed, s_unplaced.size + ns_unplaced.size].min
+          total = num_placed + num_unplaced
+
+          raise GameError, 'too many placed tokens' if num_placed > 7
+
+          # increase survivor tokens if needed
+          (total - s_placed.size - s_unplaced.size).times { survivor.tokens << Token.new(survivor, price: 0) }
+
+          # swap the tokens
+          ns_placed.each { |t| swap_token(survivor, nonsurvivor, t) }
+
+          # allow the nonsurvivor to restart later
+          reset_corporation!(nonsurvivor)
+
+          # finally done with Merge/Acquire step
+          @round.active_step.pass!
+
+          # stop survivor from running after merge if
+          # other corp already ran or this is an acquisition
+          @skip_round[@merge_data[:corps].first] = true if @merge_data[:skip] || @merge_data[:type] == :acquisition
+          @log << "#{@merge_data[:corps].first.name} will not run" if @merge_data[:skip] && @merge_data[:type] == :merge
+
+          @merge_data.clear
+          @log << 'Merge complete'
+        end
       end
     end
   end
