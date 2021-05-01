@@ -7,6 +7,7 @@ def def_phase(name, train_limit, tiles)
     tiles: tiles,
     operating_rounds: 2,
     on: name == '2' ? nil : name,
+    status: name == '2' ? [] : ['can_buy_companies'],
   }
 end
 
