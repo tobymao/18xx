@@ -109,7 +109,7 @@ module View
           @@town_track_type[edges] ||=
             begin
               edge_a, edge_b = edges
-              [nil, :sharp, :gentle, :straight][(edge_a - edge_b).abs]
+              edges.any?(&:nil?) ? :straight : [nil, :sharp, :gentle, :straight][(edge_a - edge_b).abs]
             end
         end
 
@@ -135,14 +135,19 @@ module View
         def town_track_location(tile, town, edges)
           edge_a, = edges
 
-          loc = if town.exits.size == 2 && tile.stops.one?
+          loc = if town.loc == :center
+                  Base::CENTER
+                elsif town.exits.size == 2 && tile.stops.one?
                   SINGLE_STOP_TWO_EXIT_REGIONS[town_track_type(edges)][min_edge(edges)]
                 elsif town.exits.size == 2
                   MULTIPLE_STOP_TWO_EXIT_REGIONS[town_track_type(edges)][edge_a % 6]
                 elsif edge_a
                   EDGE_TOWN_REGIONS[edge_a]
+
+                # rubocop:disable Lint/DuplicateBranch
                 else
                   Base::CENTER
+                  # rubocop:enable Lint/DuplicateBranch
                 end
           [loc]
         end
@@ -152,7 +157,9 @@ module View
         def town_rotation_angles(tile, town, edges)
           edge_a, = edges
 
-          if center_town?(tile, town)
+          if town.loc == :center
+            town_rotation_angles_loc_center(tile, town)
+          elsif center_town?(tile, town)
             case town_track_type(edges)
             when :straight
               [min_edge(edges) * 60]
@@ -176,20 +183,27 @@ module View
             [(edge_a * 60) + delta]
           elsif edge_a
             [edge_a * 60]
+
+          # rubocop:disable Lint/DuplicateBranch
           else
-            # This town is in the center. Find the orientation of the town
-            # by looking at the first path connected to it
-            path = town.paths.first
-            if (edge = path.exits&.first)
-              [edge * 60]
+            town_rotation_angles_loc_center(tile, town)
+            # rubocop:enable Lint/DuplicateBranch
+          end
+        end
+
+        def town_rotation_angles_loc_center(tile, town)
+          # This town is in the center. Find the orientation of the town
+          # by looking at the first path connected to it
+          path = town.paths.first
+          if (edge = path.exits&.first)
+            [edge * 60]
+          else
+            other_stop = (path.stops - [town]).first
+            other_edge = tile.preferred_city_town_edges[other_stop] if other_stop
+            if other_edge
+              [other_edge * 60]
             else
-              other_stop = (path.stops - [town]).first
-              other_edge = tile.preferred_city_town_edges[other_stop] if other_stop
-              if other_edge
-                [other_edge * 60]
-              else
-                [0]
-              end
+              [0]
             end
           end
         end
@@ -203,7 +217,10 @@ module View
         def town_position(tile, town, edges)
           edge_a, = edges
 
-          if center_town?(tile, town)
+          if town.loc == :center
+            angles = [0]
+            positions = [0]
+          elsif center_town?(tile, town)
             angles, positions = case town_track_type(edges)
                                 when :straight
                                   [[edge_a * 60], [0]]
@@ -244,9 +261,12 @@ module View
                         else
                           [50]
                         end
+
+          # rubocop:disable Lint/DuplicateBranch
           else
             angles = [0]
             positions = [0]
+            # rubocop:enable Lint/DuplicateBranch
           end
 
           radians = angles.map { |a| a / 180 * Math::PI }
