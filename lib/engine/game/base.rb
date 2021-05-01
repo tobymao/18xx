@@ -1476,6 +1476,8 @@ module Engine
         extra_cities = new_tile.cities
         @cities.concat(extra_cities)
         extra_cities.each { |c| @_cities[c.id] = c }
+
+        new_tile
       end
 
       def find_share_price(price)
