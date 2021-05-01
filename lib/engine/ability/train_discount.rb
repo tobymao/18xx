@@ -10,7 +10,7 @@ module Engine
       def setup(discount:, trains:, closed_when_used_up: nil)
         @discount = discount
         @trains = trains
-        @closed_when_used_up = closed_when_used_up || false
+        @closed_when_used_up = closed_when_used_up
       end
 
       def discounted_price(train, price)

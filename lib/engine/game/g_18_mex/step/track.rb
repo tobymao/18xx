@@ -38,8 +38,7 @@ module Engine
 
             home_hex = @game.hex_by_id(entity.coordinates)
             if home_hex.tile.color == :white
-              return @game.upgrade_cost(home_hex.tile, home_hex, entity,
-                                        entity) <= entity.cash
+              return @game.upgrade_cost(home_hex.tile, home_hex, entity, entity) <= entity.cash
             end
 
             super

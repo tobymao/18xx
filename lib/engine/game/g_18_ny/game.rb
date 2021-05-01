@@ -226,7 +226,7 @@ module Engine
           @log << "#{@erie_canal_private.name}'s revenue reduced from #{format_currency(@erie_canal_private.revenue)}" \
                   " to #{format_currency(@erie_canal_private.revenue - 10)}"
           @erie_canal_private.revenue -= 10
-          return unless @erie_canal_private.revenue.zero?
+          return if @erie_canal_private.revenue.positive?
 
           @log << "#{@erie_canal_private.name} closes"
           @erie_canal_private.close!

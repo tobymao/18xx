@@ -18,12 +18,12 @@ module Engine
           end
 
           def active?
-            return false if @game.stagecoach_token.nil?
+            return false unless @game.stagecoach_token
             return false if @passed && !@game.privates_closed
 
             corporation = @game.stagecoach_token&.corporation
             # Remove token if privates are closed and it can't be exchanged
-            remove_stagecoach_token if @game.privates_closed && (corporation.nil? || !corporation.next_token)
+            remove_stagecoach_token if @game.privates_closed && !corporation&.next_token
 
             (@game.stagecoach_token && @game.privates_closed) ||
               (corporation == @game.round.current_operator && corporation.next_token)

@@ -45,7 +45,7 @@ module Engine
         return unless entity&.company?
 
         @game.abilities(entity, :train_discount, time: 'buying_train') do |ability|
-          return ability if train.nil? || ability.trains.include?(train.name)
+          return ability if !train || ability.trains.include?(train.name)
         end
 
         nil

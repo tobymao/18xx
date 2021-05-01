@@ -251,7 +251,7 @@ module Engine
       def border_cost_discount(entity, spender, border, cost, hex)
         entity.all_abilities.each do |a|
           next if (a.type != :tile_discount) ||
-            a.terrain.nil? ||
+            !a.terrain ||
             (border.type != a.terrain) ||
             (a.hexes && !a.hexes.include?(hex.name))
 
