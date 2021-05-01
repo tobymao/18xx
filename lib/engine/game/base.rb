@@ -102,6 +102,10 @@ module Engine
       GAME_END_CHECK = { bankrupt: :immediate, bank: :full_or }.freeze
 
       BANKRUPTCY_ALLOWED = true
+      # How many players does bankrupcy cause to end the game
+      # one - as soon as any player goes bankrupt
+      # all_but_one - all but one
+      BANKRUPTCY_ENDS_GAME_AFTER = :one
 
       BANK_CASH = 12_000
 
@@ -252,6 +256,23 @@ module Engine
         liquidation: 'Liquidation',
         repar: 'Par value after bankruptcy',
         ignore_one_sale: 'Ignore first share sold when moving price',
+      }.freeze
+
+      GAME_END_REASONS_TEXT = {
+        bankrupt: 'player is bankrupt', # this is prefixed in the UI
+        bank: 'The bank runs out of money',
+        stock_market: 'Corporation enters end game trigger on stock market',
+        final_train: 'The final train is purchased',
+        final_phase: 'The final phase is entered',
+        custom: 'Unknown custom reason', # override on subclasses
+      }.freeze
+
+      GAME_END_REASONS_TIMING_TEXT = {
+        immediate: 'Ends immediately',
+        current_round: 'End of the current round',
+        current_or: 'Ends at the next end of an OR',
+        full_or: 'Ends at the next end of a complete OR set',
+        one_more_full_or_set: 'Finish the current OR set, then end after the next complete OR set',
       }.freeze
 
       OPERATING_ROUND_NAME = 'Operating'
@@ -1693,6 +1714,15 @@ module Engine
         self.class::ASSIGNMENT_TOKENS[assignment]
       end
 
+      def bankruptcy_limit_reached?
+        case self.class::BANKRUPTCY_ENDS_GAME_AFTER
+        when :one
+          @players.any?(&:bankrupt)
+        when :all_but_one
+          @players.count { |p| !p.bankrupt } == 1
+        end
+      end
+
       private
 
       def init_graph
@@ -1980,6 +2010,8 @@ module Engine
             x, y = xy
             neighbor = coordinates[[hex.x + x, hex.y + y]]
             next unless neighbor
+
+            hex.all_neighbors[direction] = neighbor
             next if self.class::IMPASSABLE_HEX_COLORS.include?(neighbor.tile.color) && !neighbor.targeting?(hex)
             next if hex.tile.borders.any? { |border| border.edge == direction && border.type == :impassable }
 
@@ -2015,6 +2047,10 @@ module Engine
             reorder_players
             new_stock_round
           end
+      end
+
+      def clear_programmed_actions
+        @programmed_actions.clear
       end
 
       def check_programmed_actions
@@ -2250,10 +2286,6 @@ module Engine
 
       def bank_cash
         @bank.cash
-      end
-
-      def bankruptcy_limit_reached?
-        @players.any?(&:bankrupt)
       end
 
       def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)

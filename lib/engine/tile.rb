@@ -95,6 +95,7 @@ module Engine
                               visit_cost: params['visit_cost'],
                               route: params['route'],
                               format: params['format'],
+                              boom: params['boom'],
                               loc: params['loc'])
         cache << city
         city
@@ -106,6 +107,8 @@ module Engine
                               route: params['route'],
                               format: params['format'],
                               loc: params['loc'],
+                              boom: params['boom'],
+                              style: params['style'],
                               to_city: params['to_city'])
         cache << town
         town
@@ -131,7 +134,7 @@ module Engine
       when 'label'
         Part::Label.new(params)
       when 'upgrade'
-        Part::Upgrade.new(params['cost'], params['terrain']&.split('|'))
+        Part::Upgrade.new(params['cost'], params['terrain']&.split('|'), params['size'])
       when 'border'
         Part::Border.new(params['edge'], params['type'], params['cost'])
       when 'junction'

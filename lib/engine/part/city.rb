@@ -7,7 +7,7 @@ module Engine
   module Part
     class City < RevenueCenter
       attr_accessor :reservations
-      attr_reader :tokens, :extra_tokens
+      attr_reader :tokens, :extra_tokens, :boom
 
       def initialize(revenue, **opts)
         super
@@ -16,6 +16,7 @@ module Engine
         # Bull tokens are tokens in a city that don't go in a city slot
         @extra_tokens = []
         @reservations = []
+        @boom = opts[:boom]
       end
 
       def slots(all: false)

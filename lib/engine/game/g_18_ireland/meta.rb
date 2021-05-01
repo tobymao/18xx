@@ -8,8 +8,7 @@ module Engine
       module Meta
         include Game::Meta
 
-        DEV_STAGE = :prealpha
-        DEPENDS_ON = '1849' # probably only while in development
+        DEV_STAGE = :alpha
 
         GAME_DESIGNER = 'Ian Scrivins'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18Ireland'
