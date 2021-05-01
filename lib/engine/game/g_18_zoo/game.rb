@@ -1039,8 +1039,14 @@ module Engine
         end
 
         def event_rust_own_3s_4s!
-          @log << '-- Event: "3S long" and "4S" owned by current player are rusted! --' # TODO: only if any owned
-          # TODO: remove the 3S long and 4S owned by current player
+          entity = current_entity
+          return unless entity.corporation?
+
+          train = entity.trains.find(&:obsolete)
+          return unless train
+
+          rust(train)
+          @log << "'#{train.name}' owned by #{entity.name} rusts!"
         end
 
         def all_potential_upgrades(tile, tile_manifest: nil, selected_company: nil)
