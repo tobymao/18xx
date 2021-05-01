@@ -104,10 +104,17 @@
       "created_at": 1618411295
     },
     {
-      "type": "lay_tile",
+      "type": "pass",
       "entity": "GI",
       "entity_type": "corporation",
       "id": 13,
+      "created_at": 1618411295
+    },
+    {
+      "type": "lay_tile",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 14,
       "created_at": 1618411298,
       "hex": "K13",
       "tile": "9-1",
@@ -117,7 +124,7 @@
       "type": "buy_company",
       "entity": "GI",
       "entity_type": "corporation",
-      "id": 14,
+      "id": 15,
       "created_at": 1618411304,
       "company": "THAT_IS_MINE",
       "price": 2
@@ -126,7 +133,7 @@
       "type": "assign",
       "entity": "THAT_IS_MINE",
       "entity_type": "company",
-      "id": 15,
+      "id": 16,
       "created_at": 1618411311,
       "target": "K15",
       "target_type": "hex"
@@ -135,7 +142,7 @@
       "type": "lay_tile",
       "entity": "GI",
       "entity_type": "corporation",
-      "id": 16,
+      "id": 17,
       "created_at": 1618411314,
       "hex": "K15",
       "tile": "621-0",
@@ -145,7 +152,7 @@
       "type": "end_game",
       "entity": "GI",
       "entity_type": "corporation",
-      "id": 17,
+      "id": 18,
       "created_at": 1618411372
     }
   ],

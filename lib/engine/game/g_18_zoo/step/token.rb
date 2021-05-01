@@ -7,6 +7,14 @@ module Engine
       module Step
         class Token < Engine::Step::Token
           include Engine::Game::G18ZOO::ChooseAbilityOnOr
+
+          def can_place_token?(entity)
+            current_entity == entity &&
+              !@round.tokened &&
+              !(tokens = available_tokens(entity)).empty? &&
+              min_token_price(tokens) <= @game.buying_power(entity, use_tickets: true) &&
+              @game.graph.can_token?(entity)
+          end
         end
       end
     end

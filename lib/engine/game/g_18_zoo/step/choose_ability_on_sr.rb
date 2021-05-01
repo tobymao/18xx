@@ -131,16 +131,19 @@ module Engine
           @game.buy_train(corporation, train, train.price)
           @game.phase.buying_train!(corporation, train)
 
-          ability = Engine::G18ZOO::Ability::DisableTrain.new(type: 'disable_train', train: train,
-                                                              description: "Whatsup - #{train.id} disabled")
+          ability = Engine::G18ZOO::Ability::DisableTrain.new(
+            type: 'disable_train', train: train,
+            description: "Whatsup: #{train.id} disabled",
+            desc_detail: "Train #{train.id} got using \"Whatsup\"; disabled for the next OR"
+          )
           corporation.add_ability(ability)
+
+          @log << "#{current_entity.name} uses \"Whatsup\" for #{corporation.name}, "\
+              "paying #{@game.format_currency(train.price)} to buy a #{train.name}"
 
           prev = corporation.share_price.price
           @game.stock_market.move_right(corporation)
           @game.log_share_price(corporation, prev, '(whatsup bonus)')
-
-          @log << "#{current_entity.name} uses \"Whatsup\" for #{corporation.name}, "\
-              "paying #{@game.format_currency(train.price)} to buy a #{train.name}"
 
           @game.whatsup.close!
         end

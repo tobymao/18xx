@@ -155,6 +155,13 @@
       "created_at": 1616540903
     },
     {
+      "type": "pass",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 18,
+      "created_at": 1616540903
+    },
+    {
       "type": "buy_company",
       "entity": "PB",
       "entity_type": "corporation",
@@ -188,6 +195,13 @@
       "train": "3S-0",
       "price": 12,
       "variant": "3S"
+    },
+    {
+      "type": "pass",
+      "entity": "PB",
+      "entity_type": "corporation",
+      "id": 23,
+      "created_at": 1618387945
     },
     {
       "type": "pass",
