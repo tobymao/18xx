@@ -4,127 +4,88 @@ module Engine
   module Game
     module G1868WY
       module Entities
-        BASE_CORPORATION = {
-          float_percent: 20,
-          tokens: [0, 40, 60, 80],
-          always_market_price: true,
-          reservation_color: nil,
-          abilities: [],
-        }.freeze
+        CORPORATION_RESERVATION_COLOR = '#c6e9af'
+
+        def self.def_corporation(**kwargs)
+          {
+            float_percent: 20,
+            tokens: [0, 40, 60, 80],
+            always_market_price: true,
+            logo: "1868_wy/#{kwargs[:sym]}",
+            simple_logo: "1868_wy/#{kwargs[:sym]}.alt",
+            reservation_color: CORPORATION_RESERVATION_COLOR,
+          }.merge(kwargs).freeze
+        end
 
         CORPORATIONS = [
-          BASE_CORPORATION.merge(
-            {
-              sym: 'BH',
-              name: 'Bighorn Railroad Company',
-              logo: '1868_wy/BH',
-              simple_logo: '1868_wy/BH.alt',
-              coordinates: 'C11',
-              color: '#000000',
-            }
+          def_corporation(
+            sym: 'BH',
+            name: 'Bighorn Railroad Company',
+            coordinates: 'C11',
+            color: '#000000',
           ),
-          BASE_CORPORATION.merge(
-            {
-              sym: 'C&N',
-              name: 'Cheyenne & Northern Railway',
-              logo: '1868_wy/CnN',
-              simple_logo: '1868_wy/CnN.alt',
-              coordinates: 'D22',
-              color: '#c00000',
-            }
+          def_corporation(
+            sym: 'C&N',
+            name: 'Cheyenne & Northern Railway',
+            coordinates: 'D22',
+            color: '#c00000',
           ),
-          BASE_CORPORATION.merge(
-            {
-              sym: 'CC',
-              name: 'Carbon Cutoff Railway',
-              logo: '1868_wy/CC',
-              simple_logo: '1868_wy/CC.alt',
-              coordinates: 'N2',
-              color: '#9A9A9D',
-              text_color: 'black',
-            }
+          def_corporation(
+            sym: 'CC',
+            name: 'Carbon Cutoff Railway',
+            coordinates: 'N2',
+            color: '#9A9A9D',
+            text_color: 'black',
           ),
-          BASE_CORPORATION.merge(
-            {
-              sym: 'DPR',
-              name: 'Denver Pacific Railway and Telegraph Company',
-              logo: '1868_wy/DPR',
-              simple_logo: '1868_wy/DPR.alt',
-              coordinates: '',
-              color: '#4D2674',
-            }
+          def_corporation(
+            sym: 'DPR',
+            name: 'Denver Pacific Railway and Telegraph Company',
+            coordinates: '',
+            color: '#4D2674',
           ),
-          BASE_CORPORATION.merge(
-            {
-              sym: 'FEMV',
-              name: 'Fremont, Elkhorn & Missouri Valley Railroad',
-              logo: '1868_wy/FEMV',
-              simple_logo: '1868_wy/FEMV.alt',
-              coordinates: 'I33',
-              color: '#5E0000',
-            }
+          def_corporation(
+            sym: 'FEMV',
+            name: 'Fremont, Elkhorn & Missouri Valley Railroad',
+            coordinates: 'I33',
+            color: '#5E0000',
           ),
-          BASE_CORPORATION.merge(
-            {
-              sym: 'LNP',
-              name: 'Laramie, North Park and Pacific Railroad and Telegraph Company',
-              logo: '1868_wy/LNP',
-              simple_logo: '1868_wy/LNP.alt',
-              coordinates: 'O25',
-              color: '#FFC425',
-              text_color: 'black',
-            }
+          def_corporation(
+            sym: 'LNP',
+            name: 'Laramie, North Park and Pacific Railroad and Telegraph Company',
+            coordinates: 'O25',
+            color: '#FFC425',
+            text_color: 'black',
           ),
-          BASE_CORPORATION.merge(
-            {
-              sym: 'OSL',
-              name: 'Oregon Short Line Railroad',
-              logo: '1868_wy/OSL',
-              simple_logo: '1868_wy/OSL.alt',
-              coordinates: 'L8',
-              color: '#492F24',
-            }
+          def_corporation(
+            sym: 'OSL',
+            name: 'Oregon Short Line Railroad',
+            coordinates: 'L8',
+            color: '#492F24',
           ),
-          BASE_CORPORATION.merge(
-            {
-              sym: 'RCL',
-              name: 'Rapid City, Black Hills & Western Railroad Company',
-              logo: '1868_wy/RCL',
-              simple_logo: '1868_wy/RCL.alt',
-              coordinates: 'D34',
-              color: '#FFFFFF',
-              text_color: 'black',
-            }
+          def_corporation(
+            sym: 'RCL',
+            name: 'Rapid City, Black Hills & Western Railroad Company',
+            coordinates: 'D34',
+            color: '#FFFFFF',
+            text_color: 'black',
           ),
-          BASE_CORPORATION.merge(
-            {
-              sym: 'UP',
-              name: 'Union Pacific Railroad',
-              logo: '1868_wy/UP',
-              simple_logo: '1868_wy/UP.alt',
-              coordinates: 'O29',
-              color: '#006D9C',
-            }
+          def_corporation(
+            sym: 'UP',
+            name: 'Union Pacific Railroad',
+            coordinates: 'O29',
+            color: '#006D9C',
           ),
-          BASE_CORPORATION.merge(
-            {
-              sym: 'WNW',
-              name: 'Wyoming & North Western Railway',
-              logo: '1868_wy/WNW',
-              simple_logo: '1868_wy/WNW.alt',
-              coordinates: 'I11',
-              color: '#004D95',
-            }
+          def_corporation(
+            sym: 'WNW',
+            name: 'Wyoming & North Western Railway',
+            coordinates: 'I11',
+            color: '#004D95',
           ),
-          BASE_CORPORATION.merge(
-            {
-              sym: 'WYC',
-              name: 'Wyoming Central Railway',
-              logo: '1868_wy/WYC',
-              simple_logo: '1868_wy/WYC.alt',
-              coordinates: 'I23',
-              color: '#f58121',
-            }
+          def_corporation(
+            sym: 'WYC',
+            name: 'Wyoming Central Railway',
+            coordinates: 'I23',
+            color: '#f58121',
           ),
         ].freeze
 
