@@ -77,7 +77,18 @@ module View
           else
             game_title = dest
             hex_or_tile_ids = hexes_or_tiles.split('+')
-            hex_or_tile_ids.flat_map { |id| render_individual_tile_from_game(game_title, id) }
+
+            if (game_class = load_game_class(game_title))
+              players = Array.new(game_class::PLAYER_RANGE.max) { |n| "Player #{n + 1}" }
+              game = game_class.new(players)
+
+              [
+                h(:h2, game_class.full_title),
+                *hex_or_tile_ids.flat_map { |id| render_individual_tile_from_game(game, id) },
+              ]
+            else
+              []
+            end
           end
 
         h('div#tiles', rendered)
@@ -101,13 +112,7 @@ module View
       end
     end
 
-    def render_individual_tile_from_game(game_title, hex_or_tile_id)
-      game_class = load_game_class(game_title)
-      return [] unless game_class
-
-      players = Array.new(game_class::PLAYER_RANGE.max) { |n| "Player #{n + 1}" }
-      game = game_class.new(players)
-
+    def render_individual_tile_from_game(game, hex_or_tile_id)
       id, rotation = hex_or_tile_id.split('-')
       rotations = rotation ? [rotation.to_i] : @rotations
 
@@ -122,18 +127,15 @@ module View
           [t, id, id]
         end
 
-      h(:div, [
-          h(:h2, game_class.full_title),
-          *render_tile_blocks(
-            name,
-            layout: game.class::LAYOUT,
-            tile: tile,
-            location_name: tile.location_name || @location_name,
-            scale: 3.0,
-            rotations: rotations,
-            hex_coordinates: hex_coordinates,
-          ),
-        ])
+      render_tile_blocks(
+        name,
+        layout: game.class::LAYOUT,
+        tile: tile,
+        location_name: tile.location_name || @location_name,
+        scale: 3.0,
+        rotations: rotations,
+        hex_coordinates: hex_coordinates,
+      )
     end
 
     def map_hexes_and_tile_manifest_for(game_class)
