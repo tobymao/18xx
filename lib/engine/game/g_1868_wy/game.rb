@@ -43,6 +43,20 @@ module Engine
           ['', '20b', '30b', '40o', '50o', '55y', '60y'],
         ].freeze
 
+        LATE_CORPORATIONS = %w[C&N DPR FEMV LNP OSL].freeze
+        EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+          'all_corps_available' => ['All Corporations Available',
+                                    'C&N, DPR, FEMV, LNP, OSL are now available to start'],
+          'full_capitalization' =>
+            ['Full Capitalization', 'Railroads now float at 60% and receive full capitalization'],
+        ).freeze
+        STATUS_TEXT = Base::STATUS_TEXT.merge(
+          'all_corps_available' => ['All Corporations Available',
+                                    'C&N, DPR, FEMV, LNP, OSL are available to start'],
+          'full_capitalization' =>
+            ['Full Capitalization', 'Railroads float at 60% and receive full capitalization'],
+        ).freeze
+
         def init_tiles
           super.each do |tile|
             tile.towns.each { |town| town.style = :dot }
@@ -57,6 +71,37 @@ module Engine
 
         def ipo_name(_entity = nil)
           'Treasury'
+        end
+
+        def setup
+          @late_corps, @corporations = @corporations.partition { |c| LATE_CORPORATIONS.include?(c.id) }
+          @late_corps.each { |corp| corp.reservation_color = nil }
+        end
+
+        def event_all_corps_available!
+          @late_corps.each { |corp| corp.reservation_color = CORPORATION_RESERVATION_COLOR }
+          @corporations.concat(@late_corps)
+          @log << '-- All corporations now available --'
+        end
+
+        def event_full_capitalization!
+          @log << '-- Event: Railroads now float at 60% and receive full capitalization --'
+          @corporations.each do |corporation|
+            corporation.capitalization = :full
+            corporation.float_percent = 60
+          end
+        end
+
+        def float_corporation(corporation)
+          if @phase.status.include?('full_capitalization')
+            bundle = ShareBundle.new(corporation.shares_of(corporation))
+            @share_pool.transfer_shares(bundle, @share_pool)
+            @log << "#{corporation.name}'s remaining shares are transferred to the Market"
+          end
+
+          super
+
+          corporation.capitalization = :incremental
         end
       end
     end
