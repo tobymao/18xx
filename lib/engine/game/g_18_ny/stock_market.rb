@@ -7,13 +7,10 @@ module Engine
     module G18NY
       class StockMarket < Engine::StockMarket
         def move_up(corporation)
-          if top_row?(corporation)
-            move_right(corporation)
-            move_down(corporation)
-            return
-          end
+          return super unless top_row?(corporation)
 
-          super
+          move_right(corporation)
+          move_down(corporation)
         end
 
         def top_row?(corporation)
