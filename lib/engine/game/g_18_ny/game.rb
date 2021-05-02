@@ -73,7 +73,6 @@ module Engine
             train_limit: { minor: 2, major: 4 },
             tiles: [:yellow],
             operating_rounds: 1,
-            status: %w[float_20],
           },
           {
             name: '4H',
@@ -81,7 +80,7 @@ module Engine
             train_limit: { minor: 2, major: 4 },
             tiles: %i[yellow green],
             operating_rounds: 2,
-            status: %w[float_30 can_buy_companies],
+            status: %w[can_buy_companies],
           },
           {
             name: '6H',
@@ -89,7 +88,7 @@ module Engine
             train_limit: { minor: 1, major: 3 },
             tiles: %i[yellow green],
             operating_rounds: 2,
-            status: %w[float_40 can_buy_companies],
+            status: %w[can_buy_companies],
           },
           {
             name: '12H',
@@ -97,7 +96,6 @@ module Engine
             train_limit: { minor: 1, major: 2 },
             tiles: %i[yellow green brown],
             operating_rounds: 3,
-            status: %w[float_50],
           },
           {
             name: '5DE',
@@ -105,7 +103,6 @@ module Engine
             train_limit: { major: 2 },
             tiles: %i[yellow green brown],
             operating_rounds: 3,
-            status: %w[fullcap float_60],
           },
           {
             name: 'D',
@@ -113,19 +110,18 @@ module Engine
             train_limit: { major: 2 },
             tiles: %i[yellow green brown gray],
             operating_rounds: 3,
-            status: %w[fullcap float_60],
           },
         ].freeze
 
         TRAINS = [{ name: '2H', num: 11, distance: 2, price: 100, rusts_on: '6H' },
-                  { name: '4H', num: 6, distance: 4, price: 200, rusts_on: '5DE' },
-                  { name: '6H', num: 4, distance: 6, price: 300, rusts_on: 'D' },
+                  { name: '4H', num: 6, distance: 4, price: 200, rusts_on: '5DE', events: [{ type: 'float_30' }] },
+                  { name: '6H', num: 4, distance: 6, price: 300, rusts_on: 'D', events: [{ type: 'float_40' }] },
                   {
                     name: '12H',
                     num: 2,
                     distance: 12,
                     price: 600,
-                    events: [{ type: 'close_companies' }, { type: 'nyc_formation' }],
+                    events: [{ type: 'float_50' }, { type: 'close_companies' }, { type: 'nyc_formation' }],
                   },
                   { name: '12H', num: 1, distance: 12, price: 600, events: [{ type: 'capitalization_round' }] },
                   {
@@ -133,8 +129,20 @@ module Engine
                     num: 2,
                     distance: [{ nodes: %w[city offboard town], pay: 5, visit: 99, multiplier: 2 }],
                     price: 800,
+                    events: [{ type: 'float_60' }],
                   },
                   { name: 'D', num: 20, distance: 99, price: 1000 }].freeze
+
+        EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+          float_30: ['30% to Float', 'Companies must have 30% of their shares sold to float'],
+          float_40: ['40% to Float', 'Companies must have 40% of their shares sold to float'],
+          float_50: ['50% to Float', 'Companies must have 50% of their shares sold to float'],
+          float_60:
+            ['60% to Float', 'Companies must have 60% of their shares sold to float and receive full capitalization'],
+          nyc_formation: ['NYC Formation', 'Triggers the formation of the NYC'],
+          capitalization_round:
+            ['Capitalization Round', 'Special Capitalization Round before next Stock Round'],
+        ).freeze
 
         ERIE_CANAL_ICON = 'canal'
 
@@ -186,6 +194,42 @@ module Engine
           @privates_closed = true
         end
 
+        def event_float_30!
+          @log << "-- Event: #{EVENTS_TEXT['float_30'][1]} --"
+          non_floated_companies { |c| c.float_percent = 30 }
+        end
+
+        def event_float_40!
+          @log << "-- Event: #{EVENTS_TEXT['float_40'][1]} --"
+          non_floated_companies { |c| c.float_percent = 40 }
+        end
+
+        def event_float_50!
+          @log << "-- Event: #{EVENTS_TEXT['float_50'][1]} --"
+          non_floated_companies { |c| c.float_percent = 50 }
+        end
+
+        def event_float_60!
+          @log << "-- Event: #{EVENTS_TEXT['float_60'][1]} --"
+          non_floated_companies do |c|
+            c.float_percent = 60
+            c.capitalization = :full
+            c.spend(c.cash, @bank) if c.cash.positive?
+          end
+        end
+
+        def event_nyc_formation!
+          @log << "-- Event: #{EVENTS_TEXT['nyc_formation'][1]} --"
+        end
+
+        def event_capitalization_round!
+          @log << "-- Event: #{EVENTS_TEXT['capitalization_round'][1]} --"
+        end
+
+        def non_floated_companies
+          @corporations.each { |c| yield c unless c.floated? }
+        end
+
         # Stock round logic
 
         def issuable_shares(entity)
@@ -217,6 +261,15 @@ module Engine
 
         def can_hold_above_limit?(_entity)
           true
+        end
+
+        def float_corporation(corporation)
+          super
+          # TODO: verify NYC will not be affected
+          return unless corporation.capitalization == :full
+
+          @log << 'Remaining shares placed in the market'
+          @share_pool.transfer_shares(ShareBundle.new(corporation.shares_of(corporation)), @share_pool)
         end
 
         # Operating round logic
