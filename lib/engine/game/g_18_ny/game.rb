@@ -37,6 +37,8 @@ module Engine
 
         ALL_COMPANIES_ASSIGNABLE = true
 
+        TRACK_RESTRICTION = :permissive
+
         # Two lays with one being an upgrade. Tile lays cost 20
         TILE_LAYS = [
           { lay: true, upgrade: true, cost: 20, cannot_reuse_same_hex: true },
