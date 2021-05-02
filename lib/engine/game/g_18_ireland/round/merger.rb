@@ -29,13 +29,13 @@ module Engine
             return if action.free?
             return if active_step
 
-            @game.players.each(&:unpass!)
             next_entity!
           end
 
           def next_entity!
             next_entity_index! if @entities.any?
-            return if @entity_index.zero?
+
+            return if @entities.all?(&:passed?)
 
             @steps.each(&:unpass!)
             @steps.each(&:setup)
