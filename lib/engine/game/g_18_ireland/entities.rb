@@ -408,7 +408,7 @@ module Engine
           {
             float_percent: 40,
             sym: 'DER',
-            name: 'Dundalt & Enniskillen Railway',
+            name: 'Dundalk & Enniskillen Railway',
             logo: '18_ireland/DER',
             tokens: [0],
             shares: [40, 20, 20, 20],

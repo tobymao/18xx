@@ -173,7 +173,7 @@ module Engine
           },
           {
             name: 'D',
-            num: 1,
+            num: 29, # 7 majors @ 2, 15 minors @ 1
             distance: 99,
             price: 770,
             discount: {
