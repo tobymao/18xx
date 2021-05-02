@@ -51,7 +51,7 @@ module Engine
                .reject(&:blocks_lay)
         end
 
-        def remove_border_calculate_cost!(tile, entity)
+        def remove_border_calculate_cost!(tile, entity, spender)
           hex = tile.hex
           types = []
           total_cost = tile.borders.dup.sum do |border|
@@ -63,7 +63,7 @@ module Engine
 
             tile.borders.delete(border)
             types << border.type
-            cost - border_cost_discount(entity, border, hex)
+            cost - border_cost_discount(entity, spender, border, cost, hex)
           end
 
           # If we use the Glasgow and South-Western Railway private, it removes the border cost of one estuary crossing

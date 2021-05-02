@@ -1244,7 +1244,7 @@ module Engine
         @graph
       end
 
-      def upgrade_cost(tile, hex, entity)
+      def upgrade_cost(tile, hex, entity, spender)
         ability = entity.all_abilities.find do |a|
           a.type == :tile_discount &&
             (!a.hexes || a.hexes.include?(hex.name))
@@ -1253,14 +1253,14 @@ module Engine
         tile.upgrades.sum do |upgrade|
           discount = ability && upgrade.terrains.uniq == [ability.terrain] ? ability.discount : 0
 
-          log_cost_discount(entity, ability, discount)
+          log_cost_discount(spender, ability, discount)
 
           total_cost = upgrade.cost - discount
           total_cost
         end
       end
 
-      def tile_cost_with_discount(_tile, hex, entity, cost)
+      def tile_cost_with_discount(_tile, hex, entity, spender, cost)
         ability = entity.all_abilities.find do |a|
           a.type == :tile_discount &&
             !a.terrain &&
@@ -1270,15 +1270,15 @@ module Engine
         return cost unless ability
 
         discount = [cost, ability.discount].min
-        log_cost_discount(entity, ability, discount)
+        log_cost_discount(spender, ability, discount)
 
         cost - discount
       end
 
-      def log_cost_discount(entity, ability, discount)
+      def log_cost_discount(spender, ability, discount)
         return unless discount.positive?
 
-        @log << "#{entity.name} receives a discount of "\
+        @log << "#{spender.name} receives a discount of "\
                 "#{format_currency(discount)} from "\
                 "#{ability.owner.name}"
       end

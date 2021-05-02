@@ -5,8 +5,8 @@ require_relative 'base'
 module Engine
   module Action
     class PlaceToken < Base
-      attr_reader :city, :slot, :token
-      attr_accessor :cost
+      attr_reader :city, :slot
+      attr_accessor :cost, :token
 
       def initialize(entity, city:, slot:, cost: nil, tokener: nil, token_type: nil)
         super(entity)

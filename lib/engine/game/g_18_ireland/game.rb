@@ -387,7 +387,7 @@ module Engine
           @narrow_connected_paths.clear
         end
 
-        def upgrade_cost(old_tile, hex, entity)
+        def upgrade_cost(old_tile, hex, entity, spender)
           return 0 if hex.tile.paths.all? { |path| path.track == :narrow }
 
           super

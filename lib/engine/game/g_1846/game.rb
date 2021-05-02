@@ -507,7 +507,7 @@ module Engine
           ], round_num: round_num)
         end
 
-        def upgrade_cost(tile, hex, entity)
+        def upgrade_cost(tile, hex, entity, spender)
           [TILE_COST, super].max
         end
 

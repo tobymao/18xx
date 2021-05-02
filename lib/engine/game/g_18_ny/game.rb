@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
-require_relative 'map'
 require_relative 'meta'
+require_relative '../base'
+require_relative 'map'
 require_relative 'entities'
 
 module Engine
@@ -11,6 +12,9 @@ module Engine
         include_meta(G18NY::Meta)
         include G18NY::Entities
         include G18NY::Map
+
+        attr_reader :privates_closed
+        attr_accessor :stagecoach_token
 
         CAPITALIZATION = :incremental
         HOME_TOKEN_TIMING = :operate
@@ -37,6 +41,7 @@ module Engine
           { lay: true, upgrade: true, cost: 20, cannot_reuse_same_hex: true },
           { lay: true, upgrade: :not_if_upgraded, cost: 20, cannot_reuse_same_hex: true },
         ].freeze
+        TILE_COST = 20
 
         TRACK_RESTRICTION = :permissive
 
@@ -119,7 +124,7 @@ module Engine
                     num: 2,
                     distance: 12,
                     price: 600,
-                    events: [{ type: 'remove_corporations' }, { type: 'nyc_formation' }],
+                    events: [{ type: 'close_companies' }, { type: 'nyc_formation' }],
                   },
                   { name: '12H', num: 1, distance: 12, price: 600, events: [{ type: 'capitalization_round' }] },
                   {
@@ -130,11 +135,52 @@ module Engine
                   },
                   { name: 'D', num: 20, distance: 99, price: 1000 }].freeze
 
+        ERIE_CANAL_ICON = 'canal'
+
+        def setup
+          @erie_canal_private = @companies.find { |c| c.id == 'EC' }
+          @stagecoach_token =
+            Token.new(nil, logo: '/logos/18_ny/stagecoach.svg', simple_logo: '/logos/18_ny/stagecoach.alt.svg')
+        end
+
+        def new_auction_round
+          Round::Auction.new(self, [
+            G18NY::Step::CompanyPendingPar,
+            Engine::Step::WaterfallAuction,
+          ])
+        end
+
         def stock_round
           Round::Stock.new(self, [
             G18NY::Step::BuySellParShares,
           ])
         end
+
+        def operating_round(round_num)
+          Round::Operating.new(self, [
+            G18NY::Step::StagecoachExchange,
+            Engine::Step::BuyCompany,
+            G18NY::Step::SpecialTrack,
+            G18NY::Step::SpecialToken,
+            G18NY::Step::Track,
+            Engine::Step::Token,
+            Engine::Step::Route,
+            Engine::Step::Dividend,
+            Engine::Step::DiscardTrain,
+            Engine::Step::SpecialBuyTrain,
+            Engine::Step::BuyTrain,
+            [Engine::Step::BuyCompany, { blocks: true }],
+          ], round_num: round_num)
+        end
+
+        # Events
+
+        def event_close_companies!
+          super
+          @privates_closed = true
+        end
+
+        # Stock round logic
 
         def issuable_shares(entity)
           return [] if !entity.corporation? || entity.type != :major
@@ -165,6 +211,44 @@ module Engine
 
         def can_hold_above_limit?(_entity)
           true
+        end
+
+        # Operating round logic
+
+        def operating_order
+          minors, majors = @corporations.select(&:floated?).sort.partition { |c| c.type == :minor }
+          minors + majors
+        end
+
+        def tile_lay(_hex, old_tile, _new_tile)
+          return unless old_tile.icons.any? { |icon| icon.name == ERIE_CANAL_ICON }
+
+          @log << "#{@erie_canal_private.name}'s revenue reduced from #{format_currency(@erie_canal_private.revenue)}" \
+                  " to #{format_currency(@erie_canal_private.revenue - 10)}"
+          @erie_canal_private.revenue -= 10
+          return if @erie_canal_private.revenue.positive?
+
+          @log << "#{@erie_canal_private.name} closes"
+          @erie_canal_private.close!
+        end
+
+        def upgrade_cost(tile, _hex, entity, spender)
+          terrain_cost = tile.upgrades.sum(&:cost)
+          discounts = 0
+
+          # Tile discounts must be activated
+          if entity.company? && (ability = entity.all_abilities.find { |a| a.type == :tile_discount })
+            discounts = tile.upgrades.sum do |upgrade|
+              next unless upgrade.terrains.include?(ability.terrain)
+
+              discount = [upgrade.cost, ability.discount].min
+              log_cost_discount(spender, ability, discount) if discount.positive?
+              discount
+            end
+          end
+
+          terrain_cost -= TILE_COST if terrain_cost.positive?
+          terrain_cost - discounts
         end
       end
     end

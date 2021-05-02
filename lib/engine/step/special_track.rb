@@ -33,11 +33,8 @@ module Engine
       end
 
       def round_state
-        super.merge(
-          {
-            teleported: nil,
-          }
-        )
+        state = @round.respond_to?(:teleported) ? {} : { teleported: nil }
+        state.merge(super)
       end
 
       def process_lay_tile(action)
@@ -71,7 +68,11 @@ module Engine
         end
 
         if ability.type == :tile_lay
-          ability.owner.close! unless ability.count.positive? || !ability.closed_when_used_up
+          if ability.count.zero? && ability.closed_when_used_up
+            company = ability.owner
+            @log << "#{company.name} closes"
+            company.close!
+          end
           @company = ability.count.positive? ? action.entity : nil if ability.must_lay_together
         end
 
