@@ -213,9 +213,10 @@ module Engine
       EBUY_SELL_MORE_THAN_NEEDED_LIMITS_DEPOT_TRAIN = false
 
       # when is the home token placed? on...
-      # operate
+      # par
       # float
-      # operating_round // 1889 places on first operating round
+      # operating_round (start of next OR)
+      # operate (corporation's first OR turn)
       HOME_TOKEN_TIMING = :operate
 
       DISCARDED_TRAINS = :discard # discard or remove
@@ -1486,16 +1487,17 @@ module Engine
       end
 
       def after_par(corporation)
-        return unless corporation.capitalization == :incremental
+        if corporation.capitalization == :incremental
+          all_companies_with_ability(:shares) do |company, ability|
+            next unless corporation.name == ability.shares.first.corporation.name
 
-        all_companies_with_ability(:shares) do |company, ability|
-          next unless corporation.name == ability.shares.first.corporation.name
-
-          amount = ability.shares.sum { |share| corporation.par_price.price * share.num_shares }
-          @bank.spend(amount, corporation)
-          @log << "#{corporation.name} receives #{format_currency(amount)}
+            amount = ability.shares.sum { |share| corporation.par_price.price * share.num_shares }
+            @bank.spend(amount, corporation)
+            @log << "#{corporation.name} receives #{format_currency(amount)}
                    from #{company.name}"
+          end
         end
+
         place_home_token(corporation) if self.class::HOME_TOKEN_TIMING == :par
       end
 
