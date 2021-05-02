@@ -27,7 +27,7 @@ module Engine
         POOL_SHARE_DROP = :each
         CAPITALIZATION = :incremental
         SELL_BUY_ORDER = :sell_buy
-        HOME_TOKEN_TIMING = :float
+        HOME_TOKEN_TIMING = :par
 
         MUST_EMERGENCY_ISSUE_BEFORE_EBUY = true
         MUST_BUY_TRAIN = :always
