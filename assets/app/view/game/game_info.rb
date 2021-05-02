@@ -226,7 +226,6 @@ module View
                             else
                               "#{event_name}(on #{ordinal(index + 1)} train)"
                             end
-              event_text << event_name unless event_text.include?(event_name)
             end
           end
           event_text = event_text.flat_map { |e| [h('span.nowrap', e), ', '] }[0..-2]
