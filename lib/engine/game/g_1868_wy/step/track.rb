@@ -1,0 +1,29 @@
+# frozen_string_literal: true
+
+require_relative '../../../step/track'
+
+module Engine
+  module Game
+    module G1868WY
+      module Step
+        class Track < Engine::Step::Track
+          def lay_tile_action(action)
+            super
+            @game.spend_tile_lay_points(action)
+          end
+
+          def can_lay_tile?(entity)
+            return true if super
+
+            # if 1 track point remains and P7 can be bought, block in the track step
+            (corporation = entity).corporation? &&
+              @game.phase.status.include?('can_buy_companies') &&
+              @game.p7_company.owned_by_player? &&
+              @game.buying_power(entity).positive? &&
+              @game.track_points_available(corporation) == (@game.class::YELLOW_POINT_COST - 1)
+          end
+        end
+      end
+    end
+  end
+end
