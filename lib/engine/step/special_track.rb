@@ -57,6 +57,7 @@ module Engine
           lay_tile_action(action, spender: owner)
         else
           lay_tile(action, spender: owner)
+          ability.laid_hexes << action.hex.id
           @round.laid_hexes << action.hex
           check_connect(action, ability)
         end
@@ -165,7 +166,7 @@ module Engine
         return if ability.hexes.size < 2
         return if !ability.start_count || ability.start_count < 2 || ability.start_count == ability.count
 
-        paths = ability.hexes.flat_map do |hex_id|
+        paths = ability.laid_hexes.flat_map do |hex_id|
           @game.hex_by_id(hex_id).tile.paths
         end.uniq
 

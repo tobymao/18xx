@@ -7,7 +7,7 @@ module Engine
     class TileLay < Base
       attr_reader :hexes, :tiles, :free, :discount, :special, :connect, :blocks,
                   :reachable, :must_lay_together, :cost, :must_lay_all, :closed_when_used_up,
-                  :consume_tile_lay
+                  :consume_tile_lay, :laid_hexes
 
       def setup(tiles:, hexes: nil, free: false, discount: nil, special: nil,
                 connect: nil, blocks: nil, reachable: nil, must_lay_together: nil, cost: 0,
@@ -25,6 +25,7 @@ module Engine
         @must_lay_all = @must_lay_together && !!must_lay_all
         @cost = cost
         @consume_tile_lay = consume_tile_lay || false
+        @laid_hexes = []
       end
     end
   end
