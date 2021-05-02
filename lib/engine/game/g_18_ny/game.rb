@@ -4,6 +4,7 @@ require_relative 'meta'
 require_relative '../base'
 require_relative 'map'
 require_relative 'entities'
+require_relative 'stock_market'
 
 module Engine
   module Game
@@ -141,6 +142,11 @@ module Engine
           @erie_canal_private = @companies.find { |c| c.id == 'EC' }
           @stagecoach_token =
             Token.new(nil, logo: '/logos/18_ny/stagecoach.svg', simple_logo: '/logos/18_ny/stagecoach.alt.svg')
+        end
+
+        def init_stock_market
+          G18NY::StockMarket.new(game_market, self.class::CERT_LIMIT_TYPES,
+                                 multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
         end
 
         def new_auction_round
