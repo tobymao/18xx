@@ -60,6 +60,7 @@ module Engine
             if (revenue + entity.cash).negative?
               @log << "#{entity.name} loses #{@game.format_currency(-revenue)} and cannot pay out of treasury"
               entity.spend(entity.cash, @game.bank) if entity.cash.positive? # zero out cash
+              pass!
               if entity.minor?
                 @game.close_mine!(entity)
               else
@@ -107,6 +108,18 @@ module Engine
             @game.concession_unpend!(entity) if @game.concession_pending?(entity) && entity == @game.qlb
 
             pass!
+          end
+
+          def log_run_payout(entity, kind, revenue, action, payout)
+            unless Dividend::DIVIDEND_TYPES.include?(kind)
+              @log << "#{entity.name} runs for #{@game.format_currency(revenue)} and pays #{action.kind}"
+            end
+
+            if payout[:corporation].positive?
+              @log << "#{entity.name} withholds #{@game.format_currency(payout[:corporation])}"
+            elsif payout[:per_share].zero? && !revenue.negative?
+              @log << "#{entity.name} does not run"
+            end
           end
 
           # shares in IPO and pool never pay
