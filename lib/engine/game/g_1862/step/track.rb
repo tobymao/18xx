@@ -16,9 +16,9 @@ module Engine
             super
           end
 
-          def upgraded_track(action)
+          def upgraded_track(_from, to, _hex)
             # this also takes care of adding small stations, since that is never yellow to yellow
-            @round.upgraded_track = true if action.tile.color != :yellow || action.tile.label.to_s == 'N'
+            @round.upgraded_track = true if to.color != :yellow || to.label.to_s == 'N'
           end
 
           def update_tile_lists(tile, old_tile)
