@@ -293,6 +293,54 @@ module Engine
           @erie_canal_private.close!
         end
 
+        def upgrades_to?(from, to, special = false, selected_company: nil)
+          return true if town_to_city_upgrade?(from, to)
+
+          super
+        end
+
+        def town_to_city_upgrade?(from, to)
+          return false unless @phase.tiles.include?(:green)
+
+          case from.name
+          when '3'
+            to.name == '5'
+          when '4'
+            to.name == '57'
+          when '58'
+            to.name == '6'
+          else
+            false
+          end
+        end
+
+        def upgrades_to_correct_label?(from, to)
+          # Handle hexes that change from standard tiles to special city tiles
+          case from.hex.name
+          when 'E3'
+            return true if to.name == 'X35'
+            return false if to.color == :gray
+          when 'D8'
+            return true if to.name == 'X13'
+            return false if to.color == :green
+          when 'D12'
+            return true if to.name == 'X24'
+            return false if to.color == :brown
+          when 'K19'
+            return true if to.name == 'X21'
+            return false if to.color == :brown
+          end
+
+          super
+        end
+
+        def legal_tile_rotation?(entity, hex, tile)
+          # NYC tiles have a specific rotation
+          return tile.rotation.zero? if hex.id == 'J20' && %w[X11 X22].include?(tile.name)
+
+          super
+        end
+
         def upgrade_cost(tile, _hex, entity, spender)
           terrain_cost = tile.upgrades.sum(&:cost)
           discounts = 0
