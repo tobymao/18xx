@@ -134,7 +134,7 @@ module Engine
             available_votes = @round.votes_for + @round.votes_against + @round.to_vote.sum do |_player, shares|
               shares
             end
-            @round.votes_needed = (available_votes / 2.0).ceil
+            @round.votes_needed = (available_votes / 2.0).floor + 1
             voters = @round.to_vote.map { |p, _s| p.name }.join(',')
             @game.log << "Shareholders (#{voters}) will now vote for proposed merge of "\
             "#{@round.merging.map(&:name).join(',')}, #{@round.votes_needed} votes needed"
