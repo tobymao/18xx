@@ -289,7 +289,7 @@ module Engine
             abilities: [
               {
                 type: 'assign_hexes',
-                hexes: %w[B9 B11 D5 E12 F5 H13 J3 J5 L11 M2 M6 N1 N7],
+                hexes: %w[B9 B11 D5 E12 F5 H13 J3 J5 L11 M2 M6 N7],
                 when: 'owning_corp_or_turn',
                 count: 1,
                 owner_type: 'corporation',
