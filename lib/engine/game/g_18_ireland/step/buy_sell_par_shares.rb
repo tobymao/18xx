@@ -49,16 +49,20 @@ module Engine
           end
 
           def can_ipo_any?(entity)
-            @game.phase.name.to_i >= MAJOR_PHASE && !bought? && !sold? &&
+            phase_allows_ipo? && !bought? && !sold? &&
             @game.corporations.any? do |c|
               @game.can_par?(c, entity) && c.type == :major && can_buy?(entity, c.shares.first&.to_bundle)
             end
           end
 
+          def phase_allows_ipo?
+            @game.phase.name == 'D' || @game.phase.name.to_i >= MAJOR_PHASE
+          end
+
           def ipo_type(entity)
             # Major's are par, minors are bid
             if entity.type == :major
-              if @game.phase.name == 'D' || @game.phase.name.to_i >= MAJOR_PHASE
+              if phase_allows_ipo?
                 :par
               else
                 "Cannot start till phase #{MAJOR_PHASE}"
