@@ -105,6 +105,7 @@ module Engine
 
           def finish_merge
             players = @game.players.rotate(@game.players.index(current_entity))
+            players.each(&:unpass!)
             @round.to_vote = players.map do |player|
               shares = @round.merging.sum { |corp| player.num_shares_of(corp,) }
               [player, shares] unless shares.zero?
@@ -215,9 +216,10 @@ module Engine
             @round.merging ||= []
             @game.log <<
               if @round.merging.empty?
-                "Proposing merge of #{action.corporation.name}"
+                "#{action.entity.name} proposing merge of #{action.corporation.name}"
               else
-                "Adding #{action.corporation.name} to proposed merge of #{@round.merging.map(&:name).join(',')}"
+                "#{action.entity.name} adds #{action.corporation.name}"\
+                " to proposed merge of #{@round.merging.map(&:name).join(',')}"
               end
             @round.merging << action.corporation
 
@@ -231,6 +233,7 @@ module Engine
             if @round.merging
               finish_merge
             else
+              current_entity.pass!
               super
             end
           end
@@ -250,7 +253,6 @@ module Engine
 
             # Minors only have one token
             new_home = new_corporation.tokens.first.city
-            # @todo: connected via broad-gauge track
 
             return false unless corporations.any? { |c| @game.graph.connected_nodes(c)[new_home] }
 
@@ -282,8 +284,8 @@ module Engine
             end
             if merging.empty?
               # first corporation must have shares owned by player
-              potential_corporations.reject! { |c| entity.shares_of(c).empty? }
-              potential_corporations.select { |c| potential_corporations.any? { |c2| merge_possible?([c], c2) } }
+              start_corporations = potential_corporations.reject { |c| entity.shares_of(c).empty? }
+              start_corporations.select { |c| potential_corporations.any? { |c2| merge_possible?([c], c2) } }
             else
               potential_corporations.select { |c| merge_possible?(merging, c) }
             end
@@ -302,6 +304,11 @@ module Engine
 
           def show_other_players
             true # Could say this being true is actually the game...
+          end
+
+          def setup
+            @round.vote_outcome = nil
+            @round.merging = nil
           end
 
           def round_state
