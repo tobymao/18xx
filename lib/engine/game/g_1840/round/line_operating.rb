@@ -8,7 +8,7 @@ module Engine
       module Round
         class LineOperating < Engine::Round::Operating
           def select_entities
-            @game.operating_order.select { |item| item.type == :minor }.sort_by(&:id)
+            @game.operating_order.select { |item| item.type == :minor }.sort_by { |item| item.id.to_i }
           end
 
           def self.short_name

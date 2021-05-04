@@ -229,9 +229,9 @@ module Engine
         end
 
         def new_operating_round(round_num = 1)
-          @or += 1
           @log << "-- #{round_description(self.class::OPERATING_ROUND_NAME, round_num)} --"
           @phase.next! if @or == 2 || @or == 6 || @or == 8
+          @or += 1
           @round_counter += 1
           operating_round(round_num)
         end
