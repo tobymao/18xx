@@ -14,6 +14,7 @@ module Engine
           def actions(entity)
             return [] if entity.company? || entity == @game.mhe
             return [] if entity != current_entity
+            return [] if entity.minor? && !entity.owner
             return [] if entity.corporation? && entity.receivership?
 
             rval = []
@@ -35,6 +36,10 @@ module Engine
             else
               'Skip (Trains)'
             end
+          end
+
+          def log_skip(entity)
+            super if !entity.minor? || entity.owner
           end
 
           def skip!
