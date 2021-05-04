@@ -4,6 +4,7 @@ require_relative 'entities'
 require_relative 'map'
 require_relative 'meta'
 require_relative 'trains'
+require_relative 'step/track'
 require_relative '../base'
 require_relative '../company_price_up_to_face'
 require_relative '../stubs_are_restricted'
@@ -28,6 +29,10 @@ module Engine
         CAPITALIZATION = :incremental
         SELL_BUY_ORDER = :sell_buy
         HOME_TOKEN_TIMING = :par
+
+        TRACK_POINTS = 6
+        YELLOW_POINT_COST = 2
+        UPGRADE_POINT_COST = 3
 
         MUST_EMERGENCY_ISSUE_BEFORE_EBUY = true
         MUST_BUY_TRAIN = :always
@@ -74,8 +79,26 @@ module Engine
         end
 
         def setup
+          init_track_points
+
           @late_corps, @corporations = @corporations.partition { |c| LATE_CORPORATIONS.include?(c.id) }
           @late_corps.each { |corp| corp.reservation_color = nil }
+        end
+
+        def operating_round(round_num)
+          Round::Operating.new(self, [
+            Engine::Step::Bankrupt,
+            Engine::Step::Exchange,
+            Engine::Step::SpecialTrack,
+            Engine::Step::BuyCompany,
+            G1868WY::Step::Track,
+            Engine::Step::Token,
+            Engine::Step::Route,
+            Engine::Step::Dividend,
+            Engine::Step::DiscardTrain,
+            Engine::Step::BuyTrain,
+            [Engine::Step::BuyCompany, { blocks: true }],
+          ], round_num: round_num)
         end
 
         def event_all_corps_available!
@@ -102,6 +125,46 @@ module Engine
           super
 
           corporation.capitalization = :incremental
+        end
+
+        def init_track_points
+          @track_points_used = Hash.new(0)
+        end
+
+        def status_str(corporation)
+          "Track Points: #{track_points_available(corporation)}" if corporation.floated?
+        end
+
+        def p7_company
+          @p7_company ||= company_by_id('P7')
+        end
+
+        def track_points_available(entity)
+          return 0 unless (corporation = entity).corporation?
+
+          p7_point = p7_company.owner == corporation ? 1 : 0
+          TRACK_POINTS + p7_point - @track_points_used[corporation]
+        end
+
+        def tile_lays(entity)
+          if (points = track_points_available(entity)) >= UPGRADE_POINT_COST
+            { @round.num_laid_track => { lay: true, upgrade: true, cost: 0 } }
+          elsif points == YELLOW_POINT_COST
+            { @round.num_laid_track => { lay: true, upgrade: false, cost: 0 } }
+          else
+            []
+          end
+        end
+
+        def spend_tile_lay_points(action)
+          return unless (corporation = action.entity).corporation?
+
+          points_used = action.tile.color == :yellow ? YELLOW_POINT_COST : UPGRADE_POINT_COST
+          @track_points_used[corporation] += points_used
+        end
+
+        def or_round_finished
+          init_track_points
         end
       end
     end
