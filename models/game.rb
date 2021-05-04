@@ -99,6 +99,8 @@ class Game < Base
   end
 
   def ordered_players
+    return players.sort_by { |p| settings['player_order'].find_index(p.id) || p.id } if settings['player_order']
+
     players
       .sort_by(&:id)
       .shuffle(random: Random.new(settings['seed'] || 1))
