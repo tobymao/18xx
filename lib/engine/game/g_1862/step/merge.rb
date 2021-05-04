@@ -52,16 +52,13 @@ module Engine
           end
 
           def process_choose(action)
-            if action.choice == :first
-              @log << "#{@merging.last.name} (non-survivor) will merge into #{@merging.first.name} (survivor)"
-              survivor = @merging.first
-              nonsurvivor = @merging.last
-            else
-              @log << "#{@merging.first.name} (non-survivor) will merge into #{@merging.last.name} (survivor)"
-              survivor = @merging.last
-              nonsurvivor = @merging.first
-            end
-            @game.start_merge(action.entity, survivor, nonsurvivor, :merge)
+            choose_action(action, :merge)
+          end
+
+          def choose_action(action, merge_type)
+            survivor, nonsurvivor = action.choice == :first ? @merging : @merging.reverse
+            @log << "#{nonsurvivor.name} (non-survivor) will merge into #{survivor.name} (survivor)"
+            @game.start_merge(action.entity, survivor, nonsurvivor, merge_type)
             @merging = nil
           end
 
@@ -69,12 +66,19 @@ module Engine
             "Corporations that can merge with #{corporation.name}"
           end
 
+          def setup
+            @mergeable_ = {}
+          end
+
           def mergeable_candidates(corporation)
-            # Mergeable candidates must be connected by track
-            parts = @game.graph.connected_nodes(corporation).keys
-              .reject { |n| @game.class::LONDON_TOKEN_HEXES.include?(n.hex.id) }
-            mergeable = parts.select(&:city?).flat_map { |c| c.tokens.compact.map(&:corporation) }
-            mergeable.uniq.reject { |c| c == corporation }
+            @mergeable_[corporation] ||=
+              begin
+                # Mergeable candidates must be connected by track
+                parts = @game.graph.connected_nodes(corporation).keys
+                  .reject { |n| @game.class::LONDON_TOKEN_HEXES.include?(n.hex.id) }
+                mergeable = parts.select(&:city?).flat_map { |c| c.tokens.compact.map(&:corporation) }
+                mergeable.uniq.reject { |c| c == corporation }
+              end
           end
 
           def mergeable(corporation)

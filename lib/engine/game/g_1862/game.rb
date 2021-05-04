@@ -725,20 +725,19 @@ module Engine
 
           from_exits = from_tile.exits
           legal_exits = Engine::Tile::ALL_EDGES.select { |e| from.hex.neighbors[e] }
-          @tiles.each do |to|
+          @tiles.any? do |to|
             next unless Engine::Tile::COLORS.index(to.color) == (Engine::Tile::COLORS.index(from.color) + 1)
             next unless upgrades_to_correct_label?(from, to)
 
             to_exits = to.exits
-            return true if Engine::Tile::ALL_EDGES.any? { |rot| exits_match?(to_exits, rot, from_exits, legal_exits) }
+            Engine::Tile::ALL_EDGES.any? { |rot| exits_match?(to_exits, rot, from_exits, legal_exits) }
           end
-          false
         end
 
         def exits_match?(exits, rotation, from_exits, legal_exits)
           exits = exits.map { |e| (e + rotation) % 6 }
-          from_exits.all? { |e| exits.include?(e) } # every exit on old tile appears on new tile
-          exits.all? { |e| legal_exits.include?(e) } # every exit on new tile is legal
+          from_exits.all? { |e| exits.include?(e) } && # every exit on old tile appears on new tile
+            exits.all? { |e| legal_exits.include?(e) } # every exit on new tile is legal
         end
 
         # OK to start a corp if
@@ -851,7 +850,7 @@ module Engine
           @log << "#{corp.name} enters Bankruptcy"
 
           # compensate former owners of shares if share price is not zero
-          share_value = corp.trains.empty? ? corp.share_price.price / 2 : corp.share_price.price
+          share_value = effective_price(corp)
           corp.share_holders.keys.each do |share_holder|
             next unless share_holder.player?
 
@@ -1550,8 +1549,8 @@ module Engine
           @stock_market.market.first.max_by { |p| p.price <= price ? p.price : 0 }
         end
 
-        def compute_merger_share_price(corpa, corpb)
-          prices = [effective_price(corpa), effective_price(corpb)].sort
+        def compute_merger_share_price(corp_a, corp_b)
+          prices = [effective_price(corp_a), effective_price(corp_b)].sort
           find_valid_share_price(prices.first + prices.last / 2.0)
         end
 
@@ -1986,18 +1985,17 @@ module Engine
         end
 
         def finish_merge
-          survivor = @merge_data[:corps].first
-          nonsurvivor = @merge_data[:corps].last
+          survivor, nonsurvivor = @merge_data[:corps]
           s_placed = survivor.placed_tokens
           s_unplaced = survivor.unplaced_tokens
           ns_placed = nonsurvivor.placed_tokens
           ns_unplaced = nonsurvivor.unplaced_tokens
 
           num_placed = s_placed.size + ns_placed.size
+          raise GameError, 'too many placed tokens' if num_placed > 7
+
           num_unplaced = [7 - num_placed, s_unplaced.size + ns_unplaced.size].min
           total = num_placed + num_unplaced
-
-          raise GameError, 'too many placed tokens' if num_placed > 7
 
           # increase survivor tokens if needed
           (total - s_placed.size - s_unplaced.size).times { survivor.tokens << Token.new(survivor, price: 0) }

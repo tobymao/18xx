@@ -18,17 +18,7 @@ module Engine
           end
 
           def process_choose(action)
-            if action.choice == :first
-              @log << "#{@merging.last.name} (non-survivor) will merge into #{@merging.first.name} (survivor)"
-              survivor = @merging.first
-              nonsurvivor = @merging.last
-            else
-              @log << "#{@merging.first.name} (non-survivor) will merge into #{@merging.last.name} (survivor)"
-              survivor = @merging.last
-              nonsurvivor = @merging.first
-            end
-            @game.start_merge(action.entity, survivor, nonsurvivor, :acquire)
-            @merging = nil
+            choose_action(action, :acquire)
           end
         end
       end

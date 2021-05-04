@@ -62,21 +62,14 @@ module Engine
           end
 
           def choices
-            if pending_option[:percent] > 10
-              {
-                sell: "Sell #{pending_option[:share].corporation.name} #{pending_option[:percent]}% option "\
-                  "share (Director's certificate) for #{@game.format_currency(pending_option[:sell_price])}",
-                redeem: "Redeem (buy) #{pending_option[:share].corporation.name} #{pending_option[:percent]}% option "\
-                  "share (Director's certificate) for #{@game.format_currency(pending_option[:redeem_price])}",
-              }
-            else
-              {
-                sell: "Sell #{pending_option[:share].corporation.name} option share "\
-                  "for #{@game.format_currency(pending_option[:sell_price])}",
-                redeem: "Redeem (buy) #{pending_option[:share].corporation.name} option share "\
-                  "for #{@game.format_currency(pending_option[:redeem_price])}",
-              }
-            end
+            percent_str = pending_option[:percent] > 10 ? '' : "#{pending_option[:percent]}% "
+            share_str = pending_option[:percent] > 10 ? "(Director's certificate) " : ''
+            {
+              sell: "Sell #{pending_option[:share].corporation.name} #{percent_str}option share #{share_str}"\
+                "for #{@game.format_currency(pending_option[:sell_price])}",
+              redeem: "Redeem (buy) #{pending_option[:share].corporation.name} #{percent_str}option share #{share_str}"\
+                "for #{@game.format_currency(pending_option[:redeem_price])}",
+            }
           end
 
           def round_state
