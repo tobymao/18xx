@@ -7,8 +7,6 @@ module Engine
     module G1870
       module Step
         class BuySellParShares < Engine::Step::BuySellParShares
-          # Possible pars after reissuing, with their coordinates on the stock market
-          ISSUE_PAR_PRICES = [68, 72, 76, 82, 90, 100, 110, 120, 140, 160, 180, 200].freeze
           def actions(entity)
             return [] if @round.current_actions.last&.entity&.corporation?
 
@@ -44,7 +42,7 @@ module Engine
 
           def issuable_shares(entity)
             bundle = Engine::ShareBundle.new(entity.shares_of(entity))
-            bundle.share_price = issue_par(entity)
+            bundle.share_price = issue_par(entity).price
 
             [bundle]
           end
@@ -65,8 +63,8 @@ module Engine
           def issue_par(corporation)
             # We're adding 1 to force it to round up. We can do this, because
             # we know all the possible values and it is smaller than all gaps.
-            [ISSUE_PAR_PRICES.min_by { |v| (0.75 * corporation.share_price.price + 1 - v).abs },
-             corporation.par_price.price].max
+            [@game.stock_market.market[0].min_by { |v| (0.75 * corporation.share_price.price + 1 - v.price).abs },
+             corporation.par_price].max_by(&:price)
           end
 
           def process_buy_shares(action)
@@ -85,9 +83,9 @@ module Engine
             @log << "#{corporation.name} reissues #{@game.share_pool.num_presentation(action.bundle)}"
 
             new_par = issue_par(corporation)
-            if new_par > corporation.par_price.price
-              corporation.par_price = @game.find_share_price(new_par)
-              @log << "#{corporation.name}'s par price is now #{@game.format_currency(new_par)}"
+            if new_par.price > corporation.par_price.price
+              corporation.par_price = new_par
+              @log << "#{corporation.name}'s par price is now #{@game.format_currency(new_par.price)}"
             end
             corporation.capitalization = :incremental
             @game.reissued[corporation] = true
