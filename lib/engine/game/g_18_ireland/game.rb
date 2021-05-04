@@ -239,7 +239,7 @@ module Engine
 
         def calculate_shannon_revenue(route, revenues)
           shannon_hexes = self.class::SHANNON_HEXES.map { |hex| hex_by_id(hex) }
-          shannon_options = []
+          shannon_options = [0]
           route.visited_stops.each do |stop|
             next unless stop.city?
 
