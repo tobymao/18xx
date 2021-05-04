@@ -150,6 +150,14 @@ module GameManager
     end
   end
 
+  def swap_players(game, player1, player2)
+    game['players'][player1], game['players'][player2] = game['players'][player2], game['players'][player1]
+    player_order = game['players'].map { |p| p['id'] }
+    @connection.safe_post(url(game, '/player_order'), { player_order: player_order }) do |data|
+      update_game(data)
+    end
+  end
+
   def user_in_game?(user, game)
     game['players'].map { |p| p['id'] }.include?(user&.dig('id'))
   end

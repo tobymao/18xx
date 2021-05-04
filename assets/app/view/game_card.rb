@@ -189,37 +189,10 @@ module View
         },
       }
 
-      p_elm = players.map.with_index do |player, index|
-        short_name = player['name'].truncate
-        if owner? && new? && player['id'] != @user['id']
-          button_props = {
-            on: { click: -> { store(:confirm_kick, [@gdata['id'], player['id']]) } },
-            attrs: { title: "Kick #{player['name']}!" },
-            style: {
-              padding: '0.1rem 0.3rem',
-              margin: '0 0.3rem 0.1rem 0.3rem',
-            },
-          }
-
-          elm = if @confirm_kick != [@gdata['id'], player['id']]
-                  h(:button, button_props, "#{short_name} ❌")
-                else
-                  button_props['on'] = { click: -> { kick(@gdata, player) } }
-                  h(:button, button_props, 'Kick! ❌')
-                end
-
-        else
-          player_props = { attrs: { title: player['name'].to_s } }
-
-          elm = h(:span, [
-            h(acting?(player) ? :em : :span, player_props, short_name),
-            index == (players.size - 1) || owner? && new? ? '' : ', ',
-          ])
-        end
-        elm
-      end
+      p_elm = players.map.with_index { |player, index| render_player(player, index) }
 
       children = [h(:div, [h(:strong, 'Id: '), @gdata['id'].to_s])]
+      children << h(:div, [h(:strong, 'Player order set manually')]) if @gdata.dig('settings', 'player_order')
       children << h(:div, [h(:i, 'Invite only game')]) if @gdata['status'] == 'new' && @gdata.dig('settings',
                                                                                                   'unlisted')
       children << h(:div, [h(:strong, 'Description: '), @gdata['description']]) unless @gdata['description'].empty?
@@ -262,6 +235,62 @@ module View
       end
 
       h(:div, props, children)
+    end
+
+    def render_player(player, index)
+      short_name = player['name'].truncate
+      player_props = { attrs: { title: player['name'].to_s } }
+      button_style = {
+        padding: '0.1rem 0.3rem',
+        margin: '0 0.3rem 0.1rem 0.3rem',
+      }
+
+      p_content = []
+
+      if index.positive? && (owner? && new? && @gdata.dig('settings', 'player_order'))
+        button_props = {
+          on: { click: -> { swap_players(@gdata, index - 1, index) } },
+          attrs: { title: 'Move player to the left' },
+          style: button_style,
+        }
+
+        p_content << h(:button, button_props, '<')
+      end
+
+      p_content << h(:span, [h(acting?(player) ? :em : :span, player_props, short_name)])
+
+      if owner? && new? && player['id'] != @user['id']
+        button_props = {
+          attrs: { title: "Kick #{player['name']}!" },
+          style: button_style,
+        }
+
+        if @confirm_kick != [@gdata['id'], player['id']]
+          button_props['on'] = { click: -> { store(:confirm_kick, [@gdata['id'], player['id']]) } }
+          p_content << h(:button, button_props, '❌')
+        else
+          button_props['on'] = { click: -> { kick(@gdata, player) } }
+          p_content << h(:button, button_props, 'Kick! ❌')
+        end
+      end
+
+      if index != players.size - 1 && owner? && new? && @gdata.dig('settings', 'player_order')
+        button_props = {
+          on: { click: -> { swap_players(@gdata, index, index + 1) } },
+          attrs: { title: 'Move player to the right' },
+          style: button_style,
+        }
+
+        p_content << h(:button, button_props, '>')
+      end
+
+      p_attrs = { style: { paddingRight: '0.5rem', whiteSpace: 'nowrap' } }
+      if index.positive?
+        p_attrs[:style][:borderLeft] = "#{setting_for(:font)} solid thin"
+        p_attrs[:style][:paddingLeft] = '0.5rem'
+      end
+
+      h(:span, p_attrs, p_content)
     end
 
     def render_broken

@@ -26,6 +26,9 @@ class Api
             halt(400, 'Cannot join because game has started') unless game.status == 'new'
 
             GameUser.create(game: game, user: user)
+            game.settings['player_order'] << user.id if game.settings['player_order']
+            game.save
+
             game.players(reload: true)
             game.to_h
           end
@@ -34,6 +37,8 @@ class Api
             halt(400, 'Cannot leave because game has started') unless game.status == 'new'
             halt(400, 'You are not in the game') unless users.any? { |u| u.id == user.id }
             game.remove_player(user)
+            game.settings['player_order']&.delete(user.id)
+            game.save
             game.to_h
           end
 
@@ -139,6 +144,17 @@ class Api
           # POST '/api/game/<game_id>/kick
           r.is 'kick' do
             game.remove_player(r.params['id'])
+            game.settings['player_order']&.delete(r.params['id'])
+            game.save
+
+            game.to_h
+          end
+
+          halt(400, 'You are not allowed to change the player order in this game') unless game.settings['player_order']
+          r.is 'player_order' do
+            game.settings['player_order'] = r.params['player_order']
+            game.save
+
             game.to_h
           end
         end
@@ -162,6 +178,7 @@ class Api
             max_players: r['max_players'],
             settings: {
               seed: Random.new_seed % 2**31,
+              player_order: r['player_order'] ? [user.id] : nil,
               unlisted: r['unlisted'],
               optional_rules: r['optional_rules'],
             },

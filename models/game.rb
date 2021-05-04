@@ -102,6 +102,7 @@ class Game < Base
     players
       .sort_by(&:id)
       .shuffle(random: Random.new(settings['seed'] || 1))
+      .sort_by.with_index { |player, i| [settings['player_order']&.find_index(player.id) || i] }
   end
 
   def archive!
