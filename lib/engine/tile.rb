@@ -15,8 +15,8 @@ module Engine
     include Config::Tile
 
     attr_accessor :blocks_lay, :hex, :icons, :index, :legal_rotations, :location_name,
-                  :name, :opposite, :reservations, :upgrades
-    attr_reader :borders, :cities, :color, :edges, :junction, :nodes, :labels,
+                  :name, :opposite, :reservations, :upgrades, :color
+    attr_reader :borders, :cities, :edges, :junction, :nodes, :labels,
                 :parts, :preprinted, :rotation, :stops, :towns, :offboards, :blockers,
                 :city_towns, :unlimited, :stubs, :partitions, :id, :frame, :hidden
 

@@ -62,16 +62,21 @@ module Engine
             ['Full Capitalization', 'Railroads float at 60% and receive full capitalization'],
         ).freeze
 
+        def dotify(tile)
+          tile.towns.each { |town| town.style = :dot }
+          tile
+        end
+
         def init_tiles
-          super.each do |tile|
-            tile.towns.each { |town| town.style = :dot }
-          end
+          super.each { |tile| dotify(tile) }
         end
 
         def init_hexes(companies, corporations)
-          super.each do |hex|
-            hex.tile.towns.each { |town| town.style = :dot }
-          end
+          super.each { |hex| dotify(hex.tile) }
+        end
+
+        def add_extra_tile(tile)
+          dotify(super)
         end
 
         def ipo_name(_entity = nil)
@@ -80,6 +85,7 @@ module Engine
 
         def setup
           init_track_points
+          setup_company_price_up_to_face
 
           @late_corps, @corporations = @corporations.partition { |c| LATE_CORPORATIONS.include?(c.id) }
           @late_corps.each { |corp| corp.reservation_color = nil }
@@ -165,6 +171,20 @@ module Engine
 
         def or_round_finished
           init_track_points
+        end
+
+        def action_processed(action)
+          case action
+          when Action::LayTile
+            if action.hex.name == 'G15'
+              action.hex.tile.color = :gray
+              @log << 'Wind River Canyon turns gray; it can never be upgraded'
+            end
+          end
+        end
+
+        def or_set_finished
+          depot.export!
         end
       end
     end
