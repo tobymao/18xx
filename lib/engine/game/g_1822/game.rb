@@ -1619,11 +1619,13 @@ module Engine
           spender = company.owner
           bundle = company_tax_haven_bundle(choice)
           corporation = bundle.corporation
+          floated = corporation.floated?
           receiver = bundle.owner == @share_pool ? @bank : corporation
           @share_pool.transfer_shares(bundle, @tax_haven, spender: spender, receiver: receiver,
                                                           price: bundle.price, allow_president_change: false)
           @log << "#{spender.name} spends #{format_currency(bundle.price)} and tax haven gains a share of "\
                   "#{corporation.name}."
+          float_corporation(corporation) if corporation.floatable && floated != corporation.floated?
         end
 
         def company_tax_haven_bundle(choice)
