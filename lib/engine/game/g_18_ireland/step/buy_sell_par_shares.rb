@@ -36,8 +36,6 @@ module Engine
             @auctioning = nil
 
             @round.minor_started = true
-            # Player to the right of the winner is the new player
-            @round.goto_entity!(winner.entity)
             pass!
           end
 

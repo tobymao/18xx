@@ -89,6 +89,10 @@ def repair(game, original_actions, actions, broken_action)
   elsif game.active_step.is_a?(Engine::Game::G18Ireland::Step::Merge)
     add_pass.call
     return    
+  elsif game.active_step.is_a?(Engine::Game::G18Ireland::Step::BuySellParShares)
+    # After a bid, the turn order is wrong.
+    add_pass.call
+    return
   elsif game.active_step.is_a?(Engine::Game::G1817::Step::Acquire) && broken_action['type'] != 'pass'
     add_pass.call
     return
@@ -102,7 +106,7 @@ def repair(game, original_actions, actions, broken_action)
       add_pass.call
       return
     end
-  elsif game.active_step.is_a?(Engine::Game::G1867::Merge) && broken_action['type'] != 'pass'
+  elsif game.active_step.is_a?(Engine::Game::G1867::Step::Merge) && broken_action['type'] != 'pass'
     add_pass.call
     return
   elsif game.is_a?(Engine::Game::G18CO) &&
@@ -386,16 +390,16 @@ def migrate_db_actions(data, pin, dry_run=false, debug=false)
     puts e.backtrace if debug
     puts 'Something went wrong', e
     if !dry_run
-      if pin == :delete
-        puts "Deleting #{data.id}"
-        data.destroy
+      if pin == :delete || pin == :archive
+        puts "Archiving #{data.id}"
+        data.archive!
       else
         puts "Pinning #{data.id} to #{pin}"
         data.settings['pin']=pin
         data.save
       end
     else
-      puts "Needs pinning #{data.id}"
+      puts "Needs pinning #{data.id} to #{pin}"
     end
   end
   return original_actions
@@ -425,7 +429,7 @@ def migrate_db_to_json(id, filename)
   File.write(filename, JSON.pretty_generate(json))
 end
 
-# Pass pin=:delete to delete failed games
+# Pass pin=:archive to archive failed games
 def migrate_title(title, pin, dry_run=false, debug = false)
   DB[:games].order(:id).where(Sequel.pg_jsonb_op(:settings).has_key?('pin') => false, status: %w[active finished], title: title).select(:id).paged_each(rows_per_fetch: 1) do |game|
     games = Game.eager(:user, :players, :actions).where(id: [game[:id]]).all
