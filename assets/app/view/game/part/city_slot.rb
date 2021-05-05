@@ -59,7 +59,7 @@ module View
             fill: color,
           }
 
-          if @game.highlight_token?(@token)
+          if @game&.highlight_token?(@token)
             radius -= 3
             token_attrs.merge!({
                                  stroke: 'white',
