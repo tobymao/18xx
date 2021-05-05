@@ -700,7 +700,8 @@ module Engine
         LAYOUT = :flat
 
         attr_reader :post_nationalization, :bankrupted
-        attr_accessor :borrowed_trains, :national_ever_owned_permanent, :false_national_president
+        attr_accessor :borrowed_trains, :national_ever_owned_permanent, :false_national_president,
+                      :nationalization_train_discard_trigger
 
         # These plain city hexes upgrade to L tiles in brown
         LAKE_HEXES = %w[B19 C14 F17 O18 P9 N3 L13].freeze
@@ -801,12 +802,9 @@ module Engine
 
           revenue += 20 if route.corporation.assigned?(port.id) && stops.any? { |stop| stop.hex.assigned?(port.id) }
 
-          route.corporation.companies.each do |company|
-            abilities(company, :hex_bonus) do |ability|
-              revenue += stops.map { |s| s.hex.id }.uniq.sum { |id| ability.hexes.include?(id) ? ability.amount : 0 }
-            end
+          route.corporation.all_abilities.select { |a| a.type == :hex_bonus }.each do |ability|
+            revenue += stops.map { |s| s.hex.id }.uniq.sum { |id| ability.hexes.include?(id) ? ability.amount : 0 }
           end
-
           revenue
         end
 
@@ -924,6 +922,7 @@ module Engine
           @gray_hamilton ||= @tiles.find { |t| t.name == '123' }
 
           @post_nationalization = false
+          @nationalization_train_discard_trigger = false
           @national_formed = false
 
           @pre_national_percent_by_player = {}
@@ -949,13 +948,13 @@ module Engine
           @national_ever_owned_permanent = false
 
           # 1 of each right is reserved w/ the private when it gets bought in. This leaves 2 extra to sell.
-          @available_bridge_tokens = 2
-          @available_tunnel_tokens = 2
+          available_tokens = @optional_rules&.include?(:unlimited_bonus_tokens) ? 99 : 2
+          @available_bridge_tokens = available_tokens
+          @available_tunnel_tokens = available_tokens
 
           # Corp -> Borrowed Train
           @borrowed_trains = {}
-
-          create_destinations(ALTERNATE_DESTINATIONS)
+          create_destinations(@optional_rules&.include?(:alternate_destinations) ? ALTERNATE_DESTINATIONS : DESTINATIONS)
         end
 
         def create_destinations(destinations)
@@ -1351,7 +1350,7 @@ module Engine
           end
           # Leftover cash is transferred
           major.spend(major.cash, national) if major.cash.positive?
-
+          @loans << major.loans.pop(major.loans.size)
           # Tunnel / Bridge rights are transferred
           if tunnel?(major)
             if tunnel?(national)
@@ -1524,7 +1523,7 @@ module Engine
             end
             # not president, just give them shares
             while player_national_shares.positive?
-              if national_share_index == max_national_shares
+              if national_share_index == (max_national_shares - 1) # 19 shares; president is double
                 @log << "#{national.name} is out of shares to issue, #{player.name} gets no more shares"
                 player_national_shares = 0
               else
@@ -1540,11 +1539,13 @@ module Engine
             end
           end
           # Distribute market shares to the market
-          @share_pool.buy_shares(
-            @share_pool,
-            ShareBundle.new(national.shares_by_corporation[national][-1 * national_market_share_count..-1]),
-            exchange: :free
-          )
+          if national_market_share_count.positive?
+            @share_pool.buy_shares(
+              @share_pool,
+              ShareBundle.new(national.shares_by_corporation[national][-1 * national_market_share_count..-1]),
+              exchange: :free
+            )
+          end
         end
 
         def national_token_swap
@@ -1617,6 +1618,7 @@ module Engine
           # Reduce the nationals train holding limit to the real value
           # (It was artificially high to avoid forced discard triggering early)
           # TODO: Do it.
+          @nationalization_train_discard_trigger = true
           @post_nationalization = true
         end
 
