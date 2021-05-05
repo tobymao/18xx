@@ -561,6 +561,10 @@ module Engine
         end
       end
 
+      def acting_for_entity(entity)
+        entity&.owner
+      end
+
       def player_log(entity, msg)
         @log << "-- #{msg}" if entity.id == @user
       end

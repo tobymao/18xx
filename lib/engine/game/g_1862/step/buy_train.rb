@@ -24,6 +24,7 @@ module Engine
 
           def actions(entity)
             return [] if entity != current_entity
+            return [] if entity.corporation? && entity.receivership?
             return [] if @game.skip_round[entity]
             return [] if buyable_trains(entity).empty? && !must_buy_train?(entity)
             return [] if entity.share_price&.type == :close
@@ -39,6 +40,12 @@ module Engine
 
           def log_skip(entity)
             super if !must_ebuy?(entity) && !@game.skip_round[entity]
+          end
+
+          def skip!
+            return receivership_buy(current_entity) if current_entity.corporation? && current_entity.receivership?
+
+            super
           end
 
           def pass!
@@ -99,6 +106,42 @@ module Engine
             end
           end
 
+          def receivership_buy(entity)
+            @pass = true
+            if (buy_type = receivership_train(entity))
+              @log << "#{entity.name} is in Receivership and must buy a train"
+              train = @depot.depot_trains.first
+              variant_name = train.variants.keys.find { |n| n != train.sym && @game.train_type_by_name(n) == buy_type }
+
+              buy_train_action(
+                Engine::Action::BuyTrain.new(
+                  entity,
+                  train: train,
+                  price: train.price, # all variants have the same price as the base train
+                  variant: variant_name,
+                  shell: nil,
+                  slots: nil,
+                  warranties: 0,
+                )
+              )
+            elsif entity.trains.empty?
+              @log << "#{entity.name} is in Receivership and cannot buy a train"
+              @game.enter_bankruptcy!(entity)
+            else
+              log_skip(entity)
+            end
+          end
+
+          def receivership_train(entity)
+            return nil if entity.cash < @depot.min_depot_price
+
+            permit_list = @game.permits[entity].sort_by(&:to_s) # order: express, freight, local
+            permit_list.each do |permit_type|
+              return permit_type if room_for_type?(entity, permit_type)
+            end
+            nil
+          end
+
           def room?(entity, _shell = nil)
             if @game.phase.available?('G')
               entity.trains.size < @game.train_limit(entity)
@@ -119,7 +162,7 @@ module Engine
 
           def buyable_trains(entity)
             depot_trains = @depot.depot_trains.reject { |t| entity.cash < t.price }
-            other_trains = @depot.other_trains(entity)
+            other_trains = @game.lner ? [] : @depot.other_trains(entity)
 
             other_trains.reject! { |t| entity.cash < @game.used_train_price(t) }
             other_trains.select! { |t| room_for_type?(entity, @game.train_type(t)) }

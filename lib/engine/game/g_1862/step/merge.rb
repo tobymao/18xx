@@ -9,7 +9,7 @@ module Engine
         class Merge < Engine::Step::Base
           def actions(entity)
             return [] if !entity.corporation? || entity != current_entity
-            return [] if entity.receivership? || @game.skip_round[entity]
+            return [] if entity.receivership? || @game.skip_round[entity] || @game.lner
 
             return ['choose'] if @merging
 

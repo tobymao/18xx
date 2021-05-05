@@ -9,7 +9,7 @@ module Engine
         class Token < Engine::Step::Token
           def actions(entity)
             return [] if entity.corporation? && entity.receivership?
-            return [] if @game.skip_round[entity]
+            return [] if @game.skip_round[entity] || @game.lner
 
             super
           end

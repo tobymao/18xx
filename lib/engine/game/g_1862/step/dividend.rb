@@ -16,13 +16,21 @@ module Engine
           end
 
           def actions(entity)
+            return [] if entity.corporation? && entity.receivership?
             return [] if @game.skip_round[entity]
 
             super
           end
 
           def skip!
-            return super unless @game.skip_round[current_entity]
+            return pass! if @game.skip_round[current_entity]
+
+            process_dividend(Action::Dividend.new(current_entity, kind: 'withhold'))
+
+            if !current_entity.corporation? || !current_entity.receivership?
+              current_entity.operating_history[[@game.turn, @round.round_num]] =
+                OperatingInfo.new([], @game.actions.last, 0, @round.laid_hexes)
+            end
 
             pass!
           end
@@ -93,6 +101,7 @@ module Engine
             end
             payout_shares(entity, revenue) if payout[:per_share].positive?
             change_share_price(entity, payout)
+            @game.check_bankruptcy!(entity)
 
             pass!
           end
