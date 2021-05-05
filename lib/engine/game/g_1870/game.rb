@@ -621,7 +621,7 @@ module Engine
             Engine::Step::Route,
             G1870::Step::Dividend,
             Engine::Step::DiscardTrain,
-            Engine::Step::BuyTrain,
+            G1870::Step::BuyTrain,
             [G1870::Step::BuyCompany, { blocks: true }],
             G1870::Step::PriceProtection,
             G1870::Step::CheckConnection,
