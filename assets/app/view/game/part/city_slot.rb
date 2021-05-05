@@ -54,7 +54,21 @@ module View
             radius -= 4
           end
 
-          children = [h(:circle, attrs: { r: @radius, fill: color })]
+          token_attrs = {
+            r: @radius,
+            fill: color,
+          }
+
+          if @game.highlight_token?(@token)
+            radius -= 3
+            token_attrs.merge!({
+                                 stroke: 'white',
+                                 'stroke-width': '3px',
+                                 filter: 'drop-shadow(8px 8px 2px #444)',
+                               })
+          end
+
+          children = [h(:circle, attrs: token_attrs)]
           children << reservation if @reservation && !@token
           children << render_boom if @city&.boom
           children << h(Token, token: @token, radius: radius, game: @game) if @token

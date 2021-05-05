@@ -2358,6 +2358,10 @@ module Engine
         "#{count_available_tokens(corporation)}/#{corporation.tokens.size}"
       end
 
+      def highlight_token?(_token)
+        false
+      end
+
       def show_value_of_companies?(entity)
         entity.player?
       end
