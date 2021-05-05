@@ -87,11 +87,6 @@ module Engine
             return nil if color != :white && !tile_lay[:upgrade]
             return nil if color != :white && tile_lay[:cannot_reuse_same_hex] && @round.laid_hexes.include?(hex)
 
-            # London yellow tile counts as an upgrade
-            if hex.tile.color == :white && @round.num_laid_track.positive? && hex.name == @game.class::LONDON_HEX
-              return nil
-            end
-
             # Middleton Railway can only lay track on hexes with one town
             return nil if entity.id == @game.class::COMPANY_MTONR && (hex.tile.towns.empty? || hex.tile.towns.size > 1)
 

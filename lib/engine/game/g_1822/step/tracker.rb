@@ -81,14 +81,8 @@ module Engine
           [total_cost, types]
         end
 
-        def upgraded_track(from, to, hex)
-          @round.upgraded_track = upgraded_track?(from, to, hex)
-        end
-
-        def upgraded_track?(_from, to, hex)
-          # London yellow tile counts as an upgrade
-          tile_color = to.color
-          tile_color != :yellow || (tile_color == :yellow && hex.name == @game.class::LONDON_HEX)
+        def upgraded_track?(from, _to, _hex)
+          from.color != :white
         end
       end
     end
