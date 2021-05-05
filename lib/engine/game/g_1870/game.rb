@@ -770,6 +770,20 @@ module Engine
           @share_pool.sell_shares(bundle)
         end
 
+        def num_certs(entity)
+          entity.shares.sum do |s|
+            next 0 unless s.corporation.counts_for_limit
+            next 0 unless s.counts_for_limit
+            # Don't count shares that have been sold and will go to yellow unless protected
+            next 0 if @round.sell_queue.any? do |bundle, _|
+              bundle.corporation == s.corporation &&
+                !stock_market.find_share_price(s.corporation, Array.new(bundle.num_shares, :up)).counts_for_limit
+            end
+
+            s.cert_size
+          end + entity.companies.size
+        end
+
         def legal_tile_rotation?(_entity, hex, tile)
           return true unless abilities(river_company, :blocks_partition)
 
