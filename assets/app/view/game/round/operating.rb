@@ -71,6 +71,7 @@ module View
             left << h(Player, player: entity, game: @game)
           elsif entity.operator? && entity.floated?
             left << h(Corporation, corporation: entity)
+            left << h(Corporation, corporation: @step.show_other) if @step.respond_to?(:show_other) && @step.show_other
           elsif (company = entity).company?
             left << h(Company, company: company)
 

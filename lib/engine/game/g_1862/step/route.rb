@@ -7,6 +7,16 @@ module Engine
     module G1862
       module Step
         class Route < Engine::Step::Route
+          def actions(entity)
+            return [] if @game.skip_round[entity]
+
+            super
+          end
+
+          def log_skip(entity)
+            super unless @game.skip_round[entity]
+          end
+
           def process_run_routes(action)
             super
 

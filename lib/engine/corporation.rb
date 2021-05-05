@@ -23,7 +23,8 @@ module Engine
     include Spender
 
     attr_accessor :ipoed, :par_via_exchange, :max_ownership_percent, :float_percent, :capitalization, :second_share,
-                  :type, :floatable, :original_par_price, :reservation_color, :min_price, :ipo_owner
+                  :type, :floatable, :original_par_price, :reservation_color, :min_price, :ipo_owner,
+                  :always_market_price
     attr_reader :companies, :name, :full_name, :fraction_shares, :id, :needs_token_to_par,
                 :presidents_share
     attr_writer :par_price, :share_price

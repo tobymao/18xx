@@ -9,6 +9,15 @@ module Engine
         class BuySellParShares < Engine::Step::BuySellParShares
           UNCHARTERED_TOKEN_COST = 40
 
+          def can_buy_any_from_ipo?(entity)
+            @game.corporations.each do |corporation|
+              next unless corporation.ipoed
+              return true if can_buy_shares?(entity, corporation.ipo_shares)
+            end
+
+            false
+          end
+
           def can_sell?(entity, bundle)
             return unless bundle
 

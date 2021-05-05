@@ -15,6 +15,22 @@ module Engine
             HUDSON_TYPES
           end
 
+          def actions(entity)
+            return [] if @game.skip_round[entity]
+
+            super
+          end
+
+          def skip!
+            return super unless @game.skip_round[current_entity]
+
+            pass!
+          end
+
+          def log_skip(entity)
+            super unless @game.skip_round[entity]
+          end
+
           def actual_dividend_types(entity, revenue, subsidy)
             hudson_allowed?(entity, revenue, subsidy) ? HUDSON_TYPES : DIVIDEND_TYPES
           end
