@@ -46,8 +46,6 @@ module Engine
         ].freeze
         TILE_COST = 20
 
-        TRACK_RESTRICTION = :permissive
-
         MARKET = [
           %w[70 75 80 90 100p 110 125 150 175 200 230 260 300 350 400
              450 500],
