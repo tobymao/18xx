@@ -30,7 +30,7 @@ module Engine
                 type = read_type_from_icon(action.hex)
 
                 if type == 'token'
-                  @round.pending_tokens << {
+                  @round.pending_special_tokens << {
                     entity: entity,
                     token: entity.find_token_by_type,
                   }

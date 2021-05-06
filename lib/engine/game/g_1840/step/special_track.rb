@@ -70,7 +70,9 @@ module Engine
                 return @game.tiles.select { |tile| tiles.include?(tile.name) }
               end
 
-              return @game.tiles.select { |tile| color == tile.color }
+              return @game.tiles.select do |tile|
+                       color == tile.color && !@game.class::TILES_FIXED_ROTATION.include?(tile.name)
+                     end
             end
 
             tiles = super
@@ -99,6 +101,7 @@ module Engine
 
           def legal_tile_rotation?(_entity, hex, tile)
             return tile.rotation.zero? if color == 'purple' && @game.class::TILES_FIXED_ROTATION.include?(tile.name)
+            return true if color == 'purple'
 
             super
           end

@@ -259,7 +259,7 @@ module Engine
 
         def init_company_round
           @round_counter += 1
-          @intern_cr_phase_counter += 1
+          @intern_cr_phase_counter = 1
           @cr_counter += 1
           remove_obsolete_trains
           @log << "-- #{round_description('Company', nil)} --"

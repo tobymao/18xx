@@ -18,7 +18,7 @@ module Engine
           def round_state
             super.merge(
               {
-                pending_tokens: [],
+                pending_special_tokens: [],
               }
             )
           end
@@ -40,11 +40,11 @@ module Engine
           end
 
           def pending_token
-            @round.pending_tokens&.first || {}
+            @round.pending_special_tokens&.first || {}
           end
 
           def description
-            'Place Token'
+            'Place free Token'
           end
 
           def available_tokens(_entity)
