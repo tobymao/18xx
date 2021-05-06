@@ -25,21 +25,10 @@ module Engine
           super
         end
 
-        def get_tile_lay(entity)
-          corporation = if entity.id == @game.class::COMPANY_HSBC
-                          entity
-                        else
-                          entity.company? ? entity.owner : entity
-                        end
-          action = @game.tile_lays(corporation)[@round.num_laid_track]&.clone
-          return unless action
+        def get_tile_lay_corporation(entity)
+          return entity if entity.id == @game.class::COMPANY_HSBC
 
-          action[:lay] = !@round.upgraded_track if action[:lay] == :not_if_upgraded
-          action[:upgrade] = !@round.upgraded_track if action[:upgrade] == :not_if_upgraded
-          action[:cost] = action[:cost] || 0
-          action[:upgrade_cost] = action[:upgrade_cost] || action[:cost]
-          action[:cannot_reuse_same_hex] = action[:cannot_reuse_same_hex] || false
-          action
+          super
         end
 
         def legal_tile_rotation?(entity, hex, tile)

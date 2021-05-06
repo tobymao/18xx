@@ -30,7 +30,7 @@ module Engine
       end
 
       def get_tile_lay(entity)
-        corporation = entity.company? ? entity.owner : entity
+        corporation = get_tile_lay_corporation(entity)
         action = @game.tile_lays(corporation)[@round.num_laid_track]&.clone
         return unless action
 
@@ -40,6 +40,10 @@ module Engine
         action[:upgrade_cost] = action[:upgrade_cost] || action[:cost]
         action[:cannot_reuse_same_hex] = action[:cannot_reuse_same_hex] || false
         action
+      end
+
+      def get_tile_lay_corporation(entity)
+        entity.company? ? entity.owner : entity
       end
 
       def lay_tile_action(action, entity: nil, spender: nil)
