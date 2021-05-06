@@ -61,11 +61,11 @@ module View
 
           if @game&.highlight_token?(@token)
             radius -= 3
-            token_attrs.merge!({
-                                 stroke: 'white',
-                                 'stroke-width': '3px',
-                                 filter: 'drop-shadow(8px 8px 2px #444)',
-                               })
+            token_attrs.merge!(
+              stroke: 'white',
+              'stroke-width': '3px',
+              filter: 'drop-shadow(8px 8px 2px #444)',
+            )
           end
 
           children = [h(:circle, attrs: token_attrs)]
