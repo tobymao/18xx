@@ -256,30 +256,30 @@ module Engine
             'count' => 1,
             'color' => 'purple',
             'code' =>
-            'town=revenue:yellow_30|brown_10;path=a:0,b:_0;path=a:1,b:_0;' \
+            'town=revenue:yellow_30|brown_10,loc:center;path=a:0,b:_0;path=a:1,b:_0;' \
                 'path=a:2,b:_0;path=a:4,b:_0;path=a:5,b:_0,track:narrow;path=a:3,b:_0,track:narrow',
           },
           'L30b' => {
             'count' => 1,
             'color' => 'purple',
             'code' =>
-            'town=revenue:yellow_30|brown_10;city=revenue:yellow_30|brown_10;city=revenue:yellow_30|brown_10;' \
-                'path=a:1,b:_0;path=a:3,b:_0;' \
+            'town=revenue:yellow_30|brown_10,loc:center;city=revenue:yellow_30|brown_10;' \
+                'city=revenue:yellow_30|brown_10;path=a:1,b:_0;path=a:3,b:_0;' \
                 'path=a:4,b:_0;path=a:5,b:_0;path=a:0,b:_1,track:narrow;path=a:2,b:_2,track:narrow',
           },
           'L31a' => {
             'count' => 1,
             'color' => 'purple',
             'code' =>
-            'town=revenue:yellow_10|brown_30;path=a:0,b:_0;path=a:0,b:_0;path=a:1,b:_0;' \
+            'town=revenue:yellow_10|brown_30,loc:center;path=a:0,b:_0;path=a:0,b:_0;path=a:1,b:_0;' \
             'path=a:2,b:_0;path=a:4,b:_0;path=a:5,b:_0,track:narrow;path=a:3,b:_0,track:narrow',
           },
           'L31b' => {
             'count' => 1,
             'color' => 'purple',
             'code' =>
-            'city=revenue:yellow_10|brown_30;city=revenue:yellow_10|brown_30;town=revenue:yellow_10|brown_30;' \
-            'path=a:1,b:_2;path=a:3,b:_2;' \
+            'city=revenue:yellow_10|brown_30;city=revenue:yellow_10|brown_30;' \
+            'town=revenue:yellow_10|brown_30,loc:center;path=a:1,b:_2;path=a:3,b:_2;' \
             'path=a:4,b:_2;path=a:5,b:_2;path=a:0,b:_0,track:narrow;path=a:2,b:_1,track:narrow',
           },
 
