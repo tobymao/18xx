@@ -53,13 +53,17 @@ module Engine
             ACTIONS
           end
 
+          # This step should not be passed
+          # This prevents the force_next_entity! from trying
+          def pass!; end
+
           def process_destination_connection(action)
             action.corporations.each do |corporation|
               @game.log << "-- #{corporation.name} can connect to its destination --"
 
               @round.connection_runs[corporation] = @game.destination_hex(corporation)
             end
-            pass!
+            @passed = true
           end
         end
       end
