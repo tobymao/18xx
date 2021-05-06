@@ -75,12 +75,12 @@ module View
             attrs: { transform: '' },
           }
           props[:attrs][:transform] = rotation_for_layout if @edge
-          if @extra_token
-            props[:attrs][:transform] += ' scale(0.95)'
-            props[:attrs][:filter] = 'drop-shadow(0 0 6px #000)'
-          elsif highlight
+          if highlight
             # make it look like an extra tall token
             props[:attrs][:filter] = 'drop-shadow(8px 8px 2px #444)'
+          elsif @extra_token
+            props[:attrs][:transform] += ' scale(0.95)'
+            props[:attrs][:filter] = 'drop-shadow(0 0 6px #000)'
           end
 
           h(:g, props, children)
