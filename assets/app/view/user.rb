@@ -14,9 +14,11 @@ module View
     include UserManager
 
     needs :type
+    needs :notifications, store: true, default: nil
 
     TILE_COLORS = Lib::Hex::COLOR.freeze
     ROUTE_COLORS = Lib::Settings::ROUTE_COLORS.freeze
+    NOTIFICATION_OPTIONS = %i[email webhook none].freeze
 
     def render_content
       children =
@@ -44,9 +46,9 @@ module View
         render_username,
         render_email,
         h('div#settings__options', [
-          render_checkbox('Turn and Message Emails', :notifications),
+          render_notifications,
           render_checkbox('Red 18xx.games Logo', :red_logo),
-        ]),
+        ].flatten),
         h('div#settings__colors', { style: { maxWidth: '38rem' } }, [
           render_color('Main Background', :bg, color_for(:bg)),
           render_color('Main Font Color', :font, color_for(:font)),
@@ -86,9 +88,9 @@ module View
         render_input('User Name', id: :name),
         render_input('Email', id: :email, type: :email, attrs: { autocomplete: 'email' }),
         render_input('Password', id: :password, type: :password, attrs: { autocomplete: 'new-password' }),
-        render_checkbox('Turn and Message Emails', :notifications),
+        render_notifications,
         h(:div, [render_button('Create Account') { submit }]),
-      ]
+      ].flatten
 
       [render_form(title, inputs)]
     end
@@ -109,7 +111,9 @@ module View
 
     def reset_settings
       input_elm(:red_logo).checked = default_for(:red_logo)
-      %i[bg font bg2 font2 your_turn hotseat_game].each { |e| input_elm(e).value = default_for(e) }
+      %i[notifications webhook_url webhook_user_id bg font bg2 font2 your_turn hotseat_game].each do |e|
+        input_elm(e).value = default_for(e)
+      end
       TILE_COLORS.each { |color, hex_color| input_elm(color).value = hex_color }
       ROUTE_COLORS.each_with_index do |hex_color, index|
         input_elm(route_prop_string(index, :color)).value = hex_color
@@ -140,6 +144,33 @@ module View
           input_style: { width: '13rem' },
         ),
       ])
+    end
+
+    def render_notifications
+      elements = []
+      store(:notifications, setting_for(:notifications) || :email, skip: true) unless @notifications
+
+      notification_options = NOTIFICATION_OPTIONS.flat_map do |option|
+        attrs = { value: option }
+        attrs[:selected] = option if @notifications == option
+
+        h(:option, { attrs: attrs }, option.to_s.capitalize)
+      end
+
+      notification_change = lambda do
+        store(:notifications, Native(@inputs[:notifications]).elm&.value)
+      end
+
+      elements << render_input('Turn/Message Notifications', id: :notifications, el: 'select',
+                                                             on: { input: notification_change }, children: notification_options)
+
+      if @notifications == :webhook
+        elements << render_input('Webhook URL', id: :webhook_url, attrs: { value: setting_for(:webhook_url) })
+        elements << render_input('Webhook User ID', id: :webhook_user_id,
+                                                    attrs: { value: setting_for(:webhook_user_id) })
+      end
+
+      elements
     end
 
     def render_checkbox(label, id)

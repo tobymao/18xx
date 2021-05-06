@@ -21,7 +21,9 @@ module Lib
     end.to_h
 
     SETTINGS = {
-      notifications: true,
+      notifications: :email,
+      webhook_url: '',
+      webhook_user_id: '',
       red_logo: false,
       show_location_names: true,
       bg: DARK ? '#000000' : '#ffffff',
