@@ -20,7 +20,7 @@ module Engine
           end
 
           def crowded_corps
-            [@game.national] if can_discard(@game.national)
+            return [@game.national] if can_discard(@game.national)
 
             []
           end
@@ -38,8 +38,14 @@ module Engine
 
             train = action.train
             @game.depot.reclaim_train(train)
+            done_discarding unless can_discard(@game.national)
+            @log << "#{action.entity.name} scraps a #{train.name} train"
+          end
+
+          def done_discarding
             @game.nationalization_train_discard_trigger = false
-            @log << "#{entity.name} scraps a #{train.name} train"
+            @game.national.remove_ability(@game.abilities(@game.national, :train_limit))
+            @game.national.add_ability(@game.class::POST_NATIONALIZATION_TRAIN_ABILITY)
           end
 
           def trains(corporation)
@@ -55,13 +61,13 @@ module Engine
           end
 
           def must_discard(entity)
-            entity == @game.national && time_to_discard && national_discardable_trains.length > 3
+            entity == @game.national && time_to_discard && national_discardable_trains.size > 3
           end
 
           def national_discardable_trains
             non_permanent_trains = @game.national.trains.select(&:rusts_on)
             permanent_trains = @game.national.trains.reject(&:rusts_on)
-            non_permanent_trains + (permanent_trains.length > 3 ? permanent_trains : [])
+            non_permanent_trains + (permanent_trains.size > 3 ? permanent_trains : [])
           end
         end
       end
