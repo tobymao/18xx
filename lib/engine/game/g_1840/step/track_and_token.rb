@@ -19,12 +19,31 @@ module Engine
           def process_lay_tile(action)
             entity = action.entity
             spender = @game.owning_major_corporation(entity)
+            tile = action.tile
 
             lay_tile_action(action, spender: spender)
             pass! if !can_lay_tile?(entity) && @tokened
 
-            @orange_placed = true if @game.orange_framed?(action.tile)
-            @normal_placed = true unless @game.orange_framed?(action.tile)
+            if @game.orange_framed?(tile)
+              @orange_placed = true
+              if tile.color == 'yellow'
+                type = read_type_from_icon(action.hex)
+
+                if type == 'token'
+                  @round.pending_tokens << {
+                    entity: entity,
+                    token: entity.find_token_by_type,
+                  }
+                else
+                  @round.pending_tile_lays << {
+                    entity: entity,
+                    color: type,
+                  }
+                end
+
+              end
+            end
+            @normal_placed = true unless @game.orange_framed?(tile)
           end
 
           def available_hex(entity, hex)
@@ -56,6 +75,15 @@ module Engine
             end
 
             super
+          end
+
+          def read_type_from_icon(hex)
+            name = hex.original_tile.icons.first.name
+            name.split('_').first
+          end
+
+          def show_other
+            @game.owning_major_corporation(current_entity)
           end
         end
       end
