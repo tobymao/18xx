@@ -93,21 +93,26 @@ module Engine
             corporation = bundle.corporation
             price = corporation.share_price.price
 
-            previous_ignore = corporation.share_price.type == :ignore_one_sale
+            hit_soft_ledge = false
             bundle.num_shares.times do
-              previous_ignore = corporation.share_price.type == :ignore_one_sale
-              @game.stock_market.move_down(corporation)
+              if hit_soft_ledge
+                @game.stock_market.move_down(corporation)
+                hit_soft_ledge = false
+              end
+
+              r, c = corporation.share_price.coordinates
+              if corporation.share_price.type != :ignore_one_sale &&
+                  @game.stock_market.market.dig(r + 1, c)&.type == :ignore_one_sale
+                hit_soft_ledge = true
+              else
+                @game.stock_market.move_down(corporation)
+              end
             end
-            current_ignore = corporation.share_price.type == :ignore_one_sale
 
             verb = forced ? 'can\'t' : 'doesn\'t'
             num_presentation = @game.share_pool.num_presentation(bundle)
             @log << "#{corporation_owner.name} #{verb} price protect #{num_presentation} of #{corporation.name}"
-
-            if current_ignore && !previous_ignore
-              @log << "#{corporation.name} hits the ledge"
-              @game.stock_market.move_up(corporation) if current_ignore && !previous_ignore
-            end
+            @log << "#{corporation.name} hits the ledge" if hit_soft_ledge
 
             @game.log_share_price(corporation, price)
 
