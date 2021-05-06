@@ -22,6 +22,7 @@ class Api
             password: r['password'],
             settings: {
               notifications: r['notifications'],
+              webhook: r['webhook'],
               webhook_url: r['webhook_url'],
               webhook_user_id: r['webhook_user_id'],
             },

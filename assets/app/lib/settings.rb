@@ -22,6 +22,7 @@ module Lib
 
     SETTINGS = {
       notifications: :email,
+      webhook: :slack,
       webhook_url: '',
       webhook_user_id: '',
       red_logo: false,
