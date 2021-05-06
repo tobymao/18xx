@@ -59,13 +59,10 @@ module View
             fill: color,
           }
 
-          if @game&.highlight_token?(@token)
+          if (highlight = @game&.highlight_token?(@token))
             radius -= 3
-            token_attrs.merge!(
-              stroke: 'white',
-              'stroke-width': '3px',
-              filter: 'drop-shadow(8px 8px 2px #444)',
-            )
+            token_attrs[:stroke] = 'white'
+            token_attrs[:'stroke-width'] = '3px'
           end
 
           children = [h(:circle, attrs: token_attrs)]
@@ -81,6 +78,9 @@ module View
           if @extra_token
             props[:attrs][:transform] += ' scale(0.95)'
             props[:attrs][:filter] = 'drop-shadow(0 0 6px #000)'
+          elsif highlight
+            # make it look like an extra tall token
+            props[:attrs][:filter] = 'drop-shadow(8px 8px 2px #444)'
           end
 
           h(:g, props, children)
