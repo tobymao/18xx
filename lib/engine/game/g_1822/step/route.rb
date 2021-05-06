@@ -58,7 +58,7 @@ module Engine
           end
 
           def only_e_train?(entity)
-            @game.route_trains(entity).reject { |t| t.name == @game.class::E_TRAIN }.empty?
+            @game.route_trains(entity).none? { |t| t.name != @game.class::E_TRAIN }
           end
 
           def pullman_train_choices(entity)
