@@ -8,7 +8,8 @@ module Engine
       module Step
         class Track < Engine::Step::Track
           def actions(entity)
-            return [] if @game.skip_round[entity]
+            return [] if entity.corporation? && entity.receivership?
+            return [] if @game.skip_round[entity] || @game.lner
 
             super
           end

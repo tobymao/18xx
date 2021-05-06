@@ -9,11 +9,12 @@ module Engine
       module Step
         class RedeemShare < Engine::Step::IssueShares
           def actions(entity)
-            available_actions = []
-            return available_actions unless entity.corporation?
-            return available_actions if entity != current_entity
-            return available_actions if @game.skip_round[entity]
+            return [] unless entity.corporation?
+            return [] if entity != current_entity
+            return [] if entity.receivership?
+            return [] if @game.skip_round[entity]
 
+            available_actions = []
             available_actions << 'buy_shares' unless redeemable_shares(entity).empty?
             available_actions << 'pass' if blocks? && !available_actions.empty?
 

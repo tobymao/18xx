@@ -17,6 +17,14 @@ module Engine
             super unless @game.skip_round[entity]
           end
 
+          def help
+            return super unless current_entity.receivership?
+
+            "#{current_entity.name} is in receivership (it has no president). Most of its "\
+              "actions are automated, but the majority share owner (#{@game.acting_for_entity(current_entity).name}) "\
+              "must manually run its trains. Please enter the best route you see for #{current_entity.name}."
+          end
+
           def process_run_routes(action)
             super
 

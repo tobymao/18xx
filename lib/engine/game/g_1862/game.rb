@@ -26,7 +26,7 @@ module Engine
         include Entities
         include Map
 
-        attr_accessor :chartered, :base_tiles, :deferred_rust, :skip_round
+        attr_accessor :chartered, :base_tiles, :deferred_rust, :skip_round, :permits, :lner
 
         register_colors(black: '#000000',
                         orange: '#f48221',
@@ -195,7 +195,7 @@ module Engine
             train_limit: 3, # across all types
             tiles: %i[yellow green brown],
             operating_rounds: 3,
-            status: %w[three_total end_game],
+            status: ['three_total'],
           },
         ].freeze
 
@@ -405,6 +405,7 @@ module Engine
                 price: 800,
               },
             ],
+            events: [{ 'type' => 'cert_limit_change' }, { 'type' => 'lner_trigger' }],
           },
         ].freeze
 
@@ -452,14 +453,27 @@ module Engine
         # NOTE: that the definition of an "upgrade" is extended to include "N" tiles
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
 
-        GAME_END_CHECK = { stock_market: :current_or, bank: :current_or, custom: :immediate }.freeze
+        GAME_END_CHECK = { stock_market: :current_or, bank: :full_or, custom: :full_or }.freeze
+        GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
+          bank: 'The bank runs out of money before LNER forms',
+          custom: 'LNER forms before bank runs out of money'
+        )
 
         STATUS_TEXT = Base::STATUS_TEXT.merge(
-          'three_per' => ['3 per kind', 'Limit of 3 trains of each kind (Freight/Local/Express)'],
-          'two_per' => ['2 per kind', 'Limit of 2 trains of each kind (Freight/Local/Express)'],
-          'three_total' => ['3 total', 'Limit of 3 trains total'],
-          'end_game' => ['Game end trigger', 'LNER forms at end of OR set'],
+          'three_per' => ['3 per kind',
+                          'Limit of 3 trains of each kind (Freight/Local/Express)'],
+          'two_per' => ['2 per kind',
+                        'Limit of 2 trains of each kind (Freight/Local/Express)'],
+          'three_total' => ['3 total',
+                            'Limit of 3 trains total'],
         ).freeze
+
+        EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+           'cert_limit_change' => ['New Cert Limit',
+                                   'Certificate Limit Changes'],
+           'lner_trigger' => ['LNER Trigger',
+                              'LNER will form at end of OR set, game ends at end of following OR set'],
+         ).freeze
 
         CHARTERED_TOKEN_COST = 60
         UNCHARTERED_TOKEN_COST = 40
@@ -513,6 +527,8 @@ module Engine
         def setup_preround
           @base_tiles = []
           @skip_round = {}
+          @lner_triggered = nil
+          @lner = nil
 
           # remove reservations (nice to have in starting map)
           @corporations.each { |corp| remove_reservation(corp) }
@@ -682,7 +698,7 @@ module Engine
 
         def place_home_token(corporation)
           # If a corp has laid it's first token assume it's their home token
-          return if corporation.tokens.first&.used
+          return if corporation.tokens.first&.used || corporation.receivership?
 
           hex = hex_by_id(corporation.coordinates)
 
@@ -744,6 +760,7 @@ module Engine
         # - there still is a slot available, OR
         # - a legal upgrade has an additional slot
         def legal_to_start?(corporation)
+          return false if @lner
           return true if corporation.tokens.first&.used
 
           hex = hex_by_id(corporation.coordinates)
@@ -774,6 +791,21 @@ module Engine
           (from.label == to.label) ||
             (from.label.to_s == 'N' && to.label.to_s == 'I' && from.hex.id == IPSWITCH_HEX) ||
             (from.label.to_s == 'Y' && to.label.to_s == 'H' && from.hex.id == HARWICH_HEX)
+        end
+
+        def active_players
+          players_ = @round.active_entities.map(&:player).compact
+
+          players_.empty? ? [acting_for_entity(@round.active_entities[0])] : players_
+        end
+
+        # find majority shareholder for receivership corp
+        # breaking ties with closest to priority deal
+        def acting_for_entity(entity)
+          return entity if entity.player?
+          return entity.owner if entity.owner.player?
+
+          @players.max_by { |h| h.shares_of(entity).sum(&:percent) }
         end
 
         def stock_round
@@ -838,12 +870,69 @@ module Engine
                 @turn += 1
                 or_round_finished
                 or_set_finished
-                new_parliament_round
+                if @lner_triggered
+                  @lner_triggered = false
+                  form_lner
+                  new_stock_round
+                else
+                  new_parliament_round
+                end
               end
             when init_round.class
               init_round_finished
               new_stock_round
             end
+        end
+
+        def form_lner
+          @log << '-- LNER Formed --'
+
+          # move all IPO stock to market
+          @corporations.each do |corp|
+            if @chartered[corp] && !(ipo_shares = corp.ipo_shares).empty?
+              ipo_shares.each { |s| transfer_share(s, @share_pool) }
+              @log << "Moved #{ipo_shares.size} shares from #{corp.name} IPO to market"
+            end
+          end
+
+          @lner = true
+        end
+
+        def event_cert_limit_change!
+          @cert_limit = @players.map { |p| p.shares.sum(&:percent) }.max / 10
+          @log << "-- Certificate limit is now #{@cert_limit} per player --"
+        end
+
+        def event_lner_triggered!
+          @lner_triggered = true
+          @log << 'LNER will form at end of current OR set'
+        end
+
+        # overridden to change bank condition
+        def game_end_check
+          triggers = {
+            bankrupt: bankruptcy_limit_reached?,
+            bank: @bank.broken? && !@lner,
+            stock_market: @stock_market.max_reached?,
+            final_train: @depot.empty?,
+            final_phase: @phase.phases.last == @phase.current,
+            custom: custom_end_game_reached?,
+          }.select { |_, t| t }
+
+          %i[immediate current_round current_or full_or one_more_full_or_set].each do |after|
+            triggers.keys.each do |reason|
+              if game_end_check_values[reason] == after
+                @final_turn ||= @turn + 1 if after == :one_more_full_or_set
+                return [reason, after]
+              end
+            end
+          end
+
+          nil
+        end
+
+        def custom_end_game_reached?
+          @lner
         end
 
         def enter_bankruptcy!(corp)
@@ -869,6 +958,9 @@ module Engine
           reset_corporation(corp)
 
           @skip_round[corp] = true
+
+          # disable auto-actions if this was in a stock round
+          clear_programmed_actions if @round.stock?
         end
 
         def status_array(corp)
@@ -938,7 +1030,7 @@ module Engine
         end
 
         def selling_movement?(corporation)
-          corporation.floated? && !@phase.available?('H')
+          corporation.floated? && !@lner
         end
 
         def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
@@ -1506,6 +1598,14 @@ module Engine
             "( #{owners.map { |c, t| "#{c} x#{t}" }.join(', ')}) --"
         end
 
+        def highlight_token?(token)
+          return false unless token
+          return false unless token.corporation
+
+          corporation = token.corporation
+          corporation.tokens.find_index(token).zero?
+        end
+
         def must_buy_train?(entity)
           entity.trains.empty?
         end
@@ -1703,8 +1803,8 @@ module Engine
             while returned < return_percent
               share = reordered.shift
               returned += share.percent
-              transfer_share(share, @share_pool)
               @log << "#{entity.name} returns a #{share.percent}% share of #{share.corporation.name} to the market"
+              transfer_share(share, @share_pool)
 
               if share.president && share.corporation == @merge_data[:corps].first
                 raise GameError, 'returning incorrect presidents share'
@@ -1855,14 +1955,17 @@ module Engine
             corporation.owner = majority_holder
           else
             @log << "#{corporation.name} has no president and enters receivership"
-            corporation.owner = nil
+            corporation.owner = @share_pool
           end
         end
 
         def move_assets(survivor, nonsurvivor)
+          # stocks
+          nonsurvivor.shares_of(survivor).dup.each { |s| transfer_share(s, survivor) }
           # cash
           nonsurvivor.spend(nonsurvivor.cash, survivor) if nonsurvivor.cash.positive?
           # trains
+          nonsurvivor.trains.each { |t| t.owner = survivor }
           survivor.trains.concat(nonsurvivor.trains)
           nonsurvivor.trains.clear
           # permits

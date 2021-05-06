@@ -71,7 +71,7 @@ module Engine
         @current_operator = entity
         @current_operator_acted = false
         entity.trains.each { |train| train.operated = false }
-        @log << "#{entity.owner.name} operates #{entity.name}" unless finished?
+        @log << "#{@game.acting_for_entity(entity).name} operates #{entity.name}" unless finished?
         @game.place_home_token(entity) if @home_token_timing == :operate
         skip_steps
         next_entity! if finished?
