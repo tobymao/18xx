@@ -39,6 +39,8 @@ module Engine
 
         AVAILABLE_CORP_COLOR = '#c6e9af'
 
+        TILE_LAYS = [{ lay: true, upgrade: true, cost: 0 }, { lay: true, upgrade: true, cost: 0 }].freeze
+
         MARKET_TEXT = {
           par: 'City Corporation Par',
           par_2: 'Major Corporation Par',
@@ -53,6 +55,8 @@ module Engine
           city: [65, 75, 85, 95],
           major: [70, 80, 90, 100],
         }.freeze
+
+        TILE_COST = 0
 
         INITIAL_CITY_PAR = {
           'W' => 95,
@@ -116,11 +120,48 @@ module Engine
           { type: :End },
         ].freeze
 
+        CITY_TRACK_EXITS = {
+          # G
+          'B16' => [1, 3],
+          'B14' => [0, 4],
+          'C13' => [0, 3],
+          'D12' => [5, 3],
+          'E13' => [0, 2],
+          'F12' => [0, 3],
+          'H12' => [0, 2],
+          # V
+          'B10' => [0, 3],
+          'C9' => [1, 3],
+          'D6' => [5, 3],
+          'E7' => [0, 2],
+          'F6' => [0, 3],
+          'G5' => [1, 3],
+          # D
+          'B20' => [2, 5],
+          'C21' => [2, 5],
+          'D22' => [2, 5],
+          'E23' => [2, 5],
+          # W
+          'G23' => [1, 3],
+          'G21' => [1, 4],
+          'G19' => [1, 4],
+          'G17' => [0, 4],
+          'H16' => [0, 3],
+          'I15' => [1, 3],
+          'I13' => [1, 4],
+          'I9' => [1, 4],
+          'I7' => [1, 4],
+          'I5' => [1, 4],
+          'I3' => [1, 4],
+        }.freeze
+
         attr_reader :tram_corporations, :major_corporations, :tram_owned_by_corporation
 
         def setup
+          @intern_cr_phase_counter = 0
           @cr_counter = 0
           @first_stock_round = true
+          @or = 0
           @all_tram_corporations = @corporations.select { |item| item.type == :minor }
           @tram_corporations = @all_tram_corporations.reject { |item| item.id == '2' }.sort_by do
             rand
@@ -174,16 +215,25 @@ module Engine
             @players.each { |item| @bank.spend(ADDITIONAL_CASH, item) }
             @first_stock_round = false
           end
-          Engine::Round::Stock.new(self, [
+          G1840::Round::Stock.new(self, [
             G1840::Step::BuySellParShares,
           ])
         end
 
         def init_company_round
           @round_counter += 1
+          @intern_cr_phase_counter += 1
           @cr_counter += 1
           @log << "-- #{round_description('Company', nil)} --"
           new_company_operating_route_round
+        end
+
+        def new_operating_round(round_num = 1)
+          @log << "-- #{round_description(self.class::OPERATING_ROUND_NAME, round_num)} --"
+          @phase.next! if @or == 2 || @or == 6 || @or == 8
+          @or += 1
+          @round_counter += 1
+          operating_round(round_num)
         end
 
         def new_company_operating_route_round(round_num)
@@ -215,18 +265,13 @@ module Engine
 
         def operating_round(round_num)
           G1840::Round::LineOperating.new(self, [
-            Engine::Step::Bankrupt,
-            Engine::Step::Exchange,
             Engine::Step::SpecialTrack,
             Engine::Step::SpecialToken,
             Engine::Step::BuyCompany,
             Engine::Step::HomeToken,
-            Engine::Step::Track,
-            Engine::Step::Token,
+            G1840::Step::TrackAndToken,
             Engine::Step::Route,
-            Engine::Step::Dividend,
-            Engine::Step::DiscardTrain,
-            Engine::Step::BuyTrain,
+            G1840::Step::Dividend,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
@@ -235,31 +280,34 @@ module Engine
           @round =
             case @round
             when Engine::Round::Stock
-              init_company_round
-            when G1840::Round::CompanyOperating
-              @cr_counter += 1
-              if @cr_counter < 3
-                new_company_operating_buy_train_round
-              elsif @cr_counter < 4
-                new_company_operating_auction_round
+              if @cr_counter.zero?
+                init_company_round
               else
-                new_operating_round(@round.round_num + 1)
+                new_operating_round(@round.round_num)
+              end
+            when G1840::Round::CompanyOperating
+              @intern_cr_phase_counter += 1
+              if @intern_cr_phase_counter < 3
+                new_company_operating_buy_train_round
+              elsif @intern_cr_phase_counter < 4
+                new_company_operating_auction_round
+              elsif @cr_counter == 1
+                new_operating_round(@round.round_num)
+              else
+                new_stock_round
               end
             when new_company_operating_auction_round.class
               new_company_operating_switch_trains
             when Engine::Round::Operating
-              # after LR is always CR
-              # after first CR comes LR else SR, after CR6 game ends
-              # After OR is either CR or LR or SR ;)
-              # if @round.round_num < @operating_rounds
-              #   or_round_finished
-              #   new_operating_round(@round.round_num + 1)
-              # else
-              #   @turn += 1
-              #   or_round_finished
-              #   or_set_finished
-              #   new_stock_round
-              # end
+              if @round.round_num < @operating_rounds
+                or_round_finished
+                new_operating_round(@round.round_num + 1)
+              else
+                @turn += 1
+                or_round_finished
+                or_set_finished
+                init_company_round
+              end
             when init_round.class
               init_round_finished
               new_stock_round
@@ -292,6 +340,10 @@ module Engine
           @tram_owned_by_corporation[corporation] || []
         end
 
+        def owning_major_corporation(corporation)
+          @tram_owned_by_corporation.find { |_k, v| v.find { |item| item == corporation } }.first
+        end
+
         def buy_tram_corporation(buying_corporation, tram_corporation)
           tram_corporation.ipoed = true
           tram_corporation.ipo_shares.each do |share|
@@ -321,9 +373,42 @@ module Engine
         end
 
         def payout_companies
-          return unless @cr_counter.zero?
+          return unless @intern_cr_phase_counter.zero?
 
           super
+        end
+
+        def place_home_token(corporation)
+          super
+          @graph.clear
+        end
+
+        def buying_power(entity, **)
+          return 0 if entity.type == :city
+          return entity.cash if entity.type == :major
+
+          owning_major_corporation(entity).cash
+        end
+
+        def orange_framed?(tile)
+          tile.frame&.color == '#ffa500'
+        end
+
+        def upgrades_to?(from, to, special = false, selected_company: nil)
+          if from.towns.empty? && from.cities.empty? && !to.towns.empty? && to.cities.empty? &&
+            from.color == :white && to.color == :yellow
+            return true
+          end
+          if orange_framed?(from) && from.towns.size == 1 &&
+             to.towns.size == 2 && from.color == :yellow && to.color == :green
+            return true
+          end
+
+          super
+        end
+
+        def needed_exits_for_hex(hex)
+          CITY_TRACK_EXITS[hex.id]
         end
       end
     end

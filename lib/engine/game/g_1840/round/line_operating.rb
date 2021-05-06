@@ -8,7 +8,7 @@ module Engine
       module Round
         class LineOperating < Engine::Round::Operating
           def select_entities
-            @game.operating_order.select { |item| item.type == :minor }
+            @game.operating_order.select { |item| item.type == :minor }.sort_by { |item| item.id.to_i }
           end
 
           def self.short_name
@@ -17,6 +17,15 @@ module Engine
 
           def name
             'Line Round'
+          end
+
+          def after_process(action)
+            entity = @entities[@entity_index]
+            if action.is_a?(Engine::Action::RunRoutes) && !action.routes.empty?
+              process_action(Engine::Action::Dividend.new(entity,
+                                                          kind: 'payout'))
+            end
+            super
           end
         end
       end

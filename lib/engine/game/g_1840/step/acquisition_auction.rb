@@ -86,7 +86,6 @@ module Engine
             if @auctioning && !@active_bidders.empty?
               winning_bid = highest_bid(@auctioning)
               if winning_bid
-                # puts @active_bidders
                 return [@active_bidders[(@active_bidders.index(winning_bid.entity) + 1) % @active_bidders.size]]
               end
             end
@@ -162,7 +161,6 @@ module Engine
 
             @round.next_entity_index!
             entity = entities[entity_index]
-            # puts entity.id, entity.passed?
             next_entity! if entity&.passed?
           end
 
