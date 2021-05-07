@@ -17,7 +17,7 @@ module Engine
           end
 
           def buyable_trains(entity)
-            super
+            super.select { |item| item.owner == @game.depot }
           end
 
           def buyable_train_variants(train, entity)

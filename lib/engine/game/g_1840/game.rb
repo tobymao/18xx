@@ -179,6 +179,14 @@ module Engine
           'R1',
         ].freeze
 
+        MAINTAINANCE_COST = {
+          'Y1' => {},
+          'O1' => {},
+          'R1' => { 'Y1' => -50 },
+          'Pi1' => { 'Y1' => -200, 'O1' => -100, 'R1' => -50 },
+          'Pu1' => { 'Y1' => -400, 'O1' => -300, 'R1' => -100, 'Pu1' => 200 },
+        }.freeze
+
         attr_reader :tram_corporations, :major_corporations, :tram_owned_by_corporation
 
         def setup
@@ -186,6 +194,7 @@ module Engine
           @cr_counter = 0
           @first_stock_round = true
           @or = 0
+          @active_maintainance_cost = {}
           @all_tram_corporations = @corporations.select { |item| item.type == :minor }
           @tram_corporations = @all_tram_corporations.reject { |item| item.id == '2' }.sort_by do
             rand
@@ -450,7 +459,6 @@ module Engine
         end
 
         def info_train_price(train)
-          puts train.names_to_prices
           name_and_prices = train.names_to_prices.sort_by { |k, _v| k }.to_h
 
           active_variant = (available_trains & train.variants.keys).first
@@ -472,6 +480,32 @@ module Engine
           return unless train_to_remove
 
           @depot.export_all!(train_to_remove)
+        end
+
+        def buy_train(operator, train, price = nil)
+          super
+
+          new_cost = MAINTAINANCE_COST[train.sym]
+          @active_maintainance_cost = new_cost if new_cost['Y1'] &&
+                                      (@active_maintainance_cost['Y1'].nil? ||
+                                         new_cost['Y1'] < @active_maintainance_cost['Y1'])
+        end
+
+        def status_str(corporation)
+          return if corporation.type != :minor
+
+          "Maintenance: #{format_currency(maintenance_costs(corporation))}"
+        end
+
+        def maintenance_costs(corporation)
+          corporation.trains.inject(0) { |sum, train| sum + (@active_maintainance_cost[train.sym] || 0) }
+        end
+
+        def routes_revenue(routes)
+          return super if routes.empty?
+
+          corporation = routes.first.train.owner
+          routes.sum(&:revenue) + maintenance_costs(corporation)
         end
       end
     end
