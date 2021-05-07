@@ -5,6 +5,7 @@ require_relative 'map'
 require_relative 'meta'
 require_relative 'trains'
 require_relative 'step/track'
+require_relative 'step/waterfall_auction'
 require_relative '../base'
 require_relative '../company_price_up_to_face'
 require_relative '../stubs_are_restricted'
@@ -107,6 +108,22 @@ module Engine
           ], round_num: round_num)
         end
 
+        def new_auction_round
+          Round::Auction.new(self, [
+            Engine::Step::CompanyPendingPar,
+            G1868WY::Step::WaterfallAuction,
+          ])
+        end
+
+        def init_round_finished
+          p10_company.revenue = 0
+          p10_company.desc = 'Pays $40 revenue ONLY in green phases. Closes, '\
+                             'becomes LHP train at phase 5.'
+
+          p11_company.close!
+          @log << "#{p11_company.name} closes"
+        end
+
         def event_all_corps_available!
           @late_corps.each { |corp| corp.reservation_color = CORPORATION_RESERVATION_COLOR }
           @corporations.concat(@late_corps)
@@ -141,8 +158,24 @@ module Engine
           "Track Points: #{track_points_available(corporation)}" if corporation.floated?
         end
 
+        def p1_company
+          @p1_company ||= company_by_id('P1')
+        end
+
         def p7_company
           @p7_company ||= company_by_id('P7')
+        end
+
+        def p10_company
+          @p10_company ||= company_by_id('P10')
+        end
+
+        def p11_company
+          @p11_company ||= company_by_id('P11')
+        end
+
+        def p12_company
+          @p12_company ||= company_by_id('P12')
         end
 
         def track_points_available(entity)
@@ -185,6 +218,20 @@ module Engine
 
         def or_set_finished
           depot.export!
+        end
+
+        def isr_payout_companies(p12_bidders)
+          payout_companies
+          bidders = p12_bidders.map(&:name).sort
+          @log << "#{bidders.join(', ')} collect#{bidders.one? ? 's' : ''} $5 "\
+                  "for their bid#{bidders.one? ? '' : 's'} on #{p12_company.name}"
+          p12_bidders.each { |p| @bank.spend(5, p) }
+        end
+
+        def isr_company_choices
+          @isr_company_choices ||= COMPANY_CHOICES.transform_values do |company_ids|
+            company_ids.map { |id| company_by_id(id) }
+          end
         end
       end
     end
