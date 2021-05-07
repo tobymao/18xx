@@ -447,12 +447,19 @@ module Engine
 
         def info_available_train(_first_train, train)
           !(available_trains & train.variants.keys).empty?
-          # train.sym == first_train&.sym
         end
 
         def info_train_price(train)
-          # TODO:  prices
-          train.names_to_prices.values.map { |p| format_currency(p) }.join(', ')
+          puts train.names_to_prices
+          name_and_prices = train.names_to_prices.sort_by { |k, _v| k }.to_h
+
+          active_variant = (available_trains & train.variants.keys).first
+          return name_and_prices.values.map { |p| format_currency(p) }.join(', ') unless active_variant
+
+          active_price = name_and_prices[active_variant]
+          name_and_prices.delete(active_variant)
+
+          "#{active_price}, (#{name_and_prices.values.map { |p| format_currency(p) }.join(', ')})"
         end
 
         def available_trains
