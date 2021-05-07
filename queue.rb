@@ -24,7 +24,7 @@ MessageBus.subscribe '/turn' do |msg|
   minute_ago = (Time.now - 60).to_i
 
   users = users.reject do |user|
-    next true if user.email =~ /@(msn|hotmail|outlook|live|passport)/
+    next true if /@(msn|hotmail|outlook|live|passport)/.match?(user.email)
     next true if user.settings['notifications'] == false
     next false if data['force']
     next true if (Bus[Bus::USER_TS % user.id].to_i || minute_ago) > minute_ago
