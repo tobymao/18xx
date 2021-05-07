@@ -33,7 +33,7 @@ module Engine
 
           def process_choose(action)
             corporation = @round.buy_tokens
-            @game.purchase_tokens!(corporation, action.choice)
+            @game.purchase_tokens!(corporation, action.choice.to_i)
 
             @round.buy_tokens = nil
             pass!

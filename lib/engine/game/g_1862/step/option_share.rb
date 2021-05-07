@@ -36,7 +36,7 @@ module Engine
           def process_choose(action)
             entity = action.entity
             share = pending_option[:share]
-            if action.choice == :sell
+            if action.choice.to_s == 'sell'
               @game.bank.spend(pending_option[:sell_price], entity)
               @game.transfer_share(share, @game.share_pool)
               @log << "#{entity.name} sells #{pending_option[:share].corporation.name} #{pending_option[:percent]}% "\

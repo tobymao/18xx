@@ -49,6 +49,7 @@ module Engine
             entity = winner.entity
             corporation = winner.corporation
             price = winner.price
+            @round.won_auction[entity] = true
 
             @log << "#{entity.name} wins bid on #{corporation.name} for #{@game.format_currency(price)}"
             entity.spend(price, @game.bank) if price.positive?
@@ -63,7 +64,7 @@ module Engine
           end
 
           def can_start_auction?(entity)
-            max_bid(entity) >= MIN_BID && !@round.started_auction[entity] &&
+            max_bid(entity) >= MIN_BID && !@round.won_auction[entity] &&
             @game.ipoable_corporations.any? do |c|
               @game.can_par?(c, entity) && can_buy?(entity, c.shares.first&.to_bundle)
             end
@@ -167,7 +168,6 @@ module Engine
               add_bid(action)
             else
               selection_bid(action)
-              @round.started_auction[action.entity] = true
             end
           end
 
@@ -215,7 +215,7 @@ module Engine
           def round_state
             super.merge(
               {
-                started_auction: {},
+                won_auction: {},
               }
             )
           end
