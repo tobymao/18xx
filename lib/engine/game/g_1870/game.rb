@@ -10,7 +10,7 @@ module Engine
       class Game < Game::Base
         include_meta(G1870::Meta)
 
-        attr_accessor :connection_run, :reissued
+        attr_accessor :sell_queue, :connection_run, :reissued
 
         register_colors(black: '#37383a',
                         orange: '#f48221',
@@ -652,6 +652,7 @@ module Engine
         end
 
         def setup
+          @sell_queue = []
           @connection_run = {}
           @reissued = {}
 
@@ -765,7 +766,7 @@ module Engine
         end
 
         def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
-          @round.sell_queue << [bundle, bundle.corporation.owner]
+          @sell_queue << [bundle, bundle.corporation.owner]
 
           @share_pool.sell_shares(bundle)
         end
@@ -775,7 +776,7 @@ module Engine
             next 0 unless s.corporation.counts_for_limit
             next 0 unless s.counts_for_limit
             # Don't count shares that have been sold and will go to yellow unless protected
-            next 0 if @round.sell_queue.any? do |bundle, _|
+            next 0 if @sell_queue.any? do |bundle, _|
               bundle.corporation == s.corporation &&
                 !stock_market.find_share_price(s.corporation, Array.new(bundle.num_shares, :up)).counts_for_limit
             end

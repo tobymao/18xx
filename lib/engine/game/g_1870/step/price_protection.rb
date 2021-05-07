@@ -21,12 +21,8 @@ module Engine
             'Price protect shares'
           end
 
-          def round_state
-            super.merge(sell_queue: [])
-          end
-
           def active_entities
-            return [] if @round.sell_queue.empty?
+            return [] if @game.sell_queue.empty?
 
             [price_protection_entity]
           end
@@ -36,11 +32,11 @@ module Engine
           end
 
           def price_protection
-            @round.sell_queue.dig(0, 0)
+            @game.sell_queue.dig(0, 0)
           end
 
           def price_protection_entity
-            @round.sell_queue.dig(0, 1)
+            @game.sell_queue.dig(0, 1)
           end
 
           def can_sell?
@@ -57,7 +53,7 @@ module Engine
           end
 
           def process_buy_shares(action)
-            bundle, = @round.sell_queue.shift
+            bundle, = @game.sell_queue.shift
 
             player = action.entity
             price = bundle.price
@@ -88,7 +84,7 @@ module Engine
           end
 
           def process_pass(_action, forced = false)
-            bundle, corporation_owner = @round.sell_queue.shift
+            bundle, corporation_owner = @game.sell_queue.shift
 
             corporation = bundle.corporation
             price = corporation.share_price.price
