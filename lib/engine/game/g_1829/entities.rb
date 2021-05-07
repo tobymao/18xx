@@ -57,8 +57,17 @@ module Engine
             simple_logo: '1829/LNWR.alt',
             tokens: [0, 40, 100, 100, 100],
             max_ownership_percent: 100,
+            connect: false,
+            abilities: [
+            {
+              type: 'tile_lay',
+              connect: false,
+              count: 1,
+              tiles: [],
+              hexes: %w[B7 B9 B11],
+            },
+],
             city: 1,
-            min_price: 100,
             coordinates: 'E8',
             type: 'init1',
             color: 'black',
