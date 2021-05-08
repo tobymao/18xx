@@ -105,9 +105,9 @@ module Engine
             name: 'Drumglass Colliery Railway',
             value: 60,
             revenue: 12,
-            desc: 'No Corporation can build in the DCR hex until this company is bought by any Corporation'\
-            ' or closed. The owning Corporation can then place a yellow tile'\
-            ' in that hex without using a tile action or paying terrain costs.',
+            desc: 'No Corporation can build in the DCR hex (H4) until this company is bought by any Corporation'\
+            ' or closed. The owning Corporation may place a yellow tile'\
+            ' on that hex (H4) without using a tile action or paying terrain costs.',
             sym: 'DCR',
             abilities: [
               {
@@ -117,7 +117,7 @@ module Engine
               },
               {
                 type: 'tile_lay',
-                hexes: ['F4'],
+                hexes: ['H4'],
                 tiles: [],
                 when: 'owning_corp_or_turn',
                 owner_type: 'corporation',
