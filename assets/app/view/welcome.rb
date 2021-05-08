@@ -17,6 +17,7 @@ module View
 
     def render_notification
       message = <<~MESSAGE
+        <p>We now support Slack/Discord notifications. Learn how to use them <a href='https://github.com/tobymao/18xx/wiki/Notifications'>here</a>.</p>
         <p>18Ireland is now in alpha. 18Mag is now in production. 18FL is now in beta.</p>
         <p>Please submit problem reports and make suggestions for improvements on
         <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>.</p>

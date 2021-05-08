@@ -3,6 +3,7 @@
 require_relative 'base'
 require_relative '../assets/app/lib/settings'
 require 'argon2'
+require 'uri'
 
 class User < Base
   one_to_many :games
@@ -26,6 +27,8 @@ class User < Base
     params.each do |key, value|
       settings[key] = value if SETTINGS.include?(key)
     end
+
+    settings.delete('webhook_url') if settings['webhook'] != 'custom'
   end
 
   def self.by_email(email)
@@ -71,5 +74,11 @@ class User < Base
     validates_format /^.+$/, :name, message: 'may not be empty'
     validates_format /^[^\s].*$/, :name, message: 'may not start with a whitespace'
     validates_format /^[^@\s]+@[^@\s]+\.[^@\s]+$/, :email
+
+    # rubocop:disable Style/GuardClause
+    if (url = settings['webhook_url']) && !%w[slack.com discord.com].include?(URI.parse(url).host)
+      errors.add(:webhook_url, 'only supports Slack and Discord, let us know if you want others')
+    end
+    # rubocop:enable Style/GuardClause
   end
 end
