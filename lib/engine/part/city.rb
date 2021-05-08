@@ -7,7 +7,7 @@ module Engine
   module Part
     class City < RevenueCenter
       attr_accessor :reservations
-      attr_reader :tokens, :extra_tokens
+      attr_reader :tokens, :extra_tokens, :boom
 
       def initialize(revenue, **opts)
         super
@@ -16,6 +16,7 @@ module Engine
         # Bull tokens are tokens in a city that don't go in a city slot
         @extra_tokens = []
         @reservations = []
+        @boom = opts[:boom]
       end
 
       def slots(all: false)
@@ -74,13 +75,14 @@ module Engine
         true
       end
 
-      def tokenable?(corporation, free: false, tokens: corporation.tokens_by_type, cheater: false, extra_slot: false)
+      def tokenable?(corporation, free: false, tokens: corporation.tokens_by_type, cheater: false,
+                     extra_slot: false, spender: nil)
         tokens = Array(tokens)
         return false if !extra_slot && tokens.empty?
 
         tokens.any? do |t|
           next false unless extra_slot || get_slot(t.corporation, cheater: cheater)
-          next false if !free && t.price > corporation.cash
+          next false if !free && t.price > (spender || corporation).cash
           next false if @tile.cities.any? { |c| c.tokened_by?(t.corporation) }
           next true if reserved_by?(corporation)
           next false if @tile.token_blocked_by_reservation?(corporation)
@@ -103,9 +105,10 @@ module Engine
         reservation || open_slot
       end
 
-      def place_token(corporation, token, free: false, check_tokenable: true, cheater: false, extra_slot: false)
+      def place_token(corporation, token, free: false, check_tokenable: true, cheater: false,
+                      extra_slot: false, spender: nil)
         if check_tokenable && !tokenable?(
-            corporation, free: free, tokens: token, cheater: cheater, extra_slot: extra_slot
+            corporation, free: free, tokens: token, cheater: cheater, extra_slot: extra_slot, spender: spender
           )
           raise GameError, "#{corporation.name} cannot lay token on #{id} #{tile.hex&.id}"
         end

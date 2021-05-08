@@ -7,6 +7,7 @@ require 'view/game/buy_trains'
 require 'view/game/borrow_train'
 require 'view/game/convert'
 require 'view/game/switch_trains'
+require 'view/game/reassign_trains'
 require 'view/game/company'
 require 'view/game/corporation'
 require 'view/game/player'
@@ -38,6 +39,7 @@ module View
           left << h(Dividend) if @current_actions.include?('dividend')
           left << h(Convert) if @current_actions.include?('convert')
           left << h(SwitchTrains) if @current_actions.include?('switch_trains')
+          left << h(ReassignTrains) if @current_actions.include?('reassign_trains')
           if @current_actions.include?('buy_train') || @current_actions.include?('scrap_train')
             left << h(IssueShares) if @current_actions.include?('sell_shares')
             left << h(BuyTrains)
@@ -69,6 +71,7 @@ module View
             left << h(Player, player: entity, game: @game)
           elsif entity.operator? && entity.floated?
             left << h(Corporation, corporation: entity)
+            left << h(Corporation, corporation: @step.show_other) if @step.respond_to?(:show_other) && @step.show_other
           elsif (company = entity).company?
             left << h(Company, company: company)
 

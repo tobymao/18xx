@@ -91,9 +91,6 @@ module View
       def render
         step = @game.round.active_step
         @corporation ||= step.current_entity
-        if @selected_company&.owner == @corporation
-          @ability = @game.abilities(@selected_company, :train_discount, time: 'buying_train')
-        end
 
         @depot = @game.depot
 
@@ -208,12 +205,22 @@ module View
             .flat_map do |name, variant|
             price = variant[:price]
             president_assist, _fee = @game.president_assisted_buy(@corporation, train, price)
-            price = @ability&.discounted_price(train, price) || price
+            entity = @corporation
+
+            if @selected_company&.owner == @corporation
+              @game.abilities(@selected_company, :train_discount, time: 'buying_train') do |ability|
+                if ability.trains.include?(train.name)
+                  price = ability.discounted_price(train, price)
+                  entity = @selected_company
+                end
+              end
+            end
+
             price = @game.discard_discount(train, price)
 
             buy_train = lambda do
               process_action(Engine::Action::BuyTrain.new(
-                @ability ? @selected_company : @corporation,
+                entity,
                 train: train,
                 price: price,
                 variant: name,

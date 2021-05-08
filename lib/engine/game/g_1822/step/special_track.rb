@@ -39,7 +39,7 @@ module Engine
                       end
             @in_process = true
             if @game.company_ability_extra_track?(entity)
-              upgraded_extra_track = upgraded_track?(action)
+              upgraded_extra_track = upgraded_track?(action.hex.tile, action.tile, action.hex)
               raise GameError, 'Cannot lay an extra upgrade' if upgraded_extra_track && @extra_laided_track
 
               lay_tile(action, spender: spender)
@@ -86,11 +86,6 @@ module Engine
             return nil if color == :white && !tile_lay[:lay]
             return nil if color != :white && !tile_lay[:upgrade]
             return nil if color != :white && tile_lay[:cannot_reuse_same_hex] && @round.laid_hexes.include?(hex)
-
-            # London yellow tile counts as an upgrade
-            if hex.tile.color == :white && @round.num_laid_track.positive? && hex.name == @game.class::LONDON_HEX
-              return nil
-            end
 
             # Middleton Railway can only lay track on hexes with one town
             return nil if entity.id == @game.class::COMPANY_MTONR && (hex.tile.towns.empty? || hex.tile.towns.size > 1)

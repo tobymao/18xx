@@ -149,7 +149,11 @@ module Engine
         ].freeze
 
         # Game will end after 10 ORs (or 11 in case of optional rule) - checked in end_now? below
-        GAME_END_CHECK = {}.freeze
+        GAME_END_CHECK = { custom: :current_or }.freeze
+
+        GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
+          custom: 'Fixed number of ORs'
+        )
 
         BANKRUPTCY_ALLOWED = false
 

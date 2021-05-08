@@ -368,7 +368,7 @@ module View
       game_end = @game.game_ending_description
       description += " - #{game_end}" if game_end
       description += " - Pinned to Version: #{@pin}" if @pin
-      h(:div, { style: { fontWeight: 'bold', margin: '2vmin 0' } }, description)
+      h(:h4, description)
     end
 
     def render_action
@@ -407,7 +407,11 @@ module View
       when Engine::Round::Auction
         h(Game::Round::Auction, game: @game, user: @user)
       when Engine::Round::Merger
-        h(Game::Round::Merger, game: @game)
+        if current_entity_actions.include?('buy_train')
+          h(Game::Round::Operating, game: @game)
+        else
+          h(Game::Round::Merger, game: @game)
+        end
       end
     end
 

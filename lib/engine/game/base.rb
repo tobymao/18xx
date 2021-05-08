@@ -102,6 +102,10 @@ module Engine
       GAME_END_CHECK = { bankrupt: :immediate, bank: :full_or }.freeze
 
       BANKRUPTCY_ALLOWED = true
+      # How many players does bankrupcy cause to end the game
+      # one - as soon as any player goes bankrupt
+      # all_but_one - all but one
+      BANKRUPTCY_ENDS_GAME_AFTER = :one
 
       BANK_CASH = 12_000
 
@@ -204,10 +208,15 @@ module Engine
       MUST_EMERGENCY_ISSUE_BEFORE_EBUY = false # corporation must issue shares before ebuy (if possible)
       EBUY_SELL_MORE_THAN_NEEDED = false # true if corporation may continue to sell shares even though enough funds
       EBUY_CAN_SELL_SHARES = true # true if a player can sell shares for ebuy
+
+      # if sold more than needed then cannot then buy a cheaper train in the depot.
+      EBUY_SELL_MORE_THAN_NEEDED_LIMITS_DEPOT_TRAIN = false
+
       # when is the home token placed? on...
-      # operate
+      # par
       # float
-      # operating_round // 1889 places on first operating round
+      # operating_round (start of next OR)
+      # operate (corporation's first OR turn)
       HOME_TOKEN_TIMING = :operate
 
       DISCARDED_TRAINS = :discard # discard or remove
@@ -249,6 +258,25 @@ module Engine
         repar: 'Par value after bankruptcy',
         ignore_one_sale: 'Ignore first share sold when moving price',
       }.freeze
+
+      GAME_END_REASONS_TEXT = {
+        bankrupt: 'player is bankrupt', # this is prefixed in the UI
+        bank: 'The bank runs out of money',
+        stock_market: 'Corporation enters end game trigger on stock market',
+        final_train: 'The final train is purchased',
+        final_phase: 'The final phase is entered',
+        custom: 'Unknown custom reason', # override on subclasses
+      }.freeze
+
+      GAME_END_REASONS_TIMING_TEXT = {
+        immediate: 'Ends immediately',
+        current_round: 'End of the current round',
+        current_or: 'Ends at the next end of an OR',
+        full_or: 'Ends at the next end of a complete OR set',
+        one_more_full_or_set: 'Finish the current OR set, then end after the next complete OR set',
+      }.freeze
+
+      OPERATING_ROUND_NAME = 'Operating'
 
       MARKET_SHARE_LIMIT = 50 # percent
       ALL_COMPANIES_ASSIGNABLE = false
@@ -310,6 +338,41 @@ module Engine
 
       def game_hexes
         self.class::HEXES
+      end
+
+      def hex_neighbor(hex, edge)
+        return hex.neighbors[edge] if hex.neighbors[edge]
+
+        letter = hex.id.match(Engine::Hex::COORD_LETTER)[1]
+        number = hex.id.match(Engine::Hex::COORD_NUMBER)[1].to_i
+
+        flip_axes = case [layout, axes]
+                    when [:flat, { x: :number, y: :letter }]
+                      true
+                    else
+                      false
+                    end
+
+        d_letter, d_number = case [layout, edge]
+                             when [:flat, 0], [:pointy, 4]
+                               [0, 2]
+                             when [:flat, 1], [:pointy, 3]
+                               [-1, 1]
+                             when [:flat, 2], [:pointy, 2]
+                               [-1, -1]
+                             when [:flat, 3], [:pointy, 1]
+                               [0, -2]
+                             when [:flat, 4], [:pointy, 0]
+                               [1, -1]
+                             when [:flat, 5], [:pointy, 5]
+                               [1, 1]
+                             end
+        d_letter, d_number = [d_number, d_letter] if flip_axes
+
+        letter = Engine::Hex::LETTERS[Engine::Hex::LETTERS.index(letter) + d_letter]
+        number += d_number
+
+        hex_by_id("#{letter}#{number}")
       end
 
       # use to modify location names based on optional rules
@@ -496,6 +559,10 @@ module Engine
         else
           active_players
         end
+      end
+
+      def acting_for_entity(entity)
+        entity&.owner
       end
 
       def player_log(entity, msg)
@@ -864,7 +931,7 @@ module Engine
       end
 
       def sellable_turn?
-        self.class::SELL_AFTER == :first ? @turn > 1 : true
+        self.class::SELL_AFTER == :first ? (@turn > 1 || !@round.stock?) : true
       end
 
       def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
@@ -1182,7 +1249,7 @@ module Engine
         @graph
       end
 
-      def upgrade_cost(tile, hex, entity)
+      def upgrade_cost(tile, hex, entity, spender)
         ability = entity.all_abilities.find do |a|
           a.type == :tile_discount &&
             (!a.hexes || a.hexes.include?(hex.name))
@@ -1191,14 +1258,14 @@ module Engine
         tile.upgrades.sum do |upgrade|
           discount = ability && upgrade.terrains.uniq == [ability.terrain] ? ability.discount : 0
 
-          log_cost_discount(entity, ability, discount)
+          log_cost_discount(spender, ability, discount)
 
           total_cost = upgrade.cost - discount
           total_cost
         end
       end
 
-      def tile_cost_with_discount(_tile, hex, entity, cost)
+      def tile_cost_with_discount(_tile, hex, entity, spender, cost)
         ability = entity.all_abilities.find do |a|
           a.type == :tile_discount &&
             !a.terrain &&
@@ -1208,15 +1275,15 @@ module Engine
         return cost unless ability
 
         discount = [cost, ability.discount].min
-        log_cost_discount(entity, ability, discount)
+        log_cost_discount(spender, ability, discount)
 
         cost - discount
       end
 
-      def log_cost_discount(entity, ability, discount)
+      def log_cost_discount(spender, ability, discount)
         return unless discount.positive?
 
-        @log << "#{entity.name} receives a discount of "\
+        @log << "#{spender.name} receives a discount of "\
                 "#{format_currency(discount)} from "\
                 "#{ability.owner.name}"
       end
@@ -1413,6 +1480,8 @@ module Engine
         extra_cities = new_tile.cities
         @cities.concat(extra_cities)
         extra_cities.each { |c| @_cities[c.id] = c }
+
+        new_tile
       end
 
       def find_share_price(price)
@@ -1424,16 +1493,17 @@ module Engine
       end
 
       def after_par(corporation)
-        return unless corporation.capitalization == :incremental
+        if corporation.capitalization == :incremental
+          all_companies_with_ability(:shares) do |company, ability|
+            next unless corporation.name == ability.shares.first.corporation.name
 
-        all_companies_with_ability(:shares) do |company, ability|
-          next unless corporation.name == ability.shares.first.corporation.name
-
-          amount = ability.shares.sum { |share| corporation.par_price.price * share.num_shares }
-          @bank.spend(amount, corporation)
-          @log << "#{corporation.name} receives #{format_currency(amount)}
+            amount = ability.shares.sum { |share| corporation.par_price.price * share.num_shares }
+            @bank.spend(amount, corporation)
+            @log << "#{corporation.name} receives #{format_currency(amount)}
                    from #{company.name}"
+          end
         end
+
         place_home_token(corporation) if self.class::HOME_TOKEN_TIMING == :par
       end
 
@@ -1650,6 +1720,15 @@ module Engine
 
       def assignment_tokens(assignment)
         self.class::ASSIGNMENT_TOKENS[assignment]
+      end
+
+      def bankruptcy_limit_reached?
+        case self.class::BANKRUPTCY_ENDS_GAME_AFTER
+        when :one
+          @players.any?(&:bankrupt)
+        when :all_but_one
+          @players.count { |p| !p.bankrupt } == 1
+        end
       end
 
       private
@@ -1939,6 +2018,8 @@ module Engine
             x, y = xy
             neighbor = coordinates[[hex.x + x, hex.y + y]]
             next unless neighbor
+
+            hex.all_neighbors[direction] = neighbor
             next if self.class::IMPASSABLE_HEX_COLORS.include?(neighbor.tile.color) && !neighbor.targeting?(hex)
             next if hex.tile.borders.any? { |border| border.edge == direction && border.type == :impassable }
 
@@ -1949,7 +2030,7 @@ module Engine
 
       def total_rounds(name)
         # Return the total number of rounds for those with more than one.
-        @operating_rounds if name == 'Operating'
+        @operating_rounds if name == self.class::OPERATING_ROUND_NAME
       end
 
       def next_round!
@@ -1974,6 +2055,10 @@ module Engine
             reorder_players
             new_stock_round
           end
+      end
+
+      def clear_programmed_actions
+        @programmed_actions.clear
       end
 
       def check_programmed_actions
@@ -2156,7 +2241,7 @@ module Engine
       end
 
       def new_operating_round(round_num = 1)
-        @log << "-- #{round_description('Operating', round_num)} --"
+        @log << "-- #{round_description(self.class::OPERATING_ROUND_NAME, round_num)} --"
         @round_counter += 1
         operating_round(round_num)
       end
@@ -2209,10 +2294,6 @@ module Engine
 
       def bank_cash
         @bank.cash
-      end
-
-      def bankruptcy_limit_reached?
-        @players.any?(&:bankrupt)
       end
 
       def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
@@ -2400,6 +2481,8 @@ module Engine
             end
           return true unless corporation
 
+          return false unless token_ability_from_owner_usable?(ability, corporation)
+
           tokened_hexes = []
 
           corporation.tokens.each do |token|
@@ -2410,6 +2493,10 @@ module Engine
         else
           true
         end
+      end
+
+      def token_ability_from_owner_usable?(ability, corporation)
+        ability.from_owner ? corporation.find_token_by_type : true
       end
     end
   end

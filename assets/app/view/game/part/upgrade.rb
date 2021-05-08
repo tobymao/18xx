@@ -8,6 +8,7 @@ module View
       class Upgrade < Base
         needs :cost
         needs :terrains, default: []
+        needs :size, default: nil
 
         P_CENTER = {
           region_weights: CENTER,
@@ -70,10 +71,10 @@ module View
         def render_part
           cost = h('text.number', { attrs: { fill: 'black' } }, @cost)
 
-          delta_x = -10
+          delta_x = -(size / 2)
 
           terrain = @terrains.map.with_index do |t, index|
-            delta_y = 5 + (20 * index)
+            delta_y = 5 + (size * index)
             {
               mountain: mountain(delta_x: delta_x, delta_y: delta_y),
               water: water(delta_x: delta_x, delta_y: delta_y),
@@ -82,6 +83,7 @@ module View
               lake: svg(delta_x: delta_x, delta_y: delta_y, icon: 'lake'),
               river: svg(delta_x: delta_x, delta_y: delta_y, icon: 'river'),
               hill: svg(delta_x: delta_x, delta_y: delta_y, icon: 'hill'),
+              cow_skull: svg(delta_x: delta_x, delta_y: delta_y, icon: 'cow_skull'),
             }[t]
           end
 
@@ -110,10 +112,14 @@ module View
               href: "/icons/#{icon}.svg",
               x: delta_x,
               y: delta_y,
-              height: SIZE,
-              width: SIZE,
+              height: size,
+              width: size,
             },
           )
+        end
+
+        def size
+          @size ||= SIZE
         end
       end
     end

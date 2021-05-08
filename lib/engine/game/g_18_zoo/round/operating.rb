@@ -9,11 +9,13 @@ module Engine
             super
 
             @game.corporations.each do |corporation|
-              corporation.all_abilities.each do |ability|
-                next unless ability.is_a?(Engine::G18ZOO::Ability::DisableTrain)
-
-                ability.train.operated = true
-                corporation.remove_ability ability
+              if (ability = @game.abilities(corporation, :disable_train))
+                if ability.used?
+                  corporation.remove_ability(ability)
+                else
+                  ability.train.operated = true
+                  ability.use!
+                end
               end
 
               next if !corporation.floated? || corporation.num_market_shares.zero?

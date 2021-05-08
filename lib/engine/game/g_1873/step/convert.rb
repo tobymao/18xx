@@ -8,6 +8,7 @@ module Engine
       module Step
         class Convert < Engine::Step::Base
           def actions(entity)
+            return [] if entity.minor? && !entity.owner
             return %w[convert pass] if can_convert?(entity)
 
             []
@@ -24,6 +25,10 @@ module Engine
             return 'Stay Open' if current_entity.minor?
 
             'Do not convert'
+          end
+
+          def log_skip(entity)
+            super if !entity.minor? || entity.owner
           end
 
           def skip!

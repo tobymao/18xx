@@ -16,9 +16,11 @@ module View
       needs :limit, default: nil
       needs :scroll_pos, default: nil
       needs :chat_input, default: ''
+      needs :show_chat, default: true, store: true
+      needs :show_log, default: true, store: true
 
       def render
-        children = [render_log]
+        children = [render_log_choices, render_log]
 
         @player = @game.player_by_id(@user['id']) if @user
 
@@ -165,6 +167,9 @@ module View
         action_log = log.flat_map do |entry|
           line = entry.message
 
+          next [] if line.is_a?(String) && !@show_log
+          next [] if !line.is_a?(String) && !@show_chat
+
           line_props = {
             style: {
               marginBottom: '0.2rem',
@@ -209,6 +214,23 @@ module View
       def render_date_banner(time)
         date = "-- #{Time.at(time).strftime('%F')} --"
         h('div.chatline', { style: { textAlign: :center } }, date)
+      end
+
+      def render_log_choices
+        h(:div, { style: { marginBottom: '0.3rem', textAlign: 'right' } }, [
+            h(:button,
+              {
+                style: { marginTop: '0' },
+                on: { click: -> { store(:show_log, !@show_log) } },
+              },
+              "Log #{@show_log ? '✅' : '❌'}"),
+            h(:button,
+              {
+                style: { marginTop: '0' },
+                on: { click: -> { store(:show_chat, !@show_chat) } },
+              },
+              "Chat #{@show_chat ? '✅' : '❌'}"),
+          ])
       end
     end
   end

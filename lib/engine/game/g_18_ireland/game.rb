@@ -16,6 +16,8 @@ module Engine
         HOME_TOKEN_TIMING = :par
         SELL_BUY_ORDER = :sell_buy
         MUST_BUY_TRAIN = :always
+        EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
+        EBUY_SELL_MORE_THAN_NEEDED_LIMITS_DEPOT_TRAIN = true
 
         ASSIGNMENT_TOKENS = {
           'CDSPC' => '/icons/18_ireland/port_token.svg',
@@ -109,14 +111,14 @@ module Engine
             num: 6,
             distance: 2,
             price: 80,
-            rusts_on: '4H',
+            rusts_on: '6H',
           },
           {
             name: "1H'",
             num: 6,
             distance: 1,
             price: 40,
-            rusts_on: '6H',
+            rusts_on: '8H',
             reserved: true,
           },
           {
@@ -141,6 +143,7 @@ module Engine
             distance: 6,
             price: 300,
             rusts_on: '10H',
+            events: [{ 'type' => 'majors_can_ipo' }],
           },
           {
             name: "3H'",
@@ -170,7 +173,7 @@ module Engine
           },
           {
             name: 'D',
-            num: 1,
+            num: 29, # 7 majors @ 2, 15 minors @ 1
             distance: 99,
             price: 770,
             discount: {
@@ -183,21 +186,21 @@ module Engine
         EVENTS_TEXT = Base::EVENTS_TEXT.merge('corporations_can_merge' => ['Corporations can merge',
                                                                            'Players can vote to merge corporations'],
                                               'minors_cannot_start' => ['Minors cannot start'],
+                                              'majors_can_ipo' => ['Majors can be ipoed'],
                                               'train_trade_allowed' =>
                                               ['Train trade in allowed',
                                                'Trains can be traded in for face value for more powerful trains'],)
         # Companies guaranteed to be in the game
         PROTECTED_COMPANIES = %w[DAR DK].freeze
         PROTECTED_CORPORATION = 'DKR'
+        SHANNON_COMPANY = 'RSSC'
+        SHANNON_HEXES = %w[F10 D16].freeze
         KEEP_COMPANIES = 5
+        BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
 
         # used for laying tokens, running routes, mergers
         def init_graph
           Graph.new(self, skip_track: :narrow)
-        end
-
-        def bankruptcy_limit_reached?
-          @players.reject(&:bankrupt).one?
         end
 
         def tile_lays(entity)
@@ -234,11 +237,40 @@ module Engine
           company_by_id('CDSPC')
         end
 
-        def revenue_for(route, stops)
-          revenue = super
-          # Bonus for connected narrow gauges directly connected
-          # via narrow gauge without being connected to broad gauge.
-          revenue += stops.sum do |stop|
+        def calculate_shannon_revenue(route, revenues)
+          shannon_hexes = self.class::SHANNON_HEXES.map { |hex| hex_by_id(hex) }
+          shannon_options = [0]
+          route.visited_stops.each do |stop|
+            next unless stop.city?
+
+            next unless shannon_hexes.include?(stop.hex)
+
+            other_hex = (shannon_hexes - [stop.hex]).first
+            # Avoid calculating this multiple times
+            unless revenues[other_hex]
+              # Tiles only ever contain one city
+              other_city = other_hex.tile.cities.first
+              revenue = other_city.route_revenue(route.phase, route.train)
+              revenue += narrow_gauge_revenue(route, [other_city])
+              revenues[other_hex] = revenue
+            end
+            shannon_options << revenues[other_hex]
+          end
+          { route: route, revenue: shannon_options.max }
+        end
+
+        def shannon_revenue(routes)
+          entity = routes.first.train.owner
+          return nil unless entity.companies.any? { |c| c.id == self.class::SHANNON_COMPANY }
+
+          revenues = {}
+
+          destination_bonus = routes.map { |r| calculate_shannon_revenue(r, revenues) }.compact
+          destination_bonus.sort_by { |v| v[:revenue] }.reverse&.first
+        end
+
+        def narrow_gauge_revenue(route, stops)
+          stops.sum do |stop|
             bonus = 0
             nodes = { stop => true }
 
@@ -260,6 +292,17 @@ module Engine
             end
             bonus
           end
+        end
+
+        def revenue_for(route, stops)
+          revenue = super
+          # Bonus for connected narrow gauges directly connected
+          # via narrow gauge without being connected to broad gauge.
+          revenue += narrow_gauge_revenue(route, stops)
+
+          shannon_revenue = shannon_revenue(route.routes)
+
+          revenue += shannon_revenue[:revenue] if shannon_revenue && shannon_revenue[:route] == route
 
           # Bonus for assignments
           tasps = tasps_company&.id
@@ -268,6 +311,38 @@ module Engine
           revenue += 10 if route.corporation.assigned?(cdspc) && (stops.map(&:hex).find { |hex| hex.assigned?(cdspc) })
 
           revenue
+        end
+
+        def train_help(_entity, runnable_trains, _routes)
+          return [] if runnable_trains.empty?
+
+          entity = runnable_trains.first.owner
+
+          # Shannon
+          shannon = entity.companies.any? { |c| c.id == self.class::SHANNON_COMPANY }
+
+          help = ['Trains only use broad gauge.'\
+          'Narrow gauge track is automatically added to connected revenue centers.']
+
+          if shannon
+            help << "#{self.class::SHANNON_COMPANY} automatically adds the value (including Narrow Gauge) of"\
+            ' Dromod or Limerick to the other city for one train.'
+          end
+          help
+        end
+
+        def revenue_str(route)
+          str = super
+
+          ng_revenue = narrow_gauge_revenue(route, route.stops)
+          str += " (Narrow: #{format_currency(ng_revenue)})" if ng_revenue.positive?
+
+          shannon_revenue = shannon_revenue(route.routes)
+          if shannon_revenue && shannon_revenue[:route] == route
+            str += " (#{self.class::SHANNON_COMPANY}:#{format_currency(shannon_revenue[:revenue])})"
+          end
+
+          str
         end
 
         def narrow_connected_hexes(corporation)
@@ -312,10 +387,32 @@ module Engine
           @narrow_connected_paths.clear
         end
 
-        def upgrade_cost(old_tile, hex, entity)
+        def upgrade_cost(old_tile, hex, entity, spender)
           return 0 if hex.tile.paths.all? { |path| path.track == :narrow }
 
           super
+        end
+
+        def unstarted_corporation_summary
+          unipoed = @corporations.reject(&:ipoed)
+          minor, major = unipoed.partition { |c| c.type == :minor }
+          ["#{major.size} major", minor]
+        end
+
+        def timeline
+          timeline = []
+          minors = @corporations.select { |c| !c.ipoed && c.type == :minor }.map(&:name)
+          timeline << "Minors: #{minors.join(', ')}" unless minors.empty?
+          timeline
+        end
+
+        def sorted_corporations
+          # Corporations sorted by some potential game rules
+          ipoed, others = corporations.partition(&:ipoed)
+
+          # hide non-ipoed majors until phase 4
+          others.reject! { |c| c.type == :major } unless @show_majors
+          ipoed.sort + others
         end
 
         def tile_uses_broad_rules?(old_tile, tile)
@@ -333,7 +430,7 @@ module Engine
             connection_directions = if tile_uses_broad_rules?(hex.tile, tile)
                                       graph.connected_hexes(corp)[hex]
                                     else
-                                      narrow_connected_hexes(corp)[hex] | graph.connected_hexes(corp)[hex]
+                                      narrow_connected_hexes(corp)[hex] || graph.connected_hexes(corp)[hex]
                                     end
             # Must be connected for the tile to be layable
             return false unless connection_directions
@@ -389,6 +486,7 @@ module Engine
           corporations.unshift(protect)
 
           @corporations = corporations
+          @show_majors = false
         end
 
         def rust(train)
@@ -399,6 +497,30 @@ module Engine
             @reserved_trains.delete(new_train)
             @depot.reclaim_train(new_train)
             @extra_trains << new_train.name
+          end
+
+          super
+        end
+
+        def close_corporation(corporation, quiet: false)
+          # Share holders gain the final value of shares on corporations from bankrupt players
+          if corporation.share_price&.price&.positive? && corporation.owner&.bankrupt
+            payouts = {}
+            per_share = corporation.share_price.price
+            @players.each do |holder|
+              next if holder.bankrupt
+
+              amount = holder.num_shares_of(corporation, ceil: false) * per_share
+              next unless amount.positive?
+
+              payouts[holder] = amount
+              @bank.spend(amount, holder)
+            end
+            receivers = payouts
+            .sort_by { |_r, c| -c }
+            .map { |receiver, cash| "#{format_currency(cash)} to #{receiver.name}" }.join(', ')
+
+            @log << "Bank settles for #{corporation.name} #{format_currency(per_share)} per share = #{receivers}"
           end
 
           super
@@ -431,12 +553,19 @@ module Engine
 
                 @stock_market.set_par(corporation, share_price)
                 @share_pool.buy_shares(player, share, exchange: :free)
+
+                after_par(corporation)
+
+                # Clear the corporation of money
+                corporation.spend(corporation.cash, @bank)
                 # Receives the bid money
                 @bank.spend(price, corporation)
-                after_par(corporation)
                 # And buys a 2 train
                 train = @depot.upcoming.first
+                @log << "#{corporation.name} buys a #{train.name} train for "\
+                "#{format_currency(train.price)} from #{train.owner.name}"
                 buy_train(corporation, train, train.price)
+
               else
                 share_pool.buy_shares(player, share, exchange: :free)
               end
@@ -465,6 +594,11 @@ module Engine
           end
         end
 
+        def buying_power(entity, **)
+          # Cannot issue shares to buy trains
+          entity.cash
+        end
+
         def issuable_shares(entity)
           return [] unless entity.corporation?
           return [] unless entity.num_ipo_shares
@@ -488,7 +622,7 @@ module Engine
         end
 
         def stock_round
-          Engine::Round::Stock.new(self, [
+          G18Ireland::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
             Engine::Step::Exchange,
             Engine::Step::HomeToken,
@@ -506,7 +640,7 @@ module Engine
 
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
-            Engine::Step::Bankrupt,
+            G18Ireland::Step::Bankrupt,
             G18Ireland::Step::Assign,
             Engine::Step::Exchange,
             Engine::Step::HomeToken,
@@ -575,6 +709,11 @@ module Engine
           end
 
           @log << 'Minors can no longer be started' if removed.any?
+        end
+
+        def event_majors_can_ipo!
+          @log << 'Majors can now be started via IPO'
+          @show_majors = true
         end
 
         def event_train_trade_allowed!; end

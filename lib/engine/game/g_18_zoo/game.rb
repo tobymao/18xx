@@ -138,6 +138,10 @@ module Engine
         # Game end after the ORs in the third turn, of if any company reach 24
         GAME_END_CHECK = { stock_market: :current_or, custom: :full_or }.freeze
 
+        GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
+          custom: 'End of Turn 3'
+        )
+
         BANKRUPTCY_ALLOWED = false
 
         STARTING_CASH_SMALL_MAP = { 2 => 40, 3 => 28, 4 => 23, 5 => 22 }.freeze
@@ -200,6 +204,13 @@ module Engine
           'WINGS' => '/icons/18_zoo/wings.svg',
         }.freeze
 
+        EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+          'new_train' => ['First train bonus',
+                          'Corporation moves on the right buying the first train of this type'],
+          'rust_own_3s_4s' => ['First train buyer rust 3S Long and 4S',
+                               'Corporation buying the first train of this type rust immediately 3S Long and 4S'],
+        ).freeze
+
         MARKET_TEXT = Base::MARKET_TEXT.merge(par_2: 'Can only enter during green phase',
                                               par_3: 'Can only enter during brown phase').freeze
 
@@ -222,6 +233,9 @@ module Engine
 
           @available_companies = []
           @future_companies = []
+
+          # Initialize the player depts, if player have to take an emergency debt
+          @player_debts = Hash.new { |h, k| h[k] = 0 }
 
           draw_size = @players.size == 5 ? 6 : 4
           @companies_for_isr = @companies.first(draw_size)
@@ -330,7 +344,8 @@ module Engine
 
         def player_value(player)
           player.cash + player.shares.select { |s| s.corporation.ipoed }.sum(&:price) +
-            player.companies.select { |company| company.name.start_with?('ZOOTicket') }.sum(&:value)
+            player.companies.select { |company| company.name.start_with?('ZOOTicket') }.sum(&:value) -
+            @player_debts[player] * 2
         end
 
         def end_game!
@@ -790,6 +805,47 @@ module Engine
           connect_hexes
         end
 
+        def buying_power(entity, use_tickets: false, **)
+          return super unless use_tickets
+
+          tickets = if entity.player?
+                      entity.companies || []
+                    elsif entity.corporation?
+                      entity.owner&.companies || []
+                    else
+                      []
+                    end
+          super + tickets.select { |company| company.name.start_with?('ZOOTicket') }.sum(&:value)
+        end
+
+        def show_progress_bar?
+          true
+        end
+
+        def progress_information
+          [
+            { type: :PRE },
+            { type: :SR, value: '4', name: '1' },
+            { type: :OR, value: '5', name: '1.1' },
+            { type: :OR, value: '6', name: '1.2' },
+            { type: :SR, value: '7', name: '2' },
+            { type: :OR, value: '8', name: '2.1' },
+            { type: :OR, value: '9', name: '2.2' },
+            { type: :SR, value: '10', name: '3' },
+            { type: :OR, value: '12', name: '3.1' },
+            { type: :OR, value: '15', name: '3.2' },
+            { type: :OR, value: '18', name: '3.3' },
+            { type: :End, value: '20' },
+          ]
+        end
+
+        def take_player_loan(player, debt)
+          # Give the player the money. The money for loans is outside money, doesnt count towards the normal bank money.
+          player.cash += debt
+
+          @player_debts[player] += debt
+        end
+
         private
 
         def init_round
@@ -987,8 +1043,14 @@ module Engine
         end
 
         def event_rust_own_3s_4s!
-          @log << '-- Event: "3S long" and "4S" owned by current player are rusted! --' # TODO: only if any owned
-          # TODO: remove the 3S long and 4S owned by current player
+          entity = current_entity
+          return unless entity.corporation?
+
+          train = entity.trains.find(&:obsolete)
+          return unless train
+
+          rust(train)
+          @log << "'#{train.name}' owned by #{entity.name} rusts!"
         end
 
         def all_potential_upgrades(tile, tile_manifest: nil, selected_company: nil)

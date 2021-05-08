@@ -15,8 +15,8 @@ module Engine
     include Config::Tile
 
     attr_accessor :blocks_lay, :hex, :icons, :index, :legal_rotations, :location_name,
-                  :name, :opposite, :reservations, :upgrades
-    attr_reader :borders, :cities, :color, :edges, :junction, :nodes, :labels,
+                  :name, :opposite, :reservations, :upgrades, :color
+    attr_reader :borders, :cities, :edges, :junction, :nodes, :labels,
                 :parts, :preprinted, :rotation, :stops, :towns, :offboards, :blockers,
                 :city_towns, :unlimited, :stubs, :partitions, :id, :frame, :hidden
 
@@ -95,6 +95,7 @@ module Engine
                               visit_cost: params['visit_cost'],
                               route: params['route'],
                               format: params['format'],
+                              boom: params['boom'],
                               loc: params['loc'])
         cache << city
         city
@@ -106,6 +107,9 @@ module Engine
                               route: params['route'],
                               format: params['format'],
                               loc: params['loc'],
+                              boom: params['boom'],
+                              style: params['style'],
+                              double: params['double'],
                               to_city: params['to_city'])
         cache << town
         town
@@ -131,7 +135,7 @@ module Engine
       when 'label'
         Part::Label.new(params)
       when 'upgrade'
-        Part::Upgrade.new(params['cost'], params['terrain']&.split('|'))
+        Part::Upgrade.new(params['cost'], params['terrain']&.split('|'), params['size'])
       when 'border'
         Part::Border.new(params['edge'], params['type'], params['cost'])
       when 'junction'

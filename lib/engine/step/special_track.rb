@@ -33,11 +33,8 @@ module Engine
       end
 
       def round_state
-        super.merge(
-          {
-            teleported: nil,
-          }
-        )
+        state = @round.respond_to?(:teleported) ? {} : { teleported: nil }
+        state.merge(super)
       end
 
       def process_lay_tile(action)
@@ -60,6 +57,7 @@ module Engine
           lay_tile_action(action, spender: owner)
         else
           lay_tile(action, spender: owner)
+          ability.laid_hexes << action.hex.id
           @round.laid_hexes << action.hex
           check_connect(action, ability)
         end
@@ -71,7 +69,11 @@ module Engine
         end
 
         if ability.type == :tile_lay
-          ability.owner.close! unless ability.count.positive? || !ability.closed_when_used_up
+          if ability.count.zero? && ability.closed_when_used_up
+            company = ability.owner
+            @log << "#{company.name} closes"
+            company.close!
+          end
           @company = ability.count.positive? ? action.entity : nil if ability.must_lay_together
         end
 
@@ -164,7 +166,7 @@ module Engine
         return if ability.hexes.size < 2
         return if !ability.start_count || ability.start_count < 2 || ability.start_count == ability.count
 
-        paths = ability.hexes.flat_map do |hex_id|
+        paths = ability.laid_hexes.flat_map do |hex_id|
           @game.hex_by_id(hex_id).tile.paths
         end.uniq
 

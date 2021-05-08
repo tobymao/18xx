@@ -27,10 +27,10 @@ module Engine
         CURRENCY_FORMAT_STR = '%d ℳ'
         BANK_CASH = 100_000
         CERT_LIMIT = {
-          2 => 99,
-          3 => 99,
-          4 => 99,
-          5 => 99,
+          2 => 999,
+          3 => 999,
+          4 => 999,
+          5 => 999,
         }.freeze
         STARTING_CASH = {
           2 => 2100,
@@ -60,6 +60,10 @@ module Engine
                      { lay: :double_lay, upgrade: :double_lay, cost: 0 }].freeze
 
         GAME_END_CHECK = { stock_market: :current_or, custom: :one_more_full_or_set }.freeze
+
+        GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
+          custom: 'Phase 5 is entered'
+        )
 
         RAILWAY_MIN_BID = 100
         MIN_BID_INCREMENT = 10
@@ -1645,6 +1649,8 @@ module Engine
         def check_distance(route, visits)
           train = route.train
 
+          add_new_diesel(route) if diesel?(route.train)
+
           # no real "distance" for 1873 routes, instead might as well use visits for checks:
           # check that route begins and ends with termini
           corporation = train_owner(route.train)
@@ -1799,15 +1805,19 @@ module Engine
 
         def check_diesel_nodes(route)
           entity = train_owner(route.train)
-          if route.visited_stops.any? { |n| !diesel_graph.connected_nodes(entity)[n] }
-            raise GameError, 'Diesel route has to directly or indirectly connect to concession route'
-          end
+          return unless route.visited_stops.any? { |n| !diesel_graph.connected_nodes(entity)[n] }
 
+          raise GameError, 'Diesel route has to directly or indirectly connect to concession route'
+        end
+
+        def add_new_diesel(route)
           # add diesel to end if all diesel routes are defined
           s_train = @supertrains[route.train]
           num_diesel_routes = route.routes.count { |r| diesel?(r.train) }
           num_diesels = @subtrains[s_train].size
-          allocate_pool_diesel(route.train) if num_diesel_routes == num_diesels
+          return unless num_diesel_routes == num_diesels
+
+          allocate_pool_diesel(route.train)
         end
 
         def concession_route_run?(entity, routes)
@@ -1945,6 +1955,10 @@ module Engine
         def player_sort(entities)
           minors, majors = entities.partition(&:minor?)
           (minors.sort_by { |m| m.name.to_i } + majors.sort_by(&:name)).group_by(&:owner)
+        end
+
+        def show_game_cert_limit?
+          false
         end
 
         def game_location_names

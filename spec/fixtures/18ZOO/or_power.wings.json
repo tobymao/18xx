@@ -253,6 +253,13 @@
       "rotation": 3
     },
     {
+      "type": "pass",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 29,
+      "created_at": 1618583820
+    },
+    {
       "type": "run_routes",
       "entity": "GI",
       "entity_type": "corporation",

@@ -62,11 +62,11 @@ def repair(game, original_actions, actions, broken_action)
     actions.insert(action_idx, home_token_h)
     return
   elsif broken_action['type'] == 'pass' &&
-    game.active_step.is_a?(Engine::Step::G1817::BuySellParShares) &&
+    game.active_step.is_a?(Engine::Game::G1817::Step::BuySellParShares) &&
     broken_action['entity'] == prev_action['entity']
     actions.delete(broken_action)
     return
-  elsif broken_action['type'] == 'place_token' && game.is_a?(Engine::Game::G1867)
+  elsif broken_action['type'] == 'place_token' && game.is_a?(Engine::Game::Step::G1867)
     # Stub changed token numbering
     hex_id = broken_action['city'].split('-')[0]
     hex = game.hex_by_id(hex_id)
@@ -74,32 +74,39 @@ def repair(game, original_actions, actions, broken_action)
 
     broken_action['city'] = hex.tile.cities.first.id
     return [broken_action]
-  elsif game.active_step.is_a?(Engine::Step::G18SJ::ChoosePriority)
+  elsif game.active_step.is_a?(Engine::Game::G18SJ::Step::ChoosePriority)
     choice = Engine::Action::Choose.new(game.active_step.current_entity, choice: 'wait')
     choice.user = choice.entity.player.id
     actions.insert(action_idx, choice.to_h)
     return
   elsif game.active_step.is_a?(Engine::Step::BuyCompany) ||
-    game.active_step.is_a?(Engine::Step::G1817::PostConversion) ||
-    game.active_step.is_a?(Engine::Step::G1817::BuySellParShares) ||
-    game.active_step.is_a?(Engine::Step::G1867::SingleItemAuction) ||
-    game.active_step.is_a?(Engine::Step::G1817::Loan)
+    game.active_step.is_a?(Engine::Game::G1817::Step::PostConversion) ||
+    game.active_step.is_a?(Engine::Game::G1817::Step::BuySellParShares) ||
+    game.active_step.is_a?(Engine::Game::G1867::Step::SingleItemAuction) ||
+    game.active_step.is_a?(Engine::Game::G1817::Step::Loan)
     add_pass.call
     return
-  elsif game.active_step.is_a?(Engine::Step::G1817::Acquire) && broken_action['type'] != 'pass'
+  elsif game.active_step.is_a?(Engine::Game::G18Ireland::Step::Merge)
+    add_pass.call
+    return    
+  elsif game.active_step.is_a?(Engine::Game::G18Ireland::Step::BuySellParShares)
+    # After a bid, the turn order is wrong.
+    add_pass.call
+    return
+  elsif game.active_step.is_a?(Engine::Game::G1817::Step::Acquire) && broken_action['type'] != 'pass'
     add_pass.call
     return
   elsif game.active_step.is_a?(Engine::Step::BuySellParShares) && game.is_a?(Engine::Game::G1867) && broken_action['type']=='bid'
     add_pass.call
     return
-  elsif game.active_step.is_a?(Engine::Step::G1889::SpecialTrack)
+  elsif game.active_step.is_a?(Engine::Game::G1889::Step::SpecialTrack)
     # laying track for Ehime Railway didn't always block, now it needs an
     # explicit pass
     if broken_action['entity'] != 'ER'
       add_pass.call
       return
     end
-  elsif game.active_step.is_a?(Engine::Step::G1867::Merge) && broken_action['type'] != 'pass'
+  elsif game.active_step.is_a?(Engine::Game::G1867::Step::Merge) && broken_action['type'] != 'pass'
     add_pass.call
     return
   elsif game.is_a?(Engine::Game::G18CO) &&
@@ -114,15 +121,15 @@ def repair(game, original_actions, actions, broken_action)
     add_pass.call
     return
   elsif broken_action['type'] == 'pass'
-    if game.active_step.is_a?(Engine::Step::G1817::PostConversionLoans)
+    if game.active_step.is_a?(Engine::Game::G1817::Step::PostConversionLoans)
       actions.delete(broken_action)
       return
     end
-    if game.active_step.is_a?(Engine::Step::G1867::PostMergerShares)
+    if game.active_step.is_a?(Engine::Game::G1867::Step::PostMergerShares)
       actions.delete(broken_action)
       return
     end
-    if game.active_step.is_a?(Engine::Step::G1817::Acquire)
+    if game.active_step.is_a?(Engine::Game::G1817::Step::Acquire)
       # Remove corps passes that went into acquisition
       if (game.active_step.current_entity.corporation? && broken_action['entity_type'] == 'player')
         action2 = Engine::Action::Pass.new(game.active_step.current_entity).to_h
@@ -134,12 +141,12 @@ def repair(game, original_actions, actions, broken_action)
       end
       return
     end
-    if game.active_step.is_a?(Engine::Step::G1867::Merge)
+    if game.active_step.is_a?(Engine::Game::G1867::Step::Merge)
       # Remove corps passes that went into acquisition
       actions.delete(broken_action)
       return
     end
-    if game.active_step.is_a?(Engine::Step::G1817::Conversion)
+    if game.active_step.is_a?(Engine::Game::G1817::Step::Conversion)
       # Remove corps passes that went into acquisition
       actions.delete(broken_action)
       return
@@ -383,16 +390,16 @@ def migrate_db_actions(data, pin, dry_run=false, debug=false)
     puts e.backtrace if debug
     puts 'Something went wrong', e
     if !dry_run
-      if pin == :delete
-        puts "Deleting #{data.id}"
-        data.destroy
+      if pin == :delete || pin == :archive
+        puts "Archiving #{data.id}"
+        data.archive!
       else
         puts "Pinning #{data.id} to #{pin}"
         data.settings['pin']=pin
         data.save
       end
     else
-      puts "Needs pinning #{data.id}"
+      puts "Needs pinning #{data.id} to #{pin}"
     end
   end
   return original_actions
@@ -422,7 +429,7 @@ def migrate_db_to_json(id, filename)
   File.write(filename, JSON.pretty_generate(json))
 end
 
-# Pass pin=:delete to delete failed games
+# Pass pin=:archive to archive failed games
 def migrate_title(title, pin, dry_run=false, debug = false)
   DB[:games].order(:id).where(Sequel.pg_jsonb_op(:settings).has_key?('pin') => false, status: %w[active finished], title: title).select(:id).paged_each(rows_per_fetch: 1) do |game|
     games = Game.eager(:user, :players, :actions).where(id: [game[:id]]).all

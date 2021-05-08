@@ -118,7 +118,8 @@ module Engine
           corporation = company.owner
           ability = Engine::G18ZOO::Ability::IncreaseDistanceForTrain.new(
             type: 'increase_distance_for_train', train: train, distance: 1,
-            description: "Train #{train.name} can do 1 step more"
+            description: "A spoonful of sugar: Train #{train.name} can do 1 step more",
+            desc_detail: "Train #{train.name} is considered like a higher train, and can do 1 step more"
           )
           corporation.add_ability(ability)
           @log << "#{train.name} gets a boost from '#{@game.a_spoonful_of_sugar.name}' for this round"

@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
-require_relative 'map'
 require_relative 'meta'
+require_relative '../base'
+require_relative 'map'
 require_relative 'entities'
+require_relative 'stock_market'
 
 module Engine
   module Game
@@ -11,6 +13,9 @@ module Engine
         include_meta(G18NY::Meta)
         include G18NY::Entities
         include G18NY::Map
+
+        attr_reader :privates_closed
+        attr_accessor :stagecoach_token
 
         CAPITALIZATION = :incremental
         HOME_TOKEN_TIMING = :operate
@@ -32,13 +37,14 @@ module Engine
 
         ALL_COMPANIES_ASSIGNABLE = true
 
+        TRACK_RESTRICTION = :permissive
+
         # Two lays with one being an upgrade. Tile lays cost 20
         TILE_LAYS = [
           { lay: true, upgrade: true, cost: 20, cannot_reuse_same_hex: true },
           { lay: true, upgrade: :not_if_upgraded, cost: 20, cannot_reuse_same_hex: true },
         ].freeze
-
-        TRACK_RESTRICTION = :permissive
+        TILE_COST = 20
 
         MARKET = [
           %w[70 75 80 90 100p 110 125 150 175 200 230 260 300 350 400
@@ -67,7 +73,6 @@ module Engine
             train_limit: { minor: 2, major: 4 },
             tiles: [:yellow],
             operating_rounds: 1,
-            status: %w[float_20],
           },
           {
             name: '4H',
@@ -75,7 +80,7 @@ module Engine
             train_limit: { minor: 2, major: 4 },
             tiles: %i[yellow green],
             operating_rounds: 2,
-            status: %w[float_30 can_buy_companies],
+            status: %w[can_buy_companies],
           },
           {
             name: '6H',
@@ -83,7 +88,7 @@ module Engine
             train_limit: { minor: 1, major: 3 },
             tiles: %i[yellow green],
             operating_rounds: 2,
-            status: %w[float_40 can_buy_companies],
+            status: %w[can_buy_companies],
           },
           {
             name: '12H',
@@ -91,7 +96,6 @@ module Engine
             train_limit: { minor: 1, major: 2 },
             tiles: %i[yellow green brown],
             operating_rounds: 3,
-            status: %w[float_50],
           },
           {
             name: '5DE',
@@ -99,7 +103,6 @@ module Engine
             train_limit: { major: 2 },
             tiles: %i[yellow green brown],
             operating_rounds: 3,
-            status: %w[fullcap float_60],
           },
           {
             name: 'D',
@@ -107,19 +110,18 @@ module Engine
             train_limit: { major: 2 },
             tiles: %i[yellow green brown gray],
             operating_rounds: 3,
-            status: %w[fullcap float_60],
           },
         ].freeze
 
         TRAINS = [{ name: '2H', num: 11, distance: 2, price: 100, rusts_on: '6H' },
-                  { name: '4H', num: 6, distance: 4, price: 200, rusts_on: '5DE' },
-                  { name: '6H', num: 4, distance: 6, price: 300, rusts_on: 'D' },
+                  { name: '4H', num: 6, distance: 4, price: 200, rusts_on: '5DE', events: [{ type: 'float_30' }] },
+                  { name: '6H', num: 4, distance: 6, price: 300, rusts_on: 'D', events: [{ type: 'float_40' }] },
                   {
                     name: '12H',
                     num: 2,
                     distance: 12,
                     price: 600,
-                    events: [{ type: 'remove_corporations' }, { type: 'nyc_formation' }],
+                    events: [{ type: 'float_50' }, { type: 'close_companies' }, { type: 'nyc_formation' }],
                   },
                   { name: '12H', num: 1, distance: 12, price: 600, events: [{ type: 'capitalization_round' }] },
                   {
@@ -127,14 +129,108 @@ module Engine
                     num: 2,
                     distance: [{ nodes: %w[city offboard town], pay: 5, visit: 99, multiplier: 2 }],
                     price: 800,
+                    events: [{ type: 'float_60' }],
                   },
                   { name: 'D', num: 20, distance: 99, price: 1000 }].freeze
+
+        EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+          float_30: ['30% to Float', 'Companies must have 30% of their shares sold to float'],
+          float_40: ['40% to Float', 'Companies must have 40% of their shares sold to float'],
+          float_50: ['50% to Float', 'Companies must have 50% of their shares sold to float'],
+          float_60:
+            ['60% to Float', 'Companies must have 60% of their shares sold to float and receive full capitalization'],
+          nyc_formation: ['NYC Formation', 'Triggers the formation of the NYC'],
+          capitalization_round:
+            ['Capitalization Round', 'Special Capitalization Round before next Stock Round'],
+        ).freeze
+
+        ERIE_CANAL_ICON = 'canal'
+
+        def setup
+          @erie_canal_private = @companies.find { |c| c.id == 'EC' }
+          @stagecoach_token =
+            Token.new(nil, logo: '/logos/18_ny/stagecoach.svg', simple_logo: '/logos/18_ny/stagecoach.alt.svg')
+        end
+
+        def init_stock_market
+          G18NY::StockMarket.new(game_market, self.class::CERT_LIMIT_TYPES,
+                                 multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
+        end
+
+        def new_auction_round
+          Round::Auction.new(self, [
+            G18NY::Step::CompanyPendingPar,
+            Engine::Step::WaterfallAuction,
+          ])
+        end
 
         def stock_round
           Round::Stock.new(self, [
             G18NY::Step::BuySellParShares,
           ])
         end
+
+        def operating_round(round_num)
+          Round::Operating.new(self, [
+            G18NY::Step::StagecoachExchange,
+            Engine::Step::BuyCompany,
+            G18NY::Step::SpecialTrack,
+            G18NY::Step::SpecialToken,
+            G18NY::Step::Track,
+            Engine::Step::Token,
+            Engine::Step::Route,
+            Engine::Step::Dividend,
+            Engine::Step::DiscardTrain,
+            Engine::Step::SpecialBuyTrain,
+            Engine::Step::BuyTrain,
+            [Engine::Step::BuyCompany, { blocks: true }],
+          ], round_num: round_num)
+        end
+
+        # Events
+
+        def event_close_companies!
+          super
+          @privates_closed = true
+        end
+
+        def event_float_30!
+          @log << "-- Event: #{EVENTS_TEXT['float_30'][1]} --"
+          non_floated_companies { |c| c.float_percent = 30 }
+        end
+
+        def event_float_40!
+          @log << "-- Event: #{EVENTS_TEXT['float_40'][1]} --"
+          non_floated_companies { |c| c.float_percent = 40 }
+        end
+
+        def event_float_50!
+          @log << "-- Event: #{EVENTS_TEXT['float_50'][1]} --"
+          non_floated_companies { |c| c.float_percent = 50 }
+        end
+
+        def event_float_60!
+          @log << "-- Event: #{EVENTS_TEXT['float_60'][1]} --"
+          non_floated_companies do |c|
+            c.float_percent = 60
+            c.capitalization = :full
+            c.spend(c.cash, @bank) if c.cash.positive?
+          end
+        end
+
+        def event_nyc_formation!
+          @log << "-- Event: #{EVENTS_TEXT['nyc_formation'][1]} --"
+        end
+
+        def event_capitalization_round!
+          @log << "-- Event: #{EVENTS_TEXT['capitalization_round'][1]} --"
+        end
+
+        def non_floated_companies
+          @corporations.each { |c| yield c unless c.floated? }
+        end
+
+        # Stock round logic
 
         def issuable_shares(entity)
           return [] if !entity.corporation? || entity.type != :major
@@ -165,6 +261,101 @@ module Engine
 
         def can_hold_above_limit?(_entity)
           true
+        end
+
+        def float_corporation(corporation)
+          super
+          # TODO: verify NYC will not be affected
+          return unless corporation.capitalization == :full
+
+          @log << 'Remaining shares placed in the market'
+          @share_pool.transfer_shares(ShareBundle.new(corporation.shares_of(corporation)), @share_pool)
+        end
+
+        # Operating round logic
+
+        def operating_order
+          minors, majors = @corporations.select(&:floated?).sort.partition { |c| c.type == :minor }
+          minors + majors
+        end
+
+        def tile_lay(_hex, old_tile, _new_tile)
+          return unless old_tile.icons.any? { |icon| icon.name == ERIE_CANAL_ICON }
+
+          @log << "#{@erie_canal_private.name}'s revenue reduced from #{format_currency(@erie_canal_private.revenue)}" \
+                  " to #{format_currency(@erie_canal_private.revenue - 10)}"
+          @erie_canal_private.revenue -= 10
+          return if @erie_canal_private.revenue.positive?
+
+          @log << "#{@erie_canal_private.name} closes"
+          @erie_canal_private.close!
+        end
+
+        def upgrades_to?(from, to, special = false, selected_company: nil)
+          return true if town_to_city_upgrade?(from, to)
+
+          super
+        end
+
+        def town_to_city_upgrade?(from, to)
+          return false unless @phase.tiles.include?(:green)
+
+          case from.name
+          when '3'
+            to.name == '5'
+          when '4'
+            to.name == '57'
+          when '58'
+            to.name == '6'
+          else
+            false
+          end
+        end
+
+        def upgrades_to_correct_label?(from, to)
+          # Handle hexes that change from standard tiles to special city tiles
+          case from.hex.name
+          when 'E3'
+            return true if to.name == 'X35'
+            return false if to.color == :gray
+          when 'D8'
+            return true if to.name == 'X13'
+            return false if to.color == :green
+          when 'D12'
+            return true if to.name == 'X24'
+            return false if to.color == :brown
+          when 'K19'
+            return true if to.name == 'X21'
+            return false if to.color == :brown
+          end
+
+          super
+        end
+
+        def legal_tile_rotation?(entity, hex, tile)
+          # NYC tiles have a specific rotation
+          return tile.rotation.zero? if hex.id == 'J20' && %w[X11 X22].include?(tile.name)
+
+          super
+        end
+
+        def upgrade_cost(tile, _hex, entity, spender)
+          terrain_cost = tile.upgrades.sum(&:cost)
+          discounts = 0
+
+          # Tile discounts must be activated
+          if entity.company? && (ability = entity.all_abilities.find { |a| a.type == :tile_discount })
+            discounts = tile.upgrades.sum do |upgrade|
+              next unless upgrade.terrains.include?(ability.terrain)
+
+              discount = [upgrade.cost, ability.discount].min
+              log_cost_discount(spender, ability, discount) if discount.positive?
+              discount
+            end
+          end
+
+          terrain_cost -= TILE_COST if terrain_cost.positive?
+          terrain_cost - discounts
         end
       end
     end

@@ -15,6 +15,30 @@ module Engine
             HUDSON_TYPES
           end
 
+          def actions(entity)
+            return [] if entity.corporation? && entity.receivership?
+            return [] if @game.skip_round[entity]
+
+            super
+          end
+
+          def skip!
+            return pass! if @game.skip_round[current_entity]
+
+            process_dividend(Action::Dividend.new(current_entity, kind: 'withhold'))
+
+            if !current_entity.corporation? || !current_entity.receivership?
+              current_entity.operating_history[[@game.turn, @round.round_num]] =
+                OperatingInfo.new([], @game.actions.last, 0, @round.laid_hexes)
+            end
+
+            pass!
+          end
+
+          def log_skip(entity)
+            super unless @game.skip_round[entity]
+          end
+
           def actual_dividend_types(entity, revenue, subsidy)
             hudson_allowed?(entity, revenue, subsidy) ? HUDSON_TYPES : DIVIDEND_TYPES
           end
@@ -77,8 +101,13 @@ module Engine
             end
             payout_shares(entity, revenue) if payout[:per_share].positive?
             change_share_price(entity, payout)
+            @game.check_bankruptcy!(entity)
 
             pass!
+          end
+
+          def holder_for_corporation(entity)
+            entity
           end
 
           def log_run_payout(entity, kind, revenue, subsidy, action, payout)

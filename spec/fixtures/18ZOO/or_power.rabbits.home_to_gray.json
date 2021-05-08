@@ -170,6 +170,13 @@
       "created_at": 1618955105
     },
     {
+      "type": "pass",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 20,
+      "created_at": 1618955105
+    },
+    {
       "type": "lay_tile",
       "entity": "GI",
       "entity_type": "corporation",

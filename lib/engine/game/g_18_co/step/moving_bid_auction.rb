@@ -36,6 +36,7 @@ module Engine
 
             entity.pass!
             log_skip(entity)
+            @round.pass_order |= [current_entity]
             end_auction! if all_passed?
             @round.next_entity_index!
             skip! if active?

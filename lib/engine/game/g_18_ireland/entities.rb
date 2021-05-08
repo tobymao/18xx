@@ -189,9 +189,9 @@ module Engine
             name: 'Dublin & Kingstown Railway',
             value: 120,
             revenue: 0,
-            desc: 'The owner of this company: Takes the D&KR directorship; sets the share'\
+            desc: 'The owner of this company: Takes the DKR directorship; sets the share'\
             ' price at half bid; places a 2H-Train on the charter; places the winning bid'\
-            ' in the D&KR treasury less the cost of the train and discards this card.',
+            ' in the DKR treasury less the cost of the train and discards this card.',
             sym: 'DK',
             abilities: [
             { type: 'close', when: 'bought_train', corporation: 'DKR' },
@@ -408,7 +408,7 @@ module Engine
           {
             float_percent: 40,
             sym: 'DER',
-            name: 'Dundalt & Enniskillen Railway',
+            name: 'Dundalk & Enniskillen Railway',
             logo: '18_ireland/DER',
             tokens: [0],
             shares: [40, 20, 20, 20],

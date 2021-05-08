@@ -5,12 +5,16 @@ require_relative 'revenue_center'
 module Engine
   module Part
     class Town < RevenueCenter
-      attr_reader :to_city
+      attr_accessor :style
+      attr_reader :to_city, :boom, :double
 
       def initialize(revenue, **opts)
         super
 
         @to_city = opts[:to_city]
+        @boom = opts[:boom]
+        @style = opts[:style]&.to_sym
+        @double = !!opts[:double]
       end
 
       def <=(other)
@@ -23,11 +27,13 @@ module Engine
         true
       end
 
-      # render with a rectangle (as opposed to a dot) if
-      # it has any paths and either it's not in the center or it is in the center
-      # and has less than two exits and less than three paths
+      # render as a dot or rectangle; if @style is set to 'rect', then render a
+      # rectangle; if @style is set to something else, render a dot; if @style is
+      # unset, render with a rectangle if it has any paths and either it's not
+      # in the center or it is in the center and has less than two exits and
+      # less than three paths
       def rect?
-        paths.any? && paths.size < 3
+        @style ? (@style == :rect) : (!paths.empty? && paths.size < 3)
       end
     end
   end

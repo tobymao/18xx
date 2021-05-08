@@ -727,11 +727,12 @@ module Engine
         end
 
         def event_phase_revenue!
-          @log << '-- Event: P15-HR and P20-C&WR now closes and its money returned to the bank --'
+          @log << '-- Event: Phase revenue companies now close with money returned to the bank --'
           self.class::PRIVATE_PHASE_REVENUE.each do |company_id|
             company = @companies.find { |c| c.id == company_id }
             next if !company || company&.closed? || !@phase_revenue[company_id]
 
+            @log << "#{company.name} closes"
             if @phase_revenue[company.id].cash.positive?
               @phase_revenue[company.id].spend(@phase_revenue[company.id].cash, @bank)
             end
@@ -1205,7 +1206,7 @@ module Engine
           minors + concessions + privates
         end
 
-        def upgrade_cost(tile, hex, entity)
+        def upgrade_cost(tile, hex, entity, _spender)
           operator = entity.company? ? entity.owner : entity
           abilities = operator.all_abilities.select do |a|
             a.type == :tile_discount && (!a.hexes || a.hexes.include?(hex.name))
@@ -1618,11 +1619,13 @@ module Engine
           spender = company.owner
           bundle = company_tax_haven_bundle(choice)
           corporation = bundle.corporation
+          floated = corporation.floated?
           receiver = bundle.owner == @share_pool ? @bank : corporation
           @share_pool.transfer_shares(bundle, @tax_haven, spender: spender, receiver: receiver,
                                                           price: bundle.price, allow_president_change: false)
           @log << "#{spender.name} spends #{format_currency(bundle.price)} and tax haven gains a share of "\
                   "#{corporation.name}."
+          float_corporation(corporation) if corporation.floatable && floated != corporation.floated?
         end
 
         def company_tax_haven_bundle(choice)

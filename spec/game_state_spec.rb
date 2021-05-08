@@ -335,7 +335,7 @@ module Engine
         end
 
         it 'train 2J must be available as first 2J/4J train' do
-          game = game_at_action(game_file, 212)
+          game = game_at_action(game_file, 215)
           action = {
             'type' => 'buy_train',
             'entity' => 'GI',
@@ -344,7 +344,7 @@ module Engine
             'price' => 37,
             'variant' => '2J',
           }
-          game.process_action(action)
+          game.process_action(action).maybe_raise!
 
           expect(game.log.find { |item| item.message == 'GI buys a 2J train for 37$N from The Depot' }).to_not be_nil
           expect(game.corporation_by_id('GI').trains[0].variant[:name]).to eq('2J')

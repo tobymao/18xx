@@ -198,10 +198,17 @@
       "created_at": 1618954006
     },
     {
-      "type": "lay_tile",
+      "type": "pass",
       "entity": "LI",
       "entity_type": "corporation",
       "id": 23,
+      "created_at": 1618954006
+    },
+    {
+      "type": "lay_tile",
+      "entity": "LI",
+      "entity_type": "corporation",
+      "id": 24,
       "created_at": 1618954024,
       "hex": "F16",
       "tile": "8-2",
@@ -211,7 +218,7 @@
       "type": "lay_tile",
       "entity": "LI",
       "entity_type": "corporation",
-      "id": 24,
+      "id": 25,
       "created_at": 1618954029,
       "hex": "G17",
       "tile": "8-3",
@@ -221,7 +228,7 @@
       "type": "lay_tile",
       "entity": "MOLES",
       "entity_type": "company",
-      "id": 25,
+      "id": 26,
       "created_at": 1618954046,
       "hex": "G17",
       "tile": "81-0",
@@ -231,7 +238,7 @@
       "type": "lay_tile",
       "entity": "MOLES",
       "entity_type": "company",
-      "id": 26,
+      "id": 27,
       "created_at": 1618954054,
       "hex": "F16",
       "tile": "82-0",
@@ -241,7 +248,7 @@
       "type": "end_game",
       "entity": "LI",
       "entity_type": "corporation",
-      "id": 27,
+      "id": 28,
       "created_at": 1618954671
     }
   ],

@@ -177,10 +177,10 @@ module Engine
         super
         if @round.current_actions.any?
           @round.pass_order.delete(current_entity)
-          current_entity.unpass!
+          current_entity&.unpass!
         else
           @round.pass_order |= [current_entity]
-          current_entity.pass!
+          current_entity&.pass!
         end
       end
 

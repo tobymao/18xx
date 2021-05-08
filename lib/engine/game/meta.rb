@@ -18,6 +18,7 @@ module Engine
       GAME_TITLE = nil
       GAME_SUBTITLE = nil
       GAME_SUPERTITLE = nil
+      GAME_FULL_TITLE = nil
       GAME_ALIASES = [].freeze
       GAME_VARIANTS = [].freeze
       GAME_IS_VARIANT_OF = nil
@@ -51,7 +52,9 @@ module Engine
         end
 
         def full_title
-          [self::GAME_SUPERTITLE, title, self::GAME_SUBTITLE].compact.join(': ')
+          @full_title ||=
+            self::GAME_FULL_TITLE ||
+            [self::GAME_SUPERTITLE, title, self::GAME_SUBTITLE].compact.join(': ')
         end
 
         def fs_name

@@ -102,6 +102,13 @@
       "created_at": 1616453855
     },
     {
+      "type": "pass",
+      "entity": "PB",
+      "entity_type": "corporation",
+      "id": 12,
+      "created_at": 1616453855
+    },
+    {
       "type": "lay_tile",
       "entity": "PB",
       "entity_type": "corporation",

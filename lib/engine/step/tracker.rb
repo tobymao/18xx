@@ -44,8 +44,9 @@ module Engine
 
       def lay_tile_action(action, entity: nil, spender: nil)
         tile = action.tile
+        old_tile = action.hex.tile
         tile_lay = get_tile_lay(action.entity)
-        raise GameError, 'Cannot lay an upgrade now' if tile.color != :yellow && !(tile_lay && tile_lay[:upgrade])
+        raise GameError, 'Cannot lay an upgrade now' if old_tile.color != :white && !(tile_lay && tile_lay[:upgrade])
         raise GameError, 'Cannot lay a yellow now' if tile.color == :yellow && !(tile_lay && tile_lay[:lay])
         if tile_lay[:cannot_reuse_same_hex] && @round.laid_hexes.include?(action.hex)
           raise GameError, "#{action.hex.id} cannot be layed as this hex was already layed on this turn"
@@ -54,13 +55,13 @@ module Engine
         extra_cost = tile.color == :yellow ? tile_lay[:cost] : tile_lay[:upgrade_cost]
 
         lay_tile(action, extra_cost: extra_cost, entity: entity, spender: spender)
-        upgraded_track(action)
+        upgraded_track(old_tile, tile, action.hex)
         @round.num_laid_track += 1
         @round.laid_hexes << action.hex
       end
 
-      def upgraded_track(action)
-        @round.upgraded_track = true if action.tile.color != :yellow
+      def upgraded_track(from, _to, _hex)
+        @round.upgraded_track = true if from.color != :white
       end
 
       def tile_lay_abilities_should_block?(entity)
@@ -104,6 +105,16 @@ module Engine
 
         hex.lay(tile)
 
+        # Impassable hex is no longer impassible, update neighbors
+        if @game.class::IMPASSABLE_HEX_COLORS.include?(old_tile.color)
+          hex.all_neighbors.each do |direction, neighbor|
+            next if hex.tile.borders.any? { |border| border.edge == direction && border.type == :impassable }
+
+            neighbor.neighbors[neighbor.neighbor_direction(hex)] = hex
+            hex.neighbors[direction] = neighbor
+          end
+        end
+
         graph.clear
         free = false
         discount = 0
@@ -146,14 +157,14 @@ module Engine
         cost =
           if free
             # call for the side effect of deleting a completed border cost
-            remove_border_calculate_cost!(tile, entity)
+            remove_border_calculate_cost!(tile, entity, spender)
 
             extra_cost
           else
-            border, border_types = remove_border_calculate_cost!(tile, entity)
+            border, border_types = remove_border_calculate_cost!(tile, entity, spender)
             terrain += border_types if border.positive?
-            base_cost = @game.upgrade_cost(old_tile, hex, entity) + border + extra_cost - discount
-            @game.tile_cost_with_discount(tile, hex, entity, base_cost)
+            base_cost = @game.upgrade_cost(old_tile, hex, entity, spender) + border + extra_cost - discount
+            @game.tile_cost_with_discount(tile, hex, entity, spender, base_cost)
           end
 
         pay_tile_cost!(entity, tile, rotation, hex, spender, cost, extra_cost)
@@ -228,7 +239,7 @@ module Engine
         end
       end
 
-      def remove_border_calculate_cost!(tile, entity)
+      def remove_border_calculate_cost!(tile, entity, spender)
         hex = tile.hex
         types = []
 
@@ -243,25 +254,27 @@ module Engine
           tile.borders.delete(border)
           neighbor.tile.borders.map! { |nb| nb.edge == hex.invert(edge) ? nil : nb }.compact!
 
-          cost - border_cost_discount(entity, border, hex)
+          cost - border_cost_discount(entity, spender, border, cost, hex)
         end
         [total_cost, types]
       end
 
-      def border_cost_discount(entity, border, hex)
-        ability = entity.all_abilities.find do |a|
-          (a.type == :tile_discount) &&
-            a.terrain &&
-            (border.type == a.terrain) &&
-            (!a.hexes || a.hexes.include?(hex.name))
-        end
-        discount = ability&.discount || 0
+      def border_cost_discount(entity, spender, border, cost, hex)
+        entity.all_abilities.each do |a|
+          next if (a.type != :tile_discount) ||
+            !a.terrain ||
+            (border.type != a.terrain) ||
+            (a.hexes && !a.hexes.include?(hex.name))
 
-        if discount.positive?
-          @log << "#{entity.name} receives a discount of #{@game.format_currency(discount)} from #{ability.owner.name}"
+          discount = [a.discount, cost].min
+          if discount.positive?
+            @log << "#{spender.name} receives a discount of #{@game.format_currency(discount)} from" \
+                    " #{a.owner.name}"
+          end
+          return discount
         end
 
-        discount
+        0
       end
 
       def check_track_restrictions!(entity, old_tile, new_tile)

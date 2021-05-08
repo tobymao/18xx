@@ -235,6 +235,13 @@
       "created_at": 1618845429
     },
     {
+      "type": "pass",
+      "entity": "PE",
+      "entity_type": "corporation",
+      "id": 27,
+      "created_at": 1618845429
+    },
+    {
       "type": "lay_tile",
       "entity": "PE",
       "entity_type": "corporation",

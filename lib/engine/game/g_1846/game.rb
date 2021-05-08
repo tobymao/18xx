@@ -140,6 +140,7 @@ module Engine
         HOME_TOKEN_TIMING = :float
         MUST_BUY_TRAIN = :always
         CERT_LIMIT_COUNTS_BANKRUPTED = true
+        BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
 
         ORANGE_GROUP = [
           'Lake Shore Line',
@@ -506,7 +507,7 @@ module Engine
           ], round_num: round_num)
         end
 
-        def upgrade_cost(tile, hex, entity)
+        def upgrade_cost(tile, hex, entity, spender)
           [TILE_COST, super].max
         end
 
@@ -575,10 +576,6 @@ module Engine
           self.class::LSL_HEXES.each do |hex|
             hex_by_id(hex).tile.icons.reject! { |icon| icon.name == self.class::LSL_ICON }
           end
-        end
-
-        def bankruptcy_limit_reached?
-          @players.reject(&:bankrupt).one?
         end
 
         def sellable_bundles(player, corporation)

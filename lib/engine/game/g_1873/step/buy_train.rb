@@ -14,6 +14,7 @@ module Engine
           def actions(entity)
             return [] if entity.company? || entity == @game.mhe
             return [] if entity != current_entity
+            return [] if entity.minor? && !entity.owner
             return [] if entity.corporation? && entity.receivership?
 
             rval = []
@@ -35,6 +36,10 @@ module Engine
             else
               'Skip (Trains)'
             end
+          end
+
+          def log_skip(entity)
+            super if !entity.minor? || entity.owner
           end
 
           def skip!
@@ -232,6 +237,7 @@ module Engine
             maint_due = @game.train_maintenance(train.name)
             if maint_due.positive? && action.extra_due
               # seller must pay maintenance
+              old_owner = old_owner.owner if @game.public_mine?(old_owner.owner)
               raise GameError, 'Seller has insufficient funds to pay maintenance' if old_owner.cash < maint_due
 
               old_owner.spend(maint_due, @game.bank)

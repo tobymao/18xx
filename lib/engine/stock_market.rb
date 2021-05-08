@@ -129,8 +129,6 @@ module Engine
       .reverse
     end
 
-    private
-
     def share_price(row, column)
       @market[row]&.[](column)
     end

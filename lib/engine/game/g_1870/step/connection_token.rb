@@ -40,6 +40,7 @@ module Engine
 
             if action.choice == 'Map'
               destination.tile.cities.first.place_token(entity, token, free: true, extra_slot: true)
+              @game.graph.clear
               ability.description = 'Reached ' + ability.description
 
               @log << "#{entity.name} places destination token on the map with bonus"

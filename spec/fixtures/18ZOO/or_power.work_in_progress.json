@@ -111,10 +111,17 @@
       "created_at": 1618496977
     },
     {
+      "type": "pass",
+      "entity": "PB",
+      "entity_type": "corporation",
+      "id": 14,
+      "created_at": 1618496977
+    },
+    {
       "type": "assign",
       "entity": "WORK_IN_PROGRESS",
       "entity_type": "company",
-      "id": 14,
+      "id": 15,
       "created_at": 1618497040,
       "target": "L4",
       "target_type": "hex"
@@ -123,7 +130,7 @@
       "type": "end_game",
       "entity": "PB",
       "entity_type": "corporation",
-      "id": 15,
+      "id": 16,
       "created_at": 1618497089
     }
   ],

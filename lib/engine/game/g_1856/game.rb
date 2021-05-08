@@ -573,13 +573,6 @@ module Engine
                 description: 'Inter train buy/sell at face value',
                 face_value: true,
               },
-              { type: 'description', description: '3 train limit' },
-
-              {
-                type: 'train_buy',
-                description: 'Inter train buy/sell at face value',
-                face_value: true,
-              },
               {
                 type: 'train_limit',
                 increase: 99,
@@ -700,7 +693,8 @@ module Engine
         LAYOUT = :flat
 
         attr_reader :post_nationalization, :bankrupted
-        attr_accessor :borrowed_trains, :national_ever_owned_permanent, :false_national_president
+        attr_accessor :borrowed_trains, :national_ever_owned_permanent, :false_national_president,
+                      :nationalization_train_discard_trigger
 
         # These plain city hexes upgrade to L tiles in brown
         LAKE_HEXES = %w[B19 C14 F17 O18 P9 N3 L13].freeze
@@ -788,6 +782,25 @@ module Engine
           type: 'description',
           description: '(Temporary) 1-Share presidency'
         )
+        POST_NATIONALIZATION_TRAIN_ABILITY = Ability::TrainLimit.new(
+          type: 'train_limit',
+          description: 'Train Limit of 3',
+          increase: 1
+        )
+        TWENTY_SHARE_NATIONAL_ABILITY = Ability::Description.new(
+          type: 'description',
+          description: '20 Share Corporation'
+        )
+        NATIONAL_IMMOBILE_SHARE_PRICE_ABILITY = Ability::Description.new(
+          type: 'description',
+          description: 'Share price may not change',
+          desc_detail: 'Share price may not change until this corporation has owned a permanent train'
+        )
+        NATIONAL_FORCED_WITHHOLD_ABILITY = Ability::Description.new(
+          type: 'description',
+          description: 'May not pay dividends',
+          desc_detail: 'Must withhold earnings until this corporation has owned a permanent train'
+        )
         def national
           @national ||= corporation_by_id('CGR')
         end
@@ -801,12 +814,9 @@ module Engine
 
           revenue += 20 if route.corporation.assigned?(port.id) && stops.any? { |stop| stop.hex.assigned?(port.id) }
 
-          route.corporation.companies.each do |company|
-            abilities(company, :hex_bonus) do |ability|
-              revenue += stops.map { |s| s.hex.id }.uniq.sum { |id| ability.hexes.include?(id) ? ability.amount : 0 }
-            end
+          route.corporation.all_abilities.select { |a| a.type == :hex_bonus }.each do |ability|
+            revenue += stops.map { |s| s.hex.id }.uniq.sum { |id| ability.hexes.include?(id) ? ability.amount : 0 }
           end
-
           revenue
         end
 
@@ -924,6 +934,7 @@ module Engine
           @gray_hamilton ||= @tiles.find { |t| t.name == '123' }
 
           @post_nationalization = false
+          @nationalization_train_discard_trigger = false
           @national_formed = false
 
           @pre_national_percent_by_player = {}
@@ -949,13 +960,17 @@ module Engine
           @national_ever_owned_permanent = false
 
           # 1 of each right is reserved w/ the private when it gets bought in. This leaves 2 extra to sell.
-          @available_bridge_tokens = 2
-          @available_tunnel_tokens = 2
+          available_tokens = @optional_rules&.include?(:unlimited_bonus_tokens) ? 99 : 2
+          @available_bridge_tokens = available_tokens
+          @available_tunnel_tokens = available_tokens
 
           # Corp -> Borrowed Train
           @borrowed_trains = {}
-
-          create_destinations(ALTERNATE_DESTINATIONS)
+          create_destinations(
+            @optional_rules&.include?(:alternate_destinations) ? ALTERNATE_DESTINATIONS : DESTINATIONS
+          )
+          national.add_ability(self.class::NATIONAL_IMMOBILE_SHARE_PRICE_ABILITY)
+          national.add_ability(self.class::NATIONAL_FORCED_WITHHOLD_ABILITY)
         end
 
         def create_destinations(destinations)
@@ -1239,6 +1254,7 @@ module Engine
 
             # Nationalization!!
             G1856::Step::NationalizationPayoff,
+            G1856::Step::NationalizationDiscardTrains,
             G1856::Step::SpecialBuy,
             G1856::Step::Track,
             G1856::Step::Escrow,
@@ -1337,6 +1353,8 @@ module Engine
           return if @national_ever_owned_permanent
 
           @national_ever_owned_permanent = true
+          national.remove_ability(self.class::NATIONAL_FORCED_WITHHOLD_ABILITY)
+          national.remove_ability(self.class::NATIONAL_IMMOBILE_SHARE_PRICE_ABILITY)
           @log << "-- #{national.name} now owns a permanent train, may no longer borrow a train when trainless --"
           national.remove_ability(national.all_abilities.find { |a| a.type == :borrow_train })
         end
@@ -1351,7 +1369,7 @@ module Engine
           end
           # Leftover cash is transferred
           major.spend(major.cash, national) if major.cash.positive?
-
+          @loans << major.loans.pop(major.loans.size)
           # Tunnel / Bridge rights are transferred
           if tunnel?(major)
             if tunnel?(national)
@@ -1418,6 +1436,7 @@ module Engine
             new_share = Share.new(national, percent: 5, index: num_shares + i, cert_size: 0.5)
             national.shares_by_corporation[national] << new_share
           end
+          national.add_ability(self.class::TWENTY_SHARE_NATIONAL_ABILITY)
         end
 
         def calculate_national_price
@@ -1524,7 +1543,7 @@ module Engine
             end
             # not president, just give them shares
             while player_national_shares.positive?
-              if national_share_index == max_national_shares
+              if national_share_index == (max_national_shares - 1) # 19 shares; president is double
                 @log << "#{national.name} is out of shares to issue, #{player.name} gets no more shares"
                 player_national_shares = 0
               else
@@ -1540,6 +1559,8 @@ module Engine
             end
           end
           # Distribute market shares to the market
+          return unless national_market_share_count.positive?
+
           @share_pool.buy_shares(
             @share_pool,
             ShareBundle.new(national.shares_by_corporation[national][-1 * national_market_share_count..-1]),
@@ -1564,8 +1585,6 @@ module Engine
           home_bases = @nationalized_corps.map do |c|
             nationalize_home_token(c, create_national_token)
           end
-          # So the national will get 11 tokens if and only if all 11 majors merge in
-          remaining_tokens = [national_token_limit - home_bases.size, 0].max
 
           # Other tokens second, ignoring duplicates from the home token set
           @nationalized_corps.each do |corp|
@@ -1584,7 +1603,7 @@ module Engine
             # TODO: implement this case, maybe use a varaiation of the below?
             # @round.corporations_removing_tokens = [buyer, acquired_corp]
           end
-
+          remaining_tokens = [national_token_limit - national.tokens.size, 0].max
           @log << "#{national.name} has #{remaining_tokens} spare #{format_currency(national_token_price)} tokens"
           remaining_tokens.times { national.tokens << Engine::Token.new(@national, price: national_token_price) }
         end
@@ -1617,6 +1636,7 @@ module Engine
           # Reduce the nationals train holding limit to the real value
           # (It was artificially high to avoid forced discard triggering early)
           # TODO: Do it.
+          @nationalization_train_discard_trigger = true
           @post_nationalization = true
         end
 
