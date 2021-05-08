@@ -139,6 +139,14 @@ class Api
           # POST '/api/game/<game_id>/kick
           r.is 'kick' do
             game.remove_player(r.params['id'])
+
+            game.to_h
+          end
+
+          r.is 'player_order' do
+            game.settings['player_order'] = r.params['player_order']
+            game.save
+
             game.to_h
           end
         end
@@ -162,6 +170,7 @@ class Api
             max_players: r['max_players'],
             settings: {
               seed: Random.new_seed % 2**31,
+              player_order: r['player_order'],
               unlisted: r['unlisted'],
               optional_rules: r['optional_rules'],
             },
