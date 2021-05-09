@@ -38,6 +38,9 @@ module Engine
         OPERATING_ROUND_NAME = 'Line'
 
         AVAILABLE_CORP_COLOR = '#c6e9af'
+        EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
+        EBUY_CAN_SELL_SHARES = false
+        ALLOW_TRAIN_BUY_FROM_OTHERS = false
 
         TILE_LAYS = [{ lay: true, upgrade: true, cost: 0 }, { lay: true, upgrade: true, cost: 0 }].freeze
 
@@ -195,6 +198,7 @@ module Engine
           @first_stock_round = true
           @or = 0
           @active_maintainance_cost = {}
+          @player_debts = Hash.new { |h, k| h[k] = 0 }
           @all_tram_corporations = @corporations.select { |item| item.type == :minor }
           @tram_corporations = @all_tram_corporations.reject { |item| item.id == '2' }.sort_by do
             rand
@@ -498,7 +502,11 @@ module Engine
         end
 
         def maintenance_costs(corporation)
-          corporation.trains.inject(0) { |sum, train| sum + (@active_maintainance_cost[train.sym] || 0) }
+          corporation.trains.inject(0) { |sum, train| sum + train_maintenance(train.sym) }
+        end
+
+        def train_maintenance(train_sym)
+          @active_maintainance_cost[train_sym] || 0
         end
 
         def routes_revenue(routes)
@@ -506,6 +514,24 @@ module Engine
 
           corporation = routes.first.train.owner
           routes.sum(&:revenue) + maintenance_costs(corporation)
+        end
+
+        def scrap_train(train, entity)
+          @log << "#{entity.name} scraps #{train.name}"
+          remove_train(train)
+          train.owner = nil
+        end
+
+        def increase_debt(player, amount)
+          @player_debts[player] += amount * 2
+        end
+
+        def player_debt(player)
+          @player_debts[player]
+        end
+
+        def player_value(player)
+          super - player_debt(player)
         end
       end
     end
