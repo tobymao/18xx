@@ -26,6 +26,7 @@ MessageBus.subscribe '/turn' do |msg|
 
   users.each do |user|
     next if user.settings['notifications'] != 'webhook'
+    next if (user.settings['webhook_user_id']&.strip || '') == ''
 
     begin
       message = "<@#{user.settings['webhook_user_id']}> #{data['type']} #{data['game_url']}"

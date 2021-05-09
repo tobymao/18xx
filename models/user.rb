@@ -75,8 +75,10 @@ class User < Base
     validates_format /^[^\s].*$/, :name, message: 'may not start with a whitespace'
     validates_format /^[^@\s]+@[^@\s]+\.[^@\s]+$/, :email
 
+    errors.add(:webhook_user_id, 'cannot be empty') if settings['webhook'] && (settings['webhook_user_id']&.strip || '') == ''
+
     # rubocop:disable Style/GuardClause
-    if (url = settings['webhook_url']) && !%w[slack.com discord.com].include?(URI.parse(url).host)
+    if (url = settings['webhook_url']) && !/slack|discord/.match?(URI.parse(url).host)
       errors.add(:webhook_url, 'only supports Slack and Discord, let us know if you want others')
     end
     # rubocop:enable Style/GuardClause
