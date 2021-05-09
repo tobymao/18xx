@@ -73,6 +73,7 @@ class Api
                 game.round = meta['round']
                 game.turn = meta['turn']
                 game.acting = acting.map(&:id)
+                acting.delete(user)
 
                 game.result = meta['game_result']
                 game.status = meta['game_status']
@@ -80,6 +81,7 @@ class Api
                 game.save
               else
                 engine = Engine::Game.load(game, actions: actions_h(game))
+                prev = acting_users(engine, users)
 
                 r.params['user'] = user.id
 
@@ -94,7 +96,7 @@ class Api
                   action: action,
                 )
 
-                acting = set_game_state(game, engine, users)
+                acting = set_game_state(game, engine, users) - prev
               end
             end
 
@@ -191,8 +193,7 @@ class Api
   end
 
   def set_game_state(game, engine, users)
-    active_players = engine.active_players_id
-    acting = users.select { |u| active_players.include?(u.id) }
+    acting = acting_users(engine, users)
 
     game.round = engine.round.name
     game.turn = engine.turn
@@ -208,6 +209,11 @@ class Api
 
     game.save
     acting
+  end
+
+  def acting_users(engine, users)
+    active_players = engine.active_players_id
+    users.select { |u| active_players.include?(u.id) }
   end
 
   def publish_turn(user_ids, game, url, type, force)

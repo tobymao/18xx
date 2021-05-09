@@ -204,6 +204,7 @@ module Engine
 
             @round.merging = nil
             @round.vote_outcome = nil
+            @corp_connectivity.clear
             pass!
           end
 
@@ -248,13 +249,39 @@ module Engine
             end
           end
 
+          def corporation_connected?(c1, c2)
+            # Are corporations connected (blocking by tokens doesn't matter)
+            unless @corp_connectivity[c1]
+              new_home = c1.tokens.first.city
+              connected = []
+              visited = {}
+              new_home.walk(skip_track: :narrow, tile_type: @game.class::TILE_TYPE) do |path, _, _|
+                next if visited[path]
+
+                visited[path] = true
+
+                path.nodes.each do |p_node|
+                  next unless p_node.city?
+                  next if visited[p_node]
+
+                  visited[p_node] = true
+
+                  a = p_node.tokens.select { |t| t&.corporation&.type == :minor }.map(&:corporation)
+                  connected.concat(a)
+                end
+              end
+              connected.each { |c| @corp_connectivity[c] = connected }
+            end
+            @corp_connectivity[c1].include?(c2)
+          end
+
           def merge_possible?(corporations, new_corporation)
             return false if corporations.include?(new_corporation)
 
             # Minors only have one token
             new_home = new_corporation.tokens.first.city
 
-            return false unless corporations.any? { |c| @game.graph.connected_nodes(c)[new_home] }
+            return false unless corporations.any? { |c| corporation_connected?(c, new_corporation) }
 
             # Don't share tokens (minors only have one token)
             return false if corporations.any? { |c| c.tokens.first.city.tile == new_home.tile }
@@ -307,6 +334,7 @@ module Engine
           end
 
           def setup
+            @corp_connectivity = {}
             @round.vote_outcome = nil
             @round.merging = nil
           end
