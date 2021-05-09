@@ -15,6 +15,15 @@ module Engine
 
             []
           end
+
+          def buyable_trains(entity)
+            super
+          end
+
+          def buyable_train_variants(train, entity)
+            base = super
+            base.select { |item| @game.available_trains.include?(item[:name]) }
+          end
         end
       end
     end

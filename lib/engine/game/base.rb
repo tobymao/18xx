@@ -2383,6 +2383,10 @@ module Engine
         train.names_to_prices.keys.join(', ')
       end
 
+      def info_available_train(first_train, train)
+        train.sym == first_train&.sym
+      end
+
       def info_train_price(train)
         train.names_to_prices.values.map { |p| format_currency(p) }.join(', ')
       end
