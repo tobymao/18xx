@@ -537,6 +537,24 @@ module Engine
         def player_value(player)
           super - player_debt(player)
         end
+
+        def check_other(route)
+          check_track_type(route)
+        end
+
+        def check_track_type(route)
+          corporation = route.train.owner
+          track_types = route.chains.flat_map { |item| item[:paths] }.flat_map(&:track).uniq
+
+          if corporation.type == :city && !(track_types - ['narrow']).empty?
+            raise GameError,
+                  'Route may only contain narrow tracks'
+          end
+
+          return unless corporation.type == :minor && !(track_types - ['broad']).empty?
+
+          raise GameError, 'Route may only contain broad tracks'
+        end
       end
     end
   end
