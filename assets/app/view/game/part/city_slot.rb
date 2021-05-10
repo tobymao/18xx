@@ -54,7 +54,18 @@ module View
             radius -= 4
           end
 
-          children = [h(:circle, attrs: { r: @radius, fill: color })]
+          token_attrs = {
+            r: @radius,
+            fill: color,
+          }
+
+          if (highlight = @game&.highlight_token?(@token))
+            radius -= 3
+            token_attrs[:stroke] = 'white'
+            token_attrs[:'stroke-width'] = '3px'
+          end
+
+          children = [h(:circle, attrs: token_attrs)]
           children << reservation if @reservation && !@token
           children << render_boom if @city&.boom
           children << h(Token, token: @token, radius: radius, game: @game) if @token
@@ -64,7 +75,10 @@ module View
             attrs: { transform: '' },
           }
           props[:attrs][:transform] = rotation_for_layout if @edge
-          if @extra_token
+          if highlight
+            # make it look like an extra tall token
+            props[:attrs][:filter] = 'drop-shadow(8px 8px 2px #444)'
+          elsif @extra_token
             props[:attrs][:transform] += ' scale(0.95)'
             props[:attrs][:filter] = 'drop-shadow(0 0 6px #000)'
           end
