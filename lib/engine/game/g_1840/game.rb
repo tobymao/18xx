@@ -451,7 +451,7 @@ module Engine
 
         def info_train_name(train)
           names = train.names_to_prices.keys.sort
-          active_variant = (available_trains & train.variants.keys).first
+          active_variant = active_variant(train)
           return names.join(', ') unless active_variant
 
           names -= [active_variant]
@@ -459,19 +459,23 @@ module Engine
         end
 
         def info_available_train(_first_train, train)
-          !(available_trains & train.variants.keys).empty?
+          !active_variant(train).nil?
         end
 
         def info_train_price(train)
           name_and_prices = train.names_to_prices.sort_by { |k, _v| k }.to_h
 
-          active_variant = (available_trains & train.variants.keys).first
+          active_variant = active_variant(train)
           return name_and_prices.values.map { |p| format_currency(p) }.join(', ') unless active_variant
 
           active_price = name_and_prices[active_variant]
           name_and_prices.delete(active_variant)
 
           "#{active_price}, (#{name_and_prices.values.map { |p| format_currency(p) }.join(', ')})"
+        end
+
+        def active_variant(train)
+          (available_trains & train.variants.keys).first
         end
 
         def available_trains
@@ -502,7 +506,7 @@ module Engine
         end
 
         def maintenance_costs(corporation)
-          corporation.trains.inject(0) { |sum, train| sum + train_maintenance(train.sym) }
+          corporation.trains.sum { |train| train_maintenance(train.sym) }
         end
 
         def train_maintenance(train_sym)
