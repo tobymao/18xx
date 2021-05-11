@@ -66,12 +66,12 @@ module Engine
               connected: true,
               extra_action: true,
             )
-            @round.pending_tokens.shift
+            @round.pending_special_tokens.shift
           end
 
           def process_pass(action)
             super
-            @round.pending_tokens.shift
+            @round.pending_special_tokens.shift
           end
 
           def show_other
