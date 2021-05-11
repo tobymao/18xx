@@ -25,6 +25,12 @@ module Engine
           super
         end
 
+        def get_tile_lay_corporation(entity)
+          return entity if entity.id == @game.class::COMPANY_HSBC
+
+          super
+        end
+
         def legal_tile_rotation?(entity, hex, tile)
           # We will remove a town from the white S tile, this meaning we will not follow the normal path upgrade rules
           if hex.name == @game.class::UPGRADABLE_S_HEX_NAME &&
