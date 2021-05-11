@@ -1388,6 +1388,9 @@ module Engine
               city.reservations.delete(corporation)
             end
           end
+          if self.class::CLOSED_CORP_RESERVATIONS_REMOVED && hex.tile.reserved_by?(corporation)
+            hex.tile.reservations.delete(corporation)
+          end
         end
 
         corporation.spend(corporation.cash, @bank) if corporation.cash.positive?
