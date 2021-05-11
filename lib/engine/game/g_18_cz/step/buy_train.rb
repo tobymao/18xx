@@ -40,9 +40,10 @@ module Engine
 
             large_trains = trains.select { |item| @game.train_of_size?(item, :large) }
 
-            large_trains if entity.trains.none? do |item|
+            return large_trains if entity.trains.none? do |item|
               @game.train_of_size?(item, :large)
             end && room_for_only_one?(entity)
+
             default_trains.concat(medium_trains).concat(large_trains)
           end
 
