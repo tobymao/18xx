@@ -38,6 +38,9 @@ module Engine
         OPERATING_ROUND_NAME = 'Line'
 
         AVAILABLE_CORP_COLOR = '#c6e9af'
+        EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
+        EBUY_CAN_SELL_SHARES = false
+        ALLOW_TRAIN_BUY_FROM_OTHERS = false
 
         TILE_LAYS = [{ lay: true, upgrade: true, cost: 0 }, { lay: true, upgrade: true, cost: 0 }].freeze
 
@@ -155,6 +158,38 @@ module Engine
           'I3' => [1, 4],
         }.freeze
 
+        RED_TILES = %w[D20 E19 E21].freeze
+
+        TILES_FIXED_ROTATION = %w[L30a L30b L31a L31b].freeze
+        PURPLE_SPECIAL_TILES = {
+          'G11' => %w[L30a L31a],
+          'F24' => %w[L30b L31b],
+        }.freeze
+
+        TRAIN_ORDER = [
+          %w[Y1 O1],
+          %w[Y2 O2 R1],
+          %w[O3 R2 Pi1],
+          %w[R3 Pi2 Pu1],
+          %w[Pi3 Pu2],
+        ].freeze
+
+        DEPOT_CLEARING = [
+          '',
+          '',
+          'Y1',
+          'O1',
+          'R1',
+        ].freeze
+
+        MAINTAINANCE_COST = {
+          'Y1' => {},
+          'O1' => {},
+          'R1' => { 'Y1' => -50 },
+          'Pi1' => { 'Y1' => -200, 'O1' => -100, 'R1' => -50 },
+          'Pu1' => { 'Y1' => -400, 'O1' => -300, 'R1' => -100, 'Pu1' => 200 },
+        }.freeze
+
         attr_reader :tram_corporations, :major_corporations, :tram_owned_by_corporation
 
         def setup
@@ -162,6 +197,8 @@ module Engine
           @cr_counter = 0
           @first_stock_round = true
           @or = 0
+          @active_maintainance_cost = {}
+          @player_debts = Hash.new { |h, k| h[k] = 0 }
           @all_tram_corporations = @corporations.select { |item| item.type == :minor }
           @tram_corporations = @all_tram_corporations.reject { |item| item.id == '2' }.sort_by do
             rand
@@ -224,6 +261,7 @@ module Engine
           @round_counter += 1
           @intern_cr_phase_counter += 1
           @cr_counter += 1
+          remove_obsolete_trains
           @log << "-- #{round_description('Company', nil)} --"
           new_company_operating_route_round
         end
@@ -409,6 +447,95 @@ module Engine
 
         def needed_exits_for_hex(hex)
           CITY_TRACK_EXITS[hex.id]
+        end
+
+        def info_train_name(train)
+          names = train.names_to_prices.keys.sort
+          active_variant = active_variant(train)
+          return names.join(', ') unless active_variant
+
+          names -= [active_variant]
+          "#{active_variant}, (#{names.join(', ')})"
+        end
+
+        def info_available_train(_first_train, train)
+          !active_variant(train).nil?
+        end
+
+        def info_train_price(train)
+          name_and_prices = train.names_to_prices.sort_by { |k, _v| k }.to_h
+
+          active_variant = active_variant(train)
+          return name_and_prices.values.map { |p| format_currency(p) }.join(', ') unless active_variant
+
+          active_price = name_and_prices[active_variant]
+          name_and_prices.delete(active_variant)
+
+          "#{active_price}, (#{name_and_prices.values.map { |p| format_currency(p) }.join(', ')})"
+        end
+
+        def active_variant(train)
+          (available_trains & train.variants.keys).first
+        end
+
+        def available_trains
+          index = [@cr_counter - 1, 0].max
+          TRAIN_ORDER[index]
+        end
+
+        def remove_obsolete_trains
+          train_to_remove = DEPOT_CLEARING[@cr_counter - 1]
+          return unless train_to_remove
+
+          @depot.export_all!(train_to_remove)
+        end
+
+        def buy_train(operator, train, price = nil)
+          super
+
+          new_cost = MAINTAINANCE_COST[train.sym]
+          @active_maintainance_cost = new_cost if new_cost['Y1'] &&
+                                      (@active_maintainance_cost['Y1'].nil? ||
+                                         new_cost['Y1'] < @active_maintainance_cost['Y1'])
+        end
+
+        def status_str(corporation)
+          return if corporation.type != :minor
+
+          "Maintenance: #{format_currency(maintenance_costs(corporation))}"
+        end
+
+        def maintenance_costs(corporation)
+          corporation.trains.sum { |train| train_maintenance(train.sym) }
+        end
+
+        def train_maintenance(train_sym)
+          @active_maintainance_cost[train_sym] || 0
+        end
+
+        def routes_revenue(routes)
+          return super if routes.empty?
+
+          corporation = routes.first.train.owner
+          routes.sum(&:revenue) + maintenance_costs(corporation)
+        end
+
+        def scrap_train(train, entity)
+          @log << "#{entity.name} scraps #{train.name}"
+          remove_train(train)
+          train.owner = nil
+        end
+
+        def increase_debt(player, amount)
+          @player_debts[player] += amount * 2
+        end
+
+        def player_debt(player)
+          @player_debts[player]
+        end
+
+        def player_value(player)
+          super - player_debt(player)
         end
       end
     end

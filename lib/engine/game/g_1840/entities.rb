@@ -49,6 +49,7 @@ module Engine
               distance: 99,
               price: 100,
               num: 5,
+              available_on: '1',
               variants: [
                 {
                   name: 'Y2',
@@ -61,6 +62,7 @@ module Engine
               distance: 99,
               price: 300,
               num: 5,
+              available_on: '1',
               variants: [
                 {
                   name: 'O2',
@@ -77,6 +79,7 @@ module Engine
               distance: 99,
               price: 500,
               num: 5,
+              available_on: '1',
               variants: [
                 {
                   name: 'R2',
@@ -93,6 +96,7 @@ module Engine
               distance: 99,
               price: 600,
               num: 5,
+              available_on: '1',
               variants: [
                 {
                   name: 'Pi2',
@@ -109,6 +113,7 @@ module Engine
               distance: 99,
               price: 800,
               num: 5,
+              available_on: '1',
               variants: [
                 {
                   name: 'Pu2',

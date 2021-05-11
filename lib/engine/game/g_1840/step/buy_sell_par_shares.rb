@@ -35,6 +35,10 @@ module Engine
 
             track_action(action, action.bundle.corporation)
           end
+
+          def visible_corporations
+            @game.corporations.reject { |item| item.type == :minor }
+          end
         end
       end
     end

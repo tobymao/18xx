@@ -226,6 +226,8 @@ module Engine
 
       MUST_BUY_TRAIN = :route # When must the company buy a train if it doesn't have one (route, never, always)
 
+      ALLOW_TRAIN_BUY_FROM_OTHERS = true # Allows train buy from other corporations
+
       # Default tile lay, one tile either upgrade or lay at zero cost
       # allows multiple lays, value must be either true, false or :not_if_upgraded
       TILE_LAYS = [{ lay: true, upgrade: true, cost: 0 }].freeze
@@ -2385,6 +2387,10 @@ module Engine
 
       def info_train_name(train)
         train.names_to_prices.keys.join(', ')
+      end
+
+      def info_available_train(first_train, train)
+        train.sym == first_train&.sym
       end
 
       def info_train_price(train)

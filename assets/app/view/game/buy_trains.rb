@@ -65,11 +65,18 @@ module View
 
         must_take_loan = step.must_take_loan?(@corporation) if step.respond_to?(:must_take_loan?)
         if must_take_loan
-          children << h(:div, "#{player.name} does not have enough liquidity to "\
-                              "contribute towards #{@corporation.name} buying a train "\
-                              "from the Depot. #{@corporation.name} must buy a "\
-                              "train from another corporation, or #{player.name} must "\
-                              "take a loan of at least #{@game.format_currency(share_funds_required)}")
+          text = "#{player.name} does not have enough liquidity to "\
+          "contribute towards #{@corporation.name} buying a train "\
+          'from the Depot. '
+
+          if @game.class::ALLOW_TRAIN_BUY_FROM_OTHERS
+            text += "#{@corporation.name} must buy a "\
+            'train from another corporation, or'
+          end
+
+          text += "#{player.name} must " \
+          "take a loan of at least #{@game.format_currency(share_funds_required)}"
+          children << h(:div, text)
         end
 
         if @must_buy_train &&
