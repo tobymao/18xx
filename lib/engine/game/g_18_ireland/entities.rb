@@ -60,7 +60,7 @@ module Engine
             name: 'City of Dublin Steam Packet Company',
             value: 45,
             revenue: 10,
-            desc: 'The owning Corporation can place the +£10 token on any port.'\
+            desc: 'The owning Corporation can place the +£10 token on any port (Belfast, Londonderry or Rosslare).'\
             ' This action closes the company, but the Corporation adds £10 to the' \
             " port's revenue until the end of the game.",
             sym: 'CDSPC',
