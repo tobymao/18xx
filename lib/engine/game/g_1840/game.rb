@@ -259,7 +259,7 @@ module Engine
 
         def init_company_round
           @round_counter += 1
-          @intern_cr_phase_counter += 1
+          @intern_cr_phase_counter = 1
           @cr_counter += 1
           remove_obsolete_trains
           @log << "-- #{round_description('Company', nil)} --"
@@ -303,8 +303,8 @@ module Engine
 
         def operating_round(round_num)
           G1840::Round::LineOperating.new(self, [
-            Engine::Step::SpecialTrack,
-            Engine::Step::SpecialToken,
+            G1840::Step::SpecialTrack,
+            G1840::Step::SpecialToken,
             Engine::Step::BuyCompany,
             Engine::Step::HomeToken,
             G1840::Step::TrackAndToken,
@@ -441,6 +441,9 @@ module Engine
              to.towns.size == 2 && from.color == :yellow && to.color == :green
             return true
           end
+
+          return true if from.color == 'red' && to.color == 'red' && RED_TILES.include?(from.hex.coordinates)
+          return true if from.color == 'purple' && to.color == 'purple'
 
           super
         end
