@@ -551,7 +551,7 @@ module Engine
                   'Route may only contain narrow tracks'
           end
 
-          return unless corporation.type == :minor && !(track_types - ['broad']).empty?
+          return if (track_types - ['broad']).empty?
 
           raise GameError, 'Route may only contain broad tracks'
         end
