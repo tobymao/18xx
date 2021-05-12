@@ -78,7 +78,7 @@ module Engine
           end
 
           def can_increase_bid?(entity)
-            max_bid(entity) >= highest_bid(@auctioning).price + min_increment + min_par * 3
+            max_bid(entity) >= min_required(entity)
           end
 
           def min_par
@@ -164,11 +164,23 @@ module Engine
             price = action.price
             raise GameError, "Bid must be a multiple of #{MIN_BID_INCREMENT}" if (price % MIN_BID_INCREMENT).positive?
 
-            if auctioning
+            if @auctioning
               add_bid(action)
             else
               selection_bid(action)
             end
+          end
+
+          def auction_entity(entity)
+            @auctioning = entity
+            @active_bidders, cannot_bid = initial_auction_entities.partition do |player|
+              player == @auction_triggerer || can_increase_bid?(player)
+            end
+            cannot_bid.each do |player|
+              @game.log << "#{player.name} cannot afford minimum bid + 3 x minimum par of "\
+                "#{@game.format_currency(min_required(player))} and is out of the auction for #{auctioning.name}"
+            end
+            resolve_bids
           end
 
           def add_bid(action)
@@ -183,7 +195,20 @@ module Engine
                     end
             super(action)
 
+            passing = @active_bidders.reject do |player|
+              player == entity || can_increase_bid?(player)
+            end
+            passing.each do |player|
+              @game.log << "#{player.name} cannot afford minimum bid + 3 x minimum par of "\
+                "#{@game.format_currency(min_required(player))} and is out of the auction for #{auctioning.name}"
+              remove_from_auction(player)
+            end
+
             resolve_bids
+          end
+
+          def min_required(entity)
+            highest_bid(@auctioning).price + min_increment + min_par * 3
           end
 
           def min_bid(corporation)

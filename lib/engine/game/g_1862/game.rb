@@ -142,7 +142,7 @@ module Engine
             train_limit: 3, # per type
             tiles: [:yellow],
             operating_rounds: 1,
-            status: ['three_per'],
+            status: ['three_per', 'first_rev'],
           },
           {
             name: 'B',
@@ -150,7 +150,7 @@ module Engine
             train_limit: 3, # 3 type
             tiles: %i[yellow green],
             operating_rounds: 2,
-            status: ['three_per'],
+            status: ['three_per', 'first_rev'],
           },
           {
             name: 'C',
@@ -158,7 +158,7 @@ module Engine
             train_limit: 3, # per type
             tiles: %i[yellow green],
             operating_rounds: 2,
-            status: ['three_per'],
+            status: ['three_per', 'middle_rev'],
           },
           {
             name: 'D',
@@ -166,7 +166,7 @@ module Engine
             train_limit: 3, # per type
             tiles: %i[yellow green brown],
             operating_rounds: 3,
-            status: ['three_per'],
+            status: ['three_per', 'middle_rev'],
           },
           {
             name: 'E',
@@ -174,7 +174,7 @@ module Engine
             train_limit: 2, # per type
             tiles: %i[yellow green brown],
             operating_rounds: 3,
-            status: ['two_per'],
+            status: ['two_per', 'last_rev'],
           },
           {
             name: 'F',
@@ -182,7 +182,7 @@ module Engine
             train_limit: 2, # per type
             tiles: %i[yellow green brown],
             operating_rounds: 3,
-            status: ['two_per'],
+            status: ['two_per', 'last_rev'],
           },
           {
             name: 'G',
@@ -190,7 +190,7 @@ module Engine
             train_limit: 3, # across all types
             tiles: %i[yellow green brown],
             operating_rounds: 3,
-            status: ['three_total'],
+            status: ['three_total', 'last_rev'],
           },
           {
             name: 'H',
@@ -198,7 +198,7 @@ module Engine
             train_limit: 3, # across all types
             tiles: %i[yellow green brown],
             operating_rounds: 3,
-            status: ['three_total'],
+            status: ['three_total', 'last_rev'],
           },
         ].freeze
 
@@ -469,6 +469,12 @@ module Engine
                         'Limit of 2 trains of each kind (Freight/Local/Express)'],
           'three_total' => ['3 total',
                             'Limit of 3 trains total'],
+          'first_rev' => ['First offboard',
+                          'First offboard/port value used for revenue'],
+          'middle_rev' => ['Middle offboard',
+                           'Middle offboard/port value used for revenue'],
+          'last_rev' => ['Last offboard',
+                         'Last offboard/port value used for revenue'],
         ).freeze
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
@@ -501,6 +507,17 @@ module Engine
 
         FREIGHT_BONUS = 20
         PORT_FREIGHT_BONUS = 30
+
+        REAL_PHASE_TO_REV_PHASE = {
+          'A' => :white,
+          'B' => :white,
+          'C' => :gray,
+          'D' => :gray,
+          'E' => :purple,
+          'F' => :purple,
+          'G' => :purple,
+          'H' => :purple,
+        }.freeze
 
         def init_share_pool
           SharePool.new(self, allow_president_sale: true)
@@ -954,8 +971,10 @@ module Engine
             when G1862::Round::Parliament
               if @double_parliament
                 @double_parliament = false
+                clear_programmed_actions
                 new_parliament_round
               else
+                clear_programmed_actions
                 new_stock_round
               end
             when Engine::Round::Stock
@@ -1085,6 +1104,10 @@ module Engine
           else
             'IPO'
           end
+        end
+
+        def bank_sort(corporations)
+          corporations.sort.sort_by { |c| @starting_phase[c] }
         end
 
         def check_bankruptcy!(entity)
@@ -1248,8 +1271,16 @@ module Engine
           end
         end
 
+        def game_route_revenue(stop, phase, train)
+          if stop.offboard?
+            stop.revenue[REAL_PHASE_TO_REV_PHASE[phase.name]]
+          else
+            stop.route_revenue(phase, train)
+          end
+        end
+
         def stop_revenues(stops, route)
-          stops.sum { |stop| stop.route_revenue(route.phase, route.train) }
+          stops.sum { |stop| game_route_revenue(stop, route.phase, route.train) }
         end
 
         # Brute force it. Theoretical max combos is 729, but realistic max is order of magnitude lower
@@ -1587,7 +1618,7 @@ module Engine
           rev = 0
           unless ends.empty?
             rev = ends.sum do |stop|
-              stop_on_other_route?(route, stop) ? 0 : stop.route_revenue(route.phase, route.train)
+              stop_on_other_route?(route, stop) ? 0 : game_route_revenue(stop, route.phase, route.train)
             end
           end
           return rev unless route == route_set.first
@@ -1599,7 +1630,7 @@ module Engine
         def revenue_for(route, stops)
           return freight_revenue(route, stops) if train_type(route.train) == :freight
 
-          stops.sum { |stop| stop_on_other_route?(route, stop) ? 0 : stop.route_revenue(route.phase, route.train) }
+          stops.sum { |stop| stop_on_other_route?(route, stop) ? 0 : game_route_revenue(stop, route.phase, route.train) }
         end
 
         def hex_on_other_route?(this_route, hex)
@@ -2192,7 +2223,7 @@ module Engine
           # remove trains
           corporation.trains.clear
 
-          convert_to_full!(corporation)
+          convert_to_incremental!(corporation)
         end
 
         def finish_merge
@@ -2227,6 +2258,10 @@ module Engine
 
           @merge_data.clear
           @log << 'Merge complete'
+        end
+
+        def separate_treasury?
+          true
         end
       end
     end

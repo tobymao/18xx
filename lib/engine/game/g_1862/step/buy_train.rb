@@ -220,7 +220,12 @@ module Engine
           end
 
           def warranty_text
-            'Warranties (each)'
+            train = @depot.depot_trains.first
+            if train.sym.include?('A') || train.sym.include?('D')
+              'Additional Warranties (each)'
+            else
+              'Warranties (each)'
+            end
           end
 
           def warranty_max

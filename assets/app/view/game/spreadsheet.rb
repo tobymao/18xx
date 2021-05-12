@@ -182,6 +182,9 @@ module View
 
         or_history_titles = render_history_titles(@game.all_corporations)
 
+        treasury = []
+        treasury << h(:th, render_sort_link('Shares', :treasury)) if @game.separate_treasury?
+
         extra = []
         extra << h(:th, render_sort_link('Loans', :loans)) if @game.total_loans&.nonzero?
         extra << h(:th, render_sort_link('Shorts', :shorts)) if @game.respond_to?(:available_shorts)
@@ -203,7 +206,7 @@ module View
             h(:th, th_props[@game.players.size], 'Players'),
             h(:th, th_props[2], 'Bank'),
             h(:th, th_props[2], 'Prices'),
-            h(:th, th_props[5 + extra.size, false], ['Corporation ', render_toggle_not_floated_link]),
+            h(:th, th_props[5 + extra.size + treasury.size, false], ['Corporation ', render_toggle_not_floated_link]),
             h(:th, ''),
             *connection_run_header,
             h(:th, th_props[or_history_titles.size, false], 'OR History'),
@@ -220,6 +223,7 @@ module View
             h(:th, render_sort_link(@game.ipo_name, :par_price)),
             h(:th, render_sort_link('Market', :share_price)),
             h(:th, render_sort_link('Cash', :cash)),
+            *treasury,
             h(:th, render_sort_link('Order', :order)),
             h(:th, render_sort_link('Trains', :trains)),
             h(:th, render_sort_link('Tokens', :tokens)),
@@ -333,7 +337,7 @@ module View
             when :id
               corporation.id
             when :ipo_shares
-              num_shares_of(corporation, corporation)
+              num_shares_of(@game.separate_treasury? ? @game.bank : corporation, corporation)
             when :market_shares
               num_shares_of(@game.share_pool, corporation)
             when :share_price
@@ -342,6 +346,8 @@ module View
               corporation.par_price&.price || 0
             when :cash
               corporation.cash
+            when :treasury
+              num_shares_of(corporation, corporation)
             when :order
               operating_order
             when :trains
@@ -411,6 +417,9 @@ module View
             convert_hex_to_rgba(color_for(:font2), 0.5)
           end
 
+        treasury = []
+        treasury << h(:td, num_shares_of(corporation, corporation)) if @game.separate_treasury?
+
         extra = []
         extra << h(:td, "#{corporation.loans.size}/#{@game.maximum_loans(corporation)}") if @game.total_loans&.nonzero?
         if @game.respond_to?(:available_shorts)
@@ -429,7 +438,7 @@ module View
         end
         extra << h(:td, @game.corporation_size_name(corporation)) if @diff_corp_sizes
 
-        n_ipo_shares = num_shares_of(corporation, corporation)
+        n_ipo_shares = num_shares_of(@game.separate_treasury? ? @game.bank : corporation, corporation)
         n_market_shares = num_shares_of(@game.share_pool, corporation)
         h(:tr, tr_props, [
           h(:th, name_props, corporation.name),
@@ -463,6 +472,7 @@ module View
           h('td.padded_number', market_props,
             corporation.share_price ? @game.format_currency(corporation.share_price.price) : ''),
           h('td.padded_number', @game.format_currency(corporation.cash)),
+          *treasury,
           h('td.padded_number', order_props, operating_order),
           h(:td, corporation.trains.map(&:name).join(', ')),
           h(:td, @game.token_string(corporation)),
