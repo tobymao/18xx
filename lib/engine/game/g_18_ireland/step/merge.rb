@@ -189,14 +189,6 @@ module Engine
                                           exchange: :free)
             end
 
-            move_tokens_to_surviving(target, @round.merging)
-
-            # Add the $50 token back
-            if target.tokens.size < 3
-              new_token = Engine::Token.new(target, price: 50)
-              target.tokens << new_token
-            end
-
             tokens = target.tokens.map { |t| t.city&.hex&.id }
             charter_tokens = tokens.size - tokens.compact.size
             @log << "#{target.name} has tokens (#{tokens.size}: #{tokens.compact.size} on hexes #{tokens.compact}"\
