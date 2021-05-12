@@ -630,7 +630,7 @@ module Engine
         def enforce_obligations
           @players.each do |player|
             remaining_fine = 0
-            player.companies.each do |company|
+            player.companies.dup.each do |company|
               corp = corporation_by_id(company.id)
               @log << "#{player.name} has missed obligation for #{corp.name}"
               new_fine = corp.par_price.price * 5
