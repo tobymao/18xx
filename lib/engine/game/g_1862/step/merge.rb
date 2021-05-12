@@ -56,7 +56,7 @@ module Engine
           end
 
           def choose_action(action, merge_type)
-            survivor, nonsurvivor = action.choice == :first ? @merging : @merging.reverse
+            survivor, nonsurvivor = action.choice.to_s == 'first' ? @merging : @merging.reverse
             @log << "#{nonsurvivor.name} (non-survivor) will merge into #{survivor.name} (survivor)"
             @game.start_merge(action.entity, survivor, nonsurvivor, merge_type)
             @merging = nil
@@ -102,16 +102,6 @@ module Engine
 
           def show_other
             @merging ? @merging.last : nil
-          end
-
-          def round_state
-            {
-              converted: nil,
-              merge_type: nil,
-              converts: [],
-              share_dealing_players: [],
-              share_dealing_multiple: [],
-            }
           end
         end
       end
