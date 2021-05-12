@@ -21,7 +21,7 @@ module Engine
               @round.vote_outcome = :against
               @round.to_vote = []
             elsif @round.to_vote.empty?
-              @game.log << 'Votes are tided and proposal is rejected'
+              @game.log << 'Votes are tied and proposal is rejected'
               @round.vote_outcome = :against
             end
           end

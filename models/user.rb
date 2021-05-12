@@ -75,9 +75,11 @@ class User < Base
     validates_format /^[^\s].*$/, :name, message: 'may not start with a whitespace'
     validates_format /^[^@\s]+@[^@\s]+\.[^@\s]+$/, :email
 
-    if settings['webhook'] && (settings['webhook_user_id']&.strip || '') == ''
-      errors.add(:webhook_user_id,
-                 'cannot be empty')
+    if settings['webhook'] && (
+        (settings['webhook_user_id']&.strip || '') == '' ||
+        settings['webhook_user_id']&.include?(' ')
+      )
+      errors.add(:webhook_user_id, 'spaces are not allowed in the user id. look at the wiki for more info')
     end
 
     # rubocop:disable Style/GuardClause

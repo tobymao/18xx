@@ -253,8 +253,8 @@ module Engine
           end
 
           def combine_ipo_shares
-            @merger.shares_of(@merger).dup.each { |s| s.transfer(@ipo) }
-            @target.shares_of(@target).dup.each { |s| s.transfer(@ipo) }
+            @merger.shares.dup.each { |s| s.transfer(@ipo) }
+            @target.shares.dup.each { |s| s.transfer(@ipo) }
           end
 
           def exchange_pairs(entity)

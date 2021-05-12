@@ -151,6 +151,9 @@ module Engine
         new_city.groups = old_city.groups
       end
 
+      @tile.hex = nil
+      tile.hex = self
+
       # when upgrading, preserve tokens on previous tile (must be handled after
       # reservations are completely done due to OO weirdness)
       city_map.each do |old_city, new_city|
@@ -181,9 +184,6 @@ module Engine
 
       tile.partitions.concat(@tile.partitions)
       @tile.partitions.clear
-
-      @tile.hex = nil
-      tile.hex = self
 
       # give the city/town name of this hex to the new tile; remove it from the
       # old one

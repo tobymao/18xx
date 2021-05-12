@@ -6,6 +6,12 @@ module Engine
       module Entities
         CORPORATION_RESERVATION_COLOR = '#c6e9af'
 
+        COMPANY_CHOICES = {
+          'P3' => %w[P3a P3b P3c],
+          'P5' => %w[P5a P5b P5c],
+          'P6' => %w[P6a P6b P6c],
+        }.freeze
+
         def self.def_corporation(**kwargs)
           {
             float_percent: 20,
@@ -103,7 +109,8 @@ module Engine
             sym: 'P2',
             value: 45,
             revenue: 10,
-            abilities: [{ type: 'close', on_phase: '5' }],
+            abilities: [{ type: 'close', on_phase: '5' },
+                        { type: 'revenue_change', revenue: 0, when: 'sold' }],
             desc: 'Provides its owning Railroad Company a +$10 revenue bonus for routes '\
                   'starting or ending at either of the accessible Yellowstone entrances. '\
                   'Closes at phase 5.',
@@ -264,7 +271,7 @@ module Engine
             revenue: 15,
             abilities: [{ type: 'close', on_phase: '6' }],
             desc: 'Gives owning Railroad Company a $60 discount to terrain costs for one '\
-                  'tile lay per OR. Closes at phase 6',
+                  'tile lay per OR. Closes at phase 6.',
           },
           {
             name: 'P7 John S. "General Jack" Casement',
@@ -300,16 +307,20 @@ module Engine
             name: "P10 Laramie, Hahn's Peak & Pacific Railway",
             sym: 'P10',
             value: 180,
-            revenue: 40,
-            abilities: [{ type: 'close', on_phase: '5' }],
-            desc: 'Pays revenue ONLY in green phases. Closes, becomes LHP train at phase 5.',
+            revenue: 20,
+            abilities: [{ type: 'close', on_phase: '5' },
+                        { type: 'revenue_change', revenue: 40, on_phase: '3' },
+                        { type: 'revenue_change', revenue: 0, on_phase: '5' }],
+            desc: 'Pays $20 revenue if all players consecutively pass on buying P11 '\
+                  'during the ISR. Pays $40 revenue ONLY in green phases. Closes, becomes '\
+                  'LHP train at phase 5.',
           },
           {
             name: 'P11 Thomas C. Durant',
             sym: 'P11',
             value: 220,
             revenue: 0,
-            abilities: [{ type: 'shares', shares: 'UP_0' }, { type: 'no_buy' }],
+            abilities: [{ type: 'shares', shares: 'UP_0' }],
             desc: "Owner receives the President's certificate of the Union Pacific "\
                   'Railroad, chooses its par value, and it receives 2× that amount. '\
                   'Closes at end of ISR.',

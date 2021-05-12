@@ -9,6 +9,7 @@ module Engine
         class Route < Engine::Step::Route
           def actions(entity)
             return [] if !entity.operator? || @game.route_trains(entity).empty? || !@game.can_run_route?(entity)
+            return [] if entity.corporation? && entity.type == :minor && only_e_train?(entity)
 
             @pullman_train ||= nil
             actions = ACTIONS.dup
@@ -54,6 +55,10 @@ module Engine
 
             @orginal_train = nil
             @pullman_train = nil
+          end
+
+          def only_e_train?(entity)
+            @game.route_trains(entity).none? { |t| t.name != @game.class::E_TRAIN }
           end
 
           def pullman_train_choices(entity)

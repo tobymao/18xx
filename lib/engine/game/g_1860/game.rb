@@ -1910,6 +1910,13 @@ module Engine
         def bank_sort(entities)
           entities.sort_by(&:name).sort_by { |e| corp_layer(e) }
         end
+
+        def highlight_token?(token)
+          return false unless token
+          return false unless (corporation = token.corporation)
+
+          corporation.tokens.find_index(token).zero?
+        end
       end
     end
   end
