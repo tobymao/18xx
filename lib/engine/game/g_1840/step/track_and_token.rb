@@ -9,6 +9,18 @@ module Engine
         class TrackAndToken < Engine::Step::TrackAndToken
           def process_place_token(action)
             entity = action.entity
+            city = action.city
+            token = city.tokens[action.slot]
+            hex = city.hex
+
+            if token&.corporation&.type == :city
+              check_connected(entity, city, hex)
+              spender = @game.owning_major_corporation(entity)
+              spender.spend(40, @game.bank)
+              @log << "#{entity.name} removes token from #{hex.name} (#{hex.location_name})"\
+                      "for #{@game.format_currency(40)}"
+              token.destroy!
+            end
 
             spender = @game.owning_major_corporation(entity)
             place_token(entity, action.city, action.token, spender: spender)
@@ -84,6 +96,10 @@ module Engine
 
           def show_other
             @game.owning_major_corporation(current_entity)
+          end
+
+          def can_replace_token?(_entity, _token)
+            true
           end
         end
       end
