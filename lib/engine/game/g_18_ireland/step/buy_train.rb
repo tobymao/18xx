@@ -7,6 +7,11 @@ module Engine
     module G18Ireland
       module Step
         class BuyTrain < Engine::Step::BuyTrain
+          def setup
+            super
+            @exchanged = false
+          end
+
           def buy_train_action(action, entity = nil)
             super
             @exchanged = true if action.exchange
