@@ -9,6 +9,7 @@ module Engine
         include Game::Meta
 
         DEV_STAGE = :prealpha
+        PROTOTYPE = true
 
         GAME_SUBTITLE = 'The Seven Weeks War'
         GAME_DESIGNER = 'Simon Cutforth'

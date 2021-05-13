@@ -6,6 +6,7 @@ module Engine
       # platform-relevant metadata
       DEV_STAGES = %i[production beta alpha prealpha].freeze
       DEV_STAGE = :prealpha
+      PROTOTYPE = false
       DEPENDS_ON = nil
 
       # real game metadata
