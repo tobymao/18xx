@@ -19,6 +19,7 @@ module View
       message = <<~MESSAGE
         <p>We now support Slack/Discord notifications. Learn how to use them <a href='https://github.com/tobymao/18xx/wiki/Notifications'>here</a>.</p>
         <p>18Ireland is now in alpha. 18FL, Hazbahn 1873 and 1870 are now in beta.</p>
+        <p>Prototype games are now more clearly labelled, 1849: Kingdom of the Two Sicilies is production.</p>
         <p>Please submit problem reports and make suggestions for improvements on
         <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>.</p>
         <p>The <a href='https://github.com/tobymao/18xx/wiki'>18xx.games Wiki</a> has rules, maps,
