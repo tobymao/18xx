@@ -973,7 +973,7 @@ module Engine
       end
 
       def can_run_route?(entity)
-        @graph.route_info(entity)&.dig(:route_available)
+        graph_for_entity(entity).route_info(entity)&.dig(:route_available)
       end
 
       def must_buy_train?(entity)

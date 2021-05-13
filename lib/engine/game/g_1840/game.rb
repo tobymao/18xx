@@ -190,7 +190,7 @@ module Engine
           'Pu1' => { 'Y1' => -400, 'O1' => -300, 'R1' => -100, 'Pu1' => 200 },
         }.freeze
 
-        attr_reader :tram_corporations, :major_corporations, :tram_owned_by_corporation
+        attr_reader :tram_corporations, :major_corporations, :tram_owned_by_corporation, :city_graph
 
         def setup
           @intern_cr_phase_counter = 0
@@ -238,6 +238,12 @@ module Engine
           @corporations.concat(@major_corporations)
           @corporations.concat(@city_corporations)
           @corporations.concat(@tram_corporations)
+
+          @city_graph = Graph.new(self, skip_track: :broad)
+        end
+
+        def init_graph
+          Graph.new(self, skip_track: :narrow)
         end
 
         def new_auction_round
@@ -548,15 +554,22 @@ module Engine
         def check_track_type(route)
           corporation = route.train.owner
           track_types = route.chains.flat_map { |item| item[:paths] }.flat_map(&:track).uniq
-
+          puts(track_types - [:narrow])
           if corporation.type == :city && !(track_types - [:narrow]).empty?
             raise GameError,
                   'Route may only contain narrow tracks'
           end
 
-          return if (track_types - [:broad]).empty?
+          return if corporation.type != :minor || (track_types - ['broad']).empty?
 
           raise GameError, 'Route may only contain broad tracks'
+        end
+
+        def graph_for_entity(entity)
+          return @city_graph if entity.type == :city
+
+          puts entity.type
+          @graph
         end
       end
     end
