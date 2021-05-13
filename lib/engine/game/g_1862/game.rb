@@ -519,6 +519,8 @@ module Engine
           'H' => :purple,
         }.freeze
 
+        MAX_TOKENS = 7
+
         def init_share_pool
           SharePool.new(self, allow_president_sale: true)
         end
@@ -612,7 +614,7 @@ module Engine
         def remove_marker(corporation)
           hex = hex_by_id(corporation.coordinates)
           marker = hex.tile.icons.find(&:large)
-          hex.tile.icons.delete(marker)
+          hex.tile.icons.delete(marker) if marker
         end
 
         def share_prices
@@ -2185,12 +2187,12 @@ module Engine
           s_placed = @merge_data[:corps].first.placed_tokens.size
           ns_placed = @merge_data[:corps].last.placed_tokens.size
 
-          if s_placed + ns_placed > 7
+          if s_placed + ns_placed > MAX_TOKENS
             # player needs to remove excess tokens
             @round.pending_removals << {
               survivor: @merge_data[:corps].first,
               nonsurvivor: @merge_data[:corps].last,
-              count: (s_placed + ns_placed) - 7,
+              count: (s_placed + ns_placed) - MAX_TOKENS,
               hexes: merge_hex_list(@merge_data[:corps]),
             }
             return true
@@ -2223,6 +2225,9 @@ module Engine
           # remove trains
           corporation.trains.clear
 
+          # put marker onto map
+          add_marker(corporation)
+
           convert_to_incremental!(corporation)
         end
 
@@ -2234,9 +2239,9 @@ module Engine
           ns_unplaced = nonsurvivor.unplaced_tokens
 
           num_placed = s_placed.size + ns_placed.size
-          raise GameError, 'too many placed tokens' if num_placed > 7
+          raise GameError, 'too many placed tokens' if num_placed > MAX_TOKENS
 
-          num_unplaced = [7 - num_placed, s_unplaced.size + ns_unplaced.size].min
+          num_unplaced = [MAX_TOKENS - num_placed, s_unplaced.size + ns_unplaced.size].min
           total = num_placed + num_unplaced
 
           # increase survivor tokens if needed
@@ -2262,6 +2267,15 @@ module Engine
 
         def separate_treasury?
           true
+        end
+
+        def player_value(player)
+          halfprice_shares, reg_shares = player.shares.partition { |s| s.corporation.trains.empty? }
+          player.cash + reg_shares.sum(&:price) + halfprice_shares.sum { |s| (s.price / 2).to_i }
+        end
+
+        def liquidity(player)
+          player_value(player)
         end
       end
     end

@@ -14,7 +14,7 @@ module Engine
           def description
             return 'Choose Survivor' if @merging
 
-            'Acquire Corporation'
+            'Acquire'
           end
 
           def process_choose(action)

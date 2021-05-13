@@ -43,7 +43,7 @@ module Engine
           def description
             return 'Choose Survivor' if @merging
 
-            'Merge with Major Corporation'
+            'Merge'
           end
 
           def process_merge(action)
