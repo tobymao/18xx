@@ -734,21 +734,10 @@
       "slot": 0
     },
     {
-      "type": "choose_ability",
-      "entity": "A_SPOONFUL_OF_SUGAR",
-      "entity_type": "company",
-      "id": 75,
-      "created_at": 1617903725,
-      "choice": {
-        "type": "sugar",
-        "train_id": "3S-1"
-      }
-    },
-    {
       "type": "run_routes",
       "entity": "PE",
       "entity_type": "corporation",
-      "id": 76,
+      "id": 75,
       "created_at": 1617903778,
       "routes": [
         {
@@ -793,7 +782,7 @@
       "type": "dividend",
       "entity": "PE",
       "entity_type": "corporation",
-      "id": 77,
+      "id": 76,
       "created_at": 1617903780,
       "kind": "payout"
     },
@@ -801,21 +790,21 @@
       "type": "pass",
       "entity": "PE",
       "entity_type": "corporation",
-      "id": 78,
+      "id": 77,
       "created_at": 1617903787
     },
     {
       "type": "pass",
       "entity": "PE",
       "entity_type": "corporation",
-      "id": 79,
+      "id": 78,
       "created_at": 1617903790
     },
     {
       "type": "buy_company",
       "entity": "Player 3",
       "entity_type": "player",
-      "id": 80,
+      "id": 79,
       "created_at": 1617903822,
       "company": "A_SQUEEZE",
       "price": 2
@@ -824,14 +813,14 @@
       "type": "pass",
       "entity": "Player 3",
       "entity_type": "player",
-      "id": 81,
+      "id": 80,
       "created_at": 1617903829
     },
     {
       "type": "par",
       "entity": "Player 2",
       "entity_type": "player",
-      "id": 82,
+      "id": 81,
       "created_at": 1617903834,
       "corporation": "LI",
       "share_price": "9,1,3"
@@ -840,7 +829,7 @@
       "type": "lay_tile",
       "entity": "LI",
       "entity_type": "corporation",
-      "id": 83,
+      "id": 82,
       "created_at": 1617903842,
       "hex": "E15",
       "tile": "15-1",
@@ -850,7 +839,7 @@
       "type": "lay_tile",
       "entity": "LI",
       "entity_type": "corporation",
-      "id": 84,
+      "id": 83,
       "created_at": 1617903849,
       "hex": "D14",
       "tile": "9-2",
@@ -860,7 +849,7 @@
       "type": "lay_tile",
       "entity": "LI",
       "entity_type": "corporation",
-      "id": 85,
+      "id": 84,
       "created_at": 1617903851,
       "hex": "C13",
       "tile": "X9-1",
@@ -870,14 +859,14 @@
       "type": "pass",
       "entity": "Player 2",
       "entity_type": "player",
-      "id": 86,
+      "id": 85,
       "created_at": 1617903875
     },
     {
       "type": "buy_company",
       "entity": "Player 1",
       "entity_type": "player",
-      "id": 87,
+      "id": 86,
       "created_at": 1617903895,
       "company": "TOO_MUCH_RESPONSIBILITY",
       "price": 1
@@ -886,14 +875,14 @@
       "type": "pass",
       "entity": "Player 1",
       "entity_type": "player",
-      "id": 88,
+      "id": 87,
       "created_at": 1617903898
     },
     {
       "type": "buy_shares",
       "entity": "Player 3",
       "entity_type": "player",
-      "id": 89,
+      "id": 88,
       "created_at": 1617903907,
       "shares": [
         "PB_2"
@@ -904,14 +893,14 @@
       "type": "pass",
       "entity": "Player 3",
       "entity_type": "player",
-      "id": 90,
+      "id": 89,
       "created_at": 1617903918
     },
     {
       "type": "choose_ability",
       "entity": "ZOOTicket 3 - Player 2",
       "entity_type": "company",
-      "id": 91,
+      "id": 90,
       "created_at": 1617903923,
       "choice": {
         "type": "sell"
@@ -921,7 +910,7 @@
       "type": "buy_shares",
       "entity": "Player 2",
       "entity_type": "player",
-      "id": 92,
+      "id": 91,
       "created_at": 1617903926,
       "shares": [
         "LI_1"
@@ -932,14 +921,14 @@
       "type": "pass",
       "entity": "Player 1",
       "entity_type": "player",
-      "id": 93,
+      "id": 92,
       "created_at": 1617903948
     },
     {
       "type": "buy_company",
       "entity": "Player 3",
       "entity_type": "player",
-      "id": 94,
+      "id": 93,
       "created_at": 1617903954,
       "company": "WORK_IN_PROGRESS",
       "price": 2
@@ -948,21 +937,21 @@
       "type": "pass",
       "entity": "Player 3",
       "entity_type": "player",
-      "id": 95,
+      "id": 94,
       "created_at": 1617903956
     },
     {
       "type": "pass",
       "entity": "Player 2",
       "entity_type": "player",
-      "id": 96,
+      "id": 95,
       "created_at": 1617903963
     },
     {
       "type": "buy_shares",
       "entity": "Player 1",
       "entity_type": "player",
-      "id": 97,
+      "id": 96,
       "created_at": 1617903998,
       "shares": [
         "PE_2"
@@ -973,7 +962,7 @@
       "type": "choose_ability",
       "entity": "WHATSUP",
       "entity_type": "company",
-      "id": 98,
+      "id": 97,
       "created_at": 1617904005,
       "choice": {
         "type": "whatsup",
@@ -985,35 +974,35 @@
       "type": "pass",
       "entity": "Player 1",
       "entity_type": "player",
-      "id": 99,
+      "id": 98,
       "created_at": 1617904017
     },
     {
       "type": "pass",
       "entity": "Player 3",
       "entity_type": "player",
-      "id": 100,
+      "id": 99,
       "created_at": 1617904023
     },
     {
       "type": "pass",
       "entity": "Player 2",
       "entity_type": "player",
-      "id": 101,
+      "id": 100,
       "created_at": 1617904025
     },
     {
       "type": "pass",
       "entity": "Player 1",
       "entity_type": "player",
-      "id": 102,
+      "id": 101,
       "created_at": 1617904026
     },
     {
       "type": "lay_tile",
       "entity": "GI",
       "entity_type": "corporation",
-      "id": 103,
+      "id": 102,
       "created_at": 1617904052,
       "hex": "H18",
       "tile": "9-3",
@@ -1023,7 +1012,7 @@
       "type": "lay_tile",
       "entity": "GI",
       "entity_type": "corporation",
-      "id": 104,
+      "id": 103,
       "created_at": 1617904055,
       "hex": "G17",
       "tile": "8-1",
@@ -1033,7 +1022,7 @@
       "type": "run_routes",
       "entity": "GI",
       "entity_type": "corporation",
-      "id": 105,
+      "id": 104,
       "created_at": 1617904060,
       "routes": [
         {
@@ -1081,9 +1070,16 @@
       "type": "dividend",
       "entity": "GI",
       "entity_type": "corporation",
-      "id": 106,
+      "id": 105,
       "created_at": 1617904063,
       "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 106,
+      "created_at": 1617904066
     },
     {
       "type": "pass",
@@ -1133,10 +1129,17 @@
       "variant": "4S"
     },
     {
+      "type": "pass",
+      "entity": "LI",
+      "entity_type": "corporation",
+      "id": 112,
+      "created_at": 1617904066
+    },
+    {
       "type": "lay_tile",
       "entity": "PE",
       "entity_type": "corporation",
-      "id": 112,
+      "id": 113,
       "created_at": 1617904117,
       "hex": "L14",
       "tile": "X7-2",
@@ -1146,22 +1149,11 @@
       "type": "lay_tile",
       "entity": "PE",
       "entity_type": "corporation",
-      "id": 113,
+      "id": 114,
       "created_at": 1617904121,
       "hex": "L16",
       "tile": "24-0",
       "rotation": 1
-    },
-    {
-      "type": "choose_ability",
-      "entity": "A_SPOONFUL_OF_SUGAR",
-      "entity_type": "company",
-      "id": 114,
-      "created_at": 1617904129,
-      "choice": {
-        "type": "sugar",
-        "train_id": "3S-1"
-      }
     },
     {
       "type": "run_routes",
@@ -1306,7 +1298,7 @@
       "type": "lay_tile",
       "entity": "GI",
       "entity_type": "corporation",
-      "id": 125,
+      "id": 123,
       "created_at": 1617904246,
       "hex": "H10",
       "tile": "X8-2",
@@ -1316,7 +1308,7 @@
       "type": "lay_tile",
       "entity": "GI",
       "entity_type": "corporation",
-      "id": 126,
+      "id": 124,
       "created_at": 1617904253,
       "hex": "K9",
       "tile": "14-0",
@@ -1326,7 +1318,7 @@
       "type": "run_routes",
       "entity": "GI",
       "entity_type": "corporation",
-      "id": 127,
+      "id": 125,
       "created_at": 1617904326,
       "routes": [
         {
@@ -1390,7 +1382,7 @@
       "type": "dividend",
       "entity": "GI",
       "entity_type": "corporation",
-      "id": 128,
+      "id": 126,
       "created_at": 1617904328,
       "kind": "payout"
     },
@@ -1398,14 +1390,21 @@
       "type": "pass",
       "entity": "GI",
       "entity_type": "corporation",
-      "id": 129,
+      "id": 127,
       "created_at": 1617904331
+    },
+    {
+      "type": "pass",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 128,
+      "created_at": 1617904066
     },
     {
       "type": "lay_tile",
       "entity": "LI",
       "entity_type": "corporation",
-      "id": 130,
+      "id": 129,
       "created_at": 1617904338,
       "hex": "F14",
       "tile": "7-0",
@@ -1415,7 +1414,7 @@
       "type": "lay_tile",
       "entity": "LI",
       "entity_type": "corporation",
-      "id": 131,
+      "id": 130,
       "created_at": 1617904340,
       "hex": "F16",
       "tile": "9-5",
@@ -1425,7 +1424,7 @@
       "type": "run_routes",
       "entity": "LI",
       "entity_type": "corporation",
-      "id": 132,
+      "id": 131,
       "created_at": 1617904356,
       "routes": [
         {
@@ -1500,7 +1499,7 @@
       "type": "dividend",
       "entity": "LI",
       "entity_type": "corporation",
-      "id": 133,
+      "id": 132,
       "created_at": 1617904358,
       "kind": "payout"
     },
@@ -1508,8 +1507,15 @@
       "type": "pass",
       "entity": "LI",
       "entity_type": "corporation",
-      "id": 134,
+      "id": 133,
       "created_at": 1617904361
+    },
+    {
+      "type": "pass",
+      "entity": "LI",
+      "entity_type": "corporation",
+      "id": 134,
+      "created_at": 1617904066
     },
     {
       "type": "lay_tile",
@@ -1537,17 +1543,6 @@
       "entity_type": "corporation",
       "id": 137,
       "created_at": 1617904361
-    },
-    {
-      "type": "choose_ability",
-      "entity": "A_SPOONFUL_OF_SUGAR",
-      "entity_type": "company",
-      "id": 137,
-      "created_at": 1617904402,
-      "choice": {
-        "type": "sugar",
-        "train_id": "3S-1"
-      }
     },
     {
       "type": "run_routes",
@@ -1657,14 +1652,14 @@
       "type": "pass",
       "entity": "PB",
       "entity_type": "corporation",
-      "id": 142,
+      "id": 143,
       "created_at": 1617904419
     },
     {
       "type": "run_routes",
       "entity": "PB",
       "entity_type": "corporation",
-      "id": 143,
+      "id": 144,
       "created_at": 1617904434,
       "routes": [
         {
@@ -1732,7 +1727,7 @@
       "type": "dividend",
       "entity": "PB",
       "entity_type": "corporation",
-      "id": 144,
+      "id": 145,
       "created_at": 1617904435,
       "kind": "payout"
     },
@@ -1740,21 +1735,21 @@
       "type": "pass",
       "entity": "PB",
       "entity_type": "corporation",
-      "id": 145,
+      "id": 146,
       "created_at": 1617904438
     },
     {
       "type": "pass",
       "entity": "PB",
       "entity_type": "corporation",
-      "id": 146,
+      "id": 147,
       "created_at": 1617904439
     },
     {
       "type": "buy_company",
       "entity": "Player 1",
       "entity_type": "player",
-      "id": 147,
+      "id": 148,
       "created_at": 1617904450,
       "company": "MIDAS",
       "price": 2
@@ -1763,14 +1758,14 @@
       "type": "pass",
       "entity": "Player 1",
       "entity_type": "player",
-      "id": 148,
+      "id": 149,
       "created_at": 1617904453
     },
     {
       "type": "buy_company",
       "entity": "Player 3",
       "entity_type": "player",
-      "id": 149,
+      "id": 150,
       "created_at": 1617904456,
       "company": "RABBITS",
       "price": 3
@@ -1779,21 +1774,21 @@
       "type": "pass",
       "entity": "Player 3",
       "entity_type": "player",
-      "id": 150,
+      "id": 151,
       "created_at": 1617904457
     },
     {
       "type": "pass",
       "entity": "Player 2",
       "entity_type": "player",
-      "id": 151,
+      "id": 152,
       "created_at": 1617904468
     },
     {
       "type": "buy_company",
       "entity": "Player 1",
       "entity_type": "player",
-      "id": 152,
+      "id": 153,
       "created_at": 1617904476,
       "company": "BANDAGE",
       "price": 1
@@ -1802,21 +1797,21 @@
       "type": "pass",
       "entity": "Player 1",
       "entity_type": "player",
-      "id": 153,
+      "id": 154,
       "created_at": 1617904478
     },
     {
       "type": "pass",
       "entity": "Player 3",
       "entity_type": "player",
-      "id": 154,
+      "id": 155,
       "created_at": 1617904487
     },
     {
       "type": "buy_shares",
       "entity": "Player 2",
       "entity_type": "player",
-      "id": 155,
+      "id": 156,
       "created_at": 1617904489,
       "shares": [
         "LI_2"
@@ -1827,7 +1822,7 @@
       "type": "choose_ability",
       "entity": "MIDAS",
       "entity_type": "company",
-      "id": 156,
+      "id": 157,
       "created_at": 1617904495,
       "choice": {
         "type": "midas"
@@ -1837,7 +1832,7 @@
       "type": "par",
       "entity": "Player 1",
       "entity_type": "player",
-      "id": 157,
+      "id": 158,
       "created_at": 1617904510,
       "corporation": "TI",
       "share_price": "9,1,3"
@@ -1846,7 +1841,7 @@
       "type": "lay_tile",
       "entity": "TI",
       "entity_type": "corporation",
-      "id": 158,
+      "id": 159,
       "created_at": 1617904514,
       "hex": "H14",
       "tile": "14-1",
@@ -1856,7 +1851,7 @@
       "type": "lay_tile",
       "entity": "TI",
       "entity_type": "corporation",
-      "id": 159,
+      "id": 160,
       "created_at": 1617904522,
       "hex": "H12",
       "tile": "8-2",
@@ -1866,7 +1861,7 @@
       "type": "lay_tile",
       "entity": "TI",
       "entity_type": "corporation",
-      "id": 160,
+      "id": 161,
       "created_at": 1617904524,
       "hex": "G11",
       "tile": "8-3",
@@ -1876,14 +1871,14 @@
       "type": "pass",
       "entity": "Player 1",
       "entity_type": "player",
-      "id": 161,
+      "id": 162,
       "created_at": 1617904528
     },
     {
       "type": "choose_ability",
       "entity": "ZOOTicket 3 - Player 3",
       "entity_type": "company",
-      "id": 162,
+      "id": 163,
       "created_at": 1617904548,
       "choice": {
         "type": "sell"
@@ -1893,7 +1888,7 @@
       "type": "buy_shares",
       "entity": "Player 3",
       "entity_type": "player",
-      "id": 163,
+      "id": 164,
       "created_at": 1617904553,
       "shares": [
         "LI_3"
@@ -1904,14 +1899,14 @@
       "type": "pass",
       "entity": "Player 2",
       "entity_type": "player",
-      "id": 164,
+      "id": 165,
       "created_at": 1617904568
     },
     {
       "type": "choose_ability",
       "entity": "ZOOTicket 1 - Player 1",
       "entity_type": "company",
-      "id": 165,
+      "id": 166,
       "created_at": 1617904572,
       "choice": {
         "type": "sell"
@@ -1921,7 +1916,7 @@
       "type": "choose_ability",
       "entity": "ZOOTicket 2 - Player 1",
       "entity_type": "company",
-      "id": 166,
+      "id": 167,
       "created_at": 1617904574,
       "choice": {
         "type": "sell"
@@ -1931,7 +1926,7 @@
       "type": "buy_shares",
       "entity": "Player 1",
       "entity_type": "player",
-      "id": 167,
+      "id": 168,
       "created_at": 1617904585,
       "shares": [
         "TI_1"
@@ -1942,28 +1937,28 @@
       "type": "pass",
       "entity": "Player 1",
       "entity_type": "player",
-      "id": 168,
+      "id": 169,
       "created_at": 1617904587
     },
     {
       "type": "pass",
       "entity": "Player 3",
       "entity_type": "player",
-      "id": 169,
+      "id": 170,
       "created_at": 1617904591
     },
     {
       "type": "pass",
       "entity": "Player 2",
       "entity_type": "player",
-      "id": 170,
+      "id": 171,
       "created_at": 1617904595
     },
     {
       "type": "buy_shares",
       "entity": "Player 1",
       "entity_type": "player",
-      "id": 171,
+      "id": 172,
       "created_at": 1617904597,
       "shares": [
         "TI_2"
@@ -1974,42 +1969,42 @@
       "type": "pass",
       "entity": "Player 1",
       "entity_type": "player",
-      "id": 172,
+      "id": 173,
       "created_at": 1617904600
     },
     {
       "type": "pass",
       "entity": "Player 3",
       "entity_type": "player",
-      "id": 173,
+      "id": 174,
       "created_at": 1617904600
     },
     {
       "type": "pass",
       "entity": "Player 2",
       "entity_type": "player",
-      "id": 174,
+      "id": 175,
       "created_at": 1617904601
     },
     {
       "type": "pass",
       "entity": "Player 1",
       "entity_type": "player",
-      "id": 175,
+      "id": 176,
       "created_at": 1617904618
     },
     {
       "type": "pass",
       "entity": "LI",
       "entity_type": "corporation",
-      "id": 176,
+      "id": 177,
       "created_at": 1617904624
     },
     {
       "type": "run_routes",
       "entity": "LI",
       "entity_type": "corporation",
-      "id": 177,
+      "id": 178,
       "created_at": 1617904630,
       "routes": [
         {
@@ -2084,7 +2079,7 @@
       "type": "dividend",
       "entity": "LI",
       "entity_type": "corporation",
-      "id": 178,
+      "id": 179,
       "created_at": 1617904631,
       "kind": "payout"
     },
@@ -2092,7 +2087,7 @@
       "type": "buy_train",
       "entity": "LI",
       "entity_type": "corporation",
-      "id": 179,
+      "id": 180,
       "created_at": 1617904633,
       "train": "4S-2",
       "price": 20,
@@ -2100,34 +2095,30 @@
     },
     {
       "type": "pass",
-      "entity": "PE",
+      "entity": "LI",
       "entity_type": "corporation",
-      "id": 180,
+      "id": 181,
       "created_at": 1617904639
     },
     {
       "type": "pass",
       "entity": "PE",
       "entity_type": "corporation",
-      "id": 181,
-      "created_at": 1617904641
+      "id": 182,
+      "created_at": 1617904639
     },
     {
-      "type": "choose_ability",
-      "entity": "A_SPOONFUL_OF_SUGAR",
-      "entity_type": "company",
-      "id": 182,
-      "created_at": 1617904646,
-      "choice": {
-        "type": "sugar",
-        "train_id": "3S-1"
-      }
+      "type": "pass",
+      "entity": "PE",
+      "entity_type": "corporation",
+      "id": 183,
+      "created_at": 1617904641
     },
     {
       "type": "buy_company",
       "entity": "PE",
       "entity_type": "corporation",
-      "id": 183,
+      "id": 184,
       "created_at": 1617904654,
       "company": "BANDAGE",
       "price": 1
@@ -2136,7 +2127,7 @@
       "type": "run_routes",
       "entity": "PE",
       "entity_type": "corporation",
-      "id": 184,
+      "id": 185,
       "created_at": 1617904656,
       "routes": [
         {
@@ -2211,7 +2202,7 @@
       "type": "dividend",
       "entity": "PE",
       "entity_type": "corporation",
-      "id": 185,
+      "id": 186,
       "created_at": 1617904658,
       "kind": "payout"
     },
@@ -2219,28 +2210,28 @@
       "type": "pass",
       "entity": "PE",
       "entity_type": "corporation",
-      "id": 186,
+      "id": 187,
       "created_at": 1617904668
     },
     {
       "type": "pass",
       "entity": "PE",
       "entity_type": "corporation",
-      "id": 187,
+      "id": 188,
       "created_at": 1617904669
     },
     {
       "type": "pass",
       "entity": "GI",
       "entity_type": "corporation",
-      "id": 188,
+      "id": 189,
       "created_at": 1617904672
     },
     {
       "type": "run_routes",
       "entity": "GI",
       "entity_type": "corporation",
-      "id": 189,
+      "id": 190,
       "created_at": 1617904677,
       "routes": [
         {
@@ -2304,7 +2295,7 @@
       "type": "dividend",
       "entity": "GI",
       "entity_type": "corporation",
-      "id": 190,
+      "id": 191,
       "created_at": 1617904682,
       "kind": "payout"
     },
@@ -2312,21 +2303,28 @@
       "type": "pass",
       "entity": "GI",
       "entity_type": "corporation",
-      "id": 191,
+      "id": 192,
+      "created_at": 1617904684
+    },
+    {
+      "type": "pass",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 193,
       "created_at": 1617904684
     },
     {
       "type": "pass",
       "entity": "PB",
       "entity_type": "corporation",
-      "id": 192,
+      "id": 194,
       "created_at": 1617904686
     },
     {
       "type": "run_routes",
       "entity": "PB",
       "entity_type": "corporation",
-      "id": 193,
+      "id": 195,
       "created_at": 1617904695,
       "routes": [
         {
@@ -2394,7 +2392,7 @@
       "type": "dividend",
       "entity": "PB",
       "entity_type": "corporation",
-      "id": 194,
+      "id": 196,
       "created_at": 1617904697,
       "kind": "payout"
     },
@@ -2402,14 +2400,21 @@
       "type": "pass",
       "entity": "PB",
       "entity_type": "corporation",
-      "id": 195,
+      "id": 197,
+      "created_at": 1617904699
+    },
+    {
+      "type": "pass",
+      "entity": "PB",
+      "entity_type": "corporation",
+      "id": 198,
       "created_at": 1617904699
     },
     {
       "type": "lay_tile",
       "entity": "TI",
       "entity_type": "corporation",
-      "id": 196,
+      "id": 199,
       "created_at": 1617904705,
       "hex": "G7",
       "tile": "7-2",
@@ -2419,7 +2424,7 @@
       "type": "lay_tile",
       "entity": "TI",
       "entity_type": "corporation",
-      "id": 197,
+      "id": 200,
       "created_at": 1617904708,
       "hex": "H8",
       "tile": "8-4",
@@ -2429,24 +2434,31 @@
       "type": "pass",
       "entity": "TI",
       "entity_type": "corporation",
-      "id": 198,
+      "id": 201,
       "created_at": 1617904713
     },
     {
       "type": "buy_train",
       "entity": "TI",
       "entity_type": "corporation",
-      "id": 199,
+      "id": 202,
       "created_at": 1617904715,
       "train": "5S-0",
       "price": 30,
       "variant": "5S"
     },
     {
+      "type": "pass",
+      "entity": "PE",
+      "entity_type": "corporation",
+      "id": 203,
+      "created_at": 1617904066
+    },
+    {
       "type": "discard_train",
       "entity": "LI",
       "entity_type": "corporation",
-      "id": 200,
+      "id": 204,
       "created_at": 1617904721,
       "train": "3S Long-0"
     },
@@ -2454,7 +2466,7 @@
       "type": "choose_ability",
       "entity": "ZOOTicket 3 - Player 1",
       "entity_type": "company",
-      "id": 201,
+      "id": 205,
       "created_at": 1617904740,
       "choice": {
         "type": "sell",
@@ -2466,17 +2478,24 @@
       "type": "buy_train",
       "entity": "TI",
       "entity_type": "corporation",
-      "id": 202,
+      "id": 206,
       "created_at": 1617904743,
       "train": "3S Long-0",
       "price": 12,
       "variant": "3S Long"
     },
     {
+      "type": "pass",
+      "entity": "TI",
+      "entity_type": "corporation",
+      "id": 207,
+      "created_at": 1617904066
+    },
+    {
       "type": "lay_tile",
       "entity": "LI",
       "entity_type": "corporation",
-      "id": 203,
+      "id": 208,
       "created_at": 1617904752,
       "hex": "E15",
       "tile": "611-0",
@@ -2486,14 +2505,14 @@
       "type": "pass",
       "entity": "LI",
       "entity_type": "corporation",
-      "id": 204,
+      "id": 209,
       "created_at": 1617904754
     },
     {
       "type": "run_routes",
       "entity": "LI",
       "entity_type": "corporation",
-      "id": 205,
+      "id": 210,
       "created_at": 1617904765,
       "routes": [
         {
@@ -2568,29 +2587,36 @@
       "type": "dividend",
       "entity": "LI",
       "entity_type": "corporation",
-      "id": 206,
+      "id": 211,
       "created_at": 1617904768,
       "kind": "payout"
     },
     {
       "type": "pass",
+      "entity": "LI",
+      "entity_type": "corporation",
+      "id": 212,
+      "created_at": 1617904066
+    },
+    {
+      "type": "pass",
       "entity": "PE",
       "entity_type": "corporation",
-      "id": 207,
+      "id": 213,
       "created_at": 1617904771
     },
     {
       "type": "pass",
       "entity": "PE",
       "entity_type": "corporation",
-      "id": 208,
+      "id": 214,
       "created_at": 1617904773
     },
     {
       "type": "buy_train",
       "entity": "PE",
       "entity_type": "corporation",
-      "id": 209,
+      "id": 215,
       "created_at": 1617904796,
       "train": "5S-1",
       "price": 30,
@@ -2600,21 +2626,21 @@
       "type": "pass",
       "entity": "PB",
       "entity_type": "corporation",
-      "id": 210,
+      "id": 216,
       "created_at": 1617904800
     },
     {
       "type": "pass",
       "entity": "PB",
       "entity_type": "corporation",
-      "id": 211,
+      "id": 217,
       "created_at": 1617904801
     },
     {
       "type": "run_routes",
       "entity": "PB",
       "entity_type": "corporation",
-      "id": 212,
+      "id": 218,
       "created_at": 1617904806,
       "routes": [
         {
@@ -2682,7 +2708,7 @@
       "type": "dividend",
       "entity": "PB",
       "entity_type": "corporation",
-      "id": 213,
+      "id": 219,
       "created_at": 1617904807,
       "kind": "payout"
     },
@@ -2690,21 +2716,28 @@
       "type": "pass",
       "entity": "PB",
       "entity_type": "corporation",
-      "id": 214,
+      "id": 220,
+      "created_at": 1617904814
+    },
+    {
+      "type": "pass",
+      "entity": "PB",
+      "entity_type": "corporation",
+      "id": 221,
       "created_at": 1617904814
     },
     {
       "type": "pass",
       "entity": "GI",
       "entity_type": "corporation",
-      "id": 215,
+      "id": 222,
       "created_at": 1617904819
     },
     {
       "type": "buy_train",
       "entity": "GI",
       "entity_type": "corporation",
-      "id": 218,
+      "id": 223,
       "created_at": 1617904825,
       "train": "4J-0",
       "price": 47,
@@ -2714,14 +2747,14 @@
       "type": "pass",
       "entity": "TI",
       "entity_type": "corporation",
-      "id": 217,
+      "id": 224,
       "created_at": 1617904831
     },
     {
       "type": "run_routes",
       "entity": "TI",
       "entity_type": "corporation",
-      "id": 218,
+      "id": 225,
       "created_at": 1617904846,
       "routes": [
         {
@@ -2771,7 +2804,7 @@
       "type": "dividend",
       "entity": "TI",
       "entity_type": "corporation",
-      "id": 219,
+      "id": 226,
       "created_at": 1617904849,
       "kind": "payout"
     },
@@ -2779,14 +2812,21 @@
       "type": "pass",
       "entity": "TI",
       "entity_type": "corporation",
-      "id": 220,
+      "id": 227,
+      "created_at": 1617904856
+    },
+    {
+      "type": "pass",
+      "entity": "TI",
+      "entity_type": "corporation",
+      "id": 228,
       "created_at": 1617904856
     },
     {
       "type": "lay_tile",
       "entity": "LI",
       "entity_type": "corporation",
-      "id": 221,
+      "id": 229,
       "created_at": 1617904863,
       "hex": "D10",
       "tile": "9-6",
@@ -2796,7 +2836,7 @@
       "type": "lay_tile",
       "entity": "LI",
       "entity_type": "corporation",
-      "id": 222,
+      "id": 230,
       "created_at": 1617904866,
       "hex": "E9",
       "tile": "201-1",
@@ -2806,14 +2846,14 @@
       "type": "pass",
       "entity": "LI",
       "entity_type": "corporation",
-      "id": 223,
+      "id": 231,
       "created_at": 1617904868
     },
     {
       "type": "run_routes",
       "entity": "LI",
       "entity_type": "corporation",
-      "id": 224,
+      "id": 232,
       "created_at": 1617904877,
       "routes": [
         {
@@ -2894,7 +2934,7 @@
       "type": "dividend",
       "entity": "LI",
       "entity_type": "corporation",
-      "id": 225,
+      "id": 233,
       "created_at": 1617904879,
       "kind": "payout"
     },
@@ -2902,7 +2942,7 @@
       "type": "buy_train",
       "entity": "LI",
       "entity_type": "corporation",
-      "id": 226,
+      "id": 234,
       "created_at": 1617904887,
       "train": "4J-1",
       "price": 37,
@@ -2912,14 +2952,14 @@
       "type": "pass",
       "entity": "PE",
       "entity_type": "corporation",
-      "id": 227,
+      "id": 235,
       "created_at": 1617904890
     },
     {
       "type": "run_routes",
       "entity": "PE",
       "entity_type": "corporation",
-      "id": 228,
+      "id": 236,
       "created_at": 1617904922,
       "routes": [
         {
@@ -2976,7 +3016,7 @@
       "type": "dividend",
       "entity": "PE",
       "entity_type": "corporation",
-      "id": 229,
+      "id": 237,
       "created_at": 1617904923,
       "kind": "payout"
     },
@@ -2984,28 +3024,35 @@
       "type": "pass",
       "entity": "PE",
       "entity_type": "corporation",
-      "id": 230,
+      "id": 238,
       "created_at": 1617904924
+    },
+    {
+      "type": "pass",
+      "entity": "PE",
+      "entity_type": "corporation",
+      "id": 239,
+      "created_at": 1617904066
     },
     {
       "type": "pass",
       "entity": "PB",
       "entity_type": "corporation",
-      "id": 231,
+      "id": 240,
       "created_at": 1617904927
     },
     {
       "type": "pass",
       "entity": "PB",
       "entity_type": "corporation",
-      "id": 232,
+      "id": 241,
       "created_at": 1617904928
     },
     {
       "type": "run_routes",
       "entity": "PB",
       "entity_type": "corporation",
-      "id": 233,
+      "id": 242,
       "created_at": 1617904933,
       "routes": [
         {
@@ -3073,7 +3120,7 @@
       "type": "dividend",
       "entity": "PB",
       "entity_type": "corporation",
-      "id": 234,
+      "id": 243,
       "created_at": 1617904935,
       "kind": "payout"
     },
@@ -3081,7 +3128,7 @@
       "type": "buy_train",
       "entity": "PB",
       "entity_type": "corporation",
-      "id": 235,
+      "id": 244,
       "created_at": 1617904946,
       "train": "4J-2",
       "price": 37,
@@ -3091,14 +3138,14 @@
       "type": "pass",
       "entity": "GI",
       "entity_type": "corporation",
-      "id": 236,
+      "id": 245,
       "created_at": 1617904951
     },
     {
       "type": "run_routes",
       "entity": "GI",
       "entity_type": "corporation",
-      "id": 237,
+      "id": 246,
       "created_at": 1617904967,
       "routes": [
         {
@@ -3145,29 +3192,36 @@
       "type": "dividend",
       "entity": "GI",
       "entity_type": "corporation",
-      "id": 238,
+      "id": 247,
       "created_at": 1617904968,
       "kind": "payout"
     },
     {
       "type": "pass",
-      "entity": "TI",
+      "entity": "GI",
       "entity_type": "corporation",
-      "id": 239,
+      "id": 248,
       "created_at": 1617904970
     },
     {
       "type": "pass",
       "entity": "TI",
       "entity_type": "corporation",
-      "id": 240,
+      "id": 249,
+      "created_at": 1617904970
+    },
+    {
+      "type": "pass",
+      "entity": "TI",
+      "entity_type": "corporation",
+      "id": 250,
       "created_at": 1617904971
     },
     {
       "type": "run_routes",
       "entity": "TI",
       "entity_type": "corporation",
-      "id": 241,
+      "id": 251,
       "created_at": 1617904973,
       "routes": [
         {
@@ -3217,7 +3271,7 @@
       "type": "dividend",
       "entity": "TI",
       "entity_type": "corporation",
-      "id": 242,
+      "id": 252,
       "created_at": 1617904974,
       "kind": "payout"
     },
@@ -3225,7 +3279,14 @@
       "type": "pass",
       "entity": "TI",
       "entity_type": "corporation",
-      "id": 243,
+      "id": 253,
+      "created_at": 1617904976
+    },
+    {
+      "type": "pass",
+      "entity": "TI",
+      "entity_type": "corporation",
+      "id": 254,
       "created_at": 1617904976
     }
   ],

@@ -131,6 +131,15 @@ module Engine
               },
             ],
           },
+          {
+            name: '1S',
+            distance: [{ 'nodes' => %w[city offboard], 'pay' => 1, 'visit' => 1 },
+                       { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
+            price: 0,
+            num: 1,
+            no_local: false,
+            reserved: true,
+          },
         ].freeze
 
         LAYOUT = :flat
@@ -202,6 +211,7 @@ module Engine
           'BARREL' => '/icons/18_zoo/barrel.svg',
           'HOLE' => '/icons/18_zoo/hole.svg',
           'WINGS' => '/icons/18_zoo/wings.svg',
+          'BANDAGE' => '/icons/18_zoo/bandage.svg',
         }.freeze
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
@@ -402,8 +412,8 @@ module Engine
           @round.floated_corporation = corporation
           @round.available_tracks = %w[5 6 57]
 
-          bonus_after_par(corporation, 5, 2, %w[14 15]) if corporation.par_price.price == 9
-          bonus_after_par(corporation, 10, 4, %w[14 15 611]) if corporation.par_price.price == 12
+          bonus_after_par(corporation, 5, 2, %w[14 15 619]) if corporation.par_price.price == 9
+          bonus_after_par(corporation, 10, 4, %w[14 15 619 611]) if corporation.par_price.price == 12
 
           return unless @near_families
 
@@ -435,10 +445,43 @@ module Engine
           end
         end
 
+        def choices_for_bandage?(entity)
+          return {} if @round.respond_to?(:entity_with_bandage) && @round.entity_with_bandage
+
+          corporations = entity.player? ? @corporations.filter { |c| c.owner == entity } : [entity]
+          corporation = corporations.find { |c| c.assigned?(bandage.id) }
+          if corporation
+            return [[{ type: :remove_bandage, corporation: corporation.id },
+                     "Remove bandage from 1S (#{corporation.name})"]]
+          end
+
+          corporations.flat_map do |c|
+            c.trains
+             .uniq(&:name)
+             .map { |train| [{ type: :bandage, train_id: train.id }, "#{train.name} (#{train.owner.name})"] }
+          end.to_h
+        end
+
+        def can_use_bandage?(entity, bandage)
+          return false if @round.respond_to?(:entity_with_bandage) && @round.entity_with_bandage
+
+          corporations = entity.player? ? @corporations.filter { |c| c.owner == entity } : [entity]
+          return true if corporations.any? do |corporation|
+            return true if corporation.assigned?(bandage.id)
+            return true if !corporation.trains.empty? &&
+              [corporation, corporation.owner].include?(bandage.owner)
+
+            false
+          end
+
+          false
+        end
+
         def entity_can_use_company?(entity, company)
           return true if entity.player? && entity == company.owner
           return true if entity.corporation? && entity == company.owner
           return true if entity.corporation? && zoo_ticket?(company) && entity.owner == company.owner
+          return true if company == bandage && can_use_bandage?(entity, company)
 
           false
         end
@@ -550,12 +593,6 @@ module Engine
           @a_spoonful_of_sugar ||= company_by_id('A_SPOONFUL_OF_SUGAR')
         end
 
-        def can_choose_sugar?(entity, company)
-          company == a_spoonful_of_sugar && entity&.corporation? && a_spoonful_of_sugar.owner == entity &&
-            entity.trains.any? { |train| !%w[2J 4J].include?(train.name) } &&
-            entity.all_abilities.none? { |a| a.type == :increase_distance_for_train }
-        end
-
         def apply_custom_ability(company)
           case company.sym
           when 'TOO_MUCH_RESPONSIBILITY'
@@ -619,30 +656,22 @@ module Engine
         end
 
         def check_distance(route, visits)
-          distance = route.train.distance
-          cities_visited = visits.count { |v| v.city? || (v.offboard? && v.revenue[:yellow].positive?) }
+          cities_visited = cities_visited(route, visits)
+          name = route.train.name
 
-          # Passing through Hole count as a stop
-          cities_visited += 1 if !@holes.empty? && (@holes & route.all_hexes).size == 2
-
-          # Passing through City with Wings doesn't count
-          visits = route.visited_stops
-          if visits.size > 2
-            corporation = route.corporation
-            visits[1..-2].each do |node|
-              cities_visited -= 1 if node.city? && node.blocks?(corporation)
-            end
-          end
-
-          raise GameError, 'Water and external gray don\'t count as city/offboard.' if cities_visited < 2
-
-          # 2S, 3S, 4S, 5S
-          if distance.is_a?(Numeric)
-            # Ability 'IncreaseDistanceForTrain' can change the max distance for a specific train
-            distance += abilities(route.train.owner, :increase_distance_for_train)&.distance || 0
-            raise GameError, "#{cities_visited} is too many stops for #{distance} train" if distance < cities_visited
+          if name == '1S'
+            raise GameError, "Train with bandage cannot visit #{cities_visited} stops" if cities_visited > 1
           else
-            super
+            raise GameError, 'Water and external gray don\'t count as city/offboard.' if cities_visited < 2
+
+            distance = distance_aux(route)
+
+            # 2S, 3S, 4S, 5S
+            if distance.is_a?(Numeric)
+              raise GameError, "#{cities_visited} is too many stops for #{name}" if distance < cities_visited
+            else
+              super
+            end
           end
         end
 
@@ -659,6 +688,7 @@ module Engine
         def check_connected(route, _token)
           blocked = nil
           blocked_by = nil
+          train_with_sugar = nil
 
           route.routes.each_with_index do |current_route, index|
             visits = current_route.visited_stops
@@ -668,6 +698,7 @@ module Engine
             corporation = route.corporation
             visits[1..-2].each do |node|
               next if !node.city? || !node.blocks?(corporation)
+              raise GameError, 'Route is not connected' unless route.train.owner.assigned?(wings.id)
               raise GameError, "City with only '#{work_in_progress.name}' slot cannot be bypassed" if node.city? &&
                 node.slots(all: true) == 1 && node.tokens.first.type == :blocking
               raise GameError, 'Only one train can bypass a tokened-out city' if blocked && blocked_by != index
@@ -676,6 +707,16 @@ module Engine
               blocked = node
               blocked_by = index
             end
+
+            distance = current_route.train.distance
+            next unless distance.is_a?(Numeric) && current_route.train.owner == a_spoonful_of_sugar.owner
+
+            cities_visited = cities_visited(current_route, visits)
+
+            next unless distance < cities_visited
+            raise GameError, 'Only one train can use the sugar' if train_with_sugar
+
+            train_with_sugar = current_route.train
           end
         end
 
@@ -846,6 +887,75 @@ module Engine
           @player_debts[player] += debt
         end
 
+        def rust?(train)
+          return true if !train.owner || !train.owner.corporation?
+          return true if @round.trains_for_bandage&.include?(train)
+
+          corporation = train.owner
+          player = corporation.owner
+
+          @round.entity_with_bandage = player if bandage.owner == player
+          @round.entity_with_bandage = corporation if bandage.owner == corporation && !corporation.assigned?(bandage.id)
+          return true if !@round.entity_with_bandage || ![train.owner,
+                                                          train.owner.owner].include?(@round.entity_with_bandage)
+
+          @round.trains_for_bandage << train
+
+          false
+        end
+
+        def rust(train)
+          return if !train.owner || !train.owner.corporation?
+
+          corporation = train.owner
+          player = corporation.owner
+
+          @round.entity_with_bandage = player if bandage.owner == player
+          @round.entity_with_bandage = corporation if bandage.owner == corporation && !corporation.assigned?(bandage.id)
+
+          super
+        end
+
+        def assign_bandage(train)
+          corporation = train.owner
+
+          corporation.assign!(bandage.id)
+          @train_with_bandage = train
+
+          bandage.desc = "Train #{train.name} now is a 1S"
+
+          new_train = train_by_id('1S-0')
+          new_train.owner = train.owner
+          new_train.buyable
+          train.owner.trains.delete(train)
+          train.owner.trains << new_train
+        end
+
+        def process_choose_bandage?(action)
+          train = train_by_id(action.choice['train_id'])
+          assign_bandage(train)
+
+          @log << "#{train.name} gets a bandage, becomes a 1S"
+        end
+
+        def process_remove_bandage?(action)
+          corporation = corporation_by_id(action.choice['corporation'])
+          train = @train_with_bandage
+          company = bandage
+
+          corporation.remove_assignment!(company.id)
+          company.close!
+          @log << "#{company.name} closes"
+
+          @log << "#{corporation.name} removes bandage from 1S; train is #{train&.name} again"
+
+          corporation.trains.delete(train_by_id('1S-0'))
+          corporation.trains << @train_with_bandage
+          @train_with_bandage = nil
+
+          rust_trains!(train_by_id("#{train&.rusts_on}-0"), train&.owner) if phase.available?(train&.rusts_on)
+        end
+
         private
 
         def init_round
@@ -951,6 +1061,7 @@ module Engine
             Engine::Step::DiscardTrain,
             G18ZOO::Step::HomeTrack,
             G18ZOO::Step::BonusTracks,
+            G18ZOO::Step::TrainProtection,
             G18ZOO::Step::BuySellParShares,
           ])
         end
@@ -969,6 +1080,7 @@ module Engine
             G18ZOO::Step::Assign,
             G18ZOO::Step::SpecialTrack,
             G18ZOO::Step::SpecialToken,
+            G18ZOO::Step::TrainProtection,
             G18ZOO::Step::BuyOrUsePowerOnOr,
             G18ZOO::Step::BuyCompany,
             G18ZOO::Step::Track,
@@ -1091,6 +1203,32 @@ module Engine
             .uniq(&:name)
             .select { |t| (MOLES_UPGRADES[tile.name] || []).include?(t.name) }
             .select { |t| upgrades_to?(tile, t, selected_company: company) }
+        end
+
+        def cities_visited(route, visits)
+          cities_visited = visits.count { |v| v.city? || (v.offboard? && v.revenue[:yellow].positive?) }
+
+          # Passing through Hole count as a stop
+          cities_visited += 1 if !@holes.empty? && (@holes & route.all_hexes).size == 2
+
+          # Passing through City with Wings doesn't count
+          visits = route.visited_stops
+          if visits.size > 2
+            corporation = route.corporation
+            visits[1..-2].each do |node|
+              cities_visited -= 1 if node.city? && node.blocks?(corporation)
+            end
+          end
+
+          cities_visited
+        end
+
+        def distance_aux(route)
+          distance = route.train.distance
+          # A spoonful of sugar raise the distance number
+          distance += 1 if distance.is_a?(Numeric) && route.train.owner == a_spoonful_of_sugar.owner
+
+          distance
         end
       end
     end

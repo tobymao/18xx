@@ -25,6 +25,8 @@ module Engine
 
             entity ||= current_entity
 
+            return false if @game.train_by_id('1S-0').owner == entity
+
             can_buy_normal = room?(entity) &&
               @game.buying_power(entity, use_tickets: true) >= @depot.min_price(entity)
 

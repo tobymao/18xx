@@ -13,7 +13,7 @@ module Engine
           include Engine::Game::G18ZOO::Step::Tracker
 
           def available_hex(entity, hex)
-            return false if %w[M MM].include?(hex.location_name)
+            return false if %w[M MM].include?(hex.location_name) && hex.tile.color != :white
             return false if hex.tile.label.to_s == 'O' && hex.tile.color != :white
             return false if %i[red gray].include?(hex.tile.color)
 

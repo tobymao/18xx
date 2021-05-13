@@ -200,16 +200,23 @@
     },
     {
       "type": "pass",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 23,
+      "created_at": 1618162061
+    },
+    {
+      "type": "pass",
       "entity": "Player 2",
       "entity_type": "player",
-      "id": 23,
+      "id": 24,
       "created_at": 1618162068
     },
     {
       "type": "end_game",
       "entity": "Player 1",
       "entity_type": "player",
-      "id": 24,
+      "id": 25,
       "created_at": 1618386597
     }
   ],
