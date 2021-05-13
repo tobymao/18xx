@@ -50,7 +50,8 @@ module Engine
             revenue: 0,
             desc: 'MAJOR, Phase 2. Permanent 2-Train. 2P-train is a permanent 2-train. It can’t be sold to another '\
                   'company. It does not count against train limit. It does not count as a train for the purpose of '\
-                  'mandatory train ownership and purchase. A company may not own more than one 2P train. Dividends '\
+                  'mandatory train ownership and purchase. A company may not own more than one 2P train. '\
+                  'A company cannot own both a permanent L-train and a permanent 2-train. Dividends '\
                   'can be separated from other trains and may be split, paid in full, or retained. If a company '\
                   'runs a 2P-train and pays a dividend (split or full), but retains its dividend from other train '\
                   'operations this still counts as a normal dividend for stock price movement purposes. Vice-versa, '\
@@ -67,7 +68,8 @@ module Engine
             revenue: 0,
             desc: 'MAJOR, Phase 2. Permanent 2-Train. 2P-train is a permanent 2-train. It can’t be sold to another '\
                   'company. It does not count against train limit. It does not count as a train for the purpose of '\
-                  'mandatory train ownership and purchase. A company may not own more than one 2P train. Dividends '\
+                  'mandatory train ownership and purchase. A company may not own more than one 2P train. '\
+                  'A company cannot own both a permanent L-train and a permanent 2-train. Dividends '\
                   'can be separated from other trains and may be split, paid in full, or retained. If a company '\
                   'runs a 2P-train and pays a dividend (split or full), but retains its dividend from other train '\
                   'operations this still counts as a normal dividend for stock price movement purposes. Vice-versa, '\
@@ -331,7 +333,7 @@ module Engine
             revenue: 0,
             desc: 'MAJOR/MINOR, Phase 1. Permanent L-Train. An L-train cannot be sold to another company. It does '\
                   'not count as a train for the purposes of mandatory train ownership. It does not count against '\
-                  'train ownership limit A company cannot own a permanent L-train and a permanent 2-train. '\
+                  'train ownership limit. A company cannot own both a permanent L-train and a permanent 2-train. '\
                   'Dividends can be separated from other trains and may be split, paid in full, or retained. If a '\
                   'company runs a permanent L-train and pays a dividend (split or full), but retains its dividend '\
                   'from other train operations this still counts as a normal dividend for stock price movement '\
