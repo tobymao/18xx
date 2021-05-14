@@ -24,6 +24,7 @@ module Engine
 
             spender = @game.owning_major_corporation(entity)
             place_token(entity, city, action.token, spender: spender)
+
             @game.city_graph.clear
             @tokened = true
             pass! unless can_lay_tile?(entity)

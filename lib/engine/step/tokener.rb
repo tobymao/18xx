@@ -145,7 +145,6 @@ module Engine
       end
 
       def check_connected(entity, city, hex)
-        puts @game.graph.connected_nodes(entity)[city], city
         return if @game.loading || @game.graph.connected_nodes(entity)[city]
 
         city_string = hex.tile.cities.size > 1 ? " city #{city.index}" : ''

@@ -554,7 +554,7 @@ module Engine
         def check_track_type(route)
           corporation = route.train.owner
           track_types = route.chains.flat_map { |item| item[:paths] }.flat_map(&:track).uniq
-          puts(track_types - [:narrow])
+
           if corporation.type == :city && !(track_types - [:narrow]).empty?
             raise GameError,
                   'Route may only contain narrow tracks'
@@ -568,7 +568,6 @@ module Engine
         def graph_for_entity(entity)
           return @city_graph if entity.type == :city
 
-          puts entity.type
           @graph
         end
       end

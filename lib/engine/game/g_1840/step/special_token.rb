@@ -70,15 +70,16 @@ module Engine
               token.destroy!
             end
 
-            token.price = 0
+            action.token.price = 0
 
             place_token(
               entity,
               city,
               action.token,
-              connected: true,
               extra_action: true,
             )
+
+            @game.city_graph.clear
             @round.pending_special_tokens.shift
           end
 
