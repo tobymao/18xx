@@ -25,6 +25,8 @@ module Engine
 
         MUST_SELL_IN_BLOCKS = false
 
+        PROTOTYPE = true
+
         MARKET = [
           %w[0l
              0a

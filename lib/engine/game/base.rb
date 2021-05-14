@@ -451,14 +451,23 @@ module Engine
           @log << "#{self.class.title} is currently considered 'alpha',"\
             ' the rules implementation is likely to not be complete.'
           @log << 'As the implementation improves, games that are not compatible'\
-            ' with the latest version will be deleted without notice.'
+            ' with the latest version will be archived without notice.'
           @log << 'We suggest that any alpha quality game is concluded within 7 days.'
         when :beta
           @log << "#{self.class.title} is currently considered 'beta',"\
             ' the rules implementation may allow illegal moves.'
           @log << 'As the implementation improves, games that are not compatible'\
-            ' with the latest version will be pinned but may be deleted after 7 days.'
+            ' with the latest version will be pinned but may be archived after 7 days.'
           @log << 'Because of this we suggest not playing games that may take months to complete.'
+        end
+
+        if self.class::PROTOTYPE
+          @log << "#{self.class.title} is currently a prototype game, "\
+          ' the design is not final, and so may change at any time.'
+          unless self.class::DEV_STAGE == :alpha
+            @log << 'If the game is modified due to a design change, games will be pinned'
+          end
+
         end
 
         @companies = init_companies(@players)

@@ -76,12 +76,15 @@ module View
       @max_p = {}
       closest_title = @title && Engine.closest_title(@title)
 
-      game_options = visible_games.group_by { |game| game::DEV_STAGE }.flat_map do |dev_stage, game_list|
+      game_options = visible_games
+      .group_by { |game| game::DEV_STAGE == :production && game::PROTOTYPE ? :prototype : game::DEV_STAGE }
+      .flat_map do |dev_stage, game_list|
         option_list = game_list.map do |game|
           @min_p[game.title], @max_p[game.title] = game::PLAYER_RANGE
 
           title = game.title
           title += " (#{game::GAME_LOCATION})" if game::GAME_LOCATION
+          title += ' [Prototype]' if game::PROTOTYPE
 
           attrs = { value: game.title }
           attrs[:selected] = (game.title == closest_title) ||
