@@ -207,7 +207,7 @@ module Engine
             resolve_bids
           end
 
-          def min_required(entity)
+          def min_required(_entity)
             highest_bid(@auctioning).price + min_increment + min_par * 3
           end
 

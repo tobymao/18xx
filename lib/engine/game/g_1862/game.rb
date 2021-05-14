@@ -142,7 +142,7 @@ module Engine
             train_limit: 3, # per type
             tiles: [:yellow],
             operating_rounds: 1,
-            status: ['three_per', 'first_rev'],
+            status: %w[three_per first_rev],
           },
           {
             name: 'B',
@@ -150,7 +150,7 @@ module Engine
             train_limit: 3, # 3 type
             tiles: %i[yellow green],
             operating_rounds: 2,
-            status: ['three_per', 'first_rev'],
+            status: %w[three_per first_rev],
           },
           {
             name: 'C',
@@ -158,7 +158,7 @@ module Engine
             train_limit: 3, # per type
             tiles: %i[yellow green],
             operating_rounds: 2,
-            status: ['three_per', 'middle_rev'],
+            status: %w[three_per middle_rev],
           },
           {
             name: 'D',
@@ -166,7 +166,7 @@ module Engine
             train_limit: 3, # per type
             tiles: %i[yellow green brown],
             operating_rounds: 3,
-            status: ['three_per', 'middle_rev'],
+            status: %w[three_per middle_rev],
           },
           {
             name: 'E',
@@ -174,7 +174,7 @@ module Engine
             train_limit: 2, # per type
             tiles: %i[yellow green brown],
             operating_rounds: 3,
-            status: ['two_per', 'last_rev'],
+            status: %w[two_per last_rev],
           },
           {
             name: 'F',
@@ -182,7 +182,7 @@ module Engine
             train_limit: 2, # per type
             tiles: %i[yellow green brown],
             operating_rounds: 3,
-            status: ['two_per', 'last_rev'],
+            status: %w[two_per last_rev],
           },
           {
             name: 'G',
@@ -190,7 +190,7 @@ module Engine
             train_limit: 3, # across all types
             tiles: %i[yellow green brown],
             operating_rounds: 3,
-            status: ['three_total', 'last_rev'],
+            status: %w[three_total last_rev],
           },
           {
             name: 'H',
@@ -198,7 +198,7 @@ module Engine
             train_limit: 3, # across all types
             tiles: %i[yellow green brown],
             operating_rounds: 3,
-            status: ['three_total', 'last_rev'],
+            status: %w[three_total last_rev],
           },
         ].freeze
 
@@ -1632,7 +1632,9 @@ module Engine
         def revenue_for(route, stops)
           return freight_revenue(route, stops) if train_type(route.train) == :freight
 
-          stops.sum { |stop| stop_on_other_route?(route, stop) ? 0 : game_route_revenue(stop, route.phase, route.train) }
+          stops.sum do |stop|
+            stop_on_other_route?(route, stop) ? 0 : game_route_revenue(stop, route.phase, route.train)
+          end
         end
 
         def hex_on_other_route?(this_route, hex)
