@@ -146,6 +146,13 @@
       "created_at": 1616088434
     },
     {
+      "type": "pass",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 18,
+      "created_at": 1616088434
+    },
+    {
       "type": "buy_shares",
       "entity": "Player 2",
       "entity_type": "player",
@@ -497,6 +504,13 @@
       "entity_type": "corporation",
       "id": 61,
       "created_at": 1616088517
+    },
+    {
+      "type": "pass",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 18,
+      "created_at": 1616088434
     }
   ],
   "id": "hs_uamrxjzy_1615400251",

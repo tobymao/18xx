@@ -9,6 +9,8 @@ module Engine
         def can_choose_ability?(company)
           entity = @game.current_entity
           return false unless entity.player?
+          return true if company == @game.bandage && @game.can_use_bandage?(entity, company)
+
           return false unless company.owner == entity
 
           return true if @game.zoo_ticket?(company)
@@ -28,6 +30,7 @@ module Engine
           return true if @game.holiday.owner == entity && can_choose_holiday?(entity)
           return true if @game.whatsup.owner == entity && can_choose_whatsup?(entity)
           return true if @game.it_is_all_greek_to_me.owner == entity && can_choose_greek?(entity)
+          return true if @game.bandage.owner == entity && @game.can_use_bandage?(entity, @game.bandage)
 
           false
         end
@@ -38,6 +41,7 @@ module Engine
           return choices_for_holiday if company == @game.holiday
           return choices_for_whatsup(company.owner) if company == @game.whatsup
           return choices_for_greek if company == @game.it_is_all_greek_to_me
+          return @game.choices_for_bandage?(company.owner) if company == @game.bandage
 
           {}
         end
@@ -48,6 +52,8 @@ module Engine
           process_holiday(action) if action.choice['type'] == 'holiday'
           process_whatsup(action) if action.choice['type'] == 'whatsup'
           process_greek(action) if action.choice['type'] == 'greek'
+          @game.process_choose_bandage?(action) if action.choice['type'] == 'bandage'
+          @game.process_remove_bandage?(action) if action.choice['type'] == 'remove_bandage'
         end
 
         def can_choose_midas?(_player)

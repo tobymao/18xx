@@ -15,13 +15,12 @@ module Engine
           def actions(entity)
             return [] if @round.president_helped
 
-            # TODO: change to something like this: @game.abilities(entity, :assign_hexes) ||
             return can_choose_ability?(entity) ? ACTIONS : [] if entity.company?
             return [] unless blocks?
 
             actions = []
             actions << 'choose_ability' if can_choose_any_ability_on_any_step?(entity)
-            actions << 'pass' unless actions.empty?
+            actions << 'pass' if blocks?
             actions.uniq
           end
 

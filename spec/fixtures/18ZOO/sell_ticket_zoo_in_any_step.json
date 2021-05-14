@@ -142,6 +142,13 @@
       "created_at": 1616317327
     },
     {
+      "type": "pass",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 18,
+      "created_at": 1616088434
+    },
+    {
       "type": "run_routes",
       "entity": "GI",
       "entity_type": "corporation",
@@ -155,6 +162,13 @@
       "entity_type": "corporation",
       "id": 18,
       "created_at": 1616317331
+    },
+    {
+      "type": "pass",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 18,
+      "created_at": 1616088434
     },
     {
       "type": "buy_shares",
