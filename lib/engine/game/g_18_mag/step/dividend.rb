@@ -175,6 +175,14 @@ module Engine
           def chart
             @game.price_movement_chart
           end
+
+          def variable_share_multiplier(corporation)
+            corporation.total_shares
+          end
+
+          def variable_input_step
+            1
+          end
         end
       end
     end

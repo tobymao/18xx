@@ -570,6 +570,25 @@ module Engine
 
           @graph
         end
+
+        def major_revenue(corporation)
+          corporate_card_minors(corporation).sum(&:cash)
+        end
+
+        def price_movement_chart
+          [
+            ['Dividend', 'Share Price Change'],
+            ['0', '1 ←'],
+            ['10 - 90', 'none'],
+            ['100 - 190', '1 →'],
+            ['200 - 390', '2 →'],
+            ['400 - 590', '3 →'],
+            ['600 - 990', '4 →'],
+            ['1000 - 1490', '5 →'],
+            ['1500 - 2490', '6 →'],
+            ['2500+', '7 →'],
+          ]
+        end
       end
     end
   end
