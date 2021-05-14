@@ -52,17 +52,30 @@ module Engine
           end
 
           def process_place_token(action)
-            hex = action.city.hex
-            unless available_hex(action.entity, hex)
+            city = action.city
+            token = city.tokens[action.slot]
+            hex = city.hex
+            entity = action.entity
+
+            unless available_hex(entity, hex)
               raise GameError, "Cannot place token on #{hex.name} as the hex is not available"
+            end
+
+            if token&.corporation&.type == :city
+              check_connected(entity, city, hex)
+              spender = @game.owning_major_corporation(entity)
+              spender.spend(40, @game.bank)
+              @log << "#{entity.name} removes token from #{hex.name} (#{hex.location_name}) "\
+                      "for #{@game.format_currency(40)}"
+              token.destroy!
             end
 
             token.price = 0
 
             place_token(
-              token.corporation,
-              action.city,
-              token,
+              entity,
+              city,
+              action.token,
               connected: true,
               extra_action: true,
             )
@@ -76,6 +89,10 @@ module Engine
 
           def show_other
             @game.owning_major_corporation(current_entity)
+          end
+
+          def can_replace_token?(_entity, _token)
+            true
           end
         end
       end
