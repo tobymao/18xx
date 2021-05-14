@@ -203,17 +203,6 @@
       "price": 3
     },
     {
-      "type": "choose_ability",
-      "entity": "A_SPOONFUL_OF_SUGAR",
-      "entity_type": "company",
-      "id": 24,
-      "created_at": 1618165146,
-      "choice": {
-        "type": "sugar",
-        "train_id": "2S-0"
-      }
-    },
-    {
       "type": "end_game",
       "entity": "GI",
       "entity_type": "corporation",

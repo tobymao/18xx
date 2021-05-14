@@ -525,6 +525,105 @@ module Engine
       end
     end
 
+    describe 'A spoonful of sugar' do
+      context 'when used on two train' do
+        let(:game_file_name) { 'or_power.a_spoonful_of_sugar' }
+
+        it 'must fail' do
+          game = Engine::Game.load(game_file, at_action: 33)
+          action = {
+            'type' => 'run_routes',
+            'entity' => 'PE',
+            'entity_type' => 'corporation',
+            'routes' => [
+              {
+                'train' => '2S-0',
+                'connections' => [
+                  %w[K17 J18 I19],
+                  %w[K17 L16 M17 N18],
+                ],
+                'hexes' => %w[I19 K17 N18],
+              },
+              {
+                'train' => '2S-1',
+                'connections' => [
+                  %w[K15 K17],
+                  %w[K15 J16 I17 I19],
+                ],
+                'hexes' => %w[K17 K15 I19],
+              },
+            ],
+          }
+          expect do
+            game.process_action(action)
+          end.to raise_error(Engine::GameError, 'Only one train can use the sugar')
+        end
+      end
+
+      context 'two different train use wings' do
+        let(:game_file_name) { 'or_power.wings' }
+
+        it 'is not possible' do
+          game = Engine::Game.load(game_file, at_action: 59)
+          action = {
+            'type' => 'run_routes',
+            'entity' => 'GI',
+            'entity_type' => 'corporation',
+            'routes' => [
+              {
+                'train' => '2S-1',
+                'connections' => [
+                  %w[L4 M5],
+                  %w[K9 K7 L6 L4],
+                ],
+                'hexes' => %w[M5 L4 K9],
+              },
+              {
+                'train' => '3S-0',
+                'connections' => [
+                  %w[K15 K13 K11 K9],
+                  %w[K15 K17],
+                  %w[K17 L16 M15 N14],
+                  %w[N14 N12],
+                ],
+                'hexes' => %w[K15 K17 N14 N12],
+              },
+            ],
+          }
+          expect do
+            game.process_action(action)
+          end.to raise_error(Engine::GameError, 'Only one train can bypass a tokened-out city')
+        end
+      end
+
+      context 'City with "Work in progress"' do
+        let(:game_file_name) { 'or_power.work_in_progress.cannot_ignore_with_wings' }
+
+        it 'cannot be pass-through' do
+          game = Engine::Game.load(game_file, at_action: 17)
+          action = {
+            'type' => 'run_routes',
+            'entity' => 'GI',
+            'entity_type' => 'corporation',
+            'routes' => [
+              {
+                'train' => '2S-0',
+                'connections' => [
+                  %w[L4 M5],
+                  %w[K9 K7 L6 L4],
+                ],
+                'hexes' => %w[M5 L4 K9],
+              },
+            ],
+          }
+          expect do
+            game.process_action(action)
+          end.to raise_error(Engine::GameError,
+                             'City with only \'Work in progress\' slot cannot be bypassed')
+        end
+      end
+    end
+
     describe 'Wings' do
       context 'fly over two cities' do
         let(:game_file_name) { 'or_power.wings' }

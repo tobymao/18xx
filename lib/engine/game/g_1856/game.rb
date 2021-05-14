@@ -848,6 +848,8 @@ module Engine
           100
         end
 
+        # There are 11 corporations in the game and keeping corporation homes is mandatory; so this can
+        # (rarely) be broken
         def national_token_limit
           10
         end
@@ -1254,6 +1256,7 @@ module Engine
 
             # Nationalization!!
             G1856::Step::NationalizationPayoff,
+            G1856::Step::RemoveTokens,
             G1856::Step::NationalizationDiscardTrains,
             G1856::Step::SpecialBuy,
             G1856::Step::Track,
@@ -1589,7 +1592,7 @@ module Engine
           # Other tokens second, ignoring duplicates from the home token set
           @nationalized_corps.each do |corp|
             corp.tokens.each do |token|
-              next if !token.city || home_bases.include?(token.city.hex)
+              next if !token.used || !token.city || home_bases.include?(token.city.hex)
 
               remove_duplicate_tokens(corp)
               replace_token(corp, token, create_national_token)
@@ -1598,12 +1601,17 @@ module Engine
 
           # Then reduce down to limit
           # TODO: Possibly override ReduceTokens?
-          if national.tokens.size > national_token_limit
-            @log << "#{national.name} will is above token limit and must decide which tokens to remove"
-            # TODO: implement this case, maybe use a varaiation of the below?
-            # @round.corporations_removing_tokens = [buyer, acquired_corp]
+          tokens_to_keep = [home_bases.size, national_token_limit].max
+          if national.tokens.size > tokens_to_keep
+            @log << "#{national.name} is above token limit and must decide which tokens to remove"
+            # This will be resolved in RemoveTokens
+            @round.pending_removals << {
+              corp: national,
+              count: national.tokens.size - tokens_to_keep,
+              hexes: tokens.map(&:hex).reject { |hex| home_bases.include?(hex) },
+            }
           end
-          remaining_tokens = [national_token_limit - national.tokens.size, 0].max
+          remaining_tokens = [tokens_to_keep - national.tokens.size, 0].max
           @log << "#{national.name} has #{remaining_tokens} spare #{format_currency(national_token_price)} tokens"
           remaining_tokens.times { national.tokens << Engine::Token.new(@national, price: national_token_price) }
         end
@@ -1635,7 +1643,6 @@ module Engine
 
           # Reduce the nationals train holding limit to the real value
           # (It was artificially high to avoid forced discard triggering early)
-          # TODO: Do it.
           @nationalization_train_discard_trigger = true
           @post_nationalization = true
         end
@@ -1653,10 +1660,7 @@ module Engine
           # In the case of OO and Toronto tiles this is ambigious and must be solved by the user
 
           cities = Array(corp).flat_map(&:tokens).map(&:city).compact
-          @national.tokens.each do |token|
-            city = token.city
-            token.remove! if cities.include?(city)
-          end
+          @national.tokens.select { |t| cities.include?(t.city) }.each(&:destroy!)
         end
 
         # Convert the home token of the corporation to one of the national's
