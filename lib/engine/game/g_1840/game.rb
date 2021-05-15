@@ -4,6 +4,7 @@ require_relative 'meta'
 require_relative 'map'
 require_relative 'entities'
 require_relative '../base'
+require_relative '../company_price_up_to_face'
 
 module Engine
   module Game
@@ -12,6 +13,7 @@ module Engine
         include_meta(G1840::Meta)
         include Map
         include Entities
+        include CompanyPriceUpToFace
 
         register_colors(red: '#d1232a',
                         orange: '#f58121',
@@ -241,6 +243,8 @@ module Engine
           @corporations.concat(@tram_corporations)
 
           @city_graph = Graph.new(self, skip_track: :broad)
+
+          setup_company_price_up_to_face
         end
 
         def init_graph
@@ -312,12 +316,12 @@ module Engine
           G1840::Round::LineOperating.new(self, [
             G1840::Step::SpecialTrack,
             G1840::Step::SpecialToken,
-            Engine::Step::BuyCompany,
+            G1840::Step::BuyCompany,
             Engine::Step::HomeToken,
             G1840::Step::TrackAndToken,
             Engine::Step::Route,
             G1840::Step::Dividend,
-            [Engine::Step::BuyCompany, { blocks: true }],
+            [G1840::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 
@@ -603,6 +607,35 @@ module Engine
 
         def update_last_revenue(entity)
           @last_revenue[entity] = major_revenue(entity)
+        end
+
+        def revenue_for(route, stops)
+          if route.corporation.type == :city
+
+            # without city or with tokened city
+            filtered_stops = stops.select do |stop|
+              stop.tile.cities.empty? || stop.tile.cities.any? do |city|
+                city.tokens.any? { |token| token&.corporation == route.corporation }
+              end
+            end
+            return filtered_stops.sum { |stop| stop.route_revenue(route.phase, route.train) }
+          end
+
+          revenue = super
+
+          major_corp = owning_major_corporation(route.corporation)
+          major_corp.companies.each do |company|
+            abilities(company, :hex_bonus) do |ability|
+              revenue += stops.map { |s| s.hex.id }.uniq&.sum { |id| ability.hexes.include?(id) ? ability.amount : 0 }
+            end
+          end
+          revenue
+        end
+
+        def check_connected(route, token)
+          return if route.corporation.type == :city
+
+          super
         end
       end
     end
