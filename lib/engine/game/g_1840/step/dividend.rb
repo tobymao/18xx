@@ -95,9 +95,28 @@ module Engine
           def corp_dividend_options(entity, amount = 0)
             dividend_types.map do |type|
               payout = send(type, entity, amount)
-              payout[:divs_to_corporation] = 0
-              [type, payout.merge(share_price_change(entity, amount - payout[:corporation]))]
+              [type, payout.merge(share_price_change(entity, amount))]
             end.to_h
+          end
+
+          def share_price_change(entity, revenue = 0)
+            return {} if entity.minor?
+
+            return { share_direction: :left, share_times: 1 } if revenue.zero?
+
+            times = 0
+            times = 1 if revenue >= 100 && revenue <= 190
+            times = 2 if revenue >= 200 && revenue <= 390
+            times = 3 if revenue >= 499 && revenue <= 590
+            times = 4 if revenue >= 600 && revenue <= 990
+            times = 5 if revenue >= 1000 && revenue <= 1490
+            times = 6 if revenue >= 1500 && revenue <= 2490
+            times = 7 if revenue >= 2500
+            if times.positive?
+              { share_direction: :right, share_times: times }
+            else
+              {}
+            end
           end
 
           def variable(entity, amount)
