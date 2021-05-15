@@ -63,7 +63,7 @@ module Engine
           def available_hex(entity, hex)
             return @game.graph.reachable_hexes(entity)[hex] unless can_lay_tile?(entity, hex)
             return !@orange_placed if @game.orange_framed?(hex.tile)
-            return @game.graph.connected_hexes(entity)[hex] if @normal_placed
+            return @game.graph.connected_nodes(entity)[hex] if @normal_placed
 
             super
           end

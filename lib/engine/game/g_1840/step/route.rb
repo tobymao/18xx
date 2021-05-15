@@ -12,6 +12,10 @@ module Engine
 
             super
           end
+
+          def log_skip(entity)
+            @log << "#{entity.name} skips #{description.downcase}" unless entity.type == :major
+          end
         end
       end
     end

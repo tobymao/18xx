@@ -59,12 +59,15 @@ module Engine
           end
 
           def corp_log_run_payout(entity, amount)
-            if amount.positive?
-              @log << "#{entity.name} pays out #{@game.format_currency(amount)}"
-              return
-            end
-            @log << "#{entity.name} does not pay out"
-            # TODO: Show leftover
+            withhold_value = @game.major_revenue(entity) - amount
+            text = if amount.positive?
+                     "#{entity.name} pays out #{@game.format_currency(amount)}"
+                   else
+                     "#{entity.name} does not pay out"
+                   end
+
+            text += " and withholds #{@game.format_currency(withhold_value)}" if withhold_value.positive?
+            @log << text
           end
 
           def corp_payout_shares(entity, amount)
