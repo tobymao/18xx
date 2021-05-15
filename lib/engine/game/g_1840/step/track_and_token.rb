@@ -9,9 +9,23 @@ module Engine
         class TrackAndToken < Engine::Step::TrackAndToken
           def process_place_token(action)
             entity = action.entity
+            city = action.city
+            token = city.tokens[action.slot]
+            hex = city.hex
+
+            if token&.corporation&.type == :city
+              check_connected(entity, city, hex)
+              spender = @game.owning_major_corporation(entity)
+              spender.spend(40, @game.bank)
+              @log << "#{entity.name} removes token from #{hex.name} (#{hex.location_name}) "\
+                      "for #{@game.format_currency(40)}"
+              token.destroy!
+            end
 
             spender = @game.owning_major_corporation(entity)
-            place_token(entity, action.city, action.token, spender: spender)
+            place_token(entity, city, action.token, spender: spender)
+
+            @game.city_graph.clear
             @tokened = true
             pass! unless can_lay_tile?(entity)
           end
@@ -49,7 +63,7 @@ module Engine
           def available_hex(entity, hex)
             return @game.graph.reachable_hexes(entity)[hex] unless can_lay_tile?(entity, hex)
             return !@orange_placed if @game.orange_framed?(hex.tile)
-            return false if @normal_placed
+            return @game.graph.connected_hexes(entity)[hex] if @normal_placed
 
             super
           end
@@ -84,6 +98,17 @@ module Engine
 
           def show_other
             @game.owning_major_corporation(current_entity)
+          end
+
+          def can_replace_token?(_entity, _token)
+            true
+          end
+
+          def can_place_token?(entity)
+            current_entity == entity &&
+              !@round.tokened &&
+              !(tokens = available_tokens(entity)).empty? &&
+              min_token_price(tokens) <= buying_power(entity)
           end
         end
       end

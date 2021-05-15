@@ -45,10 +45,7 @@ module Engine
         hex = city.hex
         extra_action ||= special_ability.extra_action if special_ability&.type == :token
 
-        if !@game.loading && connected && !@game.graph.connected_nodes(entity)[city]
-          city_string = hex.tile.cities.size > 1 ? " city #{city.index}" : ''
-          raise GameError, "Cannot place token on #{hex.name}#{city_string} because it is not connected"
-        end
+        check_connected(entity, city, hex) if connected
 
         if special_ability&.type == :token && special_ability.city && special_ability.city != city.index
           raise GameError, "#{special_ability.owner.name} can only place token on #{hex.name} city "\
@@ -145,6 +142,13 @@ module Engine
         end
 
         [token, nil]
+      end
+
+      def check_connected(entity, city, hex)
+        return if @game.loading || @game.graph.connected_nodes(entity)[city]
+
+        city_string = hex.tile.cities.size > 1 ? " city #{city.index}" : ''
+        raise GameError, "Cannot place token on #{hex.name}#{city_string} because it is not connected"
       end
     end
   end
