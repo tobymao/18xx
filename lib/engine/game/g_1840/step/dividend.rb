@@ -46,6 +46,7 @@ module Engine
               @round.laid_hexes
             )
 
+            @game.update_last_revenue(entity)
             @round.routes = []
 
             corp_log_run_payout(entity, amount)

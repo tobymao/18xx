@@ -199,6 +199,7 @@ module Engine
           @or = 0
           @active_maintainance_cost = {}
           @player_debts = Hash.new { |h, k| h[k] = 0 }
+          @last_revenue = Hash.new { |h, k| h[k] = 0 }
           @all_tram_corporations = @corporations.select { |item| item.type == :minor }
           @tram_corporations = @all_tram_corporations.reject { |item| item.id == '2' }.sort_by do
             rand
@@ -509,9 +510,19 @@ module Engine
         end
 
         def status_str(corporation)
-          return if corporation.type != :minor
+          return "Maintenance: #{format_currency(maintenance_costs(corporation))}" if corporation.type == :minor
 
-          "Maintenance: #{format_currency(maintenance_costs(corporation))}"
+          return 'Revenue' if corporation.type == :major
+        end
+
+        def status_array(corporation)
+          return if corporation.type != :major
+
+          elements = []
+          elements << "Last: #{format_currency(@last_revenue[corporation])}"
+          elements << "Next: #{format_currency(major_revenue(corporation))}"
+
+          elements
         end
 
         def maintenance_costs(corporation)
@@ -588,6 +599,10 @@ module Engine
             ['1500 - 2490', '6 →'],
             ['2500+', '7 →'],
           ]
+        end
+
+        def update_last_revenue(entity)
+          @last_revenue[entity] = major_revenue(entity)
         end
       end
     end
