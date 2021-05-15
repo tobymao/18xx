@@ -169,7 +169,7 @@ module Engine
 
           def handle_warranties!(entity)
             # remove one warranty from each train and see if it rusts
-            entity.trains.each do |train|
+            entity.trains.dup.each do |train|
               train.name = train.name[0..-2] if train.name.include?('*')
               next unless @game.deferred_rust.include?(train) && !train.name.include?('*')
 
