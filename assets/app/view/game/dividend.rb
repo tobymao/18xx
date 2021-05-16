@@ -136,7 +136,7 @@ module View
       end
 
       def render_variable(entity)
-        max = (@step.variable_max(entity) / entity.total_shares).to_i
+        max = (@step.variable_max(entity) / @step.variable_share_multiplier(entity)).to_i
 
         input = h(:input,
                   props: {
@@ -145,20 +145,23 @@ module View
                     max: max,
                     type: 'number',
                     size: max.to_s.size,
+                    step: @step.variable_input_step,
                   })
 
         h(:div,
           [
             h(:h3, { style: { margin: '0.5rem 0 0.2rem 0' } }, 'Pay Dividends'),
             @step.help_str(max),
-            input,
-            h(:button, { on: { click: -> { create_dividend(input) } } }, 'Pay Dividend'),
+            h(:div, [
+              input,
+              h(:button, { on: { click: -> { create_dividend(input) } } }, 'Pay Dividend'),
+            ]),
             dividend_chart,
         ])
       end
 
       def create_dividend(input)
-        amount = input.JS['elm'].JS['value'].to_i * @step.current_entity.total_shares
+        amount = input.JS['elm'].JS['value'].to_i * @step.variable_share_multiplier(@step.current_entity)
         process_action(Engine::Action::Dividend.new(@step.current_entity, kind: 'variable', amount: amount))
       end
 

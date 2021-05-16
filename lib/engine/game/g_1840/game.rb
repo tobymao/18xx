@@ -4,6 +4,7 @@ require_relative 'meta'
 require_relative 'map'
 require_relative 'entities'
 require_relative '../base'
+require_relative '../company_price_up_to_face'
 
 module Engine
   module Game
@@ -12,6 +13,7 @@ module Engine
         include_meta(G1840::Meta)
         include Map
         include Entities
+        include CompanyPriceUpToFace
 
         register_colors(red: '#d1232a',
                         orange: '#f58121',
@@ -190,6 +192,19 @@ module Engine
           'Pu1' => { 'Y1' => -400, 'O1' => -300, 'R1' => -100, 'Pu1' => 200 },
         }.freeze
 
+        PRICE_MOVEMENT_CHART = [
+          ['Dividend', 'Share Price Change'],
+          ['0', '1 ←'],
+          ['10 - 90', 'none'],
+          ['100 - 190', '1 →'],
+          ['200 - 390', '2 →'],
+          ['400 - 590', '3 →'],
+          ['600 - 990', '4 →'],
+          ['1000 - 1490', '5 →'],
+          ['1500 - 2490', '6 →'],
+          ['2500+', '7 →'],
+        ].freeze
+
         attr_reader :tram_corporations, :major_corporations, :tram_owned_by_corporation, :city_graph
 
         def setup
@@ -199,6 +214,7 @@ module Engine
           @or = 0
           @active_maintainance_cost = {}
           @player_debts = Hash.new { |h, k| h[k] = 0 }
+          @last_revenue = Hash.new { |h, k| h[k] = 0 }
           @all_tram_corporations = @corporations.select { |item| item.type == :minor }
           @tram_corporations = @all_tram_corporations.reject { |item| item.id == '2' }.sort_by do
             rand
@@ -240,6 +256,8 @@ module Engine
           @corporations.concat(@tram_corporations)
 
           @city_graph = Graph.new(self, skip_track: :broad)
+
+          setup_company_price_up_to_face
         end
 
         def init_graph
@@ -311,12 +329,12 @@ module Engine
           G1840::Round::LineOperating.new(self, [
             G1840::Step::SpecialTrack,
             G1840::Step::SpecialToken,
-            Engine::Step::BuyCompany,
+            G1840::Step::BuyCompany,
             Engine::Step::HomeToken,
             G1840::Step::TrackAndToken,
             Engine::Step::Route,
             G1840::Step::Dividend,
-            [Engine::Step::BuyCompany, { blocks: true }],
+            [G1840::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 
@@ -509,9 +527,16 @@ module Engine
         end
 
         def status_str(corporation)
-          return if corporation.type != :minor
+          return "Maintenance: #{format_currency(maintenance_costs(corporation))}" if corporation.type == :minor
 
-          "Maintenance: #{format_currency(maintenance_costs(corporation))}"
+          return 'Revenue' if corporation.type == :major
+        end
+
+        def status_array(corporation)
+          return if corporation.type != :major
+
+          ["Last: #{format_currency(@last_revenue[corporation])}",
+           "Next: #{format_currency(major_revenue(corporation))}"]
         end
 
         def maintenance_costs(corporation)
@@ -569,6 +594,48 @@ module Engine
           return @city_graph if entity.type == :city
 
           @graph
+        end
+
+        def major_revenue(corporation)
+          corporate_card_minors(corporation).sum(&:cash)
+        end
+
+        def price_movement_chart
+          PRICE_MOVEMENT_CHART
+        end
+
+        def update_last_revenue(entity)
+          @last_revenue[entity] = major_revenue(entity)
+        end
+
+        def revenue_for(route, stops)
+          if route.corporation.type == :city
+
+            # without city or with tokened city
+            return stops.sum do |stop|
+                     next 0 if !stop.tile.cities.empty? && stop.tile.cities.none? do |city|
+                       city.tokens.any? { |token| token&.corporation == route.corporation }
+                     end
+
+                     stop.route_revenue(route.phase, route.train)
+                   end
+          end
+
+          revenue = super
+
+          major_corp = owning_major_corporation(route.corporation)
+          major_corp.companies.each do |company|
+            abilities(company, :hex_bonus) do |ability|
+              revenue += stops.map { |s| s.hex.id }.uniq&.sum { |id| ability.hexes.include?(id) ? ability.amount : 0 }
+            end
+          end
+          revenue
+        end
+
+        def check_connected(route, token)
+          return if route.corporation.type == :city
+
+          super
         end
       end
     end

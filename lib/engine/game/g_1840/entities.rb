@@ -103,7 +103,7 @@ module Engine
                   price: 500,
                 },
                 {
-                  name: 'Pi2',
+                  name: 'Pi3',
                   price: 400,
                 },
               ],

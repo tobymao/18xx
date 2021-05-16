@@ -23,7 +23,7 @@ module Engine
             entity = @entities[@entity_index]
             if action.is_a?(Engine::Action::RunRoutes) && !action.routes.empty?
               process_action(Engine::Action::Dividend.new(entity,
-                                                          kind: 'payout'))
+                                                          kind: 'withhold'))
             end
             super
           end
