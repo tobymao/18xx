@@ -3,14 +3,14 @@
 require_relative '../../../step/tracker'
 require_relative '../../../step/track'
 require_relative '../../../step/upgrade_track_max_exits'
-require_relative 'automatic_loan'
+require_relative '../../../step/automatic_loan'
 
 module Engine
   module Game
     module G1867
       module Step
         class Track < Engine::Step::Track
-          include AutomaticLoan
+          include Engine::Step::AutomaticLoan
           include Engine::Step::UpgradeTrackMaxExits
 
           def lay_tile(action, extra_cost: 0, entity: nil, spender: nil)

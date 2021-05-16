@@ -2,14 +2,14 @@
 
 require_relative '../../../step/base'
 require_relative '../../../step/buy_train'
-require_relative 'automatic_loan'
+require_relative '../../../step/automatic_loan'
 
 module Engine
   module Game
     module G1867
       module Step
         class BuyTrain < Engine::Step::BuyTrain
-          include AutomaticLoan
+          include Engine::Step::AutomaticLoan
 
           def actions(entity)
             return [] if entity != current_entity

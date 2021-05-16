@@ -5,6 +5,8 @@ require_relative '../base'
 require_relative 'map'
 require_relative 'entities'
 require_relative 'stock_market'
+require_relative '../../loan'
+require_relative '../interest_on_loans'
 
 module Engine
   module Game
@@ -13,8 +15,9 @@ module Engine
         include_meta(G18NY::Meta)
         include G18NY::Entities
         include G18NY::Map
+        include InterestOnLoans
 
-        attr_reader :privates_closed
+        attr_reader :privates_closed, :loan_value
         attr_accessor :stagecoach_token
 
         CAPITALIZATION = :incremental
@@ -147,9 +150,13 @@ module Engine
         ERIE_CANAL_ICON = 'canal'
 
         def setup
-          @erie_canal_private = @companies.find { |c| c.id == 'EC' }
+          @interest = {}
           @stagecoach_token =
             Token.new(nil, logo: '/logos/18_ny/stagecoach.svg', simple_logo: '/logos/18_ny/stagecoach.alt.svg')
+        end
+
+        def erie_canal_private
+          @erie_canal_private ||= @companies.find { |c| c.id == 'EC' }
         end
 
         def init_stock_market
@@ -171,6 +178,7 @@ module Engine
         end
 
         def operating_round(round_num)
+          calculate_interest
           Round::Operating.new(self, [
             G18NY::Step::StagecoachExchange,
             Engine::Step::BuyCompany,
@@ -180,6 +188,7 @@ module Engine
             Engine::Step::Token,
             Engine::Step::Route,
             Engine::Step::Dividend,
+            #            Engine::Step::LoanOperations,
             Engine::Step::DiscardTrain,
             Engine::Step::SpecialBuyTrain,
             Engine::Step::BuyTrain,
@@ -232,6 +241,10 @@ module Engine
 
         # Stock round logic
 
+        def ipo_name(_entity = nil)
+          'Treasury'
+        end
+
         def issuable_shares(entity)
           return [] if !entity.corporation? || entity.type != :major
 
@@ -282,13 +295,13 @@ module Engine
         def tile_lay(_hex, old_tile, _new_tile)
           return unless old_tile.icons.any? { |icon| icon.name == ERIE_CANAL_ICON }
 
-          @log << "#{@erie_canal_private.name}'s revenue reduced from #{format_currency(@erie_canal_private.revenue)}" \
-                  " to #{format_currency(@erie_canal_private.revenue - 10)}"
-          @erie_canal_private.revenue -= 10
-          return if @erie_canal_private.revenue.positive?
+          @log << "#{erie_canal_private.name}'s revenue reduced from #{format_currency(erie_canal_private.revenue)}" \
+                  " to #{format_currency(erie_canal_private.revenue - 10)}"
+          erie_canal_private.revenue -= 10
+          return if erie_canal_private.revenue.positive?
 
-          @log << "#{@erie_canal_private.name} closes"
-          @erie_canal_private.close!
+          @log << "#{erie_canal_private.name} closes"
+          erie_canal_private.close!
         end
 
         def upgrades_to?(from, to, special = false, selected_company: nil)
@@ -356,6 +369,73 @@ module Engine
 
           terrain_cost -= TILE_COST if terrain_cost.positive?
           terrain_cost - discounts
+        end
+
+        def init_loans
+          @loan_value = 50
+          # 11 minors * 2, 8 majors * 10
+          Array.new(102) { |id| Loan.new(id, @loan_value) }
+        end
+
+        def interest_rate
+          5
+        end
+
+        def calculate_corporation_interest(corporation)
+          @interest[corporation] = corporation.loans.size
+        end
+
+        def calculate_interest
+          # Number of loans interest is due on is set before taking loans in that OR
+          @interest.clear
+          @corporations.each { |c| calculate_corporation_interest(c) }
+        end
+
+        def interest_owed_for_loans(loans)
+          interest_rate * loans
+        end
+
+        def loans_due_interest(entity)
+          @interest[entity] || 0
+        end
+
+        def interest_owed(entity)
+          interest_rate * loans_due_interest(entity)
+        end
+
+        def maximum_loans(entity)
+          entity.num_player_shares
+        end
+
+        def take_loan(entity, loan)
+          raise GameError, "Cannot take more than #{maximum_loans(entity)} loans" unless can_take_loan?(entity)
+
+          name = entity.name
+          amount = loan.amount - interest_rate
+          @log << "#{name} takes a loan and receives #{format_currency(amount)}"
+          @bank.spend(amount, entity)
+          entity.loans << loan
+          @loans.delete(loan)
+        end
+
+        def repay_loan(entity, loan)
+          @log << "#{entity.name} pays off a loan for #{format_currency(loan.amount)}"
+          entity.spend(loan.amount, bank)
+
+          entity.loans.delete(loan)
+          @loans << loan
+        end
+
+        def can_take_loan?(entity)
+          entity.corporation? && entity.loans.size < maximum_loans(entity)
+        end
+
+        def buying_power(entity, full: false, prepay_interest: false)
+          return entity.cash unless full
+          return entity.cash unless entity.corporation?
+
+          num_loans = maximum_loans(entity) - entity.loans.size
+          entity.cash + (num_loans * @loan_value) - (prepay_interest ? num_loans * interest_rate : 0)
         end
       end
     end
