@@ -15,8 +15,10 @@ module Engine
         GAME_RULES_URL = {
           '18ZOO Rules' =>
             'https://boardgamegeek.com/filepage/219443/complete-rules-layout-standard',
-          '18ZOO Stock Market' =>
+          'Stock Market extract' =>
             'https://boardgamegeek.com/filepage/219446/stock-board-details-playing-18xxgames',
+          'Intro guide' =>
+            'https://boardgamegeek.com/thread/2660017/article/37718069#37718069',
         }.freeze
         GAME_TITLE = '18ZOO'
 
