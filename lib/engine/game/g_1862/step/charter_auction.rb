@@ -65,15 +65,16 @@ module Engine
 
           def can_start_auction?(entity)
             max_bid(entity) >= MIN_BID && !@round.won_auction[entity] &&
-            @game.ipoable_corporations.any? do |c|
-              @game.can_par?(c, entity) && can_buy?(entity, c.shares.first&.to_bundle)
+            rval = @game.ipoable_corporations.any? do |c|
+              @game.can_par?(c, entity) && can_buy?(entity, c.ipo_shares.first&.to_bundle)
             end
+            rval
           end
 
           def can_bid?(entity)
             max_bid(entity) >= MIN_BID &&
             @game.ipoable_corporations.any? do |c|
-              @game.can_par?(c, entity) && can_buy?(entity, c.shares.first&.to_bundle)
+              @game.can_par?(c, entity) && can_buy?(entity, c.ipo_shares.first&.to_bundle)
             end
           end
 

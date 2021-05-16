@@ -595,6 +595,12 @@ module Engine
           @offer_order.each { |c| @starting_phase[c] = 'A' }
           @offer_order.reverse.take(8).each { |c| @starting_phase[c] = 'B' }
           @offer_order.reverse.take(4).each { |c| @starting_phase[c] = 'C' }
+
+          @corporations.each { |c| convert_to_full!(c) }
+        end
+
+        def shares
+          @corporations.flat_map(&:ipo_shares)
         end
 
         def remove_reservation(corporation)
@@ -1076,7 +1082,7 @@ module Engine
           corp.spend(corp.cash, @bank) if corp.cash.positive?
 
           # make it available to restart
-          restart_corporation(corp)
+          restart_corporation!(corp)
 
           @skip_round[corp] = true
 
@@ -1267,7 +1273,8 @@ module Engine
             # OK, since local trains won't have offboards
             all_stops = visits.select { |n| n.city? || n.offboard? }
             stop_options = []
-            all_stops.combination(route.train.distance[0]['pay']) { |c| stop_options << c }
+            length = [all_stops.size, route.train.distance[0]['pay']].min
+            all_stops.combination(length) { |c| stop_options << c }
             stop_options = [[]] if stop_options.empty?
             stop_options
           end
@@ -1338,7 +1345,7 @@ module Engine
           when :express
             compute_express_stops(route, visits)
           else
-            [visits.first, visits.last]
+            freight_revenue_stops(route, visits)
           end
         end
 
@@ -1557,8 +1564,9 @@ module Engine
           this_route.routes.each do |r|
             return false if r == this_route
 
-            return true if r.visited_stops.include?(stop)
-            return true unless (r.visited_stops.flat_map(&:groups) & stop.groups).empty?
+            other_stops = r.stops
+            return true if other_stops.include?(stop)
+            return true unless (other_stops.flat_map(&:groups) & stop.groups).empty?
           end
           false
         end
@@ -2213,7 +2221,7 @@ module Engine
 
         def restart_corporation!(corporation)
           # un-IPO the corporation
-          corporation.share_price.corporations.delete(corporation)
+          corporation.share_price&.corporations&.delete(corporation)
           corporation.share_price = nil
           corporation.par_price = nil
           corporation.ipoed = false
@@ -2230,7 +2238,10 @@ module Engine
           # put marker onto map
           add_marker(corporation)
 
-          convert_to_incremental!(corporation)
+          convert_to_full!(corporation)
+
+          # re-sort shares
+          @bank.shares_by_corporation[corporation].sort_by!(&:id)
         end
 
         def finish_merge
