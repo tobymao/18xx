@@ -165,7 +165,7 @@ module Engine
           par_1: :yellow,
           par_2: :green,
           par_3: :brown,
-          endgame: :gray,
+          endgame: :blue,
         }.freeze
 
         STOCKMARKET_THRESHOLD = [
@@ -218,7 +218,8 @@ module Engine
           'new_train' => ['First train bonus',
                           'Corporation moves on the right buying the first train of this type'],
           'rust_own_3s_4s' => ['First train buyer rust 3S Long and 4S',
-                               'Corporation buying the first train of this type rust immediately 3S Long and 4S'],
+                               'Corporation buying the first train of this type rust immediately 3S Long and 4S'\
+            ' (runs one last time)'],
         ).freeze
 
         MARKET_TEXT = Base::MARKET_TEXT.merge(par_2: 'Can only enter during green phase',
