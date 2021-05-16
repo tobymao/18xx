@@ -9,21 +9,21 @@ module Engine
             sym: 'HOLIDAY',
             name: 'Holiday',
             value: 3,
-            desc: 'Choose a family, its reputation mark goes one tick to the right.',
+            desc: 'Choose a family, its reputation mark goes one tick to the right',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
           },
           {
             sym: 'MIDAS',
             name: 'Midas',
             value: 2,
-            desc: 'When turn order is appointed, seize the Priority (Squirrel 1).',
+            desc: 'When turn order is decided, seize the Priority (Squirrel 1)',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
           },
           {
             sym: 'TOO_MUCH_RESPONSIBILITY',
             name: 'Too much responsibility',
             value: 1,
-            desc: 'Get 3$N.',
+            desc: 'Get 3$N',
             abilities: [{ type: 'no_buy', owner_type: 'player' },
                         { type: 'description', description: 'Get 3$N', when: 'any' }],
           },
@@ -31,28 +31,29 @@ module Engine
             sym: 'LEPRECHAUN_POT_OF_GOLD',
             name: 'Leprechaun pot of gold',
             value: 2,
-            desc: 'Earn 2$N now, and at the start of each SR.',
+            desc: 'Earn 2$N now, and at the start of each SR',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
           },
           {
             sym: 'IT_IS_ALL_GREEK_TO_ME',
             name: 'It’s all greek to me',
             value: 2,
-            desc: 'After your action in a SR, do another one.',
+            desc: 'After your action in a SR, do another one',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
           },
           {
             sym: 'WHATSUP',
             name: 'Whatsup',
             value: 3,
-            desc: 'During SR, a family can buy the first available squirrel, deactivated. Reputation moves one tick.',
+            desc: 'During SR, a family can buy the first available squirrel, deactivated. Reputation moves one tick'\
+            ' to the right',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
           },
           {
             sym: 'RABBITS',
             name: 'Rabbits',
             value: 3,
-            desc: 'Two bonus upgrades, even illegal or before the phase.',
+            desc: 'Two bonus upgrades, even illegally or before the correct phase',
             abilities: [
               {
                 type: 'tile_lay',
@@ -73,7 +74,7 @@ module Engine
             sym: 'MOLES',
             name: 'Moles',
             value: 3,
-            desc: '4 special tiles, that can upgrade any plain tiles, even illegal.',
+            desc: '4 special tiles, that can upgrade any plain tiles, even illegally',
             abilities: [
               {
                 type: 'tile_lay',
@@ -94,7 +95,7 @@ module Engine
             sym: 'ANCIENT_MAPS',
             name: 'Ancient maps',
             value: 1,
-            desc: 'Build two additional yellow tiles.',
+            desc: 'Build two additional yellow tiles',
             abilities: [
               {
                 type: 'tile_lay',
@@ -115,7 +116,7 @@ module Engine
             sym: 'HOLE',
             name: 'Hole',
             value: 2,
-            desc: 'Mark two R areas anywhere on the map, so they are connected.',
+            desc: 'Mark two R areas anywhere on the map, so they are connected',
             abilities: [
               {
                 type: 'assign_hexes',
@@ -130,7 +131,7 @@ module Engine
             sym: 'ON_DIET',
             name: 'On diet',
             value: 3,
-            desc: 'Put a depot in addition to the allowed spaces.',
+            desc: 'Put a station in addition to the allowed spaces',
             abilities: [
               {
                 type: 'token',
@@ -147,7 +148,7 @@ module Engine
             sym: 'SPARKLING_GOLD',
             name: 'Sparkling gold',
             value: 1,
-            desc: 'Get 2$N / 1$N when you build on a M / MM tile.',
+            desc: 'Get 2$N / 1$N when you build on a M / MM tile',
             abilities: [
               {
                 type: 'tile_discount',
@@ -188,7 +189,7 @@ module Engine
             sym: 'WORK_IN_PROGRESS',
             name: 'Work in progress',
             value: 2,
-            desc: 'Block anywhere a free place of a station tile.',
+            desc: 'Block anywhere a free place on a station tile',
             abilities: [
               {
                 type: 'assign_hexes',
@@ -202,7 +203,7 @@ module Engine
             sym: 'CORN',
             name: 'Corn',
             value: 2,
-            desc: 'Chooses a tile with its own depot; the station worths +30.',
+            desc: 'Chooses a tile with its own station; the station worth +30',
             abilities: [
               {
                 type: 'assign_hexes',
@@ -221,7 +222,7 @@ module Engine
             sym: 'TWO_BARRELS',
             name: 'Two barrels',
             value: 2,
-            desc: 'Use twice, to double the value of all O tiles – don’t collect the O in treasury.',
+            desc: 'Use twice, to double the value of all O tiles – don’t collect the O in treasury',
             abilities: [
               {
                 type: 'description',
@@ -237,7 +238,7 @@ module Engine
             sym: 'A_SQUEEZE',
             name: 'A squeeze',
             value: 2,
-            desc: 'Take an additional 3$N if at least one squirrel runs an O.',
+            desc: 'Take an additional 3$N if at least one squirrel runs an O',
           },
           {
             sym: 'BANDAGE',
@@ -250,7 +251,7 @@ module Engine
             sym: 'WINGS',
             name: 'Wings',
             value: 2,
-            desc: 'During the run, a squirrel at will can skip a tokened-out station.',
+            desc: 'During the run, a squirrel at will can skip a tokened-out station',
             abilities: [
               {
                 type: 'assign_corporation',
@@ -263,7 +264,7 @@ module Engine
             sym: 'A_SPOONFUL_OF_SUGAR',
             name: 'A spoonful of sugar',
             value: 3,
-            desc: 'A squirrel at will runs one more station - not applicable to 4J or 2J.',
+            desc: 'A squirrel at will runs one more station - not applicable to 4J or 2J',
           },
         ].freeze
 

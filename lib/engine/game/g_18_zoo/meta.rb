@@ -11,6 +11,13 @@ module Engine
         DEV_STAGE = :alpha
 
         GAME_DESIGNER = 'Paolo Russo'
+        GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18ZOO'
+        GAME_RULES_URL = {
+          '18ZOO Rules' =>
+            'https://boardgamegeek.com/filepage/219443/complete-rules-layout-standard',
+          '18ZOO Stock Market' =>
+            'https://boardgamegeek.com/filepage/219446/stock-board-details-playing-18xxgames',
+        }.freeze
         GAME_TITLE = '18ZOO'
 
         PLAYER_RANGE = [2, 5].freeze
