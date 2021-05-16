@@ -14,7 +14,7 @@
       "entity_type": "player",
       "id": 2,
       "created_at": 1616074737,
-      "company": "IT_IS_ALL_GREEK_TO_ME",
+      "company": "IT_S_ALL_GREEK_TO_ME",
       "price": 2
     },
     {
@@ -28,7 +28,7 @@
     },
     {
       "type": "choose_ability",
-      "entity": "IT_IS_ALL_GREEK_TO_ME",
+      "entity": "IT_S_ALL_GREEK_TO_ME",
       "entity_type": "company",
       "id": 4,
       "created_at": 1616074744,

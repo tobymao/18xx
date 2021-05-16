@@ -14,7 +14,7 @@
       "entity_type": "player",
       "id": 2,
       "created_at": 1618395058,
-      "company": "THAT_IS_MINE",
+      "company": "THAT_S_MINE",
       "price": 2
     },
     {
@@ -255,12 +255,12 @@
       "entity_type": "corporation",
       "id": 29,
       "created_at": 1618411012,
-      "company": "THAT_IS_MINE",
+      "company": "THAT_S_MINE",
       "price": 0
     },
     {
       "type": "assign",
-      "entity": "THAT_IS_MINE",
+      "entity": "THAT_S_MINE",
       "entity_type": "company",
       "id": 30,
       "created_at": 1618411027,

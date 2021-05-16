@@ -14,7 +14,7 @@
       "entity_type": "player",
       "id": 2,
       "created_at": 1616540788,
-      "company": "ON_DIET",
+      "company": "ON_A_DIET",
       "price": 3
     },
     {
@@ -167,12 +167,12 @@
       "entity_type": "corporation",
       "id": 19,
       "created_at": 1616540932,
-      "company": "ON_DIET",
+      "company": "ON_A_DIET",
       "price": 2
     },
     {
       "type": "place_token",
-      "entity": "ON_DIET",
+      "entity": "ON_A_DIET",
       "entity_type": "company",
       "id": 20,
       "created_at": 1618387926,

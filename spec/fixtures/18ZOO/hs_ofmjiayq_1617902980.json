@@ -7,7 +7,7 @@
       "entity_type": "player",
       "id": 1,
       "created_at": 1617903001,
-      "company": "HOLIDAY",
+      "company": "DAYS_OFF",
       "price": 3
     },
     {
@@ -50,7 +50,7 @@
       "entity_type": "player",
       "id": 6,
       "created_at": 1617903052,
-      "company": "SPARKLING_GOLD",
+      "company": "SHINING_GOLD",
       "price": 1
     },
     {
@@ -66,7 +66,7 @@
       "entity_type": "player",
       "id": 8,
       "created_at": 1617903056,
-      "company": "THAT_IS_MINE",
+      "company": "THAT_S_MINE",
       "price": 2
     },
     {
@@ -82,7 +82,7 @@
       "entity_type": "player",
       "id": 10,
       "created_at": 1617903060,
-      "company": "A_SPOONFUL_OF_SUGAR",
+      "company": "A_TIP_OF_SUGAR",
       "price": 3
     },
     {
@@ -233,12 +233,12 @@
     },
     {
       "type": "choose_ability",
-      "entity": "HOLIDAY",
+      "entity": "DAYS_OFF",
       "entity_type": "company",
       "id": 28,
       "created_at": 1617903173,
       "choice": {
-        "type": "holiday",
+        "type": "days_off",
         "corporation_id": "PB"
       }
     },
@@ -282,7 +282,7 @@
       "entity_type": "corporation",
       "id": 33,
       "created_at": 1617903277,
-      "company": "THAT_IS_MINE",
+      "company": "THAT_S_MINE",
       "price": 2
     },
     {
@@ -334,7 +334,7 @@
       "entity_type": "corporation",
       "id": 39,
       "created_at": 1617903313,
-      "company": "SPARKLING_GOLD",
+      "company": "SHINING_GOLD",
       "price": 1
     },
     {
@@ -418,7 +418,7 @@
       "entity_type": "corporation",
       "id": 48,
       "created_at": 1617903391,
-      "company": "A_SPOONFUL_OF_SUGAR",
+      "company": "A_TIP_OF_SUGAR",
       "price": 3
     },
     {
@@ -1790,7 +1790,7 @@
       "entity_type": "player",
       "id": 153,
       "created_at": 1617904476,
-      "company": "BANDAGE",
+      "company": "PATCH",
       "price": 1
     },
     {
@@ -2120,7 +2120,7 @@
       "entity_type": "corporation",
       "id": 184,
       "created_at": 1617904654,
-      "company": "BANDAGE",
+      "company": "PATCH",
       "price": 1
     },
     {

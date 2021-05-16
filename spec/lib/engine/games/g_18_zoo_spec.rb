@@ -457,13 +457,13 @@ module Engine
 
     describe 'That is mine!' do
       context 'corporation already put a token' do
-        let(:game_file_name) { 'or_power.that_is_mine.cannot_convert_if_already_tokened' }
+        let(:game_file_name) { 'or_power.that_s_mine.cannot_convert_if_already_tokened' }
 
         it 'cannot convert' do
           game = Engine::Game.load(game_file, at_action: 33)
           action = {
             'type' => 'place_token',
-            'entity' => 'THAT_IS_MINE',
+            'entity' => 'THAT_S_MINE',
             'entity_type' => 'company',
             'city' => '619-0-0',
             'slot' => 1,
@@ -474,13 +474,13 @@ module Engine
       end
 
       context 'corporation has no token' do
-        let(:game_file_name) { 'or_power.that_is_mine.cannot_convert_if_no_token' }
+        let(:game_file_name) { 'or_power.that_s_mine.cannot_convert_if_no_token' }
 
         it 'cannot convert' do
           game = Engine::Game.load(game_file, at_action: 16)
           action = {
             'type' => 'place_token',
-            'entity' => 'THAT_IS_MINE',
+            'entity' => 'THAT_S_MINE',
             'entity_type' => 'company',
             'city' => '201-0-0',
             'slot' => 0,
@@ -491,13 +491,13 @@ module Engine
       end
 
       context 'corporation has no money' do
-        let(:game_file_name) { 'or_power.that_is_mine.cannot_convert_if_no_money' }
+        let(:game_file_name) { 'or_power.that_s_mine.cannot_convert_if_no_money' }
 
         it 'cannot convert' do
           game = Engine::Game.load(game_file, at_action: 16)
           action = {
             'type' => 'place_token',
-            'entity' => 'THAT_IS_MINE',
+            'entity' => 'THAT_S_MINE',
             'entity_type' => 'company',
             'city' => '201-0-0',
             'slot' => 0,
@@ -508,13 +508,13 @@ module Engine
       end
 
       context 'reserved hex is not reachable' do
-        let(:game_file_name) { 'or_power.that_is_mine' }
+        let(:game_file_name) { 'or_power.that_s_mine' }
 
         it 'cannot convert' do
           game = Engine::Game.load(game_file, at_action: 10)
           action = {
             'type' => 'place_token',
-            'entity' => 'THAT_IS_MINE',
+            'entity' => 'THAT_S_MINE',
             'entity_type' => 'company',
             'city' => 'L4-3-1',
             'slot' => 0,
@@ -525,9 +525,9 @@ module Engine
       end
     end
 
-    describe 'A spoonful of sugar' do
+    describe 'A tip of sugar' do
       context 'when used on two train' do
-        let(:game_file_name) { 'or_power.a_spoonful_of_sugar' }
+        let(:game_file_name) { 'or_power.a_tip_of_sugar' }
 
         it 'must fail' do
           game = Engine::Game.load(game_file, at_action: 33)
@@ -556,7 +556,7 @@ module Engine
           }
           expect do
             game.process_action(action)
-          end.to raise_error(Engine::GameError, 'Only one train can use the sugar')
+          end.to raise_error(Engine::GameError, 'Only one train can use "A tip of sugar"')
         end
       end
 

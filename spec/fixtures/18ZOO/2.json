@@ -21,7 +21,7 @@
       "entity_type": "player",
       "id": 3,
       "created_at": 1618164889,
-      "company": "A_SPOONFUL_OF_SUGAR",
+      "company": "A_TIP_OF_SUGAR",
       "price": 3
     },
     {
@@ -199,7 +199,7 @@
       "entity_type": "corporation",
       "id": 23,
       "created_at": 1618165131,
-      "company": "A_SPOONFUL_OF_SUGAR",
+      "company": "A_TIP_OF_SUGAR",
       "price": 3
     },
     {

@@ -14,7 +14,7 @@
       "entity_type": "player",
       "id": 2,
       "created_at": 1616084024,
-      "company": "HOLIDAY",
+      "company": "DAYS_OFF",
       "price": 3
     },
     {
@@ -35,12 +35,12 @@
     },
     {
       "type": "choose_ability",
-      "entity": "HOLIDAY",
+      "entity": "DAYS_OFF",
       "entity_type": "company",
       "id": 5,
       "created_at": 1616084035,
       "choice": {
-        "type": "holiday",
+        "type": "days_off",
         "corporation_id": "GI"
       }
     },

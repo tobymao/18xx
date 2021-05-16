@@ -9,13 +9,13 @@ module Engine
         def can_choose_ability?(company)
           entity = @game.current_entity
           return false unless entity.player?
-          return true if company == @game.bandage && @game.can_use_bandage?(entity, company)
+          return true if company == @game.patch && @game.can_use_bandage?(entity, company)
 
           return false unless company.owner == entity
 
           return true if @game.zoo_ticket?(company)
           return true if company == @game.midas && can_choose_midas?(entity)
-          return true if company == @game.holiday && can_choose_holiday?(entity)
+          return true if company == @game.days_off && can_choose_days_off?(entity)
           return true if company == @game.whatsup && can_choose_whatsup?(entity)
           return true if company == @game.it_is_all_greek_to_me && can_choose_greek?(entity)
 
@@ -27,10 +27,10 @@ module Engine
 
           return true if @game.zoo_tickets?(entity)
           return true if @game.midas.owner == entity && can_choose_midas?(entity)
-          return true if @game.holiday.owner == entity && can_choose_holiday?(entity)
+          return true if @game.days_off.owner == entity && can_choose_days_off?(entity)
           return true if @game.whatsup.owner == entity && can_choose_whatsup?(entity)
           return true if @game.it_is_all_greek_to_me.owner == entity && can_choose_greek?(entity)
-          return true if @game.bandage.owner == entity && @game.can_use_bandage?(entity, @game.bandage)
+          return true if @game.patch.owner == entity && @game.can_use_bandage?(entity, @game.patch)
 
           false
         end
@@ -38,10 +38,10 @@ module Engine
         def choices_ability(company)
           return choices_for_zoo_ticket(company) if @game.zoo_ticket?(company)
           return choices_for_midas if company == @game.midas
-          return choices_for_holiday if company == @game.holiday
+          return choices_for_days_off if company == @game.days_off
           return choices_for_whatsup(company.owner) if company == @game.whatsup
           return choices_for_greek if company == @game.it_is_all_greek_to_me
-          return @game.choices_for_bandage?(company.owner) if company == @game.bandage
+          return @game.choices_for_bandage?(company.owner) if company == @game.patch
 
           {}
         end
@@ -49,10 +49,10 @@ module Engine
         def process_choose_ability(action)
           process_choose_zoo_ticket(action) if action.choice['type'] == 'sell'
           process_midas(action) if action.choice['type'] == 'midas'
-          process_holiday(action) if action.choice['type'] == 'holiday'
+          process_days_off(action) if action.choice['type'] == 'days_off'
           process_whatsup(action) if action.choice['type'] == 'whatsup'
           process_greek(action) if action.choice['type'] == 'greek'
-          @game.process_choose_bandage?(action) if action.choice['type'] == 'bandage'
+          @game.process_choose_bandage?(action) if action.choice['type'] == 'patch'
           @game.process_remove_bandage?(action) if action.choice['type'] == 'remove_bandage'
         end
 
@@ -60,7 +60,7 @@ module Engine
           !@game.midas_active?
         end
 
-        def can_choose_holiday?(_player)
+        def can_choose_days_off?(_player)
           @game.corporations.any?(&:ipoed)
         end
 
@@ -84,9 +84,9 @@ module Engine
           { { type: :midas } => "Priority for #{@game.midas.owner.name}" }
         end
 
-        def choices_for_holiday
+        def choices_for_days_off
           @game.corporations.select(&:ipoed)
-               .map { |corporation| [{ type: :holiday, corporation_id: corporation.id }, corporation.name] }
+               .map { |corporation| [{ type: :days_off, corporation_id: corporation.id }, corporation.name] }
                .to_h
         end
 
@@ -120,15 +120,15 @@ module Engine
           @log << "-- #{current_entity.name} uses \"Midas\", will get the Priority for the next SR --"
         end
 
-        def process_holiday(action)
+        def process_days_off(action)
           corporation = @game.corporation_by_id(action.choice['corporation_id'])
           current_value = corporation.share_price.price
           @game.stock_market.move_right(corporation)
           new_value = corporation.share_price.price
-          @log << "-- #{current_entity.name} uses \"Holiday\" for #{corporation.name}, "\
+          @log << "-- #{current_entity.name} uses \"Days off\" for #{corporation.name}, "\
                 "moving from #{@game.format_currency(current_value)} to #{@game.format_currency(new_value)} --"
 
-          @game.holiday.close!
+          @game.days_off.close!
         end
 
         def process_whatsup(action)

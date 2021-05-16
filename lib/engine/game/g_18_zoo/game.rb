@@ -207,11 +207,11 @@ module Engine
         ].freeze
 
         ASSIGNMENT_TOKENS = {
-          'CORN' => '/icons/18_zoo/corn.svg',
+          'WHEAT' => '/icons/18_zoo/wheat.svg',
           'BARREL' => '/icons/18_zoo/barrel.svg',
           'HOLE' => '/icons/18_zoo/hole.svg',
           'WINGS' => '/icons/18_zoo/wings.svg',
-          'BANDAGE' => '/icons/18_zoo/bandage.svg',
+          'PATCH' => '/icons/18_zoo/patch.svg',
         }.freeze
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
@@ -450,27 +450,27 @@ module Engine
           return {} if @round.respond_to?(:entity_with_bandage) && @round.entity_with_bandage
 
           corporations = entity.player? ? @corporations.filter { |c| c.owner == entity } : [entity]
-          corporation = corporations.find { |c| c.assigned?(bandage.id) }
+          corporation = corporations.find { |c| c.assigned?(patch.id) }
           if corporation
             return [[{ type: :remove_bandage, corporation: corporation.id },
-                     "Remove bandage from 1S (#{corporation.name})"]]
+                     "Remove \"Patch\" from 1S (#{corporation.name})"]]
           end
 
           corporations.flat_map do |c|
             c.trains
              .uniq(&:name)
-             .map { |train| [{ type: :bandage, train_id: train.id }, "#{train.name} (#{train.owner.name})"] }
+             .map { |train| [{ type: :patch, train_id: train.id }, "#{train.name} (#{train.owner.name})"] }
           end.to_h
         end
 
-        def can_use_bandage?(entity, bandage)
+        def can_use_bandage?(entity, patch)
           return false if @round.respond_to?(:entity_with_bandage) && @round.entity_with_bandage
 
           corporations = entity.player? ? @corporations.filter { |c| c.owner == entity } : [entity]
           return true if corporations.any? do |corporation|
-            return true if corporation.assigned?(bandage.id)
+            return true if corporation.assigned?(patch.id)
             return true if !corporation.trains.empty? &&
-              [corporation, corporation.owner].include?(bandage.owner)
+              [corporation, corporation.owner].include?(patch.owner)
 
             false
           end
@@ -482,13 +482,13 @@ module Engine
           return true if entity.player? && entity == company.owner
           return true if entity.corporation? && entity == company.owner
           return true if entity.corporation? && zoo_ticket?(company) && entity.owner == company.owner
-          return true if company == bandage && can_use_bandage?(entity, company)
+          return true if company == patch && can_use_bandage?(entity, company)
 
           false
         end
 
-        def holiday
-          @holiday ||= company_by_id('HOLIDAY')
+        def days_off
+          @days_off ||= company_by_id('DAYS_OFF')
         end
 
         def midas
@@ -509,7 +509,7 @@ module Engine
         end
 
         def it_is_all_greek_to_me
-          @it_is_all_greek_to_me ||= company_by_id('IT_IS_ALL_GREEK_TO_ME')
+          @it_is_all_greek_to_me ||= company_by_id('IT_S_ALL_GREEK_TO_ME')
         end
 
         def greek_to_me_active?
@@ -536,33 +536,33 @@ module Engine
           @hole ||= company_by_id('HOLE')
         end
 
-        def on_diet
-          @on_diet ||= company_by_id('ON_DIET')
+        def on_a_diet
+          @on_a_diet ||= company_by_id('ON_A_DIET')
         end
 
-        def sparkling_gold
-          @sparkling_gold ||= company_by_id('SPARKLING_GOLD')
+        def shining_gold
+          @shining_gold ||= company_by_id('SHINING_GOLD')
         end
 
-        def that_is_mine
-          @that_is_mine ||= company_by_id('THAT_IS_MINE')
+        def that_s_mine
+          @that_s_mine ||= company_by_id('THAT_S_MINE')
         end
 
         def can_choose_is_mine?(entity, company)
-          company == that_is_mine && entity&.corporation? && that_is_mine.owner == entity &&
+          company == that_s_mine && entity&.corporation? && that_s_mine.owner == entity &&
             !@round.tokened &&
             !entity.unplaced_tokens.empty? &&
             entity.unplaced_tokens.first.price <= buying_power(entity) &&
-            that_is_mine.all_abilities[0].is_a?(Ability::Reservation) &&
-            graph.reachable_hexes(entity)[that_is_mine.all_abilities[0].hex]
+            that_s_mine.all_abilities[0].is_a?(Ability::Reservation) &&
+            graph.reachable_hexes(entity)[that_s_mine.all_abilities[0].hex]
         end
 
         def work_in_progress
           @work_in_progress ||= company_by_id('WORK_IN_PROGRESS')
         end
 
-        def corn
-          @corn ||= company_by_id('CORN')
+        def wheat
+          @wheat ||= company_by_id('WHEAT')
         end
 
         def two_barrels
@@ -582,16 +582,16 @@ module Engine
           @a_squeeze ||= company_by_id('A_SQUEEZE')
         end
 
-        def bandage
-          @bandage ||= company_by_id('BANDAGE')
+        def patch
+          @patch ||= company_by_id('PATCH')
         end
 
         def wings
           @wings ||= company_by_id('WINGS')
         end
 
-        def a_spoonful_of_sugar
-          @a_spoonful_of_sugar ||= company_by_id('A_SPOONFUL_OF_SUGAR')
+        def a_tip_of_sugar
+          @a_tip_of_sugar ||= company_by_id('A_TIP_OF_SUGAR')
         end
 
         def apply_custom_ability(company)
@@ -623,8 +623,8 @@ module Engine
         def revenue_for(route, stops)
           revenue = super
 
-          # Add 30$N if route contains 'Corn' and Corporation owns 'Corn'
-          revenue += 30 if route.corporation.assigned?(corn.id) && stops.any? { |stop| stop.hex.assigned?(corn.id) }
+          # Add 30$N if route contains 'Wheat' and Corporation owns 'Wheat'
+          revenue += 30 if route.corporation.assigned?(wheat.id) && stops.any? { |stop| stop.hex.assigned?(wheat.id) }
 
           # Towns revenues are doubled if 'Two barrels' is in use
           revenue += 10 * stops.count { |stop| !stop.tile.towns.empty? } if two_barrels_used_this_or?(route.corporation)
@@ -661,7 +661,7 @@ module Engine
           name = route.train.name
 
           if name == '1S'
-            raise GameError, "Train with bandage cannot visit #{cities_visited} stops" if cities_visited > 1
+            raise GameError, "Train with \"Patch\" cannot visit #{cities_visited} stops" if cities_visited > 1
           else
             raise GameError, 'Water and external gray don\'t count as city/offboard.' if cities_visited < 2
 
@@ -710,12 +710,12 @@ module Engine
             end
 
             distance = current_route.train.distance
-            next unless distance.is_a?(Numeric) && current_route.train.owner == a_spoonful_of_sugar.owner
+            next unless distance.is_a?(Numeric) && current_route.train.owner == a_tip_of_sugar.owner
 
             cities_visited = cities_visited(current_route, visits)
 
             next unless distance < cities_visited
-            raise GameError, 'Only one train can use the sugar' if train_with_sugar
+            raise GameError, 'Only one train can use "A tip of sugar"' if train_with_sugar
 
             train_with_sugar = current_route.train
           end
@@ -724,8 +724,8 @@ module Engine
         def company_header(company)
           type_text = @future_companies.include?(company) ? 'FUTURE POWER' : 'POWER'
           sr_or_text = case company.sym
-                       when 'HOLIDAY', 'MIDAS', 'TOO_MUCH_RESPONSIBILITY', 'LEPRECHAUN_POT_OF_GOLD',
-                         'IT_IS_ALL_GREEK_TO_ME', 'WHATSUP'
+                       when 'DAYS_OFF', 'MIDAS', 'TOO_MUCH_RESPONSIBILITY', 'LEPRECHAUN_POT_OF_GOLD',
+                         'IT_S_ALL_GREEK_TO_ME', 'WHATSUP'
                          '(SR)'
                        else
                          '(OR)'
@@ -739,8 +739,8 @@ module Engine
           # Barrel assignment
           barrel_assignment = entity.assigned?('BARREL')
 
-          # Corn assignment
-          corn_assignment = entity.assigned?('CORN')
+          # Wheat assignment
+          corn_assignment = entity.assigned?('WHEAT')
 
           # Holes assignment
           holes_assignment = !@holes.empty?
@@ -753,7 +753,7 @@ module Engine
             help << "Off-boards (#{@holes.map(&:coordinates)}) are special: they can used as terminal (as usual); "\
                     'Any route passing through them must go to the other side, and a single route cannot use it twice.'
           end
-          help << 'Any train running in a city which has a Corn token increase route value by 30.' if corn_assignment
+          help << 'Any train running in a city which has a "Wheat" token increase route value by 30.' if corn_assignment
           help
         end
 
@@ -895,8 +895,8 @@ module Engine
           corporation = train.owner
           player = corporation.owner
 
-          @round.entity_with_bandage = player if bandage.owner == player
-          @round.entity_with_bandage = corporation if bandage.owner == corporation && !corporation.assigned?(bandage.id)
+          @round.entity_with_bandage = player if patch.owner == player
+          @round.entity_with_bandage = corporation if patch.owner == corporation && !corporation.assigned?(patch.id)
           return true if !@round.entity_with_bandage || ![train.owner,
                                                           train.owner.owner].include?(@round.entity_with_bandage)
 
@@ -911,8 +911,8 @@ module Engine
           corporation = train.owner
           player = corporation.owner
 
-          @round.entity_with_bandage = player if bandage.owner == player
-          @round.entity_with_bandage = corporation if bandage.owner == corporation && !corporation.assigned?(bandage.id)
+          @round.entity_with_bandage = player if patch.owner == player
+          @round.entity_with_bandage = corporation if patch.owner == corporation && !corporation.assigned?(patch.id)
 
           super
         end
@@ -920,10 +920,10 @@ module Engine
         def assign_bandage(train)
           corporation = train.owner
 
-          corporation.assign!(bandage.id)
+          corporation.assign!(patch.id)
           @train_with_bandage = train
 
-          bandage.desc = "Train #{train.name} now is a 1S"
+          patch.desc = "Train #{train.name} now is a 1S"
 
           new_train = train_by_id('1S-0')
           new_train.owner = train.owner
@@ -936,19 +936,19 @@ module Engine
           train = train_by_id(action.choice['train_id'])
           assign_bandage(train)
 
-          @log << "#{train.name} gets a bandage, becomes a 1S"
+          @log << "#{train.name} gets a patch, becomes a 1S"
         end
 
         def process_remove_bandage?(action)
           corporation = corporation_by_id(action.choice['corporation'])
           train = @train_with_bandage
-          company = bandage
+          company = patch
 
           corporation.remove_assignment!(company.id)
           company.close!
           @log << "#{company.name} closes"
 
-          @log << "#{corporation.name} removes bandage from 1S; train is #{train&.name} again"
+          @log << "#{corporation.name} removes the patch from 1S; train is #{train&.name} again"
 
           corporation.trains.delete(train_by_id('1S-0'))
           corporation.trains << @train_with_bandage
@@ -1226,8 +1226,8 @@ module Engine
 
         def distance_aux(route)
           distance = route.train.distance
-          # A spoonful of sugar raise the distance number
-          distance += 1 if distance.is_a?(Numeric) && route.train.owner == a_spoonful_of_sugar.owner
+          # A tip of sugar raise the distance number
+          distance += 1 if distance.is_a?(Numeric) && route.train.owner == a_tip_of_sugar.owner
 
           distance
         end
