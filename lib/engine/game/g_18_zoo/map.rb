@@ -211,7 +211,7 @@ module Engine
             white: {
               %w[F7 G8 G12 G18 H5 H7 H9 H13 H15 I2 I8 I18 J5 J7 J9 J11 J13 J17 J19 K12 K14 L13 L17 M12 M18] => '',
               %w[H3 I6 K10 K18 N11] => 'city=revenue:0,slots:1',
-              %w[G2 G16 H1 H11 I10 I12 J3 L15 N13 N15] => 'label=O;icon=image:river,sticky:1',
+              %w[G2 G16 H1 H11 I10 I12 J3 L15 N13 N15] => 'town=revenue:0;label=O;icon=image:river,sticky:1',
               %w[I16 J15 K6] => 'upgrade=cost:1,terrain:hill',
               %w[H19 K4 L7 L19 N17] => 'upgrade=cost:2,terrain:mountain',
               %w[G6 G20 K16 L5] => TILE_Y,
@@ -244,7 +244,7 @@ module Engine
             white: {
               %w[D10 D16 E11 E15 E17 F4 F14 G5 G13 G15 G17 H4 H8 H12 H14 H16 I5 I7 I9 I13 J2 J8 J18 K5 K7] => '',
               %w[E5 F16 I3 I15 J6] => 'city=revenue:0,slots:1',
-              %w[D12 D14 E9 F6 G19 H2 I1 I11 J10 J12 K3] => 'label=O;icon=image:river,sticky:1',
+              %w[D12 D14 E9 F6 G19 H2 I1 I11 J10 J12 K3] => 'town=revenue:0;label=O;icon=image:river,sticky:1',
               %w[E13 F18 G9 J16 L6] => 'upgrade=cost:1,terrain:hill',
               %w[E7 F8 F12 G11 H18 I19 L4 M7] => 'upgrade=cost:2,terrain:mountain',
               %w[C11 F10 H6 H20 M5] => TILE_Y,
@@ -284,7 +284,7 @@ module Engine
               %w[C16 D11 D15 D17 E14 F7 F13 F15 F17 G8 G12 G14 G16 H5 H7 H9 H13 I2 I8 I18 J5 J7 J9 J11 J13 J17 J19 K12
                  K14 L13 L17 M12 M18] => '',
               %w[E16 H3 H15 I6 K10 K18 N11] => 'city=revenue:0,slots:1',
-              %w[C12 C14 F19 G2 H1 H11 I10 I12 J3 L15 N13 N15] => 'label=O;icon=image:river,sticky:1',
+              %w[C12 C14 F19 G2 H1 H11 I10 I12 J3 L15 N13 N15] => 'town=revenue:0;label=O;icon=image:river,sticky:1',
               %w[D13 E18 I16 J15 K6] => 'upgrade=cost:1,terrain:hill',
               %w[E12 F11 G18 H19 K4 L7 L19 N17] => 'upgrade=cost:2,terrain:mountain',
               %w[E10 G6 G20 K16 L5] => TILE_Y,
@@ -321,7 +321,7 @@ module Engine
             white: {
               %w[E4 F5 G4 G8 G12 G14 G16 H5 H7 H9 H13 I2 I8 I18 J5 J7 J9 J11 J13 J17 J19 K12 K14 L13 L17 M12 M18] => '',
               %w[D5 H3 H15 I6 K10 K18 N11] => 'city=revenue:0,slots:1',
-              %w[E6 F17 F19 G2 H1 H11 I10 I12 J3 L15 N13 N15] => 'label=O;icon=image:river,sticky:1',
+              %w[E6 F17 F19 G2 H1 H11 I10 I12 J3 L15 N13 N15] => 'town=revenue:0;label=O;icon=image:river,sticky:1',
               %w[I16 J15 K6] => 'upgrade=cost:1,terrain:hill',
               %w[D7 G18 H19 K4 L7 L19 N17] => 'upgrade=cost:2,terrain:mountain',
               %w[G6 G20 K16 L5] => TILE_Y,
@@ -361,7 +361,7 @@ module Engine
               %w[D10 D16 E11 E15 E17 F4 F14 G5 G13 G15 G17 H4 H8 H12 H14 H16 I5 I7 I9 I13 J2 J8 J18 K5 K7 K9 K17 K19 L8
                  L14] => '',
               %w[E5 F16 I3 I15 J6 L10 L18] => 'city=revenue:0,slots:1',
-              %w[D12 D14 E9 F6 G19 H2 I1 I11 J10 J12 K3 M15 M17] => 'label=O;icon=image:river,sticky:1',
+              %w[D12 D14 E9 F6 G19 H2 I1 I11 J10 J12 K3 M15 M17] => 'town=revenue:0;label=O;icon=image:river,sticky:1',
               %w[E13 F18 G9 J16 L6] => 'upgrade=cost:1,terrain:hill',
               %w[E7 F8 F12 G11 H18 I19 L4 M7] => 'upgrade=cost:2,terrain:mountain',
               %w[C11 F10 H6 H20 L16 M5] => TILE_Y,
