@@ -1081,6 +1081,9 @@ module Engine
           # move cash to bank
           corp.spend(corp.cash, @bank) if corp.cash.positive?
 
+          # remove tokens from map
+          corp.tokens.each(&:remove!)
+
           # make it available to restart
           restart_corporation!(corp)
 
