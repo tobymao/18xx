@@ -50,7 +50,7 @@ module Engine
             @round.routes = []
 
             corp_log_run_payout(entity, amount)
-            @game.corporate_card_minors(entity).each { |item| item.spend(item.cash, entity) }
+            @game.corporate_card_minors(entity).each { |item| item.spend(item.cash, entity, check_positive: false) }
 
             corp_payout_shares(entity, amount) if amount.positive?
 

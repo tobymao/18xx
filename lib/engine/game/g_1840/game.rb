@@ -192,6 +192,19 @@ module Engine
           'Pu1' => { 'Y1' => -400, 'O1' => -300, 'R1' => -100, 'Pu1' => 200 },
         }.freeze
 
+        PRICE_MOVEMENT_CHART = [
+          ['Dividend', 'Share Price Change'],
+          ['0', '1 ←'],
+          ['10 - 90', 'none'],
+          ['100 - 190', '1 →'],
+          ['200 - 390', '2 →'],
+          ['400 - 590', '3 →'],
+          ['600 - 990', '4 →'],
+          ['1000 - 1490', '5 →'],
+          ['1500 - 2490', '6 →'],
+          ['2500+', '7 →'],
+        ].freeze
+
         attr_reader :tram_corporations, :major_corporations, :tram_owned_by_corporation, :city_graph
 
         def setup
@@ -522,11 +535,8 @@ module Engine
         def status_array(corporation)
           return if corporation.type != :major
 
-          elements = []
-          elements << "Last: #{format_currency(@last_revenue[corporation])}"
-          elements << "Next: #{format_currency(major_revenue(corporation))}"
-
-          elements
+          ["Last: #{format_currency(@last_revenue[corporation])}",
+           "Next: #{format_currency(major_revenue(corporation))}"]
         end
 
         def maintenance_costs(corporation)
@@ -591,18 +601,7 @@ module Engine
         end
 
         def price_movement_chart
-          [
-            ['Dividend', 'Share Price Change'],
-            ['0', '1 ←'],
-            ['10 - 90', 'none'],
-            ['100 - 190', '1 →'],
-            ['200 - 390', '2 →'],
-            ['400 - 590', '3 →'],
-            ['600 - 990', '4 →'],
-            ['1000 - 1490', '5 →'],
-            ['1500 - 2490', '6 →'],
-            ['2500+', '7 →'],
-          ]
+          PRICE_MOVEMENT_CHART
         end
 
         def update_last_revenue(entity)
@@ -613,12 +612,13 @@ module Engine
           if route.corporation.type == :city
 
             # without city or with tokened city
-            filtered_stops = stops.select do |stop|
-              stop.tile.cities.empty? || stop.tile.cities.any? do |city|
-                city.tokens.any? { |token| token&.corporation == route.corporation }
-              end
-            end
-            return filtered_stops.sum { |stop| stop.route_revenue(route.phase, route.train) }
+            return stops.sum do |stop|
+                     next 0 if !stop.tile.cities.empty? && stop.tile.cities.none? do |city|
+                       city.tokens.any? { |token| token&.corporation == route.corporation }
+                     end
+
+                     stop.route_revenue(route.phase, route.train)
+                   end
           end
 
           revenue = super
