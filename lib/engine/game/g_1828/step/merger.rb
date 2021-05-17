@@ -326,15 +326,10 @@ module Engine
             merger_share = entity.shares_of(@merger).reject(&:president).first
             target_share = entity.shares_of(@target).reject(&:president).first
 
-            num_system_shares = total_shares / 2
             if @player_selection
               @odd_share = @player_selection.include?(@merger.name) ? merger_share : target_share
               @player_selection = nil
-            elsif !merger_share || entity.num_shares_of(@merger) <= num_system_shares
-              @odd_share = target_share
-            elsif !target_share
-              @odd_share = merger_share
-            elsif entity.player?
+            elsif entity.player? && merger_share && target_share
               choices = merging_corporations.map do |c|
                 "#{c.name} (#{@game.format_currency(c.share_price.price)})"
               end
@@ -343,7 +338,7 @@ module Engine
                                                 choices: choices)
               nil
             else
-              @odd_share = entity.shares_of(@merger).first
+              @odd_share = merger_share || target_share
             end
           end
 
