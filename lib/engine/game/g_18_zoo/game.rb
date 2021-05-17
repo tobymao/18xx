@@ -153,11 +153,7 @@ module Engine
 
         BANKRUPTCY_ALLOWED = false
 
-        STARTING_CASH_SMALL_MAP = { 2 => 40, 3 => 28, 4 => 23, 5 => 22 }.freeze
-
-        STARTING_CASH_BIG_MAP = { 2 => 48, 3 => 32, 4 => 27, 5 => 22 }.freeze
-
-        SMALL_MAP = %i[map_a map_b map_c].freeze
+        STARTING_CASH = { 2 => 40, 3 => 28, 4 => 23 }.freeze
 
         CERT_LIMIT_INCLUDES_PRIVATES = false
 
@@ -307,8 +303,6 @@ module Engine
         end
 
         def init_optional_rules(optional_rules)
-          @map ||= :map_a
-
           rules = super
 
           @near_families = @players.size < 5
@@ -1012,15 +1006,6 @@ module Engine
           corporations
         end
 
-        def init_starting_cash(players, bank)
-          hash = SMALL_MAP.include?(@map) ? self.class::STARTING_CASH_SMALL_MAP : self.class::STARTING_CASH_BIG_MAP
-          cash = hash[players.size]
-
-          players.each do |player|
-            bank.spend(cash, player)
-          end
-        end
-
         def custom_end_game_reached?
           @turn == 3
         end
@@ -1236,11 +1221,7 @@ module Engine
         include G18ZOOMapB::Entities
         include G18ZOOMapB::Map
 
-        def init_optional_rules(_optional_rules)
-          @map = :map_b
-
-          super
-        end
+        STARTING_CASH = { 2 => 40, 3 => 28, 4 => 23 }.freeze
       end
     end
 
@@ -1250,11 +1231,7 @@ module Engine
         include G18ZOOMapC::Entities
         include G18ZOOMapC::Map
 
-        def init_optional_rules(_optional_rules)
-          @map = :map_c
-
-          super
-        end
+        STARTING_CASH = { 2 => 40, 3 => 28, 4 => 23 }.freeze
       end
     end
 
@@ -1264,11 +1241,7 @@ module Engine
         include G18ZOOMapD::Entities
         include G18ZOOMapD::Map
 
-        def init_optional_rules(_optional_rules)
-          @map = :map_d
-
-          super
-        end
+        STARTING_CASH = { 2 => 48, 3 => 32, 4 => 27, 5 => 22 }.freeze
       end
     end
 
@@ -1278,11 +1251,7 @@ module Engine
         include G18ZOOMapE::Entities
         include G18ZOOMapE::Map
 
-        def init_optional_rules(_optional_rules)
-          @map = :map_e
-
-          super
-        end
+        STARTING_CASH = { 2 => 48, 3 => 32, 4 => 27, 5 => 22 }.freeze
       end
     end
 
@@ -1292,11 +1261,7 @@ module Engine
         include G18ZOOMapF::Entities
         include G18ZOOMapF::Map
 
-        def init_optional_rules(_optional_rules)
-          @map = :map_f
-
-          super
-        end
+        STARTING_CASH = { 2 => 48, 3 => 32, 4 => 27, 5 => 22 }.freeze
       end
     end
   end
