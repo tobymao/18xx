@@ -636,7 +636,7 @@ module Engine
         end
 
         def ready_corporations
-          @offer_order.select { |corp| available_to_start?(corp) }
+          @offer_order.select { |corp| available_to_start?(corp) | corp.ipoed }
         end
 
         def available_to_start?(corporation)
@@ -1022,6 +1022,9 @@ module Engine
             end
           end
 
+          # remove any non-ipoed corps
+          @corporations.reject(&:ipoed).dup.each { |c| remove_corporation!(c) }
+
           @lner = true
         end
 
@@ -1081,6 +1084,9 @@ module Engine
           # move cash to bank
           corp.spend(corp.cash, @bank) if corp.cash.positive?
 
+          # remove tokens from map
+          corp.tokens.each(&:remove!)
+
           # make it available to restart
           restart_corporation!(corp)
 
@@ -1095,8 +1101,8 @@ module Engine
           status = []
           status << %w[Receivership bold] if corp.receivership?
           status << %w[Chartered bold] if @chartered[corp]
-          status << ["Phase available: #{start_phase}"] unless @phase.available?(start_phase)
-          status << ['Cannot start'] if @phase.available?(start_phase) && !legal_to_start?(corp)
+          status << ["Phase available: #{start_phase}"] if !@phase.available?(start_phase) && !corp.ipoed
+          status << ['Cannot start'] if @phase.available?(start_phase) && !legal_to_start?(corp) && !corp.ipoed
           status << ["Permits: #{@permits[corp].map(&:to_s).join(',')}"]
           status
         end
@@ -1551,7 +1557,7 @@ module Engine
           check_london(visits)
 
           return super if train_type(route.train) != :freight
-          return if (distance = route.train.distance) >= hex_route_distance(route)
+          return if route.train.distance >= (distance = hex_route_distance(route))
 
           raise GameError, "#{distance} is too many hexes for a #{route.train.name} train"
         end
@@ -2123,8 +2129,14 @@ module Engine
           @permits[survivor].concat(@permits[nonsurvivor])
           @permits[survivor].uniq!
           @permits[nonsurvivor] = @original_permits[nonsurvivor]
-          # charter flag
-          @chartered.delete(survivor)
+          # charter flag (keeping survivor chartered appears to only be needed for solo game)
+          if @chartered[survivor] && !@chartered[nonsurvivor]
+            # no shares can be in IPO, but doing this for consistancy (non-chartered => incremental)
+            survivor.capitalization = :incremental
+            survivor.always_market_price = true
+            survivor.ipo_owner = survivor
+          end
+          @chartered.delete(survivor) unless @chartered[nonsurvivor]
           @chartered.delete(nonsurvivor)
           @log << "Moved assets from #{nonsurvivor.name} to #{survivor.name}"
         end
@@ -2217,6 +2229,20 @@ module Engine
           new_token.place(city)
           city.tokens[city.tokens.find_index(old_token)] = new_token
           nonsurvivor.tokens.delete(old_token)
+        end
+
+        def remove_corporation!(corporation)
+          @log << "#{corporation.name} cannot be started and is removed from the game"
+
+          remove_marker(corporation)
+
+          corporation.share_holders.keys.each do |share_holder|
+            share_holder.shares_by_corporation.delete(corporation)
+          end
+
+          @share_pool.shares_by_corporation.delete(corporation)
+          corporation.share_price&.corporations&.delete(corporation)
+          @corporations.delete(corporation)
         end
 
         def restart_corporation!(corporation)
