@@ -636,7 +636,7 @@ module Engine
         end
 
         def ready_corporations
-          @offer_order.select { |corp| available_to_start?(corp) | corp.ipoed }
+          @offer_order.select { |corp| available_to_start?(corp) || corp.ipoed }
         end
 
         def available_to_start?(corporation)
