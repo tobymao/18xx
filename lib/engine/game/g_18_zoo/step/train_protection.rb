@@ -38,7 +38,7 @@ module Engine
           end
 
           def choice_name
-            'Assign the bandage to a train before rusting'
+            'Assign the patch to a train before rusting'
           end
 
           def choices
@@ -53,7 +53,7 @@ module Engine
             owner = train.owner.name
             @game.assign_bandage(train)
 
-            @log << "#{train.name} owned by #{owner} gets a bandage and is not rusted"
+            @log << "#{train.name} owned by #{owner} gets a patch and is not rusted"
 
             @round.trains_for_bandage.delete(train)
             @game.rust_trains!(@game.train_by_id("#{train.rusts_on}-0"), nil)

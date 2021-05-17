@@ -6,8 +6,8 @@ module Engine
       module Entities
         COMPANIES = [
           {
-            sym: 'HOLIDAY',
-            name: 'Holiday',
+            sym: 'DAYS_OFF',
+            name: 'Days off',
             value: 3,
             desc: 'Choose a family, its reputation mark goes one tick to the right',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
@@ -35,7 +35,7 @@ module Engine
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
           },
           {
-            sym: 'IT_IS_ALL_GREEK_TO_ME',
+            sym: 'IT_S_ALL_GREEK_TO_ME',
             name: 'It’s all greek to me',
             value: 2,
             desc: 'After your action in a SR, do another one',
@@ -128,8 +128,8 @@ module Engine
             ],
           },
           {
-            sym: 'ON_DIET',
-            name: 'On diet',
+            sym: 'ON_A_DIET',
+            name: 'On a diet',
             value: 3,
             desc: 'Put a station in addition to the allowed spaces',
             abilities: [
@@ -145,8 +145,8 @@ module Engine
             ],
           },
           {
-            sym: 'SPARKLING_GOLD',
-            name: 'Sparkling gold',
+            sym: 'SHINING_GOLD',
+            name: 'Shining gold',
             value: 1,
             desc: 'Get 2$N / 1$N when you build on a M / MM tile',
             abilities: [
@@ -172,7 +172,7 @@ module Engine
             ],
           },
           {
-            sym: 'THAT_IS_MINE',
+            sym: 'THAT_S_MINE',
             name: "That's mine!",
             value: 2,
             desc: 'Book anywhere an open place for a station tile.',
@@ -200,8 +200,8 @@ module Engine
             ],
           },
           {
-            sym: 'CORN',
-            name: 'Corn',
+            sym: 'WHEAT',
+            name: 'Wheat',
             value: 2,
             desc: 'Chooses a tile with its own station; the station worth +30',
             abilities: [
@@ -241,7 +241,7 @@ module Engine
             desc: 'Take an additional 3$N if at least one squirrel runs an O',
           },
           {
-            sym: 'BANDAGE',
+            sym: 'PATCH',
             name: 'Bandage',
             value: 1,
             desc: 'Mark a squirrel – it runs as a 1S. It cannot be sold; but can be dismissed'\
@@ -261,8 +261,8 @@ module Engine
             ],
           },
           {
-            sym: 'A_SPOONFUL_OF_SUGAR',
-            name: 'A spoonful of sugar',
+            sym: 'A_TIP_OF_SUGAR',
+            name: 'A tip of sugar',
             value: 3,
             desc: 'A squirrel at will runs one more station - not applicable to 4J or 2J',
           },

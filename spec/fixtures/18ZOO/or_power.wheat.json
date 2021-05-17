@@ -14,7 +14,7 @@
       "entity_type": "player",
       "id": 2,
       "created_at": 1616106008,
-      "company": "CORN",
+      "company": "WHEAT",
       "price": 2
     },
     {
@@ -83,7 +83,7 @@
       "entity_type": "corporation",
       "id": 10,
       "created_at": 1616106722,
-      "company": "CORN",
+      "company": "WHEAT",
       "price": 0
     },
     {
@@ -139,7 +139,7 @@
     },
     {
       "type": "assign",
-      "entity": "CORN",
+      "entity": "WHEAT",
       "entity_type": "company",
       "id": 17,
       "created_at": 1616403308,

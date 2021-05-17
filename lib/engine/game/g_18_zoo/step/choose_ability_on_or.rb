@@ -6,7 +6,7 @@ module Engine
       module ChooseAbilityOnOr
         def can_choose_ability_on_any_step(corporation, company)
           return true if @game.zoo_ticket?(company) && company.owner == corporation.owner
-          return true if company == @game.bandage && @game.can_use_bandage?(corporation, company)
+          return true if company == @game.patch && @game.can_use_bandage?(corporation, company)
 
           false
         end
@@ -15,7 +15,7 @@ module Engine
           return false unless entity.corporation?
 
           return true if @game.zoo_tickets?(entity.owner)
-          return true if @game.can_use_bandage?(entity, @game.bandage)
+          return true if @game.can_use_bandage?(entity, @game.patch)
 
           false
         end
@@ -25,7 +25,7 @@ module Engine
           return choices_for_zoo_ticket(company, corporation) if @game.zoo_ticket?(company)
 
           return choices_for_two_barrels?(company.owner) if company == @game.two_barrels
-          return @game.choices_for_bandage?(corporation) if company == @game.bandage
+          return @game.choices_for_bandage?(corporation) if company == @game.patch
 
           {}
         end
@@ -33,7 +33,7 @@ module Engine
         def process_choose_ability(action)
           process_choose_zoo_ticket(action) if action.choice['type'] == 'sell'
           process_choose_two_barrels?(action) if action.choice['type'] == 'two_barrels'
-          @game.process_choose_bandage?(action) if action.choice['type'] == 'bandage'
+          @game.process_choose_bandage?(action) if action.choice['type'] == 'patch'
           @game.process_remove_bandage?(action) if action.choice['type'] == 'remove_bandage'
         end
 
