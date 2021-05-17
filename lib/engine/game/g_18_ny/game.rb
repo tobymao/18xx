@@ -191,7 +191,7 @@ module Engine
             #            Engine::Step::LoanOperations,
             Engine::Step::DiscardTrain,
             Engine::Step::SpecialBuyTrain,
-            Engine::Step::BuyTrain,
+            G18NY::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
@@ -407,23 +407,32 @@ module Engine
           entity.num_player_shares
         end
 
-        def take_loan(entity, loan)
+        def take_loan(entity, loan, prepay_interest: false)
           raise GameError, "Cannot take more than #{maximum_loans(entity)} loans" unless can_take_loan?(entity)
 
           name = entity.name
-          amount = loan.amount - interest_rate
+          amount = loan.amount - (prepay_interest ? interest_rate : 0)
           @log << "#{name} takes a loan and receives #{format_currency(amount)}"
           @bank.spend(amount, entity)
           entity.loans << loan
           @loans.delete(loan)
+
+          initial_sp = entity.share_price.price
+          @stock_market.move_left(entity)
+          @log << "#{name}'s share price changes from" \
+                  " #{format_currency(initial_sp)} to #{format_currency(entity.share_price.price)}"
         end
 
         def repay_loan(entity, loan)
           @log << "#{entity.name} pays off a loan for #{format_currency(loan.amount)}"
           entity.spend(loan.amount, bank)
-
           entity.loans.delete(loan)
           @loans << loan
+
+          initial_sp = entity.share_price.price
+          @stock_market.move_right(entity)
+          @log << "#{name}'s share price changes from" \
+                  " #{format_currency(initial_sp)} to #{format_currency(entity.share_price.price)}"
         end
 
         def can_take_loan?(entity)
