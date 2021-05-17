@@ -144,6 +144,14 @@ module Engine
 
     describe 'starting values' do
       max_players = { map_a: 4, map_b: 4, map_c: 4, map_d: 5, map_e: 5, map_f: 5 }
+      game_by_variant = {
+        map_a: Engine::Game::G18ZOO::Game,
+        map_b: Engine::Game::G18ZOOMapB::Game,
+        map_c: Engine::Game::G18ZOOMapC::Game,
+        map_d: Engine::Game::G18ZOOMapD::Game,
+        map_e: Engine::Game::G18ZOOMapE::Game,
+        map_f: Engine::Game::G18ZOOMapF::Game,
+      }
       expected_cash = {
         map_a: { 2 => 40, 3 => 28, 4 => 23 },
         map_b: { 2 => 40, 3 => 28, 4 => 23 },
@@ -170,7 +178,7 @@ module Engine
           current_players = %w[a b c d e].first(num_players)
 
           context "#{num_players} Players, #{variant}" do
-            let(:game) { Engine::Game::G18ZOO::Game.new(current_players, optional_rules: [variant.to_sym]) }
+            let(:game) { game_by_variant[variant].new(current_players, optional_rules: [variant.to_sym]) }
             let(:player_1) { game.players.first }
 
             it "should start with #{expected_cash[variant][num_players]}$N" do
@@ -200,13 +208,13 @@ module Engine
             end
 
             it 'should have only valid corporation coordinates' do
-              game.class::CORPORATION_COORDINATES_BY_MAP[variant.to_sym].each do |_id, coordinate|
+              game.class::CORPORATION_COORDINATES.each do |_id, coordinate|
                 expect(game.hexes.map(&:coordinates)).to include(coordinate.to_s)
               end
             end
 
             it 'should have only valid location names' do
-              game.class::LOCATION_NAMES_BY_MAP[variant.to_sym].each do |coordinate, _name|
+              game.class::LOCATION_NAMES.each do |coordinate, _name|
                 expect(game.hexes.map(&:coordinates)).to include(coordinate)
               end
             end

@@ -153,11 +153,7 @@ module Engine
 
         BANKRUPTCY_ALLOWED = false
 
-        STARTING_CASH_SMALL_MAP = { 2 => 40, 3 => 28, 4 => 23, 5 => 22 }.freeze
-
-        STARTING_CASH_BIG_MAP = { 2 => 48, 3 => 32, 4 => 27, 5 => 22 }.freeze
-
-        SMALL_MAP = %i[map_a map_b map_c].freeze
+        STARTING_CASH = { 2 => 40, 3 => 28, 4 => 23 }.freeze
 
         CERT_LIMIT_INCLUDES_PRIVATES = false
 
@@ -309,11 +305,6 @@ module Engine
         def init_optional_rules(optional_rules)
           rules = super
 
-          maps = rules.select { |rule| rule.start_with?('map_') }
-          raise GameError, 'Please select a single map.' unless maps.size <= 1
-
-          @map = maps.empty? ? :map_a : maps.first
-
           @near_families = @players.size < 5
           @all_private_visible = rules.include?(:power_visible)
 
@@ -322,12 +313,12 @@ module Engine
 
         # use to modify hexes based on optional rules
         def optional_hexes
-          self.class::HEXES_BY_MAP[@map]
+          self.class::HEXES
         end
 
         # use to modify location names based on optional rules
         def location_name(coord)
-          self.class::LOCATION_NAMES_BY_MAP[@map][coord]
+          self.class::LOCATION_NAMES[coord]
         end
 
         def purchasable_companies(entity = nil)
@@ -826,7 +817,7 @@ module Engine
           return unless entity.all_abilities.empty?
 
           items = @holes.map(&:coordinates).sort.join('-')
-          hole_to_convert = self.class::HOLE_BY_MAP[@map]
+          hole_to_convert = self.class::HOLE
           hole_to_convert[items].each do |coordinates_list, new_tile_code|
             coordinates_list.each do |coordinates|
               hex_by_id(coordinates).lay(Engine::Tile.from_code(coordinates, :red, new_tile_code))
@@ -1003,26 +994,16 @@ module Engine
         end
 
         def init_corporations(stock_market)
-          corporations = self.class::CORPORATIONS.select { |c| CORPORATIONS_BY_MAP[@map].include?(c[:sym]) }
-                                                 .map do |corporation|
+          corporations = self.class::CORPORATIONS.map do |corporation|
             Corporation.new(
               min_price: stock_market.par_prices.map(&:price).min,
               capitalization: self.class::CAPITALIZATION,
-              coordinates: CORPORATION_COORDINATES_BY_MAP[@map][corporation[:sym]],
+              coordinates: self.class::CORPORATION_COORDINATES[corporation[:sym]],
               **corporation.merge(corporation_opts),
             )
           end
           @near_families_purchasable = corporations.map { |c| { id: c.id } }
           corporations
-        end
-
-        def init_starting_cash(players, bank)
-          hash = SMALL_MAP.include?(@map) ? self.class::STARTING_CASH_SMALL_MAP : self.class::STARTING_CASH_BIG_MAP
-          cash = hash[players.size]
-
-          players.each do |player|
-            bank.spend(cash, player)
-          end
         end
 
         def custom_end_game_reached?
@@ -1231,6 +1212,56 @@ module Engine
 
           distance
         end
+      end
+    end
+
+    module G18ZOOMapB
+      class Game < G18ZOO::Game
+        include_meta(G18ZOOMapB::Meta)
+        include G18ZOOMapB::Entities
+        include G18ZOOMapB::Map
+
+        STARTING_CASH = { 2 => 40, 3 => 28, 4 => 23 }.freeze
+      end
+    end
+
+    module G18ZOOMapC
+      class Game < G18ZOO::Game
+        include_meta(G18ZOOMapC::Meta)
+        include G18ZOOMapC::Entities
+        include G18ZOOMapC::Map
+
+        STARTING_CASH = { 2 => 40, 3 => 28, 4 => 23 }.freeze
+      end
+    end
+
+    module G18ZOOMapD
+      class Game < G18ZOO::Game
+        include_meta(G18ZOOMapD::Meta)
+        include G18ZOOMapD::Entities
+        include G18ZOOMapD::Map
+
+        STARTING_CASH = { 2 => 48, 3 => 32, 4 => 27, 5 => 22 }.freeze
+      end
+    end
+
+    module G18ZOOMapE
+      class Game < G18ZOO::Game
+        include_meta(G18ZOOMapE::Meta)
+        include G18ZOOMapE::Entities
+        include G18ZOOMapE::Map
+
+        STARTING_CASH = { 2 => 48, 3 => 32, 4 => 27, 5 => 22 }.freeze
+      end
+    end
+
+    module G18ZOOMapF
+      class Game < G18ZOO::Game
+        include_meta(G18ZOOMapF::Meta)
+        include G18ZOOMapF::Entities
+        include G18ZOOMapF::Map
+
+        STARTING_CASH = { 2 => 48, 3 => 32, 4 => 27, 5 => 22 }.freeze
       end
     end
   end
