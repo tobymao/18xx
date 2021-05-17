@@ -636,7 +636,7 @@ module Engine
         end
 
         def ready_corporations
-          @offer_order.select { |corp| available_to_start?(corp) }
+          @offer_order.select { |corp| available_to_start?(corp) | corp.ipoed }
         end
 
         def available_to_start?(corporation)
@@ -1098,8 +1098,8 @@ module Engine
           status = []
           status << %w[Receivership bold] if corp.receivership?
           status << %w[Chartered bold] if @chartered[corp]
-          status << ["Phase available: #{start_phase}"] unless @phase.available?(start_phase)
-          status << ['Cannot start'] if @phase.available?(start_phase) && !legal_to_start?(corp)
+          status << ["Phase available: #{start_phase}"] if !@phase.available?(start_phase) && !corp.ipoed
+          status << ['Cannot start'] if @phase.available?(start_phase) && !legal_to_start?(corp) && !corp.ipoed
           status << ["Permits: #{@permits[corp].map(&:to_s).join(',')}"]
           status
         end
@@ -1554,7 +1554,7 @@ module Engine
           check_london(visits)
 
           return super if train_type(route.train) != :freight
-          return if (distance = route.train.distance) >= hex_route_distance(route)
+          return if route.train.distance >= (distance = hex_route_distance(route))
 
           raise GameError, "#{distance} is too many hexes for a #{route.train.name} train"
         end
