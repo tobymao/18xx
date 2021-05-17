@@ -1022,6 +1022,9 @@ module Engine
             end
           end
 
+          # remove any non-ipoed corps
+          @corporations.reject(&:ipoed).dup.each { |c| remove_corporation!(c) }
+
           @lner = true
         end
 
@@ -2126,8 +2129,14 @@ module Engine
           @permits[survivor].concat(@permits[nonsurvivor])
           @permits[survivor].uniq!
           @permits[nonsurvivor] = @original_permits[nonsurvivor]
-          # charter flag
-          @chartered.delete(survivor)
+          # charter flag (keeping survivor chartered appears to only be needed for solo game)
+          if @chartered[survivor] && !@chartered[nonsurvivor]
+            # no shares can be in IPO, but doing this for consistancy (non-chartered => incremental)
+            survivor.capitalization = :incremental
+            survivor.always_market_price = true
+            survivor.ipo_owner = survivor
+          end
+          @chartered.delete(survivor) unless @chartered[nonsurvivor]
           @chartered.delete(nonsurvivor)
           @log << "Moved assets from #{nonsurvivor.name} to #{survivor.name}"
         end
@@ -2220,6 +2229,20 @@ module Engine
           new_token.place(city)
           city.tokens[city.tokens.find_index(old_token)] = new_token
           nonsurvivor.tokens.delete(old_token)
+        end
+
+        def remove_corporation!(corporation)
+          @log << "#{corporation.name} cannot be started and is removed from the game"
+
+          remove_marker(corporation)
+
+          corporation.share_holders.keys.each do |share_holder|
+            share_holder.shares_by_corporation.delete(corporation)
+          end
+
+          @share_pool.shares_by_corporation.delete(corporation)
+          corporation.share_price&.corporations&.delete(corporation)
+          @corporations.delete(corporation)
         end
 
         def restart_corporation!(corporation)
