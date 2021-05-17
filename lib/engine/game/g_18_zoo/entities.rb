@@ -9,14 +9,14 @@ module Engine
             sym: 'DAYS_OFF',
             name: 'Days off',
             value: 3,
-            desc: 'Choose a family, its reputation mark goes one tick to the right',
+            desc: 'Choose a family (a company), its reputation mark (share value) goes one tick to the right',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
           },
           {
             sym: 'MIDAS',
             name: 'Midas',
             value: 2,
-            desc: 'When turn order is decided, seize the Priority (Squirrel 1)',
+            desc: 'When turn order is decided, seize the Priority',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
           },
           {
@@ -31,7 +31,7 @@ module Engine
             sym: 'LEPRECHAUN_POT_OF_GOLD',
             name: 'Leprechaun pot of gold',
             value: 2,
-            desc: 'Earn 2$N now, and at the start of each SR',
+            desc: 'Earn 2$N now, and 2$N at the start of each SR',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
           },
           {
@@ -45,8 +45,8 @@ module Engine
             sym: 'WHATSUP',
             name: 'Whatsup',
             value: 3,
-            desc: 'During SR, a family can buy the first available squirrel, deactivated. Reputation moves one tick'\
-            ' to the right',
+            desc: 'During SR, a family (a company) can buy the first available squirrel (train), deactivated. '\
+            'Reputation (share value) moves one tick to the right',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
           },
           {
@@ -116,7 +116,7 @@ module Engine
             sym: 'HOLE',
             name: 'Hole',
             value: 2,
-            desc: 'Mark two R areas anywhere on the map, so they are connected',
+            desc: 'Mark two R areas anywhere on the map, and from now on they are connected',
             abilities: [
               {
                 type: 'assign_hexes',
@@ -175,7 +175,7 @@ module Engine
             sym: 'THAT_S_MINE',
             name: "That's mine!",
             value: 2,
-            desc: 'Book anywhere an open place for a station tile.',
+            desc: 'Book anywhere an open place on a station tile',
             abilities: [
               {
                 type: 'assign_hexes',
@@ -203,7 +203,7 @@ module Engine
             sym: 'WHEAT',
             name: 'Wheat',
             value: 2,
-            desc: 'Chooses a tile with its own station; the station worth +30',
+            desc: 'Chooses a tile with its own station; the station is worth +30',
             abilities: [
               {
                 type: 'assign_hexes',
@@ -238,20 +238,20 @@ module Engine
             sym: 'A_SQUEEZE',
             name: 'A squeeze',
             value: 2,
-            desc: 'Take an additional 3$N if at least one squirrel runs an O',
+            desc: 'Take an additional 3$N if at least one squirrel (train) runs an O',
           },
           {
             sym: 'PATCH',
-            name: 'Bandage',
+            name: 'Patch',
             value: 1,
-            desc: 'Mark a squirrel – it runs as a 1S. It cannot be sold; but can be dismissed'\
-            ' (otherwise family cannot purchase new squirrel).',
+            desc: 'Mark a squirrel (train) – it runs as a 1S. It cannot be sold; but can be dismissed '\
+            '- otherwise family (a company) cannot purchase new squirrel (train)',
           },
           {
             sym: 'WINGS',
             name: 'Wings',
             value: 2,
-            desc: 'During the run, a squirrel at will can skip a tokened-out station',
+            desc: 'During the run, a squirrel (train) at will can skip a tokened-out station',
             abilities: [
               {
                 type: 'assign_corporation',
@@ -264,7 +264,7 @@ module Engine
             sym: 'A_TIP_OF_SUGAR',
             name: 'A tip of sugar',
             value: 3,
-            desc: 'A squirrel at will runs one more station - not applicable to 4J or 2J',
+            desc: 'A squirrel (train) at will runs one more station - not applicable to 4J or 2J',
           },
         ].freeze
 

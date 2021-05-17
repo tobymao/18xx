@@ -218,7 +218,8 @@ module Engine
             ' (runs one last time)'],
         ).freeze
 
-        MARKET_TEXT = Base::MARKET_TEXT.merge(par_2: 'Can only enter during green phase',
+        MARKET_TEXT = Base::MARKET_TEXT.merge(par_1: 'Yellow phase par',
+                                              par_2: 'Can only enter during green phase',
                                               par_3: 'Can only enter during brown phase').freeze
 
         MARKET_SHARE_LIMIT = 80 # percent
@@ -311,14 +312,12 @@ module Engine
           rules
         end
 
-        # use to modify hexes based on optional rules
-        def optional_hexes
-          self.class::HEXES
-        end
-
-        # use to modify location names based on optional rules
-        def location_name(coord)
-          self.class::LOCATION_NAMES[coord]
+        def result
+          current_order = @players.dup
+          @players
+            .sort_by { |p| [-player_value(p), current_order.index(p)] }
+            .map { |p| [p.name, player_value(p)] }
+            .to_h
         end
 
         def purchasable_companies(entity = nil)
@@ -459,7 +458,11 @@ module Engine
 
           corporations = entity.player? ? @corporations.filter { |c| c.owner == entity } : [entity]
           return true if corporations.any? do |corporation|
+            # can remove the patch
             return true if corporation.assigned?(patch.id)
+            # cannot apply the patch if already 3 companies
+            return false if patch.owner&.player? && corporation.companies.count >= 3
+            # can apply the patch
             return true if !corporation.trains.empty? &&
               [corporation, corporation.owner].include?(patch.owner)
 
@@ -737,7 +740,6 @@ module Engine
           holes_assignment = !@holes.empty?
 
           help = []
-          # TODO: add logic for Bandage - trains
 
           help << 'Routes get no subsidy at all, but every town increase route value by 10.' if barrel_assignment
           if holes_assignment
@@ -921,6 +923,12 @@ module Engine
           new_train.buyable
           train.owner.trains.delete(train)
           train.owner.trains << new_train
+
+          return unless patch.owner.player?
+
+          patch.owner.companies&.delete(patch)
+          patch.owner = corporation
+          corporation.companies << patch
         end
 
         def process_choose_bandage?(action)
@@ -961,7 +969,7 @@ module Engine
           num_ticket_zoo = players.size == 5 ? 2 : 3
           players.each do |player|
             (1..num_ticket_zoo).each do |i|
-              ticket = Company.new(sym: "ZOOTicket #{i} - #{player.id}",
+              ticket = Company.new(sym: "ZOOTicket #{i} - #{player.name}",
                                    name: "ZOOTicket #{i}",
                                    value: 4,
                                    desc: 'Can be sold to gain money.')
@@ -983,14 +991,9 @@ module Engine
         end
 
         def num_trains(train)
-          num_players = @players.size
+          return @players.size if train[:name] == '2S'
 
-          case train[:name]
-          when '2S'
-            num_players
-          else
-            super
-          end
+          super
         end
 
         def init_corporations(stock_market)
