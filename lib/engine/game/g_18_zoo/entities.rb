@@ -3,7 +3,7 @@
 module Engine
   module Game
     module G18ZOO
-      module Entities
+      module SharedEntities
         COMPANIES = [
           {
             sym: 'DAYS_OFF',
@@ -268,7 +268,7 @@ module Engine
           },
         ].freeze
 
-        CORPORATIONS = [
+        ALL_CORPORATIONS = [
           {
             sym: 'CR',
             float_percent: 20,
@@ -362,47 +362,87 @@ module Engine
             color: '#858585',
           },
         ].freeze
+      end
 
-        CORPORATIONS_BY_MAP = {
-          map_a: %w[GI PB PE LI TI],
-          map_b: %w[CR GI PB PE BB],
-          map_c: %w[CR LI TI BB EL],
-          map_d: %w[CR GI PB PE LI TI BB],
-          map_e: %w[CR GI PB PE TI BB EL],
-          map_f: %w[CR GI PE LI TI BB EL],
+      module Entities
+        include G18ZOO::SharedEntities
+        CORPORATIONS = ALL_CORPORATIONS.select { |corporation| %w[GI PB PE LI TI].include?(corporation[:sym]) }.freeze
+
+        CORPORATION_COORDINATES = { 'GI' => 'K9', 'PB' => 'N10', 'PE' => 'K17', 'LI' => 'E15', 'TI' => 'H14' }.freeze
+      end
+    end
+
+    module G18ZOOMapB
+      module Entities
+        include G18ZOO::SharedEntities
+        CORPORATIONS = ALL_CORPORATIONS.select { |corporation| %w[CR GI PB PE BB].include?(corporation[:sym]) }.freeze
+
+        CORPORATION_COORDINATES = { 'CR' => 'H3', 'GI' => 'K10', 'PB' => 'N11', 'PE' => 'K18', 'BB' => 'I6' }.freeze
+      end
+    end
+
+    module G18ZOOMapC
+      module Entities
+        include G18ZOO::SharedEntities
+        CORPORATIONS = ALL_CORPORATIONS.select { |corporation| %w[CR LI TI BB EL].include?(corporation[:sym]) }.freeze
+
+        CORPORATION_COORDINATES = { 'CR' => 'I3', 'LI' => 'F16', 'TI' => 'I15', 'BB' => 'J6', 'EL' => 'E5' }.freeze
+      end
+    end
+
+    module G18ZOOMapD
+      module Entities
+        include G18ZOO::SharedEntities
+        CORPORATIONS = ALL_CORPORATIONS.select do |corporation|
+          %w[CR GI PB PE LI TI BB].include?(corporation[:sym])
+        end.freeze
+
+        CORPORATION_COORDINATES = {
+          'CR' => 'H3',
+          'GI' => 'K10',
+          'PB' => 'N11',
+          'PE' => 'K18',
+          'LI' => 'E16',
+          'TI' => 'H15',
+          'BB' => 'I6',
         }.freeze
+      end
+    end
 
-        CORPORATION_COORDINATES_BY_MAP = {
-          map_a: { 'GI' => 'K9', 'PB' => 'N10', 'PE' => 'K17', 'LI' => 'E15', 'TI' => 'H14' },
-          map_b: { 'CR' => 'H3', 'GI' => 'K10', 'PB' => 'N11', 'PE' => 'K18', 'BB' => 'I6' },
-          map_c: { 'CR' => 'I3', 'LI' => 'F16', 'TI' => 'I15', 'BB' => 'J6', 'EL' => 'E5' },
-          map_d: {
-            'CR' => 'H3',
-            'GI' => 'K10',
-            'PB' => 'N11',
-            'PE' => 'K18',
-            'LI' => 'E16',
-            'TI' => 'H15',
-            'BB' => 'I6',
-          },
-          map_e: {
-            'CR' => 'H3',
-            'GI' => 'K10',
-            'PB' => 'N11',
-            'PE' => 'K18',
-            'TI' => 'H15',
-            'BB' => 'I6',
-            'EL' => 'D5',
-          },
-          map_f: {
-            'CR' => 'I3',
-            'GI' => 'L10',
-            'PE' => 'L18',
-            'LI' => 'F16',
-            'TI' => 'I15',
-            'BB' => 'J6',
-            'EL' => 'E5',
-          },
+    module G18ZOOMapE
+      module Entities
+        include G18ZOO::SharedEntities
+        CORPORATIONS = ALL_CORPORATIONS.select do |corporation|
+          %w[CR GI PB PE TI BB EL].include?(corporation[:sym])
+        end.freeze
+
+        CORPORATION_COORDINATES = {
+          'CR' => 'H3',
+          'GI' => 'K10',
+          'PB' => 'N11',
+          'PE' => 'K18',
+          'TI' => 'H15',
+          'BB' => 'I6',
+          'EL' => 'D5',
+        }.freeze
+      end
+    end
+
+    module G18ZOOMapF
+      module Entities
+        include G18ZOO::SharedEntities
+        CORPORATIONS = ALL_CORPORATIONS.select do |corporation|
+          %w[CR GI PE LI TI BB EL].include?(corporation[:sym])
+        end.freeze
+
+        CORPORATION_COORDINATES = {
+          'CR' => 'I3',
+          'GI' => 'L10',
+          'PE' => 'L18',
+          'LI' => 'F16',
+          'TI' => 'I15',
+          'BB' => 'J6',
+          'EL' => 'E5',
         }.freeze
       end
     end
