@@ -4,8 +4,11 @@ require_relative 'meta'
 require_relative '../base'
 require_relative 'entities'
 require_relative 'map'
+require_relative 'round/parliament'
+require_relative 'round/stock'
 require_relative 'step/charter_auction'
 require_relative 'step/buy_tokens'
+require_relative 'step/forced_sales'
 require_relative 'step/buy_sell_par_shares'
 require_relative 'step/home_upgrade'
 require_relative 'step/option_share'
@@ -139,7 +142,7 @@ module Engine
             train_limit: 3, # per type
             tiles: [:yellow],
             operating_rounds: 1,
-            status: ['three_per'],
+            status: %w[three_per first_rev],
           },
           {
             name: 'B',
@@ -147,7 +150,7 @@ module Engine
             train_limit: 3, # 3 type
             tiles: %i[yellow green],
             operating_rounds: 2,
-            status: ['three_per'],
+            status: %w[three_per first_rev],
           },
           {
             name: 'C',
@@ -155,7 +158,7 @@ module Engine
             train_limit: 3, # per type
             tiles: %i[yellow green],
             operating_rounds: 2,
-            status: ['three_per'],
+            status: %w[three_per middle_rev],
           },
           {
             name: 'D',
@@ -163,7 +166,7 @@ module Engine
             train_limit: 3, # per type
             tiles: %i[yellow green brown],
             operating_rounds: 3,
-            status: ['three_per'],
+            status: %w[three_per middle_rev],
           },
           {
             name: 'E',
@@ -171,7 +174,7 @@ module Engine
             train_limit: 2, # per type
             tiles: %i[yellow green brown],
             operating_rounds: 3,
-            status: ['two_per'],
+            status: %w[two_per last_rev],
           },
           {
             name: 'F',
@@ -179,7 +182,7 @@ module Engine
             train_limit: 2, # per type
             tiles: %i[yellow green brown],
             operating_rounds: 3,
-            status: ['two_per'],
+            status: %w[two_per last_rev],
           },
           {
             name: 'G',
@@ -187,7 +190,7 @@ module Engine
             train_limit: 3, # across all types
             tiles: %i[yellow green brown],
             operating_rounds: 3,
-            status: ['three_total'],
+            status: %w[three_total last_rev],
           },
           {
             name: 'H',
@@ -195,7 +198,7 @@ module Engine
             train_limit: 3, # across all types
             tiles: %i[yellow green brown],
             operating_rounds: 3,
-            status: ['three_total'],
+            status: %w[three_total last_rev],
           },
         ].freeze
 
@@ -466,6 +469,12 @@ module Engine
                         'Limit of 2 trains of each kind (Freight/Local/Express)'],
           'three_total' => ['3 total',
                             'Limit of 3 trains total'],
+          'first_rev' => ['First offboard',
+                          'First offboard/port value used for revenue'],
+          'middle_rev' => ['Middle offboard',
+                           'Middle offboard/port value used for revenue'],
+          'last_rev' => ['Last offboard',
+                         'Last offboard/port value used for revenue'],
         ).freeze
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
@@ -498,6 +507,19 @@ module Engine
 
         FREIGHT_BONUS = 20
         PORT_FREIGHT_BONUS = 30
+
+        REAL_PHASE_TO_REV_PHASE = {
+          'A' => :white,
+          'B' => :white,
+          'C' => :gray,
+          'D' => :gray,
+          'E' => :purple,
+          'F' => :purple,
+          'G' => :purple,
+          'H' => :purple,
+        }.freeze
+
+        MAX_TOKENS = 7
 
         def init_share_pool
           SharePool.new(self, allow_president_sale: true)
@@ -573,6 +595,12 @@ module Engine
           @offer_order.each { |c| @starting_phase[c] = 'A' }
           @offer_order.reverse.take(8).each { |c| @starting_phase[c] = 'B' }
           @offer_order.reverse.take(4).each { |c| @starting_phase[c] = 'C' }
+
+          @corporations.each { |c| convert_to_full!(c) }
+        end
+
+        def shares
+          @corporations.flat_map(&:ipo_shares)
         end
 
         def remove_reservation(corporation)
@@ -592,7 +620,7 @@ module Engine
         def remove_marker(corporation)
           hex = hex_by_id(corporation.coordinates)
           marker = hex.tile.icons.find(&:large)
-          hex.tile.icons.delete(marker)
+          hex.tile.icons.delete(marker) if marker
         end
 
         def share_prices
@@ -608,7 +636,7 @@ module Engine
         end
 
         def ready_corporations
-          @offer_order.select { |corp| available_to_start?(corp) }
+          @offer_order.select { |corp| available_to_start?(corp) || corp.ipoed }
         end
 
         def available_to_start?(corporation)
@@ -621,6 +649,94 @@ module Engine
           entity.companies << charter
           @log << "#{entity.name} is under obligation for #{corporation.name}"
           @chartered[corporation] = true
+        end
+
+        # called at end of stock round
+        def enforce_obligations
+          @players.each do |player|
+            remaining_fine = 0
+            player.companies.dup.each do |company|
+              corp = corporation_by_id(company.id)
+              @log << "#{player.name} has missed obligation for #{corp.name}"
+              new_fine = corp.par_price.price * 5
+              @log << "#{player.name} is fined #{format_currency(new_fine)}"
+              player.companies.delete(company)
+              company.owner = nil
+              @chartered.delete(corp)
+
+              if player.cash >= new_fine
+                @log << "#{player.name} pays #{format_currency(new_fine)}"
+                player.spend(new_fine, @bank)
+                restart_corporation!(corp)
+                next
+              else
+                @log << "#{player.name} pays #{format_currency(player.cash)}"
+                new_fine -= player.cash
+                player.spend(player.cash, @bank)
+              end
+
+              @log << "#{player.name} still owes #{format_currency(new_fine)} on #{corp.name} obligation"
+
+              # sell shares of company until either debt is repaid, or out of those shares
+              share_value = effective_price(corp)
+              shares = player.shares_of(corp).sort_by(&:percent)
+              share_revenue = 0
+              while new_fine.positive? && !shares.empty?
+                share = shares.shift
+                sale_price = share.percent * share_value / 10
+                new_fine -= sale_price
+                share_revenue += sale_price
+              end
+              @log << "#{player.name} sells shares of #{corp.name} for #{format_currency(share_revenue)}"
+
+              unless new_fine.positive?
+                @bank.spend(-new_fine, player) unless new_fine.zero?
+                restart_corporation!(corp)
+                next
+              end
+
+              if player.shares.empty?
+                @log << "#{player.name} has no more assets. Remainder of debt is forgiven."
+                restart_corporation!(corp)
+                next
+              end
+
+              @log << "#{player.name} still owes #{format_currency(new_fine)} on #{corp.name} obligation"
+              remaining_fine += new_fine
+              restart_corporation!(corp)
+            end
+
+            if remaining_fine.positive? && can_sell_any_shares?(player)
+              @log << "#{player.name} owes #{format_currency(remaining_fine)} on all obligations and is required to "\
+               'sell some or all assets'
+              @round.pending_forced_sales << {
+                entity: player,
+                amount: remaining_fine,
+              }
+            elsif remaining_fine.positive?
+              @log << "#{player.name} has no more sellable assets. Remainder of debt is forgiven."
+            end
+          end
+        end
+
+        def can_sell_any_shares?(entity)
+          @corporations.any? do |corporation|
+            bundles = bundles_for_corporation(entity, corporation)
+            bundles.any? { |bundle| can_dump_share?(entity, bundle) }
+          end
+        end
+
+        def can_dump_share?(entity, bundle)
+          corp = bundle.corporation
+          return true if !bundle.presidents_share || bundle.percent >= corp.presidents_percent
+
+          max_shares = corp.player_share_holders.reject { |p, _| p == entity }.values.max || 0
+          return true if max_shares >= corp.presidents_percent
+
+          diff = bundle.shares.sum(&:percent) - bundle.percent
+
+          pool_shares = @share_pool.percent_of(corp) || 0
+          pool_shares >= diff
         end
 
         def after_par(corporation)
@@ -739,7 +855,7 @@ module Engine
           return false if from.color == :green && (from.label.to_s != 'N' || !@phase.tiles.include?(:brown))
           return false if from.color == :brown
 
-          from_exits = from_tile.exits
+          from_exits = from.exits
           legal_exits = Engine::Tile::ALL_EDGES.select { |e| from.hex.neighbors[e] }
           @tiles.any? do |to|
             next unless Engine::Tile::COLORS.index(to.color) == (Engine::Tile::COLORS.index(from.color) + 1)
@@ -796,7 +912,15 @@ module Engine
         def active_players
           players_ = @round.active_entities.map(&:player).compact
 
-          players_.empty? ? [acting_for_entity(@round.active_entities[0])] : players_
+          players_.empty? ? acting_when_empty : players_
+        end
+
+        def acting_when_empty
+          if (active_entity = @round && @round.active_entities[0])
+            [acting_for_entity(active_entity)]
+          else
+            @players
+          end
         end
 
         # find majority shareholder for receivership corp
@@ -809,8 +933,9 @@ module Engine
         end
 
         def stock_round
-          Engine::Round::Stock.new(self, [
+          G1862::Round::Stock.new(self, [
             G1862::Step::BuyTokens,
+            G1862::Step::ForcedSales,
             G1862::Step::BuySellParShares,
           ])
         end
@@ -854,8 +979,10 @@ module Engine
             when G1862::Round::Parliament
               if @double_parliament
                 @double_parliament = false
+                clear_programmed_actions
                 new_parliament_round
               else
+                clear_programmed_actions
                 new_stock_round
               end
             when Engine::Round::Stock
@@ -895,6 +1022,9 @@ module Engine
             end
           end
 
+          # remove any non-ipoed corps
+          @corporations.reject(&:ipoed).dup.each { |c| remove_corporation!(c) }
+
           @lner = true
         end
 
@@ -903,7 +1033,7 @@ module Engine
           @log << "-- Certificate limit is now #{@cert_limit} per player --"
         end
 
-        def event_lner_triggered!
+        def event_lner_trigger!
           @lner_triggered = true
           @log << 'LNER will form at end of current OR set'
         end
@@ -954,8 +1084,11 @@ module Engine
           # move cash to bank
           corp.spend(corp.cash, @bank) if corp.cash.positive?
 
+          # remove tokens from map
+          corp.tokens.each(&:remove!)
+
           # make it available to restart
-          reset_corporation(corp)
+          restart_corporation!(corp)
 
           @skip_round[corp] = true
 
@@ -968,8 +1101,8 @@ module Engine
           status = []
           status << %w[Receivership bold] if corp.receivership?
           status << %w[Chartered bold] if @chartered[corp]
-          status << ["Phase available: #{start_phase}"] unless @phase.available?(start_phase)
-          status << ['Cannot start'] if @phase.available?(start_phase) && !legal_to_start?(corp)
+          status << ["Phase available: #{start_phase}"] if !@phase.available?(start_phase) && !corp.ipoed
+          status << ['Cannot start'] if @phase.available?(start_phase) && !legal_to_start?(corp) && !corp.ipoed
           status << ["Permits: #{@permits[corp].map(&:to_s).join(',')}"]
           status
         end
@@ -985,6 +1118,10 @@ module Engine
           else
             'IPO'
           end
+        end
+
+        def bank_sort(corporations)
+          corporations.sort.sort_by { |c| @starting_phase[c] }
         end
 
         def check_bankruptcy!(entity)
@@ -1142,14 +1279,23 @@ module Engine
             # OK, since local trains won't have offboards
             all_stops = visits.select { |n| n.city? || n.offboard? }
             stop_options = []
-            all_stops.combination(route.train.distance[0]['pay']) { |c| stop_options << c }
+            length = [all_stops.size, route.train.distance[0]['pay']].min
+            all_stops.combination(length) { |c| stop_options << c }
             stop_options = [[]] if stop_options.empty?
             stop_options
           end
         end
 
+        def game_route_revenue(stop, phase, train)
+          if stop.offboard?
+            stop.revenue[REAL_PHASE_TO_REV_PHASE[phase.name]]
+          else
+            stop.route_revenue(phase, train)
+          end
+        end
+
         def stop_revenues(stops, route)
-          stops.sum { |stop| stop.route_revenue(route.phase, route.train) }
+          stops.sum { |stop| game_route_revenue(stop, route.phase, route.train) }
         end
 
         # Brute force it. Theoretical max combos is 729, but realistic max is order of magnitude lower
@@ -1205,7 +1351,7 @@ module Engine
           when :express
             compute_express_stops(route, visits)
           else
-            [visits.first, visits.last]
+            freight_revenue_stops(route, visits)
           end
         end
 
@@ -1293,6 +1439,8 @@ module Engine
         # given a set of routes that connect end-to-end
         # find the start and stop
         def freight_set_ends(set)
+          return [] unless set
+
           ends = []
           nodes = Hash.new { |h, k| h[k] = [] }
           set.each do |r|
@@ -1409,7 +1557,7 @@ module Engine
           check_london(visits)
 
           return super if train_type(route.train) != :freight
-          return if (distance = route.train.distance) >= hex_route_distance(route)
+          return if route.train.distance >= (distance = hex_route_distance(route))
 
           raise GameError, "#{distance} is too many hexes for a #{route.train.name} train"
         end
@@ -1422,8 +1570,9 @@ module Engine
           this_route.routes.each do |r|
             return false if r == this_route
 
-            return true if r.visited_stops.include?(stop)
-            return true unless (r.visited_stops.flat_map(&:groups) & stop.groups).empty?
+            other_stops = r.stops
+            return true if other_stops.include?(stop)
+            return true unless (other_stops.flat_map(&:groups) & stop.groups).empty?
           end
           false
         end
@@ -1485,7 +1634,7 @@ module Engine
           rev = 0
           unless ends.empty?
             rev = ends.sum do |stop|
-              stop_on_other_route?(route, stop) ? 0 : stop.route_revenue(route.phase, route.train)
+              stop_on_other_route?(route, stop) ? 0 : game_route_revenue(stop, route.phase, route.train)
             end
           end
           return rev unless route == route_set.first
@@ -1497,7 +1646,9 @@ module Engine
         def revenue_for(route, stops)
           return freight_revenue(route, stops) if train_type(route.train) == :freight
 
-          stops.sum { |stop| stop_on_other_route?(route, stop) ? 0 : stop.route_revenue(route.phase, route.train) }
+          stops.sum do |stop|
+            stop_on_other_route?(route, stop) ? 0 : game_route_revenue(stop, route.phase, route.train)
+          end
         end
 
         def hex_on_other_route?(this_route, hex)
@@ -1660,7 +1811,9 @@ module Engine
           corp = share.corporation
           corp.share_holders[share.owner] -= share.percent
           corp.share_holders[new_owner] += share.percent
-          @share_pool.move_share(share, new_owner)
+          share.owner.shares_by_corporation[corp].delete(share)
+          new_owner.shares_by_corporation[corp] << share
+          share.owner = new_owner
         end
 
         def start_merge(originator, survivor, nonsurvivor, merge_type)
@@ -1745,7 +1898,7 @@ module Engine
 
         # look for next entity that has needed share
         def find_donor_share(entity, corp, holders, percent)
-          return nil if entity.corporation?
+          return @share_pool.shares_of(corp).find { |s| s.percent == percent } if entity.corporation?
 
           donors = [@share_pool] + holders[(holders.find_index(entity) + 1)..-1]
 
@@ -1862,7 +2015,7 @@ module Engine
                   "#{@merge_data[:corps].first.name} share from #{donor.name}"
                 odd_share = swap_share if os == odd_share
               else
-                price = os == odd_share ? @merge_data[:price].price / 2 : @merge_data[:price].price
+                price = (os == odd_share ? @merge_data[:price].price / 2 : @merge_data[:price].price)
                 transfer_share(os, @share_pool)
                 @bank.spend(price, entity)
                 @log << "#{entity.name} unable to trade for #{@merge_data[:corps].first.name} share."
@@ -1882,6 +2035,10 @@ module Engine
           # if they can pay, will ask player
           #
           if odd_share
+            if @merge_data[:type] != :refinance && odd_share.corporation == @merge_data[:corps].last
+              raise GameError, "Odd share is of non-survivor #{odd_share.corporation}"
+            end
+
             if pres_option_percent
               sell_price = @merge_data[:corps].first.share_price.price * pres_option_percent / 20
               redeem_price = @merge_data[:corps].first.share_price.price * (60 - pres_option_percent) / 20
@@ -1965,15 +2122,24 @@ module Engine
           # cash
           nonsurvivor.spend(nonsurvivor.cash, survivor) if nonsurvivor.cash.positive?
           # trains
-          nonsurvivor.trains.each { |t| t.owner = survivor }
+          nonsurvivor.trains.each do |t|
+            t.owner = survivor
+            t.operated = false
+          end
           survivor.trains.concat(nonsurvivor.trains)
           nonsurvivor.trains.clear
           # permits
           @permits[survivor].concat(@permits[nonsurvivor])
           @permits[survivor].uniq!
           @permits[nonsurvivor] = @original_permits[nonsurvivor]
-          # charter flag
-          @chartered.delete(survivor)
+          # charter flag (keeping survivor chartered appears to only be needed for solo game)
+          if @chartered[survivor] && !@chartered[nonsurvivor]
+            # no shares can be in IPO, but doing this for consistancy (non-chartered => incremental)
+            survivor.capitalization = :incremental
+            survivor.always_market_price = true
+            survivor.ipo_owner = survivor
+          end
+          @chartered.delete(survivor) unless @chartered[nonsurvivor]
           @chartered.delete(nonsurvivor)
           @log << "Moved assets from #{nonsurvivor.name} to #{survivor.name}"
         end
@@ -2046,12 +2212,12 @@ module Engine
           s_placed = @merge_data[:corps].first.placed_tokens.size
           ns_placed = @merge_data[:corps].last.placed_tokens.size
 
-          if s_placed + ns_placed > 7
+          if s_placed + ns_placed > MAX_TOKENS
             # player needs to remove excess tokens
             @round.pending_removals << {
               survivor: @merge_data[:corps].first,
               nonsurvivor: @merge_data[:corps].last,
-              count: (s_placed + ns_placed) - 7,
+              count: (s_placed + ns_placed) - MAX_TOKENS,
               hexes: merge_hex_list(@merge_data[:corps]),
             }
             return true
@@ -2068,9 +2234,23 @@ module Engine
           nonsurvivor.tokens.delete(old_token)
         end
 
-        def reset_corporation!(corporation)
+        def remove_corporation!(corporation)
+          @log << "#{corporation.name} cannot be started and is removed from the game"
+
+          remove_marker(corporation)
+
+          corporation.share_holders.keys.each do |share_holder|
+            share_holder.shares_by_corporation.delete(corporation)
+          end
+
+          @share_pool.shares_by_corporation.delete(corporation)
+          corporation.share_price&.corporations&.delete(corporation)
+          @corporations.delete(corporation)
+        end
+
+        def restart_corporation!(corporation)
           # un-IPO the corporation
-          corporation.share_price.corporations.delete(corporation)
+          corporation.share_price&.corporations&.delete(corporation)
           corporation.share_price = nil
           corporation.par_price = nil
           corporation.ipoed = false
@@ -2084,7 +2264,13 @@ module Engine
           # remove trains
           corporation.trains.clear
 
+          # put marker onto map
+          add_marker(corporation)
+
           convert_to_full!(corporation)
+
+          # re-sort shares
+          @bank.shares_by_corporation[corporation].sort_by!(&:id)
         end
 
         def finish_merge
@@ -2095,9 +2281,9 @@ module Engine
           ns_unplaced = nonsurvivor.unplaced_tokens
 
           num_placed = s_placed.size + ns_placed.size
-          raise GameError, 'too many placed tokens' if num_placed > 7
+          raise GameError, 'too many placed tokens' if num_placed > MAX_TOKENS
 
-          num_unplaced = [7 - num_placed, s_unplaced.size + ns_unplaced.size].min
+          num_unplaced = [MAX_TOKENS - num_placed, s_unplaced.size + ns_unplaced.size].min
           total = num_placed + num_unplaced
 
           # increase survivor tokens if needed
@@ -2107,7 +2293,7 @@ module Engine
           ns_placed.each { |t| swap_token(survivor, nonsurvivor, t) }
 
           # allow the nonsurvivor to restart later
-          reset_corporation!(nonsurvivor)
+          restart_corporation!(nonsurvivor)
 
           # finally done with Merge/Acquire step
           @round.active_step.pass!
@@ -2119,6 +2305,19 @@ module Engine
 
           @merge_data.clear
           @log << 'Merge complete'
+        end
+
+        def separate_treasury?
+          true
+        end
+
+        def player_value(player)
+          halfprice_shares, reg_shares = player.shares.partition { |s| s.corporation.trains.empty? }
+          player.cash + reg_shares.sum(&:price) + halfprice_shares.sum { |s| (s.price / 2).to_i }
+        end
+
+        def liquidity(player)
+          player_value(player)
         end
       end
     end

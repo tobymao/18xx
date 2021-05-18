@@ -49,6 +49,7 @@ module Engine
             entity = winner.entity
             corporation = winner.corporation
             price = winner.price
+            @round.won_auction[entity] = true
 
             @log << "#{entity.name} wins bid on #{corporation.name} for #{@game.format_currency(price)}"
             entity.spend(price, @game.bank) if price.positive?
@@ -63,21 +64,22 @@ module Engine
           end
 
           def can_start_auction?(entity)
-            max_bid(entity) >= MIN_BID && !@round.started_auction[entity] &&
-            @game.ipoable_corporations.any? do |c|
-              @game.can_par?(c, entity) && can_buy?(entity, c.shares.first&.to_bundle)
+            max_bid(entity) >= MIN_BID && !@round.won_auction[entity] &&
+            rval = @game.ipoable_corporations.any? do |c|
+              @game.can_par?(c, entity) && can_buy?(entity, c.ipo_shares.first&.to_bundle)
             end
+            rval
           end
 
           def can_bid?(entity)
             max_bid(entity) >= MIN_BID &&
             @game.ipoable_corporations.any? do |c|
-              @game.can_par?(c, entity) && can_buy?(entity, c.shares.first&.to_bundle)
+              @game.can_par?(c, entity) && can_buy?(entity, c.ipo_shares.first&.to_bundle)
             end
           end
 
           def can_increase_bid?(entity)
-            max_bid(entity) >= highest_bid(@auctioning).price + min_increment + min_par * 3
+            max_bid(entity) >= min_required(entity)
           end
 
           def min_par
@@ -163,12 +165,23 @@ module Engine
             price = action.price
             raise GameError, "Bid must be a multiple of #{MIN_BID_INCREMENT}" if (price % MIN_BID_INCREMENT).positive?
 
-            if auctioning
+            if @auctioning
               add_bid(action)
             else
               selection_bid(action)
-              @round.started_auction[action.entity] = true
             end
+          end
+
+          def auction_entity(entity)
+            @auctioning = entity
+            @active_bidders, cannot_bid = initial_auction_entities.partition do |player|
+              player == @auction_triggerer || can_increase_bid?(player)
+            end
+            cannot_bid.each do |player|
+              @game.log << "#{player.name} cannot afford minimum bid + 3 x minimum par of "\
+                "#{@game.format_currency(min_required(player))} and is out of the auction for #{auctioning.name}"
+            end
+            resolve_bids
           end
 
           def add_bid(action)
@@ -183,7 +196,20 @@ module Engine
                     end
             super(action)
 
+            passing = @active_bidders.reject do |player|
+              player == entity || can_increase_bid?(player)
+            end
+            passing.each do |player|
+              @game.log << "#{player.name} cannot afford minimum bid + 3 x minimum par of "\
+                "#{@game.format_currency(min_required(player))} and is out of the auction for #{auctioning.name}"
+              remove_from_auction(player)
+            end
+
             resolve_bids
+          end
+
+          def min_required(_entity)
+            highest_bid(@auctioning).price + min_increment + min_par * 3
           end
 
           def min_bid(corporation)
@@ -215,7 +241,7 @@ module Engine
           def round_state
             super.merge(
               {
-                started_auction: {},
+                won_auction: {},
               }
             )
           end

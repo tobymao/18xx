@@ -16,7 +16,7 @@ module Engine
           end
 
           def available_hex(entity, hex)
-            return true if entity.assigned?(@game.wings.id)
+            return true if entity.corporation? && entity.assigned?(@game.wings.id)
 
             super
           end
@@ -24,24 +24,11 @@ module Engine
           def process_run_routes(action)
             super
 
-            # Clean the 'A spoonful of sugar' usage
-            ability = @game.abilities(action.entity, :increase_distance_for_train)
-            action.entity.remove_ability(ability) if ability
-
             return unless @game.two_barrels.all_abilities.empty?
 
             # Close 'Two Barrels' if used and no more usage
             @game.two_barrels.close!
             @log << "'#{@game.two_barrels.name}' is closed"
-          end
-
-          def train_name(entity, train)
-            text = ''
-
-            ability_for_distance = entity && @game.abilities(entity, :increase_distance_for_train)
-            text = " (+#{ability_for_distance.distance})" if ability_for_distance&.train == train
-
-            train.name + text
           end
 
           def chart(entity)
@@ -75,7 +62,6 @@ module Engine
             return false unless entity.corporation?
 
             return true if @game.can_choose_two_barrels?(entity, company)
-            return true if @game.can_choose_sugar?(entity, company)
 
             false
           end

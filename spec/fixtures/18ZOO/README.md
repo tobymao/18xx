@@ -23,7 +23,7 @@ URLs: http://localhost:9292/fixture/18ZOO/{name}
 
 Working:
 SR powers:
-- sr_power.holiday.json
+- sr_power.days_off.json
 - sr_power.it_is_all_greek_to_me.json
 - sr_power.leprechaun_pot_of_gold.json
 - sr_power.midas.json
@@ -31,21 +31,21 @@ SR powers:
 - sr_power.whatsup.json
 OR powers:
 - or_power.ancient_maps
-- or_power.a_spoonful_of_sugar
+- or_power.a_tip_of_sugar
 - or_power.a_squeeze
-- or_power.corn
+- or_power.wheat
 - or_power.hole
 - or_power.moles
-- or_power.on_diet
+- or_power.on_a_diet
 - or_power.rabbits
-- or_power.sparkling_gold
+- or_power.shining_gold
 - or_power.two_barrels
-- or_power.that_is_mine
+- or_power.that_s_mine
 - or_power.wings
 - or_power.work_in_progress
 ```
 
 ```
 Not working:
-- or_power.bandage.not_yet_working
+- or_power.patch.not_yet_working
 ```

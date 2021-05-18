@@ -71,11 +71,17 @@ module View
       end
 
       def render_input
-        max_price = max_purchase_price(@corporation, @selected_company)
+        step = @game.round.step_for(@corporation, 'buy_company')
+        buyer = if step.respond_to?(:spender)
+                  step.spender(@corporation)
+                else
+                  @corporation
+                end
+        max_price = max_purchase_price(buyer, @selected_company)
 
         h(BuyValueInput, value: max_price, min_value: @selected_company.min_price,
                          max_value: max_price,
-                         size: @corporation.cash.to_s.size,
+                         size: buyer.cash.to_s.size,
                          selected_entity: @selected_company)
       end
 

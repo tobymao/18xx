@@ -14,7 +14,7 @@
       "entity_type": "player",
       "id": 2,
       "created_at": 1616539171,
-      "company": "SPARKLING_GOLD",
+      "company": "SHINING_GOLD",
       "price": 1
     },
     {
@@ -73,7 +73,7 @@
       "entity_type": "corporation",
       "id": 9,
       "created_at": 1616539249,
-      "company": "SPARKLING_GOLD",
+      "company": "SHINING_GOLD",
       "price": 1
     },
     {

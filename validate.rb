@@ -16,10 +16,12 @@ $total_time = 0
 def run_game(game, actions = nil)
   actions ||= game.actions.map(&:to_h)
   data={'id':game.id, 'title': game.title, 'status':game.status}
+
+  $total += 1
+  time = Time.now
+  engine = Engine::Game.load(game)
   begin
-    $total += 1
-    time = Time.now
-    engine = Engine::Game.load(game).maybe_raise!
+    engine.maybe_raise!    
 
     time = Time.now - time
     $total_time += time
@@ -29,6 +31,7 @@ def run_game(game, actions = nil)
     data['result']=engine.result
   rescue Exception => e # rubocop:disable Lint/RescueException
     $count += 1
+    data['last_action']=engine.last_processed_action
     data['finished']=false
     #data['stack']=e.backtrace
     data['exception']=e

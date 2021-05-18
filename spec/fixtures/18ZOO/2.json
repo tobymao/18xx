@@ -21,7 +21,7 @@
       "entity_type": "player",
       "id": 3,
       "created_at": 1618164889,
-      "company": "A_SPOONFUL_OF_SUGAR",
+      "company": "A_TIP_OF_SUGAR",
       "price": 3
     },
     {
@@ -199,19 +199,8 @@
       "entity_type": "corporation",
       "id": 23,
       "created_at": 1618165131,
-      "company": "A_SPOONFUL_OF_SUGAR",
+      "company": "A_TIP_OF_SUGAR",
       "price": 3
-    },
-    {
-      "type": "choose_ability",
-      "entity": "A_SPOONFUL_OF_SUGAR",
-      "entity_type": "company",
-      "id": 24,
-      "created_at": 1618165146,
-      "choice": {
-        "type": "sugar",
-        "train_id": "2S-0"
-      }
     },
     {
       "type": "end_game",

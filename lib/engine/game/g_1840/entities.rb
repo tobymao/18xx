@@ -103,7 +103,7 @@ module Engine
                   price: 500,
                 },
                 {
-                  name: 'Pi2',
+                  name: 'Pi3',
                   price: 400,
                 },
               ],
@@ -264,7 +264,7 @@ module Engine
           {
             sym: '3',
             name: 'Linie 3',
-            logo: '1840/2',
+            logo: '1840/3',
             tokens: [0, 20, 40, 60, 80, 100],
             type: 'minor',
             always_market_price: true,

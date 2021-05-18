@@ -169,6 +169,13 @@
       "target_type": "hex"
     },
     {
+      "type": "pass",
+      "entity": "PB",
+      "entity_type": "corporation",
+      "id": 11,
+      "created_at": 1618496974
+    },
+    {
       "type": "lay_tile",
       "entity": "PB",
       "entity_type": "corporation",

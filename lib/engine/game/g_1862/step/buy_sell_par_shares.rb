@@ -33,6 +33,12 @@ module Engine
             false
           end
 
+          def can_ipo_any?(entity)
+            !bought? && @game.corporations.any? do |c|
+              @game.can_par?(c, entity) && can_buy?(entity, c.ipo_shares.first&.to_bundle)
+            end
+          end
+
           def can_sell?(entity, bundle)
             return unless bundle
 

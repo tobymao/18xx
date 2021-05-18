@@ -316,26 +316,13 @@ module Engine
     end
 
     describe '18ZOO' do
-      describe 2 do
-        it 'only a single train should have "+1" inside the train name when Company "Sugar" is enabled' do
-          game = game_at_action(game_file, 24)
-          corporation = game.round.active_entities[0]
-          trains = corporation.trains
-          expect(game.active_step.train_name(corporation, trains[0])).to eq('2S (+1)'), 'Train with Sugar must have +1'
-          expect(game.active_step.train_name(corporation, trains[1])).to eq('2S'), 'Train without Sugar must be 2S'
-          expect(game.active_step.train_name(corporation, trains[2])).to eq('3S'), 'Train without Sugar must be 3S'
-          log = game.log.find { |item| item.message == '2S gets a boost from \'A spoonful of sugar\' for this round' }
-          expect(log).to_not be_nil
-        end
-      end
-
       describe 3 do
         let(:game_file) do
           Find.find(FIXTURES_DIR).find { |f| File.basename(f) == 'hs_ofmjiayq_1617902980.json' }
         end
 
         it 'train 2J must be available as first 2J/4J train' do
-          game = game_at_action(game_file, 215)
+          game = game_at_action(game_file, 222)
           action = {
             'type' => 'buy_train',
             'entity' => 'GI',
@@ -365,16 +352,16 @@ module Engine
           game.process_action(action)
 
           expect(corporation.cash).to eq(32)
-          expect(game.log[28].message).to eq('GI earns 4$N (2 certs inside kitchen)')
+          expect(game.log.index { |item| item.message == 'GI earns 4$N (2 certs inside kitchen)' }).to eq(30)
         end
       end
 
       describe 5 do
         it 'log messages after buy / pass / sell' do
           game = game_at_action(game_file, 10)
-          expect(game.log[15].message).to_not eq('Player 1 declines to sell shares') # Buy, Pass
-          expect(game.log[16].message).to eq('Player 1 passes') # Pass
-          expect(game.log[19].message).to eq('Player 2 declines to buy shares') # Sell, Pass
+          expect(game.log[17].message).to_not eq('Player 1 declines to sell shares') # Buy, Pass
+          expect(game.log[18].message).to eq('Player 1 passes') # Pass
+          expect(game.log[21].message).to eq('Player 2 declines to buy shares') # Sell, Pass
         end
       end
 

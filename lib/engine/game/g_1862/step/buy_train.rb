@@ -26,6 +26,7 @@ module Engine
             return [] if entity != current_entity
             return [] if entity.corporation? && entity.receivership?
             return [] if @game.skip_round[entity]
+            return [] unless room?(entity)
             return [] if buyable_trains(entity).empty? && !must_buy_train?(entity)
             return [] if entity.share_price&.type == :close
             return %w[buy_train] if can_buy_depot_train?(entity) && must_buy_train?(entity)
@@ -219,7 +220,12 @@ module Engine
           end
 
           def warranty_text
-            'Warranties (each)'
+            train = @depot.depot_trains.first
+            if train.sym.include?('A') || train.sym.include?('D')
+              'Additional Warranties (each)'
+            else
+              'Warranties (each)'
+            end
           end
 
           def warranty_max

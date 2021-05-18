@@ -15,7 +15,7 @@ module Engine
             return [] if @game.skip_round[entity]
 
             available_actions = []
-            available_actions << 'buy_shares' unless redeemable_shares(entity).empty?
+            available_actions << 'buy_shares' if can_redeem?(entity)
             available_actions << 'pass' if blocks? && !available_actions.empty?
 
             available_actions
@@ -31,6 +31,12 @@ module Engine
 
           def pass_description
             'Skip (Redeem)'
+          end
+
+          def can_redeem?(entity)
+            return false if (shares = redeemable_shares(entity)).empty?
+
+            shares.any? { |s| s.price <= entity.cash }
           end
         end
       end

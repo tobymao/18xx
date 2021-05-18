@@ -66,7 +66,7 @@ module Engine
             subsidy = @game.routes_subsidy(routes)
             actual_dividend_types(entity, revenue, subsidy).map do |type|
               payout = send(type, entity, revenue, subsidy)
-              payout[:divs_to_corporation] = 0
+              payout[:divs_to_corporation] = corporation_dividends(entity, payout[:per_share])
               net_revenue = revenue
               net_revenue += hudson_delta(entity, revenue) if type == :hudson
               [type, payout.merge(share_price_change(entity, payout[:per_share].positive? ? net_revenue : 0))]
@@ -169,7 +169,7 @@ module Engine
 
           def handle_warranties!(entity)
             # remove one warranty from each train and see if it rusts
-            entity.trains.each do |train|
+            entity.trains.dup.each do |train|
               train.name = train.name[0..-2] if train.name.include?('*')
               next unless @game.deferred_rust.include?(train) && !train.name.include?('*')
 

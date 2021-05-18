@@ -103,7 +103,18 @@ module Engine
             @game.stock_market.share_price(new_row, new_column)
           end
 
-          def finish_merge
+          def finish_merge(entity)
+            # Sort to ensure uniqueness
+            merging_sorted = @round.merging.sort
+            if (previous_proposer = @round.proposed_mergers[merging_sorted])
+              # Filtering proposals would be quite complex as it can be 2 long or 3 long, this is easy.
+              @game.log << "#{previous_proposer.name} already proposed the same exact merger of"\
+              " #{@round.merging.map(&:name).join(',')}."\
+              ' This is against the rules, clearing proposal.'
+              @round.merging = []
+              return
+            end
+
             players = @game.players.rotate(@game.players.index(current_entity))
             players.each(&:unpass!)
             @round.to_vote = players.map do |player|
@@ -139,7 +150,10 @@ module Engine
             @game.log << "Shareholders (#{voters}) will now vote for proposed merge of "\
             "#{@round.merging.map(&:name).join(',')}, #{@round.votes_needed} votes needed"
 
+            @round.proposed_mergers[merging_sorted] = entity
+
             # just in case the market shares carry the vote
+
             check_result
           end
 
@@ -189,14 +203,6 @@ module Engine
                                           exchange: :free)
             end
 
-            move_tokens_to_surviving(target, @round.merging)
-
-            # Add the $50 token back
-            if target.tokens.size < 3
-              new_token = Engine::Token.new(target, price: 50)
-              target.tokens << new_token
-            end
-
             tokens = target.tokens.map { |t| t.city&.hex&.id }
             charter_tokens = tokens.size - tokens.compact.size
             @log << "#{target.name} has tokens (#{tokens.size}: #{tokens.compact.size} on hexes #{tokens.compact}"\
@@ -227,12 +233,12 @@ module Engine
             return unless mergeable_candidates(action.entity).none?
 
             # No more potential merges, finish merge
-            finish_merge
+            finish_merge(action.entity)
           end
 
           def process_pass(action)
             if @round.merging
-              finish_merge
+              finish_merge(action.entity)
             else
               current_entity.pass!
               super
@@ -347,6 +353,7 @@ module Engine
               vote_outcome: nil,
               to_vote: [],
               merging: nil,
+              proposed_mergers: {},
             }
           end
         end

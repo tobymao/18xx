@@ -15,7 +15,7 @@ module Engine
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18Mag'
         GAME_LOCATION = 'Hungary'
         GAME_PUBLISHER = :lonny_games
-        GAME_RULES_URL = 'https://www.lonny.at/games/18magyarorsz%C3%A1g/'
+        GAME_RULES_URL = 'https://www.lonny.at/app/download/10197748784/18Mag_Rules_ENG_comp.pdf'
 
         PLAYER_RANGE = [2, 6].freeze
       end

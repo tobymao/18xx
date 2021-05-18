@@ -3,27 +3,27 @@
 module Engine
   module Game
     module G18ZOO
-      module Entities
+      module SharedEntities
         COMPANIES = [
           {
-            sym: 'HOLIDAY',
-            name: 'Holiday',
+            sym: 'DAYS_OFF',
+            name: 'Days off',
             value: 3,
-            desc: 'Choose a family, its reputation mark goes one tick to the right.',
+            desc: 'Choose a family (a company), its reputation mark (share value) goes one tick to the right',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
           },
           {
             sym: 'MIDAS',
             name: 'Midas',
             value: 2,
-            desc: 'When turn order is appointed, seize the Priority (Squirrel 1).',
+            desc: 'When turn order is decided, seize the Priority',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
           },
           {
             sym: 'TOO_MUCH_RESPONSIBILITY',
             name: 'Too much responsibility',
             value: 1,
-            desc: 'Get 3$N.',
+            desc: 'Get 3$N',
             abilities: [{ type: 'no_buy', owner_type: 'player' },
                         { type: 'description', description: 'Get 3$N', when: 'any' }],
           },
@@ -31,28 +31,29 @@ module Engine
             sym: 'LEPRECHAUN_POT_OF_GOLD',
             name: 'Leprechaun pot of gold',
             value: 2,
-            desc: 'Earn 2$N now, and at the start of each SR.',
+            desc: 'Earn 2$N now, and 2$N at the start of each SR',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
           },
           {
-            sym: 'IT_IS_ALL_GREEK_TO_ME',
+            sym: 'IT_S_ALL_GREEK_TO_ME',
             name: 'It’s all greek to me',
             value: 2,
-            desc: 'After your action in a SR, do another one.',
+            desc: 'After your action in a SR, do another one',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
           },
           {
             sym: 'WHATSUP',
             name: 'Whatsup',
             value: 3,
-            desc: 'During SR, a family can buy the first available squirrel, deactivated. Reputation moves one tick.',
+            desc: 'During SR, a family (a company) can buy the first available squirrel (train), deactivated. '\
+            'Reputation (share value) moves one tick to the right',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
           },
           {
             sym: 'RABBITS',
             name: 'Rabbits',
             value: 3,
-            desc: 'Two bonus upgrades, even illegal or before the phase.',
+            desc: 'Two bonus upgrades, even illegally or before the correct phase',
             abilities: [
               {
                 type: 'tile_lay',
@@ -73,7 +74,7 @@ module Engine
             sym: 'MOLES',
             name: 'Moles',
             value: 3,
-            desc: '4 special tiles, that can upgrade any plain tiles, even illegal.',
+            desc: '4 special tiles, that can upgrade any plain tiles, even illegally',
             abilities: [
               {
                 type: 'tile_lay',
@@ -94,7 +95,7 @@ module Engine
             sym: 'ANCIENT_MAPS',
             name: 'Ancient maps',
             value: 1,
-            desc: 'Build two additional yellow tiles.',
+            desc: 'Build two additional yellow tiles',
             abilities: [
               {
                 type: 'tile_lay',
@@ -115,7 +116,7 @@ module Engine
             sym: 'HOLE',
             name: 'Hole',
             value: 2,
-            desc: 'Mark two R areas anywhere on the map, so they are connected.',
+            desc: 'Mark two R areas anywhere on the map, and from now on they are connected',
             abilities: [
               {
                 type: 'assign_hexes',
@@ -127,10 +128,10 @@ module Engine
             ],
           },
           {
-            sym: 'ON_DIET',
-            name: 'On diet',
+            sym: 'ON_A_DIET',
+            name: 'On a diet',
             value: 3,
-            desc: 'Put a depot in addition to the allowed spaces.',
+            desc: 'Put a station in addition to the allowed spaces',
             abilities: [
               {
                 type: 'token',
@@ -144,10 +145,10 @@ module Engine
             ],
           },
           {
-            sym: 'SPARKLING_GOLD',
-            name: 'Sparkling gold',
+            sym: 'SHINING_GOLD',
+            name: 'Shining gold',
             value: 1,
-            desc: 'Get 2$N / 1$N when you build on a M / MM tile.',
+            desc: 'Get 2$N / 1$N when you build on a M / MM tile',
             abilities: [
               {
                 type: 'tile_discount',
@@ -171,10 +172,10 @@ module Engine
             ],
           },
           {
-            sym: 'THAT_IS_MINE',
+            sym: 'THAT_S_MINE',
             name: "That's mine!",
             value: 2,
-            desc: 'Book anywhere an open place for a station tile.',
+            desc: 'Book anywhere an open place on a station tile',
             abilities: [
               {
                 type: 'assign_hexes',
@@ -188,7 +189,7 @@ module Engine
             sym: 'WORK_IN_PROGRESS',
             name: 'Work in progress',
             value: 2,
-            desc: 'Block anywhere a free place of a station tile.',
+            desc: 'Block anywhere a free place on a station tile',
             abilities: [
               {
                 type: 'assign_hexes',
@@ -199,10 +200,10 @@ module Engine
             ],
           },
           {
-            sym: 'CORN',
-            name: 'Corn',
+            sym: 'WHEAT',
+            name: 'Wheat',
             value: 2,
-            desc: 'Chooses a tile with its own depot; the station worths +30.',
+            desc: 'Chooses a tile with its own station; the station is worth +30',
             abilities: [
               {
                 type: 'assign_hexes',
@@ -221,7 +222,7 @@ module Engine
             sym: 'TWO_BARRELS',
             name: 'Two barrels',
             value: 2,
-            desc: 'Use twice, to double the value of all O tiles – don’t collect the O in treasury.',
+            desc: 'Use twice, to double the value of all O tiles – don’t collect the O in treasury',
             abilities: [
               {
                 type: 'description',
@@ -237,20 +238,20 @@ module Engine
             sym: 'A_SQUEEZE',
             name: 'A squeeze',
             value: 2,
-            desc: 'Take an additional 3$N if at least one squirrel runs an O.',
+            desc: 'Take an additional 3$N if at least one squirrel (train) runs an O',
           },
           {
-            sym: 'BANDAGE',
-            name: 'Bandage',
+            sym: 'PATCH',
+            name: 'Patch',
             value: 1,
-            desc: 'Mark a squirrel – it runs as a 1S. It cannot be sold; but can be dismissed'\
-            ' (otherwise family cannot purchase new squirrel).',
+            desc: 'Mark a squirrel (train) – it runs as a 1S. It cannot be sold; but can be dismissed '\
+            '- otherwise family (a company) cannot purchase new squirrel (train)',
           },
           {
             sym: 'WINGS',
             name: 'Wings',
             value: 2,
-            desc: 'During the run, a squirrel at will can skip a tokened-out station.',
+            desc: 'During the run, a squirrel (train) at will can skip a tokened-out station',
             abilities: [
               {
                 type: 'assign_corporation',
@@ -260,14 +261,14 @@ module Engine
             ],
           },
           {
-            sym: 'A_SPOONFUL_OF_SUGAR',
-            name: 'A spoonful of sugar',
+            sym: 'A_TIP_OF_SUGAR',
+            name: 'A tip of sugar',
             value: 3,
-            desc: 'A squirrel at will runs one more station - not applicable to 4J or 2J.',
+            desc: 'A squirrel (train) at will runs one more station - not applicable to 4J or 2J',
           },
         ].freeze
 
-        CORPORATIONS = [
+        ALL_CORPORATIONS = [
           {
             sym: 'CR',
             float_percent: 20,
@@ -361,47 +362,87 @@ module Engine
             color: '#858585',
           },
         ].freeze
+      end
 
-        CORPORATIONS_BY_MAP = {
-          map_a: %w[GI PB PE LI TI],
-          map_b: %w[CR GI PB PE BB],
-          map_c: %w[CR LI TI BB EL],
-          map_d: %w[CR GI PB PE LI TI BB],
-          map_e: %w[CR GI PB PE TI BB EL],
-          map_f: %w[CR GI PE LI TI BB EL],
+      module Entities
+        include G18ZOO::SharedEntities
+        CORPORATIONS = ALL_CORPORATIONS.select { |corporation| %w[GI PB PE LI TI].include?(corporation[:sym]) }.freeze
+
+        CORPORATION_COORDINATES = { 'GI' => 'K9', 'PB' => 'N10', 'PE' => 'K17', 'LI' => 'E15', 'TI' => 'H14' }.freeze
+      end
+    end
+
+    module G18ZOOMapB
+      module Entities
+        include G18ZOO::SharedEntities
+        CORPORATIONS = ALL_CORPORATIONS.select { |corporation| %w[CR GI PB PE BB].include?(corporation[:sym]) }.freeze
+
+        CORPORATION_COORDINATES = { 'CR' => 'H3', 'GI' => 'K10', 'PB' => 'N11', 'PE' => 'K18', 'BB' => 'I6' }.freeze
+      end
+    end
+
+    module G18ZOOMapC
+      module Entities
+        include G18ZOO::SharedEntities
+        CORPORATIONS = ALL_CORPORATIONS.select { |corporation| %w[CR LI TI BB EL].include?(corporation[:sym]) }.freeze
+
+        CORPORATION_COORDINATES = { 'CR' => 'I3', 'LI' => 'F16', 'TI' => 'I15', 'BB' => 'J6', 'EL' => 'E5' }.freeze
+      end
+    end
+
+    module G18ZOOMapD
+      module Entities
+        include G18ZOO::SharedEntities
+        CORPORATIONS = ALL_CORPORATIONS.select do |corporation|
+          %w[CR GI PB PE LI TI BB].include?(corporation[:sym])
+        end.freeze
+
+        CORPORATION_COORDINATES = {
+          'CR' => 'H3',
+          'GI' => 'K10',
+          'PB' => 'N11',
+          'PE' => 'K18',
+          'LI' => 'E16',
+          'TI' => 'H15',
+          'BB' => 'I6',
         }.freeze
+      end
+    end
 
-        CORPORATION_COORDINATES_BY_MAP = {
-          map_a: { 'GI' => 'K9', 'PB' => 'N10', 'PE' => 'K17', 'LI' => 'E15', 'TI' => 'H14' },
-          map_b: { 'CR' => 'H3', 'GI' => 'K10', 'PB' => 'N11', 'PE' => 'K18', 'BB' => 'I6' },
-          map_c: { 'CR' => 'I3', 'LI' => 'F16', 'TI' => 'I15', 'BB' => 'J6', 'EL' => 'E5' },
-          map_d: {
-            'CR' => 'H3',
-            'GI' => 'K10',
-            'PB' => 'N11',
-            'PE' => 'K18',
-            'LI' => 'E16',
-            'TI' => 'H15',
-            'BB' => 'I6',
-          },
-          map_e: {
-            'CR' => 'H3',
-            'GI' => 'K10',
-            'PB' => 'N11',
-            'PE' => 'K18',
-            'TI' => 'H15',
-            'BB' => 'I6',
-            'EL' => 'D5',
-          },
-          map_f: {
-            'CR' => 'I3',
-            'GI' => 'L10',
-            'PE' => 'L18',
-            'LI' => 'F16',
-            'TI' => 'I15',
-            'BB' => 'J6',
-            'EL' => 'E5',
-          },
+    module G18ZOOMapE
+      module Entities
+        include G18ZOO::SharedEntities
+        CORPORATIONS = ALL_CORPORATIONS.select do |corporation|
+          %w[CR GI PB PE TI BB EL].include?(corporation[:sym])
+        end.freeze
+
+        CORPORATION_COORDINATES = {
+          'CR' => 'H3',
+          'GI' => 'K10',
+          'PB' => 'N11',
+          'PE' => 'K18',
+          'TI' => 'H15',
+          'BB' => 'I6',
+          'EL' => 'D5',
+        }.freeze
+      end
+    end
+
+    module G18ZOOMapF
+      module Entities
+        include G18ZOO::SharedEntities
+        CORPORATIONS = ALL_CORPORATIONS.select do |corporation|
+          %w[CR GI PE LI TI BB EL].include?(corporation[:sym])
+        end.freeze
+
+        CORPORATION_COORDINATES = {
+          'CR' => 'I3',
+          'GI' => 'L10',
+          'PE' => 'L18',
+          'LI' => 'F16',
+          'TI' => 'I15',
+          'BB' => 'J6',
+          'EL' => 'E5',
         }.freeze
       end
     end
