@@ -48,7 +48,6 @@ module Engine
               name: 'Y1',
               distance: 99,
               price: 100,
-              num: 5,
               available_on: '1',
               variants: [
                 {
@@ -61,7 +60,6 @@ module Engine
               name: 'O1',
               distance: 99,
               price: 300,
-              num: 5,
               available_on: '1',
               variants: [
                 {
@@ -78,7 +76,6 @@ module Engine
               name: 'R1',
               distance: 99,
               price: 500,
-              num: 5,
               available_on: '1',
               variants: [
                 {
@@ -95,7 +92,6 @@ module Engine
               name: 'Pi1',
               distance: 99,
               price: 600,
-              num: 5,
               available_on: '1',
               variants: [
                 {
@@ -112,7 +108,6 @@ module Engine
               name: 'Pu1',
               distance: 99,
               price: 800,
-              num: 5,
               available_on: '1',
               variants: [
                 {
@@ -143,6 +138,7 @@ module Engine
                   hexes: ['D28'],
                   amount: 20,
                 },
+                { type: 'sell_company', when: 'any' },
               ],
               color: nil,
             },

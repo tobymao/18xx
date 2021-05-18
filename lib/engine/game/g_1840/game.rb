@@ -205,6 +205,14 @@ module Engine
           ['2500+', '7 →'],
         ].freeze
 
+        TRAIN_FOR_PLAYER_COUNT = {
+          2 => { Y1: 2, O1: 3, R1: 3, Pi1: 3, Pu1: 3 },
+          3 => { Y1: 4, O1: 4, R1: 4, Pi1: 4, Pu1: 4 },
+          4 => { Y1: 6, O1: 5, R1: 5, Pi1: 5, Pu1: 5 },
+          5 => { Y1: 8, O1: 6, R1: 6, Pi1: 6, Pu1: 6 },
+          6 => { Y1: 10, O1: 7, R1: 7, Pi1: 7, Pu1: 7 },
+        }.freeze
+
         attr_reader :tram_corporations, :major_corporations, :tram_owned_by_corporation, :city_graph
 
         def setup
@@ -648,6 +656,11 @@ module Engine
 
         def scrap_button_text
           'Scrap'
+        end
+
+        def num_trains(train)
+          num_players = @players.size
+          TRAIN_FOR_PLAYER_COUNT[num_players][train[:name]]
         end
       end
     end
