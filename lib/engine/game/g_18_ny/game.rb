@@ -196,7 +196,9 @@ module Engine
           ], round_num: round_num)
         end
 
+        #
         # Events
+        #
 
         def event_close_companies!
           super
@@ -239,7 +241,9 @@ module Engine
           @corporations.each { |c| yield c unless c.floated? }
         end
 
+        #
         # Stock round logic
+        #
 
         def ipo_name(_entity = nil)
           'Treasury'
@@ -285,7 +289,9 @@ module Engine
           @share_pool.transfer_shares(ShareBundle.new(corporation.shares_of(corporation)), @share_pool)
         end
 
+        #
         # Operating round logic
+        #
 
         def operating_order
           minors, majors = @corporations.select(&:floated?).sort.partition { |c| c.type == :minor }
