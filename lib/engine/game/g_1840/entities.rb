@@ -138,7 +138,6 @@ module Engine
                   hexes: ['D28'],
                   amount: 20,
                 },
-                { type: 'sell_company', when: 'any' },
               ],
               color: nil,
             },

@@ -223,6 +223,7 @@ module Engine
           @active_maintainance_cost = {}
           @player_debts = Hash.new { |h, k| h[k] = 0 }
           @last_revenue = Hash.new { |h, k| h[k] = 0 }
+          @player_order_first_sr = Hash.new { |h, k| h[k] = 0 }
           @all_tram_corporations = @corporations.select { |item| item.type == :minor }
           @tram_corporations = @all_tram_corporations.reject { |item| item.id == '2' }.sort_by do
             rand
@@ -275,6 +276,12 @@ module Engine
         def new_auction_round
           Engine::Round::Auction.new(self, [
             G1840::Step::SelectionAuction,
+          ])
+        end
+
+        def player_order_round
+          G1840::Round::Choices.new(self, [
+            G1840::Step::ChoosePlayerOrder,
           ])
         end
 
@@ -379,7 +386,10 @@ module Engine
                 init_company_round
               end
             when init_round.class
+              player_order_round
+            when player_order_round.class
               init_round_finished
+              order_for_first_sr
               new_stock_round
             end
         end
@@ -661,6 +671,15 @@ module Engine
         def num_trains(train)
           num_players = @players.size
           TRAIN_FOR_PLAYER_COUNT[num_players][train[:name]]
+        end
+
+        def set_order_for_first_sr(player, index)
+          @player_order_first_sr[player] = index
+        end
+
+        def order_for_first_sr
+          @players.sort_by! { |p| @player_order_first_sr[p] }
+          @log << "Priority order: #{@players.map(&:name).join(', ')}"
         end
       end
     end
