@@ -7,3 +7,7 @@ hotseat002:
  * Alternate destinations
  * CGR Diesel borrow
  * incomplete CGR implementation - will have to be removed / replayed at some point
+
+ hotseat003:
+ * Test national may never close
+ * Test excess national token discard

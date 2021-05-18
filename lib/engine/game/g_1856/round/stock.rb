@@ -20,6 +20,11 @@ module Engine
             players_unvested_holdings[@entities[@entity_index]] = nil
             super
           end
+
+          def sold_out_stock_movement(corp)
+            # do nothing for the national if it has never owned a permanent train
+            super if corp != @game.national || !@game.national_ever_owned_permanent
+          end
         end
       end
     end
