@@ -1101,6 +1101,7 @@ module Engine
           status = []
           status << %w[Receivership bold] if corp.receivership?
           status << %w[Chartered bold] if @chartered[corp]
+          status << ["Par: #{format_currency(corp.original_par_price.price)}"] if corp.ipoed
           status << ["Phase available: #{start_phase}"] if !@phase.available?(start_phase) && !corp.ipoed
           status << ['Cannot start'] if @phase.available?(start_phase) && !legal_to_start?(corp) && !corp.ipoed
           status << ["Permits: #{@permits[corp].map(&:to_s).join(',')}"]
@@ -2051,7 +2052,7 @@ module Engine
 
             # only ask if they can afford to buy
             #
-            if @merge_data[:originator] == entity
+            if @merge_data[:originator] == entity && @merge_data[:type] != :refinance
               # need to use combined cash for corps
               other = @merge_data[:corps].find { |c| c != entity }
               other.spend(other.cash, entity) if other.cash.positive?
