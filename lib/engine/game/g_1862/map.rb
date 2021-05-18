@@ -417,7 +417,7 @@ module Engine
           'C12' => 'Great Dunmow',
           'D11' => 'Sudbury',
           'E12' => 'Colchester',
-          'F11' => 'Ipswitch',
+          'F11' => 'Ipswich',
           'G12' => 'Felixstowe',
           'B13' => "Bishop's Stortford",
           'C14' => 'London',
@@ -449,7 +449,6 @@ module Engine
             %w[
             E2
             F3
-            C4
             E4
             B5
             D5
@@ -471,6 +470,7 @@ module Engine
             ] => 'city=revenue:0;label=N',
             %w[
             H5
+            C4
             C8
             D9
             ] => 'city=revenue:0;label=Y',

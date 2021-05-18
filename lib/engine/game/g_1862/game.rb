@@ -1898,7 +1898,10 @@ module Engine
 
         # look for next entity that has needed share
         def find_donor_share(entity, corp, holders, percent)
-          return nil if entity.corporation?
+          if entity.corporation?
+            match = @share_pool.shares_of(corp).find { |s| s.percent == percent }
+            return match
+          end
 
           donors = [@share_pool] + holders[(holders.find_index(entity) + 1)..-1]
 
