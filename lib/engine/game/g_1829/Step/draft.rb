@@ -77,11 +77,13 @@ module Engine
 
             action_finalized
           end
+
           def track_action(action, corporation, player_action = true)
             @round.last_to_act = action.entity.player
             @round.current_actions << action if player_action
             @round.players_history[action.entity.player][corporation] << action
           end
+
           def process_pass(action)
             @log << "#{action.entity.name} passes"
             action.entity.pass!
