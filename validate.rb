@@ -115,6 +115,25 @@ def validate_json(filename, strict: false)
   game.maybe_raise!
 end
 
+def validate_json_auto(filename, strict: false)
+  # Validate the json, and try and add auto actions at the end
+  data = JSON.parse(File.read(filename))
+  rungame = Engine::Game.load(data, strict: strict).maybe_raise!
+  rungame.maybe_raise!
+  actions = rungame.class.filtered_actions(data['actions']).first
+
+  action = actions.last
+
+  # Process game to previous action
+  auto_game = Engine::Game.load(data, at_action: action['id'] - 1)
+
+  # Add the action but without the auto actions
+  clone = action.dup
+  clone.delete('auto_actions')
+  auto_game.process_action(clone, add_auto_actions: true)
+  auto_game.maybe_raise!
+end
+
 def pin_games(pin_version, game_ids)
   game_ids.each do |id|
     data = Game[id]
