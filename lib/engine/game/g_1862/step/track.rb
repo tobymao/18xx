@@ -98,6 +98,8 @@ module Engine
           end
 
           def available_hex(entity, hex, normal: false)
+            return nil if @game.class::LONDON_TOKEN_HEXES.include?(hex.id) # never highlight the London hexes
+
             color = hex.tile.color
             num_towns = hex.tile.towns.size
             num_cities = hex.tile.cities.size

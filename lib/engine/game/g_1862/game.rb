@@ -1898,7 +1898,7 @@ module Engine
 
         # look for next entity that has needed share
         def find_donor_share(entity, corp, holders, percent)
-          return nil if entity.corporation?
+          return @share_pool.shares_of(corp).find { |s| s.percent == percent } if entity.corporation?
 
           donors = [@share_pool] + holders[(holders.find_index(entity) + 1)..-1]
 
@@ -2122,7 +2122,10 @@ module Engine
           # cash
           nonsurvivor.spend(nonsurvivor.cash, survivor) if nonsurvivor.cash.positive?
           # trains
-          nonsurvivor.trains.each { |t| t.owner = survivor }
+          nonsurvivor.trains.each do |t|
+            t.owner = survivor
+            t.operated = false
+          end
           survivor.trains.concat(nonsurvivor.trains)
           nonsurvivor.trains.clear
           # permits
