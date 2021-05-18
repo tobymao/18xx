@@ -1609,13 +1609,13 @@ module Engine
           # this game essentially uses double-height coordinates
           dx = (x_a - x_b).abs
           dy = (y_a - y_b).abs
-          distance = [0, dx + [0, (dy - dx) / 2].max - 1].max
+          distance = end_a == end_b ? -1 : [0, dx + [0, (dy - dx) / 2].max - 1].max
 
           # adjust for offboards
           distance += 1 if end_a != setend_a
           distance += 1 if end_b != setend_b
 
-          distance
+          [0, distance].max
         end
 
         def freight_bonus(set)
