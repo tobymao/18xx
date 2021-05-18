@@ -157,38 +157,12 @@ module Engine
 
         LAYOUT = :pointy
 
-        def event_next_corps_available!
-          next_corps, @future_corporations = @future_corporations.partition do |corporation|
-            case corporation.num_ipo_shares
-            when 0
-              case corporation.type
-              when :init2
-                corporation.type == :init3
-              when :init3
-                corporation.type == :init4
-              when :init4
-                corporation.type == :init5
-              when :init5
-                corporation.type == :init6
-              when :init6
-                corporation.type == :init7
-              when :init7
-                corporation.type == :init8
-              when :init8
-                corporation.type == :init9
-              when :init9
-                corporation.type == :init10
-              end
-              End
+        def setup
+          @corporations.each do |corporation|
+            if corporation.type == 'init1'
+              # here should be the fixed parprices per corporation
             end
           end
-          @corporations.concat(next_corps)
-          @log << '-- Medium corporations now available --'
-        end
-
-        def setup
-          # Only small companies are available until later phases
-          @corporations, @future_corporations = @corporations.partition { |corporation| corporation.type == :init1 }
         end
 
         def upgrades_to?(from, to, _special = false, selected_company: nil)
@@ -208,27 +182,19 @@ module Engine
           upgrades
         end
 
-        def get_par_prices(entity, _corp)
-          @game
-            .stock_market
-            .par_prices
-            .select { |p| p.price * 2 <= entity.cash }
-        end
-
-        def par_prices(corp)
-          par_nodes = stock_market.par_prices
-          available_par_prices = PAR_RANGE[corp.type]
-          par_nodes.select { |par_node| available_par_prices.include?(par_node.price) }
-        end
-
         def init_round
           G1829::Round::Draft.new(self,
                                   [G1829::Step::Draft],
                                   snake_order: false)
         end
 
+        def stock_round
+          G1829::Round::Stock.new(self, [
+            Engine::Step::BuySellParShares,
+          ])
+        end
         def operating_round(round_num)
-          Round::Operating.new(self, [
+          G1829::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
             Engine::Step::HomeToken,
