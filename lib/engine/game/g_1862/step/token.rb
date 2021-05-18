@@ -51,8 +51,11 @@ module Engine
           end
 
           def available_hex(entity, hex)
-            @game.graph.reachable_hexes(entity)[hex] ||
-              (@game.class::LONDON_TOKEN_HEXES.include?(hex.id) && can_token_london?(entity))
+            if @game.class::LONDON_TOKEN_HEXES.include?(hex.id)
+              can_token_london?(entity)
+            else
+              @game.graph.reachable_hexes(entity)[hex]
+            end
           end
         end
       end
