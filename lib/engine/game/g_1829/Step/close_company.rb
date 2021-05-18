@@ -8,7 +8,6 @@ module Engine
           def process_close_company(_action)
             @log << "#{company.name} is closed."
             company.close!
-            @log << "#{company.name} closes"
           end
         end
       end

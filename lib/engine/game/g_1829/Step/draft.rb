@@ -71,12 +71,17 @@ module Engine
             @companies.delete(company)
 
             @log << "#{player.name} buys #{company.name} for #{@game.format_currency(price)}"
-
-            entities.each(&:unpass!)
+            action.entity.unpass!
+            # entities.each(&:unpass!)
             @round.next_entity_index!
+
             action_finalized
           end
-
+          def track_action(action, corporation, player_action = true)
+            @round.last_to_act = action.entity.player
+            @round.current_actions << action if player_action
+            @round.players_history[action.entity.player][corporation] << action
+          end
           def process_pass(action)
             @log << "#{action.entity.name} passes"
             action.entity.pass!
@@ -87,7 +92,7 @@ module Engine
           def action_finalized
             return unless finished?
 
-            @round.reset_entity_index!
+            @round.next_entity!
           end
 
           def committed_cash(_player, _show_hidden = false)
