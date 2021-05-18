@@ -7,7 +7,6 @@ module Engine
     module G1829
       module Round
         class Stock < Engine::Round::Stock
-
         end
       end
     end
