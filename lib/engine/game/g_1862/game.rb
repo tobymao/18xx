@@ -2122,7 +2122,10 @@ module Engine
           # cash
           nonsurvivor.spend(nonsurvivor.cash, survivor) if nonsurvivor.cash.positive?
           # trains
-          nonsurvivor.trains.each { |t| t.owner = survivor }
+          nonsurvivor.trains.each do |t|
+            t.owner = survivor
+            t.operated = false
+          end
           survivor.trains.concat(nonsurvivor.trains)
           nonsurvivor.trains.clear
           # permits
