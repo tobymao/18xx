@@ -193,6 +193,7 @@ module Engine
             Engine::Step::BuySellParShares,
           ])
         end
+
         def operating_round(round_num)
           G1829::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
