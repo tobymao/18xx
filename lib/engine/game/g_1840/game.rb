@@ -332,7 +332,7 @@ module Engine
             G1840::Step::BuyCompany,
             Engine::Step::HomeToken,
             G1840::Step::TrackAndToken,
-            Engine::Step::Route,
+            G1840::Step::Route,
             G1840::Step::Dividend,
             [G1840::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
@@ -636,6 +636,18 @@ module Engine
           return if route.corporation.type == :city
 
           super
+        end
+
+        def scrappable_trains(entity)
+          corporate_card_minors(entity).flat_map(&:trains) + entity.trains
+        end
+
+        def scrap_info(train)
+          "Maintenance: #{format_currency(train_maintenance(train.sym))}"
+        end
+
+        def scrap_button_text
+          'Scrap'
         end
       end
     end
