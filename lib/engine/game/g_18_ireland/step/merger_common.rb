@@ -12,11 +12,12 @@ module Engine
           end
 
           def check_result
+            # Assumes @round.votes_needed is half+1
             if @round.votes_for >= @round.votes_needed
               @game.log << 'Majority has voted for merger and proposal is accepted'
               @round.vote_outcome = :for
               @round.to_vote = []
-            elsif @round.votes_against > @round.votes_needed
+            elsif @round.votes_against >= @round.votes_needed
               @game.log << 'Majority has voted against merger and proposal is rejected'
               @round.vote_outcome = :against
               @round.to_vote = []
