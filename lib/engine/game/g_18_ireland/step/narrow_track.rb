@@ -49,6 +49,15 @@ module Engine
             end
           end
 
+          def all_hex_neighbors(entity, hex)
+            # Legal tile rotation enforces gauge connectivity, return a union of both narrow and broad
+            neighbors = (@game.graph_for_entity(entity).connected_hexes(entity)[hex] || []) |
+             (@game.narrow_connected_hexes(entity)[hex] || [])
+            return nil if neighbors.empty?
+
+            neighbors
+          end
+
           def legal_tile_rotation?(entity, hex, tile)
             return false unless @game.legal_tile_rotation?(entity, hex, tile)
 
