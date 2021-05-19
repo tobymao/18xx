@@ -670,7 +670,7 @@ module Engine
 
         def num_trains(train)
           num_players = @players.size
-          TRAIN_FOR_PLAYER_COUNT[num_players][train[:name]]
+          TRAIN_FOR_PLAYER_COUNT[num_players][train[:name].to_sym]
         end
 
         def set_order_for_first_sr(player, index)
