@@ -259,7 +259,7 @@ module Engine
             # Are corporations connected (blocking by tokens doesn't matter)
             unless @corp_connectivity[c1]
               new_home = c1.tokens.first.city
-              connected = []
+              connected = [c1]
               visited = {}
               new_home.walk(skip_track: :narrow, tile_type: @game.class::TILE_TYPE) do |path, _, _|
                 next if visited[path]

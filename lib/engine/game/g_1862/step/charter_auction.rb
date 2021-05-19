@@ -140,7 +140,7 @@ module Engine
             if action.entity.cash >= action.share_price.price
               @finish_action = %w[buy_shares pass]
             else
-              @log << "#{entity.name} skips buying additional shares"
+              @log << "#{action.entity.name} skips buying additional shares"
               pass!
             end
           end

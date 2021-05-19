@@ -40,7 +40,7 @@ module View
           left << h(Convert) if @current_actions.include?('convert')
           left << h(SwitchTrains) if @current_actions.include?('switch_trains')
           left << h(ReassignTrains) if @current_actions.include?('reassign_trains')
-          if @current_actions.include?('buy_train') || @current_actions.include?('scrap_train')
+          if @current_actions.include?('buy_train')
             left << h(IssueShares) if @current_actions.include?('sell_shares')
             left << h(BuyTrains)
           elsif @current_actions.include?('borrow_train')
@@ -65,6 +65,7 @@ module View
           elsif @current_actions.include?('buy_corporation')
             left << h(BuyCorporation)
           end
+          left << h(ScrapTrains) if @current_actions.include?('scrap_train')
           left << h(Loans, corporation: entity) if (%w[take_loan payoff_loan] & @current_actions).any?
 
           if entity.player?

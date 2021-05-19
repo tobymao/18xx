@@ -613,7 +613,7 @@ module Engine
         def add_marker(corporation)
           hex = @hexes.find { |h| h.id == corporation.coordinates } # hex_by_id doesn't work here
           image = "1862/#{corporation.id}".upcase.delete('&')
-          marker = Part::Icon.new(image, nil, true, nil, hex.tile.preprinted, large: true, owner: nil)
+          marker = Part::Icon.new(image, nil, true, nil, hex.tile.preprinted, large: true, owner: corporation)
           hex.tile.icons << marker
         end
 
@@ -1101,6 +1101,7 @@ module Engine
           status = []
           status << %w[Receivership bold] if corp.receivership?
           status << %w[Chartered bold] if @chartered[corp]
+          status << ["Par: #{format_currency(corp.original_par_price.price)}"] if corp.ipoed
           status << ["Phase available: #{start_phase}"] if !@phase.available?(start_phase) && !corp.ipoed
           status << ['Cannot start'] if @phase.available?(start_phase) && !legal_to_start?(corp) && !corp.ipoed
           status << ["Permits: #{@permits[corp].map(&:to_s).join(',')}"]
@@ -1608,13 +1609,13 @@ module Engine
           # this game essentially uses double-height coordinates
           dx = (x_a - x_b).abs
           dy = (y_a - y_b).abs
-          distance = [0, dx + [0, (dy - dx) / 2].max - 1].max
+          distance = end_a == end_b ? -1 : [0, dx + [0, (dy - dx) / 2].max - 1].max
 
           # adjust for offboards
           distance += 1 if end_a != setend_a
           distance += 1 if end_b != setend_b
 
-          distance
+          [0, distance].max
         end
 
         def freight_bonus(set)
@@ -2051,7 +2052,7 @@ module Engine
 
             # only ask if they can afford to buy
             #
-            if @merge_data[:originator] == entity
+            if @merge_data[:originator] == entity && @merge_data[:type] != :refinance
               # need to use combined cash for corps
               other = @merge_data[:corps].find { |c| c != entity }
               other.spend(other.cash, entity) if other.cash.positive?
@@ -2122,12 +2123,10 @@ module Engine
           # cash
           nonsurvivor.spend(nonsurvivor.cash, survivor) if nonsurvivor.cash.positive?
           # trains
-          nonsurvivor.trains.each do |t|
-            t.owner = survivor
-            t.operated = false
-          end
+          nonsurvivor.trains.each { |t| t.owner = survivor }
           survivor.trains.concat(nonsurvivor.trains)
           nonsurvivor.trains.clear
+          survivor.trains.each { |t| t.operated = false }
           # permits
           @permits[survivor].concat(@permits[nonsurvivor])
           @permits[survivor].uniq!
@@ -2318,6 +2317,21 @@ module Engine
 
         def liquidity(player)
           player_value(player)
+        end
+
+        def decorate_marker(icon)
+          return nil if !(corporation = icon.owner) || !icon.owner.corporation?
+
+          color = available_to_start?(corporation) ? 'white' : 'black'
+          shape = case @permits[corporation]&.first
+                  when :local
+                    :diamond
+                  when :express
+                    :circle
+                  else
+                    :hexagon
+                  end
+          { color: color, shape: shape }
         end
       end
     end
