@@ -2266,6 +2266,9 @@ module Engine
           # put marker onto map
           add_marker(corporation)
 
+          # remove charter flag
+          @chartered.delete(corporation)
+
           convert_to_full!(corporation)
 
           # re-sort shares
@@ -2296,6 +2299,9 @@ module Engine
 
           # finally done with Merge/Acquire step
           @round.active_step.pass!
+
+          # we mucked around with tokens, clear the graph
+          @graph.clear
 
           # stop survivor from running after merge if
           # other corp already ran or this is an acquisition
