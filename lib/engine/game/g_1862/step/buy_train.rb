@@ -243,6 +243,10 @@ module Engine
           def warranty_cost
             @game.format_currency(WARRANTY_COST)
           end
+
+          def ebuy_president_can_contribute?(_corporation)
+            false
+          end
         end
       end
     end
