@@ -318,7 +318,6 @@ module Engine
             G1840::Step::SellCompany,
             G1840::Step::Route,
             G1840::Step::Dividend,
-            # TODO: Divident of major corporations
           ], round_num: round_num, no_city: false)
         end
 
