@@ -144,13 +144,6 @@ module View
           children << send("render_#{view}")
         end
 
-        scrappable_trains = []
-        scrappable_trains = step.scrappable_trains(@corporation) if step.respond_to?(:scrappable_trains)
-        unless scrappable_trains.empty?
-          children << h(:h3, 'Trains to Scrap')
-          children << h(:div, div_props, scrap_trains(scrappable_trains))
-        end
-
         discountable_trains = @game.discountable_trains_for(@corporation)
 
         if discountable_trains.any? && step.discountable_trains_allowed?(@corporation)
@@ -406,23 +399,6 @@ module View
       def other_owner(other)
         step = @game.round.active_step
         step.respond_to?(:real_owner) ? step.real_owner(other) : other.owner
-      end
-
-      def scrap_trains(scrappable_trains)
-        step = @game.round.active_step
-        scrappable_trains.flat_map do |train|
-          scrap = lambda do
-            process_action(Engine::Action::ScrapTrain.new(
-              @corporation,
-              train: train,
-            ))
-          end
-
-          [h(:div, train.name),
-           h('div.nowrap', train.owner.name),
-           h('div.right', step.scrap_info(train)),
-           h('button.no_margin', { on: { click: scrap } }, step.scrap_button_text(train))]
-        end
       end
 
       def price_range(train)
