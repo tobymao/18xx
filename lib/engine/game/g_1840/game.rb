@@ -315,6 +315,7 @@ module Engine
 
         def new_company_operating_route_round(round_num)
           G1840::Round::CompanyOperating.new(self, [
+            G1840::Step::SellCompany,
             G1840::Step::Route,
             G1840::Step::Dividend,
             # TODO: Divident of major corporations
@@ -323,12 +324,14 @@ module Engine
 
         def new_company_operating_buy_train_round(round_num)
           G1840::Round::CompanyOperating.new(self, [
+            G1840::Step::SellCompany,
             G1840::Step::BuyTrain,
           ], round_num: round_num, no_city: true)
         end
 
         def new_company_operating_auction_round
           G1840::Round::Acquisition.new(self, [
+            G1840::Step::SellCompany,
             G1840::Step::InterruptingBuyTrain,
             G1840::Step::AcquisitionAuction,
           ])
@@ -336,12 +339,14 @@ module Engine
 
         def new_company_operating_switch_trains(round_num)
           G1840::Round::CompanyOperating.new(self, [
+            G1840::Step::SellCompany,
             G1840::Step::ReassignTrains,
           ], round_num: round_num, no_city: true)
         end
 
         def operating_round(round_num)
           G1840::Round::LineOperating.new(self, [
+            G1840::Step::SellCompany,
             G1840::Step::SpecialTrack,
             G1840::Step::SpecialToken,
             G1840::Step::BuyCompany,
@@ -680,6 +685,28 @@ module Engine
         def order_for_first_sr
           @players.sort_by! { |p| @player_order_first_sr[p] }
           @log << "Priority order: #{@players.map(&:name).join(', ')}"
+        end
+
+        def entity_can_use_company?(entity, company)
+          return true if entity.player? && entity == company.owner
+          return true if entity.corporation? && company.owner == owning_major_corporation(entity)
+
+          false
+        end
+
+        def sell_company_choice(company)
+          { { type: :sell } => "Sell for #{format_currency(company.value)}" }
+        end
+
+        def sell_company(company)
+          price = company.value
+          player = company.player
+
+          @log << "#{player.name} sells #{company.name} for #{format_currency(price)}"
+
+          @bank.spend(price, player)
+
+          company.close!
         end
       end
     end
