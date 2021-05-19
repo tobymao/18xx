@@ -2269,6 +2269,9 @@ module Engine
           # remove charter flag
           @chartered.delete(corporation)
 
+          # restore original permit
+          @permits[corporation] = @original_permits[corporation]
+
           convert_to_full!(corporation)
 
           # re-sort shares
