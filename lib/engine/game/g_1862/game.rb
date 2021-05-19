@@ -612,6 +612,8 @@ module Engine
 
         def add_marker(corporation)
           hex = @hexes.find { |h| h.id == corporation.coordinates } # hex_by_id doesn't work here
+          return if hex.tile.icons.find(&:large) # don't add twice
+
           image = "1862/#{corporation.id}".upcase.delete('&')
           marker = Part::Icon.new(image, nil, true, nil, hex.tile.preprinted, large: true, owner: corporation)
           hex.tile.icons << marker
