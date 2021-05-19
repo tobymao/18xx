@@ -177,6 +177,7 @@ module Engine
             distance: 99,
             price: 770,
             discount: {
+              "3H'" => 150,
               '8H' => 440,
               '10H' => 550,
             },
