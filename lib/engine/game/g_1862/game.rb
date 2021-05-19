@@ -2130,7 +2130,7 @@ module Engine
           # permits
           @permits[survivor].concat(@permits[nonsurvivor])
           @permits[survivor].uniq!
-          @permits[nonsurvivor] = @original_permits[nonsurvivor]
+          @permits[nonsurvivor] = @original_permits[nonsurvivor].dup
           # charter flag (keeping survivor chartered appears to only be needed for solo game)
           if @chartered[survivor] && !@chartered[nonsurvivor]
             # no shares can be in IPO, but doing this for consistancy (non-chartered => incremental)
@@ -2270,7 +2270,7 @@ module Engine
           @chartered.delete(corporation)
 
           # restore original permit
-          @permits[corporation] = @original_permits[corporation]
+          @permits[corporation] = @original_permits[corporation].dup
 
           convert_to_full!(corporation)
 
