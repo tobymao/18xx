@@ -2524,6 +2524,10 @@ module Engine
       def separate_treasury?
         false
       end
+
+      def decorate_marker(_icon)
+        nil
+      end
     end
   end
 end

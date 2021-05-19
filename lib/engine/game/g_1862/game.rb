@@ -613,7 +613,7 @@ module Engine
         def add_marker(corporation)
           hex = @hexes.find { |h| h.id == corporation.coordinates } # hex_by_id doesn't work here
           image = "1862/#{corporation.id}".upcase.delete('&')
-          marker = Part::Icon.new(image, nil, true, nil, hex.tile.preprinted, large: true, owner: nil)
+          marker = Part::Icon.new(image, nil, true, nil, hex.tile.preprinted, large: true, owner: corporation)
           hex.tile.icons << marker
         end
 
@@ -2317,6 +2317,21 @@ module Engine
 
         def liquidity(player)
           player_value(player)
+        end
+
+        def decorate_marker(icon)
+          return nil if !(corporation = icon.owner) || !icon.owner.corporation?
+
+          color = available_to_start?(corporation) ? 'white' : 'black'
+          shape = case @permits[corporation]&.first
+                  when :local
+                    :diamond
+                  when :express
+                    :circle
+                  else
+                    :hexagon
+                  end
+          { color: color, shape: shape }
         end
       end
     end
