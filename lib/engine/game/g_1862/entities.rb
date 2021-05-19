@@ -265,7 +265,7 @@ module Engine
           },
           {
             sym: 'WVR',
-            name: 'Waveney Vally Railway',
+            name: 'Waveney Valley Railway',
             logo: '1862/WVR',
             simple_logo: '1862/WVR.alt',
             float_percent: 50,
