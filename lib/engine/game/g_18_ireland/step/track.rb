@@ -8,9 +8,8 @@ module Engine
       module Step
         class Track < Engine::Step::Track
           include NarrowTrack
-
           def hex_neighbors(entity, hex)
-            super || @game.narrow_connected_hexes(entity)[hex]
+            all_hex_neighbors(entity, hex)
           end
         end
       end

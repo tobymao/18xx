@@ -23,16 +23,13 @@ module Engine
               return unless (ability = abilities(entity))
               return if ability.count == 2 && hex.id != 'F4'
             when 'BoW'
-              return @game.graph.connected_hexes(operator)[hex] || @game.narrow_connected_hexes(operator)[hex]
+              return all_hex_neighbors(operator, hex)
             end
 
             return unless (ability = abilities(entity))
             return if !ability.hexes&.empty? && !ability.hexes&.include?(hex.id)
 
-            if ability.type == :tile_lay && ability.reachable && !(@game.graph.connected_hexes(operator)[hex] ||
-               @game.narrow_connected_hexes(operator)[hex])
-              return
-            end
+            return if ability.type == :tile_lay && ability.reachable && !all_hex_neighbors(operator, hex)
 
             @game.hex_by_id(hex.id).neighbors.keys
           end
