@@ -60,7 +60,7 @@ module Engine
           },
           'IR5' => { 'count' => 14, 'color' => 'yellow', 'code' => 'town=revenue:10;path=a:0,b:_0,track:narrow' },
           'IR6' => {
-            'count' => 1,
+            'count' => 2,
             'color' => 'green',
             'code' => 'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:4,b:_1;label=BC',
           },
