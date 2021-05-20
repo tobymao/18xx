@@ -8,11 +8,7 @@ require_relative '../base'
 module Engine
   module Game
     module G18ZOO
-      class Game < Game::Base
-        include_meta(G18ZOO::Meta)
-        include G18ZOO::Entities
-        include G18ZOO::Map
-
+      class SharedGame < Game::Base
         CURRENCY_FORMAT_STR = '%d$N'
 
         BANK_CASH = 99_999
@@ -21,7 +17,7 @@ module Engine
           2 => { '5' => 10, '7' => 12 },
           3 => { '5' => 7, '7' => 9 },
           4 => { '5' => 5, '7' => 7 },
-          5 => { '5' => 0, '7' => 6 },
+          5 => { '5' => 6, '7' => 6 },
         }.freeze
 
         CAPITALIZATION = :incremental
@@ -29,7 +25,7 @@ module Engine
         MUST_SELL_IN_BLOCKS = true
 
         MARKET = [
-          %w[7 8 9 10 11 12 13 14 15 16 20 24e],
+          %w[7 8 9 10s 11s 12s 13s 14s 15s 16 20 24e],
           %w[6 7x 8 9z 10 11 12w 13 14],
           %w[5 6x 7 8 9 10 11],
           %w[4 5x 6 7 8],
@@ -153,15 +149,14 @@ module Engine
 
         BANKRUPTCY_ALLOWED = false
 
-        STARTING_CASH = { 2 => 40, 3 => 28, 4 => 23 }.freeze
-
         CERT_LIMIT_INCLUDES_PRIVATES = false
 
         STOCKMARKET_COLORS = {
           par_1: :yellow,
           par_2: :green,
           par_3: :brown,
-          endgame: :blue,
+          endgame: :orange,
+          safe_par: :blue,
         }.freeze
 
         STOCKMARKET_THRESHOLD = [
@@ -218,9 +213,10 @@ module Engine
             ' (runs one last time)'],
         ).freeze
 
-        MARKET_TEXT = Base::MARKET_TEXT.merge(par_1: 'Yellow phase par',
-                                              par_2: 'Can only enter during green phase',
-                                              par_3: 'Can only enter during brown phase').freeze
+        MARKET_TEXT = Base::MARKET_TEXT.merge(safe_par: 'President bonus',
+                                              par_1: 'Yellow phase par',
+                                              par_2: 'Green phase par (bonus 5$N + 2 yellow tracks)',
+                                              par_3: 'Brown phase par (bonus 10$N + 4 yellow tracks)').freeze
 
         MARKET_SHARE_LIMIT = 80 # percent
 
@@ -310,6 +306,44 @@ module Engine
           @all_private_visible = rules.include?(:power_visible)
 
           rules
+        end
+
+        def game_bases
+          return game_base_2 if @optional_rules.include?(:base_2)
+          return game_base_3 if @optional_rules.include?(:base_3)
+
+          nil
+        end
+
+        def optional_hexes
+          base = game_bases
+          hexes = game_hexes
+          return hexes unless base
+
+          new_hexes = {}
+          hexes.keys.each do |color|
+            new_map = hexes[color].transform_keys do |coords|
+              coords - base.keys
+            end
+            base.each do |coords, tile_array|
+              next unless color == tile_array[1]
+
+              new_map[[coords]] = tile_array[0]
+            end
+
+            new_hexes[color] = new_map
+          end
+
+          new_hexes
+        end
+
+        def location_name(coord)
+          result = game_location_names[coord]
+          result = game_location_name_base_2[coord] if @optional_rules.include?(:base_2) &&
+            game_location_name_base_2.key?(coord)
+          result = game_location_name_base_3[coord] if @optional_rules.include?(:base_3) &&
+            game_location_name_base_3.key?(coord)
+          result
         end
 
         def result
@@ -419,8 +453,8 @@ module Engine
                                                      .find { |c| !c.ipoed }
             @near_families_purchasable = [{ direction: 'next', id: next_corporation.id },
                                           { direction: 'reverse', id: previous_corporation.id }]
-            @log << "Near family rule: #{previous_corporation.full_name} and #{next_corporation.full_name}"\
-            ' are available.'
+            @log << "Near family rule: either #{previous_corporation.full_name} or #{next_corporation.full_name}"\
+            ' are available (choosing one excludes the other one)'
           else
             if @corporations.count(&:ipoed) == 2
               @near_families_direction = @near_families_purchasable.find { |c| c[:id] == corporation.id }[:direction]
@@ -431,7 +465,7 @@ module Engine
             if following_corporation
               @near_families_purchasable = [{ id: following_corporation.id }]
 
-              @log << "Near family rule: #{following_corporation.full_name} is now available."
+              @log << "Near family rule: #{following_corporation.full_name} is now available"
             end
           end
         end
@@ -819,7 +853,7 @@ module Engine
           return unless entity.all_abilities.empty?
 
           items = @holes.map(&:coordinates).sort.join('-')
-          hole_to_convert = self.class::HOLE
+          hole_to_convert = game_hole
           hole_to_convert[items].each do |coordinates_list, new_tile_code|
             coordinates_list.each do |coordinates|
               hex_by_id(coordinates).lay(Engine::Tile.from_code(coordinates, :red, new_tile_code))
@@ -997,11 +1031,11 @@ module Engine
         end
 
         def init_corporations(stock_market)
-          corporations = self.class::CORPORATIONS.map do |corporation|
+          corporations = game_corporations.map do |corporation|
             Corporation.new(
               min_price: stock_market.par_prices.map(&:price).min,
               capitalization: self.class::CAPITALIZATION,
-              coordinates: self.class::CORPORATION_COORDINATES[corporation[:sym]],
+              coordinates: game_corporation_coordinates[corporation[:sym]],
               **corporation.merge(corporation_opts),
             )
           end
@@ -1216,30 +1250,102 @@ module Engine
           distance
         end
       end
+
+      class Game < G18ZOO::SharedGame
+        include_meta(G18ZOO::Meta)
+        include G18ZOO::Entities
+        include G18ZOO::Map
+
+        STARTING_CASH = { 2 => 40, 3 => 28, 4 => 27, 5 => 22 }.freeze
+
+        def game_corporations
+          return G18ZOOMapD::Entities::CORPORATIONS if @players.size >= 4
+
+          G18ZOOMapA::Entities::CORPORATIONS
+        end
+
+        def game_corporation_coordinates
+          return G18ZOOMapD::Entities::CORPORATION_COORDINATES if @players.size >= 4
+
+          G18ZOOMapA::Entities::CORPORATION_COORDINATES
+        end
+
+        def game_hexes
+          return G18ZOOMapD::Map::HEXES if @players.size >= 4
+
+          G18ZOOMapA::Map::HEXES
+        end
+
+        def game_hole
+          return G18ZOOMapD::Map::HOLE if @players.size >= 4
+
+          G18ZOOMapA::Map::HOLE
+        end
+
+        def game_location_names
+          return G18ZOOMapD::Map::LOCATION_NAMES if @players.size >= 4
+
+          G18ZOOMapA::Map::LOCATION_NAMES
+        end
+
+        def game_base_2
+          return G18ZOOMapD::Map::BASE_2 if @players.size >= 4
+
+          G18ZOOMapA::Map::BASE_2
+        end
+
+        def game_location_name_base_2
+          return G18ZOOMapD::Map::LOCATION_NAMES_BASE_2 if @players.size >= 4
+
+          G18ZOOMapA::Map::LOCATION_NAMES_BASE_2
+        end
+
+        def game_base_3
+          return G18ZOOMapD::Map::BASE_3 if @players.size >= 4
+
+          G18ZOOMapA::Map::BASE_3
+        end
+
+        def game_location_name_base_3
+          return G18ZOOMapD::Map::LOCATION_NAMES_BASE_3 if @players.size >= 4
+
+          G18ZOOMapA::Map::LOCATION_NAMES_BASE_3
+        end
+      end
+    end
+
+    module G18ZOOMapA
+      class Game < G18ZOO::SharedGame
+        include_meta(G18ZOOMapA::Meta)
+        include G18ZOOMapA::Entities
+        include G18ZOOMapA::Map
+
+        STARTING_CASH = { 2 => 40, 3 => 28, 4 => 27, 5 => 22 }.freeze
+      end
     end
 
     module G18ZOOMapB
-      class Game < G18ZOO::Game
+      class Game < G18ZOO::SharedGame
         include_meta(G18ZOOMapB::Meta)
         include G18ZOOMapB::Entities
         include G18ZOOMapB::Map
 
-        STARTING_CASH = { 2 => 40, 3 => 28, 4 => 23 }.freeze
+        STARTING_CASH = { 2 => 40, 3 => 28, 4 => 23, 5 => 22 }.freeze
       end
     end
 
     module G18ZOOMapC
-      class Game < G18ZOO::Game
+      class Game < G18ZOO::SharedGame
         include_meta(G18ZOOMapC::Meta)
         include G18ZOOMapC::Entities
         include G18ZOOMapC::Map
 
-        STARTING_CASH = { 2 => 40, 3 => 28, 4 => 23 }.freeze
+        STARTING_CASH = { 2 => 40, 3 => 28, 4 => 23, 5 => 22 }.freeze
       end
     end
 
     module G18ZOOMapD
-      class Game < G18ZOO::Game
+      class Game < G18ZOO::SharedGame
         include_meta(G18ZOOMapD::Meta)
         include G18ZOOMapD::Entities
         include G18ZOOMapD::Map
@@ -1249,7 +1355,7 @@ module Engine
     end
 
     module G18ZOOMapE
-      class Game < G18ZOO::Game
+      class Game < G18ZOO::SharedGame
         include_meta(G18ZOOMapE::Meta)
         include G18ZOOMapE::Entities
         include G18ZOOMapE::Map
@@ -1259,7 +1365,7 @@ module Engine
     end
 
     module G18ZOOMapF
-      class Game < G18ZOO::Game
+      class Game < G18ZOO::SharedGame
         include_meta(G18ZOOMapF::Meta)
         include G18ZOOMapF::Entities
         include G18ZOOMapF::Map

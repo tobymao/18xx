@@ -9,7 +9,7 @@ module Engine
             return unless entity.company?
             return unless entity.owner&.corporation?
             return if entity == @game.wheat && entity.owner.tokens.none? { |token| token&.city&.hex == hex }
-            return if entity == @game.hole && hex.tile.label.to_s != 'R'
+            return if entity == @game.hole && !available_hex_for_hole?(entity, hex)
             return if entity == @game.that_s_mine && !available_hex_for_mine?(entity, hex)
             return if entity == @game.work_in_progress && !available_hex_for_work_in_progress?(hex)
             return if hex.assigned?(entity.id)
@@ -48,6 +48,14 @@ module Engine
           end
 
           private
+
+          def available_hex_for_hole?(_entity, hex)
+            return false if hex.tile.label.to_s != 'R'
+            return false if @game.optional_rules.include?(:base_2) && @game.game_base_2.key?(hex.coordinates)
+            return false if @game.optional_rules.include?(:base_3) && @game.game_base_3.key?(hex.coordinates)
+
+            true
+          end
 
           def available_hex_for_mine?(entity, hex)
             !hex.tile.cities.empty? &&
