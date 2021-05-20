@@ -2468,6 +2468,8 @@ module Engine
             @round.operating? && @round.current_operator == ability.corporation
           when 'owning_player_or_turn'
             @round.operating? && @round.current_operator.player == ability.player
+          when 'owning_player_sr_turn'
+            @round.stock? && @round.current_entity == ability.player
           when 'or_between_turns'
             @round.operating? && !@round.current_operator_acted
           when 'or_start'

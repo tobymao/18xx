@@ -8,6 +8,8 @@ module Engine
       module Step
         class BuySellParShares < Engine::Step::BuySellParShares
           def actions(entity)
+            return ['choose_ability'] if entity.company?
+
             return [] unless entity == current_entity
 
             actions = []
@@ -16,6 +18,9 @@ module Engine
             actions << 'sell_shares' if can_sell_any?(entity)
 
             actions << 'pass' if !actions.empty? && @game.all_major_corporations_ipoed?
+
+            actions << 'choose_ability' if !actions.empty? && entity.player? && !entity.companies.empty?
+
             actions
           end
 
@@ -38,6 +43,15 @@ module Engine
 
           def visible_corporations
             @game.corporations.reject { |item| item.type == :minor }
+          end
+
+          def choices_ability(company)
+            @game.sell_company_choice(company)
+          end
+
+          def process_choose_ability(action)
+            company = action.entity
+            @game.sell_company(company)
           end
         end
       end
