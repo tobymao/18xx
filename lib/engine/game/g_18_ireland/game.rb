@@ -18,6 +18,7 @@ module Engine
         MUST_BUY_TRAIN = :always
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
         EBUY_SELL_MORE_THAN_NEEDED_LIMITS_DEPOT_TRAIN = true
+        CERT_LIMIT_COUNTS_BANKRUPTED = true
 
         ASSIGNMENT_TOKENS = {
           'CDSPC' => '/icons/18_ireland/port_token.svg',
