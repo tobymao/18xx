@@ -24,7 +24,7 @@ module Engine
 
           def withhold(_entity, revenue, subsidy)
             {
-              corporation: (revenue / 25).ceil + subsidy,
+              corporation: (revenue / 25.0).ceil + subsidy,
               per_share: 0,
               share_direction: :left,
               share_times: 1,
