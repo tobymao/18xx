@@ -905,6 +905,13 @@ module Engine
           true
         end
 
+        def init_stock_market
+          stock_market = G1856::StockMarket.new(game_market, self.class::CERT_LIMIT_TYPES,
+                                                multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
+          stock_market.game = self
+          stock_market
+        end
+
         def init_corporations(stock_market)
           min_price = stock_market.par_prices.map(&:price).min
 
@@ -1437,6 +1444,7 @@ module Engine
           num_shares = national.total_shares
           10.times do |i|
             new_share = Share.new(national, percent: 5, index: num_shares + i, cert_size: 0.5)
+            @_shares[new_share.id] = new_share
             national.shares_by_corporation[national] << new_share
           end
           national.add_ability(self.class::TWENTY_SHARE_NATIONAL_ABILITY)
@@ -1608,7 +1616,7 @@ module Engine
             @round.pending_removals << {
               corp: national,
               count: national.tokens.size - tokens_to_keep,
-              hexes: tokens.map(&:hex).reject { |hex| home_bases.include?(hex) },
+              hexes: national.tokens.map(&:hex).reject { |hex| home_bases.include?(hex) },
             }
           end
           remaining_tokens = [tokens_to_keep - national.tokens.size, 0].max
