@@ -352,7 +352,7 @@ module Engine
           game.process_action(action)
 
           expect(corporation.cash).to eq(32)
-          expect(game.log.index { |item| item.message == 'GI earns 4$N (2 certs inside kitchen)' }).to eq(30)
+          expect(game.log.index { |item| item.message == 'GI earns 4$N (2 certs in the Market)' }).to eq(30)
         end
       end
 
