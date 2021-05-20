@@ -911,6 +911,17 @@ module Engine
           ]
         end
 
+        def timeline
+          @timeline = [
+            "Current value of a ZOOTicket is #{format_currency(ZOO_TICKET_VALUE[@turn][@round.round_num])}.",
+            '--- Numbers 4,5,6…20 on the timeline are the value of a single ZOOTicket during each round
+              (i.e. a ZOOTicket is worth 9$N in the OR 2.2).',
+            '--- If not sold at the end of game a ZOOTicket is worth 20$N for the final score',
+            'IPO RESERVED share: at the start of SR 3 each company gets a new share available (R share)
+              that players can purchase',
+          ]
+        end
+
         def take_player_loan(player, debt)
           # Give the player the money. The money for loans is outside money, doesnt count towards the normal bank money.
           player.cash += debt
