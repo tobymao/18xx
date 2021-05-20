@@ -4,6 +4,12 @@ require_relative 'entities'
 require_relative 'map'
 require_relative 'meta'
 require_relative 'trains'
+require_relative 'step/buy_company'
+require_relative 'step/buy_train'
+require_relative 'step/development_token'
+require_relative 'step/dividend'
+require_relative 'step/route'
+require_relative 'step/token'
 require_relative 'step/track'
 require_relative 'step/waterfall_auction'
 require_relative '../base'
@@ -88,28 +94,36 @@ module Engine
           init_track_points
           setup_company_price_up_to_face
 
+          @development_hexes = init_development_hexes
+          @development_token_count = Hash.new(0)
+
           @late_corps, @corporations = @corporations.partition { |c| LATE_CORPORATIONS.include?(c.id) }
           @late_corps.each { |corp| corp.reservation_color = nil }
+
+          @coal_companies = init_coal_companies
+          @minors.concat(@coal_companies)
+          update_cache(:minors)
         end
 
         def operating_round(round_num)
-          Round::Operating.new(self, [
+          G1868WY::Round::Operating.new(self, [
+            G1868WY::Step::DevelopmentToken,
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
             Engine::Step::SpecialTrack,
-            Engine::Step::BuyCompany,
+            G1868WY::Step::BuyCompany,
             G1868WY::Step::Track,
-            Engine::Step::Token,
-            Engine::Step::Route,
-            Engine::Step::Dividend,
+            G1868WY::Step::Token,
+            G1868WY::Step::Route,
+            G1868WY::Step::Dividend,
             Engine::Step::DiscardTrain,
-            Engine::Step::BuyTrain,
-            [Engine::Step::BuyCompany, { blocks: true }],
+            G1868WY::Step::BuyTrain,
+            [G1868WY::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 
         def new_auction_round
-          Round::Auction.new(self, [
+          Engine::Round::Auction.new(self, [
             Engine::Step::CompanyPendingPar,
             G1868WY::Step::WaterfallAuction,
           ])
@@ -155,7 +169,14 @@ module Engine
         end
 
         def status_str(corporation)
-          "Track Points: #{track_points_available(corporation)}" if corporation.floated?
+          return unless corporation.floated?
+
+          if corporation.minor?
+            player = corporation.owner
+            "#{player.name} Cash: #{format_currency(player.cash)}"
+          else
+            "Track Points: #{track_points_available(corporation)}"
+          end
         end
 
         def p1_company
@@ -232,6 +253,88 @@ module Engine
           @isr_company_choices ||= COMPANY_CHOICES.transform_values do |company_ids|
             company_ids.map { |id| company_by_id(id) }
           end
+        end
+
+        def init_coal_companies
+          @players.map.with_index do |player, index|
+            coal_company = Engine::Minor.new(
+              type: :coal,
+              sym: "Coal-#{index + 1}",
+              name: "#{player.name} Coal",
+              logo: '1868_wy/coal',
+              tokens: [],
+              color: :black,
+              abilities: [{ type: 'no_buy', owner_type: 'player' }],
+            )
+            coal_company.owner = player
+            coal_company.float!
+            coal_company
+          end
+        end
+
+        def init_development_hexes
+          @hexes.select do |hex|
+            hex.tile.city_towns.empty? && hex.tile.offboards.empty?
+          end
+        end
+
+        def operating_order
+          coal = @coal_companies.sort_by { |m| @players.index(m.owner) }
+          railroads = @corporations.select(&:floated?).sort
+          coal + railroads
+        end
+
+        def setup_development_tokens
+          logo = "/icons/1868_wy/coal-#{@phase.name}.svg"
+          @coal_companies.each do |coal|
+            coal.unplaced_tokens.each { |t| coal.tokens.delete(t) }
+            (@phase.name == '2' ? 2 : 1).times do
+              coal.tokens << Token.new(
+                coal,
+                price: 0,
+                logo: logo,
+                simple_logo: logo,
+                type: :development,
+              )
+            end
+          end
+        end
+
+        def available_coal_hex?(hex)
+          (hex.tile.icons.count { |i| i.name == :coal } < 2) && @development_hexes.include?(hex)
+        end
+
+        def place_development_token(action)
+          entity = action.entity
+          player = entity.player
+          hex = action.hex
+          token = action.token
+          cost = action.cost
+
+          player.spend(cost, @bank) if cost.positive?
+          token.place(nil, hex: hex)
+          hex.tile.icons << Part::Icon.new("1868_wy/coal-#{@phase.name}", :coal)
+
+          cost_str = cost.positive? ? " for #{format_currency(cost)}" : ''
+          @log << "#{player.name} places a Development Token on #{hex.name}#{cost_str}"
+
+          increment_development_token_count(hex)
+        end
+
+        def increment_development_token_count(tokened_hex)
+          hexes = [tokened_hex].concat((0..5).map { |edge| hex_neighbor(tokened_hex, edge) })
+
+          hexes.each do |hex|
+            next unless hex
+            next unless hex.tile.city_towns.any?(&:boom)
+
+            @development_token_count[hex] += 1
+            handle_boom!(hex)
+          end
+        end
+
+        def handle_boom!(hex)
+          # TODO
         end
       end
     end
