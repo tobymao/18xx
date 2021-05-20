@@ -776,8 +776,12 @@ module Engine
 
           help << 'Routes get no subsidy at all, but every town increase route value by 10.' if barrel_assignment
           if holes_assignment
-            help << "Off-boards (#{@holes.map(&:coordinates)}) are special: they can used as terminal (as usual); "\
-                    'Any route passing through them must go to the other side, and a single route cannot use it twice.'
+            c1 = @holes.first.coordinates
+            c2 = @holes.last.coordinates
+            help << "Off-boards #{c1}, #{c2} are special: they can be used at the beginning or end of a route, and"\
+                    ' may also be passed through. Click on it to use it as a beginning or end of a route. Click on'\
+                    " the first stop out of the off-board #{c1} and the first stop out of the off-board #{c2} to run"\
+                    ' a route through.'
           end
           help << 'Any train running in a city which has a "Wheat" token increase route value by 30.' if corn_assignment
           help
