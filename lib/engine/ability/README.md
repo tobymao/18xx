@@ -42,6 +42,8 @@ These attributes may be set for all ability types
       used with `close` abilities
     - `owning_corp_or_turn`: usable at any point during the owning corporation's OR turn
     - `owning_player_or_turn`: usable at any point during any of the owning player's OR turns
+    - `owning_player_sr_turn`: usable at any point during any of the owning player's
+    SR turns
     - `or_between_turns`: usable at the start of any corporation's OR turn,
       before that corporation has acted
     - `stock_round`: usable any time during a Stock Round
