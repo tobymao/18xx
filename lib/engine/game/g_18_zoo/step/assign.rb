@@ -58,34 +58,46 @@ module Engine
           end
 
           def available_hex_for_mine?(entity, hex)
-            !hex.tile.cities.empty? &&
+            hex.tile.color != 'white' &&
+              !hex.tile.cities.empty? &&
               !hex.tile.cities.first.tokened_by?(entity.owner) &&
               hex.tile.cities.first.available_slots.positive?
           end
 
           def process_assign_that_s_mine(action)
-            action.target.tile.cities.first.add_reservation!(action.entity.owner)
+            hex = action.target
+            unless available_hex_for_mine?(action.entity, hex)
+              raise GameError, "Cannot place token on #{hex.name} as the hex is not available"
+            end
+
+            hex.tile.cities.first.add_reservation!(action.entity.owner)
             @log << "#{action.entity.owner.name} reserves #{action.target.name}"
 
             @game.that_s_mine.remove_ability(@game.that_s_mine.all_abilities[0])
 
-            @game.that_s_mine.desc = "Can convert reserved token in #{action.target.name} into own"
-            new_ability = Ability::Token.new(type: 'token', hexes: [action.target.id], owner_type: 'corporation',
+            @game.that_s_mine.desc = "Can convert reserved token in #{hex.name} into own"
+            new_ability = Ability::Token.new(type: 'token', hexes: [hex.id], owner_type: 'corporation',
                                              extra_slot: false, from_owner: true, when: 'owning_corp_or_turn',
                                              special_only: true, discount: 0)
             @game.that_s_mine.add_ability(new_ability)
           end
 
           def available_hex_for_work_in_progress?(hex)
-            !hex.tile.cities.empty? &&
+            hex.tile.color != 'white' &&
+              !hex.tile.cities.empty? &&
               hex.tile.cities.first.available_slots.positive?
           end
 
           def process_assign_work_in_progress(action)
+            hex = action.target
+            unless available_hex_for_work_in_progress?(hex)
+              raise GameError, "Cannot place token on #{hex.name} as the hex is not available"
+            end
+
             token = Engine::Token.new(nil, price: 0, logo: '/icons/18_zoo/block.svg', type: :blocking)
-            action.target.tile.cities.first.exchange_token(token)
+            hex.tile.cities.first.exchange_token(token)
             @game.graph.clear_graph_for_all
-            @log << "#{action.entity.name} blocks a slot in #{action.target.name}"
+            @log << "#{action.entity.name} blocks a slot in #{hex.name}"
 
             @log << "#{action.entity.name} closes"
             action.entity.close!
