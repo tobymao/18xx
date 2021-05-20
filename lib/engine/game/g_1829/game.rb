@@ -12,6 +12,7 @@ module Engine
         include_meta(G1829::Meta)
         include G1829::Entities
         include G1829::Map
+
         register_colors(red: '#d1232a',
                         orange: '#f58121',
                         black: '#110a0c',
@@ -156,6 +157,14 @@ module Engine
 
         LAYOUT = :pointy
 
+        def setup
+          @corporations.each do |corporation|
+            if corporation.type == 'init1'
+              # here should be the fixed parprices per corporation
+            end
+          end
+        end
+
         def upgrades_to?(from, to, _special = false, selected_company: nil)
           return GREEN_CITIES.include?(to.name) if YELLOW_TOWNS.include? from.hex.tile.name
           return BROWN_CITIES.include?(to.name) if GREEN_CITIES.include? from.hex.tile.name
@@ -165,6 +174,7 @@ module Engine
         end
 
         def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
+          # upgrade for 1,2,3,4,55 in 12,13,14,15
           upgrades = super
           return upgrades unless tile_manifest
 
@@ -172,8 +182,20 @@ module Engine
           upgrades
         end
 
+        def init_round
+          G1829::Round::Draft.new(self,
+                                  [G1829::Step::Draft],
+                                  snake_order: false)
+        end
+
+        def stock_round
+          G1829::Round::Stock.new(self, [
+            Engine::Step::BuySellParShares,
+          ])
+        end
+
         def operating_round(round_num)
-          Round::Operating.new(self, [
+          G1829::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
             Engine::Step::HomeToken,
