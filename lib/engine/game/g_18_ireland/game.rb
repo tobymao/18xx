@@ -704,11 +704,7 @@ module Engine
             corporation.owned_by_player? || corporation.type != :minor
           end
 
-          hexes.each do |hex|
-            hex.tile.cities.each do |city|
-              city.reservations.reject! { |reservation| removed.include?(reservation) }
-            end
-          end
+          removed.each { |c| close_corporation(c, quiet: true) }
 
           @log << 'Minors can no longer be started' if removed.any?
         end
