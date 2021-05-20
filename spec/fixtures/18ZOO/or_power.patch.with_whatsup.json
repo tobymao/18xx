@@ -527,10 +527,7 @@
             "N14",
             "N12",
             "N10"
-          ],
-          "revenue": 100,
-          "revenue_str": "K15-K17-N14-N12-N10",
-          "subsidy": 2
+          ]
         },
         {
           "train": "3S-1",
@@ -553,10 +550,7 @@
             "M5",
             "L4",
             "N10"
-          ],
-          "revenue": 80,
-          "revenue_str": "M5-L4-N10",
-          "subsidy": 0
+          ]
         }
       ]
     },
@@ -622,10 +616,7 @@
           "hexes": [
             "K9",
             "L4"
-          ],
-          "revenue": 70,
-          "revenue_str": "K9-L4",
-          "subsidy": 0
+          ]
         }
       ]
     },
@@ -714,10 +705,7 @@
             "K9",
             "K15",
             "K17"
-          ],
-          "revenue": 90,
-          "revenue_str": "K9-K15-K17",
-          "subsidy": 0
+          ]
         },
         {
           "train": "3S-2",
@@ -748,10 +736,7 @@
             "N14",
             "N12",
             "N10"
-          ],
-          "revenue": 100,
-          "revenue_str": "I19-K17-N14-N12-N10",
-          "subsidy": 2
+          ]
         }
       ]
     },
@@ -853,10 +838,7 @@
             "N14",
             "N12",
             "N10"
-          ],
-          "revenue": 100,
-          "revenue_str": "K15-K17-N14-N12-N10",
-          "subsidy": 2
+          ]
         },
         {
           "train": "3S-1",
@@ -887,10 +869,7 @@
             "K9",
             "L4",
             "M5"
-          ],
-          "revenue": 130,
-          "revenue_str": "H10-I9-K9-L4-M5",
-          "subsidy": 2
+          ]
         }
       ]
     },
@@ -980,10 +959,7 @@
             "K17",
             "N14",
             "N12"
-          ],
-          "revenue": 180,
-          "revenue_str": "L4-K9-K15-K17-N14-N12",
-          "subsidy": 2
+          ]
         },
         {
           "train": "1S-0",
@@ -997,10 +973,7 @@
           "hexes": [
             "I9",
             "K9"
-          ],
-          "revenue": 40,
-          "revenue_str": "I9-K9",
-          "subsidy": 1
+          ]
         }
       ]
     },

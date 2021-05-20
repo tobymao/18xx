@@ -114,14 +114,16 @@ module Engine
           },
           {
             name: '4J',
-            distance: [{ 'nodes' => %w[city offboard town], 'pay' => 4, 'multiplier' => 2 }],
+            distance: 4,
+            multiplier: 2,
             price: 47,
             num: 99,
             events: [{ 'type' => 'new_train' }, { 'type' => 'rust_own_3s_4s' }],
             variants: [
               {
                 name: '2J',
-                distance: [{ 'nodes' => %w[city offboard town], 'pay' => 2, 'multiplier' => 2 }],
+                distance: 2,
+                multiplier: 2,
                 price: 37,
                 num: 99,
               },
@@ -652,7 +654,8 @@ module Engine
           revenue = super
 
           # Add 30$N if route contains 'Wheat' and Corporation owns 'Wheat'
-          revenue += 30 if route.corporation.assigned?(wheat.id) && stops.any? { |stop| stop.hex.assigned?(wheat.id) }
+          revenue += 30 * (route.train.multiplier || 1) if route.corporation.assigned?(wheat.id) &&
+            stops.any? { |stop| stop.hex.assigned?(wheat.id) }
 
           # Towns revenues are doubled if 'Two barrels' is in use
           revenue += 10 * stops.count { |stop| !stop.tile.towns.empty? } if two_barrels_used_this_or?(route.corporation)
@@ -685,22 +688,17 @@ module Engine
         end
 
         def check_distance(route, visits)
-          cities_visited = cities_visited(route, visits)
           name = route.train.name
+          check_town = %w[4J 2J].include?(name)
+          cities_visited = cities_visited(route, visits, check_town)
 
           if name == '1S'
             raise GameError, "Train with \"Patch\" cannot visit #{cities_visited} stops" if cities_visited > 1
           else
             raise GameError, 'Water and external gray don\'t count as city/offboard.' if cities_visited < 2
 
-            distance = distance_aux(route)
-
-            # 2S, 3S, 4S, 5S
-            if distance.is_a?(Numeric)
-              raise GameError, "#{cities_visited} is too many stops for #{name}" if distance < cities_visited
-            else
-              super
-            end
+            max_distance = distance_aux(route, check_town)
+            raise GameError, "#{cities_visited} is too many stops for #{name}" if max_distance < cities_visited
           end
         end
 
@@ -737,10 +735,11 @@ module Engine
               blocked_by = index
             end
 
+            is_j_train = %w[4J 2J].include?(current_route.train.name)
             distance = current_route.train.distance
-            next unless distance.is_a?(Numeric) && current_route.train.owner == a_tip_of_sugar.owner
+            next if is_j_train || current_route.train.owner != a_tip_of_sugar.owner
 
-            cities_visited = cities_visited(current_route, visits)
+            cities_visited = cities_visited(current_route, visits, is_j_train)
 
             next unless distance < cities_visited
             raise GameError, 'Only one train can use "A tip of sugar"' if train_with_sugar
@@ -1224,8 +1223,11 @@ module Engine
             .select { |t| upgrades_to?(tile, t, selected_company: company) }
         end
 
-        def cities_visited(route, visits)
-          cities_visited = visits.count { |v| v.city? || (v.offboard? && v.revenue[:yellow].positive?) }
+        def cities_visited(route, visits, check_town)
+          cities_visited = visits.count do |v|
+            v.city? || (v.offboard? && v.revenue[:yellow].positive?) ||
+                      (v.town? && check_town)
+          end
 
           # Passing through Hole count as a stop
           cities_visited += 1 if !@holes.empty? && (@holes & route.all_hexes).size == 2
@@ -1242,10 +1244,10 @@ module Engine
           cities_visited
         end
 
-        def distance_aux(route)
+        def distance_aux(route, is_j_train)
           distance = route.train.distance
-          # A tip of sugar raise the distance number
-          distance += 1 if distance.is_a?(Numeric) && route.train.owner == a_tip_of_sugar.owner
+          # A tip of sugar raise the max_distance number
+          distance += 1 if !is_j_train && route.train.owner == a_tip_of_sugar.owner
 
           distance
         end
