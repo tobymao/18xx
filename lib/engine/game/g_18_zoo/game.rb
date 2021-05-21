@@ -455,8 +455,8 @@ module Engine
                                                      .find { |c| !c.ipoed }
             @near_families_purchasable = [{ direction: 'next', id: next_corporation.id },
                                           { direction: 'reverse', id: previous_corporation.id }]
-            @log << "Near family rule: either #{previous_corporation.full_name} or #{next_corporation.full_name}"\
-            ' are available (choosing one excludes the other one)'
+            @log << "Near family rule: next choice is either #{previous_corporation.full_name} or"\
+                    " #{next_corporation.full_name} (choosing one excludes the other one)"
           else
             if @corporations.count(&:ipoed) == 2
               @near_families_direction = @near_families_purchasable.find { |c| c[:id] == corporation.id }[:direction]
@@ -968,7 +968,7 @@ module Engine
 
           new_train = train_by_id('1S-0')
           new_train.owner = train.owner
-          new_train.buyable
+          new_train.buyable = false
           train.owner.trains.delete(train)
           train.owner.trains << new_train
           train.rusts_on = "block-#{train.rusts_on}"
@@ -990,13 +990,14 @@ module Engine
         def process_remove_bandage?(action)
           corporation = corporation_by_id(action.choice['corporation'])
           train = @train_with_bandage
+          train.buyable = true
           company = patch
 
           corporation.remove_assignment!(company.id)
           company.close!
           @log << "#{company.name} closes"
 
-          @log << "#{corporation.name} removes the patch from 1S; train is #{train&.name} again"
+          @log << "#{corporation.name} removes the patch from 1S; train is #{train.name} again"
 
           corporation.trains.delete(train_by_id('1S-0'))
           corporation.trains << @train_with_bandage
