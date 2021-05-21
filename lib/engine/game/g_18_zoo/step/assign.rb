@@ -51,8 +51,9 @@ module Engine
 
           def available_hex_for_hole?(_entity, hex)
             return false if hex.tile.label.to_s != 'R'
-            return false if @game.optional_rules.include?(:base_2) && @game.game_base_2.key?(hex.coordinates)
             return false if @game.optional_rules.include?(:base_3) && @game.game_base_3.key?(hex.coordinates)
+            return false if @game.optional_rules.include?(:base_2) && !@game.optional_rules.include?(:base_3) &&
+              @game.game_base_2.key?(hex.coordinates)
 
             true
           end

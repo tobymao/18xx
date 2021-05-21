@@ -215,7 +215,7 @@ module Engine
             ' (runs one last time)'],
         ).freeze
 
-        MARKET_TEXT = Base::MARKET_TEXT.merge(safe_par: 'President bonus',
+        MARKET_TEXT = Base::MARKET_TEXT.merge(safe_par: 'President bonus (+1/3$N to the president)',
                                               par_1: 'Yellow phase par',
                                               par_2: 'Green phase par (bonus 5$N + 2 yellow tracks)',
                                               par_3: 'Brown phase par (bonus 10$N + 4 yellow tracks)').freeze
@@ -311,8 +311,8 @@ module Engine
         end
 
         def game_bases
-          return game_base_2 if @optional_rules.include?(:base_2)
           return game_base_3 if @optional_rules.include?(:base_3)
+          return game_base_2 if @optional_rules.include?(:base_2)
 
           nil
         end
@@ -342,7 +342,7 @@ module Engine
         def location_name(coord)
           result = game_location_names[coord]
           result = game_location_name_base_2[coord] if @optional_rules.include?(:base_2) &&
-            game_location_name_base_2.key?(coord)
+            !@optional_rules.include?(:base_3) && game_location_name_base_2.key?(coord)
           result = game_location_name_base_3[coord] if @optional_rules.include?(:base_3) &&
             game_location_name_base_3.key?(coord)
           result
