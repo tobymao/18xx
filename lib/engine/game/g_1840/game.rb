@@ -109,15 +109,15 @@ module Engine
           { type: :LR, name: '2a' },
           { type: :LR, name: '2b' },
           { type: :CR, name: '3', value: '1x' },
-          { type: :SR, name: '3', value: '1x' },
+          { type: :SR, name: '3' },
           { type: :LR, name: '3a' },
           { type: :LR, name: '3b' },
           { type: :CR, name: '4', value: '2x' },
-          { type: :SR, name: '4', value: '1x' },
+          { type: :SR, name: '4' },
           { type: :LR, name: '4a' },
           { type: :LR, name: '4b' },
           { type: :CR, name: '5', value: '3x' },
-          { type: :SR, name: '5', value: '1x' },
+          { type: :SR, name: '5' },
           { type: :LR, name: '5a' },
           { type: :LR, name: '5b' },
           { type: :LR, name: '5c' },
@@ -212,6 +212,8 @@ module Engine
           5 => { Y1: 8, O1: 6, R1: 6, Pi1: 6, Pu1: 6 },
           6 => { Y1: 10, O1: 7, R1: 7, Pi1: 7, Pu1: 7 },
         }.freeze
+
+        CR_MULTIPLIER = [1, 1, 1, 2, 3, 10].freeze
 
         attr_reader :tram_corporations, :major_corporations, :tram_owned_by_corporation, :city_graph
 
@@ -573,7 +575,10 @@ module Engine
           return super if routes.empty?
 
           corporation = routes.first.train.owner
-          routes.sum(&:revenue) + maintenance_costs(corporation)
+          sum = routes.sum(&:revenue)
+          return sum + maintenance_costs(corporation) if corporation.type == :minor
+
+          sum * current_cr_multipler
         end
 
         def scrap_train(train, entity)
@@ -706,6 +711,15 @@ module Engine
           @bank.spend(price, player)
 
           company.close!
+        end
+
+        def current_cr_multipler
+          index = [@cr_counter - 1, 0].max
+          CR_MULTIPLIER[index]
+        end
+
+        def end_now?(after)
+          @cr_counter == 6
         end
       end
     end
