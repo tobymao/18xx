@@ -143,9 +143,10 @@ module Engine
     end
 
     describe 'starting values' do
-      max_players = { map_a: 4, map_b: 4, map_c: 4, map_d: 5, map_e: 5, map_f: 5 }
+      max_players = { map_a_d: 5, map_b: 5, map_c: 5, map_d: 5, map_e: 5, map_f: 5 }
       game_by_variant = {
-        map_a: Engine::Game::G18ZOO::Game,
+        map_a_d: Engine::Game::G18ZOO::Game,
+        map_a: Engine::Game::G18ZOOMapA::Game,
         map_b: Engine::Game::G18ZOOMapB::Game,
         map_c: Engine::Game::G18ZOOMapC::Game,
         map_d: Engine::Game::G18ZOOMapD::Game,
@@ -153,17 +154,19 @@ module Engine
         map_f: Engine::Game::G18ZOOMapF::Game,
       }
       expected_cash = {
-        map_a: { 2 => 40, 3 => 28, 4 => 23 },
-        map_b: { 2 => 40, 3 => 28, 4 => 23 },
-        map_c: { 2 => 40, 3 => 28, 4 => 23 },
+        map_a_d: { 2 => 40, 3 => 28, 4 => 27, 5 => 22 },
+        map_a: { 2 => 40, 3 => 28, 4 => 23, 5 => 22 },
+        map_b: { 2 => 40, 3 => 28, 4 => 23, 5 => 22 },
+        map_c: { 2 => 40, 3 => 28, 4 => 23, 5 => 22 },
         map_d: { 2 => 48, 3 => 32, 4 => 27, 5 => 22 },
         map_e: { 2 => 48, 3 => 32, 4 => 27, 5 => 22 },
         map_f: { 2 => 48, 3 => 32, 4 => 27, 5 => 22 },
       }
       expected_cert_limit = {
-        map_a: { 2 => 10, 3 => 7, 4 => 5 },
-        map_b: { 2 => 10, 3 => 7, 4 => 5 },
-        map_c: { 2 => 10, 3 => 7, 4 => 5 },
+        map_a_d: { 2 => 10, 3 => 7, 4 => 7, 5 => 6 },
+        map_a: { 2 => 10, 3 => 7, 4 => 5, 5 => 6 },
+        map_b: { 2 => 10, 3 => 7, 4 => 5, 5 => 6 },
+        map_c: { 2 => 10, 3 => 7, 4 => 5, 5 => 6 },
         map_d: { 2 => 12, 3 => 9, 4 => 7, 5 => 6 },
         map_e: { 2 => 12, 3 => 9, 4 => 7, 5 => 6 },
         map_f: { 2 => 12, 3 => 9, 4 => 7, 5 => 6 },
@@ -195,8 +198,10 @@ module Engine
               end).to eq(expected_ticket_zoo[num_players])
             end
 
-            it "should have #{expected_corporations[variant]} corporation in game" do
-              expect(game.corporations.size).to eq(expected_corporations[variant])
+            if expected_corporations[variant]
+              it "should have #{expected_corporations[variant]} corporation in game" do
+                expect(game.corporations.size).to eq(expected_corporations[variant])
+              end
             end
 
             it "should contains #{expected_available_companies[num_players]} available companies for isr" do
@@ -208,13 +213,13 @@ module Engine
             end
 
             it 'should have only valid corporation coordinates' do
-              game.class::CORPORATION_COORDINATES.each do |_id, coordinate|
+              game.game_corporation_coordinates.each do |_id, coordinate|
                 expect(game.hexes.map(&:coordinates)).to include(coordinate.to_s)
               end
             end
 
             it 'should have only valid location names' do
-              game.class::LOCATION_NAMES.each do |coordinate, _name|
+              game.game_location_names.each do |coordinate, _name|
                 expect(game.hexes.map(&:coordinates)).to include(coordinate)
               end
             end

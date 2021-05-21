@@ -8,11 +8,7 @@ require_relative '../base'
 module Engine
   module Game
     module G18ZOO
-      class Game < Game::Base
-        include_meta(G18ZOO::Meta)
-        include G18ZOO::Entities
-        include G18ZOO::Map
-
+      class SharedGame < Game::Base
         CURRENCY_FORMAT_STR = '%d$N'
 
         BANK_CASH = 99_999
@@ -21,7 +17,7 @@ module Engine
           2 => { '5' => 10, '7' => 12 },
           3 => { '5' => 7, '7' => 9 },
           4 => { '5' => 5, '7' => 7 },
-          5 => { '5' => 0, '7' => 6 },
+          5 => { '5' => 6, '7' => 6 },
         }.freeze
 
         CAPITALIZATION = :incremental
@@ -29,7 +25,7 @@ module Engine
         MUST_SELL_IN_BLOCKS = true
 
         MARKET = [
-          %w[7 8 9 10 11 12 13 14 15 16 20 24e],
+          %w[7 8 9 10s 11s 12s 13s 14s 15s 16 20 24e],
           %w[6 7x 8 9z 10 11 12w 13 14],
           %w[5 6x 7 8 9 10 11],
           %w[4 5x 6 7 8],
@@ -118,14 +114,16 @@ module Engine
           },
           {
             name: '4J',
-            distance: [{ 'nodes' => %w[city offboard town], 'pay' => 4, 'multiplier' => 2 }],
+            distance: 4,
+            multiplier: 2,
             price: 47,
             num: 99,
             events: [{ 'type' => 'new_train' }, { 'type' => 'rust_own_3s_4s' }],
             variants: [
               {
                 name: '2J',
-                distance: [{ 'nodes' => %w[city offboard town], 'pay' => 2, 'multiplier' => 2 }],
+                distance: 2,
+                multiplier: 2,
                 price: 37,
                 num: 99,
               },
@@ -153,15 +151,14 @@ module Engine
 
         BANKRUPTCY_ALLOWED = false
 
-        STARTING_CASH = { 2 => 40, 3 => 28, 4 => 23 }.freeze
-
         CERT_LIMIT_INCLUDES_PRIVATES = false
 
         STOCKMARKET_COLORS = {
           par_1: :yellow,
           par_2: :green,
           par_3: :brown,
-          endgame: :blue,
+          endgame: :orange,
+          safe_par: :blue,
         }.freeze
 
         STOCKMARKET_THRESHOLD = [
@@ -218,9 +215,10 @@ module Engine
             ' (runs one last time)'],
         ).freeze
 
-        MARKET_TEXT = Base::MARKET_TEXT.merge(par_1: 'Yellow phase par',
-                                              par_2: 'Can only enter during green phase',
-                                              par_3: 'Can only enter during brown phase').freeze
+        MARKET_TEXT = Base::MARKET_TEXT.merge(safe_par: 'President bonus',
+                                              par_1: 'Yellow phase par',
+                                              par_2: 'Green phase par (bonus 5$N + 2 yellow tracks)',
+                                              par_3: 'Brown phase par (bonus 10$N + 4 yellow tracks)').freeze
 
         MARKET_SHARE_LIMIT = 80 # percent
 
@@ -310,6 +308,44 @@ module Engine
           @all_private_visible = rules.include?(:power_visible)
 
           rules
+        end
+
+        def game_bases
+          return game_base_2 if @optional_rules.include?(:base_2)
+          return game_base_3 if @optional_rules.include?(:base_3)
+
+          nil
+        end
+
+        def optional_hexes
+          base = game_bases
+          hexes = game_hexes
+          return hexes unless base
+
+          new_hexes = {}
+          hexes.keys.each do |color|
+            new_map = hexes[color].transform_keys do |coords|
+              coords - base.keys
+            end
+            base.each do |coords, tile_array|
+              next unless color == tile_array[1]
+
+              new_map[[coords]] = tile_array[0]
+            end
+
+            new_hexes[color] = new_map
+          end
+
+          new_hexes
+        end
+
+        def location_name(coord)
+          result = game_location_names[coord]
+          result = game_location_name_base_2[coord] if @optional_rules.include?(:base_2) &&
+            game_location_name_base_2.key?(coord)
+          result = game_location_name_base_3[coord] if @optional_rules.include?(:base_3) &&
+            game_location_name_base_3.key?(coord)
+          result
         end
 
         def result
@@ -419,8 +455,8 @@ module Engine
                                                      .find { |c| !c.ipoed }
             @near_families_purchasable = [{ direction: 'next', id: next_corporation.id },
                                           { direction: 'reverse', id: previous_corporation.id }]
-            @log << "Near family rule: #{previous_corporation.full_name} and #{next_corporation.full_name}"\
-            ' are available.'
+            @log << "Near family rule: either #{previous_corporation.full_name} or #{next_corporation.full_name}"\
+            ' are available (choosing one excludes the other one)'
           else
             if @corporations.count(&:ipoed) == 2
               @near_families_direction = @near_families_purchasable.find { |c| c[:id] == corporation.id }[:direction]
@@ -431,7 +467,7 @@ module Engine
             if following_corporation
               @near_families_purchasable = [{ id: following_corporation.id }]
 
-              @log << "Near family rule: #{following_corporation.full_name} is now available."
+              @log << "Near family rule: #{following_corporation.full_name} is now available"
             end
           end
         end
@@ -618,7 +654,8 @@ module Engine
           revenue = super
 
           # Add 30$N if route contains 'Wheat' and Corporation owns 'Wheat'
-          revenue += 30 if route.corporation.assigned?(wheat.id) && stops.any? { |stop| stop.hex.assigned?(wheat.id) }
+          revenue += 30 * (route.train.multiplier || 1) if route.corporation.assigned?(wheat.id) &&
+            stops.any? { |stop| stop.hex.assigned?(wheat.id) }
 
           # Towns revenues are doubled if 'Two barrels' is in use
           revenue += 10 * stops.count { |stop| !stop.tile.towns.empty? } if two_barrels_used_this_or?(route.corporation)
@@ -651,22 +688,17 @@ module Engine
         end
 
         def check_distance(route, visits)
-          cities_visited = cities_visited(route, visits)
           name = route.train.name
+          check_town = %w[4J 2J].include?(name)
+          cities_visited = cities_visited(route, visits, check_town)
 
           if name == '1S'
             raise GameError, "Train with \"Patch\" cannot visit #{cities_visited} stops" if cities_visited > 1
           else
             raise GameError, 'Water and external gray don\'t count as city/offboard.' if cities_visited < 2
 
-            distance = distance_aux(route)
-
-            # 2S, 3S, 4S, 5S
-            if distance.is_a?(Numeric)
-              raise GameError, "#{cities_visited} is too many stops for #{name}" if distance < cities_visited
-            else
-              super
-            end
+            max_distance = distance_aux(route, check_town)
+            raise GameError, "#{cities_visited} is too many stops for #{name}" if max_distance < cities_visited
           end
         end
 
@@ -703,10 +735,11 @@ module Engine
               blocked_by = index
             end
 
+            is_j_train = %w[4J 2J].include?(current_route.train.name)
             distance = current_route.train.distance
-            next unless distance.is_a?(Numeric) && current_route.train.owner == a_tip_of_sugar.owner
+            next if is_j_train || current_route.train.owner != a_tip_of_sugar.owner
 
-            cities_visited = cities_visited(current_route, visits)
+            cities_visited = cities_visited(current_route, visits, is_j_train)
 
             next unless distance < cities_visited
             raise GameError, 'Only one train can use "A tip of sugar"' if train_with_sugar
@@ -743,8 +776,12 @@ module Engine
 
           help << 'Routes get no subsidy at all, but every town increase route value by 10.' if barrel_assignment
           if holes_assignment
-            help << "Off-boards (#{@holes.map(&:coordinates)}) are special: they can used as terminal (as usual); "\
-                    'Any route passing through them must go to the other side, and a single route cannot use it twice.'
+            c1 = @holes.first.coordinates
+            c2 = @holes.last.coordinates
+            help << "Off-boards #{c1}, #{c2} are special: they can be used at the beginning or end of a route, and"\
+                    ' may also be passed through. Click on it to use it as a beginning or end of a route. Click on'\
+                    " the first stop out of the off-board #{c1} and the first stop out of the off-board #{c2} to run"\
+                    ' a route through.'
           end
           help << 'Any train running in a city which has a "Wheat" token increase route value by 30.' if corn_assignment
           help
@@ -819,7 +856,7 @@ module Engine
           return unless entity.all_abilities.empty?
 
           items = @holes.map(&:coordinates).sort.join('-')
-          hole_to_convert = self.class::HOLE
+          hole_to_convert = game_hole
           hole_to_convert[items].each do |coordinates_list, new_tile_code|
             coordinates_list.each do |coordinates|
               hex_by_id(coordinates).lay(Engine::Tile.from_code(coordinates, :red, new_tile_code))
@@ -871,6 +908,17 @@ module Engine
             { type: :OR, value: '15', name: '3.2' },
             { type: :OR, value: '18', name: '3.3' },
             { type: :End, value: '20' },
+          ]
+        end
+
+        def timeline
+          @timeline = [
+            "Current value of a ZOOTicket is #{format_currency(ZOO_TICKET_VALUE[@turn][@round.round_num])}.",
+            '--- Numbers 4,5,6…20 on the timeline are the value of a single ZOOTicket during each round
+              (i.e. a ZOOTicket is worth 9$N in the OR 2.2).',
+            '--- If not sold at the end of game a ZOOTicket is worth 20$N for the final score',
+            'IPO RESERVED share: at the start of SR 3 each company gets a new share available (R share)
+              that players can purchase',
           ]
         end
 
@@ -997,11 +1045,11 @@ module Engine
         end
 
         def init_corporations(stock_market)
-          corporations = self.class::CORPORATIONS.map do |corporation|
+          corporations = game_corporations.map do |corporation|
             Corporation.new(
               min_price: stock_market.par_prices.map(&:price).min,
               capitalization: self.class::CAPITALIZATION,
-              coordinates: self.class::CORPORATION_COORDINATES[corporation[:sym]],
+              coordinates: game_corporation_coordinates[corporation[:sym]],
               **corporation.merge(corporation_opts),
             )
           end
@@ -1190,8 +1238,11 @@ module Engine
             .select { |t| upgrades_to?(tile, t, selected_company: company) }
         end
 
-        def cities_visited(route, visits)
-          cities_visited = visits.count { |v| v.city? || (v.offboard? && v.revenue[:yellow].positive?) }
+        def cities_visited(route, visits, check_town)
+          cities_visited = visits.count do |v|
+            v.city? || (v.offboard? && v.revenue[:yellow].positive?) ||
+                      (v.town? && check_town)
+          end
 
           # Passing through Hole count as a stop
           cities_visited += 1 if !@holes.empty? && (@holes & route.all_hexes).size == 2
@@ -1208,38 +1259,110 @@ module Engine
           cities_visited
         end
 
-        def distance_aux(route)
+        def distance_aux(route, is_j_train)
           distance = route.train.distance
-          # A tip of sugar raise the distance number
-          distance += 1 if distance.is_a?(Numeric) && route.train.owner == a_tip_of_sugar.owner
+          # A tip of sugar raise the max_distance number
+          distance += 1 if !is_j_train && route.train.owner == a_tip_of_sugar.owner
 
           distance
         end
       end
+
+      class Game < G18ZOO::SharedGame
+        include_meta(G18ZOO::Meta)
+        include G18ZOO::Entities
+        include G18ZOO::Map
+
+        STARTING_CASH = { 2 => 40, 3 => 28, 4 => 27, 5 => 22 }.freeze
+
+        def game_corporations
+          return G18ZOOMapD::Entities::CORPORATIONS if @players.size >= 4
+
+          G18ZOOMapA::Entities::CORPORATIONS
+        end
+
+        def game_corporation_coordinates
+          return G18ZOOMapD::Entities::CORPORATION_COORDINATES if @players.size >= 4
+
+          G18ZOOMapA::Entities::CORPORATION_COORDINATES
+        end
+
+        def game_hexes
+          return G18ZOOMapD::Map::HEXES if @players.size >= 4
+
+          G18ZOOMapA::Map::HEXES
+        end
+
+        def game_hole
+          return G18ZOOMapD::Map::HOLE if @players.size >= 4
+
+          G18ZOOMapA::Map::HOLE
+        end
+
+        def game_location_names
+          return G18ZOOMapD::Map::LOCATION_NAMES if @players.size >= 4
+
+          G18ZOOMapA::Map::LOCATION_NAMES
+        end
+
+        def game_base_2
+          return G18ZOOMapD::Map::BASE_2 if @players.size >= 4
+
+          G18ZOOMapA::Map::BASE_2
+        end
+
+        def game_location_name_base_2
+          return G18ZOOMapD::Map::LOCATION_NAMES_BASE_2 if @players.size >= 4
+
+          G18ZOOMapA::Map::LOCATION_NAMES_BASE_2
+        end
+
+        def game_base_3
+          return G18ZOOMapD::Map::BASE_3 if @players.size >= 4
+
+          G18ZOOMapA::Map::BASE_3
+        end
+
+        def game_location_name_base_3
+          return G18ZOOMapD::Map::LOCATION_NAMES_BASE_3 if @players.size >= 4
+
+          G18ZOOMapA::Map::LOCATION_NAMES_BASE_3
+        end
+      end
+    end
+
+    module G18ZOOMapA
+      class Game < G18ZOO::SharedGame
+        include_meta(G18ZOOMapA::Meta)
+        include G18ZOOMapA::Entities
+        include G18ZOOMapA::Map
+
+        STARTING_CASH = { 2 => 40, 3 => 28, 4 => 27, 5 => 22 }.freeze
+      end
     end
 
     module G18ZOOMapB
-      class Game < G18ZOO::Game
+      class Game < G18ZOO::SharedGame
         include_meta(G18ZOOMapB::Meta)
         include G18ZOOMapB::Entities
         include G18ZOOMapB::Map
 
-        STARTING_CASH = { 2 => 40, 3 => 28, 4 => 23 }.freeze
+        STARTING_CASH = { 2 => 40, 3 => 28, 4 => 23, 5 => 22 }.freeze
       end
     end
 
     module G18ZOOMapC
-      class Game < G18ZOO::Game
+      class Game < G18ZOO::SharedGame
         include_meta(G18ZOOMapC::Meta)
         include G18ZOOMapC::Entities
         include G18ZOOMapC::Map
 
-        STARTING_CASH = { 2 => 40, 3 => 28, 4 => 23 }.freeze
+        STARTING_CASH = { 2 => 40, 3 => 28, 4 => 23, 5 => 22 }.freeze
       end
     end
 
     module G18ZOOMapD
-      class Game < G18ZOO::Game
+      class Game < G18ZOO::SharedGame
         include_meta(G18ZOOMapD::Meta)
         include G18ZOOMapD::Entities
         include G18ZOOMapD::Map
@@ -1249,7 +1372,7 @@ module Engine
     end
 
     module G18ZOOMapE
-      class Game < G18ZOO::Game
+      class Game < G18ZOO::SharedGame
         include_meta(G18ZOOMapE::Meta)
         include G18ZOOMapE::Entities
         include G18ZOOMapE::Map
@@ -1259,7 +1382,7 @@ module Engine
     end
 
     module G18ZOOMapF
-      class Game < G18ZOO::Game
+      class Game < G18ZOO::SharedGame
         include_meta(G18ZOOMapF::Meta)
         include G18ZOOMapF::Entities
         include G18ZOOMapF::Map

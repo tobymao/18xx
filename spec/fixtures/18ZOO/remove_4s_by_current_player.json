@@ -1040,10 +1040,10 @@
   "created_at": "2021-04-29",
   "loaded": true,
   "result": {
-    "Player 1": 76,
-    "Player 4": 17,
-    "Player 2": 14,
-    "Player 3": 0
+    "Player 1": 80,
+    "Player 4": 21,
+    "Player 2": 18,
+    "Player 3": 8
   },
   "turn": 3,
   "round": "Stock Round",

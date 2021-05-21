@@ -27,6 +27,16 @@ module Engine
             short_name: 'Powers visible',
             desc: 'Next powers are visible since the beginning.',
           },
+          {
+            sym: :base_2,
+            short_name: 'Base 2',
+            desc: 'Center map with ”less money”. If both Base 2 and Base 3 are selected, it is applied Base 3 only',
+          },
+          {
+            sym: :base_3,
+            short_name: 'Base 3',
+            desc: 'Center map with ”more money”. If both Base 2 and Base 3 are selected, it is applied Base 3 only',
+          },
         ].freeze
       end
 
@@ -35,41 +45,62 @@ module Engine
         include G18ZOO::SharedMeta
 
         GAME_TITLE = '18ZOO'
+        GAME_FULL_TITLE = '18ZOO - Map A (2-3 players) / Map D (4-5 players)'
 
         GAME_VARIANTS = [
+          {
+            sym: :map_a,
+            name: 'Map A',
+            title: '18ZOO - Map A',
+            desc: '5 corporations, suggested for 2-3 players',
+          },
           {
             sym: :map_b,
             name: 'Map B',
             title: '18ZOO - Map B',
-            desc: 'Map with 5 families',
+            desc: '5 corporations, suggested for 2-3 players',
           },
           {
             sym: :map_c,
             name: 'Map C',
             title: '18ZOO - Map C',
-            desc: 'Map with 5 families',
+            desc: '5 corporations, suggested for 2-3 players',
           },
           {
             sym: :map_d,
             name: 'Map D',
             title: '18ZOO - Map D',
-            desc: 'Map with 7 families',
+            desc: '7 corporations, suggested for 4-5 players',
           },
           {
             sym: :map_e,
             name: 'Map E',
             title: '18ZOO - Map E',
-            desc: 'Map with 7 families',
+            desc: '7 corporations, suggested for 4-5 players',
           },
           {
             sym: :map_f,
             name: 'Map F',
             title: '18ZOO - Map F',
-            desc: 'Map with 7 families',
+            desc: '7 corporations, suggested for 4-5 players',
           },
         ].freeze
 
-        PLAYER_RANGE = [2, 4].freeze
+        PLAYER_RANGE = [2, 5].freeze
+      end
+    end
+
+    module G18ZOOMapA
+      module Meta
+        include Engine::Game::Meta
+        include G18ZOO::SharedMeta
+
+        DEPENDS_ON = '18ZOO'
+
+        GAME_TITLE = '18ZOO - Map A'
+        GAME_IS_VARIANT_OF = G18ZOO::Meta
+
+        PLAYER_RANGE = [2, 5].freeze
       end
     end
 
@@ -83,7 +114,7 @@ module Engine
         GAME_TITLE = '18ZOO - Map B'
         GAME_IS_VARIANT_OF = G18ZOO::Meta
 
-        PLAYER_RANGE = [2, 4].freeze
+        PLAYER_RANGE = [2, 5].freeze
       end
     end
 
@@ -97,7 +128,7 @@ module Engine
         GAME_TITLE = '18ZOO - Map C'
         GAME_IS_VARIANT_OF = G18ZOO::Meta
 
-        PLAYER_RANGE = [2, 4].freeze
+        PLAYER_RANGE = [2, 5].freeze
       end
     end
 

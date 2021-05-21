@@ -219,10 +219,7 @@
             "I19",
             "K17",
             "K15"
-          ],
-          "revenue": 80,
-          "revenue_str": "I19-K17-K15",
-          "subsidy": 0
+          ]
         },
         {
           "train": "2S-1",
@@ -237,10 +234,7 @@
           "hexes": [
             "I19",
             "K15"
-          ],
-          "revenue": 60,
-          "revenue_str": "I19-K15",
-          "subsidy": 0
+          ]
         }
       ]
     },
@@ -317,10 +311,7 @@
             "I19",
             "K17",
             "K15"
-          ],
-          "revenue": 90,
-          "revenue_str": "I19-K17-K15",
-          "subsidy": 0
+          ]
         },
         {
           "train": "2S-1",
@@ -335,10 +326,7 @@
           "hexes": [
             "K15",
             "I19"
-          ],
-          "revenue": 60,
-          "revenue_str": "K15-I19",
-          "subsidy": 0
+          ]
         }
       ]
     },
