@@ -672,16 +672,31 @@ module Engine
           ])
         end
 
-        # HACKS TO BE ABLE TO TEST FULL SR SETUP
-        HOME_TOKEN_TIMING = :never
-        def or_set_finished
-          depot.export!
+        def next_round!
+          @round =
+            case @round
+            when Engine::Round::Stock
+              @operating_rounds = @phase.operating_rounds
+              reorder_players
+              new_operating_round
+            when Engine::Round::Operating
+              if @round.round_num < @operating_rounds
+                or_round_finished
+                new_operating_round(@round.round_num + 1)
+              else
+                @turn += 1
+                or_round_finished
+                or_set_finished
+                new_stock_round
+              end
+            when init_round.class
+              init_round_finished
+              reorder_players
+              new_stock_round
+            end
         end
 
-        def operating_round(round_num)
-          Round::Operating.new(self, [], round_num: round_num)
-        end
-        # END HACKS
+        HOME_TOKEN_TIMING = :never
 
         def setup
           @al_corporation = corporation_by_id('AL')
@@ -750,7 +765,7 @@ module Engine
           end
         end
 
-        def after_buy_company(player, company, price)
+        def after_buy_company(player, company, _price)
           target_price = optional_short_game ? 67 : 100
           share_price = stock_market.par_prices.find { |pp| pp.price == target_price }
 
