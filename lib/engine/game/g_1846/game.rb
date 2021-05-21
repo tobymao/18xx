@@ -319,8 +319,16 @@ module Engine
           @minors.select(&:floated?) + corporations
         end
 
-        def num_removals(_group)
-          (two_player? ? 1 : 5 - @players.size) + (first_edition? ? 0 : 1)
+        def num_removals(group)
+          additional =
+            case group
+            when BLUE_GROUP, ORANGE_GROUP
+              (first_edition? ? 0 : 1)
+            else
+              0
+            end
+
+          (two_player? ? 1 : 5 - @players.size) + additional
         end
 
         def corporation_removal_groups
