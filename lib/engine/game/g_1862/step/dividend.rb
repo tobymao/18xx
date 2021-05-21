@@ -44,7 +44,7 @@ module Engine
           end
 
           def hudson_delta(entity, revenue)
-            entity.share_price.price - revenue
+            (entity.share_price.price - revenue).ceil(-1)
           end
 
           def hudson_allowed?(entity, revenue, subsidy)
@@ -79,6 +79,7 @@ module Engine
             subsidy = @game.routes_subsidy(routes)
             kind = action.kind.to_sym
             payout = dividend_options(entity)[kind]
+            revenue += hudson_delta(entity, revenue) if kind == :hudson
 
             handle_warranties!(entity)
 

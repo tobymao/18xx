@@ -418,8 +418,7 @@ module Engine
         SELL_AFTER = :any_time
         SELL_BUY_ORDER = :sell_buy
         MARKET_SHARE_LIMIT = 100
-        TRAIN_PRICE_MIN = 10
-        TRAIN_PRICE_MULTIPLE = 10
+        CERT_LIMIT_INCLUDES_PRIVATES = false
 
         TRACK_RESTRICTION = :permissive
 
