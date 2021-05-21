@@ -26,6 +26,14 @@ module Engine
         ].freeze
 
         PLAYER_RANGE = [3, 5].freeze
+        OPTIONAL_RULES = [
+          {
+            sym: :first_ed,
+            short_name: '1st Edition Private Companies',
+            desc: 'Exclude the 2nd Edition companies Boomtown and Little Miami',
+            players: [2, 3, 4, 5],
+          },
+        ].freeze
       end
     end
   end
