@@ -51,12 +51,13 @@ module Engine
           def process_choose(action)
             train = @game.train_by_id(action.choice)
             owner = train.owner.name
+            rusts_on = "#{train.rusts_on}-0"
             @game.assign_bandage(train)
 
             @log << "#{train.name} owned by #{owner} gets a patch and is not rusted"
 
             @round.trains_for_bandage.delete(train)
-            @game.rust_trains!(@game.train_by_id("#{train.rusts_on}-0"), nil)
+            @game.rust_trains!(@game.train_by_id(rusts_on), nil)
 
             @round.entity_with_bandage = nil
             @round.trains_for_bandage = []

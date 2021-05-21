@@ -971,6 +971,7 @@ module Engine
           new_train.buyable
           train.owner.trains.delete(train)
           train.owner.trains << new_train
+          train.rusts_on = "block-#{train.rusts_on}"
 
           return unless patch.owner.player?
 
@@ -1001,7 +1002,8 @@ module Engine
           corporation.trains << @train_with_bandage
           @train_with_bandage = nil
 
-          rust_trains!(train_by_id("#{train&.rusts_on}-0"), train&.owner) if phase.available?(train&.rusts_on)
+          train.rusts_on = train.rusts_on.gsub('block-', '')
+          rust_trains!(train_by_id("#{train.rusts_on}-0"), train.owner) if phase.available?(train.rusts_on)
         end
 
         private
