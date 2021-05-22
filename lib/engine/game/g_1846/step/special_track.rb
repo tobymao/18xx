@@ -8,6 +8,7 @@ module Engine
       module Step
         class SpecialTrack < Engine::Step::SpecialTrack
           def process_lay_tile(action)
+            @game.remove_lm_icons if action.entity.id == 'LM'
             @game.remove_lsl_icons if action.entity.id == 'LSL'
 
             super

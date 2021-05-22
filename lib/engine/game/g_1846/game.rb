@@ -173,6 +173,9 @@ module Engine
         LSL_HEXES = %w[D14 E17].freeze
         LSL_ICON = 'lsl'
 
+        LM_HEXES = %w[G13 H12].freeze
+        LM_ICON = 'lm'
+
         MEAT_HEXES = %w[D6 I1].freeze
         STEAMBOAT_HEXES = %w[B8 C5 D14 I1 G19].freeze
         BOOMTOWN_HEXES = %w[H12].freeze
@@ -236,6 +239,7 @@ module Engine
           return unless @players.size.between?(*self.class::PLAYER_RANGE)
 
           remove_from_group!(orange_group, @companies) do |company|
+            remove_lm_icons if company == little_miami
             remove_lsl_icons if company == lake_shore_line
             company.close!
             @round.active_step.companies.delete(company)
@@ -555,6 +559,7 @@ module Engine
 
         def event_close_companies!
           @minors.dup.each { |minor| close_corporation(minor) }
+          remove_lm_icons
           remove_lsl_icons
           remove_steamboat_markers! unless steamboat.owned_by_corporation?
           super
@@ -617,6 +622,12 @@ module Engine
         def remove_lsl_icons
           self.class::LSL_HEXES.each do |hex|
             hex_by_id(hex).tile.icons.reject! { |icon| icon.name == self.class::LSL_ICON }
+          end
+        end
+
+        def remove_lm_icons
+          self.class::LM_HEXES.each do |hex|
+            hex_by_id(hex).tile.icons.reject! { |icon| icon.name == self.class::LM_ICON }
           end
         end
 
