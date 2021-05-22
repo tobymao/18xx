@@ -913,7 +913,7 @@ module Engine
 
         def timeline
           @timeline = [
-            "Current value of a ZOOTicket is #{format_currency(ZOO_TICKET_VALUE[@turn][@round.round_num])}.",
+            "Current value of a ZOOTicket is #{format_currency(@ticket_zoo_current_value)}.",
             '--- Numbers 4,5,6…20 on the timeline are the value of a single ZOOTicket during each round
               (i.e. a ZOOTicket is worth 9$N in the OR 2.2).',
             '--- If not sold at the end of game a ZOOTicket is worth 20$N for the final score',
@@ -1171,9 +1171,9 @@ module Engine
         end
 
         def update_zoo_tickets_value(turn, round_num = 1)
-          new_value = ZOO_TICKET_VALUE[turn][round_num]
+          @ticket_zoo_current_value = ZOO_TICKET_VALUE[turn][round_num]
           @companies.select { |c| c.name.start_with?('ZOOTicket') }.each do |company|
-            company.value = new_value
+            company.value = @ticket_zoo_current_value
             company.min_price = 0
             company.max_price = company.value - 1
           end
