@@ -973,6 +973,7 @@ module Engine
           train.owner.trains.delete(train)
           train.owner.trains << new_train
           train.rusts_on = "block-#{train.rusts_on}"
+          train.buyable = false
 
           return unless patch.owner.player?
 
