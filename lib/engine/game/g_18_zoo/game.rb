@@ -239,6 +239,7 @@ module Engine
 
           @available_companies = []
           @future_companies = []
+          @ticket_zoo_current_value = ZOO_TICKET_VALUE[1][0]
 
           # Initialize the player depts, if player have to take an emergency debt
           @player_debts = Hash.new { |h, k| h[k] = 0 }
