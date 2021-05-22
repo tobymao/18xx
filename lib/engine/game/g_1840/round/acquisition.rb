@@ -18,7 +18,7 @@ module Engine
           end
 
           def offer
-            @game.tram_corporations
+            @game.tram_corporations.sort_by { |item| item.id.to_i }
           end
 
           def select_entities

@@ -166,6 +166,13 @@ module Engine
           'I3' => [1, 4],
         }.freeze
 
+        CITY_HOME_HEXES = {
+          'G' => %w[A17 I11],
+          'V' => %w[A17 G3],
+          'D' => %w[A17 F24],
+          'W' => %w[I1 F24],
+        }.freeze
+
         RED_TILES = %w[D20 E19 E21].freeze
 
         TILES_FIXED_ROTATION = %w[L30a L30b L31a L31b].freeze
@@ -611,10 +618,12 @@ module Engine
 
         def check_other(route)
           check_track_type(route)
+
+          check_starting_hexes(route) if route.corporation.type == :city
         end
 
         def check_track_type(route)
-          corporation = route.train.owner
+          corporation = route.corporation
           track_types = route.chains.flat_map { |item| item[:paths] }.flat_map(&:track).uniq
 
           if corporation.type == :city && !(track_types - [:narrow]).empty?
@@ -625,6 +634,14 @@ module Engine
           return if corporation.type != :minor || (track_types - ['broad']).empty?
 
           raise GameError, 'Route may only contain broad tracks'
+        end
+
+        def check_starting_hexes(route)
+          hexes = CITY_HOME_HEXES[route.corporation.id]
+
+          return unless (route.visited_stops.flat_map { |item| item.hex.coordinates } & hexes).empty?
+
+          raise GameError, "Route must start in #{hexes.first} or #{hexes.last}"
         end
 
         def graph_for_entity(entity)
