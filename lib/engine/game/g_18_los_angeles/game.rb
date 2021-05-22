@@ -54,6 +54,8 @@ module Engine
         LSL_HEXES = %w[E4 E6].freeze
         LSL_ICON = 'sbl'
 
+        LM_HEXES = [].freeze
+
         MEAT_HEXES = %w[C14 F7].freeze
         STEAMBOAT_HEXES = %w[B1 C2 F7 F9].freeze
         BOOMTOWN_HEXES = [].freeze
