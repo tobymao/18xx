@@ -420,7 +420,7 @@ module Engine
         MARKET_SHARE_LIMIT = 100
         CERT_LIMIT_INCLUDES_PRIVATES = false
 
-        TRACK_RESTRICTION = :permissive
+        TRACK_RESTRICTION = :semi_restrictive
 
         SOLD_OUT_INCREASE = false
 
