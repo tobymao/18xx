@@ -840,6 +840,8 @@ module Engine
         end
 
         def check_little_miami_graph_before!
+          return if loading
+
           @checked_little_miami_graph_before ||=
             begin
               graph = compute_little_miami_graph
@@ -853,6 +855,8 @@ module Engine
         end
 
         def check_little_miami_graph_after!
+          return if loading
+
           graph = compute_little_miami_graph
           reached_hexes = graph.connected_nodes(little_miami_router).select { |_k, v| v }.keys.map { |n| n.hex.id }
           if (little_miami_hexes & reached_hexes) != little_miami_hexes
