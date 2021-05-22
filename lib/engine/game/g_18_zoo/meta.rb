@@ -19,6 +19,8 @@ module Engine
             'https://boardgamegeek.com/filepage/219446/stock-board-details-playing-18xxgames',
           'Intro guide' =>
             'https://boardgamegeek.com/thread/2660017/article/37718069#37718069',
+          'FAQ' =>
+            'https://boardgamegeek.com/thread/2661280/faq',
         }.freeze
 
         OPTIONAL_RULES = [
