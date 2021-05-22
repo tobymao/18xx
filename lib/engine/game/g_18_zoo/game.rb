@@ -47,7 +47,6 @@ module Engine
             train_limit: 4,
             tiles: %i[yellow green],
             status: ['can_buy_companies'],
-            operating_rounds: 2,
           },
           {
             name: '4S',
@@ -55,7 +54,6 @@ module Engine
             train_limit: 3,
             tiles: %i[yellow green],
             status: ['can_buy_companies'],
-            operating_rounds: 2,
           },
           {
             name: '5S',
@@ -63,7 +61,6 @@ module Engine
             train_limit: 2,
             tiles: %i[yellow green brown],
             status: ['can_buy_companies'],
-            operating_rounds: 2,
           },
           {
             name: '4J/2J',
@@ -71,7 +68,6 @@ module Engine
             train_limit: 2,
             tiles: %i[yellow green brown gray],
             status: ['can_buy_companies'],
-            operating_rounds: 3,
           },
         ].freeze
 
@@ -1078,6 +1074,8 @@ module Engine
         def new_stock_round
           result = super
 
+          @operating_rounds = @turn == 3 ? 3 : 2 # Last round has 3 ORs
+
           update_zoo_tickets_value(@turn, 0)
 
           add_cousins if @turn == 3
@@ -1106,7 +1104,7 @@ module Engine
         end
 
         def new_operating_round(round_num = 1)
-          @operating_rounds = 3 if @turn == 3 # Last round has 3 ORs
+          @operating_rounds = @turn == 3 ? 3 : 2 # Last round has 3 ORs
           update_zoo_tickets_value(@turn, round_num)
 
           midas.close! if midas_active?
