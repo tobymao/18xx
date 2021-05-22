@@ -30,6 +30,8 @@ module Engine
 
         STARTING_CASH = { 3 => 600, 4 => 450, 5 => 360, 6 => 300 }.freeze
 
+        HOME_TOKEN_TIMING = :never
+
         TILES = {
           '70' => 1,
         }.freeze
@@ -695,8 +697,6 @@ module Engine
               new_stock_round
             end
         end
-
-        HOME_TOKEN_TIMING = :never
 
         def setup
           @al_corporation = corporation_by_id('AL')

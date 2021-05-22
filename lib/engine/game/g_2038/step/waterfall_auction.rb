@@ -39,7 +39,7 @@ module Engine
           end
 
           def minor?(company)
-            @game.minors.find { |m| m.id == company.id }
+            @game.minors.any? { |m| m.id == company.id }
           end
 
           def buy_company(player, company, price)
