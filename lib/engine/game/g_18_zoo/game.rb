@@ -47,7 +47,6 @@ module Engine
             train_limit: 4,
             tiles: %i[yellow green],
             status: ['can_buy_companies'],
-            operating_rounds: 2,
           },
           {
             name: '4S',
@@ -55,7 +54,6 @@ module Engine
             train_limit: 3,
             tiles: %i[yellow green],
             status: ['can_buy_companies'],
-            operating_rounds: 2,
           },
           {
             name: '5S',
@@ -63,7 +61,6 @@ module Engine
             train_limit: 2,
             tiles: %i[yellow green brown],
             status: ['can_buy_companies'],
-            operating_rounds: 2,
           },
           {
             name: '4J/2J',
@@ -71,7 +68,6 @@ module Engine
             train_limit: 2,
             tiles: %i[yellow green brown gray],
             status: ['can_buy_companies'],
-            operating_rounds: 3,
           },
         ].freeze
 
@@ -146,7 +142,11 @@ module Engine
         GAME_END_CHECK = { stock_market: :current_or, custom: :full_or }.freeze
 
         GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
-          custom: 'End of Turn 3'
+          custom: 'Complete set of 3SR-7OR'
+        )
+
+        GAME_END_REASONS_TIMING_TEXT = Base::GAME_END_REASONS_TIMING_TEXT.merge(
+          full_or: 'Ends at the end of OR 3.3'
         )
 
         BANKRUPTCY_ALLOWED = false
@@ -209,10 +209,10 @@ module Engine
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'new_train' => ['First train bonus',
-                          'Corporation moves on the right buying the first train of this type'],
+                          'Corporation buying the first train of this type moves one tick to the right'],
           'rust_own_3s_4s' => ['First train buyer rust 3S Long and 4S',
-                               'Corporation buying the first train of this type rust immediately 3S Long and 4S'\
-            ' (runs one last time)'],
+                               'Corporation buying the first train of this type rust immediately its own 3S Long'\
+                               ' and 4S (3S long snd 4S run one last time for the other corporations)'],
         ).freeze
 
         MARKET_TEXT = Base::MARKET_TEXT.merge(safe_par: 'President bonus (+1/3$N to the president)',
@@ -239,6 +239,7 @@ module Engine
 
           @available_companies = []
           @future_companies = []
+          @ticket_zoo_current_value = ZOO_TICKET_VALUE[1][0]
 
           # Initialize the player depts, if player have to take an emergency debt
           @player_debts = Hash.new { |h, k| h[k] = 0 }
@@ -913,7 +914,7 @@ module Engine
 
         def timeline
           @timeline = [
-            "Current value of a ZOOTicket is #{format_currency(ZOO_TICKET_VALUE[@turn][@round.round_num])}.",
+            "Current value of a ZOOTicket is #{format_currency(@ticket_zoo_current_value)}.",
             '--- Numbers 4,5,6…20 on the timeline are the value of a single ZOOTicket during each round
               (i.e. a ZOOTicket is worth 9$N in the OR 2.2).',
             '--- If not sold at the end of game a ZOOTicket is worth 20$N for the final score',
@@ -972,6 +973,7 @@ module Engine
           train.owner.trains.delete(train)
           train.owner.trains << new_train
           train.rusts_on = "block-#{train.rusts_on}"
+          train.buyable = false
 
           return unless patch.owner.player?
 
@@ -1005,6 +1007,8 @@ module Engine
 
           train.rusts_on = train.rusts_on.gsub('block-', '')
           rust_trains!(train_by_id("#{train.rusts_on}-0"), train.owner) if phase.available?(train.rusts_on)
+
+          train_by_id('1S-0').owner = nil
         end
 
         private
@@ -1075,6 +1079,8 @@ module Engine
         def new_stock_round
           result = super
 
+          @operating_rounds = @turn == 3 ? 3 : 2 # Last round has 3 ORs
+
           update_zoo_tickets_value(@turn, 0)
 
           add_cousins if @turn == 3
@@ -1103,7 +1109,7 @@ module Engine
         end
 
         def new_operating_round(round_num = 1)
-          @operating_rounds = 3 if @turn == 3 # Last round has 3 ORs
+          @operating_rounds = @turn == 3 ? 3 : 2 # Last round has 3 ORs
           update_zoo_tickets_value(@turn, round_num)
 
           midas.close! if midas_active?
@@ -1169,9 +1175,9 @@ module Engine
         end
 
         def update_zoo_tickets_value(turn, round_num = 1)
-          new_value = ZOO_TICKET_VALUE[turn][round_num]
+          @ticket_zoo_current_value = ZOO_TICKET_VALUE[turn][round_num]
           @companies.select { |c| c.name.start_with?('ZOOTicket') }.each do |company|
-            company.value = new_value
+            company.value = @ticket_zoo_current_value
             company.min_price = 0
             company.max_price = company.value - 1
           end

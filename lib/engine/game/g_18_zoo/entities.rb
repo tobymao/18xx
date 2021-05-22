@@ -96,7 +96,7 @@ module Engine
           {
             sym: 'ANCIENT_MAPS',
             name: 'Ancient maps',
-            value: 1,
+            value: 2,
             desc: 'The family (company) can build two additional yellow tiles',
             abilities: [
               {
@@ -132,7 +132,7 @@ module Engine
           {
             sym: 'ON_A_DIET',
             name: 'On a diet',
-            value: 3,
+            value: 2,
             desc: 'The family (company) can place a station in addition to the allowed spaces',
             abilities: [
               {
@@ -240,13 +240,13 @@ module Engine
           {
             sym: 'A_SQUEEZE',
             name: 'A squeeze',
-            value: 2,
+            value: 3,
             desc: 'The family (company) gets an additional 3$N if at least one of its squirrels (train) runs an O',
           },
           {
             sym: 'PATCH',
             name: 'Patch',
-            value: 1,
+            value: 2,
             desc: 'The owner (player or family) marks a squirrel (train) – it runs as a 1S. It cannot be sold.'\
             ' It can be dismissed - otherwise the family (company) cannot purchase new squirrels (train)',
           },
