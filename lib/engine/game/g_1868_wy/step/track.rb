@@ -25,6 +25,15 @@ module Engine
               @game.buying_power(entity).positive? &&
               @game.track_points_available(corporation) == (@game.class::YELLOW_POINT_COST - 1)
           end
+
+          def legal_tile_rotation?(entity, hex, tile)
+            if (tile.name == @game.class::BROWN_DOUBLE_BOOMCITY_TILE) ||
+               ((upgrades = @game.class::TILE_UPGRADES[hex.tile.name]) && upgrades.include?(tile.name))
+              hex.tile.exits & tile.exits == hex.tile.exits
+            else
+              super
+            end
+          end
         end
       end
     end

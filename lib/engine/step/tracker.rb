@@ -205,10 +205,7 @@ module Engine
       end
 
       def update_tile_lists(tile, old_tile)
-        @game.add_extra_tile(tile) if tile.unlimited
-
-        @game.tiles.delete(tile)
-        @game.tiles << old_tile unless old_tile.preprinted
+        @game.update_tile_lists(tile, old_tile)
       end
 
       def pay_tile_cost!(entity, tile, rotation, hex, spender, cost, _extra_cost)

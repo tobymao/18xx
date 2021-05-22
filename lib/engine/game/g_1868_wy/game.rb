@@ -4,6 +4,7 @@ require_relative 'entities'
 require_relative 'map'
 require_relative 'meta'
 require_relative 'trains'
+require_relative 'step/boom_track'
 require_relative 'step/buy_company'
 require_relative 'step/buy_train'
 require_relative 'step/development_token'
@@ -27,6 +28,8 @@ module Engine
 
         include CompanyPriceUpToFace
         include StubsAreRestricted
+
+        attr_reader :tile_layers
 
         BANK_CASH = 99_999
         STARTING_CASH = { 3 => 734, 4 => 550, 5 => 440, 6 => 367 }.freeze
@@ -69,6 +72,16 @@ module Engine
             ['Full Capitalization', 'Railroads float at 60% and receive full capitalization'],
         ).freeze
 
+        BROWN_DOUBLE_BOOMCITY_TILE = 'B5BB'
+        GRAY_BOOMCITY_TILE = '5B'
+        GRAY_DOUBLE_BOOMCITY_TILE = '5BB'
+
+        DTC_BOOMCITY = 3
+        DTC_REVENUE = 4
+        DTC_DOUBLE_BOOMCITY = 5
+
+        BOOMING_REVENUE_BONUS = 10
+
         def dotify(tile)
           tile.towns.each { |town| town.style = :dot }
           tile
@@ -96,6 +109,10 @@ module Engine
 
           @development_hexes = init_development_hexes
           @development_token_count = Hash.new(0)
+          @pending_boom_tile_lays = {}
+          @pending_gray_boom_tile_lays = { boom: [], double_boom: [] }
+
+          @tile_layers = {}
 
           @late_corps, @corporations = @corporations.partition { |c| LATE_CORPORATIONS.include?(c.id) }
           @late_corps.each { |corp| corp.reservation_color = nil }
@@ -107,6 +124,7 @@ module Engine
 
         def operating_round(round_num)
           G1868WY::Round::Operating.new(self, [
+            G1868WY::Step::BoomTrack,
             G1868WY::Step::DevelopmentToken,
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
@@ -234,6 +252,7 @@ module Engine
               action.hex.tile.color = :gray
               @log << 'Wind River Canyon turns gray; it can never be upgraded'
             end
+            @tile_layers[action.hex] = action.entity.player
           end
         end
 
@@ -321,20 +340,214 @@ module Engine
           increment_development_token_count(hex)
         end
 
+        def boomer?(tile)
+          tile.city_towns.any?(&:boom)
+        end
+
         def increment_development_token_count(tokened_hex)
           hexes = [tokened_hex].concat((0..5).map { |edge| hex_neighbor(tokened_hex, edge) })
 
           hexes.each do |hex|
             next unless hex
-            next unless hex.tile.city_towns.any?(&:boom)
+            next unless boomer?(hex.tile)
 
             @development_token_count[hex] += 1
             handle_boom!(hex)
           end
+
+          # gray tiles are limited, so handle them last
+          handle_gray_booms!
         end
 
         def handle_boom!(hex)
-          # TODO
+          case @development_token_count[hex]
+          when DTC_BOOMCITY
+            boomtown_to_boomcity!(hex)
+          when DTC_REVENUE
+            boomcity_increase_revenue!(hex)
+          when DTC_DOUBLE_BOOMCITY
+            boomcity_to_double_boomcity!(hex) if %i[brown gray].include?(hex.tile.color)
+          end
+        end
+
+        def boomtown_to_boomcity!(hex, gray_checked: false)
+          if !gray_checked && hex.tile.color == :gray
+            @pending_gray_boom_tile_lays[:boom] << hex
+            return
+          end
+
+          @log << "#{location_name(hex.name)} (#{hex.name}) is Booming! A Boomtown is replaced by a Boom City."
+
+          # auto-upgrade the preprinted tile
+          if (tile = hex.tile).preprinted
+            boomtown = tile.towns.pop
+            city = Engine::Part::City.new('0', boom: true, loc: boomtown.loc)
+            city.tile = tile
+            tile.cities << city
+            tile.city_towns << city
+            tile.rotate!(0) # reset tile rendering
+
+          # more than one Boomtown in yellow, a choice must be made
+          elsif tile.towns.count(&:boom) > 1 && tile.color == :yellow
+            @pending_boom_tile_lays[hex] = boomcity_tiles(tile.name)
+
+          # auto-upgrade the tile
+          else
+            new_tile = boomcity_tiles(tile.name).first
+            boom_autoreplace_tile!(new_tile, tile)
+          end
+        end
+
+        def boomcity_increase_revenue!(hex)
+          # actual logic for increased revenue is handled in `revenue_for()`
+          @log << "#{location_name(hex.name)} (#{hex.name}) is Booming! Its revenue "\
+                  "increases by #{format_currency(BOOMING_REVENUE_BONUS)}."
+        end
+
+        def boomcity_to_double_boomcity!(hex, gray_checked: false)
+          if !gray_checked && hex.tile.color == :gray
+            @pending_gray_boom_tile_lays[:double_boom] << hex
+            return
+          end
+
+          @log << "#{location_name(hex.name)} (#{hex.name}) is Booming! The Boom City becomes a Double Boom City."
+
+          tile = hex.tile
+          new_tile = double_boomcity_tile(tile.name)
+          boom_autoreplace_tile!(new_tile, tile)
+        end
+
+        def boom_autoreplace_tile!(new_tile, tile)
+          hex = tile.hex
+
+          new_tile.rotate!(tile.rotation)
+          update_tile_lists(new_tile, tile)
+          hex.lay(new_tile)
+          @log << "#{new_tile.name} replaces #{tile.name} on #{hex.name}"
+        end
+
+        def gray_double_boomcity_tile_count
+          @tiles.count { |t| t.name == GRAY_DOUBLE_BOOMCITY_TILE }
+        end
+
+        def gray_boomcity_tile_count
+          @tiles.count { |t| t.name == GRAY_BOOMCITY_TILE }
+        end
+
+        # gray Boom City tiles available in supply, plus how many will be made
+        # available by resolving pending upgrades to gray Double Boom City tiles
+        def gray_boomcity_tile_potential_count
+          gray_boomcity_tile_count +
+           [gray_double_boomcity_tile_count, @pending_gray_boom_tile_lays[:double_boom].size].min
+        end
+
+        # because gray tiles are limited, their counts could affect pending tile
+        # lays, so track them separately
+        def pending_boom_tile_lays
+          @pending_boom_tile_lays.merge(
+            @pending_gray_boom_tile_lays[:boom].map { |h| [h, boomcity_tiles(h.tile.name)] }.to_h
+          ).merge(
+            @pending_gray_boom_tile_lays[:double_boom].map { |h| [h, [double_boomcity_tile(h.tile.name)]] }.to_h
+          )
+        end
+
+        # * automatically lay gray Boom upgrades if enough tiles remain
+        # * if no such tiles remain, remove the pending gray lays from the list
+        #   of pending lays
+        # * if some such tiles remain, but not enough for all of the Booming
+        #   hexes, then they will be manually resolved by the BoomTrack step
+        def handle_gray_booms!
+          return if @pending_gray_boom_tile_lays.values.flatten.empty?
+
+          # clear gray double boom city actions, no tiles remain
+          if (num_double_boom_tiles = gray_double_boomcity_tile_count).zero?
+            @pending_gray_boom_tile_lays[:double_boom].clear
+
+          # there are enough gray double boom city tiles, automatically lay them
+          elsif num_double_boom_tiles >= @pending_gray_boom_tile_lays[:double_boom].size
+            @pending_gray_boom_tile_lays[:double_boom].each do |hex|
+              boomcity_to_double_boomcity!(hex, gray_checked: true)
+            end
+          end
+
+          # clear pending gray boom city tile lays, no tiles remain
+          if gray_boomcity_tile_potential_count.zero?
+            @pending_gray_boom_tile_lays[:boom].clear
+
+          # there are enough gray boom city tiles, automatically lay them
+          elsif gray_boomcity_tile_count >= @pending_gray_boom_tile_lays[:boom].size
+            @pending_gray_boom_tile_lays[:boom].each do |hex|
+              boomtown_to_boomcity!(hex, gray_checked: true)
+            end
+          end
+        end
+
+        def postprocess_boom_lay_tile(action)
+          hex = action.hex
+
+          if hex.tile.color == :gray
+            %i[boom double_boom].each do |kind|
+              handle_gray_booms! if @pending_gray_boom_tile_lays[kind].delete(hex)
+            end
+          end
+
+          @pending_boom_tile_lays.delete(hex)
+        end
+
+        def boomcity_tiles(tile_name)
+          (BOOMTOWN_TO_BOOMCITY_TILES[tile_name] || []).map { |n| @tiles.find { |t| t.name == n && !t.hex } }.compact
+        end
+
+        def double_boomcity_tile(tile_name)
+          @tiles.find { |t| t.name == "#{tile_name}B" && !t.hex }
+        end
+
+        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
+          @pending_boom_tile_lays[tile.hex] || super
+        end
+
+        def upgrades_to?(from, to, special = false, selected_company: nil)
+          hex = from.hex
+          if @pending_boom_tile_lays[hex]
+            from.name == to.name.downcase
+          else
+            return false unless boomer?(from) == boomer?(to)
+
+            if (@development_token_count[hex] >= DTC_DOUBLE_BOOMCITY) &&
+               (from.color == :green) && (to.color == :brown)
+              return to.name == BROWN_DOUBLE_BOOMCITY_TILE
+            end
+
+            if (upgrades = TILE_UPGRADES[from.name])
+              upgrades.include?(to.name)
+            else
+              super
+            end
+          end
+        end
+
+        def revenue_for(route, stops)
+          stops.sum do |stop|
+            revenue = stop.route_revenue(route.phase, route.train)
+            revenue += BOOMING_REVENUE_BONUS if stop.city? && @development_token_count[stop.hex] >= DTC_REVENUE
+            revenue
+          end
+        end
+
+        def active_players
+          return super if @pending_boom_tile_lays.empty?
+
+          # when a double Boomtown tile booms, the player who laid it gets to
+          # choose which of the two Boomtowns becomes the Boom City
+          @pending_boom_tile_lays.keys.map do |hex|
+            @tile_layers[hex]
+          end.uniq
+        end
+
+        def valid_actors(action)
+          return super if @pending_boom_tile_lays.empty?
+
+          [@tile_layers[action.hex]]
         end
       end
     end
