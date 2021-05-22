@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/token'
+require_relative 'tokened_city_must_be_connected'
 
 module Engine
   module Game
@@ -42,6 +43,8 @@ module Engine
 
             super
           end
+
+          include TokenedCityMustBeConnected
         end
       end
     end
