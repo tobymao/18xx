@@ -847,7 +847,10 @@ module Engine
             @little_miami_hexes_laid << hex
           end
 
-          check_little_miami_graph_after! unless abilities(little_miami, :tile_lay)
+          return if abilities(little_miami, :tile_lay)
+
+          check_little_miami_graph_after!
+          remove_lm_icons
         end
 
         def check_little_miami_graph_before!
