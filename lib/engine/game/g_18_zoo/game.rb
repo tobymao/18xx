@@ -1005,6 +1005,8 @@ module Engine
 
           train.rusts_on = train.rusts_on.gsub('block-', '')
           rust_trains!(train_by_id("#{train.rusts_on}-0"), train.owner) if phase.available?(train.rusts_on)
+
+          train_by_id('1S-0').owner = nil
         end
 
         private
