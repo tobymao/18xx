@@ -6,7 +6,7 @@ module Engine
   module Game
     module G1840
       module Round
-        class CompanyOperating < Engine::Round::Operating
+        class Company < Engine::Round::Operating
           attr_reader :no_city, :payout_privates
 
           def initialize(game, steps, **opts)

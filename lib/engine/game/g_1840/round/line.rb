@@ -6,7 +6,7 @@ module Engine
   module Game
     module G1840
       module Round
-        class LineOperating < Engine::Round::Operating
+        class Line < Engine::Round::Operating
           def select_entities
             @game.operating_order.select { |item| item.type == :minor }.sort_by { |item| item.id.to_i }
           end

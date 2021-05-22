@@ -46,6 +46,12 @@ module Engine
 
         TILE_LAYS = [{ lay: true, upgrade: true, cost: 0 }, { lay: true, upgrade: true, cost: 0 }].freeze
 
+        GAME_END_CHECK = { custom: :current_round }.freeze
+
+        GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
+          custom: 'Fixed number of Rounds'
+        )
+
         MARKET_TEXT = {
           par: 'City Corporation Par',
           par_2: 'Major Corporation Par',
@@ -174,6 +180,7 @@ module Engine
           %w[O3 R2 Pi1],
           %w[R3 Pi2 Pu1],
           %w[Pi3 Pu2],
+          [],
         ].freeze
 
         DEPOT_CLEARING = [
@@ -308,15 +315,18 @@ module Engine
         end
 
         def new_operating_round(round_num = 1)
+          if @or == 2 || @or == 6 || @or == 8
+            @phase.next!
+            @operating_rounds = @phase.operating_rounds
+          end
           @log << "-- #{round_description(self.class::OPERATING_ROUND_NAME, round_num)} --"
-          @phase.next! if @or == 2 || @or == 6 || @or == 8
           @or += 1
           @round_counter += 1
           operating_round(round_num)
         end
 
         def new_company_operating_route_round(round_num)
-          G1840::Round::CompanyOperating.new(self, [
+          G1840::Round::Company.new(self, [
             G1840::Step::SellCompany,
             G1840::Step::Route,
             G1840::Step::Dividend,
@@ -324,7 +334,7 @@ module Engine
         end
 
         def new_company_operating_buy_train_round(round_num)
-          G1840::Round::CompanyOperating.new(self, [
+          G1840::Round::Company.new(self, [
             G1840::Step::SellCompany,
             G1840::Step::BuyTrain,
           ], round_num: round_num, no_city: true)
@@ -339,14 +349,14 @@ module Engine
         end
 
         def new_company_operating_switch_trains(round_num)
-          G1840::Round::CompanyOperating.new(self, [
+          G1840::Round::Company.new(self, [
             G1840::Step::SellCompany,
             G1840::Step::ReassignTrains,
           ], round_num: round_num, no_city: true)
         end
 
         def operating_round(round_num)
-          G1840::Round::LineOperating.new(self, [
+          G1840::Round::Line.new(self, [
             G1840::Step::SellCompany,
             G1840::Step::SpecialTrack,
             G1840::Step::SpecialToken,
@@ -368,7 +378,7 @@ module Engine
               else
                 new_operating_round(@round.round_num)
               end
-            when G1840::Round::CompanyOperating
+            when G1840::Round::Company
               @intern_cr_phase_counter += 1
               if @intern_cr_phase_counter < 3
                 new_company_operating_buy_train_round
@@ -718,8 +728,15 @@ module Engine
           CR_MULTIPLIER[index]
         end
 
-        def end_now?(after)
+        def custom_end_game_reached?
           @cr_counter == 6
+        end
+
+        def game_ending_description
+          _, after = game_end_check
+          return unless after
+
+          'Game Ends at conclusion of this Company Round'
         end
       end
     end
