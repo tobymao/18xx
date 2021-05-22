@@ -25,7 +25,7 @@ module Engine
           end
 
           def actions(entity)
-            return [] if available.one?
+            return [] if available.one? || finished?
 
             entity == current_entity ? ACTIONS_WITH_PASS : []
           end
