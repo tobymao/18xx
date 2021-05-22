@@ -160,7 +160,8 @@ module Engine
             ['B16'] => 'city=revenue:0;border=edge:4,type:mountain,cost:40',
             ['D14'] => 'city=revenue:0;icon=image:port,sticky:1;icon=image:1846/lsl,sticky:1',
             ['E17'] => 'city=revenue:0;label=Z;icon=image:1846/lsl,sticky:1',
-            ['H12'] => 'city=revenue:0;label=Z;border=edge:0,type:water,cost:40;icon=image:1846/lm,sticky:1;icon=image:1846/boom,sticky:1',
+            ['H12'] => 'city=revenue:0;label=Z;border=edge:0,type:water,cost:40;'\
+                       'icon=image:1846/lm,sticky:1;icon=image:1846/boom,sticky:1',
             ['F18'] => 'upgrade=cost:40,terrain:mountain;border=edge:5,type:water,cost:40',
             ['H16'] => 'upgrade=cost:40,terrain:mountain',
             ['G17'] => 'upgrade=cost:40,terrain:mountain;border=edge:4,type:water,cost:20',
