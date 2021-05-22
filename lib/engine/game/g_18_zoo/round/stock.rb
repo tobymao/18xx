@@ -20,7 +20,7 @@ module Engine
           end
 
           def sold_out?(corporation)
-            corporation.player_share_holders.values.sum >= 100
+            corporation.player_share_holders.values.sum >= (@game.turn == 3 ? 120 : 100)
           end
         end
       end
