@@ -17,6 +17,7 @@ module ParAndBuy
     return exchange_for_rag(action, entity) if entity.company?
 
     # In case president's share is reserved, do not change presidency
+    corporation = action.bundle.corporation
     allow_president_change = corporation.presidents_share.buyable
     buy_shares(action.entity, action.bundle, swap: action.swap, allow_president_change: allow_president_change)
     track_action(action, corporation)
