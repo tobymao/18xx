@@ -142,7 +142,11 @@ module Engine
         GAME_END_CHECK = { stock_market: :current_or, custom: :full_or }.freeze
 
         GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
-          custom: 'End of Turn 3'
+          custom: 'Complete set of 3SR-7OR'
+        )
+
+        GAME_END_REASONS_TIMING_TEXT = Base::GAME_END_REASONS_TIMING_TEXT.merge(
+          full_or: 'Ends at the end of OR 3.3'
         )
 
         BANKRUPTCY_ALLOWED = false
@@ -205,10 +209,10 @@ module Engine
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'new_train' => ['First train bonus',
-                          'Corporation moves on the right buying the first train of this type'],
+                          'Corporation buying the first train of this type moves one tick to the right'],
           'rust_own_3s_4s' => ['First train buyer rust 3S Long and 4S',
-                               'Corporation buying the first train of this type rust immediately 3S Long and 4S'\
-            ' (runs one last time)'],
+                               'Corporation buying the first train of this type rust immediately its own 3S Long'\
+                               ' and 4S (3S long snd 4S run one last time for the other corporations)'],
         ).freeze
 
         MARKET_TEXT = Base::MARKET_TEXT.merge(safe_par: 'President bonus (+1/3$N to the president)',
