@@ -18,6 +18,10 @@ module Engine
               @entity_index = (@entity_index + 1) % @entities.size
             end
           end
+
+          def sold_out?(corporation)
+            corporation.player_share_holders.values.sum >= 100
+          end
         end
       end
     end

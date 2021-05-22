@@ -57,8 +57,8 @@ module Engine
             return unless bonus.positive?
 
             @game.bank.spend(bonus, entity.player, check_positive: false)
-            @log << "Family owner #{entity.player.name} earns #{@game.format_currency(bonus)}"\
-              " as bonus from #{entity.name} run"
+            @log << "President #{entity.player.name} earns #{@game.format_currency(bonus)}"\
+              " as a bonus from #{entity.name} run"
           end
 
           def process_dividend(action)
