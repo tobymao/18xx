@@ -12,7 +12,10 @@ module Engine
 
             base = super.dup
 
-            base << 'scrap_train' if entity.type == :minor && !entity.trains.empty?
+            if entity.type == :minor && !entity.trains.empty?
+              base << 'run_routes' if base.empty?
+              base << 'scrap_train'
+            end
             base
           end
 
