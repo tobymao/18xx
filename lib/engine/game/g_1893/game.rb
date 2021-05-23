@@ -11,7 +11,7 @@ module Engine
         include_meta(G1893::Meta)
 
         attr_accessor :passers_first_stock_round, :agv_mergable, :agv_auto_found, :hgk_mergable, :hgk_auto_found,
-                      :potential_discard_trains
+                      :potential_discard_trains, :fdsd_to_close
 
         register_colors(
           gray70: '#B3B3B3',
@@ -43,6 +43,9 @@ module Engine
 
         # New track must be usable
         TRACK_RESTRICTION = :restrictive
+
+        # Needed for RAG exchange selection when parring
+        ALL_COMPANIES_ASSIGNABLE = true
 
         TILES = {
           '3' => 2,
@@ -408,7 +411,7 @@ module Engine
                 corporations: ['RAG'],
                 owner_type: 'player',
                 when: 'owning_player_sr_turn',
-                from: %w[ipo market],
+                from: %w[market],
               },
             ],
             color: nil,
@@ -869,6 +872,14 @@ module Engine
           @hgk_corporation ||= corporation_by_id('HGK')
         end
 
+        def rag
+          @rag_corporation ||= corporation_by_id('RAG')
+        end
+
+        def fdsd
+          @fdsd_company ||= company_by_id('FdSD')
+        end
+
         def hdsk
           @hdsk_company ||= company_by_id('HdSK')
         end
@@ -975,6 +986,9 @@ module Engine
           @hgk_auto_found = false
           agv.floatable = false
           hgk.floatable = false
+
+          # Set to true via phase change, and set to false when event handled
+          @fdsd_to_close = false
 
           @potential_discard_trains = []
 
@@ -1185,7 +1199,10 @@ module Engine
         end
 
         def event_fdsd_closed!
-          @log << 'NOT IMPLEMENTED - FdSD closed'
+          return if fdsd.closed?
+
+          @log << "#{fdsd.name} will close during the next SR, after #{fdsd.player.name}'s first turn"
+          @fdsd_to_close = true
         end
 
         def event_eva_closed!
@@ -1205,6 +1222,13 @@ module Engine
           # Privates A-C always buyable, minors topmost 2
           privates, minors = buyable.partition { |c| NAME_OF_PRIVATES.include?(c.sym) }
           privates + (minors.size < 2 ? minors : minors[0..1])
+        end
+
+        # Allow for par of RAG if owning FdSD
+        def can_par?(corporation, entity)
+          return true if corporation == rag && entity == fdsd.owner
+
+          super
         end
 
         def remove_ability(corporation, ability_name)
