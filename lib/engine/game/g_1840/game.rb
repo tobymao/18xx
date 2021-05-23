@@ -444,7 +444,7 @@ module Engine
         end
 
         def owning_major_corporation(corporation)
-          @tram_owned_by_corporation.find { |_k, v| v.find { |item| item == corporation } }.first
+          @tram_owned_by_corporation.find { |_k, v| v.find { |item| item == corporation } }&.first
         end
 
         def buy_tram_corporation(buying_corporation, tram_corporation)
