@@ -24,6 +24,10 @@ module Engine
             super
               .reject { |tile| %w[80 X80 81 X81 82 X82 83 X83].include?(tile.name) }
           end
+
+          def help
+            @game.threshold_help
+          end
         end
       end
     end

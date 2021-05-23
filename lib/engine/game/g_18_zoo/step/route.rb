@@ -33,10 +33,10 @@ module Engine
 
           def chart(entity)
             threshold = @game.threshold(entity)
-            bonus_hold = chart_price(entity.share_price)
-            bonus_pay = chart_price(@game.share_price_updated(entity, threshold))
+            bonus_hold = @game.chart_price(entity.share_price)
+            bonus_pay = @game.chart_price(@game.share_price_updated(entity, threshold))
             [
-              ["Threshold#{nbsp(4)}Move", 'Bonus'],
+              ["Threshold#{nbsp(4)}Move", 'Dividend'],
               ["withhold#{nbsp(6)}1 ←", ''],
               ["< #{threshold}#{nbsp(13)}", bonus_hold.to_s],
               ["≥ #{threshold}#{nbsp(6)}1 →", bonus_pay.to_s],
@@ -45,14 +45,6 @@ module Engine
 
           private
 
-          def chart_price(share_price)
-            bonus_share = @game.bonus_payout_for_share(share_price)
-            bonus_president = @game.bonus_payout_for_president(share_price)
-            "#{@game.format_currency(bonus_share)}"\
-              "#{bonus_president.positive? ? '+' + @game.format_currency(bonus_president) : ''}"
-          end
-
-          # TODO: check if other solution with three columns
           def nbsp(time)
             ' ' * time
           end
