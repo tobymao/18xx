@@ -15,7 +15,7 @@ module Engine
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1893'
         GAME_LOCATION = 'Cologne, Germany'
         GAME_PUBLISHER = :marflow_games
-        GAME_RULES_URL = 'https://boardgamegeek.com/filepage/188718/1893-cologne-rule-summary-version-10'
+        GAME_RULES_URL = 'https://18xx-marflow-games.de/onewebmedia/1893%20-%20Cologne%20Rules%20Version%202.2%20EN.pdf'
 
         PLAYER_RANGE = [2, 4].freeze
         OPTIONAL_RULES = [
