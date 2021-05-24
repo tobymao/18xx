@@ -9,6 +9,8 @@ module Engine
     module G18Scan
       class Game < Game::Base
         include_meta(G18Scan::Meta)
+        include Entities
+        include Map
 
         CURRENCY_FORMAT_STR = 'K%d'
 
