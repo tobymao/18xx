@@ -17,7 +17,7 @@ module Engine
             return EXCHANGE_ACTIONS if entity == @game.fdsd && @game.rag.ipoed
             return [] unless entity&.player?
 
-            return %w[assign pass] if available_subsidiaries(entity).any?
+            return %w[assign pass] unless available_subsidiaries(entity).empty?
 
             result = super
             result.concat(FIRST_SR_ACTIONS) if can_buy_company?(entity)
@@ -104,7 +104,7 @@ module Engine
             corporation = action.corporation
             @par_rag = (action if rag_exchangable(action.entity, corporation))
 
-            return par_corporation(action) unless available_subsidiaries(current_entity).any?
+            return par_corporation(action) if available_subsidiaries(current_entity).empty?
 
             # If player cannot afford to par without exchange, make automatic exchange
             player = action.entity
@@ -224,19 +224,19 @@ module Engine
           end
 
           def description
-            return 'Exchange FdSD' if available_subsidiaries(current_entity).any?
+            return 'Exchange FdSD' unless available_subsidiaries(current_entity).empty?
 
             super
           end
 
           def pass_description
-            return 'Pass (Exchange FsDF)' if available_subsidiaries(current_entity).any?
+            return 'Pass (Exchange FsDF)' unless available_subsidiaries(current_entity).empty?
 
             super
           end
 
           def log_pass(entity)
-            return if available_subsidiaries(current_entity).any?
+            return unless available_subsidiaries(current_entity).empty?
 
             super
           end
