@@ -48,7 +48,7 @@ module Engine
                 'path=a:4,b:_0;label=COP',
             },
         }.freeze
-        
+
         LOCATION_NAMES = {
           'A6' => 'Kiel',
           'B7' => 'Stettin',
