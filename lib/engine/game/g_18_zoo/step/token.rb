@@ -15,6 +15,10 @@ module Engine
               min_token_price(tokens) <= @game.buying_power(entity, use_tickets: true) &&
               @game.graph.can_token?(entity)
           end
+
+          def help
+            @game.threshold_help
+          end
         end
       end
     end

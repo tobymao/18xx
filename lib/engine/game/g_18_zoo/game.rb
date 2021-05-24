@@ -131,7 +131,6 @@ module Engine
                        { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             price: 0,
             num: 1,
-            no_local: false,
             reserved: true,
           },
         ].freeze
@@ -211,8 +210,8 @@ module Engine
           'new_train' => ['First train bonus',
                           'Corporation buying the first train of this type moves one tick to the right'],
           'rust_own_3s_4s' => ['First train buyer rust 3S Long and 4S',
-                               'Corporation buying the first train of this type rust immediately its own 3S Long'\
-                               ' and 4S (3S long snd 4S run one last time for the other corporations)'],
+                               'Corporation buying the first 4J/2J rusts immediately its own 3S Long and 4S '\
+                               '(3S long and 4S run one last time for the other corporations)'],
         ).freeze
 
         MARKET_TEXT = Base::MARKET_TEXT.merge(safe_par: 'President bonus (+1/3$N to the president)',
@@ -937,6 +936,9 @@ module Engine
           corporation = train.owner
           player = corporation.owner
 
+          # Train protection cannot be applied if corporation has already 3 companies
+          return true if patch.owner == player && corporation.companies.count >= 3
+
           @round.entity_with_bandage = player if patch.owner == player
           @round.entity_with_bandage = corporation if patch.owner == corporation && !corporation.assigned?(patch.id)
           return true if !@round.entity_with_bandage || ![train.owner,
@@ -949,6 +951,8 @@ module Engine
 
         def rust(train)
           return if !train.owner || !train.owner.corporation?
+          # Train protection cannot be applied if corporation has already 3 companies
+          return super if patch.owner&.player? && train.owner.companies.count >= 3
 
           corporation = train.owner
           player = corporation.owner
@@ -1009,6 +1013,28 @@ module Engine
           rust_trains!(train_by_id("#{train.rusts_on}-0"), train.owner) if phase.available?(train.rusts_on)
 
           train_by_id('1S-0').owner = nil
+        end
+
+        def can_run_route?(entity)
+          entity.trains.any? { |t| t.name == '1S' } || super
+        end
+
+        def chart_price(share_price)
+          bonus_share = bonus_payout_for_share(share_price)
+          bonus_president = bonus_payout_for_president(share_price)
+          "#{format_currency(bonus_share)}"\
+              "#{bonus_president.positive? ? '+' + format_currency(bonus_president) : ''}"
+        end
+
+        def threshold_help
+          entity = current_entity
+          return unless entity
+
+          threshold = threshold(entity)
+          bonus_hold = chart_price(entity.share_price)
+          bonus_pay = chart_price(share_price_updated(entity, threshold))
+
+          "Current dividend #{bonus_hold}. Threshold to move: #{threshold}. Dividend if moved #{bonus_pay}"
         end
 
         private

@@ -384,7 +384,37 @@ module Engine
           },
         }.freeze
 
-        HOLE = G18ZOOMapA::Map::HOLE
+        HOLE = {
+          'tiles' => {
+            %w[J21 O8 N7] => 'path=a:2,b:5,lanes:2',
+            %w[K22 N21] => 'path=a:2,b:4,lanes:2',
+            %w[L21] => 'path=a:1,b:4,lanes:2',
+            %w[M20] => 'path=a:1,b:5,lanes:2',
+            %w[O20 P11] => 'path=a:1,b:3,lanes:2',
+            %w[O18 O16 O14] => 'path=a:0,b:3,lanes:2',
+            %w[O12] => 'path=a:0,b:4,lanes:2',
+            %w[P9] => 'path=a:0,b:2,lanes:2',
+            %w[M6] => 'offboard=revenue:yellow_30|brown_60;path=a:1,b:_0;path=a:2,b:_0;label=R;'\
+                          'path=a:1,b:5,b_lane:2.0;path=a:1,b:5,b_lane:2.1;'\
+                          'path=a:2,b:5,b_lane:2.0;path=a:2,b:5,b_lane:2.1',
+            %w[N19] => 'offboard=revenue:yellow_30|brown_60;path=a:2,b:_0;label=R;'\
+                          'path=a:2,b:0,b_lane:2.0;path=a:2,b:0,b_lane:2.1',
+            %w[I20] => 'offboard=revenue:yellow_30|brown_60;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=R;'\
+                          'path=a:2,b:5,b_lane:2.0;path=a:2,b:5,b_lane:2.1;'\
+                          'path=a:3,b:5,b_lane:2.0;path=a:3,b:5,b_lane:2.1;'\
+                          'path=a:4,b:5,b_lane:2.0;path=a:4,b:5,b_lane:2.1;',
+          },
+          'I20-M6-tiles' => %w[I20 J21 K22 L21 M20 N21 O20 O18 O16 O14 O12 P11 P9 O8 N7 M6],
+          'I20-M6' => {},
+          'I20-N19-tiles' => %w[I20 J21 K22 L21 M20 N19],
+          'I20-N19' => {
+            %w[N21] => 'path=a:2,b:3,lanes:2',
+          },
+          'M6-N19-tiles' => %w[N19 O20 O18 O16 O14 O12 P11 P9 O8 N7 M6],
+          'M6-N19' => {
+            %w[N21] => 'path=a:3,b:4,lanes:2',
+          },
+        }.freeze
 
         LOCATION_NAMES = {
           'I16' => 'M',
