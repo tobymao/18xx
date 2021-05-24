@@ -163,85 +163,35 @@ module Engine
 
         TRACK_RESTRICTION = :semirestrictive
 
-        COPENHAGEN_HEX = 'C6'
+        DESTINATIONS = {
+          'M1' => 'F5',
+          'M2' => 'K2',
+          'M3' => 'G4',
+        }.freeze
 
-        EVENTS_TEXT = Base::EVENTS_TEXT.merge(
-          'minors_closed' => ['Minors closed'],
-        ).freeze
+        # COPENHAGEN_HEX = 'C6'
 
-        def company_1
-          @company_1 ||= company_by_id('1')
-        end
+        # EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+        #   'minors_closed' => ['Minors closed'],
+        # ).freeze
 
-        def company_2
-          @company_2 ||= company_by_id('2')
-        end
-
-        def company_3
-          @company_3 ||= company_by_id('3')
-        end
-
-        def sj
-          @sj_corporation ||= corporation_by_id('SJ')
-        end
-
-        def company_1_reserved_share
-          @company_1_reserved_share ||= sj.shares[6]
-        end
-
-        def company_2_reserved_share
-          @company_2_reserved_share ||= sj.shares[7]
-        end
-
-        def company_3_reserved_share
-          @company_3_reserved_share ||= sj.shares[8]
-        end
-
-        def dsb
-          @dsb_corporation ||= corporation_by_id('DSB')
-        end
-
-        def nsb
-          @nsb_corporation ||= corporation_by_id('NSB')
-        end
-
-        def vr
-          @vr_corporation ||= corporation_by_id('VR')
-        end
-
-        def nsj
-          @nsj_corporation ||= corporation_by_id('NSJ')
-        end
-
-        def minor_1
-          @minor_a ||= minor_by_id('1')
-        end
-
-        def minor_2
-          @minor_2 ||= minor_by_id('2')
-        end
-
-        def minor_3
-          @minor_3 ||= minor_by_id('3')
-        end
-
-        def operating_round(round_num)
-          Round::Operating.new(self, [
-            Engine::Step::Bankrupt,
-            G18Scan::Step::Assign,
-            G18Scan::Step::BuyCompany,
-            Engine::Step::HomeToken,
-            G18Scan::Step::Merge,
-            G18Scan::Step::SpecialTrack,
-            G18Scan::Step::Track,
-            Engine::Step::Token,
-            Engine::Step::Route,
-            G18Scan::Step::Dividend,
-            Engine::Step::DiscardTrain,
-            G18Scan::Step::SingleDepotTrainBuy,
-            [Engine::Step::BuyCompany, { blocks: true }],
-          ], round_num: round_num)
-        end
+        # def operating_round(round_num)
+        #   Round::Operating.new(self, [
+        #     Engine::Step::Bankrupt,
+        #     G18Scan::Step::Assign,
+        #     G18Scan::Step::BuyCompany,
+        #     Engine::Step::HomeToken,
+        #     G18Scan::Step::Merge,
+        #     G18Scan::Step::SpecialTrack,
+        #     G18Scan::Step::Track,
+        #     Engine::Step::Token,
+        #     Engine::Step::Route,
+        #     G18Scan::Step::Dividend,
+        #     Engine::Step::DiscardTrain,
+        #     G18Scan::Step::SingleDepotTrainBuy,
+        #     [Engine::Step::BuyCompany, { blocks: true }],
+        #   ], round_num: round_num)
+        # end
       end
     end
   end
