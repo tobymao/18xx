@@ -322,7 +322,7 @@ module Engine
         end
 
         def new_operating_round(round_num = 1)
-          if @or == 2 || @or == 6 || @or == 8
+          if [2, 6, 8].include?(@or)
             @phase.next!
             @operating_rounds = @phase.operating_rounds
           end
