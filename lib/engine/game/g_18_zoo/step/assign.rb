@@ -59,7 +59,7 @@ module Engine
           end
 
           def available_hex_for_mine?(entity, hex)
-            hex.tile.color != 'white' &&
+            hex.tile.color != :white &&
               !hex.tile.cities.empty? &&
               !hex.tile.cities.first.tokened_by?(entity.owner) &&
               hex.tile.cities.first.available_slots.positive?
@@ -84,7 +84,7 @@ module Engine
           end
 
           def available_hex_for_work_in_progress?(hex)
-            hex.tile.color != 'white' &&
+            hex.tile.color != :white &&
               !hex.tile.cities.empty? &&
               hex.tile.cities.first.available_slots.positive?
           end

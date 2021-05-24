@@ -297,7 +297,7 @@ module Engine
         { phase: :yellow, price: 6, expected_par_prices: [5, 6, 7], gain: 0, trains: [] },
         { phase: :yellow, price: 7, expected_par_prices: [5, 6, 7], gain: 0, trains: [] },
         { phase: :green, price: 9, expected_par_prices: [5, 6, 7, 9], gain: 5, trains: ['3S'] },
-        { phase: :brown, price: 12, expected_par_prices: [5, 6, 7, 9, 12], gain: 10, trains: %w[3S 4S 5S] },
+        { phase: :brown, price: 12, expected_par_prices: [5, 6, 7, 9, 12], gain: 10, trains: ['3S', '4S', '4S Perm'] },
       ].each do |data|
         describe (data[:phase]).to_s do
           let(:share_price) { stock_market.par_prices.find { |par_price| par_price.price == data[:price] } }
@@ -370,12 +370,6 @@ module Engine
               item[:trains].each { |train| phase.buying_train!(corporation, game.trains.find { |t| t.name == train }) }
             end
 
-            item[:track_for_invalid].each do |track_for_invalid|
-              # TODO: fix later
-              # it "should auto-skip when tile is..." do
-              # end
-            end
-
             item[:track_for_valid].each do |track_for_valid|
               describe "when hex tile is #{track_for_valid[:color] || 'empty'}" do
                 before do
@@ -387,29 +381,6 @@ module Engine
                                                                       share_price: share_price))
 
                   expect(game.round.active_step).to be_instance_of(Engine::Game::G18ZOO::Step::HomeTrack)
-                end
-
-                # TODO: fix later
-                # it 'could pass' do
-                #   expect(game.round.active_step.actions(game.current_entity)).to include 'pass'
-                #
-                #   game.round.process_action(Action::Pass.new(corporation))
-                #
-                #   expect(game.round.active_step).to be_instance_of(Engine::Game::G18ZOO::Step::FreeActionsOnSr)
-                # end
-
-                track_for_valid[:tiles].each do |tile|
-                  # TODO: fix later
-                  #   it "could put the track #{tile}" do
-                  #     expect(game.round.active_step.actions(game.current_entity)).to include 'lay_tile'
-                  #
-                  #     game.round.process_action(Action::LayTile.new(corporation,
-                  #                                                   tile: game.tile_by_id(tile),
-                  #                                                   hex: game.hex_by_id(corporation.coordinates),
-                  #                                                   rotation: 0))
-                  #
-                  #     expect(game.round.active_step).to be_instance_of(Engine::Game::G18ZOO::Step::FreeActionsOnSr)
-                  #   end
                 end
               end
             end
@@ -490,7 +461,7 @@ module Engine
         let(:game_file_name) { 'or_power.that_s_mine.cannot_convert_if_no_token' }
 
         it 'cannot convert' do
-          game = Engine::Game.load(game_file, at_action: 16)
+          game = Engine::Game.load(game_file, at_action: 17)
           action = {
             'type' => 'place_token',
             'entity' => 'THAT_S_MINE',

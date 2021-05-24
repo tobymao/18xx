@@ -56,6 +56,13 @@ module Engine
             status: ['can_buy_companies'],
           },
           {
+            name: '4S Perm',
+            on: '4S Perm',
+            train_limit: 3,
+            tiles: %i[yellow green brown],
+            status: ['can_buy_companies'],
+          },
+          {
             name: '5S',
             on: '5S',
             train_limit: 2,
@@ -67,7 +74,7 @@ module Engine
             on: '4J',
             train_limit: 2,
             tiles: %i[yellow green brown gray],
-            status: ['can_buy_companies'],
+            status: %w[can_buy_companies grey_homes],
           },
         ].freeze
 
@@ -98,8 +105,14 @@ module Engine
             distance: 4,
             price: 20,
             obsolete_on: '4J',
-            num: 3,
+            num: 2,
             events: [{ 'type' => 'new_train' }],
+          },
+          {
+            name: '4S Perm',
+            distance: 4,
+            price: 20,
+            num: 1,
           },
           {
             name: '5S',
@@ -212,6 +225,11 @@ module Engine
           'rust_own_3s_4s' => ['First train buyer rust 3S Long and 4S',
                                'Corporation buying the first 4J/2J rusts immediately its own 3S Long and 4S '\
                                '(3S long and 4S run one last time for the other corporations)'],
+        ).freeze
+
+        STATUS_TEXT = Base::STATUS_TEXT.merge(
+          'grey_homes' => ['Grey Homes',
+                           '3 Grey tracks available; upgrade HOME of GIRAFFES, TIGERS and BROWN BEARS'],
         ).freeze
 
         MARKET_TEXT = Base::MARKET_TEXT.merge(safe_par: 'President bonus (+1/3$N to the president)',

@@ -316,28 +316,6 @@ module Engine
     end
 
     describe '18ZOO' do
-      describe 3 do
-        let(:game_file) do
-          Find.find(FIXTURES_DIR).find { |f| File.basename(f) == 'hs_ofmjiayq_1617902980.json' }
-        end
-
-        it 'train 2J must be available as first 2J/4J train' do
-          game = game_at_action(game_file, 222)
-          action = {
-            'type' => 'buy_train',
-            'entity' => 'GI',
-            'entity_type' => 'corporation',
-            'train' => '4J-0',
-            'price' => 37,
-            'variant' => '2J',
-          }
-          game.process_action(action).maybe_raise!
-
-          expect(game.log.find { |item| item.message == 'GI buys a 2J train for 37$N from The Depot' }).to_not be_nil
-          expect(game.corporation_by_id('GI').trains[0].variant[:name]).to eq('2J')
-        end
-      end
-
       describe 4 do
         it 'corporation should earn 2$N for each share in Market' do
           game = game_at_action(game_file, 14)
