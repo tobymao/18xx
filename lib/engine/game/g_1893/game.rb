@@ -452,8 +452,8 @@ module Engine
             value: 200,
             revenue: 0,
             desc: "Buyer takes control of minor with same name (KFBE), and the price paid makes the minor's treasury. "\
-              "KFBE minor and private are exchanged into the 20% president's certificate of AGV when AGV is formed. "\
-              'The private and minor cannot be sold.',
+              "KFBE minor and private are exchanged into the 20% certificate (not presidency) of HGK when "\
+              'HGK is formed. The private and minor cannot be sold.',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
             color: nil,
           },
@@ -485,8 +485,8 @@ module Engine
             value: 190,
             revenue: 0,
             desc: "Buyer takes control of minor with same name (BKB), and the price paid makes the minor's treasury. "\
-              'BKB minor and private are exchanged into a 20% certificate of AGV when AGV is formed. '\
-              'The private and minor cannot be sold.',
+              'BKB minor and private are exchanged into a 20% certificate (not presidency) of AGV when '\
+              'AGV is formed. The private and minor cannot be sold.',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
             color: nil,
           },
