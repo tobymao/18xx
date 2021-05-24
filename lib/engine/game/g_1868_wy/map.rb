@@ -344,7 +344,7 @@ module Engine
             'count' => 'unlimited',
             'color' => 'brown',
             'hidden' => 1,
-            'code' => 'junction;label=GT;'\
+            'code' => 'junction;'\
                       'path=a:_0,b:0;path=a:_0,b:1;path=a:_0,b:2;path=a:_0,b:4;path=a:_0,b:5',
           },
           'B5b' => {
@@ -377,7 +377,7 @@ module Engine
             'count' => 6,
             'color' => 'gray',
             'code' => 'town=revenue:20,boom:1;'\
-                      'path=a:_0,b:0;path=a:_0,b:1;path=a:_0,b:2;path=a:_0,b:3;path=a:_0,b:4;path=a:_0,b:5',
+                      'path=a:_0,b:0;path=a:_0,b:1;path=a:_0,b:2;path=a:_0,b:4;path=a:_0,b:5',
           },
           '5B' => {
             'count' => 6,
@@ -389,7 +389,7 @@ module Engine
             'count' => 'unlimited',
             'hidden' => 1,
             'color' => 'gray',
-            'code' => 'junction;label=GT;'\
+            'code' => 'junction;'\
                       'path=a:_0,b:0;path=a:_0,b:1;path=a:_0,b:2;path=a:_0,b:4;path=a:_0,b:5',
           },
           'RC' => {
@@ -520,6 +520,68 @@ module Engine
 
           '5b' => %w[5B],
           '5bb' => %w[5BB],
+        }.freeze
+
+        GHOST_TOWN_TILE = {
+          'Y5b' => '7',
+          'Y5B' => '7',
+          '963bb' => '7',
+          '963Bb' => '7',
+          '963bB' => '7',
+
+          'Y6b' => '8',
+          'Y6B' => '8',
+          '962bb' => '8',
+          '962Bb' => '8',
+          '962bB' => '8',
+
+          'Y57b' => '9',
+          'Y57B' => '9',
+          '961bb' => '9',
+          '961Bb' => '9',
+
+          '14b' => '544',
+          '14B' => '544',
+
+          '15b' => '545',
+          '15B' => '545',
+
+          '619b' => '546',
+          '619B' => '546',
+
+          '941a1' => '83',
+          '941a2' => '83',
+          '941a3' => '83',
+          '941A1' => '83',
+          '941A2' => '83',
+          '941A3' => '83',
+
+          '942a1' => '82',
+          '942a2' => '82',
+          '942a3' => '82',
+          '942A1' => '82',
+          '942A2' => '82',
+          '942A3' => '82',
+
+          '943a1' => '80',
+          '943a2' => '80',
+          '943a3' => '80',
+          '943A1' => '80',
+          '943A2' => '80',
+          '943A3' => '80',
+
+          '944a1' => '81',
+          '944A1' => '81',
+
+          'B5b' => 'B5',
+          'B5bb' => 'B5',
+          'B5B' => 'B5',
+          'B5BB' => 'B5',
+
+          '5b' => 'B5G',
+          '5bb' => 'B5G',
+          '5B' => 'B5G',
+          '5BB' => 'B5G',
         }.freeze
 
         LOCATION_NAMES = {

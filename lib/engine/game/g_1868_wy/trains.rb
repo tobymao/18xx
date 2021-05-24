@@ -16,6 +16,14 @@ module Engine
         end
 
         def self.def_train(name, price, plus_name, plus_price, num, **kwargs)
+          events =
+            if name.to_i >= 4
+              [{ 'type' => "remove_coal_dt_#{name.to_i - 2}" }]
+            else
+              []
+            end
+          events.concat(kwargs.delete(:events) || [])
+
           plus_cities, plus_towns = plus_name.split('+').map(&:to_i)
           {
             name: name,
@@ -32,6 +40,7 @@ module Engine
               },
             ],
             num: num,
+            events: events,
           }.merge(kwargs).freeze
         end
 

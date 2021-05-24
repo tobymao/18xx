@@ -145,10 +145,11 @@ module Engine
           end
         end
 
-        new_city.reservations.concat(old_city.reservations)
+        if new_city
+          new_city.reservations.concat(old_city.reservations)
+          new_city.groups = old_city.groups
+        end
         old_city.reservations.clear
-
-        new_city.groups = old_city.groups
       end
 
       @tile.hex = nil
