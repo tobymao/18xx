@@ -49,18 +49,18 @@ module Engine
             @game.update_last_revenue(entity)
             @round.routes = []
 
-            corp_log_run_payout(entity, amount)
-            @game.corporate_card_minors(entity).each { |item| item.spend(item.cash, entity, check_positive: false) }
+            withhold_value = @game.major_revenue(entity) - amount
+            corp_log_run_payout(entity, amount, withhold_value)
+            @game.corporate_card_minors(entity).each { |item| item.spend(item.cash, @game.bank, check_positive: false) }
 
-            corp_payout_shares(entity, amount) if amount.positive?
+            corp_payout_shares(entity, amount, withhold_value)
 
             change_share_price(entity, payout)
 
             pass!
           end
 
-          def corp_log_run_payout(entity, amount)
-            withhold_value = @game.major_revenue(entity) - amount
+          def corp_log_run_payout(entity, amount, withhold_value)
             text = if amount.positive?
                      "#{entity.name} pays out #{@game.format_currency(amount)}"
                    else
@@ -71,7 +71,11 @@ module Engine
             @log << text
           end
 
-          def corp_payout_shares(entity, amount)
+          def corp_payout_shares(entity, amount, withhold_value)
+            @game.bank.spend(withhold_value, entity, check_positive: false)
+
+            return if amount.zero?
+
             per_share = payout_per_share(entity, amount)
 
             payouts = {}
@@ -93,7 +97,7 @@ module Engine
 
             receiver ||= holder
             payouts[receiver] = amount
-            entity.spend(amount, receiver, check_positive: false)
+            @game.bank.spend(amount, receiver, check_positive: false)
           end
 
           def corp_dividend_options(entity, amount = 0)

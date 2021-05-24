@@ -25,9 +25,10 @@ module Engine
           def select_entities
             entites = @game.operating_order
             entites.reject! { |item| item.type == :minor }
-            entites.reject! { |item| item.type == :city } if @no_city
 
-            entites
+            return entites.select { |item| item.type == :major } if @no_city
+
+            entites.partition(&:type).flat_map { |item| item }
           end
 
           def laid_hexes
