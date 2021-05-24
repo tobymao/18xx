@@ -29,10 +29,13 @@ module Engine
             return [] unless room?(entity)
             return [] if buyable_trains(entity).empty? && !must_buy_train?(entity)
             return [] if entity.share_price&.type == :close
-            return %w[buy_train] if can_buy_depot_train?(entity) && must_buy_train?(entity)
-            return %w[buy_train pass] unless buyable_trains(entity).empty?
 
-            []
+            actions = []
+            actions << 'buy_train' unless buyable_trains(entity).empty?
+            actions << 'convert' if !can_buy_depot_train?(entity) && must_buy_train?(entity) && ebuy_choice?(entity)
+            actions << 'pass' if !actions.empty? && !(can_buy_depot_train?(entity) && must_buy_train?(entity))
+
+            actions
           end
 
           def log_pass(entity)
@@ -76,6 +79,11 @@ module Engine
             entity.original_par_price.price * 10 >= delta
           end
 
+          def ebuy_choice?(entity)
+            delta = delta_cash(entity)
+            can_sell_stock?(entity, delta) && can_refinance?(entity, delta)
+          end
+
           def pass_description
             if @acted
               'Done (Trains)'
@@ -88,6 +96,10 @@ module Engine
             else
               'Skip (Trains)'
             end
+          end
+
+          def convert_text(_entity)
+            'Refinance for Forced Purchase'
           end
 
           def ebuy(entity)
@@ -105,6 +117,16 @@ module Engine
               @game.enter_bankruptcy!(entity)
               @pass = true
             end
+          end
+
+          def voluntary_refinance(entity)
+            delta = delta_cash(entity)
+            raise GameError, 'Logic error: cannot refinance' unless can_refinance?(entity, delta)
+
+            @log << "#{entity.name} must buy a train and is short #{@game.format_currency(delta)}"
+            @round.emergency_buy = true
+            @log << "#{entity.name} will refinance"
+            @game.refinance!(entity)
           end
 
           def receivership_buy(entity)
@@ -209,6 +231,10 @@ module Engine
             super
 
             warranties.times { train.name = train.name + '*' }
+          end
+
+          def process_convert(action)
+            voluntary_refinance(action.entity)
           end
 
           def president_may_contribute?(_entity, _shell = nil)

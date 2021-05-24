@@ -19,7 +19,9 @@ module View
           on: { click: click },
         }
 
-        h(:div, [h('button', props, @game.round.active_step.description)])
+        step = @game.round.active_step
+        text = step.respond_to?(:convert_text) ? step.convert_text(@game.current_entity) : step.description
+        h(:div, [h('button', props, text)])
       end
     end
   end
