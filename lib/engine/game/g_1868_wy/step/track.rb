@@ -1,12 +1,15 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/track'
+require_relative '../skip_coal_and_oil'
 
 module Engine
   module Game
     module G1868WY
       module Step
         class Track < Engine::Step::Track
+          include G1868WY::SkipCoalAndOil
+
           def lay_tile_action(action)
             super
             @game.spend_tile_lay_points(action)

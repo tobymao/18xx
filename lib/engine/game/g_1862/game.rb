@@ -418,10 +418,9 @@ module Engine
         SELL_AFTER = :any_time
         SELL_BUY_ORDER = :sell_buy
         MARKET_SHARE_LIMIT = 100
-        TRAIN_PRICE_MIN = 10
-        TRAIN_PRICE_MULTIPLE = 10
+        CERT_LIMIT_INCLUDES_PRIVATES = false
 
-        TRACK_RESTRICTION = :permissive
+        TRACK_RESTRICTION = :semi_restrictive
 
         SOLD_OUT_INCREASE = false
 
@@ -612,8 +611,10 @@ module Engine
 
         def add_marker(corporation)
           hex = @hexes.find { |h| h.id == corporation.coordinates } # hex_by_id doesn't work here
+          return if hex.tile.icons.find(&:large) # don't add twice
+
           image = "1862/#{corporation.id}".upcase.delete('&')
-          marker = Part::Icon.new(image, nil, true, nil, hex.tile.preprinted, large: true, owner: nil)
+          marker = Part::Icon.new(image, nil, true, nil, hex.tile.preprinted, large: true, owner: corporation)
           hex.tile.icons << marker
         end
 
@@ -1578,30 +1579,14 @@ module Engine
           false
         end
 
-        # adjust end of set of routes to neighbor node if end is an offboard
-        def adjust_end(set, setend)
-          return setend unless setend.offboard?
-
-          # find route in set that has this end
-          end_route = set.find { |r| r.visited_stops.include?(setend) }
-          # find chain in route that has this end
-          end_chain = end_route.chains.find { |c| c[:nodes].include?(setend) }
-          # return other node in chain
-          end_chain[:nodes].find { |n| n != setend }
-        end
-
         # from https://www.redblobgames.com/grids/hexagons
         def doubleheight_coordinates(hex)
           [hex.id[0].ord - 'A'.ord, hex.id[1..-1].to_i]
         end
 
         # given a freight route set, find number of intervening hexes
-        # between ends. If an end is an offboard, calculate distance as if end
-        # is last hex before offboard and add 1
-        def hex_crow_distance(set, setend_a, setend_b)
-          end_a = adjust_end(set, setend_a)
-          end_b = adjust_end(set, setend_b)
-
+        # between ends.
+        def hex_crow_distance(_set, end_a, end_b)
           x_a, y_a = doubleheight_coordinates(end_a.hex)
           x_b, y_b = doubleheight_coordinates(end_b.hex)
 
@@ -1609,11 +1594,7 @@ module Engine
           # this game essentially uses double-height coordinates
           dx = (x_a - x_b).abs
           dy = (y_a - y_b).abs
-          distance = end_a == end_b ? -1 : [0, dx + [0, (dy - dx) / 2].max - 1].max
-
-          # adjust for offboards
-          distance += 1 if end_a != setend_a
-          distance += 1 if end_b != setend_b
+          distance = [0, dx + [0, (dy - dx) / 2].max - 1].max
 
           [0, distance].max
         end
@@ -2123,16 +2104,14 @@ module Engine
           # cash
           nonsurvivor.spend(nonsurvivor.cash, survivor) if nonsurvivor.cash.positive?
           # trains
-          nonsurvivor.trains.each do |t|
-            t.owner = survivor
-            t.operated = false
-          end
+          nonsurvivor.trains.each { |t| t.owner = survivor }
           survivor.trains.concat(nonsurvivor.trains)
           nonsurvivor.trains.clear
+          survivor.trains.each { |t| t.operated = false }
           # permits
           @permits[survivor].concat(@permits[nonsurvivor])
           @permits[survivor].uniq!
-          @permits[nonsurvivor] = @original_permits[nonsurvivor]
+          @permits[nonsurvivor] = @original_permits[nonsurvivor].dup
           # charter flag (keeping survivor chartered appears to only be needed for solo game)
           if @chartered[survivor] && !@chartered[nonsurvivor]
             # no shares can be in IPO, but doing this for consistancy (non-chartered => incremental)
@@ -2268,6 +2247,12 @@ module Engine
           # put marker onto map
           add_marker(corporation)
 
+          # remove charter flag
+          @chartered.delete(corporation)
+
+          # restore original permit
+          @permits[corporation] = @original_permits[corporation].dup
+
           convert_to_full!(corporation)
 
           # re-sort shares
@@ -2299,6 +2284,9 @@ module Engine
           # finally done with Merge/Acquire step
           @round.active_step.pass!
 
+          # we mucked around with tokens, clear the graph
+          @graph.clear
+
           # stop survivor from running after merge if
           # other corp already ran or this is an acquisition
           @skip_round[@merge_data[:corps].first] = true if @merge_data[:skip] || @merge_data[:type] == :acquisition
@@ -2319,6 +2307,21 @@ module Engine
 
         def liquidity(player)
           player_value(player)
+        end
+
+        def decorate_marker(icon)
+          return nil if !(corporation = icon.owner) || !icon.owner.corporation?
+
+          color = available_to_start?(corporation) ? 'white' : 'black'
+          shape = case @permits[corporation]&.first
+                  when :local
+                    :diamond
+                  when :express
+                    :circle
+                  else
+                    :hexagon
+                  end
+          { color: color, shape: shape }
         end
       end
     end

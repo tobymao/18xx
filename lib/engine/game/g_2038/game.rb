@@ -30,6 +30,8 @@ module Engine
 
         STARTING_CASH = { 3 => 600, 4 => 450, 5 => 360, 6 => 300 }.freeze
 
+        HOME_TOKEN_TIMING = :never
+
         TILES = {
           '70' => 1,
         }.freeze
@@ -169,6 +171,7 @@ module Engine
                 price: 275,
               },
             ],
+            events: [{ 'type' => 'asteroid_league_can_form' }],
           },
           {
             name: '6d5c',
@@ -653,9 +656,47 @@ module Engine
         end
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+          'asteroid_league_can_form' => ['Asteroid League may be formed'],
           'group_b_corps_available' => ['Group B Corporations become available'],
           'group_c_corps_available' => ['Group C Corporations become available'],
         ).freeze
+
+        def init_bank
+          return super unless optional_short_game
+
+          Engine::Bank.new(4_000, log: @log)
+        end
+
+        def new_auction_round
+          Round::Auction.new(self, [
+            Engine::Step::CompanyPendingPar,
+            G2038::Step::WaterfallAuction,
+          ])
+        end
+
+        def next_round!
+          @round =
+            case @round
+            when Engine::Round::Stock
+              @operating_rounds = @phase.operating_rounds
+              reorder_players
+              new_operating_round
+            when Engine::Round::Operating
+              if @round.round_num < @operating_rounds
+                or_round_finished
+                new_operating_round(@round.round_num + 1)
+              else
+                @turn += 1
+                or_round_finished
+                or_set_finished
+                new_stock_round
+              end
+            when init_round.class
+              init_round_finished
+              reorder_players
+              new_stock_round
+            end
+        end
 
         def setup
           @al_corporation = corporation_by_id('AL')
@@ -692,10 +733,13 @@ module Engine
           @available_corp_group = :group_c
         end
 
+        def event_asteroid_league_can_form!
+          @log << 'Asteroid League may now be formed'
+          @corporations << @al_corporation
+        end
+
         def event_asteroid_league_formed!
           @log << 'Asteroid League has formed'
-
-          @corporations << @al_corporation
         end
 
         def company_header(company)
@@ -721,14 +765,11 @@ module Engine
           end
         end
 
-        def after_buy_company(player, company, price)
-          if (minor = @minors.find { |m| m.id == company.id })
-            float_minor(player, minor, price)
-          end
-
+        def after_buy_company(player, company, _price)
           target_price = optional_short_game ? 67 : 100
           share_price = stock_market.par_prices.find { |pp| pp.price == target_price }
 
+          # NOTE: This should only ever be TSI
           abilities(company, :shares) do |ability|
             ability.shares.each do |share|
               if share.president
@@ -740,13 +781,6 @@ module Engine
               end
             end
           end
-        end
-
-        def float_minor(player, minor, price)
-          minor.owner = player
-          minor.float!
-          capital = (price - 100) / 2
-          @bank.spend(100 + capital, minor)
         end
 
         def optional_short_game

@@ -14,7 +14,7 @@ module Hooks
 
     req.body =
       case uri.host
-      when 'discord.com'
+      when 'discord.com', 'discordapp.com'
         JSON.generate(
           content: message,
           allowed_mentions: { parse: ['users'] },

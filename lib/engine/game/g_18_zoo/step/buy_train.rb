@@ -9,6 +9,14 @@ module Engine
         class BuyTrain < Engine::Step::BuyTrain
           include Engine::Game::G18ZOO::ChooseAbilityOnOr
 
+          def actions(entity)
+            actions = super
+
+            return ['pass'] if @game.train_by_id('1S-0').owner == entity && actions.include?('buy_train')
+
+            actions
+          end
+
           def setup
             super
 
@@ -24,8 +32,6 @@ module Engine
             return false if @round.president_helped
 
             entity ||= current_entity
-
-            return false if @game.train_by_id('1S-0').owner == entity
 
             can_buy_normal = room?(entity) &&
               @game.buying_power(entity, use_tickets: true) >= @depot.min_price(entity)

@@ -115,24 +115,44 @@ module View
 
         def render_part
           children = @icons.map.with_index do |icon, index|
-            # large icons can have player colors
-            color = 'white'
+            # large icons can have player colors or shape decorations
             radius = LARGE_RADIUS
             adjust = 0
+
+            dx = (((index - (@icons.size - 1) / 2.0) * -DELTA_X) + LARGE_RADIUS).round(2)
+            dy = LARGE_RADIUS.round(2)
+            decor = h(:circle, attrs: { r: LARGE_RADIUS, fill: 'white', cx: dx, cy: dy })
+
             show_player_colors = setting_for(:show_player_colors, @game)
-            if show_player_colors && (owner = icon&.owner) && @game.players.include?(owner)
+            if (decoration = @game.decorate_marker(icon))
+              color = decoration[:color]
+              case decoration[:shape]
+              when :circle
+                radius -= 4
+                adjust = 4
+                decor = h(:circle, attrs: { r: LARGE_RADIUS, fill: color, cx: dx, cy: dy })
+              when :diamond
+                radius -= 4
+                adjust = 4
+                size = LARGE_RADIUS - 4
+                decor = h(:polygon, attrs: { points: diamond_points(size, dx, dy), fill: color })
+              else # hexagon
+                radius -= 2
+                adjust = 2
+                decor = h(:polygon, attrs: { points: hex_points(LARGE_RADIUS, dx, dy), fill: color })
+              end
+            elsif show_player_colors && (owner = icon&.owner) && @game.players.include?(owner)
               color = player_colors(@game.players)[owner]
               radius -= 4
               adjust = 4
+              decor = h(:circle, attrs: { r: LARGE_RADIUS, fill: color, cx: dx, cy: dy })
             end
 
             icon_x_pos = ((index - (@icons.size - 1) / 2.0) * -DELTA_X + adjust).round(2)
             icon_y_pos = adjust.round(2)
-            ring_x_pos = (((index - (@icons.size - 1) / 2.0) * -DELTA_X) + LARGE_RADIUS).round(2)
-            ring_y_pos = LARGE_RADIUS.round(2)
 
             h(:g, [
-              h(:circle, attrs: { r: LARGE_RADIUS, fill: color, cx: ring_x_pos, cy: ring_y_pos }),
+              decor,
               h(:image,
                 attrs: {
                   href: icon.image,
@@ -141,12 +161,32 @@ module View
                   width: "#{radius * 2}px",
                   height: "#{radius * 2}px",
                 }),
-            ])
+            ].compact)
           end
 
           h(:g, { attrs: { transform: "#{rotation_for_layout} translate(#{-LARGE_RADIUS} #{-LARGE_RADIUS})" } }, [
               h(:g, { attrs: { transform: translate } }, children),
             ])
+        end
+
+        def diamond_points(r, cx, cy)
+          s = r * Math.sqrt(2.0)
+          "#{(cx - s).round(2)},#{cy.round(2)} "\
+            "#{cx.round(2)},#{(cy - s).round(2)} "\
+            "#{(cx + s).round(2)},#{cy.round(2)} "\
+            "#{cx.round(2)},#{(cy + s).round(2)}"
+        end
+
+        def hex_points(r, cx, cy)
+          s = r * 2 / Math.sqrt(3.0)
+          f60 = Math.sin(60 / 180 * Math::PI)
+          f30 = Math.sin(30 / 180 * Math::PI)
+          "#{(cx - s).round(2)},#{cy.round(2)} "\
+            "#{(cx - s * f30).round(2)},#{(cy - s * f60).round(2)} "\
+            "#{(cx + s * f30).round(2)},#{(cy - s * f60).round(2)} "\
+            "#{(cx + s).round(2)},#{cy.round(2)} "\
+            "#{(cx + s * f30).round(2)},#{(cy + s * f60).round(2)} "\
+            "#{(cx - s * f30).round(2)},#{(cy + s * f60).round(2)}"
         end
       end
     end

@@ -366,7 +366,7 @@ module Engine
                     discount: { '3' => 90, '4' => 150 },
                     events: [{ 'type' => 'agv_founded' },
                              { 'type' => 'hgk_buyable' },
-                             { 'type' => 'bonds_exchanged' }],
+                             { 'type' => 'fdsd_closed' }],
                   },
                   {
                     name: '6',
@@ -392,8 +392,25 @@ module Engine
             name: 'Fond der Stadt Düsseldorf',
             value: 190,
             revenue: 20,
-            desc: 'May be exchanged against 20% shares of the Rheinbahn AG. This private cannot be sold.',
-            abilities: [{ type: 'no_buy', owner_type: 'player' }],
+            desc: 'May be exchanged against 20% shares of the Rheinbahn AG in an SR (except the first one). '\
+              'If less than 20% remains in the market the exchange will be what remains. May also be exchanged '\
+              'to par RAG in which case the private is exchanged for the 20% presidency share. '\
+              'FdSD is closed either due to the exchange or if FdSD has not been exchanged to do an exchange '\
+              'after the first SR of phase 5. An exchange is handled as a Buy action. This private '\
+              'cannot be sold.',
+            abilities: [
+              {
+                type: 'no_buy',
+                owner_type: 'player',
+              },
+              {
+                type: 'exchange',
+                corporations: ['RAG'],
+                owner_type: 'player',
+                when: 'owning_player_sr_turn',
+                from: %w[ipo market],
+              },
+            ],
             color: nil,
           },
           {
@@ -401,7 +418,8 @@ module Engine
             name: 'Eisenbahnverkehrsmittel Aktiengesellschaft',
             value: 150,
             revenue: 30,
-            desc: 'Leaves the game after the purchase of the first 6-train. This private cannot be sold.',
+            desc: 'Leaves the game after the purchase of the first 6-train. This private cannot be sold to '\
+              'any corporation.',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
             color: nil,
           },
@@ -644,12 +662,12 @@ module Engine
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'remove_tile_block' => ['Remove tile block', 'Rhine may be passed. N5 P5 becomes possible to lay tiles in'],
           'agv_buyable' => ['AGV buyable', 'AGV shares can be bought in the stockmarket'],
-          'agv_founded' => ['AGV founded', 'AGV is automatically founded in next Merge Round if not yet founded'],
+          'agv_founded' => ['AGV founded', 'AGV is automatically founded in next Merge Round'],
           'hgk_buyable' => ['HGK buyable', 'HGK shares can be bought in the stockmarket'],
-          'hgk_founded' => ['HGK founded', 'HGK is automatically founded in next Merge Round if not yet founded'],
-          'bonds_exchanged' => ['FdSD exchanged', 'Any remaining Fond der Stadt Düsseldorf bonds must be exchanged '\
-              'during next Stock Round'],
-          'eva_closed' => ['EVA closed', 'EVA Is closed']
+          'hgk_founded' => ['HGK founded', 'HGK is automatically founded in next Merge Round'],
+          'fdsd_closed' => ['FdSD closed at end of SR', 'Fond der Stadt Düsseldorf is closed at end of next'\
+              'Stock Round'],
+          'eva_closed' => ['EVA closed', 'EVA is closed']
         ).freeze
 
         STATUS_TEXT = Base::STATUS_TEXT.merge(
@@ -1166,8 +1184,8 @@ module Engine
           owner.shares_of(corporation).select { |s| s.percent == 20 }
         end
 
-        def event_bonds_exchanged!
-          @log << 'NOT IMPLEMENTED - bonds exchanged'
+        def event_fdsd_closed!
+          @log << 'NOT IMPLEMENTED - FdSD closed'
         end
 
         def event_eva_closed!

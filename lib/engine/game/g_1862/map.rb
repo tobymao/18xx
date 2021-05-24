@@ -331,7 +331,7 @@ module Engine
           {
             'count' => 1,
             'color' => 'brown',
-            'code' => 'city=revenue:60,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:4,b:_0;label=H',
+            'code' => 'city=revenue:60,slots:2;path=a:0,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=H',
           },
           '798' => 3,
           '798_1' =>
@@ -534,7 +534,7 @@ module Engine
             %w[
             G14
             ] => 'offboard=revenue:white_70|gray_100|purple_130,groups:Denmark,hide:1;path=a:3,b:_0;'\
-              'offboard=revenue:white_60|gray_90|purple_120,groups:Holland,hide:1;path=a:2,b:_1;'\
+              'offboard=revenue:white_70|gray_100|purple_130,groups:Holland,hide:1;path=a:2,b:_1;'\
               'border=edge:4;border=edge:1;partition=a:3,b:0,type:divider',
             %w[
             F15

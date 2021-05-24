@@ -59,6 +59,11 @@ module Engine
             @game.passers_first_stock_round.include?(entity)
           end
 
+          def get_par_prices(_entity, _corporation)
+            # Exclude 120 par - these are just as starts for AGV/HGK
+            super.reject { |p| p.price == 120 }
+          end
+
           def process_pass(action)
             @game.passers_first_stock_round << action.entity if @game.turn == 1
             super

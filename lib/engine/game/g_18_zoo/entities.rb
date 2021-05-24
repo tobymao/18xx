@@ -23,7 +23,7 @@ module Engine
             sym: 'TOO_MUCH_RESPONSIBILITY',
             name: 'Too much responsibility',
             value: 1,
-            desc: 'Get 3$N',
+            desc: 'Player gets 3$N',
             abilities: [{ type: 'no_buy', owner_type: 'player' },
                         { type: 'description', description: 'Get 3$N', when: 'any' }],
           },
@@ -31,14 +31,14 @@ module Engine
             sym: 'LEPRECHAUN_POT_OF_GOLD',
             name: 'Leprechaun pot of gold',
             value: 2,
-            desc: 'Earn 2$N now, and 2$N at the start of each SR',
+            desc: 'Player earns 2$N now, and 2$N at the start of each SR',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
           },
           {
             sym: 'IT_S_ALL_GREEK_TO_ME',
             name: 'It’s all greek to me',
             value: 2,
-            desc: 'After your action in a SR, do another one',
+            desc: 'After your turn in a SR, you get another turn',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
           },
           {
@@ -53,7 +53,8 @@ module Engine
             sym: 'RABBITS',
             name: 'Rabbits',
             value: 3,
-            desc: 'Two bonus upgrades, even illegally or before the correct phase',
+            desc: 'The family (company) gets two bonus upgrades, that can be placed even illegally or before the'\
+            ' correct phase',
             abilities: [
               {
                 type: 'tile_lay',
@@ -74,7 +75,8 @@ module Engine
             sym: 'MOLES',
             name: 'Moles',
             value: 3,
-            desc: '4 special tiles, that can upgrade any plain tiles, even illegally',
+            desc: 'The family (company) gets 4 special tiles, that can be used to upgrade any plain tiles,'\
+            ' even illegally',
             abilities: [
               {
                 type: 'tile_lay',
@@ -94,8 +96,8 @@ module Engine
           {
             sym: 'ANCIENT_MAPS',
             name: 'Ancient maps',
-            value: 1,
-            desc: 'Build two additional yellow tiles',
+            value: 2,
+            desc: 'The family (company) can build two additional yellow tiles',
             abilities: [
               {
                 type: 'tile_lay',
@@ -130,8 +132,8 @@ module Engine
           {
             sym: 'ON_A_DIET',
             name: 'On a diet',
-            value: 3,
-            desc: 'Put a station in addition to the allowed spaces',
+            value: 2,
+            desc: 'The family (company) can place a station in addition to the allowed spaces',
             abilities: [
               {
                 type: 'token',
@@ -148,7 +150,7 @@ module Engine
             sym: 'SHINING_GOLD',
             name: 'Shining gold',
             value: 1,
-            desc: 'Get 2$N / 1$N when you build on a M / MM tile',
+            desc: 'The family (company) gets 2$N / 1$N when it builds on a M / MM tile',
             abilities: [
               {
                 type: 'tile_discount',
@@ -175,7 +177,7 @@ module Engine
             sym: 'THAT_S_MINE',
             name: "That's mine!",
             value: 2,
-            desc: 'Book anywhere an open place on a station tile',
+            desc: 'The family (company) books anywhere an open place on a station tile',
             abilities: [
               {
                 type: 'assign_hexes',
@@ -189,7 +191,7 @@ module Engine
             sym: 'WORK_IN_PROGRESS',
             name: 'Work in progress',
             value: 2,
-            desc: 'Block anywhere a free place on a station tile',
+            desc: 'The family (company) blocks anywhere a free place on a station tile',
             abilities: [
               {
                 type: 'assign_hexes',
@@ -203,7 +205,7 @@ module Engine
             sym: 'WHEAT',
             name: 'Wheat',
             value: 2,
-            desc: 'Chooses a tile with its own station; the station is worth +30',
+            desc: 'The family (company) chooses a tile with its own station; the station is worth +30',
             abilities: [
               {
                 type: 'assign_hexes',
@@ -222,7 +224,8 @@ module Engine
             sym: 'TWO_BARRELS',
             name: 'Two barrels',
             value: 2,
-            desc: 'Use twice, to double the value of all O tiles – don’t collect the O in treasury',
+            desc: 'The family (company) can use twice this power to double the value of all O tiles –'\
+            ' but it doesn’t collect in treasury the usual 1$N for each O',
             abilities: [
               {
                 type: 'description',
@@ -237,15 +240,15 @@ module Engine
           {
             sym: 'A_SQUEEZE',
             name: 'A squeeze',
-            value: 2,
-            desc: 'Take an additional 3$N if at least one squirrel (train) runs an O',
+            value: 3,
+            desc: 'The family (company) gets an additional 3$N if at least one of its squirrels (train) runs an O',
           },
           {
             sym: 'PATCH',
             name: 'Patch',
-            value: 1,
-            desc: 'Mark a squirrel (train) – it runs as a 1S. It cannot be sold; but can be dismissed '\
-            '- otherwise family (a company) cannot purchase new squirrel (train)',
+            value: 2,
+            desc: 'The owner (player or family) marks a squirrel (train) – it runs as a 1S. It cannot be sold.'\
+            ' It can be dismissed - otherwise the family (company) cannot purchase new squirrels (train)',
           },
           {
             sym: 'WINGS',
@@ -362,8 +365,18 @@ module Engine
             color: '#858585',
           },
         ].freeze
+
+        def game_corporation_coordinates
+          self.class::CORPORATION_COORDINATES
+        end
       end
 
+      module Entities
+        include G18ZOO::SharedEntities
+      end
+    end
+
+    module G18ZOOMapA
       module Entities
         include G18ZOO::SharedEntities
         CORPORATIONS = ALL_CORPORATIONS.select { |corporation| %w[GI PB PE LI TI].include?(corporation[:sym]) }.freeze

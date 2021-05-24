@@ -2939,10 +2939,21 @@
       "kind": "payout"
     },
     {
+      "type": "sell_shares",
+      "entity": "Player 2",
+      "entity_type": "player",
+      "id": 234,
+      "created_at": 1621714151,
+      "shares": [
+        "LI_1"
+      ],
+      "percent": 20
+    },
+    {
       "type": "buy_train",
       "entity": "LI",
       "entity_type": "corporation",
-      "id": 234,
+      "id": 235,
       "created_at": 1617904887,
       "train": "4J-1",
       "price": 37,
@@ -2952,14 +2963,14 @@
       "type": "pass",
       "entity": "PE",
       "entity_type": "corporation",
-      "id": 235,
+      "id": 236,
       "created_at": 1617904890
     },
     {
       "type": "run_routes",
       "entity": "PE",
       "entity_type": "corporation",
-      "id": 236,
+      "id": 237,
       "created_at": 1617904922,
       "routes": [
         {
@@ -3016,7 +3027,7 @@
       "type": "dividend",
       "entity": "PE",
       "entity_type": "corporation",
-      "id": 237,
+      "id": 238,
       "created_at": 1617904923,
       "kind": "payout"
     },
@@ -3024,35 +3035,35 @@
       "type": "pass",
       "entity": "PE",
       "entity_type": "corporation",
-      "id": 238,
+      "id": 239,
       "created_at": 1617904924
     },
     {
       "type": "pass",
       "entity": "PE",
       "entity_type": "corporation",
-      "id": 239,
+      "id": 240,
       "created_at": 1617904066
     },
     {
       "type": "pass",
       "entity": "PB",
       "entity_type": "corporation",
-      "id": 240,
+      "id": 241,
       "created_at": 1617904927
     },
     {
       "type": "pass",
       "entity": "PB",
       "entity_type": "corporation",
-      "id": 241,
+      "id": 242,
       "created_at": 1617904928
     },
     {
       "type": "run_routes",
       "entity": "PB",
       "entity_type": "corporation",
-      "id": 242,
+      "id": 243,
       "created_at": 1617904933,
       "routes": [
         {
@@ -3120,7 +3131,7 @@
       "type": "dividend",
       "entity": "PB",
       "entity_type": "corporation",
-      "id": 243,
+      "id": 244,
       "created_at": 1617904935,
       "kind": "payout"
     },
@@ -3128,7 +3139,7 @@
       "type": "buy_train",
       "entity": "PB",
       "entity_type": "corporation",
-      "id": 244,
+      "id": 245,
       "created_at": 1617904946,
       "train": "4J-2",
       "price": 37,
@@ -3138,14 +3149,14 @@
       "type": "pass",
       "entity": "GI",
       "entity_type": "corporation",
-      "id": 245,
+      "id": 246,
       "created_at": 1617904951
     },
     {
       "type": "run_routes",
       "entity": "GI",
       "entity_type": "corporation",
-      "id": 246,
+      "id": 247,
       "created_at": 1617904967,
       "routes": [
         {
@@ -3192,20 +3203,13 @@
       "type": "dividend",
       "entity": "GI",
       "entity_type": "corporation",
-      "id": 247,
+      "id": 248,
       "created_at": 1617904968,
       "kind": "payout"
     },
     {
       "type": "pass",
       "entity": "GI",
-      "entity_type": "corporation",
-      "id": 248,
-      "created_at": 1617904970
-    },
-    {
-      "type": "pass",
-      "entity": "TI",
       "entity_type": "corporation",
       "id": 249,
       "created_at": 1617904970
@@ -3215,13 +3219,20 @@
       "entity": "TI",
       "entity_type": "corporation",
       "id": 250,
+      "created_at": 1617904970
+    },
+    {
+      "type": "pass",
+      "entity": "TI",
+      "entity_type": "corporation",
+      "id": 251,
       "created_at": 1617904971
     },
     {
       "type": "run_routes",
       "entity": "TI",
       "entity_type": "corporation",
-      "id": 251,
+      "id": 252,
       "created_at": 1617904973,
       "routes": [
         {
@@ -3271,7 +3282,7 @@
       "type": "dividend",
       "entity": "TI",
       "entity_type": "corporation",
-      "id": 252,
+      "id": 253,
       "created_at": 1617904974,
       "kind": "payout"
     },
@@ -3279,14 +3290,14 @@
       "type": "pass",
       "entity": "TI",
       "entity_type": "corporation",
-      "id": 253,
+      "id": 254,
       "created_at": 1617904976
     },
     {
       "type": "pass",
       "entity": "TI",
       "entity_type": "corporation",
-      "id": 254,
+      "id": 255,
       "created_at": 1617904976
     }
   ],
@@ -3316,9 +3327,9 @@
   "created_at": "2021-04-08",
   "loaded": true,
   "result": {
-    "Player 2": 110,
+    "Player 2": 99,
     "Player 1": 123,
-    "Player 3": 81
+    "Player 3": 80
   },
   "turn": 3,
   "round": "Operating Round",

@@ -5,6 +5,9 @@ module Engine
     module G18ZOO
       module SharedMap
         TILE_Y = 'label=Y;city=revenue:yellow_30|green_40|brown_50,slots:1'
+        TILE_O = 'town=revenue:0;label=O;icon=image:river,sticky:1'
+        TILE_M = 'upgrade=cost:1,terrain:hill'
+        TILE_MM = 'upgrade=cost:2,terrain:mountain'
 
         TILES = {
           '7' => 6,
@@ -141,8 +144,38 @@ module Engine
             'code' => "#{Engine::Config::Tile::GREEN['142']};label=O;icon=image:river,sticky:1",
           },
         }.freeze
+
+        def game_hole
+          self.class::HOLE
+        end
+
+        def game_location_names
+          self.class::LOCATION_NAMES
+        end
+
+        def game_base_2
+          self.class::BASE_2
+        end
+
+        def game_location_name_base_2
+          self.class::LOCATION_NAMES_BASE_2
+        end
+
+        def game_base_3
+          self.class::BASE_3
+        end
+
+        def game_location_name_base_3
+          self.class::LOCATION_NAMES_BASE_3
+        end
       end
 
+      module Map
+        include G18ZOO::SharedMap
+      end
+    end
+
+    module G18ZOOMapA
       module Map
         include G18ZOO::SharedMap
 
@@ -180,9 +213,9 @@ module Engine
             %w[J4 I5 G7 I7 H8 J8 D10 J10 G11 K11 M11 F12 H12 J12 L12 E13 G13 K13 D14 F14 C15 G15 D16 F16 J16 L16 I17
                M17 J18] => '',
             %w[K9 N10 K17 E15 H14] => 'city=revenue:0,slots:1',
-            %w[C11 C13 F18 H10 I9 I11 J2 L14 N12 N14] => 'town=revenue:0;label=O;icon=image:river,sticky:1',
-            %w[D12 I15 J14 E17] => 'upgrade=cost:1,terrain:hill',
-            %w[E11 F10 G17 H18 K3 L18 N16] => 'upgrade=cost:2,terrain:mountain',
+            %w[C11 C13 F18 H10 I9 I11 J2 L14 N12 N14] => TILE_O,
+            %w[D12 I15 J14 E17] => TILE_M,
+            %w[E11 F10 G17 H18 K3 L18 N16] => TILE_MM,
             %w[E9 G19 K15 L4] => TILE_Y,
           },
         }.freeze
@@ -271,6 +304,44 @@ module Engine
           'J14' => 'M',
           'E17' => 'M',
         }.freeze
+
+        BASE_2 = {
+          'G7' => [TILE_O, :white],
+          'G9' => [TILE_M, :white],
+          'G11' => ['', :white],
+          'H8' => [TILE_MM, :white],
+          'H10' => ['offboard=revenue:yellow_30|brown_60;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
+            'path=a:4,b:_0;path=a:5,b:_0;label=R', :red],
+          'H12' => [TILE_M, :white],
+          'I7' => [TILE_O, :white],
+          'I9' => [TILE_M, :white],
+          'I11' => ['', :white],
+        }.freeze
+
+        LOCATION_NAMES_BASE_2 = {
+          'G9' => 'M',
+          'H8' => 'MM',
+          'H12' => 'M',
+          'I9' => 'M',
+        }.freeze
+
+        BASE_3 = {
+          'G7' => %w[path=a:0,b:3 gray],
+          'G9' => [TILE_O, 'white'],
+          'G11' => [TILE_MM, 'white'],
+          'H8' => [TILE_MM, 'white'],
+          'H10' => [TILE_Y, 'white'],
+          'H12' => [TILE_O, 'white'],
+          'I7' => %w[path=a:2,b:3 gray],
+          'I9' => [TILE_O, 'white'],
+          'I11' => [TILE_MM, 'white'],
+        }.freeze
+
+        LOCATION_NAMES_BASE_3 = {
+          'G11' => 'MM',
+          'H8' => 'MM',
+          'I11' => 'MM',
+        }.freeze
       end
     end
 
@@ -306,83 +377,14 @@ module Engine
           white: {
             %w[F7 G8 G12 G18 H5 H7 H9 H13 H15 I2 I8 I18 J5 J7 J9 J11 J13 J17 J19 K12 K14 L13 L17 M12 M18] => '',
             %w[H3 I6 K10 K18 N11] => 'city=revenue:0,slots:1',
-            %w[G2 G16 H1 H11 I10 I12 J3 L15 N13 N15] => 'town=revenue:0;label=O;icon=image:river,sticky:1',
-            %w[I16 J15 K6] => 'upgrade=cost:1,terrain:hill',
-            %w[H19 K4 L7 L19 N17] => 'upgrade=cost:2,terrain:mountain',
+            %w[G2 G16 H1 H11 I10 I12 J3 L15 N13 N15] => TILE_O,
+            %w[I16 J15 K6] => TILE_M,
+            %w[H19 K4 L7 L19 N17] => TILE_MM,
             %w[G6 G20 K16 L5] => TILE_Y,
           },
         }.freeze
 
-        HOLE = {
-          'tiles' => {
-            %w[B14 F6 F20 P8] => 'path=a:0,b:2,lanes:2',
-            %w[A11 B16 O13 O15 O17] => 'path=a:0,b:3,lanes:2',
-            %w[A9 O11] => 'path=a:0,b:4,lanes:2',
-            %w[O19 P10] => 'path=a:1,b:3,lanes:2',
-            %w[B8 C7 D6 H22 I21 L20] => 'path=a:1,b:4,lanes:2',
-            %w[D18 E5 J20 M19] => 'path=a:1,b:5,lanes:2',
-            %w[C19 G23 K21 N20] => 'path=a:2,b:4,lanes:2',
-            %w[E19 N6 O7] => 'path=a:2,b:5,lanes:2',
-            %w[A13 B18 F22] => 'path=a:3,b:5,lanes:2',
-            %w[C17] => 'offboard=revenue:yellow_30|brown_60;path=a:3,b:_0;path=a:4,b:_0;label=R;'\
-                        'path=a:3,b:0,b_lane:2.0;path=a:3,b:0,b_lane:2.1;'\
-                        'path=a:4,b:0,b_lane:2.0;path=a:4,b:0,b_lane:2.1',
-            %w[F8] => 'offboard=revenue:yellow_30|brown_60;path=a:4,b:_0;label=R;'\
-                        'path=a:3,b:4,a_lane:2.0;path=a:3,b:4,a_lane:2.1',
-            %w[I19] => 'offboard=revenue:yellow_30|brown_60;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=R;'\
-                        'path=a:2,b:0,b_lane:2.0;path=a:2,b:0,b_lane:2.1;'\
-                        'path=a:3,b:0,b_lane:2.0;path=a:3,b:0,b_lane:2.1;'\
-                        'path=a:4,b:0,b_lane:2.0;path=a:4,b:0,b_lane:2.1;',
-            %w[M5] => 'offboard=revenue:yellow_30|brown_60;path=a:2,b:_0;label=R;'\
-                        'path=a:5,b:2,a_lane:2.0;path=a:5,b:2,a_lane:2.1',
-            %w[N18] => 'offboard=revenue:yellow_30|brown_60;path=a:2,b:_0;label=R;'\
-                        'path=a:0,b:2,a_lane:2.0;path=a:0,b:2,a_lane:2.1',
-          },
-          'C17-F8-tiles' => %w[C17 B18 B16 B14 A13 A11 A9 B8 C7 D6 E5 F6 F8],
-          'C17-F8' => {
-            %w[C19] => 'path=a:2,b:3,lanes:2',
-          },
-          'C17-I19-tiles' => %w[C17 D18 E19 F20 F22 G23 H22 I19],
-          'C17-I19' => {
-            %w[C19] => 'path=a:4,b:3,lanes:2',
-            %w[I21] => 'path=a:1,b:3,lanes:2',
-          },
-          'C17-M5-tiles' => %w[M5 N6 O7 P8 P10 O11 O13 O15 O17 O19 N20 M19 L20 K21 J20 I21 H22 G23 F22 F20 E19 D18
-                               C17],
-          'C17-M5' => {
-            %w[C19] => 'path=a:4,b:3,lanes:2',
-          },
-          'C17-N18-tiles' => %w[N18 M19 L20 K21 J20 I21 H22 G23 F22 F20 E19 D18 C17],
-          'C17-N18' => {
-            %w[C19] => 'path=a:4,b:3,lanes:2',
-            %w[N20] => 'path=a:2,b:3,lanes:2',
-          },
-          'F8-I19-tiles' => %w[I19 H22 G23 F22 F20 E19 D18 C19 B18 B16 B14 A13 A11 A9 B8 C7 D6 E5 F6 F8],
-          'F8-I19' => {
-            %w[I21] => 'path=a:1,b:3,lanes:2',
-          },
-          'F8-M5-tiles' => %w[M5 N6 O7 P8 P10 O11 O13 O15 O17 O19 N20 M19 L20 K21 J20 I21 H22 G23 F22 F20 E19 D18 C19
-                              B18 B16 B14 A13 A11 A9 B8 C7 D6 E5 F6 F8],
-          'F8-M5' => {},
-          'F8-N18-tiles' => %w[N18 M19 L20 K21 J20 I21 H22 G23 F22 F20 E19 D18 C19 B18 B16 B14 A13 A11 A9 B8 C7 D6 E5
-                               F6 F8],
-          'F8-N18' => {
-            %w[N20] => 'path=a:2,b:3,lanes:2',
-          },
-          'I19-M5-tiles' => %w[M5 N6 O7 P8 P10 O11 O13 O15 O17 O19 N20 M19 L20 K21 J20 I19],
-          'I19-M5' => {
-            %w[I21] => 'path=a:3,b:4,lanes:2',
-          },
-          'I19-N18-tiles' => %w[N18 M19 L20 K21 J20 I19],
-          'I19-N18' => {
-            %w[I21] => 'path=a:3,b:4,lanes:2',
-            %w[N20] => 'path=a:2,b:3,lanes:2',
-          },
-          'M5-N18-tiles' => %w[M5 N6 O7 P8 P10 O11 O13 O15 O17 O19 N18],
-          'M5-N18' => {
-            %w[N20] => 'path=a:3,b:4,lanes:2',
-          },
-        }.freeze
+        HOLE = G18ZOOMapA::Map::HOLE
 
         LOCATION_NAMES = {
           'I16' => 'M',
@@ -393,6 +395,44 @@ module Engine
           'L7' => 'MM',
           'L19' => 'MM',
           'N17' => 'MM',
+        }.freeze
+
+        BASE_2 = {
+          'G8' => [TILE_O, :white],
+          'G10' => [TILE_M, :white],
+          'G12' => ['', :white],
+          'H9' => [TILE_MM, :white],
+          'H11' => ['offboard=revenue:yellow_30|brown_60;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
+            'path=a:4,b:_0;path=a:5,b:_0;label=R', :red],
+          'H13' => [TILE_M, :white],
+          'I8' => [TILE_O, :white],
+          'I10' => [TILE_M, :white],
+          'I12' => ['', :white],
+        }.freeze
+
+        LOCATION_NAMES_BASE_2 = {
+          'G10' => 'M',
+          'H9' => 'MM',
+          'H13' => 'M',
+          'I10' => 'M',
+        }.freeze
+
+        BASE_3 = {
+          'G8' => %w[path=a:0,b:3 gray],
+          'G10' => [TILE_O, 'white'],
+          'G12' => [TILE_MM, 'white'],
+          'H9' => [TILE_MM, 'white'],
+          'H11' => [TILE_Y, 'white'],
+          'H13' => [TILE_O, 'white'],
+          'I8' => %w[path=a:2,b:3 gray],
+          'I10' => [TILE_O, 'white'],
+          'I12' => [TILE_MM, 'white'],
+        }.freeze
+
+        LOCATION_NAMES_BASE_3 = {
+          'G12' => 'MM',
+          'H9' => 'MM',
+          'I12' => 'MM',
         }.freeze
       end
     end
@@ -428,9 +468,9 @@ module Engine
           white: {
             %w[D10 D16 E11 E15 E17 F4 F14 G5 G13 G15 G17 H4 H8 H12 H14 H16 I5 I7 I9 I13 J2 J8 J18 K5 K7] => '',
             %w[E5 F16 I3 I15 J6] => 'city=revenue:0,slots:1',
-            %w[D12 D14 E9 F6 G19 H2 I1 I11 J10 J12 K3] => 'town=revenue:0;label=O;icon=image:river,sticky:1',
-            %w[E13 F18 G9 J16 L6] => 'upgrade=cost:1,terrain:hill',
-            %w[E7 F8 F12 G11 H18 I19 L4 M7] => 'upgrade=cost:2,terrain:mountain',
+            %w[D12 D14 E9 F6 G19 H2 I1 I11 J10 J12 K3] => TILE_O,
+            %w[E13 F18 G9 J16 L6] => TILE_M,
+            %w[E7 F8 F12 G11 H18 I19 L4 M7] => TILE_MM,
             %w[C11 F10 H6 H20 M5] => TILE_Y,
           },
         }.freeze
@@ -499,6 +539,46 @@ module Engine
           'L4' => 'MM',
           'M7' => 'MM',
         }.freeze
+
+        BASE_2 = {
+          'G7' => [TILE_O, :white],
+          'G9' => [TILE_M, :white],
+          'G11' => ['', :white],
+          'H8' => [TILE_MM, :white],
+          'H10' => ['offboard=revenue:yellow_30|brown_60;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
+            'path=a:4,b:_0;path=a:5,b:_0;label=R', :red],
+          'H12' => [TILE_M, :white],
+          'I7' => [TILE_O, :white],
+          'I9' => [TILE_M, :white],
+          'I11' => ['', :white],
+        }.freeze
+
+        LOCATION_NAMES_BASE_2 = {
+          'G9' => 'M',
+          'G11' => nil,
+          'H8' => 'MM',
+          'H12' => 'M',
+          'I9' => 'M',
+        }.freeze
+
+        BASE_3 = {
+          'G7' => %w[path=a:0,b:3 gray],
+          'G9' => [TILE_O, 'white'],
+          'G11' => [TILE_MM, 'white'],
+          'H8' => [TILE_MM, 'white'],
+          'H10' => [TILE_Y, 'white'],
+          'H12' => [TILE_O, 'white'],
+          'I7' => %w[path=a:2,b:3 gray],
+          'I9' => [TILE_O, 'white'],
+          'I11' => [TILE_MM, 'white'],
+        }.freeze
+
+        LOCATION_NAMES_BASE_3 = {
+          'G9' => nil,
+          'G11' => 'MM',
+          'H8' => 'MM',
+          'I11' => 'MM',
+        }.freeze
       end
     end
 
@@ -540,9 +620,9 @@ module Engine
             %w[C16 D11 D15 D17 E14 F7 F13 F15 F17 G8 G12 G14 G16 H5 H7 H9 H13 I2 I8 I18 J5 J7 J9 J11 J13 J17 J19 K12
                K14 L13 L17 M12 M18] => '',
             %w[E16 H3 H15 I6 K10 K18 N11] => 'city=revenue:0,slots:1',
-            %w[C12 C14 F19 G2 H1 H11 I10 I12 J3 L15 N13 N15] => 'town=revenue:0;label=O;icon=image:river,sticky:1',
-            %w[D13 E18 I16 J15 K6] => 'upgrade=cost:1,terrain:hill',
-            %w[E12 F11 G18 H19 K4 L7 L19 N17] => 'upgrade=cost:2,terrain:mountain',
+            %w[C12 C14 F19 G2 H1 H11 I10 I12 J3 L15 N13 N15] => TILE_O,
+            %w[D13 E18 I16 J15 K6] => TILE_M,
+            %w[E12 F11 G18 H19 K4 L7 L19 N17] => TILE_MM,
             %w[E10 G6 G20 K16 L5] => TILE_Y,
           },
         }.freeze
@@ -635,6 +715,33 @@ module Engine
           'L19' => 'MM',
           'N17' => 'MM',
         }.freeze
+
+        BASE_2 = G18ZOOMapB::Map::BASE_2
+
+        LOCATION_NAMES_BASE_2 = {
+          'G10' => 'M',
+          'H9' => 'MM',
+          'H13' => 'M',
+          'I10' => 'M',
+        }.freeze
+
+        BASE_3 = {
+          'G8' => %w[path=a:0,b:3 gray],
+          'G10' => [TILE_O, 'white'],
+          'G12' => [TILE_MM, 'white'],
+          'H9' => [TILE_MM, 'white'],
+          'H11' => [TILE_Y, 'white'],
+          'H13' => [TILE_O, 'white'],
+          'I8' => %w[path=a:2,b:3 gray],
+          'I10' => [TILE_O, 'white'],
+          'I12' => [TILE_MM, 'white'],
+        }.freeze
+
+        LOCATION_NAMES_BASE_3 = {
+          'G12' => 'MM',
+          'H9' => 'MM',
+          'I12' => 'MM',
+        }.freeze
       end
     end
 
@@ -673,9 +780,9 @@ module Engine
           white: {
             %w[E4 F5 G4 G8 G12 G14 G16 H5 H7 H9 H13 I2 I8 I18 J5 J7 J9 J11 J13 J17 J19 K12 K14 L13 L17 M12 M18] => '',
             %w[D5 H3 H15 I6 K10 K18 N11] => 'city=revenue:0,slots:1',
-            %w[E6 F17 F19 G2 H1 H11 I10 I12 J3 L15 N13 N15] => 'town=revenue:0;label=O;icon=image:river,sticky:1',
-            %w[I16 J15 K6] => 'upgrade=cost:1,terrain:hill',
-            %w[D7 G18 H19 K4 L7 L19 N17] => 'upgrade=cost:2,terrain:mountain',
+            %w[E6 F17 F19 G2 H1 H11 I10 I12 J3 L15 N13 N15] => TILE_O,
+            %w[I16 J15 K6] => TILE_M,
+            %w[D7 G18 H19 K4 L7 L19 N17] => TILE_MM,
             %w[G6 G20 K16 L5] => TILE_Y,
           },
         }.freeze
@@ -743,6 +850,33 @@ module Engine
           'L19' => 'MM',
           'N17' => 'MM',
         }.freeze
+
+        BASE_2 = G18ZOOMapB::Map::BASE_2
+
+        LOCATION_NAMES_BASE_2 = {
+          'G10' => 'M',
+          'H9' => 'MM',
+          'H13' => 'M',
+          'I10' => 'M',
+        }.freeze
+
+        BASE_3 = {
+          'G8' => %w[path=a:0,b:3 gray],
+          'G10' => [TILE_O, 'white'],
+          'G12' => [TILE_MM, 'white'],
+          'H9' => [TILE_MM, 'white'],
+          'H11' => [TILE_Y, 'white'],
+          'H13' => [TILE_O, 'white'],
+          'I8' => %w[path=a:2,b:3 gray],
+          'I10' => [TILE_O, 'white'],
+          'I12' => [TILE_MM, 'white'],
+        }.freeze
+
+        LOCATION_NAMES_BASE_3 = {
+          'G12' => 'MM',
+          'H9' => 'MM',
+          'I12' => 'MM',
+        }.freeze
       end
     end
 
@@ -784,9 +918,9 @@ module Engine
             %w[D10 D16 E11 E15 E17 F4 F14 G5 G13 G15 G17 H4 H8 H12 H14 H16 I5 I7 I9 I13 J2 J8 J18 K5 K7 K9 K17 K19 L8
                L14] => '',
             %w[E5 F16 I3 I15 J6 L10 L18] => 'city=revenue:0,slots:1',
-            %w[D12 D14 E9 F6 G19 H2 I1 I11 J10 J12 K3 M15 M17] => 'town=revenue:0;label=O;icon=image:river,sticky:1',
-            %w[E13 F18 G9 J16 L6] => 'upgrade=cost:1,terrain:hill',
-            %w[E7 F8 F12 G11 H18 I19 L4 M7] => 'upgrade=cost:2,terrain:mountain',
+            %w[D12 D14 E9 F6 G19 H2 I1 I11 J10 J12 K3 M15 M17] => TILE_O,
+            %w[E13 F18 G9 J16 L6] => TILE_M,
+            %w[E7 F8 F12 G11 H18 I19 L4 M7] => TILE_MM,
             %w[C11 F10 H6 H20 L16 M5] => TILE_Y,
           },
         }.freeze
@@ -843,20 +977,35 @@ module Engine
           },
         }.freeze
 
-        LOCATION_NAMES = {
-          'E13' => 'M',
-          'F18' => 'M',
+        LOCATION_NAMES = G18ZOOMapC::Map::LOCATION_NAMES
+
+        BASE_2 = G18ZOOMapC::Map::BASE_2
+
+        LOCATION_NAMES_BASE_2 = {
           'G9' => 'M',
-          'J16' => 'M',
-          'L6' => 'M',
-          'E7' => 'MM',
-          'F8' => 'MM',
-          'F12' => 'MM',
+          'G11' => nil,
+          'H8' => 'MM',
+          'H12' => 'M',
+          'I9' => 'M',
+        }.freeze
+
+        BASE_3 = {
+          'G7' => %w[path=a:0,b:3 gray],
+          'G9' => [TILE_O, 'white'],
+          'G11' => [TILE_MM, 'white'],
+          'H8' => [TILE_MM, 'white'],
+          'H10' => [TILE_Y, 'white'],
+          'H12' => [TILE_O, 'white'],
+          'I7' => %w[path=a:2,b:3 gray],
+          'I9' => [TILE_O, 'white'],
+          'I11' => [TILE_MM, 'white'],
+        }.freeze
+
+        LOCATION_NAMES_BASE_3 = {
+          'G9' => nil,
           'G11' => 'MM',
-          'H18' => 'MM',
-          'I19' => 'MM',
-          'L4' => 'MM',
-          'M7' => 'MM',
+          'H8' => 'MM',
+          'I11' => 'MM',
         }.freeze
       end
     end

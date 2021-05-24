@@ -31,22 +31,19 @@ module Engine
           end
 
           def scrappable_trains(entity)
-            @game.corporate_card_minors(entity).flat_map(&:trains) + entity.trains
+            @game.scrappable_trains(entity)
           end
 
           def scrap_info(train)
-            "Maintenance: #{@game.format_currency(@game.train_maintenance(train.sym))}"
+            @game.scrap_info(train)
           end
 
           def scrap_button_text(_train)
-            'Scrap'
+            @game.scrap_button_text
           end
 
           def process_scrap_train(action)
-            entity = action.entity
-            train = action.train
-
-            @game.scrap_train(train, entity)
+            @game.scrap_train(action.train, action.entity)
           end
 
           def must_buy_train?(entity)

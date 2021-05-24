@@ -24,7 +24,7 @@ module Engine
 
           def withhold(_entity, revenue, subsidy)
             {
-              corporation: (revenue / 25).ceil + subsidy,
+              corporation: (revenue / 25.0).ceil + subsidy,
               per_share: 0,
               share_direction: :left,
               share_times: 1,
@@ -57,8 +57,8 @@ module Engine
             return unless bonus.positive?
 
             @game.bank.spend(bonus, entity.player, check_positive: false)
-            @log << "Family owner #{entity.player.name} earns #{@game.format_currency(bonus)}"\
-              " as bonus from #{entity.name} run"
+            @log << "President #{entity.player.name} earns #{@game.format_currency(bonus)}"\
+              " as a bonus from #{entity.name} run"
           end
 
           def process_dividend(action)

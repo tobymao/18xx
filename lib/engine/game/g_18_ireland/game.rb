@@ -18,6 +18,7 @@ module Engine
         MUST_BUY_TRAIN = :always
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
         EBUY_SELL_MORE_THAN_NEEDED_LIMITS_DEPOT_TRAIN = true
+        CERT_LIMIT_COUNTS_BANKRUPTED = true
 
         ASSIGNMENT_TOKENS = {
           'CDSPC' => '/icons/18_ireland/port_token.svg',
@@ -177,6 +178,7 @@ module Engine
             distance: 99,
             price: 770,
             discount: {
+              "3H'" => 150,
               '8H' => 440,
               '10H' => 550,
             },
@@ -702,11 +704,7 @@ module Engine
             corporation.owned_by_player? || corporation.type != :minor
           end
 
-          hexes.each do |hex|
-            hex.tile.cities.each do |city|
-              city.reservations.reject! { |reservation| removed.include?(reservation) }
-            end
-          end
+          removed.each { |c| close_corporation(c, quiet: true) }
 
           @log << 'Minors can no longer be started' if removed.any?
         end

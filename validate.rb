@@ -13,13 +13,13 @@ $count = 0
 $total = 0
 $total_time = 0
 
-def run_game(game, actions = nil)
+def run_game(game, actions = nil, strict: false)
   actions ||= game.actions.map(&:to_h)
   data={'id':game.id, 'title': game.title, 'status':game.status}
 
   $total += 1
   time = Time.now
-  engine = Engine::Game.load(game)
+  engine = Engine::Game.load(game, strict: strict)
   begin
     engine.maybe_raise!    
 
@@ -39,7 +39,7 @@ def run_game(game, actions = nil)
   data
 end
 
-def validate_all(*titles, game_ids: nil)
+def validate_all(*titles, game_ids: nil, strict: false)
   $count = 0
   $total = 0
   $total_time = 0
@@ -57,7 +57,7 @@ def validate_all(*titles, game_ids: nil)
       where_args2[:title] = titles if titles.any?
       games = Game.eager(:user, :players, :actions).where(**where_args2).all
       _ = games.each do |game|
-        data[game.id]=run_game(game)
+        data[game.id]=run_game(game, strict: strict)
       end
       page.clear
     end

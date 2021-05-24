@@ -205,6 +205,14 @@ module Engine
           ['2500+', '7 →'],
         ].freeze
 
+        TRAIN_FOR_PLAYER_COUNT = {
+          2 => { Y1: 2, O1: 3, R1: 3, Pi1: 3, Pu1: 3 },
+          3 => { Y1: 4, O1: 4, R1: 4, Pi1: 4, Pu1: 4 },
+          4 => { Y1: 6, O1: 5, R1: 5, Pi1: 5, Pu1: 5 },
+          5 => { Y1: 8, O1: 6, R1: 6, Pi1: 6, Pu1: 6 },
+          6 => { Y1: 10, O1: 7, R1: 7, Pi1: 7, Pu1: 7 },
+        }.freeze
+
         attr_reader :tram_corporations, :major_corporations, :tram_owned_by_corporation, :city_graph
 
         def setup
@@ -215,6 +223,7 @@ module Engine
           @active_maintainance_cost = {}
           @player_debts = Hash.new { |h, k| h[k] = 0 }
           @last_revenue = Hash.new { |h, k| h[k] = 0 }
+          @player_order_first_sr = Hash.new { |h, k| h[k] = 0 }
           @all_tram_corporations = @corporations.select { |item| item.type == :minor }
           @tram_corporations = @all_tram_corporations.reject { |item| item.id == '2' }.sort_by do
             rand
@@ -270,6 +279,12 @@ module Engine
           ])
         end
 
+        def player_order_round
+          G1840::Round::Choices.new(self, [
+            G1840::Step::ChoosePlayerOrder,
+          ])
+        end
+
         def stock_round
           if @first_stock_round
             @log << "Every Player receives #{format_currency(ADDITIONAL_CASH)} to par a corporation"
@@ -300,20 +315,22 @@ module Engine
 
         def new_company_operating_route_round(round_num)
           G1840::Round::CompanyOperating.new(self, [
+            G1840::Step::SellCompany,
             G1840::Step::Route,
             G1840::Step::Dividend,
-            # TODO: Divident of major corporations
           ], round_num: round_num, no_city: false)
         end
 
         def new_company_operating_buy_train_round(round_num)
           G1840::Round::CompanyOperating.new(self, [
+            G1840::Step::SellCompany,
             G1840::Step::BuyTrain,
           ], round_num: round_num, no_city: true)
         end
 
         def new_company_operating_auction_round
           G1840::Round::Acquisition.new(self, [
+            G1840::Step::SellCompany,
             G1840::Step::InterruptingBuyTrain,
             G1840::Step::AcquisitionAuction,
           ])
@@ -321,18 +338,20 @@ module Engine
 
         def new_company_operating_switch_trains(round_num)
           G1840::Round::CompanyOperating.new(self, [
+            G1840::Step::SellCompany,
             G1840::Step::ReassignTrains,
           ], round_num: round_num, no_city: true)
         end
 
         def operating_round(round_num)
           G1840::Round::LineOperating.new(self, [
+            G1840::Step::SellCompany,
             G1840::Step::SpecialTrack,
             G1840::Step::SpecialToken,
             G1840::Step::BuyCompany,
             Engine::Step::HomeToken,
             G1840::Step::TrackAndToken,
-            Engine::Step::Route,
+            G1840::Step::Route,
             G1840::Step::Dividend,
             [G1840::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
@@ -371,7 +390,10 @@ module Engine
                 init_company_round
               end
             when init_round.class
+              player_order_round
+            when player_order_round.class
               init_round_finished
+              order_for_first_sr
               new_stock_round
             end
         end
@@ -636,6 +658,54 @@ module Engine
           return if route.corporation.type == :city
 
           super
+        end
+
+        def scrappable_trains(entity)
+          corporate_card_minors(entity).flat_map(&:trains) + entity.trains
+        end
+
+        def scrap_info(train)
+          "Maintenance: #{format_currency(train_maintenance(train.sym))}"
+        end
+
+        def scrap_button_text
+          'Scrap'
+        end
+
+        def num_trains(train)
+          num_players = @players.size
+          TRAIN_FOR_PLAYER_COUNT[num_players][train[:name].to_sym]
+        end
+
+        def set_order_for_first_sr(player, index)
+          @player_order_first_sr[player] = index
+        end
+
+        def order_for_first_sr
+          @players.sort_by! { |p| @player_order_first_sr[p] }
+          @log << "Priority order: #{@players.map(&:name).join(', ')}"
+        end
+
+        def entity_can_use_company?(entity, company)
+          return true if entity.player? && entity == company.owner
+          return true if entity.corporation? && company.owner == owning_major_corporation(entity)
+
+          false
+        end
+
+        def sell_company_choice(company)
+          { { type: :sell } => "Sell for #{format_currency(company.value)}" }
+        end
+
+        def sell_company(company)
+          price = company.value
+          player = company.player
+
+          @log << "#{player.name} sells #{company.name} for #{format_currency(price)}"
+
+          @bank.spend(price, player)
+
+          company.close!
         end
       end
     end

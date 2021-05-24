@@ -534,10 +534,7 @@
             "N14",
             "N12",
             "N10"
-          ],
-          "revenue": 100,
-          "revenue_str": "K15-K17-N14-N12-N10",
-          "subsidy": 2
+          ]
         },
         {
           "train": "3S-1",
@@ -560,10 +557,7 @@
             "M5",
             "L4",
             "N10"
-          ],
-          "revenue": 80,
-          "revenue_str": "M5-L4-N10",
-          "subsidy": 0
+          ]
         }
       ]
     },
@@ -636,10 +630,7 @@
           "hexes": [
             "K9",
             "L4"
-          ],
-          "revenue": 70,
-          "revenue_str": "K9-L4",
-          "subsidy": 0
+          ]
         }
       ]
     },
@@ -677,10 +668,17 @@
       "created_at": 1620658894
     },
     {
+      "type": "pass",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 69,
+      "created_at": 1620658894
+    },
+    {
       "type": "lay_tile",
       "entity": "PE",
       "entity_type": "corporation",
-      "id": 69,
+      "id": 70,
       "created_at": 1620658906,
       "hex": "K9",
       "tile": "15-1",
@@ -690,7 +688,7 @@
       "type": "lay_tile",
       "entity": "PE",
       "entity_type": "corporation",
-      "id": 70,
+      "id": 71,
       "created_at": 1620658908,
       "hex": "J10",
       "tile": "8-1",
@@ -700,14 +698,14 @@
       "type": "pass",
       "entity": "PE",
       "entity_type": "corporation",
-      "id": 71,
+      "id": 72,
       "created_at": 1620658913
     },
     {
       "type": "run_routes",
       "entity": "PE",
       "entity_type": "corporation",
-      "id": 72,
+      "id": 73,
       "created_at": 1620659387,
       "routes": [
         {
@@ -728,10 +726,7 @@
             "K9",
             "K15",
             "K17"
-          ],
-          "revenue": 90,
-          "revenue_str": "K9-K15-K17",
-          "subsidy": 0
+          ]
         },
         {
           "train": "3S-2",
@@ -762,10 +757,7 @@
             "N14",
             "N12",
             "N10"
-          ],
-          "revenue": 100,
-          "revenue_str": "I19-K17-N14-N12-N10",
-          "subsidy": 2
+          ]
         }
       ]
     },
@@ -773,7 +765,7 @@
       "type": "dividend",
       "entity": "PE",
       "entity_type": "corporation",
-      "id": 73,
+      "id": 74,
       "created_at": 1620659421,
       "kind": "payout"
     },
@@ -781,35 +773,35 @@
       "type": "pass",
       "entity": "PE",
       "entity_type": "corporation",
-      "id": 74,
+      "id": 75,
       "created_at": 1620659428
     },
     {
       "type": "pass",
       "entity": "PE",
       "entity_type": "corporation",
-      "id": 75,
+      "id": 76,
       "created_at": 1620659430
     },
     {
       "type": "pass",
       "entity": "Player 1",
       "entity_type": "player",
-      "id": 76,
+      "id": 77,
       "created_at": 1620659443
     },
     {
       "type": "pass",
       "entity": "Player 2",
       "entity_type": "player",
-      "id": 77,
+      "id": 78,
       "created_at": 1620659444
     },
     {
       "type": "lay_tile",
       "entity": "PB",
       "entity_type": "corporation",
-      "id": 78,
+      "id": 79,
       "created_at": 1620659452,
       "hex": "I9",
       "tile": "X8-2",
@@ -819,7 +811,7 @@
       "type": "lay_tile",
       "entity": "PB",
       "entity_type": "corporation",
-      "id": 79,
+      "id": 80,
       "created_at": 1620659455,
       "hex": "H10",
       "tile": "X7-0",
@@ -829,14 +821,14 @@
       "type": "pass",
       "entity": "PB",
       "entity_type": "corporation",
-      "id": 80,
+      "id": 81,
       "created_at": 1620659458
     },
     {
       "type": "run_routes",
       "entity": "PB",
       "entity_type": "corporation",
-      "id": 81,
+      "id": 82,
       "created_at": 1620659482,
       "routes": [
         {
@@ -867,10 +859,7 @@
             "N14",
             "N12",
             "N10"
-          ],
-          "revenue": 100,
-          "revenue_str": "K15-K17-N14-N12-N10",
-          "subsidy": 2
+          ]
         },
         {
           "train": "3S-1",
@@ -901,10 +890,7 @@
             "K9",
             "L4",
             "M5"
-          ],
-          "revenue": 130,
-          "revenue_str": "H10-I9-K9-L4-M5",
-          "subsidy": 2
+          ]
         }
       ]
     },
@@ -912,16 +898,9 @@
       "type": "dividend",
       "entity": "PB",
       "entity_type": "corporation",
-      "id": 82,
+      "id": 83,
       "created_at": 1620659483,
       "kind": "payout"
-    },
-    {
-      "type": "pass",
-      "entity": "PB",
-      "entity_type": "corporation",
-      "id": 83,
-      "created_at": 1620659486
     },
     {
       "type": "pass",
@@ -931,10 +910,17 @@
       "created_at": 1620659486
     },
     {
+      "type": "pass",
+      "entity": "PB",
+      "entity_type": "corporation",
+      "id": 85,
+      "created_at": 1620659486
+    },
+    {
       "type": "lay_tile",
       "entity": "GI",
       "entity_type": "corporation",
-      "id": 85,
+      "id": 86,
       "created_at": 1620659491,
       "hex": "I11",
       "tile": "X9-5",
@@ -944,7 +930,7 @@
       "type": "lay_tile",
       "entity": "GI",
       "entity_type": "corporation",
-      "id": 86,
+      "id": 87,
       "created_at": 1620659502,
       "hex": "K15",
       "tile": "792-0",
@@ -954,14 +940,14 @@
       "type": "pass",
       "entity": "GI",
       "entity_type": "corporation",
-      "id": 87,
+      "id": 88,
       "created_at": 1620659505
     },
     {
       "type": "run_routes",
       "entity": "GI",
       "entity_type": "corporation",
-      "id": 88,
+      "id": 89,
       "created_at": 1620659542,
       "routes": [
         {
@@ -1001,10 +987,7 @@
             "K17",
             "N14",
             "N12"
-          ],
-          "revenue": 180,
-          "revenue_str": "L4-K9-K15-K17-N14-N12",
-          "subsidy": 2
+          ]
         },
         {
           "train": "1S-0",
@@ -1018,10 +1001,7 @@
           "hexes": [
             "I9",
             "K9"
-          ],
-          "revenue": 40,
-          "revenue_str": "I9-K9",
-          "subsidy": 1
+          ]
         }
       ]
     },
@@ -1029,7 +1009,7 @@
       "type": "dividend",
       "entity": "GI",
       "entity_type": "corporation",
-      "id": 89,
+      "id": 90,
       "created_at": 1620661959,
       "kind": "payout"
     },
@@ -1037,7 +1017,7 @@
       "type": "choose_ability",
       "entity": "PATCH",
       "entity_type": "company",
-      "id": 90,
+      "id": 91,
       "created_at": 1620827074,
       "choice": {
         "type": "remove_bandage",
@@ -1045,11 +1025,45 @@
       }
     },
     {
+      "type": "choose_ability",
+      "entity": "ZOOTicket 1 - Player 1",
+      "entity_type": "company",
+      "id": 92,
+      "created_at": 1621689444,
+      "choice": {
+        "type": "sell",
+        "price": 8,
+        "corporation": "GI"
+      }
+    },
+    {
+      "type": "choose_ability",
+      "entity": "ZOOTicket 2 - Player 1",
+      "entity_type": "company",
+      "id": 93,
+      "created_at": 1621689446,
+      "choice": {
+        "type": "sell",
+        "price": 8,
+        "corporation": "GI"
+      }
+    },
+    {
+      "type": "buy_train",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 94,
+      "created_at": 1621689594,
+      "train": "4S-1",
+      "price": 20,
+      "variant": "4S"
+    },
+    {
       "type": "end_game",
       "entity": "GI",
       "entity_type": "corporation",
-      "id": 91,
-      "created_at": 1620827079
+      "id": 95,
+      "created_at": 1621689604
     }
   ],
   "id": "hs_yylreptp_1612654521",
@@ -1071,8 +1085,8 @@
   "loaded": true,
   "mode": "hotseat",
   "result": {
-    "Player 1": 121,
-    "Player 2": 91
+    "Player 1": 84,
+    "Player 2": 92
   },
   "round": "Operating Round",
   "settings": {
