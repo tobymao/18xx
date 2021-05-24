@@ -48,6 +48,8 @@ module Engine
             @log << "#{entity.name} places home token on #{hex.name}"
           end
 
+          def check_track_restrictions!(_entity, _old_tile, _new_tile); end
+
           # no graph at this point -> use other company on hex (there has to be one)
           def hex_neighbors(_entity, hex)
             other = hex.tile.cities.first.tokens.find { |t| t }.corporation
