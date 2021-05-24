@@ -4,14 +4,14 @@ module Engine
   module Game
     module G18Scan
       module Entities
-
         COMPANIES = [
           {
             sym: 'Ferry',
             name: 'Stockholm-Åbo Ferry Company',
             value: 120,
             revenue: 20,
-            desc: 'Comes with two +20 bonus tokens. Tokens may be purchased by a Corporation for K20 to gain a +20 bonus to runs across the ferry on L7.',
+            desc: 'Comes with two +20 bonus tokens. Tokens may be purchased by a Corporation for K20 to gain a +20 '\
+                  'bonus to runs across the ferry on L7.',
             abilities: [
               { type: 'shares', shares: 'VR_1' },
               { type: 'close', when: 'tokens_sold' },
@@ -22,7 +22,8 @@ module Engine
             name: 'Lapland Ore Mine',
             value: 150,
             revenue: 25,
-            desc: 'Comes with one +50 token. Token may be purchased by a Corporation for K50 to increase the value of one run to Kiruna (T1) by 50.',
+            desc: 'Comes with one +50 token. Token may be purchased by a Corporation for K50 to increase the value '\
+                  'of one run to Kiruna (T1) by 50.',
           },
           {
             sym: 'SJS',
@@ -50,7 +51,9 @@ module Engine
             name: 'Södra Stambanan (Southern Mainline)',
             value: 260,
             revenue: 0,
-            desc: 'Owner takes control of minor corporation 1. Begins in Malmö (D7). This private cannot be sold. Destination: Göteborg (F5). When Phase 5 begins, the minor corporation closes, but its owner receives a 10% share in SJ.',
+            desc: 'Owner takes control of minor corporation 1. Begins in Malmö (D7). This private cannot be sold. '\
+                  'Destination: Göteborg (F5). When Phase 5 begins, the minor corporation closes, but its owner '\
+                  'receives a 10% share in SJ.',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
           },
           {
@@ -58,7 +61,9 @@ module Engine
             name: 'Nordvästra Stambanan (Northwestern Mainline)',
             value: 220,
             revenue: 0,
-            desc: 'Owner takes control of minor corporation 2. Begins in Northern Stockholm (K6). This private cannot be sold. Destination: Trondheim (K2). When Phase 5 begins, the minor corporation closes, but its owner receives a 10% share in SJ.',
+            desc: 'Owner takes control of minor corporation 2. Begins in Northern Stockholm (K6). This private '\
+                  'cannot be sold. Destination: Trondheim (K2). When Phase 5 begins, the minor corporation closes, '\
+                  'but its owner receives a 10% share in SJ.',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
           },
           {
@@ -66,7 +71,9 @@ module Engine
             name: 'Västra Stambanan (Western Mainline)',
             value: 200,
             revenue: 0,
-            desc: 'Owner takes control of minor corporation 3. Begins in Southwestern Stockholm (K6). This private cannot be sold. Destination: Oslo (G4). When Phase 5 begins, the minor corporation closes, but its owner receives a 10% share in SJ.',
+            desc: 'Owner takes control of minor corporation 3. Begins in Southwestern Stockholm (K6). This private '\
+                  'cannot be sold. Destination: Oslo (G4). When Phase 5 begins, the minor corporation closes, but '\
+                  'its owner receives a 10% share in SJ.',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
           },
         ].freeze
