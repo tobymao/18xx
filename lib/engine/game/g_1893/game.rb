@@ -437,7 +437,7 @@ module Engine
           },
           {
             sym: 'EKB',
-            name: 'Euskirchener Kreisbahn',
+            name: 'M1 Euskirchener Kreisbahn',
             value: 210,
             revenue: 0,
             desc: "Buyer takes control of minor with same name (EKB), and the price paid makes the minor's treasury. "\
@@ -448,7 +448,7 @@ module Engine
           },
           {
             sym: 'KFBE',
-            name: 'Köln-Frechen-Benzelrather Eisenbahn',
+            name: 'M2 Köln-Frechen-Benzelrather Eisenbahn',
             value: 200,
             revenue: 0,
             desc: "Buyer takes control of minor with same name (KFBE), and the price paid makes the minor's treasury. "\
@@ -459,7 +459,7 @@ module Engine
           },
           {
             sym: 'KSZ',
-            name: 'Kleinbahn Siegburg-Zündorf',
+            name: 'M3 Kleinbahn Siegburg-Zündorf',
             value: 100,
             revenue: 0,
             desc: "Buyer takes control of minor with same name (KSZ), and the price paid makes the minor's treasury. "\
@@ -470,7 +470,7 @@ module Engine
           },
           {
             sym: 'KBE',
-            name: 'Köln-Bonner Eisenbahn',
+            name: 'M4 Köln-Bonner Eisenbahn',
             value: 220,
             revenue: 0,
             desc: "Buyer takes control of minor with same name (KBE), and the price paid makes the minor's treasury. "\
@@ -481,7 +481,7 @@ module Engine
           },
           {
             sym: 'BKB',
-            name: 'Bergheimer Kreisbahn',
+            name: 'M5 Bergheimer Kreisbahn',
             value: 190,
             revenue: 0,
             desc: "Buyer takes control of minor with same name (BKB), and the price paid makes the minor's treasury. "\
