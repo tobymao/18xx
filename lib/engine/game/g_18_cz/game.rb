@@ -384,6 +384,7 @@ module Engine
             when init_round.class
               init_round_finished
               reorder_players(:least_cash, log_player_order: true)
+              clear_programmed_actions
               new_stock_round
             end
         end
