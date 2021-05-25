@@ -77,23 +77,23 @@
       "price": 2
     },
     {
-      "type": "assign",
-      "entity": "THAT_S_MINE",
-      "entity_type": "company",
-      "id": 10,
-      "created_at": 1618405543,
-      "target": "L4",
-      "target_type": "hex"
-    },
-    {
       "type": "lay_tile",
       "entity": "GI",
       "entity_type": "corporation",
-      "id": 11,
+      "id": 10,
       "created_at": 1618407807,
       "hex": "L4",
       "tile": "201-0",
       "rotation": 5
+    },
+    {
+      "type": "assign",
+      "entity": "THAT_S_MINE",
+      "entity_type": "company",
+      "id": 11,
+      "created_at": 1618405543,
+      "target": "L4",
+      "target_type": "hex"
     },
     {
       "type": "place_token",
