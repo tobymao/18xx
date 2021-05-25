@@ -240,7 +240,7 @@ module Engine
             name: '3.1',
             on: '5',
             train_limit: { prussian: 3, major: 2 },
-            tiles: %i[yellow green],
+            tiles: %i[yellow green brown],
             operating_rounds: 3,
             events: { close_companies: true },
           },
@@ -384,6 +384,7 @@ module Engine
             float_percent: 50,
             shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
             coordinates: 'O15',
+            par_price: 92,
             color: :Blue,
             reservation_color: nil,
           },
@@ -395,6 +396,7 @@ module Engine
             tokens: [0, 0, 0],
             float_percent: 50,
             shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
+            par_price: 88,
             coordinates: 'H16',
             color: '#d81e3e',
             reservation_color: nil,
@@ -407,6 +409,12 @@ module Engine
             tokens: [0, 0],
             float_percent: 50,
             shares: [20, 10, 10, 10, 10, 10, 10, 20],
+            abilities: [
+              {
+                type: 'no_buy',
+                description: 'Unavailable in SR before Bay and Sax IPO are sold',
+              },
+            ],
             # last_cert = true,
             coordinates: 'L6',
             color: '#7b352a',
@@ -415,11 +423,18 @@ module Engine
           {
             sym: 'HE',
             name: 'Hessische Eisenbahn',
+            type: 'Regional',
             logo: '1835/HE',
             simple_logo: '1835/HE.alt',
             tokens: [0, 0],
             float_percent: 50,
             shares: [20, 10, 10, 10, 10, 10, 10, 20],
+            abilities: [
+              {
+                type: 'no_buy',
+                description: 'Unavailable in SR before WT is floated',
+              },
+            ],
             last_cert: %w[HE_7],
             # last_cert = true,
             coordinates: 'J8',
@@ -429,12 +444,19 @@ module Engine
           {
             sym: 'WT',
             name: 'Württembergische Eisenbahn',
+            type: 'Regional',
             logo: '1835/WT',
             simple_logo: '1835/WT.alt',
             tokens: [0, 0],
             float_percent: 50,
             shares: [20, 10, 10, 10, 10, 10, 10, 20],
             last_cert: ['WT_7'],
+            abilities: [
+              {
+                type: 'no_buy',
+                description: 'Unavailable in SR before Bad is floated',
+              },
+            ],
             # last_cert = true,
             coordinates: 'M9',
             color: :yellow,
@@ -444,6 +466,7 @@ module Engine
           {
             sym: 'MS',
             name: 'Eisenbahn Mecklenburg Schwerin',
+            type: 'Regional',
             logo: '1835/MS',
             simple_logo: '1835/MS.alt',
             tokens: [0, 0],
@@ -451,6 +474,12 @@ module Engine
             float_percent: 60,
             shares: [20, 10, 20, 20, 10, 10, 10],
             # the shares order creates a 10 share company, but the first 3 sold papers are 20%
+            abilities: [
+              {
+                type: 'no_buy',
+                description: 'Unavailable in SR until Bad, Hes and Wur are soldout',
+              },
+            ],
             coordinates: 'C13',
             color: :violet,
             reservation_color: nil,
@@ -458,12 +487,19 @@ module Engine
           {
             sym: 'OL',
             name: 'Oldenburgische Eisenbahn',
+            type: 'Regional',
             logo: '1835/OL',
             simple_logo: '1835/OL.alt',
             tokens: [0, 0],
             float_percent: 60,
             shares: [20, 10, 20, 20, 10, 10, 10],
             # the shares order creates a 10 share company, but the first 3 sold papers are 20%
+            abilities: [
+              {
+                type: 'no_buy',
+                description: 'Unavailable in SR until MS floats',
+              },
+            ],
             coordinates: 'D6',
             color: '#6e6966',
             reservation_color: nil,
@@ -472,11 +508,18 @@ module Engine
           {
             sym: 'PR',
             name: 'Preussische Eisenbahn',
+            type: 'Staatsbahn',
             logo: '1835/PR',
             simple_logo: '1835/PR.alt',
             tokens: [0, 0, 0, 0, 0],
             shares: [10, 10, 10, 10, 10, 10, 10, 10, 5, 5, 5, 5],
             # shares for minors and Privates should be reserved
+            abilities: [
+              {
+                type: 'no_buy',
+                description: 'Unavailable in SR until Baden-Dir is sold',
+              },
+            ],
             coordinates: 'E19',
             color: '#37383a',
             reservation_color: nil,
@@ -487,15 +530,18 @@ module Engine
           {
             sym: 'P1',
             name: 'Bergisch Märkische Bahn',
+            type: 'PreStaatsbahn',
             logo: '1835/PR',
             simple_logo: '1835/PR.alt',
             tokens: [0],
+            type: 'group_a',
             abilities: [
               {
                 type: 'exchange',
                 corporations: %w[PR_9],
                 owner_type: 'player',
                 when: ['Phase 2.3', 'Phase 2.4', 'Phase 3.1'],
+                abilities: [{ type: 'no_buy', owner_type: 'player' }],
                 # reserved papers perhaps a option
                 from: 'ipo',
               },
@@ -506,9 +552,11 @@ module Engine
           {
             sym: 'P2',
             name: 'Berlin Potsdamer Bahn',
+            type: 'PreStaatsbahn',
             logo: '1835/PR',
             simple_logo: '1835/PR.alt',
             tokens: [0],
+            type: 'group_a',
             abilities: [
               {
                 type: 'exchange',
@@ -516,6 +564,7 @@ module Engine
                 owner_type: 'player',
                 when: ['Phase 2.3', 'Phase 2.4', 'Phase 3.1'],
                 # reserved papers perhaps a option
+                abilities: [{ type: 'no_buy', owner_type: 'player' }],
                 from: 'ipo',
               },
             ],
@@ -526,14 +575,17 @@ module Engine
             sym: 'P3',
             name: 'Magdeburger-Bahn',
             logo: '1835/PR',
+            type: 'PreStaatsbahn',
             simple_logo: '1835/PR.alt',
             tokens: [0],
+            type: 'group_a',
             abilities: [
               {
                 type: 'exchange',
                 corporations: %w[PR_10],
                 owner_type: 'player',
                 when: ['Phase 2.3', 'Phase 2.4', 'Phase 3.1'],
+                abilities: [{ type: 'no_buy', owner_type: 'player' }],
                 # reserved papers perhaps a option
                 from: 'ipo',
               },
@@ -544,14 +596,17 @@ module Engine
           {
             sym: 'P4',
             name: 'Köln-Mindener Bahn',
+            type: 'PreStaatsbahn',
             logo: '1835/PR',
             simple_logo: '1835/PR.alt',
             tokens: [0],
+            type: 'group_a',
             abilities: [
               {
                 type: 'exchange',
                 corporations: %w[PR_3],
                 owner_type: 'player',
+                abilities: [{ type: 'no_buy', owner_type: 'player' }],
                 when: ['Phase 2.3', 'Phase 2.4', 'Phase 3.1'],
                 # reserved papers perhaps a option
                 from: 'ipo',
@@ -563,14 +618,17 @@ module Engine
           {
             sym: 'P5',
             name: 'Berlin Stettiner Bahn',
+            type: 'PreStaatsbahn',
             logo: '1835/PR',
             simple_logo: '1835/PR.alt',
             tokens: [0],
+            type: 'group_a',
             abilities: [
               {
                 type: 'exchange',
                 corporations: %w[PR_11],
                 owner_type: 'player',
+                abilities: [{ type: 'no_buy', owner_type: 'player' }],
                 when: ['Phase 2.3', 'Phase 2.4', 'Phase 3.1'],
                 # reserved papers perhaps a option
                 from: 'ipo',
@@ -582,14 +640,17 @@ module Engine
           {
             sym: 'P6',
             name: 'Altona Kiel Bahn',
+            type: 'PreStaatsbahn',
             logo: '1835/PR',
             simple_logo: '1835/PR.alt',
             tokens: [0],
+            type: 'group_a',
             abilities: [
               {
                 type: 'exchange',
                 corporations: %w[PR_12],
                 owner_type: 'player',
+                abilities: [{ type: 'no_buy', owner_type: 'player' }],
                 when: ['Phase 2.3', 'Phase 2.4', 'Phase 3.1'],
                 # reserved papers perhaps a option
                 from: 'ipo',
@@ -742,13 +803,48 @@ module Engine
         LAYOUT = :pointy
 
         SELL_MOVEMENT = :down_block
-
+        
+        # Cannot sell until operated
+        SELL_AFTER = :operate
+        SOLD_OUT_INCREASE = true
         HOME_TOKEN_TIMING = :float
+        
+        LAYER_BY_NAME = {
+          'P1' => 1,
+          'P2' => 1,
+          'P3' => 1,
+          'P4' => 1,
+          'P5' => 1,
+          'P6' => 1,
+          'Bay' => 2,
+          'Sax' => 2,
+          'Bad' => 3,
+          'Pru' => 4,
+          'WT' => 4,
+          'HE' => 5,
+          'MS' => 6,
+          'Old' => 7,
+        }.freeze
 
-        def init_round
-          G1835::Round::Draft.new(self,
-                                  [G1835::Step::Draft],
-                                  reverse_order: true)
+        def init_corporations(stock_market)
+          corporations = CORPORATIONS.dup
+
+          corporations.map! do |corporation|
+            G1835::Corporation.new(
+              min_price: stock_market.par_prices.map(&:price).min,
+              capitalization: self.class::CAPITALIZATION,
+              **corporation.merge(corporation_opts),
+            )
+          end
+
+          corporations
+        end
+
+        def init_minors
+          minors = MINORS.dup
+
+
+          minors.map { |minor| G1835::Minor.new(**minor) }
         end
 
         def operating_round(round_num)
@@ -764,7 +860,21 @@ module Engine
             Step::DiscardTrain,
             Step::BuyTrain,
           ], round_num: round_num)
-        end
+          def init_round
+            @log << '-- First Stock Round --'
+            @log << 'Player order is reversed the first turn'
+            G1835::Round::FirstStock.new(self, [
+              G1835::Step::BuySellParSharesFirstSr,
+            ])
+          end
+  
+          def stock_round
+            Engine::Round::Stock.new(self, [
+              Engine::Step::DiscardTrain,
+              G1835::Step::BuySellParExchangeShares,
+            ])
+          end
+          end
       end
     end
   end
