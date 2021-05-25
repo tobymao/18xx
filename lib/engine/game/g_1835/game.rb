@@ -753,16 +753,15 @@ module Engine
 
         def operating_round(round_num)
           Round::Operating.new(self, [
-            Step::Bankrupt,
-            Step::Exchange,
-            Step::SpecialTrack,
-            Step::SpecialToken,
-            Step::Track,
-            Step::Token,
-            Step::Route,
-            Step::Dividend,
-            Step::DiscardTrain,
-            Step::BuyTrain,
+            Engine::Step::Bankrupt,
+            Engine::Step::SpecialTrack,
+            Engine::Step::SpecialToken,
+            Engine::Step::Track,
+            Engine::Step::Token,
+            Engine::Step::Route,
+            Engine::Step::Dividend,
+            Engine::Step::DiscardTrain,
+            Engine::Step::BuyTrain,
           ], round_num: round_num)
         end
       end

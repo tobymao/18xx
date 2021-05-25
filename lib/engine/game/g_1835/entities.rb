@@ -164,7 +164,7 @@ module Engine
                     hexes: %w[M15 M17],
                     tiles: %w[3 4 7 8 9 58],
                     free: true,
-                    count: 1,
+                    count: 2,
                   },
                   { type: 'shares', shares: 'BY_1' },
                 ],
