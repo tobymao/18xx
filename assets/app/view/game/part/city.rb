@@ -299,7 +299,7 @@ module View
           children << render_box(slots.size) if slots.size.between?(2, 6)
           children.concat(slots)
 
-          if @show_revenue && @city.paths.any? && (revenue = render_revenue)
+          if @show_revenue && @city&.paths&.any? && (revenue = render_revenue)
             children << revenue
           end
 

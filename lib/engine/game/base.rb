@@ -1745,6 +1745,12 @@ module Engine
         end
       end
 
+      def update_tile_lists(tile, old_tile)
+        add_extra_tile(tile) if tile.unlimited
+        @tiles.delete(tile)
+        @tiles << old_tile unless old_tile.preprinted
+      end
+
       private
 
       def init_graph

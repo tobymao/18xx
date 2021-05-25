@@ -443,6 +443,85 @@ module Engine
           },
         }.freeze
 
+        TILE_UPGRADES = {
+          # town + city -> city
+          'YG' => ['GG'],
+          'YL' => ['GL'],
+
+          # Brown Boomtown
+          '14b' => ['B5b'],
+          '15b' => ['B5b'],
+          '619b' => ['B5b'],
+
+          # Brown Boom City
+          '14B' => ['B5B'],
+          '15B' => ['B5B'],
+          '619B' => ['B5B'],
+
+          # Brown double Boomtown
+          '941a1' => ['B5bb'],
+          '941a2' => ['B5bb'],
+          '941a3' => ['B5bb'],
+          '942a1' => ['B5bb'],
+          '942a2' => ['B5bb'],
+          '942a3' => ['B5bb'],
+          '943a1' => ['B5bb'],
+          '943a2' => ['B5bb'],
+          '943a3' => ['B5bb'],
+          '944a1' => ['B5bb'],
+
+          # Brown Double Boom City
+          '941A1' => ['B5BB'],
+          '941A2' => ['B5BB'],
+          '941A3' => ['B5BB'],
+          '942A1' => ['B5BB'],
+          '942A2' => ['B5BB'],
+          '942A3' => ['B5BB'],
+          '943A1' => ['B5BB'],
+          '943A2' => ['B5BB'],
+          '943A3' => ['B5BB'],
+          '944A1' => ['B5BB'],
+
+          # Brown double Boomtown -> Gray double Boomtown
+          'B5bb' => ['5bb'],
+
+          # Brown Double Boom City -> Gray Double Boom City
+          'B5BB' => ['5BB'],
+        }.freeze
+
+        BOOMTOWN_TO_BOOMCITY_TILES = {
+          'Y5b' => %w[Y5B],
+          'Y6b' => %w[Y6B],
+          'Y57b' => %w[Y57B],
+          '961bb' => %w[961Bb 961bB],
+          '962bb' => %w[962Bb 962bB],
+          '963bb' => %w[963Bb 963bB],
+
+          '14b' => %w[14B],
+          '15b' => %w[15B],
+          '619b' => %w[619B],
+
+          '941a1' => %w[941A1],
+          '941a2' => %w[941A2],
+          '941a3' => %w[941A3],
+
+          '942a1' => %w[942A1],
+          '942a2' => %w[942A2],
+          '942a3' => %w[942A3],
+
+          '943a1' => %w[943A1],
+          '943a2' => %w[943A2],
+          '943a3' => %w[943A3],
+
+          '944a1' => %w[944A1],
+
+          'B5b' => %w[B5B],
+          'B5bb' => %w[B5BB],
+
+          '5b' => %w[5B],
+          '5bb' => %w[5BB],
+        }.freeze
+
         LOCATION_NAMES = {
           'A1' => 'Independence Creek',
           'A13' => 'Billings',
@@ -566,11 +645,11 @@ module Engine
             %w[B14 E15] => 'town=revenue:0,boom:1;upgrade=terrain:water,cost:20',
             %w[B24] => 'town=revenue:0,boom:1;upgrade=terrain:water,cost:10;upgrade=terrain:cow_skull,cost:10,size:40'\
                        'town=revenue:0,boom:1',
-            %w[C15] => 'town=revenue:0,boom:1;town=revenue:0,boom:1;upgrade=terrain:water,cost:20',
+            %w[C15] => 'town=revenue:0,boom:1,loc:4;town=revenue:0,boom:1,loc:1;upgrade=terrain:water,cost:20',
             %w[B16 C9 F18 F20 G19 L22 N18 N26] => 'upgrade=cost:60,terrain:mountain',
             %w[B18 D10 I5 I7 L24] => 'upgrade=cost:40,terrain:mountain',
             %w[M3 M19 M21] => 'upgrade=cost:30,terrain:mountain;town=revenue:0,boom:1',
-            %w[L4] => 'upgrade=cost:40,terrain:mountain;town=revenue:0,boom:1;town=revenue:0,boom:1',
+            %w[L4] => 'upgrade=cost:40,terrain:mountain;town=revenue:0,boom:1,loc:4;town=revenue:0,boom:1,loc:1',
             %w[I23] => 'city=revenue:0;label=C',
             %w[F8 H4 L26] => 'upgrade=cost:50,terrain:mountain',
             %w[L2 L10] => 'upgrade=cost:30,terrain:mountain',
@@ -578,7 +657,7 @@ module Engine
             %w[L20 M9] => 'upgrade=cost:20,terrain:mountain;upgrade=cost:20,terrain:water',
             %w[G9] => 'upgrade=cost:20,terrain:mountain;upgrade=cost:10,terrain:water;town=revenue:0',
             %w[G23] => 'upgrade=cost:20,terrain:mountain;town=revenue:0,boom:1',
-            %w[D26] => 'town=revenue:0,boom:1;town=revenue:0,boom:1',
+            %w[D26] => 'town=revenue:0,boom:1,loc:4;town=revenue:0,boom:1,loc:1',
             %w[F26] => 'upgrade=terrain:cow_skull,cost:10,size:40;town=revenue:0,boom:1',
             %w[F22] => 'upgrade=terrain:cow_skull,cost:10,size:40;upgrade=terrain:water,cost:10;town=revenue:0,boom:1',
             %w[I11] => 'city=revenue:0',
@@ -629,7 +708,8 @@ module Engine
                          'border=edge:2,type:mountain;border=edge:3,type:mountain',
             %w[K7] => 'upgrade=cost:20,terrain:mountain;upgrade=cost:10,terrain:water;'\
                       'border=edge:2,type:mountain;border=edge:3,type:mountain',
-            %w[K11] => 'upgrade=cost:20,terrain:cow_skull,size:40;town=revenue:0,boom:1;town=revenue:0,boom:1;'\
+            %w[K11] => 'upgrade=cost:20,terrain:cow_skull,size:40;'\
+                       'town=revenue:0,boom:1,loc:4;town=revenue:0,boom:1,loc:1;'\
                        'border=edge:2,type:mountain;border=edge:3,type:mountain',
             %w[K13] => 'upgrade=terrain:cow_skull,cost:20,size:40;'\
                        'border=edge:2,type:mountain;border=edge:3,type:mountain',
