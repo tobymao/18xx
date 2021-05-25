@@ -52,6 +52,8 @@ module Engine
           custom: 'Fixed number of Rounds'
         )
 
+        NEXT_SR_PLAYER_ORDER = :least_cash
+
         MARKET_TEXT = {
           par: 'City Corporation Par',
           par_2: 'Major Corporation Par',
@@ -380,6 +382,7 @@ module Engine
           @round =
             case @round
             when Engine::Round::Stock
+              reorder_players(log_player_order: true)
               if @cr_counter.zero?
                 init_company_round
               else
@@ -705,7 +708,7 @@ module Engine
         end
 
         def num_trains(train)
-          num_players = @players.size
+          num_players = [@players.size, 3].max
           TRAIN_FOR_PLAYER_COUNT[num_players][train[:name].to_sym]
         end
 
