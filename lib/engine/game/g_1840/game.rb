@@ -46,6 +46,12 @@ module Engine
 
         TILE_LAYS = [{ lay: true, upgrade: true, cost: 0 }, { lay: true, upgrade: true, cost: 0 }].freeze
 
+        GAME_END_CHECK = { custom: :current_round }.freeze
+
+        GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
+          custom: 'Fixed number of Rounds'
+        )
+
         MARKET_TEXT = {
           par: 'City Corporation Par',
           par_2: 'Major Corporation Par',
@@ -109,15 +115,15 @@ module Engine
           { type: :LR, name: '2a' },
           { type: :LR, name: '2b' },
           { type: :CR, name: '3', value: '1x' },
-          { type: :SR, name: '3', value: '1x' },
+          { type: :SR, name: '3' },
           { type: :LR, name: '3a' },
           { type: :LR, name: '3b' },
           { type: :CR, name: '4', value: '2x' },
-          { type: :SR, name: '4', value: '1x' },
+          { type: :SR, name: '4' },
           { type: :LR, name: '4a' },
           { type: :LR, name: '4b' },
           { type: :CR, name: '5', value: '3x' },
-          { type: :SR, name: '5', value: '1x' },
+          { type: :SR, name: '5' },
           { type: :LR, name: '5a' },
           { type: :LR, name: '5b' },
           { type: :LR, name: '5c' },
@@ -160,6 +166,13 @@ module Engine
           'I3' => [1, 4],
         }.freeze
 
+        CITY_HOME_HEXES = {
+          'G' => %w[A17 I11],
+          'V' => %w[A17 G3],
+          'D' => %w[A17 F24],
+          'W' => %w[I1 F24],
+        }.freeze
+
         RED_TILES = %w[D20 E19 E21].freeze
 
         TILES_FIXED_ROTATION = %w[L30a L30b L31a L31b].freeze
@@ -174,6 +187,7 @@ module Engine
           %w[O3 R2 Pi1],
           %w[R3 Pi2 Pu1],
           %w[Pi3 Pu2],
+          [],
         ].freeze
 
         DEPOT_CLEARING = [
@@ -212,6 +226,8 @@ module Engine
           5 => { Y1: 8, O1: 6, R1: 6, Pi1: 6, Pu1: 6 },
           6 => { Y1: 10, O1: 7, R1: 7, Pi1: 7, Pu1: 7 },
         }.freeze
+
+        CR_MULTIPLIER = [1, 1, 1, 2, 3, 10].freeze
 
         attr_reader :tram_corporations, :major_corporations, :tram_owned_by_corporation, :city_graph
 
@@ -306,15 +322,18 @@ module Engine
         end
 
         def new_operating_round(round_num = 1)
+          if [2, 6, 8].include?(@or)
+            @phase.next!
+            @operating_rounds = @phase.operating_rounds
+          end
           @log << "-- #{round_description(self.class::OPERATING_ROUND_NAME, round_num)} --"
-          @phase.next! if @or == 2 || @or == 6 || @or == 8
           @or += 1
           @round_counter += 1
           operating_round(round_num)
         end
 
         def new_company_operating_route_round(round_num)
-          G1840::Round::CompanyOperating.new(self, [
+          G1840::Round::Company.new(self, [
             G1840::Step::SellCompany,
             G1840::Step::Route,
             G1840::Step::Dividend,
@@ -322,7 +341,7 @@ module Engine
         end
 
         def new_company_operating_buy_train_round(round_num)
-          G1840::Round::CompanyOperating.new(self, [
+          G1840::Round::Company.new(self, [
             G1840::Step::SellCompany,
             G1840::Step::BuyTrain,
           ], round_num: round_num, no_city: true)
@@ -337,14 +356,14 @@ module Engine
         end
 
         def new_company_operating_switch_trains(round_num)
-          G1840::Round::CompanyOperating.new(self, [
+          G1840::Round::Company.new(self, [
             G1840::Step::SellCompany,
             G1840::Step::ReassignTrains,
           ], round_num: round_num, no_city: true)
         end
 
         def operating_round(round_num)
-          G1840::Round::LineOperating.new(self, [
+          G1840::Round::Line.new(self, [
             G1840::Step::SellCompany,
             G1840::Step::SpecialTrack,
             G1840::Step::SpecialToken,
@@ -366,7 +385,7 @@ module Engine
               else
                 new_operating_round(@round.round_num)
               end
-            when G1840::Round::CompanyOperating
+            when G1840::Round::Company
               @intern_cr_phase_counter += 1
               if @intern_cr_phase_counter < 3
                 new_company_operating_buy_train_round
@@ -425,7 +444,7 @@ module Engine
         end
 
         def owning_major_corporation(corporation)
-          @tram_owned_by_corporation.find { |_k, v| v.find { |item| item == corporation } }.first
+          @tram_owned_by_corporation.find { |_k, v| v.find { |item| item == corporation } }&.first
         end
 
         def buy_tram_corporation(buying_corporation, tram_corporation)
@@ -573,7 +592,10 @@ module Engine
           return super if routes.empty?
 
           corporation = routes.first.train.owner
-          routes.sum(&:revenue) + maintenance_costs(corporation)
+          sum = routes.sum(&:revenue)
+          return sum + maintenance_costs(corporation) if corporation.type == :minor
+
+          sum * current_cr_multipler
         end
 
         def scrap_train(train, entity)
@@ -596,10 +618,12 @@ module Engine
 
         def check_other(route)
           check_track_type(route)
+
+          check_starting_hexes(route) if route.corporation.type == :city
         end
 
         def check_track_type(route)
-          corporation = route.train.owner
+          corporation = route.corporation
           track_types = route.chains.flat_map { |item| item[:paths] }.flat_map(&:track).uniq
 
           if corporation.type == :city && !(track_types - [:narrow]).empty?
@@ -610,6 +634,14 @@ module Engine
           return if corporation.type != :minor || (track_types - ['broad']).empty?
 
           raise GameError, 'Route may only contain broad tracks'
+        end
+
+        def check_starting_hexes(route)
+          hexes = CITY_HOME_HEXES[route.corporation.id]
+
+          return unless (route.visited_stops.flat_map { |item| item.hex.coordinates } & hexes).empty?
+
+          raise GameError, "Route must start in #{hexes.first} or #{hexes.last}"
         end
 
         def graph_for_entity(entity)
@@ -706,6 +738,22 @@ module Engine
           @bank.spend(price, player)
 
           company.close!
+        end
+
+        def current_cr_multipler
+          index = [@cr_counter - 1, 0].max
+          CR_MULTIPLIER[index]
+        end
+
+        def custom_end_game_reached?
+          @cr_counter == 6
+        end
+
+        def game_ending_description
+          _, after = game_end_check
+          return unless after
+
+          'Game Ends at conclusion of this Company Round'
         end
       end
     end

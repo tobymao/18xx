@@ -58,6 +58,7 @@ module Engine
               end
             end
             @normal_placed = true unless @game.orange_framed?(tile)
+            @game.city_graph.clear
           end
 
           def available_hex(entity, hex)
