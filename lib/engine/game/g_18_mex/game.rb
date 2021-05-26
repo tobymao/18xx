@@ -133,7 +133,7 @@ module Engine
         LOCATION_NAMES = {
           'A6' => 'Ciudad Juárez / El Paso',
           'B1' => 'Baja California',
-          'B3' => 'Nogales / Tuscon',
+          'B3' => 'Nogales / Tucson',
           'D3' => 'Hermosillo',
           'E6' => 'Chihuahua',
           'F5' => 'Copper Canyon',
