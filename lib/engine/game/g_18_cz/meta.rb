@@ -15,7 +15,7 @@ module Engine
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18CZ'
         GAME_LOCATION = 'Czech Republic'
         GAME_PUBLISHER = :lonny_games
-        GAME_RULES_URL = 'https://www.lonny.at/app/download/9940504884/rules_English.pdf'
+        GAME_RULES_URL = 'https://www.lonny.at/app/download/10197418384/rules_English.pdf'
 
         PLAYER_RANGE = [2, 6].freeze
       end
