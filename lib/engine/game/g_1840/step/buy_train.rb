@@ -15,11 +15,12 @@ module Engine
             actions = []
 
             actions << 'scrap_train' unless scrappable_trains(entity).empty?
-
             return actions + %w[buy_train] if president_may_contribute?(entity)
             return actions + %w[buy_train pass] if can_buy_train?(entity)
 
-            []
+            return actions if actions.empty?
+
+            actions + %w[pass]
           end
 
           def buyable_train_variants(train, _entity)

@@ -40,10 +40,10 @@ module Engine
 
             if @game.orange_framed?(tile)
               @orange_placed = true
-              if tile.color == 'yellow'
+              if tile.color == :yellow
                 type = read_type_from_icon(action.hex)
 
-                if type == 'token'
+                if type == :token
                   @round.pending_special_tokens << {
                     entity: entity,
                     token: entity.find_token_by_type,
@@ -94,7 +94,7 @@ module Engine
 
           def read_type_from_icon(hex)
             name = hex.original_tile.icons.first.name
-            name.split('_').first
+            name.split('_').first.to_sym
           end
 
           def show_other
@@ -110,6 +110,12 @@ module Engine
               !@round.tokened &&
               !(tokens = available_tokens(entity)).empty? &&
               min_token_price(tokens) <= buying_power(entity)
+          end
+
+          def hex_neighbors(_entity, hex)
+            return @game.hex_by_id(hex.id).neighbors.keys if @game.orange_framed?(hex.tile)
+
+            super
           end
         end
       end

@@ -46,26 +46,26 @@ module Engine
           def available_hex(entity, hex)
             return false if @game.orange_framed?(hex.tile)
 
-            return @game.class::RED_TILES.include?(hex.coordinates) if color == 'red' &&
+            return @game.class::RED_TILES.include?(hex.coordinates) if color == :red &&
              hex.tile == hex.original_tile
 
-            return hex.tile.color == color if color == 'purple' &&  hex.tile == hex.original_tile
+            return hex.tile.color == color if color == :purple && hex.tile == hex.original_tile
 
             connected = @game.graph_for_entity(entity).connected_hexes(entity)[hex]
             return false unless connected
 
-            return hex.tile.color == 'white' if color == 'yellow'
+            return hex.tile.color == :white if color == :yellow
 
-            hex.tile.color == 'yellow'
+            hex.tile.color == :yellow
           end
 
           def potential_tiles(_entity, hex)
-            if color == 'red'
+            if color == :red
               return @game.tiles
               .select { |tile| color == tile.color }
             end
 
-            if color == 'purple'
+            if color == :purple
               if (tiles = @game.class::PURPLE_SPECIAL_TILES[hex.coordinates])
                 return @game.tiles.select { |tile| tiles.include?(tile.name) }
               end
@@ -93,15 +93,15 @@ module Engine
           end
 
           def hex_neighbors(_entity, hex)
-            return @game.hex_by_id(hex.id).neighbors.keys if (hex.tile.color == 'purple') ||
-                                                              (hex.tile.color == 'red')
+            return @game.hex_by_id(hex.id).neighbors.keys if (hex.tile.color == :purple) ||
+                                                              (hex.tile.color == :red)
 
             super
           end
 
           def legal_tile_rotation?(_entity, hex, tile)
-            return tile.rotation.zero? if color == 'purple' && @game.class::TILES_FIXED_ROTATION.include?(tile.name)
-            return true if color == 'purple'
+            return tile.rotation.zero? if color == :purple && @game.class::TILES_FIXED_ROTATION.include?(tile.name)
+            return true if color == :purple
 
             super
           end

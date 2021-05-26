@@ -334,19 +334,19 @@ module Engine
           operating_round(round_num)
         end
 
-        def new_company_operating_route_round(round_num)
+        def new_company_operating_route_round
           G1840::Round::Company.new(self, [
             G1840::Step::SellCompany,
             G1840::Step::Route,
             G1840::Step::Dividend,
-          ], round_num: round_num, no_city: false)
+          ], no_city: false)
         end
 
-        def new_company_operating_buy_train_round(round_num)
+        def new_company_operating_buy_train_round
           G1840::Round::Company.new(self, [
             G1840::Step::SellCompany,
             G1840::Step::BuyTrain,
-          ], round_num: round_num, no_city: true)
+          ], no_city: true)
         end
 
         def new_company_operating_auction_round
@@ -357,11 +357,11 @@ module Engine
           ])
         end
 
-        def new_company_operating_switch_trains(round_num)
+        def new_company_operating_switch_trains
           G1840::Round::Company.new(self, [
             G1840::Step::SellCompany,
             G1840::Step::ReassignTrains,
-          ], round_num: round_num, no_city: true)
+          ], no_city: true)
         end
 
         def operating_round(round_num)
@@ -510,8 +510,8 @@ module Engine
             return true
           end
 
-          return true if from.color == 'red' && to.color == 'red' && RED_TILES.include?(from.hex.coordinates)
-          return true if from.color == 'purple' && to.color == 'purple'
+          return true if from.color == :red && to.color == :red && RED_TILES.include?(from.hex.coordinates)
+          return true if from.color == :purple && to.color == :purple
 
           super
         end
@@ -621,8 +621,20 @@ module Engine
 
         def check_other(route)
           check_track_type(route)
-
+          check_hex_reentry(route)
           check_starting_hexes(route) if route.corporation.type == :city
+        end
+
+        def check_hex_reentry(route)
+          visited_hexes = {}
+          last_hex = nil
+          route.ordered_paths.each do |path|
+            hex = path.hex
+            raise GameError, 'Route cannot re-enter a hex' if hex != last_hex && visited_hexes[hex]
+
+            visited_hexes[hex] = true
+            last_hex = hex
+          end
         end
 
         def check_track_type(route)
