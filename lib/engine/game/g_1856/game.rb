@@ -1666,6 +1666,12 @@ module Engine
             c.close!
           end
 
+          earliest_index = @nationalized_corps.map { |n| @round.entities.find_index(n) }.min
+          current_corp_index = @round.entities.find_index(train_by_id('6-0').owner)
+          # none of the natioanlized corps ran yet, CGR runs next.
+          @round.entities.insert(current_corp_index + 1, national) if current_corp_index && 
+            (current_corp_index < earliest_index)
+
           # Reduce the nationals train holding limit to the real value
           # (It was artificially high to avoid forced discard triggering early)
           @nationalization_train_discard_trigger = true
