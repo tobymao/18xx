@@ -56,7 +56,7 @@ module Engine
           def can_replace_token?(entity, token)
             available_hex(entity, token.city.hex) && corps.include?(token.corporation) &&
             # duplicate tokens first
-            (duplicate_token[:tokens].nil? || duplicate_token[:tokens].include?(token))
+            (!duplicate_token[:tokens] || duplicate_token[:tokens].include?(token))
           end
 
           def process_remove_token(action)

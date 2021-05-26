@@ -1600,7 +1600,7 @@ module Engine
           # Other tokens second, ignoring duplicates from the home token set
           @nationalized_corps.each do |corp|
             corp.tokens.each do |token|
-              next if !token.used || !token.city || home_bases.map(&:hex).include?(token.city.hex)
+              next if !token.used || !token.city || home_bases.any? { |base| base.hex == token.city.hex }
 
               remove_duplicate_tokens(corp)
               replace_token(corp, token, create_national_token)
@@ -1635,7 +1635,7 @@ module Engine
             @round.pending_removals << {
               corp: national,
               count: national.tokens.size - tokens_to_keep,
-              hexes: national.tokens.map(&:hex).reject { |hex| home_bases.map(&:hex).include?(hex) },
+              hexes: national.tokens.map(&:hex).reject { |hex| home_bases.any? { |base| base.hex == hex } },
             }
           end
           remaining_tokens = [tokens_to_keep - national.tokens.size, 0].max
@@ -1668,8 +1668,8 @@ module Engine
             c.close!
           end
 
-          earliest_index = @nationalized_corps.map { |n| @round.entities.find_index(n) }.min
-          current_corp_index = @round.entities.find_index(train_by_id('6-0').owner)
+          earliest_index = @nationalized_corps.map { |n| @round.entities.index(n) }.min
+          current_corp_index = @round.entities.index(train_by_id('6-0').owner)
           # none of the natioanlized corps ran yet, CGR runs next.
           @round.entities.insert(current_corp_index + 1, national) if current_corp_index &&
             (current_corp_index < earliest_index)
