@@ -332,7 +332,7 @@ module Engine
           'H8' => [TILE_MM, 'white'],
           'H10' => [TILE_Y, 'white'],
           'H12' => [TILE_O, 'white'],
-          'I7' => %w[path=a:2,b:3 gray],
+          'I7' => %w[path=a:2,b:3;path=a:1,b:3 gray],
           'I9' => [TILE_O, 'white'],
           'I11' => [TILE_MM, 'white'],
         }.freeze
@@ -454,7 +454,7 @@ module Engine
           'H9' => [TILE_MM, 'white'],
           'H11' => [TILE_Y, 'white'],
           'H13' => [TILE_O, 'white'],
-          'I8' => %w[path=a:2,b:3 gray],
+          'I8' => %w[path=a:2,b:3;path=a:1,b:3 gray],
           'I10' => [TILE_O, 'white'],
           'I12' => [TILE_MM, 'white'],
         }.freeze
@@ -598,7 +598,7 @@ module Engine
           'H8' => [TILE_MM, 'white'],
           'H10' => [TILE_Y, 'white'],
           'H12' => [TILE_O, 'white'],
-          'I7' => %w[path=a:2,b:3 gray],
+          'I7' => %w[path=a:2,b:3;path=a:1,b:3 gray],
           'I9' => [TILE_O, 'white'],
           'I11' => [TILE_MM, 'white'],
         }.freeze
@@ -762,7 +762,7 @@ module Engine
           'H9' => [TILE_MM, 'white'],
           'H11' => [TILE_Y, 'white'],
           'H13' => [TILE_O, 'white'],
-          'I8' => %w[path=a:2,b:3 gray],
+          'I8' => %w[path=a:2,b:3;path=a:1,b:3 gray],
           'I10' => [TILE_O, 'white'],
           'I12' => [TILE_MM, 'white'],
         }.freeze
@@ -897,7 +897,7 @@ module Engine
           'H9' => [TILE_MM, 'white'],
           'H11' => [TILE_Y, 'white'],
           'H13' => [TILE_O, 'white'],
-          'I8' => %w[path=a:2,b:3 gray],
+          'I8' => %w[path=a:2,b:3;path=a:1,b:3 gray],
           'I10' => [TILE_O, 'white'],
           'I12' => [TILE_MM, 'white'],
         }.freeze
@@ -1026,7 +1026,7 @@ module Engine
           'H8' => [TILE_MM, 'white'],
           'H10' => [TILE_Y, 'white'],
           'H12' => [TILE_O, 'white'],
-          'I7' => %w[path=a:2,b:3 gray],
+          'I7' => %w[path=a:2,b:3;path=a:1,b:3 gray],
           'I9' => [TILE_O, 'white'],
           'I11' => [TILE_MM, 'white'],
         }.freeze
