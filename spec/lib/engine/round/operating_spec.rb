@@ -611,7 +611,7 @@ module Engine
 
     context '1846' do
       let(:players) { %w[a b c d e] }
-      let(:game) { Game::G1846::Game.new(players) }
+      let(:game) { Game::G1846::Game.new(players, optional_rules: [:first_ed]) }
       let(:corporation) { game.corporation_by_id('B&O') }
       let(:corporation_1) { game.corporation_by_id('PRR') }
       let(:big4) { game.minor_by_id('BIG4') }
