@@ -12,7 +12,7 @@ module Engine
               revenue: 5,
               desc: 'Nürnberg-Fürth Bahn, Director of AG may lay token on L14 north or south, 10% Bayern',
               abilities: [{ type: 'shares', shares: 'BY_2' }, { type: 'no_buy' }],
-              color: nil,
+              color: :blue,
             },
             {
               sym: 'P1',
@@ -32,7 +32,7 @@ module Engine
               desc: 'Buyer take control of pre-staatsbahn V1, which will be exchanged for the 5% certificate '\
                  'of Pru when V2 declares Pru starting or 5-Train is sold. Pre-Staatsbahnen starts in Köln (H2). '\
                  ' Cannot be sold.',
-              color: nil,
+              color: :black,
             },
             {
               name: 'Leipzig-Dresdner Bahn',
@@ -43,7 +43,7 @@ module Engine
               abilities: [{ type: 'shares', shares: %w[SX_0] },
                           { type: 'no_buy' },
                           { type: 'close', when: 'bought_train', corporation: 'SX' }],
-              color: nil,
+              color: :red,
             },
             {
               sym: 'P2',
@@ -53,7 +53,7 @@ module Engine
               desc: "Buyer take control of pre-staatsbahn M2, which will be exchanged for the Director's certificate "\
                 'of SD when the first 4 train is sold and Pru is opened. P2 starts in Berlin (E19). '\
                 'Cannot be sold.',
-              color: nil,
+              color: :black,
             },
             {
               sym: 'P3',
@@ -63,7 +63,7 @@ module Engine
               desc: 'Buyer take control of pre-staatsbahn M3, which will be exchanged for a 5% share of Pru when the '\
                 'first 4 train is sold and M2 declares Pru open. M3 starts in Innsbruck (F14). Cannot be sold.',
               abilities: [{ type: 'no_buy', owner_type: 'player' }],
-              color: nil,
+              color: :black,
             },
             {
               sym: 'P4',
@@ -73,7 +73,7 @@ module Engine
               desc: 'Buyer take control of pre-staatsbahn M3, which will be exchanged for a 10% share of Pru when the '\
                 'first 4 train is sold and M2 declares Pru open. M3 starts in Innsbruck (G5). Cannot be sold.',
               abilities: [{ type: 'no_buy', owner_type: 'player' }],
-              color: nil,
+              color: :black,
             },
             {
               name: 'Bayrische Eisenbahn Director Share',
@@ -91,7 +91,7 @@ module Engine
                   from: 'ipo',
                 },
               ],
-              color: nil,
+              color: :blue,
             },
             {
               name: 'Braunschweigische Bahn',
@@ -109,7 +109,7 @@ module Engine
                   from: 'ipo',
                 },
               ],
-              color: nil,
+              color: :black,
             },
             {
               name: 'Hannoversche Bahn',
@@ -127,8 +127,8 @@ module Engine
                   # reserved papers perhaps a option
                   from: 'ipo',
                 },
+                color: :black,
               ],
-              color: nil,
             },
             {
               sym: 'P5',
@@ -138,7 +138,7 @@ module Engine
               desc: 'Buyer take control of pre-staatsbahn M5, which will be exchanged for a 5% share of Pru when the '\
                 'first 4 train is sold and M2 declares Pru open. M5 starts in Innsbruck (E19). Cannot be sold.',
               abilities: [{ type: 'no_buy', owner_type: 'player' }],
-              color: nil,
+              color: :black,
             },
             {
               sym: 'P6',
@@ -148,7 +148,7 @@ module Engine
               desc: 'Buyer take control of pre-staatsbahn M3, which will be exchanged for a 5% share of Pru when the '\
                 'first 4 train is sold and M2 declares Pru open. M3 starts in Innsbruck (C11). Cannot be sold.',
               abilities: [{ type: 'no_buy', owner_type: 'player' }],
-              color: nil,
+              color: :black,
             },
             {
               name: 'Ostbayrische Bahn',
@@ -163,12 +163,14 @@ module Engine
                     owner_type: 'player',
                     hexes: %w[M15 M17],
                     tiles: %w[3 4 7 8 9 58],
-                    free: true,
-                    count: 1,
+                    when: 'track',
+                    consume_tile_lay: true,
+                    count: 2,
+                    closed_when_used_up: true,
                   },
                   { type: 'shares', shares: 'BY_1' },
                 ],
-              color: nil,
+              color: :blue,
             },
             {
               name: 'Pfalzbahnen',
@@ -186,7 +188,7 @@ module Engine
                 },
                 { type: 'shares', shares: 'BY_3' },
               ],
-              color: nil,
+              color: :blue,
             },
         ].freeze
 
@@ -202,7 +204,6 @@ module Engine
             shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
             coordinates: 'O15',
             color: :Blue,
-            reservation_color: nil,
           },
           {
             sym: 'SX',
@@ -215,7 +216,6 @@ module Engine
             shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
             coordinates: 'H16',
             color: '#d81e3e',
-            reservation_color: nil,
           },
           {
             sym: 'BA',
@@ -226,10 +226,8 @@ module Engine
             max_ownership_percent: 100,
             float_percent: 50,
             shares: [20, 10, 10, 10, 10, 10, 10, 20],
-            # last_cert = true,
             coordinates: 'L6',
             color: '#7b352a',
-            reservation_color: nil,
           },
           {
             sym: 'HE',
@@ -241,10 +239,8 @@ module Engine
             float_percent: 50,
             shares: [20, 10, 10, 10, 10, 10, 10, 20],
             last_cert: %w[HE_7],
-            # last_cert = true,
             coordinates: 'J8',
             color: :green,
-            reservation_color: nil,
           },
           {
             sym: 'WT',
@@ -256,11 +252,9 @@ module Engine
             float_percent: 50,
             shares: [20, 10, 10, 10, 10, 10, 10, 20],
             last_cert: ['WT_7'],
-            # last_cert = true,
             coordinates: 'M9',
             color: :yellow,
             text_color: 'black',
-            reservation_color: nil,
           },
           {
             sym: 'MS',
@@ -275,7 +269,6 @@ module Engine
             # the shares order creates a 10 share company, but the first 3 sold papers are 20%
             coordinates: 'C13',
             color: :violet,
-            reservation_color: nil,
           },
           {
             sym: 'OL',
@@ -289,7 +282,6 @@ module Engine
             # the shares order creates a 10 share company, but the first 3 sold papers are 20%
             coordinates: 'D6',
             color: '#6e6966',
-            reservation_color: nil,
           },
 
           {
@@ -299,10 +291,8 @@ module Engine
             simple_logo: '1835/PR.alt',
             tokens: [0, 0, 0, 0, 0],
             shares: [10, 10, 10, 10, 10, 10, 10, 10, 5, 5, 5, 5],
-            # shares for minors and Privates should be reserved
             coordinates: 'E19',
             color: '#37383a',
-            reservation_color: nil,
           },
         ].freeze
 
@@ -329,7 +319,6 @@ module Engine
                 corporations: %w[PR_0x],
                 owner_type: 'player',
                 when: ['Phase 2.3', 'Phase 2.4', 'Phase 3.1'],
-                # reserved papers perhaps a option
                 from: 'ipo',
               },
             ],
@@ -348,7 +337,6 @@ module Engine
                 corporations: %w[PR_10],
                 owner_type: 'player',
                 when: ['Phase 2.3', 'Phase 2.4', 'Phase 3.1'],
-                # reserved papers perhaps a option
                 from: 'ipo',
               },
             ],
@@ -367,7 +355,6 @@ module Engine
                 corporations: %w[PR_3],
                 owner_type: 'player',
                 when: ['Phase 2.3', 'Phase 2.4', 'Phase 3.1'],
-                # reserved papers perhaps a option
                 from: 'ipo',
               },
             ],
@@ -386,7 +373,6 @@ module Engine
                 corporations: %w[PR_11],
                 owner_type: 'player',
                 when: ['Phase 2.3', 'Phase 2.4', 'Phase 3.1'],
-                # reserved papers perhaps a option
                 from: 'ipo',
               },
             ],
@@ -406,7 +392,6 @@ module Engine
                 corporations: %w[PR_12],
                 owner_type: 'player',
                 when: ['Phase 2.3', 'Phase 2.4', 'Phase 3.1'],
-                # reserved papers perhaps a option
                 from: 'ipo',
               },
             ],
