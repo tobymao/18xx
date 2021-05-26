@@ -42,6 +42,11 @@ module Engine
             @log << "#{action.entity.name} scraps a #{train.name} train"
           end
 
+          def pass!
+            done_discarding
+            super
+          end
+
           def done_discarding
             @game.nationalization_train_discard_trigger = false
             @game.national.remove_ability(@game.abilities(@game.national, :train_limit))
