@@ -16,7 +16,8 @@ module Engine
           '18ZOO Rules' =>
             'https://boardgamegeek.com/filepage/219443/complete-rules-layout-standard',
           'Stock Market extract' =>
-            'https://boardgamegeek.com/filepage/219446/stock-board-details-playing-18xxgames',
+            'https://cf.geekdo-images.com/KGlFUsaWc3P_4TQEUPGIWw__imagepage/img/l0dTWH1jFaO7v5IRFyBByoFsNnM='\
+            '/fit-in/900x600/filters:no_upscale():strip_icc()/pic6153038.png',
           'Intro guide' =>
             'https://boardgamegeek.com/thread/2660017/article/37718069#37718069',
           'FAQ' =>

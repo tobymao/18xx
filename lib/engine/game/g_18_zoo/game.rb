@@ -1057,7 +1057,7 @@ module Engine
 
           help = "Current dividend #{format_currency(bonus_hold_share)}"
           help += " (+#{format_currency(bonus_hold_president)} bonus president)" if bonus_hold_president.positive?
-          help += ". Threshold to move: #{threshold}. Dividend if moved #{bonus_pay_share}"
+          help += ". Threshold to move: #{threshold}. Dividend if moved #{format_currency(bonus_pay_share)}"
           help += " (+#{format_currency(bonus_pay_president)} bonus president)" if bonus_pay_president.positive?
 
           help
