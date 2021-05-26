@@ -66,7 +66,7 @@ module Engine
           end
 
           def must_discard(entity)
-            entity == @game.national && time_to_discard && national_discardable_trains.size > 3
+            entity == @game.national && time_to_discard && @game.national.trains.size > 3
           end
 
           def national_discardable_trains

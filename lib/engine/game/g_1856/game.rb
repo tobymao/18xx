@@ -1616,13 +1616,15 @@ module Engine
 
           # There won't be any duplicates (OO or NY) that need deduplicating where a home city is involved
           # because that case is automatically resolved above
-          national_token_hex_count.each { |hex, tokens| 
+          national_token_hex_count.each do |hex, tokens|
+            next unless tokens.size > 1
+
             @round.duplicate_tokens << {
               corp: national,
               hexes: [hex],
-              tokens: tokens
-            } if tokens.size > 1
-          }
+              tokens: tokens,
+            }
+          end
 
           # Then reduce down to limit
           # TODO: Possibly override ReduceTokens?
@@ -1669,7 +1671,7 @@ module Engine
           earliest_index = @nationalized_corps.map { |n| @round.entities.find_index(n) }.min
           current_corp_index = @round.entities.find_index(train_by_id('6-0').owner)
           # none of the natioanlized corps ran yet, CGR runs next.
-          @round.entities.insert(current_corp_index + 1, national) if current_corp_index && 
+          @round.entities.insert(current_corp_index + 1, national) if current_corp_index &&
             (current_corp_index < earliest_index)
 
           # Reduce the nationals train holding limit to the real value
