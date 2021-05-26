@@ -1600,12 +1600,29 @@ module Engine
           # Other tokens second, ignoring duplicates from the home token set
           @nationalized_corps.each do |corp|
             corp.tokens.each do |token|
-              next if !token.used || !token.city || home_bases.include?(token.city.hex)
+              next if !token.used || !token.city || home_bases.map(&:hex).include?(token.city.hex)
 
               remove_duplicate_tokens(corp)
               replace_token(corp, token, create_national_token)
             end
           end
+
+          national_token_hex_count = {}
+          national.tokens.each do |token|
+            arry = national_token_hex_count[token.hex] || []
+            arry << token
+            national_token_hex_count[token.hex] = arry
+          end
+
+          # There won't be any duplicates (OO or NY) that need deduplicating where a home city is involved
+          # because that case is automatically resolved above
+          national_token_hex_count.each { |hex, tokens| 
+            @round.duplicate_tokens << {
+              corp: national,
+              hexes: [hex],
+              tokens: tokens
+            } if tokens.size > 1
+          }
 
           # Then reduce down to limit
           # TODO: Possibly override ReduceTokens?
@@ -1616,7 +1633,7 @@ module Engine
             @round.pending_removals << {
               corp: national,
               count: national.tokens.size - tokens_to_keep,
-              hexes: national.tokens.map(&:hex).reject { |hex| home_bases.include?(hex) },
+              hexes: national.tokens.map(&:hex).reject { |hex| home_bases.map(&:hex).include?(hex) },
             }
           end
           remaining_tokens = [tokens_to_keep - national.tokens.size, 0].max
@@ -1672,7 +1689,7 @@ module Engine
         end
 
         # Convert the home token of the corporation to one of the national's
-        # Return the nationalized corps home hex
+        # Return the nationalized corps home city
         def nationalize_home_token(corp, token)
           unless token
             # Why would this ever happen?
@@ -1681,10 +1698,10 @@ module Engine
           end
           # A nationalized corporation needs to have a loan which means it needs to have operated so it must have a home
           home_token = corp.tokens.first
-          home_hex = home_token.city.hex
+          home_city = home_token.city
 
           replace_token(corp, home_token, token)
-          home_hex
+          home_city
         end
 
         def replace_token(major, major_token, token)
