@@ -29,11 +29,14 @@
       "share_price": "7,1,1"
     },
     {
-      "type": "pass",
+      "type": "lay_tile",
       "entity": "GI",
       "entity_type": "corporation",
       "id": 4,
-      "created_at": 1620750819
+      "created_at": 1618164999,
+      "hex": "K9",
+      "tile": "6-0",
+      "rotation": 1
     },
     {
       "type": "pass",
@@ -118,11 +121,14 @@
       "share_price": "7,1,1"
     },
     {
-      "type": "pass",
+      "type": "lay_tile",
       "entity": "PB",
       "entity_type": "corporation",
       "id": 14,
-      "created_at": 1620750834
+      "created_at": 1622035302,
+      "hex": "N10",
+      "tile": "57-0",
+      "rotation": 0
     },
     {
       "type": "pass",
@@ -424,11 +430,14 @@
       "share_price": "9,1,3"
     },
     {
-      "type": "pass",
+      "type": "lay_tile",
       "entity": "PE",
       "entity_type": "corporation",
       "id": 50,
-      "created_at": 1620752443
+      "created_at": 1622035363,
+      "hex": "K17",
+      "tile": "57-1",
+      "rotation": 2
     },
     {
       "type": "pass",
