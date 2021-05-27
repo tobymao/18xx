@@ -44,7 +44,7 @@ module View
 
         children << h(:div, "#{player.name} has #{@game.format_currency(player.cash)} in cash.")
 
-        if @game.class::EBUY_CAN_SELL_SHARES
+        if step.can_ebuy_sell_shares?(@corporation)
           if share_funds_allowed.positive?
             children << h(:div, "#{player.name} has #{@game.format_currency(share_funds_possible)} "\
                                 'in sellable shares.')

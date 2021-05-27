@@ -84,6 +84,10 @@ module Engine
         pass! unless can_buy_train?(entity)
       end
 
+      def can_ebuy_sell_shares?(_entity)
+        @game.class::EBUY_CAN_SELL_SHARES
+      end
+
       def can_sell?(entity, bundle)
         return false if @game.class::MUST_SELL_IN_BLOCKS && @corporations_sold.include?(bundle.corporation)
         return false if current_entity != entity && must_issue_before_ebuy?(current_entity)
@@ -115,6 +119,8 @@ module Engine
           depot_trains = [@depot.min_depot_train] if @game.class::EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST
 
           if @game.class::EBUY_SELL_MORE_THAN_NEEDED_LIMITS_DEPOT_TRAIN
+            # Don't alter the depot train list
+            depot_trains = depot_trains.dup
             depot_trains.reject! do |t|
               t.price < spend_minmax(entity, t).first
             end
