@@ -96,6 +96,7 @@ module Engine
           'M13' => 'Ostbayern',
           'M15' => 'Ostbayern',
         }.freeze
+
         HEXES = {
           white: {
             %w[B18
@@ -202,7 +203,7 @@ module Engine
           green: {
             ['C11'] =>
             'city=revenue:40;path=a:0,b:_0;city=revenue:40;path=a:2,b:_1;'\
-            'city=revenue=40;path=a:4,b:_2;path=a:3,b:_2;label=HH;upgrade=cost:50,terrain:water',
+            'city=revenue=40;path=a:4,b:_2;path=a:3,b:_2;label=HH',
             ['J8'] =>
             'city=revenue:40,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;upgrade=cost:50;label=Y',
             ['L14'] =>

@@ -203,7 +203,7 @@ module Engine
             float_percent: 50,
             shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
             coordinates: 'O15',
-            color: :Blue,
+            color: :blue,
           },
           {
             sym: 'SX',

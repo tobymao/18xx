@@ -2,6 +2,8 @@
 
 require_relative 'meta'
 require_relative '../base'
+require_relative 'map'
+require_relative '../../round/operating'
 
 module Engine
   module Game
@@ -128,6 +130,9 @@ module Engine
           'N12' => 'Augsburg',
           'O5' => 'Freiburg',
           'O15' => 'München',
+          'I3' => 'Köln',
+          'M13' => 'Ostbayern',
+          'M15' => 'Ostbayern',
         }.freeze
 
         MARKET = [['',
@@ -752,7 +757,7 @@ module Engine
         end
 
         def operating_round(round_num)
-          Round::Operating.new(self, [
+          Engine::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             Engine::Step::SpecialTrack,
             Engine::Step::SpecialToken,
