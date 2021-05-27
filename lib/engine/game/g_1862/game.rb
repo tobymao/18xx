@@ -29,7 +29,7 @@ module Engine
         include Entities
         include Map
 
-        attr_accessor :chartered, :base_tiles, :deferred_rust, :skip_round, :permits, :lner
+        attr_accessor :chartered, :base_tiles, :deferred_rust, :skip_round, :permits, :lner, :london_nodes
 
         register_colors(black: '#000000',
                         orange: '#f48221',
@@ -492,15 +492,13 @@ module Engine
             D15
         ].freeze
 
-        LONDON_FULL_HEXES = %w[
+        LONDON_HEXES = %w[
+            A12
             A14
             B15
             C14
             D15
         ].freeze
-
-        LONDON_HALF_HEX = 'A12'
-        LONDON_HALF_EXIT = 5
 
         IPSWITCH_HEX = 'F11'
         HARWICH_HEX = 'F13'
@@ -544,6 +542,9 @@ module Engine
           @global_stops = nil
           @deferred_rust = []
           @merging = nil
+          @london_nodes = LONDON_HEXES.map do |h|
+            hex_by_id(h).tile.nodes.find { |n| n.offboard? && n.groups.include?('London') }
+          end
         end
 
         def setup_preround
@@ -1526,10 +1527,7 @@ module Engine
         end
 
         def london_hex?(stop)
-          return true if LONDON_FULL_HEXES.include?(stop.hex.id)
-          return false unless LONDON_HALF_HEX == stop.hex.id
-
-          stop.exits.include?(LONDON_HALF_EXIT)
+          @london_nodes.include?(stop)
         end
 
         def check_london(visits)
