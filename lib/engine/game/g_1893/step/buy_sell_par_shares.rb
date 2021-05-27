@@ -92,13 +92,16 @@ module Engine
           end
 
           def process_sell_shares(action)
+            player = action.entity
+            corporation = action.bundle.corporation
             # In case president's share is reserved, do not change presidency
-            allow_president_change = action.bundle.corporation.presidents_share.buyable
+            allow_president_change = corporation.presidents_share.buyable
             @game.sell_shares_and_change_price(action.bundle,
                                                allow_president_change: allow_president_change,
                                                swap: action.swap)
 
-            track_action(action, action.bundle.corporation)
+            track_action(action, corporation)
+            @round.players_sold[player][corporation] = :now
           end
 
           def process_par(action)
