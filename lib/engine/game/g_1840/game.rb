@@ -692,10 +692,15 @@ module Engine
 
           revenue = super
 
+          valid_stops = stops.reject do |s|
+            s.hex.tile.cities.empty? && s.hex.tile.towns.empty?
+          end
+          hex_ids = valid_stops.map { |s| s.hex.id }.uniq
+
           major_corp = owning_major_corporation(route.corporation)
           major_corp.companies.each do |company|
             abilities(company, :hex_bonus) do |ability|
-              revenue += stops.map { |s| s.hex.id }.uniq&.sum { |id| ability.hexes.include?(id) ? ability.amount : 0 }
+              revenue += hex_ids&.sum { |id| ability.hexes.include?(id) ? ability.amount : 0 }
             end
           end
           revenue
@@ -736,6 +741,7 @@ module Engine
         def entity_can_use_company?(entity, company)
           return true if entity.player? && entity == company.owner
           return true if entity.corporation? && company.owner == owning_major_corporation(entity)
+          return true if entity.corporation? && company.owner == entity.corporation.owner
 
           false
         end

@@ -46,17 +46,16 @@ module Engine
           def available_hex(entity, hex)
             return false if @game.orange_framed?(hex.tile)
 
-            return @game.class::RED_TILES.include?(hex.coordinates) if color == :red &&
-             hex.tile == hex.original_tile
-
-            return hex.tile.color == color if color == :purple && hex.tile == hex.original_tile
-
             connected = @game.graph_for_entity(entity).connected_hexes(entity)[hex]
             return false unless connected
 
             return hex.tile.color == :white if color == :yellow
+            return hex.tile.color == :yellow if color == :green
 
-            hex.tile.color == :yellow
+            return @game.class::RED_TILES.include?(hex.coordinates) if color == :red &&
+             hex.tile == hex.original_tile
+
+            return hex.tile.color == color if hex.tile == hex.original_tile
           end
 
           def potential_tiles(_entity, hex)
@@ -92,22 +91,35 @@ module Engine
             @round.pending_tile_lays.shift
           end
 
-          def hex_neighbors(_entity, hex)
-            return @game.hex_by_id(hex.id).neighbors.keys if (hex.tile.color == :purple) ||
-                                                              (hex.tile.color == :red)
-
-            super
+          def hex_neighbors(entity, hex)
+            @game.graph_for_entity(entity).connected_hexes(entity)[hex]
           end
 
-          def legal_tile_rotation?(_entity, hex, tile)
+          def legal_tile_rotation?(entity, hex, tile)
             return tile.rotation.zero? if color == :purple && @game.class::TILES_FIXED_ROTATION.include?(tile.name)
             return true if color == :purple
+
+            if color == :red
+              return tile.exits.all? { |edge| hex.neighbors[edge] } &&
+                    !(tile.exits & hex_neighbors(entity, hex)).empty?
+            end
 
             super
           end
 
           def show_other
             @game.owning_major_corporation(current_entity)
+          end
+
+          def upgradeable_tiles(entity, hex)
+            potential_tiles(entity, hex).map do |tile|
+              tile.rotate!(0) # reset tile to no rotation since calculations are absolute
+              tile.legal_rotations = legal_tile_rotations(entity, hex, tile)
+              next if tile.legal_rotations.empty?
+
+              tile.rotate! # rotate it to the first legal rotation
+              tile
+            end.compact
           end
         end
       end
