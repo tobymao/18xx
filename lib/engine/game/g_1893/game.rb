@@ -1298,8 +1298,6 @@ module Engine
           super + player.num_shares_of(adsk) * 100
         end
 
-        private
-
         def move_buyable_shares_to_market(corporation)
           corporation.shares.each do |s|
             next unless s.buyable
@@ -1307,6 +1305,8 @@ module Engine
             @share_pool.transfer_shares(s.to_bundle, @share_pool, price: 0, allow_president_change: false)
           end
         end
+
+        private
 
         def base_map
           simple_city = %w[I2 I8 L3 O2 O4 T3]
