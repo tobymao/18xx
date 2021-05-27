@@ -734,6 +734,10 @@ module Engine
           end
         end
 
+        def init_share_pool
+          G1893::SharePool.new(self)
+        end
+
         def init_corporations(stock_market)
           self.class::CORPORATIONS.map do |corporation|
             G1893::Corporation.new(
