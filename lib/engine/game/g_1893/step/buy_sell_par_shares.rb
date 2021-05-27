@@ -21,7 +21,7 @@ module Engine
 
             result = super
             result.concat(FIRST_SR_ACTIONS) if can_buy_company?(entity)
-            result << 'buy_shares' if exchange_ability(entity) && !bought?
+            result << 'buy_shares' if exchange_ability(entity) && !bought? && !first_sr_passed?(entity)
             result
           end
 
