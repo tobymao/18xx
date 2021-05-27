@@ -24,6 +24,10 @@ module Engine
             next_entity! if @offering.empty? || merger_candidates_for(current_entity).empty?
           end
 
+          def finish_round
+            # Do not move stock prices after merge round
+          end
+
           def finished?
             @offering.empty? && @game.potential_discard_trains.empty?
           end
