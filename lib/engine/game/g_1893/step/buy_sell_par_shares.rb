@@ -94,8 +94,9 @@ module Engine
           def process_sell_shares(action)
             # In case president's share is reserved, do not change presidency
             allow_president_change = action.bundle.corporation.presidents_share.buyable
-            sell_shares(action.entity, action.bundle, swap: action.swap,
-                                                      allow_president_change: allow_president_change)
+            @game.sell_shares_and_change_price(action.bundle,
+                                               allow_president_change: allow_president_change,
+                                               swap: action.swap)
 
             track_action(action, action.bundle.corporation)
           end

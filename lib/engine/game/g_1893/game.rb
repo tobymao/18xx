@@ -734,6 +734,16 @@ module Engine
           end
         end
 
+        def init_corporations(stock_market)
+          self.class::CORPORATIONS.map do |corporation|
+            G1893::Corporation.new(
+              min_price: stock_market.par_prices.map(&:price).min,
+              capitalization: self.class::CAPITALIZATION,
+              **corporation.merge(corporation_opts),
+            )
+          end
+        end
+
         def next_round!
           @round =
             case @round
@@ -834,6 +844,11 @@ module Engine
             G1893::Step::Dividend,
             G1893::Step::BuyTrain,
           ], round_num: round_num)
+        end
+
+        def operating_order
+          # AdSK is bonds, and do not operate
+          super.reject { |c| c == adsk }
         end
 
         def new_merger_round(count)
@@ -1272,6 +1287,11 @@ module Engine
           return super unless corporation == adsk
 
           @share_pool.sell_shares(bundle, allow_president_change: false, swap: swap)
+        end
+
+        # Bonds does not seem to included in liquidity, so add them explicitly
+        def liquidity(player, emergency: false)
+          super + player.num_shares_of(adsk) * 100
         end
 
         private
