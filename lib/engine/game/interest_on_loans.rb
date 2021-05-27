@@ -5,8 +5,13 @@
 # loans and taking out extra loans to cover the interest
 # returns interest owed if it cannot pay
 module InterestOnLoans
+  def interest_paid?(entity)
+    @interest_paid[entity]
+  end
+
   def pay_interest!(entity)
     owed = interest_owed(entity)
+    @interest_paid[entity] = true
 
     while owed > entity.cash &&
         (loan = loans[0]) &&
