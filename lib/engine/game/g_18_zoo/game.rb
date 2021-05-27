@@ -70,7 +70,7 @@ module Engine
             status: ['can_buy_companies'],
           },
           {
-            name: '4J/2J',
+            name: '4J',
             on: '4J',
             train_limit: 2,
             tiles: %i[yellow green brown gray],
