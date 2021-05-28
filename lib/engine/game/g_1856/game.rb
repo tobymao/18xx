@@ -1015,10 +1015,13 @@ module Engine
         end
 
         def destination_connected?(corp)
-          corp.capitalization == :escrow && hexes_connected?(*@destinations[corp.id])
+          (!corp.capitalization || corp.capitalization == :escrow) && hexes_connected?(*@destinations[corp.id])
         end
 
         def hexes_connected?(start_hex_id, goal_hex_ids)
+          # Can't go anywhere if we have nowhere to start
+          return false unless hex_by_id(start_hex_id)
+
           tokens = hex_by_id(start_hex_id).tile.cities.map { |city| [city, true] }.to_h
 
           tokens.keys.each do |node|
@@ -1036,6 +1039,7 @@ module Engine
           @log << "-- #{corp.name} has destinated --"
           remove_dest_icons(corp)
           release_escrow!(corp)
+          corp.destinated!
         end
 
         def remove_dest_icons(corp)
@@ -1132,10 +1136,13 @@ module Engine
         end
 
         def release_escrow!(corporation)
-          @log << "Releasing #{format_currency(corporation.escrow)} from escrow for #{corporation.name}"
-          @bank.spend(corporation.escrow, corporation) if corporation.escrow.positive?
+          # Can't release escrow if there was none to begin with (unparred corps can destinate)
+          if corporation.escrow
+            @log << "Releasing #{format_currency(corporation.escrow)} from escrow for #{corporation.name}"
+            @bank.spend(corporation.escrow, corporation) if corporation.escrow.positive?
+          end
           corporation.escrow = nil
-          corporation.capitalization = :incremental
+          corporation.capitalization = :incremental if corporation.capitalization == :escrow
         end
 
         def can_buy_tunnel_token?(entity)

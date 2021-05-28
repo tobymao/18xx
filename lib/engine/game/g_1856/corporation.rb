@@ -19,6 +19,7 @@ module Engine
           @escrow = nil
           super(sym: sym, name: name, **opts)
           @capitalization = nil
+          @destinated = false
         end
 
         # ~Ab~RE-using floated? to represent whether or not a corporation has operated
@@ -43,14 +44,19 @@ module Engine
           @escrow = 0 if @capitalization == :escrow
         end
 
+        def destinated!
+          @destinated = true
+        end
+
         def capitalization_type_desc
           CAPITALIZATION_STRS[@capitalization || _capitalization_type]
         end
 
         def _capitalization_type
           # TODO: escrow
-          return :escrow if @game.phase.status.include?('escrow')
-          return :incremental if @game.phase.status.include?('incremental')
+          return :escrow if !@destinated && @game.phase.status.include?('escrow')
+          return :incremental if (@destinated && @game.phase.status.include?('escrow')) ||
+            @game.phase.status.include?('incremental')
           return :full if @game.phase.status.include?('fullcap')
 
           # This shouldn't happen

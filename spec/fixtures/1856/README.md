@@ -11,3 +11,6 @@ hotseat002:
  hotseat003:
  * Test national may never close
  * Test excess national token discard
+
+ hotseat004:
+ * Test that unparred corporations can destinate
