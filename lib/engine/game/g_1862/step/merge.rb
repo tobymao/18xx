@@ -77,7 +77,7 @@ module Engine
                 parts = @game.graph.connected_nodes(corporation).keys
                   .reject { |n| @game.class::LONDON_TOKEN_HEXES.include?(n.hex.id) }
                 mergeable = parts.select(&:city?).flat_map { |c| c.tokens.compact.map(&:corporation) }
-                mergeable.uniq.reject { |c| c == corporation }
+                mergeable.uniq.reject { |c| c == corporation || c.receivership? }
               end
           end
 

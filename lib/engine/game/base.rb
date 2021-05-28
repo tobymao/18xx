@@ -2325,6 +2325,10 @@ module Engine
           .reject(&:blocks_lay)
       end
 
+      def interest_paid?(_entity)
+        true
+      end
+
       def interest_rate; end
 
       def president_assisted_buy(_corporation, _train, _price)

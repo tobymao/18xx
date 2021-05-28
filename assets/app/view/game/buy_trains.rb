@@ -44,7 +44,7 @@ module View
 
         children << h(:div, "#{player.name} has #{@game.format_currency(player.cash)} in cash.")
 
-        if @game.class::EBUY_CAN_SELL_SHARES
+        if step.can_ebuy_sell_shares?(@corporation)
           if share_funds_allowed.positive?
             children << h(:div, "#{player.name} has #{@game.format_currency(share_funds_possible)} "\
                                 'in sellable shares.')
@@ -319,7 +319,9 @@ module View
               end
 
               if other_owner(other) == @corporation.owner
-                if !@corporation.loans.empty? && !@game.can_pay_interest?(@corporation, -price)
+                if !@corporation.loans.empty? &&
+                   !@game.interest_paid?(@corporation) &&
+                   !@game.can_pay_interest?(@corporation, -price)
                   # We don't support nested confirmed, it's unlikely you'll buy from another player.
                   opts = {
                     color: :yellow,

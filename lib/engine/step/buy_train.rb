@@ -13,7 +13,7 @@ module Engine
         return [] if entity.minor?
 
         # TODO: This needs to check it actually needs to sell shares.
-        return ['sell_shares'] if entity == current_entity&.owner
+        return ['sell_shares'] if entity == current_entity&.owner && can_ebuy_sell_shares?(current_entity)
 
         return [] if entity != current_entity
         # TODO: Not sure this is right

@@ -523,6 +523,7 @@ module Engine
             type: 'major',
             reservation_color: nil,
             shares: [50, 10, 10, 10, 10, 10],
+            always_market_price: true,
           },
           {
             float_percent: 50,
@@ -534,6 +535,7 @@ module Engine
             type: 'major',
             reservation_color: nil,
             shares: [50, 10, 10, 10, 10, 10],
+            always_market_price: true,
           },
           {
             float_percent: 50,
@@ -545,6 +547,7 @@ module Engine
             type: 'major',
             reservation_color: nil,
             shares: [50, 10, 10, 10, 10, 10],
+            always_market_price: true,
           },
           {
             float_percent: 50,
@@ -558,6 +561,7 @@ module Engine
             type: 'major',
             reservation_color: nil,
             shares: [50, 10, 10, 10, 10, 10],
+            always_market_price: true,
           },
           {
             float_percent: 50,
@@ -569,6 +573,7 @@ module Engine
             type: 'major',
             reservation_color: nil,
             shares: [50, 10, 10, 10, 10, 10],
+            always_market_price: true,
           },
           {
             float_percent: 50,
@@ -580,6 +585,7 @@ module Engine
             type: 'major',
             reservation_color: nil,
             shares: [50, 10, 10, 10, 10, 10],
+            always_market_price: true,
           },
           {
             float_percent: 0,
@@ -591,6 +597,7 @@ module Engine
             type: 'city',
             reservation_color: nil,
             shares: [10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
+            always_market_price: true,
           },
           {
             float_percent: 0,
@@ -603,6 +610,7 @@ module Engine
             type: 'city',
             reservation_color: nil,
             shares: [10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
+            always_market_price: true,
           },
           {
             float_percent: 0,
@@ -615,6 +623,7 @@ module Engine
             type: 'city',
             reservation_color: nil,
             shares: [10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
+            always_market_price: true,
           },
           {
             float_percent: 0,
@@ -627,7 +636,7 @@ module Engine
             type: 'city',
             reservation_color: nil,
             shares: [10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
-            par_price: 65,
+            always_market_price: true,
           },
           ].freeze
       end

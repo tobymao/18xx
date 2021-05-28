@@ -52,6 +52,8 @@ module Engine
           custom: 'Fixed number of Rounds'
         )
 
+        NEXT_SR_PLAYER_ORDER = :least_cash
+
         MARKET_TEXT = {
           par: 'City Corporation Par',
           par_2: 'Major Corporation Par',
@@ -332,19 +334,19 @@ module Engine
           operating_round(round_num)
         end
 
-        def new_company_operating_route_round(round_num)
+        def new_company_operating_route_round
           G1840::Round::Company.new(self, [
             G1840::Step::SellCompany,
             G1840::Step::Route,
             G1840::Step::Dividend,
-          ], round_num: round_num, no_city: false)
+          ], no_city: false)
         end
 
-        def new_company_operating_buy_train_round(round_num)
+        def new_company_operating_buy_train_round
           G1840::Round::Company.new(self, [
             G1840::Step::SellCompany,
             G1840::Step::BuyTrain,
-          ], round_num: round_num, no_city: true)
+          ], no_city: true)
         end
 
         def new_company_operating_auction_round
@@ -355,11 +357,11 @@ module Engine
           ])
         end
 
-        def new_company_operating_switch_trains(round_num)
+        def new_company_operating_switch_trains
           G1840::Round::Company.new(self, [
             G1840::Step::SellCompany,
             G1840::Step::ReassignTrains,
-          ], round_num: round_num, no_city: true)
+          ], no_city: true)
         end
 
         def operating_round(round_num)
@@ -380,6 +382,7 @@ module Engine
           @round =
             case @round
             when Engine::Round::Stock
+              reorder_players(log_player_order: true)
               if @cr_counter.zero?
                 init_company_round
               else
@@ -507,8 +510,8 @@ module Engine
             return true
           end
 
-          return true if from.color == 'red' && to.color == 'red' && RED_TILES.include?(from.hex.coordinates)
-          return true if from.color == 'purple' && to.color == 'purple'
+          return true if from.color == :red && to.color == :red && RED_TILES.include?(from.hex.coordinates)
+          return true if from.color == :purple && to.color == :purple
 
           super
         end
@@ -618,8 +621,20 @@ module Engine
 
         def check_other(route)
           check_track_type(route)
-
+          check_hex_reentry(route)
           check_starting_hexes(route) if route.corporation.type == :city
+        end
+
+        def check_hex_reentry(route)
+          visited_hexes = {}
+          last_hex = nil
+          route.ordered_paths.each do |path|
+            hex = path.hex
+            raise GameError, 'Route cannot re-enter a hex' if hex != last_hex && visited_hexes[hex]
+
+            visited_hexes[hex] = true
+            last_hex = hex
+          end
         end
 
         def check_track_type(route)
@@ -677,10 +692,15 @@ module Engine
 
           revenue = super
 
+          valid_stops = stops.reject do |s|
+            s.hex.tile.cities.empty? && s.hex.tile.towns.empty?
+          end
+          hex_ids = valid_stops.map { |s| s.hex.id }.uniq
+
           major_corp = owning_major_corporation(route.corporation)
           major_corp.companies.each do |company|
             abilities(company, :hex_bonus) do |ability|
-              revenue += stops.map { |s| s.hex.id }.uniq&.sum { |id| ability.hexes.include?(id) ? ability.amount : 0 }
+              revenue += hex_ids&.sum { |id| ability.hexes.include?(id) ? ability.amount : 0 }
             end
           end
           revenue
@@ -705,7 +725,7 @@ module Engine
         end
 
         def num_trains(train)
-          num_players = @players.size
+          num_players = [@players.size, 3].max
           TRAIN_FOR_PLAYER_COUNT[num_players][train[:name].to_sym]
         end
 
@@ -721,6 +741,7 @@ module Engine
         def entity_can_use_company?(entity, company)
           return true if entity.player? && entity == company.owner
           return true if entity.corporation? && company.owner == owning_major_corporation(entity)
+          return true if entity.corporation? && company.owner == entity.corporation.owner
 
           false
         end

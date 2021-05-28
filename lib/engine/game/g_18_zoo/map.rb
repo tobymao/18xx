@@ -326,15 +326,15 @@ module Engine
         }.freeze
 
         BASE_3 = {
-          'G7' => %w[path=a:0,b:3 gray],
-          'G9' => [TILE_O, 'white'],
-          'G11' => [TILE_MM, 'white'],
-          'H8' => [TILE_MM, 'white'],
-          'H10' => [TILE_Y, 'white'],
-          'H12' => [TILE_O, 'white'],
-          'I7' => %w[path=a:2,b:3 gray],
-          'I9' => [TILE_O, 'white'],
-          'I11' => [TILE_MM, 'white'],
+          'G7' => ['path=a:0,b:3', :gray],
+          'G9' => [TILE_O, :white],
+          'G11' => [TILE_MM, :white],
+          'H8' => [TILE_MM, :white],
+          'H10' => [TILE_Y, :white],
+          'H12' => [TILE_O, :white],
+          'I7' => ['path=a:2,b:3;path=a:1,b:3', :gray],
+          'I9' => [TILE_O, :white],
+          'I11' => [TILE_MM, :white],
         }.freeze
 
         LOCATION_NAMES_BASE_3 = {
@@ -448,15 +448,15 @@ module Engine
         }.freeze
 
         BASE_3 = {
-          'G8' => %w[path=a:0,b:3 gray],
-          'G10' => [TILE_O, 'white'],
-          'G12' => [TILE_MM, 'white'],
-          'H9' => [TILE_MM, 'white'],
-          'H11' => [TILE_Y, 'white'],
-          'H13' => [TILE_O, 'white'],
-          'I8' => %w[path=a:2,b:3 gray],
-          'I10' => [TILE_O, 'white'],
-          'I12' => [TILE_MM, 'white'],
+          'G8' => ['path=a:0,b:3', :gray],
+          'G10' => [TILE_O, :white],
+          'G12' => [TILE_MM, :white],
+          'H9' => [TILE_MM, :white],
+          'H11' => [TILE_Y, :white],
+          'H13' => [TILE_O, :white],
+          'I8' => ['path=a:2,b:3;path=a:1,b:3', :gray],
+          'I10' => [TILE_O, :white],
+          'I12' => [TILE_MM, :white],
         }.freeze
 
         LOCATION_NAMES_BASE_3 = {
@@ -592,15 +592,15 @@ module Engine
         }.freeze
 
         BASE_3 = {
-          'G7' => %w[path=a:0,b:3 gray],
-          'G9' => [TILE_O, 'white'],
-          'G11' => [TILE_MM, 'white'],
-          'H8' => [TILE_MM, 'white'],
-          'H10' => [TILE_Y, 'white'],
-          'H12' => [TILE_O, 'white'],
-          'I7' => %w[path=a:2,b:3 gray],
-          'I9' => [TILE_O, 'white'],
-          'I11' => [TILE_MM, 'white'],
+          'G7' => ['path=a:0,b:3', :gray],
+          'G9' => [TILE_O, :white],
+          'G11' => [TILE_MM, :white],
+          'H8' => [TILE_MM, :white],
+          'H10' => [TILE_Y, :white],
+          'H12' => [TILE_O, :white],
+          'I7' => ['path=a:2,b:3;path=a:1,b:3', :gray],
+          'I9' => [TILE_O, :white],
+          'I11' => [TILE_MM, :white],
         }.freeze
 
         LOCATION_NAMES_BASE_3 = {
@@ -756,15 +756,15 @@ module Engine
         }.freeze
 
         BASE_3 = {
-          'G8' => %w[path=a:0,b:3 gray],
-          'G10' => [TILE_O, 'white'],
-          'G12' => [TILE_MM, 'white'],
-          'H9' => [TILE_MM, 'white'],
-          'H11' => [TILE_Y, 'white'],
-          'H13' => [TILE_O, 'white'],
-          'I8' => %w[path=a:2,b:3 gray],
-          'I10' => [TILE_O, 'white'],
-          'I12' => [TILE_MM, 'white'],
+          'G8' => ['path=a:0,b:3', :gray],
+          'G10' => [TILE_O, :white],
+          'G12' => [TILE_MM, :white],
+          'H9' => [TILE_MM, :white],
+          'H11' => [TILE_Y, :white],
+          'H13' => [TILE_O, :white],
+          'I8' => ['path=a:2,b:3;path=a:1,b:3', :gray],
+          'I10' => [TILE_O, :white],
+          'I12' => [TILE_MM, :white],
         }.freeze
 
         LOCATION_NAMES_BASE_3 = {
@@ -891,15 +891,15 @@ module Engine
         }.freeze
 
         BASE_3 = {
-          'G8' => %w[path=a:0,b:3 gray],
-          'G10' => [TILE_O, 'white'],
-          'G12' => [TILE_MM, 'white'],
-          'H9' => [TILE_MM, 'white'],
-          'H11' => [TILE_Y, 'white'],
-          'H13' => [TILE_O, 'white'],
-          'I8' => %w[path=a:2,b:3 gray],
-          'I10' => [TILE_O, 'white'],
-          'I12' => [TILE_MM, 'white'],
+          'G8' => ['path=a:0,b:3', :gray],
+          'G10' => [TILE_O, :white],
+          'G12' => [TILE_MM, :white],
+          'H9' => [TILE_MM, :white],
+          'H11' => [TILE_Y, :white],
+          'H13' => [TILE_O, :white],
+          'I8' => ['path=a:2,b:3;path=a:1,b:3', :gray],
+          'I10' => [TILE_O, :white],
+          'I12' => [TILE_MM, :white],
         }.freeze
 
         LOCATION_NAMES_BASE_3 = {
@@ -1020,15 +1020,15 @@ module Engine
         }.freeze
 
         BASE_3 = {
-          'G7' => %w[path=a:0,b:3 gray],
-          'G9' => [TILE_O, 'white'],
-          'G11' => [TILE_MM, 'white'],
-          'H8' => [TILE_MM, 'white'],
-          'H10' => [TILE_Y, 'white'],
-          'H12' => [TILE_O, 'white'],
-          'I7' => %w[path=a:2,b:3 gray],
-          'I9' => [TILE_O, 'white'],
-          'I11' => [TILE_MM, 'white'],
+          'G7' => ['path=a:0,b:3', :gray],
+          'G9' => [TILE_O, :white],
+          'G11' => [TILE_MM, :white],
+          'H8' => [TILE_MM, :white],
+          'H10' => [TILE_Y, :white],
+          'H12' => [TILE_O, :white],
+          'I7' => ['path=a:2,b:3;path=a:1,b:3', :gray],
+          'I9' => [TILE_O, :white],
+          'I11' => [TILE_MM, :white],
         }.freeze
 
         LOCATION_NAMES_BASE_3 = {

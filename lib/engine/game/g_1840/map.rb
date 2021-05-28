@@ -331,9 +331,15 @@ module Engine
           },
 
           red: {
-            ['D20'] => 'border=edge:0,type:impassable;border=edge:5,type:impassable',
-            ['E19'] => 'border=edge:3,type:impassable;border=edge:4,type:impassable',
-            ['E21'] => 'border=edge:1,type:impassable;border=edge:2,type:impassable',
+            ['D20'] => 'border=edge:0,type:impassable;border=edge:5,type:impassable;'\
+                        'offboard=revenue:yellow_0,visit_cost:0;path=a:2,b:_0;' \
+                        'path=a:3,b:_0;path=a:4,b:_0;path=a:1,b:_0',
+            ['E19'] => 'border=edge:3,type:impassable;border=edge:4,type:impassable;' \
+                        'offboard=revenue:yellow_0,visit_cost:0;path=a:0,b:_0;path=a:1,b:_0;' \
+                        'path=a:2,b:_0;path=a:5,b:_0',
+            ['E21'] => 'border=edge:1,type:impassable;border=edge:2,type:impassable;'\
+                        'offboard=revenue:yellow_0,visit_cost:0;path=a:0,b:_0;path=a:3,b:_0;' \
+                        'path=a:4,b:_0;path=a:5,b:_0',
             ['K9'] =>
             'city=slots:2,revenue:yellow_30|green_40|brown_50|gray_60;path=a:2,b:_0;'\
             'path=a:3,b:_0,terminal:1;path=a:4,b:_0,lanes:2,terminal:1;border=edge:1;border=edge:4',

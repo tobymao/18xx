@@ -26,29 +26,37 @@ module Engine
           end
 
           def pending_entity
-            pending_removal[:corp]
+            duplicate_token[:corp] || pending_removal[:corp]
           end
 
           def pending_removal
             @round.pending_removals&.first || {}
           end
 
+          def duplicate_token
+            @round.duplicate_tokens&.first || {}
+          end
+
           def round_state
             {
+              duplicate_tokens: [],
               pending_removals: [],
             }
           end
 
+          # duplicate tokens, then pending_removal
           def hexes
-            pending_removal[:hexes]
+            (duplicate_token && duplicate_token[:hexes]) || pending_removal[:hexes]
           end
 
           def corps
-            [pending_removal[:corp]]
+            [(duplicate_token && duplicate_token[:corp]) || pending_removal[:corp]]
           end
 
           def can_replace_token?(entity, token)
-            available_hex(entity, token.city.hex) && corps.include?(token.corporation)
+            available_hex(entity, token.city.hex) && corps.include?(token.corporation) &&
+            # duplicate tokens first
+            (!duplicate_token[:tokens] || duplicate_token[:tokens].include?(token))
           end
 
           def process_remove_token(action)
@@ -61,8 +69,11 @@ module Engine
             @log << "#{entity.name} removes token from #{hex.name} (#{hex.location_name})"
             token.destroy!
 
+            @round.duplicate_tokens.shift unless @round.duplicate_tokens.empty?
+            return if @round.pending_removals.empty?
+
             count = @round.pending_removals[0][:count] - 1
-            @round.pending_removals[0][:count] = count
+            @round.pending_removals[0][:count] = count if count.positive?
 
             return unless count.zero?
 

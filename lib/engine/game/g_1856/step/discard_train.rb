@@ -42,6 +42,11 @@ module Engine
             @log << "#{action.entity.name} scraps a #{train.name} train"
           end
 
+          def pass!
+            done_discarding
+            super
+          end
+
           def done_discarding
             @game.nationalization_train_discard_trigger = false
             @game.national.remove_ability(@game.abilities(@game.national, :train_limit))
@@ -61,7 +66,7 @@ module Engine
           end
 
           def must_discard(entity)
-            entity == @game.national && time_to_discard && national_discardable_trains.size > 3
+            entity == @game.national && time_to_discard && @game.national.trains.size > 3
           end
 
           def national_discardable_trains

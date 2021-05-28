@@ -206,6 +206,55 @@ module Engine
                         }],
             color: nil,
           },
+          {
+            name: 'Boomtown',
+            sym: 'BT',
+            value: 40,
+            revenue: 10,
+            desc: 'The owning corporation may place a $20 marker in Cincinnati (H12), to '\
+                  'add $20 to all of its routes run to this location.',
+            abilities: [
+              {
+                type: 'assign_hexes',
+                when: 'owning_corp_or_turn',
+                hexes: %w[H12],
+                count: 1,
+                owner_type: 'corporation',
+              },
+              {
+                type: 'assign_corporation',
+                when: 'sold',
+                count: 1,
+                owner_type: 'corporation',
+              },
+            ],
+            color: nil,
+          },
+          {
+            name: 'Little Miami',
+            sym: 'LM',
+            value: 40,
+            revenue: 15,
+            desc: 'If no track exists from Cincinnati (H12) to Dayton (G13), the '\
+                  'owning corporation may lay/upgrade one extra $0 cost tile in '\
+                  'each of these hexes that adds connecting track.',
+            abilities: [
+              {
+                type: 'tile_lay',
+                when: 'owning_corp_or_turn',
+                owner_type: 'corporation',
+                discount: 20,
+                must_lay_together: true,
+                hexes: %w[H12 G13],
+                tiles: %w[5 6 57 14 15 619 291 292 293 294 295 296],
+                count: 2,
+                special: false,
+                connect: false,
+                reachable: false,
+              },
+            ],
+            color: nil,
+          },
         ].freeze
 
         CORPORATIONS = [

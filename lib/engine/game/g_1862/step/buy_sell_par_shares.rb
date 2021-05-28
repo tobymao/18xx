@@ -24,6 +24,21 @@ module Engine
             share.percent < corporation.presidents_percent || share.owner != @game.share_pool
           end
 
+          def can_buy_any?(entity)
+            (can_buy_any_from_market?(entity) ||
+             can_buy_any_from_ipo?(entity) ||
+             can_buy_any_from_treasury?(entity))
+          end
+
+          def can_buy_any_from_treasury?(entity)
+            @game.corporations.each do |corporation|
+              next unless corporation.ipoed
+              return true if can_buy_shares?(entity, corporation.shares)
+            end
+
+            false
+          end
+
           def can_buy_any_from_ipo?(entity)
             @game.corporations.each do |corporation|
               next unless corporation.ipoed

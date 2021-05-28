@@ -70,7 +70,7 @@ module Engine
             status: ['can_buy_companies'],
           },
           {
-            name: '4J/2J',
+            name: '4J',
             on: '4J',
             train_limit: 2,
             tiles: %i[yellow green brown gray],
@@ -1057,7 +1057,7 @@ module Engine
 
           help = "Current dividend #{format_currency(bonus_hold_share)}"
           help += " (+#{format_currency(bonus_hold_president)} bonus president)" if bonus_hold_president.positive?
-          help += ". Threshold to move: #{threshold}. Dividend if moved #{bonus_pay_share}"
+          help += ". Threshold to move: #{threshold}. Dividend if moved #{format_currency(bonus_pay_share)}"
           help += " (+#{format_currency(bonus_pay_president)} bonus president)" if bonus_pay_president.positive?
 
           help
@@ -1252,11 +1252,13 @@ module Engine
           entity = current_entity
           return unless entity.corporation?
 
-          train = entity.trains.find(&:obsolete)
-          return unless train
+          entity.trains.each do |train|
+            next unless train.obsolete
 
-          rust(train)
-          @log << "'#{train.name}' owned by #{entity.name} rusts!"
+            train.rusts_on = '4J'
+          end
+
+          rust_trains!(train_by_id('4J-0'), nil)
         end
 
         def all_potential_upgrades(tile, tile_manifest: nil, selected_company: nil)

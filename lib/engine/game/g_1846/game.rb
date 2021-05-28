@@ -146,12 +146,14 @@ module Engine
           'Lake Shore Line',
           'Michigan Central',
           'Ohio & Indiana',
+          'Little Miami',
         ].freeze
 
         BLUE_GROUP = [
           'Steamboat Company',
           'Meat Packing Company',
           'Tunnel Blasting Company',
+          'Boomtown',
         ].freeze
 
         GREEN_GROUP = %w[C&O ERIE PRR].freeze
@@ -171,20 +173,25 @@ module Engine
         LSL_HEXES = %w[D14 E17].freeze
         LSL_ICON = 'lsl'
 
+        LITTLE_MIAMI_HEXES = %w[H12 G13].freeze
+        LITTLE_MIAMI_ICON = 'lm'
+
         MEAT_HEXES = %w[D6 I1].freeze
         STEAMBOAT_HEXES = %w[B8 C5 D14 I1 G19].freeze
+        BOOMTOWN_HEXES = %w[H12].freeze
 
         MEAT_REVENUE_DESC = 'Meat-Packing'
 
         TILE_COST = 20
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
-          'remove_markers' => ['Remove Markers', 'Remove Steamboat and Meat Packing markers'],
+          'remove_markers' => ['Remove Markers', 'Remove Steamboat, Meat Packing, and Boomtown markers'],
           'remove_reservations' => ['Remove Reservations', 'Remove reserved token slots for corporations']
         ).freeze
 
         ASSIGNMENT_TOKENS = {
           'MPC' => '/icons/1846/mpc_token.svg',
           'SC' => '/icons/1846/sc_token.svg',
+          'BT' => '/icons/1846/bt_token.svg',
         }.freeze
 
         # Two tiles can be laid, only one upgrade
@@ -199,9 +206,10 @@ module Engine
         end
 
         def init_companies(players)
-          super + Array.new(num_pass_companies(players)) do |i|
-            name = "Pass (#{i + 1})"
+          companies = super
 
+          passes = Array.new(num_pass_companies(players)) do |i|
+            name = "Pass (#{i + 1})"
             Company.new(
               sym: name,
               name: name,
@@ -209,6 +217,15 @@ module Engine
               desc: "Choose this card if you don't want to purchase any of the offered companies this turn.",
             )
           end
+
+          if first_edition?
+            second_ed_companies, companies = companies.partition { |c| %w[BT LM].include?(c.id) }
+            second_ed_companies.each(&:close!)
+            @blue_group = BLUE_GROUP.take(3)
+            @orange_group = ORANGE_GROUP.take(3)
+          end
+
+          companies + passes
         end
 
         def num_pass_companies(players)
@@ -221,12 +238,13 @@ module Engine
           # When creating a game the game will not have enough to start
           return unless @players.size.between?(*self.class::PLAYER_RANGE)
 
-          remove_from_group!(self.class::ORANGE_GROUP, @companies) do |company|
+          remove_from_group!(orange_group, @companies) do |company|
+            remove_lm_icons if company == little_miami
             remove_lsl_icons if company == lake_shore_line
             company.close!
             @round.active_step.companies.delete(company)
           end
-          remove_from_group!(self.class::BLUE_GROUP, @companies) do |company|
+          remove_from_group!(blue_group, @companies) do |company|
             company.close!
             @round.active_step.companies.delete(company)
           end
@@ -256,6 +274,18 @@ module Engine
           end
 
           @last_action = nil
+        end
+
+        def orange_group
+          @orange_group ||= self.class::ORANGE_GROUP
+        end
+
+        def blue_group
+          @blue_group ||= self.class::BLUE_GROUP
+        end
+
+        def first_edition?
+          @first_edition ||= @optional_rules.include?(:first_ed)
         end
 
         def setup_turn
@@ -293,8 +323,16 @@ module Engine
           @minors.select(&:floated?) + corporations
         end
 
-        def num_removals(_group)
-          two_player? ? 1 : 5 - @players.size
+        def num_removals(group)
+          additional =
+            case group
+            when BLUE_GROUP, ORANGE_GROUP
+              (first_edition? ? 0 : 1)
+            else
+              0
+            end
+
+          (two_player? ? 1 : 5 - @players.size) + additional
         end
 
         def corporation_removal_groups
@@ -328,12 +366,15 @@ module Engine
         def revenue_for(route, stops)
           revenue = super
 
-          meat = meat_packing.id
-          revenue += 30 if route.corporation.assigned?(meat) && stops.any? { |stop| stop.hex.assigned?(meat) }
-
-          steam = steamboat.id
-          if route.corporation.assigned?(steam) && (port = stops.map(&:hex).find { |hex| hex.assigned?(steam) })
-            revenue += 20 * port.tile.icons.count { |icon| icon.name == 'port' }
+          [
+            [boomtown, 20],
+            [meat_packing, 30],
+            [steamboat, 20, 'port'],
+          ].each do |company, bonus_revenue, icon|
+            id = company&.id
+            if id && route.corporation.assigned?(id) && (assigned_stop = stops.find { |s| s.hex.assigned?(id) })
+              revenue += bonus_revenue * (icon ? assigned_stop.hex.tile.icons.count { |i| i.name == icon } : 1)
+            end
           end
 
           revenue += east_west_bonus(stops)[:revenue]
@@ -368,15 +409,14 @@ module Engine
             stop_hexes.include?(h) ? h&.name : "(#{h&.name})"
           end.join('-')
 
-          meat = meat_packing.id
-          str += " + #{self.class::MEAT_REVENUE_DESC}" if route.corporation.assigned?(meat) && stops.any? do |stop|
-                                                            stop.hex.assigned?(meat)
-                                                          end
-
-          steam = steamboat.id
-          str += ' + Port' if route.corporation.assigned?(steam) && (stops.map(&:hex).find do |hex|
-                                                                       hex.assigned?(steam)
-                                                                     end)
+          [
+            [boomtown, 'Boomtown'],
+            [meat_packing, self.class::MEAT_REVENUE_DESC],
+            [steamboat, 'Port'],
+          ].each do |company, desc|
+            id = company&.id
+            str += " + #{desc}" if id && route.corporation.assigned?(id) && stops.any? { |s| s.hex.assigned?(id) }
+          end
 
           bonus = east_west_bonus(stops)[:description]
           str += " + #{bonus}" if bonus
@@ -395,6 +435,10 @@ module Engine
 
         def steamboat
           @steamboat ||= company_by_id('SC')
+        end
+
+        def boomtown
+          @boomtown ||= company_by_id('BT')
         end
 
         def block_for_steamboat?
@@ -422,6 +466,7 @@ module Engine
         end
 
         def preprocess_action(action)
+          preprocess_little_miami(action)
           check_special_tile_lay(action) unless psuedo_special_tile_lay?(action)
         end
 
@@ -437,6 +482,7 @@ module Engine
           end
 
           check_special_tile_lay(action)
+          postprocess_little_miami(action)
 
           super
 
@@ -444,13 +490,13 @@ module Engine
         end
 
         def special_tile_lay?(action)
-          (action.is_a?(Action::LayTile) &&
-           (action.entity == michigan_central || action.entity == ohio_indiana))
+          action.is_a?(Action::LayTile) &&
+            [michigan_central, ohio_indiana, little_miami].include?(action.entity)
         end
 
         def psuedo_special_tile_lay?(action)
-          (action.is_a?(Action::LayTile) &&
-           (action.entity == michigan_central&.owner || action.entity == ohio_indiana&.owner))
+          action.is_a?(Action::LayTile) &&
+            [michigan_central, ohio_indiana, little_miami].any? { |c| c&.owner == action.entity }
         end
 
         def check_special_tile_lay(action)
@@ -513,6 +559,7 @@ module Engine
 
         def event_close_companies!
           @minors.dup.each { |minor| close_corporation(minor) }
+          remove_lm_icons
           remove_lsl_icons
           remove_steamboat_markers! unless steamboat.owned_by_corporation?
           super
@@ -559,9 +606,9 @@ module Engine
             end
           end
 
-          (self.class::MEAT_HEXES + self.class::STEAMBOAT_HEXES).uniq.each do |hex|
+          (self.class::MEAT_HEXES + self.class::STEAMBOAT_HEXES + self.class::BOOMTOWN_HEXES).uniq.each do |hex|
             hex_by_id(hex).tile.icons.reject! do |icon|
-              %w[meat port].include?(icon.name)
+              %w[meat port boom].include?(icon.name)
             end
           end
 
@@ -575,6 +622,12 @@ module Engine
         def remove_lsl_icons
           self.class::LSL_HEXES.each do |hex|
             hex_by_id(hex).tile.icons.reject! { |icon| icon.name == self.class::LSL_ICON }
+          end
+        end
+
+        def remove_lm_icons
+          self.class::LITTLE_MIAMI_HEXES.each do |hex|
+            hex_by_id(hex).tile.icons.reject! { |icon| icon.name == self.class::LITTLE_MIAMI_ICON }
           end
         end
 
@@ -740,6 +793,110 @@ module Engine
 
         def ability_time_is_or_start?
           active_step.is_a?(G1846::Step::Assign) || super
+        end
+
+        def little_miami
+          @little_miami ||= company_by_id('LM')
+        end
+
+        def little_miami_router
+          @little_miami_router ||=
+            Engine::Corporation.new(name: 'LM Corp', sym: 'LM Corp', tokens: [], coordinates: LITTLE_MIAMI_HEXES.first)
+        end
+
+        def compute_little_miami_graph
+          graph = Graph.new(self, no_blocking: true, home_as_token: true)
+          graph.compute(little_miami_router)
+          graph
+        end
+
+        def little_miami_action?(action)
+          action.entity == little_miami &&
+            (action.is_a?(Action::LayTile) || action.is_a?(Action::Pass))
+        end
+
+        def preprocess_little_miami(action)
+          return unless little_miami_action?(action)
+
+          @little_miami_hexes_laid ||= []
+          check_little_miami_graph_before! if @little_miami_hexes_laid.empty?
+
+          return unless action.is_a?(Action::LayTile)
+
+          hex = action.hex
+          @little_miami_before_exits ||= {}
+          @little_miami_before_exits[hex.id] = hex.tile.exits.dup
+        end
+
+        def postprocess_little_miami(action)
+          return unless little_miami_action?(action)
+
+          if action.is_a?(Action::LayTile)
+            hex = action.hex
+            @little_miami_new_exits ||= {}
+            @little_miami_new_exits[hex.id] = hex.tile.exits.dup - @little_miami_before_exits[hex.id]
+
+            if @little_miami_hexes_laid == [hex]
+              raise GameError, 'Cannot lay and upgrade a tile in the same hex with Little Miami'
+            end
+
+            @little_miami_hexes_laid << hex
+          end
+
+          return if abilities(little_miami, :tile_lay)
+
+          check_little_miami_graph_after!
+          remove_lm_icons
+        end
+
+        def check_little_miami_graph_before!
+          return if loading
+
+          graph = compute_little_miami_graph
+          reached_hexes = graph.connected_nodes(little_miami_router).select { |_k, v| v }.keys.map { |n| n.hex.id }
+
+          return unless (LITTLE_MIAMI_HEXES & reached_hexes) == LITTLE_MIAMI_HEXES
+
+          raise GameError, "#{LITTLE_MIAMI_HEXES.join(' and ')} are already connected, cannot use Little Miami"
+        end
+
+        def check_little_miami_graph_after!
+          return if loading
+
+          graph = compute_little_miami_graph
+          reached_hexes = graph.connected_nodes(little_miami_router).select { |_k, v| v }.keys.map { |n| n.hex.id }
+          if (LITTLE_MIAMI_HEXES & reached_hexes) != LITTLE_MIAMI_HEXES
+            raise GameError, "#{LITTLE_MIAMI_HEXES.join(' and ')} must be connected after using Little Miami"
+          end
+
+          new_paths_by_hex = @little_miami_new_exits.map do |hex_id, exits|
+            paths = exits.flat_map do |exit|
+              graph.connected_paths(little_miami_router).keys.select do |path|
+                path.hex.id == hex_id && path.exits.include?(exit)
+              end
+            end
+            [hex_id, paths]
+          end
+
+          return if new_paths_by_hex.all? do |hex_id, new_paths_on_hex|
+            little_miami_a_new_path_used_for_connection?(hex_id, new_paths_on_hex)
+          end
+
+          raise GameError, 'Some new track on each tile laid by Little Miami must '\
+                           "be used to connect #{LITTLE_MIAMI_HEXES.join(' and ')}"
+        end
+
+        def little_miami_a_new_path_used_for_connection?(hex_id, new_paths)
+          node = hex_by_id(hex_id).tile.cities.first
+
+          other_hex_id = LITTLE_MIAMI_HEXES.find { |h| h != hex_id }
+          other_node = hex_by_id(other_hex_id).tile.cities.first
+
+          node.walk do |_path, visited_paths, visited_nodes|
+            return true if visited_nodes[other_node] && new_paths.any? { |p| visited_paths[p] }
+          end
+
+          false
         end
       end
     end

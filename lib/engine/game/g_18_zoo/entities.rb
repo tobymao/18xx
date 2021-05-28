@@ -9,21 +9,23 @@ module Engine
             sym: 'DAYS_OFF',
             name: 'Days off',
             value: 3,
-            desc: 'Choose a family (a company), its reputation mark (share value) goes one tick to the right',
+            desc: 'During SR you can choose a family (company) and its reputation mark (share value) increase!'\
+                  ' It goes one tick to the right',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
           },
           {
             sym: 'MIDAS',
             name: 'Midas',
             value: 2,
-            desc: 'When turn order is decided, seize the Priority',
+            desc: 'During SR you can book the priority: when priority is assigned by “more money” criteria,'\
+                  ' you are assigned 1st spot',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
           },
           {
             sym: 'TOO_MUCH_RESPONSIBILITY',
             name: 'Too much responsibility',
             value: 1,
-            desc: 'Player gets 3$N',
+            desc: 'Player gets immediately 3$N',
             abilities: [{ type: 'no_buy', owner_type: 'player' },
                         { type: 'description', description: 'Get 3$N', when: 'any' }],
           },
@@ -38,15 +40,16 @@ module Engine
             sym: 'IT_S_ALL_GREEK_TO_ME',
             name: 'It’s all greek to me',
             value: 2,
-            desc: 'After your turn in a SR, you get another turn',
+            desc: 'After your turn in a SR, you get another turn - it means you can play twice in a SR:'\
+                  ' “who said you can steal a company?”',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
           },
           {
             sym: 'WHATSUP',
             name: 'Whatsup',
             value: 3,
-            desc: 'During SR, a family (a company) can buy the first available squirrel (train), deactivated. '\
-            'Reputation (share value) moves one tick to the right',
+            desc: 'During SR, a family (company) can buy the first available squirrel (train), deactivated.'\
+                  ' Reputation (share value) moves one tick to the right',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
           },
           {
@@ -54,7 +57,7 @@ module Engine
             name: 'Rabbits',
             value: 3,
             desc: 'The family (company) gets two bonus upgrades, that can be placed even illegally or before the'\
-            ' correct phase',
+                  ' correct phase',
             abilities: [
               {
                 type: 'tile_lay',
@@ -76,7 +79,7 @@ module Engine
             name: 'Moles',
             value: 3,
             desc: 'The family (company) gets 4 special tiles, that can be used to upgrade any plain tiles,'\
-            ' even illegally',
+                  ' even illegally (mountains and water pool)',
             abilities: [
               {
                 type: 'tile_lay',
@@ -118,7 +121,7 @@ module Engine
             sym: 'HOLE',
             name: 'Hole',
             value: 2,
-            desc: 'Mark two R areas anywhere on the map, and from now on they are connected',
+            desc: 'Mark two offmap R areas anywhere on the map, and from now on they are connected to run through',
             abilities: [
               {
                 type: 'assign_hexes',
@@ -133,7 +136,8 @@ module Engine
             sym: 'ON_A_DIET',
             name: 'On a diet',
             value: 2,
-            desc: 'The family (company) can place a station in addition to the allowed spaces',
+            desc: 'The family (company) can place a station in addition to the allowed spaces -'\
+                  ' no one can lock you out',
             abilities: [
               {
                 type: 'token',
@@ -177,7 +181,8 @@ module Engine
             sym: 'THAT_S_MINE',
             name: "That's mine!",
             value: 2,
-            desc: 'The family (company) books anywhere an open place on a station tile',
+            desc: 'The family (company) books anywhere an open place on a station tile '\
+                  '- it is booked until the family can and will put a token there',
             abilities: [
               {
                 type: 'assign_hexes',
@@ -225,7 +230,7 @@ module Engine
             name: 'Two barrels',
             value: 2,
             desc: 'The family (company) can use twice this power to double the value of all O tiles –'\
-            ' but it doesn’t collect in treasury the usual 1$N for each O',
+                  ' but the downside is that family doesn\'t collect in treasury the usual 1$N for each O',
             abilities: [
               {
                 type: 'description',
@@ -241,20 +246,23 @@ module Engine
             sym: 'A_SQUEEZE',
             name: 'A squeeze',
             value: 3,
-            desc: 'The family (company) gets an additional 3$N if at least one of its squirrels (train) runs an O',
+            desc: 'The family (company) gets an additional 3$N if at least one of its squirrels (train)'\
+                  ' runs through or to a O',
           },
           {
             sym: 'PATCH',
             name: 'Patch',
             value: 2,
-            desc: 'The owner (player or family) marks a squirrel (train) – it runs as a 1S. It cannot be sold.'\
-            ' It can be dismissed - otherwise the family (company) cannot purchase new squirrels (train)',
+            desc: 'Save from rust: at the phase change the player or the family can choose to mark a squirrel (train)'\
+                  ' so that it won\'t rust; it becomes and run as a 1S. The 1S cannot be sold.'\
+                  ' The PATCH on 1S can be dismissed anytime.'\
+                  ' If PATCH stays on, the family (company) cannot purchase new squirrels (train)',
           },
           {
             sym: 'WINGS',
             name: 'Wings',
             value: 2,
-            desc: 'During the run, a squirrel (train) at will can skip a tokened-out station',
+            desc: 'During the run, a squirrel (train) can skip one tokened-out station',
             abilities: [
               {
                 type: 'assign_corporation',
@@ -267,7 +275,7 @@ module Engine
             sym: 'A_TIP_OF_SUGAR',
             name: 'A tip of sugar',
             value: 3,
-            desc: 'A squirrel (train) at will runs one more station - not applicable to 4J or 2J',
+            desc: 'A squirrel (train) at will runs one more stop - it doesn\'t work with 4J or 2J',
           },
         ].freeze
 
