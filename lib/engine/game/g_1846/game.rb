@@ -173,8 +173,8 @@ module Engine
         LSL_HEXES = %w[D14 E17].freeze
         LSL_ICON = 'lsl'
 
-        LM_HEXES = %w[G13 H12].freeze
-        LM_ICON = 'lm'
+        LITTLE_MIAMI_HEXES = %w[H12 G13].freeze
+        LITTLE_MIAMI_ICON = 'lm'
 
         MEAT_HEXES = %w[D6 I1].freeze
         STEAMBOAT_HEXES = %w[B8 C5 D14 I1 G19].freeze
@@ -626,8 +626,8 @@ module Engine
         end
 
         def remove_lm_icons
-          self.class::LM_HEXES.each do |hex|
-            hex_by_id(hex).tile.icons.reject! { |icon| icon.name == self.class::LM_ICON }
+          self.class::LITTLE_MIAMI_HEXES.each do |hex|
+            hex_by_id(hex).tile.icons.reject! { |icon| icon.name == self.class::LITTLE_MIAMI_ICON }
           end
         end
 
@@ -799,13 +799,9 @@ module Engine
           @little_miami ||= company_by_id('LM')
         end
 
-        def little_miami_hexes
-          @little_miami_hexes ||= little_miami.all_abilities.first.hexes
-        end
-
         def little_miami_router
           @little_miami_router ||=
-            Engine::Corporation.new(name: 'LM Corp', sym: 'LM Corp', tokens: [], coordinates: little_miami_hexes.first)
+            Engine::Corporation.new(name: 'LM Corp', sym: 'LM Corp', tokens: [], coordinates: LITTLE_MIAMI_HEXES.first)
         end
 
         def compute_little_miami_graph
@@ -822,7 +818,8 @@ module Engine
         def preprocess_little_miami(action)
           return unless little_miami_action?(action)
 
-          check_little_miami_graph_before!
+          @little_miami_hexes_laid ||= []
+          check_little_miami_graph_before! if @little_miami_hexes_laid.empty?
 
           return unless action.is_a?(Action::LayTile)
 
@@ -839,7 +836,6 @@ module Engine
             @little_miami_new_exits ||= {}
             @little_miami_new_exits[hex.id] = hex.tile.exits.dup - @little_miami_before_exits[hex.id]
 
-            @little_miami_hexes_laid ||= []
             if @little_miami_hexes_laid == [hex]
               raise GameError, 'Cannot lay and upgrade a tile in the same hex with Little Miami'
             end
@@ -856,16 +852,12 @@ module Engine
         def check_little_miami_graph_before!
           return if loading
 
-          @checked_little_miami_graph_before ||=
-            begin
-              graph = compute_little_miami_graph
-              reached_hexes = graph.connected_nodes(little_miami_router).select { |_k, v| v }.keys.map { |n| n.hex.id }
-              if (little_miami_hexes & reached_hexes) == little_miami_hexes
-                raise GameError, "#{little_miami_hexes.join(' and ')} are already connected, cannot use Little Miami"
-              end
+          graph = compute_little_miami_graph
+          reached_hexes = graph.connected_nodes(little_miami_router).select { |_k, v| v }.keys.map { |n| n.hex.id }
 
-              true
-            end
+          return unless (LITTLE_MIAMI_HEXES & reached_hexes) == LITTLE_MIAMI_HEXES
+
+          raise GameError, "#{LITTLE_MIAMI_HEXES.join(' and ')} are already connected, cannot use Little Miami"
         end
 
         def check_little_miami_graph_after!
@@ -873,8 +865,8 @@ module Engine
 
           graph = compute_little_miami_graph
           reached_hexes = graph.connected_nodes(little_miami_router).select { |_k, v| v }.keys.map { |n| n.hex.id }
-          if (little_miami_hexes & reached_hexes) != little_miami_hexes
-            raise GameError, "#{little_miami_hexes.join(' and ')} must be connected after using Little Miami"
+          if (LITTLE_MIAMI_HEXES & reached_hexes) != LITTLE_MIAMI_HEXES
+            raise GameError, "#{LITTLE_MIAMI_HEXES.join(' and ')} must be connected after using Little Miami"
           end
 
           new_paths_by_hex = @little_miami_new_exits.map do |hex_id, exits|
@@ -891,13 +883,13 @@ module Engine
           end
 
           raise GameError, 'Some new track on each tile laid by Little Miami must '\
-                           "be used to connect #{little_miami_hexes.join(' and ')}"
+                           "be used to connect #{LITTLE_MIAMI_HEXES.join(' and ')}"
         end
 
         def little_miami_a_new_path_used_for_connection?(hex_id, new_paths)
           node = hex_by_id(hex_id).tile.cities.first
 
-          other_hex_id = little_miami_hexes.find { |h| h != hex_id }
+          other_hex_id = LITTLE_MIAMI_HEXES.find { |h| h != hex_id }
           other_node = hex_by_id(other_hex_id).tile.cities.first
 
           node.walk do |_path, visited_paths, visited_nodes|
