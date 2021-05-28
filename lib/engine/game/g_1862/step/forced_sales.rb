@@ -71,7 +71,7 @@ module Engine
               if can_sell_any?(entity)
                 @log << "#{entity.name} still owes #{@game.format_currency(pending_forced_sale[:amount])}"
               else
-                @log << "#{player.name} has no more sellable assets. Remainder of debt is forgiven."
+                @log << "#{entity.name} has no more sellable assets. Remainder of debt is forgiven."
                 @round.pending_forced_sales.shift
               end
             else
@@ -79,6 +79,11 @@ module Engine
               @log << "#{entity.name} has repaid obligation debt"
               @round.pending_forced_sales.shift
             end
+          end
+
+          def visible_corporations
+            entity = pending_entity
+            entity.shares_by_corporation.keys.reject { |c| entity.shares_of(c).empty? }
           end
         end
       end
