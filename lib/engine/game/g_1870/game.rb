@@ -552,7 +552,6 @@ module Engine
 
         LAYOUT = :pointy
 
-        EBUY_PRES_SWAP = false
         EBUY_OTHER_VALUE = false
 
         CLOSED_CORP_TRAINS_REMOVED = false
