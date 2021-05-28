@@ -243,7 +243,7 @@ module Engine
                 type: 'tile_lay',
                 when: 'owning_corp_or_turn',
                 owner_type: 'corporation',
-                free: true,
+                discount: 20,
                 must_lay_together: true,
                 hexes: %w[H12 G13],
                 tiles: %w[5 6 57 14 15 619 291 292 293 294 295 296],
