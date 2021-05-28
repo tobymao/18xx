@@ -1917,6 +1917,10 @@ module Engine
 
           corporation.tokens.find_index(token).zero?
         end
+
+        def entity_can_use_company?(entity, company)
+          company.owner == entity
+        end
       end
     end
   end
