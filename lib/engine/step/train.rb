@@ -7,6 +7,9 @@ module Engine
   module Step
     module Train
       include EmergencyMoney
+
+      attr_accessor :last_share_issued_price, :last_share_sold_price
+
       def can_buy_train?(entity = nil, _shell = nil)
         entity ||= current_entity
 
