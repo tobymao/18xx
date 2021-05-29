@@ -25,6 +25,12 @@ module Engine
             pass! unless can_buy_train?(action.entity)
           end
 
+          def buyable_trains(entity)
+            trains = super
+            trains.reject!(&:rusts_on) if entity == @game.national
+            trains
+          end
+
           def pass!
             if (borrowed_train = @game.borrowed_trains[current_entity])
               @game.log << "#{current_entity.name} returns #{borrowed_train.name}"
