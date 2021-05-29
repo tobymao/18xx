@@ -46,7 +46,8 @@ module Engine
 
         @game.abilities(entity, :tile_lay) do |ability|
           ability.hexes.each do |hex_id|
-            free = true if ability.free && @game.hex_by_id(hex_id).tile.preprinted
+            free = true if (ability.free || ability.discount >= @game.class::TILE_COST) &&
+                           @game.hex_by_id(hex_id).tile.preprinted
           end
         end
 
