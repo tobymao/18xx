@@ -24,11 +24,12 @@ module Engine
 
           def select_entities
             entites = @game.operating_order
-            entites.reject! { |item| item.type == :minor }
+            majors = entites.select { |item| item.type == :major }
 
-            return entites.select { |item| item.type == :major } if @no_city
+            return majors if @no_city
 
-            entites.partition(&:type).flat_map { |item| item }
+            cities = entites.select { |item| item.type == :city }
+            majors.concat(cities)
           end
 
           def laid_hexes

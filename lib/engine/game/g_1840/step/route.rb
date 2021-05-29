@@ -22,16 +22,14 @@ module Engine
           def auto_actions(entity)
             return unless entity.type == :city
 
-            start_nodes = @game.starting_nodes(entity)
+            starting_nodes = @game.starting_nodes(entity)
 
-            route_1 = route_for_node(entity, start_nodes[0])
-            route_2 = route_for_node(entity, start_nodes[1])
-            puts route_1.connection_hexes
-            puts route_2.connection_hexes
+            route_1 = route_for_node(entity, starting_nodes[0])
+            route_2 = route_for_node(entity, starting_nodes[1])
 
-            route = if !route_1.connection_hexes.empty? && route_2.connection_hexes.empty?
+            route = if route_2.connection_hexes.empty?
                       route_1
-                    elsif route_1.connection_hexes.empty? && !route_2.connection_hexes.empty?
+                    elsif route_1.connection_hexes.empty?
                       route_2
                     else
                       route_1.revenue > route_2.revenue ? route_1 : route_2
@@ -41,22 +39,6 @@ module Engine
               entity,
               routes: [route],
             )]
-
-            #     "train": "City-1",
-            #   "connections": [
-            #     [
-            #       "A17",
-            #       "A15",
-            #       "A13"
-            #     ]
-            #   ],
-            #   "hexes": [
-            #     "A13",
-            #     "A17"
-            #   ],
-            #   "revenue": 70,
-            #   "revenue_str": "A13-A17"
-            # }
           end
 
           def route_for_node(entity, start_node)
