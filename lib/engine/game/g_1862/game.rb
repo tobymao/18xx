@@ -2281,7 +2281,7 @@ module Engine
           restart_corporation!(nonsurvivor)
 
           # finally done with Merge/Acquire step
-          @round.active_step.pass!
+          @round.active_step&.pass!
 
           # we mucked around with tokens, clear the graph
           @graph.clear
