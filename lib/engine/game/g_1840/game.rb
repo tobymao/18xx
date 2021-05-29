@@ -776,6 +776,19 @@ module Engine
 
           'Game Ends at conclusion of this Company Round'
         end
+
+        def starting_nodes(corporation)
+          case corporation.id
+          when 'V'
+            [hex_by_id('A17').tile.cities[1], hex_by_id('G3').tile.cities.first]
+          when 'D'
+            [hex_by_id('A17').tile.cities[2], hex_by_id('F24').tile.cities[1]]
+          when 'G'
+            [hex_by_id('A17').tile.cities.first, hex_by_id('I11').tile.cities.first]
+          when 'W'
+            [hex_by_id('F24').tile.cities.first, hex_by_id('I1').tile.cities.first]
+          end
+        end
       end
     end
   end
