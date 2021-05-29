@@ -672,10 +672,12 @@ module Engine
                 player.spend(new_fine, @bank)
                 restart_corporation!(corp)
                 next
-              else
+              elsif player.cash.positive?
                 @log << "#{player.name} pays #{format_currency(player.cash)}"
                 new_fine -= player.cash
                 player.spend(player.cash, @bank)
+              else
+                @log << "#{player.name} has no cash to pay fine"
               end
 
               @log << "#{player.name} still owes #{format_currency(new_fine)} on #{corp.name} obligation"
@@ -710,8 +712,8 @@ module Engine
             end
 
             if remaining_fine.positive? && can_sell_any_shares?(player)
-              @log << "#{player.name} owes #{format_currency(remaining_fine)} on all obligations and is required to "\
-               'sell some or all assets'
+              @log << "-- #{player.name} owes #{format_currency(remaining_fine)} on all obligations and is required"\
+               ' to sell some or all assets --'
               @round.pending_forced_sales << {
                 entity: player,
                 amount: remaining_fine,
