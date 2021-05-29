@@ -1319,6 +1319,12 @@ module Engine
           end
         end
 
+        def player_value(player)
+          # At the end of the game share values of corporations are reduced by $10 / share / loan left
+          # so we can sum (# loans in corp) across corp holdings for the player
+          player.value - player.shares.sum { |s| s.percent * s.corporation.loans.count }
+        end
+
         # Nationalization Methods
 
         def event_nationalization!
