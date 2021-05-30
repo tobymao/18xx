@@ -24,7 +24,7 @@ module Engine
             actions << 'sell_shares' if can_sell_any?(entity)
             actions << 'sell_company' if can_sell_any_companies?(entity)
 
-            actions << 'pass' if actions.any?
+            actions << 'pass' if actions.any? || last_chance_to_exchange?(entity)
             actions
           end
 
@@ -42,6 +42,22 @@ module Engine
 
           def purchasable_companies(_entity)
             []
+          end
+
+          # special case: player just parred a company AND has the private that can
+          # be exchanged for a share AND Fishbourne is available
+          def last_chance_to_exchange?(player)
+            return false unless (par_action = @round.current_actions.find { |x| x.is_a?(Action::Par) })
+
+            corp = par_action.corporation
+            xchange_company = player.companies.find do |company|
+              company.abilities.any? do |ability|
+                ability.type == 'exchange' && ability.corporations.include?(corp.name)
+              end
+            end
+            return false unless xchange_company
+
+            @game.phase.available?('6')
           end
 
           def can_buy_company?(player, company)
