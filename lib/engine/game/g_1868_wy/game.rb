@@ -62,8 +62,13 @@ module Engine
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'all_corps_available' => ['All Corporations Available',
                                     'C&N, DPR, FEMV, LNP, OSL are now available to start'],
-          'full_capitalization' =>
-            ['Full Capitalization', 'Railroads now float at 60% and receive full capitalization'],
+          'full_capitalization' => ['Full Capitalization',
+                                    'Railroads now float at 60% and receive full capitalization'],
+          'rust_coal_dt_2' => ['Remove Phase 2 Coal DTs', 'Remove Phase 2 Coal Development Tokens'],
+          'rust_coal_dt_3' => ['Remove Phase 3 Coal DTs', 'Remove Phase 3 Coal Development Tokens'],
+          'rust_coal_dt_4' => ['Remove Phase 4 Coal DTs', 'Remove Phase 4 Coal Development Tokens'],
+          'rust_coal_dt_5' => ['Remove Phase 5 Coal DTs', 'Remove Phase 5 Coal Development Tokens'],
+          'rust_coal_dt_6' => ['Remove Phase 6 Coal DTs', 'Remove Phase 6 Coal Development Tokens'],
         ).freeze
         STATUS_TEXT = Base::STATUS_TEXT.merge(
           'all_corps_available' => ['All Corporations Available',
@@ -76,11 +81,20 @@ module Engine
         GRAY_BOOMCITY_TILE = '5B'
         GRAY_DOUBLE_BOOMCITY_TILE = '5BB'
 
+        DTC_GHOST_TOWN = 0
         DTC_BOOMCITY = 3
         DTC_REVENUE = 4
         DTC_DOUBLE_BOOMCITY = 5
 
         BOOMING_REVENUE_BONUS = 10
+        BUSTED_REVENUE = {
+          yellow: 10,
+          green: 10,
+          brown: 20,
+          gray: 20,
+        }.freeze
+
+        GHOST_TOWN_NAME = 'ghost town'
 
         def dotify(tile)
           tile.towns.each { |town| town.style = :dot }
@@ -107,10 +121,14 @@ module Engine
           init_track_points
           setup_company_price_up_to_face
 
+          setup_event_methods
+
           @development_hexes = init_development_hexes
           @development_token_count = Hash.new(0)
+          @placed_development_tokens = Hash.new { |h, k| h[k] = [] }
           @pending_boom_tile_lays = {}
           @pending_gray_boom_tile_lays = { boom: [], double_boom: [] }
+          @busters = {}
 
           @tile_layers = {}
 
@@ -168,6 +186,29 @@ module Engine
             corporation.capitalization = :full
             corporation.float_percent = 60
           end
+        end
+
+        def setup_event_methods
+          (2..6).each do |phase|
+            self.class.define_method("event_remove_coal_dt_#{phase}!") do
+              event_remove_coal_dt!(phase.to_s)
+            end
+          end
+        end
+
+        def event_remove_coal_dt!(phase_name)
+          @log << "-- Event: Phase #{phase_name} Coal Development Tokens are removed --"
+
+          @placed_development_tokens[phase_name].each do |hex|
+            tokens = hex.tile.icons.select { |i| i.name == "coal-#{phase_name}" }
+
+            tokens.each do |token|
+              hex.tile.icons.delete(token)
+              decrement_development_token_count(hex)
+            end
+          end
+
+          handle_bust_preprinted_and_revenue!
         end
 
         def float_corporation(corporation)
@@ -241,10 +282,6 @@ module Engine
           @track_points_used[corporation] += points_used
         end
 
-        def or_round_finished
-          init_track_points
-        end
-
         def action_processed(action)
           case action
           when Action::LayTile
@@ -254,10 +291,6 @@ module Engine
             end
             @tile_layers[action.hex] = action.entity.player
           end
-        end
-
-        def or_set_finished
-          depot.export!
         end
 
         def isr_payout_companies(p12_bidders)
@@ -320,7 +353,7 @@ module Engine
         end
 
         def available_coal_hex?(hex)
-          (hex.tile.icons.count { |i| i.name == :coal } < 2) && @development_hexes.include?(hex)
+          (hex.tile.icons.count { |i| i.name.include?('coal') } < 2) && @development_hexes.include?(hex)
         end
 
         def place_development_token(action)
@@ -332,12 +365,13 @@ module Engine
 
           player.spend(cost, @bank) if cost.positive?
           token.place(nil, hex: hex)
-          hex.tile.icons << Part::Icon.new("1868_wy/coal-#{@phase.name}", :coal)
+          hex.tile.icons << Part::Icon.new("1868_wy/coal-#{@phase.name}")
 
           cost_str = cost.positive? ? " for #{format_currency(cost)}" : ''
           @log << "#{player.name} places a Development Token on #{hex.name}#{cost_str}"
 
           increment_development_token_count(hex)
+          @placed_development_tokens[@phase.name] << hex
         end
 
         def boomer?(tile)
@@ -376,11 +410,16 @@ module Engine
             return
           end
 
-          @log << "#{location_name(hex.name)} (#{hex.name}) is Booming! A Boomtown is replaced by a Boom City."
+          tile = hex.tile
+
+          unless tile.preprinted
+            @log << "#{hex.name} #{location_name(hex.name)} is Booming! A Boomtown is replaced by a Boom City."
+          end
 
           # auto-upgrade the preprinted tile
-          if (tile = hex.tile).preprinted
+          if tile.preprinted
             boomtown = tile.towns.pop
+            tile.city_towns.delete(boomtown)
             city = Engine::Part::City.new('0', boom: true, loc: boomtown.loc)
             city.tile = tile
             tile.cities << city
@@ -394,13 +433,13 @@ module Engine
           # auto-upgrade the tile
           else
             new_tile = boomcity_tiles(tile.name).first
-            boom_autoreplace_tile!(new_tile, tile)
+            boom_bust_autoreplace_tile!(new_tile, tile)
           end
         end
 
         def boomcity_increase_revenue!(hex)
           # actual logic for increased revenue is handled in `revenue_for()`
-          @log << "#{location_name(hex.name)} (#{hex.name}) is Booming! Its revenue "\
+          @log << "#{hex.name} #{location_name(hex.name)} is Booming! Its revenue "\
                   "increases by #{format_currency(BOOMING_REVENUE_BONUS)}."
         end
 
@@ -410,20 +449,23 @@ module Engine
             return
           end
 
-          @log << "#{location_name(hex.name)} (#{hex.name}) is Booming! The Boom City becomes a Double Boom City."
+          @log << "#{hex.name}) is Booming! The Boom City becomes a Double Boom City."
 
-          tile = hex.tile
-          new_tile = double_boomcity_tile(tile.name)
-          boom_autoreplace_tile!(new_tile, tile)
+          tile = hex.tile # {location_name(hex.name)}          new_tile = double_boomcity_tile(tile.name)
+          boom_bust_autoreplace_tile!(new_tile, tile)
         end
 
-        def boom_autoreplace_tile!(new_tile, tile)
+        def boom_bust_autoreplace_tile!(new_tile, tile)
           hex = tile.hex
 
-          new_tile.rotate!(tile.rotation)
+          sorted_exits = tile.exits.sort
+          (0..5).find do |rotation|
+            new_tile.rotate!((tile.rotation + rotation) % 6)
+            new_tile.exits.sort == sorted_exits
+          end
+
           update_tile_lists(new_tile, tile)
           hex.lay(new_tile)
-          @log << "#{new_tile.name} replaces #{tile.name} on #{hex.name}"
         end
 
         def gray_double_boomcity_tile_count
@@ -528,9 +570,14 @@ module Engine
 
         def revenue_for(route, stops)
           stops.sum do |stop|
-            revenue = stop.route_revenue(route.phase, route.train)
-            revenue += BOOMING_REVENUE_BONUS if stop.city? && @development_token_count[stop.hex] >= DTC_REVENUE
-            revenue
+            if stop.city? && stop.boom
+              dtc = @development_token_count[stop.hex]
+              next BUSTED_REVENUE[stop.hex.tile.color] if dtc < DTC_BOOMCITY
+
+              gets_bonus = dtc >= DTC_REVENUE
+            end
+
+            stop.route_revenue(route.phase, route.train) + (gets_bonus ? BOOMING_REVENUE_BONUS : 0)
           end
         end
 
@@ -548,6 +595,167 @@ module Engine
           return super if @pending_boom_tile_lays.empty?
 
           [@tile_layers[action.hex]]
+        end
+
+        def decrement_development_token_count(tokened_hex)
+          hexes = [tokened_hex].concat((0..5).map { |edge| hex_neighbor(tokened_hex, edge) })
+
+          hexes.each do |hex|
+            next unless hex
+            next unless @development_token_count[hex].positive?
+
+            if (dtc = @development_token_count[hex]) >= DTC_BOOMCITY
+              @busters[hex] ||= dtc
+            end
+            @development_token_count[hex] -= 1
+          end
+        end
+
+        def handle_bust_preprinted_and_revenue!
+          @busters.dup.each do |hex, original_dtc|
+            next handle_bust_hex!(hex) if hex.tile.preprinted
+
+            new_dtc = @development_token_count[hex]
+            if (original_dtc >= DTC_REVENUE) && (new_dtc >= DTC_BOOMCITY)
+              @log << "#{hex.name}) is Busting! Its revenue "\
+                      "decreases by #{format_currency(BOOMING_REVENUE_BONUS)}."
+            elsif new_dtc < DTC_BOOMCITY
+              @log << "#{hex.name} #{location_name(hex.name)} is Busting! Its revenue "\
+                      "drops to #{format_currency(BUSTED_REVENUE[hex.tile.color])}."
+            end
+          end
+        end
+
+        def bust_round!
+          @log << "-- BUST Round #{@turn}.#{@round.round_num} (of 2) -- "
+
+          @busters.dup.each do |hex, _original_dtc|
+            next if hex.tile.preprinted
+
+            handle_bust_hex!(hex)
+          end
+        end
+
+        def handle_bust_hex!(hex)
+          new_dtc = @development_token_count[hex]
+
+          if !hex.tile.preprinted && new_dtc == DTC_GHOST_TOWN
+            to_ghost_town!(hex)
+          elsif new_dtc < DTC_BOOMCITY
+            boomcity_to_boomtown!(hex)
+          elsif new_dtc < DTC_DOUBLE_BOOMCITY
+            double_boomcity_to_boomcity!(hex)
+          end
+
+          @busters.delete(hex)
+        end
+
+        def busting_return_tokens!(hex, all_tokens: true)
+          tokens =
+            if all_tokens
+              hex.tile.cities.first.tokens.compact
+            else
+              [hex.tile.cities.first.tokens[1]].compact
+            end
+
+          corporations = tokens.map do |token|
+            token.remove!
+            token.corporation.name
+          end
+
+          if corporations.empty?
+            ''
+          else
+            " Tokens are returned: #{corporations.join(' and ')}" unless corporations.empty?
+          end
+        end
+
+        def to_ghost_town!(hex)
+          log_str = "#{hex.name} #{location_name(hex.name)} Busts to a Ghost Town."
+          log_str += busting_return_tokens!(hex)
+          @log << log_str
+
+          hex.location_name = GHOST_TOWN_NAME
+          hex.tile.location_name = GHOST_TOWN_NAME
+
+          gt_tile_name = GHOST_TOWN_TILE[hex.tile.name]
+          gt_tile = @tiles.find { |t| t.name == gt_tile_name.to_s && !t.hex }
+
+          boom_bust_autoreplace_tile!(gt_tile, hex.tile)
+
+          @development_hexes << hex
+        end
+
+        def boomcity_to_boomtown!(hex)
+          return unless hex.tile.cities.first&.boom
+
+          if (tile = hex.tile).preprinted
+            boomcity = tile.cities.pop
+            tile.city_towns.delete(boomcity)
+            boomtown = Engine::Part::Town.new('0', boom: true, loc: boomcity.loc)
+            boomtown.tile = tile
+            tile.towns << boomtown
+            tile.city_towns << boomtown
+            tile.rotate!(0) # reset tile rendering
+
+          else
+            log_str = "#{hex.name} #{location_name(hex.name)} Busts to a Boomtown."
+            log_str += busting_return_tokens!(hex)
+            @log << log_str
+
+            new_tile_name = hex.tile.name.downcase
+            if %i[brown gray].include?(hex.tile.color) &&
+               hex.tile.cities.first.slots == 2 &&
+               hex.original_tile.city_towns.size == 1
+              new_tile_name = new_tile_name.sub('bb', 'b')
+            end
+
+            tile = @tiles.find { |t| t.name == new_tile_name && !t.hex }
+            boom_bust_autoreplace_tile!(tile, hex.tile)
+          end
+        end
+
+        def double_boomcity_to_boomcity!(hex)
+          return unless %i[brown gray].include?(hex.tile.color)
+          return if hex.original_tile.city_towns.size == 2
+
+          city = hex.tile.cities.first
+          return unless city&.boom
+          return unless city.slots == 2
+
+          @log << "#{hex.name} #{location_name(hex.name)} Busts to a Boom City."
+          log_str += busting_return_tokens!(hex, all_tokens: false)
+          @log << log_str
+
+          new_tile_name = hex.tile.name.sub('BB', 'B')
+          tile = @tiles.find { |t| t.name == new_tile_name && !t.hex }
+          boom_bust_autoreplace_tile!(tile, hex.tile)
+        end
+
+        def next_round!
+          @round =
+            case @round
+            when Engine::Round::Stock
+              @operating_rounds = @phase.operating_rounds
+              reorder_players
+              new_operating_round
+            when G1868WY::Round::Operating
+              if @round.round_num < @operating_rounds
+                init_track_points
+                bust_round!
+                new_operating_round(@round.round_num + 1)
+              else
+                @turn += 1
+                init_track_points
+                depot.export!
+                bust_round!
+                new_stock_round
+              end
+            when init_round.class
+              init_round_finished
+              reorder_players
+              new_stock_round
+            end
         end
       end
     end
