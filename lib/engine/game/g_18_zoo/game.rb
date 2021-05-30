@@ -422,7 +422,17 @@ module Engine
           Array.new(@round.bonus_tracks) { |_| { lay: true } } if @round.bonus_tracks.positive?
         end
 
+        def corporation_coordinates_grey
+          [
+            game_corporation_coordinates['GI'],
+            game_corporation_coordinates['TI'],
+            game_corporation_coordinates['BB'],
+          ]
+        end
+
         def upgrades_to?(from, to, special = false, selected_company: nil)
+          return false if to.color == :gray && !corporation_coordinates_grey.include?(from.hex.coordinates)
+
           # Stock - Home Track
           if @round.is_a?(Engine::Round::Stock) && @round.available_tracks.any?
             return @round.available_tracks.include?(to.name) &&
