@@ -11,9 +11,9 @@ module Engine
         DEV_STAGE = :prealpha
 
         GAME_DESIGNER = 'Bill Dixon'
-        GAME_INFO_URL = 'https://google.com'
+        GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1856'
         GAME_LOCATION = 'Ontario, Canada'
-        GAME_RULES_URL = 'http://google.com'
+        GAME_RULES_URL = 'http://www.rr18xx.com/rules_1856.pdf'
 
         # See: https://www.facebook.com/groups/1824321454265528/permalink/4157468544284129
         GAME_PUBLISHER = :sea_horse

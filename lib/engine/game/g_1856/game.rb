@@ -357,7 +357,7 @@ module Engine
             sym: 'WSRC',
             value: 40,
             revenue: 10,
-            desc: 'The public company that owns this private company may place a free station marker and '\
+            desc: 'The public company that owns this private company may place a free station marker and/or '\
             'green #59 tile on the Kitchener hex (I12). This action closes the private company.',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['I12'] },
                         {
@@ -373,9 +373,9 @@ module Engine
             sym: 'TCC',
             value: 50,
             revenue: 10,
-            desc: "During its operating turn, the public company owning this private company may place a '\
+            desc: 'During its operating turn, the public company owning this private company may place a '\
             'track tile in the hex occupied by this private company (H11). This track lay is in addition to '\
-            'the public company's normal track lay. This action does not close the private company.",
+            'the public company\'s normal track lay. This action does not close the private company.',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['H11'] },
                         {
                           type: 'tile_lay',
