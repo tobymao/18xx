@@ -59,6 +59,11 @@ module Engine
               end
             end
 
+            # reset last share sold stuff so that the new president isn't
+            # restricted from buying any trains
+            @game.active_step.last_share_issued_price = nil
+            @game.active_step.last_share_sold_price = nil
+
             @game.minors
               .select { |minor| minor.owner == player }
               .each { |minor| @game.close_corporation(minor, quiet: true) }
