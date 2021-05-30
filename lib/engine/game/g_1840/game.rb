@@ -69,8 +69,6 @@ module Engine
           major: [70, 80, 90, 100],
         }.freeze
 
-        TILE_COST = 0
-
         INITIAL_CITY_PAR = {
           'W' => 95,
           'V' => 85,

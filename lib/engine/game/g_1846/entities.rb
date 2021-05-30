@@ -392,7 +392,7 @@ module Engine
             abilities: [
               {
                 type: 'tile_lay',
-                free: true,
+                discount: 20,
                 description: 'Free tile lay: E5, F6, G5, H6, J4',
                 desc_detail: 'May lay yellow tiles for free on hexes marked with an IC-icon (E5, '\
                              'F6, G5, H6 and J4).',

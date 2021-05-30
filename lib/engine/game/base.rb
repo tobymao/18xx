@@ -237,6 +237,8 @@ module Engine
       # :lawson Tile type like 1817, 1822
       TILE_TYPE = :normal
 
+      TILE_COST = 0
+
       IMPASSABLE_HEX_COLORS = %i[blue gray red].freeze
 
       EVENTS_TEXT = {
