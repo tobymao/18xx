@@ -286,7 +286,7 @@ module Engine
             on: '6',
             train_limit: 2,
             tiles: %i[yellow green brown gray],
-            status: %w[fullcap facing_6],
+            status: %w[fullcap facing_6 upgradable_towns],
             operating_rounds: 3,
           },
           {
@@ -294,7 +294,7 @@ module Engine
             on: 'D',
             train_limit: 2,
             tiles: %i[yellow green brown gray black],
-            status: %w[fullcap facing_6],
+            status: %w[fullcap facing_6 upgradable_towns],
             operating_rounds: 3,
           },
         ].freeze
@@ -1255,6 +1255,11 @@ module Engine
             '60% to start',
             'An unstarted corporation needs 60% sold from the IPO to start for the first time',
           ],
+          'upgradable_towns' => [
+            'Towns can be upgraded',
+            'Single town tiles can be upgraded to plain track or yellow cities. '\
+            'Double town tiles can be upgraded to green cities',
+          ],
         }.merge(Base::STATUS_TEXT)
         def operating_round(round_num)
           G1856::Round::Operating.new(self, [
@@ -1489,10 +1494,23 @@ module Engine
           @stock_market.market[0].find { |p| p.price == market_price }
         end
 
+        # As long as this is only used in core code for display we can re-use it
+        def percent_to_operate
+          return 20 if @phase.status.include?('facing_2')
+          return 30 if @phase.status.include?('facing_3')
+          return 40 if @phase.status.include?('facing_4')
+          return 50 if @phase.status.include?('facing_5')
+          return 60 if @phase.status.include?('facing_6')
+
+          # This shouldn't happen
+          raise NotImplementedError
+        end
+
         def float_str(entity)
           return 'Floats in phase 6' if entity == national
+          return super if entity.corporation && entity.capitalization_type == :full
 
-          super
+          "#{percent_to_operate}%* to operate" if entity.corporation? && entity.floatable
         end
 
         def float_national

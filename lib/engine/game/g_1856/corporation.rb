@@ -24,11 +24,11 @@ module Engine
 
         # ~Ab~RE-using floated? to represent whether or not a corporation has operated
         def floated?
-          @started || (@capitalization == :full && percent_of(self) <= 100 - percent_to_float)
+          @started || (@capitalization == :full && percent_of(self) <= 100 - @game.percent_to_operate)
         end
 
         def floatable?
-          percent_of(self) <= 100 - percent_to_float
+          percent_of(self) <= 100 - @game.percent_to_operate
         end
 
         def float!
@@ -40,7 +40,7 @@ module Engine
         end
 
         def par!
-          @capitalization = _capitalization_type
+          @capitalization = capitalization_type
           @escrow = 0 if @capitalization == :escrow
         end
 
@@ -49,27 +49,15 @@ module Engine
         end
 
         def capitalization_type_desc
-          CAPITALIZATION_STRS[@capitalization || _capitalization_type]
+          CAPITALIZATION_STRS[@capitalization || capitalization_type]
         end
 
-        def _capitalization_type
+        def capitalization_type
           # TODO: escrow
           return :escrow if !@destinated && @game.phase.status.include?('escrow')
           return :incremental if (@destinated && @game.phase.status.include?('escrow')) ||
             @game.phase.status.include?('incremental')
           return :full if @game.phase.status.include?('fullcap')
-
-          # This shouldn't happen
-          raise NotImplementedError
-        end
-
-        # As long as this is only used in core code for display we can re-use it
-        def percent_to_float
-          return 20 if @game.phase.status.include?('facing_2')
-          return 30 if @game.phase.status.include?('facing_3')
-          return 40 if @game.phase.status.include?('facing_4')
-          return 50 if @game.phase.status.include?('facing_5')
-          return 60 if @game.phase.status.include?('facing_6')
 
           # This shouldn't happen
           raise NotImplementedError
