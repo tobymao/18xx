@@ -32,6 +32,7 @@ module Engine
           end
 
           def can_buy?(entity, bundle)
+            return false unless bundle
             return false if first_sr_passed?(entity) || !@game.buyable?(bundle.corporation)
             return true if rag_exchangable(entity, bundle.corporation) && !bought?
 
@@ -39,6 +40,7 @@ module Engine
           end
 
           def can_sell?(_entity, bundle)
+            return false unless bundle
             return false if @game.turn == 1
             return !bought? if bundle.corporation == @game.adsk
 
@@ -46,6 +48,7 @@ module Engine
           end
 
           def can_gain?(entity, bundle, exchange: false)
+            return false unless bundle
             return false if exchange && !rag_exchangable(entity, bundle)
 
             !first_sr_passed?(entity) && super && @game.buyable?(bundle.corporation)
