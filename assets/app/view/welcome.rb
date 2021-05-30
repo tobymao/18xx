@@ -23,8 +23,6 @@ module View
         Rule. For more info, see
         <a href='https://boardgamegeek.com/thread/2665904/article/37786107'>BGG</a> and the
         <a href='https://github.com/tobymao/18xx/wiki/1846#notes-on-2nd-edition-companies'>18xx.games Wiki</a></p>
-        <p>1862, 18Ireland and 18ZOO are now in alpha. 18FL, Hazbahn 1873 and 1870 are now in beta.</p>
-        <p>Prototype games are now more clearly labelled, 1849: Kingdom of the Two Sicilies is production.</p>
         <p>Please submit problem reports and make suggestions for improvements on
         <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>.</p>
         <p>The <a href='https://github.com/tobymao/18xx/wiki'>18xx.games Wiki</a> has rules, maps,
