@@ -38,6 +38,13 @@ module Engine
           end
 
           def process_lay_tile(action)
+            if action.hex.id == 'I12' && !@game.wsrc.closed?
+              # Kitchener got laid so the lay tile bonus for the private is no longer needed
+
+              tile_lay = @game.abilities(@game.wsrc, :tile_lay)
+              @game.wsrc.remove_ability(tile_lay) if tile_lay
+            end
+
             super
             # TODO: Replace 'true' with @loading check & implement auto action usage
             # @game.destination_check! # if true

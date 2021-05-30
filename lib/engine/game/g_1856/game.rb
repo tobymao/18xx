@@ -361,10 +361,19 @@ module Engine
             'green #59 tile on the Kitchener hex (I12). This action closes the private company.',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['I12'] },
                         {
-                          type: 'teleport',
+                          type: 'tile_lay',
                           owner_type: 'corporation',
+                          consume_tile_lay: true,
+                          count: 1,
                           hexes: ['I12'],
                           tiles: ['59'],
+                        },
+                        {
+                          type: 'token',
+                          description: 'Token in Waterloo & Saugeen for free',
+                          hexes: ['I12'],
+                          count: 1,
+                          price: 0,
                         }],
             color: nil,
           },
@@ -832,6 +841,10 @@ module Engine
           @bridge ||= company_by_id('NFSBC')
         end
 
+        def wsrc
+          @wsrc || company_by_id('WSRC')
+        end
+
         def maximum_loans(entity)
           entity.num_player_shares
         end
@@ -1268,8 +1281,8 @@ module Engine
             # No exchanges.
             G1856::Step::Assign,
             G1856::Step::Loan,
-            Engine::Step::SpecialTrack,
-            Engine::Step::SpecialToken,
+            G1856::Step::SpecialTrack,
+            G1856::Step::SpecialToken,
             Engine::Step::BuyCompany,
             Engine::Step::HomeToken,
 
