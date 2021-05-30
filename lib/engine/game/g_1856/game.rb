@@ -713,7 +713,7 @@ module Engine
 
         SELL_MOVEMENT = :down_per_10
 
-        HOME_TOKEN_TIMING = :operating_round
+        HOME_TOKEN_TIMING = :operate
 
         RIGHT_COST = 50
 
