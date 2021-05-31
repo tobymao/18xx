@@ -237,7 +237,7 @@ module Engine
           end
 
           def pass_description
-            return 'Pass (Exchange FsDF)' unless available_subsidiaries(current_entity).empty?
+            return 'Pass (Exchange FdSD)' unless available_subsidiaries(current_entity).empty?
 
             super
           end
