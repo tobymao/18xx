@@ -12,6 +12,7 @@ module Engine
 
             super
           end
+
           def process_place_token(action)
             # This is WSRC because no other private can use the special token step
             @game.log << "#{@game.wsrc.name} is used and will close at the end of the operating round"
