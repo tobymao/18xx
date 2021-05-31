@@ -74,6 +74,8 @@ module Engine
 
         OR_SETS = [1, 1, 1, 1, 2, 2, 2, 3].freeze
 
+        GAME_END_CHECK = { custom: :full_or }.freeze
+
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'medium_corps_available' => ['Medium Corps Available',
                                        '5-share corps ATE, BN, BTE, KFN, NWB are available to start'],
@@ -132,8 +134,7 @@ module Engine
 
         def setup
           @or = 0
-          # We can modify COMPANY_VALUES and OR_SETS if we want to support the shorter variant
-          @last_or = COMPANY_VALUES.size
+          @last_or = OR_SETS.size
           @recently_floated = []
           @rusted_variants = []
           @vaclavs_corporations = []
@@ -303,8 +304,8 @@ module Engine
           super
         end
 
-        def end_now?(_after)
-          @or == @last_or
+        def custom_end_game_reached?
+          @turn == @last_or
         end
 
         def timeline
