@@ -23,6 +23,7 @@ module View
         Rule. For more info, see
         <a href='https://boardgamegeek.com/thread/2665904/article/37786107'>BGG</a> and the
         <a href='https://github.com/tobymao/18xx/wiki/1846#notes-on-2nd-edition-companies'>18xx.games Wiki</a></p>
+        <p>1840 is now in alpha</p>
         <p>Please submit problem reports and make suggestions for improvements on
         <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>.</p>
         <p>The <a href='https://github.com/tobymao/18xx/wiki'>18xx.games Wiki</a> has rules, maps,
