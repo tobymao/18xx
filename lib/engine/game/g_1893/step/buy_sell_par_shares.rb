@@ -162,11 +162,11 @@ module Engine
             par_prices.reject { |p| p.price == 120 }
           end
 
-          def available_par_cash(entity, corporation, _share_price)
+          def available_par_cash(entity, corporation, share_price)
             available = entity.cash
 
-            # If parring at max (100), FdSD private can pay for 200
-            available += 200 if rag_exchangable(entity, corporation)
+            # If parring via FdSD, private can pay for 2 shares
+            available += 2 * share_price.price if rag_exchangable(entity, corporation)
 
             available
           end
