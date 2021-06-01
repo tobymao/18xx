@@ -1775,6 +1775,9 @@ module Engine
         end
 
         def find_valid_par_price(price)
+          min_par = @stock_market.par_prices.min_by(&:price)
+          return min_par if price < min_par.price # rules white space
+
           @stock_market.par_prices.max_by { |p| p.price <= price ? p.price : 0 }
         end
 

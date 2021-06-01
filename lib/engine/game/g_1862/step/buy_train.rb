@@ -47,13 +47,15 @@ module Engine
           end
 
           def skip!
-            return receivership_buy(current_entity) if current_entity.corporation? && current_entity.receivership?
+            if !@game.skip_round[current_entity] && current_entity.corporation? && current_entity.receivership?
+              return receivership_buy(current_entity)
+            end
 
             super
           end
 
           def pass!
-            return ebuy(current_entity) if must_ebuy?(current_entity)
+            return ebuy(current_entity) if !@game.skip_round[current_entity] && must_ebuy?(current_entity)
 
             super
           end
