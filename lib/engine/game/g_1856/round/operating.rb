@@ -8,7 +8,7 @@ module Engine
     module G1856
       module Round
         class Operating < Engine::Round::Operating
-          attr_accessor :cash_crisis_player
+          attr_accessor :cash_crisis_player, :wsrc_activated
           attr_reader :paid_interest, :took_loan, :redeemed_loan,
                       :interest_penalty, :player_interest_penalty,
                       :cash_crisis_due_to_interest, :cash_crisis_due_to_forced_repay
@@ -19,7 +19,18 @@ module Engine
             @took_loan = {}
             @interest_penalty = {}
             @player_interest_penalty = {}
+            @wsrc_activated = false
             super
+          end
+
+          def finished?
+            finished = super
+            if @wsrc_activated && finished
+              @game.log << "#{@game.wsrc.name} closes"
+              @game.wsrc.close!
+              @wsrc_activated = false
+            end
+            finished
           end
 
           def start_operating
