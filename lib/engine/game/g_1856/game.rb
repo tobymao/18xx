@@ -1013,7 +1013,7 @@ module Engine
             corporation_by_id(corp).add_ability(ability)
             dest_arr.each do |d|
               # Array(d).first allows us to treat 'E5' or %[O2 N3] identically
-              hex_by_id(Array(d).first).original_tile.icons << Part::Icon.new(self.icon_path(corp))
+              hex_by_id(Array(d).first).original_tile.icons << Part::Icon.new(icon_path(corp))
             end
             @destinations[corp] = [d_start, d_goals].freeze
           end
@@ -1097,7 +1097,7 @@ module Engine
           # The L hexes on the map start as plain yellow cities
           return %w[5 6 57].include?(to.name) if self.class::LAKE_HEXES.include?(from.hex.name) && from.color == :white
           # B,L to B-L
-          return to.name == '121' if from.color == :yellow && 
+          return to.name == '121' if from.color == :yellow &&
               [self.class::BARRIE_HEX, self.class::LONDON_HEX].include?(from.hex.name)
           # Hamilton OO upgrade is yet another case of ignoring labels in upgrades
           return to.name == '123' if from.color == :brown && from.hex.name == self.class::HAMILTON_HEX

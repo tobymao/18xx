@@ -18,7 +18,7 @@ module Engine
         CERT_LIMIT = { 2 => 20, 3 => 13, 4 => 10 }.freeze
         def cert_limit
           # cert limit isn't dynamic in 1836jr56
-          return CERT_LIMIT[@players.size]
+          CERT_LIMIT[@players.size]
         end
 
         STARTING_CASH = { 2 => 450, 3 => 300, 4 => 225 }.freeze
@@ -193,48 +193,48 @@ module Engine
           },
         ].freeze
 
-                  TRAINS = [{ name: '2', distance: 2, price: 100, rusts_on: '4', num: 4 },
-                    { name: "2'", distance: 2, price: 100, rusts_on: '4', num: 1 },
-                    { name: '3', distance: 3, price: 225, rusts_on: '6', num: 3 },
-                    { name: "3'", distance: 3, price: 225, rusts_on: '6', num: 1 },
-                    { name: '4', distance: 4, price: 350, rusts_on: '8', num: 2 },
-                    {
-                      name: "4'",
-                      distance: 4,
-                      price: 350,
-                      rusts_on: '8',
-                      num: 1,
-                      events: [{ 'type' => 'no_more_escrow_corps' }],
-                    },
-                    {
-                      name: '5',
-                      distance: 5,
-                      price: 550,
-                      num: 1,
-                      events: [{ 'type' => 'close_companies' }],
-                    },
-                    {
-                      name: "5'",
-                      distance: 5,
-                      price: 550,
-                      num: 1,
-                      events: [{ 'type' => 'no_more_incremental_corps' }],
-                    },
-                    {
-                      name: '6',
-                      distance: 6,
-                      price: 700,
-                      num: 2,
-                      events: [{ 'type' => 'nationalization' }, { 'type' => 'remove_tokens' }],
-                    },
-                    {
-                      name: '8',
-                      distance: 8,
-                      price: 1000,
-                      num: 5,
-                      available_on: '6',
-                      discount: { '4' => 350, "4'" => 350, '5' => 350, "5'" => 350, '6' => 350 },
-                    }].freeze
+        TRAINS = [{ name: '2', distance: 2, price: 100, rusts_on: '4', num: 4 },
+                  { name: "2'", distance: 2, price: 100, rusts_on: '4', num: 1 },
+                  { name: '3', distance: 3, price: 225, rusts_on: '6', num: 3 },
+                  { name: "3'", distance: 3, price: 225, rusts_on: '6', num: 1 },
+                  { name: '4', distance: 4, price: 350, rusts_on: '8', num: 2 },
+                  {
+                    name: "4'",
+                    distance: 4,
+                    price: 350,
+                    rusts_on: '8',
+                    num: 1,
+                    events: [{ 'type' => 'no_more_escrow_corps' }],
+                  },
+                  {
+                    name: '5',
+                    distance: 5,
+                    price: 550,
+                    num: 1,
+                    events: [{ 'type' => 'close_companies' }],
+                  },
+                  {
+                    name: "5'",
+                    distance: 5,
+                    price: 550,
+                    num: 1,
+                    events: [{ 'type' => 'no_more_incremental_corps' }],
+                  },
+                  {
+                    name: '6',
+                    distance: 6,
+                    price: 700,
+                    num: 2,
+                    events: [{ 'type' => 'nationalization' }, { 'type' => 'remove_tokens' }],
+                  },
+                  {
+                    name: '8',
+                    distance: 8,
+                    price: 1000,
+                    num: 5,
+                    available_on: '6',
+                    discount: { '4' => 350, "4'" => 350, '5' => 350, "5'" => 350, '6' => 350 },
+                  }].freeze
 
         COMPANIES = [
           {
@@ -263,7 +263,7 @@ module Engine
                           when: 'owning_corp_or_turn',
                           count: 1,
                         }],
-                        color: nil,
+            color: nil,
           },
           {
             name: 'Charbonnages du Hainaut',
@@ -281,7 +281,7 @@ module Engine
                           tiles: %w[6 5 57],
                           hexes: ['J8'],
                         }],
-                        color: nil,
+            color: nil,
           },
           {
             # Rules questions
@@ -308,7 +308,7 @@ module Engine
               },
             ],
             color: nil,
-          }
+          },
         ].freeze
 
         ASSIGNMENT_TOKENS = {
@@ -458,7 +458,7 @@ module Engine
           },
         }.freeze
 
-        LAKE_HEXES = []
+        LAKE_HEXES = [].freeze
         LAYOUT = :pointy
 
         SELL_BUY_ORDER = :sell_buy_sell
@@ -467,6 +467,7 @@ module Engine
         def national
           @national ||= corporation_by_id('MESS')
         end
+
         def port
           @port ||= company_by_id('RdP')
         end
@@ -534,6 +535,7 @@ module Engine
           national.add_ability(self.class::NATIONAL_IMMOBILE_SHARE_PRICE_ABILITY)
           national.add_ability(self.class::NATIONAL_FORCED_WITHHOLD_ABILITY)
         end
+
         def operating_round(round_num)
           G1856::Round::Operating.new(self, [
             G1856::Step::Bankrupt,
@@ -571,11 +573,10 @@ module Engine
                       @phase.phases.any? { |phase| ability.on_phase == phase[:name] })
               next
             end
-  
+
             company.close!
           end
         end
-  
 
         def icon_path(corp)
           super if corp == national
