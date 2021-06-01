@@ -510,7 +510,7 @@ module Engine
               color: nil,
             },
             {
-              name: 'Strakonitz – Blatna – Bresnitz',
+              name: 'Wolframs - Teltsch',
               value: 40,
               revenue: 5,
               sym: 'S4',
@@ -571,7 +571,7 @@ module Engine
               color: nil,
             },
             {
-              name: 'Martinitz – Rochlitz',
+              name: 'Strakonitz – Blatna – Bresnitz',
               value: 45,
               revenue: 5,
               sym: 'S5',
