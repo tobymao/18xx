@@ -286,7 +286,7 @@ module Engine
             on: '6',
             train_limit: 2,
             tiles: %i[yellow green brown gray],
-            status: %w[fullcap facing_6],
+            status: %w[fullcap facing_6 upgradable_towns],
             operating_rounds: 3,
           },
           {
@@ -294,7 +294,7 @@ module Engine
             on: 'D',
             train_limit: 2,
             tiles: %i[yellow green brown gray black],
-            status: %w[fullcap facing_6],
+            status: %w[fullcap facing_6 upgradable_towns],
             operating_rounds: 3,
           },
         ].freeze
@@ -357,14 +357,23 @@ module Engine
             sym: 'WSRC',
             value: 40,
             revenue: 10,
-            desc: 'The public company that owns this private company may place a free station marker and '\
+            desc: 'The public company that owns this private company may place a free station marker and/or '\
             'green #59 tile on the Kitchener hex (I12). This action closes the private company.',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['I12'] },
                         {
-                          type: 'teleport',
+                          type: 'tile_lay',
                           owner_type: 'corporation',
+                          consume_tile_lay: true,
+                          count: 1,
                           hexes: ['I12'],
                           tiles: ['59'],
+                        },
+                        {
+                          type: 'token',
+                          description: 'Token in Waterloo & Saugeen for free',
+                          hexes: ['I12'],
+                          count: 1,
+                          price: 0,
                         }],
             color: nil,
           },
@@ -373,9 +382,9 @@ module Engine
             sym: 'TCC',
             value: 50,
             revenue: 10,
-            desc: "During its operating turn, the public company owning this private company may place a '\
+            desc: 'During its operating turn, the public company owning this private company may place a '\
             'track tile in the hex occupied by this private company (H11). This track lay is in addition to '\
-            'the public company's normal track lay. This action does not close the private company.",
+            'the public company\'s normal track lay. This action does not close the private company.',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['H11'] },
                         {
                           type: 'tile_lay',
@@ -832,6 +841,10 @@ module Engine
           @bridge ||= company_by_id('NFSBC')
         end
 
+        def wsrc
+          @wsrc || company_by_id('WSRC')
+        end
+
         def maximum_loans(entity)
           entity.num_player_shares
         end
@@ -1255,6 +1268,11 @@ module Engine
             '60% to start',
             'An unstarted corporation needs 60% sold from the IPO to start for the first time',
           ],
+          'upgradable_towns' => [
+            'Towns can be upgraded',
+            'Single town tiles can be upgraded to plain track or yellow cities. '\
+            'Double town tiles can be upgraded to green cities',
+          ],
         }.merge(Base::STATUS_TEXT)
         def operating_round(round_num)
           G1856::Round::Operating.new(self, [
@@ -1263,8 +1281,8 @@ module Engine
             # No exchanges.
             G1856::Step::Assign,
             G1856::Step::Loan,
-            Engine::Step::SpecialTrack,
-            Engine::Step::SpecialToken,
+            G1856::Step::SpecialTrack,
+            G1856::Step::SpecialToken,
             Engine::Step::BuyCompany,
             Engine::Step::HomeToken,
 
@@ -1283,7 +1301,7 @@ module Engine
             Engine::Step::DiscardTrain,
             G1856::Step::BuyTrain,
             # Repay Loans - See Loan
-            [Engine::Step::BuyCompany, { blocks: true }],
+            [G1856::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 
@@ -1489,10 +1507,23 @@ module Engine
           @stock_market.market[0].find { |p| p.price == market_price }
         end
 
+        # As long as this is only used in core code for display we can re-use it
+        def percent_to_operate
+          return 20 if @phase.status.include?('facing_2')
+          return 30 if @phase.status.include?('facing_3')
+          return 40 if @phase.status.include?('facing_4')
+          return 50 if @phase.status.include?('facing_5')
+          return 60 if @phase.status.include?('facing_6')
+
+          # This shouldn't happen
+          raise NotImplementedError
+        end
+
         def float_str(entity)
           return 'Floats in phase 6' if entity == national
+          return super if entity.corporation && entity.capitalization_type == :full
 
-          super
+          "#{percent_to_operate}%* to operate" if entity.corporation? && entity.floatable
         end
 
         def float_national

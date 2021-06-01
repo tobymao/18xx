@@ -119,7 +119,12 @@ module Engine
           end
 
           def potential_tiles(entity, hex)
-            return super unless @game.concession_incomplete?(entity)
+            unless @game.concession_incomplete?(entity)
+              # allow using reserved tile for this hex. Legality is checked after placement
+              return super unless @game.reserved_tiles[hex.id][:tile]
+
+              return (super + [@game.reserved_tiles[hex.id][:tile]]).uniq
+            end
 
             if !@game.concession_tile(hex)
               # can only lay in concession hexes

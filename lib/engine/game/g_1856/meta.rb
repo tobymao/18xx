@@ -8,12 +8,12 @@ module Engine
       module Meta
         include Game::Meta
 
-        DEV_STAGE = :prealpha
+        DEV_STAGE = :alpha
 
         GAME_DESIGNER = 'Bill Dixon'
-        GAME_INFO_URL = 'https://google.com'
+        GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1856'
         GAME_LOCATION = 'Ontario, Canada'
-        GAME_RULES_URL = 'http://google.com'
+        GAME_RULES_URL = 'https://www.google.com/search?q=1856+rules'
 
         # See: https://www.facebook.com/groups/1824321454265528/permalink/4157468544284129
         GAME_PUBLISHER = :sea_horse
