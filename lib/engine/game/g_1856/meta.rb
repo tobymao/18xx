@@ -21,7 +21,7 @@ module Engine
         PLAYER_RANGE = [3, 6].freeze
         OPTIONAL_RULES = [
           {
-            sym: :alternate_destination,
+            sym: :alternate_destinations,
             short_name: 'Alternate Destinations',
             desc: 'Use alternate destinations for corporations; see rules for more details',
           },
