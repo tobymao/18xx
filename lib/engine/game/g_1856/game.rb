@@ -995,6 +995,10 @@ module Engine
           national.add_ability(self.class::NATIONAL_FORCED_WITHHOLD_ABILITY)
         end
 
+        def icon_path(corp)
+          "../logos/1856/#{corp}"
+        end
+
         def create_destinations(destinations)
           @destinations = {}
           destinations.each do |corp, dest|
@@ -1009,7 +1013,7 @@ module Engine
             corporation_by_id(corp).add_ability(ability)
             dest_arr.each do |d|
               # Array(d).first allows us to treat 'E5' or %[O2 N3] identically
-              hex_by_id(Array(d).first).original_tile.icons << Part::Icon.new("../logos/1856/#{corp}")
+              hex_by_id(Array(d).first).original_tile.icons << Part::Icon.new(icon_path(corp))
             end
             @destinations[corp] = [d_start, d_goals].freeze
           end
@@ -1085,17 +1089,18 @@ module Engine
           return gray_phase? if to.name == '8' && from.name == '58'
 
           # Certain green cities upgrade to other labels
-          return to.name == '127' if from.color == :green && from.hex.name == BARRIE_HEX
-          return to.name == '126' if from.color == :green && from.hex.name == LONDON_HEX
+          return to.name == '127' if from.color == :green && from.hex.name == self.class::BARRIE_HEX
+          return to.name == '126' if from.color == :green && from.hex.name == self.class::LONDON_HEX
           # You may lay the brown 5-spoke L if and only if it is laid on a L hex -
           # NOT EVEN IF YOU GREEN A DOUBLE DIT ON A LAKE EDTGE
-          return to.name == '125' if from.color == :green && LAKE_HEXES.include?(from.hex.name)
+          return to.name == '125' if from.color == :green && self.class::LAKE_HEXES.include?(from.hex.name)
           # The L hexes on the map start as plain yellow cities
-          return %w[5 6 57].include?(to.name) if LAKE_HEXES.include?(from.hex.name) && from.color == :white
+          return %w[5 6 57].include?(to.name) if self.class::LAKE_HEXES.include?(from.hex.name) && from.color == :white
           # B,L to B-L
-          return to.name == '121' if from.color == :yellow && [BARRIE_HEX, LONDON_HEX].include?(from.hex.name)
+          return to.name == '121' if from.color == :yellow &&
+              [self.class::BARRIE_HEX, self.class::LONDON_HEX].include?(from.hex.name)
           # Hamilton OO upgrade is yet another case of ignoring labels in upgrades
-          return to.name == '123' if from.color == :brown && from.hex.name == HAMILTON_HEX
+          return to.name == '123' if from.color == :brown && from.hex.name == self.class::HAMILTON_HEX
 
           super
         end
@@ -1354,7 +1359,7 @@ module Engine
 
         def event_nationalization!
           @nationalization_trigger ||= train_by_id('6-0').owner.owner
-          @log << '-- Event: CGR merger --'
+          @log << "-- Event: #{national.id} merger --"
           corporations_repay_loans
           # Now that we have determined the triggerer for nationalization we can get them in order
           @nationalizables = nationalizable_corporations

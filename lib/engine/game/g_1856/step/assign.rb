@@ -15,9 +15,8 @@ module Engine
               raise GameError,
                     "Could not assign #{company.name} to #{target.name}; :assign_hexes ability not found"
             end
-
             case company.id
-            when 'GLSC'
+            when @game.port.id
               target.assign!(company.id)
               ability.use!
               @log << "#{company.name} builds port on #{target.name} and closes"
