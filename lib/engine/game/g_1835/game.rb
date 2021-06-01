@@ -2,6 +2,8 @@
 
 require_relative 'meta'
 require_relative '../base'
+require_relative 'map'
+require_relative '../../round/operating'
 
 module Engine
   module Game
@@ -128,6 +130,9 @@ module Engine
           'N12' => 'Augsburg',
           'O5' => 'Freiburg',
           'O15' => 'München',
+          'I3' => 'Köln',
+          'M13' => 'Ostbayern',
+          'M15' => 'Ostbayern',
         }.freeze
 
         MARKET = [['',
@@ -745,24 +750,23 @@ module Engine
 
         HOME_TOKEN_TIMING = :float
 
-        def setup
-          # 1 of each right is reserved w/ the private when it gets bought in. This leaves 2 extra to sell.
-          @available_bridge_tokens = 2
-          @available_tunnel_tokens = 2
+        def init_round
+          G1835::Round::Draft.new(self,
+                                  [G1835::Step::Draft],
+                                  reverse_order: true)
         end
 
         def operating_round(round_num)
-          Round::Operating.new(self, [
-            Step::Bankrupt,
-            Step::Exchange,
-            Step::SpecialTrack,
-            Step::SpecialToken,
-            Step::Track,
-            Step::Token,
-            Step::Route,
-            Step::Dividend,
-            Step::DiscardTrain,
-            Step::BuyTrain,
+          Engine::Round::Operating.new(self, [
+            Engine::Step::Bankrupt,
+            Engine::Step::SpecialTrack,
+            Engine::Step::SpecialToken,
+            Engine::Step::Track,
+            Engine::Step::Token,
+            Engine::Step::Route,
+            Engine::Step::Dividend,
+            Engine::Step::DiscardTrain,
+            Engine::Step::BuyTrain,
           ], round_num: round_num)
         end
       end
