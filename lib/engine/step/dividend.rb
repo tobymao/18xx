@@ -61,13 +61,17 @@ module Engine
 
         log_run_payout(entity, kind, revenue, action, payout)
 
-        @game.bank.spend(payout[:corporation], entity) if payout[:corporation].positive?
+        payout_corporation(payout[:corporation], entity)
 
         payout_shares(entity, revenue - payout[:corporation]) if payout[:per_share].positive?
 
         change_share_price(entity, payout)
 
         pass!
+      end
+
+      def payout_corporation(amount, entity)
+        @game.bank.spend(amount, entity) if amount.positive?
       end
 
       def log_run_payout(entity, kind, revenue, action, payout)

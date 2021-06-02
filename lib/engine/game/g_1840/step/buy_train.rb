@@ -68,15 +68,7 @@ module Engine
 
             difference = cost - player.cash
 
-            loan_count = (difference / 100.to_f).ceil
-            loan_amount = loan_count * 100
-
-            @game.increase_debt(player, loan_amount)
-
-            @log << "#{player.name} takes a loan of #{@game.format_currency(loan_amount)}. " \
-                    "The player value is decreased by #{@game.format_currency(loan_amount * 2)}."
-
-            @game.bank.spend(loan_amount, player)
+            @game.take_loan(player, difference)
           end
         end
       end
