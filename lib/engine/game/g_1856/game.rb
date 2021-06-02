@@ -600,32 +600,33 @@ module Engine
         HEXES = {
           red: {
             ['A20'] =>
-                     'offboard=revenue:yellow_30|brown_50|black_60;path=a:4,b:_0;path=a:5,b:_0',
+                     'offboard=revenue:yellow_30|brown_50|black_60;path=a:4,b:_0,terminal:1;path=a:5,b:_0,terminal:1',
             ['A14'] => 'border=edge:4',
             ['B13'] =>
-                   'offboard=revenue:yellow_30|brown_50;path=a:0,b:_0;path=a:5,b:_0;border=edge:1',
+                   'offboard=revenue:yellow_30|brown_50;path=a:0,b:_0;path=a:5,b:_0,terminal:1;border=edge:1',
             ['H5'] =>
-                   'offboard=revenue:yellow_30|brown_50|black_40;path=a:0,b:_0;path=a:5,b:_0;'\
+                   'offboard=revenue:yellow_30|brown_50|black_40;path=a:0,b:_0,terminal:1;path=a:5,b:_0,terminal:1;'\
                    'icon=image:port,sticky:1',
             ['K2'] =>
-                   'offboard=revenue:yellow_20|brown_30;path=a:0,b:_0;path=a:5,b:_0;'\
+                   'offboard=revenue:yellow_20|brown_30;path=a:0,b:_0,terminal:1;path=a:5,b:_0,terminal:1;'\
                    'icon=image:port,sticky:1',
             ['N1'] =>
                    'offboard=revenue:yellow_20|brown_30|black_50,hide:1,groups:Canadian West;'\
-                   'path=a:0,b:_0;path=a:1,b:_0;border=edge:5',
+                   'path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;border=edge:5',
             ['O2'] =>
                    'offboard=revenue:yellow_20|brown_30|black_50,groups:Canadian West;'\
-                   'path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0;border=edge:2',
+                   'path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;path=a:5,b:_0,terminal:1;border=edge:2',
             ['Q8'] =>
                    'offboard=revenue:yellow_20|brown_30|black_50,groups:Lower Canada;'\
-                   'path=a:1,b:_0;path=a:2,b:_0;border=edge:0',
+                   'path=a:1,b:_0,terminal:1;path=a:2,b:_0,terminal:1;border=edge:0',
             ['Q10'] =>
                    'offboard=revenue:yellow_20|brown_30|black_50,hide:1,groups:Lower Canada;'\
-                   'path=a:2,b:_0;border=edge:3',
+                   'path=a:2,b:_0,terminal:1;border=edge:3',
             ['P19'] =>
-                   'offboard=revenue:yellow_30|brown_40,hide:1,groups:Buffalo;path=a:2,b:_0;border=edge:3',
+                   'offboard=revenue:yellow_30|brown_40,hide:1,groups:Buffalo;path=a:2,b:_0,terminal:1;border=edge:3',
             ['P17'] =>
-                   'offboard=revenue:yellow_30|brown_40,groups:Buffalo;path=a:1,b:_0;path=a:2,b:_0;border=edge:0',
+                   'offboard=revenue:yellow_30|brown_40,groups:Buffalo;'\
+                   'path=a:1,b:_0,terminal:1;path=a:2,b:_0,terminal:1;border=edge:0',
           },
           yellow: {
             %w[F15 M4] => 'city=revenue:30;path=a:0,b:_0;path=a:4,b:_0',
