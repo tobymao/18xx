@@ -106,7 +106,7 @@ module Engine
             value: 60,
             revenue: 12,
             desc: 'No Corporation can build in the DCR hex (H4) until this company is bought by any Corporation'\
-            ' or closed. The owning Corporation may place a yellow tile'\
+            ' or closed. The owning Corporation may place a yellow tile, subject to normal track laying rules,'\
             ' on that hex (H4) without using a tile action or paying terrain costs.',
             sym: 'DCR',
             abilities: [

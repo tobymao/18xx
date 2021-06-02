@@ -593,7 +593,7 @@ module Engine
 
         def home_token_locations(corporation)
           hexes.select do |hex|
-            hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
+            !hex.tile.exits.empty? && hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
           end
         end
 
