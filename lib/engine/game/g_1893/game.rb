@@ -748,6 +748,19 @@ module Engine
           end
         end
 
+        def store_player_info
+          rsn = @round.class.short_name
+          case @round
+          when G1893::Round::Merger
+            round_num = @merger_count
+          else
+            round_num = @round.round_num
+          end
+          @players.each do |p|
+            p.history << PlayerInfo.new(rsn, turn, round_num, player_value(p))
+          end
+        end
+
         def next_round!
           @round =
             case @round
@@ -777,7 +790,7 @@ module Engine
               or_round_finished
               if @round.round_num < @operating_rounds
                 @after_merger_round = :operating_round_second
-                merger_count = 2
+                new_merger_round(2)
               else
                 or_set_finished
                 # If starting package remains, need to sell it first
@@ -786,9 +799,8 @@ module Engine
                                       else
                                         :auction_round
                                       end
-                merger_count = 3
+                new_merger_round(3)
               end
-              new_merger_round(merger_count)
             when Engine::Round::Draft
               if @is_init_round
                 @is_init_round = false
@@ -856,7 +868,8 @@ module Engine
         end
 
         def new_merger_round(count)
-          @log << "-- Merge Round #{@turn}.#{count} (of 3) --"
+          @merger_count = count
+          @log << "-- Merge Round #{@turn}.#{@merger_count} (of 3) --"
           G1893::Round::Merger.new(self, [
             G1893::Step::PotentialDiscardTrainsAfterMerge,
             G1893::Step::Merger,
