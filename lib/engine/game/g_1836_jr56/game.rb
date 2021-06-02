@@ -585,7 +585,7 @@ module Engine
         end
 
         def revenue_for(route, stops)
-          revenue = super
+          revenue = super # port private is counted in super
 
           port_stop = stops.find { |stop| stop.groups.include?('port') }
           # Port offboards
@@ -600,12 +600,6 @@ module Engine
 
               0
             end
-          end
-          # Port private
-          revenue += 20 if route.corporation.assigned?(port.id) && stops.any? { |stop| stop.hex.assigned?(port.id) }
-
-          route.corporation.all_abilities.select { |a| a.type == :hex_bonus }.each do |ability|
-            revenue += stops.map { |s| s.hex.id }.uniq.sum { |id| ability.hexes.include?(id) ? ability.amount : 0 }
           end
 
           revenue
