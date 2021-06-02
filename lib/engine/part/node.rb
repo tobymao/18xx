@@ -73,6 +73,7 @@ module Engine
 
             path.nodes.each do |next_node|
               next if next_node == self
+              next if next_node.offboard?
               next if corporation && next_node.blocks?(corporation)
 
               next_node.walk(
