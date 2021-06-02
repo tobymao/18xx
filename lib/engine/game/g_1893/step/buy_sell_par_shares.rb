@@ -11,7 +11,7 @@ module Engine
           include BuyMinor
 
           FIRST_SR_ACTIONS = %w[buy_company pass].freeze
-          EXCHANGE_ACTIONS = %w[buy_shares].freeze
+          EXCHANGE_ACTIONS = %w[buy_shares pass].freeze
 
           def actions(entity)
             return EXCHANGE_ACTIONS if entity == @game.fdsd && @game.rag.ipoed
@@ -21,7 +21,7 @@ module Engine
 
             result = super
             result.concat(FIRST_SR_ACTIONS) if can_buy_company?(entity)
-            result << 'buy_shares' if exchange_ability(entity) && !bought? && !first_sr_passed?(entity)
+            result.concat(EXCHANGE_ACTIONS) if can_exchange?(entity)
             result
           end
 
@@ -49,14 +49,14 @@ module Engine
 
           def can_gain?(entity, bundle, exchange: false)
             return false unless bundle
-            return false if exchange && !rag_exchangable(entity, bundle)
+            return false if exchange && !rag_exchangable(entity, bundle.corporation)
 
             !first_sr_passed?(entity) && super && @game.buyable?(bundle.corporation)
           end
 
           def can_exchange?(entity)
             rag = @game.rag
-            !bought? && exchange_ability(entity) && rag.ipoed && rag.num_market_shares.positive?
+            !bought? && !first_sr_passed?(entity) && exchange_ability(entity) && rag.num_market_shares.positive?
           end
 
           def ipo_type(corporation)
