@@ -435,9 +435,9 @@ module Engine
             ['K11'] => 'town=revenue:0;town=revenue:0;upgrade=cost:60,terrain:mountain',
           },
           red: {
-            ['A13'] => 'offboard=revenue:yellow_40|brown_70;path=a:0,b:_0;path=a:1,b:_0',
-            %w[E13 H12] => 'offboard=revenue:yellow_30|brown_50;path=a:1,b:_0',
-            ['K13'] => 'offboard=revenue:yellow_40|brown_70;path=a:1,b:_0;path=a:2,b:_0',
+            ['A13'] => 'offboard=revenue:yellow_40|brown_70;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1',
+            %w[E13 H12] => 'offboard=revenue:yellow_30|brown_50;path=a:1,b:_0,terminal:1',
+            ['K13'] => 'offboard=revenue:yellow_40|brown_70;path=a:1,b:_0,terminal:1;path=a:2,b:_0,terminal:1',
           },
           yellow: {
             ['D6'] =>
@@ -450,11 +450,13 @@ module Engine
           },
           blue: {
             %w[E3 G1] =>
-            'offboard=revenue:green_20|brown_30,format:+%d,groups:port,route:never;path=a:4,b:_0;path=a:5,b:_0',
+            'offboard=revenue:green_20|brown_30,format:+%d,groups:port,route:never;'\
+            'path=a:4,b:_0,terminal:1;path=a:5,b:_0,terminal:1',
           },
           green: {
             ['J2'] =>
-            'offboard=revenue:green_20|brown_30,format:+%d,groups:port,route:never;path=a:3,b:_0;path=a:4,b:_0',
+            'offboard=revenue:green_20|brown_30,format:+%d,groups:port,route:never;'\
+            'path=a:3,b:_0,terminal:1;path=a:4,b:_0,terminal:1',
           },
         }.freeze
 
