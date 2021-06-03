@@ -45,7 +45,6 @@ module Engine
       # counter: a hash tracking edges and junctions to avoid reuse
       # skip_track: If passed, don't walk on track of that type (ie: :broad track for 1873)
       # tile_type: if :lawson don't undo visited nodes
-      # max_nodes: If passed, stop walking after visiting the number of nodes
       #
       # This method recursively bubbles up yielded values from nested Node::Walk and Path::Walk calls
       def walk(

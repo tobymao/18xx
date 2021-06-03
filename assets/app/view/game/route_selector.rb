@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'lib/settings'
+require 'engine/auto_router'
 require 'view/game/actionable'
 
 module View
@@ -248,6 +249,11 @@ module View
           store(:routes, @routes)
         end
 
+        auto = lambda do
+          router = Engine::AutoRouter.new(@game)
+          store(:routes, router.compute(@game.current_entity))
+        end
+
         submit_style = {
           minWidth: '6.5rem',
           marginTop: '1rem',
@@ -267,6 +273,7 @@ module View
             h('button.small', { on: { click: clear } }, 'Clear Train'),
             h('button.small', { on: { click: clear_all } }, 'Clear All'),
             h('button.small', { on: { click: reset_all } }, 'Reset'),
+            h('button.small', { on: { click: auto } }, 'Auto'),
           ]),
           h(:button, { style: submit_style, on: { click: submit } }, 'Submit ' + revenue + subsidy),
         ])
