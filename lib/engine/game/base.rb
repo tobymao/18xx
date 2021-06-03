@@ -1044,29 +1044,30 @@ module Engine
       end
 
       def check_overlap(routes)
-        tracks = []
+        tracks = {}
+
+        check = lambda do |key|
+          raise GameError, "Route cannot reuse track on #{key[0].id}" if tracks[key]
+          tracks[key] = true
+        end
 
         routes.each do |route|
           route.paths.each do |path|
             a = path.a
             b = path.b
 
-            tracks << [path.hex, a.num, path.lanes[0][1]] if a.edge?
-            tracks << [path.hex, b.num, path.lanes[1][1]] if b.edge?
+            check.call([path.hex, a.num, path.lanes[0][1]]) if a.edge?
+            check.call([path.hex, b.num, path.lanes[1][1]]) if b.edge?
 
             # check track between edges and towns not in center
             # (essentially, that town needs to act like an edge for this purpose)
             if b.edge? && a.town? && (nedge = a.tile.preferred_city_town_edges[a]) && nedge != b.num
-              tracks << [path.hex, a, path.lanes[0][1]]
+              check.call([path.hex, a, path.lanes[0][1]])
             end
             if a.edge? && b.town? && (nedge = b.tile.preferred_city_town_edges[b]) && nedge != a.num
-              tracks << [path.hex, b, path.lanes[1][1]]
+              check.call([path.hex, b, path.lanes[1][1]])
             end
           end
-        end
-
-        tracks.group_by(&:itself).each do |k, v|
-          raise GameError, "Route cannot reuse track on #{k[0].id}" if v.size > 1
         end
       end
 
