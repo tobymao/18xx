@@ -100,8 +100,8 @@ module Engine
       puts "Pruned paths to #{train_routes.map { |k, v| k.name + ':' + v.size.to_s}.join(', ')} in: #{Time.now - now}"
 
       limit = (1..train_routes.values.map(&:size).max).bsearch do |x|
-        (x ** train_routes.size) >= 10000
-      end
+        (x ** train_routes.size) >= 10_000
+      end || 10_000
 
       train_routes.each do |train, routes|
         train_routes[train] = routes.sort_by(&:revenue).reverse.take(limit)
