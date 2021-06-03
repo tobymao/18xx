@@ -402,9 +402,10 @@ module Engine
             sym: 'GLSC',
             value: 70,
             revenue: 15,
-            desc: 'At any time during its operating turn, the owning public company may place the port token in '\
-            'any one city adjacent to Lake Erie, Lake Huron or Georgian Bay. '\
-            'Placement of this token closes the Great Lakes Shipping Company.',
+            desc: 'At any time during its operating turn, the owning public company may place the port marker in '\
+            'any one hex with the port symbol. The port marker raises the value of all revenue locations in that hex '\
+            'by $20 for that corporation. This marker will may not be moved and will be removed when the first '\
+            '6 train is purchased. Placement of this marker closes the Great Lakes Shipping Company.',
             abilities: [
               {
                 type: 'assign_hexes',
