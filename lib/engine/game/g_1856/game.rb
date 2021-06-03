@@ -1527,7 +1527,7 @@ module Engine
 
         def float_str(entity)
           return 'Floats in phase 6' if entity == national
-          return super if entity.corporation && entity.capitalization_type == :full
+          return super if entity.corporation && (entity.capitalization || entity.capitalization_type) == :full
 
           "#{percent_to_operate}%* to operate" if entity.corporation? && entity.floatable
         end
