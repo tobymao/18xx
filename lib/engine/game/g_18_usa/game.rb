@@ -348,79 +348,40 @@ module Engine
                   }].freeze
 
         COMPANIES = [
+          # P1
           {
-            name: 'Pittsburgh Steel Mill',
-            value: 40,
+            name: 'Lehigh Coal Mine Co.',
+            value: 30,
             revenue: 0,
-            desc: 'Owning corp may place special Pittsburgh yellow tile during tile-laying, '\
-                  'regardless of connectivity.  The hex is not reserved, and the power '\
-                  'is lost if another company builds there first.',
-            sym: 'PSM',
-            abilities: [
-            {
-              type: 'tile_lay',
-              hexes: ['F13'],
-              tiles: ['X00'],
-              when: 'track',
-              owner_type: 'corporation',
-              count: 1,
-            },
-          ],
-            color: nil,
-          },
-          {
-            name: 'Mountain Engineers',
-            value: 40,
-            revenue: 0,
-            desc: 'Owning company receives $20 after laying a yellow tile in a '\
-                  'mountain hex.  Any fees must be paid first.',
-            sym: 'ME',
+            desc: 'Comes with one coal mine marker. When placing a yellow '\
+                  'tile in a mountain hex next to a revenue location, can place '\
+                  'token to avoid $15 terrain fee.  Marked yellow hexes cannot be '\
+                  'upgraded.  Hexes pay $10 extra revenue and do not count as a '\
+                  'stop.  May not start or end a route at a coal mine.',
+            sym: 'P1',
             abilities: [
               {
-                type: 'tile_income',
-                income: 20,
-                terrain: 'mountain',
+                type: 'tile_lay',
+                hexes: %w[B6 B10 B12 C9 D8 D10 D26 E19 E25 F8 F10 F16 F22 F24],
+                tiles: %w[7 8 9],
+                free: false,
+                when: 'track',
                 owner_type: 'corporation',
-                owner_only: true,
+                count: 1,
               },
             ],
             color: nil,
           },
+          #P2
           {
-            name: 'Ohio Bridge Company',
+            name: 'Fox Bridge Works',
             value: 40,
             revenue: 0,
             desc: 'Comes with one $10 bridge token that may be placed by the owning '\
-                  'corp in Louisville, Cincinnati, or Charleston, max one token '\
-                  'per city, regardless of connectivity.  Allows owning corp to '\
-                  'skip $10 river fee when placing yellow tiles.',
-            sym: 'OBC',
-            abilities: [
-              {
-                type: 'tile_discount',
-                discount: 10,
-                terrain: 'water',
-                owner_type: 'corporation',
-              },
-              {
-                type: 'assign_hexes',
-                hexes: %w[H3 G6 H9],
-                count: 1,
-                when: 'owning_corp_or_turn',
-                owner_type: 'corporation',
-              },
-            ],
-            color: nil,
-          },
-          {
-            name: 'Union Bridge Company',
-            value: 80,
-            revenue: 0,
-            desc: 'Comes with two $10 bridge token that may be placed by the owning '\
-                  'corp in Louisville, Cincinnati, or Charleston, max one token '\
+                  'corp in a city with $10 water cost, max one token '\
                   'per city, regardless of connectivity..  Allows owning corp to '\
                   'skip $10 river fee when placing yellow tiles.',
-            sym: 'UBC',
+            sym: 'P2',
             abilities: [
               {
                 type: 'tile_discount',
@@ -430,7 +391,7 @@ module Engine
               },
               {
                 type: 'assign_hexes',
-                hexes: %w[H3 G6 H9],
+                hexes: %w[C10 C17 D14 E15 E17 F20 G17],
                 count: 2,
                 when: 'owning_corp_or_turn',
                 owner_type: 'corporation',
@@ -438,12 +399,74 @@ module Engine
             ],
             color: nil,
           },
+          #P14
           {
-            name: 'Train Station',
+            name: 'Pyramid Scheme',
+            value: 60,
+            revenue: 0,
+            desc: 'Does nothing',
+            sym: 'P14',
+            abilities: [],
+            color: nil,
+          },
+          # P18
+          {
+            name: 'Peabody Coal Company',
+            value: 30,
+            revenue: 0,
+            desc: 'Comes with two coal mine markers. When placing a yellow '\
+                  'tile in a mountain hex next to a revenue location, can place '\
+                  'token to avoid $15 terrain fee.  Marked yellow hexes cannot be '\
+                  'upgraded.  Hexes pay $10 extra revenue and do not count as a '\
+                  'stop.  May not start or end a route at a coal mine.',
+            sym: 'P18',
+            abilities: [
+              {
+                type: 'tile_lay',
+                hexes: %w[B6 B10 B12 C9 D8 D10 D26 E19 E25 F8 F10 F16 F22 F24],
+                tiles: %w[7 8 9],
+                free: false,
+                when: 'track',
+                owner_type: 'corporation',
+                count: 2,
+              },
+            ],
+            color: nil,
+          },
+          # P22
+          {
+            name: 'American Bridge Company',
+            value: 80,
+            revenue: 0,
+            desc: 'Comes with two $10 bridge tokens that may be placed by the owning '\
+                  'corp in a city with $10 water cost, max one token '\
+                  'per city, regardless of connectivity..  Allows owning corp to '\
+                  'skip $10 river fee when placing yellow tiles.',
+            sym: 'P22',
+            abilities: [
+              {
+                type: 'tile_discount',
+                discount: 10,
+                terrain: 'water',
+                owner_type: 'corporation',
+              },
+              {
+                type: 'assign_hexes',
+                hexes: %w[C10 C17 D14 E15 E17 F20 G17],
+                count: 2,
+                when: 'owning_corp_or_turn',
+                owner_type: 'corporation',
+              },
+            ],
+            color: nil,
+          },
+          # P23
+          {
+            name: 'Bailey Yard',
             value: 80,
             revenue: 0,
             desc: 'Provides an additional station marker for the owning corp, awarded at time of purchase',
-            sym: 'TS',
+            sym: 'P23',
             abilities: [
               {
                 type: 'additional_token',
@@ -453,155 +476,26 @@ module Engine
             ],
             color: nil,
           },
+          # P28
           {
-            name: 'Minor Coal 18_usa/mine',
-            value: 30,
-            revenue: 0,
-            desc: 'Comes with one coal 18_usa/mine marker.  When placing a yellow '\
-                  'tile in a mountain hex next to a revenue location, can place '\
-                  'token to avoid $15 terrain fee.  Marked yellow hexes cannot be '\
-                  'upgraded.  Hexes pay $10 extra revenue and do not count as a '\
-                  'stop.  May not start or end a route at a coal 18_usa/mine.',
-            sym: 'MINC',
-            abilities: [
-              {
-                type: 'tile_lay',
-                hexes: %w[B25
-                          C20
-                          C24
-                          E18
-                          F15
-                          G12
-                          G14
-                          H11
-                          H13
-                          H15
-                          I8
-                          I10],
-                tiles: %w[7 8 9],
-                free: false,
-                when: 'track',
-                owner_type: 'corporation',
-                count: 1,
-              },
-            ],
-            color: nil,
-          },
-          {
-            name: 'Coal 18_usa/mine',
-            value: 60,
-            revenue: 0,
-            desc: 'Comes with two coal 18_usa/mine markers.  When placing a yellow '\
-                  'tile in a mountain hex next to a revenue location, can place '\
-                  'token to avoid $15 terrain fee.  Marked yellow hexes cannot be '\
-                  'upgraded.  Hexes pay $10 extra revenue and do not count as a '\
-                  'stop.  May not start or end a route at a coal 18_usa/mine.',
-            sym: 'CM',
-            abilities: [
-              {
-                type: 'tile_lay',
-                hexes: %w[B25
-                          C20
-                          C24
-                          E18
-                          F15
-                          G12
-                          G14
-                          H11
-                          H13
-                          H15
-                          I8
-                          I10],
-                tiles: %w[7 8 9],
-                free: false,
-                when: 'track',
-                owner_type: 'corporation',
-                count: 2,
-              },
-            ],
-            color: nil,
-          },
-          {
-            name: 'Major Coal 18_usa/mine',
+            name: 'Consolidation Coal Co.',
             value: 90,
             revenue: 0,
-            desc: 'Comes with three coal 18_usa/mine markers.  When placing a yellow '\
+            desc: 'Comes with three coal mine markers. When placing a yellow '\
                   'tile in a mountain hex next to a revenue location, can place '\
                   'token to avoid $15 terrain fee.  Marked yellow hexes cannot be '\
                   'upgraded.  Hexes pay $10 extra revenue and do not count as a '\
-                  'stop.  May not start or end a route at a coal 18_usa/mine.',
-            sym: 'MAJC',
+                  'stop.  May not start or end a route at a coal mine.',
+            sym: 'P28',
             abilities: [
               {
                 type: 'tile_lay',
-                hexes: %w[B25
-                          C20
-                          C24
-                          E18
-                          F15
-                          G12
-                          G14
-                          H11
-                          H13
-                          H15
-                          I8
-                          I10],
+                hexes: %w[B6 B10 B12 C9 D8 D10 D26 E19 E25 F8 F10 F16 F22 F24],
                 tiles: %w[7 8 9],
                 free: false,
                 when: 'track',
                 owner_type: 'corporation',
                 count: 3,
-              },
-            ],
-            color: nil,
-          },
-          {
-            name: 'Minor Mail Contract',
-            value: 60,
-            revenue: 0,
-            desc: 'Pays owning corp $10 at the start of each operating round, as '\
-                  'long as the company has at least one train.',
-            sym: 'MINM',
-            abilities: [
-              {
-                type: 'revenue_change',
-                revenue: 10,
-                when: 'has_train',
-                owner_type: 'corporation',
-              },
-            ],
-            color: nil,
-          },
-          {
-            name: 'Mail Contract',
-            value: 90,
-            revenue: 0,
-            desc: 'Pays owning corp $15 at the start of each operating round, as '\
-                  'long as the company has at least one train.',
-            sym: 'MAIL',
-            abilities: [
-              {
-                type: 'revenue_change',
-                revenue: 15,
-                when: 'has_train',
-                owner_type: 'corporation',
-              },
-            ],
-            color: nil,
-          },
-          {
-            name: 'Major Mail Contract',
-            value: 120,
-            revenue: 0,
-            desc: 'Pays owning corp $20 at the start of each operating round, as '\
-                  'long as the company has at least one train.',
-            sym: 'MAJM',
-            abilities: [
-              {
-                type: 'revenue_change',
-                revenue: 20,
-                when: 'has_train',
-                owner_type: 'corporation',
               },
             ],
             color: nil,
