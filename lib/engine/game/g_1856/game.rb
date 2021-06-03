@@ -1666,9 +1666,14 @@ module Engine
 
           # There won't be any duplicates (OO or NY) that need deduplicating where a home city is involved
           # because that case is automatically resolved above
+          has_duplicate_tokens = false
           national_token_hex_count.each do |hex, tokens|
             next unless tokens.size > 1
 
+            unless has_duplicate_tokens
+              @log << "-- #{national.name} has to remove duplicate tokens from hexes --"
+              has_duplicate_tokens = true
+            end
             @round.duplicate_tokens << {
               corp: national,
               hexes: [hex],
@@ -1679,8 +1684,8 @@ module Engine
           # Then reduce down to limit
           # TODO: Possibly override ReduceTokens?
           tokens_to_keep = [home_bases.size, national_token_limit].max
-          if national.tokens.size > tokens_to_keep
-            @log << "#{national.name} is above token limit and must decide which tokens to remove"
+          if (national.tokens.size - @round.duplicate_tokens.size) > tokens_to_keep
+            @log << "-- #{national.name} is above token limit and must decide which tokens to remove --"
             # This will be resolved in RemoveTokens
             @round.pending_removals << {
               corp: national,
@@ -1688,8 +1693,9 @@ module Engine
               hexes: national.tokens.map(&:hex).reject { |hex| home_bases.any? { |base| base.hex == hex } },
             }
           end
-          remaining_tokens = [tokens_to_keep - national.tokens.size, 0].max
-          @log << "#{national.name} has #{remaining_tokens} spare #{format_currency(national_token_price)} tokens"
+          remaining_tokens = [tokens_to_keep - national.tokens.size + @round.duplicate_tokens.size, 0].max
+          tokens = remaining_tokens == 1 ? 'token' : 'tokens'
+          @log << "#{national.name} has #{remaining_tokens} spare #{format_currency(national_token_price)} #{tokens}"
           remaining_tokens.times { national.tokens << Engine::Token.new(@national, price: national_token_price) }
         end
 
