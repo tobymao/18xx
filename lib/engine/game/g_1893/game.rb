@@ -552,6 +552,13 @@ module Engine
             simple_logo: '1893/AdSK.alt',
             color: :gray,
             text_color: 'white',
+            abilities: [
+              {
+                type: 'base',
+                description: 'Bonds - Pays 10M per 10% each OR',
+                desc_detail: "Are bonds, with a fixed value, and fixed payout. At the start of each OR each 10% payout 10M to the owner. AdSK does not have a treasury, and never buys trains.",
+              },
+            ],
             reservation_color: nil,
           },
           {
@@ -572,6 +579,7 @@ module Engine
               {
                 type: 'no_buy',
                 description: 'Unavailable in SR before phase 4',
+                desc_detail: 'During phase 4 it is possible to buy its shares from the market for 120M. During each MR in phase 4 the share holders and owners of minor 1 (20%), 3 (10%) and 5 (20%), will vote if AGV should form. If 50% vote yes, AGV will float, otherwise voting is repeated each MR until Phase 5 when AGV float automatically during the first MR.',
               },
             ],
             reservation_color: nil,
@@ -593,6 +601,7 @@ module Engine
               {
                 type: 'no_buy',
                 description: 'Unavailable in SR before phase 5',
+                desc_detail: 'During phase 5 it is possible to buy its shares from the market for 120M. During each MR in phase 4 the share holders and owners of minor 2 (20%), 4 (20%) and HdSK (10%), will vote if HGK should form. If 50% vote yes, HGK will float, otherwise voting is repeated each MR until Phase 6 when HGK float automatically during the first MR.',
               },
             ],
             coordinates: 'J5',
