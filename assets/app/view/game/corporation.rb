@@ -551,14 +551,20 @@ module View
 
       def render_loans
         interest_props = { style: {} }
+        loan_props = { style: {} }
         unless @game.can_pay_interest?(@corporation)
           color = StockMarket::COLOR_MAP[:yellow]
           interest_props[:style][:backgroundColor] = color
           interest_props[:style][:color] = contrast_on(color)
         end
+        if @corporation.loans.size > @game.maximum_loans(@corporation)
+          color = StockMarket::COLOR_MAP[:red]
+          loan_props[:style][:backgroundColor] = color
+          loan_props[:style][:color] = contrast_on(color)
+        end
 
         [
-          h('tr.ipo', [
+          h('tr.ipo', loan_props, [
             h('td.right', 'Loans'),
             h('td.padded_number', "#{@corporation.loans.size}/"\
             "#{@game.maximum_loans(@corporation)}"),
