@@ -1033,7 +1033,7 @@ module Engine
         end
 
         def destination_connected?(corp)
-          (!corp.capitalization || corp.capitalization == :escrow) && hexes_connected?(*@destinations[corp.id])
+          (corp.capitalization || corp.capitalization_type) == :escrow && hexes_connected?(*@destinations[corp.id])
         end
 
         def hexes_connected?(start_hex_id, goal_hex_ids)
