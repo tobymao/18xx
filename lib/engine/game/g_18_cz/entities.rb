@@ -1934,6 +1934,7 @@ module Engine
               text_color: 'black',
               type: 'small',
               reservation_color: nil,
+              fraction_shares: false,
             },
             {
               float_percent: 50,
@@ -1950,6 +1951,7 @@ module Engine
               text_color: 'black',
               type: 'small',
               reservation_color: nil,
+              fraction_shares: false,
             },
             {
               float_percent: 50,
@@ -1966,6 +1968,7 @@ module Engine
               text_color: 'black',
               type: 'small',
               reservation_color: nil,
+              fraction_shares: false,
             },
             {
               float_percent: 50,
@@ -1982,6 +1985,7 @@ module Engine
               text_color: 'black',
               type: 'small',
               reservation_color: nil,
+              fraction_shares: false,
             },
             {
               float_percent: 50,
@@ -1997,6 +2001,7 @@ module Engine
               color: :"#009846",
               type: 'small',
               reservation_color: nil,
+              fraction_shares: false,
             },
           ].freeze
       end

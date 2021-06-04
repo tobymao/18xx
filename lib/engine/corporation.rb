@@ -43,7 +43,14 @@ module Engine
       corp_shares.each { |share| @ipo_owner.shares_by_corporation[self] << share }
       share_holders[@ipo_owner] = corp_shares.sum(&:percent)
 
-      @fraction_shares = corp_shares.find { |s| (s.percent % 10).positive? }
+      @fraction_shares = if opts.key?(:fraction_shares)
+                           opts[:fraction_shares]
+                         else
+                           corp_shares.find do |s|
+                             (s.percent % 10).positive?
+                           end
+                         end
+
       @presidents_share = corp_shares.first
       @second_share = corp_shares[1]
 
