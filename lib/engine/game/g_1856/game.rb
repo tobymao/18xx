@@ -1064,6 +1064,7 @@ module Engine
         def remove_dest_icons(corp)
           return unless @destinations[corp.id]
 
+          corp.all_abilities.each { |a| corp.remove_ability(a) if a.type == 'destination' }
           @destinations[corp.id].each do |dest|
             Array(dest).each { |id| hex_by_id(id).tile.icons.reject! { |i| i.name == corp.id } }
           end
