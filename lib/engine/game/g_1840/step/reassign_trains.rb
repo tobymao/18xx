@@ -43,6 +43,12 @@ module Engine
               reassignments << "#{train.name} ➝ #{new_corporation.name}"
             end
 
+            invalid_tram_corp = @game.tram_owned_by_corporation[entity].find { |item| item.trains.size > 1 }
+            if invalid_tram_corp
+              raise GameError,
+                    "#{invalid_tram_corp.full_name} cannot be assigned more than one train"
+            end
+
             @log << "#{entity.owner.name} reassignes trains: #{reassignments.join(', ')}" unless reassignments.empty?
           end
 
