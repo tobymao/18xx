@@ -28,6 +28,12 @@ module Engine
 
             return if old_tile.preprinted
 
+            if %w[M MM].include?(old_tile.hex.location_name)
+              old_tile.label = nil
+              old_tile.icons = []
+              old_tile.location_name = old_tile.hex.location_name
+            end
+
             @game.tiles << old_tile
 
             additional_tile = @game.tile_by_id(old_tile.id.start_with?('X') ? old_tile.id[1..-1] : 'X' + old_tile.id)
