@@ -38,35 +38,62 @@ module Engine
             lay_tile_action(action, spender: spender)
             pass! if !can_lay_tile?(entity) && @tokened
 
-            if @game.orange_framed?(tile)
+            if @game.orange_framed?(tile) && tile.color == :yellow
               @orange_placed = true
-              if tile.color == :yellow
-                type = read_type_from_icon(action.hex)
+              type = read_type_from_icon(action.hex)
 
-                if type == :token
-                  @round.pending_special_tokens << {
-                    entity: entity,
-                    token: entity.find_token_by_type,
-                  }
-                else
-                  @round.pending_tile_lays << {
-                    entity: entity,
-                    color: type,
-                  }
-                end
-
+              if type == :token
+                @round.pending_special_tokens << {
+                  entity: entity,
+                  token: entity.find_token_by_type,
+                }
+              else
+                @round.pending_tile_lays << {
+                  entity: entity,
+                  color: type,
+                }
               end
+
+              entry = @game.class::CITY_TRACKS.find do |_k, v|
+                v.include?(tile.hex.coordinates)
+              end
+              entry[1].delete(tile.hex.coordinates) if entry
+            else
+              @normal_placed = true
             end
-            @normal_placed = true unless @game.orange_framed?(tile)
             @game.city_graph.clear
           end
 
           def available_hex(entity, hex)
             return @game.graph.reachable_hexes(entity)[hex] unless can_lay_tile?(entity, hex)
-            return !@orange_placed if @game.orange_framed?(hex.tile)
+
+            return orange_tile_available?(hex) if @game.orange_framed?(hex.tile) && hex.tile == hex.original_tile
+
             return @game.graph.connected_nodes(entity)[hex] if @normal_placed
 
             super
+          end
+
+          def orange_tile_available?(hex)
+            return false if @orange_placed
+
+            entry = @game.class::CITY_TRACKS.find do |_k, v|
+              v.include?(hex.coordinates)
+            end
+
+            # Already placed, and could be upgraded
+            return false unless entry
+
+            hexes = entry[1]
+            index = hexes.index(hex.coordinates)
+
+            # Only possible to go further if "Westbahnhof" is layed
+            if hex.coordinates == 'F12' && (index == hexes.size - 1)
+              station = @game.hex_by_id('G11')
+              return station.tile != station.original_tile
+            end
+
+            index.zero? || (index == hexes.size - 1)
           end
 
           def setup
@@ -113,7 +140,9 @@ module Engine
           end
 
           def hex_neighbors(_entity, hex)
-            return @game.hex_by_id(hex.id).neighbors.keys if @game.orange_framed?(hex.tile)
+            if @game.orange_framed?(hex.tile) && hex.tile == hex.original_tile
+              return @game.hex_by_id(hex.id).neighbors.keys
+            end
 
             super
           end

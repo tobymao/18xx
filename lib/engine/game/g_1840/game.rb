@@ -166,6 +166,13 @@ module Engine
           'I3' => [1, 4],
         }.freeze
 
+        CITY_TRACKS = {
+          'D' => %w[B20 C21 D22 E23],
+          'G' => %w[B16 B14 C13 D12 E13 F12 H12],
+          'V' => %w[B10 C9 D6 E7 F6 G5],
+          'W' => %w[G23 G21 G19 G17 H16 I15 I13 I9 I7 I5 I3],
+        }.freeze
+
         CITY_HOME_HEXES = {
           'G' => %w[A17 I11],
           'V' => %w[A17 G3],
@@ -786,6 +793,16 @@ module Engine
                   "The player value is decreased by #{format_currency(loan_amount * 2)}."
 
           @bank.spend(loan_amount, player)
+        end
+
+        def remove_open_tram_corporations
+          @log << '-- All major corporations owns 3 line corporations --'
+          @all_tram_corporations.each do |corp|
+            unless owning_major_corporation(corp)
+              close_corporation(corp)
+              corp.close!
+            end
+          end
         end
       end
     end

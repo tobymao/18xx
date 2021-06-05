@@ -208,7 +208,13 @@ module Engine
                 entity: item,
               }
             end
-            @game.restock_tram_corporations
+
+            if @game.major_corporations.none? { |item| @game.corporate_card_minors(item).size < 3 }
+              @game.remove_open_tram_corporations
+            else
+              @game.restock_tram_corporations
+            end
+
             pass!
           end
         end
