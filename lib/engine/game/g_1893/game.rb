@@ -951,32 +951,32 @@ module Engine
 
         def hdsk_reserved_share
           # 10% certificate in HGK
-          { share: hgk.shares[1], private: hdsk, minor: nil }
+          { share: hgk.shares[1], private: hdsk }
         end
 
         def ekb_reserved_share
           # President's certificate in AGV
-          { share: agv.shares[0], private: nil, minor: ekb }
+          { share: agv.shares[0], minor: ekb }
         end
 
         def kfbe_reserved_share
           # 20% certificate in HGK
-          { share: hgk.shares[2], private: nil, minor: kfbe }
+          { share: hgk.shares[2], minor: kfbe }
         end
 
         def ksz_reserved_share
           # 10% certificate in AGV
-          { share: agv.shares[1], private: nil, minor: ksz }
+          { share: agv.shares[1], minor: ksz }
         end
 
         def kbe_reserved_share
           # President's certificate in HGK
-          { share: hgk.shares[0], private: nil, minor: kbe }
+          { share: hgk.shares[0], minor: kbe }
         end
 
         def bkb_reserved_share
           # 20% certificate in AGV
-          { share: agv.shares[2], private: nil, minor: bkb }
+          { share: agv.shares[2], minor: bkb }
         end
 
         def merged_corporation?(corporation)
@@ -1102,7 +1102,7 @@ module Engine
 
         def mergers(target)
           reserved_shares = target == agv ? mergers_agv : mergers_hgk
-          reserved_shares.map { |info| info['minor'] || info['private'] }
+          reserved_shares.map { |info| info[:minor] || info[:private] }
         end
 
         def event_hgk_buyable!
@@ -1146,9 +1146,8 @@ module Engine
           end
 
           exchange_info.each do |mergeinfo|
-            share = mergeinfo['share']
-            puts("Share: #{share} from #{mergeinfo}")
-            mergee = mergeinfo['minor'] || mergeinfo['private']
+            share = mergeinfo[:share]
+            mergee = mergeinfo[:minor] || mergeinfo[:private]
             player = mergee.owner
             if share.president
               extra_info = ' presidency'
@@ -1220,12 +1219,7 @@ module Engine
           end
 
           # Give president the chance to discard any trains
-          if !mergable.trains.empty?
-            puts("Mergable #{mergable.name} is added to potential_discard_trains")
-            @potential_discard_trains << mergable
-          else
-            puts("Mergable #{mergable.name} has no trains")
-          end
+          @potential_discard_trains << mergable unless mergable.trains.empty?
 
           mergable.ipoed = true
           @log << "#{mergable.name} have been completly founded and now floats"

@@ -36,10 +36,14 @@ module Engine
             @offering.first
           end
 
+          def next_merge_target
+            @offering.shift
+          end
+
           def handle_vote(choice)
             percent = @votes[current_entity]
             case choice
-            when :yes
+            when 'yes'
               @log << "#{current_entity.name} approves merge of #{names(merger_candidates_for(current_entity))}"
               @yes += percent
               @done = @yes >= 50
@@ -50,7 +54,9 @@ module Engine
               @log << "#{names(merger_candidates)} are merged into #{merge_target.name}"
 
               merge_target == @game.agv ? @game.found_agv : @game.found_hgk
-            when :no
+
+              next_merge_target
+            when 'no'
               @log << "#{current_entity.name} declines merge of #{names(merger_candidates_for(current_entity))}"
               @no += percent
               @done = @no > 50
@@ -58,8 +64,9 @@ module Engine
               return unless @done
 
               @log << "#{names(merger_candidates)} are not merged into #{merge_target.name} at this time"
+
+              next_merge_target
             end
-            @offering.delete(merge_target)
           end
 
           def current_entity
@@ -97,11 +104,11 @@ module Engine
           end
 
           def merger_candidates(mergable = nil)
-            @game.mergers(mergable || @game.round.merge_target)
+            @game.mergers(mergable || merge_target)
           end
 
           def merger_candidates_for(player)
-            merger_candidates.select { |c| c.owner == player }
+            merger_candidates.select { |c| c&.owner == player }
           end
 
           def names(merger_candidates)
