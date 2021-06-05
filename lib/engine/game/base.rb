@@ -1048,6 +1048,7 @@ module Engine
 
         check = lambda do |key|
           raise GameError, "Route cannot reuse track on #{key[0].id}" if tracks[key]
+
           tracks[key] = true
         end
 

@@ -28,13 +28,23 @@ module Engine
       @stops = nil
     end
 
-    def clear_cache!(all: false)
+    def clear_cache!(all: false, only_routes: false)
       @connection_hexes = nil if all
-      @hexes = nil
       @revenue = nil
       @revenue_str = nil
-      @subsidy = nil
+
+      return if !all && only_routes
+
+      @ordered_paths = nil
+      @distance_str = nil
+      @distance = nil
+      @hexes = nil
+      @paths = nil
       @stops = nil
+      @subsidy = nil
+      @visited_stops = nil
+      @check_connected = nil
+      @check_distance = nil
     end
 
     def reset!
@@ -197,7 +207,7 @@ module Engine
     end
 
     def paths
-      chains.flat_map { |ch| ch[:paths] }
+      @paths ||= chains.flat_map { |ch| ch[:paths] }
     end
 
     def paths_for(other_paths)
@@ -213,10 +223,8 @@ module Engine
     end
 
     def hexes
-      return @hexes if @hexes
-
       # find unique node hexes
-      connection_data
+      @hexes ||= connection_data
         .flat_map { |c| [c[:left], c[:right]] }
         .chunk(&:itself)
         .to_a # opal has a bug that needs this conversion from enum
@@ -253,7 +261,7 @@ module Engine
     end
 
     def ordered_paths
-      connection_data.flat_map do |c|
+      @ordered_paths ||= connection_data.flat_map do |c|
         cpaths = c[:chain][:paths]
         cpaths[0].nodes.include?(c[:left]) ? cpaths : cpaths.reverse
       end
@@ -266,7 +274,7 @@ module Engine
     end
 
     def distance_str
-      @game.route_distance_str(self)
+      @distance_str ||= @game.route_distance_str(self)
     end
 
     def distance

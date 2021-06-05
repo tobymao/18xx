@@ -175,6 +175,7 @@ class Api
               player_order: r['player_order'],
               unlisted: r['unlisted'],
               optional_rules: r['optional_rules'],
+              auto_routing: r['auto_routing'],
             },
             title: title,
             round: Engine.game_by_title(title).new([]).round&.name,

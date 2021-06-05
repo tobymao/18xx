@@ -9,7 +9,12 @@ module Engine
       @game = game
     end
 
-    def compute(corporation)
+    def compute(corporation, **opts)
+      static = opts[:routes] || []
+      path_timeout = opts[:path_timeout] || 10
+      route_timeout = opts[:route_timeout] || 10
+      route_limit = opts[:route_limit] || 60_000
+
       connections = {}
 
       nodes = @game.graph.connected_nodes(corporation).keys.sort_by do |node|
@@ -24,17 +29,21 @@ module Engine
         ]
       end
 
+      stops = static.flat_map(&:stops)
+      nodes -= stops
+      visited = stops.map { |node| [node, true] }.to_h
+
       now = Time.now
 
       nodes.each do |node|
-        if Time.now - now > 10
-          puts 'Giving up path search'
+        if Time.now - now > path_timeout
+          puts 'Path timeout reached'
           break
         else
           puts "Path search: #{nodes.index(node)} / #{nodes.size}"
         end
 
-        node.walk(corporation: corporation) do |_, vp|
+        node.walk(corporation: corporation, visited: visited.dup) do |_, vp|
           paths = vp.keys
 
           chains = []
@@ -48,11 +57,11 @@ module Engine
             chain = []
           end
 
-          assign = lambda do |node|
+          assign = lambda do |n|
             if !left
-              left = node
+              left = n
             elsif !right
-              right = node
+              right = n
               complete.call
             end
           end
@@ -67,11 +76,11 @@ module Engine
 
           next if chains.empty?
 
-          id = chains.flat_map { |chain| chain[:paths] }.sort!
+          id = chains.flat_map { |c| c[:paths] }.sort!
           next if connections[id]
 
-          connections[id] = chains.map do |chain|
-            { left: chain[:nodes][0], right: chain[:nodes][1], chain: chain }
+          connections[id] = chains.map do |c|
+            { left: c[:nodes][0], right: c[:nodes][1], chain: c }
           end
         end
       end
@@ -94,14 +103,16 @@ module Engine
           )
           route.revenue
           train_routes[train] << route
-        rescue GameError
+        rescue GameError # rubocop:disable Lint/SuppressedException
         end
       end
-      puts "Pruned paths to #{train_routes.map { |k, v| k.name + ':' + v.size.to_s}.join(', ')} in: #{Time.now - now}"
+      puts "Pruned paths to #{train_routes.map { |k, v| k.name + ':' + v.size.to_s }.join(', ')} in: #{Time.now - now}"
+
+      static.each { |route| train_routes[route.train] = [route] }
 
       limit = (1..train_routes.values.map(&:size).max).bsearch do |x|
-        (x ** train_routes.size) >= 10_000
-      end || 10_000
+        (x**train_routes.size) >= route_limit
+      end || route_limit
 
       train_routes.each do |train, routes|
         train_routes[train] = routes.sort_by(&:revenue).reverse.take(limit)
@@ -110,6 +121,7 @@ module Engine
       train_routes = train_routes.values.sort_by { |routes| -routes[0].paths.size }
 
       combos = [[]]
+      possibilities = []
 
       puts "Finding route combos with depth #{limit}"
       counter = 0
@@ -118,25 +130,31 @@ module Engine
       train_routes.each do |routes|
         combos = routes.flat_map do |route|
           combos.map do |combo|
-            combo = combo + [route]
+            combo += [route]
             route.routes = combo
-            route.clear_cache!
+            route.clear_cache!(only_routes: true)
             counter += 1
-            puts "#{counter} / #{limit ** train_routes.size}" if counter % 1000 == 0
+            if (counter % 1000).zero?
+              puts "#{counter} / #{limit**train_routes.size}"
+              raise if Time.now - now > route_timeout
+            end
             route.revenue
+            possibilities << combo
             combo
-          rescue GameError
+          rescue GameError # rubocop:disable Lint/SuppressedException
           end
         end
 
         combos.compact!
+      rescue RuntimeError
+        puts 'Route timeout reach'
+        break
       end
 
-      puts "Found #{combos.size} possible routes in: #{Time.now - now}"
+      puts "Found #{possibilities.size} possible routes in: #{Time.now - now}"
 
-
-      combos.max_by do |routes|
-        routes.each { |route| route.routes = routes}
+      possibilities.max_by do |routes|
+        routes.each { |route| route.routes = routes }
         @game.routes_revenue(routes)
       end || []
     end

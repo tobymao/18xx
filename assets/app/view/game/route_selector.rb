@@ -251,7 +251,11 @@ module View
 
         auto = lambda do
           router = Engine::AutoRouter.new(@game)
-          store(:routes, router.compute(@game.current_entity))
+          @routes = router.compute(
+            @game.current_entity,
+            routes: @routes.reject { |r| r.paths.empty? },
+          )
+          store(:routes, @routes)
         end
 
         submit_style = {
@@ -273,8 +277,8 @@ module View
             h('button.small', { on: { click: clear } }, 'Clear Train'),
             h('button.small', { on: { click: clear_all } }, 'Clear All'),
             h('button.small', { on: { click: reset_all } }, 'Reset'),
-            h('button.small', { on: { click: auto } }, 'Auto'),
-          ]),
+            @game_data.dig('settings', 'auto_routing') ? h('button.small', { on: { click: auto } }, 'Auto') : nil,
+          ].compact),
           h(:button, { style: submit_style, on: { click: submit } }, 'Submit ' + revenue + subsidy),
         ])
       end
