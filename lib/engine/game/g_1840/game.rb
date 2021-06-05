@@ -166,6 +166,13 @@ module Engine
           'I3' => [1, 4],
         }.freeze
 
+        CITY_TRACKS = {
+          'D' => %w[B20 C21 D22 E23],
+          'G' => %w[B16 B14 C13 D12 E13 F12 H12],
+          'V' => %w[B10 C9 D6 E7 F6 G5],
+          'W' => %w[G23 G21 G19 G17 H16 I15 I13 I9 I7 I5 I3],
+        }.freeze
+
         CITY_HOME_HEXES = {
           'G' => %w[A17 I11],
           'V' => %w[A17 G3],
@@ -667,19 +674,16 @@ module Engine
         end
 
         def revenue_for(route, stops)
-          if route.corporation.type == :city
+          # without city or with tokened city
+          base_revenue = stops.sum do |stop|
+            next 0 if !stop.tile.cities.empty? && stop.tile.cities.none? do |city|
+              city.tokens.any? { |token| token&.corporation == route.corporation }
+            end
 
-            # without city or with tokened city
-            return stops.sum do |stop|
-                     next 0 if !stop.tile.cities.empty? && stop.tile.cities.none? do |city|
-                       city.tokens.any? { |token| token&.corporation == route.corporation }
-                     end
-
-                     stop.route_revenue(route.phase, route.train)
-                   end
+            stop.route_revenue(route.phase, route.train)
           end
 
-          revenue = super
+          return base_revenue if route.corporation.type == :city
 
           valid_stops = stops.reject do |s|
             s.hex.tile.cities.empty? && s.hex.tile.towns.empty?
@@ -689,10 +693,10 @@ module Engine
           major_corp = owning_major_corporation(route.corporation)
           major_corp.companies.each do |company|
             abilities(company, :hex_bonus) do |ability|
-              revenue += hex_ids&.sum { |id| ability.hexes.include?(id) ? ability.amount : 0 }
+              base_revenue += hex_ids&.sum { |id| ability.hexes.include?(id) ? ability.amount : 0 }
             end
           end
-          revenue
+          base_revenue
         end
 
         def check_connected(route, token)
@@ -776,6 +780,28 @@ module Engine
             [hex_by_id('A17').tile.cities.first, hex_by_id('I11').tile.cities.first]
           when 'W'
             [hex_by_id('F24').tile.cities.first, hex_by_id('I1').tile.cities.first]
+          end
+        end
+
+        def take_loan(player, amount)
+          loan_count = (amount / 100.to_f).ceil
+          loan_amount = loan_count * 100
+
+          increase_debt(player, loan_amount)
+
+          @log << "#{player.name} takes a loan of #{format_currency(loan_amount)}. " \
+                  "The player value is decreased by #{format_currency(loan_amount * 2)}."
+
+          @bank.spend(loan_amount, player)
+        end
+
+        def remove_open_tram_corporations
+          @log << '-- All major corporations owns 3 line corporations --'
+          @all_tram_corporations.each do |corp|
+            unless owning_major_corporation(corp)
+              close_corporation(corp)
+              corp.close!
+            end
           end
         end
       end

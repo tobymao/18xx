@@ -71,6 +71,39 @@ module Engine
             @log << text
           end
 
+          def payout_corporation(amount, entity)
+            @game.bank.spend(amount, entity) if amount.positive?
+
+            return unless amount.negative?
+
+            to_pay = -amount
+            major = @game.owning_major_corporation(entity)
+
+            if major.cash < to_pay
+              difference = to_pay - major.cash
+
+              @game.take_loan(major.owner, difference - major.owner.cash) if major.owner.cash < difference
+              major.owner.spend(difference, major)
+              @log << "#{major.owner.name} subvents #{major.name} with #{@game.format_currency(difference)}"
+            end
+
+            major.spend(to_pay, @game.bank)
+          end
+
+          def log_run_payout(entity, kind, revenue, action, payout)
+            unless Dividend::DIVIDEND_TYPES.include?(kind)
+              @log << "#{entity.name} runs for #{@game.format_currency(revenue)} and pays #{action.kind}"
+            end
+
+            if payout[:corporation].positive?
+              @log << "#{entity.name} withholds #{@game.format_currency(payout[:corporation])}"
+            elsif payout[:corporation].negative?
+              @log << "#{entity.name} has to pay #{@game.format_currency(-payout[:corporation])}"
+            elsif payout[:per_share].zero?
+              @log << "#{entity.name} does not run"
+            end
+          end
+
           def corp_payout_shares(entity, amount, withhold_value)
             @game.bank.spend(withhold_value, entity, check_positive: false)
 

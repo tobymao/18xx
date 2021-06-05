@@ -44,7 +44,7 @@ module Engine
           end
 
           def available_hex(entity, hex)
-            return false if @game.orange_framed?(hex.tile)
+            return false if @game.orange_framed?(hex.tile) && hex.tile == hex.original_tile
 
             connected = @game.graph_for_entity(entity).connected_hexes(entity)[hex]
             return false unless connected
