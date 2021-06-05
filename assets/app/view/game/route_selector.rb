@@ -272,13 +272,16 @@ module View
 
         render_halts ||= @game.respond_to?(:routes_subsidy) && @game.routes_subsidy(active_routes).positive?
         subsidy = render_halts ? " + #{@game.format_currency(@game.routes_subsidy(active_routes))} (subsidy)" : ''
+        buttons = [
+          h('button.small', { on: { click: clear } }, 'Clear Train'),
+          h('button.small', { on: { click: clear_all } }, 'Clear All'),
+          h('button.small', { on: { click: reset_all } }, 'Reset'),
+        ]
+        if @game_data.dig('settings', 'auto_routing') || @game_data['mode'] == :hotseat
+          buttons << h('button.small', { on: { click: auto } }, 'Auto')
+        end
         h(:div, { style: { overflow: 'auto', marginBottom: '1rem' } }, [
-          h(:div, [
-            h('button.small', { on: { click: clear } }, 'Clear Train'),
-            h('button.small', { on: { click: clear_all } }, 'Clear All'),
-            h('button.small', { on: { click: reset_all } }, 'Reset'),
-            @game_data.dig('settings', 'auto_routing') ? h('button.small', { on: { click: auto } }, 'Auto') : nil,
-          ].compact),
+          h(:div, buttons),
           h(:button, { style: submit_style, on: { click: submit } }, 'Submit ' + revenue + subsidy),
         ])
       end

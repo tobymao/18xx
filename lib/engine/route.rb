@@ -83,7 +83,7 @@ module Engine
     end
 
     def select(node, other, keep = nil)
-      other_paths = @game.compute_other_paths(@routes, self)
+      other_paths = compute_other_paths
 
       connection_data.each do |c|
         next if c[:chain] == keep
@@ -396,6 +396,12 @@ module Engine
       matching
     end
 
+    def compute_other_paths
+      other_paths = @game.compute_other_paths(@routes, self)
+      @routes.each { |r| r.instance_variable_set('@paths', nil) }
+      other_paths
+    end
+
     def connection_data
       return @connection_data if @connection_data
 
@@ -417,7 +423,7 @@ module Engine
         find_matching_chains(hex_ids)
       end
 
-      other_paths = @game.compute_other_paths(@routes, self)
+      other_paths = compute_other_paths
 
       if possibilities.one?
         chain = possibilities[0].find do |ch|
