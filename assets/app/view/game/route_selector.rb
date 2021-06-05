@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'lib/settings'
+require 'engine/auto_router'
 require 'view/game/actionable'
 
 module View
@@ -248,6 +249,15 @@ module View
           store(:routes, @routes)
         end
 
+        auto = lambda do
+          router = Engine::AutoRouter.new(@game)
+          @routes = router.compute(
+            @game.current_entity,
+            routes: @routes.reject { |r| r.paths.empty? },
+          )
+          store(:routes, @routes)
+        end
+
         submit_style = {
           minWidth: '6.5rem',
           marginTop: '1rem',
@@ -262,12 +272,16 @@ module View
 
         render_halts ||= @game.respond_to?(:routes_subsidy) && @game.routes_subsidy(active_routes).positive?
         subsidy = render_halts ? " + #{@game.format_currency(@game.routes_subsidy(active_routes))} (subsidy)" : ''
+        buttons = [
+          h('button.small', { on: { click: clear } }, 'Clear Train'),
+          h('button.small', { on: { click: clear_all } }, 'Clear All'),
+          h('button.small', { on: { click: reset_all } }, 'Reset'),
+        ]
+        if @game_data.dig('settings', 'auto_routing') || @game_data['mode'] == :hotseat
+          buttons << h('button.small', { on: { click: auto } }, 'Auto')
+        end
         h(:div, { style: { overflow: 'auto', marginBottom: '1rem' } }, [
-          h(:div, [
-            h('button.small', { on: { click: clear } }, 'Clear Train'),
-            h('button.small', { on: { click: clear_all } }, 'Clear All'),
-            h('button.small', { on: { click: reset_all } }, 'Reset'),
-          ]),
+          h(:div, buttons),
           h(:button, { style: submit_style, on: { click: submit } }, 'Submit ' + revenue + subsidy),
         ])
       end

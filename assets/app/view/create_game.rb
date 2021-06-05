@@ -31,6 +31,7 @@ module View
         inputs << h(:label, { style: @label_style }, 'Game Options')
         inputs << render_input('Invite only game', id: 'unlisted', type: :checkbox,
                                                    container_style: { paddingLeft: '0.5rem' })
+        inputs << render_input('Auto Routing', id: 'auto_routing', type: :checkbox)
         inputs << render_game_info
       when :hotseat
         inputs << h(:label, { style: @label_style }, 'Player Names')

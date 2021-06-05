@@ -4,8 +4,8 @@ require_relative 'game_error'
 
 module Engine
   class Route
-    attr_accessor :halts
-    attr_reader :last_node, :phase, :train, :routes, :abilities
+    attr_accessor :halts, :routes
+    attr_reader :last_node, :phase, :train, :abilities
 
     def initialize(game, phase, train, **opts)
       @game = game
@@ -22,19 +22,29 @@ module Engine
       @abilities = opts[:abilities]
 
       @node_chains = {}
-      @connection_data = nil
+      @connection_data = opts[:connection_data]
       @last_node = nil
       @last_offboard = []
       @stops = nil
     end
 
-    def clear_cache!(all: false)
+    def clear_cache!(all: false, only_routes: false)
       @connection_hexes = nil if all
-      @hexes = nil
       @revenue = nil
       @revenue_str = nil
-      @subsidy = nil
+
+      return if !all && only_routes
+
+      @ordered_paths = nil
+      @distance_str = nil
+      @distance = nil
+      @hexes = nil
+      @paths = nil
       @stops = nil
+      @subsidy = nil
+      @visited_stops = nil
+      @check_connected = nil
+      @check_distance = nil
     end
 
     def reset!
@@ -73,7 +83,7 @@ module Engine
     end
 
     def select(node, other, keep = nil)
-      other_paths = @game.compute_other_paths(@routes, self)
+      other_paths = compute_other_paths
 
       connection_data.each do |c|
         next if c[:chain] == keep
@@ -197,7 +207,7 @@ module Engine
     end
 
     def paths
-      chains.flat_map { |ch| ch[:paths] }
+      @paths ||= chains.flat_map { |ch| ch[:paths] }
     end
 
     def paths_for(other_paths)
@@ -205,7 +215,7 @@ module Engine
     end
 
     def visited_stops
-      connection_data.flat_map { |c| [c[:left], c[:right]] }.uniq
+      @visited_stops ||= connection_data.flat_map { |c| [c[:left], c[:right]] }.uniq
     end
 
     def stops
@@ -213,10 +223,8 @@ module Engine
     end
 
     def hexes
-      return @hexes if @hexes
-
       # find unique node hexes
-      connection_data
+      @hexes ||= connection_data
         .flat_map { |c| [c[:left], c[:right]] }
         .chunk(&:itself)
         .to_a # opal has a bug that needs this conversion from enum
@@ -249,11 +257,11 @@ module Engine
     end
 
     def check_connected!(token)
-      @game.check_connected(self, token)
+      @check_connected ||= @game.check_connected(self, token) || true
     end
 
     def ordered_paths
-      connection_data.flat_map do |c|
+      @ordered_paths ||= connection_data.flat_map do |c|
         cpaths = c[:chain][:paths]
         cpaths[0].nodes.include?(c[:left]) ? cpaths : cpaths.reverse
       end
@@ -266,15 +274,15 @@ module Engine
     end
 
     def distance_str
-      @game.route_distance_str(self)
+      @distance_str ||= @game.route_distance_str(self)
     end
 
     def distance
-      @game.route_distance(self)
+      @distance ||= @game.route_distance(self)
     end
 
     def check_distance!(visits)
-      @game.check_distance(self, visits)
+      @check_distance ||= @game.check_distance(self, visits) || true
     end
 
     def check_other!
@@ -292,16 +300,16 @@ module Engine
             raise GameError, 'Route must contain token'
           end
 
-          check_distance!(visited)
-          check_cycles!
-          check_overlap!
-          check_terminals!
-          check_connected!(token)
-          check_other!
-
           visited.flat_map(&:groups).flatten.group_by(&:itself).each do |key, group|
             raise GameError, "Cannot use group #{key} more than once" unless group.one?
           end
+
+          check_terminals!
+          check_other!
+          check_cycles!
+          check_distance!(visited)
+          check_overlap!
+          check_connected!(token)
 
           @game.revenue_for(self, stops)
         end
@@ -388,6 +396,12 @@ module Engine
       matching
     end
 
+    def compute_other_paths
+      other_paths = @game.compute_other_paths(@routes, self)
+      @routes.each { |r| r.instance_variable_set('@paths', nil) }
+      other_paths
+    end
+
     def connection_data
       return @connection_data if @connection_data
 
@@ -409,7 +423,7 @@ module Engine
         find_matching_chains(hex_ids)
       end
 
-      other_paths = @game.compute_other_paths(@routes, self)
+      other_paths = compute_other_paths
 
       if possibilities.one?
         chain = possibilities[0].find do |ch|
