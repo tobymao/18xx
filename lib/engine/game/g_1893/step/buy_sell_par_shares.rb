@@ -126,7 +126,7 @@ module Engine
             rag = @par_rag.corporation
 
             @log << "#{player.name} exchanges #{@game.fdsd.name} to pay for par of #{rag.name}"
-            close_fdsd
+            @game.close_fdsd
             @game.bank.spend(@par_rag.share_price.price * 2, player)
 
             par_corporation(@par_rag)
@@ -179,10 +179,7 @@ module Engine
 
             # If FdSD owner passes in SR, and FdSD was to be closed
             # due to phase change, FdSD is forcibly closed
-            if @game.fdsd_to_close && @game.fdsd.player == @current_entity
-              close_fdsd
-              @game.fdsd_to_close = false
-            end
+            @game.close_fdsd if @game.fdsd_to_close && @game.fdsd.player == @current_entity
 
             super
           end
@@ -190,7 +187,6 @@ module Engine
           def process_buy_shares(action)
             entity = action.entity
             return exchange_for_rag(action, entity) if entity.company?
-
             # In case president's share is reserved, do not change presidency
             corporation = action.bundle.corporation
             allow_president_change = corporation.presidents_share.buyable
@@ -198,6 +194,10 @@ module Engine
             track_action(action, corporation)
             @round.last_to_act = action.entity
             @round.current_actions << action
+
+            # If FdSD owner buys something in SR, and FdSD was to be closed
+            # due to phase change, FdSD is forcibly closed
+            @game.close_fdsd if @game.fdsd_to_close && @game.fdsd.player == entity
           end
 
           def exchange_for_rag(action, entity)
@@ -217,7 +217,7 @@ module Engine
             share_str = bundle.num_shares == 1 ? ' the last 10% share ' : ' two 10% shares '
             share_str += "of #{corporation.name}"
             @log << "#{player.name} exchanges #{@game.fdsd.name} for #{share_str} from market"
-            close_fdsd
+            @game.close_fdsd
 
             @game.share_pool.buy_shares(player,
                                         bundle,
@@ -276,12 +276,6 @@ module Engine
             else
               @game.sorted_corporations.reject(&:closed?)
             end
-          end
-
-          def close_fdsd
-            fdsd = @game.fdsd
-            fdsd.close!
-            @log << "#{fdsd.name} closed"
           end
         end
       end

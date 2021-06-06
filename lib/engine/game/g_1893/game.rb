@@ -1184,7 +1184,7 @@ module Engine
               @log << "#{mergable.name} receives the trains from #{mergee.name}: #{transferred.map(&:name).join(', ')}"
             end
 
-            # Transfer tokens (Note! HGK first token is )
+            # Transfer tokens (Note! HGK first token is assigned from the start)
             minor_token = mergee.tokens.first
             city = minor_token.city
             city.remove_reservation!(mergee)
@@ -1244,6 +1244,12 @@ module Engine
 
           @log << "#{fdsd.name} will close during the next SR, after #{fdsd.player.name}'s first turn"
           @fdsd_to_close = true
+        end
+
+        def close_fdsd
+          fdsd.close!
+          @log << "#{fdsd.name} closed"
+          @fdsd_to_close = false
         end
 
         def event_eva_closed!
