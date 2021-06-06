@@ -52,6 +52,7 @@ module Engine
         on: nil,
         corporation: nil,
         visited_paths: {},
+        skip_paths: nil,
         counter: Hash.new(0),
         skip_track: nil,
         tile_type: :normal,
@@ -65,7 +66,13 @@ module Engine
           next if node_path.track == skip_track
           next if node_path.ignore?
 
-          node_path.walk(visited: visited_paths, counter: counter, on: on, tile_type: tile_type) do |path, vp, ct|
+          node_path.walk(
+            visited: visited_paths,
+            skip_paths: skip_paths,
+            counter: counter,
+            on: on,
+            tile_type: tile_type,
+          ) do |path, vp, ct|
             ret = yield path, vp, visited
             next if ret == :abort
             next if path.terminal?
@@ -81,6 +88,7 @@ module Engine
                 corporation: corporation,
                 visited_paths: vp,
                 skip_track: skip_track,
+                skip_paths: skip_paths,
                 tile_type: tile_type,
                 &block
               )

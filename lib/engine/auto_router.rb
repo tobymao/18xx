@@ -11,9 +11,9 @@ module Engine
 
     def compute(corporation, **opts)
       static = opts[:routes] || []
-      path_timeout = opts[:path_timeout] || 10
+      path_timeout = opts[:path_timeout] || 20
       route_timeout = opts[:route_timeout] || 10
-      route_limit = opts[:route_limit] || 60_000
+      route_limit = opts[:route_limit] || 100_000
 
       connections = {}
 
@@ -29,11 +29,9 @@ module Engine
         ]
       end
 
-      stops = static.flat_map(&:stops)
-      nodes -= stops
-      visited = stops.map { |node| [node, true] }.to_h
-
       now = Time.now
+
+      skip_paths = static.flat_map(&:paths).map { |path| [path, true] }.to_h
 
       nodes.each do |node|
         if Time.now - now > path_timeout
@@ -43,7 +41,7 @@ module Engine
           puts "Path search: #{nodes.index(node)} / #{nodes.size}"
         end
 
-        node.walk(corporation: corporation, visited: visited.dup) do |_, vp|
+        node.walk(corporation: corporation, skip_paths: skip_paths) do |_, vp|
           paths = vp.keys
 
           chains = []
@@ -86,14 +84,11 @@ module Engine
       end
 
       puts "Found #{connections.size} paths in: #{Time.now - now}"
-
-      connections = connections.values
-
-      train_routes = Hash.new { |h, k| h[k] = [] }
-
       puts 'Pruning paths to legal routes'
+
       now = Time.now
-      connections.each do |connection|
+      train_routes = Hash.new { |h, k| h[k] = [] }
+      connections.each do |_, connection|
         corporation.trains.each do |train|
           route = Engine::Route.new(
             @game,

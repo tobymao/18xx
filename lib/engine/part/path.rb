@@ -111,8 +111,17 @@ module Engine
       # counter: a hash tracking edges and junctions to avoid reuse
       # on: A set of Paths mapping to 1 or 0. When `on` is set. Usage is currently limited to `select` in path & node
       # tile_type: if :lawson don't undo visited paths
-      def walk(skip: nil, jskip: nil, visited: {}, counter: Hash.new(0), on: nil, tile_type: :normal, &block)
-        return if visited[self]
+      def walk(
+        skip: nil,
+        jskip: nil,
+        visited: {},
+        skip_paths: nil,
+        counter: Hash.new(0),
+        on: nil,
+        tile_type: :normal,
+        &block
+      )
+        return if visited[self] || skip_paths&.key?(self)
         return if @junction && counter[@junction] > 1
         return if edges.sum { |edge| counter[edge.id] }.positive?
 
