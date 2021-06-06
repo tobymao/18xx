@@ -1,0 +1,2020 @@
+{
+    "status": "finished",
+    "actions": [
+      {
+        "type": "bid",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 1,
+        "created_at": 1623021625,
+        "company": "ACC",
+        "price": 20
+      },
+      {
+        "type": "bid",
+        "entity": "Player 2",
+        "entity_type": "player",
+        "id": 2,
+        "created_at": 1623021626,
+        "company": "E-SF",
+        "price": 40
+      },
+      {
+        "type": "bid",
+        "entity": "Player 3",
+        "entity_type": "player",
+        "id": 3,
+        "created_at": 1623021627,
+        "company": "CdH",
+        "price": 50
+      },
+      {
+        "type": "bid",
+        "entity": "Player 4",
+        "entity_type": "player",
+        "id": 4,
+        "created_at": 1623021628,
+        "company": "RdP",
+        "price": 70
+      },
+      {
+        "type": "par",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 5,
+        "created_at": 1623021637,
+        "corporation": "B",
+        "share_price": "65,5,4"
+      },
+      {
+        "type": "buy_shares",
+        "entity": "Player 2",
+        "entity_type": "player",
+        "id": 6,
+        "created_at": 1623021648,
+        "shares": [
+          "B_1"
+        ],
+        "percent": 10
+      },
+      {
+        "type": "buy_shares",
+        "entity": "Player 3",
+        "entity_type": "player",
+        "id": 7,
+        "created_at": 1623021650,
+        "shares": [
+          "B_2"
+        ],
+        "percent": 10
+      },
+      {
+        "type": "buy_shares",
+        "entity": "Player 4",
+        "entity_type": "player",
+        "id": 8,
+        "created_at": 1623021651,
+        "shares": [
+          "B_3"
+        ],
+        "percent": 10
+      },
+      {
+        "type": "buy_shares",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 9,
+        "created_at": 1623021652,
+        "shares": [
+          "B_4"
+        ],
+        "percent": 10
+      },
+      {
+        "type": "buy_shares",
+        "entity": "Player 2",
+        "entity_type": "player",
+        "id": 10,
+        "created_at": 1623021653,
+        "shares": [
+          "B_5"
+        ],
+        "percent": 10
+      },
+      {
+        "type": "buy_shares",
+        "entity": "Player 3",
+        "entity_type": "player",
+        "id": 11,
+        "created_at": 1623021654,
+        "shares": [
+          "B_6"
+        ],
+        "percent": 10
+      },
+      {
+        "type": "buy_shares",
+        "entity": "Player 4",
+        "entity_type": "player",
+        "id": 12,
+        "created_at": 1623021655,
+        "shares": [
+          "B_7"
+        ],
+        "percent": 10
+      },
+      {
+        "type": "take_loan",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 13,
+        "created_at": 1623021662,
+        "loan": 0
+      },
+      {
+        "type": "pass",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 14,
+        "created_at": 1623021664,
+        "auto_actions": [
+          {
+            "type": "destination_connection",
+            "entity": "B",
+            "entity_type": "corporation",
+            "created_at": 1623021664,
+            "corporations": []
+          }
+        ]
+      },
+      {
+        "type": "buy_train",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 15,
+        "created_at": 1623021666,
+        "train": "2-0",
+        "price": 100,
+        "variant": "2"
+      },
+      {
+        "type": "pass",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 16,
+        "created_at": 1623021668
+      },
+      {
+        "type": "pass",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 17,
+        "created_at": 1623021670
+      },
+      {
+        "type": "pass",
+        "entity": "Player 2",
+        "entity_type": "player",
+        "id": 18,
+        "created_at": 1623021671
+      },
+      {
+        "type": "pass",
+        "entity": "Player 3",
+        "entity_type": "player",
+        "id": 19,
+        "created_at": 1623021671
+      },
+      {
+        "type": "pass",
+        "entity": "Player 4",
+        "entity_type": "player",
+        "id": 20,
+        "created_at": 1623021672
+      },
+      {
+        "type": "take_loan",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 21,
+        "created_at": 1623021673,
+        "loan": 1
+      },
+      {
+        "type": "pass",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 22,
+        "created_at": 1623021674,
+        "auto_actions": [
+          {
+            "type": "destination_connection",
+            "entity": "B",
+            "entity_type": "corporation",
+            "created_at": 1623021674,
+            "corporations": []
+          }
+        ]
+      },
+      {
+        "type": "pass",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 23,
+        "created_at": 1623021676
+      },
+      {
+        "type": "pass",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 24,
+        "created_at": 1623021677
+      },
+      {
+        "type": "pass",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 25,
+        "created_at": 1623021678
+      },
+      {
+        "type": "pass",
+        "entity": "Player 2",
+        "entity_type": "player",
+        "id": 26,
+        "created_at": 1623021680
+      },
+      {
+        "type": "pass",
+        "entity": "Player 3",
+        "entity_type": "player",
+        "id": 27,
+        "created_at": 1623021680
+      },
+      {
+        "type": "pass",
+        "entity": "Player 4",
+        "entity_type": "player",
+        "id": 28,
+        "created_at": 1623021681
+      },
+      {
+        "type": "take_loan",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 29,
+        "created_at": 1623021682,
+        "loan": 2
+      },
+      {
+        "type": "pass",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 30,
+        "created_at": 1623021683,
+        "auto_actions": [
+          {
+            "type": "destination_connection",
+            "entity": "B",
+            "entity_type": "corporation",
+            "created_at": 1623021683,
+            "corporations": []
+          }
+        ]
+      },
+      {
+        "type": "buy_train",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 31,
+        "created_at": 1623021684,
+        "train": "2-1",
+        "price": 100,
+        "variant": "2"
+      },
+      {
+        "type": "pass",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 32,
+        "created_at": 1623021686
+      },
+      {
+        "type": "pass",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 33,
+        "created_at": 1623021687
+      },
+      {
+        "type": "pass",
+        "entity": "Player 2",
+        "entity_type": "player",
+        "id": 34,
+        "created_at": 1623021688
+      },
+      {
+        "type": "pass",
+        "entity": "Player 3",
+        "entity_type": "player",
+        "id": 35,
+        "created_at": 1623021689
+      },
+      {
+        "type": "pass",
+        "entity": "Player 4",
+        "entity_type": "player",
+        "id": 36,
+        "created_at": 1623021689
+      },
+      {
+        "type": "take_loan",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 37,
+        "created_at": 1623021691,
+        "loan": 3
+      },
+      {
+        "type": "pass",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 38,
+        "created_at": 1623021692,
+        "auto_actions": [
+          {
+            "type": "destination_connection",
+            "entity": "B",
+            "entity_type": "corporation",
+            "created_at": 1623021692,
+            "corporations": []
+          }
+        ]
+      },
+      {
+        "type": "pass",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 39,
+        "created_at": 1623021693
+      },
+      {
+        "type": "pass",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 40,
+        "created_at": 1623021693
+      },
+      {
+        "type": "pass",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 41,
+        "created_at": 1623021694
+      },
+      {
+        "type": "pass",
+        "entity": "Player 2",
+        "entity_type": "player",
+        "id": 42,
+        "created_at": 1623021695
+      },
+      {
+        "type": "pass",
+        "entity": "Player 3",
+        "entity_type": "player",
+        "id": 43,
+        "created_at": 1623021695
+      },
+      {
+        "type": "pass",
+        "entity": "Player 4",
+        "entity_type": "player",
+        "id": 44,
+        "created_at": 1623021696
+      },
+      {
+        "type": "take_loan",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 45,
+        "created_at": 1623021697,
+        "loan": 4
+      },
+      {
+        "type": "pass",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 46,
+        "created_at": 1623021698,
+        "auto_actions": [
+          {
+            "type": "destination_connection",
+            "entity": "B",
+            "entity_type": "corporation",
+            "created_at": 1623021698,
+            "corporations": []
+          }
+        ]
+      },
+      {
+        "type": "pass",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 47,
+        "created_at": 1623021699
+      },
+      {
+        "type": "pass",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 48,
+        "created_at": 1623021701
+      },
+      {
+        "type": "pass",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 49,
+        "created_at": 1623021703
+      },
+      {
+        "type": "pass",
+        "entity": "Player 2",
+        "entity_type": "player",
+        "id": 50,
+        "created_at": 1623021705
+      },
+      {
+        "type": "pass",
+        "entity": "Player 3",
+        "entity_type": "player",
+        "id": 51,
+        "created_at": 1623021706
+      },
+      {
+        "type": "pass",
+        "entity": "Player 4",
+        "entity_type": "player",
+        "id": 52,
+        "created_at": 1623021706
+      },
+      {
+        "type": "lay_tile",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 53,
+        "created_at": 1623021712,
+        "auto_actions": [
+          {
+            "type": "destination_connection",
+            "entity": "B",
+            "entity_type": "corporation",
+            "created_at": 1623021712,
+            "corporations": []
+          }
+        ],
+        "hex": "H4",
+        "tile": "57-0",
+        "rotation": 1
+      },
+      {
+        "type": "pass",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 54,
+        "created_at": 1623021719
+      },
+      {
+        "type": "run_routes",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 55,
+        "created_at": 1623021729,
+        "routes": []
+      },
+      {
+        "type": "pass",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 56,
+        "created_at": 1623021732
+      },
+      {
+        "type": "take_loan",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 57,
+        "created_at": 1623021734,
+        "loan": 5
+      },
+      {
+        "type": "pass",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 58,
+        "created_at": 1623021734
+      },
+      {
+        "type": "pass",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 59,
+        "created_at": 1623021741
+      },
+      {
+        "type": "buy_shares",
+        "entity": "Player 2",
+        "entity_type": "player",
+        "id": 60,
+        "created_at": 1623021744,
+        "shares": [
+          "B_8"
+        ],
+        "percent": 10
+      },
+      {
+        "type": "pass",
+        "entity": "Player 2",
+        "entity_type": "player",
+        "id": 61,
+        "created_at": 1623021746
+      },
+      {
+        "type": "pass",
+        "entity": "Player 3",
+        "entity_type": "player",
+        "id": 62,
+        "created_at": 1623021746
+      },
+      {
+        "type": "pass",
+        "entity": "Player 4",
+        "entity_type": "player",
+        "id": 63,
+        "created_at": 1623021747
+      },
+      {
+        "type": "pass",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 64,
+        "created_at": 1623021756
+      },
+      {
+        "type": "pass",
+        "entity": "Player 2",
+        "entity_type": "player",
+        "id": 65,
+        "created_at": 1623021767
+      },
+      {
+        "type": "take_loan",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 66,
+        "created_at": 1623021769,
+        "loan": 6
+      },
+      {
+        "type": "pass",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 67,
+        "created_at": 1623021771,
+        "auto_actions": [
+          {
+            "type": "destination_connection",
+            "entity": "B",
+            "entity_type": "corporation",
+            "created_at": 1623021771,
+            "corporations": []
+          }
+        ]
+      },
+      {
+        "type": "pass",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 68,
+        "created_at": 1623021772
+      },
+      {
+        "type": "run_routes",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 69,
+        "created_at": 1623021774,
+        "routes": []
+      },
+      {
+        "type": "pass",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 70,
+        "created_at": 1623021776
+      },
+      {
+        "type": "pass",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 71,
+        "created_at": 1623021777
+      },
+      {
+        "type": "pass",
+        "entity": "Player 3",
+        "entity_type": "player",
+        "id": 72,
+        "created_at": 1623021778
+      },
+      {
+        "type": "pass",
+        "entity": "Player 4",
+        "entity_type": "player",
+        "id": 73,
+        "created_at": 1623021779
+      },
+      {
+        "type": "pass",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 74,
+        "created_at": 1623021779
+      },
+      {
+        "type": "pass",
+        "entity": "Player 2",
+        "entity_type": "player",
+        "id": 75,
+        "created_at": 1623021780
+      },
+      {
+        "type": "take_loan",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 76,
+        "created_at": 1623021781,
+        "loan": 7
+      },
+      {
+        "type": "pass",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 77,
+        "created_at": 1623021782,
+        "auto_actions": [
+          {
+            "type": "destination_connection",
+            "entity": "B",
+            "entity_type": "corporation",
+            "created_at": 1623021782,
+            "corporations": []
+          }
+        ]
+      },
+      {
+        "type": "pass",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 78,
+        "created_at": 1623021783
+      },
+      {
+        "type": "run_routes",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 79,
+        "created_at": 1623021784,
+        "routes": []
+      },
+      {
+        "type": "pass",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 80,
+        "created_at": 1623021785
+      },
+      {
+        "type": "pass",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 81,
+        "created_at": 1623021785
+      },
+      {
+        "type": "pass",
+        "entity": "Player 3",
+        "entity_type": "player",
+        "id": 82,
+        "created_at": 1623021786
+      },
+      {
+        "type": "pass",
+        "entity": "Player 4",
+        "entity_type": "player",
+        "id": 83,
+        "created_at": 1623021787
+      },
+      {
+        "type": "pass",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 84,
+        "created_at": 1623021787
+      },
+      {
+        "type": "pass",
+        "entity": "Player 2",
+        "entity_type": "player",
+        "id": 85,
+        "created_at": 1623021788
+      },
+      {
+        "type": "take_loan",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 86,
+        "created_at": 1623021789,
+        "loan": 8
+      },
+      {
+        "type": "pass",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 87,
+        "created_at": 1623021790,
+        "auto_actions": [
+          {
+            "type": "destination_connection",
+            "entity": "B",
+            "entity_type": "corporation",
+            "created_at": 1623021790,
+            "corporations": []
+          }
+        ]
+      },
+      {
+        "type": "pass",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 88,
+        "created_at": 1623021791
+      },
+      {
+        "type": "run_routes",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 89,
+        "created_at": 1623021792,
+        "routes": []
+      },
+      {
+        "type": "pass",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 90,
+        "created_at": 1623021793
+      },
+      {
+        "type": "pass",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 91,
+        "created_at": 1623021793
+      },
+      {
+        "type": "pass",
+        "entity": "Player 3",
+        "entity_type": "player",
+        "id": 92,
+        "created_at": 1623021794
+      },
+      {
+        "type": "pass",
+        "entity": "Player 4",
+        "entity_type": "player",
+        "id": 93,
+        "created_at": 1623021794
+      },
+      {
+        "type": "pass",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 94,
+        "created_at": 1623021795
+      },
+      {
+        "type": "pass",
+        "entity": "Player 2",
+        "entity_type": "player",
+        "id": 95,
+        "created_at": 1623021795
+      },
+      {
+        "type": "take_loan",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 96,
+        "created_at": 1623021796,
+        "loan": 9
+      },
+      {
+        "type": "pass",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 97,
+        "created_at": 1623021797,
+        "auto_actions": [
+          {
+            "type": "destination_connection",
+            "entity": "B",
+            "entity_type": "corporation",
+            "created_at": 1623021797,
+            "corporations": []
+          }
+        ]
+      },
+      {
+        "type": "pass",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 98,
+        "created_at": 1623021798
+      },
+      {
+        "type": "run_routes",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 99,
+        "created_at": 1623021799,
+        "routes": []
+      },
+      {
+        "type": "pass",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 100,
+        "created_at": 1623021800
+      },
+      {
+        "type": "pass",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 101,
+        "created_at": 1623021801
+      },
+      {
+        "type": "pass",
+        "entity": "Player 3",
+        "entity_type": "player",
+        "id": 102,
+        "created_at": 1623021803
+      },
+      {
+        "type": "pass",
+        "entity": "Player 4",
+        "entity_type": "player",
+        "id": 103,
+        "created_at": 1623021803
+      },
+      {
+        "type": "pass",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 104,
+        "created_at": 1623021803
+      },
+      {
+        "type": "pass",
+        "entity": "Player 2",
+        "entity_type": "player",
+        "id": 105,
+        "created_at": 1623021804
+      },
+      {
+        "type": "lay_tile",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 106,
+        "created_at": 1623021807,
+        "auto_actions": [
+          {
+            "type": "destination_connection",
+            "entity": "B",
+            "entity_type": "corporation",
+            "created_at": 1623021807,
+            "corporations": []
+          }
+        ],
+        "hex": "H2",
+        "tile": "3-0",
+        "rotation": 3
+      },
+      {
+        "type": "place_token",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 107,
+        "created_at": 1623021807,
+        "city": "57-0-0",
+        "slot": 0
+      },
+      {
+        "type": "run_routes",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 108,
+        "created_at": 1623021813,
+        "routes": [
+          {
+            "train": "2-0",
+            "connections": [
+              [
+                "H4",
+                "H2"
+              ]
+            ],
+            "hexes": [
+              "H2",
+              "H4"
+            ],
+            "revenue": 30,
+            "revenue_str": "H2-H4"
+          }
+        ]
+      },
+      {
+        "type": "dividend",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 109,
+        "created_at": 1623021814,
+        "kind": "payout"
+      },
+      {
+        "type": "pass",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 110,
+        "created_at": 1623021816
+      },
+      {
+        "type": "pass",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 111,
+        "created_at": 1623021818
+      },
+      {
+        "type": "pass",
+        "entity": "Player 3",
+        "entity_type": "player",
+        "id": 112,
+        "created_at": 1623021819
+      },
+      {
+        "type": "pass",
+        "entity": "Player 4",
+        "entity_type": "player",
+        "id": 113,
+        "created_at": 1623021819
+      },
+      {
+        "type": "pass",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 114,
+        "created_at": 1623021820
+      },
+      {
+        "type": "pass",
+        "entity": "Player 2",
+        "entity_type": "player",
+        "id": 115,
+        "created_at": 1623021821
+      },
+      {
+        "type": "pass",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 116,
+        "created_at": 1623021822,
+        "auto_actions": [
+          {
+            "type": "destination_connection",
+            "entity": "B",
+            "entity_type": "corporation",
+            "created_at": 1623021822,
+            "corporations": []
+          }
+        ]
+      },
+      {
+        "type": "run_routes",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 117,
+        "created_at": 1623021823,
+        "routes": [
+          {
+            "train": "2-0",
+            "connections": [
+              [
+                "H4",
+                "H2"
+              ]
+            ],
+            "hexes": [
+              "H4",
+              "H2"
+            ],
+            "revenue": 30,
+            "revenue_str": "H4-H2"
+          }
+        ]
+      },
+      {
+        "type": "dividend",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 118,
+        "created_at": 1623021824,
+        "kind": "payout"
+      },
+      {
+        "type": "pass",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 119,
+        "created_at": 1623021824
+      },
+      {
+        "type": "pass",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 120,
+        "created_at": 1623021825
+      },
+      {
+        "type": "pass",
+        "entity": "Player 3",
+        "entity_type": "player",
+        "id": 121,
+        "created_at": 1623021826
+      },
+      {
+        "type": "pass",
+        "entity": "Player 4",
+        "entity_type": "player",
+        "id": 122,
+        "created_at": 1623021826
+      },
+      {
+        "type": "pass",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 123,
+        "created_at": 1623021826
+      },
+      {
+        "type": "pass",
+        "entity": "Player 2",
+        "entity_type": "player",
+        "id": 124,
+        "created_at": 1623021826
+      },
+      {
+        "type": "pass",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 125,
+        "created_at": 1623021827,
+        "auto_actions": [
+          {
+            "type": "destination_connection",
+            "entity": "B",
+            "entity_type": "corporation",
+            "created_at": 1623021827,
+            "corporations": []
+          }
+        ]
+      },
+      {
+        "type": "run_routes",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 126,
+        "created_at": 1623021828,
+        "routes": [
+          {
+            "train": "2-0",
+            "connections": [
+              [
+                "H4",
+                "H2"
+              ]
+            ],
+            "hexes": [
+              "H4",
+              "H2"
+            ],
+            "revenue": 30,
+            "revenue_str": "H4-H2"
+          }
+        ]
+      },
+      {
+        "type": "dividend",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 127,
+        "created_at": 1623021829,
+        "kind": "payout"
+      },
+      {
+        "type": "pass",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 128,
+        "created_at": 1623021830
+      },
+      {
+        "type": "pass",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 129,
+        "created_at": 1623021831
+      },
+      {
+        "type": "pass",
+        "entity": "Player 3",
+        "entity_type": "player",
+        "id": 130,
+        "created_at": 1623021833
+      },
+      {
+        "type": "pass",
+        "entity": "Player 4",
+        "entity_type": "player",
+        "id": 131,
+        "created_at": 1623021833
+      },
+      {
+        "type": "pass",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 132,
+        "created_at": 1623021834
+      },
+      {
+        "type": "pass",
+        "entity": "Player 2",
+        "entity_type": "player",
+        "id": 133,
+        "created_at": 1623021834
+      },
+      {
+        "type": "pass",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 134,
+        "created_at": 1623021835,
+        "auto_actions": [
+          {
+            "type": "destination_connection",
+            "entity": "B",
+            "entity_type": "corporation",
+            "created_at": 1623021835,
+            "corporations": []
+          }
+        ]
+      },
+      {
+        "type": "run_routes",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 135,
+        "created_at": 1623021836,
+        "routes": [
+          {
+            "train": "2-0",
+            "connections": [
+              [
+                "H4",
+                "H2"
+              ]
+            ],
+            "hexes": [
+              "H4",
+              "H2"
+            ],
+            "revenue": 30,
+            "revenue_str": "H4-H2"
+          }
+        ]
+      },
+      {
+        "type": "dividend",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 136,
+        "created_at": 1623021837,
+        "kind": "payout"
+      },
+      {
+        "type": "buy_train",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 137,
+        "created_at": 1623021839,
+        "train": "2-2",
+        "price": 100,
+        "variant": "2"
+      },
+      {
+        "type": "pass",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 138,
+        "created_at": 1623021839
+      },
+      {
+        "type": "pass",
+        "entity": "Player 3",
+        "entity_type": "player",
+        "id": 139,
+        "created_at": 1623021840
+      },
+      {
+        "type": "pass",
+        "entity": "Player 4",
+        "entity_type": "player",
+        "id": 140,
+        "created_at": 1623021841
+      },
+      {
+        "type": "pass",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 141,
+        "created_at": 1623021841
+      },
+      {
+        "type": "pass",
+        "entity": "Player 2",
+        "entity_type": "player",
+        "id": 142,
+        "created_at": 1623021841
+      },
+      {
+        "type": "pass",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 143,
+        "created_at": 1623021842,
+        "auto_actions": [
+          {
+            "type": "destination_connection",
+            "entity": "B",
+            "entity_type": "corporation",
+            "created_at": 1623021842,
+            "corporations": []
+          }
+        ]
+      },
+      {
+        "type": "run_routes",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 144,
+        "created_at": 1623021844,
+        "routes": [
+          {
+            "train": "2-0",
+            "connections": [
+              [
+                "H4",
+                "H2"
+              ]
+            ],
+            "hexes": [
+              "H4",
+              "H2"
+            ],
+            "revenue": 30,
+            "revenue_str": "H4-H2"
+          }
+        ]
+      },
+      {
+        "type": "dividend",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 145,
+        "created_at": 1623021855,
+        "kind": "payout"
+      },
+      {
+        "type": "pass",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 146,
+        "created_at": 1623021867
+      },
+      {
+        "type": "pass",
+        "entity": "Player 3",
+        "entity_type": "player",
+        "id": 147,
+        "created_at": 1623021874
+      },
+      {
+        "type": "pass",
+        "entity": "Player 4",
+        "entity_type": "player",
+        "id": 148,
+        "created_at": 1623021893
+      },
+      {
+        "type": "pass",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 149,
+        "created_at": 1623021894
+      },
+      {
+        "type": "sell_shares",
+        "entity": "Player 2",
+        "entity_type": "player",
+        "id": 150,
+        "created_at": 1623021900,
+        "shares": [
+          "B_1"
+        ],
+        "percent": 10
+      },
+      {
+        "type": "pass",
+        "entity": "Player 2",
+        "entity_type": "player",
+        "id": 151,
+        "created_at": 1623021901
+      },
+      {
+        "type": "pass",
+        "entity": "Player 3",
+        "entity_type": "player",
+        "id": 152,
+        "created_at": 1623021903
+      },
+      {
+        "type": "pass",
+        "entity": "Player 4",
+        "entity_type": "player",
+        "id": 153,
+        "created_at": 1623021903
+      },
+      {
+        "type": "buy_shares",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 154,
+        "created_at": 1623021905,
+        "shares": [
+          "B_1"
+        ],
+        "percent": 10
+      },
+      {
+        "type": "pass",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 155,
+        "created_at": 1623021906
+      },
+      {
+        "type": "pass",
+        "entity": "Player 2",
+        "entity_type": "player",
+        "id": 156,
+        "created_at": 1623021907
+      },
+      {
+        "type": "pass",
+        "entity": "Player 3",
+        "entity_type": "player",
+        "id": 157,
+        "created_at": 1623021916
+      },
+      {
+        "type": "pass",
+        "entity": "Player 4",
+        "entity_type": "player",
+        "id": 158,
+        "created_at": 1623021917
+      },
+      {
+        "type": "pass",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 159,
+        "created_at": 1623021917
+      },
+      {
+        "type": "pass",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 160,
+        "created_at": 1623021918,
+        "auto_actions": [
+          {
+            "type": "destination_connection",
+            "entity": "B",
+            "entity_type": "corporation",
+            "created_at": 1623021918,
+            "corporations": []
+          }
+        ]
+      },
+      {
+        "type": "run_routes",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 161,
+        "created_at": 1623021920,
+        "routes": [
+          {
+            "train": "2-0",
+            "connections": [
+              [
+                "H4",
+                "H2"
+              ]
+            ],
+            "hexes": [
+              "H4",
+              "H2"
+            ],
+            "revenue": 30,
+            "revenue_str": "H4-H2"
+          }
+        ]
+      },
+      {
+        "type": "sell_shares",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 162,
+        "created_at": 1623021925,
+        "shares": [
+          "B_4"
+        ],
+        "percent": 10
+      },
+      {
+        "type": "dividend",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 163,
+        "created_at": 1623021927,
+        "kind": "payout"
+      },
+      {
+        "type": "pass",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 164,
+        "created_at": 1623021930
+      },
+      {
+        "type": "sell_shares",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 165,
+        "created_at": 1623021933,
+        "shares": [
+          "B_1"
+        ],
+        "percent": 10
+      },
+      {
+        "type": "undo",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 166,
+        "created_at": 1623021941
+      },
+      {
+        "type": "undo",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 167,
+        "created_at": 1623021944
+      },
+      {
+        "type": "undo",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 168,
+        "created_at": 1623021947
+      },
+      {
+        "type": "undo",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 169,
+        "created_at": 1623021949
+      },
+      {
+        "type": "undo",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 170,
+        "created_at": 1623021951
+      },
+      {
+        "type": "undo",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 171,
+        "created_at": 1623021953
+      },
+      {
+        "type": "pass",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 172,
+        "created_at": 1623021957,
+        "auto_actions": [
+          {
+            "type": "destination_connection",
+            "entity": "B",
+            "entity_type": "corporation",
+            "created_at": 1623021958,
+            "corporations": []
+          }
+        ]
+      },
+      {
+        "type": "run_routes",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 173,
+        "created_at": 1623021962,
+        "routes": [
+          {
+            "train": "2-0",
+            "connections": [
+              [
+                "H4",
+                "H2"
+              ]
+            ],
+            "hexes": [
+              "H4",
+              "H2"
+            ],
+            "revenue": 30,
+            "revenue_str": "H4-H2"
+          }
+        ]
+      },
+      {
+        "type": "sell_shares",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 174,
+        "created_at": 1623021999,
+        "shares": [
+          "B_4"
+        ],
+        "percent": 10
+      },
+      {
+        "type": "dividend",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 175,
+        "created_at": 1623022009,
+        "kind": "payout"
+      },
+      {
+        "type": "pass",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 176,
+        "created_at": 1623022013
+      },
+      {
+        "type": "sell_shares",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 177,
+        "created_at": 1623022019,
+        "shares": [
+          "B_1"
+        ],
+        "percent": 10
+      },
+      {
+        "type": "undo",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 178,
+        "created_at": 1623022284
+      },
+      {
+        "type": "sell_shares",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 179,
+        "created_at": 1623022293,
+        "shares": [
+          "B_1"
+        ],
+        "percent": 10
+      },
+      {
+        "type": "undo",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 180,
+        "created_at": 1623024344
+      },
+      {
+        "type": "bankrupt",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 181,
+        "created_at": 1623024349
+      },
+      {
+        "type": "undo",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 182,
+        "created_at": 1623024369
+      },
+      {
+        "type": "sell_shares",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 183,
+        "created_at": 1623024373,
+        "shares": [
+          "B_1"
+        ],
+        "percent": 10
+      },
+      {
+        "type": "bankrupt",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 184,
+        "created_at": 1623024382
+      },
+      {
+        "type": "undo",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 185,
+        "created_at": 1623024393,
+        "action_id": 137
+      },
+      {
+        "type": "pass",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 186,
+        "created_at": 1623024399
+      },
+      {
+        "type": "pass",
+        "entity": "Player 3",
+        "entity_type": "player",
+        "id": 187,
+        "created_at": 1623024401
+      },
+      {
+        "type": "pass",
+        "entity": "Player 4",
+        "entity_type": "player",
+        "id": 188,
+        "created_at": 1623024403
+      },
+      {
+        "type": "pass",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 189,
+        "created_at": 1623024404
+      },
+      {
+        "type": "pass",
+        "entity": "Player 2",
+        "entity_type": "player",
+        "id": 190,
+        "created_at": 1623024404
+      },
+      {
+        "type": "pass",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 191,
+        "created_at": 1623024407,
+        "auto_actions": [
+          {
+            "type": "destination_connection",
+            "entity": "B",
+            "entity_type": "corporation",
+            "created_at": 1623024407,
+            "corporations": []
+          }
+        ]
+      },
+      {
+        "type": "run_routes",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 192,
+        "created_at": 1623024409,
+        "routes": [
+          {
+            "train": "2-0",
+            "connections": [
+              [
+                "H4",
+                "H2"
+              ]
+            ],
+            "hexes": [
+              "H4",
+              "H2"
+            ],
+            "revenue": 30,
+            "revenue_str": "H4-H2"
+          }
+        ]
+      },
+      {
+        "type": "dividend",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 193,
+        "created_at": 1623024410,
+        "kind": "payout"
+      },
+      {
+        "type": "pass",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 194,
+        "created_at": 1623024413
+      },
+      {
+        "type": "pass",
+        "entity": "Player 3",
+        "entity_type": "player",
+        "id": 195,
+        "created_at": 1623025148
+      },
+      {
+        "type": "pass",
+        "entity": "Player 4",
+        "entity_type": "player",
+        "id": 196,
+        "created_at": 1623025149
+      },
+      {
+        "type": "pass",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 197,
+        "created_at": 1623025149
+      },
+      {
+        "type": "sell_shares",
+        "entity": "Player 2",
+        "entity_type": "player",
+        "id": 198,
+        "created_at": 1623025155,
+        "shares": [
+          "B_1"
+        ],
+        "percent": 10
+      },
+      {
+        "type": "pass",
+        "entity": "Player 2",
+        "entity_type": "player",
+        "id": 199,
+        "created_at": 1623025156
+      },
+      {
+        "type": "pass",
+        "entity": "Player 3",
+        "entity_type": "player",
+        "id": 200,
+        "created_at": 1623025157
+      },
+      {
+        "type": "pass",
+        "entity": "Player 4",
+        "entity_type": "player",
+        "id": 201,
+        "created_at": 1623025157
+      },
+      {
+        "type": "buy_shares",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 202,
+        "created_at": 1623025162,
+        "shares": [
+          "B_1"
+        ],
+        "percent": 10
+      },
+      {
+        "type": "pass",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 203,
+        "created_at": 1623025164
+      },
+      {
+        "type": "pass",
+        "entity": "Player 2",
+        "entity_type": "player",
+        "id": 204,
+        "created_at": 1623025165
+      },
+      {
+        "type": "pass",
+        "entity": "Player 3",
+        "entity_type": "player",
+        "id": 205,
+        "created_at": 1623025166
+      },
+      {
+        "type": "pass",
+        "entity": "Player 4",
+        "entity_type": "player",
+        "id": 206,
+        "created_at": 1623025167
+      },
+      {
+        "type": "pass",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 207,
+        "created_at": 1623025168
+      },
+      {
+        "type": "pass",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 208,
+        "created_at": 1623025171,
+        "auto_actions": [
+          {
+            "type": "destination_connection",
+            "entity": "B",
+            "entity_type": "corporation",
+            "created_at": 1623025171,
+            "corporations": []
+          }
+        ]
+      },
+      {
+        "type": "run_routes",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 209,
+        "created_at": 1623025173,
+        "routes": [
+          {
+            "train": "2-0",
+            "connections": [
+              [
+                "H4",
+                "H2"
+              ]
+            ],
+            "hexes": [
+              "H4",
+              "H2"
+            ],
+            "revenue": 30,
+            "revenue_str": "H4-H2"
+          }
+        ]
+      },
+      {
+        "type": "sell_shares",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 210,
+        "created_at": 1623025188,
+        "shares": [
+          "B_4"
+        ],
+        "percent": 10
+      },
+      {
+        "type": "dividend",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 211,
+        "created_at": 1623025190,
+        "kind": "payout"
+      },
+      {
+        "type": "pass",
+        "entity": "B",
+        "entity_type": "corporation",
+        "id": 212,
+        "created_at": 1623025192
+      },
+      {
+        "type": "sell_shares",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 213,
+        "created_at": 1623025199,
+        "shares": [
+          "B_1"
+        ],
+        "percent": 10
+      },
+      {
+        "type": "undo",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 214,
+        "created_at": 1623025203
+      },
+      {
+        "type": "bankrupt",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 215,
+        "created_at": 1623025207
+      },
+      {
+        "type": "undo",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 216,
+        "created_at": 1623025221
+      },
+      {
+        "type": "bankrupt",
+        "entity": "Player 1",
+        "entity_type": "player",
+        "id": 217,
+        "created_at": 1623025227
+      }
+    ],
+    "id": "hs_gzehsavn_1623021617",
+    "players": [
+      {
+        "name": "Player 1"
+      },
+      {
+        "name": "Player 2"
+      },
+      {
+        "name": "Player 3"
+      },
+      {
+        "name": "Player 4"
+      }
+    ],
+    "title": "1836Jr56",
+    "description": "",
+    "max_players": "4",
+    "settings": {
+      "optional_rules": []
+    },
+    "mode": "hotseat",
+    "user": {
+      "id": 0,
+      "name": "You"
+    },
+    "created_at": "2021-06-06",
+    "loaded": true,
+    "result": {
+      "Player 4": 319,
+      "Player 2": 261,
+      "Player 3": 239,
+      "Player 1": -120
+    },
+    "turn": 16,
+    "round": "Operating Round",
+    "acting": [
+      "Player 1"
+    ],
+    "updated_at": 1623025227
+  }
