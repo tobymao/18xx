@@ -1192,7 +1192,13 @@ module Engine
             minor_token.remove!
             city.place_token(mergable, mergable.next_token, free: true)
 
-            # Minor is no longer used
+            # Private/Minor is no longer used, and connected private (if any) need to be closed as well
+            if mergee.minor?
+              @log << "Minor #{mergee.name} and its connected private (#{company_by_id(mergee.id).name}) are closed"
+              company_by_id(mergee.id).close!
+            else
+              @log << "#{mergee.name} is closed"
+            end
             mergee.close!
           end
 
@@ -1207,7 +1213,7 @@ module Engine
             new_president = majority_share_holders.first
           end
           if president_share.owner == new_president
-            @log << "#{president_share.owner.name} retains the presidency"
+            @log << "#{president_share.owner.name} retains the presidency of #{mergable.name}"
             mergable.owner = president_share.owner
           else
             @log << "#{new_president.name} becomes the president of #{mergable.name}"

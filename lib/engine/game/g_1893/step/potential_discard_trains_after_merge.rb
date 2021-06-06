@@ -19,6 +19,13 @@ module Engine
             'Optional Discard of Any Trains'
           end
 
+          def help
+            'President may discard any number of trains - click on the ones '\
+            'to discard, or pass when not wanting to discard any more. If number'\
+            ' of trains exceed train limit, discard must be done to have a legal'\
+            ' amount of trains.'
+          end
+
           def entities
             @game.potential_discard_trains.map(:player)
           end
