@@ -638,6 +638,12 @@ module Engine
         @loading = false
       end
 
+      # Override this if a game has a licensing mechanic for corporations and trains
+      # See 1862 for an example
+      def able_to_operate?(_entity, _train, _name)
+        true
+      end
+
       def process_action(action, add_auto_actions: false)
         action = Engine::Action::Base.action_from_h(action, self) if action.is_a?(Hash)
 

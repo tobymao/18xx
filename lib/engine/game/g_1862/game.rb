@@ -1210,6 +1210,10 @@ module Engine
           @graph.route_info(entity)&.dig(:route_train_purchase)
         end
 
+        def able_to_operate?(entity, _train, name)
+          @permits[entity].include?(train_type_by_name(name))
+        end
+
         def route_trains(entity)
           entity.runnable_trains.select { |t| @permits[entity].include?(train_type(t)) }
         end
