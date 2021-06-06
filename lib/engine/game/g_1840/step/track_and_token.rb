@@ -54,7 +54,7 @@ module Engine
                 }
               end
 
-              entry = @game.class::CITY_TRACKS.find do |_k, v|
+              entry = @game.city_tracks.find do |_k, v|
                 v.include?(tile.hex.coordinates)
               end
               entry[1].delete(tile.hex.coordinates) if entry
@@ -77,7 +77,7 @@ module Engine
           def orange_tile_available?(hex)
             return false if @orange_placed
 
-            entry = @game.class::CITY_TRACKS.find do |_k, v|
+            entry = @game.city_tracks.find do |_k, v|
               v.include?(hex.coordinates)
             end
 
