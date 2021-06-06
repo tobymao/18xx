@@ -187,6 +187,7 @@ module Engine
           def process_buy_shares(action)
             entity = action.entity
             return exchange_for_rag(action, entity) if entity.company?
+
             # In case president's share is reserved, do not change presidency
             corporation = action.bundle.corporation
             allow_president_change = corporation.presidents_share.buyable

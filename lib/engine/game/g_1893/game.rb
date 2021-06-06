@@ -205,7 +205,8 @@ module Engine
             'count' => 1,
             'color' => 'green',
             'code' =>
-            'city=revenue:50,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;upgrade=cost:40,terrain:water;label=K',
+            'city=revenue:50,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;upgrade=cost:40,'\
+              'terrain:water;label=K',
           },
           'KV333' =>
           {
@@ -452,7 +453,7 @@ module Engine
             value: 200,
             revenue: 0,
             desc: "Buyer takes control of minor with same name (KFBE), and the price paid makes the minor's treasury. "\
-              "KFBE minor and private are exchanged into the 20% certificate (not presidency) of HGK when "\
+              'KFBE minor and private are exchanged into the 20% certificate (not presidency) of HGK when '\
               'HGK is formed. The private and minor cannot be sold.',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
             color: nil,
@@ -556,7 +557,8 @@ module Engine
               {
                 type: 'base',
                 description: 'Bonds - Pays 10M per 10% each OR',
-                desc_detail: "Are bonds, with a fixed value, and fixed payout. At the start of each OR each 10% payout 10M to the owner. AdSK does not have a treasury, and never buys trains.",
+                desc_detail: 'Are bonds, with a fixed value, and fixed payout. At the start of each OR each 10% '\
+                  'payout 10M to the owner. AdSK does not have a treasury, and never buys trains.',
               },
             ],
             reservation_color: nil,
@@ -579,7 +581,10 @@ module Engine
               {
                 type: 'no_buy',
                 description: 'Unavailable in SR before phase 4',
-                desc_detail: 'During phase 4 it is possible to buy its shares from the market for 120M. During each MR in phase 4 the share holders and owners of minor 1 (20%), 3 (10%) and 5 (20%), will vote if AGV should form. If 50% vote yes, AGV will float, otherwise voting is repeated each MR until Phase 5 when AGV float automatically during the first MR.',
+                desc_detail: 'During phase 4 it is possible to buy its shares from the market for 120M. '\
+                  'During each MR in phase 4 the share holders and owners of minor 1 (20%), 3 (10%) and 5 (20%), '\
+                  'will vote if AGV should form. If 50% vote yes, AGV will float, otherwise voting is repeated each '\
+                  'MR until Phase 5 when AGV float automatically during the first MR.',
               },
             ],
             reservation_color: nil,
@@ -601,7 +606,10 @@ module Engine
               {
                 type: 'no_buy',
                 description: 'Unavailable in SR before phase 5',
-                desc_detail: 'During phase 5 it is possible to buy its shares from the market for 120M. During each MR in phase 4 the share holders and owners of minor 2 (20%), 4 (20%) and HdSK (10%), will vote if HGK should form. If 50% vote yes, HGK will float, otherwise voting is repeated each MR until Phase 6 when HGK float automatically during the first MR.',
+                desc_detail: 'During phase 5 it is possible to buy its shares from the market for 120M. '\
+                  'During each MR in phase 4 the share holders and owners of minor 2 (20%), 4 (20%) and '\
+                  'HdSK (10%), will vote if HGK should form. If 50% vote yes, HGK will float, otherwise '\
+                  'voting is repeated each MR until Phase 6 when HGK float automatically during the first MR.',
               },
             ],
             coordinates: 'J5',
@@ -759,12 +767,12 @@ module Engine
 
         def store_player_info
           rsn = @round.class.short_name
-          case @round
-          when G1893::Round::Merger
-            round_num = @merger_count
-          else
-            round_num = @round.round_num
-          end
+          round_num = case @round
+                      when G1893::Round::Merger
+                        @merger_count
+                      else
+                        @round.round_num
+                      end
           @players.each do |p|
             p.history << PlayerInfo.new(rsn, turn, round_num, player_value(p))
           end
