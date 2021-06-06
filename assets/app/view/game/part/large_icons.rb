@@ -124,7 +124,7 @@ module View
             decor = h(:circle, attrs: { r: LARGE_RADIUS, fill: 'white', cx: dx, cy: dy })
 
             show_player_colors = setting_for(:show_player_colors, @game)
-            if (decoration = @game.decorate_marker(icon))
+            if (decoration = @game&.decorate_marker(icon))
               color = decoration[:color]
               case decoration[:shape]
               when :circle
