@@ -205,7 +205,7 @@ module Engine
             'count' => 1,
             'color' => 'green',
             'code' =>
-            'city=revenue:50,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=K',
+            'city=revenue:50,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;upgrade=cost:40,terrain:water;label=K',
           },
           'KV333' =>
           {
@@ -702,7 +702,7 @@ module Engine
         ).freeze
 
         OPTION_TILES_USE_GREY_PHASE = %w[KV201-0 KV269-0 KV255-0 KV333-0 KV259-0].freeze
-        OPTION_TILES_REMOVE_GREY_PHASE = %w[K269-0 K255-0].freeze
+        OPTION_TILES_REMOVE_GREY_PHASE = %w[K201-0 K269-0 K255-0].freeze
         OPTION_TILES_USE_EXISTING_TRACK = %w[KV619-0 KV63-0].freeze
 
         MERGED_CORPORATIONS = %w[AGV HGK].freeze
