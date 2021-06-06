@@ -17,7 +17,7 @@ module View
 
     def render_notification
       message = <<~MESSAGE
-        <p>Auto Routing is temporarily disabled... will come back tomorrow. Learn more about it <a href='https://github.com/tobymao/18xx/wiki/Auto-Routing'>here</a></p>
+        <p>Auto Routing is now available! Learn more about it <a href='https://github.com/tobymao/18xx/wiki/Auto-Routing'>here</a></p>
         <p>1840, 1856, and 1836jr56 are now in alpha</p>
         <p>1830 now in production</p>
         <p>We now support Slack/Discord notifications. Learn how to use them <a href='https://github.com/tobymao/18xx/wiki/Notifications'>here</a>.</p>

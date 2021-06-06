@@ -333,7 +333,7 @@ module Engine
       @connection_hexes ||= if @train.local? && connection_data.one? && connection_data[0][:chain][:paths].empty?
                               [['local', connection_data[0][:left].hex.id]]
                             else
-                              chains&.map { |ch| ch[:id] }
+                              chains&.map { |chain| chain_id(chain[:paths]) }
                             end
     end
 
