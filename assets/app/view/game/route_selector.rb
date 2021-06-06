@@ -250,12 +250,13 @@ module View
         end
 
         auto = lambda do
-          router = Engine::AutoRouter.new(@game)
-          @routes = router.compute(
-            @game.current_entity,
-            routes: @routes.reject { |r| r.paths.empty? },
-          )
-          store(:routes, @routes)
+          `alert("Temporarily disabled, will fix soon")`
+          # router = Engine::AutoRouter.new(@game)
+          # @routes = router.compute(
+          #   @game.current_entity,
+          #   routes: @routes.reject { |r| r.paths.empty? },
+          # )
+          # store(:routes, @routes)
         end
 
         submit_style = {
