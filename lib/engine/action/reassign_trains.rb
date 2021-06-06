@@ -27,13 +27,13 @@ module Engine
       def args_to_h
         assignments = @assignments.map do |item|
           {
-            train: item[:train].id,
-            corporation: item[:corporation].id,
+            'train' => item[:train].id,
+            'corporation' => item[:corporation].id,
           }
         end
 
         {
-          assignments: assignments,
+          'assignments' => assignments,
         }
       end
     end
