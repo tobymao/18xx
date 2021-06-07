@@ -831,27 +831,5 @@ module Engine
         expect(icon.blocks_lay?).to be_falsy
       end
     end
-
-    describe 'Grey tile only to GI, TI, BB' do
-      let(:game_file_name) { 'or_power.rabbits.home_to_gray_li' }
-
-      it 'cannot be used for LI' do
-        game = Engine::Game.load(game_file, at_action: 24).maybe_raise!
-
-        action = {
-          'type' => 'lay_tile',
-          'entity' => 'RABBITS',
-          'entity_type' => 'company',
-          'hex' => 'E15',
-          'tile' => '455-0',
-          'rotation' => 0,
-        }
-
-        expect(game.exception).to be_nil
-        expect do
-          game.process_action(action).maybe_raise!
-        end.to raise_error(Engine::GameError, '611 is not upgradeable to 455')
-      end
-    end
   end
 end
