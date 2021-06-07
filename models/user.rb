@@ -83,7 +83,7 @@ class User < Base
     end
 
     # rubocop:disable Style/GuardClause
-    if (url = settings['webhook_url']) && !/slack|discord/.match?(URI.parse(url).host)
+    if (url = settings['webhook_url'])
       errors.add(:webhook_url, 'only supports Slack and Discord, let us know if you want others')
     end
     # rubocop:enable Style/GuardClause
