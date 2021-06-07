@@ -612,7 +612,6 @@ module Engine
                   'voting is repeated each MR until Phase 6 when HGK float automatically during the first MR.',
               },
             ],
-            coordinates: 'J5',
             reservation_color: nil,
           },
         ].freeze
@@ -1025,6 +1024,10 @@ module Engine
           @neutral.owner = @bank
           @neutral.tokens.each { |token| token.type = :neutral }
           city_by_id('H5-0-0').place_token(@neutral, @neutral.next_token)
+
+          # The HGK private has a token, that will be turned into HGK
+          # As HGK private cannot run, we start with it as HGK token
+          city_by_id('J5-0-0').place_token(hgk, hgk.next_token)
 
           @passers_first_stock_round = []
           @is_init_round = false
