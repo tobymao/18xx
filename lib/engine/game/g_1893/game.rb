@@ -1182,7 +1182,7 @@ module Engine
 
             # Mergee is a minor - transfer any cash
             if mergee.cash.positive?
-              @log << "#{mergable.name} receives the #{mergee.name} treasure of #{format_currency(mergable.cash)}"
+              @log << "#{mergable.name} receives the #{mergee.name} treasure of #{format_currency(mergee.cash)}"
               mergee.spend(mergee.cash, mergable)
             end
 
