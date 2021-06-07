@@ -81,11 +81,5 @@ class User < Base
       )
       errors.add(:webhook_user_id, 'spaces are not allowed in the user id. look at the wiki for more info')
     end
-
-    # rubocop:disable Style/GuardClause
-    if (url = settings['webhook_url']) && !/slack|discord/.match?(URI.parse(url).host)
-      errors.add(:webhook_url, 'only supports Slack and Discord, let us know if you want others')
-    end
-    # rubocop:enable Style/GuardClause
   end
 end
