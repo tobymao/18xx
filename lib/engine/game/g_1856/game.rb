@@ -363,6 +363,7 @@ module Engine
                         {
                           type: 'tile_lay',
                           owner_type: 'corporation',
+                          when: 'track',
                           consume_tile_lay: true,
                           count: 1,
                           hexes: ['I12'],
