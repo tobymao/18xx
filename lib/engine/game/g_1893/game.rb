@@ -1150,12 +1150,6 @@ module Engine
           president_priority = []
           president_share = nil
 
-          # If HGK, activate J5 token
-          if mergable == hgk
-            @log << "#{hgk.name} places an token in #{hgk.coordinates}"
-            city_by_id('J5-0-0').place_token(hgk, hgk.next_token, free: true)
-          end
-
           exchange_info.each do |mergeinfo|
             share = mergeinfo[:share]
             mergee = mergeinfo[:minor] || mergeinfo[:private]

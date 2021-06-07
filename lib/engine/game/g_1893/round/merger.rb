@@ -89,7 +89,7 @@ module Engine
               skip_message(@game.agv)
             end
             if @game.hgk_auto_found
-              @log << "-- #{game.hgk.name} is founded as phase 6 has been reached"
+              @log << "-- #{@game.hgk.name} is founded as phase 6 has been reached"
               @log << "#{names(merger_candidates(@game.hgk))} are merged into #{@game.hgk.name}"
               @game.found_hgk
             elsif @game.hgk_mergable
