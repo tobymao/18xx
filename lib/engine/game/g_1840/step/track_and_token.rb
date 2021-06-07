@@ -88,7 +88,7 @@ module Engine
             index = hexes.index(hex.coordinates)
 
             # Only possible to go further if "Westbahnhof" is layed
-            if hex.coordinates == 'F12' && (index == hexes.size - 1)
+            if hex.coordinates == 'F12' && index == hexes.size - 1 && hexes.size > 1
               station = @game.hex_by_id('G11')
               return station.tile != station.original_tile
             end
