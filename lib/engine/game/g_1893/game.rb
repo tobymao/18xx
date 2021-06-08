@@ -870,7 +870,7 @@ module Engine
             Engine::Step::Bankrupt,
             Engine::Step::DiscardTrain,
             Engine::Step::HomeToken,
-            Engine::Step::Track,
+            G1893::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
             G1893::Step::Dividend,
@@ -1049,7 +1049,12 @@ module Engine
 
         include StubsAreRestricted
 
+        def leverkusen_upgrade_to_green?(hex, tile)
+          hex.name == LEVERKUSEN_HEX_NAME && LEVERKUSEN_GREEN_TILE == tile.name
+        end
+
         def legal_tile_rotation?(_entity, hex, tile)
+          return true if leverkusen_upgrade_to_green?(hex, tile)
           return false unless legal_if_stubbed?(hex, tile)
           return true if @phase.current[:name] != '2' || !RHINE_PASSAGE.include?(hex.name)
 
@@ -1058,8 +1063,10 @@ module Engine
         end
 
         def upgrades_to?(from, to, _special = false, selected_company: nil)
-          # Leverkusen can upgrade double dits to one city
-          return to.name == LEVERKUSEN_GREEN_TILE if from.color == :yellow && from.hex.name == LEVERKUSEN_HEX_NAME
+          if from.color == :yellow && from.hex.name == LEVERKUSEN_HEX_NAME
+            # Leverkusen can upgrade double dits to one city
+            return to.name == LEVERKUSEN_GREEN_TILE
+          end
 
           # The TILE_BLOCK hexes cannot be upgraded until block has been removed (when phase 3 starts)
           return super unless TILE_BLOCK.include?(from.hex.name)
