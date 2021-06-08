@@ -16,3 +16,6 @@ hotseat002: (needs replacement)
 
  hotseat004:
  * Test that unparred corporations can destinate
+
+ hotseat005:
+ * Train buy bankruptcy

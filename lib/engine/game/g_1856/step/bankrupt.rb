@@ -11,6 +11,10 @@ module Engine
             active_entities.any?
           end
 
+          def actions(_entity)
+            ACTIONS
+          end
+
           def active_entities
             return [] unless @round.cash_crisis_player
 
@@ -18,7 +22,7 @@ module Engine
           end
 
           def process_bankrupt(action)
-            player = action.entity
+            player = action.entity.player? ? action.entity : action.entity.owner
 
             @log << "-- #{player.name} goes bankrupt --"
 
