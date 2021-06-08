@@ -54,7 +54,7 @@ module Engine
                 }
               end
 
-              entry = @game.class::CITY_TRACKS.find do |_k, v|
+              entry = @game.city_tracks.find do |_k, v|
                 v.include?(tile.hex.coordinates)
               end
               entry[1].delete(tile.hex.coordinates) if entry
@@ -77,7 +77,7 @@ module Engine
           def orange_tile_available?(hex)
             return false if @orange_placed
 
-            entry = @game.class::CITY_TRACKS.find do |_k, v|
+            entry = @game.city_tracks.find do |_k, v|
               v.include?(hex.coordinates)
             end
 
@@ -88,7 +88,7 @@ module Engine
             index = hexes.index(hex.coordinates)
 
             # Only possible to go further if "Westbahnhof" is layed
-            if hex.coordinates == 'F12' && (index == hexes.size - 1)
+            if hex.coordinates == 'F12' && index == hexes.size - 1 && hexes.size > 1
               station = @game.hex_by_id('G11')
               return station.tile != station.original_tile
             end

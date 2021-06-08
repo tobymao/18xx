@@ -166,13 +166,6 @@ module Engine
           'I3' => [1, 4],
         }.freeze
 
-        CITY_TRACKS = {
-          'D' => %w[B20 C21 D22 E23],
-          'G' => %w[B16 B14 C13 D12 E13 F12 H12],
-          'V' => %w[B10 C9 D6 E7 F6 G5],
-          'W' => %w[G23 G21 G19 G17 H16 I15 I13 I9 I7 I5 I3],
-        }.freeze
-
         CITY_HOME_HEXES = {
           'G' => %w[A17 I11],
           'V' => %w[A17 G3],
@@ -205,7 +198,7 @@ module Engine
           'R1',
         ].freeze
 
-        MAINTAINANCE_COST = {
+        MAINTENANCE_COST = {
           'Y1' => {},
           'O1' => {},
           'R1' => { 'Y1' => -50 },
@@ -236,14 +229,14 @@ module Engine
 
         CR_MULTIPLIER = [1, 1, 1, 2, 3, 10].freeze
 
-        attr_reader :tram_corporations, :major_corporations, :tram_owned_by_corporation, :city_graph
+        attr_reader :tram_corporations, :major_corporations, :tram_owned_by_corporation, :city_graph, :city_tracks
 
         def setup
           @intern_cr_phase_counter = 0
           @cr_counter = 0
           @first_stock_round = true
           @or = 0
-          @active_maintainance_cost = {}
+          @active_maintenance_cost = {}
           @player_debts = Hash.new { |h, k| h[k] = 0 }
           @last_revenue = Hash.new { |h, k| h[k] = 0 }
           @player_order_first_sr = Hash.new { |h, k| h[k] = 0 }
@@ -288,6 +281,13 @@ module Engine
           @corporations.concat(@tram_corporations)
 
           @city_graph = Graph.new(self, skip_track: :broad)
+
+          @city_tracks = {
+            'D' => %w[B20 C21 D22 E23],
+            'G' => %w[B16 B14 C13 D12 E13 F12 H12],
+            'V' => %w[B10 C9 D6 E7 F6 G5],
+            'W' => %w[G23 G21 G19 G17 H16 I15 I13 I9 I7 I5 I3],
+          }
 
           setup_company_price_up_to_face
         end
@@ -484,7 +484,7 @@ module Engine
         end
 
         def payout_companies
-          return unless @intern_cr_phase_counter.zero?
+          return unless @intern_cr_phase_counter == 1
 
           super
         end
@@ -569,10 +569,10 @@ module Engine
         def buy_train(operator, train, price = nil)
           super
 
-          new_cost = MAINTAINANCE_COST[train.sym]
-          @active_maintainance_cost = new_cost if new_cost['Y1'] &&
-                                      (@active_maintainance_cost['Y1'].nil? ||
-                                         new_cost['Y1'] < @active_maintainance_cost['Y1'])
+          new_cost = MAINTENANCE_COST[train.sym]
+          @active_maintenance_cost = new_cost if new_cost['Y1'] &&
+                                      (@active_maintenance_cost['Y1'].nil? ||
+                                         new_cost['Y1'] < @active_maintenance_cost['Y1'])
         end
 
         def status_str(corporation)
@@ -593,7 +593,7 @@ module Engine
         end
 
         def train_maintenance(train_sym)
-          @active_maintainance_cost[train_sym] || 0
+          @active_maintenance_cost[train_sym] || 0
         end
 
         def routes_revenue(routes)
@@ -626,19 +626,6 @@ module Engine
 
         def check_other(route)
           check_track_type(route)
-          check_hex_reentry(route)
-        end
-
-        def check_hex_reentry(route)
-          visited_hexes = {}
-          last_hex = nil
-          route.ordered_paths.each do |path|
-            hex = path.hex
-            raise GameError, 'Route cannot re-enter a hex' if hex != last_hex && visited_hexes[hex]
-
-            visited_hexes[hex] = true
-            last_hex = hex
-          end
         end
 
         def check_track_type(route)
@@ -676,8 +663,8 @@ module Engine
         def revenue_for(route, stops)
           # without city or with tokened city
           base_revenue = stops.sum do |stop|
-            next 0 if !stop.tile.cities.empty? && stop.tile.cities.none? do |city|
-              city.tokens.any? { |token| token&.corporation == route.corporation }
+            next 0 if stop.is_a?(Engine::Part::City) && stop.tokens.none? do |token|
+              token&.corporation == route.corporation
             end
 
             stop.route_revenue(route.phase, route.train)
@@ -740,16 +727,16 @@ module Engine
         end
 
         def sell_company_choice(company)
-          { { type: :sell } => "Sell for #{format_currency(company.value)}" }
+          { { type: :sell } => "Sell for #{format_currency(company.value)} to the bank" }
         end
 
         def sell_company(company)
           price = company.value
-          player = company.player
+          owner = company.owner
 
-          @log << "#{player.name} sells #{company.name} for #{format_currency(price)}"
+          @log << "#{owner.name} sells #{company.name} for #{format_currency(price)} to the bank"
 
-          @bank.spend(price, player)
+          @bank.spend(price, owner)
 
           company.close!
         end
@@ -803,6 +790,14 @@ module Engine
               corp.close!
             end
           end
+        end
+
+        def timeline
+          @timeline = ['Green tiles available in LR2, brown tiles in LR4 and grey tiles in LR5.',
+                       'Maintenance cost increase when first train bought:',
+                       'Red → Yellow: -50 ',
+                       'Pink → Yellow: -200 | Orange: -100 | Red: -50  ',
+                       'Purple → Yellow: -400 | Orange: -300 | Red: -100 | Purple +200  '].freeze
         end
       end
     end

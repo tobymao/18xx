@@ -146,7 +146,7 @@ module Engine
               sym: 'Karlskirche',
               value: 20,
               revenue: 10,
-              desc: 'Increase income by 20 if tram route runs to or through E21',
+              desc: 'Increase income by 20 if tram route runs to or through E21 (when red tile is placed)',
               abilities: [
                 {
                   type: 'hex_bonus',
@@ -178,7 +178,7 @@ module Engine
               sym: 'Hofburg',
               value: 40,
               revenue: 20,
-              desc: 'Increase income by 20 if tram route runs to or through E19',
+              desc: 'Increase income by 20 if tram route runs to or through E19 (when red tile is placed)',
               abilities: [
                 {
                   type: 'hex_bonus',
@@ -194,7 +194,7 @@ module Engine
               sym: 'Stephansdom',
               value: 50,
               revenue: 25,
-              desc: 'Increase income by 20 if tram route runs to or through D20',
+              desc: 'Increase income by 20 if tram route runs to or through D20 (when red tile is placed)',
               abilities: [
                 {
                   type: 'hex_bonus',
