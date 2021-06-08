@@ -118,7 +118,21 @@ module Engine
           '46' => 1,
           '611' => 3,
           '582' => 3,
-          '455' => 3,
+          'TI_455' => {
+            'count' => 1,
+            'color' => 'gray',
+            'code' => "#{Engine::Config::Tile::GRAY['455']};icon=image:18_zoo/TI",
+          },
+          'GI_455' => {
+            'count' => 1,
+            'color' => 'gray',
+            'code' => "#{Engine::Config::Tile::GRAY['455']};icon=image:18_zoo/GI",
+          },
+          'BB_455' => {
+            'count' => 1,
+            'color' => 'gray',
+            'code' => "#{Engine::Config::Tile::GRAY['455']};icon=image:18_zoo/BB",
+          },
           '80' => 1,
           'X80' => {
             'count' => 1,
