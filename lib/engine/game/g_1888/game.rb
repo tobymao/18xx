@@ -133,24 +133,87 @@ module Engine
           },
         ].freeze
 
+        DESTINATION_HEX = {
+          'JHR' => 'D12',
+          'SSL' => 'C13',
+          'CDL' => 'E17',
+          'HJR' => 'G9',
+          'TJL' => 'H4',
+          'LYR' => 'H14',
+          'JZR' => 'B6',
+          'ZDR' => 'G11',
+        }.freeze
+
+        DESTINATION_BONUS = {
+          'JHR' => 30,
+          'SSL' => 40,
+          'CDL' => 20,
+          'HJR' => 20,
+          'TJL' => 20,
+          'LYR' => 20,
+          'JZR' => 40,
+          'ZDR' => 30,
+        }.freeze
+
+        MINE_HEX = 'C5'
+        MINE_TILE = 'L41'
+        MINE_SUBSIDY = 40
+
+        DALIAN_HEX = 'E17'
+        DALIAN_FERRY_TILE = 'L40a'
+        YANTAI_HEX = 'F16'
+        YANTAI_FERRY_TILE = 'L40b'
+
+        BEIJING_HEX = 'C9'
+
         MUST_BID_INCREMENT_MULTIPLE = false # FIXME: check with Lonny
         ONLY_HIGHEST_BID_COMMITTED = false # FIXME: check with Lonny
         TRACK_RESTRICTION = :permissive # FIXME: check with Lonny
         SELL_BUY_ORDER = :sell_buy
 
+        def setup_company_price_50_to_150_percent
+          @companies.each do |company|
+            company.min_price = (company.value * 0.5).ceil
+            company.max_price = (company.value * 1.5).floor
+          end
+        end
+
+        def setup
+          setup_company_price_50_to_150_percent
+        end
+
+        def yanda
+          @yanda ||= company_by_id('YRF')
+        end
+
+        def heng_shan
+          @heng_shan ||= company_by_id('HS')
+        end
+
+        def upgrades_to?(from, to, special = false, selected_company: nil)
+          if special && selected_company == yanda
+            return ((from.hex.id == DALIAN_HEX && to.name == DALIAN_FERRY_TILE) ||
+                    (from.hex.id == YANTAI_HEX && to.name == YANTAI_FERRY_TILE))
+          end
+
+          return false if selected_company != heng_shan && to.name == MINE_TILE
+
+          super
+        end
+
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
-            Step::Bankrupt,
-            Step::SpecialTrack,
-            Step::SpecialToken,
-            Step::BuyCompany,
-            Step::Track,
-            Step::Token,
-            Step::Route,
-            Step::Dividend,
-            Step::DiscardTrain,
-            Step::BuyTrain,
-            [Step::BuyCompany, { blocks: true }],
+            Engine::Step::Bankrupt,
+            G1888::Step::SpecialTrack,
+            Engine::Step::SpecialToken,
+            Engine::Step::BuyCompany,
+            Engine::Step::Track,
+            Engine::Step::Token,
+            Engine::Step::Route,
+            G1888::Step::Dividend,
+            Engine::Step::DiscardTrain,
+            Engine::Step::BuyTrain,
+            [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 
@@ -159,6 +222,35 @@ module Engine
             'At the end of each set of ORs the next available non-permanent (2, 3 or 4) train will be exported
            (removed, triggering phase change as if purchased)',
           ]
+        end
+
+        def exchange_corporations(_exchange_ability)
+          candidates = hex_by_id(BEIJING_HEX).tile.cities.flat_map(&:tokens).compact.map { |t| t&.corporation }
+          candidates.reject(&:closed?)
+        end
+
+        def subsidy_for(_route, stops)
+          stops.any? { |s| s.hex.id == MINE_HEX && s.hex.tile.name = MINE_TILE } ? MINE_SUBSIDY : 0
+        end
+
+        def routes_subsidy(routes)
+          routes.sum(&:subsidy)
+        end
+
+        def destinated?(corp, stops)
+          stops.any? { |s| s.hex.id == corp.coordinates } &&
+            stops.any? { |s| s.hex.id == DESTINATION_HEX[corp.name] }
+        end
+
+        def revenue_for(route, stops)
+          corp = route.train.owner
+          bonus = destinated?(corp, stops) ? DESTINATION_BONUS[corp.name] : 0
+          super + bonus
+        end
+
+        def revenue_str(route)
+          bonus = destinated?(route.train.owner, route.stops) ? ' (dest)' : ''
+          super + bonus
         end
       end
     end
