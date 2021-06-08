@@ -9,7 +9,9 @@ module Engine
         include Game::Meta
 
         # DEV_STAGE = :alpha
+        PROTOTYPE = true
 
+        GAME_LOCATION = 'North China'
         GAME_DESIGNER = 'Leonhard "Lonny" Orgler'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1888'
         GAME_PUBLISHER = :lonny_games

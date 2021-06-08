@@ -208,7 +208,7 @@ module Engine
             %w[D14 E11 E13 E15 E19 F12 F18] => '',
             ['E17'] => 'city=revenue:yellow_20|green_30|brown_40|gray_50,slots:2;path=a:2,b:_0;path=a:3,b:_0;icon=image:1888/CDL_dest,sticky:1',
             ['F16'] => 'city=revenue:40,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0',
-            ['H16'] => 'offboard=revenue:10;path=a:1,b:_0',
+            ['H16'] => 'offboard=revenue:10,visit_cost:0;path=a:1,b:_0',
           },
         }.freeze
         # rubocop:enable Layout/LineLength
