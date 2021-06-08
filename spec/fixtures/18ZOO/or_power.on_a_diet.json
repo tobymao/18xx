@@ -168,7 +168,7 @@
       "id": 19,
       "created_at": 1616540932,
       "company": "ON_A_DIET",
-      "price": 2
+      "price": 1
     },
     {
       "type": "place_token",
@@ -308,7 +308,7 @@
   "mode": "hotseat",
   "result": {
     "Player 2": 106,
-    "Player 1": 99
+    "Player 1": 98
   },
   "round": "Operating Round",
   "settings": {

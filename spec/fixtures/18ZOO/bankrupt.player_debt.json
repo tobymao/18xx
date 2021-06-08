@@ -27,11 +27,14 @@
       "share_price": "5,3,1"
     },
     {
-      "type": "pass",
+      "type": "lay_tile",
       "entity": "GI",
       "entity_type": "corporation",
       "id": 4,
-      "created_at": 1619534274
+      "created_at": 1618164999,
+      "hex": "K9",
+      "tile": "6-0",
+      "rotation": 1
     },
     {
       "type": "pass",
@@ -57,11 +60,14 @@
       "share_price": "5,3,1"
     },
     {
-      "type": "pass",
+      "type": "lay_tile",
       "entity": "PB",
       "entity_type": "corporation",
       "id": 8,
-      "created_at": 1619534280
+      "created_at": 1622032218,
+      "hex": "N10",
+      "tile": "57-0",
+      "rotation": 0
     },
     {
       "type": "pass",
@@ -87,11 +93,14 @@
       "share_price": "5,3,1"
     },
     {
-      "type": "pass",
+      "type": "lay_tile",
       "entity": "PE",
       "entity_type": "corporation",
       "id": 12,
-      "created_at": 1619534286
+      "created_at": 1622035183,
+      "hex": "K17",
+      "tile": "57-1",
+      "rotation": 2
     },
     {
       "type": "pass",
@@ -99,20 +108,6 @@
       "entity_type": "player",
       "id": 13,
       "created_at": 1619534295
-    },
-    {
-      "type": "pass",
-      "entity": "Player 2",
-      "entity_type": "player",
-      "id": 14,
-      "created_at": 1619534296
-    },
-    {
-      "type": "undo",
-      "entity": "Player 1",
-      "entity_type": "player",
-      "id": 15,
-      "created_at": 1619534308
     },
     {
       "type": "par",
@@ -124,11 +119,14 @@
       "share_price": "7,1,1"
     },
     {
-      "type": "pass",
+      "type": "lay_tile",
       "entity": "LI",
       "entity_type": "corporation",
-      "id": 17,
-      "created_at": 1619534314
+      "id": 15,
+      "created_at": 1622035229,
+      "hex": "E15",
+      "tile": "5-0",
+      "rotation": 0
     },
     {
       "type": "pass",

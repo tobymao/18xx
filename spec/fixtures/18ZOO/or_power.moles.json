@@ -118,7 +118,7 @@
       "id": 14,
       "created_at": 1618953946,
       "company": "MOLES",
-      "price": 3
+      "price": 2
     },
     {
       "type": "lay_tile",
@@ -271,7 +271,7 @@
   "loaded": true,
   "mode": "hotseat",
   "result": {
-    "Player 1": 106,
+    "Player 1": 105,
     "Player 2": 104
   },
   "round": "Operating Round",

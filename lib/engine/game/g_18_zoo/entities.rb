@@ -77,7 +77,7 @@ module Engine
           {
             sym: 'MOLES',
             name: 'Moles',
-            value: 3,
+            value: 2,
             desc: 'The family (company) gets 4 special tiles, that can be used to upgrade any plain tiles,'\
                   ' even illegally (mountains and water pool)',
             abilities: [
@@ -135,7 +135,7 @@ module Engine
           {
             sym: 'ON_A_DIET',
             name: 'On a diet',
-            value: 2,
+            value: 1,
             desc: 'The family (company) can place a station in addition to the allowed spaces -'\
                   ' no one can lock you out',
             abilities: [
@@ -274,7 +274,7 @@ module Engine
           {
             sym: 'A_TIP_OF_SUGAR',
             name: 'A tip of sugar',
-            value: 3,
+            value: 2,
             desc: 'A squirrel (train) at will runs one more stop - it doesn\'t work with 4J or 2J',
           },
         ].freeze
