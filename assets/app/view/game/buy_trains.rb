@@ -10,6 +10,7 @@ module View
       include Actionable
       include EmergencyMoney
       include AlternateCorporations
+      include Lib::Settings
       needs :show_other_players, default: nil, store: true
       needs :corporation, default: nil
       needs :active_shell, default: nil, store: true
@@ -133,9 +134,9 @@ module View
           end
           children << h(:h3, 'Available Trains')
           children << h(:div, div_props, [
-            *from_depot(depot_trains),
+            *from_depot(depot_trains, @corporation),
             *render_warranty(depot_trains),
-            *other_corp_trains.any? ? other_trains(other_corp_trains) : '',
+            *other_corp_trains.any? ? other_trains(other_corp_trains, @corporation) : '',
           ])
         end
 
@@ -197,7 +198,7 @@ module View
         h('div#buy_trains', props, children)
       end
 
-      def from_depot(depot_trains)
+      def from_depot(depot_trains, corporation)
         depot_trains.flat_map do |train|
           train.variants
             .select { |_, v| @game.round.active_step.buyable_train_variants(train, @corporation).include?(v) }
@@ -229,12 +230,17 @@ module View
                 warranties: warranties,
               ))
             end
-
+            train_props = { style: {} }
+            unless @game.able_to_operate?(corporation, train, name)
+              color = StockMarket::COLOR_MAP[:yellow]
+              train_props[:style][:backgroundColor] = color
+              train_props[:style][:color] = contrast_on(color)
+            end
             source = @depot.discarded.include?(train) ? 'The Discard' : 'The Depot'
 
-            [h(:div, name),
-             h('div.nowrap', source),
-             h('div.right', @game.format_currency(price)),
+            [h(:div, train_props, name),
+             h('div.nowrap', train_props, source),
+             h('div.right', train_props, @game.format_currency(price)),
              h('button.no_margin', { on: { click: buy_train } }, president_assist.positive? ? 'Assisted buy' : 'Buy')]
           end
         end
@@ -283,7 +289,7 @@ module View
         @warranty_input.JS['elm'].JS['value'].to_i
       end
 
-      def other_trains(other_corp_trains)
+      def other_trains(other_corp_trains, corporation)
         step = @game.round.active_step
         hidden_trains = false
         trains_to_buy = other_corp_trains.flat_map do |other, trains|
@@ -342,9 +348,15 @@ module View
 
             real_name = other_owner(other) != other.owner ? " [#{other_owner(other).name}]" : ''
 
+            train_props = { style: {} }
+            unless @game.able_to_operate?(corporation, group[0], name)
+              color = StockMarket::COLOR_MAP[:yellow]
+              train_props[:style][:backgroundColor] = color
+              train_props[:style][:color] = contrast_on(color)
+            end
             line = if @show_other_players || other_owner(other) == @corporation.owner
-                     [h(:div, name),
-                      h('div.nowrap',
+                     [h(:div, train_props, name),
+                      h('div.nowrap', train_props,
                         "#{other.name} (#{count > 1 ? "#{count}, " : ''}#{other.owner.name}#{real_name})"),
                       input,
                       h('button.no_margin', { on: { click: buy_train_click } }, 'Buy')]
