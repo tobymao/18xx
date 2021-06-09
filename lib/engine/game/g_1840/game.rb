@@ -53,7 +53,7 @@ module Engine
           custom: 'Fixed number of Rounds'
         )
 
-        NEXT_SR_PLAYER_ORDER = :least_cash
+        NEXT_SR_PLAYER_ORDER = :most_cash
 
         MARKET_TEXT = {
           par: 'City Corporation Par',
