@@ -311,6 +311,7 @@ module Engine
         BIDDING_BOX_START_PRIVATE = 'P1'
 
         BIDDING_TOKENS = {
+          '2': 7,
           '3': 6,
           '4': 5,
           '5': 4,
