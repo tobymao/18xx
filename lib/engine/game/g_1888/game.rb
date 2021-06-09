@@ -217,6 +217,10 @@ module Engine
           ], round_num: round_num)
         end
 
+        def or_set_finished
+          depot.export! if %w[2 3 4].include?(@depot.upcoming.first.name)
+        end
+
         def timeline
           @timeline = [
             'At the end of each set of ORs the next available non-permanent (2, 3 or 4) train will be exported
