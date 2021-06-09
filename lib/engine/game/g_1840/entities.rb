@@ -541,7 +541,7 @@ module Engine
             float_percent: 50,
             sym: 'SJE',
             name: 'Schaeck-Jaquet & Comp',
-            logo: '1840/DTKC',
+            logo: '1840/SJE',
             tokens: [],
             color: '#2F2483',
             type: 'major',
