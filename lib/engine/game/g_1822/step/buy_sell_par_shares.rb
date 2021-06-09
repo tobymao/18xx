@@ -248,6 +248,9 @@ module Engine
             # Bid is done in should_stop_applying_program
             return if action.is_a?(Action::Bid)
 
+            # Off shore cannot cause presidency shift, ignore
+            return if action.is_a?(Action::Choose) && action.entity.id == @game.class::COMPANY_OSTH
+
             super
           end
 
