@@ -685,9 +685,7 @@ module Engine
           revenue += 10 * stops.count { |stop| !stop.tile.towns.empty? } if two_barrels_used_this_or?(route.corporation)
 
           # Add Hole off-board revenue when passing through
-          if !@holes.empty? && (@holes & route.all_hexes).size == 2
-            revenue += @holes[0].tile.offboards[0].route_revenue(route.phase, route.train)
-          end
+          revenue += @holes[0].tile.offboards[0].route_revenue(route.phase, route.train) if pass_through_hole?(route)
 
           # City skipped by Wings worth 0
           visits = route.visited_stops
@@ -731,9 +729,22 @@ module Engine
 
           return if @holes.empty?
 
+          holes_in_route = route.paths.map(&:tile).select { |tile| @holes.include?(tile.hex) }
+
           # Route cannot use Hole as off-board and as pass-through, or used twice
-          holes_in_route = route.paths.map(&:tile).count { |tile| @holes.include?(tile.hex) }
-          raise GameError, 'Hole cannot be a terminal or used multiple times if used as tunnel.' if holes_in_route > 2
+          count_holes = holes_in_route.size
+          if count_holes > 2
+            raise GameError, 'Hole cannot be used as a terminal and as a tunnel at the same time; neither can be used'\
+              ' multiple times as tunnel with the same squirrel (train)'
+          end
+
+          # Route cannot go in and out from the same hex
+          hole_used_twice = (count_holes == 2) && (holes_in_route.uniq.size == 1)
+          raise GameError, 'Route cannot go in and out from the same hex of one of the two R AREA' if hole_used_twice
+
+          # Route cannot use Hole as starting end ending point
+          hole_used_twice = (@holes & route.stops.map { |stop| stop.tile.hex }).size == 2
+          raise GameError, 'Route cannot use holes as terminal more than once' if hole_used_twice
         end
 
         def check_connected(route, _token)
@@ -871,7 +882,7 @@ module Engine
 
           return distance if @holes.empty?
 
-          distance + ((@holes & route.all_hexes).size == 2 ? 1 : 0)
+          distance + (pass_through_hole?(route) ? 1 : 0)
         end
 
         def assign_hole(entity, target)
@@ -1307,14 +1318,20 @@ module Engine
             .select { |t| upgrades_to?(tile, t, selected_company: company) }
         end
 
+        def pass_through_hole?(route)
+          !@holes.empty? &&
+            (@holes & route.all_hexes).size == 2 &&
+            (@holes & route.stops.map { |stop| stop.tile.hex }).size.zero?
+        end
+
         def cities_visited(route, visits, check_town)
           cities_visited = visits.count do |v|
             v.city? || (v.offboard? && v.revenue[:yellow].positive?) ||
-                      (v.town? && check_town)
+              (v.town? && check_town)
           end
 
           # Passing through Hole count as a stop
-          cities_visited += 1 if !@holes.empty? && (@holes & route.all_hexes).size == 2
+          cities_visited += 1 if pass_through_hole?(route)
 
           # Passing through City with Wings doesn't count
           visits = route.visited_stops
