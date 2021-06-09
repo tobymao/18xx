@@ -352,6 +352,7 @@ module Engine
           G1840::Round::Company.new(self, [
             G1840::Step::SellCompany,
             G1840::Step::BuyTrain,
+            G1840::Step::ReassignTrains,
           ], no_city: true)
         end
 
@@ -485,9 +486,10 @@ module Engine
         end
 
         def payout_companies
-          return if @intern_cr_phase_counter != 1 && @round.is_a?(G1840::Round::Line)
-
-          super
+          if @intern_cr_phase_counter == 1 && @round.is_a?(G1840::Round::Company) ||
+             @round.is_a?(Engine::Round::Auction)
+            super
+          end
         end
 
         def place_home_token(corporation)
