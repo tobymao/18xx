@@ -38,6 +38,7 @@ module Engine
         ADDITIONAL_CASH = 350
 
         OPERATING_ROUND_NAME = 'Line'
+        OPERATION_ROUND_SHORT_NAME = 'LRs'
 
         AVAILABLE_CORP_COLOR = '#c6e9af'
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false

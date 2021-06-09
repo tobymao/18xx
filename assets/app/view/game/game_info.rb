@@ -115,7 +115,8 @@ module View
                 h(:tr, [
                   h(:th, 'Phase'),
                   h(:th, 'On Train'),
-                  h(:th, { attrs: { title: 'Number of Operating Rounds' } }, 'ORs'),
+                  h(:th, { attrs: { title: "Number of #{@game.operation_round_name} Rounds" } },
+                    @game.operation_round_short_name),
                   h(:th, 'Train Limit'),
                   h(:th, 'Tiles'),
                   *extra,

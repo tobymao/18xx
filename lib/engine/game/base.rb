@@ -281,6 +281,7 @@ module Engine
       }.freeze
 
       OPERATING_ROUND_NAME = 'Operating'
+      OPERATION_ROUND_SHORT_NAME = 'ORs'
 
       MARKET_SHARE_LIMIT = 50 # percent
       ALL_COMPANIES_ASSIGNABLE = false
@@ -2549,6 +2550,14 @@ module Engine
 
       def decorate_marker(_icon)
         nil
+      end
+
+      def operation_round_short_name
+        self.class::OPERATION_ROUND_SHORT_NAME
+      end
+
+      def operation_round_name
+        self.class::OPERATING_ROUND_NAME
       end
     end
   end
