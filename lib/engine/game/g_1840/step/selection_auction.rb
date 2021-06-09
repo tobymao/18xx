@@ -41,10 +41,9 @@ module Engine
             else
               @log << "#{entity.name} passes bidding"
               entity.pass!
-              return all_passed! if entities.all?(&:passed?)
-
-              next_entity!
+              all_passed! if entities.all?(&:passed?)
             end
+            next_entity!
           end
 
           def next_entity!
@@ -76,11 +75,12 @@ module Engine
 
           def setup
             setup_auction
-            @companies = @game.companies.dup
+            @companies = @game.companies.sort_by(&:value)
+            @cheapest = @companies.first
           end
 
           def starting_bid(company)
-            company.value
+            company.min_bid
           end
 
           def min_bid(company)
@@ -125,18 +125,43 @@ module Engine
                   "with a bid of #{@game.format_currency(price)}"
           end
 
+          def forced_win(player, company)
+            company.owner = player
+            player.companies << company
+
+            @companies.delete(company)
+            @log << "#{player.name} wins the auction for #{company.name} "\
+                  "for #{@game.format_currency(0)}"
+          end
+
           def all_passed!
-            @companies.each { |c| @game.companies.delete(c) }
-            # Need to move entity round once more to be back to the priority deal player
-            @round.next_entity_index!
-            pass!
+            # Everyone has passed so we need to run a fake OR.
+            if @companies.include?(@cheapest)
+              # No one has bought anything so we reduce the value of the cheapest company.
+              value = @cheapest.min_bid
+              @cheapest.discount += 5
+              new_value = @cheapest.min_bid
+              @log << "#{@cheapest.name} minimum bid decreases from "\
+                "#{@game.format_currency(value)} to #{@game.format_currency(new_value)}"
+
+              if new_value <= 0
+                # It's now free so the next player is forced to take it.
+                @round.next_entity_index!
+                forced_win(current_entity, @cheapest)
+                resolve_bids
+              end
+            else
+              @game.payout_companies
+              @game.or_set_finished
+            end
+
+            entities.each(&:unpass!)
           end
 
           def resolve_bids
             super
             entities.each(&:unpass!)
             @round.goto_entity!(@auction_triggerer)
-            next_entity!
           end
         end
       end

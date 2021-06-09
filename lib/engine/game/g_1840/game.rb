@@ -485,7 +485,7 @@ module Engine
         end
 
         def payout_companies
-          return unless @intern_cr_phase_counter == 1
+          return if @intern_cr_phase_counter != 1 && @round.is_a?(G1840::Round::Line)
 
           super
         end
