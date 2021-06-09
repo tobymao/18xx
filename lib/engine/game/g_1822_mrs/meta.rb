@@ -21,7 +21,7 @@ module Engine
         GAME_TITLE = '1822MRS'
         GAME_IS_VARIANT_OF = G1822::Meta
 
-        PLAYER_RANGE = [3, 7].freeze
+        PLAYER_RANGE = [2, 7].freeze
 
         OPTIONAL_RULES = [
           {
