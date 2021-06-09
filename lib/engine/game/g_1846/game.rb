@@ -177,8 +177,16 @@ module Engine
         LITTLE_MIAMI_ICON = 'lm'
 
         MEAT_HEXES = %w[D6 I1].freeze
+        MEAT_ICON = 'meat'
+
         STEAMBOAT_HEXES = %w[B8 C5 D14 I1 G19].freeze
+        STEAMBOAT_ICON = 'port'
+
         BOOMTOWN_HEXES = %w[H12].freeze
+        BOOMTOWN_ICON = 'boom'
+
+        IC_HEXES = %w[E5 F6 G5 H6 J4].freeze
+        IC_ICON = 'ic'
 
         MEAT_REVENUE_DESC = 'Meat-Packing'
 
@@ -245,6 +253,9 @@ module Engine
             @round.active_step.companies.delete(company)
           end
           remove_from_group!(blue_group, @companies) do |company|
+            remove_boomtown_icons if company == boomtown
+            remove_steamboat_icons if company == steamboat
+            remove_meat_icons if company == meat_packing
             company.close!
             @round.active_step.companies.delete(company)
           end
@@ -252,6 +263,7 @@ module Engine
           corporation_removal_groups.each do |group|
             remove_from_group!(group, @corporations) do |corporation|
               place_home_token(corporation)
+              remove_ic_icons if corporation == illinois_central
               abilities(corporation, :reservation) do |ability|
                 corporation.remove_ability(ability)
               end
@@ -606,11 +618,9 @@ module Engine
             end
           end
 
-          (self.class::MEAT_HEXES + self.class::STEAMBOAT_HEXES + self.class::BOOMTOWN_HEXES).uniq.each do |hex|
-            hex_by_id(hex).tile.icons.reject! do |icon|
-              %w[meat port boom].include?(icon.name)
-            end
-          end
+          remove_boomtown_icons
+          remove_steamboat_icons
+          remove_meat_icons
 
           removals.each do |company, removal|
             hex = removal[:hex]
@@ -628,6 +638,30 @@ module Engine
         def remove_lm_icons
           self.class::LITTLE_MIAMI_HEXES.each do |hex|
             hex_by_id(hex).tile.icons.reject! { |icon| icon.name == self.class::LITTLE_MIAMI_ICON }
+          end
+        end
+
+        def remove_boomtown_icons
+          self.class::BOOMTOWN_HEXES.each do |hex|
+            hex_by_id(hex).tile.icons.reject! { |icon| icon.name == self.class::BOOMTOWN_ICON }
+          end
+        end
+
+        def remove_steamboat_icons
+          self.class::STEAMBOAT_HEXES.each do |hex|
+            hex_by_id(hex).tile.icons.reject! { |icon| icon.name == self.class::STEAMBOAT_ICON }
+          end
+        end
+
+        def remove_meat_icons
+          self.class::MEAT_HEXES.each do |hex|
+            hex_by_id(hex).tile.icons.reject! { |icon| icon.name == self.class::MEAT_ICON }
+          end
+        end
+
+        def remove_ic_icons
+          self.class::IC_HEXES.each do |hex|
+            hex_by_id(hex).tile.icons.reject! { |icon| icon.name == self.class::IC_ICON }
           end
         end
 
