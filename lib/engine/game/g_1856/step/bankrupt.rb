@@ -11,7 +11,9 @@ module Engine
             active_entities.any?
           end
 
-          def actions(_entity)
+          def actions(entity)
+            return [] if entity.company?
+
             ACTIONS
           end
 
