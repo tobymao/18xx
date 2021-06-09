@@ -8,7 +8,7 @@ module Engine
       module Meta
         include Game::Meta
 
-        DEV_STAGE = :beta
+        DEV_STAGE = :production
 
         GAME_SUBTITLE = 'Railroading across the Trans Mississippi'
         GAME_DESIGNER = 'Bill Dixon'
