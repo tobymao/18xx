@@ -416,7 +416,8 @@ module Engine
 
       it 'only following corporation is available after first par and following par ' do
         game.round.process_action(Action::Par.new(player_1, corporation: corporation, share_price: share_price))
-        game.round.process_action(Engine::Action::Pass.new(corporation))
+        game.round.process_action(Action::LayTile.new(corporation, tile: game.tile_by_id('6-0'),
+                                                                   hex: game.hex_by_id('K9'), rotation: 1))
         game.round.process_action(Engine::Action::Pass.new(player_1))
         game.round.process_action(Action::Par.new(player_2, corporation: second_corporation, share_price: share_price))
 
@@ -426,7 +427,8 @@ module Engine
 
       it 'only previous corporation is available after first par and previous par' do
         game.round.process_action(Action::Par.new(player_1, corporation: corporation, share_price: share_price))
-        game.round.process_action(Engine::Action::Pass.new(corporation))
+        game.round.process_action(Action::LayTile.new(corporation, tile: game.tile_by_id('6-0'),
+                                                                   hex: game.hex_by_id('K9'), rotation: 1))
         game.round.process_action(Engine::Action::Pass.new(player_1))
         game.round.process_action(Action::Par.new(player_2, corporation: last_corporation, share_price: share_price))
 

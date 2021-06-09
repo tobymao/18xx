@@ -27,11 +27,14 @@
       "share_price": "7,1,1"
     },
     {
-      "type": "pass",
+      "type": "lay_tile",
       "entity": "GI",
       "entity_type": "corporation",
       "id": 4,
-      "created_at": 1616084032
+      "created_at": 1618164999,
+      "hex": "K9",
+      "tile": "6-0",
+      "rotation": 1
     },
     {
       "type": "choose_ability",

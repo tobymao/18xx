@@ -25,11 +25,14 @@
       "share_price": "7,1,1"
     },
     {
-      "type": "pass",
+      "type": "lay_tile",
       "entity": "GI",
       "entity_type": "corporation",
       "id": 4,
-      "created_at": 1616317110
+      "created_at": 1616317187,
+      "hex": "K9",
+      "tile": "5-0",
+      "rotation": 2
     },
     {
       "type": "pass",
@@ -57,20 +60,17 @@
       "entity": "GI",
       "entity_type": "corporation",
       "id": 8,
-      "created_at": 1616317187,
-      "hex": "K9",
-      "tile": "5-0",
-      "rotation": 2
-    },
-    {
-      "type": "lay_tile",
-      "entity": "GI",
-      "entity_type": "corporation",
-      "id": 9,
       "created_at": 1616317190,
       "hex": "L4",
       "tile": "201-0",
       "rotation": 5
+    },
+    {
+      "type": "pass",
+      "entity": "GI",
+      "entity_type": "corporation",
+      "id": 9,
+      "created_at": 1616317190
     },
     {
       "type": "choose_ability",
