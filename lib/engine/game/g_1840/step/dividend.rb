@@ -148,7 +148,7 @@ module Engine
             times = 0
             times = 1 if revenue >= 100 && revenue <= 190
             times = 2 if revenue >= 200 && revenue <= 390
-            times = 3 if revenue >= 499 && revenue <= 590
+            times = 3 if revenue >= 400 && revenue <= 590
             times = 4 if revenue >= 600 && revenue <= 990
             times = 5 if revenue >= 1000 && revenue <= 1490
             times = 6 if revenue >= 1500 && revenue <= 2490

@@ -7,10 +7,16 @@ module Engine
     module G1840
       module Step
         class ReassignTrains < Engine::Step::Base
-          BUY_ACTIONS = %w[reassign_trains pass].freeze
+          ACTIONS = %w[reassign_trains pass].freeze
 
-          def actions(_entity)
-            BUY_ACTIONS
+          def actions(entity)
+            minor_corps = @game.corporate_card_minors(entity)
+            if minor_corps.size.zero? ||
+              minor_corps.size == 1 && !minor_corps.first.trains.empty? && entity.trains.empty?
+              return []
+            end
+
+            ACTIONS
           end
 
           def pass_description
@@ -19,6 +25,22 @@ module Engine
 
           def description
             'Reassign Trains'
+          end
+
+          def auto_actions(entity)
+            minor_corps = @game.corporate_card_minors(entity)
+            train_count = minor_corps.sum { |item| item.trains.size } + entity.trains.size
+            return if minor_corps.size != 1 || train_count != 1
+
+            [
+              Engine::Action::ReassignTrains.new(
+                entity,
+                assignments: [{
+                  train: entity.trains.first,
+                  corporation: @game.corporate_card_minors(entity).first,
+                }]
+              ),
+            ]
           end
 
           def help_text

@@ -38,6 +38,7 @@ module Engine
         ADDITIONAL_CASH = 350
 
         OPERATING_ROUND_NAME = 'Line'
+        OPERATION_ROUND_SHORT_NAME = 'LRs'
 
         AVAILABLE_CORP_COLOR = '#c6e9af'
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
@@ -52,7 +53,7 @@ module Engine
           custom: 'Fixed number of Rounds'
         )
 
-        NEXT_SR_PLAYER_ORDER = :least_cash
+        NEXT_SR_PLAYER_ORDER = :most_cash
 
         MARKET_TEXT = {
           par: 'City Corporation Par',
@@ -351,6 +352,7 @@ module Engine
           G1840::Round::Company.new(self, [
             G1840::Step::SellCompany,
             G1840::Step::BuyTrain,
+            G1840::Step::ReassignTrains,
           ], no_city: true)
         end
 
@@ -484,9 +486,10 @@ module Engine
         end
 
         def payout_companies
-          return unless @intern_cr_phase_counter == 1
-
-          super
+          if @intern_cr_phase_counter == 1 && @round.is_a?(G1840::Round::Company) ||
+             @round.is_a?(Engine::Round::Auction)
+            super
+          end
         end
 
         def place_home_token(corporation)
