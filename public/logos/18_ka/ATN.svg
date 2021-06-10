@@ -1,4 +1,0 @@
-<?xml version="1.0"?>
-<svg version="1.1" viewBox="-30 -30 60 60" xmlns="http://www.w3.org/2000/svg" xmlns:xhtml="http://www.w3.org/1999/xhtml">
-<g><clipPath id="8fc0fafb-edb1-42fc-9afd-6479c7f8c214"><circle cx="0" cy="0" r="30"></circle></clipPath><g clip-path="url(#8fc0fafb-edb1-42fc-9afd-6479c7f8c214)"><g transform="rotate(0)"><circle cx="0" cy="0" r="30" fill="#0a0a0a" stroke="none"></circle></g><circle cx="0" cy="0" r="15" fill="#777" stroke="#110a0c" clip-path="url(#8fc0fafb-edb1-42fc-9afd-6479c7f8c214)"></circle><text font-family="Arial" font-weight="bolder" font-size="16" text-anchor="middle" stroke-width="0.5" stroke="none" fill="rgb(255, 255, 255)" x="0" y="5.5">ATN</text></g><circle cx="0" cy="0" r="30" fill="none" stroke="#707070" stroke-width="1"></circle></g>
-</svg>
