@@ -10,7 +10,7 @@ module Engine
           include Engine::Game::G18ZOO::ChooseAbilityOnOr
 
           def dividend_options(entity)
-            revenue = @game.routes_revenue(routes)
+            revenue = @game.routes_revenue(routes)[:value]
             subsidy = @game.routes_subsidy(routes)
 
             dividend_types.map do |type|
@@ -47,11 +47,25 @@ module Engine
           end
 
           def payout_per_share(entity, revenue)
-            @game.bonus_payout_for_share(@game.share_price_updated(entity, revenue))
+            real_revenue = revenue.is_a?(Hash) ? revenue[:value] : revenue
+            @game.bonus_payout_for_share(@game.share_price_updated(entity, real_revenue))
           end
 
           def payout_shares(entity, revenue)
-            super(entity, revenue + @subsidy)
+            revenue_hash = { type: :revenue, value: revenue + @subsidy }
+            per_share = payout_per_share(entity, revenue_hash)
+
+            payouts = {}
+            (@game.players + @game.corporations).each do |payee|
+              payout_entity(entity, payee, per_share, payouts)
+            end
+
+            receivers = payouts
+                          .sort_by { |_r, c| -c }
+                          .map { |receiver, cash| "#{@game.format_currency(cash)} to #{receiver.name}" }.join(', ')
+
+            @log << "#{entity.name} collects #{@game.format_currency(revenue_hash)}. "\
+                      "#{entity.name} pays #{@game.format_currency(per_share)} per share (#{receivers})"
 
             bonus = @game.bonus_payout_for_president(@game.share_price_updated(entity, revenue))
             return unless bonus.positive?
@@ -64,7 +78,34 @@ module Engine
           def process_dividend(action)
             @subsidy = @game.routes_subsidy(routes)
 
-            super
+            entity = action.entity
+            revenue_hash = @game.routes_revenue(routes)
+            revenue = revenue_hash[:value]
+            kind = action.kind.to_sym
+            payout = dividend_options(entity)[kind]
+
+            rust_obsolete_trains!(entity)
+
+            entity.operating_history[[@game.turn, @round.round_num]] = OperatingInfo.new(
+              routes,
+              action,
+              revenue_hash,
+              @round.laid_hexes
+            )
+
+            entity.trains.each { |train| train.operated = true }
+
+            @round.routes = []
+
+            log_run_payout(entity, kind, revenue, action, payout)
+
+            payout_corporation(payout[:corporation], entity)
+
+            payout_shares(entity, revenue - payout[:corporation]) if payout[:per_share].positive?
+
+            change_share_price(entity, payout)
+
+            pass!
 
             @subsidy = 0
 

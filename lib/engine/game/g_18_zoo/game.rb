@@ -698,7 +698,7 @@ module Engine
             end
           end
 
-          revenue
+          { type: :revenue, value: revenue }
         end
 
         def zoo_ticket?(company)
@@ -818,7 +818,9 @@ module Engine
                     " the first stop out of the off-board #{c1} and the first stop out of the off-board #{c2} to run"\
                     ' a route through.'
           end
-          help << 'Any train running in a city which has a "Wheat" token increase route value by 30.' if corn_assignment
+          if corn_assignment
+            help << 'Any train running in a city which has a "Wheat" token increase route value by 30 nuts.'
+          end
           help
         end
 
@@ -844,9 +846,66 @@ module Engine
           subsidy
         end
 
+        def routes_revenue(routes)
+          value = routes.sum { |route| route.revenue.is_a?(Integer) ? route.revenue : route.revenue[:value] }
+          { type: :revenue, value: value }
+        end
+
         def format_currency(val)
           # object with :revenue should not be formatted
-          val.is_a?(Integer) ? super : val[:revenue].to_s
+          val.is_a?(Integer) ? super : "#{val[:value]} nuts"
+        end
+
+        def compute_stops(route)
+          visits = route.visited_stops
+          distance = route.train.distance
+          return visits if distance.is_a?(Numeric)
+          return [] if visits.empty?
+
+          # distance is an array of hashes defining how many locations of
+          # each type can be hit. A 2+2 train (4 locations, at most 2 of
+          # which can be cities) looks like this:
+          #   [ { nodes: [ 'town' ],                     pay: 2},
+          #     { nodes: [ 'city', 'town', 'offboard' ], pay: 2} ]
+          # Stops use the first available slot, so for each stop in this case
+          # we'll try to put it in a town slot if possible and then
+          # in a city/town/offboard slot.
+          distance = distance.sort_by { |types, _| types.size }
+
+          max_num_stops = [distance.sum { |h| h['pay'] }, visits.size].min
+
+          max_num_stops.downto(1) do |num_stops|
+            # to_i to work around Opal bug
+            stops, revenue = visits.combination(num_stops.to_i).map do |stops|
+              # Make sure this set of stops is legal
+              # 1) At least one stop must have a token
+              next if stops.none? { |stop| stop.tokened_by?(route.corporation) }
+
+              # 2) We can't ask for more revenue centers of a type than are allowed
+              types_used = Array.new(distance.size, 0) # how many slots of each row are filled
+
+              next unless stops.all? do |stop|
+                row = distance.index.with_index do |h, i|
+                  h['nodes'].include?(stop.type) && types_used[i] < h['pay']
+                end
+
+                types_used[row] += 1 if row
+                row
+              end
+
+              [stops, revenue_for(route, stops)[:value]]
+            end.compact.max_by(&:last)
+
+            revenue ||= 0
+
+            # We assume that no stop collection with m < n stops could be
+            # better than a stop collection with n stops, so if we found
+            # anything usable with this number of stops we return it
+            # immediately.
+            return stops if revenue.positive?
+          end
+
+          []
         end
 
         def bonus_payout_for_share(share_price)
@@ -1074,7 +1133,7 @@ module Engine
 
           help = "Current dividend #{format_currency(bonus_hold_share)}"
           help += " (+#{format_currency(bonus_hold_president)} bonus president)" if bonus_hold_president.positive?
-          help += ". Threshold to move: #{threshold}. Dividend if moved #{format_currency(bonus_pay_share)}"
+          help += ". Threshold to move: #{threshold} nuts. Dividend if moved #{format_currency(bonus_pay_share)}"
           help += " (+#{format_currency(bonus_pay_president)} bonus president)" if bonus_pay_president.positive?
 
           help

@@ -38,8 +38,8 @@ module Engine
             [
               ["Threshold#{nbsp(4)}Move", 'Dividend'],
               ["withhold#{nbsp(6)}1 ←", ''],
-              ["< #{threshold}#{nbsp(13)}", bonus_hold.to_s],
-              ["≥ #{threshold}#{nbsp(6)}1 →", bonus_pay.to_s],
+              ["< #{threshold} nuts#{nbsp(13)}", bonus_hold.to_s],
+              ["≥ #{threshold} nuts#{nbsp(6)}1 →", bonus_pay.to_s],
             ]
           end
 
