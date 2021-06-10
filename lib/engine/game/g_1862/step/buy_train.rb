@@ -196,10 +196,11 @@ module Engine
           end
 
           def buyable_train_variants(train, entity)
-            return [] unless buyable_trains(entity).any? { |bt| bt.variants[bt.name] }
+            return [] unless buyable_trains(entity).find(train)
 
             variants = train.variants.values
             return variants if train.owned_by_corporation?
+            return [] unless buyable_trains(entity).any? { |bt| bt.variants[bt.name] }
 
             variants.reject! { |v| v[:name] == train.sym }
             variants.select! { |v| room_for_type?(entity, @game.train_type_by_name(v[:name])) }

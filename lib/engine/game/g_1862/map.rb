@@ -98,6 +98,13 @@ module Engine
             'hidden' => 1,
             'code' => 'town=revenue:20;path=a:0,b:_0;path=a:3,b:_0;path=a:1,b:4',
           },
+          '20_1b' =>
+          {
+            'count' => 6,
+            'color' => 'green',
+            'hidden' => 1,
+            'code' => 'town=revenue:20;path=a:1,b:_0;path=a:4,b:_0;path=a:0,b:3',
+          },
           '20_2' =>
           {
             'count' => 6,
