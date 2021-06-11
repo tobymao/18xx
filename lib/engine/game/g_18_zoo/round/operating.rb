@@ -32,6 +32,10 @@ module Engine
               ability.use!
             end
           end
+
+          def name
+            "OR(#{@round_num}/#{@game.operating_rounds})-day"
+          end
         end
       end
     end

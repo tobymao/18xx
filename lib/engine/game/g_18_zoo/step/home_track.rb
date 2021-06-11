@@ -41,6 +41,10 @@ module Engine
             current_entity && !@round.available_tracks.empty?
           end
 
+          def help
+            "#{current_entity.name} should place the home track"
+          end
+
           def current_entity
             @round.floated_corporation
           end
