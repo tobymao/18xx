@@ -820,6 +820,10 @@ module Engine
         self.class::CURRENCY_FORMAT_STR % val
       end
 
+      def format_revenue_currency(val)
+        format_currency(val)
+      end
+
       def purchasable_companies(entity = nil)
         @companies.select do |company|
           company.owner&.player? && entity != company.owner && !abilities(company, :no_buy)

@@ -125,7 +125,7 @@ module View
           children = []
           if route
             revenue, invalid = begin
-              [@game.format_currency(route.revenue), nil]
+              [@game.format_revenue_currency(route.revenue), nil]
             rescue Engine::GameError => e
               ['N/A', e.to_s]
             end
@@ -265,7 +265,7 @@ module View
         }
 
         revenue = begin
-          @game.format_currency(@game.routes_revenue(active_routes))
+          @game.format_revenue_currency(@game.routes_revenue(active_routes))
         rescue Engine::GameError
           '(Invalid Route)'
         end

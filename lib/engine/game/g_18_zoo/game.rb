@@ -818,7 +818,10 @@ module Engine
                     " the first stop out of the off-board #{c1} and the first stop out of the off-board #{c2} to run"\
                     ' a route through.'
           end
-          help << 'Any train running in a city which has a "Wheat" token increase route value by 30.' if corn_assignment
+          if corn_assignment
+            help << 'Any train running in a city which has a "Wheat" token increase route value by '\
+                    "#{format_revenue_currency(30)}."
+          end
           help
         end
 
@@ -844,9 +847,8 @@ module Engine
           subsidy
         end
 
-        def format_currency(val)
-          # object with :revenue should not be formatted
-          val.is_a?(Integer) ? super : val[:revenue].to_s
+        def format_revenue_currency(val)
+          "#{val} nuts"
         end
 
         def bonus_payout_for_share(share_price)
@@ -1074,7 +1076,8 @@ module Engine
 
           help = "Current dividend #{format_currency(bonus_hold_share)}"
           help += " (+#{format_currency(bonus_hold_president)} bonus president)" if bonus_hold_president.positive?
-          help += ". Threshold to move: #{threshold}. Dividend if moved #{format_currency(bonus_pay_share)}"
+          help += ". Threshold to move: #{format_revenue_currency(threshold)}. "\
+                  "Dividend if moved #{format_currency(bonus_pay_share)}"
           help += " (+#{format_currency(bonus_pay_president)} bonus president)" if bonus_pay_president.positive?
 
           help

@@ -38,7 +38,7 @@ module Engine
           raise GameError, 'Cannot run train that operated' if train.operated
 
           trains[train] = true
-          revenue = @game.format_currency(route.revenue)
+          revenue = @game.format_revenue_currency(route.revenue)
           @log << "#{entity.name} runs a #{train.name} train for #{revenue}: #{route.revenue_str}"
           abilities.concat(route.abilities) if route.abilities
         end

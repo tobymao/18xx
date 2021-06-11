@@ -509,7 +509,7 @@ module View
 
       def render_revenue_history
         last_run = @corporation.operating_history[@corporation.operating_history.keys.max]
-        revenue = @game.format_currency(last_run.revenue)
+        revenue = @game.format_revenue_currency(last_run.revenue)
         text, type =
           case (last_run.dividend.is_a?(Engine::Action::Dividend) ? last_run.dividend.kind : 'no_run')
           when 'no_run'

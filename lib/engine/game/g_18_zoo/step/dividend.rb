@@ -70,6 +70,13 @@ module Engine
 
             action.entity.remove_assignment!('BARREL') if @game.two_barrels_used_this_or?(action.entity)
           end
+
+          private
+
+          def log_payout_shares(entity, revenue, per_share, receivers)
+            @log << "#{entity.name} collects #{@game.format_revenue_currency(revenue)}. "\
+                      "#{entity.name} pays #{@game.format_currency(per_share)} per share (#{receivers})"
+          end
         end
       end
     end
