@@ -691,6 +691,10 @@ module Engine
           end
         end
 
+        def corporation_opts
+          two_player? && @optional_rules&.include?(:two_player_share_limit) ? { max_ownership_percent: 70 } : {}
+        end
+
         def event_hurricane!
           @log << '-- Event: Florida Keys Hurricane --'
           key_west = @hexes.find { |h| h.id == 'M24' }
@@ -730,7 +734,6 @@ module Engine
             raise GameError, 'Cannot convert 10 share corporation'
           end
 
-          corporation.max_ownership_percent = 60
           shares.each { |share| corporation.share_holders[share.owner] += share.percent }
 
           new_shares.each do |share|

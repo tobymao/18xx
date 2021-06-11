@@ -83,7 +83,7 @@ module Engine
             node = city_hex.respond_to?(:city?) ? city_hex : city_hex.tile.towns.first
             min_distance = INFINITE_DISTANCE
             goal_cities = entity.tokens.select(&:city).map(&:city)
-            return unless node
+            return if node.nil?
 
             node.walk(corporation: entity) do |path, visited_paths, _visited|
               if goal_cities.include?(path.city)
