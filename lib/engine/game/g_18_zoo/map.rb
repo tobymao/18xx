@@ -5,7 +5,7 @@ module Engine
     module G18ZOO
       module SharedMap
         TILE_Y = 'label=Y;city=revenue:yellow_30|green_40|brown_50,slots:1'
-        TILE_O = 'town=revenue:0;label=O;icon=image:river,sticky:1'
+        TILE_O = 'town=revenue:10;label=O;icon=image:river,sticky:1'
         TILE_M = 'upgrade=cost:1,terrain:hill'
         TILE_MM = 'upgrade=cost:2,terrain:mountain'
 

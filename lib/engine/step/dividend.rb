@@ -133,8 +133,7 @@ module Engine
                       .sort_by { |_r, c| -c }
                       .map { |receiver, cash| "#{@game.format_currency(cash)} to #{receiver.name}" }.join(', ')
 
-        @log << "#{entity.name} pays out #{@game.format_currency(revenue)} = "\
-                        "#{@game.format_currency(per_share)} per share (#{receivers})"
+        log_payout_shares(entity, revenue, per_share, receivers)
       end
 
       def payout_entity(entity, holder, per_share, payouts)
@@ -183,6 +182,13 @@ module Engine
         end
 
         @log << '-- Event: Obsolete trains rust --' if rusted_trains.any?
+      end
+
+      private
+
+      def log_payout_shares(entity, revenue, per_share, receivers)
+        @log << "#{entity.name} pays out #{@game.format_currency(revenue)} = "\
+                        "#{@game.format_currency(per_share)} per share (#{receivers})"
       end
     end
   end
