@@ -22,6 +22,10 @@ module Engine
           def sold_out?(corporation)
             corporation.player_share_holders.values.sum == (@game.turn == 3 ? 120 : 100)
           end
+
+          def name
+            'SR-day'
+          end
         end
       end
     end

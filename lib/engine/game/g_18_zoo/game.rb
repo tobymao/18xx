@@ -1099,7 +1099,7 @@ module Engine
               ticket = Company.new(sym: "ZOOTicket #{i} - #{player.name}",
                                    name: "ZOOTicket #{i}",
                                    value: 4,
-                                   desc: 'Can be sold to gain money.')
+                                   desc: 'Exchange it for money: give any amount of it to the company.')
               ticket.add_ability(Ability::NoBuy.new(type: 'no_buy'))
               ticket.owner = player
               player.companies << ticket
