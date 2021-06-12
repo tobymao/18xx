@@ -244,24 +244,29 @@ module Engine
         {
           '1846' => [
             {
-              hex: 'D6',
-              initial_icons: %w[meat],
-              lays: [{ tile: '298', rotation: 0, icons: %w[meat] },
-                     { tile: '299', rotation: 0, icons: %w[meat] },
-                     { tile: '300', rotation: 0, icons: %w[meat] }],
+              hex: 'F22',
+              initial_icons: %w[20],
+              lays: [],
             },
             {
-              hex: 'D14',
-              initial_icons: %w[port lsl],
-              lays: [{ tile: '5', rotation: 1, icons: %w[port lsl] },
-                     { tile: '14', rotation: 1, icons: %w[port lsl] },
-                     { tile: '611', rotation: 5, icons: %w[port lsl] },
-                     { tile: '51', rotation: 5, icons: %w[port lsl] }],
+              hex: 'D22',
+              initial_icons: %w[30],
+              lays: [],
             },
             {
-              hex: 'G19',
-              initial_icons: %w[port port],
-              lays: [{ tile: '14', rotation: 1, icons: %w[port port] }],
+              hex: 'C17',
+              initial_icons: %w[30],
+              lays: [],
+            },
+            {
+              hex: 'C21',
+              initial_icons: %w[30],
+              lays: [],
+            },
+            {
+              hex: 'B18',
+              initial_icons: %w[20],
+              lays: [],
             },
             {
               hex: 'J4',
