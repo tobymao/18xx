@@ -800,13 +800,22 @@ module Engine
               else
                 reorder_players
               end
-              @after_merger_round = :operating_round_first
-              new_merger_round(1)
+              if hgk.floated?
+                new_operating_round
+              else
+                @after_merger_round = :operating_round_first
+                new_merger_round(1)
+              end
             when Engine::Round::Operating
               or_round_finished
-              if @round.round_num < @operating_rounds
+              if hgk.floated? && @round.round_num < @operating_rounds
+                new_operating_round(@round.round_num + 1)
+              elsif @round.round_num < @operating_rounds
                 @after_merger_round = :operating_round_second
                 new_merger_round(2)
+              elsif hgk.floated?
+                @turn += 1
+                new_stock_round
               else
                 or_set_finished
                 # If starting package remains, need to sell it first
