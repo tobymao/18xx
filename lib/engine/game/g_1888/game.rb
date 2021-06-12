@@ -265,6 +265,15 @@ module Engine
           bonus = destinated?(route.train.owner, route.stops) ? ' (dest)' : ''
           super + bonus
         end
+
+        def destination_str(corp)
+          hexid = DESTINATION_HEX[corp.name]
+          "#{LOCATION_NAMES[hexid]} (#{hexid}) +#{DESTINATION_BONUS[corp.name]}"
+        end
+
+        def status_array(corp)
+          ["Dest: #{destination_str(corp)}"]
+        end
       end
     end
   end
