@@ -94,7 +94,7 @@ module Engine
       []
     end
 
-    def <=>(other)
+    def <=>(_other)
       1
     end
   end

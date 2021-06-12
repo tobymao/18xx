@@ -141,7 +141,8 @@ module Engine
           def add_player_vote_info(player, percent, name)
             if @voters.include?(player)
               @votes[player] += percent
-              @log << "Player #{player.name} adds another #{percent} votes from owning #{name}, for a total of #{@votes[player]} votes"
+              @log << "Player #{player.name} adds another #{percent} votes from owning #{name}, "\
+                      "for a total of #{@votes[player]} votes"
             else
               @voters << player
               @log << "Player #{player.name} gets #{percent} votes from owning #{name}"

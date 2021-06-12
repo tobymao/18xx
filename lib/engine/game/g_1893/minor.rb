@@ -6,7 +6,6 @@ module Engine
   module Game
     module G1893
       class Minor < Engine::Minor
-
         def percent_of(_corp)
           0
         end
@@ -23,7 +22,7 @@ module Engine
           false
         end
 
-        def <=>(other)
+        def <=>(_other)
           1
         end
       end
