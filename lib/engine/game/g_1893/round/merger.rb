@@ -24,6 +24,10 @@ module Engine
             next_entity! if @offering.empty? || merger_candidates_for(current_entity).empty?
           end
 
+          def finish_round
+            # Do not move stock prices after merge round
+          end
+
           def finished?
             @offering.empty? && @game.potential_discard_trains.empty?
           end
@@ -32,10 +36,14 @@ module Engine
             @offering.first
           end
 
+          def next_merge_target
+            @offering.shift
+          end
+
           def handle_vote(choice)
             percent = @votes[current_entity]
             case choice
-            when :yes
+            when 'yes'
               @log << "#{current_entity.name} approves merge of #{names(merger_candidates_for(current_entity))}"
               @yes += percent
               @done = @yes >= 50
@@ -46,7 +54,9 @@ module Engine
               @log << "#{names(merger_candidates)} are merged into #{merge_target.name}"
 
               merge_target == @game.agv ? @game.found_agv : @game.found_hgk
-            when :no
+
+              next_merge_target
+            when 'no'
               @log << "#{current_entity.name} declines merge of #{names(merger_candidates_for(current_entity))}"
               @no += percent
               @done = @no > 50
@@ -54,8 +64,9 @@ module Engine
               return unless @done
 
               @log << "#{names(merger_candidates)} are not merged into #{merge_target.name} at this time"
+
+              next_merge_target
             end
-            @offering.delete(merge_target)
           end
 
           def current_entity
@@ -78,7 +89,7 @@ module Engine
               skip_message(@game.agv)
             end
             if @game.hgk_auto_found
-              @log << "-- #{game.hgk.name} is founded as phase 6 has been reached"
+              @log << "-- #{@game.hgk.name} is founded as phase 6 has been reached"
               @log << "#{names(merger_candidates(@game.hgk))} are merged into #{@game.hgk.name}"
               @game.found_hgk
             elsif @game.hgk_mergable
@@ -93,11 +104,11 @@ module Engine
           end
 
           def merger_candidates(mergable = nil)
-            @game.mergers(mergable || @game.round.merge_target)
+            @game.mergers(mergable || merge_target)
           end
 
           def merger_candidates_for(player)
-            merger_candidates.select { |c| c.owner == player }
+            merger_candidates.select { |c| c&.owner == player }
           end
 
           def names(merger_candidates)
@@ -124,16 +135,17 @@ module Engine
 
           def add_player_vote_info_for_reserved_share(reserved_share)
             player = reserved_share[:minor] ? reserved_share[:minor].owner : reserved_share[:private].owner
-            add_player_vote_info(player, reserved_share[:share].percent)
+            add_player_vote_info(player, reserved_share[:share].percent, reserved_share[:name])
           end
 
-          def add_player_vote_info(player, percent)
+          def add_player_vote_info(player, percent, name)
             if @voters.include?(player)
               @votes[player] += percent
-              @log << "Player #{player} adds another #{percent} votes, to get #{@votes[player]}"
+              @log << "Player #{player.name} adds another #{percent} votes from owning #{name}, "\
+                      "for a total of #{@votes[player]} votes"
             else
               @voters << player
-              @log << "Player #{player} has #{percent} votes"
+              @log << "Player #{player.name} gets #{percent} votes from owning #{name}"
               @votes[player] = percent
             end
           end
@@ -143,7 +155,7 @@ module Engine
               percent = 10 * player.num_shares_of(corporation, ceil: false)
               next unless percent.positive?
 
-              add_player_vote_info(player, percent)
+              add_player_vote_info(player, percent, "#{percent}% shares of #{corporation.name}")
             end
           end
 

@@ -19,6 +19,17 @@ module Engine
             'Optional Discard of Any Trains'
           end
 
+          def help
+            'President may discard any number of trains - click on the ones '\
+            'to discard, or pass when not wanting to discard any more. If number'\
+            ' of trains exceed train limit, discard must be done to have a legal'\
+            ' amount of trains.'
+          end
+
+          def entities
+            @game.potential_discard_trains.map(:player)
+          end
+
           def log_skip(entity)
             super unless entity.corporation?
           end
@@ -29,13 +40,23 @@ module Engine
             [discarding_entity]
           end
 
+          def active?
+            return true if @game.potential_discard_trains&.any?
+
+            false
+          end
+
+          def blocking?
+            active?
+          end
+
           def process_discard_train(action)
             train = action.train
             @game.depot.reclaim_train(train)
             @log << "#{action.entity.name} discards a #{train.name} train"
             return unless action.entity.trains.empty?
 
-            @game.potential_discard_trains.delete(action.entity)
+            @game.potential_discard_trains.shift
           end
 
           def process_pass(action)
@@ -43,7 +64,7 @@ module Engine
               raise GameError, "#{action.entity.name} exceeds train limit of #{@ŋame.train_limit(action.entity)}"
             end
 
-            @game.potential_discard_trains.delete(action.entity)
+            @game.potential_discard_trains.shift
             super
           end
 
