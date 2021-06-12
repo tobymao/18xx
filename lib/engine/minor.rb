@@ -85,17 +85,5 @@ module Engine
       @floated = false
       @owner = nil
     end
-
-    def percent_of(_corp)
-      0
-    end
-
-    def shares_of(_corp)
-      []
-    end
-
-    def <=>(_other)
-      1
-    end
   end
 end
