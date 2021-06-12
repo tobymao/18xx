@@ -15,6 +15,14 @@ module Engine
           []
         end
 
+        def holding_ok?(_entity, _amount)
+          false
+        end
+
+        def ipoed
+          false
+        end
+
         def <=>(other)
           1
         end
