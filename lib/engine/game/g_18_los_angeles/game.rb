@@ -51,8 +51,15 @@ module Engine
           'SP' => 'C6',
         }.freeze
 
+        ABILITY_ICONS = {
+          SBL: 'sbl',
+          LAC: 'meat',
+          LAS: 'port',
+        }.freeze
+
         LSL_HEXES = %w[E4 E6].freeze
         LSL_ICON = 'sbl'
+        LSL_ID = 'SBL'
 
         LITTLE_MIAMI_HEXES = [].freeze
 
@@ -128,7 +135,7 @@ module Engine
             G1846::Step::Bankrupt,
             Engine::Step::Assign,
             G18LosAngeles::Step::SpecialToken,
-            Engine::Step::SpecialTrack,
+            G1846::Step::SpecialTrack,
             G1846::Step::BuyCompany,
             G1846::Step::IssueShares,
             G1846::Step::TrackAndToken,

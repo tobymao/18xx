@@ -171,16 +171,28 @@ module Engine
         }.freeze
 
         LSL_HEXES = %w[D14 E17].freeze
+
+        # we must define these since it's redefined by 18LA
         LSL_ICON = 'lsl'
+        LSL_ID = 'LSL'
+        MEAT_REVENUE_DESC = 'Meat-Packing'
 
         LITTLE_MIAMI_HEXES = %w[H12 G13].freeze
-        LITTLE_MIAMI_ICON = 'lm'
+
+        ABILITY_ICONS = {
+          SC: 'port',
+          MPC: 'meat',
+          LSL: 'lsl',
+          BT: 'boom',
+          LM: 'lm',
+          IC: 'ic',
+        }.freeze
 
         MEAT_HEXES = %w[D6 I1].freeze
-        STEAMBOAT_HEXES = %w[B8 C5 D14 I1 G19].freeze
-        BOOMTOWN_HEXES = %w[H12].freeze
 
-        MEAT_REVENUE_DESC = 'Meat-Packing'
+        STEAMBOAT_HEXES = %w[B8 C5 D14 I1 G19].freeze
+
+        BOOMTOWN_HEXES = %w[H12].freeze
 
         TILE_COST = 20
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
@@ -238,13 +250,20 @@ module Engine
           # When creating a game the game will not have enough to start
           return unless @players.size.between?(*self.class::PLAYER_RANGE)
 
+          if first_edition?
+            remove_icons(self.class::BOOMTOWN_HEXES, self.class::ABILITY_ICONS['BT'])
+            remove_icons(self.class::LITTLE_MIAMI_HEXES, self.class::ABILITY_ICONS['LM'])
+          end
+
           remove_from_group!(orange_group, @companies) do |company|
-            remove_lm_icons if company == little_miami
-            remove_lsl_icons if company == lake_shore_line
+            ability_with_icons = company.abilities.find { |ability| ability.type == 'tile_lay' }
+            remove_icons(ability_with_icons.hexes, self.class::ABILITY_ICONS[company.id]) if ability_with_icons
             company.close!
             @round.active_step.companies.delete(company)
           end
           remove_from_group!(blue_group, @companies) do |company|
+            ability_with_icons = company.abilities.find { |ability| ability.type == 'assign_hexes' }
+            remove_icons(ability_with_icons.hexes, self.class::ABILITY_ICONS[company.id]) if ability_with_icons
             company.close!
             @round.active_step.companies.delete(company)
           end
@@ -252,6 +271,8 @@ module Engine
           corporation_removal_groups.each do |group|
             remove_from_group!(group, @corporations) do |corporation|
               place_home_token(corporation)
+              ability_with_icons = corporation.abilities.find { |ability| ability.type == 'tile_lay' }
+              remove_icons(ability_with_icons.hexes, self.class::ABILITY_ICONS[corporation.id]) if ability_with_icons
               abilities(corporation, :reservation) do |ability|
                 corporation.remove_ability(ability)
               end
@@ -559,8 +580,8 @@ module Engine
 
         def event_close_companies!
           @minors.dup.each { |minor| close_corporation(minor) }
-          remove_lm_icons
-          remove_lsl_icons
+          remove_icons(self.class::LSL_HEXES, self.class::ABILITY_ICONS[lake_shore_line.id]) if lake_shore_line
+          remove_icons(self.class::LITTLE_MIAMI_HEXES, self.class::ABILITY_ICONS[little_miami.id]) if little_miami
           remove_steamboat_markers! unless steamboat.owned_by_corporation?
           super
         end
@@ -606,28 +627,20 @@ module Engine
             end
           end
 
-          (self.class::MEAT_HEXES + self.class::STEAMBOAT_HEXES + self.class::BOOMTOWN_HEXES).uniq.each do |hex|
-            hex_by_id(hex).tile.icons.reject! do |icon|
-              %w[meat port boom].include?(icon.name)
-            end
-          end
+          remove_icons(self.class::BOOMTOWN_HEXES, self.class::ABILITY_ICONS['BT'])
+          remove_icons(self.class::STEAMBOAT_HEXES, self.class::ABILITY_ICONS['SC'])
+          remove_icons(self.class::MEAT_HEXES, self.class::ABILITY_ICONS['MPC'])
 
           removals.each do |company, removal|
             hex = removal[:hex]
             corp = removal[:corporation]
-            @log << "-- Event: #{corp}'s #{company_by_id(company).name} token removed from #{hex} --"
+            @log << "-- Event: #{corp}'s #{company_by_id(company).name} marker removed from #{hex} --"
           end
         end
 
-        def remove_lsl_icons
-          self.class::LSL_HEXES.each do |hex|
-            hex_by_id(hex).tile.icons.reject! { |icon| icon.name == self.class::LSL_ICON }
-          end
-        end
-
-        def remove_lm_icons
-          self.class::LITTLE_MIAMI_HEXES.each do |hex|
-            hex_by_id(hex).tile.icons.reject! { |icon| icon.name == self.class::LITTLE_MIAMI_ICON }
+        def remove_icons(hex_list, icon_name)
+          hex_list.each do |hex|
+            hex_by_id(hex).tile.icons.reject! { |icon| icon.name == icon_name }
           end
         end
 
@@ -846,7 +859,7 @@ module Engine
           return if abilities(little_miami, :tile_lay)
 
           check_little_miami_graph_after!
-          remove_lm_icons
+          remove_icons(self.class::LITTLE_MIAMI_HEXES, self.class::ABILITY_ICONS[little_miami.id])
         end
 
         def check_little_miami_graph_before!
