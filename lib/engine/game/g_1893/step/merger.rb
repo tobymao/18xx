@@ -47,6 +47,13 @@ module Engine
             end
           end
 
+          def visible_corporations
+            shown = @game.corporations
+            return shown if shown.select(&:minor?).any?
+
+            shown.concat(@game.round.merger_candidates.select(&:minor?))
+          end
+
           def help
             names = @game.round.names(@game.round.merger_candidates_for(@game.round.current_entity))
             "Vote Yes or No to merge #{names} into #{@game.round.merge_target.name}. " \

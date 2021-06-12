@@ -764,6 +764,10 @@ module Engine
           end
         end
 
+        def init_minors
+          MINORS.dup.map { |minor| G1893::Minor.new(**minor) }
+        end
+
         def store_player_info
           rsn = @round.class.short_name
           round_num = case @round
@@ -967,32 +971,32 @@ module Engine
 
         def hdsk_reserved_share
           # 10% certificate in HGK
-          { share: hgk.shares[1], private: hdsk }
+          { share: hgk.shares[1], private: hdsk, name: hdsk.name }
         end
 
         def ekb_reserved_share
           # President's certificate in AGV
-          { share: agv.shares[0], minor: ekb }
+          { share: agv.shares[0], minor: ekb, name: ekb.name }
         end
 
         def kfbe_reserved_share
           # 20% certificate in HGK
-          { share: hgk.shares[2], minor: kfbe }
+          { share: hgk.shares[2], minor: kfbe, name: kfbe.name }
         end
 
         def ksz_reserved_share
           # 10% certificate in AGV
-          { share: agv.shares[1], minor: ksz }
+          { share: agv.shares[1], minor: ksz, name: ksz.name }
         end
 
         def kbe_reserved_share
           # President's certificate in HGK
-          { share: hgk.shares[0], minor: kbe }
+          { share: hgk.shares[0], minor: kbe, name: kbe.name }
         end
 
         def bkb_reserved_share
           # 20% certificate in AGV
-          { share: agv.shares[2], minor: bkb }
+          { share: agv.shares[2], minor: bkb, name: bkb.name }
         end
 
         def merged_corporation?(corporation)
@@ -1353,6 +1357,13 @@ module Engine
 
             @share_pool.transfer_shares(s.to_bundle, @share_pool, price: 0, allow_president_change: false)
           end
+        end
+
+        def corporation_available?(corporation)
+          # Needed to show during merger
+          return false if corporation.minor?
+
+          super
         end
 
         private

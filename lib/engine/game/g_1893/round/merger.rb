@@ -135,16 +135,16 @@ module Engine
 
           def add_player_vote_info_for_reserved_share(reserved_share)
             player = reserved_share[:minor] ? reserved_share[:minor].owner : reserved_share[:private].owner
-            add_player_vote_info(player, reserved_share[:share].percent)
+            add_player_vote_info(player, reserved_share[:share].percent, reserved_share[:name])
           end
 
-          def add_player_vote_info(player, percent)
+          def add_player_vote_info(player, percent, name)
             if @voters.include?(player)
               @votes[player] += percent
-              @log << "Player #{player} adds another #{percent} votes, to get #{@votes[player]}"
+              @log << "Player #{player.name} adds another #{percent} votes from owning #{name}, for a total of #{@votes[player]} votes"
             else
               @voters << player
-              @log << "Player #{player} has #{percent} votes"
+              @log << "Player #{player.name} gets #{percent} votes from owning #{name}"
               @votes[player] = percent
             end
           end
@@ -154,7 +154,7 @@ module Engine
               percent = 10 * player.num_shares_of(corporation, ceil: false)
               next unless percent.positive?
 
-              add_player_vote_info(player, percent)
+              add_player_vote_info(player, percent, "#{percent}% shares of #{corporation.name}")
             end
           end
 
