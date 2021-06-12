@@ -17,7 +17,9 @@ module Engine
             'Buy or Pass. If you pass you cannot act more this round. This continues until just one ' \
             'certificate remains after which regular share round commences. If everyone passes earlier ' \
             'this means the game will skip the share round and go directly to operation round, and the ' \
-            'remaining privates will be auctioned out before the share round following the operation round.'
+            'remaining privates will be auctioned out before the share round following the operation round. ' \
+            'Note! Only two lowest numbered remaining minors are available. If one is bought, the next one '\
+            'becomes available, and so on.'
           end
 
           def setup
@@ -25,17 +27,25 @@ module Engine
           end
 
           def actions(entity)
-            return [] if available.one? || finished?
+            return [] if @game.draftables.one? || finished?
 
             entity == current_entity ? ACTIONS_WITH_PASS : []
           end
 
           def available
-            @game.buyable_companies
+            @game.draftable_companies + @game.buyable_minors
           end
 
-          def may_purchase?(company)
-            available.include?(company)
+          def may_purchase?(minor)
+            @game.buyable_companies.include?(minor)
+          end
+
+          def may_choose?(_minor)
+            false
+          end
+
+          def may_draft?(minor)
+            @game.draftable_minors.include?(minor)
           end
 
           def auctioning; end
@@ -69,29 +79,28 @@ module Engine
           end
 
           def finished?
-            available.one? || @game.passers_first_stock_round.size == @game.players.size
+            @game.buyable_companies.one? || @game.passers_first_stock_round.size == @game.players.size
           end
 
-          def min_bid(company)
-            company&.value
+          def min_bid(entity)
+            return entity.value if entity.company?
+
+            @game.minor_starting_treasury(entity)
           end
 
-          def max_bid(_entity, company)
-            may_purchase?(company) ? min_bid(company) : 0
+          def max_place_bid(_player, _object)
+            0
+          end
+
+          def max_bid(_player, object)
+            min_bid(object)
           end
 
           def process_bid(action)
-            company = action.company
             player = action.entity
             price = action.price
 
-            company.owner = player
-            player.companies << company
-            player.spend(price, @game.bank)
-
-            @log << "#{player.name} buys \"#{company.name}\" for #{@game.format_currency(price)}"
-
-            handle_connected_minor(company, player, price)
+            draft_object(action.minor || action.company, player, price)
 
             action_finalized
           end

@@ -21,14 +21,18 @@ module Engine
           end
 
           def help
-            return 'Select a company to auction' unless @auctioning
+            return 'Select a company or minor to auction' unless @auctioning
 
-            "Buy (if enough cash) or Pass. If everyone passes, the price is lowered by #{@game.format_currency(10)} "\
-              'and a new buy/pass opportunity is presented. This continues until someone buys it or when price go '\
-              'below 50% of the value in which case the player that selected the company is force to buy it. '\
-              'Then next player in SR order gets to select a new company to be auctioned, and so on until all ' \
-              'companies are sold. Then the game continues with SR2. Note! Minors bought in this way will get the '\
-              "purchase price as treasury, or #{@game.format_currency(100)}, whichever is highest."
+            text = "Buy #{@auctioning.name} for #{format(min_bid(@auctioning))} or Pass. "\
+              "If everyone passes, the price is lowered by #{format(10)} "\
+              'and a new buy/pass opportunity is presented. This continues until someone buys it or until '\
+              "the price has been lowered to #{format(min_purchase(@auctioning))} (50%). "\
+              "If noone buys it #{@auction_triggerer.name} is forced to buy it. "
+            if @auctioning.minor? && min_purchase(@auctioning) < 100
+              text += "Note! If purchase price is below #{format(100)}, bank will add so that minor "\
+                "receives a treasury of #{format(100)}."
+            end
+            text
           end
 
           def actions(entity)
@@ -43,12 +47,13 @@ module Engine
           def setup
             @reduction_step = 10
             @auction_triggerer = nil
+            @current_reduction = 0
 
             setup_auction
           end
 
           def available
-            @auctioning ? [@auctioning] : @game.buyable_companies
+            @auctioning ? [@auctioning] : (@game.draftable_companies + @game.buyable_minors)
           end
 
           def process_pass(action)
@@ -61,7 +66,7 @@ module Engine
             @auctioning = target
 
             if entities.all?(&:passed?)
-              if (target.discount + @reduction_step) > target.value / 2
+              if min_purchase(target) >= min_bid(target)
                 force_purchase(@auction_triggerer, target)
               else
                 all_passed!(target)
@@ -91,22 +96,35 @@ module Engine
             next_entity!
           end
 
-          def min_bid(company)
-            return unless company
+          def min_bid(entity)
+            return entity.min_bid if entity.company?
 
-            company&.min_bid
+            @game.minor_starting_treasury(entity) - @current_reduction
           end
 
-          def may_purchase?(_entity)
-            !!@auctioning
+          def min_purchase(entity)
+            value = entity.company? ? entity.value : @game.minor_starting_treasury(entity)
+            value / 2
+          end
+
+          def may_purchase?(entity)
+            !!@auctioning && @game.buyable_companies.include?(entity)
           end
 
           def may_choose?(_entity)
             !@auctioning
           end
 
-          def max_bid(entity, target)
-            may_purchase?(target) ? target.min_bid : entity.cash
+          def may_draft?(minor)
+            @auctioning && @game.draftable_minors.include?(minor)
+          end
+
+          def max_bid(_player, object)
+            min_bid(object)
+          end
+
+          def max_place_bid(_entity, _company)
+            0
           end
 
           def selection_bid(bid)
@@ -120,20 +138,17 @@ module Engine
           protected
 
           def reduce_price(target)
-            target.discount += @reduction_step
-
-            @game.log << "Price of #{target.name} is now lowered to #{@game.format_currency(target.min_bid)}"
+            @current_reduction += @reduction_step
+            target.discount += @reduction_step if target.company?
+            new_price = min_bid(target)
+            @game.log << "Price of #{target.name} is now lowered to #{format(new_price)}"
           end
 
           def force_purchase(bidder, target)
             # TODO: Handle the case when bidder cannot afford this
 
-            @log << "#{bidder.name} is forced to buy #{target.name}"
-
-            purchase_company(target, bidder, target.min_bid)
-
-            treasury = target.min_bid < 100 ? 100 : target.min_bid
-            handle_connected_minor(target, bidder, treasury)
+            price = min_bid(target)
+            draft_object(target, bidder, price, forced: true)
 
             reset_auction(bidder, target)
           end
@@ -143,25 +158,15 @@ module Engine
             bidder = bid.entity
             price = bid.price
 
-            unless may_purchase?(target)
-              raise GameError, "#{target.name} cannot be purchased for #{@game.format_currency(price)}."
-            end
+            raise GameError, "#{target.name} cannot be purchased for #{format(price)}." unless may_purchase?(target)
 
-            purchase_company(target, bidder, price)
-
-            treasury = price < 100 ? 100 : price
-            handle_connected_minor(target, bidder, treasury)
+            draft_object(bid.minor || bid.company, player, price)
 
             reset_auction(bidder, target)
           end
 
           def purchase_company(company, buyer)
-            @game.bank.companies&.delete(company)
-            company.owner = buyer
-
-            buyer.companies << company
             buyer.spend(company.min_bid, @game.bank)
-            @log << "#{buyer.name} buy #{company.name} for #{@game.format_currency(company.min_bid)}"
           end
 
           def all_passed!(target)
@@ -175,13 +180,19 @@ module Engine
             @bids.clear
             @active_bidders.clear
             @auctioning = nil
-            @current_reduction = 0
             post_win_bid(winner, target)
 
             entities.each(&:unpass!)
             @round.goto_entity!(@auction_triggerer)
             @auction_triggerer = nil
+            @current_reduction = 0
             next_entity!
+          end
+
+          private
+
+          def format(value)
+            @game.format_currency(value)
           end
         end
       end

@@ -205,7 +205,8 @@ module Engine
             'count' => 1,
             'color' => 'green',
             'code' =>
-            'city=revenue:50,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=K',
+            'city=revenue:50,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;upgrade=cost:40,'\
+              'terrain:water;label=K',
           },
           'KV333' =>
           {
@@ -389,109 +390,6 @@ module Engine
                     discount: { '4' => 150, '5' => 225, '6' => 315 },
                   }].freeze
 
-        COMPANIES = [
-          {
-            sym: 'FdSD',
-            name: 'Fond der Stadt Düsseldorf',
-            value: 190,
-            revenue: 20,
-            desc: 'May be exchanged against 20% shares of the Rheinbahn AG in an SR (except the first one). '\
-              'If less than 20% remains in the market the exchange will be what remains. May also be exchanged '\
-              'to par RAG in which case the private is exchanged for the 20% presidency share. '\
-              'FdSD is closed either due to the exchange or if FdSD has not been exchanged to do an exchange '\
-              'after the first SR of phase 5. An exchange is handled as a Buy action. This private '\
-              'cannot be sold.',
-            abilities: [
-              {
-                type: 'no_buy',
-                owner_type: 'player',
-              },
-              {
-                type: 'exchange',
-                corporations: ['RAG'],
-                owner_type: 'player',
-                when: 'owning_player_sr_turn',
-                from: %w[market],
-              },
-            ],
-            color: nil,
-          },
-          {
-            sym: 'EVA',
-            name: 'Eisenbahnverkehrsmittel Aktiengesellschaft',
-            value: 150,
-            revenue: 30,
-            desc: 'Leaves the game after the purchase of the first 6-train. This private cannot be sold to '\
-              'any corporation.',
-            abilities: [{ type: 'no_buy', owner_type: 'player' }],
-            color: nil,
-          },
-          {
-            sym: 'HdSK',
-            name: 'Häfen der Stadt Köln',
-            value: 100,
-            revenue: 10,
-            desc: 'Exchange against 10% certificate of HGK. This private cannot be sold.',
-            abilities: [{ type: 'no_buy', owner_type: 'player' }],
-            color: nil,
-          },
-          {
-            sym: 'EKB',
-            name: 'Euskirchener Kreisbahn',
-            value: 210,
-            revenue: 0,
-            desc: "Buyer takes control of minor with same name (EKB), and the price paid makes the minor's treasury. "\
-              "EKB minor and private are exchanged into the 20% president's certificate of AGV when AGV is formed. "\
-              'The private and minor cannot be sold.',
-            abilities: [{ type: 'no_buy', owner_type: 'player' }],
-            color: nil,
-          },
-          {
-            sym: 'KFBE',
-            name: 'Köln-Frechen-Benzelrather Eisenbahn',
-            value: 200,
-            revenue: 0,
-            desc: "Buyer takes control of minor with same name (KFBE), and the price paid makes the minor's treasury. "\
-              "KFBE minor and private are exchanged into the 20% president's certificate of AGV when AGV is formed. "\
-              'The private and minor cannot be sold.',
-            abilities: [{ type: 'no_buy', owner_type: 'player' }],
-            color: nil,
-          },
-          {
-            sym: 'KSZ',
-            name: 'Kleinbahn Siegburg-Zündorf',
-            value: 100,
-            revenue: 0,
-            desc: "Buyer takes control of minor with same name (KSZ), and the price paid makes the minor's treasury. "\
-              'KSZ minor and private are exchanged into a 10% certificate of AGV when AGV is formed. '\
-              'The private and minor cannot be sold.',
-            abilities: [{ type: 'no_buy', owner_type: 'player' }],
-            color: nil,
-          },
-          {
-            sym: 'KBE',
-            name: 'Köln-Bonner Eisenbahn',
-            value: 220,
-            revenue: 0,
-            desc: "Buyer takes control of minor with same name (KBE), and the price paid makes the minor's treasury. "\
-              "KBE minor and private are exchanged into the 20% president's certificate of HGK when HGK is formed. "\
-              'The private and minor cannot be sold.',
-            abilities: [{ type: 'no_buy', owner_type: 'player' }],
-            color: nil,
-          },
-          {
-            sym: 'BKB',
-            name: 'Bergheimer Kreisbahn',
-            value: 190,
-            revenue: 0,
-            desc: "Buyer takes control of minor with same name (BKB), and the price paid makes the minor's treasury. "\
-              'BKB minor and private are exchanged into a 20% certificate of AGV when AGV is formed. '\
-              'The private and minor cannot be sold.',
-            abilities: [{ type: 'no_buy', owner_type: 'player' }],
-            color: nil,
-          },
-        ].freeze
-
         NAME_OF_PRIVATES = %w[FdSD EVA HdSK].freeze
 
         CORPORATIONS = [
@@ -540,21 +438,6 @@ module Engine
             reservation_color: nil,
           },
           {
-            name: 'Anleihen der Stadt Köln',
-            sym: 'AdSK',
-            float_percent: 101,
-            always_market_price: true,
-            max_ownership_percent: 100,
-            floatable: false,
-            tokens: [],
-            shares: [0, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
-            logo: '1893/AdSK',
-            simple_logo: '1893/AdSK.alt',
-            color: :gray,
-            text_color: 'white',
-            reservation_color: nil,
-          },
-          {
             name: 'AG für Verkehrswesen',
             sym: 'AGV',
             float_percent: 50,
@@ -572,6 +455,10 @@ module Engine
               {
                 type: 'no_buy',
                 description: 'Unavailable in SR before phase 4',
+                desc_detail: 'During phase 4 it is possible to buy its shares from the market for 120M. '\
+                  'During each MR in phase 4 the share holders and owners of minor 1 (20%), 3 (10%) and 5 (20%), '\
+                  'will vote if AGV should form. If 50% vote yes, AGV will float, otherwise voting is repeated each '\
+                  'MR until Phase 5 when AGV float automatically during the first MR.',
               },
             ],
             reservation_color: nil,
@@ -593,70 +480,98 @@ module Engine
               {
                 type: 'no_buy',
                 description: 'Unavailable in SR before phase 5',
+                desc_detail: 'During phase 5 it is possible to buy its shares from the market for 120M. '\
+                  'During each MR in phase 4 the share holders and owners of minor 2 (20%), 4 (20%) and '\
+                  'HdSK (10%), will vote if HGK should form. If 50% vote yes, HGK will float, otherwise '\
+                  'voting is repeated each MR until Phase 6 when HGK float automatically during the first MR.',
               },
             ],
-            coordinates: 'J5',
             reservation_color: nil,
           },
         ].freeze
 
         MINORS = [
-          {
-            sym: 'EKB',
-            name: '1 Euskirchener Kreisbahn',
-            type: 'minor',
-            tokens: [0],
-            logo: '1893/EKB',
-            simple_logo: '1893/EKB.alt',
-            coordinates: 'T3',
-            city: 0,
-            color: :green,
-          },
-          {
-            sym: 'KFBE',
-            name: '2 Köln-Frechen-Benzelrather E',
-            type: 'minor',
-            tokens: [0],
-            logo: '1893/KFBE',
-            simple_logo: '1893/KFBE.alt',
-            coordinates: 'L3',
-            city: 0,
-            color: :red,
-          },
-          {
-            sym: 'KSZ',
-            name: '3 Kleinbahn Siegburg-Zündorf',
-            type: 'minor',
-            tokens: [0],
-            logo: '1893/KSZ',
-            simple_logo: '1893/KSZ.alt',
-            coordinates: 'P7',
-            city: 0,
-            color: :green,
-          },
-          {
-            sym: 'KBE',
-            name: '4 Köln-Bonner Eisenbahn',
-            type: 'minor',
-            tokens: [0],
-            logo: '1893/KBE',
-            simple_logo: '1893/KBE.alt',
-            coordinates: 'O4',
-            city: 0,
-            color: :red,
-          },
-          {
-            sym: 'BKB',
-            name: '5 Bergheimer Kreisbahn',
-            type: 'minor',
-            tokens: [0],
-            logo: '1893/BKB',
-            simple_logo: '1893/BKB.alt',
-            coordinates: 'I2',
-            city: 0,
-            color: :green,
-          },
-        ].freeze
+            {
+              sym: 'EKB',
+              name: '1 Euskirchener Kreisbahn',
+              type: 'minor',
+              tokens: [0],
+              logo: '1893/EKB',
+              simple_logo: '1893/EKB.alt',
+              coordinates: 'T3',
+              city: 0,
+              color: :green,
+              abilities: [
+                {
+                  type: 'base',
+                  description: 'When AGV form: becomes 20% president certificate in AGV',
+                  desc_detail: 'During merge rounds in phase 4 this minor gives 20 votes on AGV formation. '\
+                               'When AGV form this minor is exchanged for a 20% president certificate in AGV, '\
+                               'while the treasury, token and train(s) of the minor are merged into AGV.',
+                },
+              ],
+            },
+            {
+              sym: 'KFBE',
+              name: '2 Köln-Frechen-Benzelrather E',
+              type: 'minor',
+              tokens: [0],
+              logo: '1893/KFBE',
+              simple_logo: '1893/KFBE.alt',
+              coordinates: 'L3',
+              city: 0,
+              color: :red,
+            },
+            {
+              sym: 'KSZ',
+              name: '3 Kleinbahn Siegburg-Zündorf',
+              type: 'minor',
+              tokens: [0],
+              logo: '1893/KSZ',
+              simple_logo: '1893/KSZ.alt',
+              coordinates: 'P7',
+              city: 0,
+              color: :green,
+            },
+            {
+              sym: 'KBE',
+              name: '4 Köln-Bonner Eisenbahn',
+              type: 'minor',
+              tokens: [0],
+              logo: '1893/KBE',
+              simple_logo: '1893/KBE.alt',
+              coordinates: 'O4',
+              city: 0,
+              color: :red,
+            },
+            {
+              sym: 'BKB',
+              name: '5 Bergheimer Kreisbahn',
+              type: 'minor',
+              tokens: [0],
+              logo: '1893/BKB',
+              simple_logo: '1893/BKB.alt',
+              coordinates: 'I2',
+              city: 0,
+              color: :green,
+            },
+          ].freeze
+
+        MINOR_INITIAL_PRICE = {
+          'EKB' => 210,
+          'KFBE' => 200,
+          'KSZ' => 100,
+          'KBE' => 220,
+          'BKB' => 190,
+        }.freeze
+
+        MINOR_DESCRIPTION = {
+          'EKB' => 'exchanged for AGV 20% president certificate when AGV form',
+          'KFBE' => 'exchanged for HGK 20% certificate when HGK form',
+          'KSZ' => 'exchanged for AGV 10% certificate when AGV form',
+          'KBE' => 'exchanged for HGK 20% president certificate when HGK form',
+          'BKB' => 'exchanged for AGV 20% certificate when AGV form',
+        }.freeze
 
         LAYOUT = :flat
 
@@ -693,7 +608,7 @@ module Engine
         ).freeze
 
         OPTION_TILES_USE_GREY_PHASE = %w[KV201-0 KV269-0 KV255-0 KV333-0 KV259-0].freeze
-        OPTION_TILES_REMOVE_GREY_PHASE = %w[K269-0 K255-0].freeze
+        OPTION_TILES_REMOVE_GREY_PHASE = %w[K201-0 K269-0 K255-0].freeze
         OPTION_TILES_USE_EXISTING_TRACK = %w[KV619-0 KV63-0].freeze
 
         MERGED_CORPORATIONS = %w[AGV HGK].freeze
@@ -734,6 +649,80 @@ module Engine
           end
         end
 
+        def game_companies
+          all_companies = [
+            {
+              sym: 'FdSD',
+              name: 'Fond der Stadt Düsseldorf',
+              value: 190,
+              revenue: 20,
+              desc: 'May be exchanged against 20% shares of the Rheinbahn AG in an SR (except the first one). '\
+                'If less than 20% remains in the market the exchange will be what remains. May also be exchanged '\
+                'to par RAG in which case the private is exchanged for the 20% presidency share. '\
+                'FdSD is closed either due to the exchange or if FdSD has not been exchanged to do an exchange '\
+                'after the first SR of phase 5. An exchange is handled as a Buy action. This private '\
+                'cannot be sold.',
+              abilities: [
+                {
+                  type: 'no_buy',
+                  owner_type: 'player',
+                },
+                {
+                  type: 'exchange',
+                  corporations: ['RAG'],
+                  owner_type: 'player',
+                  when: 'owning_player_sr_turn',
+                  from: %w[market],
+                },
+              ],
+              color: nil,
+            },
+            {
+              sym: 'EVA',
+              name: 'Eisenbahnverkehrsmittel Aktiengesellschaft',
+              value: 150,
+              revenue: 30,
+              desc: 'Leaves the game after the purchase of the first 6-train. This private cannot be sold to '\
+                'any corporation.',
+              abilities: [{ type: 'no_buy', owner_type: 'player' }],
+              color: nil,
+            },
+            {
+              sym: 'HdSK',
+              name: 'Häfen der Stadt Köln',
+              value: 100,
+              revenue: 10,
+              desc: 'Exchange against 10% certificate of HGK. This private cannot be sold.',
+              abilities: [{ type: 'no_buy', owner_type: 'player' }],
+              color: nil,
+            },
+          ]
+          (1..10).each do |x|
+            all_companies << {
+              sym: "AdSK-#{x}",
+              name: "Anleihen der Stadt Köln #{x}",
+              value: 100,
+              revenue: 10,
+              desc: 'Bond. Can be bought/sold during Stock Round in a similar way shares are bought/sold.',
+              color: nil,
+            }
+          end
+          all_companies
+        end
+
+        def store_player_info
+          rsn = @round.class.short_name
+          round_num = case @round
+                      when G1893::Round::Merger
+                        @merger_count
+                      else
+                        @round.round_num
+                      end
+          @players.each do |p|
+            p.history << PlayerInfo.new(rsn, turn, round_num, player_value(p))
+          end
+        end
+
         def next_round!
           @round =
             case @round
@@ -757,24 +746,32 @@ module Engine
               else
                 reorder_players
               end
-              @after_merger_round = :operating_round_first
-              new_merger_round(1)
+              if hgk.floated?
+                new_operating_round
+              else
+                @after_merger_round = :operating_round_first
+                new_merger_round(1)
+              end
             when Engine::Round::Operating
               or_round_finished
-              if @round.round_num < @operating_rounds
+              if hgk.floated? && @round.round_num < @operating_rounds
+                new_operating_round(@round.round_num + 1)
+              elsif @round.round_num < @operating_rounds
                 @after_merger_round = :operating_round_second
-                merger_count = 2
+                new_merger_round(2)
+              elsif hgk.floated?
+                @turn += 1
+                new_stock_round
               else
                 or_set_finished
                 # If starting package remains, need to sell it first
-                @after_merger_round = if buyable_companies.empty?
+                @after_merger_round = if draftables.empty?
                                         :stock_round
                                       else
                                         :auction_round
                                       end
-                merger_count = 3
+                new_merger_round(3)
               end
-              new_merger_round(merger_count)
             when Engine::Round::Draft
               if @is_init_round
                 @is_init_round = false
@@ -817,7 +814,8 @@ module Engine
         end
 
         def stock_round
-          G1893::Round::Stock.new(self, [
+          @passers_first_stock_round = []
+          Engine::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
             G1893::Step::BuySellParShares,
           ])
@@ -828,7 +826,7 @@ module Engine
             Engine::Step::Bankrupt,
             Engine::Step::DiscardTrain,
             Engine::Step::HomeToken,
-            Engine::Step::Track,
+            G1893::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
             G1893::Step::Dividend,
@@ -837,7 +835,8 @@ module Engine
         end
 
         def new_merger_round(count)
-          @log << "-- Merge Round #{@turn}.#{count} (of 3) --"
+          @merger_count = count
+          @log << "-- Merge Round #{@turn}.#{@merger_count} (of 3) --"
           G1893::Round::Merger.new(self, [
             G1893::Step::PotentialDiscardTrainsAfterMerge,
             G1893::Step::Merger,
@@ -845,7 +844,6 @@ module Engine
         end
 
         def float_str(entity)
-          return 'Each pay 10M per OR' if entity.name == 'AdSK'
           return super if !entity.corporation || entity.floatable
           return super unless merged_corporation?(entity)
 
@@ -853,15 +851,10 @@ module Engine
         end
 
         def status_str(entity)
-          return 'Minor' if entity.minor?
+          return "Minor - #{MINOR_DESCRIPTION[entity.name]}" if entity.minor?
           return 'Exchangable corporation' if !entity.floated? && merged_corporation?(entity)
-          return 'Bond - Buy/Sell as share for set price' if entity == adsk
 
           'Corporation'
-        end
-
-        def adsk
-          @adsk_corporation ||= corporation_by_id('AdSK')
         end
 
         def agv
@@ -910,32 +903,32 @@ module Engine
 
         def hdsk_reserved_share
           # 10% certificate in HGK
-          { share: hgk.shares[1], private: hdsk, minor: nil }
+          { share: hgk.shares[1], private: hdsk, name: hdsk.name }
         end
 
         def ekb_reserved_share
           # President's certificate in AGV
-          { share: agv.shares[0], private: nil, minor: ekb }
+          { share: agv.shares[0], minor: ekb, name: ekb.name }
         end
 
         def kfbe_reserved_share
           # 20% certificate in HGK
-          { share: hgk.shares[2], private: nil, minor: kfbe }
+          { share: hgk.shares[2], minor: kfbe, name: kfbe.name }
         end
 
         def ksz_reserved_share
           # 10% certificate in AGV
-          { share: agv.shares[1], private: nil, minor: ksz }
+          { share: agv.shares[1], minor: ksz, name: ksz.name }
         end
 
         def kbe_reserved_share
           # President's certificate in HGK
-          { share: hgk.shares[0], private: nil, minor: kbe }
+          { share: hgk.shares[0], minor: kbe, name: kbe.name }
         end
 
         def bkb_reserved_share
           # 20% certificate in AGV
-          { share: agv.shares[2], private: nil, minor: bkb }
+          { share: agv.shares[2], minor: bkb, name: bkb.name }
         end
 
         def merged_corporation?(corporation)
@@ -943,15 +936,6 @@ module Engine
         end
 
         def setup
-          # Set up bonds to have a presidency share owned by the bank
-          # and have a set price of 100
-          adsk.shares[0].buyable = false
-          @share_pool.transfer_shares(adsk.shares[0].to_bundle, @bank)
-          bond_price = @stock_market.par_prices.find { |p| p.price == 100 }
-          @stock_market.set_par(adsk, bond_price)
-          adsk.ipoed = true
-          move_buyable_shares_to_market(adsk)
-
           [hdsk_reserved_share, ekb_reserved_share, kfbe_reserved_share, ksz_reserved_share,
            kbe_reserved_share, bkb_reserved_share].each { |info| info[:share].buyable = false }
 
@@ -977,6 +961,10 @@ module Engine
           @neutral.tokens.each { |token| token.type = :neutral }
           city_by_id('H5-0-0').place_token(@neutral, @neutral.next_token)
 
+          # The HGK private has a token, that will be turned into HGK
+          # As HGK private cannot run, we start with it as HGK token
+          city_by_id('J5-0-0').place_token(hgk, hgk.next_token)
+
           @passers_first_stock_round = []
           @is_init_round = false
           @after_merger_round = nil
@@ -997,7 +985,12 @@ module Engine
 
         include StubsAreRestricted
 
+        def leverkusen_upgrade_to_green?(hex, tile)
+          hex.name == LEVERKUSEN_HEX_NAME && LEVERKUSEN_GREEN_TILE == tile.name
+        end
+
         def legal_tile_rotation?(_entity, hex, tile)
+          return true if leverkusen_upgrade_to_green?(hex, tile)
           return false unless legal_if_stubbed?(hex, tile)
           return true if @phase.current[:name] != '2' || !RHINE_PASSAGE.include?(hex.name)
 
@@ -1006,8 +999,10 @@ module Engine
         end
 
         def upgrades_to?(from, to, _special = false, selected_company: nil)
-          # Leverkusen can upgrade double dits to one city
-          return to.name == LEVERKUSEN_GREEN_TILE if from.color == :yellow && from.hex.name == LEVERKUSEN_HEX_NAME
+          if from.color == :yellow && from.hex.name == LEVERKUSEN_HEX_NAME
+            # Leverkusen can upgrade double dits to one city
+            return to.name == LEVERKUSEN_GREEN_TILE
+          end
 
           # The TILE_BLOCK hexes cannot be upgraded until block has been removed (when phase 3 starts)
           return super unless TILE_BLOCK.include?(from.hex.name)
@@ -1039,6 +1034,7 @@ module Engine
           move_buyable_shares_to_market(agv)
           @agv_mergable = true
           remove_ability(agv, :no_buy)
+          agv.ipoed = true
         end
 
         def event_agv_founded!
@@ -1061,7 +1057,7 @@ module Engine
 
         def mergers(target)
           reserved_shares = target == agv ? mergers_agv : mergers_hgk
-          reserved_shares.map { |info| info['minor'] || info['private'] }
+          reserved_shares.map { |info| info[:minor] || info[:private] }
         end
 
         def event_hgk_buyable!
@@ -1071,6 +1067,7 @@ module Engine
           move_buyable_shares_to_market(hgk)
           @hgk_mergable = true
           remove_ability(hgk, :no_buy)
+          hgk.ipoed = true
         end
 
         def event_hgk_founded!
@@ -1098,16 +1095,9 @@ module Engine
           president_priority = []
           president_share = nil
 
-          # If HGK, activate J5 token
-          if mergable == hgk
-            @log << "#{hgk.name} places an token in #{hgk.coordinates}"
-            city_by_id('J5-0-0').place_token(hgk, hgk.next_token, free: true)
-          end
-
           exchange_info.each do |mergeinfo|
-            share = mergeinfo['share']
-            puts("Share: #{share} from #{mergeinfo}")
-            mergee = mergeinfo['minor'] || mergeinfo['private']
+            share = mergeinfo[:share]
+            mergee = mergeinfo[:minor] || mergeinfo[:private]
             player = mergee.owner
             if share.president
               extra_info = ' presidency'
@@ -1134,7 +1124,7 @@ module Engine
 
             # Mergee is a minor - transfer any cash
             if mergee.cash.positive?
-              @log << "#{mergable.name} receives the #{mergee.name} treasure of #{format_currency(mergable.cash)}"
+              @log << "#{mergable.name} receives the #{mergee.name} treasure of #{format_currency(mergee.cash)}"
               mergee.spend(mergee.cash, mergable)
             end
 
@@ -1144,7 +1134,7 @@ module Engine
               @log << "#{mergable.name} receives the trains from #{mergee.name}: #{transferred.map(&:name).join(', ')}"
             end
 
-            # Transfer tokens (Note! HGK first token is )
+            # Transfer tokens (Note! HGK first token is assigned from the start)
             minor_token = mergee.tokens.first
             city = minor_token.city
             city.remove_reservation!(mergee)
@@ -1152,7 +1142,12 @@ module Engine
             minor_token.remove!
             city.place_token(mergable, mergable.next_token, free: true)
 
-            # Minor is no longer used
+            # Private/Minor is no longer used
+            @log << if mergee.minor?
+                      "Minor #{mergee.name} are closed"
+                    else
+                      "#{mergee.name} is closed"
+                    end
             mergee.close!
           end
 
@@ -1167,7 +1162,7 @@ module Engine
             new_president = majority_share_holders.first
           end
           if president_share.owner == new_president
-            @log << "#{president_share.owner.name} retains the presidency"
+            @log << "#{president_share.owner.name} retains the presidency of #{mergable.name}"
             mergable.owner = president_share.owner
           else
             @log << "#{new_president.name} becomes the president of #{mergable.name}"
@@ -1179,12 +1174,7 @@ module Engine
           end
 
           # Give president the chance to discard any trains
-          if !mergable.trains.empty?
-            puts("Mergable #{mergable.name} is added to potential_discard_trains")
-            @potential_discard_trains << mergable
-          else
-            puts("Mergable #{mergable.name} has no trains")
-          end
+          @potential_discard_trains << mergable unless mergable.trains.empty?
 
           mergable.ipoed = true
           @log << "#{mergable.name} have been completly founded and now floats"
@@ -1205,9 +1195,34 @@ module Engine
           @fdsd_to_close = true
         end
 
+        def close_fdsd
+          fdsd.close!
+          @log << "#{fdsd.name} closed"
+          @fdsd_to_close = false
+        end
+
         def event_eva_closed!
           @log << "#{eva.name} closed"
           eva.close!
+        end
+
+        def num_certs(player)
+          super + owned_minors(player).count
+        end
+
+        def liquidity(player, emergency: false)
+          value = super
+          return value unless sellable_turn?
+
+          value + 100 * player.companies.count { |c| bond?(c) }
+        end
+
+        def player_value(player)
+          super + owned_minors(player).sum { |m| MINOR_INITIAL_PRICE[m.name] }
+        end
+
+        def owned_minors(player)
+          @minors.select { |m| m.owner == player }
         end
 
         def buyable?(entity)
@@ -1217,16 +1232,44 @@ module Engine
         end
 
         def buyable_companies
-          buyable = @companies.select { |c| !c.closed? && c.owner == @bank }
-
-          # Privates A-C always buyable, minors topmost 2
-          privates, minors = buyable.partition { |c| NAME_OF_PRIVATES.include?(c.sym) }
-          privates + (minors.size < 2 ? minors : minors[0..1])
+          @companies.select { |c| !c.closed? && c.owner == @bank }
         end
 
-        # Allow for par of RAG if owning FdSD
+        def buyable_minors
+          @minors.reject { |m| m.closed? || m.owner }
+        end
+
+        def draftable_companies
+          buyable_companies.select { |c| draftable?(c) }
+        end
+
+        def draftable?(company)
+          NAME_OF_PRIVATES.include?(company.sym)
+        end
+
+        def bond?(company)
+          return false unless company.company?
+
+          company.sym.start_with?('AdSK')
+        end
+
+        def draftable_minors
+          draftable = buyable_minors
+          draftable.size < 2 ? draftable : draftable[0..1]
+        end
+
+        def draftables
+          draftable_companies + draftable_minors
+        end
+
+        def minor_starting_treasury(minor)
+          MINOR_INITIAL_PRICE[minor.id]
+        end
+
         def can_par?(corporation, entity)
+          # Allow for par of RAG if owning FdSD
           return true if corporation == rag && entity == fdsd.owner
+          return false if entity.cash < 120
 
           super
         end
@@ -1254,28 +1297,6 @@ module Engine
           [president_assist, fee]
         end
 
-        def payout_companies
-          super
-
-          @players.each do |player|
-            bonds = player.num_shares_of(adsk)
-            next unless bonds.positive?
-
-            revenue = bonds * 10
-            @log << "#{player.name} collects #{format_currency(revenue)} from #{adsk.name}"
-            @bank.spend(revenue, player)
-          end
-        end
-
-        def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil)
-          corporation = bundle.corporation
-          return super unless corporation == adsk
-
-          @share_pool.sell_shares(bundle, allow_president_change: false, swap: swap)
-        end
-
-        private
-
         def move_buyable_shares_to_market(corporation)
           corporation.shares.each do |s|
             next unless s.buyable
@@ -1283,6 +1304,12 @@ module Engine
             @share_pool.transfer_shares(s.to_bundle, @share_pool, price: 0, allow_president_change: false)
           end
         end
+
+        def player_card_minors(player)
+          @minors.select { |m| m.owner == player }
+        end
+
+        private
 
         def base_map
           simple_city = %w[I2 I8 L3 O2 O4 T3]
