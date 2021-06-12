@@ -164,6 +164,9 @@ module Engine
         YANTAI_HEX = 'F16'
         YANTAI_FERRY_TILE = 'L40b'
 
+        XIAN_HEX = 'H2'
+        TERRACOTTA_TILE = 'L39'
+
         BEIJING_HEX = 'C9'
 
         MUST_BID_INCREMENT_MULTIPLE = false # FIXME: check with Lonny
@@ -190,11 +193,17 @@ module Engine
           @heng_shan ||= company_by_id('HS')
         end
 
+        def terracotta
+          @terracotta ||= company_by_id('TA')
+        end
+
         def upgrades_to?(from, to, special = false, selected_company: nil)
           if special && selected_company == yanda
             return ((from.hex.id == DALIAN_HEX && to.name == DALIAN_FERRY_TILE) ||
                     (from.hex.id == YANTAI_HEX && to.name == YANTAI_FERRY_TILE))
           end
+
+          return (from.hex.id == XIAN_HEX && to.name == TERRACOTTA_TILE) if special && selected_company == terracotta
 
           return false if selected_company != heng_shan && to.name == MINE_TILE
 
