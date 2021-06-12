@@ -203,215 +203,217 @@ module Engine
           },
         ].freeze
 
-        TRAINS = [
-          {
-            name: 'A',
-            distance: 99,
-            price: 100,
-            rusts_on: 'C',
-            num: 7,
-            no_local: true,
-            variants: [
-              {
-                name: '1F*',
-                distance: 1,
-                price: 100,
-                no_local: true,
-              },
-              {
-                name: '2L*',
-                distance: [{ 'nodes' => %w[city], 'pay' => 2, 'visit' => 2 },
-                           { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
-                price: 100,
-              },
-              {
-                name: '2E*',
-                distance: [{ 'nodes' => %w[city offboard], 'pay' => 2, 'visit' => 2 },
-                           { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
-                price: 100,
-              },
-            ],
-          },
-          {
-            name: 'B',
-            distance: 99,
-            price: 200,
-            rusts_on: 'E',
-            num: 6,
-            variants: [
-              {
-                name: '2F',
-                distance: 2,
-                price: 200,
-              },
-              {
-                name: '2/3L',
-                distance: [{ 'nodes' => %w[city], 'pay' => 2, 'visit' => 3 },
-                           { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
-                price: 200,
-              },
-              {
-                name: '2/3E',
-                distance: [{ 'nodes' => %w[city offboard], 'pay' => 2, 'visit' => 3 },
-                           { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
-                price: 200,
-              },
-            ],
-          },
-          {
-            name: 'C',
-            distance: 99,
-            price: 280,
-            rusts_on: 'F',
-            num: 4,
-            variants: [
-              {
-                name: '3F',
-                distance: 3,
-                price: 280,
-              },
-              {
-                name: '3L',
-                distance: [{ 'nodes' => %w[city], 'pay' => 3, 'visit' => 3 },
-                           { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
-                price: 280,
-              },
-              {
-                name: '3E',
-                distance: [{ 'nodes' => %w[city offboard], 'pay' => 3, 'visit' => 3 },
-                           { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
-                price: 280,
-              },
-            ],
-          },
-          {
-            name: 'D',
-            distance: 99,
-            price: 360,
-            rusts_on: 'G',
-            num: 3,
-            variants: [
-              {
-                name: '5F*',
-                distance: 5,
-                price: 360,
-              },
-              {
-                name: '4L*',
-                distance: [{ 'nodes' => %w[city], 'pay' => 4, 'visit' => 4 },
-                           { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
-                price: 360,
-              },
-              {
-                name: '4E*',
-                distance: [{ 'nodes' => %w[city offboard], 'pay' => 4, 'visit' => 4 },
-                           { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
-                price: 360,
-              },
-            ],
-          },
-          {
-            name: 'E',
-            distance: 99,
-            price: 500,
-            num: 3,
-            variants: [
-              {
-                name: '6F',
-                distance: 6,
-                price: 500,
-              },
-              {
-                name: '4/5L',
-                distance: [{ 'nodes' => %w[city], 'pay' => 4, 'visit' => 5 },
-                           { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
-                price: 500,
-              },
-              {
-                name: '4/5E',
-                distance: [{ 'nodes' => %w[city offboard], 'pay' => 4, 'visit' => 5 },
-                           { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
-                price: 500,
-              },
-            ],
-          },
-          {
-            name: 'F',
-            distance: 99,
-            price: 600,
-            num: 2,
-            variants: [
-              {
-                name: '7F',
-                distance: 7,
-                price: 600,
-              },
-              {
-                name: '5L',
-                distance: [{ 'nodes' => %w[city], 'pay' => 5, 'visit' => 5 },
-                           { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
-                price: 600,
-              },
-              {
-                name: '5E',
-                distance: [{ 'nodes' => %w[city offboard], 'pay' => 5, 'visit' => 5 },
-                           { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
-                price: 600,
-              },
-            ],
-          },
-          {
-            name: 'G',
-            distance: 99,
-            price: 700,
-            num: 1,
-            variants: [
-              {
-                name: '8F',
-                distance: 8,
-                price: 700,
-              },
-              {
-                name: '5/6L',
-                distance: [{ 'nodes' => %w[city], 'pay' => 5, 'visit' => 6 },
-                           { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
-                price: 700,
-              },
-              {
-                name: '5/6E',
-                distance: [{ 'nodes' => %w[city offboard], 'pay' => 5, 'visit' => 6 },
-                           { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
-                price: 700,
-              },
-            ],
-          },
-          {
-            name: 'H',
-            distance: 99,
-            price: 800,
-            num: 99,
-            variants: [
-              {
-                name: '9F',
-                distance: 9,
-                price: 800,
-              },
-              {
-                name: '6L',
-                distance: [{ 'nodes' => %w[city], 'pay' => 6, 'visit' => 6 },
-                           { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
-                price: 800,
-              },
-              {
-                name: '6E',
-                distance: [{ 'nodes' => %w[city offboard], 'pay' => 6, 'visit' => 6 },
-                           { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
-                price: 800,
-              },
-            ],
-            events: [{ 'type' => 'cert_limit_change' }, { 'type' => 'lner_trigger' }],
-          },
-        ].freeze
+        def game_trains
+          [
+            {
+              name: 'A',
+              distance: 99,
+              price: 100,
+              rusts_on: 'C',
+              num: @optional_rules&.include?(:short_length) ? 6 : 7,
+              no_local: true,
+              variants: [
+                {
+                  name: '1F*',
+                  distance: 1,
+                  price: 100,
+                  no_local: true,
+                },
+                {
+                  name: '2L*',
+                  distance: [{ 'nodes' => %w[city], 'pay' => 2, 'visit' => 2 },
+                             { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
+                  price: 100,
+                },
+                {
+                  name: '2E*',
+                  distance: [{ 'nodes' => %w[city offboard], 'pay' => 2, 'visit' => 2 },
+                             { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
+                  price: 100,
+                },
+              ],
+            },
+            {
+              name: 'B',
+              distance: 99,
+              price: 200,
+              rusts_on: 'E',
+              num: @optional_rules&.include?(:short_length) ? 5 : 6,
+              variants: [
+                {
+                  name: '2F',
+                  distance: 2,
+                  price: 200,
+                },
+                {
+                  name: '2/3L',
+                  distance: [{ 'nodes' => %w[city], 'pay' => 2, 'visit' => 3 },
+                             { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
+                  price: 200,
+                },
+                {
+                  name: '2/3E',
+                  distance: [{ 'nodes' => %w[city offboard], 'pay' => 2, 'visit' => 3 },
+                             { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
+                  price: 200,
+                },
+              ],
+            },
+            {
+              name: 'C',
+              distance: 99,
+              price: 280,
+              rusts_on: 'F',
+              num: @optional_rules&.include?(:long_length) ? 5 : 4,
+              variants: [
+                {
+                  name: '3F',
+                  distance: 3,
+                  price: 280,
+                },
+                {
+                  name: '3L',
+                  distance: [{ 'nodes' => %w[city], 'pay' => 3, 'visit' => 3 },
+                             { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
+                  price: 280,
+                },
+                {
+                  name: '3E',
+                  distance: [{ 'nodes' => %w[city offboard], 'pay' => 3, 'visit' => 3 },
+                             { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
+                  price: 280,
+                },
+              ],
+            },
+            {
+              name: 'D',
+              distance: 99,
+              price: 360,
+              rusts_on: 'G',
+              num: @optional_rules&.include?(:long_length) ? 4 : 3,
+              variants: [
+                {
+                  name: '5F*',
+                  distance: 5,
+                  price: 360,
+                },
+                {
+                  name: '4L*',
+                  distance: [{ 'nodes' => %w[city], 'pay' => 4, 'visit' => 4 },
+                             { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
+                  price: 360,
+                },
+                {
+                  name: '4E*',
+                  distance: [{ 'nodes' => %w[city offboard], 'pay' => 4, 'visit' => 4 },
+                             { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
+                  price: 360,
+                },
+              ],
+            },
+            {
+              name: 'E',
+              distance: 99,
+              price: 500,
+              num: 3,
+              variants: [
+                {
+                  name: '6F',
+                  distance: 6,
+                  price: 500,
+                },
+                {
+                  name: '4/5L',
+                  distance: [{ 'nodes' => %w[city], 'pay' => 4, 'visit' => 5 },
+                             { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
+                  price: 500,
+                },
+                {
+                  name: '4/5E',
+                  distance: [{ 'nodes' => %w[city offboard], 'pay' => 4, 'visit' => 5 },
+                             { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
+                  price: 500,
+                },
+              ],
+            },
+            {
+              name: 'F',
+              distance: 99,
+              price: 600,
+              num: 2,
+              variants: [
+                {
+                  name: '7F',
+                  distance: 7,
+                  price: 600,
+                },
+                {
+                  name: '5L',
+                  distance: [{ 'nodes' => %w[city], 'pay' => 5, 'visit' => 5 },
+                             { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
+                  price: 600,
+                },
+                {
+                  name: '5E',
+                  distance: [{ 'nodes' => %w[city offboard], 'pay' => 5, 'visit' => 5 },
+                             { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
+                  price: 600,
+                },
+              ],
+            },
+            {
+              name: 'G',
+              distance: 99,
+              price: 700,
+              num: 1,
+              variants: [
+                {
+                  name: '8F',
+                  distance: 8,
+                  price: 700,
+                },
+                {
+                  name: '5/6L',
+                  distance: [{ 'nodes' => %w[city], 'pay' => 5, 'visit' => 6 },
+                             { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
+                  price: 700,
+                },
+                {
+                  name: '5/6E',
+                  distance: [{ 'nodes' => %w[city offboard], 'pay' => 5, 'visit' => 6 },
+                             { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
+                  price: 700,
+                },
+              ],
+            },
+            {
+              name: 'H',
+              distance: 99,
+              price: 800,
+              num: 99,
+              variants: [
+                {
+                  name: '9F',
+                  distance: 9,
+                  price: 800,
+                },
+                {
+                  name: '6L',
+                  distance: [{ 'nodes' => %w[city], 'pay' => 6, 'visit' => 6 },
+                             { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
+                  price: 800,
+                },
+                {
+                  name: '6E',
+                  distance: [{ 'nodes' => %w[city offboard], 'pay' => 6, 'visit' => 6 },
+                             { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
+                  price: 800,
+                },
+              ],
+              events: [{ 'type' => 'cert_limit_change' }, { 'type' => 'lner_trigger' }],
+            },
+          ]
+        end
 
         EBUY_PRES_SWAP = false # allow presidential swaps of other corps when ebuying
         EBUY_OTHER_VALUE = false # allow ebuying other corp trains for up to face
@@ -517,7 +519,12 @@ module Engine
           'H' => :purple,
         }.freeze
 
-        MAX_TOKENS = 7
+        NORM_TOKENS = 7
+        OPTIONAL_TOKENS = 8
+
+        def max_tokens
+          @max_tokens ||= @optional_rules&.include?(:eight_tokens) ? OPTIONAL_TOKENS : NORM_TOKENS
+        end
 
         def init_share_pool
           SharePool.new(self, allow_president_sale: true)
@@ -2200,12 +2207,12 @@ module Engine
           s_placed = @merge_data[:corps].first.placed_tokens.size
           ns_placed = @merge_data[:corps].last.placed_tokens.size
 
-          if s_placed + ns_placed > MAX_TOKENS
+          if s_placed + ns_placed > max_tokens
             # player needs to remove excess tokens
             @round.pending_removals << {
               survivor: @merge_data[:corps].first,
               nonsurvivor: @merge_data[:corps].last,
-              count: (s_placed + ns_placed) - MAX_TOKENS,
+              count: (s_placed + ns_placed) - max_tokens,
               hexes: merge_hex_list(@merge_data[:corps]),
             }
             return true
@@ -2275,9 +2282,9 @@ module Engine
           ns_unplaced = nonsurvivor.unplaced_tokens
 
           num_placed = s_placed.size + ns_placed.size
-          raise GameError, 'too many placed tokens' if num_placed > MAX_TOKENS
+          raise GameError, 'too many placed tokens' if num_placed > max_tokens
 
-          num_unplaced = [MAX_TOKENS - num_placed, s_unplaced.size + ns_unplaced.size].min
+          num_unplaced = [max_tokens - num_placed, s_unplaced.size + ns_unplaced.size].min
           total = num_placed + num_unplaced
 
           # increase survivor tokens if needed
