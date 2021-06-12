@@ -1440,6 +1440,8 @@ module Engine
             end
           end
 
+          remove_dest_icons(major)
+
           # Tokens:
           # Remove reservations
 
