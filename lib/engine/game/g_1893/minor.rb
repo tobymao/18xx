@@ -16,7 +16,7 @@ module Engine
         end
 
         def holding_ok?(_entity, _amount)
-          false
+          true
         end
 
         def ipoed
