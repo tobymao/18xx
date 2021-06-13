@@ -230,6 +230,18 @@ module Engine
 
         CR_MULTIPLIER = [1, 1, 1, 2, 3, 10].freeze
 
+        THREE_PLAYER_SMALL_REMOVE =  %w[A1 A3 A5 A7 A9 A11 A15 A25 A27 A29 B2 B4 B6 B8 B10 B26 B28 C1 C3 C5 C7 C9 C29
+                                        D2 D4 D6 D8 D26 D28 E1 E3 E5 E7 F2 F4 F6 F8 G1 G3 G5].freeze
+
+        THREE_PLAYER_SMALL_ADD = {
+          gray: { ['B10'] => 'town=revenue:10;path=a:4,b:_0;path=a:5,b:_0' },
+        }.freeze
+
+        THREE_PLAYER_LINES_REMOVE = %w[9 10 13 14 16 17].freeze
+
+        THREE_PLAYER_COMPANY_REMOVE = 'Prater'
+        THREE_PLAYER_CORP_REMOVE = 'V'
+
         attr_reader :tram_corporations, :major_corporations, :tram_owned_by_corporation, :city_graph, :city_tracks
 
         def setup
@@ -291,6 +303,46 @@ module Engine
           }
 
           setup_company_price_up_to_face
+        end
+
+        def two_player?
+          @players.size == 2
+        end
+
+        def three_player_small?
+          @players.size == 3 && @optional_rules&.include?(:three_player_small)
+        end
+
+        def optional_hexes
+          return self.class::HEXES if !three_player_small? && !two_player?
+
+          new_hexes = {}
+          HEXES.keys.each do |color|
+            new_map = self.class::HEXES[color].transform_keys do |coords|
+              coords - THREE_PLAYER_SMALL_REMOVE
+            end
+            THREE_PLAYER_SMALL_ADD[color]&.each { |coords, tile_str| new_map[coords] = tile_str }
+            new_hexes[color] = new_map
+          end
+
+          new_hexes
+        end
+
+        def init_companies(players)
+          companies = super
+          companies = companies.reject { |item| item.name == THREE_PLAYER_COMPANY_REMOVE } if three_player_small?
+          companies
+        end
+
+        def init_corporations(stock_market)
+          corporations = super
+          if three_player_small?
+            corporations = corporations.reject do |item|
+              item.id == THREE_PLAYER_CORP_REMOVE ||
+                         THREE_PLAYER_LINES_REMOVE.include?(item.id)
+            end
+          end
+          corporations
         end
 
         def init_graph

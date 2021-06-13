@@ -18,6 +18,15 @@ module Engine
         PLAYER_RANGE = [3, 6].freeze
 
         DEV_STAGE = :alpha
+
+        OPTIONAL_RULES = [
+          {
+            sym: :three_player_small,
+            short_name: '3P small map',
+            desc: 'Use the smaller recommended map for three player',
+            players: [3],
+          },
+        ].freeze
       end
     end
   end
