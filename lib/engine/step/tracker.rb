@@ -333,7 +333,6 @@ module Engine
 
       def legal_tile_rotation?(entity, hex, tile)
         return false unless @game.legal_tile_rotation?(entity, hex, tile)
-        return true if @game.override_legal_tile_rotation?(entity, hex, tile)
 
         old_paths = hex.tile.paths
         old_ctedges = hex.tile.city_town_edges
