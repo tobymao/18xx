@@ -31,9 +31,9 @@ module Engine
 
         BANK_CASH = 99_999
 
-        CERT_LIMIT = { 3 => 16, 4 => 14, 5 => 13, 6 => 12 }.freeze
+        CERT_LIMIT = { 2 => 18, 3 => 16, 4 => 14, 5 => 13, 6 => 12 }.freeze
 
-        STARTING_CASH = { 3 => 300, 4 => 260, 5 => 230, 6 => 200 }.freeze
+        STARTING_CASH = { 2=> 350, 3 => 300, 4 => 260, 5 => 230, 6 => 200 }.freeze
 
         ADDITIONAL_CASH = 350
 
@@ -233,6 +233,8 @@ module Engine
         THREE_PLAYER_SMALL_REMOVE =  %w[A1 A3 A5 A7 A9 A11 A15 A25 A27 A29 B2 B4 B6 B8 B10 B26 B28 C1 C3 C5 C7 C9 C29
                                         D2 D4 D6 D8 D26 D28 E1 E3 E5 E7 F2 F4 F6 F8 G1 G3 G5].freeze
 
+        TWO_PLAYER_REMOVE = %w[B12 C11 D10E9 E11 F10 G7 G9 G11 H4 H6 H8 H10 I1 I3 I5 I7 O9 I11 J4 J6 J8 J10 K7].freeze
+
         THREE_PLAYER_SMALL_ADD = {
           gray: { ['B10'] => 'town=revenue:10;path=a:4,b:_0;path=a:5,b:_0' },
         }.freeze
@@ -319,9 +321,12 @@ module Engine
           new_hexes = {}
           HEXES.keys.each do |color|
             new_map = self.class::HEXES[color].transform_keys do |coords|
-              coords - THREE_PLAYER_SMALL_REMOVE
+              coords -= THREE_PLAYER_SMALL_REMOVE
+              coords -= TWO_PLAYER_REMOVE if two_player?
+
+              coords
             end
-            THREE_PLAYER_SMALL_ADD[color]&.each { |coords, tile_str| new_map[coords] = tile_str }
+            THREE_PLAYER_SMALL_ADD[color]&.each { |coords, tile_str| new_map[coords] = tile_str } if three_player_small?
             new_hexes[color] = new_map
           end
 

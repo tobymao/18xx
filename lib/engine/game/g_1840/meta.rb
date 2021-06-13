@@ -15,7 +15,7 @@ module Engine
         GAME_PUBLISHER = :lonny_games
         GAME_RULES_URL = 'https://www.lonny.at/app/download/10197449884/Rules_ENG_final-compr.pdf'
 
-        PLAYER_RANGE = [3, 6].freeze
+        PLAYER_RANGE = [2, 6].freeze
 
         DEV_STAGE = :alpha
 
