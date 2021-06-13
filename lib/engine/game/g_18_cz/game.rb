@@ -74,6 +74,14 @@ module Engine
 
         OR_SETS = [1, 1, 1, 1, 2, 2, 2, 3].freeze
 
+        GAME_END_REASONS_TEXT = Base::EVENTS_TEXT.merge(
+          custom: 'End of Game',
+        ).freeze
+
+        GAME_END_REASONS_TIMING_TEXT = Base::EVENTS_TEXT.merge(
+          full_or: 'Ends after the last OR set',
+        ).freeze
+
         GAME_END_CHECK = { custom: :full_or }.freeze
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
