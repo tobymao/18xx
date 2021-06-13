@@ -1209,8 +1209,10 @@ module Engine
         end
 
         companies.each do |company|
-          revenue = company.revenue
           owner = company.owner
+          next if owner == bank
+
+          revenue = company.revenue
           @bank.spend(revenue, owner)
           @log << "#{owner.name} collects #{format_currency(revenue)} from #{company.name}"
         end
