@@ -1366,11 +1366,6 @@ module Engine
         true
       end
 
-      def override_legal_tile_rotation?(_entity, _hex, _tile)
-        # Return true to skip further general checks for legal tile rotation
-        false
-      end
-
       def can_par?(corporation, parrer)
         return false if corporation.par_via_exchange && corporation.par_via_exchange.owner != parrer
         return false if corporation.needs_token_to_par && corporation.tokens.empty?
