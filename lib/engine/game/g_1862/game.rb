@@ -1641,7 +1641,7 @@ module Engine
         def hex_on_other_route?(this_route, hex)
           this_route.routes.each do |r|
             return false if r == this_route
-            return false unless train_type(r.train) == :local
+            next unless train_type(r.train) == :local
 
             return true if r.all_hexes.include?(hex)
           end
