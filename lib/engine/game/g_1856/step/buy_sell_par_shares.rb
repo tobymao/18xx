@@ -26,8 +26,14 @@ module Engine
             super && !attempt_cgr_action_while_not_floated?(bundle) && vested?(entity, bundle)
           end
 
-          def can_gain?(entity, bundle)
-            super && !attempt_cgr_action_while_not_floated?(bundle)
+          def can_gain?(entity, bundle, exchange: false)
+            return if !bundle || !entity
+
+            corporation = bundle.corporation
+
+            corporation.holding_ok?(entity, bundle.percent) &&
+              !attempt_cgr_action_while_not_floated?(bundle) &&
+              (!corporation.counts_for_limit || exchange || @game.num_certs(entity) + 1 <= @game.cert_limit)
           end
 
           def attempt_cgr_action_while_not_floated?(bundle)
