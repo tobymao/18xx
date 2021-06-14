@@ -12,6 +12,11 @@ module Engine
           # Although .. Is that ever going to happen? Assuming remotely competent play?
           # Has it ever happened in the history of the game?
           def can_buy?(entity, bundle)
+            # holding_ok uses 60% for limit as if it was a player. This isn't true for the market so we are getting
+            # around this buy adding 10% so that if it's ok for the market to hold current + 10% = <=60% it's OK to
+            # buy IPO (so it's OK to buy IPO if market is <= 50%)
+            return false if bundle.owner == bundle.corporation && !bundle.corporation.holding_ok?(@game.share_pool, 10)
+
             if @game.false_national_president && entity == @game.false_national_president
               # The player is the false national president
               return super if bundle.corporation == @game.national
