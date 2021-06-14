@@ -402,7 +402,7 @@ module Engine
         def player_value(player)
           player.cash + player.shares.select { |s| s.corporation.ipoed }.sum(&:price) +
             player.companies.select { |company| company.name.start_with?('ZOOTicket') }.sum(&:value) -
-            @player_debts[player] * 2
+            player_debt(player)
         end
 
         def end_game!
@@ -1081,6 +1081,14 @@ module Engine
           help += " (+#{format_currency(bonus_pay_president)} bonus president)" if bonus_pay_president.positive?
 
           help
+        end
+
+        def player_debt(player)
+          @player_debts[player] * 2
+        end
+
+        def player_debt_str
+          'Debt'
         end
 
         private
