@@ -286,7 +286,7 @@ module Engine
             on: '6',
             train_limit: 2,
             tiles: %i[yellow green brown gray],
-            status: %w[fullcap facing_6 upgradable_towns],
+            status: %w[fullcap facing_6 upgradable_towns no_loans],
             operating_rounds: 3,
           },
           {
@@ -294,7 +294,7 @@ module Engine
             on: 'D',
             train_limit: 2,
             tiles: %i[yellow green brown gray black],
-            status: %w[fullcap facing_6 upgradable_towns],
+            status: %w[fullcap facing_6 upgradable_towns no_loans],
             operating_rounds: 3,
           },
         ].freeze
@@ -903,6 +903,7 @@ module Engine
             !@round.took_loan[entity] &&
             !@round.redeemed_loan[entity] &&
             @loans.any? &&
+            !@phase.status.include?('no_loans') &&
             !@post_nationalization
         end
 
@@ -1281,6 +1282,10 @@ module Engine
             'Towns can be upgraded',
             'Single town tiles can be upgraded to plain track or yellow cities. '\
             'Double town tiles can be upgraded to green cities',
+          ],
+          'no_loans' => [
+            'Loans may not be taken',
+            'Outstanding loans must be repaid and no more loans may be taken',
           ],
         }.merge(Base::STATUS_TEXT)
         def operating_round(round_num)

@@ -326,7 +326,7 @@ module Engine
             on: '6',
             train_limit: 2,
             tiles: %i[yellow green brown gray],
-            status: %w[fullcap facing_6 upgradable_towns],
+            status: %w[fullcap facing_6 upgradable_towns no_loans],
             operating_rounds: 3,
           },
           {
@@ -334,7 +334,7 @@ module Engine
             on: '8',
             train_limit: 2,
             tiles: %i[yellow green brown gray black],
-            status: %w[fullcap facing_6 upgradable_towns],
+            status: %w[fullcap facing_6 upgradable_towns no_loans],
             operating_rounds: 3,
           },
         ].freeze
