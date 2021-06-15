@@ -1011,8 +1011,8 @@ module Engine
             dest_arr = Array(dest)
             d_goals = Array(dest_arr.first)
             d_start = dest_arr.size > 1 ? dest_arr.last : corporation_by_id(corp).coordinates
-            @destination_statuses[corp] = "Dest: Connect #{hex_by_id(d_start).tile.location_name} to"\
-                  " #{hex_by_id(d_goals.first).tile.location_name}"
+            @destination_statuses[corp] = "Dest: Connect #{hex_by_id(d_start).tile.location_name} (#{d_start}) to"\
+                  " #{hex_by_id(d_goals.first).tile.location_name} (#{d_goals})"
             dest_arr.each do |d|
               # Array(d).first allows us to treat 'E5' or %[O2 N3] identically
               hex_by_id(Array(d).first).original_tile.icons << Part::Icon.new(icon_path(corp))
