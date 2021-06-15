@@ -33,7 +33,7 @@ module Engine
 
         CERT_LIMIT = { 2 => 18, 3 => 16, 4 => 14, 5 => 13, 6 => 12 }.freeze
 
-        STARTING_CASH = { 2=> 350, 3 => 300, 4 => 260, 5 => 230, 6 => 200 }.freeze
+        STARTING_CASH = { 2 => 350, 3 => 300, 4 => 260, 5 => 230, 6 => 200 }.freeze
 
         ADDITIONAL_CASH = 350
 
@@ -79,8 +79,9 @@ module Engine
 
         INITIAL_CITY_TOKENS = {
           'W' => [
-            { coordinate: 'I1' },
-            { coordinate: 'I9' },
+            { coordinate: 'I1', ignore_two_player: true },
+            { coordinate: 'I9', ignore_two_player: true },
+            { coordinate: 'I11', city_index: 1, only_two_player: true },
             { coordinate: 'I15' },
             { coordinate: 'F24' },
           ],
@@ -230,19 +231,26 @@ module Engine
 
         CR_MULTIPLIER = [1, 1, 1, 2, 3, 10].freeze
 
-        THREE_PLAYER_SMALL_REMOVE =  %w[A1 A3 A5 A7 A9 A11 A15 A25 A27 A29 B2 B4 B6 B8 B10 B26 B28 C1 C3 C5 C7 C9 C29
+        THREE_PLAYER_SMALL_REMOVE =  %w[A1 A3 A5 A7 A9 A11 A15 A25 A27 A29 B2 B4 B6 B8 B10 B26 B28 C1 C3 C5 C7 C9 C27 C29
                                         D2 D4 D6 D8 D26 D28 E1 E3 E5 E7 F2 F4 F6 F8 G1 G3 G5].freeze
 
-        TWO_PLAYER_REMOVE = %w[B12 C11 D10E9 E11 F10 G7 G9 G11 H4 H6 H8 H10 I1 I3 I5 I7 O9 I11 J4 J6 J8 J10 K7].freeze
+        TWO_PLAYER_REMOVE = %w[B12 C11 D10 E9 E11 F10 G7 G9 G11 H4 H6 H8 H10 I1 I3 I5 I7 I9 I11 J4 J6 J8 J10 K7].freeze
 
         THREE_PLAYER_SMALL_ADD = {
           gray: { ['B10'] => 'town=revenue:10;path=a:4,b:_0;path=a:5,b:_0' },
+        }.freeze
+
+        TWO_PLAYER_ADD = {
+          gray: { ['I11'] => 'city=revenue:30;city=revenue:30;path=a:3,b:_0,track:narrow;path=a:4,b:_1,track:narrow;' },
+          white: { ['G13'] => 'upgrade=cost:20;frame=color:#ffa500;icon=image:1840/red_hex' },
         }.freeze
 
         THREE_PLAYER_LINES_REMOVE = %w[9 10 13 14 16 17].freeze
 
         THREE_PLAYER_COMPANY_REMOVE = 'Prater'
         THREE_PLAYER_CORP_REMOVE = 'V'
+
+        TWO_PLAYER_COMPANY_REMOVE = 'Schönbrunn“.'
 
         attr_reader :tram_corporations, :major_corporations, :tram_owned_by_corporation, :city_graph, :city_tracks
 
@@ -278,6 +286,9 @@ module Engine
             initial_coordinates_info = INITIAL_CITY_TOKENS[corporation.id]
 
             initial_coordinates_info.each do |info|
+              next if info[:ignore_two_player] && two_player?
+              next if info[:only_two_player] && !two_player?
+
               token = corporation.find_token_by_type
               city_index = info[:city_index] || 0
               hex_by_id(info[:coordinate]).tile.cities[city_index].place_token(corporation, token,
@@ -301,8 +312,12 @@ module Engine
             'D' => %w[B20 C21 D22 E23],
             'G' => %w[B16 B14 C13 D12 E13 F12 H12],
             'V' => %w[B10 C9 D6 E7 F6 G5],
-            'W' => %w[G23 G21 G19 G17 H16 I15 I13 I9 I7 I5 I3],
           }
+          @city_tracks['W'] = if two_player?
+                                %w[G23 G21 G19 G17 H16 I15 I13 I11]
+                              else
+                                %w[G23 G21 G19 G17 H16 I15 I13 I9 I7 I5 I3]
+                              end
 
           setup_company_price_up_to_face
         end
@@ -327,6 +342,7 @@ module Engine
               coords
             end
             THREE_PLAYER_SMALL_ADD[color]&.each { |coords, tile_str| new_map[coords] = tile_str } if three_player_small?
+            TWO_PLAYER_ADD[color]&.each { |coords, tile_str| new_map[coords] = tile_str } if two_player?
             new_hexes[color] = new_map
           end
 
@@ -336,12 +352,13 @@ module Engine
         def init_companies(players)
           companies = super
           companies = companies.reject { |item| item.name == THREE_PLAYER_COMPANY_REMOVE } if three_player_small?
+          companies = companies.reject { |item| item.name == TWO_PLAYER_COMPANY_REMOVE } if two_player?
           companies
         end
 
         def init_corporations(stock_market)
           corporations = super
-          if three_player_small?
+          if three_player_small? || two_player?
             corporations = corporations.reject do |item|
               item.id == THREE_PLAYER_CORP_REMOVE ||
                          THREE_PLAYER_LINES_REMOVE.include?(item.id)
@@ -826,7 +843,10 @@ module Engine
           when 'G'
             [hex_by_id('A17').tile.cities.first, hex_by_id('I11').tile.cities.first]
           when 'W'
-            [hex_by_id('F24').tile.cities.first, hex_by_id('I1').tile.cities.first]
+            nodes = [hex_by_id('F24').tile.cities.first]
+            nodes.concat(hex_by_id('I1').tile.cities.first) unless two_player?
+            nodes.concat(hex_by_id('I11').tile.cities.first) if two_player?
+            nodes
           end
         end
 
