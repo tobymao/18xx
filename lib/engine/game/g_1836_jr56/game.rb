@@ -517,6 +517,8 @@ module Engine
 
           @bankrupted = false
 
+          @destination_statuses = {}
+
           # Is the president of the national a "false" president?
           # A false president gets the presidency with only one share; in this case the president gets
           # the full president's certificate but is obligated to buy up to the full presidency in the

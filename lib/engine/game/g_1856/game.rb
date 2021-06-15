@@ -990,6 +990,8 @@ module Engine
           @available_bridge_tokens = available_tokens
           @available_tunnel_tokens = available_tokens
 
+          @destination_statuses = {}
+
           # Corp -> Borrowed Train
           @borrowed_trains = {}
           create_destinations(
@@ -1009,12 +1011,8 @@ module Engine
             dest_arr = Array(dest)
             d_goals = Array(dest_arr.first)
             d_start = dest_arr.size > 1 ? dest_arr.last : corporation_by_id(corp).coordinates
-            ability = Ability::Base.new(
-                type: 'destination',
-                description: "Connect #{hex_by_id(d_start).tile.location_name} to"\
-                  " #{hex_by_id(d_goals.first).tile.location_name}"
-              )
-            corporation_by_id(corp).add_ability(ability)
+            @destination_statuses[corp] = "Dest: Connect #{hex_by_id(d_start).tile.location_name} (#{d_start}) to"\
+                  " #{hex_by_id(d_goals.first).tile.location_name} (#{d_goals})"
             dest_arr.each do |d|
               # Array(d).first allows us to treat 'E5' or %[O2 N3] identically
               hex_by_id(Array(d).first).original_tile.icons << Part::Icon.new(icon_path(corp))
@@ -1066,7 +1064,7 @@ module Engine
         def remove_dest_icons(corp)
           return unless @destinations[corp.id]
 
-          corp.all_abilities.each { |a| corp.remove_ability(a) if a.type == 'destination' }
+          @destination_statuses.delete(corp.id)
           @destinations[corp.id].each do |dest|
             Array(dest).each { |id| hex_by_id(id).tile.icons.reject! { |i| i.name == corp.id } }
           end
@@ -1388,6 +1386,10 @@ module Engine
 
         def max_national_shares
           20
+        end
+
+        def status_array(corp)
+          [@destination_statuses[corp.id]] if @destination_statuses.key?(corp.id)
         end
 
         def corporations_repay_loans
