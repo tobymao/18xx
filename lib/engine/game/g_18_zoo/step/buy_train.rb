@@ -76,7 +76,8 @@ module Engine
 
             difference = (cost - entity.cash)
             @game.take_player_loan(entity, difference)
-            @log << "#{entity.name} takes a debt of #{@game.format_currency(difference)}"
+            @log << "Bank covers the #{@game.format_currency(difference)} missing;"\
+                    " #{entity.name} gets an endgame loan of #{@game.format_currency(difference * 2)}"
           end
 
           def sellable_shares?(player)

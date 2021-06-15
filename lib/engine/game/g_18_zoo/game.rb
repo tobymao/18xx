@@ -402,7 +402,7 @@ module Engine
         def player_value(player)
           player.cash + player.shares.select { |s| s.corporation.ipoed }.sum(&:price) +
             player.companies.select { |company| company.name.start_with?('ZOOTicket') }.sum(&:value) -
-            @player_debts[player] * 2
+            player_debt(player)
         end
 
         def end_game!
@@ -951,11 +951,12 @@ module Engine
         def timeline
           @timeline = [
             "Current value of a ZOOTicket is #{format_currency(@ticket_zoo_current_value)}.",
-            '--- Numbers 4,5,6…20 on the timeline are the value of a single ZOOTicket during each round
-              (i.e. a ZOOTicket is worth 9$N in the OR 2.2).',
-            '--- If not sold at the end of game a ZOOTicket is worth 20$N for the final score',
-            'IPO RESERVED share: at the start of SR 3 each company gets a new share available (R share)
-              that players can purchase',
+            'ZOOTicket: the numbers 4,5,6…20 on the timeline are the value of a single ZOOTicket during each round'\
+              ' (i.e. a ZOOTicket is worth 9$N in the OR 2.2). At the end of game each non-sold ZOOTicket is worth'\
+              ' 20$N for the score.',
+            'SR 3: at the start of SR 3 each company gets a new share available (IPO RESERVED R share) for purchase',
+            'END: if during the train forced purchase the player doesn\'t have enough money, the bank covers the'\
+              ' expense; the player gets a negative debt (loan) equal to twice what the bank paid',
           ]
         end
 
@@ -1081,6 +1082,10 @@ module Engine
           help += " (+#{format_currency(bonus_pay_president)} bonus president)" if bonus_pay_president.positive?
 
           help
+        end
+
+        def player_debt(player)
+          @player_debts[player] * 2
         end
 
         private
