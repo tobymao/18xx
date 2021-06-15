@@ -1064,7 +1064,7 @@ module Engine
         def remove_dest_icons(corp)
           return unless @destinations[corp.id]
 
-          @destination_statuses.delete(corp)
+          @destination_statuses.delete(corp.id)
           @destinations[corp.id].each do |dest|
             Array(dest).each { |id| hex_by_id(id).tile.icons.reject! { |i| i.name == corp.id } }
           end
