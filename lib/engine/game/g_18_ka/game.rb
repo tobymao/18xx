@@ -915,6 +915,7 @@ module Engine
           # CGR flags
           @national_ever_owned_permanent = false
 
+          @destination_statuses = {}
           # Corp -> Borrowed Train
           @borrowed_trains = {}
           create_destinations(DESTINATIONS)
