@@ -11,7 +11,8 @@ module Engine
           include BuyMinor
 
           FIRST_SR_ACTIONS = %w[buy_company pass].freeze
-          EXCHANGE_ACTIONS = %w[buy_shares].freeze
+          EXCHANGE_ACTIONS = %w[buy_shares pass].freeze
+          SELL_COMPANY_ACTIONS = %w[sell_company pass].freeze
 
           def actions(entity)
             return EXCHANGE_ACTIONS if entity == @game.fdsd && @game.rag.ipoed
@@ -21,17 +22,28 @@ module Engine
 
             result = super
             result.concat(FIRST_SR_ACTIONS) if can_buy_company?(entity)
-            result << 'buy_shares' if exchange_ability(entity) && !bought?
+            result.concat(EXCHANGE_ACTIONS) if can_exchange?(entity)
+            result.concat(SELL_COMPANY_ACTIONS) if can_sell_any_companies?(entity)
             result
           end
 
           def can_buy_company?(player, _company = nil)
             return false if first_sr_passed?(player)
+            return false if @round.players_sold[player][:bond]
 
             @game.buyable_companies.any? { |c| player.cash >= c.value } && !sold? && !bought?
           end
 
+          def can_sell_any_companies?(entity)
+            sellable_companies(entity).any? && !bought?
+          end
+
+          def can_sell_company?(company)
+            @game.bond?(company)
+          end
+
           def can_buy?(entity, bundle)
+            return false unless bundle
             return false if first_sr_passed?(entity) || !@game.buyable?(bundle.corporation)
             return true if rag_exchangable(entity, bundle.corporation) && !bought?
 
@@ -39,21 +51,22 @@ module Engine
           end
 
           def can_sell?(_entity, bundle)
+            return false unless bundle
             return false if @game.turn == 1
-            return !bought? if bundle.corporation == @game.adsk
 
             super && @game.buyable?(bundle.corporation)
           end
 
           def can_gain?(entity, bundle, exchange: false)
-            return false if exchange && !rag_exchangable(entity, bundle)
+            return false unless bundle
+            return false if exchange && !rag_exchangable(entity, bundle.corporation)
 
             !first_sr_passed?(entity) && super && @game.buyable?(bundle.corporation)
           end
 
           def can_exchange?(entity)
             rag = @game.rag
-            !bought? && exchange_ability(entity) && rag.ipoed && rag.num_market_shares.positive?
+            !bought? && !first_sr_passed?(entity) && exchange_ability(entity) && rag.num_market_shares.positive?
           end
 
           def ipo_type(corporation)
@@ -73,8 +86,6 @@ module Engine
 
           def process_buy_company(action)
             entity = action.entity
-            company = action.company
-            price = action.price
 
             super
 
@@ -87,17 +98,33 @@ module Engine
             end
 
             @round.last_to_act = entity
-
-            handle_connected_minor(company, entity, price)
           end
 
           def process_sell_shares(action)
+            player = action.entity
+            corporation = action.bundle.corporation
             # In case president's share is reserved, do not change presidency
-            allow_president_change = action.bundle.corporation.presidents_share.buyable
-            sell_shares(action.entity, action.bundle, swap: action.swap,
-                                                      allow_president_change: allow_president_change)
+            allow_president_change = corporation.presidents_share.buyable
+            @game.sell_shares_and_change_price(action.bundle,
+                                               allow_president_change: allow_president_change,
+                                               swap: action.swap)
 
-            track_action(action, action.bundle.corporation)
+            track_action(action, corporation)
+            @round.players_sold[player][corporation] = :now
+          end
+
+          def process_sell_company(action)
+            company = action.company
+            player = action.entity
+            price = action.price
+            raise GameError, "Cannot sell #{company.id}" unless can_sell_company?(company)
+
+            @log << "#{player.name} sells #{company.name} for #{@game.format_currency(price)} to the bank"
+            @game.bank.spend(price, player)
+            company.owner = @game.bank
+            player.companies.delete(company)
+            @round.players_sold[player][:bond] = :now
+            track_action(action, company)
           end
 
           def process_par(action)
@@ -119,7 +146,7 @@ module Engine
             rag = @par_rag.corporation
 
             @log << "#{player.name} exchanges #{@game.fdsd.name} to pay for par of #{rag.name}"
-            close_fdsd
+            @game.close_fdsd
             @game.bank.spend(@par_rag.share_price.price * 2, player)
 
             par_corporation(@par_rag)
@@ -150,16 +177,15 @@ module Engine
                          else
                            super
                          end
-
             # Exclude 120 par - these are just starts for AGV/HGK
             par_prices.reject { |p| p.price == 120 }
           end
 
-          def available_par_cash(entity, corporation, _share_price)
+          def available_par_cash(entity, corporation, share_price: nil)
             available = entity.cash
 
-            # If parring at max (100), FdSD private can pay for 200
-            available += 200 if rag_exchangable(entity, corporation)
+            # If parring via FdSD, private can pay for 2 shares
+            available += 2 * share_price.price if rag_exchangable(entity, corporation)
 
             available
           end
@@ -172,10 +198,7 @@ module Engine
 
             # If FdSD owner passes in SR, and FdSD was to be closed
             # due to phase change, FdSD is forcibly closed
-            if @game.fdsd_to_close && @game.fdsd.player == @current_entity
-              close_fdsd
-              @game.fdsd_to_close = false
-            end
+            @game.close_fdsd if @game.fdsd_to_close && @game.fdsd.player == @current_entity
 
             super
           end
@@ -191,6 +214,10 @@ module Engine
             track_action(action, corporation)
             @round.last_to_act = action.entity
             @round.current_actions << action
+
+            # If FdSD owner buys something in SR, and FdSD was to be closed
+            # due to phase change, FdSD is forcibly closed
+            @game.close_fdsd if @game.fdsd_to_close && @game.fdsd.player == entity
           end
 
           def exchange_for_rag(action, entity)
@@ -210,7 +237,7 @@ module Engine
             share_str = bundle.num_shares == 1 ? ' the last 10% share ' : ' two 10% shares '
             share_str += "of #{corporation.name}"
             @log << "#{player.name} exchanges #{@game.fdsd.name} for #{share_str} from market"
-            close_fdsd
+            @game.close_fdsd
 
             @game.share_pool.buy_shares(player,
                                         bundle,
@@ -230,7 +257,7 @@ module Engine
           end
 
           def pass_description
-            return 'Pass (Exchange FsDF)' unless available_subsidiaries(current_entity).empty?
+            return 'Pass (Exchange FdSD)' unless available_subsidiaries(current_entity).empty?
 
             super
           end
@@ -271,10 +298,15 @@ module Engine
             end
           end
 
-          def close_fdsd
-            fdsd = @game.fdsd
-            fdsd.close!
-            @log << "#{fdsd.name} closed"
+          def sellable_companies(entity)
+            return [] unless @game.turn > 1
+            return [] unless entity.player?
+
+            entity.companies.select { |c| @game.bond?(c) }
+          end
+
+          def sell_price(company)
+            company.value
           end
         end
       end

@@ -24,36 +24,32 @@ module Engine
           end
 
           def description
-            "Merge of #{merge_target.name}"
+            "Merge of #{@game.round.merge_target.name}"
           end
 
-          def active_entities
+          def entities
             @game.round.voters
-          end
-
-          def merge_target
-            @game.round.offering.first
           end
 
           def buyable_items(_entity)
             return [] unless choice_available?
 
-            [Item.new(description: :yes, cost: 0),
-             Item.new(description: :no, cost: 0)]
+            [Item.new(description: 'yes', cost: 0),
+             Item.new(description: 'no', cost: 0)]
           end
 
           def item_str(item)
             case item.description
-            when :yes
+            when 'yes'
               "Yes (#{@game.round.yes}% so far)"
-            when :no
+            when 'no'
               "No (#{@game.round.no}% so far)"
             end
           end
 
           def help
             names = @game.round.names(@game.round.merger_candidates_for(@game.round.current_entity))
-            "Vote Yes or No to merge #{names} into #{merge_target.name}. " \
+            "Vote Yes or No to merge #{names} into #{@game.round.merge_target.name}. " \
             '50% Yes votes is required to execute merge. If No votes exceed 50% merge is postponed. ' \
             'Note! Even if declined, there is an automatic merge at the start of the Merge Round following '\
             'the next phase change.'
@@ -73,7 +69,6 @@ module Engine
 
           def process_special_buy(action)
             @round.choice_done = true
-            @log << "Name: #{action.item.description}"
             @round.handle_vote(action.item.description)
             @round.next_entity!
           end
