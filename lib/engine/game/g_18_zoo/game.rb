@@ -1087,10 +1087,6 @@ module Engine
           @player_debts[player] * 2
         end
 
-        def player_debt_str
-          'Debt'
-        end
-
         private
 
         def init_round

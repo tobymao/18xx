@@ -132,7 +132,7 @@ module View
 
         if @game.respond_to?(:player_debt) && @game.player_debt(@player).positive?
           trs << h(:tr, [
-            h(:td, @game.respond_to?(:player_debt_str) ? @game.player_debt_str : 'Loan'),
+            h(:td, 'Loan'),
             h('td.right', @game.format_currency(@game.player_debt(@player))),
           ])
         end
