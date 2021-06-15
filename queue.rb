@@ -41,8 +41,8 @@ MessageBus.subscribe '/turn' do |msg|
     notifications = user.settings['notifications'] || 'none'
     next true if notifications == 'none'
     next true if /@(msn|hotmail|outlook|live|passport)/.match?(user.email.downcase)
-    next false if data['force']
     next true if notifications != 'email'
+    next false if data['force']
     next true if (Bus[Bus::USER_TS % user.id].to_i || minute_ago) > minute_ago
 
     email_sent = user.settings['email_sent'] || 0
