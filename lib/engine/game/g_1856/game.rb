@@ -1424,7 +1424,7 @@ module Engine
           end
           # Leftover cash is transferred
           major.spend(major.cash, national) if major.cash.positive?
-          @loans << major.loans.pop(major.loans.size)
+          @loans += major.loans.pop(major.loans.size)
           # Tunnel / Bridge rights are transferred
           if tunnel?(major)
             if tunnel?(national)

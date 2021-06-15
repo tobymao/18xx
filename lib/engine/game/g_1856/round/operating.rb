@@ -68,7 +68,8 @@ module Engine
             bank = @game.bank
             owed = 100 * loans_to_payoff
             owed_fmt = @game.format_currency(owed)
-            @log << "#{entity.name} must repay #{loans_to_payoff} loans and owes #{owed_fmt}"
+            loans_fmt = loans_to_payoff == 1 ? 'loan' : 'loans'
+            @log << "#{entity.name} must repay #{loans_to_payoff} #{loans_fmt} and owes #{owed_fmt}"
 
             # TODO: In the weird edge case where someone goes bankrupt in a cash crisis over this, are the loans
             # redeemed at the time of end game value? If so, how many?
