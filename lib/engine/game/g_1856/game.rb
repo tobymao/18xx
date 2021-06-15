@@ -1657,7 +1657,7 @@ module Engine
             corp.tokens.each do |token|
               next if !token.used || !token.city || home_bases.any? { |base| base.hex == token.city.hex }
 
-              remove_duplicate_tokens(corp)
+              remove_duplicate_tokens(corp, home_bases)
               replace_token(corp, token, create_national_token)
             end
           end
@@ -1748,13 +1748,13 @@ module Engine
           token
         end
 
-        def remove_duplicate_tokens(corp)
+        def remove_duplicate_tokens(corp, home_bases)
           # If there are 2 station markers on the same city the
           # surviving company must remove one and place it on its charter.
           # In the case of OO and Toronto tiles this is ambigious and must be solved by the user
 
           cities = Array(corp).flat_map(&:tokens).map(&:city).compact
-          @national.tokens.select { |t| cities.include?(t.city) }.each(&:destroy!)
+          @national.tokens.select { |t| cities.include?(t.city) && !home_bases.include?(t.city) }.each(&:destroy!)
         end
 
         # Convert the home token of the corporation to one of the national's
