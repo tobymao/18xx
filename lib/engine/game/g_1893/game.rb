@@ -557,6 +557,54 @@ module Engine
             },
           ].freeze
 
+        PRIVATE_COMPANIES = [
+          {
+            sym: 'FdSD',
+            name: 'Fond der Stadt Düsseldorf',
+            value: 190,
+            revenue: 20,
+            desc: 'May be exchanged against 20% shares of the Rheinbahn AG in an SR (except the first one). '\
+              'If less than 20% remains in the market the exchange will be what remains. May also be exchanged '\
+              'to par RAG in which case the private is exchanged for the 20% presidency share. '\
+              'FdSD is closed either due to the exchange or if FdSD has not been exchanged to do an exchange '\
+              'after the first SR of phase 5. An exchange is handled as a Buy action. This private '\
+              'cannot be sold.',
+            abilities: [
+              {
+                type: 'no_buy',
+                owner_type: 'player',
+              },
+              {
+                type: 'exchange',
+                corporations: ['RAG'],
+                owner_type: 'player',
+                when: 'owning_player_sr_turn',
+                from: %w[market],
+              },
+            ],
+            color: nil,
+          },
+          {
+            sym: 'EVA',
+            name: 'Eisenbahnverkehrsmittel Aktiengesellschaft',
+            value: 150,
+            revenue: 30,
+            desc: 'Leaves the game after the purchase of the first 6-train. This private cannot be sold to '\
+              'any corporation.',
+            abilities: [{ type: 'no_buy', owner_type: 'player' }],
+            color: nil,
+          },
+          {
+            sym: 'HdSK',
+            name: 'Häfen der Stadt Köln',
+            value: 100,
+            revenue: 10,
+            desc: 'Exchange against 10% certificate of HGK. This private cannot be sold.',
+            abilities: [{ type: 'no_buy', owner_type: 'player' }],
+            color: nil,
+          },
+        ].freeze
+
         MINOR_INITIAL_PRICE = {
           'EKB' => 210,
           'KFBE' => 200,
@@ -650,64 +698,18 @@ module Engine
         end
 
         def game_companies
-          all_companies = [
+          # Companies in 1893 are the private companies, and the 10 AdSK bonds
+          @all_companies ||= PRIVATE_COMPANIES + (1..10).map do |x|
             {
-              sym: 'FdSD',
-              name: 'Fond der Stadt Düsseldorf',
-              value: 190,
-              revenue: 20,
-              desc: 'May be exchanged against 20% shares of the Rheinbahn AG in an SR (except the first one). '\
-                'If less than 20% remains in the market the exchange will be what remains. May also be exchanged '\
-                'to par RAG in which case the private is exchanged for the 20% presidency share. '\
-                'FdSD is closed either due to the exchange or if FdSD has not been exchanged to do an exchange '\
-                'after the first SR of phase 5. An exchange is handled as a Buy action. This private '\
-                'cannot be sold.',
-              abilities: [
-                {
-                  type: 'no_buy',
-                  owner_type: 'player',
-                },
-                {
-                  type: 'exchange',
-                  corporations: ['RAG'],
-                  owner_type: 'player',
-                  when: 'owning_player_sr_turn',
-                  from: %w[market],
-                },
-              ],
-              color: nil,
-            },
-            {
-              sym: 'EVA',
-              name: 'Eisenbahnverkehrsmittel Aktiengesellschaft',
-              value: 150,
-              revenue: 30,
-              desc: 'Leaves the game after the purchase of the first 6-train. This private cannot be sold to '\
-                'any corporation.',
-              abilities: [{ type: 'no_buy', owner_type: 'player' }],
-              color: nil,
-            },
-            {
-              sym: 'HdSK',
-              name: 'Häfen der Stadt Köln',
-              value: 100,
-              revenue: 10,
-              desc: 'Exchange against 10% certificate of HGK. This private cannot be sold.',
-              abilities: [{ type: 'no_buy', owner_type: 'player' }],
-              color: nil,
-            },
-          ]
-          (1..10).each do |x|
-            all_companies << {
               sym: "AdSK-#{x}",
               name: "Anleihen der Stadt Köln #{x}",
               value: 100,
               revenue: 10,
-              desc: 'Bond. Can be bought/sold during Stock Round in a similar way shares are bought/sold.',
-              color: nil,
+              desc: 'Bond of the City of Cologne. Works like a private company but can be bought '\
+                'and sold during a SR, in a similar way as shares.',
+              color: 'orange',
             }
           end
-          all_companies
         end
 
         def store_player_info
@@ -855,6 +857,10 @@ module Engine
           return 'Exchangable corporation' if !entity.floated? && merged_corporation?(entity)
 
           'Corporation'
+        end
+
+        def company_header(company)
+          bond?(company) ? 'BOND' : 'PRIVATE COMPANY'
         end
 
         def agv
