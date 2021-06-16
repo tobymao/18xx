@@ -343,7 +343,7 @@ module Engine
           },
         ].freeze
 
-        TRAINS = [{ name: '2', distance: 2, num: 8, price: 80, rusts_on: '4' },
+        TRAINS = [{ name: '2', distance: 2, price: 80, rusts_on: '4' },
                   {
                     name: '3',
                     distance: 3,
@@ -365,7 +365,7 @@ module Engine
                   {
                     name: '5',
                     distance: 5,
-                    num: 3,
+                    num: 2,
                     price: 450,
                     discount: { '3' => 90, '4' => 150 },
                     events: [{ 'type' => 'agv_founded' },
