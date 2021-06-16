@@ -141,6 +141,7 @@ module Engine
           'D12' => [5, 3],
           'E13' => [0, 2],
           'F12' => [0, 3],
+          'G11' => [5, 3], # only 2 player
           'H12' => [0, 2],
           # V
           'B10' => [0, 3],
@@ -242,15 +243,16 @@ module Engine
 
         TWO_PLAYER_ADD = {
           gray: { ['I11'] => 'city=revenue:30;city=revenue:30;path=a:3,b:_0,track:narrow;path=a:4,b:_1,track:narrow;' },
-          white: { ['G13'] => 'upgrade=cost:20;frame=color:#ffa500;icon=image:1840/red_hex' },
+          white: { ['G11'] => 'upgrade=cost:20;frame=color:#ffa500;icon=image:1840/red_hex' },
         }.freeze
 
         THREE_PLAYER_LINES_REMOVE = %w[9 10 13 14 16 17].freeze
+        TWO_PLAYER_LINES_REMOVE = %w[8 9 10 11 12 13 14 16 17].freeze
 
         THREE_PLAYER_COMPANY_REMOVE = 'Prater'
         THREE_PLAYER_CORP_REMOVE = 'V'
 
-        TWO_PLAYER_COMPANY_REMOVE = 'Schönbrunn“.'
+        TWO_PLAYER_COMPANY_REMOVE = %w[Schönbrunn Prater].freeze
 
         attr_reader :tram_corporations, :major_corporations, :tram_owned_by_corporation, :city_graph, :city_tracks
 
@@ -310,11 +312,17 @@ module Engine
 
           @city_tracks = {
             'D' => %w[B20 C21 D22 E23],
-            'G' => %w[B16 B14 C13 D12 E13 F12 H12],
             'V' => %w[B10 C9 D6 E7 F6 G5],
           }
+
+          @city_tracks['G'] = if two_player?
+                                %w[B16 B14 C13 D12 E13 F12 G11 H12]
+                              else
+                                %w[B16 B14 C13 D12 E13 F12 H12]
+                              end
+
           @city_tracks['W'] = if two_player?
-                                %w[G23 G21 G19 G17 H16 I15 I13 I11]
+                                %w[G23 G21 G19 G17 H16 I15 I13]
                               else
                                 %w[G23 G21 G19 G17 H16 I15 I13 I9 I7 I5 I3]
                               end
@@ -351,20 +359,28 @@ module Engine
 
         def init_companies(players)
           companies = super
-          companies = companies.reject { |item| item.name == THREE_PLAYER_COMPANY_REMOVE } if three_player_small?
-          companies = companies.reject { |item| item.name == TWO_PLAYER_COMPANY_REMOVE } if two_player?
+          if two_player? || three_player_small?
+            companies = companies.reject do |item|
+              item.name == THREE_PLAYER_COMPANY_REMOVE
+            end
+          end
+          companies = companies.reject { |item| TWO_PLAYER_COMPANY_REMOVE.include?(item.name) } if two_player?
           companies
         end
 
         def init_corporations(stock_market)
           corporations = super
-          if three_player_small? || two_player?
-            corporations = corporations.reject do |item|
-              item.id == THREE_PLAYER_CORP_REMOVE ||
-                         THREE_PLAYER_LINES_REMOVE.include?(item.id)
-            end
+          return corporations if !three_player_small? && !two_player?
+
+          lines_to_remove = if three_player_small?
+                              THREE_PLAYER_LINES_REMOVE
+                            else
+                              TWO_PLAYER_LINES_REMOVE
+                            end
+          corporations.reject do |item|
+            item.id == THREE_PLAYER_CORP_REMOVE ||
+            lines_to_remove.include?(item.id)
           end
-          corporations
         end
 
         def init_graph
@@ -683,6 +699,29 @@ module Engine
           sum * current_cr_multipler
         end
 
+        def revenue_str(route)
+          str = super
+
+          return str if route.corporation.type == :city
+
+          valid_stops = route.stops.reject do |s|
+            s.hex.tile.cities.empty? && s.hex.tile.towns.empty?
+          end
+          hex_ids = valid_stops.map { |s| s.hex.id }.uniq
+
+          bonus = []
+          major_corp = owning_major_corporation(route.corporation)
+          major_corp.companies.each do |company|
+            abilities(company, :hex_bonus) do |ability|
+              bonus << company.name unless (ability.hexes & hex_ids).empty?
+            end
+          end
+
+          return str if bonus.empty?
+
+          "#{str} (#{bonus.join(',')})"
+        end
+
         def scrap_train(train, entity)
           @log << "#{entity.name} scraps #{train.name}"
           remove_train(train)
@@ -844,8 +883,8 @@ module Engine
             [hex_by_id('A17').tile.cities.first, hex_by_id('I11').tile.cities.first]
           when 'W'
             nodes = [hex_by_id('F24').tile.cities.first]
-            nodes.concat(hex_by_id('I1').tile.cities.first) unless two_player?
-            nodes.concat(hex_by_id('I11').tile.cities.first) if two_player?
+            nodes << hex_by_id('I1').tile.cities.first unless two_player?
+            nodes << hex_by_id('I11').tile.cities[1] if two_player?
             nodes
           end
         end
