@@ -64,7 +64,7 @@ module View
           children.concat(render_corporations)
           children.concat(render_mergeable_entities) if @current_actions.include?('merge')
           children.concat(render_player_companies) if @current_actions.include?('sell_company')
-          if @step.respond_to?(:purchasable_minors) && !@step.purchasable_minors(@current_entity).empty?
+          if @step.respond_to?(:purchasable_minors) && !@step.purchasable_minors.empty?
             children.concat(render_purchasable_minors)
           end
           children.concat(render_bank_companies)
