@@ -99,7 +99,7 @@ module Engine
           def min_bid(entity)
             return entity.min_bid if entity.company?
 
-            @game.minor_starting_treasury(entity) - @current_reduction
+            initial_minor_price(entity) - @current_reduction
           end
 
           def min_purchase(entity)

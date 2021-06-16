@@ -27,4 +27,8 @@ module BuyMinor
     company.owner = player
     player.companies << company
   end
+
+  def initial_minor_price(minor)
+    @game.minor_starting_treasury(minor)
+  end
 end
