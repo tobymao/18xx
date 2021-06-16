@@ -64,12 +64,12 @@ module View
           children.concat(render_corporations)
           children.concat(render_mergeable_entities) if @current_actions.include?('merge')
           children.concat(render_player_companies) if @current_actions.include?('sell_company')
-          if @step.respond_to?(:purchasable_minors) && @step.purchasable_minors(@current_entity).any?
+          if @step.respond_to?(:purchasable_minors) && !@step.purchasable_minors(@current_entity).empty?
             children.concat(render_purchasable_minors)
           end
           children.concat(render_bank_companies)
           children << h(Players, game: @game)
-          if @step.respond_to?(:purchasable_companies) && @step.purchasable_companies(@current_entity).any?
+          if @step.respond_to?(:purchasable_companies) && !@step.purchasable_companies(@current_entity).empty?
             children << h(BuyCompanyFromOtherPlayer, game: @game)
           end
           children << h(StockMarket, game: @game)
