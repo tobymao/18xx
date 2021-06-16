@@ -252,7 +252,7 @@ module Engine
         THREE_PLAYER_COMPANY_REMOVE = 'Prater'
         THREE_PLAYER_CORP_REMOVE = 'V'
 
-        TWO_PLAYER_COMPANY_REMOVE = %w[Schönbrunn Prater].freeze
+        TWO_PLAYER_COMPANY_REMOVE = ['Schloss Schönbrunn', 'Prater'].freeze
 
         attr_reader :tram_corporations, :major_corporations, :tram_owned_by_corporation, :city_graph, :city_tracks
 
