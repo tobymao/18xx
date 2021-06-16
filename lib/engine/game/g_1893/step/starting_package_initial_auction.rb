@@ -85,7 +85,7 @@ module Engine
           def min_bid(entity)
             return entity.value if entity.company?
 
-            @game.minor_starting_treasury(entity)
+            initial_minor_price(entity)
           end
 
           def max_place_bid(_player, _object)

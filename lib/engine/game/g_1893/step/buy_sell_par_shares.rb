@@ -13,6 +13,7 @@ module Engine
           FIRST_SR_ACTIONS = %w[buy_company pass].freeze
           EXCHANGE_ACTIONS = %w[buy_shares pass].freeze
           SELL_COMPANY_ACTIONS = %w[sell_company pass].freeze
+          BUY_MINOR_ACTIONS = %w[buy_corporation pass].freeze
 
           def actions(entity)
             return EXCHANGE_ACTIONS if entity == @game.fdsd && @game.rag.ipoed
@@ -24,6 +25,7 @@ module Engine
             result.concat(FIRST_SR_ACTIONS) if can_buy_company?(entity)
             result.concat(EXCHANGE_ACTIONS) if can_exchange?(entity)
             result.concat(SELL_COMPANY_ACTIONS) if can_sell_any_companies?(entity)
+            result.concat(BUY_MINOR_ACTIONS) if can_buy_any_minors?(entity)
             result
           end
 
@@ -36,6 +38,23 @@ module Engine
 
           def can_sell_any_companies?(entity)
             sellable_companies(entity).any? && !bought?
+          end
+
+          def can_buy_any_minors?(entity)
+            return false unless @game.num_certs(entity) < @game.cert_limit
+
+            @game.buyable_minors(entity).any? { |m| can_buy_minor?(entity, m) }
+          end
+
+          def can_buy_minor?(entity, minor)
+            return false unless minor.minor?
+            return false if bought?
+
+            entity.cash >= initial_minor_price(minor)
+          end
+
+          def purchasable_minors
+            @game.draftable_minors
           end
 
           def can_sell_company?(company)
@@ -98,6 +117,15 @@ module Engine
             end
 
             @round.last_to_act = entity
+          end
+
+          def process_buy_corporation(action)
+            player = action.entity
+            minor = action.minor
+            price = action.price
+            draft_object(minor, player, price)
+
+            @round.last_to_act = player
           end
 
           def process_sell_shares(action)
