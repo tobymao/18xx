@@ -449,16 +449,10 @@ module Engine
         def new_company_operating_auction_round
           G1840::Round::Acquisition.new(self, [
             G1840::Step::SellCompany,
+            G1840::Step::InterruptingReassignTrains,
             G1840::Step::InterruptingBuyTrain,
             G1840::Step::AcquisitionAuction,
           ])
-        end
-
-        def new_company_operating_switch_trains
-          G1840::Round::Company.new(self, [
-            G1840::Step::SellCompany,
-            G1840::Step::ReassignTrains,
-          ], no_city: true)
         end
 
         def operating_round(round_num)
@@ -489,15 +483,15 @@ module Engine
               @intern_cr_phase_counter += 1
               if @intern_cr_phase_counter < 3
                 new_company_operating_buy_train_round
-              elsif @intern_cr_phase_counter < 4
+              else
                 new_company_operating_auction_round
-              elsif @cr_counter == 1
+              end
+            when new_company_operating_auction_round.class
+              if @cr_counter == 1
                 new_operating_round(@round.round_num)
               else
                 new_stock_round
               end
-            when new_company_operating_auction_round.class
-              new_company_operating_switch_trains
             when Engine::Round::Operating
               if @round.round_num < @operating_rounds
                 or_round_finished
