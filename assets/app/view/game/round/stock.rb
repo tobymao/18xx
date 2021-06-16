@@ -64,7 +64,9 @@ module View
           children.concat(render_corporations)
           children.concat(render_mergeable_entities) if @current_actions.include?('merge')
           children.concat(render_player_companies) if @current_actions.include?('sell_company')
-          children.concat(render_buyable_minors)
+          if @step.respond_to?(:purchasable_minors) && @step.purchasable_minors(@current_entity).any?
+            children.concat(render_purchasable_minors)
+          end
           children.concat(render_bank_companies)
           children << h(Players, game: @game)
           if @step.respond_to?(:purchasable_companies) && @step.purchasable_companies(@current_entity).any?
@@ -377,7 +379,7 @@ module View
           [h(Bid, entity: @current_entity, corporation: company)]
         end
 
-        def render_buyable_minors
+        def render_purchasable_minors
           props = {
             style: {
               display: 'inline-block',
@@ -385,7 +387,7 @@ module View
             },
           }
 
-          @step.buyable_minors.map do |minor|
+          @step.purchasable_minors.map do |minor|
             children = [h(Corporation, corporation: minor)]
             children << render_minor_input(minor) if @selected_corporation == minor
             h(:div, props, children)
@@ -393,11 +395,7 @@ module View
         end
 
         def render_minor_input(minor)
-          minor_actions = []
-
-          minor_actions.concat(render_minor_buy(minor))
-
-          h(:div, { style: { textAlign: 'center', margin: '1rem' } }, minor_actions)
+          h(:div, { style: { textAlign: 'center', margin: '1rem' } }, render_minor_buy(minor))
         end
 
         def render_minor_buy(minor)
