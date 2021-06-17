@@ -43,7 +43,7 @@ module Engine
           def can_buy_any_minors?(entity)
             return false unless @game.num_certs(entity) < @game.cert_limit
 
-            @game.buyable_minors(entity).any? { |m| can_buy_minor?(entity, m) }
+            purchasable_minors.any? { |m| can_buy_minor?(entity, m) }
           end
 
           def can_buy_minor?(entity, minor)
