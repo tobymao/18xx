@@ -247,7 +247,7 @@ module Engine
         }.freeze
 
         attr_accessor :first_train_of_new_phase
-        attr_reader :available_companies, :future_companies
+        attr_reader :available_companies, :future_companies, :train_with_bandage
 
         def setup
           @operating_rounds = 2 # 2 ORs on first and second round
@@ -1014,7 +1014,7 @@ module Engine
           new_train.buyable = false
           train.owner.trains.delete(train)
           train.owner.trains << new_train
-          train.rusts_on = "block-#{train.rusts_on}"
+          train.rusts_on = "block-#{train.rusts_on}" if train.rusts_on
           train.buyable = false
 
           return unless patch.owner.player?
@@ -1047,8 +1047,10 @@ module Engine
           corporation.trains << @train_with_bandage
           @train_with_bandage = nil
 
-          train.rusts_on = train.rusts_on.gsub('block-', '')
-          rust_trains!(train_by_id("#{train.rusts_on}-0"), train.owner) if phase.available?(train.rusts_on)
+          if train.rusts_on
+            train.rusts_on = train.rusts_on.gsub('block-', '')
+            rust_trains!(train_by_id("#{train.rusts_on}-0"), train.owner) if phase.available?(train.rusts_on)
+          end
 
           train_by_id('1S-0').owner = nil
         end

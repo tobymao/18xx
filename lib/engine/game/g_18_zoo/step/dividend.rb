@@ -71,6 +71,21 @@ module Engine
             action.entity.remove_assignment!('BARREL') if @game.two_barrels_used_this_or?(action.entity)
           end
 
+          def rust_obsolete_trains!(entity)
+            rusted_trains = []
+            entity.trains.select(&:obsolete).each do |train|
+              train.rusts_on = '2S'
+              # do not rust if 1S run instead of train
+              next if @round.train_in_route.include?('1S-0') && !@round.train_in_route.include?(train.id)
+              next unless @game.rust?(train)
+
+              rusted_trains << train.name
+              @game.rust(train)
+            end
+
+            @log << "-- Event: Obsolete trains rust (#{rusted_trains.join(', ')}) --" if rusted_trains.any?
+          end
+
           private
 
           def log_payout_shares(entity, revenue, per_share, receivers)
