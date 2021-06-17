@@ -23,7 +23,7 @@ module Engine
       @discount = opts[:discount] || 0
       @min_auction_price = -@discount
       @closed = false
-      @min_price = @value / 2
+      @min_price = (@value / 2.0).ceil
       @max_price = @value * 2
       @interval = opts[:interval] # Array of prices or nil
       @color = opts[:color] || :yellow
