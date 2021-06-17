@@ -63,7 +63,7 @@ module Engine
           end
 
           def sellable_bundle?(bundle)
-            return false unless bundle.shares.size == 1
+            return false unless bundle.shares.one?
 
             super
           end
