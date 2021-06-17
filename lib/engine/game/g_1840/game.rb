@@ -736,6 +736,7 @@ module Engine
 
         def check_other(route)
           check_track_type(route)
+          check_red_tiles(route)
         end
 
         def check_track_type(route)
@@ -750,6 +751,16 @@ module Engine
           return if corporation.type != :minor || (track_types - ['broad']).empty?
 
           raise GameError, 'Route may only contain broad tracks'
+        end
+
+        def check_red_tiles(route)
+          visited_hexes = route.stops.map { |s| s.hex.id }.uniq
+          RED_TILES.each do |item|
+            if visited_hexes.include?(item)
+              hex = hex_by_id(item)
+              raise GameError, "Route may not connect to #{hex.location_name} yet" if hex.original_tile == hex.tile
+            end
+          end
         end
 
         def graph_for_entity(entity)
@@ -768,6 +779,12 @@ module Engine
 
         def update_last_revenue(entity)
           @last_revenue[entity] = major_revenue(entity)
+        end
+
+        def city_tokened_by?(city, entity)
+          return super unless entity.type == :city
+
+          true
         end
 
         def revenue_for(route, stops)

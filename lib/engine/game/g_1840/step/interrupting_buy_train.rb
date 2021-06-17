@@ -31,6 +31,11 @@ module Engine
             @round.corporation_bought_minor&.first || {}
           end
 
+          def process_buy_train(action)
+            check_spend(action)
+            buy_train_action(action)
+          end
+
           def pass!
             @round.corporation_needs_reassign << {
               entity: buying_entity,
