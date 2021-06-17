@@ -1109,9 +1109,9 @@ module Engine
         end
 
         def can_par?(corporation, parrer)
-          return false if @false_national_president && parrer == @false_national_president
+          return false if corporation == national
 
-          corporation == national ? national.ipoed : super
+          super
         end
 
         #
