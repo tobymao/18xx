@@ -1819,6 +1819,7 @@ module Engine
           entity = action.entity
           train = action.train
           buy_train(entity, train, :free)
+          train.operated = false
           @borrowed_trains[entity] = train
           @log << "#{entity.name} borrows a #{train.name}"
         end
