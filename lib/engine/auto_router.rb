@@ -118,6 +118,7 @@ module Engine
       combos = [[]]
       possibilities = []
 
+      limit = train_routes.map(&:size).reduce(&:*)
       puts "Finding route combos with depth #{limit}"
       counter = 0
       now = Time.now
@@ -130,7 +131,7 @@ module Engine
             route.clear_cache!(only_routes: true)
             counter += 1
             if (counter % 1000).zero?
-              puts "#{counter} / #{limit**train_routes.size}"
+              puts "#{counter} / #{limit}"
               raise if Time.now - now > route_timeout
             end
             route.revenue
@@ -148,10 +149,12 @@ module Engine
 
       puts "Found #{possibilities.size} possible routes in: #{Time.now - now}"
 
-      possibilities.max_by do |routes|
+      max_routes = possibilities.max_by do |routes|
         routes.each { |route| route.routes = routes }
         @game.routes_revenue(routes)
       end || []
+
+      max_routes.each { |route| route.routes = max_routes }
     end
   end
 end

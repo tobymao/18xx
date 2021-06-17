@@ -558,6 +558,8 @@ module Engine
         end
 
         def check_distance(route, visits)
+          raise GameError, 'Cannot run Pullman train' if pullman_train?(route.train)
+
           english_channel_visit = english_channel_visit(visits)
           # Permanent local train cant run in the english channel
           if self.class::LOCAL_TRAINS.include?(route.train.name) && english_channel_visit.positive?
