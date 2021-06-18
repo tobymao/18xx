@@ -12,8 +12,8 @@ module Engine
     def compute(corporation, **opts)
       static = opts[:routes] || []
       path_timeout = opts[:path_timeout] || 20
-      route_timeout = opts[:route_timeout] || 10
-      route_limit = opts[:route_limit] || 100_000
+      route_timeout = opts[:route_timeout] || 20
+      route_limit = opts[:route_limit] || 1_000
 
       connections = {}
 
@@ -105,12 +105,8 @@ module Engine
 
       static.each { |route| train_routes[route.train] = [route] }
 
-      limit = (1..train_routes.values.map(&:size).max).bsearch do |x|
-        (x**train_routes.size) >= route_limit
-      end || route_limit
-
       train_routes.each do |train, routes|
-        train_routes[train] = routes.sort_by(&:revenue).reverse.take(limit)
+        train_routes[train] = routes.sort_by(&:revenue).reverse.take(route_limit)
       end
 
       train_routes = train_routes.values.sort_by { |routes| -routes[0].paths.size }
