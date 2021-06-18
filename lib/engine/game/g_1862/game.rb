@@ -663,6 +663,7 @@ module Engine
 
         # called at end of stock round
         def enforce_obligations
+          @next_priority ||= @players[@round.entity_index]
           @players.each do |player|
             remaining_fine = 0
             player.companies.dup.each do |company|
@@ -944,6 +945,15 @@ module Engine
           @players.max_by { |h| h.shares_of(entity).sum(&:percent) }
         end
 
+        def reorder_players(_order = nil, log_player_order: false)
+          @players.rotate!(@players.index(@next_priority))
+          @log << if log_player_order
+                    "Priority order: #{@players.map(&:name).join(', ')}"
+                  else
+                    "#{@players.first.name} has priority deal"
+                  end
+        end
+
         def stock_round
           G1862::Round::Stock.new(self, [
             G1862::Step::BuyTokens,
@@ -975,6 +985,11 @@ module Engine
         def init_round
           @log << '-- Initial Parliament Round -- '
           new_parliament_round
+        end
+
+        def new_stock_round
+          @next_priority = nil
+          super
         end
 
         def new_parliament_round
