@@ -197,8 +197,6 @@ module Engine
 
         SELL_BUY_ORDER = :sell_buy
 
-        NEXT_SR_PLAYER_ORDER = :most_cash # TODO: check if a bug
-
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
 
         HOME_TOKEN_TIMING = :float
