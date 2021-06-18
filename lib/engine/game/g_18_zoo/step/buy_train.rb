@@ -62,6 +62,12 @@ module Engine
             @game.first_train_of_new_phase = false
           end
 
+          def sellable_bundle?(bundle)
+            return false unless bundle.shares.one?
+
+            super
+          end
+
           private
 
           def try_take_player_loan(entity, cost)
