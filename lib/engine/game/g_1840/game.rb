@@ -232,8 +232,8 @@ module Engine
 
         CR_MULTIPLIER = [1, 1, 1, 2, 3, 10].freeze
 
-        THREE_PLAYER_SMALL_REMOVE =  %w[A1 A3 A5 A7 A9 A11 A15 A25 A27 A29 B2 B4 B6 B8 B10 B26 B28 C1 C3 C5 C7 C9 C27 C29
-                                        D2 D4 D6 D8 D26 D28 E1 E3 E5 E7 F2 F4 F6 F8 G1 G3 G5].freeze
+        THREE_PLAYER_SMALL_REMOVE =  %w[A1 A3 A5 A7 A9 A11 A15 A25 A27 A29 B2 B4 B6 B8 B10 B26 B28 C1 C3 C5 C7 C9 C27
+                                        C29 D2 D4 D6 D8 D26 D28 E1 E3 E5 E7 F2 F4 F6 F8 G1 G3 G5].freeze
 
         TWO_PLAYER_REMOVE = %w[B12 C11 D10 E9 E11 F10 G7 G9 G11 H4 H6 H8 H10 I1 I3 I5 I7 I9 I11 J4 J6 J8 J10 K7].freeze
 
