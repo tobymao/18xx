@@ -14,10 +14,10 @@ module Engine
             sym: 'KT',
           },
           {
-            name: 'Chinese Wall',
+            name: 'Great Wall of China',
             value: 50,
             revenue: 10,
-            desc: 'A company owning this private may lay one or two plain yellow tiles for free onto hexes with the Chinese Wall in addition to the normal tile lay step. No connection is required. This does not close the company. If laying two tiles, both tiles must be laid during the same turn and must be connected.',
+            desc: 'A company owning this private may lay one or two yellow tiles for free onto hexes with the Great Wall in addition to the normal tile lay step. No connection is required. This does not close the company. If laying two tiles, both tiles must be laid during the same turn and must be connected.',
             sym: 'CW',
             abilities: [{
               type: 'tile_lay',
@@ -26,8 +26,8 @@ module Engine
               free: true,
               must_lay_together: true,
               special: false,
-              hexes: %w[B4 B8 B10 C7 C11 C15 D2 D4 D6 F4],
-              tiles: %w[7 8 9],
+              hexes: %w[B4 B6 B8 B10 B16 C3 C7 C11 C13 C15 D2 D4 D6 E3 F4],
+              tiles: %w[1 2 3 4 5 6 7 8 9 55 56 57 58 69],
               count: 2,
             }],
           },
