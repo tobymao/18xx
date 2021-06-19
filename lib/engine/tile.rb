@@ -150,7 +150,7 @@ module Engine
       when 'partition'
         Part::Partition.new(params['a'], params['b'], params['type'], params['restrict'])
       when 'frame'
-        Part::Frame.new(params['color'])
+        Part::Frame.new(params['color'], params['color2'])
       end
     end
 

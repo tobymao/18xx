@@ -5,10 +5,11 @@ require_relative 'base'
 module Engine
   module Part
     class Frame < Base
-      attr_reader :color
+      attr_reader :color, :color2
 
-      def initialize(color)
+      def initialize(color, color2 = nil)
         @color = color
+        @color2 = color2
       end
 
       def frame?
