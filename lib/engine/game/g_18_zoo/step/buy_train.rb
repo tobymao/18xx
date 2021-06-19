@@ -68,6 +68,21 @@ module Engine
             @corporations_sold = [] # do not care about MUST_SELL_IN_BLOCKS when in emergency
           end
 
+          # player cash cannot be used to buy from other corporation
+          def spend_minmax(entity, train)
+            if train.from_depot? && (buying_power(entity) < train.price)
+              min = if @last_share_sold_price
+                      (buying_power(entity) + entity.owner.cash) - @last_share_sold_price + 1
+                    else
+                      1
+                    end
+              max = [train.price, buying_power(entity) + entity.owner.cash].min
+              [min, max]
+            else
+              [1, buying_power(entity)]
+            end
+          end
+
           private
 
           def try_take_player_loan(entity, cost)

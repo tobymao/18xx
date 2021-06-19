@@ -1051,6 +1051,9 @@ module Engine
           end
 
           train_by_id('1S-0').owner = nil
+
+          # re-enable buy_train step if owner has no train
+          @round.steps.find { |s| s.is_a?(G18ZOO::Step::BuyTrain) }.unpass! if corporation.trains.empty?
         end
 
         def can_run_route?(entity)

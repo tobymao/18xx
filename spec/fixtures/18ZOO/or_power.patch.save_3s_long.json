@@ -1032,21 +1032,10 @@
       "created_at": 1622048981
     },
     {
-      "type": "choose_ability",
-      "entity": "PATCH",
-      "entity_type": "company",
-      "id": 122,
-      "created_at": 1622048983,
-      "choice": {
-        "type": "remove_bandage",
-        "corporation": "GI"
-      }
-    },
-    {
       "type": "end_game",
       "entity": "Player 1",
       "entity_type": "player",
-      "id": 123,
+      "id": 122,
       "created_at": 1622048994
     }
   ],
