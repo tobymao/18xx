@@ -62,10 +62,10 @@ module Engine
             @game.first_train_of_new_phase = false
           end
 
-          def sellable_bundle?(bundle)
-            return false unless bundle.shares.one?
-
+          def process_sell_shares(action)
             super
+
+            @corporations_sold = [] # do not care about MUST_SELL_IN_BLOCKS when in emergency
           end
 
           private
