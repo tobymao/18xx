@@ -788,7 +788,7 @@ module Engine
         end
 
         def reorder_player_pass_order
-          return reorder_players(:first_to_pass) if @passers_first_stock_round.empty?
+          return reorder_players(:after_last_to_act) if @passers_first_stock_round.empty?
 
           pd = @passers_first_stock_round.first
           @players.rotate!(@players.index(pd))
@@ -816,7 +816,6 @@ module Engine
         end
 
         def stock_round
-          @passers_first_stock_round = []
           Engine::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
             G1893::Step::BuySellParShares,

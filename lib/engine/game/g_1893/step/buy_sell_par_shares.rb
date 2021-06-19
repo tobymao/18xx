@@ -18,8 +18,8 @@ module Engine
           def actions(entity)
             return EXCHANGE_ACTIONS if entity == @game.fdsd && @game.rag.ipoed
             return [] unless entity&.player?
-
             return %w[assign pass] unless available_subsidiaries(entity).empty?
+            return [] if first_sr_passed?(entity)
 
             result = super
             result.concat(FIRST_SR_ACTIONS) if can_buy_company?(entity)
@@ -30,7 +30,6 @@ module Engine
           end
 
           def can_buy_company?(player, _company = nil)
-            return false if first_sr_passed?(player)
             return false if @round.players_sold[player][:bond]
 
             @game.buyable_companies.any? { |c| player.cash >= c.value } && !sold? && !bought?
@@ -63,7 +62,7 @@ module Engine
 
           def can_buy?(entity, bundle)
             return false unless bundle
-            return false if first_sr_passed?(entity) || !@game.buyable?(bundle.corporation)
+            return false unless @game.buyable?(bundle.corporation)
             return true if rag_exchangable(entity, bundle.corporation) && !bought?
 
             super
@@ -80,12 +79,12 @@ module Engine
             return false unless bundle
             return false if exchange && !rag_exchangable(entity, bundle.corporation)
 
-            !first_sr_passed?(entity) && super && @game.buyable?(bundle.corporation)
+            super && @game.buyable?(bundle.corporation)
           end
 
           def can_exchange?(entity)
             rag = @game.rag
-            !bought? && !first_sr_passed?(entity) && exchange_ability(entity) && rag.num_market_shares.positive?
+            !bought? && exchange_ability(entity) && rag.num_market_shares.positive?
           end
 
           def ipo_type(corporation)
@@ -95,7 +94,7 @@ module Engine
           end
 
           def first_sr_passed?(entity)
-            @game.passers_first_stock_round.include?(entity)
+            @game.turn == 1 && @game.passers_first_stock_round.include?(entity)
           end
 
           def process_pass(action)
