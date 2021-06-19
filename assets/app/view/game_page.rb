@@ -407,7 +407,7 @@ module View
       when Engine::Round::Auction
         h(Game::Round::Auction, game: @game, user: @user)
       when Engine::Round::Merger
-        if current_entity_actions.include?('buy_train') || current_entity_actions.include?('scrap_train')
+        if !(%w[buy_train scrap_train reassign_trains] & current_entity_actions).empty?
           h(Game::Round::Operating, game: @game)
         else
           h(Game::Round::Merger, game: @game)

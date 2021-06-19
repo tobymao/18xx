@@ -31,9 +31,9 @@ module Engine
 
         BANK_CASH = 99_999
 
-        CERT_LIMIT = { 3 => 16, 4 => 14, 5 => 13, 6 => 12 }.freeze
+        CERT_LIMIT = { 2 => 18, 3 => 16, 4 => 14, 5 => 13, 6 => 12 }.freeze
 
-        STARTING_CASH = { 3 => 300, 4 => 260, 5 => 230, 6 => 200 }.freeze
+        STARTING_CASH = { 2 => 350, 3 => 300, 4 => 260, 5 => 230, 6 => 200 }.freeze
 
         ADDITIONAL_CASH = 350
 
@@ -79,8 +79,9 @@ module Engine
 
         INITIAL_CITY_TOKENS = {
           'W' => [
-            { coordinate: 'I1' },
-            { coordinate: 'I9' },
+            { coordinate: 'I1', ignore_two_player: true },
+            { coordinate: 'I9', ignore_two_player: true },
+            { coordinate: 'I11', city_index: 1, only_two_player: true },
             { coordinate: 'I15' },
             { coordinate: 'F24' },
           ],
@@ -140,6 +141,7 @@ module Engine
           'D12' => [5, 3],
           'E13' => [0, 2],
           'F12' => [0, 3],
+          'G11' => [5, 3], # only 2 player
           'H12' => [0, 2],
           # V
           'B10' => [0, 3],
@@ -230,6 +232,28 @@ module Engine
 
         CR_MULTIPLIER = [1, 1, 1, 2, 3, 10].freeze
 
+        THREE_PLAYER_SMALL_REMOVE =  %w[A1 A3 A5 A7 A9 A11 A15 A25 A27 A29 B2 B4 B6 B8 B10 B26 B28 C1 C3 C5 C7 C9 C27
+                                        C29 D2 D4 D6 D8 D26 D28 E1 E3 E5 E7 F2 F4 F6 F8 G1 G3 G5].freeze
+
+        TWO_PLAYER_REMOVE = %w[B12 C11 D10 E9 E11 F10 G7 G9 G11 H4 H6 H8 H10 I1 I3 I5 I7 I9 I11 J4 J6 J8 J10 K7].freeze
+
+        THREE_PLAYER_SMALL_ADD = {
+          gray: { ['B10'] => 'town=revenue:10;path=a:4,b:_0;path=a:5,b:_0' },
+        }.freeze
+
+        TWO_PLAYER_ADD = {
+          gray: { ['I11'] => 'city=revenue:30;city=revenue:30;path=a:3,b:_0,track:narrow;path=a:4,b:_1,track:narrow;' },
+          white: { ['G11'] => 'upgrade=cost:20;frame=color:#ffa500;icon=image:1840/red_hex' },
+        }.freeze
+
+        THREE_PLAYER_LINES_REMOVE = %w[9 10 13 14 16 17].freeze
+        TWO_PLAYER_LINES_REMOVE = %w[8 9 10 11 12 13 14 16 17].freeze
+
+        THREE_PLAYER_COMPANY_REMOVE = 'Prater'
+        THREE_PLAYER_CORP_REMOVE = 'V'
+
+        TWO_PLAYER_COMPANY_REMOVE = ['Schloss Schönbrunn', 'Prater'].freeze
+
         attr_reader :tram_corporations, :major_corporations, :tram_owned_by_corporation, :city_graph, :city_tracks
 
         def setup
@@ -264,6 +288,9 @@ module Engine
             initial_coordinates_info = INITIAL_CITY_TOKENS[corporation.id]
 
             initial_coordinates_info.each do |info|
+              next if info[:ignore_two_player] && two_player?
+              next if info[:only_two_player] && !two_player?
+
               token = corporation.find_token_by_type
               city_index = info[:city_index] || 0
               hex_by_id(info[:coordinate]).tile.cities[city_index].place_token(corporation, token,
@@ -285,12 +312,75 @@ module Engine
 
           @city_tracks = {
             'D' => %w[B20 C21 D22 E23],
-            'G' => %w[B16 B14 C13 D12 E13 F12 H12],
             'V' => %w[B10 C9 D6 E7 F6 G5],
-            'W' => %w[G23 G21 G19 G17 H16 I15 I13 I9 I7 I5 I3],
           }
 
+          @city_tracks['G'] = if two_player?
+                                %w[B16 B14 C13 D12 E13 F12 G11 H12]
+                              else
+                                %w[B16 B14 C13 D12 E13 F12 H12]
+                              end
+
+          @city_tracks['W'] = if two_player?
+                                %w[G23 G21 G19 G17 H16 I15 I13]
+                              else
+                                %w[G23 G21 G19 G17 H16 I15 I13 I9 I7 I5 I3]
+                              end
+
           setup_company_price_up_to_face
+        end
+
+        def two_player?
+          @players.size == 2
+        end
+
+        def three_player_small?
+          @players.size == 3 && @optional_rules&.include?(:three_player_small)
+        end
+
+        def optional_hexes
+          return self.class::HEXES if !three_player_small? && !two_player?
+
+          new_hexes = {}
+          HEXES.keys.each do |color|
+            new_map = self.class::HEXES[color].transform_keys do |coords|
+              coords -= THREE_PLAYER_SMALL_REMOVE
+              coords -= TWO_PLAYER_REMOVE if two_player?
+
+              coords
+            end
+            THREE_PLAYER_SMALL_ADD[color]&.each { |coords, tile_str| new_map[coords] = tile_str } if three_player_small?
+            TWO_PLAYER_ADD[color]&.each { |coords, tile_str| new_map[coords] = tile_str } if two_player?
+            new_hexes[color] = new_map
+          end
+
+          new_hexes
+        end
+
+        def init_companies(players)
+          companies = super
+          if two_player? || three_player_small?
+            companies = companies.reject do |item|
+              item.name == THREE_PLAYER_COMPANY_REMOVE
+            end
+          end
+          companies = companies.reject { |item| TWO_PLAYER_COMPANY_REMOVE.include?(item.name) } if two_player?
+          companies
+        end
+
+        def init_corporations(stock_market)
+          corporations = super
+          return corporations if !three_player_small? && !two_player?
+
+          lines_to_remove = if three_player_small?
+                              THREE_PLAYER_LINES_REMOVE
+                            else
+                              TWO_PLAYER_LINES_REMOVE
+                            end
+          corporations.reject do |item|
+            item.id == THREE_PLAYER_CORP_REMOVE ||
+            lines_to_remove.include?(item.id)
+          end
         end
 
         def init_graph
@@ -359,16 +449,10 @@ module Engine
         def new_company_operating_auction_round
           G1840::Round::Acquisition.new(self, [
             G1840::Step::SellCompany,
+            G1840::Step::InterruptingReassignTrains,
             G1840::Step::InterruptingBuyTrain,
             G1840::Step::AcquisitionAuction,
           ])
-        end
-
-        def new_company_operating_switch_trains
-          G1840::Round::Company.new(self, [
-            G1840::Step::SellCompany,
-            G1840::Step::ReassignTrains,
-          ], no_city: true)
         end
 
         def operating_round(round_num)
@@ -399,15 +483,15 @@ module Engine
               @intern_cr_phase_counter += 1
               if @intern_cr_phase_counter < 3
                 new_company_operating_buy_train_round
-              elsif @intern_cr_phase_counter < 4
+              else
                 new_company_operating_auction_round
-              elsif @cr_counter == 1
+              end
+            when new_company_operating_auction_round.class
+              if @cr_counter == 1
                 new_operating_round(@round.round_num)
               else
                 new_stock_round
               end
-            when new_company_operating_auction_round.class
-              new_company_operating_switch_trains
             when Engine::Round::Operating
               if @round.round_num < @operating_rounds
                 or_round_finished
@@ -609,6 +693,29 @@ module Engine
           sum * current_cr_multipler
         end
 
+        def revenue_str(route)
+          str = super
+
+          return str if route.corporation.type == :city
+
+          valid_stops = route.stops.reject do |s|
+            s.hex.tile.cities.empty? && s.hex.tile.towns.empty?
+          end
+          hex_ids = valid_stops.map { |s| s.hex.id }.uniq
+
+          bonus = []
+          major_corp = owning_major_corporation(route.corporation)
+          major_corp.companies.each do |company|
+            abilities(company, :hex_bonus) do |ability|
+              bonus << company.name unless (ability.hexes & hex_ids).empty?
+            end
+          end
+
+          return str if bonus.empty?
+
+          "#{str} (#{bonus.join(',')})"
+        end
+
         def scrap_train(train, entity)
           @log << "#{entity.name} scraps #{train.name}"
           remove_train(train)
@@ -629,6 +736,7 @@ module Engine
 
         def check_other(route)
           check_track_type(route)
+          check_red_tiles(route)
         end
 
         def check_track_type(route)
@@ -643,6 +751,16 @@ module Engine
           return if corporation.type != :minor || (track_types - ['broad']).empty?
 
           raise GameError, 'Route may only contain broad tracks'
+        end
+
+        def check_red_tiles(route)
+          visited_hexes = route.stops.map { |s| s.hex.id }.uniq
+          RED_TILES.each do |item|
+            if visited_hexes.include?(item)
+              hex = hex_by_id(item)
+              raise GameError, "Route may not connect to #{hex.location_name} yet" if hex.original_tile == hex.tile
+            end
+          end
         end
 
         def graph_for_entity(entity)
@@ -661,6 +779,12 @@ module Engine
 
         def update_last_revenue(entity)
           @last_revenue[entity] = major_revenue(entity)
+        end
+
+        def city_tokened_by?(city, entity)
+          return super unless entity.type == :city
+
+          true
         end
 
         def revenue_for(route, stops)
@@ -769,7 +893,10 @@ module Engine
           when 'G'
             [hex_by_id('A17').tile.cities.first, hex_by_id('I11').tile.cities.first]
           when 'W'
-            [hex_by_id('F24').tile.cities.first, hex_by_id('I1').tile.cities.first]
+            nodes = [hex_by_id('F24').tile.cities.first]
+            nodes << hex_by_id('I1').tile.cities.first unless two_player?
+            nodes << hex_by_id('I11').tile.cities[1] if two_player?
+            nodes
           end
         end
 

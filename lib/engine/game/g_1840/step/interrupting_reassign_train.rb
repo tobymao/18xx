@@ -1,41 +1,40 @@
 # frozen_string_literal: true
 
+require_relative 'reassign_trains'
+
 module Engine
   module Game
     module G1840
       module Step
-        class InterruptingBuyTrain < BuyTrain
+        class InterruptingReassignTrains < ReassignTrains
           def active_entities
-            [buying_entity]
+            [reassigning_entity]
           end
 
           def round_state
             {
-              corporation_bought_minor: [],
+              corporation_needs_reassign: [],
             }
           end
 
           def active?
-            buying_entity
+            reassigning_entity
           end
 
           def current_entity
-            buying_entity
+            reassigning_entity
           end
 
-          def buying_entity
+          def reassigning_entity
             corporation[:entity]
           end
 
           def corporation
-            @round.corporation_bought_minor&.first || {}
+            @round.corporation_needs_reassign&.first || {}
           end
 
           def pass!
-            @round.corporation_needs_reassign << {
-              entity: buying_entity,
-            }
-            @round.corporation_bought_minor.shift
+            @round.corporation_needs_reassign.shift
             super
           end
         end

@@ -71,6 +71,11 @@ module Engine
             @game.take_loan(player, difference)
           end
 
+          def process_buy_train(action)
+            check_spend(action)
+            buy_train_action(action)
+          end
+
           def help
             'You can only assign one train to a line corporation'
           end
