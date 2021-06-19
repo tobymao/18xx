@@ -109,7 +109,7 @@ module Engine
         train_routes[train] = routes.sort_by(&:revenue).reverse.take(route_limit)
       end
 
-      train_routes = train_routes.values.sort_by { |routes| -routes[0].paths.size }
+      train_routes = train_routes.values.sort_by(&:size)
 
       combos = [[]]
       possibilities = []
