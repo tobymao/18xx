@@ -160,7 +160,7 @@ module Engine
 
             raise GameError, "#{target.name} cannot be purchased for #{format(price)}." unless may_purchase?(target)
 
-            draft_object(bid.minor || bid.company, player, price)
+            draft_object(bid.minor || bid.company, bidder, price)
 
             reset_auction(bidder, target)
           end
