@@ -40,6 +40,7 @@ module Engine
             return [] unless entity == current_entity
 
             return %w[bid] unless @auctioning
+            return [] if min_bid(@auctioning) > entity.cash
 
             ACTIONS
           end
@@ -65,16 +66,24 @@ module Engine
             pass_auction(entity)
             @auctioning = target
 
+            return if all_passed?(target)
+
+            next_entity! if @auctioning
+          end
+
+          def all_passed?(target)
+            return true unless target
+
             if entities.all?(&:passed?)
               if min_purchase(target) >= min_bid(target)
                 force_purchase(@auction_triggerer, target)
               else
                 all_passed!(target)
               end
-              return
+              true
+            else
+              false
             end
-
-            next_entity! if @auctioning
           end
 
           def pass_auction(entity)
@@ -86,7 +95,12 @@ module Engine
           def next_entity!
             @round.next_entity_index!
             entity = entities[entity_index]
-            next_entity! if entity&.passed?
+            return unless entity
+            return if all_passed?(@auctioning) || !(entity.passed? || actions(entity).empty?)
+
+            entity.pass!
+            @log << "#{entity.name} is forced to pass on #{@auctioning.name} as price exceed cash"
+            next_entity!
           end
 
           def process_bid(action)
@@ -145,12 +159,34 @@ module Engine
           end
 
           def force_purchase(bidder, target)
-            # TODO: Handle the case when bidder cannot afford this
-
             price = min_bid(target)
-            draft_object(target, bidder, price, forced: true)
+            info = forced_purchaser(target, bidder, price, bidder)
+            draft_object(target, info[:buyer], info[:price], forced: true)
 
-            reset_auction(bidder, target)
+            reset_auction(info[:buyer], target)
+          end
+
+          # In case the one starting the auction is forced to buy (all passes until price reaches 50%) then select
+          # the first player in player order that can afford to buy it. Now there is a theoretical possibility that
+          # no-one can afford to buy it... The rules does not cover this but I decided to implement that the auctioner
+          # gets to buy the target for whatever cash that player holds. If it ever happens - good for that player...
+          def forced_purchaser(target, candidate, price, first_candidate)
+            return { buyer: candidate,  price: price } unless price > candidate.cash
+
+            @game.log << "#{candidate.name} would be forced to buy #{target.name} but cannot afford "\
+              "#{@game.format_currency(price)}"
+            entity_index = entities.find_index(candidate)
+            entity_index = (entity_index + 1) % entities.size
+            next_candidate = entities[entity_index]
+            if next_candidate == first_candidate
+              @game.log << "As noone can afford #{candidate.name} for #{@game.format_currency(price)}, "\
+              "price is reduced to whatever #{first_candidate.name} has in cash"
+              { buyer: first_candidate, price: first_candidate.cash }
+            else
+              return { buyer: next_candidate, price: price } unless price > next_candidate.cash
+
+              forced_purchaser(target, next_candidate, price, first_candidate)
+            end
           end
 
           def purchase(bid)
