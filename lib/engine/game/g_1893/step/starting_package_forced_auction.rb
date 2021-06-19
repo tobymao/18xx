@@ -48,7 +48,6 @@ module Engine
           def setup
             @reduction_step = 10
             @auction_triggerer = nil
-            @current_reduction = 0
 
             setup_auction
           end
@@ -111,14 +110,11 @@ module Engine
           end
 
           def min_bid(entity)
-            return entity.min_bid if entity.company?
-
-            initial_minor_price(entity) - @current_reduction
+            entity.min_bid
           end
 
           def min_purchase(entity)
-            value = entity.company? ? entity.value : @game.minor_starting_treasury(entity)
-            value / 2
+            entity.value / 2
           end
 
           def may_purchase?(entity)
@@ -152,7 +148,6 @@ module Engine
           protected
 
           def reduce_price(target)
-            @current_reduction += @reduction_step
             target.discount += @reduction_step if target.company?
             new_price = min_bid(target)
             @game.log << "Price of #{target.name} is now lowered to #{format(new_price)}"
@@ -221,7 +216,6 @@ module Engine
             entities.each(&:unpass!)
             @round.goto_entity!(@auction_triggerer)
             @auction_triggerer = nil
-            @current_reduction = 0
             next_entity!
           end
 

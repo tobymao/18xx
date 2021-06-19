@@ -27,8 +27,4 @@ module BuyMinor
     company.owner = player
     player.companies << company
   end
-
-  def initial_minor_price(minor)
-    minor.value
-  end
 end

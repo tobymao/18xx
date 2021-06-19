@@ -53,7 +53,7 @@ module Engine
             return false unless minor.minor?
             return false if bought?
 
-            entity.cash >= initial_minor_price(minor)
+            entity.cash >= minor.min_bid
           end
 
           def purchasable_minors

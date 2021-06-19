@@ -41,6 +41,10 @@ module Engine
       @name
     end
 
+    def min_bid
+      @value - @discount
+    end
+
     def minor?
       true
     end
