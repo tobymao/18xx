@@ -11,6 +11,7 @@ module Engine
           'A7' => 'Knoxville',
           'A23' => 'Richmond',
           'B20' => 'Weldon',
+          'C11' => 'Winston-Salem',
           'C13' => 'Greensboro',
           'C15' => 'Durham & Cary',
           'C17' => 'Raleigh',
@@ -48,16 +49,16 @@ module Engine
           '5' => 4,
           '6' => 4,
           '7' => 3,
-          '8' => 10,
-          '9' => 7,
+          '8' => 13,
+          '9' => 10,
           '55' => 1,
           '56' => 1,
           '57' => 4,
           '58' => 2,
           '12' => 3,
-          '13' => 3,
+          '13' => 8,
           '14' => 3,
-          '15' => 4,
+          '15' => 3,
           '16' => 1,
           '19' => 1,
           '20' => 1,
@@ -68,11 +69,12 @@ module Engine
           '27' => 1,
           '28' => 2,
           '29' => 2,
-          '87' => 3,
+          '87' => 2,
           '88' => 2,
           '38' => 4,
           '39' => 1,
           '40' => 1,
+          '41' => 1,
           '42' => 1,
           '43' => 1,
           '44' => 1,
@@ -80,79 +82,79 @@ module Engine
           '46' => 1,
           '47' => 1,
           '70' => 1,
-          'S1' =>
+          '1s' =>
           {
             'count' => 1,
             'color' => 'yellow',
             'code' => 'town=revenue:10;town=revenue:10;path=a:1,b:_0,track:narrow;path=a:_0,b:3,track:narrow;path=a:0,b:_1,track:narrow;path=a:_1,b:4,track:narrow',
           },
-          'S2' =>
+          '2s' =>
           {
             'count' => 1,
             'color' => 'yellow',
             'code' => 'town=revenue:10;town=revenue:10;path=a:0,b:_0,track:narrow;path=a:_0,b:3,track:narrow;path=a:1,b:_1,track:narrow;path=a:_1,b:2,track:narrow',
           },
-          'S3' =>
+          '3s' =>
           {
             'count' => 2,
             'color' => 'yellow',
             'code' => 'town=revenue:10;path=a:0,b:_0,track:narrow;path=a:_0,b:1,track:narrow',
           },
-          'S4' =>
+          '4s' =>
           {
             'count' => 3,
             'color' => 'yellow',
             'code' => 'town=revenue:10;path=a:0,b:_0,track:narrow;path=a:_0,b:3,track:narrow',
           },
-          'S5' =>
+          '5s' =>
           {
             'count' => 4,
             'color' => 'yellow',
             'code' => 'city=revenue:20;path=a:0,b:_0,track:narrow;path=a:1,b:_0,track:narrow',
           },
-          'S6' =>
+          '6s' =>
           {
             'count' => 4,
             'color' => 'yellow',
             'code' => 'city=revenue:20;path=a:0,b:_0,track:narrow;path=a:2,b:_0,track:narrow',
           },
-          'S7' =>
+          '7s' =>
           {
             'count' => 3,
             'color' => 'yellow',
             'code' => 'path=a:0,b:1,track:narrow',
           },
-          'S8' =>
+          '8s' =>
           {
-            'count' => 10,
+            'count' => 13,
             'color' => 'yellow',
             'code' => 'path=a:0,b:2,track:narrow',
           },
-          'S9' =>
+          '9s' =>
           {
-            'count' => 7,
+            'count' => 10,
             'color' => 'yellow',
             'code' => 'path=a:0,b:3,track:narrow',
           },
-          'S55' =>
+          '55s' =>
           {
             'count' => 1,
             'color' => 'yellow',
             'code' => 'town=revenue:10;town=revenue:10;path=a:0,b:_0,track:narrow;path=a:_0,b:3,track:narrow;path=a:1,b:_1,track:narrow;path=a:_1,b:4,track:narrow',
           },
-          'S56' =>
+          '56s' =>
           {
             'count' => 1,
             'color' => 'yellow',
             'code' => 'town=revenue:10;town=revenue:10;path=a:0,b:_0,track:narrow;path=a:_0,b:2,track:narrow;path=a:1,b:_1,track:narrow;path=a:_1,b:3,track:narrow',
           },
-          'S57' =>
+          '57s' =>
           {
             'count' => 4,
             'color' => 'yellow',
             'code' => 'city=revenue:20;path=a:0,b:_0,track:narrow;path=a:_0,b:3,track:narrow',
           },
-          'S58' =>
+          '58s' =>
           {
             'count' => 2,
             'color' => 'yellow',
@@ -182,97 +184,97 @@ module Engine
             'color' => 'yellow',
             'code' => 'city=revenue:40;path=a:1,b:_0,track:narrow;path=a:5,b:_0,track:narrow;label=C',
           },
-          'S12' =>
+          '12s' =>
           {
             'count' => 3,
             'color' => 'green',
             'code' => 'city=revenue:30;path=a:0,b:_0,track:narrow;path=a:1,b:_0,track:narrow;path=a:2,b:_0,track:narrow',
           },
-          'S13' =>
+          '13s' =>
           {
-            'count' => 3,
+            'count' => 8,
             'color' => 'green',
             'code' => 'city=revenue:30;path=a:0,b:_0,track:narrow;path=a:2,b:_0,track:narrow;path=a:4,b:_0,track:narrow',
           },
-          'S14' =>
+          '14s' =>
           {
             'count' => 3,
             'color' => 'green',
             'code' => 'city=revenue:30,slots:2;path=a:0,b:_0,track:narrow;path=a:1,b:_0,track:narrow;path=a:3,b:_0,track:narrow;path=a:4,b:_0,track:narrow',
           },
-          'S15' =>
+          '15s' =>
           {
-            'count' => 4,
+            'count' => 3,
             'color' => 'green',
             'code' => 'city=revenue:30,slots:2;path=a:0,b:_0,track:narrow;path=a:1,b:_0,track:narrow;path=a:2,b:_0,track:narrow;path=a:3,b:_0,track:narrow',
           },
-          'S16' =>
+          '16s' =>
           {
             'count' => 1,
             'color' => 'green',
             'code' => 'path=a:0,b:2,track:narrow;path=a:1,b:3,track:narrow',
           },
-          'S19' =>
+          '19s' =>
           {
             'count' => 1,
             'color' => 'green',
             'code' => 'path=a:0,b:3,track:narrow;path=a:2,b:4,track:narrow',
           },
-          'S20' =>
+          '20s' =>
           {
             'count' => 1,
             'color' => 'green',
             'code' => 'path=a:0,b:3,track:narrow;path=a:1,b:4,track:narrow',
           },
-          'S23' =>
+          '23s' =>
           {
             'count' => 3,
             'color' => 'green',
             'code' => 'path=a:0,b:3,track:narrow;path=a:0,b:4,track:narrow',
           },
-          'S24' =>
+          '24s' =>
           {
             'count' => 3,
             'color' => 'green',
             'code' => 'path=a:0,b:3,track:narrow;path=a:0,b:2,track:narrow',
           },
-          'S25' =>
+          '25s' =>
           {
             'count' => 2,
             'color' => 'green',
             'code' => 'path=a:0,b:2,track:narrow;path=a:0,b:4,track:narrow',
           },
-          'S26' =>
+          '26s' =>
           {
             'count' => 1,
             'color' => 'green',
             'code' => 'path=a:0,b:3,track:narrow;path=a:0,b:5,track:narrow',
           },
-          'S27' =>
+          '27s' =>
           {
             'count' => 1,
             'color' => 'green',
             'code' => 'path=a:0,b:3,track:narrow;path=a:0,b:1,track:narrow',
           },
-          'S28' =>
+          '28s' =>
           {
             'count' => 2,
             'color' => 'green',
             'code' => 'path=a:0,b:4,track:narrow;path=a:0,b:5,track:narrow',
           },
-          'S29' =>
+          '29s' =>
           {
             'count' => 2,
             'color' => 'green',
             'code' => 'path=a:0,b:2,track:narrow;path=a:0,b:1,track:narrow',
           },
-          'S87' =>
+          '87s' =>
           {
-            'count' => 3,
+            'count' => 2,
             'color' => 'green',
             'code' => 'town=revenue:10;path=a:0,b:_0,track:narrow;path=a:1,b:_0,track:narrow;path=a:2,b:_0,track:narrow;path=a:3,b:_0,track:narrow',
           },
-          'S88' =>
+          '88s' =>
           {
             'count' => 2,
             'color' => 'green',
@@ -437,15 +439,13 @@ module Engine
             G1
             ] => 'offboard=revenue:yellow_40|green_60|brown_80|gray_100;path=a:4,b:_0',
           },
-          blue: {
-            %w[
-          I17
-          ] => 'junction;path=a:1,b:_0,terminal:1;path=a:2,b:_0,terminal:1',
-          },
           gray: {
             %w[
-          A19
-          ] => 'junction;path=a:5,b:_0,terminal:1',
+            I17
+            ] => 'junction;path=a:1,b:_0,terminal:1;path=a:2,b:_0,terminal:1',
+            %w[
+            A19
+            ] => 'junction;path=a:5,b:_0,terminal:1',
             %w[
             B4
             ] => 'path=a:0,b:4,track:narrow',
