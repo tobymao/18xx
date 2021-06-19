@@ -30,22 +30,26 @@ module Engine
           end
 
           def can_buy_company?(player, _company = nil)
-            return false if @round.players_sold[player][:bond]
+            return false if first_sr_passed?(player) || @round.players_sold[player][:bond]
 
             @game.buyable_companies.any? { |c| player.cash >= c.value } && !sold? && !bought?
           end
 
           def can_sell_any_companies?(entity)
+            return false if first_sr_passed?(entity)
+
             sellable_companies(entity).any? && !bought?
           end
 
           def can_buy_any_minors?(entity)
+            return false if first_sr_passed?(entity)
             return false unless @game.num_certs(entity) < @game.cert_limit
 
             purchasable_minors.any? { |m| can_buy_minor?(entity, m) }
           end
 
           def can_buy_minor?(entity, minor)
+            return false if first_sr_passed?(entity)
             return false unless minor.minor?
             return false if bought?
 
@@ -61,6 +65,7 @@ module Engine
           end
 
           def can_buy?(entity, bundle)
+            return false if first_sr_passed?(entity)
             return false unless bundle
             return false unless @game.buyable?(bundle.corporation)
             return true if rag_exchangable(entity, bundle.corporation) && !bought?
@@ -68,7 +73,8 @@ module Engine
             super
           end
 
-          def can_sell?(_entity, bundle)
+          def can_sell?(entity, bundle)
+            return false if first_sr_passed?(entity)
             return false unless bundle
             return false if @game.turn == 1
 
@@ -76,6 +82,7 @@ module Engine
           end
 
           def can_gain?(entity, bundle, exchange: false)
+            return false if first_sr_passed?(entity)
             return false unless bundle
             return false if exchange && !rag_exchangable(entity, bundle.corporation)
 
@@ -83,6 +90,8 @@ module Engine
           end
 
           def can_exchange?(entity)
+            return false if first_sr_passed?(entity)
+
             rag = @game.rag
             !bought? && exchange_ability(entity) && rag.num_market_shares.positive?
           end
