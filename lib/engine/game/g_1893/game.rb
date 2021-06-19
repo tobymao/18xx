@@ -501,6 +501,7 @@ module Engine
               coordinates: 'T3',
               city: 0,
               color: :green,
+              value: 210,
               abilities: [
                 {
                   type: 'base',
@@ -521,6 +522,7 @@ module Engine
               coordinates: 'L3',
               city: 0,
               color: :red,
+              value: 200,
             },
             {
               sym: 'KSZ',
@@ -532,6 +534,7 @@ module Engine
               coordinates: 'P7',
               city: 0,
               color: :green,
+              value: 100,
             },
             {
               sym: 'KBE',
@@ -543,6 +546,7 @@ module Engine
               coordinates: 'O4',
               city: 0,
               color: :red,
+              value: 220,
             },
             {
               sym: 'BKB',
@@ -554,6 +558,7 @@ module Engine
               coordinates: 'I2',
               city: 0,
               color: :green,
+              value: 190,
             },
           ].freeze
 
@@ -604,14 +609,6 @@ module Engine
             color: nil,
           },
         ].freeze
-
-        MINOR_INITIAL_PRICE = {
-          'EKB' => 210,
-          'KFBE' => 200,
-          'KSZ' => 100,
-          'KBE' => 220,
-          'BKB' => 190,
-        }.freeze
 
         MINOR_DESCRIPTION = {
           'EKB' => 'exchanged for AGV 20% president certificate when AGV form',
@@ -1225,7 +1222,7 @@ module Engine
         end
 
         def player_value(player)
-          super + owned_minors(player).sum { |m| MINOR_INITIAL_PRICE[m.name] }
+          super + owned_minors(player).sum(&:value)
         end
 
         def owned_minors(player)
@@ -1267,10 +1264,6 @@ module Engine
 
         def draftables
           draftable_companies + draftable_minors
-        end
-
-        def minor_starting_treasury(minor)
-          MINOR_INITIAL_PRICE[minor.id]
         end
 
         def can_par?(corporation, entity)

@@ -209,7 +209,9 @@ module View
         }
 
         holdings =
-          if !@corporation.corporation? || @corporation.floated? || @corporation.trains.any?
+          if @corporation.minor? && !@corporation.owner && !@corporation.value.zero?
+            h(:div, [render_minor_price])
+          elsif !@corporation.corporation? || @corporation.floated? || @corporation.trains.any?
             h(:div, holdings_props, [render_trains, render_cash])
           elsif @corporation.cash.positive?
             h(:div, holdings_props, [render_to_float, render_cash])
@@ -309,6 +311,11 @@ module View
             h(:div, text),
           ])
         end)
+      end
+
+      def render_minor_price
+        price_str = "Price: #{@game.format_currency(@corporation.value - @corporation.discount)}"
+        h(:div, { style: { textAlign: 'center' } }, price_str)
       end
 
       def share_price_str(share_price)

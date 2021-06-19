@@ -18,7 +18,8 @@ module Engine
     include Passer
     include Spender
 
-    attr_reader :name, :full_name, :type
+    attr_reader :name, :full_name, :type, :value
+    attr_accessor :discount
 
     def initialize(sym:, name:, abilities: [], **opts)
       @name = sym
@@ -26,6 +27,8 @@ module Engine
       @floated = false
       @closed = false
       @type = opts[:type]&.to_sym
+      @value = opts[:value] || 0
+      @discount = 0
       init_operator(opts)
       init_abilities(abilities)
     end

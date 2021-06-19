@@ -29,6 +29,6 @@ module BuyMinor
   end
 
   def initial_minor_price(minor)
-    @game.minor_starting_treasury(minor)
+    minor.value
   end
 end
