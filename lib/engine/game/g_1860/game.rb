@@ -805,6 +805,7 @@ module Engine
         HOME_TOKEN_TIMING = :float
         SELL_AFTER = :any_time
         SELL_BUY_ORDER = :sell_buy
+        PRESIDENT_SALES_TO_MARKET = true
         MARKET_SHARE_LIMIT = 100
         TRAIN_PRICE_MIN = 10
         TRAIN_PRICE_MULTIPLE = 10
