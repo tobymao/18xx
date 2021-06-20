@@ -62,6 +62,19 @@ module View
             points: FRAME_COLOR_POINTS,
           }
           children << h(:polygon, attrs: attrs)
+
+          if (color2 = @tile&.frame&.color2)
+            attrs = {
+              stroke: color2,
+              'stroke-width': FRAME_COLOR_STROKE_WIDTH,
+              pathLength: 576,
+              'stroke-dasharray': 32,
+              'stroke-dashoffset': 16,
+              'fill-opacity': 0,
+              points: FRAME_COLOR_POINTS,
+            }
+            children << h(:polygon, attrs: attrs)
+          end
         end
         children << hex_highlight if @highlight
 
