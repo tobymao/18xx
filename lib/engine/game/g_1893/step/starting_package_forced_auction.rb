@@ -122,15 +122,21 @@ module Engine
           end
 
           def may_purchase?(entity)
-            !!@auctioning && @game.buyable_companies.include?(entity)
+            return false unless !!@auctioning
+            return @game.buyable_companies.include?(entity) if entity.company?
+
+            entity.minor? && @game.draftable_minors.include?(entity)
           end
 
           def may_choose?(_entity)
             !@auctioning
           end
 
-          def may_draft?(minor)
-            @auctioning && @game.draftable_minors.include?(minor)
+          def may_draft?(entity)
+            return false unless !!@auctioning
+            return @game.draftable_companies.include?(entity) if entity.company?
+
+            entity.minor? && @game.draftable_minors.include?(entity)
           end
 
           def max_bid(_player, object)
