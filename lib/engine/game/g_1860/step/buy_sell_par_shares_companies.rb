@@ -18,7 +18,7 @@ module Engine
             actions << 'sell_shares' if can_sell_any?(entity)
             actions << 'sell_company' if can_sell_any_companies?(entity)
 
-            actions << 'pass' if actions.any? || last_chance_to_exchange?(entity)
+            actions << 'pass' if !actions.empty? || last_chance_to_exchange?(entity)
             actions
           end
 

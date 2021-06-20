@@ -20,7 +20,7 @@ module Engine
         actions << 'sell_shares' if can_sell_any?(entity)
         actions << 'sell_company' if can_sell_any_companies?(entity)
 
-        actions << 'pass' if actions.any?
+        actions << 'pass' unless actions.empty?
         actions
       end
 
@@ -49,7 +49,7 @@ module Engine
           !entity.cash.positive? ||
           @game.num_certs(entity) >= @game.cert_limit
 
-        @game.companies.select { |c| c.owner == @game.bank }.reject { |c| did_sell?(c, entity) }.any?
+        @game.companies.any? { |c| c.owner == @game.bank && !did_sell?(c, entity) }
       end
 
       def get_par_prices(_entity, corp)
