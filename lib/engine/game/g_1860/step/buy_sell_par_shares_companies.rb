@@ -7,7 +7,6 @@ module Engine
     module G1860
       module Step
         class BuySellParSharesCompanies < Engine::Step::BuySellParSharesCompanies
-
           def actions(entity)
             return [] unless entity == current_entity
             return ['sell_shares'] if must_sell?(entity)
