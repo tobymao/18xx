@@ -19,7 +19,7 @@ module Engine
 
       nodes = @game.graph.connected_nodes(corporation).keys.sort_by do |node|
         revenue = corporation
-          .trains
+          .runnable_trains
           .map { |train| node.route_revenue(@game.phase, train) }
           .max
         [
@@ -89,7 +89,7 @@ module Engine
       now = Time.now
       train_routes = Hash.new { |h, k| h[k] = [] }
       connections.each do |_, connection|
-        corporation.trains.each do |train|
+        corporation.runnable_trains.each do |train|
           route = Engine::Route.new(
             @game,
             @game.phase,
