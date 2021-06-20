@@ -4,6 +4,7 @@ require_relative 'meta'
 require_relative '../base'
 require_relative 'entities'
 require_relative 'map'
+require_relative 'step/buy_sell_par_shares_companies'
 
 module Engine
   module Game
@@ -149,6 +150,7 @@ module Engine
         MARKET_SHARE_LIMIT = 100
         SELL_BUY_ORDER = :sell_buy
         SELL_AFTER = :first
+        PRESIDENT_SALES_TO_MARKET = true
         HOME_TOKEN_TIMING = :operate
         SOLD_OUT_INCREASE = false
         SELL_MOVEMENT = :none
@@ -206,17 +208,19 @@ module Engine
           ]
         end
 
+        def init_share_pool
+          SharePool.new(self, allow_president_sale: true)
+        end
+
         def setup
           @tile_groups = init_tile_groups
           @highest_layer = 1
-        end
 
-        def setup_preround
           # randomize layers (tranches) with one North and one South in each
           @layer_by_corp = {}
-          north = @corporations.select { |c| NORTH_CORPORATIONS.include?(c.name) }.sort_by { rand }
-          south = @corporations.select { |c| SOUTH_CORPORATIONS.include?(c.name) }.sort_by { rand }
-          north.zip(south).each_with_index do |corps, idx|
+          @north = @corporations.select { |c| NORTH_CORPORATIONS.include?(c.name) }.sort_by { rand }
+          @south = @corporations.select { |c| SOUTH_CORPORATIONS.include?(c.name) }.sort_by { rand }
+          @north.zip(@south).each_with_index do |corps, idx|
             layer = idx + 1
             corps.each do |corp|
               @layer_by_corp[corp] = layer
@@ -241,7 +245,7 @@ module Engine
               player.companies << company
               company.owner = player
             else
-              corp = [north[0], south[0]][idx - 4]
+              corp = [@north[0], @south[0]][idx - 4]
               price = par_prices(corp)[0]
               @stock_market.set_par(corp, price)
               share = corp.ipo_shares.first
@@ -281,6 +285,12 @@ module Engine
           @log << "-- #{round_description('Stock', 1)} --"
           @round_counter += 1
           stock_round
+        end
+
+        def stock_round
+          Engine::Round::Stock.new(self, [
+            G18Carolinas::Step::BuySellParSharesCompanies,
+          ])
         end
 
         def operating_round(round_num)

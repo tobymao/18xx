@@ -129,6 +129,8 @@ module Engine
       # many remain?
       CERT_LIMIT_COUNTS_BANKRUPTED = false
 
+      PRESIDENT_SALES_TO_MARKET = false
+
       MULTIPLE_BUY_TYPES = %i[multiple_buy].freeze
       MULTIPLE_BUY_ONLY_FROM_MARKET = false
 
