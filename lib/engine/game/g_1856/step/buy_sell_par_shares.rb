@@ -7,6 +7,59 @@ module Engine
     module G1856
       module Step
         class BuySellParShares < Engine::Step::BuySellParShares
+          def actions(entity)
+            return super if @game.false_national_president != entity || entity != current_entity
+
+            # entity == current_entity == @game.false_national_president
+            @game.log << "-- #{entity.name} must raise funds to buy a #{@game.national.name} share --"
+
+            actions = []
+            actions << 'sell_shares' if can_sell_any?(entity)
+            actions << 'buy_shares' if can_buy_any?(entity)
+            # Force player to sell shares
+            failed_to_raise_money(entity) if actions.empty? && !national_buy_liquidity(entity)
+
+            actions
+          end
+
+          def can_buy_shares?(entity, shares)
+            return false if @game.false_national_president == entity &&
+              entity == current_entity &&
+              shares.first&.corporation != @game.national
+
+            super
+          end
+
+          def failed_to_raise_money(player)
+            @game.log << "-- #{player.name} is unable to raise funds and is bankrupt --"
+            @game.end_game!
+          end
+
+          def national_buy_liquidity(player)
+            national_price = @game.national.share_price.price
+
+            # Can't buy from possibly cheaper IPO if market is above limit
+            national_price = [national_price, @game.national.par_price.price].min if
+                @game.national.holding_ok?(@game.share_pool, 10)
+            value = player.cash
+            value += player.shares_by_corporation.sum do |corporation, shares|
+              next 0 if shares.empty? || corporation == @game.national
+
+              value_for_sellable(player, corporation)
+            end
+            value >= national_price
+          end
+
+          def value_for_sellable(player, corporation)
+            max_bundle = sellable_bundles(player, corporation).max_by(&:price)
+            max_bundle&.price || 0
+          end
+
+          def sellable_bundles(player, corporation)
+            bundles = @game.bundles_for_corporation(player, corporation)
+            bundles.select { |bundle| can_sell?(player, bundle) }
+          end
+
           # TODO: Make it possible to go bankrupt from not being able to afford
           # to buy up to a full CGR presidency in the case of a false presidency
           # Although .. Is that ever going to happen? Assuming remotely competent play?
