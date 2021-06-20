@@ -2,19 +2,22 @@
 
 module BuyMinor
   def draft_object(object, player, price, forced: false)
+    # TODO: Remove to_company when cleaning up
+    company = @game.to_company(object)
+
     player.spend(price, @game.bank)
     verb = forced ? 'is forced to buy' : 'buys'
-    @log << "#{player.name} #{verb} \"#{object.name}\" for #{@game.format_currency(price)}"
+    @log << "#{player.name} #{verb} \"#{company.name}\" for #{@game.format_currency(price)}"
 
-    if object.minor?
-      treasury = price < 100 ? 100 : price
-      draft_minor(object, player, treasury)
-    else
-      draft_company(object, player)
-    end
+    draft_company(company, player)
+    return unless @game.minor_proxy?(company)
+
+    treasury = price < 100 ? 100 : price
+    float_minor(company, player, treasury)
   end
 
-  def draft_minor(minor, player, treasury)
+  def float_minor(minor_proxy, player, treasury)
+    minor = @game.minor_by_id(minor_proxy.sym)
     @game.log << "Minor #{minor.name} floats and receives "\
       "#{@game.format_currency(treasury)} in treasury"
     minor.owner = player

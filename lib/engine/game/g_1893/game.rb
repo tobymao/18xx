@@ -557,7 +557,7 @@ module Engine
             },
           ].freeze
 
-        PRIVATE_COMPANIES = [
+        COMPANIES = [
           {
             sym: 'FdSD',
             name: 'Fond der Stadt Düsseldorf',
@@ -582,7 +582,6 @@ module Engine
                 from: %w[market],
               },
             ],
-            color: nil,
           },
           {
             sym: 'EVA',
@@ -592,7 +591,6 @@ module Engine
             desc: 'Leaves the game after the purchase of the first 6-train. This private cannot be sold to '\
               'any corporation.',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
-            color: nil,
           },
           {
             sym: 'HdSK',
@@ -601,25 +599,55 @@ module Engine
             revenue: 10,
             desc: 'Exchange against 10% certificate of HGK. This private cannot be sold.',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
-            color: nil,
+          },
+          {
+            sym: 'EKB',
+            name: 'Euskirchener Kreisbahn',
+            value: 210,
+            revenue: 0,
+            desc: "Buyer takes control of minor with same name (EKB), and the price paid makes the minor's treasury. "\
+              "EKB minor and private are exchanged into the 20% president's certificate of AGV when AGV is formed. "\
+              'The private and minor cannot be sold.',
+            abilities: [{ type: 'no_buy', owner_type: 'player' }],
+          },
+          {
+            sym: 'KFBE',
+            name: 'Köln-Frechen-Benzelrather Eisenbahn',
+            value: 200,
+            desc: "Buyer takes control of minor with same name (KFBE), and the price paid makes the minor's treasury. "\
+              "KFBE minor and private are exchanged into the 20% president's certificate of AGV when AGV is formed. "\
+              'The private and minor cannot be sold.',
+            abilities: [{ type: 'no_buy', owner_type: 'player' }],
+          },
+          {
+            sym: 'KSZ',
+            name: 'Kleinbahn Siegburg-Zündorf',
+            value: 100,
+            desc: "Buyer takes control of minor with same name (KSZ), and the price paid makes the minor's treasury. "\
+              'KSZ minor and private are exchanged into a 10% certificate of AGV when AGV is formed. '\
+              'The private and minor cannot be sold.',
+            abilities: [{ type: 'no_buy', owner_type: 'player' }],
+          },
+          {
+            sym: 'KBE',
+            name: 'Köln-Bonner Eisenbahn',
+            value: 220,
+            desc: "Buyer takes control of minor with same name (KBE), and the price paid makes the minor's treasury. "\
+              "KBE minor and private are exchanged into the 20% president's certificate of HGK when HGK is formed. "\
+              'The private and minor cannot be sold.',
+            abilities: [{ type: 'no_buy', owner_type: 'player' }],
+          },
+          {
+            sym: 'BKB',
+            name: 'Bergheimer Kreisbahn',
+            value: 190,
+            desc: "Buyer takes control of minor with same name (BKB), and the price paid makes the minor's treasury. "\
+              'BKB minor and private are exchanged into a 20% certificate of AGV when AGV is formed. '\
+              'The private and minor cannot be sold.',
+            abilities: [{ type: 'no_buy', owner_type: 'player' }],
           },
         ].freeze
-
-        MINOR_INITIAL_PRICE = {
-          'EKB' => 210,
-          'KFBE' => 200,
-          'KSZ' => 100,
-          'KBE' => 220,
-          'BKB' => 190,
-        }.freeze
-
-        MINOR_DESCRIPTION = {
-          'EKB' => 'exchanged for AGV 20% president certificate when AGV form',
-          'KFBE' => 'exchanged for HGK 20% certificate when HGK form',
-          'KSZ' => 'exchanged for AGV 10% certificate when AGV form',
-          'KBE' => 'exchanged for HGK 20% president certificate when HGK form',
-          'BKB' => 'exchanged for AGV 20% certificate when AGV form',
-        }.freeze
+        NAME_OF_PROXY_COMPANIES = %w[EKB KFBE KSZ KBE BKB].freeze
 
         LAYOUT = :flat
 
@@ -699,7 +727,7 @@ module Engine
 
         def game_companies
           # Companies in 1893 are the private companies, and the 10 AdSK bonds
-          @all_companies ||= PRIVATE_COMPANIES + (1..10).map do |x|
+          @all_companies ||= COMPANIES + (1..10).map do |x|
             {
               sym: "AdSK-#{x}",
               name: "Anleihen der Stadt Köln #{x}",
@@ -852,7 +880,6 @@ module Engine
         end
 
         def status_str(entity)
-          return "Minor - #{MINOR_DESCRIPTION[entity.name]}" if entity.minor?
           return 'Exchangable corporation' if !entity.floated? && merged_corporation?(entity)
 
           'Corporation'
@@ -886,20 +913,40 @@ module Engine
           @ekb_minor ||= minor_by_id('EKB')
         end
 
+        def ekb_company
+          @ekb_company ||= company_by_id('EKB')
+        end
+
         def kfbe
           @kfbe_minor ||= minor_by_id('KFBE')
+        end
+
+        def kfbe_company
+          @kfbe_company ||= company_by_id('KFBE')
         end
 
         def ksz
           @ksz_minor ||= minor_by_id('KSZ')
         end
 
+        def ksz_company
+          @ksz_company ||= company_by_id('KSZ')
+        end
+
         def kbe
           @kbe_minor ||= minor_by_id('KBE')
         end
 
+        def kbe_company
+          @kbe_company ||= company_by_id('KBE')
+        end
+
         def bkb
           @bkb_minor ||= minor_by_id('BKB')
+        end
+
+        def bkb_company
+          @bkb_company ||= company_by_id('BKB')
         end
 
         def eva
@@ -908,32 +955,32 @@ module Engine
 
         def hdsk_reserved_share
           # 10% certificate in HGK
-          { share: hgk.shares[1], private: hdsk, name: hdsk.name }
+          { share: hgk.shares[1], company: hdsk, name: hdsk.name }
         end
 
         def ekb_reserved_share
           # President's certificate in AGV
-          { share: agv.shares[0], minor: ekb, name: ekb.name }
+          { share: agv.shares[0], minor: ekb, company: ekb_company, name: ekb.name }
         end
 
         def kfbe_reserved_share
           # 20% certificate in HGK
-          { share: hgk.shares[2], minor: kfbe, name: kfbe.name }
+          { share: hgk.shares[2], minor: kfbe, company: kfbe_company, name: kfbe.name }
         end
 
         def ksz_reserved_share
           # 10% certificate in AGV
-          { share: agv.shares[1], minor: ksz, name: ksz.name }
+          { share: agv.shares[1], minor: ksz, company: ksz_company, name: ksz.name }
         end
 
         def kbe_reserved_share
           # President's certificate in HGK
-          { share: hgk.shares[0], minor: kbe, name: kbe.name }
+          { share: hgk.shares[0], minor: kbe, company: kbe_company, name: kbe.name }
         end
 
         def bkb_reserved_share
           # 20% certificate in AGV
-          { share: agv.shares[2], minor: bkb, name: bkb.name }
+          { share: agv.shares[2], minor: bkb, company: bkb_company, name: bkb.name }
         end
 
         def merged_corporation?(corporation)
@@ -1104,15 +1151,16 @@ module Engine
 
           exchange_info.each do |mergeinfo|
             share = mergeinfo[:share]
-            mergee = mergeinfo[:minor] || mergeinfo[:private]
-            player = mergee.owner
+            company = mergeinfo[:company]
+            minor = mergeinfo[:minor]
+            player = company.owner
             if share.president
               extra_info = ' presidency'
               president_share = share
             else
               extra_info = ''
             end
-            @log << "#{player.name} exchanges ownership of #{mergee.name} for #{share.percent}%#{extra_info} "\
+            @log << "#{player.name} exchanges ownership of #{company.name} for #{share.percent}%#{extra_info} "\
               "share in #{share.corporation.name}"
             share.buyable = true
             @share_pool.transfer_shares(
@@ -1123,39 +1171,37 @@ module Engine
             )
             president_priority << player
 
-            # If this was the private (company) - nothing more to do
-            if mergee.company?
-              mergee.close!
+            company.close!
+
+            # If no connected minor (ie HdSK) - nothing more to do
+            unless minor
+              @log << "#{company.name} is closed"
               next
             end
 
-            # Mergee is a minor - transfer any cash
-            if mergee.cash.positive?
-              @log << "#{mergable.name} receives the #{mergee.name} treasure of #{format_currency(mergee.cash)}"
-              mergee.spend(mergee.cash, mergable)
+            # Transfer any cash from minor
+            if minor.cash.positive?
+              @log << "#{mergable.name} receives the #{minor.name} treasure of #{format_currency(minor.cash)}"
+              minor.spend(minor.cash, mergable)
             end
 
             # Transfer any trains - director will later get a chance to discard any
-            unless mergee.trains.empty?
-              transferred = transfer(:trains, mergee, mergable)
-              @log << "#{mergable.name} receives the trains from #{mergee.name}: #{transferred.map(&:name).join(', ')}"
+            unless minor.trains.empty?
+              transferred = transfer(:trains, minor, mergable)
+              @log << "#{mergable.name} receives the trains from #{minor.name}: #{transferred.map(&:name).join(', ')}"
             end
 
             # Transfer tokens (Note! HGK first token is assigned from the start)
-            minor_token = mergee.tokens.first
+            minor_token = minor.tokens.first
             city = minor_token.city
-            city.remove_reservation!(mergee)
-            @log << "#{mergee.name}'s token in #{city.hex.name} is replaced with a token for #{mergable.name}"
+            city.remove_reservation!(minor)
+            @log << "#{minor.name}'s token in #{city.hex.name} is replaced with a token for #{mergable.name}"
             minor_token.remove!
             city.place_token(mergable, mergable.next_token, free: true)
 
-            # Private/Minor is no longer used
-            @log << if mergee.minor?
-                      "Minor #{mergee.name} are closed"
-                    else
-                      "#{mergee.name} is closed"
-                    end
-            mergee.close!
+            # Minor is no longer used
+            @log << "Minor #{mergee.name} are closed"
+            minor.close!
           end
 
           # Give presidency to largest share percentage - with previous mergee order as tie breaker
@@ -1213,23 +1259,11 @@ module Engine
           eva.close!
         end
 
-        def num_certs(player)
-          super + owned_minors(player).count
-        end
-
         def liquidity(player, emergency: false)
           value = super
           return value unless sellable_turn?
 
           value + 100 * player.companies.count { |c| bond?(c) }
-        end
-
-        def player_value(player)
-          super + owned_minors(player).sum { |m| MINOR_INITIAL_PRICE[m.name] }
-        end
-
-        def owned_minors(player)
-          @minors.select { |m| m.owner == player }
         end
 
         def buyable?(entity)
@@ -1242,16 +1276,12 @@ module Engine
           @companies.select { |c| !c.closed? && c.owner == @bank }
         end
 
-        def buyable_minors
-          @minors.reject { |m| m.closed? || m.owner }
-        end
-
-        def draftable_companies
-          buyable_companies.select { |c| draftable?(c) }
-        end
-
-        def draftable?(company)
-          NAME_OF_PRIVATES.include?(company.sym)
+        def draftables
+          # Privates A-C always buyable, minors topmost 2
+          privates, minor_proxies = buyable_companies
+            .reject { |c| bond?(c) }
+            .partition { |c| private?(c) }
+          privates + (minor_proxies.size < 2 ? minor_proxies : minor_proxies[0..1])
         end
 
         def bond?(company)
@@ -1260,17 +1290,23 @@ module Engine
           company.sym.start_with?('AdSK')
         end
 
-        def draftable_minors
-          draftable = buyable_minors
-          draftable.size < 2 ? draftable : draftable[0..1]
+        def minor_proxy?(company)
+          return false unless company.company?
+
+          NAME_OF_PROXY_COMPANIES.include?(company.sym)
         end
 
-        def draftables
-          draftable_companies + draftable_minors
+        def private?(company)
+          return false unless company.company?
+
+          NAME_OF_PRIVATES.include?(company.sym)
         end
 
-        def minor_starting_treasury(minor)
-          MINOR_INITIAL_PRICE[minor.id]
+        # TODO: This is a temporary solution - might be removed
+        def to_company(entity)
+          return entity if entity.company?
+
+          company_by_id(entity.name)
         end
 
         def can_par?(corporation, entity)
