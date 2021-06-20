@@ -21,16 +21,16 @@ module Engine
           end
 
           def help
-            return 'Select a company or minor to auction' unless @auctioning
+            return 'Select a company to auction' unless @auctioning
 
             text = "Buy #{@auctioning.name} for #{format(min_bid(@auctioning))} or Pass. "\
               "If everyone passes, the price is lowered by #{format(10)} "\
               'and a new buy/pass opportunity is presented. This continues until someone buys it or until '\
               "the price has been lowered to #{format(min_purchase(@auctioning))} (50%). "\
               "If noone buys it #{@auction_triggerer.name} is forced to buy it. "
-            if @auctioning.minor? && min_purchase(@auctioning) < 100
-              text += "Note! If purchase price is below #{format(100)}, bank will add so that minor "\
-                "receives a treasury of #{format(100)}."
+            if @game.minor_proxy?(@auctioning) && min_purchase(@auctioning) < 100
+              text += "Note! If purchase price is below #{format(100)}, bank will add so that the corresponding "\
+                "minor receives a treasury of #{format(100)}."
             end
             text
           end
@@ -54,7 +54,7 @@ module Engine
           end
 
           def available
-            @auctioning ? [@auctioning] : (@game.draftable_companies + @game.buyable_minors)
+            @auctioning ? [@auctioning] : @game.draftables
           end
 
           def process_pass(action)
@@ -111,32 +111,21 @@ module Engine
           end
 
           def min_bid(entity)
-            return entity.min_bid if entity.company?
-
-            initial_minor_price(entity) - @current_reduction
+            entity.min_bid
           end
 
           def min_purchase(entity)
-            value = entity.company? ? entity.value : @game.minor_starting_treasury(entity)
-            value / 2
+            entity.value / 2
           end
 
           def may_purchase?(entity)
             return false unless !!@auctioning
-            return @game.buyable_companies.include?(entity) if entity.company?
 
-            entity.minor? && @game.draftable_minors.include?(entity)
+            @game.buyable_companies.include?(entity)
           end
 
           def may_choose?(_entity)
             !@auctioning
-          end
-
-          def may_draft?(entity)
-            return false unless !!@auctioning
-            return @game.draftable_companies.include?(entity) if entity.company?
-
-            entity.minor? && @game.draftable_minors.include?(entity)
           end
 
           def max_bid(_player, object)
@@ -149,7 +138,8 @@ module Engine
 
           def selection_bid(bid)
             @auction_triggerer = bid.entity
-            target = bid_target(bid)
+            # TODO: Remove to_company when cleaning up
+            target = @game.to_company(bid_target(bid))
 
             @game.log << "#{@auction_triggerer.name} selects #{target.name} for auction"
             auction_entity(target)
@@ -196,13 +186,14 @@ module Engine
           end
 
           def purchase(bid)
-            target = bid_target(bid)
+            # TODO: Remove to_company when cleaning up code
+            target = @game.to_company(bid_target(bid))
             bidder = bid.entity
             price = bid.price
 
             raise GameError, "#{target.name} cannot be purchased for #{format(price)}." unless may_purchase?(target)
 
-            draft_object(bid.minor || bid.company, bidder, price)
+            draft_object(target, bidder, price)
 
             reset_auction(bidder, target)
           end

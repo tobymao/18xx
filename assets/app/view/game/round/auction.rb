@@ -254,19 +254,10 @@ module View
         def render_minor_input(minor)
           minor_actions = []
 
-          minor_actions.concat(render_minor_buy(minor))
           minor_actions.concat(render_minor_choose(minor))
           minor_actions.concat(render_minor_place_bid(minor))
 
           h(:div, { style: { textAlign: 'center', margin: '1rem' } }, minor_actions)
-        end
-
-        def render_minor_buy(minor)
-          return [] if !@step.respond_to?(:may_draft?) || !@step.may_draft?(minor)
-
-          price = @step.min_bid(minor)
-          buy_str = "Buy for #{@game.format_currency(price)}"
-          [h(:button, { on: { click: -> { create_minor_buy_bid(minor) } } }, buy_str)]
         end
 
         def render_minor_choose(minor)
@@ -349,16 +340,6 @@ module View
             @current_entity,
             minor: minor,
             price: 0
-          ))
-          store(:selected_corporation, nil, skip: true)
-        end
-
-        def create_minor_buy_bid(target)
-          hide!
-          process_action(Engine::Action::Bid.new(
-            @current_entity,
-            minor: target,
-            price: @step.min_bid(target),
           ))
           store(:selected_corporation, nil, skip: true)
         end

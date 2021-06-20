@@ -25,39 +25,29 @@ module Engine
             result.concat(FIRST_SR_ACTIONS) if can_buy_company?(entity)
             result.concat(EXCHANGE_ACTIONS) if can_exchange?(entity)
             result.concat(SELL_COMPANY_ACTIONS) if can_sell_any_companies?(entity)
-            result.concat(BUY_MINOR_ACTIONS) if can_buy_any_minors?(entity)
+            # TODO: Next line to be removed - is to handle obsolete buy minor
+            result.concat(BUY_MINOR_ACTIONS) if can_buy_company?(entity)
             result
           end
 
-          def can_buy_company?(player, _company = nil)
-            return false if first_sr_passed?(player) || @round.players_sold[player][:bond]
+          def can_buy_company?(player, company = nil)
+            return false if first_sr_passed?(player)
+            return buyable_company?(player, company) if company
 
-            @game.buyable_companies.any? { |c| player.cash >= c.value } && !sold? && !bought?
+            @game.buyable_companies.any? { |c| buyable_company?(player, c) }
+          end
+
+          def buyable_company?(player, company)
+            return false if first_sr_passed?(player) || sold? || bought?
+            return false if @game.bond?(company) && @round.players_sold[player][:bond]
+
+            player.cash >= company.value
           end
 
           def can_sell_any_companies?(entity)
             return false if first_sr_passed?(entity)
 
             sellable_companies(entity).any? && !bought?
-          end
-
-          def can_buy_any_minors?(entity)
-            return false if first_sr_passed?(entity)
-            return false unless @game.num_certs(entity) < @game.cert_limit
-
-            purchasable_minors.any? { |m| can_buy_minor?(entity, m) }
-          end
-
-          def can_buy_minor?(entity, minor)
-            return false if first_sr_passed?(entity)
-            return false unless minor.minor?
-            return false if bought?
-
-            entity.cash >= initial_minor_price(minor)
-          end
-
-          def purchasable_minors
-            @game.draftable_minors
           end
 
           def can_sell_company?(company)
@@ -112,28 +102,37 @@ module Engine
           end
 
           def process_buy_company(action)
-            entity = action.entity
-
-            super
-
-            if @game.buyable_companies.one?
-              @game.corporations.each do |c|
-                next if @game.merged_corporation?(c)
-
-                @game.remove_ability(c, :no_buy)
-              end
-            end
-
-            @round.last_to_act = entity
-          end
-
-          def process_buy_corporation(action)
+            company = action.company
             player = action.entity
-            minor = action.minor
             price = action.price
-            draft_object(minor, player, price)
+
+            handle_buy_company(company, player, price)
 
             @round.last_to_act = player
+            @round.current_actions << action
+          end
+
+          def handle_buy_company(company, player, price)
+            draft_object(company, player, price)
+            return unless @game.draftables.one?
+
+            @game.corporations.each do |c|
+              next if @game.merged_corporation?(c)
+
+              @game.remove_ability(c, :no_buy)
+            end
+          end
+
+          # TODO: Rmove this when code cleaned up
+          def process_buy_corporation(action)
+            company = action.minor
+            player = action.entity
+            price = action.price
+
+            handle_buy_company(company, player, price)
+
+            @round.last_to_act = player
+            @round.current_actions << action
           end
 
           def process_sell_shares(action)
@@ -145,7 +144,7 @@ module Engine
                                                allow_president_change: allow_president_change,
                                                swap: action.swap)
 
-            track_action(action, corporation)
+            track_action(action, corporation, true)
             @round.players_sold[player][corporation] = :now
           end
 
@@ -159,8 +158,10 @@ module Engine
             @game.bank.spend(price, player)
             company.owner = @game.bank
             player.companies.delete(company)
-            @round.players_sold[player][:bond] = :now
-            track_action(action, company)
+            @round.players_sold[player][:bond] = :now if @game.bond?(company)
+
+            @round.last_to_act = player
+            @round.current_actions << action
           end
 
           def process_par(action)
@@ -199,7 +200,7 @@ module Engine
             share = corporation.ipo_shares.first
             buy_shares(entity, share.to_bundle)
             @game.after_par(corporation)
-            track_action(action, action.corporation)
+            track_action(action, action.corporation, true)
 
             @log << "Remaining 80% of #{corporation.name} are moved to market"
             @game.move_buyable_shares_to_market(corporation)
@@ -247,9 +248,7 @@ module Engine
             corporation = action.bundle.corporation
             allow_president_change = corporation.presidents_share.buyable
             buy_shares(action.entity, action.bundle, swap: action.swap, allow_president_change: allow_president_change)
-            track_action(action, corporation)
-            @round.last_to_act = action.entity
-            @round.current_actions << action
+            track_action(action, corporation, true)
 
             # If FdSD owner buys something in SR, and FdSD was to be closed
             # due to phase change, FdSD is forcibly closed
@@ -281,9 +280,7 @@ module Engine
                                         exchange_price: 0,
                                         allow_president_change: true)
 
-            track_action(action, corporation)
-            @round.last_to_act = player
-            @round.current_actions << action
+            track_action(action, corporation, true)
           end
 
           def description

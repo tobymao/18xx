@@ -64,9 +64,6 @@ module View
           children.concat(render_corporations)
           children.concat(render_mergeable_entities) if @current_actions.include?('merge')
           children.concat(render_player_companies) if @current_actions.include?('sell_company')
-          if @step.respond_to?(:purchasable_minors) && !@step.purchasable_minors.empty?
-            children.concat(render_purchasable_minors)
-          end
           children.concat(render_bank_companies)
           children << h(Players, game: @game)
           if @step.respond_to?(:purchasable_companies) && !@step.purchasable_companies(@current_entity).empty?
@@ -377,42 +374,6 @@ module View
           return [] unless @step.can_bid?(@current_entity, company)
 
           [h(Bid, entity: @current_entity, corporation: company)]
-        end
-
-        def render_purchasable_minors
-          props = {
-            style: {
-              display: 'inline-block',
-              verticalAlign: 'top',
-            },
-          }
-
-          @step.purchasable_minors.map do |minor|
-            children = [h(Corporation, corporation: minor)]
-            children << render_minor_input(minor) if @selected_corporation == minor
-            h(:div, props, children)
-          end
-        end
-
-        def render_minor_input(minor)
-          h(:div, { style: { textAlign: 'center', margin: '1rem' } }, render_minor_buy(minor))
-        end
-
-        def render_minor_buy(minor)
-          return [] if !@current_actions.include?('buy_corporation') || !@step.can_buy_minor?(@current_entity, minor)
-
-          price = @step.initial_minor_price(minor)
-          buy_str = "Buy for #{@game.format_currency(price)}"
-          [h(:button, { on: { click: -> { create_minor_buy(minor, price) } } }, buy_str)]
-        end
-
-        def create_minor_buy(minor, price)
-          process_action(Engine::Action::BuyCorporation.new(
-            @current_entity,
-            minor: minor,
-            price: price,
-          ))
-          store(:selected_corporation, nil, skip: true)
         end
       end
     end

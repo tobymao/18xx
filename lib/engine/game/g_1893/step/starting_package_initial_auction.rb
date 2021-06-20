@@ -33,19 +33,15 @@ module Engine
           end
 
           def available
-            @game.draftable_companies + @game.buyable_minors
+            @game.buyable_companies.reject { |c| @game.bond?(c) }
           end
 
-          def may_purchase?(minor)
-            @game.buyable_companies.include?(minor)
+          def may_purchase?(entity)
+            @game.draftables.include?(entity)
           end
 
           def may_choose?(_minor)
             false
-          end
-
-          def may_draft?(minor)
-            @game.draftable_minors.include?(minor)
           end
 
           def auctioning; end
@@ -79,13 +75,11 @@ module Engine
           end
 
           def finished?
-            @game.buyable_companies.one? || @game.passers_first_stock_round.size == @game.players.size
+            @game.draftables.one? || @game.passers_first_stock_round.size == @game.players.size
           end
 
           def min_bid(entity)
-            return entity.value if entity.company?
-
-            initial_minor_price(entity)
+            entity.value
           end
 
           def max_place_bid(_player, _object)
@@ -100,7 +94,8 @@ module Engine
             player = action.entity
             price = action.price
 
-            draft_object(action.minor || action.company, player, price)
+            # TODO: Use only action.company when cleaning up code (this is to keep games that did not use proxy minors)
+            draft_object(@game.to_company(action.minor || action.company), player, price)
 
             action_finalized
           end
