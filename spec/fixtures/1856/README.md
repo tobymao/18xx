@@ -19,3 +19,6 @@ hotseat002: (needs replacement)
 
  hotseat005:
  * Train buy bankruptcy
+
+ hotseat006:
+ * False Presidency game end
