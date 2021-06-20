@@ -977,7 +977,7 @@ module Engine
             Engine::Step::DiscardTrain,
             G1860::Step::HomeTrack,
             G1860::Step::Exchange,
-            G1860::Step::BuySellParShares,
+            G1860::Step::BuySellParSharesCompanies,
           ])
         end
 
