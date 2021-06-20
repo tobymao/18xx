@@ -314,7 +314,7 @@ module View
       end
 
       def render_minor_price
-        price_str = "Price: #{@game.format_currency(@corporation.value - @corporation.discount)}"
+        price_str = "Price: #{@game.format_currency(@corporation.min_bid)}"
         h(:div, { style: { textAlign: 'center' } }, price_str)
       end
 
