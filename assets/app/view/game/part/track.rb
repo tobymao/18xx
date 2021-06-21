@@ -88,27 +88,21 @@ module View
             .flat_map { |path| path_indexes[path].map { |i| [path, i] } }
             .sort_by { |_, index| index || -1 }
 
-          # track outline
-          # this has to be done in a separate pass to render connections ("switches")
-          # between tracks correctly
-          passes = sorted.map do |path, index|
-            props = {
-              color: value_for_index(index, :color, path.gauge),
-              width: width_for_index(path, index, path_indexes),
-              dash: value_for_index(index, :dash, path.gauge),
-            }
-
-            border_props = BORDER_PROPS[path.gauge]
-            inner_props = INNER_PROPS[path.gauge]
-
-            if !path.stub? && !path.offboard
-              h(TrackNodePath, tile: @tile, path: path, region_use: @region_use,
-                               pass: 0, border_props: border_props, inner_props: inner_props, **props)
-            end
-          end
-
           # Main track
-          pass1 = sorted.map do |path, index|
+          #
+          # Non-stub/offboard track requires up to three passes:
+          # - Draw borders
+          # - Draw the actual track
+          # - Draw the stripped inner bits (narrow gauge only)
+          #
+          # Each pass has to be grouped together so that track "switches" are rendered correctly
+          #
+          # Stubs and offboards can be done in a single pass because they don't have switches
+          #
+          pass0 = []
+          pass1 = []
+          pass2 = []
+          sorted.each do |path, index|
             props = {
               color: value_for_index(index, :color, path.gauge),
               width: width_for_index(path, index, path_indexes),
@@ -119,36 +113,22 @@ module View
             inner_props = INNER_PROPS[path.gauge]
 
             if path.stub?
-              h(TrackStub, stub: path, region_use: @region_use, border_props: border_props, **props)
+              pass1 << h(TrackStub, stub: path, region_use: @region_use, border_props: border_props, **props)
             elsif path.offboard
-              h(TrackOffboard, offboard: path.offboard, path: path, region_use: @region_use,
-                               border_props: border_props, **props)
+              pass1 << h(TrackOffboard, offboard: path.offboard, path: path, region_use: @region_use,
+                                        border_props: border_props, **props)
             else
-              h(TrackNodePath, tile: @tile, path: path, region_use: @region_use,
-                               pass: 1, border_props: border_props, inner_props: inner_props, **props)
+              pass0 << h(TrackNodePath, tile: @tile, path: path, region_use: @region_use,
+                                        pass: 0, border_props: border_props, inner_props: inner_props, **props)
+              pass1 << h(TrackNodePath, tile: @tile, path: path, region_use: @region_use,
+                                        pass: 1, border_props: border_props, inner_props: inner_props, **props)
+              if inner_props
+                pass2 << h(TrackNodePath, tile: @tile, path: path, region_use: @region_use,
+                                          pass: 2, border_props: border_props, inner_props: inner_props, **props)
+              end
             end
           end
-
-          # inner portion of track (narrow gauge)
-          # this has to be done in a separate pass for the same reason as the outline
-          pass2 = sorted.map do |path, index|
-            props = {
-              color: value_for_index(index, :color, path.gauge),
-              width: width_for_index(path, index, path_indexes),
-              dash: value_for_index(index, :dash, path.gauge),
-            }
-
-            border_props = BORDER_PROPS[path.gauge]
-            inner_props = INNER_PROPS[path.gauge]
-
-            if !path.stub? && !path.offboard && inner_props
-              h(TrackNodePath, tile: @tile, path: path, region_use: @region_use,
-                               pass: 2, border_props: border_props, inner_props: inner_props, **props)
-            end
-          end.compact
-          passes.concat(pass1)
-          passes.concat(pass2) unless pass2.empty?
-          passes
+          (pass0 + pass1 + pass2).compact
         end
 
         private
