@@ -5,191 +5,99 @@ module Engine
     module G1835
       module Entities
         COMPANIES = [
-            {
-              name: 'Nürnberg-Fürth',
-              sym: 'NF',
-              value: 100,
-              revenue: 5,
-              desc: 'Nürnberg-Fürth Bahn, Director of AG may lay token on L14 north or south, 10% Bayern',
-              abilities: [{ type: 'shares', shares: 'BY_2' }, { type: 'no_buy' }],
-              color: :blue,
-            },
-            {
-              sym: 'P1',
-              name: 'M1 Bergisch Märkische Bahn',
-              value: 80,
-              revenue: 0,
-              abilities: [
-                 {
-                   type: 'exchange',
-                   minors: %w[M1],
-                   owner_type: 'player',
-                   when: ['Phase 1.1'],
-                   from: 'ipo',
-                 },
-                 { type: 'no_buy' },
-               ],
-              desc: 'Buyer take control of pre-staatsbahn V1, which will be exchanged for the 5% certificate '\
-                 'of Pru when V2 declares Pru starting or 5-Train is sold. Pre-Staatsbahnen starts in Köln (H2). '\
-                 ' Cannot be sold.',
-              color: :black,
-            },
-            {
-              name: 'Leipzig-Dresdner Bahn',
-              sym: 'LD',
-              value: 190,
-              revenue: 20,
-              desc: 'Leipzig-Dresdner Bahn - Sachsen Direktor Papier',
-              abilities: [{ type: 'shares', shares: %w[SX_0] },
-                          { type: 'no_buy' },
-                          { type: 'close', when: 'bought_train', corporation: 'SX' }],
-              color: :red,
-            },
-            {
-              sym: 'P2',
-              name: 'M2 Berlin Potsdamer Bahn',
-              value: 170,
-              revenue: 0,
-              desc: "Buyer take control of pre-staatsbahn M2, which will be exchanged for the Director's certificate "\
-                'of SD when the first 4 train is sold and Pru is opened. P2 starts in Berlin (E19). '\
-                'Cannot be sold.',
-              color: :black,
-            },
-            {
-              sym: 'P3',
-              name: 'M3 Magdeburger-Bahn',
-              value: 80,
-              revenue: 0,
-              desc: 'Buyer take control of pre-staatsbahn M3, which will be exchanged for a 5% share of Pru when the '\
-                'first 4 train is sold and M2 declares Pru open. M3 starts in Innsbruck (F14). Cannot be sold.',
-              abilities: [{ type: 'no_buy', owner_type: 'player' }],
-              color: :black,
-            },
-            {
-              sym: 'P4',
-              name: 'M4 Köln-Mindener Bahn',
-              value: 160,
-              revenue: 0,
-              desc: 'Buyer take control of pre-staatsbahn M3, which will be exchanged for a 10% share of Pru when the '\
-                'first 4 train is sold and M2 declares Pru open. M3 starts in Innsbruck (G5). Cannot be sold.',
-              abilities: [{ type: 'no_buy', owner_type: 'player' }],
-              color: :black,
-            },
-            {
-              name: 'Bayrische Eisenbahn Director Share',
-              sym: 'BX',
-              value: 184,
-              tokens: [0, 40, 100],
-              revenue: 0,
-              desc: 'Bayrische Eisenbahn Director Share',
-              abilities: [
-                {
-                  type: 'exchange',
-                  corporations: %w[BY_0x],
-                  owner_type: 'player',
-                  when: ['Phase 1.1'],
-                  from: 'ipo',
-                },
-              ],
-              color: :blue,
-            },
-            {
-              name: 'Braunschweigische Bahn',
-              sym: 'BB',
-              value: 130,
-              revenue: 25,
-              desc: 'which will be exchanged for a 10% share of Pru when the '\
-                'first 4 train is sold and M2 declares Pru open. Cannot be sold.',
-              abilities: [
-                {
-                  type: 'exchange',
-                  corporations: %w[PR_2],
-                  owner_type: 'player',
-                  when: ['Phase 2.3', 'Phase 2.4', 'Phase 3.1'],
-                  from: 'ipo',
-                },
-              ],
-              color: :black,
-            },
-            {
-              name: 'Hannoversche Bahn',
-              sym: 'HB',
-              value: 160,
-              revenue: 30,
-              desc: 'Buyer take control of pre-staatsbahn M3, which will be exchanged for a 10% share of Pru when the '\
-                'first 4 train is sold and M2 declares Pru open. M3 starts in Innsbruck (F14). Cannot be sold.',
-              abilities: [
-                {
-                  type: 'exchange',
-                  corporations: %w[PR_1],
-                  owner_type: 'player',
-                  when: ['Phase 2.3', 'Phase 2.4', 'Phase 3.1'],
-                  # reserved papers perhaps a option
-                  from: 'ipo',
-                },
-                color: :black,
-              ],
-            },
-            {
-              sym: 'P5',
-              name: 'M5 Berlin Stettiner Bahn',
-              value: 80,
-              revenue: 0,
-              desc: 'Buyer take control of pre-staatsbahn M5, which will be exchanged for a 5% share of Pru when the '\
-                'first 4 train is sold and M2 declares Pru open. M5 starts in Innsbruck (E19). Cannot be sold.',
-              abilities: [{ type: 'no_buy', owner_type: 'player' }],
-              color: :black,
-            },
-            {
-              sym: 'P6',
-              name: 'M6 Altona Kiel Bahn',
-              value: 80,
-              revenue: 0,
-              desc: 'Buyer take control of pre-staatsbahn M3, which will be exchanged for a 5% share of Pru when the '\
-                'first 4 train is sold and M2 declares Pru open. M3 starts in Innsbruck (C11). Cannot be sold.',
-              abilities: [{ type: 'no_buy', owner_type: 'player' }],
-              color: :black,
-            },
-            {
-              name: 'Ostbayrische Bahn',
-              sym: 'OBB',
-              value: 120,
-              revenue: 10,
-              desc: 'Ostbayrische Bahn - 2 Tiles on M15, M17 extra (one per OR) and without cost',
-              abilities: [
-                  {
-                    type: 'tile_lay',
-                    description: "Place a free track tile at m15, M17 at any time during the corporation's operations.",
-                    owner_type: 'player',
-                    hexes: %w[M15 M17],
-                    tiles: %w[3 4 7 8 9 58],
-                    when: 'track',
-                    consume_tile_lay: true,
-                    count: 2,
-                    closed_when_used_up: true,
-                  },
-                  { type: 'shares', shares: 'BY_1' },
-                ],
-              color: :blue,
-            },
-            {
-              name: 'Pfalzbahnen',
-              sym: 'PB',
-              value: 150,
-              revenue: 15,
-              desc: 'Can lay a tile on L6 and Token on L6 if Baden AG is active already',
-              abilities: [
-                {
-                  type: 'teleport',
-                  owner_type: 'player',
-                  free_tile_lay: true,
-                  hexes: ['L6'],
-                  tiles: %w[210 211 212 213 214 215],
-                },
-                { type: 'shares', shares: 'BY_3' },
-              ],
-              color: :blue,
-            },
+          {
+            name: 'Leipzig-Dresdner Bahn',
+            sym: 'LD',
+            value: 190,
+            revenue: 20,
+            desc: 'Leipzig-Dresdner Bahn - Sachsen Direktor Papier',
+            abilities: [{ type: 'shares', shares: 'SX_0' },
+                        { type: 'no_buy' },
+                        { type: 'close', when: 'bought_train', corporation: 'SX' }],
+            color: :red,
+          },
+          {
+            name: 'Ostbayrische Bahn',
+            sym: 'OBB',
+            value: 120,
+            revenue: 10,
+            desc: 'Ostbayrische Bahn - 2 Tiles on M15, M17 extra (one per OR) and without cost',
+            abilities: [
+              {
+                type: 'tile_lay',
+                description: "Place a free track tile at m15, M17 at any time during the corporation's operations.",
+                owner_type: 'player',
+                hexes: %w[M15 M17],
+                tiles: %w[3 4 7 8 9 58],
+                free: true,
+                count: 2,
+              },
+              { type: 'shares', shares: 'BY_1' },
+            ],
+            color: :turquoise,
+          },
+          {
+            name: 'Nürnberg-Fürth',
+            sym: 'NF',
+            value: 100,
+            revenue: 5,
+            desc: 'Nürnberg-Fürth Bahn, Director of AG may lay token on L14 north or south',
+            abilities: [{ type: 'shares', shares: 'BY_2' }],
+            color: :turquoise,
+          },
+          {
+            name: 'Hannoversche Bahn',
+            sym: 'HB',
+            value: 160,
+            revenue: 30,
+            desc: '10 Percent Share of Preussische Bahn on Exchange',
+            abilities: [
+              {
+                type: 'exchange',
+                corporations: %w[PR_1],
+                owner_type: 'player',
+                when: ['Phase 2.3', 'Phase 2.4', 'Phase 3.1'],
+                # reserved papers perhaps a option
+                from: 'ipo',
+              },
+            ],
+            color: :oegray,
+          },
+          {
+            name: 'Pfalzbahnen',
+            sym: 'PB',
+            value: 150,
+            revenue: 15,
+            desc: 'Can lay a tile on L6 and Token on L6 if Baden AG is active already',
+            abilities: [
+              {
+                type: 'teleport',
+                owner_type: 'player',
+                free_tile_lay: true,
+                hexes: ['L6'],
+                tiles: %w[210 211 212 213 214 215],
+              },
+              { type: 'shares', shares: 'BY_3' },
+            ],
+            color: :turquoise,
+          },
+          {
+            name: 'Braunschweigische Bahn',
+            sym: 'BB',
+            value: 130,
+            revenue: 25,
+            desc: 'Can be exchanged for a 10% share of Preussische Bahn',
+            abilities: [
+              {
+                type: 'exchange',
+                corporations: %w[PR_2],
+                owner_type: 'player',
+                when: ['Phase 2.3', 'Phase 2.4', 'Phase 3.1'],
+                from: 'ipo',
+              },
+            ],
+            color: :oegray,
+          },
         ].freeze
 
         CORPORATIONS = [
@@ -198,18 +106,16 @@ module Engine
             name: 'Bayrische Eisenbahn',
             logo: '1835/BY',
             simple_logo: '1835/BY.alt',
-            max_ownership_percent: 100,
             tokens: [0, 0, 0, 0, 0],
             float_percent: 50,
             shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
             coordinates: 'O15',
-            color: :blue,
+            color: :turquoise,
           },
           {
             sym: 'SX',
             name: 'Sächsische Eisenbahn',
             logo: '1835/SX',
-            max_ownership_percent: 100,
             simple_logo: '1835/SX.alt',
             tokens: [0, 0, 0],
             float_percent: 50,
@@ -223,7 +129,7 @@ module Engine
             logo: '1835/BA',
             simple_logo: '1835/BA.alt',
             tokens: [0, 0],
-            max_ownership_percent: 100,
+            type: 'mid',
             float_percent: 50,
             shares: [20, 10, 10, 10, 10, 10, 10, 20],
             coordinates: 'L6',
@@ -235,7 +141,7 @@ module Engine
             logo: '1835/HE',
             simple_logo: '1835/HE.alt',
             tokens: [0, 0],
-            max_ownership_percent: 100,
+            type: 'mid',
             float_percent: 50,
             shares: [20, 10, 10, 10, 10, 10, 10, 20],
             last_cert: %w[HE_7],
@@ -248,13 +154,13 @@ module Engine
             logo: '1835/WT',
             simple_logo: '1835/WT.alt',
             tokens: [0, 0],
-            max_ownership_percent: 100,
             float_percent: 50,
+            type: 'mid',
             shares: [20, 10, 10, 10, 10, 10, 10, 20],
             last_cert: ['WT_7'],
             coordinates: 'M9',
             color: :yellow,
-            text_color: 'black',
+            text_color: 'oegray',
           },
           {
             sym: 'MS',
@@ -262,8 +168,8 @@ module Engine
             logo: '1835/MS',
             simple_logo: '1835/MS.alt',
             tokens: [0, 0],
-            max_ownership_percent: 100,
             percent: 10,
+            type: 'low',
             float_percent: 60,
             shares: [20, 10, 20, 20, 10, 10, 10],
             # the shares order creates a 10 share company, but the first 3 sold papers are 20%
@@ -276,8 +182,8 @@ module Engine
             logo: '1835/OL',
             simple_logo: '1835/OL.alt',
             tokens: [0, 0],
-            max_ownership_percent: 100,
             float_percent: 60,
+            type: 'low',
             shares: [20, 10, 20, 20, 10, 10, 10],
             # the shares order creates a 10 share company, but the first 3 sold papers are 20%
             coordinates: 'D6',
@@ -291,6 +197,7 @@ module Engine
             simple_logo: '1835/PR.alt',
             tokens: [0, 0, 0, 0, 0],
             shares: [10, 10, 10, 10, 10, 10, 10, 10, 5, 5, 5, 5],
+            # shares for minors and Privates should be reserved
             coordinates: 'E19',
             color: '#37383a',
           },
@@ -298,20 +205,29 @@ module Engine
 
         MINORS = [
           {
-            sym: 'M1',
+            sym: 'P1',
             name: 'Bergisch Märkische Bahn',
-            logo: '1822/1',
-            type: 'PreStaatsbahn',
+            logo: '1835/PR',
+            simple_logo: '1835/PR.alt',
             tokens: [0],
+            abilities: [
+              {
+                type: 'exchange',
+                corporations: %w[PR_9],
+                owner_type: 'player',
+                when: ['Phase 2.3', 'Phase 2.4', 'Phase 3.1'],
+                # reserved papers perhaps a option
+                from: 'ipo',
+              },
+            ],
             coordinates: 'H2',
-            city: 0,
             color: '#37383a',
           },
           {
             sym: 'P2',
             name: 'Berlin Potsdamer Bahn',
-            logo: '1822/2',
-            simple_logo: '1835/P2.alt',
+            logo: '1835/PR',
+            simple_logo: '1835/PR.alt',
             tokens: [0],
             abilities: [
               {
@@ -319,6 +235,7 @@ module Engine
                 corporations: %w[PR_0x],
                 owner_type: 'player',
                 when: ['Phase 2.3', 'Phase 2.4', 'Phase 3.1'],
+                # reserved papers perhaps a option
                 from: 'ipo',
               },
             ],
@@ -328,8 +245,8 @@ module Engine
           {
             sym: 'P3',
             name: 'Magdeburger-Bahn',
-            logo: '1822/3',
-            simple_logo: '1835/P3.alt',
+            logo: '1835/PR',
+            simple_logo: '1835/PR.alt',
             tokens: [0],
             abilities: [
               {
@@ -337,6 +254,7 @@ module Engine
                 corporations: %w[PR_10],
                 owner_type: 'player',
                 when: ['Phase 2.3', 'Phase 2.4', 'Phase 3.1'],
+                # reserved papers perhaps a option
                 from: 'ipo',
               },
             ],
@@ -346,8 +264,8 @@ module Engine
           {
             sym: 'P4',
             name: 'Köln-Mindener Bahn',
-            logo: '1822/4',
-            simple_logo: '1835/P4.alt',
+            logo: '1835/PR',
+            simple_logo: '1835/PR.alt',
             tokens: [0],
             abilities: [
               {
@@ -355,6 +273,7 @@ module Engine
                 corporations: %w[PR_3],
                 owner_type: 'player',
                 when: ['Phase 2.3', 'Phase 2.4', 'Phase 3.1'],
+                # reserved papers perhaps a option
                 from: 'ipo',
               },
             ],
@@ -364,8 +283,8 @@ module Engine
           {
             sym: 'P5',
             name: 'Berlin Stettiner Bahn',
-            logo: '1822/5',
-            simple_logo: '1835/P5.alt',
+            logo: '1835/PR',
+            simple_logo: '1835/PR.alt',
             tokens: [0],
             abilities: [
               {
@@ -373,18 +292,18 @@ module Engine
                 corporations: %w[PR_11],
                 owner_type: 'player',
                 when: ['Phase 2.3', 'Phase 2.4', 'Phase 3.1'],
+                # reserved papers perhaps a option
                 from: 'ipo',
               },
             ],
             coordinates: 'E19',
-            city: 1,
             color: '#37383a',
           },
           {
             sym: 'P6',
             name: 'Altona Kiel Bahn',
-            logo: '1822/6',
-            simple_logo: '1835/P6.alt',
+            logo: '1835/PR',
+            simple_logo: '1835/PR.alt',
             tokens: [0],
             abilities: [
               {
@@ -392,6 +311,7 @@ module Engine
                 corporations: %w[PR_12],
                 owner_type: 'player',
                 when: ['Phase 2.3', 'Phase 2.4', 'Phase 3.1'],
+                # reserved papers perhaps a option
                 from: 'ipo',
               },
             ],
