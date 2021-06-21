@@ -148,6 +148,12 @@ module View
             x: -30,
             y: -65,
           },
+          # edge 1
+          {
+            region_weights: { [13, 14] => 1.0 },
+            x: -50,
+            y: 25,
+          },
           P_LEFT_CORNER[:pointy],
           P_BOTTOM_LEFT_CORNER[:pointy],
           # top right corner
@@ -167,12 +173,6 @@ module View
             region_weights: { [17] => 1.0, [18, 23] => 0.25 },
             x: 50,
             y: 37,
-          },
-          # edge 1
-          {
-            region_weights: { [13, 14] => 1.0 },
-            x: -50,
-            y: 25,
           },
         ].freeze
 
