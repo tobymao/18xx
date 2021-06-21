@@ -7,6 +7,7 @@ module View
     module Part
       class TrackStub < Base
         needs :stub
+        needs :border_props, default: nil
         needs :color, default: 'black'
         needs :width, default: 8
         needs :dash, default: '0'
@@ -34,23 +35,26 @@ module View
           ]
         end
 
-        def render_part
+        def build_props(color, width, dash)
           rotate = 60 * @edge
 
-          props = {
+          {
             attrs: {
               transform: "rotate(#{rotate})",
               d: 'M 0 87 L 0 65',
-              fill: @color,
-              stroke: @color,
+              fill: color,
+              stroke: color,
               'stroke-linecap': 'butt',
               'stroke-linejoin': 'miter',
-              'stroke-width': @width,
-              'stroke-dasharray': @dash,
+              'stroke-width': width,
+              'stroke-dasharray': dash,
             },
           }
+        end
 
-          h(:path, props)
+        def render_part
+          [h(:path, build_props(@border_props['color'], @width + @border_props['width'], '0')),
+           h(:path, build_props(@color, @width, @dash))]
         end
       end
     end

@@ -13,22 +13,60 @@ module View
 
         TRACK = {
           color: '#000000',
-          width: 8,
+          width: 12,
           dash: '0',
           broad: {
             color: '#000000',
-            width: 8,
+            width: 12,
             dash: '0',
           },
           narrow: {
             color: '#000000',
-            width: 8,
-            dash: '12',
+            width: 12,
+            dash: '0',
           },
           dual: {
             color: '#FFFFFF',
-            width: 8,
+            width: 12,
             dash: '0',
+          },
+        }.freeze
+
+        # width here is added to track width
+        BORDER_PROPS = {
+          broad: {
+            color: '#FFFFFF',
+            width: 4,
+          },
+          narrow: {
+            color: '#FFFFFF',
+            width: 4,
+          },
+          dual: {
+            color: '#000000',
+            width: 4,
+          },
+        }.freeze
+
+        # width here is subtracted from track width
+        INNER_PROPS = {
+          narrow: {
+            color: '#FFFFFF',
+            width: 4,
+            dash: '12',
+          },
+        }.freeze
+
+        # use narrower track when showing more than one route on a path
+        MULTI_PATH = {
+          broad: {
+            width: 8,
+          },
+          narrow: {
+            width: 8,
+          },
+          dual: {
+            width: 8,
           },
         }.freeze
 
@@ -50,21 +88,67 @@ module View
             .flat_map { |path| path_indexes[path].map { |i| [path, i] } }
             .sort_by { |_, index| index || -1 }
 
-          sorted.map do |path, index|
+          # track outline
+          # this has to be done in a separate pass to render connections ("switches")
+          # between tracks correctly
+          passes = sorted.map do |path, index|
             props = {
-              color: value_for_index(index, :color, path.track),
+              color: value_for_index(index, :color, path.gauge),
               width: width_for_index(path, index, path_indexes),
-              dash: value_for_index(index, :dash, path.track),
+              dash: value_for_index(index, :dash, path.gauge),
             }
 
-            if path.stub?
-              h(TrackStub, stub: path, region_use: @region_use, **props)
-            elsif path.offboard
-              h(TrackOffboard, offboard: path.offboard, path: path, region_use: @region_use, **props)
-            else
-              h(TrackNodePath, tile: @tile, path: path, region_use: @region_use, **props)
+            border_props = BORDER_PROPS[path.gauge]
+            inner_props = INNER_PROPS[path.gauge]
+
+            if !path.stub? && !path.offboard
+              h(TrackNodePath, tile: @tile, path: path, region_use: @region_use,
+                               pass: 0, border_props: border_props, inner_props: inner_props, **props)
             end
           end
+
+          # Main track
+          pass1 = sorted.map do |path, index|
+            props = {
+              color: value_for_index(index, :color, path.gauge),
+              width: width_for_index(path, index, path_indexes),
+              dash: value_for_index(index, :dash, path.gauge),
+            }
+
+            border_props = BORDER_PROPS[path.gauge]
+            inner_props = INNER_PROPS[path.gauge]
+
+            if path.stub?
+              h(TrackStub, stub: path, region_use: @region_use, border_props: border_props, **props)
+            elsif path.offboard
+              h(TrackOffboard, offboard: path.offboard, path: path, region_use: @region_use,
+                               border_props: border_props, **props)
+            else
+              h(TrackNodePath, tile: @tile, path: path, region_use: @region_use,
+                               pass: 1, border_props: border_props, inner_props: inner_props, **props)
+            end
+          end
+
+          # inner portion of track (narrow gauge)
+          # this has to be done in a separate pass for the same reason as the outline
+          pass2 = sorted.map do |path, index|
+            props = {
+              color: value_for_index(index, :color, path.gauge),
+              width: width_for_index(path, index, path_indexes),
+              dash: value_for_index(index, :dash, path.gauge),
+            }
+
+            border_props = BORDER_PROPS[path.gauge]
+            inner_props = INNER_PROPS[path.gauge]
+
+            if !path.stub? && !path.offboard && inner_props
+              h(TrackNodePath, tile: @tile, path: path, region_use: @region_use,
+                               pass: 2, border_props: border_props, inner_props: inner_props, **props)
+            end
+          end.compact
+          passes.concat(pass1)
+          passes.concat(pass2) unless pass2.empty?
+          passes
         end
 
         private
@@ -78,13 +162,17 @@ module View
           indexes.empty? ? [nil] : indexes
         end
 
-        def value_for_index(index, prop, track)
-          return TRACK[track][prop] if index && track == :narrow && prop == :dash
+        def value_for_index(index, prop, gauge)
+          return TRACK[gauge][prop] if index && gauge == :narrow && prop == :dash
 
-          index ? route_prop(index, prop) : TRACK[track][prop]
+          index ? route_prop(index, prop) : TRACK[gauge][prop]
         end
 
         def width_for_index(path, index, path_indexes)
+          width = [value_for_index(index, :width, path.gauge), TRACK[path.gauge][:width]].max
+          if index && path_indexes[path].size > 1
+            width = [value_for_index(index, :width, path.gauge), MULTI_PATH[path.gauge][:width]].min
+          end
           multiplier =
             if !index || path_indexes[path].one?
               1
@@ -92,7 +180,7 @@ module View
               [1, 3 * path_indexes[path].reverse.index(index)].max
             end
 
-          value_for_index(index, :width, path.track).to_f * multiplier.to_i
+          width.to_f * multiplier.to_i
         end
       end
     end
