@@ -5,7 +5,7 @@ require_relative 'base'
 module Engine
   module Part
     class Path < Base
-      attr_reader :a, :b, :city, :edges, :exit_lanes, :gauge, :junction,
+      attr_reader :a, :b, :city, :edges, :exit_lanes, :junction,
                   :lanes, :nodes, :offboard, :stops, :terminal, :town, :track, :ignore
 
       LANES = [[1, 0].freeze, [1, 0].freeze].freeze
@@ -22,8 +22,7 @@ module Engine
         end
       end
 
-      def self.make_lanes(a, b, terminal: nil, lanes: nil, a_lane: nil, b_lane: nil, track: nil,
-                          gauge: nil, ignore: nil)
+      def self.make_lanes(a, b, terminal: nil, lanes: nil, a_lane: nil, b_lane: nil, track: nil, ignore: nil)
         track ||= :broad
         if lanes
           Array.new(lanes) do |index|
@@ -37,7 +36,6 @@ module Engine
                      terminal: terminal,
                      lanes: [a_lanes, b_lanes],
                      track: track,
-                     gauge: gauge || track,
                      ignore: ignore)
           end
         else
@@ -45,12 +43,11 @@ module Engine
                    terminal: terminal,
                    lanes: [decode_lane_spec(a_lane), decode_lane_spec(b_lane)],
                    track: track,
-                   gauge: gauge || track,
                    ignore: ignore)
         end
       end
 
-      def initialize(a, b, terminal: nil, lanes: LANES, track: :broad, gauge: nil, ignore: nil)
+      def initialize(a, b, terminal: nil, lanes: LANES, track: :broad, ignore: nil)
         @a = a
         @b = b
         @terminal = terminal
@@ -59,8 +56,7 @@ module Engine
         @stops = []
         @nodes = []
         @exit_lanes = {}
-        @track = track # track controls connectivity
-        @gauge = gauge || track # gauge controls appearance
+        @track = track
         @ignore = ignore
 
         separate_parts
@@ -240,7 +236,6 @@ module Engine
                         terminal: @terminal,
                         lanes: @lanes,
                         track: @track,
-                        gauge: @gauge,
                         ignore: @ignore)
         path.index = index
         path.tile = @tile

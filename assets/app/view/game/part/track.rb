@@ -104,13 +104,13 @@ module View
           pass2 = []
           sorted.each do |path, index|
             props = {
-              color: value_for_index(index, :color, path.gauge),
+              color: value_for_index(index, :color, path.track),
               width: width_for_index(path, index, path_indexes),
-              dash: value_for_index(index, :dash, path.gauge),
+              dash: value_for_index(index, :dash, path.track),
             }
 
-            border_props = BORDER_PROPS[path.gauge]
-            inner_props = INNER_PROPS[path.gauge]
+            border_props = BORDER_PROPS[path.track]
+            inner_props = INNER_PROPS[path.track]
 
             if path.stub?
               pass1 << h(TrackStub, stub: path, region_use: @region_use, border_props: border_props, **props)
@@ -128,7 +128,7 @@ module View
               end
             end
           end
-          (pass0 + pass1 + pass2).compact
+          pass0.concat(pass1).concat(pass2)
         end
 
         private
@@ -142,16 +142,16 @@ module View
           indexes.empty? ? [nil] : indexes
         end
 
-        def value_for_index(index, prop, gauge)
-          return TRACK[gauge][prop] if index && gauge == :narrow && prop == :dash
+        def value_for_index(index, prop, track)
+          return TRACK[track][prop] if index && track == :narrow && prop == :dash
 
-          index ? route_prop(index, prop) : TRACK[gauge][prop]
+          index ? route_prop(index, prop) : TRACK[track][prop]
         end
 
         def width_for_index(path, index, path_indexes)
-          width = [value_for_index(index, :width, path.gauge), TRACK[path.gauge][:width]].max
+          width = [value_for_index(index, :width, path.track), TRACK[path.track][:width]].max
           if index && path_indexes[path].size > 1
-            width = [value_for_index(index, :width, path.gauge), MULTI_PATH[path.gauge][:width]].min
+            width = [value_for_index(index, :width, path.track), MULTI_PATH[path.track][:width]].min
           end
           multiplier =
             if !index || path_indexes[path].one?

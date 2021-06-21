@@ -71,8 +71,7 @@ game config/code:
     - **a\_lane** - integer.integer - first integer specifies the lane width for the **a** path endpoint, the second integer specifies the lane index, or position within the lane. 0 is the most clockwise position.
     - **b\_lane** - integer.integer - first integer specifies the lane width for the **b** path endpoint, the second integer specifies the lane index, or position within the lane. 0 is the most clockwise position.
     - **lanes** - integer - number of parallel paths. Creates multiple copies of this path with **a\_lane** and **b\_lane** for each path generated automatically and set rationally.
-    - **track** - `broad/narrow/dual` - used for calculating connectivity. Defaults to `broad`.
-    - **gauge** - `broad/narrow/dual` - used for rendering. Defaults to **track** value.
+    - **track** - `broad/narrow/dual` - used for display and connectivity. Defaults to `broad`.
 - **label** - large letter(s) on tile (e.g., "Chi", "OO", or "Z")
 - **upgrade**
     - **cost** - *required* - integer

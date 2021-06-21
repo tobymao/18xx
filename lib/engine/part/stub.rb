@@ -18,10 +18,6 @@ module Engine
       def track
         :broad
       end
-
-      def gauge
-        :broad
-      end
     end
   end
 end

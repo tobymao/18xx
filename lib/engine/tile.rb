@@ -70,7 +70,7 @@ module Engine
             [k, v]
           when 'lanes'
             [k, v.to_i]
-          when 'track', 'gauge'
+          when 'track'
             [k, v.to_sym]
           else
             case v[0]
@@ -86,7 +86,6 @@ module Engine
                                                         lanes: params['lanes'], a_lane: params['a_lane'],
                                                         b_lane: params['b_lane'],
                                                         track: params['track'],
-                                                        gauge: params['gauge'],
                                                         ignore: params['ignore'])
       when 'city'
         city = Part::City.new(params['revenue'],
