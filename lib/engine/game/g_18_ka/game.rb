@@ -942,6 +942,12 @@ module Engine
           national.add_ability(self.class::NATIONAL_FORCED_WITHHOLD_ABILITY)
         end
 
+        def route_distance_str(route)
+          towns = route.visited_stops.count(&:town?)
+          cities = route_distance(route) - towns
+          "#{cities}+#{towns}"
+        end
+
         def revenue_for(route, stops)
           stops.sum { |stop| stop.route_revenue(route.phase, route.train) }
         end
