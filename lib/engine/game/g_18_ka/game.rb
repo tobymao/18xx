@@ -613,7 +613,7 @@ module Engine
             logo: '18_ka/NM',
             simple_logo: '18_ka/NM.alt',
             tokens: [0, 40, 70, 100, 130],
-            coordinates: 'I19',
+            coordinates: 'J19',
             color: NM_NAVY,
             text_color: 'white',
           },
@@ -685,7 +685,7 @@ module Engine
             logo: '18_ka/JA',
             simple_logo: '18_ka/JA.alt',
             tokens: [0, 40, 60, 80, 100, 120],
-            coordinates: 'H6',
+            coordinates: 'H5',
             color: JOVIAN_ORANGE,
             text_color: 'black',
           },
@@ -735,6 +735,7 @@ module Engine
             dest_arr = Array(dest)
             d_goals = Array(dest_arr.first)
             d_start = dest_arr.size > 1 ? dest_arr.last : corporation_by_id(corp).coordinates
+            @destination_statuses[corp] = "Dest: Connect Home (#{d_start}) to #{d_goals}"
             dest_arr.each do |d|
               # Array(d).first allows us to treat 'E5' or %[O2 N3] identically
               hex_by_id(Array(d).first).original_tile.icons << Part::Icon.new(icon_path(corp))
@@ -746,7 +747,7 @@ module Engine
           'AF' => 'I14',
           'KM' => 'K16',
           'OL' => 'E16',
-          'WM' => %w[N21 N23],
+          'WM' => [%w[N21 N23]],
 
           'ATN' => 'I10',
           'C9S' => 'H11',
@@ -758,8 +759,8 @@ module Engine
           'IPM' => 'C12',
           'ICTN' => 'G20',
           'CMM' => 'K20',
-          'MWM' => %w[D5 E4],
-          'TiTaN' => %w[E24 F25],
+          'MWM' => [%w[D5 E4]],
+          'TiTaN' => [%w[E24 F25]],
         }.freeze
 
         # These cities upgrade to the common BarrieLondon green tile,
