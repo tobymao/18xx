@@ -78,11 +78,11 @@ module Engine
 
           def train_choices(entity)
             # Diesels don't get pullmans. That'd be silly.
-            Array(@game.route_trains(entity).reject { |t| @game.pullman_train?(t) || t.variant['name'] == 'D' })
+            @game.route_trains(entity).reject { |t| @game.pullman_train?(t) || t.variant['name'] == 'D' }
           end
 
           def pullman_choices(entity)
-            Array(entity.trains.find { |t| @game.pullman_train?(t) && !@pullman_train_assignments[t] })
+            entity.trains.select { |t| @game.pullman_train?(t) && !@pullman_train_assignments[t] }
           end
 
           def process_choose(action)
@@ -103,14 +103,14 @@ module Engine
           def train_city_distance(train)
             return train.distance if train.distance.is_a?(Numeric)
 
-            distance_city = train.distance.find { |n| n['nodes'].length > 1 }
+            distance_city = train.distance.find { |n| n['nodes'].size > 1 }
             distance_city ? distance_city['visit'] : 0
           end
 
           def train_town_distance(train)
             return 0 if train.distance.is_a?(Numeric)
 
-            distance_city = train.distance.find { |n| n['nodes'].length == 1 }
+            distance_city = train.distance.find { |n| n['nodes'].size == 1 }
             distance_city ? distance_city['visit'] : 0
           end
 
