@@ -88,19 +88,6 @@ module Engine
           init10: :orange,
         ).freeze
 
-        PAR_RANGE = {
-          init1: [100],
-          init2: [90],
-          init3: [82],
-          init4: [76],
-          init5: [71],
-          init6: [67],
-          init7: [64],
-          init8: [61],
-          init9: [58],
-          init10: [56],
-        }.freeze
-
         MARKET_TEXT = {
           init1: 'Startkurs LNWR',
           init2: 'Startkurs GWR',
@@ -157,14 +144,6 @@ module Engine
 
         LAYOUT = :pointy
 
-        def setup
-          @corporations.each do |corporation|
-            if corporation.type == 'init1'
-              # here should be the fixed parprices per corporation
-            end
-          end
-        end
-
         def upgrades_to?(from, to, _special = false, selected_company: nil)
           return GREEN_CITIES.include?(to.name) if YELLOW_TOWNS.include? from.hex.tile.name
           return BROWN_CITIES.include?(to.name) if GREEN_CITIES.include? from.hex.tile.name
@@ -182,6 +161,42 @@ module Engine
           upgrades
         end
 
+        def setup
+          @lnw = @corporations.find { |c| c.id == 'LNWR' }
+          @gwr = @corporations.find { |c| c.id == 'GWR' }
+          @mid = @corporations.find { |c| c.id == 'Mid' }
+          @lsw = @corporations.find { |c| c.id == 'LSWR' }
+          @gnr = @corporations.find { |c| c.id == 'GNR' }
+          @lbs = @corporations.find { |c| c.id == 'LBSC' }
+          @ger = @corporations.find { |c| c.id == 'GER' }
+          @gcr = @corporations.find { |c| c.id == 'GCR' }
+          @lyr = @corporations.find { |c| c.id == 'LYR' }
+          @sec = @corporations.find { |c| c.id == 'SECR' }
+
+          @stock_market.set_par(@lnw, @stock_market.par_prices.find { |p| p.price == 100 })
+          @stock_market.set_par(@gwr, @stock_market.par_prices.find { |p| p.price == 90 })
+          @stock_market.set_par(@mid, @stock_market.par_prices.find { |p| p.price == 82 })
+          @stock_market.set_par(@lsw, @stock_market.par_prices.find { |p| p.price == 76 })
+          @stock_market.set_par(@gnr, @stock_market.par_prices.find { |p| p.price == 71 })
+          @stock_market.set_par(@lbs, @stock_market.par_prices.find { |p| p.price == 67 })
+          @stock_market.set_par(@ger, @stock_market.par_prices.find { |p| p.price == 64 })
+          @stock_market.set_par(@gcr, @stock_market.par_prices.find { |p| p.price == 61 })
+          @stock_market.set_par(@lyr, @stock_market.par_prices.find { |p| p.price == 58 })
+          @stock_market.set_par(@sec, @stock_market.par_prices.find { |p| p.price == 56 })
+          @lnw.ipoed = true
+          @gwr.ipoed = true
+          @mid.ipoed = true
+          @lsw.ipoed = true
+          @gnr.ipoed = true
+          @lbs.ipoed = true
+          @ger.ipoed = true
+          @gcr.ipoed = true
+          @lyr.ipoed = true
+          @sec.ipoed = true
+
+          @corporations ||= corporations + companies
+        end
+
         def init_round
           G1829::Round::Draft.new(self,
                                   [G1829::Step::Draft],
@@ -189,13 +204,13 @@ module Engine
         end
 
         def stock_round
-          G1829::Round::Stock.new(self, [
+          Engine::Round::Stock.new(self, [
             Engine::Step::BuySellParShares,
           ])
         end
 
         def operating_round(round_num)
-          G1829::Round::Operating.new(self, [
+          Engine::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
             Engine::Step::HomeToken,

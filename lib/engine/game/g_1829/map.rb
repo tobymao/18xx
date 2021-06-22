@@ -52,7 +52,7 @@ module Engine
           # green
           '10' =>
           {
-            'count' => 1,
+            'count' => 3,
             'color' => 'green',
             'code' => 'city=revenue:30;city=revenue:30;path=a:0,b:_0;path=a:3,b:_1;label=OO',
           },
@@ -199,7 +199,7 @@ module Engine
           },
           yellow: {
             %w[J7] =>
-                     'city=revenue:0;city=revenue:0;label=OO;upgrade=cost:40,terrain:water;label=OO',
+                     'city=revenue:0;city=revenue:0;label=OO;upgrade=cost:40,terrain:water',
             %w[L13 F9 D13 B11] => 'city=revenue:0;city=revenue:0;label=OO',
           },
           green: {
