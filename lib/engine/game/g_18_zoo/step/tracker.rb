@@ -6,6 +6,12 @@ module Engine
       module Step
         module Tracker
           MOUNTAIN_ICON = Engine::Part::Icon.new('18_zoo/mountain', 'mountain', true, true)
+          INVALID_TRACK_UPDATES = [
+            { old: 'X8', new: 'X25', diff: [4] },
+            { old: 'X8', new: 'X19', diff: [0, 2] },
+            { old: 'X7', new: 'X28', diff: [2] },
+            { old: 'X7', new: 'X29', diff: [5] },
+          ].freeze
 
           def lay_tile(action, extra_cost: 0, entity: nil, spender: nil)
             hex = action.hex
@@ -41,6 +47,13 @@ module Engine
           end
 
           def check_track_restrictions!(entity, old_tile, new_tile)
+            # handle edge cases where the new ends override olds but original paths are not touched
+            raise GameError, 'New track must override old one' if INVALID_TRACK_UPDATES.any? do |props|
+              old_tile.name == props[:old] &&
+                new_tile.name == props[:new] &&
+                props[:diff].include?((new_tile.rotation - old_tile.rotation + 6) % 6)
+            end
+
             super(entity.company? ? entity.owner : entity, old_tile, new_tile)
           end
         end
