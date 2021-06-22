@@ -477,7 +477,10 @@ module Engine
 
           @reserved_trains = depot.upcoming.select(&:reserved)
           @all_reserved_trains = @reserved_trains.dup
-          @reserved_trains.each { |train| depot.remove_train(train) }
+          @reserved_trains.each do |train|
+            train.reserved = false # don't hide in the UI
+            depot.remove_train(train)
+          end
 
           protect = corporations.find { |c| c.id == PROTECTED_CORPORATION }
           corporations.delete(protect)
