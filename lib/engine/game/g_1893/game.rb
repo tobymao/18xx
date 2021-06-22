@@ -1200,7 +1200,7 @@ module Engine
             city.place_token(mergable, mergable.next_token, free: true)
 
             # Minor is no longer used
-            @log << "Minor #{mergee.name} are closed"
+            @log << "Minor #{minor.name} are closed"
             minor.close!
           end
 

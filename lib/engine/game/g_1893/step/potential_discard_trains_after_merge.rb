@@ -41,9 +41,7 @@ module Engine
           end
 
           def active?
-            return false if @game.potential_discard_trains.empty?
-
-            true
+            !@game.potential_discard_trains.empty?
           end
 
           def blocking?
