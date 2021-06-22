@@ -10,6 +10,7 @@ module View
 
         needs :path
         needs :offboard
+        needs :border_props, default: nil
         needs :color, default: 'black'
         needs :width, default: 8
         needs :dash, default: '0'
@@ -41,10 +42,10 @@ module View
           ]
         end
 
-        def render_part
+        def build_props(color, width, dash)
           rotate = 60 * edge
 
-          d_width = @width.to_i / 2
+          d_width = width.to_i / 2
           offboard_start_x = d_width
           offboard_end_x = -d_width
           begin_lane, = @path.lanes
@@ -55,21 +56,24 @@ module View
           end
           point_x = (offboard_start_x + offboard_end_x) / 2
 
-          props = {
+          {
             attrs: {
               transform: "rotate(#{rotate})",
               d: "M #{offboard_start_x} 75 L #{offboard_start_x} 87 L #{offboard_end_x} 87 "\
-                 "L #{offboard_end_x} 75 L #{point_x} 48 Z",
-              fill: @color,
+                "L #{offboard_end_x} 75 L #{point_x} 48 Z",
+              fill: color,
               stroke: 'none',
               'stroke-linecap': 'butt',
               'stroke-linejoin': 'miter',
-              'stroke-width': @width.to_i * 0.75,
-              'stroke-dasharray': @dash,
+              'stroke-width': width.to_i * 0.75,
+              'stroke-dasharray': dash,
             },
           }
+        end
 
-          h(:path, props)
+        def render_part
+          [h(:path, build_props(@border_props['color'], @width + @border_props['width'], '0')),
+           h(:path, build_props(@color, @width, @dash))]
         end
       end
     end
