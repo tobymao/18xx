@@ -864,9 +864,14 @@ module Engine
         end
 
         def share_price_updated(entity, revenue)
-          return stock_market.find_share_price(entity, :right) if revenue >= threshold(entity)
+          direction = if revenue >= threshold(entity)
+                        r, c = entity.share_price.coordinates
+                        c + 1 < stock_market.market[r].size ? :right : :down
+                      else
+                        :stay
+                      end
 
-          stock_market.find_share_price(entity, :stay)
+          stock_market.find_share_price(entity, direction)
         end
 
         def route_distance(route)
