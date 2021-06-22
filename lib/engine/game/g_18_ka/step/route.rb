@@ -23,17 +23,16 @@ module Engine
             train.name = "#{city_distance}+#{town_distance + pullman_size}"
             train.distance = [
               {
-                'nodes' => %w[city offboard town],
-                'pay' => city_distance,
-                'visit' => city_distance,
-              },
-              {
                 'nodes' => ['town'],
                 'pay' => town_distance + pullman_size,
                 'visit' => town_distance + pullman_size,
               },
+              {
+                'nodes' => %w[city offboard town],
+                'pay' => city_distance,
+                'visit' => city_distance,
+              },
             ]
-            puts train.name, train.distance
           end
 
           def choice_name
@@ -62,14 +61,14 @@ module Engine
                 train.name = "#{city_distance}+#{town_distance - pullman_size}"
                 train.distance = [
                   {
-                    'nodes' => %w[city offboard town],
-                    'pay' => city_distance,
-                    'visit' => city_distance,
-                  },
-                  {
                     'nodes' => ['town'],
                     'pay' => town_distance - pullman_size,
                     'visit' => town_distance - pullman_size,
+                  },
+                  {
+                    'nodes' => %w[city offboard town],
+                    'pay' => city_distance,
+                    'visit' => city_distance,
                   },
                 ]
               end

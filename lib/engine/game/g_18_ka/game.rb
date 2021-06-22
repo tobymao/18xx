@@ -267,7 +267,7 @@ module Engine
           },
           {
             name: "2'",
-            on: "2+'",
+            on: '2+1',
             train_limit: 4,
             tiles: [:yellow],
             status: %w[escrow facing_3],
@@ -283,7 +283,7 @@ module Engine
           },
           {
             name: "3'",
-            on: "3+'",
+            on: "3+1'",
             train_limit: 4,
             tiles: %i[yellow green],
             operating_rounds: 2,
@@ -299,7 +299,7 @@ module Engine
           },
           {
             name: "4'",
-            on: "4+'",
+            on: "4+1'",
             train_limit: 3,
             tiles: %i[yellow green],
             operating_rounds: 2,
@@ -342,16 +342,20 @@ module Engine
         TRAINS = [{ name: '2', distance: 2, price: 100, rusts_on: '4', num: 4 },
                   {
                     name: '2+1',
-                    distance: [{ 'nodes' => %w[city offboard town], 'pay' => 2, 'visit' => 2 },
-                               { 'nodes' => ['town'], 'pay' => 1, 'visit' => 1 }],
+                    distance: [
+                      { 'nodes' => ['town'], 'pay' => 1, 'visit' => 1 },
+                      { 'nodes' => %w[city offboard town], 'pay' => 2, 'visit' => 2 },
+                    ],
                     price: 125,
                     obsolete_on: '4',
                     num: 1,
                   },
                   {
                     name: '2+1`',
-                    distance: [{ 'nodes' => %w[city offboard town], 'pay' => 2, 'visit' => 2 },
-                               { 'nodes' => ['town'], 'pay' => 1, 'visit' => 1 }],
+                    distance: [
+                      { 'nodes' => ['town'], 'pay' => 1, 'visit' => 1 },
+                      { 'nodes' => %w[city offboard town], 'pay' => 2, 'visit' => 2 },
+                    ],
                     price: 125,
                     obsolete_on: '4',
                     num: 1,
@@ -359,16 +363,20 @@ module Engine
                   { name: '3', distance: 3, price: 225, rusts_on: '6', num: 3 },
                   {
                     name: '3+1',
-                    distance: [{ 'nodes' => %w[city offboard town], 'pay' => 3, 'visit' => 3 },
-                               { 'nodes' => ['town'], 'pay' => 1, 'visit' => 1 }],
+                    distance: [
+                      { 'nodes' => ['town'], 'pay' => 1, 'visit' => 1 },
+                      { 'nodes' => %w[city offboard town], 'pay' => 3, 'visit' => 3 },
+                    ],
                     price: 250,
                     obsolete_on: '6',
                     num: 1,
                   },
                   {
                     name: "3+1'",
-                    distance: [{ 'nodes' => %w[city offboard town], 'pay' => 3, 'visit' => 3 },
-                               { 'nodes' => ['town'], 'pay' => 1, 'visit' => 1 }],
+                    distance: [
+                      { 'nodes' => ['town'], 'pay' => 1, 'visit' => 1 },
+                      { 'nodes' => %w[city offboard town], 'pay' => 3, 'visit' => 3 },
+                    ],
                     price: 250,
                     obsolete_on: '6',
                     num: 1,
@@ -376,16 +384,20 @@ module Engine
                   { name: '4', distance: 4, price: 350, rusts_on: '8', num: 2 },
                   {
                     name: '4+1',
-                    distance: [{ 'nodes' => %w[city offboard town], 'pay' => 4, 'visit' => 4 },
-                               { 'nodes' => ['town'], 'pay' => 1, 'visit' => 1 }],
+                    distance: [
+                      { 'nodes' => ['town'], 'pay' => 1, 'visit' => 1 },
+                      { 'nodes' => %w[city offboard town], 'pay' => 4, 'visit' => 4 },
+                    ],
                     price: 375,
                     obsolete_on: '8', # also D
                     num: 1,
                   },
                   {
                     name: "4+1'",
-                    distance: [{ 'nodes' => %w[city offboard town], 'pay' => 4, 'visit' => 4 },
-                               { 'nodes' => ['town'], 'pay' => 1, 'visit' => 1 }],
+                    distance: [
+                      { 'nodes' => ['town'], 'pay' => 1, 'visit' => 1 },
+                      { 'nodes' => %w[city offboard town], 'pay' => 4, 'visit' => 4 },
+                    ],
                     price: 375,
                     obsolete_on: '8', # also D
                     num: 1,
@@ -422,7 +434,7 @@ module Engine
                       {
                         name: 'D',
                         distance: 999,
-                        price: 12,
+                        price: 1250,
                         available_on: '6',
                         discount: { '4' => 350, "4'" => 350, '5' => 350, "5'" => 350, '6' => 350 },
                       },
