@@ -22,7 +22,7 @@ module View
           },
           narrow: {
             color: '#000000',
-            width: 11,
+            width: 12,
             dash: '0',
           },
           dual: {
