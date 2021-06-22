@@ -71,7 +71,7 @@ game config/code:
     - **a\_lane** - integer.integer - first integer specifies the lane width for the **a** path endpoint, the second integer specifies the lane index, or position within the lane. 0 is the most clockwise position.
     - **b\_lane** - integer.integer - first integer specifies the lane width for the **b** path endpoint, the second integer specifies the lane index, or position within the lane. 0 is the most clockwise position.
     - **lanes** - integer - number of parallel paths. Creates multiple copies of this path with **a\_lane** and **b\_lane** for each path generated automatically and set rationally.
-    - **track** - `broad/narrow/line/dashed`; this option is not yet implemented, so track is always broad
+    - **track** - `broad/narrow/dual` - used for display and connectivity. Defaults to `broad`.
 - **label** - large letter(s) on tile (e.g., "Chi", "OO", or "Z")
 - **upgrade**
     - **cost** - *required* - integer
@@ -93,6 +93,7 @@ game config/code:
       but can only be laid by special ability, such as a private company's ability.
 - **frame**
     - **color** - *required* - the color of the frame
+    - **color2** - A second color to display on the frame
 
 #### Town/City/Offboard sub parts
 
