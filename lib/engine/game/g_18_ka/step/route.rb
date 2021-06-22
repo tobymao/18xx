@@ -73,6 +73,7 @@ module Engine
                 ]
               end
             end
+            @pullman_train_assignments = {}
           end
 
           def train_choices(entity)
