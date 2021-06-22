@@ -149,10 +149,13 @@ module View
         end
 
         def width_for_index(path, index, path_indexes)
-          width = [
-            value_for_index(index, :width, path.track).to_f,
-            (index && path_indexes[path].size > 1 ? MULTI_PATH : TRACK)[path.track][:width],
-          ].max
+          width = value_for_index(index, :width, path.track).to_f
+
+          if index && path_indexes[path].size > 1
+            width = [width, MULTI_PATH[path.track][:width]].min
+          else
+            width = [width, TRACK[path.track][:width]].max
+          end
 
           multiplier =
             if !index || path_indexes[path].one?
