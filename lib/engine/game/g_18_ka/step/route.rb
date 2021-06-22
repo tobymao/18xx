@@ -23,7 +23,7 @@ module Engine
             train.name = "#{city_distance}+#{town_distance + pullman_size}"
             train.distance = [
               {
-                'nodes' => %w[city offboard],
+                'nodes' => %w[city offboard town],
                 'pay' => city_distance,
                 'visit' => city_distance,
               },
@@ -33,6 +33,7 @@ module Engine
                 'visit' => town_distance + pullman_size,
               },
             ]
+            puts train.name, train.distance
           end
 
           def choice_name
@@ -61,7 +62,7 @@ module Engine
                 train.name = "#{city_distance}+#{town_distance - pullman_size}"
                 train.distance = [
                   {
-                    'nodes' => %w[city offboard],
+                    'nodes' => %w[city offboard town],
                     'pay' => city_distance,
                     'visit' => city_distance,
                   },
@@ -77,9 +78,7 @@ module Engine
 
           def train_choices(entity)
             # Diesels don't get pullmans. That'd be silly.
-            Array(@game.route_trains(entity).reject do |t|
-                    @game.pullman_train?(t) || (t.name == '8' && t.distance > 8)
-                  end)
+            Array(@game.route_trains(entity).reject { |t| @game.pullman_train?(t) || t.variant['name'] == 'D' })
           end
 
           def pullman_choices(entity)
@@ -104,14 +103,14 @@ module Engine
           def train_city_distance(train)
             return train.distance if train.distance.is_a?(Numeric)
 
-            distance_city = train.distance.find { |n| n['nodes'].include?('city') }
+            distance_city = train.distance.find { |n| n['nodes'].length > 1 }
             distance_city ? distance_city['visit'] : 0
           end
 
           def train_town_distance(train)
             return 0 if train.distance.is_a?(Numeric)
 
-            distance_city = train.distance.find { |n| n['nodes'].include?('town') }
+            distance_city = train.distance.find { |n| n['nodes'].length == 1 }
             distance_city ? distance_city['visit'] : 0
           end
 
