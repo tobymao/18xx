@@ -427,7 +427,12 @@ module Engine
                         discount: { '4' => 350, "4'" => 350, '5' => 350, "5'" => 350, '6' => 350 },
                       },
                     ],
-                  }].freeze
+                  },
+                  { name: '+1', distance: 0, price: 25, rusts_on: '5', available_on: '2', num: 5 },
+                  { name: '+2', distance: 0, price: 50, rusts_on: '8', available_on: '3', num: 4 },
+                  { name: '+3', distance: 0, price: 75, available_on: '5', num: 3 },
+                  { name: '+4', distance: 0, price: 100, available_on: '6', num: 2 },
+                  { name: '+5', distance: 0, price: 125, available_on: '8', num: 1 }].freeze
 
         COMPANIES = [
           {
@@ -847,6 +852,7 @@ module Engine
 
         LAKE_HEXES = [].freeze
 
+        EXTRA_TRAIN_PULLMAN = %w[+1 +2 +3 +4 +5].freeze
         SELL_BUY_ORDER = :sell_buy_sell
         TRACK_RESTRICTION = :permissive
         TILE_RESERVATION_BLOCKS_OTHERS = true
@@ -921,6 +927,63 @@ module Engine
           create_destinations(DESTINATIONS)
           national.add_ability(self.class::NATIONAL_IMMOBILE_SHARE_PRICE_ABILITY)
           national.add_ability(self.class::NATIONAL_FORCED_WITHHOLD_ABILITY)
+        end
+
+        def revenue_for(route, stops)
+          stops.sum { |stop| stop.route_revenue(route.phase, route.train) }
+        end
+
+        def route_trains(entity)
+          entity.runnable_trains.reject { |t| pullman_train?(t) }
+        end
+
+        def pullman_train?(train)
+          self.class::EXTRA_TRAIN_PULLMAN.include?(train.name)
+        end
+
+        def must_buy_train?(entity)
+          entity.trains.none? { |t| !pullman_train?(t) } && @graph.route_info(entity)&.dig(:route_train_purchase)
+        end
+
+        def operating_round(round_num)
+          G1856::Round::Operating.new(self, [
+            G1856::Step::Bankrupt,
+            G1856::Step::CashCrisis,
+            # No exchanges.
+            G1856::Step::Assign,
+            G1856::Step::Loan,
+            G1856::Step::SpecialTrack,
+            G1856::Step::SpecialToken,
+            Engine::Step::BuyCompany,
+            Engine::Step::HomeToken,
+
+            # Nationalization!!
+            G1856::Step::NationalizationPayoff,
+            G1856::Step::RemoveTokens,
+            G1856::Step::NationalizationDiscardTrains,
+            # Re-enable to reenable rights
+            # G1856::Step::SpecialBuy,
+            G1856::Step::Track,
+            G1856::Step::Escrow,
+            G1856::Step::Token,
+            G1856::Step::BorrowTrain,
+            G18KA::Step::Route,
+            # Interest - See Loan
+            G1856::Step::Dividend,
+            Engine::Step::DiscardTrain,
+            G1856::Step::BuyTrain,
+            # Repay Loans - See Loan
+            [G1856::Step::BuyCompany, { blocks: true }],
+          ], round_num: round_num)
+        end
+
+        def stock_round
+          G1856::Round::Stock.new(self, [
+            Engine::Step::DiscardTrain,
+            Engine::Step::Exchange,
+            Engine::Step::SpecialTrack,
+            G1856::Step::BuySellParShares,
+          ])
         end
 
         def icon_path(corp)
