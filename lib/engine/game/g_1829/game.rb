@@ -164,13 +164,12 @@ module Engine
         def setup
           parprice = [100, 90, 82, 76, 71, 67, 64, 61, 58, 56]
           corporations.each do |i|
-            @stock_market.set_par(i,@stock_market.par_prices.find { |p| p.price == parprice[@corporations.index(i)] })
+            @stock_market.set_par(i, @stock_market.par_prices.find { |p| p.price == parprice[@corporations.index(i)] })
           end
-   
+
           corporations.each do |i|
             i.ipoed = true
           end
-
         end
 
         def init_round
