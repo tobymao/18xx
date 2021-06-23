@@ -13,11 +13,11 @@ module View
 
         TRACK = {
           color: '#000000',
-          width: 12,
+          width: 9,
           dash: '0',
           broad: {
             color: '#000000',
-            width: 12,
+            width: 9,
             dash: '0',
           },
           narrow: {
@@ -27,7 +27,7 @@ module View
           },
           dual: {
             color: '#FFFFFF',
-            width: 12,
+            width: 10,
             dash: '0',
           },
         }.freeze
@@ -36,15 +36,15 @@ module View
         BORDER_PROPS = {
           broad: {
             color: '#FFFFFF',
-            width: 4,
+            width: 3,
           },
           narrow: {
             color: '#FFFFFF',
-            width: 4,
+            width: 2,
           },
           dual: {
             color: '#000000',
-            width: 4,
+            width: 3,
           },
         }.freeze
 
