@@ -94,6 +94,7 @@ module Engine
             tokens: [0, 40, 100, 100, 100],
             max_ownership_percent: 100,
             coordinates: 'E8',
+            original_par_price: 100,
             type: 'init1',
             color: 'black',
           },

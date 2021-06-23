@@ -162,39 +162,15 @@ module Engine
         end
 
         def setup
-          @lnw = @corporations.find { |c| c.id == 'LNWR' }
-          @gwr = @corporations.find { |c| c.id == 'GWR' }
-          @mid = @corporations.find { |c| c.id == 'Mid' }
-          @lsw = @corporations.find { |c| c.id == 'LSWR' }
-          @gnr = @corporations.find { |c| c.id == 'GNR' }
-          @lbs = @corporations.find { |c| c.id == 'LBSC' }
-          @ger = @corporations.find { |c| c.id == 'GER' }
-          @gcr = @corporations.find { |c| c.id == 'GCR' }
-          @lyr = @corporations.find { |c| c.id == 'LYR' }
-          @sec = @corporations.find { |c| c.id == 'SECR' }
+          parprice = [100, 90, 82, 76, 71, 67, 64, 61, 58, 56]
+          corporations.each do |i|
+            @stock_market.set_par(i,@stock_market.par_prices.find { |p| p.price == parprice[@corporations.index(i)] })
+          end
+   
+          corporations.each do |i|
+            i.ipoed = true
+          end
 
-          @stock_market.set_par(@lnw, @stock_market.par_prices.find { |p| p.price == 100 })
-          @stock_market.set_par(@gwr, @stock_market.par_prices.find { |p| p.price == 90 })
-          @stock_market.set_par(@mid, @stock_market.par_prices.find { |p| p.price == 82 })
-          @stock_market.set_par(@lsw, @stock_market.par_prices.find { |p| p.price == 76 })
-          @stock_market.set_par(@gnr, @stock_market.par_prices.find { |p| p.price == 71 })
-          @stock_market.set_par(@lbs, @stock_market.par_prices.find { |p| p.price == 67 })
-          @stock_market.set_par(@ger, @stock_market.par_prices.find { |p| p.price == 64 })
-          @stock_market.set_par(@gcr, @stock_market.par_prices.find { |p| p.price == 61 })
-          @stock_market.set_par(@lyr, @stock_market.par_prices.find { |p| p.price == 58 })
-          @stock_market.set_par(@sec, @stock_market.par_prices.find { |p| p.price == 56 })
-          @lnw.ipoed = true
-          @gwr.ipoed = true
-          @mid.ipoed = true
-          @lsw.ipoed = true
-          @gnr.ipoed = true
-          @lbs.ipoed = true
-          @ger.ipoed = true
-          @gcr.ipoed = true
-          @lyr.ipoed = true
-          @sec.ipoed = true
-
-          @corporations ||= corporations + companies
         end
 
         def init_round
