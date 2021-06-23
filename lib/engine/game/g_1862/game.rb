@@ -1319,6 +1319,8 @@ module Engine
         end
 
         def game_route_revenue(stop, phase, train)
+          return 0 unless stop
+
           if stop.offboard?
             stop.revenue[REAL_PHASE_TO_REV_PHASE[phase.name]]
           else
@@ -1342,7 +1344,7 @@ module Engine
           max_stops = nil
           possibilities.each do |p|
             rev = stop_revenues(p.flatten.uniq, routes[0]) # any route will do here
-            if rev > max_rev
+            if rev > max_rev && rev.positive?
               max_rev = rev
               max_stops = p
             end
@@ -1797,7 +1799,7 @@ module Engine
         end
 
         def effective_price(corporation)
-          corporation.trains.empty? ? corporation.share_price.price / 2 : corporation.share_price.price
+          corporation.trains.empty? ? (corporation.share_price.price / 2).to_i : corporation.share_price.price
         end
 
         def find_valid_par_price(price)
@@ -2027,7 +2029,7 @@ module Engine
                   "#{@merge_data[:corps].first.name} share from #{donor.name}"
                 odd_share = swap_share if os == odd_share
               else
-                price = (os == odd_share ? @merge_data[:price].price / 2 : @merge_data[:price].price)
+                price = (os == odd_share ? @merge_data[:price].price / 2 : @merge_data[:price].price).to_i
                 transfer_share(os, @share_pool)
                 @bank.spend(price, entity)
                 @log << "#{entity.name} unable to trade for #{@merge_data[:corps].first.name} share."
@@ -2052,11 +2054,11 @@ module Engine
             end
 
             if pres_option_percent
-              sell_price = @merge_data[:corps].first.share_price.price * pres_option_percent / 20
-              redeem_price = @merge_data[:corps].first.share_price.price * (60 - pres_option_percent) / 20
+              sell_price = (@merge_data[:corps].first.share_price.price * pres_option_percent / 20).to_i
+              redeem_price = (@merge_data[:corps].first.share_price.price * (60 - pres_option_percent) / 20).to_i
               percent = pres_option_percent
             else
-              sell_price = @merge_data[:corps].first.share_price.price / 2
+              sell_price = (@merge_data[:corps].first.share_price.price / 2).to_i
               redeem_price = sell_price
               percent = 10
             end
