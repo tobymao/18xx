@@ -949,6 +949,10 @@ module Engine
         end
       end
 
+      def shares_for_presidency_swap(shares, num_shares)
+        shares.take(num_shares)
+      end
+
       def num_certs(entity)
         certs = entity.shares.sum do |s|
           s.corporation.counts_for_limit && s.counts_for_limit ? s.cert_size : 0

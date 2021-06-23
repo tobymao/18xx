@@ -1220,7 +1220,7 @@ module Engine
           else
             @log << "#{new_president.name} becomes the president of #{mergable.name}"
             mergable.owner = new_president
-            shares_for_presidency_swap(mergable, new_president).each do |s|
+            shares_for_presidency_swap(new_president.shares_of(mergable), 2).each do |s|
               move_share(s, president_share.owner)
             end
             move_share(president_share, new_president)
@@ -1233,12 +1233,14 @@ module Engine
           @log << "#{mergable.name} have been completly founded and now floats"
         end
 
-        def shares_for_presidency_swap(corporation, owner)
-          # Try to get 2 10%, otherwise (when owner has 1 10% and 1 20%) return the 20%
-          ten_percents = owner.shares_of(corporation).select { |s| s.percent == 10 }.take(2)
-          return ten_percents if ten_percent.size == 2
+        def shares_for_presidency_swap(shares, num_shares)
+          # The shares to exchange might contain a double share.
+          # If so, return that unless more than 2 certificates.
+          twenty_percent = shares.find(&:double_cert)
+          return super unless twenty_percent
+          return [twenty_percent] if shares.size <= num_shares && twenty_percent
 
-          owner.shares_of(corporation).select { |s| s.percent == 20 }
+          super(shares - [twenty_percent], num_shares)
         end
 
         def event_fdsd_closed!
