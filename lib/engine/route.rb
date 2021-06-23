@@ -5,7 +5,7 @@ require_relative 'game_error'
 module Engine
   class Route
     attr_accessor :halts, :routes
-    attr_reader :last_node, :phase, :train, :abilities
+    attr_reader :last_node, :phase, :train, :abilities, :local_length
 
     def initialize(game, phase, train, **opts)
       @game = game
@@ -20,6 +20,7 @@ module Engine
       @subsidy = opts[:subsidy]
       @halts = opts[:halts]
       @abilities = opts[:abilities]
+      @local_length = @game.respond_to?(:local_length) ? @game.local_length : 2
 
       @node_chains = {}
       @connection_data = opts[:connection_data]
@@ -130,7 +131,7 @@ module Engine
     end
 
     def touch_node(node)
-      if connection_data.any?
+      if connection_data.any? && !local_connection?
         case node
         when head[:left]
           if (chain = next_chain(head[:right], head[:chain], node))
@@ -155,7 +156,7 @@ module Engine
             connection_data << segment(chain, left: tail[:right])
           end
         end
-        connection_data.pop if @train.local? && connection_data.size == 2
+        connection_data.pop if @train.local? && connection_data.size == @local_length
       elsif @last_node == node
         @last_node = nil
         connection_data.clear
@@ -448,6 +449,10 @@ module Engine
       end
 
       @connection_data
+    end
+
+    def local_connection?
+      @train.local? && connection_data && connection_data[0] && connection_data[0][:left] == connection_data[0][:right]
     end
   end
 end

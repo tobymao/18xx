@@ -1096,6 +1096,10 @@ module Engine
           @player_debts[player] * 2
         end
 
+        def local_length
+          99
+        end
+
         private
 
         def init_round
