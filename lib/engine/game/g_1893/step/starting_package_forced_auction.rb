@@ -142,7 +142,6 @@ module Engine
 
           def selection_bid(bid)
             @auction_triggerer = bid.entity
-            # TODO: Remove to_company when cleaning up
             target = @game.to_company(bid_target(bid))
 
             @game.log << "#{@auction_triggerer.name} selects #{target.name} for auction"
@@ -190,7 +189,6 @@ module Engine
           end
 
           def purchase(bid)
-            # TODO: Remove to_company when cleaning up code
             target = @game.to_company(bid_target(bid))
             bidder = bid.entity
             price = bid.price

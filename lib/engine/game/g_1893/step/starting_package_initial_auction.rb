@@ -33,7 +33,7 @@ module Engine
           end
 
           def available
-            @game.buyable_companies.reject { |c| @game.bond?(c) }
+            @game.buyable_companies
           end
 
           def may_purchase?(entity)

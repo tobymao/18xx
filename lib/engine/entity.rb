@@ -10,6 +10,10 @@ module Engine
       false
     end
 
+    def issuer?
+      false
+    end
+
     def minor?
       false
     end

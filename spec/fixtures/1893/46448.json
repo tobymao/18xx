@@ -170,20 +170,18 @@
       },
       {
          "id":14,
-         "type":"buy_company",
-         "price":100,
+         "type":"buy_bonds",
          "entity":5909,
-         "company":"AdSK-1",
+         "bonds":["AdSK_1"],
          "entity_type":"player",
          "user":5909,
          "created_at":1624108399
       },
       {
          "id":15,
-         "type":"buy_company",
-         "price":100,
+         "type":"buy_bonds",
          "entity":7785,
-         "company":"AdSK-2",
+         "bonds":["AdSK_2"],
          "entity_type":"player",
          "user":7785,
          "created_at":1624112340
@@ -241,14 +239,29 @@
          "created_at":1624115018
       },
       {
+         "id":20.5,
+         "type":"pass",
+         "entity":5909,
+         "entity_type":"player",
+         "user":5909,
+         "created_at":1624115018
+      },
+      {
          "id":21,
-         "type":"buy_company",
-         "price":100,
+         "type":"buy_bonds",
          "entity":7785,
-         "company":"AdSK-3",
+         "bonds":["AdSK_3"],
          "entity_type":"player",
          "user":7785,
          "created_at":1624115027
+      },
+      {
+         "id":21.5,
+         "type":"pass",
+         "entity":7785,
+         "entity_type":"player",
+         "user":7785,
+         "created_at":1624115018
       },
       {
          "id":22,
@@ -668,131 +681,30 @@
       },
       {
          "id":52,
-         "type":"buy_company",
-         "price":100,
+         "type":"buy_bonds",
          "entity":3864,
-         "company":"AdSK-4",
+         "bonds":["AdSK_4"],
          "entity_type":"player",
          "user":3864,
          "created_at":1624226958
       },
       {
          "id":53,
-         "type":"buy_company",
-         "price":100,
+         "type":"buy_bonds",
          "entity":5909,
-         "company":"AdSK-5",
+         "bonds":["AdSK_5"],
          "entity_type":"player",
          "user":5909,
          "created_at":1624257071
       },
       {
-         "id":54,
-         "type":"sell_company",
-         "price":100,
-         "entity":7785,
-         "company":"AdSK-2",
-         "entity_type":"player",
-         "user":7785,
-         "created_at":1624257416
-      },
-      {
-         "id":55,
-         "type":"sell_company",
-         "price":100,
-         "entity":7785,
-         "company":"AdSK-3",
-         "entity_type":"player",
-         "user":7785,
-         "created_at":1624257420
-      },
-      {
-         "id":56,
-         "type":"par",
-         "entity":7785,
-         "corporation":"DE",
-         "entity_type":"player",
-         "share_price":"60,5,1",
-         "user":7785,
-         "created_at":1624257588
-      },
-      {
-         "id":57,
-         "type":"undo",
-         "entity":3864,
-         "entity_type":"player",
-         "user":7785,
-         "created_at":1624257601
-      },
-      {
-         "id":58,
-         "type":"undo",
-         "entity":7785,
-         "entity_type":"player",
-         "user":7785,
-         "created_at":1624257616
-      },
-      {
-         "id":59,
-         "type":"undo",
-         "entity":7785,
-         "entity_type":"player",
-         "user":7785,
-         "created_at":1624257617
-      },
-      {
-         "id":60,
-         "type":"undo",
-         "entity":7785,
-         "entity_type":"player",
-         "user":7785,
-         "created_at":1624257619
-      },
-      {
-         "id":61,
-         "type":"redo",
-         "entity":5909,
-         "entity_type":"player",
-         "user":7785,
-         "created_at":1624257623
-      },
-      {
-         "id":62,
-         "type":"buy_company",
-         "price":100,
-         "entity":7785,
-         "company":"AdSK-6",
-         "entity_type":"player",
-         "user":7785,
-         "created_at":1624257639
-      },
-      {
-         "id":63,
-         "type":"undo",
-         "entity":3864,
-         "entity_type":"player",
-         "user":7785,
-         "created_at":1624257657
-      },
-      {
          "id":64,
-         "type":"sell_company",
-         "price":100,
+         "type":"sell_bonds",
          "entity":7785,
-         "company":"AdSK-3",
+         "bonds":["AdSK_3", "AdSK_2"],
          "entity_type":"player",
          "user":7785,
          "created_at":1624257672
-      },
-      {
-         "id":65,
-         "type":"sell_company",
-         "price":100,
-         "entity":7785,
-         "company":"AdSK-2",
-         "entity_type":"player",
-         "user":7785,
-         "created_at":1624257675
       },
       {
          "id":66,
@@ -1814,10 +1726,9 @@
       },
       {
          "id":138,
-         "type":"sell_company",
-         "price":100,
+         "type":"sell_bonds",
          "entity":3864,
-         "company":"AdSK-4",
+         "bonds":["AdSK_4"],
          "entity_type":"player",
          "user":3864,
          "created_at":1624629021
@@ -1856,10 +1767,9 @@
       },
       {
          "id":142,
-         "type":"sell_company",
-         "price":100,
+         "type":"sell_bonds",
          "entity":5909,
-         "company":"AdSK-5",
+         "bonds":["AdSK_5"],
          "entity_type":"player",
          "user":5909,
          "created_at":1624699473
@@ -1910,10 +1820,9 @@
       },
       {
          "id":147,
-         "type":"sell_company",
-         "price":100,
+         "type":"sell_bonds",
          "entity":5909,
-         "company":"AdSK-1",
+         "bonds":["AdSK_1"],
          "entity_type":"player",
          "user":5909,
          "created_at":1624737078
@@ -2676,10 +2585,9 @@
       },
       {
          "id":196,
-         "type":"buy_company",
-         "price":100,
+         "type":"buy_bonds",
          "entity":1048,
-         "company":"AdSK-1",
+         "bonds":["AdSK_1"],
          "entity_type":"player",
          "user":1048,
          "created_at":1624827629
@@ -2697,10 +2605,9 @@
       },
       {
          "id":198,
-         "type":"buy_company",
-         "price":100,
+         "type":"buy_bonds",
          "entity":5909,
-         "company":"AdSK-2",
+         "bonds":["AdSK_2"],
          "entity_type":"player",
          "auto_actions":[
             {
@@ -3563,121 +3470,51 @@
       },
       {
          "id":250,
-         "type":"program_buy_shares",
+         "type":"buy_shares",
          "entity":1048,
-         "corporation":"RSE",
-         "entity_type":"player",
-         "from_market":true,
-         "auto_actions":[
-            {
-               "type":"buy_shares",
-               "entity":1048,
-               "shares":[
-                  "RSE_1"
-               ],
-               "percent":10,
-               "created_at":1624976271,
-               "entity_type":"player"
-            }
+         "shares":[
+            "RSE_1"
          ],
-         "until_condition":5,
+         "percent":10,
+         "entity_type":"player",
          "user":1048,
-         "created_at":1624976272
+         "created_at":1624973669
       },
       {
          "id":251,
-         "type":"buy_company",
-         "price":100,
+         "type":"pass",
          "entity":5909,
-         "company":"AdSK-3",
          "entity_type":"player",
          "user":5909,
          "created_at":1625005731
       },
       {
-         "id":252,
-         "type":"message",
-         "entity":3864,
-         "message":"@Swedish-Per (GMT+2) räknar inte Bonds mot Cert limit? Henrik kunde köpa upp sig till 10/9?",
-         "entity_type":"player",
-         "user":3864,
-         "created_at":1625009040
-      },
-      {
-         "id":253,
-         "type":"message",
-         "entity":1048,
-         "message":"Det är en rapporterad bugg: https://github.com/tobymao/18xx/issues/5842",
-         "entity_type":"player",
-         "user":1048,
-         "created_at":1625029518
-      },
-      {
-         "id":254,
-         "type":"message",
-         "entity":1048,
-         "message":"Dock kommer det krävas att de säljs innan sista passet kan göras, så det kommer inte gå att lämna SR med för många cert.",
-         "entity_type":"player",
-         "user":1048,
-         "created_at":1625029594
-      },
-      {
          "id":255,
-         "type":"buy_company",
-         "price":100,
+         "type":"pass",
          "entity":7785,
-         "company":"AdSK-4",
          "entity_type":"player",
          "user":7785,
          "created_at":1625031670
-      },
-      {
-         "id":256,
-         "type":"message",
-         "entity":7785,
-         "message":"Jag kunde inte köpa aktie, kan man max äga 50%?",
-         "entity_type":"player",
-         "user":7785,
-         "created_at":1625031725
       },
       {
          "id":257,
          "type":"pass",
          "entity":3864,
          "entity_type":"player",
-         "auto_actions":[
-            {
-               "type":"buy_shares",
-               "entity":1048,
-               "shares":[
-                  "RSE_2"
-               ],
-               "percent":10,
-               "created_at":1625032408,
-               "entity_type":"player"
-            }
-         ],
          "user":3864,
          "created_at":1625032407
       },
       {
          "id":258,
-         "type":"message",
-         "entity":5909,
-         "message":"Oj då. Missade det 😅",
+         "type":"buy_shares",
+         "entity":1048,
+         "shares":[
+            "RSE_2"
+         ],
+         "percent":10,
          "entity_type":"player",
-         "user":5909,
-         "created_at":1625033815
-      },
-      {
-         "id":259,
-         "type":"sell_company",
-         "price":100,
-         "entity":5909,
-         "company":"AdSK-3",
-         "entity_type":"player",
-         "user":5909,
-         "created_at":1625033830
+         "user":1048,
+         "created_at":1625032407
       },
       {
          "id":260,
@@ -3686,25 +3523,6 @@
          "entity_type":"player",
          "user":5909,
          "created_at":1625033856
-      },
-      {
-         "id":261,
-         "type":"sell_company",
-         "price":100,
-         "entity":7785,
-         "company":"AdSK-4",
-         "entity_type":"player",
-         "user":7785,
-         "created_at":1625036090
-      },
-      {
-         "id":262,
-         "type":"message",
-         "entity":7785,
-         "message":"Ha, jag missade att jag var på 9/9 cert, disregard my last comment",
-         "entity_type":"player",
-         "user":7785,
-         "created_at":1625036128
       },
       {
          "id":263,
@@ -3719,27 +3537,26 @@
          "type":"pass",
          "entity":3864,
          "entity_type":"player",
-         "auto_actions":[
-            {
-               "type":"buy_shares",
-               "entity":1048,
-               "shares":[
-                  "RSE_3"
-               ],
-               "percent":10,
-               "created_at":1625053626,
-               "entity_type":"player"
-            }
-         ],
          "user":3864,
          "created_at":1625053624
       },
       {
+         "id":264.5,
+         "type":"buy_shares",
+         "entity":1048,
+         "shares":[
+            "RSE_3"
+         ],
+         "percent":10,
+         "entity_type":"player",
+         "user":1048,
+         "created_at":1625053624
+      },
+      {
          "id":265,
-         "type":"sell_company",
-         "price":100,
+         "type":"sell_bonds",
          "entity":5909,
-         "company":"AdSK-2",
+         "bonds":["AdSK_2"],
          "entity_type":"player",
          "user":5909,
          "created_at":1625054284
@@ -5429,10 +5246,9 @@
       },
       {
          "id":392,
-         "type":"sell_company",
-         "price":100,
+         "type":"sell_bonds",
          "entity":1048,
-         "company":"AdSK-1",
+         "bonds":["AdSK_1"],
          "entity_type":"player",
          "user":1048,
          "created_at":1625253092

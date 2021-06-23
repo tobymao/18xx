@@ -12,7 +12,6 @@ module Engine
 
           FIRST_SR_ACTIONS = %w[buy_company pass].freeze
           EXCHANGE_ACTIONS = %w[buy_shares pass].freeze
-          SELL_COMPANY_ACTIONS = %w[sell_company pass].freeze
           BUY_MINOR_ACTIONS = %w[buy_corporation pass].freeze
 
           def actions(entity)
@@ -28,7 +27,6 @@ module Engine
 
             result.concat(FIRST_SR_ACTIONS) if can_buy_company?(entity)
             result.concat(EXCHANGE_ACTIONS) if can_exchange?(entity)
-            result.concat(SELL_COMPANY_ACTIONS) if can_sell_any_companies?(entity)
             # TODO: Next line to be removed - is to handle obsolete buy minor
             result.concat(BUY_MINOR_ACTIONS) if can_buy_company?(entity)
             result
@@ -43,19 +41,8 @@ module Engine
 
           def buyable_company?(player, company)
             return false if first_sr_passed?(player) || sold? || bought?
-            return false if @game.bond?(company) && @round.players_sold[player][:bond]
 
             player.cash >= company.value
-          end
-
-          def can_sell_any_companies?(entity)
-            return false if first_sr_passed?(entity)
-
-            sellable_companies(entity).any? && !bought?
-          end
-
-          def can_sell_company?(company)
-            @game.bond?(company)
           end
 
           def can_buy?(entity, bundle)
@@ -150,22 +137,6 @@ module Engine
 
             track_action(action, corporation, true)
             @round.players_sold[player][corporation] = :now
-          end
-
-          def process_sell_company(action)
-            company = action.company
-            player = action.entity
-            price = action.price
-            raise GameError, "Cannot sell #{company.id}" unless can_sell_company?(company)
-
-            @log << "#{player.name} sells #{company.name} for #{@game.format_currency(price)} to the bank"
-            @game.bank.spend(price, player)
-            company.owner = @game.bank
-            player.companies.delete(company)
-            @round.players_sold[player][:bond] = :now if @game.bond?(company)
-
-            @round.last_to_act = player
-            @round.current_actions << action
           end
 
           def process_par(action)
@@ -333,17 +304,6 @@ module Engine
             else
               @game.sorted_corporations.reject(&:closed?)
             end
-          end
-
-          def sellable_companies(entity)
-            return [] unless @game.turn > 1
-            return [] unless entity.player?
-
-            entity.companies.select { |c| @game.bond?(c) }
-          end
-
-          def sell_price(company)
-            company.value
           end
 
           # Override this to let auto buy always buy from market
