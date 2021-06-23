@@ -1111,7 +1111,7 @@ module Engine
 
         def mergers(target)
           reserved_shares = target == agv ? mergers_agv : mergers_hgk
-          reserved_shares.map { |info| info[:minor] || info[:private] }
+          reserved_shares.map { |info| info[:minor] || info[:company] }
         end
 
         def event_hgk_buyable!
