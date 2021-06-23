@@ -264,7 +264,7 @@ module Engine
           @mhe = @corporations.find { |c| c.id == 'MHE' }
           @nwe = @corporations.find { |c| c.id == 'NWE' }
           @qlb = @corporations.find { |c| c.id == 'QLB' }
-          @qlb_dummy_train = Train.new(name: '1T', distance: 1, price: 0, index: 2, no_local: true)
+          @qlb_dummy_train = Train.new(name: '1T', distance: 1, price: 0, index: 2)
 
           init_diesel_pool
 
@@ -2720,6 +2720,7 @@ module Engine
               distance: 1,
               price: 100,
               num: 2,
+              local: true,
             },
             {
               name: '2T',

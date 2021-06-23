@@ -152,6 +152,7 @@ module Engine
             ],
             num: 22,
             price: 60,
+            local: true,
             rusts_on: '3',
             variants: [
               {
@@ -240,6 +241,7 @@ module Engine
             ],
             num: 1,
             price: 0,
+            local: true,
           },
           {
             name: '5P',
@@ -587,7 +589,7 @@ module Engine
           merthyr_tydfil_pontypool = {}
 
           routes.each do |route|
-            if route.train.local? && !route.chains.empty?
+            if route.train.local && !route.chains.empty?
               local_token_hex.concat(route.visited_stops.select(&:city?).map { |n| n.hex.id })
             end
 

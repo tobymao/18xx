@@ -120,6 +120,7 @@ module Engine
             num: 6,
             distance: 1,
             price: 40,
+            local: true,
             rusts_on: '8H',
             reserved: true,
           },

@@ -134,6 +134,7 @@ module Engine
             ],
             num: 12,
             price: 50,
+            local: true,
             rusts_on: '3',
             variants: [
               {

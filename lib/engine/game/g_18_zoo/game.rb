@@ -140,10 +140,11 @@ module Engine
           },
           {
             name: '1S',
-            distance: [{ 'nodes' => %w[city offboard], 'pay' => 1, 'visit' => 1 },
+            distance: [{ 'nodes' => ['city'], 'pay' => 1, 'visit' => 1 },
                        { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             price: 0,
             num: 1,
+            local: true,
             reserved: true,
           },
         ].freeze

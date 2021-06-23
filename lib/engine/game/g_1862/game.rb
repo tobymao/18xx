@@ -211,13 +211,11 @@ module Engine
               price: 100,
               rusts_on: 'C',
               num: @optional_rules&.include?(:short_length) ? 6 : 7,
-              no_local: true,
               variants: [
                 {
                   name: '1F*',
                   distance: 1,
                   price: 100,
-                  no_local: true,
                 },
                 {
                   name: '2L*',

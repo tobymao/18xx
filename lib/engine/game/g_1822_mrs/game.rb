@@ -544,6 +544,7 @@ module Engine
             ],
             num: 14,
             price: 50,
+            local: true,
             rusts_on: '3',
             variants: [
               {
@@ -632,6 +633,7 @@ module Engine
             ],
             num: 1,
             price: 0,
+            local: true,
           },
           {
             name: '5P',

@@ -9,7 +9,7 @@ module Engine
 
     attr_accessor :obsolete, :operated, :events, :variants, :obsolete_on, :rusted, :rusts_on, :index, :name,
                   :distance, :reserved
-    attr_reader :available_on, :discount, :multiplier, :sym, :variant
+    attr_reader :available_on, :discount, :multiplier, :sym, :variant, :local
     attr_writer :buyable
 
     def initialize(name:, distance:, price:, index: 0, **opts)
@@ -23,7 +23,7 @@ module Engine
       @available_on = opts[:available_on]
       @discount = opts[:discount]
       @multiplier = opts[:multiplier]
-      @no_local = opts[:no_local]
+      @local = opts[:local]
       @buyable = true
       @rusted = false
       @obsolete = false
@@ -55,9 +55,6 @@ module Engine
 
       @variant = @variants[new_variant]
       @variant.each { |k, v| instance_variable_set("@#{k}", v) }
-
-      # Remove the @local variable, this to get the local? method evaluate the new variant
-      remove_instance_variable(:@local) if defined?(@local)
     end
 
     def names_to_prices
@@ -82,18 +79,6 @@ module Engine
 
     def buyable
       @buyable && !@obsolete
-    end
-
-    def local?
-      return false if @no_local
-      return @local if defined?(@local)
-
-      @local = if @distance.is_a?(Numeric)
-                 @distance == 1
-               else
-                 distance_city = @distance.find { |n| n['nodes'].include?('city') }
-                 distance_city['visit'] == 1 if distance_city
-               end
     end
 
     def inspect

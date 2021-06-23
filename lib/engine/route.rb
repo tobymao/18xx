@@ -130,7 +130,7 @@ module Engine
     end
 
     def touch_node(node)
-      if connection_data.any?
+      if connection_data.any? && !local_connection?
         case node
         when head[:left]
           if (chain = next_chain(head[:right], head[:chain], node))
@@ -155,7 +155,6 @@ module Engine
             connection_data << segment(chain, left: tail[:right])
           end
         end
-        connection_data.pop if @train.local? && connection_data.size == 2
       elsif @last_node == node
         @last_node = nil
         connection_data.clear
@@ -168,7 +167,7 @@ module Engine
         end
       else
         @last_node = node
-        add_single_node_connection(node) if @train.local? && @connection_data.empty?
+        add_single_node_connection(node) if @train.local && @connection_data.empty?
       end
 
       @halts = nil
@@ -239,7 +238,7 @@ module Engine
     end
 
     def check_cycles!
-      return if @train.local?
+      return if @train.local
 
       cycles = {}
 
@@ -293,7 +292,7 @@ module Engine
       @revenue ||=
         begin
           visited = visited_stops
-          if !connection_data.empty? && visited.size < 2 && !@train.local?
+          if !connection_data.empty? && visited.size < 2 && !@train.local
             raise GameError, 'Route must have at least 2 stops'
           end
           unless (token = visited.find { |stop| @game.city_tokened_by?(stop, corporation) })
@@ -330,7 +329,7 @@ module Engine
     end
 
     def connection_hexes
-      @connection_hexes ||= if @train.local? && connection_data.one? && connection_data[0][:chain][:paths].empty?
+      @connection_hexes ||= if @train.local && connection_data.one? && connection_data[0][:chain][:paths].empty?
                               [['local', connection_data[0][:left].hex.id]]
                             else
                               chains&.map { |chain| chain_id(chain[:paths]) }
@@ -409,7 +408,7 @@ module Engine
       return @connection_data unless @connection_hexes
 
       if @connection_hexes.one? && @connection_hexes[0].include?('local')
-        if @train.local?
+        if @train.local
           city_node = @game.hex_by_id(@connection_hexes[0][1]).tile.nodes.find do |n|
             @game.city_tokened_by?(n, corporation)
           end
@@ -448,6 +447,10 @@ module Engine
       end
 
       @connection_data
+    end
+
+    def local_connection?
+      @train.local && connection_data && connection_data[0] && connection_data[0][:left] == connection_data[0][:right]
     end
   end
 end
