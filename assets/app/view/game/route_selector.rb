@@ -282,7 +282,7 @@ module View
         end
 
         remove_train = lambda do
-          @step.remove_train(@routes)
+          @step.remove_train(@selected_route)
           store(:routes, @routes)
         end
 
