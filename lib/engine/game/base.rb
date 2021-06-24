@@ -1770,6 +1770,10 @@ module Engine
         @tiles << old_tile unless old_tile.preprinted
       end
 
+      def local_length
+        2
+      end
+
       private
 
       def init_graph
