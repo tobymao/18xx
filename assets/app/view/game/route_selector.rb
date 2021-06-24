@@ -29,8 +29,10 @@ module View
         trains = @game.route_trains(@game.round.current_entity)
         operating = @game.round.current_entity.operating_history
         last_run = operating[operating.keys.max]&.routes
+        step = @game.active_step
         return [] unless last_run
         return [] if @abilities&.any?
+        return [] if step.respond_to?(:prefill_routes?) && !step.prefill_routes?(@game.round.current_entity)
 
         halts = operating[operating.keys.max]&.halts
         last_run.map do |train, connection_hexes|
@@ -49,7 +51,7 @@ module View
       end
 
       def render
-        step = @game.active_step
+        @step = @game.active_step
         current_entity = @game.round.current_entity
         if @selected_company&.owner == current_entity
           ability = @game.abilities(@selected_company, :hex_bonus, time: 'route')
@@ -125,7 +127,11 @@ module View
           children = []
           if route
             revenue, invalid = begin
-              [@game.format_revenue_currency(route.revenue), nil]
+              if @step.respond_to?(:route_revenue_str)
+                [@step.route_revenue_str(route.revenue), nil]
+              else
+                [@game.format_revenue_currency(route.revenue), nil]
+              end
             rescue Engine::GameError => e
               ['N/A', e.to_s]
             end
@@ -158,7 +164,7 @@ module View
               padding: '0 0 0.4rem 0.4rem',
             },
           }
-          train_name = step.respond_to?(:train_name) ? step.train_name(current_entity, train) : train.name
+          train_name = @step.respond_to?(:train_name) ? @step.train_name(current_entity, train) : train.name
           [
             h(:tr, [h('td.middle', [h(:div, { style: style, on: { click: onclick } }, train_name)]), *children]),
             invalid ? h(:tr, [h(:td, invalid_props, invalid)]) : '',
@@ -183,23 +189,35 @@ module View
           },
         }
 
-        instructions = 'Click revenue centers, again to cycle paths.'
-        instructions += ' Click button under Revenue to pick number of halts.' if render_halts
+        if @step.respond_to?(:instructions)
+          instructions = @step.instructions
+        else
+          instructions = 'Click revenue centers, again to cycle paths.'
+          instructions += ' Click button under Revenue to pick number of halts.' if render_halts
+        end
+
+        h3_text = @step.respond_to?(:section_header) ? @step.section_header : 'Select Routes'
+
+        table_header = if @step.respond_to?(:show_table_header?) && !@step.show_table_header?
+                         h(:thead, [])
+                       else
+                         h(:thead, [
+                           h(:tr, [
+                             h(:th, 'Train'),
+                             h(:th, 'Used'),
+                             h(:th, 'Revenue'),
+                             h(:th, th_route_props, 'Route'),
+                           ]),
+                         ])
+                       end
 
         h(:div, div_props, [
-          h(:h3, 'Select Routes'),
+          h(:h3, h3_text),
           h('div.small_font', description),
           h('div.small_font', instructions),
           train_help,
           h(:table, table_props, [
-            h(:thead, [
-              h(:tr, [
-                h(:th, 'Train'),
-                h(:th, 'Used'),
-                h(:th, 'Revenue'),
-                h(:th, th_route_props, 'Route'),
-              ]),
-            ]),
+            table_header,
             h(:tbody, trains),
           ]),
           actions(render_halts),
@@ -258,31 +276,68 @@ module View
           store(:routes, @routes)
         end
 
+        add_train = lambda do
+          @step.add_train(@routes)
+          store(:routes, @routes)
+        end
+
+        remove_train = lambda do
+          @step.remove_train(@routes)
+          store(:routes, @routes)
+        end
+
+        increase_train = lambda do
+          @step.increase_train(@selected_route)
+          store(:routes, @routes)
+        end
+
+        decrease_train = lambda do
+          @step.decrease_train(@selected_route)
+          store(:routes, @routes)
+        end
+
         submit_style = {
           minWidth: '6.5rem',
           marginTop: '1rem',
           padding: '0.2rem 0.5rem',
         }
 
-        revenue = begin
-          @game.format_revenue_currency(@game.routes_revenue(active_routes))
-        rescue Engine::GameError
-          '(Invalid Route)'
-        end
+        revenue = if @step.respond_to?(:total_str)
+                    begin
+                      @step.total_str(@game.routes_revenue(active_routes))
+                    rescue Engine::GameError
+                      @step.revenue_fail
+                    end
+                  else
+                    begin
+                      "Submit #{@game.format_revenue_currency(@game.routes_revenue(active_routes))}"
+                    rescue Engine::GameError
+                      '(Invalid Route)'
+                    end
+                  end
 
         render_halts ||= @game.respond_to?(:routes_subsidy) && @game.routes_subsidy(active_routes).positive?
         subsidy = render_halts ? " + #{@game.format_currency(@game.routes_subsidy(active_routes))} (subsidy)" : ''
-        buttons = [
-          h('button.small', { on: { click: clear } }, 'Clear Train'),
-          h('button.small', { on: { click: clear_all } }, 'Clear All'),
-          h('button.small', { on: { click: reset_all } }, 'Reset'),
-        ]
-        if @game_data.dig('settings', 'auto_routing') || @game_data['mode'] == :hotseat
+
+        show_ct_button = !@step.respond_to?(:show_clear_train_button?) || @step.show_clear_train_button?
+        show_ca_button = !@step.respond_to?(:show_clear_all_button?) || @step.show_clear_all_button?
+        show_auto_button = !@step.respond_to?(:show_auto_button?) || @step.show_auto_button?
+        buttons = []
+        buttons << h('button.small', { on: { click: clear } }, 'Clear Train') if show_ct_button
+        buttons << h('button.small', { on: { click: clear_all } }, 'Clear All') if show_ca_button
+        buttons << h('button.small', { on: { click: reset_all } }, 'Reset')
+        if (@game_data.dig('settings', 'auto_routing') || @game_data['mode'] == :hotseat) && show_auto_button
           buttons << h('button.small', { on: { click: auto } }, 'Auto')
+        end
+        if @step.respond_to?(:variable_trains?) && @step.variable_trains?(@game.current_entity)
+          buttons << h('button.small', { on: { click: add_train } }, 'Add Train')
+          buttons << h('button.small', { on: { click: remove_train } }, 'Remove Train')
+          buttons << h('button.small', { on: { click: increase_train } }, 'Increase Train')
+          buttons << h('button.small', { on: { click: decrease_train } }, 'Decrease Train')
         end
         h(:div, { style: { overflow: 'auto', marginBottom: '1rem' } }, [
           h(:div, buttons),
-          h(:button, { style: submit_style, on: { click: submit } }, 'Submit ' + revenue + subsidy),
+          h(:button, { style: submit_style, on: { click: submit } }, revenue + subsidy),
         ])
       end
 
