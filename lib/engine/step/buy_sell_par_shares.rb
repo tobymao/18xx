@@ -419,7 +419,7 @@ module Engine
                               else
                                 source = @game.ipo_name(corporation)
                                 corporation.ipo_shares
-                              end.select { |share| can_buy?(entity, share) }.group_by(&:percent)
+                              end.select { |share| can_buy?(entity, share.to_bundle) }.group_by(&:percent)
 
           if shares_by_percent.empty?
             return [Action::ProgramDisable.new(entity,
