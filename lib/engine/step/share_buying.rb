@@ -6,7 +6,8 @@ module Engine
   module Step
     module ShareBuying
       def buy_shares(entity, shares, exchange: nil, swap: nil, allow_president_change: true)
-        raise GameError, "Cannot buy a share of #{shares&.corporation&.name}" if !can_buy?(entity, shares) && !swap
+        raise GameError, "Cannot buy a share of #{shares&.corporation&.name}" if
+            !can_buy?(entity, shares.to_bundle) && !swap
 
         @game.share_pool.buy_shares(entity,
                                     shares,
