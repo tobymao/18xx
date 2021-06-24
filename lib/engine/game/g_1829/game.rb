@@ -35,6 +35,7 @@ module Engine
         GRAY_CITIES = %w[51].freeze
         GREEN_CITIES = %w[12 13 14 15].freeze
         YELLOW_TOWNS = %w[1a 2a 3a 4a 55a].freeze
+        PARPRICE = [100, 90, 82, 76, 71, 67, 64, 61, 58, 56].freeze
 
         CERT_LIMIT = { 3 => 18, 4 => 18, 5 => 17, 6 => 14, 7 => 12, 8 => 10, 9 => 9 }.freeze
 
@@ -75,31 +76,6 @@ module Engine
              345
              350],
         ].freeze
-        STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
-          init1: :red,
-          init2: :green,
-          init3: :orange,
-          init4: :brightgreen,
-          init5: :lightblue,
-          init6: :yellow,
-          init7: :orange,
-          init8: :red,
-          init9: :blue,
-          init10: :orange,
-        ).freeze
-
-        MARKET_TEXT = {
-          init1: 'Startkurs LNWR',
-          init2: 'Startkurs GWR',
-          init3: 'Startkurs Midland',
-          init4: 'Startkurs LSWR',
-          init5: 'Startkurs GNR',
-          init6: 'Startkurs LBSC',
-          init7: 'Startkurs GER',
-          init8: 'Startkurs GCR',
-          init9: 'Startkurs L&YR',
-          init10: 'Startkurs SECR',
-        }.freeze
 
         PHASES = [{ name: '2', train_limit: 4, tiles: [:yellow], operating_rounds: 1 },
                   {
@@ -162,12 +138,8 @@ module Engine
         end
 
         def setup
-          parprice = [100, 90, 82, 76, 71, 67, 64, 61, 58, 56]
           corporations.each do |i|
-            @stock_market.set_par(i, @stock_market.par_prices.find { |p| p.price == parprice[@corporations.index(i)] })
-          end
-
-          corporations.each do |i|
+            @stock_market.set_par(i, @stock_market.par_prices.find { |p| p.price == PARPRICE[@corporations.index(i)] })
             i.ipoed = true
           end
         end

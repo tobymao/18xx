@@ -94,6 +94,15 @@ module Engine
             tokens: [0, 40, 100, 100, 100],
             max_ownership_percent: 100,
             coordinates: 'E8',
+            abilities: [
+              {
+                type: 'teleport',
+                owner_type: 'player',
+                free_tile_lay: true,
+                hexes: %w[B7 B9 B11 B13 B15 C6 C8 C10 C12 C16 D3 D7 D9 D11 D13 D15 D17],
+                tiles: %w[8],
+              },
+            ],
             type: 'init1',
             color: 'black',
           },
