@@ -91,7 +91,8 @@ module Engine
 
             corporation.holding_ok?(entity, bundle.percent) &&
               !attempt_cgr_action_while_not_floated?(bundle) &&
-              (!corporation.counts_for_limit || exchange || @game.num_certs(entity) + 1 <= @game.cert_limit)
+              (!corporation.counts_for_limit || exchange ||
+                @game.num_certs(entity) + bundle.shares.sum(&:cert_size) <= @game.cert_limit)
           end
 
           def attempt_cgr_action_while_not_floated?(bundle)
