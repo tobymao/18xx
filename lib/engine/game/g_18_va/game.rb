@@ -472,7 +472,8 @@ module Engine
           },
           yellow: {
             %w[H5] => 'city=revenue:20;path=a:2,b:_0;path=a:5,b:_0;border=edge:1,type:impassable',
-            %w[H13] => 'city=revenue:20;path=a:2,b:_0;path=a:5,b:_0;border=edge:0,type:impassable;border=edge:1,type:impassable',
+            %w[H13] => 'city=revenue:20;path=a:2,b:_0;path=a:5,b:_0;'\
+              'border=edge:0,type:impassable;border=edge:1,type:impassable',
             %w[H15] => 'city=revenue:20;path=a:2,b:_0;path=a:5,b:_0;border=edge:3,type:impassable',
           },
           red: {
@@ -685,29 +686,15 @@ module Engine
           @share_pool.transfer_shares(bundle, @share_pool)
         end
 
-        #
-        # Get the currently possible upgrades for a tile
-        # from: Tile - Tile to upgrade from
-        # to: Tile - Tile to upgrade to
-        # special - ???
         def upgrades_to?(from, to, _special = false, selected_company: nil)
-          # Certain green cities upgrade to other labels
           return to.name == '170ric' if from.color == :green && from.hex.name == self.class::RIC_HEX
           return to.name == '170was' if from.color == :green && from.hex.name == self.class::WAS_HEX
-          # You may lay the brown 5-spoke L if and only if it is laid on a L hex -
-          # NOT EVEN IF YOU GREEN A DOUBLE DIT ON A LAKE EDTGE
           return to.name == '170' if from.color == :green && self.class::P_HEXES.include?(from.hex.name)
-          # The P hexes on the map start as plain yellow cities
           return %w[5 6 57].include?(to.name) if self.class::PORT_HEXES.include?(from.hex.name) && from.color == :white
 
           super
         end
 
-        #
-        # Get all possible upgrades for a tile
-        # tile: The tile to be upgraded
-        # tile_manifest: true/false Is this being called from the tile manifest screen
-        #
         def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
           upgrades = super
           return upgrades unless tile_manifest
