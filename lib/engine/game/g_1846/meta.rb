@@ -33,6 +33,12 @@ module Engine
             desc: 'Exclude the 2nd Edition companies Boomtown and Little Miami',
             players: [2, 3, 4, 5],
           },
+          {
+            sym: :second_ed_co,
+            short_name: 'Guarantee 2E and C&O',
+            desc: 'Ensure that Boomtown, Little Miami, and Chesapeake & Ohio Railroad are not removed during setup.',
+            players: [2, 3, 4, 5],
+          },
         ].freeze
       end
     end

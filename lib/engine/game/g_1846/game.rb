@@ -319,6 +319,12 @@ module Engine
           # modify code which includes rand() w/o breaking existing games
           return if removals.empty?
 
+          if @optional_rules.include?(:second_ed_co)
+            until (removals & ['Boomtown', 'Little Miami', 'C&O']).empty?
+              removals = group.sort_by { rand }.take(num_removals(group))
+            end
+          end
+
           @log << "Removing #{removals.join(', ')}"
           entities.reject! do |entity|
             if removals.include?(entity.name)
