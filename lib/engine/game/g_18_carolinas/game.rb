@@ -421,8 +421,12 @@ module Engine
           status
         end
 
-        def route_trains(entity)
-          return [@conversion_train] if @round.active_step.instance_of?(Engine::Game::G18Carolinas::Step::Track)
+        def conversion_trains
+          [@conversion_train]
+        end
+
+        def check_route_token(route, token)
+          return if route.train.name == 'Convert'
 
           super
         end
@@ -432,6 +436,12 @@ module Engine
             raise GameError, 'Route must be specified' if visits.empty?
             raise GameError, 'Route cannot begin/end in a town' if visits.first.town? || visits.last.town?
           end
+
+          super
+        end
+
+        def check_connected(route, token)
+          return if route.train.name == 'Convert'
 
           super
         end

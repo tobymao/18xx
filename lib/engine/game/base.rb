@@ -1060,6 +1060,10 @@ module Engine
         city.tokened_by?(entity)
       end
 
+      def check_route_token(_route, token)
+        raise GameError, 'Route must contain token' unless token
+      end
+
       def check_overlap(routes)
         tracks = {}
 

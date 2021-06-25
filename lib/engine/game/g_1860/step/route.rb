@@ -83,6 +83,10 @@ module Engine
             pass!
           end
 
+          def alternate_selector?
+            false
+          end
+
           def available_hex(_entity, _hex)
             true
           end

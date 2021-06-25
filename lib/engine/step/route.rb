@@ -47,6 +47,10 @@ module Engine
         abilities.uniq.each { |type| @game.abilities(action.entity, type, time: 'route')&.use! }
       end
 
+      def alternate_selector?
+        false
+      end
+
       def available_hex(entity, hex)
         @game.graph_for_entity(entity).reachable_hexes(entity)[hex]
       end

@@ -29,6 +29,8 @@ module Engine
           end
 
           def mode_enabled?
+            return false if @round.num_laid_track.positive?
+
             @game.phase.available?('5')
           end
 
@@ -38,48 +40,24 @@ module Engine
 
           def change_mode
             return :new_track unless @game.phase.available?('5')
+            return :new_track if @round.num_laid_track.positive?
 
             @mode = @mode == :new_track ? :convert_segment : :new_track
-          end
-
-          def prefill_routes?(_entity)
-            false
           end
 
           def instructions
             'Click revenue centers, again to cycle paths. Must be from city/offboard to city/offboard'
           end
 
-          def section_header
-            'Select Segment for Conversion'
-          end
+          def total_str(active_routes)
+            raise GameError, 'No routes' if active_routes.empty?
 
-          def show_table_header?
-            false
-          end
-
-          def show_clear_train_button?
-            false
-          end
-
-          def show_clear_all_button?
-            false
-          end
-
-          def show_auto_button?
-            false
-          end
-
-          def total_str(_revenue)
+            _rev = @game.routes_revenue(active_routes) # force check
             'Convert Segment'
           end
 
           def revenue_fail
             'Invalid Segment'
-          end
-
-          def route_revenue_str(_rev)
-            '---'
           end
 
           def process_run_routes(action)
@@ -88,6 +66,10 @@ module Engine
 
             hexes_to_flip.each { |h| @game.flip_tile!(h) }
             pass!
+          end
+
+          def alternate_selector?
+            true
           end
 
           def available_hex(entity, hex)
