@@ -310,7 +310,7 @@ module Engine
                        'path=a:0,b:_1;path=a:5,b:_1',
           },
           white: {
-            %w[B4 B6 B8 B18 B24 C3 C5 C11 C19 C23 C25 C27 D8 D10 D14 D16 E5 E9 E25 E27 F4 F16 F26 G7 G9 G13 G27 G29
+            %w[B4 B6 B8 B18 B24 C3 C5 C11 C19 C23 C25 C27 D2 D8 D10 D14 D16 E5 E9 E25 E27 F4 F16 F26 G7 G9 G13 G27 G29
                H4 H6 H8 H14 H18 H24 H26 I17 I19 I23 I25 I29 J6 J8 J12 J14 J18 J20 J24] => '',
             %w[B12 C15 D4 D24 D26 E3 E11 E15 F14 F18 F20 F22 F28 G15 G25 H20 H28 I21 J10 J16 J26 J28] =>
             'city=revenue:0',
@@ -448,6 +448,7 @@ module Engine
           'H28' => 'Erdberg',
           'I1' => 'Hütteldorf',
           'I9' => 'Gaudenzdorf',
+          'I11' => 'Wien',
           'I15' => 'Margareten',
           'I21' => 'Nikolsdorf',
           'I27' => 'Aspangbahnhof',
