@@ -334,8 +334,8 @@ module View
           buttons << h('button.small', { on: { click: remove_train } }, '- Train')
         end
         if @step.respond_to?(:variable_distance?) && @step.variable_distance?(@game.current_entity)
-          buttons << h('button.small', { on: { click: increase_train } }, '+ Train')
-          buttons << h('button.small', { on: { click: decrease_train } }, '- Train')
+          buttons << h('button.small', { on: { click: increase_train } }, '+ Size')
+          buttons << h('button.small', { on: { click: decrease_train } }, '- Size')
         end
         h(:div, { style: { overflow: 'auto', marginBottom: '1rem' } }, [
           h(:div, buttons),
