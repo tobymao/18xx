@@ -35,7 +35,6 @@ module Engine
         GRAY_CITIES = %w[51].freeze
         GREEN_CITIES = %w[12 13 14 15].freeze
         YELLOW_TOWNS = %w[1a 2a 3a 4a 55a].freeze
-        PARPRICE = [100, 90, 82, 76, 71, 67, 64, 61, 58, 56].freeze
 
         CERT_LIMIT = { 3 => 18, 4 => 18, 5 => 17, 6 => 14, 7 => 12, 8 => 10, 9 => 9 }.freeze
 
@@ -138,9 +137,22 @@ module Engine
         end
 
         def setup
-          corporations.each do |i|
-            @stock_market.set_par(i, @stock_market.par_prices.find { |p| p.price == PARPRICE[@corporations.index(i)] })
-            i.ipoed = true
+          par_prices = {
+            'LNWR' => 100,
+            'GWR' => 90,
+            'Mid' => 82,
+            'LSWR' => 76,
+            'GNR' => 71,
+            'LBSC' => 67,
+            'GER' => 64,
+            'GCR' => 61,
+            'LYR' => 58,
+            'SECR' => 56,
+          }.freeze
+          par_prices.each do |corporation, price|
+            corporation = corporation_by_id(corporation)
+            @stock_market.set_par(corporation, @stock_market.par_prices.find { |p| p.price == price })
+            corporation.ipoed = true
           end
         end
 
