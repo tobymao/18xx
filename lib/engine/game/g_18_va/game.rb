@@ -3,13 +3,6 @@
 require_relative 'meta'
 require_relative '../base'
 
-if RUBY_ENGINE == 'opal'
-  require_tree 'engine/game/g_18_va/step'
-else
-  require 'require_all'
-  require_rel 'step'
-end
-
 module Engine
   module Game
     module G18VA
