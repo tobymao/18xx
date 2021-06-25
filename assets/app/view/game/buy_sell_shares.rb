@@ -72,7 +72,7 @@ module View
       # Do skip president's share in case there are other shares available.
       def render_market_shares
         @pool_shares.map do |share|
-          next unless @step.can_buy?(@current_entity, share)
+          next unless @step.can_buy?(@current_entity, share.to_bundle)
           next if share.to_bundle.presidents_share && @pool_shares.size > 1
 
           h(Button::BuyShare,
@@ -84,7 +84,7 @@ module View
 
       def render_ipo_shares
         @ipo_shares.map do |share|
-          next unless @step.can_buy?(@current_entity, share)
+          next unless @step.can_buy?(@current_entity, share.to_bundle)
 
           h(Button::BuyShare,
             share: share,
@@ -96,7 +96,7 @@ module View
 
       def render_treasury_shares
         @treasury_shares.map do |share|
-          next unless @step.can_buy?(@current_entity, share)
+          next unless @step.can_buy?(@current_entity, share.to_bundle)
 
           h(Button::BuyShare,
             share: share,
@@ -109,7 +109,7 @@ module View
       def render_corporate_shares
         @corporation.corporate_shares.group_by(&:corporation).values.flat_map do |corp_shares|
           corp_shares.group_by(&:percent).values.map(&:first).sort_by(&:percent).reverse.map do |share|
-            next unless @step.can_buy?(@current_entity, share)
+            next unless @step.can_buy?(@current_entity, share.to_bundle)
 
             h(Button::BuyShare,
               share: share,

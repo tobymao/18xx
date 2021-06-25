@@ -265,7 +265,7 @@ module Engine
 
       num_shares = presidents_share.percent / corporation.share_percent
 
-      shares_for_presidency_swap(possible_reorder(president.shares_of(corporation)), num_shares).each do |s|
+      @game.shares_for_presidency_swap(possible_reorder(president.shares_of(corporation)), num_shares).each do |s|
         move_share(s, swap_to)
       end
       move_share(presidents_share, president)
@@ -273,10 +273,6 @@ module Engine
 
     def presidency_check_shares(corporation)
       corporation.player_share_holders
-    end
-
-    def shares_for_presidency_swap(shares, num_shares)
-      shares.take(num_shares)
     end
 
     def possible_reorder(shares)

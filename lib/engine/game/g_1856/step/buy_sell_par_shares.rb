@@ -91,7 +91,8 @@ module Engine
 
             corporation.holding_ok?(entity, bundle.percent) &&
               !attempt_cgr_action_while_not_floated?(bundle) &&
-              (!corporation.counts_for_limit || exchange || @game.num_certs(entity) + 1 <= @game.cert_limit)
+              (!corporation.counts_for_limit || exchange ||
+                @game.num_certs(entity) + bundle.shares.sum(&:cert_size) <= @game.cert_limit)
           end
 
           def attempt_cgr_action_while_not_floated?(bundle)
@@ -132,7 +133,8 @@ module Engine
           end
 
           def buy_and_grow_presidency(entity, shares, exchange: nil, swap: nil, allow_president_change: true)
-            raise GameError, "Cannot buy a share of #{shares&.corporation&.name}" if !can_buy?(entity, shares) && !swap
+            raise GameError, "Cannot buy a share of #{shares&.corporation&.name}" if
+                !can_buy?(entity, shares.to_bundle) && !swap
 
             bundle = shares.is_a?(ShareBundle) ? shares : ShareBundle.new(shares)
             price = bundle.price

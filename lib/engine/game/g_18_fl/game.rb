@@ -574,6 +574,7 @@ module Engine
                            may choose to convert to a 10 share corporation'],
         ).freeze
 
+        SOLD_OUT_INCREASE = false
         ASSIGNMENT_TOKENS = {
           'POSC' => '/icons/1846/sc_token.svg',
         }.freeze
