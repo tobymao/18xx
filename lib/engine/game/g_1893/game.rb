@@ -1230,7 +1230,7 @@ module Engine
           @potential_discard_trains << mergable unless mergable.trains.empty?
 
           mergable.ipoed = true
-          @log << "#{mergable.name} have been completly founded and now floats"
+          @log << "#{mergable.name} have been completely founded and now floats"
         end
 
         def shares_for_presidency_swap(shares, num_shares)
