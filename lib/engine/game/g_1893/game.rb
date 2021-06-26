@@ -41,8 +41,8 @@ module Engine
         # Sell zero or more, then Buy zero or one
         SELL_BUY_ORDER = :sell_buy
 
-        # New track must be usable
-        TRACK_RESTRICTION = :restrictive
+        # New track must be usable, or upgrade city value
+        TRACK_RESTRICTION = :semi_restrictive
 
         # Needed for RAG exchange selection when parring
         ALL_COMPANIES_ASSIGNABLE = true
