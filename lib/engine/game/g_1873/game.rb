@@ -1856,7 +1856,7 @@ module Engine
           this_route.routes.select { |r| t_type == train_type(r.train) }.each do |r|
             return false if r == this_route
 
-            return true if r.visited_stops.include?(stop)
+            return true if r.visited_stops.map(&:hex).include?(stop.hex)
           end
           false
         end
@@ -1866,7 +1866,7 @@ module Engine
           max = 0
           max_route = nil
           this_route.routes.each do |r|
-            if r.visited_stops.include?(stop) && !diesel?(r.train) && r.train.distance > max
+            if r.visited_stops.map(&:hex).include?(stop.hex) && !diesel?(r.train) && r.train.distance > max
               max = r.train.distance
               max_route = r
             end
