@@ -314,9 +314,7 @@ module Engine
         end
 
         def remove_from_group!(group, entities)
-          if @optional_rules.include?(:second_ed_co)
-            group -= ['Boomtown', 'Little Miami', 'C&O']
-          end
+          group -= ['Boomtown', 'Little Miami', 'C&O'] if @optional_rules.include?(:second_ed_co)
 
           removals = group.sort_by { rand }.take(num_removals(group))
           # This looks verbose, but it works around the fact that we can't
