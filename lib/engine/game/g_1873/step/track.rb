@@ -170,6 +170,9 @@ module Engine
             end
 
             if ch && entity.name != ch[:entity] && follows_path
+              # double-check color for non-concession company
+              raise GameError, 'Cannot lay that color yet' unless @game.phase.tiles.include?(tile.color)
+
               @log << "Laying tile finishes concession track in #{hex.id}"
               reimburse = true
             elsif ch && entity.name != ch[:entity] && !follows_path
