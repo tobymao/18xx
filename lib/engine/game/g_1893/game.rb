@@ -174,15 +174,14 @@ module Engine
             'count' => 1,
             'color' => 'brown',
             'code' =>
-            'city=revenue:30,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
+            'city=revenue:40,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
               'path=a:5,b:_0;label=S',
           },
           'KV201' =>
           {
             'count' => 1,
             'color' => 'yellow',
-            'code' =>
-            'city=revenue:30;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;upgrade=cost:40,terrain:water;label=K',
+            'code' => 'city=revenue:30;path=a:1,b:_0;path=a:2,b:_0;upgrade=cost:40,terrain:water;label=K',
           },
           'KV255' =>
           {
