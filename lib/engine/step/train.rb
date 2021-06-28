@@ -29,6 +29,10 @@ module Engine
         end.size < @game.train_limit(entity)
       end
 
+      def can_entity_buy_train?(entity)
+        !entity.minor?
+      end
+
       def must_buy_train?(entity)
         @game.must_buy_train?(entity)
       end
