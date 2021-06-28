@@ -1220,9 +1220,9 @@ module Engine
             @log << "#{new_president.name} becomes the president of #{mergable.name}"
             mergable.owner = new_president
             shares_for_presidency_swap(new_president.shares_of(mergable), 2).each do |s|
-              move_share(s, president_share.owner)
+              @share_pool.move_share(s, president_share.owner)
             end
-            move_share(president_share, new_president)
+            @share_pool.move_share(president_share, new_president)
           end
 
           # Give president the chance to discard any trains
