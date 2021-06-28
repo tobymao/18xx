@@ -37,8 +37,10 @@ module View
           left = []
           left << render_mode_button if @step.respond_to?(:mode_enabled?) && @step.mode_enabled?
           left << h(SpecialBuy) if @current_actions.include?('special_buy')
-          left << h(RouteSelector) if @current_actions.include?('run_routes') && !@step.alternate_selector?
-          left << h(TrackConversion) if @current_actions.include?('run_routes') && @step.alternate_selector?
+          if @current_actions.include?('run_routes')
+            left << h(RouteSelector) unless @step.conversion?
+            left << h(TrackConversion) if @step.conversion?
+          end
           left << h(Dividend) if @current_actions.include?('dividend')
           left << h(Convert) if @current_actions.include?('convert')
           left << h(SwitchTrains) if @current_actions.include?('switch_trains')

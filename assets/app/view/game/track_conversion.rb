@@ -16,7 +16,7 @@ module View
       # Due to the way this and the map hook up routes needs to have
       # an entry, but that route is not valid at zero length
       def active_routes
-        @routes.select { |r| r.chains.any? }
+        @routes.reject { |r| r.chains.empty? }
       end
 
       def render
@@ -95,9 +95,8 @@ module View
               padding: '0 0 0.4rem 0.4rem',
             },
           }
-          train_name = 'Segment:'
           [
-            h(:tr, [h('td.middle', [h(:div, { style: style, on: { click: onclick } }, train_name)]), *children]),
+            h(:tr, [h('td.middle', [h(:div, { style: style, on: { click: onclick } }, 'Segment:')]), *children]),
             invalid ? h(:tr, [h(:td, invalid_props, invalid)]) : '',
           ]
         end
@@ -127,7 +126,7 @@ module View
             h(:tbody, trains),
           ]),
           actions,
-        ].compact)
+        ])
       end
 
       def cleanup

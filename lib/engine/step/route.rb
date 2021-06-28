@@ -47,7 +47,7 @@ module Engine
         abilities.uniq.each { |type| @game.abilities(action.entity, type, time: 'route')&.use! }
       end
 
-      def alternate_selector?
+      def conversion?
         false
       end
 

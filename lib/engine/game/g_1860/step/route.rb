@@ -83,7 +83,7 @@ module Engine
             pass!
           end
 
-          def alternate_selector?
+          def conversion?
             false
           end
 
