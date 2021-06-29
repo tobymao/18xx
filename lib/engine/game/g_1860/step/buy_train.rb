@@ -41,8 +41,7 @@ module Engine
             entity.trains.empty? &&
               !@game.bankrupt?(entity) &&
               @game.depot.min_depot_price.positive? &&
-              entity.cash > @game.depot.min_depot_price &&
-              @game.legal_route?(entity)
+              entity.cash > @game.depot.min_depot_price
           end
 
           def buyable_trains(entity)
