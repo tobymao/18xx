@@ -394,9 +394,12 @@ module Engine
             'offboard=revenue:yellow_0;city=revenue:20;city=revenue:20;'\
              'path=a:0,b:_1,track:narrow;path=a:1,b:_0;path=a:2,b:_2,track:narrow;' \
              'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
-            %w[C17 G11 I27 J22 B26] =>
+            %w[C17 I27 J22 B26] =>
             'offboard=revenue:yellow_0,visit_cost:0;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;' \
               'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
+            ['G11'] =>
+              'offboard=revenue:yellow_0;town=revenue:10;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
+              'path=a:3,b:_1,track:narrow;path=a:4,b:_0;path=a:5,b:_1,track:narrow',
           },
         }.freeze
 
