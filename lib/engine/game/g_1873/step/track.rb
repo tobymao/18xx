@@ -156,6 +156,21 @@ module Engine
             end
           end
 
+          def legal_tile_rotation?(entity, hex, tile)
+            if tile.cities.size == 2 && tile.color == :green
+              # we have the special case of a single city yellow tile being upgraded to a
+              # green tile with two cities. the super method doesn't check connectivity correctly
+              old_ct_edges = hex.tile.city_town_edges
+              new_ct_edges = tile.city_town_edges
+
+              # for each city on the old tile, make sure there is city on the new tile
+              # that connects to the exact same edges
+              return false unless old_ct_edges.all? { |old| new_ct_edges.any? { |new| new == old } }
+            end
+
+            super
+          end
+
           # yes, I'm hijacking this a little but I need a way to see if a tile needs to be
           # reserved and the owner reimbursed for working on another company's concession route
           # and the concession company having to pay for previously laid tiles
