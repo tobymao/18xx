@@ -297,9 +297,9 @@ module Engine
           if !connection_data.empty? && visited.size < 2 && !@train.local?
             raise GameError, 'Route must have at least 2 stops'
           end
-          unless (token = visited.find { |stop| @game.city_tokened_by?(stop, corporation) })
-            raise GameError, 'Route must contain token'
-          end
+
+          token = visited.find { |stop| @game.city_tokened_by?(stop, corporation) }
+          @game.check_route_token(self, token)
 
           visited.flat_map(&:groups).flatten.group_by(&:itself).each do |key, group|
             raise GameError, "Cannot use group #{key} more than once" unless group.one?

@@ -5,6 +5,7 @@ require_relative '../base'
 require_relative 'entities'
 require_relative 'map'
 require_relative 'step/buy_sell_par_shares_companies'
+require_relative 'step/track'
 
 module Engine
   module Game
@@ -14,7 +15,7 @@ module Engine
         include Entities
         include Map
 
-        attr_reader :tile_groups
+        attr_reader :conversion_train, :tile_groups, :north_hexes, :south_hexes
 
         register_colors(green: '#237333',
                         red: '#d81e3e',
@@ -157,6 +158,13 @@ module Engine
         COMPANY_SALE_FEE = 30
         ADDED_TOKEN_PRICE = 100
 
+        CONVERSION_DISTANCE = [{ 'nodes' => %w[city offboard], 'pay' => 2, 'visit' => 2 },
+                               { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }].freeze
+
+        TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
+
+        C_TILES = %w[C1 C2 C3 C4 C5 C6 C7 C8 C9].freeze
+
         def init_tile_groups
           [
             %w[1 1s],
@@ -170,7 +178,7 @@ module Engine
             %w[9 9s],
             %w[55 55s],
             %w[56 56s],
-            %w[57 7s],
+            %w[57 57s],
             %w[58 58s],
             %w[C1 C2],
             %w[C3 C4],
@@ -208,19 +216,51 @@ module Engine
           ]
         end
 
+        def update_opposites
+          by_name = @tiles.group_by(&:name)
+          @tile_groups.each do |grp|
+            next unless grp.size == 2
+
+            name_a, name_b = grp
+            num = by_name[name_a].size
+            if num != by_name[name_b].size
+              raise GameError, "Sides of double-sided tiles need to have same number (#{name_a}, #{name_b})"
+            end
+
+            num.times.each do |idx|
+              tile_a = tile_by_id("#{name_a}-#{idx}")
+              tile_b = tile_by_id("#{name_b}-#{idx}")
+
+              tile_a.opposite = tile_b
+              tile_b.opposite = tile_a
+            end
+          end
+        end
+
         def init_share_pool
           SharePool.new(self, allow_president_sale: true)
         end
 
         def setup
           @tile_groups = init_tile_groups
-          @highest_layer = 1
+          update_opposites
+          @unused_tiles = []
 
+          # find north and south hexes
+          @north_hexes = []
+          @south_hexes = []
+          @hexes.each do |hex|
+            tile = hex.tile
+            @north_hexes << hex if tile.frame&.color == NORTH_COLOR || tile.frame&.color2 == NORTH_COLOR
+            @south_hexes << hex if tile.frame&.color == SOUTH_COLOR || tile.frame&.color2 == SOUTH_COLOR
+          end
+
+          @highest_layer = 1
           # randomize layers (tranches) with one North and one South in each
           @layer_by_corp = {}
-          @north = @corporations.select { |c| NORTH_CORPORATIONS.include?(c.name) }.sort_by { rand }
-          @south = @corporations.select { |c| SOUTH_CORPORATIONS.include?(c.name) }.sort_by { rand }
-          @north.zip(@south).each_with_index do |corps, idx|
+          @north_corps = @corporations.select { |c| NORTH_CORPORATIONS.include?(c.name) }.sort_by { rand }
+          @south_corps = @corporations.select { |c| SOUTH_CORPORATIONS.include?(c.name) }.sort_by { rand }
+          @north_corps.zip(@south_corps).each_with_index do |corps, idx|
             layer = idx + 1
             corps.each do |corp|
               @layer_by_corp[corp] = layer
@@ -245,7 +285,7 @@ module Engine
               player.companies << company
               company.owner = player
             else
-              corp = [@north[0], @south[0]][idx - 4]
+              corp = [@north_corps[0], @south_corps[0]][idx - 4]
               price = par_prices(corp)[0]
               @stock_market.set_par(corp, price)
               share = corp.ipo_shares.first
@@ -257,6 +297,12 @@ module Engine
               after_par(corp)
             end
           end
+
+          @conversion_train = Train.new(name: 'Convert', distance: CONVERSION_DISTANCE, price: 0,
+                                        index: @depot.trains.size)
+          @conversion_train.owner = nil
+          @depot.trains << @conversion_train
+          update_cache(:trains)
         end
 
         def can_ipo?(corp)
@@ -297,12 +343,60 @@ module Engine
           Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             Engine::Step::HomeToken,
-            Engine::Step::Track,
+            G18Carolinas::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
             Engine::Step::Dividend,
             Engine::Step::BuyTrain,
           ], round_num: round_num)
+        end
+
+        def upgrades_to?(from, to, special = false, selected_company: nil)
+          standard = to.paths.any? { |p| p.track == :broad }
+          southern = to.paths.any? { |p| p.track != :broad }
+
+          north = @north_hexes.include?(from.hex)
+          south = @south_hexes.include?(from.hex)
+
+          # Can only ever lay standard track in the North
+          return false if north && !south && southern
+
+          # Can only ever lay southern track in the South before phase 5
+          return false if !north && south && standard && !@phase.available?('5')
+
+          # handle C tiles specially
+          return false if from.label.to_s == 'C' && to.color == :yellow && from.cities.size != to.cities.size
+
+          super
+        end
+
+        def update_tile_lists!(tile, old_tile)
+          @tiles.delete(tile)
+          if tile.opposite
+            @tiles.delete(tile.opposite)
+            @unused_tiles << tile.opposite
+          end
+
+          return if old_tile.preprinted
+
+          @tiles << old_tile
+          return unless old_tile.opposite
+
+          @unused_tiles.delete(old_tile.opposite)
+          @tiles << old_tile.opposite
+        end
+
+        def flip_tile!(hex)
+          old = hex.tile
+          return if old.color != :yellow && old.color != :green
+          return if C_TILES.include?(old.name)
+
+          new = old.opposite
+          @log << "Flipping tile #{old.name} to #{new.name} in hex #{hex.id}"
+
+          new.rotate!(old.rotation)
+          update_tile_lists(new, old)
+          hex.lay(new)
         end
 
         def sorted_corporations
@@ -325,6 +419,37 @@ module Engine
           status << %w[Receivership bold] if corp.receivership?
 
           status
+        end
+
+        def conversion_trains
+          [@conversion_train]
+        end
+
+        def check_route_token(route, token)
+          return if route.train.name == 'Convert'
+
+          super
+        end
+
+        def check_distance(route, visits)
+          if route.train.name == 'Convert'
+            raise GameError, 'Route must be specified' if visits.empty?
+            raise GameError, 'Route cannot begin/end in a town' if visits.first.town? || visits.last.town?
+          end
+
+          super
+        end
+
+        def check_connected(route, token)
+          return if route.train.name == 'Convert'
+
+          super
+        end
+
+        def check_other(route)
+          return unless route.train.name == 'Convert'
+
+          raise GameError, 'Route must have Southern track' unless route.paths.any? { |p| p.track != :broad }
         end
       end
     end

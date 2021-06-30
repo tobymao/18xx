@@ -83,6 +83,10 @@ module Engine
             pass!
           end
 
+          def conversion?
+            false
+          end
+
           def available_hex(_entity, _hex)
             true
           end
