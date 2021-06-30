@@ -46,7 +46,7 @@ module View
             unless (route = @routes.find { |t| t.train == train })
               route = Engine::Route.new(@game, @game.phase, train, abilities: @abilities, routes: @routes)
               @routes << route
-              store(:routes, @routes)
+              store(:routes, @routes, skip: true)
             end
             store(:selected_route, route)
           end
