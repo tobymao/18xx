@@ -1715,6 +1715,10 @@ module Engine
         true
       end
 
+      def cannot_pay_interest_str
+        nil
+      end
+
       def hex_blocked_by_ability?(_entity, ability, hex)
         ability.hexes.include?(hex.id)
       end

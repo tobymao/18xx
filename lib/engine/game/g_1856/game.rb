@@ -916,10 +916,10 @@ module Engine
           Array.new(num_loans) { |id| Loan.new(id, loan_value) }
         end
 
-        def can_pay_interest?(_entity, _extra_cash = 0)
+        def can_pay_interest?(entity, extra_cash = 0)
           # TODO: A future PR may figure out how to implement buying_power
           #  that accounts for a corporations revenue.
-          true
+          entity.cash + extra_cash >= interest_owed(entity)
         end
 
         def init_stock_market
