@@ -200,6 +200,10 @@ module Engine
          I2
         ].freeze
 
+        LEGAL_75_DBL_UPGRADES = %w[914 964 967 968].freeze
+        LEGAL_76_DBL_UPGRADES = %w[914 963 965 966 967 969].freeze
+        LEGAL_956_DBL_UPGRADES = %w[968 969 970].freeze
+
         DOUBLE_LAY_TILES = %w[
           77
           78
@@ -1359,6 +1363,16 @@ module Engine
           DOUBLE_LAY_TILES.include?(tile.name)
         end
 
+        def legal_doubletown_upgrade?(from, to)
+          return true unless from.color == :yellow
+          return true unless to.cities.size == 2
+
+          # these are the only legal single city yellow to double city green upgrades
+          (from.name == '75' && LEGAL_75_DBL_UPGRADES.include?(to.name)) ||
+            (from.name == '76' && LEGAL_76_DBL_UPGRADES.include?(to.name)) ||
+            (from.name == '956' && LEGAL_956_DBL_UPGRADES.include?(to.name))
+        end
+
         def upgrades_to?(from, to, special = false, selected_company: nil)
           # correct color progression?
           if !(reserved_tiles[from.hex.id] && reserved_tiles[from.hex.id][:tile] == to) &&
@@ -1388,6 +1402,7 @@ module Engine
           return false if !from.cities.empty? && to.cities.empty?
           return false if from.label.to_s == 'B' && from.cities.size != to.cities.size
           return false if (from.frame && !to.frame) || (!from.frame && to.frame)
+          return false unless legal_doubletown_upgrade?(from, to)
 
           true
         end
@@ -1856,7 +1871,7 @@ module Engine
           this_route.routes.select { |r| t_type == train_type(r.train) }.each do |r|
             return false if r == this_route
 
-            return true if r.visited_stops.include?(stop)
+            return true if r.visited_stops.map(&:hex).include?(stop.hex)
           end
           false
         end
@@ -1866,7 +1881,7 @@ module Engine
           max = 0
           max_route = nil
           this_route.routes.each do |r|
-            if r.visited_stops.include?(stop) && !diesel?(r.train) && r.train.distance > max
+            if r.visited_stops.map(&:hex).include?(stop.hex) && !diesel?(r.train) && r.train.distance > max
               max = r.train.distance
               max_route = r
             end
