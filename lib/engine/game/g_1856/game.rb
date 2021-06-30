@@ -405,7 +405,7 @@ module Engine
             revenue: 15,
             desc: 'At any time during its operating turn, the owning public company may place the port marker in '\
             'any one hex with the port symbol. The port marker raises the value of all revenue locations in that hex '\
-            'by $20 for that corporation. This marker will may not be moved and will be removed when the first '\
+            'by $20 for that corporation. This marker may not be moved and will be removed when the first '\
             '6 train is purchased. Placement of this marker closes the Great Lakes Shipping Company.',
             abilities: [
               {
