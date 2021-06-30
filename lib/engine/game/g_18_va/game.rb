@@ -471,29 +471,29 @@ module Engine
           },
           red: {
             # Off map cities
-            ['H1'] => 'city=slots:2,revenue:yellow_40|brown_70,groups:OFBBOARD;path=a:0,b:_0,terminal:1',
+            ['H1'] => 'city=slots:2,revenue:yellow_40|brown_70,groups:OFFBOARD;path=a:0,b:_0,terminal:1',
             ['B15'] => 'city=slots:1,revenue:yellow_20|brown_40,groups:OFFBOARD;path=a:4,b:_0,terminal:1',
             ['F17'] => 'city=slots:1,revenue:yellow_30|brown_50,groups:OFFBOARD;path=a:3,b:_0,terminal:1',
           },
           gray: {
             # CMD
-            ['A6'] => 'city=slots:2,revenue:20,groups:CMD;icon=image:18_co/mine;'\
+            ['A6'] => 'city=slots:2,revenue:20,groups:CMD;icon=image:18_co/mine,visit_cost:0;'\
                       'path=a:4,b:_0,terminal:1;path=a:5,b:_0,terminal:1',
             ['A12'] => 'city=slots:2,revenue:20,groups:CMD;icon=image:18_co/mine;'\
                       'path=a:4,b:_0,terminal:1;path=a:5,b:_0,terminal:1',
           },
           blue: {
             ['I4'] =>
-                        'offboard=revenue:yellow_30|brown_20,visit_cost:0,route:optional;'\
+                        'offboard=revenue:yellow_30|brown_20,visit_cost:0,route:optional,groups:PORT;'\
                         'path=a:2,b:_0;icon=image:port',
             ['I6'] =>
-                        'offboard=revenue:yellow_20|brown_10,visit_cost:0,route:optional;'\
+                        'offboard=revenue:yellow_20|brown_10,visit_cost:0,route:optional,groups:PORT;'\
                         'path=a:2,b:_0;icon=image:port',
             ['I14'] =>
-                        'offboard=revenue:yellow_20|brown_40,visit_cost:0,route:optional;'\
+                        'offboard=revenue:yellow_20|brown_40,visit_cost:0,route:optional,groups:PORT;'\
                         'path=a:2,b:_0;icon=image:port',
             ['I16'] =>
-                        'offboard=revenue:yellow_30|brown_50,visit_cost:0,route:optional;'\
+                        'offboard=revenue:yellow_30|brown_50,visit_cost:0,route:optional,groups:PORT;'\
                         'path=a:2,b:_0;icon=image:port',
           },
         }.freeze
@@ -501,6 +501,12 @@ module Engine
         LAYOUT = :flat
 
         PORT_HEXES = %w[F13 F11 H3 F5 G4].freeze
+        PORT_TO_CITY = {
+          'I4' => 'H3',
+          'I6' => 'H5',
+          'I14' => 'H13',
+          'I16' => 'H15',
+        }.freeze
         P_HEXES = %w[F13 H3 F5].freeze
         RIC_HEX = 'F11'
         WAS_HEX = 'G4'
@@ -569,45 +575,77 @@ module Engine
           str
         end
 
+        def train_type(train)
+          return :freight if train.name[-1] == 'G'
+          return :doubler if train.name[-1] == 'D'
+
+          :passenger
+        end
+
+        def port_link?(entity, port)
+          hex_by_id(PORT_TO_CITY[port.hex.id]).tile.nodes.find(&:city?).tokened_by?(entity)
+        end
+
+        def check_port(visits)
+          port_stop = visits.find { |stop| stop&.groups&.include?('PORT') }
+          return if !port_stop || port_link?(current_entity, port_stop)
+
+          raise GameError, 'Train cannot visit port without token in connecting city'
+        end
+
+        def check_cmd(visits, train)
+          cmd_stop = visits.find { |stop| stop&.groups&.include?('CMD') }
+          return unless cmd_stop
+
+          raise GameError, "#{train.name} cannot visit CMD" unless train_type(train) == :freight
+        end
+
+        def check_distance(route, visits)
+          super
+
+          train = route.train
+          train_size = train.name[0].to_i
+
+          stops = visits.count { |s| !s.groups.include?('PORT') && (!s.town? || train_type(train) == :freight) }
+          raise GameError, 'Train must visit at least 2 paying non-port stops' if stops < 2
+
+          cities = visits.count { |s| (s.city? && !s.groups.include?('CMD')) }
+          raise GameError, "#{cities} is too many stops for a #{train.name} train" if cities > train_size
+
+          check_port(visits)
+          check_cmd(visits, train)
+        end
+
         def revenue_for(route, stops)
           revenue = super
           train = route.train
           train_size = train.name[0].to_i
-          freight_train = train.name[-1] == 'G'
-          doubler_train = train.name[-1] == 'D'
-          cmd_stop = stops.find { |stop| stop.groups.include?('CMD') }
-          cities = stops.select(&:city?).reject { |stop| stop.groups.include?('CMD') }
-          offboard_cities = cities.select { |stop| stop.groups.include?('OFFBOARD') }
-          plain_cities = cities.reject { |stop| stop.groups.include?('OFFBOARD') }
+          train_type = train_type(train)
 
-          if route.visited_stops.find(&:offboard?) && (stops.size < 3)
-            raise GameError, 'Route must contain at least 2 other stops to use a port'
-          end
-
-          raise GameError, "#{cities.size} is too many stops for a #{train.name} train" if cities.size > train_size
-          raise GameError, "#{cities.size} is too few cities for a #{train.name} train" if cities.size < 2 &&
-            !freight_train
+          offboard_stop = stops.find { |s| s.groups.include?('OFFBOARD') }
+          port_stop = stops.find { |s| s.groups.include?('PORT') }
+          cmd_stop = stops.find { |s| s.groups.include?('CMD') }
+          plain_cities = stops.select { |s| s.city? && s.groups.empty? }
 
           steam = steamboat.id
           if route.corporation.assigned?(steam) && (port = stops.map(&:hex).find { |hex| hex.assigned?(steam) })
-            revenue += 10 * port.tile.icons.count { |icon| icon.name == 'port' }
+            revenue += (train_type == :doubler ? 20 : 10) * port.tile.icons.count { |icon| icon.name == 'port' }
           end
 
           # 4Ds double plain cities
-          plain_cities.each { |city| revenue += city.route_revenue(@phase, train) } if doubler_train
+          plain_cities.each { |city| revenue += city.route_revenue(@phase, train) } if train_type == :doubler
 
-          # Offboard cities are doubled if tokened, unless using a 4D
-          unless doubler_train
-            offboard_cities.each do |city|
-              revenue += city.route_revenue(@phase, train) if city.tokened_by?(train.owner)
-            end
+          # Offboard cities are doubled if tokened, unless using a 4D in which case they are quadrupled
+          if train_type == :doubler
+            # It is doubled once by the main logic so double it again to quadruple
+            revenue += 2 * offboard_stop.route_revenue(@phase, train) if offboard_stop&.tokened_by?(train.owner)
+          elsif offboard_stop&.tokened_by?(train.owner)
+            revenue += offboard_stop.route_revenue(@phase, train)
           end
+          # Freight and doubler trains double ports
+          revenue += port_stop.route_revenue(@phase, train) if port_stop && %i[freight doubler].include?(train_type)
 
-          if cmd_stop
-            raise GameError, "#{train.name} cannot run to a coal mining district" unless freight_train
-
-            revenue += 20 * (train_size - 1)
-          end
+          revenue += 20 * (train_size - 1) if cmd_stop
 
           revenue
         end
