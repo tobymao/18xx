@@ -601,7 +601,7 @@ module Engine
         end
 
         def check_distance(route, visits)
-          return false unless super
+          super
 
           train = route.train
           train_size = train.name[0].to_i
@@ -622,25 +622,28 @@ module Engine
           train_size = train.name[0].to_i
           train_type = train_type(train)
 
-          cmd_stop = stops.find { |stop| stop.groups.include?('CMD') }
-          cities = stops.select(&:city?).reject { |stop| stop.groups.include?('CMD') }
-          offboard_cities = cities.select { |stop| stop.groups.include?('OFFBOARD') }
-          plain_cities = cities.reject { |stop| stop.groups.include?('OFFBOARD') }
+          offboard_stop = stops.find { |s| s.groups.include?('OFFBOARD') }
+          port_stop = stops.find { |s| s.groups.include?('PORT') }
+          cmd_stop = stops.find { |s| s.groups.include?('CMD') }
+          plain_cities = stops.select { |s| s.city? && s.groups.empty? }
 
           steam = steamboat.id
           if route.corporation.assigned?(steam) && (port = stops.map(&:hex).find { |hex| hex.assigned?(steam) })
-            revenue += 10 * port.tile.icons.count { |icon| icon.name == 'port' }
+            revenue += (train_type == :doubler ? 20 : 10) * port.tile.icons.count { |icon| icon.name == 'port' }
           end
 
           # 4Ds double plain cities
           plain_cities.each { |city| revenue += city.route_revenue(@phase, train) } if train_type == :doubler
 
-          # Offboard cities are doubled if tokened, unless using a 4D
-          unless train_type == :doubler
-            offboard_cities.each do |city|
-              revenue += city.route_revenue(@phase, train) if city.tokened_by?(train.owner)
-            end
+          # Offboard cities are doubled if tokened, unless using a 4D in which case they are quadrupled
+          if train_type == :doubler
+            # It is doubled once by the main logic so double it again to quadruple
+            revenue += 2 * offboard_stop.route_revenue(@phase, train) if offboard_stop&.tokened_by?(train.owner)
+          elsif offboard_stop&.tokened_by?(train.owner)
+            revenue += offboard_stop.route_revenue(@phase, train)
           end
+          # Freight and doubler trains double ports
+          revenue += port_stop.route_revenue(@phase, train) if port_stop && %i[freight doubler].include?(train_type)
 
           revenue += 20 * (train_size - 1) if cmd_stop
 
