@@ -538,6 +538,32 @@ module Engine
           'P1' => '/icons/1846/sc_token.svg',
         }.freeze
 
+        def stock_round
+          G18VA::Round::Stock.new(self, [
+            Engine::Step::DiscardTrain,
+            G18VA::Step::BuySellParShares,
+          ])
+        end
+
+        def operating_round(round_num)
+          G18VA::Round::Operating.new(self, [
+            Engine::Step::Bankrupt,
+            G18VA::Step::Assign,
+            Engine::Step::Exchange,
+            G18VA::Step::Convert,
+            Engine::Step::SpecialTrack,
+            Engine::Step::BuyCompany,
+            Engine::Step::Track,
+            G18VA::Step::SpecialToken,
+            G18VA::Step::Token,
+            Engine::Step::Route,
+            G18VA::Step::Dividend,
+            Engine::Step::DiscardTrain,
+            G18VA::Step::BuyTrain,
+            [Engine::Step::BuyCompany, { blocks: true }],
+          ], round_num: round_num)
+        end
+
         def steamboat
           @steamboat ||= company_by_id('P1')
         end
