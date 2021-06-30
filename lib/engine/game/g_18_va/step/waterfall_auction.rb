@@ -26,10 +26,20 @@ module Engine
             true
           end
 
+          def end_auction!
+            resolve_bids
+
+            @game.log << "Players are reordered based on remaining cash"
+
+            # players are reordered from most remaining cash to least with prior order as tie breaker
+            current_order = @game.players.dup.reverse
+            @game.players.sort_by! { |p| [p.cash, current_order.index(p)] }.reverse!
+          end
+
           def all_passed!
             companies_without_bids = @companies.reject { |c| @bids.key?(c) && !@bids[c].empty? }
 
-            resolve_bids if companies_without_bids.empty?
+            end_auction! if companies_without_bids.empty?
 
             companies_without_bids.each do |company|
               # each company without a bid gets decreased by 10
