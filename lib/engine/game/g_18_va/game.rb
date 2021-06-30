@@ -533,10 +533,17 @@ module Engine
         ).freeze
 
         include CompanyPrice50To150Percent
-
+        MIN_BID_INCREMENT = 5
         ASSIGNMENT_TOKENS = {
           'P1' => '/icons/1846/sc_token.svg',
         }.freeze
+
+        def new_auction_round
+          Engine::Round::Auction.new(self, [
+            Engine::Step::CompanyPendingPar,
+            G18VA::Step::WaterfallAuction,
+          ])
+        end
 
         def stock_round
           G18VA::Round::Stock.new(self, [
