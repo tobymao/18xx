@@ -22,14 +22,14 @@ module Engine
           end
 
           def resolve_bids_for_company(company)
-            accept_bid(@bids[company].max(&:price))
+            accept_bid(@bids[company].max_by(&:price))
             true
           end
 
           def end_auction!
             resolve_bids
 
-            @game.log << "Players are reordered based on remaining cash"
+            @game.log << 'Players are reordered based on remaining cash'
 
             # players are reordered from most remaining cash to least with prior order as tie breaker
             current_order = @game.players.dup.reverse
