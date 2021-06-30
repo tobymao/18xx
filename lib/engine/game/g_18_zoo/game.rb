@@ -1312,7 +1312,7 @@ module Engine
         RABBITS_UPGRADES = {
           'X7' => %w[X26 X27 X28 X29 X30 X31],
           'X8' => %w[X19 X23 X24 X25 X28 X29 X30 X31],
-          'X9' => %w[X23 X24 X26 X27],
+          'X9' => %w[X19 X23 X24 X26 X27],
         }.freeze
 
         def all_potential_upgrades_for_rabbits(tile, _tile_manifest, company)

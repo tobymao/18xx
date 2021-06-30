@@ -885,6 +885,44 @@ module Engine
           expect(icon.blocks_lay?).to be_falsy
         end
       end
+
+      describe 'Rabbits' do
+        let(:game_file_name) { 'or_power.rabbits.cannot_upgrade' }
+
+        [
+          { 'tile_1' => 'X8-0', 'rotation_1' => 0, 'tile_2' => 'X25-0', 'rotation_2' => 4 },
+          { 'tile_1' => 'X8-0', 'rotation_1' => 0, 'tile_2' => 'X19-0', 'rotation_2' => 0 },
+          { 'tile_1' => 'X8-0', 'rotation_1' => 0, 'tile_2' => 'X19-0', 'rotation_2' => 2 },
+          { 'tile_1' => 'X7-1', 'rotation_1' => 0, 'tile_2' => 'X28-0', 'rotation_2' => 2 },
+          { 'tile_1' => 'X7-1', 'rotation_1' => 0, 'tile_2' => 'X29-0', 'rotation_2' => 5 },
+        ].each do |invalid_action|
+          it "must not update invalid track (#{invalid_action['tile_2']}) on #{invalid_action['tile_1']}" do
+            game = Engine::Game.load(game_file, at_action: 19)
+            game.process_action({
+                                  'type' => 'lay_tile',
+                                  'entity' => 'GI',
+                                  'entity_type' => 'corporation',
+                                  'hex' => 'I9',
+                                  'tile' => invalid_action['tile_1'],
+                                  'rotation' => invalid_action['rotation_1'],
+                                })
+
+            action = {
+              'type' => 'lay_tile',
+              'entity' => 'RABBITS',
+              'entity_type' => 'company',
+              'hex' => 'I9',
+              'tile' => invalid_action['tile_2'],
+              'rotation' => invalid_action['rotation_2'],
+            }
+
+            expect(game.exception).to be_nil
+            expect do
+              game.process_action(action).maybe_raise!
+            end.to raise_error(Engine::GameError, 'New track must override old one')
+          end
+        end
+      end
     end
   end
 end
