@@ -320,7 +320,7 @@ module Engine
                 count: 1,
                 owner_type: 'corporation',
               },
-            ]
+            ],
           },
           {
             name: 'Tredegar Iron Works',
@@ -330,6 +330,17 @@ module Engine
               'when buying a train from the depot',
             sym: 'P2',
             color: nil,
+            abilities: [
+              {
+                type: 'train_discount',
+                discount: 200,
+                owner_type: 'corporation',
+                trains: %w[2 3 4 5 6 4D],
+                count: 1,
+                closed_when_used_up: true,
+                when: 'buying_train',
+              },
+            ],
           },
           {
             name: 'Potomac Yards',
@@ -572,9 +583,16 @@ module Engine
             Engine::Step::Route,
             G18VA::Step::Dividend,
             Engine::Step::DiscardTrain,
+            Engine::Step::SpecialBuyTrain,
             G18VA::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
+        end
+
+        def buy_train(operator, train, price = nil)
+          return super(operator, train, :free) if price.zero?
+
+          super
         end
 
         def setup
@@ -671,7 +689,7 @@ module Engine
           plain_cities = stops.select { |s| s.city? && s.groups.empty? }
 
           steam = steamboat.id
-          if route.corporation.assigned?(steam) && (port = stops.map(&:hex).find { |hex| hex.assigned?(steam) })
+          if route.corporation.assigned?(steam) && stops.map(&:hex).any? { |hex| hex.assigned?(steam) }
             revenue += train_type == :doubler ? 20 : 10
           end
 
