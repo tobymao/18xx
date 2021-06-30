@@ -33,8 +33,31 @@ module View
         children.concat(discarded_trains) if @depot.discarded.any?
         children.concat(phases)
         children.concat(timeline) if timeline
+        children.concat(cert_limit_table) if @game.cert_limit_table
         children.concat(endgame)
         children << h(GameMeta, game: @game)
+      end
+
+      def cert_limit_table
+        [
+          h(:h3, 'Certificate Limit'),
+          h(:div, { style: { overflowX: 'auto' } }, [
+            h(:table, [
+              h(:thead, [
+                h(:tr, [
+                  h(:th, 'Certs'),
+                  h(:th, @game.cert_limit_table_header_str),
+                ]),
+              ]),
+              h(:tbody, @game.cert_limit_table.map do |index, limit|
+                h(:tr, [
+                  h(:td, (index == @game.cert_limit_table_current_index ? '→ ' : '') + limit.to_s),
+                  h(:td, index),
+                ])
+              end),
+            ]),
+          ]),
+        ]
       end
 
       def timeline

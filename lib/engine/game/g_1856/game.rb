@@ -1033,6 +1033,25 @@ module Engine
           POST_NATIONALIZATION_CERT_LIMIT[num_corporations][@players.size]
         end
 
+        def cert_limit_table
+          { 'Pre-Nationalization' => PRE_NATIONALIZATION_CERT_LIMIT[@players.size] }
+          .merge(
+            POST_NATIONALIZATION_CERT_LIMIT.map do |corps, cert_limit|
+              ["#{corps} corporations remaining", cert_limit[@players.size]]
+            end.to_h
+          )
+        end
+
+        def cert_limit_table_current_index
+          return 'Pre-Nationalization' unless @post_nationalization
+
+          "#{num_corporations} corporations remaining"
+        end
+
+        def cert_limit_table_header_str
+          'Status'
+        end
+
         def destination_connected?(corp)
           (corp.capitalization || corp.capitalization_type) == :escrow && hexes_connected?(*@destinations[corp.id])
         end

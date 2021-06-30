@@ -570,6 +570,19 @@ module Engine
           ], round_num: round_num)
         end
 
+        # 1836jr56 has a static cert limit so a cert limit table doesn't help
+        def cert_limit_table
+          nil
+        end
+
+        def cert_limit_table_current_index
+          nil
+        end
+
+        def cert_limit_table_header_str
+          nil
+        end
+
         def event_close_companies!
           @log << '-- Event: Private companies close --'
           @companies.each do |company|

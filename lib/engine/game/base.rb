@@ -1711,6 +1711,24 @@ module Engine
         true
       end
 
+      # /!\ This does nothing to affect game logic /!\
+      # This should return either false or a hash mapping an unique string to a certificate limit
+      # the string key is some sort of status or identifier to distinguish the condition
+      # for the certificate limit to be at that value
+      def cert_limit_table
+        nil
+      end
+
+      # This will return the string corresponding to the current cert limit in cert_limit_table
+      def cert_limit_table_current_index
+        nil
+      end
+
+      # This will describe in the Info tab what the index string means
+      def cert_limit_table_header_str
+        nil
+      end
+
       def hex_blocked_by_ability?(_entity, ability, hex)
         ability.hexes.include?(hex.id)
       end
