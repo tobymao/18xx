@@ -37,7 +37,7 @@ module Engine
           end
 
           def all_passed!
-            companies_without_bids = @companies.reject { |c| @bids.key?(c) && !@bids[c].empty? }
+            companies_without_bids = @companies.reject { |c| @bids[c] && !@bids[c].empty? }
 
             end_auction! if companies_without_bids.empty?
 
