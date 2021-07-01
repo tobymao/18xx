@@ -861,7 +861,7 @@ module Engine
         end
 
         def interest_rate
-          10
+          @post_nationalization ? nil : 10
         end
 
         def national_token_price
@@ -883,6 +883,8 @@ module Engine
         end
 
         def interest_owed_for_loans(loans)
+          return 0 if @post_nationalization
+
           interest_rate * loans
         end
 
@@ -920,10 +922,10 @@ module Engine
           Array.new(num_loans) { |id| Loan.new(id, loan_value) }
         end
 
-        def can_pay_interest?(_entity, _extra_cash = 0)
+        def can_pay_interest?(entity, extra_cash = 0)
           # TODO: A future PR may figure out how to implement buying_power
           #  that accounts for a corporations revenue.
-          true
+          entity.cash + extra_cash >= interest_owed(entity)
         end
 
         def init_stock_market
@@ -1458,7 +1460,7 @@ module Engine
           end
           # Leftover cash is transferred
           major.spend(major.cash, national) if major.cash.positive?
-          @loans += major.loans.pop(major.loans.size)
+          @loans.concat(major.loans.pop(major.loans.size))
           # Tunnel / Bridge rights are transferred
           if tunnel?(major)
             if tunnel?(national)
@@ -1778,6 +1780,7 @@ module Engine
           # (It was artificially high to avoid forced discard triggering early)
           @nationalization_train_discard_trigger = true
           @post_nationalization = true
+          @total_loans = 0
         end
 
         # Creates and returns a token for the national
