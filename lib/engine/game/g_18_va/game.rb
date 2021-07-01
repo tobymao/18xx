@@ -555,6 +555,7 @@ module Engine
         SELL_AFTER = :operate
         EBUY_OTHER_VALUE = true
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = true
+        ONLY_HIGHEST_BID_COMMITTED = true
         CMD_HEXES = %w[A6 A12].freeze
         MINE_HEXES = %w[B5 B7 B9 B11 B13].freeze
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
@@ -572,10 +573,17 @@ module Engine
         ).freeze
 
         include CompanyPrice50To150Percent
-
+        MIN_BID_INCREMENT = 5
         ASSIGNMENT_TOKENS = {
           'P1' => '/icons/18_va/port.svg',
         }.freeze
+
+        def new_auction_round
+          Engine::Round::Auction.new(self, [
+            Engine::Step::CompanyPendingPar,
+            G18VA::Step::WaterfallAuction,
+          ])
+        end
 
         def stock_round
           G18VA::Round::Stock.new(self, [
