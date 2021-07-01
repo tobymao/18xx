@@ -468,7 +468,7 @@ module Engine
           setup_company_price_50_to_150_percent
 
           @recently_floated = []
-          make_train_soft_rust('2') if @optional_rules&.include?(:soft_rust_4t)
+          make_train_soft_rust if @optional_rules&.include?(:soft_rust_4t)
 
           # Place neutral tokens in the off board cities
           neutral = Corporation.new(
