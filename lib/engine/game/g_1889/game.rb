@@ -297,7 +297,6 @@ module Engine
             revenue: 20,
             desc: 'No special abilities.',
             sym: 'SIR',
-            min_players: 3,
             color: nil,
           },
           {
@@ -459,6 +458,14 @@ module Engine
 
           company = company_by_id('ER')
           current_entity == company ? [@round.company_sellers[company]] : super
+        end
+
+        def setup
+          if two_player? && !@optional_rules.include?(:beginner_game)
+            sir = company_by_id('SIR')
+            sir.close!
+            @round.active_step.companies.delete(sir)
+          end
         end
       end
     end

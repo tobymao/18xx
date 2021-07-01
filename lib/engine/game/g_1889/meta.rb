@@ -20,6 +20,13 @@ module Engine
         GAME_DROPDOWN_TITLE = 'Shikoku: 1889'
 
         PLAYER_RANGE = [2, 6].freeze
+        OPTIONAL_RULES = [
+          {
+            sym: :beginner_game,
+            short_name: 'Beginner Game',
+            desc: 'Beginner Game (simpler privates, more tiles available)',
+          },
+        ].freeze
       end
     end
   end
