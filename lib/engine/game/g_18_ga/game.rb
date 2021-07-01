@@ -415,8 +415,8 @@ module Engine
                J6
                J8
                E11] => '',
-            %w[C5 F8 G9 H10 H12] => 'upgrade=cost:20,terrain:water',
-            %w[E3 F2 F12 H2 I3 J10] => 'upgrade=cost:40,terrain:water',
+            %w[C5 E3 F2 F8 G9 H2 H10 H12 I3] => 'upgrade=cost:20,terrain:water',
+            %w[F12 J10] => 'upgrade=cost:40,terrain:water',
             %w[B2 B6 B8 C1] => 'upgrade=cost:60,terrain:water',
             ['D4'] => 'city=revenue:0;city=revenue:0;city=revenue:0;label=ATL;',
             %w[I11 C3 D10 F6 G3 H4 I9 G13] => 'city=revenue:0',
