@@ -7,6 +7,16 @@ module Engine
     module G18VA
       module Step
         class BuyTrain < Engine::Step::BuyTrain
+          def actions(entity)
+            return ['choose_ability'] if entity == @game.token_company && current_entity == @game.token_company.owner
+
+            actions = super
+
+            return ['pass'] if actions.empty? && @game.token_company.owner == entity
+
+            super
+          end
+
           def buyable_trains(entity)
             depot_trains = @depot.depot_trains
             other_trains = @depot.other_trains(entity)
@@ -29,6 +39,24 @@ module Engine
           def setup
             super
             @depot_trains_bought = []
+          end
+
+          def choices_ability(entity)
+            return {} unless entity.company?
+
+            { 'close' => 'Close to increase train limit by 1 permanently' }
+          end
+
+          def process_choose_ability(_action)
+            @game.log << "#{@game.token_company.name} closes to give #{current_entity.name} an increased train limit"
+            current_entity.add_ability(
+              Ability::TrainLimit.new(
+                type: 'train_limit',
+                description: '+1 train limit',
+                increase: 1
+              )
+            )
+            @game.token_company.close!
           end
 
           def spend_minmax(entity, train)
