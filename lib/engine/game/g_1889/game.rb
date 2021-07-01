@@ -468,12 +468,22 @@ module Engine
           current_entity == company ? [@round.company_sellers[company]] : super
         end
 
+        def init_round
+          return super unless @optional_rules.include?(:beginner_game)
+
+          stock_round
+        end
+
         def setup
           remove_company(company_by_id('SIR')) if two_player? && !@optional_rules.include?(:beginner_game)
           return unless @optional_rules.include?(:beginner_game)
 
           neuter_private_companies
           close_unused_privates
+
+          # companies are randomly distributed to players and they buy their company
+          @companies.sort_by! { rand }
+          @players.zip(@companies).each { |p, c| buy_company(p, c) }
         end
 
         def neuter_private_companies
@@ -484,16 +494,29 @@ module Engine
           company.abilities.clear
           company.desc = 'Closes when the first 5 train is bought. Cannot be purchased by a corporation'
           company.add_ability(Ability::NoBuy.new(type: 'no_buy'))
-          puts company, company.abilities
         end
 
         def close_unused_privates
-          @companies.each { |c| remove_company(c) unless BEGINNER_GAME_PRIVATES[@players.size].include?(c.sym) }
+          puts @companies
+          companies_dup = @companies.dup
+          companies_dup.each { |c| remove_company(c) unless BEGINNER_GAME_PRIVATES[@players.size].include?(c.sym) }
+          puts @companies
         end
 
         def remove_company(company)
           company.close!
-          @round.active_step.companies.delete(company)
+          @round.active_step.companies.delete(company) unless @optional_rules.include?(:beginner_game)
+          @companies.delete(company)
+        end
+
+        def buy_company(player, company)
+          puts 'bc', company
+          price = company.value
+          company.owner = player
+          player.companies << company
+          player.spend(price, @bank)
+          @companies.delete(company)
+          @log << "#{player.name} buys #{company.name} for #{format_currency(price)}"
         end
       end
     end
