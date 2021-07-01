@@ -39,22 +39,6 @@ module Engine
           def variable_distance?(_entity)
             true
           end
-
-          def add_train(routes)
-            @game.add_train(routes[0].corporation)
-          end
-
-          def remove_train(route)
-            @game.delete_train(route)
-          end
-
-          def increase_train(route)
-            @game.increase_train(route)
-          end
-
-          def decrease_train(route)
-            @game.decrease_train(route)
-          end
         end
       end
     end

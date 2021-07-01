@@ -4,10 +4,6 @@ require_relative 'meta'
 require_relative '../base'
 require_relative 'entities'
 require_relative 'map'
-require_relative 'step/buy_sell_par_shares_companies'
-require_relative 'step/track'
-require_relative 'step/route'
-require_relative 'step/dividend'
 
 module Engine
   module Game
@@ -534,7 +530,7 @@ module Engine
           train = route.train
           corp = train.owner
           return if train.distance == MAX_TRAIN
-          return if route.routes.map(&:train).sum(&:distance) >= @corporation_power[corp]
+          return if route.routes.sum { |r| r.train.distance } >= @corporation_power[corp]
 
           train.distance += 1
           train.name = train.distance.to_s
