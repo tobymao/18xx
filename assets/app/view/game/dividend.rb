@@ -52,8 +52,8 @@ module View
               'None'
             end
 
-          if entity.loans.any? && !@game.can_pay_interest?(entity, corp_income)
-            text += ' (Liquidate)'
+          if entity.loans.any? && !@game.can_pay_interest?(entity, corp_income) && @game.cannot_pay_interest_str
+            text += " #{@game.cannot_pay_interest_str}"
           elsif new_share.acquisition?
             text += ' (Acquisition)'
           end

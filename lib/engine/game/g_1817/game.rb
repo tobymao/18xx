@@ -989,6 +989,10 @@ module Engine
           Array.new(total_loans) { |id| Loan.new(id, @loan_value) }
         end
 
+        def cannot_pay_interest_str
+          '(Liquidate)'
+        end
+
         def future_interest_rate
           interest = ((loans_taken + (self.class::LOANS_PER_INCREMENT - 1)) /
                      self.class::LOANS_PER_INCREMENT).to_i *
