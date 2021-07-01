@@ -357,7 +357,7 @@ module Engine
                 type: 'token',
                 owner_type: 'corporation',
                 count: 1,
-                from_owner: true,
+                from_owner: false,
                 extra_slot: true,
                 special_only: true,
                 price: 0,
@@ -585,7 +585,7 @@ module Engine
         end
 
         def operating_round(round_num)
-          G18VA::Round::Operating.new(self, [
+          Engine::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             G18VA::Step::Assign,
             Engine::Step::Exchange,
@@ -593,8 +593,8 @@ module Engine
             Engine::Step::SpecialTrack,
             Engine::Step::BuyCompany,
             Engine::Step::Track,
-            G18VA::Step::SpecialToken,
-            G18VA::Step::Token,
+            Engine::Step::SpecialToken,
+            Engine::Step::Token,
             Engine::Step::Route,
             G18VA::Step::Dividend,
             Engine::Step::DiscardTrain,
@@ -704,7 +704,7 @@ module Engine
           plain_cities = stops.select { |s| s.city? && s.groups.empty? }
 
           steam = steamboat.id
-          if route.corporation.assigned?(steam) && stops.map(&:hex).any? { |hex| hex.assigned?(steam) }
+          if route.corporation.assigned?(steam) && stops.any? { |stop| stop.hex.assigned?(steam) }
             revenue += train_type == :doubler ? 20 : 10
           end
 
@@ -735,6 +735,10 @@ module Engine
           two_player? && @optional_rules&.include?(:two_player_share_limit) ? { max_ownership_percent: 70 } : {}
         end
 
+        def train_limit(entity)
+          super + Array(abilities(entity, :train_limit)).sum(&:increase)
+        end
+
         # 5 => 10 share conversion logic
         def event_forced_conversions!
           @log << '-- Event: All 5 share corporations must convert to 10 share corporations immediately --'
@@ -757,7 +761,7 @@ module Engine
             shares[0].percent = 20
             new_shares = Array.new(5) { |i| Share.new(corporation, percent: 10, index: i + 4) }
             corporation.type = :large
-            # TODO: Add 2 $100 tokens
+            2.times { corporation.tokens << Engine::Token.new(corporation, price: 100) }
           else
             raise GameError, 'Cannot convert 10 share corporation'
           end
