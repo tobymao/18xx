@@ -24,7 +24,7 @@ module Engine
           {
             sym: :beginner_game,
             short_name: 'Beginner Game',
-            desc: 'Beginner Game (simpler privates, more tiles available)',
+            desc: 'Simpler privates, more tiles available',
           },
         ].freeze
       end

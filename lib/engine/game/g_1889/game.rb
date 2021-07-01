@@ -471,8 +471,8 @@ module Engine
           2 => %w[DR SIR],
           3 => %w[DR SIR ER],
           4 => %w[DR SIR ER SMR],
-          5 => %w[DR SIR ER SMR MF],
-          6 => %w[DR SIR ER SMR MF TR],
+          5 => %w[DR SIR ER SMR TR],
+          6 => %w[DR SIR ER SMR TR MF],
         }.freeze
 
         BEGINNER_GAME_PRIVATE_REVENUES = {
