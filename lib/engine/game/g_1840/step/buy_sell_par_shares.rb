@@ -41,6 +41,15 @@ module Engine
             track_action(action, action.bundle.corporation)
           end
 
+          def sell_shares(entity, shares, swap: nil)
+            raise GameError, "Cannot sell shares of #{shares.corporation.name}" if !can_sell?(entity, shares) && !swap
+
+            allow_president_change = shares.corporation.type != :city
+
+            @round.players_sold[shares.owner][shares.corporation] = :now
+            @game.sell_shares_and_change_price(shares, swap: swap,  allow_president_change: allow_president_change)
+          end
+
           def visible_corporations
             @game.corporations.reject { |item| item.type == :minor }
           end
@@ -52,6 +61,27 @@ module Engine
           def process_choose_ability(action)
             company = action.entity
             @game.sell_company(company)
+          end
+
+          def can_sell?(entity, bundle)
+            return unless bundle
+            return false if entity != bundle.owner
+
+            corporation = bundle.corporation
+
+            timing = @game.check_sale_timing(entity, corporation)
+
+            timing &&
+              !(@game.class::MUST_SELL_IN_BLOCKS && @round.players_sold[entity][corporation] == :now) &&
+              can_sell_order? &&
+              (@game.share_pool.fit_in_bank?(bundle) || corporation.type == :city) &&
+              can_dump?(entity, bundle)
+          end
+
+          def can_dump?(entity, bundle)
+            return true if bundle.corporation.type == :city
+
+            bundle.can_dump?(entity)
           end
         end
       end
