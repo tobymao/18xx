@@ -515,6 +515,7 @@ module Engine
         SELL_AFTER = :operate
         EBUY_OTHER_VALUE = true
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = true
+        ONLY_HIGHEST_BID_COMMITTED = true
         DOUBLER_HEXES = %w[E2 F3 H3 G4 C4 F5 H5 F7 C8 E8 D9 F11 C12 F13 H13 H15].freeze
         CMD_HEXES = %w[A6 A12].freeze
         MINE_HEXES = %w[B5 B7 B9 B11 B13].freeze
@@ -533,10 +534,17 @@ module Engine
         ).freeze
 
         include CompanyPrice50To150Percent
-
+        MIN_BID_INCREMENT = 5
         ASSIGNMENT_TOKENS = {
           'P1' => '/icons/1846/sc_token.svg',
         }.freeze
+
+        def new_auction_round
+          Engine::Round::Auction.new(self, [
+            Engine::Step::CompanyPendingPar,
+            G18VA::Step::WaterfallAuction,
+          ])
+        end
 
         def stock_round
           G18VA::Round::Stock.new(self, [
