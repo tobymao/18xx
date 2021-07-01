@@ -475,6 +475,24 @@ module Engine
           6 => %w[DR SIR ER SMR MF TR],
         }.freeze
 
+        BEGINNER_GAME_PRIVATE_REVENUES = {
+          'TR' => 5,
+          'MF' => 15,
+          'ER' => 15,
+          'SMR' => 20,
+          'DR' => 20,
+          'SIR' => 25,
+        }.freeze
+
+        BEGINNER_GAME_PRIVATE_VALUES = {
+          'TR' => 20,
+          'MF' => 40,
+          'ER' => 40,
+          'SMR' => 60,
+          'DR' => 60,
+          'SIR' => 90,
+        }.freeze
+
         def setup
           remove_company(company_by_id('SIR')) if two_player? && !beginner_game?
           return unless beginner_game?
@@ -536,6 +554,8 @@ module Engine
         def neuter_company(company)
           company.abilities.clear
           company.desc = 'Closes when the first 5 train is bought. Cannot be purchased by a corporation'
+          company.value = BEGINNER_GAME_PRIVATE_VALUES[company.sym]
+          company.revenue = BEGINNER_GAME_PRIVATE_REVENUES[company.sym]
           company.add_ability(Ability::NoBuy.new(type: 'no_buy'))
         end
 
