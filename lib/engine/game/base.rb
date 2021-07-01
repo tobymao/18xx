@@ -2576,6 +2576,16 @@ module Engine
         nil
       end
 
+      def adjustable_train_list?
+        false
+      end
+
+      def adjustable_train_sizes?
+        false
+      end
+
+      def reset_adjustable_trains!; end
+
       def operation_round_short_name
         self.class::OPERATION_ROUND_SHORT_NAME
       end

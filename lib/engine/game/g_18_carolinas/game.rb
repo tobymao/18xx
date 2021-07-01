@@ -4,8 +4,6 @@ require_relative 'meta'
 require_relative '../base'
 require_relative 'entities'
 require_relative 'map'
-require_relative 'step/buy_sell_par_shares_companies'
-require_relative 'step/track'
 
 module Engine
   module Game
@@ -15,7 +13,7 @@ module Engine
         include Entities
         include Map
 
-        attr_reader :conversion_train, :tile_groups, :north_hexes, :south_hexes
+        attr_reader :tile_groups, :north_hexes, :south_hexes
 
         register_colors(green: '#237333',
                         red: '#d81e3e',
@@ -73,6 +71,13 @@ module Engine
             distance: 99,
             price: 1,
             num: 64,
+          },
+          {
+            name: 'Convert',
+            distance: [{ 'nodes' => %w[city offboard], 'pay' => 2, 'visit' => 2 },
+                       { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
+            price: 0,
+            num: 1,
           },
         ].freeze
 
@@ -158,10 +163,19 @@ module Engine
         COMPANY_SALE_FEE = 30
         ADDED_TOKEN_PRICE = 100
 
-        CONVERSION_DISTANCE = [{ 'nodes' => %w[city offboard], 'pay' => 2, 'visit' => 2 },
-                               { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }].freeze
-
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
+
+        MIN_TRAIN = {
+          '2' => 2,
+          '3' => 2,
+          '4' => 2,
+          '5' => 3,
+          '6' => 4,
+          '7' => 5,
+          '8' => 6,
+        }.freeze
+
+        MAX_TRAIN = 16
 
         C_TILES = %w[C1 C2 C3 C4 C5 C6 C7 C8 C9].freeze
 
@@ -298,11 +312,16 @@ module Engine
             end
           end
 
-          @conversion_train = Train.new(name: 'Convert', distance: CONVERSION_DISTANCE, price: 0,
-                                        index: @depot.trains.size)
-          @conversion_train.owner = nil
-          @depot.trains << @conversion_train
-          update_cache(:trains)
+          @conversion_train = @depot.trains.find { |t| t.name == 'Convert' }
+
+          # initialize corp trains
+          @corporation_trains = {}
+          @corporation_power = {}
+          @corporations.each do |corp|
+            8.times { buy_train(corp, @depot.depot_trains[0], :free) }
+            @corporation_trains[corp] = nil
+            @corporation_power[corp] = 5 # FIXME: set to 0 after testing
+          end
         end
 
         def can_ipo?(corp)
@@ -345,8 +364,8 @@ module Engine
             Engine::Step::HomeToken,
             G18Carolinas::Step::Track,
             Engine::Step::Token,
-            Engine::Step::Route,
-            Engine::Step::Dividend,
+            G18Carolinas::Step::Route,
+            G18Carolinas::Step::Dividend,
             Engine::Step::BuyTrain,
           ], round_num: round_num)
         end
@@ -431,6 +450,100 @@ module Engine
           super
         end
 
+        def enough_power?(entity)
+          return false unless entity.corporation?
+
+          @corporation_power[entity] >= MIN_TRAIN[@phase.name]
+        end
+
+        def load_corporation_trains(entity)
+          operating = entity.operating_history
+          last_run = operating[operating.keys.max]&.routes
+          return [] unless last_run
+
+          last_run.keys
+        end
+
+        def route_trains(entity)
+          @corporation_trains[entity] ||= load_corporation_trains(entity)
+
+          # adjust trains that don't meet lower limit
+          # - this may cause an illegal set of routes, but will preserve previous run
+          @corporation_trains[entity].each do |t|
+            if t.distance < MIN_TRAIN[@phase.name]
+              t.distance = MIN_TRAIN[@phase.name]
+              t.name = MIN_TRAIN[@phase.name].to_s
+            end
+          end
+
+          if @corporation_trains[entity].empty? && @corporation_power[entity] >= MIN_TRAIN[@phase.name]
+            train = entity.trains[0]
+            train.distance = MIN_TRAIN[@phase.name]
+            train.name = MIN_TRAIN[@phase.name].to_s
+            @corporation_trains[entity] = [train]
+          end
+          @corporation_trains[entity]
+        end
+
+        # after running routes, update sizes of trains actually used
+        def update_route_trains(entity, routes)
+          @corporation_trains[entity] = nil
+          routes.each do |route|
+            next if route.visited_stops.empty?
+
+            train = route.train
+            train.distance = route.visited_stops.size
+            train.name = train.distance.to_s
+          end
+        end
+
+        def adjustable_train_list?
+          true
+        end
+
+        def adjustable_train_sizes?
+          true
+        end
+
+        def reset_adjustable_trains!(routes)
+          @corporation_trains[routes[0].train.owner] = nil
+        end
+
+        def add_route_train(routes)
+          entity = routes[0].train.owner
+          trains = @corporation_trains[entity]
+          current_distance = trains.sum(&:distance)
+          return if @corporation_power[entity] - current_distance < MIN_TRAIN[@phase.name]
+
+          new_train = entity.trains.find { |t| !trains.include?(t) }
+          new_train.distance = MIN_TRAIN[@phase.name]
+          new_train.name = MIN_TRAIN[@phase.name].to_s
+          @corporation_trains[entity] << new_train
+        end
+
+        def delete_route_train(route)
+          train = route.train
+          @corporation_trains[train.owner].delete(train)
+        end
+
+        def increase_route_train(route)
+          train = route.train
+          corp = train.owner
+          return if train.distance == MAX_TRAIN
+          return if route.routes.sum { |r| r.train.distance } >= @corporation_power[corp]
+
+          train.distance += 1
+          train.name = train.distance.to_s
+        end
+
+        def decrease_route_train(route)
+          train = route.train
+          return if train.distance == MIN_TRAIN[@phase.name]
+
+          train.distance -= 1
+          train.name = train.distance.to_s
+        end
+
         def check_distance(route, visits)
           if route.train.name == 'Convert'
             raise GameError, 'Route must be specified' if visits.empty?
@@ -447,9 +560,17 @@ module Engine
         end
 
         def check_other(route)
-          return unless route.train.name == 'Convert'
+          if route.train.name == 'Convert'
+            raise GameError, 'Route must have Southern track' unless route.paths.any? { |p| p.track != :broad }
+          else
+            if route.routes.sum { |r| r.train.distance } > @corporation_power[route.train.owner]
+              raise GameError, 'Train sizes exceed train power'
+            end
 
-          raise GameError, 'Route must have Southern track' unless route.paths.any? { |p| p.track != :broad }
+            track_types = {}
+            route.paths.each { |path| track_types[path.track] = 1 }
+            raise GameError, 'Train cannot use more than one gauge' unless track_types.keys.one?
+          end
         end
       end
     end
