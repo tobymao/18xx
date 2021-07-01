@@ -42,8 +42,7 @@ module Engine
 
           def more_than_80_only_from_market(entity, bundle)
             corporation = bundle.corporation
-            ipo_share = corporation.shares[0]
-            is_ipo_share = ipo_share == bundle
+            is_ipo_share = bundle.owner.corporation?
             percent = entity.percent_of(corporation)
             !is_ipo_share || percent < 80
           end
