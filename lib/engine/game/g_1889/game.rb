@@ -437,6 +437,14 @@ module Engine
         EBUY_OTHER_VALUE = false # allow ebuying other corp trains for up to face
         HOME_TOKEN_TIMING = :operating_round
 
+        BEGINNER_GAME_PRIVATES = {
+          2 => %w[DR SIR],
+          3 => %w[DR SIR ER],
+          4 => %w[DR SIR ER SMR],
+          5 => %w[DR SIR ER SMR MF],
+          6 => %w[DR SIR ER SMR MF TR],
+        }.freeze
+
         def operating_round(round_num)
           Round::Operating.new(self, [
             Engine::Step::Bankrupt,
@@ -461,11 +469,31 @@ module Engine
         end
 
         def setup
-          if two_player? && !@optional_rules.include?(:beginner_game)
-            sir = company_by_id('SIR')
-            sir.close!
-            @round.active_step.companies.delete(sir)
-          end
+          remove_company(company_by_id('SIR')) if two_player? && !@optional_rules.include?(:beginner_game)
+          return unless @optional_rules.include?(:beginner_game)
+
+          neuter_private_companies
+          close_unused_privates
+        end
+
+        def neuter_private_companies
+          @companies.each { |c| neuter_company(c) }
+        end
+
+        def neuter_company(company)
+          company.abilities.clear
+          company.desc = 'Closes when the first 5 train is bought. Cannot be purchased by a corporation'
+          company.add_ability(Ability::NoBuy.new(type: 'no_buy'))
+          puts company, company.abilities
+        end
+
+        def close_unused_privates
+          @companies.each { |c| remove_company(c) unless BEGINNER_GAME_PRIVATES[@players.size].include?(c.sym) }
+        end
+
+        def remove_company(company)
+          company.close!
+          @round.active_step.companies.delete(company)
         end
       end
     end
