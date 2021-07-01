@@ -156,7 +156,7 @@ module Engine
             @game.bank.spend(revenue, entity.owner)
           end
 
-          def half_pay_withhold_amount(entity, revenue)
+          def half_pay_withhold_amount(_entity, revenue)
             revenue / 2
           end
         end
