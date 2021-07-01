@@ -71,6 +71,36 @@ module Engine
           '466' => 1,
           '492' => 1,
           '611' => 2,
+          'bgnnr6' => {
+            'count' => 2,
+            'color' => 'yellow',
+            'code' => 'city=revenue:20;path=a:0,b:_0;path=a:2,b:_0',
+          },
+          'bgnnr7' => {
+            'count' => 1,
+            'color' => 'yellow',
+            'code' => 'path=a:0,b:1',
+          },
+          'bgnnr8' => {
+            'count' => 1,
+            'color' => 'yellow',
+            'code' => 'path=a:0,b:2',
+          },
+          'bgnnr9' => {
+            'count' => 1,
+            'color' => 'yellow',
+            'code' => 'path=a:0,b:3',
+          },
+          'bgnnr23' => {
+            'count' => 1,
+            'color' => 'green',
+            'code' => 'path=a:0,b:3;path=a:0,b:4',
+          },
+          'bgnnr24' => {
+            'count' => 1,
+            'color' => 'green',
+            'code' => 'path=a:0,b:3;path=a:0,b:2',
+          },
         }.freeze
 
         LOCATION_NAMES = {
@@ -461,6 +491,18 @@ module Engine
           ], round_num: round_num)
         end
 
+        def setup
+          remove_company(company_by_id('SIR')) if two_player? && !beginner_game?
+          return unless beginner_game?
+
+          neuter_private_companies
+          close_unused_privates
+
+          # companies are randomly distributed to players and they buy their company
+          @companies.sort_by! { rand }
+          @players.zip(@companies).each { |p, c| buy_company(p, c) }
+        end
+
         def active_players
           return super if @finished
 
@@ -469,21 +511,22 @@ module Engine
         end
 
         def init_round
-          return super unless @optional_rules.include?(:beginner_game)
+          return super unless beginner_game?
 
           stock_round
         end
 
-        def setup
-          remove_company(company_by_id('SIR')) if two_player? && !@optional_rules.include?(:beginner_game)
-          return unless @optional_rules.include?(:beginner_game)
+        def beginner_game?
+          @optional_rules.include?(:beginner_game)
+        end
 
-          neuter_private_companies
-          close_unused_privates
+        def optional_tiles
+          remove_beginner_tiles unless beginner_game?
+        end
 
-          # companies are randomly distributed to players and they buy their company
-          @companies.sort_by! { rand }
-          @players.zip(@companies).each { |p, c| buy_company(p, c) }
+        def remove_beginner_tiles
+          @tiles.reject! { |tile| tile.id.start_with?('bgnnr') }
+          @all_tiles.reject! { |tile| tile.id.start_with?('bgnnr') }
         end
 
         def neuter_private_companies
@@ -497,15 +540,13 @@ module Engine
         end
 
         def close_unused_privates
-          puts @companies
           companies_dup = @companies.dup
           companies_dup.each { |c| remove_company(c) unless BEGINNER_GAME_PRIVATES[@players.size].include?(c.sym) }
-          puts @companies
         end
 
         def remove_company(company)
           company.close!
-          @round.active_step.companies.delete(company) unless @optional_rules.include?(:beginner_game)
+          @round.active_step.companies.delete(company) unless beginner_game?
           @companies.delete(company)
         end
 
