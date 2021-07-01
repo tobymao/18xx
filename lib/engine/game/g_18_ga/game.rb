@@ -576,7 +576,7 @@ module Engine
         end
 
         def make_train_soft_rust
-          @depot.trains.select { |t| t.name == '2' }.each { |t| update_end_of_life(t, nil, t.rusts_on) }
+          @depot.trains.select { |t| t.name == '4' }.each { |t| update_end_of_life(t, nil, t.rusts_on) }
         end
 
         def update_end_of_life(t, rusts_on, obsolete_on)
