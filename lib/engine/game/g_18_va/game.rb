@@ -152,7 +152,7 @@ module Engine
             tiles: %i[yellow green],
             corporation_sizes: [5],
             operating_rounds: 2,
-            status: %w[offboard_token_bonus cmd_token_bonus may_convert],
+            status: %w[offboard_token_bonus cmd_token_bonus can_buy_companies may_convert],
           },
           {
             name: '4',
@@ -161,7 +161,7 @@ module Engine
             tiles: %i[yellow green],
             corporation_sizes: [5],
             operating_rounds: 2,
-            status: %w[offboard_token_bonus cmd_token_bonus may_convert],
+            status: %w[offboard_token_bonus cmd_token_bonus can_buy_companies may_convert],
           },
           {
             name: '5',
@@ -170,7 +170,7 @@ module Engine
             tiles: %i[yellow green brown],
             corporation_sizes: [10],
             operating_rounds: 3,
-            status: %w[offboard_token_bonus cmd_token_bonus],
+            status: %w[offboard_token_bonus cmd_token_bonus can_buy_companies],
           },
           {
             name: '6',
@@ -179,7 +179,7 @@ module Engine
             tiles: %i[yellow green brown],
             corporation_sizes: [10],
             operating_rounds: 3,
-            status: %w[offboard_token_bonus cmd_token_bonus],
+            status: %w[offboard_token_bonus cmd_token_bonus can_buy_companies],
           },
           {
             name: '4D',
@@ -188,7 +188,7 @@ module Engine
             tiles: %i[yellow green brown gray],
             corporation_sizes: [10],
             operating_rounds: 3,
-            status: ['offboard_token_bonus'],
+            status: %w[offboard_token_bonus can_buy_companies],
           },
         ].freeze
 
@@ -306,6 +306,21 @@ module Engine
                 'by $10 permanently and exclusively for that corporation',
             sym: 'P1',
             color: nil,
+            abilities: [
+              {
+                type: 'assign_hexes',
+                when: 'owning_corp_or_turn',
+                hexes: %w[E2 F3 H3 G4 C4 F5 H5 F7 C8 E8 D9 F11 C12 F13 H13 H15],
+                count: 1,
+                owner_type: 'corporation',
+              },
+              {
+                type: 'assign_corporation',
+                when: 'sold',
+                count: 1,
+                owner_type: 'corporation',
+              },
+            ],
           },
           {
             name: 'Tredegar Iron Works',
@@ -315,6 +330,17 @@ module Engine
               'when buying a train from the depot',
             sym: 'P2',
             color: nil,
+            abilities: [
+              {
+                type: 'train_discount',
+                discount: 200,
+                owner_type: 'corporation',
+                trains: %w[2 3 4 5 6 4D],
+                count: 1,
+                closed_when_used_up: true,
+                when: 'buying_train',
+              },
+            ],
           },
           {
             name: 'Potomac Yards',
@@ -324,7 +350,21 @@ module Engine
               'by one or to place an extra, free, disconnected, and nonblocking token '\
               'in any hex that has a city slot (open or not)',
             sym: 'P3',
-            min_players: 3,
+            abilities: [
+              {
+                when: 'any',
+                extra_action: true,
+                type: 'token',
+                owner_type: 'corporation',
+                count: 1,
+                from_owner: false,
+                extra_slot: true,
+                special_only: true,
+                price: 0,
+                teleport_price: 0,
+                hexes: %w[E2 F3 H3 G4 C4 F5 H5 F7 C8 E8 D9 F11 C12 F13 H13 H15 H1 A6 A12 B15 F17],
+              },
+            ],
             color: nil,
           },
           {
@@ -515,7 +555,7 @@ module Engine
         SELL_AFTER = :operate
         EBUY_OTHER_VALUE = true
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = true
-        DOUBLER_HEXES = %w[E2 F3 H3 G4 C4 F5 H5 F7 C8 E8 D9 F11 C12 F13 H13 H15].freeze
+        ONLY_HIGHEST_BID_COMMITTED = true
         CMD_HEXES = %w[A6 A12].freeze
         MINE_HEXES = %w[B5 B7 B9 B11 B13].freeze
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
@@ -533,10 +573,17 @@ module Engine
         ).freeze
 
         include CompanyPrice50To150Percent
-
+        MIN_BID_INCREMENT = 5
         ASSIGNMENT_TOKENS = {
-          'P1' => '/icons/1846/sc_token.svg',
+          'P1' => '/icons/18_va/port.svg',
         }.freeze
+
+        def new_auction_round
+          Engine::Round::Auction.new(self, [
+            Engine::Step::CompanyPendingPar,
+            G18VA::Step::WaterfallAuction,
+          ])
+        end
 
         def stock_round
           G18VA::Round::Stock.new(self, [
@@ -546,7 +593,7 @@ module Engine
         end
 
         def operating_round(round_num)
-          G18VA::Round::Operating.new(self, [
+          Engine::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             G18VA::Step::Assign,
             Engine::Step::Exchange,
@@ -554,14 +601,25 @@ module Engine
             Engine::Step::SpecialTrack,
             Engine::Step::BuyCompany,
             Engine::Step::Track,
-            G18VA::Step::SpecialToken,
-            G18VA::Step::Token,
+            Engine::Step::SpecialToken,
+            Engine::Step::Token,
             Engine::Step::Route,
             G18VA::Step::Dividend,
             Engine::Step::DiscardTrain,
+            Engine::Step::SpecialBuyTrain,
             G18VA::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
+        end
+
+        def buy_train(operator, train, price = nil)
+          return super(operator, train, :free) if price.zero?
+
+          super
+        end
+
+        def setup
+          setup_company_price_50_to_150_percent
         end
 
         def steamboat
@@ -654,8 +712,8 @@ module Engine
           plain_cities = stops.select { |s| s.city? && s.groups.empty? }
 
           steam = steamboat.id
-          if route.corporation.assigned?(steam) && (port = stops.map(&:hex).find { |hex| hex.assigned?(steam) })
-            revenue += (train_type == :doubler ? 20 : 10) * port.tile.icons.count { |icon| icon.name == 'port' }
+          if route.corporation.assigned?(steam) && stops.any? { |stop| stop.hex.assigned?(steam) }
+            revenue += train_type == :doubler ? 20 : 10
           end
 
           # 4Ds double plain cities
@@ -685,6 +743,10 @@ module Engine
           two_player? && @optional_rules&.include?(:two_player_share_limit) ? { max_ownership_percent: 70 } : {}
         end
 
+        def train_limit(entity)
+          super + Array(abilities(entity, :train_limit)).sum(&:increase)
+        end
+
         # 5 => 10 share conversion logic
         def event_forced_conversions!
           @log << '-- Event: All 5 share corporations must convert to 10 share corporations immediately --'
@@ -707,7 +769,7 @@ module Engine
             shares[0].percent = 20
             new_shares = Array.new(5) { |i| Share.new(corporation, percent: 10, index: i + 4) }
             corporation.type = :large
-            # TODO: Add 2 $100 tokens
+            2.times { corporation.tokens << Engine::Token.new(corporation, price: 100) }
           else
             raise GameError, 'Cannot convert 10 share corporation'
           end
