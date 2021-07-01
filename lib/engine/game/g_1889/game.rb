@@ -499,6 +499,7 @@ module Engine
 
           neuter_private_companies
           close_unused_privates
+          remove_blockers_and_icons
 
           # companies are randomly distributed to players and they buy their company
           @companies.sort_by! { rand }
@@ -547,12 +548,21 @@ module Engine
           @all_tiles.reject! { |tile| tile.id.start_with?('Beg') }
         end
 
+        def remove_blockers_and_icons
+          %w[C4 K4 B11 G10 I12 J9].each do |coords|
+            hex = hex_by_id(coords)
+            hex.tile.blockers.reject! { true }
+            hex.tile.icons.reject! { true }
+          end
+        end
+
         def neuter_private_companies
           @companies.each { |c| neuter_company(c) }
         end
 
         def neuter_company(company)
-          company.abilities.clear
+          company_abilities = company.abilities.dup
+          company_abilities.each { |ability| company.remove_ability(ability) }
           company.desc = 'Closes when the first 5 train is bought. Cannot be purchased by a corporation'
           company.value = BEGINNER_GAME_PRIVATE_VALUES[company.sym]
           company.revenue = BEGINNER_GAME_PRIVATE_REVENUES[company.sym]
@@ -575,7 +585,6 @@ module Engine
           company.owner = player
           player.companies << company
           player.spend(price, @bank)
-          @companies.delete(company)
           @log << "#{player.name} buys #{company.name} for #{format_currency(price)}"
         end
       end
