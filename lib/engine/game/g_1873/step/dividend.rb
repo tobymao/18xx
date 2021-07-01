@@ -155,6 +155,10 @@ module Engine
             @log << "#{entity.owner.name} receives #{@game.format_currency(revenue)}"
             @game.bank.spend(revenue, entity.owner)
           end
+
+          def half_pay_withhold_amount(entity, revenue)
+            revenue / 2
+          end
         end
       end
     end
