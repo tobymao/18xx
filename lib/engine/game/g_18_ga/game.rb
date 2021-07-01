@@ -467,6 +467,9 @@ module Engine
         def setup
           setup_company_price_50_to_150_percent
 
+          @recently_floated = []
+          make_train_soft_rust('2') if @optional_rules&.include?(:soft_rust_4t)
+
           # Place neutral tokens in the off board cities
           neutral = Corporation.new(
             sym: 'N',
@@ -495,6 +498,13 @@ module Engine
           buy_train(neutral, @free_2_train, :free)
         end
 
+        def tile_lays(entity)
+          return super if !@optional_rules&.include?(:double_yellow_first_or) ||
+            !@recently_floated&.include?(entity)
+
+          [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }]
+        end
+
         # Only buy and sell par shares is possible action during SR
         def stock_round
           Round::Stock.new(self, [
@@ -517,6 +527,16 @@ module Engine
             Engine::Step::SingleDepotTrainBuy,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
+        end
+
+        def or_round_finished
+          @recently_floated = []
+        end
+
+        def float_corporation(corporation)
+          @recently_floated << corporation
+
+          super
         end
 
         def upgrades_to?(from, to, _special = false, selected_company: nil)
@@ -553,6 +573,16 @@ module Engine
           buy_train(corporation, @free_2_train, :free)
           @free_2_train.buyable = false
           @log << "#{corporation.name} receives a bonus non sellable 2 train"
+        end
+
+        def make_train_soft_rust
+          @depot.trains.select { |t| t.name == '2' }.each { |t| update_end_of_life(t, nil, t.rusts_on) }
+        end
+
+        def update_end_of_life(t, rusts_on, obsolete_on)
+          t.rusts_on = rusts_on
+          t.obsolete_on = obsolete_on
+          t.variants.each { |_, v| v.merge!(rusts_on: rusts_on, obsolete_on: obsolete_on) }
         end
       end
     end
