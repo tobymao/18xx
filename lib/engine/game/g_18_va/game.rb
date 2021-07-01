@@ -350,6 +350,21 @@ module Engine
               'by one or to place an extra, free, disconnected, and nonblocking token '\
               'in any hex that has a city slot (open or not)',
             sym: 'P3',
+            abilities: [
+              {
+                when: 'any',
+                extra_action: true,
+                type: 'token',
+                owner_type: 'corporation',
+                count: 1,
+                from_owner: true,
+                extra_slot: true,
+                special_only: true,
+                price: 0,
+                teleport_price: 0,
+                hexes: %w[E2 F3 H3 G4 C4 F5 H5 F7 C8 E8 D9 F11 C12 F13 H13 H15 H1 A6 A12 B15 F17],
+              },
+            ],
             color: nil,
           },
           {
