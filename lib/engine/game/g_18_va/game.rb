@@ -556,6 +556,8 @@ module Engine
         EBUY_OTHER_VALUE = true
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = true
         ONLY_HIGHEST_BID_COMMITTED = true
+        BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
+        CERT_LIMIT_COUNTS_BANKRUPTED = true
         CMD_HEXES = %w[A6 A12].freeze
         MINE_HEXES = %w[B5 B7 B9 B11 B13].freeze
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
@@ -594,7 +596,7 @@ module Engine
 
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
-            Engine::Step::Bankrupt,
+            G18VA::Step::Bankrupt,
             G18VA::Step::Assign,
             Engine::Step::Exchange,
             G18VA::Step::Convert,
@@ -755,6 +757,28 @@ module Engine
 
         def process_convert(action)
           @game.convert(action.entity)
+        end
+
+        def close_corporation(corporation, quiet: false)
+          super
+
+          # remove port assignment
+          removals = Hash.new { |h, k| h[k] = {} }
+          @hexes.each do |hex|
+            hex.assignments.dup.each do |company, _|
+              removals[company][:hex] = hex.name
+              hex.remove_assignment!(company)
+            end
+          end
+          removals.each do |company, removal|
+            hex = removal[:hex]
+            @log << "#{company_by_id(company).name} token removed from #{hex}"
+          end
+
+          corporation.close!
+          corporation = reset_corporation(corporation)
+          hex_by_id(corporation.coordinates).tile.add_reservation!(corporation, 0)
+          @corporations << corporation
         end
 
         def convert(corporation)
