@@ -19,11 +19,17 @@ module Engine
           def dividend_options(entity)
             penalty = @round.interest_penalty[entity] || 0
             revenue = @game.routes_revenue(routes) - penalty
+
             dividend_types.map do |type|
               payout = send(type, entity, revenue)
               payout[:divs_to_corporation] = corporation_dividends(entity, payout[:per_share])
+
               [type, payout.merge(share_price_change(entity, revenue - payout[:corporation]))]
             end.to_h
+          end
+
+          def payout_per_share(entity, revenue)
+            (revenue / entity.total_shares.to_f)
           end
 
           def process_dividend(action)

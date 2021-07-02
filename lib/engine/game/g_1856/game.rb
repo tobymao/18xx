@@ -33,7 +33,7 @@ module Engine
                         blue: '#0189d1',
                         brown: '#7b352a')
 
-        CURRENCY_FORMAT_STR = '$%d'
+        CURRENCY_FORMAT_STR = '$%f'
 
         BANK_CASH = 12_000
 
@@ -1861,6 +1861,14 @@ module Engine
 
         def train_limit(entity)
           super + Array(abilities(entity, :train_limit)).sum(&:increase)
+        end
+
+        def format_currency(val)
+          # On dividends per share can be a float
+          # But don't show decimal points on all
+          return super if (val % 1).zero?
+
+          format('$%.1<val>f', val: val)
         end
       end
     end
