@@ -20,7 +20,6 @@ module Engine
         PLAYER_RANGE = [2, 7].freeze
         GAME_TITLE = '1830+'
         DEPENDS_ON = '1830'
-        GAME_SUBTITLE = nil
         OPTIONAL_RULES = [
           {
             sym: :multiple_brown_from_ipo,
