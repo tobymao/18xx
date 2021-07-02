@@ -46,7 +46,7 @@ module Engine
             on: '3S',
             train_limit: 4,
             tiles: %i[yellow green],
-            status: ['can_buy_companies'],
+            status: %w[can_buy_companies ipo_9],
           },
           {
             name: '4S',
@@ -60,7 +60,7 @@ module Engine
             on: '4S Perm',
             train_limit: 3,
             tiles: %i[yellow green brown],
-            status: ['can_buy_companies'],
+            status: %w[can_buy_companies ipo_12],
           },
           {
             name: '5S',
@@ -219,13 +219,19 @@ module Engine
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'new_train' => ['First train bonus',
-                          'Corporation buying the first train of this type moves one tick to the right'],
+                          'Corporation buying the first train of this type moves one to the right'],
           'rust_own_3s_4s' => ['First train buyer rust 3S Long and 4S',
-                               'Corporation buying the first 4J/2J rusts immediately its own 3S Long and 4S '\
+                               'Corporation buying the first 4J/2J immediately rusts its own 3S Long and 4S '\
                                '(3S long and 4S run one last time for the other corporations)'],
         ).freeze
 
         STATUS_TEXT = Base::STATUS_TEXT.merge(
+          'ipo_9' => ['IPO 9 (bonus)',
+                      'Corporation gets 5$N bonus in the treasury; must place a yellow or a green'\
+                      ' track in the Home and up to 2 yellow tracks'],
+          'ipo_12' => ['IPO 12 (bonus)',
+                       'Corporation gets 10$N bonus in the treasury; must place a yellow or a green'\
+                       ' or a brown track in the Home and up to 4 yellow tracks'],
           'grey_homes' => ['Grey Homes',
                            '3 Grey tracks available; upgrade HOME of GIRAFFES, TIGERS and BROWN BEARS'],
         ).freeze
@@ -947,20 +953,41 @@ module Engine
             { type: :OR, value: '12', name: '3.1' },
             { type: :OR, value: '15', name: '3.2' },
             { type: :OR, value: '18', name: '3.3' },
-            { type: :End, value: '20' },
+            { type: :END, value: '20' },
           ]
         end
 
         def timeline
+          near_family_text = case @near_families_purchasable.size
+                             when 1
+                               corporation = corporation_by_id(@near_families_purchasable[0][:id])
+                               ordered = @corporations.sort_by(&:full_name).cycle(2).to_a
+                               corporations = @near_families_direction == 'reverse' ? ordered.reverse : ordered
+                               following_corporations = corporations.drop_while { |c| c.id != corporation.id }
+                                                                    .take(@corporations.size)
+                                                                    .reject(&:ipoed)
+                                                                    .map(&:full_name)
+                                                                    .join(', ')
+                               return if following_corporations.empty?
+
+                               "open company in strict order: #{following_corporations}"
+                             when 2
+                               next_family = corporation_by_id(@near_families_purchasable[0][:id])
+                               prev_family = corporation_by_id(@near_families_purchasable[1][:id])
+                               "open only either #{next_family.full_name} or #{prev_family.full_name}"
+                             else
+                               'open any company'
+                             end
           @timeline = [
-            "Current value of a ZOOTicket is #{format_currency(@ticket_zoo_current_value)}.",
-            'ZOOTicket: the numbers 4,5,6…20 on the timeline are the value of a single ZOOTicket during each round'\
+            "ZOOTicket: the current value is #{format_currency(@ticket_zoo_current_value)}."\
+              ' Numbers 4,5,6…20 on the timeline are the value of a single ZOOTicket during each round'\
               ' (i.e. a ZOOTicket is worth 9$N in the OR 2.2). At the end of game each non-sold ZOOTicket is worth'\
-              ' 20$N for the score.',
-            'SR 3: at the start of SR 3 each company gets a new share available (IPO RESERVED R share) for purchase',
-            'END: if during the train forced purchase the player doesn\'t have enough money, the bank covers the'\
-              ' expense; the player gets a negative debt (loan) equal to twice what the bank paid',
+              ' 20$N.',
           ]
+          @timeline << "NEARBY FAMILY: #{near_family_text}" if near_family_text
+          @timeline << 'SR 3: at the start of SR 3 the reserved R shares are available to buy.'
+          @timeline << 'END: if during a forced train purchase the player doesn\'t have enough money, the bank covers'\
+              ' the expense; the player gets a negative debt (loan) equal to twice what the bank paid'
         end
 
         def take_player_loan(player, debt)
