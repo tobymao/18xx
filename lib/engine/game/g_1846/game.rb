@@ -278,6 +278,8 @@ module Engine
               end
               place_second_token(corporation)
             end
+            @log << "Privates in the game: #{@companies.reject { |c| c.name.include?('Pass') }.map(&:name).join(', ')}"
+            @log << "Corporations in the game: #{@corporations.map(&:name).join(', ')}"
           end
 
           @cert_limit = init_cert_limit
