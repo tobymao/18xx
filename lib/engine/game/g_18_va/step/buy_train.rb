@@ -33,7 +33,10 @@ module Engine
             other_trains.reject! { |t| entity.cash < t.price && must_buy_at_face_value?(t, entity) }
 
             # Trainbuying in 18VA is like 1836jr except 4D trains are exempt
-            other_trains + (depot_trains.reject { |x| @depot_trains_bought.include?(x.sym) && x.name != '4D' })
+            other_trains + (depot_trains.reject do |x|
+                              @depot_trains_bought.include?(x.sym) &&
+                              !@game.depot.discarded.include?(x) && x.name != '4D'
+                            end)
           end
 
           def setup
