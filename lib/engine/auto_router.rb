@@ -18,8 +18,7 @@ module Engine
       connections = {}
 
       nodes = @game.graph.connected_nodes(corporation).keys.sort_by do |node|
-        revenue = corporation
-          .runnable_trains
+        revenue = @game.route_trains(corporation)
           .map { |train| node.route_revenue(@game.phase, train) }
           .max
         [
