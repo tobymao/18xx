@@ -558,6 +558,7 @@ module Engine
         ONLY_HIGHEST_BID_COMMITTED = true
         BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
         CERT_LIMIT_COUNTS_BANKRUPTED = true
+        MUST_BID_INCREMENT_MULTIPLE = true
         CMD_HEXES = %w[A6 A12].freeze
         MINE_HEXES = %w[B5 B7 B9 B11 B13].freeze
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
