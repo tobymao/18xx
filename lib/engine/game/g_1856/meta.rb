@@ -8,7 +8,7 @@ module Engine
       module Meta
         include Game::Meta
 
-        DEV_STAGE = :alpha
+        DEV_STAGE = :beta
 
         GAME_DESIGNER = 'Bill Dixon'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1856'
