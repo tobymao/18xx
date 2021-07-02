@@ -18,7 +18,7 @@ module Engine
         PLAYER_RANGE = [3, 5].freeze
         OPTIONAL_RULES = [
           {
-            sym: :soft_rust_t4,
+            sym: :soft_rust_4t,
             short_name: 'Soft rust',
             desc: '4 trains get one more run after rusting',
           },
