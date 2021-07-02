@@ -314,9 +314,10 @@ module Engine
         end
 
         def remove_from_group!(group, entities)
-          group -= ['Boomtown', 'Little Miami', 'C&O'] if @optional_rules.include?(:second_ed_co)
+          removals_group = group.dup
+          removals_group -= ['Boomtown', 'Little Miami', 'C&O'] if @optional_rules.include?(:second_ed_co)
+          removals = removals_group.sort_by { rand }.take(num_removals(group))
 
-          removals = group.sort_by { rand }.take(num_removals(group))
           # This looks verbose, but it works around the fact that we can't
           # modify code which includes rand() w/o breaking existing games
           return if removals.empty?
