@@ -9,15 +9,15 @@ module Engine
             sym: 'DAYS_OFF',
             name: 'Days off',
             value: 3,
-            desc: 'During SR you can choose a family (company) and its reputation mark (share value) increase!'\
-                  ' It goes one tick to the right',
+            desc: 'During the SR you can choose a family (company), and its reputation mark (share value) increases!'\
+                  ' It goes one space to the right',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
           },
           {
             sym: 'MIDAS',
             name: 'Midas',
             value: 2,
-            desc: 'During SR you can book the priority: when priority is assigned by “more money” criteria,'\
+            desc: 'During the SR you can take the priority: when priority is assigned by “more money” criteria,'\
                   ' you are assigned 1st spot',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
           },
@@ -25,7 +25,7 @@ module Engine
             sym: 'TOO_MUCH_RESPONSIBILITY',
             name: 'Too much responsibility',
             value: 1,
-            desc: 'Player gets immediately 3$N',
+            desc: 'Player immediately gets 3$N',
             abilities: [{ type: 'no_buy', owner_type: 'player' },
                         { type: 'description', description: 'Get 3$N', when: 'any' }],
           },
@@ -40,7 +40,7 @@ module Engine
             sym: 'IT_S_ALL_GREEK_TO_ME',
             name: 'It’s all greek to me',
             value: 2,
-            desc: 'After your turn in a SR, you get another turn - it means you can play twice in a SR:'\
+            desc: 'After your turn in an SR, you get another turn - it means you can play twice in a row in a SR:'\
                   ' “who said you can steal a company?”',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
           },
@@ -48,16 +48,16 @@ module Engine
             sym: 'WHATSUP',
             name: 'Whatsup',
             value: 3,
-            desc: 'During SR, a family (company) can buy the first available squirrel (train), deactivated.'\
-                  ' Reputation (share value) moves one tick to the right',
+            desc: 'During the SR, a family (company) can buy the first available squirrel (train), deactivated.'\
+                  ' Reputation (share value) moves one space to the right',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
           },
           {
             sym: 'RABBITS',
             name: 'Rabbits',
             value: 3,
-            desc: 'The family (company) gets two bonus upgrades, that can be placed even illegally or before the'\
-                  ' correct phase',
+            desc: 'The family (company) gets two bonus upgrades, that can be placed even illegally'\
+                  ' (mountains and water pool) or before the correct phase',
             abilities: [
               {
                 type: 'tile_lay',
@@ -136,8 +136,8 @@ module Engine
             sym: 'ON_A_DIET',
             name: 'On a diet',
             value: 1,
-            desc: 'The family (company) can place a station in addition to the allowed spaces -'\
-                  ' no one can lock you out',
+            desc: 'The family (company) can place a station in addition to the allowed spaces'\
+                  ' - no one can block you out',
             abilities: [
               {
                 type: 'token',
@@ -181,8 +181,9 @@ module Engine
             sym: 'THAT_S_MINE',
             name: "That's mine!",
             value: 2,
-            desc: 'The family (company) books anywhere an open place on a station tile '\
-                  '- it is booked until the family can and will put a token there',
+            desc: 'The family (company) reserves an open place on a station tile anywhere'\
+                  ' (irrespective of connectivity) - it is reserved and open for all to run through,'\
+                  ' until the family puts a token there',
             abilities: [
               {
                 type: 'assign_hexes',
@@ -196,7 +197,8 @@ module Engine
             sym: 'WORK_IN_PROGRESS',
             name: 'Work in progress',
             value: 2,
-            desc: 'The family (company) blocks anywhere a free place on a station tile',
+            desc: 'The family (company) blocks a free place on a station tile anywhere'\
+                  ' (irrespective of connectivity)',
             abilities: [
               {
                 type: 'assign_hexes',
@@ -229,8 +231,8 @@ module Engine
             sym: 'TWO_BARRELS',
             name: 'Two barrels',
             value: 2,
-            desc: 'The family (company) can use twice this power to double the value of all O tiles –'\
-                  ' but the downside is that family doesn\'t collect in treasury the usual 1$N for each O',
+            desc: 'The family (company) can use this power on two separate occasions to double the value of all'\
+                  ' O tiles – but the downside is that family doesn\'t collect in treasury the usual 1$N for each O',
             abilities: [
               {
                 type: 'description',
@@ -253,10 +255,10 @@ module Engine
             sym: 'PATCH',
             name: 'Patch',
             value: 2,
-            desc: 'Save from rust: at the phase change the player or the family can choose to mark a squirrel (train)'\
-                  ' so that it won\'t rust; it becomes and run as a 1S. The 1S cannot be sold.'\
-                  ' The PATCH on 1S can be dismissed anytime.'\
-                  ' If PATCH stays on, the family (company) cannot purchase new squirrels (train)',
+            desc: 'Save from rust: at the phase change the player or the family can choose to mark a squirrel'\
+                  ' (train) so that it won\'t rust; it becomes, and run as, a 1S. The 1S cannot be sold.'\
+                  ' The PATCH on 1S can be discarded anytime. If the PATCH stays on, the family (company)'\
+                  ' cannot purchase new squirrels (trains)',
           },
           {
             sym: 'WINGS',
@@ -275,7 +277,7 @@ module Engine
             sym: 'A_TIP_OF_SUGAR',
             name: 'A tip of sugar',
             value: 2,
-            desc: 'A squirrel (train) at will runs one more stop - it doesn\'t work with 4J or 2J',
+            desc: 'A squirrel (train) will run one more stop - it doesn\'t work with 4J or 2J',
           },
         ].freeze
 
