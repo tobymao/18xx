@@ -1010,6 +1010,14 @@ module Engine
 
           "../logos/18_ka/#{corp}"
         end
+
+        def format_currency(val)
+          # On dividends per share can be a float
+          # But don't show decimal points on all
+          return super if (val % 1).zero?
+
+          format('$%.1<val>c', val: val)
+        end
       end
     end
   end
