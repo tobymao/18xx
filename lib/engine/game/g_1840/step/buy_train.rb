@@ -79,6 +79,8 @@ module Engine
           def help
             'You can only assign one train to a line corporation'
           end
+
+          def check_for_cheapest_train(entity, train); end
         end
       end
     end
