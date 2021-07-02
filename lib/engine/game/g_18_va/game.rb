@@ -821,6 +821,10 @@ module Engine
           upgrades |= tiles.select { |t| %w[170 170ric 170was].include?(t.name) } if %w[14 15].include?(tile.name)
           upgrades
         end
+
+        def ipo_name(_entity = nil)
+          'Treasury'
+        end
       end
     end
   end
