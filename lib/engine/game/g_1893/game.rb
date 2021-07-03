@@ -739,6 +739,11 @@ module Engine
           end
         end
 
+        # Show minors in spreadsheet
+        def all_corporations
+          @minors + @corporations
+        end
+
         def store_player_info
           rsn = @round.class.short_name
           round_num = case @round
