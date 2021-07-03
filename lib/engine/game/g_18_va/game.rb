@@ -725,7 +725,7 @@ module Engine
           # Offboard cities are doubled if tokened, unless using a 4D in which case they are quadrupled
           if train_type == :doubler
             # It is doubled once by the main logic so double it again to quadruple
-            revenue += 2 * offboard_stop.route_revenue(@phase, train) if offboard_stop&.tokened_by?(train.owner)
+            revenue += 3 * offboard_stop.route_revenue(@phase, train) if offboard_stop&.tokened_by?(train.owner)
           elsif offboard_stop&.tokened_by?(train.owner)
             revenue += offboard_stop.route_revenue(@phase, train)
           end
