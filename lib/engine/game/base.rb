@@ -1545,7 +1545,21 @@ module Engine
           end
         end
 
+        close_companies_on_par!(corporation)
         place_home_token(corporation) if self.class::HOME_TOKEN_TIMING == :par
+      end
+
+      def close_companies_on_par!(entity)
+        @companies.each do |company|
+          next if company.closed?
+
+          abilities(company, :close, time: 'par') do |ability|
+            next if entity&.name != ability.corporation
+
+            company.close!
+            @log << "#{company.name} closes"
+          end
+        end
       end
 
       def train_help(_entity, _runnable_trains, _routes)

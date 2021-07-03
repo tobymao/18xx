@@ -352,11 +352,10 @@ module Engine
             sym: 'P3',
             abilities: [
               {
-                when: 'any',
+                when: 'owning_corp_or_turn',
                 extra_action: true,
                 type: 'token',
                 owner_type: 'corporation',
-                count: 1,
                 from_owner: false,
                 extra_slot: true,
                 special_only: true,
@@ -370,11 +369,11 @@ module Engine
           {
             name: 'Baltimore & Ohio Presidency',
             value: 140,
-            desc: 'This Company comes with a single share of the Florida East Coast Railway. '\
-            'This company closes when the FECR buys its first train',
+            desc: 'This Company is the Baltimore & Ohio Presidency',
             sym: 'P4',
             abilities: [
               { type: 'shares', shares: 'first_president' },
+              { type: 'close', when: 'par', corporation: 'B&O' },
               { type: 'no_buy' },
             ],
             color: nil,
@@ -558,6 +557,7 @@ module Engine
         ONLY_HIGHEST_BID_COMMITTED = true
         BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
         CERT_LIMIT_COUNTS_BANKRUPTED = true
+        MUST_BID_INCREMENT_MULTIPLE = true
         CMD_HEXES = %w[A6 A12].freeze
         MINE_HEXES = %w[B5 B7 B9 B11 B13].freeze
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
@@ -603,7 +603,7 @@ module Engine
             Engine::Step::SpecialTrack,
             Engine::Step::BuyCompany,
             Engine::Step::Track,
-            Engine::Step::SpecialToken,
+            G18VA::Step::SpecialToken,
             Engine::Step::Token,
             Engine::Step::Route,
             G18VA::Step::Dividend,
@@ -724,7 +724,7 @@ module Engine
           # Offboard cities are doubled if tokened, unless using a 4D in which case they are quadrupled
           if train_type == :doubler
             # It is doubled once by the main logic so double it again to quadruple
-            revenue += 2 * offboard_stop.route_revenue(@phase, train) if offboard_stop&.tokened_by?(train.owner)
+            revenue += 3 * offboard_stop.route_revenue(@phase, train) if offboard_stop&.tokened_by?(train.owner)
           elsif offboard_stop&.tokened_by?(train.owner)
             revenue += offboard_stop.route_revenue(@phase, train)
           end

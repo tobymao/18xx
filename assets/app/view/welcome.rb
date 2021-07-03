@@ -21,6 +21,7 @@ module View
         <p>1888 (prototype from Lonny), 1893 and 1840 2P and 3P variant are now in alpha</p>
         <p>18CZ is now in production</p>
         <p>1856 is now in beta</p>
+        <p>18VA is now in alpha</p>
         <p>We now support Slack/Discord notifications. Learn how to use them <a href='https://github.com/tobymao/18xx/wiki/Notifications'>here</a>.</p>
         <p>Please submit problem reports and make suggestions for improvements on
         <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>.</p>
