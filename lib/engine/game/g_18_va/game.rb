@@ -352,7 +352,7 @@ module Engine
             sym: 'P3',
             abilities: [
               {
-                when: 'any',
+                when: 'owning_corp_or_turn',
                 extra_action: true,
                 type: 'token',
                 owner_type: 'corporation',
@@ -370,11 +370,11 @@ module Engine
           {
             name: 'Baltimore & Ohio Presidency',
             value: 140,
-            desc: 'This Company comes with a single share of the Florida East Coast Railway. '\
-            'This company closes when the FECR buys its first train',
+            desc: 'This Company is the Baltimore & Ohio Presidency',
             sym: 'P4',
             abilities: [
               { type: 'shares', shares: 'first_president' },
+              { type: 'close', when: 'par', corporation: 'B&O' },
               { type: 'no_buy' },
             ],
             color: nil,
