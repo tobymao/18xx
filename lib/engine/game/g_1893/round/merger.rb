@@ -134,7 +134,7 @@ module Engine
           end
 
           def add_player_vote_info_for_reserved_share(reserved_share)
-            player = reserved_share[:minor] ? reserved_share[:minor].owner : reserved_share[:private].owner
+            player = reserved_share[:minor] ? reserved_share[:minor].owner : reserved_share[:company].owner
             add_player_vote_info(player, reserved_share[:share].percent, reserved_share[:name])
           end
 

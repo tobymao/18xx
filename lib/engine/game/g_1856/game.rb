@@ -405,7 +405,7 @@ module Engine
             revenue: 15,
             desc: 'At any time during its operating turn, the owning public company may place the port marker in '\
             'any one hex with the port symbol. The port marker raises the value of all revenue locations in that hex '\
-            'by $20 for that corporation. This marker will may not be moved and will be removed when the first '\
+            'by $20 for that corporation. This marker may not be moved and will be removed when the first '\
             '6 train is purchased. Placement of this marker closes the Great Lakes Shipping Company.',
             abilities: [
               {
@@ -603,7 +603,7 @@ module Engine
           red: {
             ['A20'] =>
                      'offboard=revenue:yellow_30|brown_50|black_60;path=a:4,b:_0,terminal:1;path=a:5,b:_0,terminal:1',
-            ['A14'] => 'border=edge:4',
+            ['A14'] => 'border=edge:4;icon=image:1856/tunnel;icon=image:1856/tunnel',
             ['B13'] =>
                    'offboard=revenue:yellow_30|brown_50;path=a:0,b:_0;path=a:5,b:_0,terminal:1;border=edge:1',
             ['H5'] =>
@@ -625,7 +625,8 @@ module Engine
                    'offboard=revenue:yellow_20|brown_30|black_50,hide:1,groups:Lower Canada;'\
                    'path=a:2,b:_0,terminal:1;border=edge:3',
             ['P19'] =>
-                   'offboard=revenue:yellow_30|brown_40,hide:1,groups:Buffalo;path=a:2,b:_0,terminal:1;border=edge:3',
+                   'offboard=revenue:yellow_30|brown_40,hide:1,groups:Buffalo;path=a:2,b:_0,terminal:1;border=edge:3'\
+                   ';icon=image:1856/bridge;icon=image:1856/bridge',
             ['P17'] =>
                    'offboard=revenue:yellow_30|brown_40,groups:Buffalo;'\
                    'path=a:1,b:_0,terminal:1;path=a:2,b:_0,terminal:1;border=edge:0',
@@ -718,6 +719,9 @@ module Engine
         BARRIE_HEX = 'M4'
         LONDON_HEX = 'F15'
         HAMILTON_HEX = 'L15'
+
+        TUNNEL_TOKEN_HEX = 'A14'
+        BRIDGE_TOKEN_HEX = 'P19'
 
         # This is unlimited in 1891
         # They're also 5% shares if there are more than 20 shares. It's weird.
@@ -857,7 +861,7 @@ module Engine
         end
 
         def interest_rate
-          10
+          @post_nationalization ? nil : 10
         end
 
         def national_token_price
@@ -879,6 +883,8 @@ module Engine
         end
 
         def interest_owed_for_loans(loans)
+          return 0 if @post_nationalization
+
           interest_rate * loans
         end
 
@@ -916,10 +922,10 @@ module Engine
           Array.new(num_loans) { |id| Loan.new(id, loan_value) }
         end
 
-        def can_pay_interest?(_entity, _extra_cash = 0)
+        def can_pay_interest?(entity, extra_cash = 0)
           # TODO: A future PR may figure out how to implement buying_power
           #  that accounts for a corporations revenue.
-          true
+          entity.cash + extra_cash >= interest_owed(entity)
         end
 
         def init_stock_market
@@ -985,11 +991,6 @@ module Engine
           # CGR flags
           @national_ever_owned_permanent = false
 
-          # 1 of each right is reserved w/ the private when it gets bought in. This leaves 2 extra to sell.
-          available_tokens = @optional_rules&.include?(:unlimited_bonus_tokens) ? 99 : 2
-          @available_bridge_tokens = available_tokens
-          @available_tunnel_tokens = available_tokens
-
           @destination_statuses = {}
 
           # Corp -> Borrowed Train
@@ -999,6 +1000,10 @@ module Engine
           )
           national.add_ability(self.class::NATIONAL_IMMOBILE_SHARE_PRICE_ABILITY)
           national.add_ability(self.class::NATIONAL_FORCED_WITHHOLD_ABILITY)
+        end
+
+        def unlimited_bonus_tokens?
+          @optional_rules&.include?(:unlimited_bonus_tokens)
         end
 
         def icon_path(corp)
@@ -1166,18 +1171,26 @@ module Engine
           corporation.capitalization = :incremental if corporation.capitalization == :escrow
         end
 
+        def tunnel_token_available?
+          hex_by_id(TUNNEL_TOKEN_HEX).tile.icons.any? { |icon| icon.name == 'tunnel' }
+        end
+
+        def bridge_token_available?
+          hex_by_id(BRIDGE_TOKEN_HEX).tile.icons.any? { |icon| icon.name == 'bridge' }
+        end
+
         def can_buy_tunnel_token?(entity)
           return false unless entity.corporation?
           return false if tunnel.owned_by_player?
 
-          @available_tunnel_tokens.positive? && !tunnel?(entity) && buying_power(entity) >= RIGHT_COST
+          tunnel_token_available? && !tunnel?(entity) && buying_power(entity) >= RIGHT_COST
         end
 
         def can_buy_bridge_token?(entity)
           return false unless entity.corporation?
           return false if bridge.owned_by_player?
 
-          @available_bridge_tokens.positive? && !bridge?(entity) && buying_power(entity) >= RIGHT_COST
+          bridge_token_available? && !bridge?(entity) && buying_power(entity) >= RIGHT_COST
         end
 
         def buy_tunnel_token(entity)
@@ -1185,7 +1198,14 @@ module Engine
           seller_name = tunnel.closed? ? 'the bank' : tunnel.owner.name
           @log << "#{entity.name} buys a tunnel token from #{seller_name} for #{format_currency(RIGHT_COST)}"
           entity.spend(RIGHT_COST, seller)
-          @available_tunnel_tokens -= 1
+
+          unless unlimited_bonus_tokens?
+            tile_icons = hex_by_id(TUNNEL_TOKEN_HEX).tile.icons
+            tile_icons.delete_at(tile_icons.index { |icon| icon.name == 'tunnel' })
+
+            graph.clear
+          end
+
           grant_right(entity, :tunnel)
         end
 
@@ -1194,7 +1214,13 @@ module Engine
           seller_name = bridge.closed? ? 'the bank' : bridge.owner.name
           @log << "#{entity.name} buys a bridge token from #{seller_name} for #{format_currency(RIGHT_COST)}"
           entity.spend(RIGHT_COST, seller)
-          @available_bridge_tokens -= 1
+
+          unless unlimited_bonus_tokens?
+            tile_icons = hex_by_id(BRIDGE_TOKEN_HEX).tile.icons
+            tile_icons.delete_at(tile_icons.index { |icon| icon.name == 'bridge' })
+
+            graph.clear
+          end
           grant_right(entity, :bridge)
         end
 
@@ -1206,6 +1232,14 @@ module Engine
         def bridge?(corporation)
           # abilities will return an array if many or an Ability if one. [*foo(bar)] gets around that
           corporation.all_abilities.any? { |ability| ability.type == :hex_bonus && ability.hexes.include?('P17') }
+        end
+
+        def add_bridge_marker_to_buffalo
+          hex_by_id(BRIDGE_TOKEN_HEX).tile.icons << Engine::Part::Icon.new('1856/bridge', 'bridge')
+        end
+
+        def add_tunnel_marker_to_sarnia
+          hex_by_id(TUNNEL_TOKEN_HEX).tile.icons << Engine::Part::Icon.new('1856/tunnel', 'tunnel')
         end
 
         def grant_right(corporation, type)
@@ -1229,8 +1263,8 @@ module Engine
 
         def event_close_companies!
           # The tokens reserved for the company's buyer are sent to the bank if closed before being bought in
-          @available_bridge_tokens += 1 if bridge.owned_by_player?
-          @available_tunnel_tokens += 1 if tunnel.owned_by_player?
+          add_bridge_marker_to_buffalo if bridge.owned_by_player? && !unlimited_bonus_tokens?
+          add_tunnel_marker_to_sarnia if tunnel.owned_by_player? && !unlimited_bonus_tokens?
           super
         end
 
@@ -1426,12 +1460,12 @@ module Engine
           end
           # Leftover cash is transferred
           major.spend(major.cash, national) if major.cash.positive?
-          @loans += major.loans.pop(major.loans.size)
+          @loans.concat(major.loans.pop(major.loans.size))
           # Tunnel / Bridge rights are transferred
           if tunnel?(major)
             if tunnel?(national)
               @log << "#{national.name} already has a tunnel token, the token is returned to the bank pool"
-              @available_tunnel_tokens += 1
+              add_tunnel_marker_to_sarnia unless unlimited_bonus_tokens?
             else
               @log << "#{national.name} gets #{major.name}'s tunnel token"
               grant_right(national, :tunnel)
@@ -1440,7 +1474,7 @@ module Engine
           if bridge?(major)
             if bridge?(national)
               @log << "#{national.name} already has a bridge token, the token is returned to the bank pool"
-              @available_bridge_tokens += 1
+              add_bridge_marker_to_buffalo unless unlimited_bonus_tokens?
             else
               @log << "#{national.name} gets #{major.name}'s bridge token"
               grant_right(national, :bridge)
@@ -1746,6 +1780,7 @@ module Engine
           # (It was artificially high to avoid forced discard triggering early)
           @nationalization_train_discard_trigger = true
           @post_nationalization = true
+          @total_loans = 0
         end
 
         # Creates and returns a token for the national
@@ -1826,6 +1861,14 @@ module Engine
 
         def train_limit(entity)
           super + Array(abilities(entity, :train_limit)).sum(&:increase)
+        end
+
+        def format_currency(val)
+          # On dividends per share can be a float
+          # But don't show decimal points on all
+          return super if (val % 1).zero?
+
+          format('$%.1<val>f', val: val)
         end
       end
     end

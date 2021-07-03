@@ -413,13 +413,13 @@ module Engine
                                                reason: "#{program.until_condition} share(s) bought in "\
                                                "#{corporation.name}, end condition met")]
           end
-          shares_by_percent = if program.from_market
+          shares_by_percent = if from_market?(program)
                                 source = 'market'
                                 @game.share_pool.shares_by_corporation[corporation]
                               else
                                 source = @game.ipo_name(corporation)
                                 corporation.ipo_shares
-                              end.select { |share| can_buy?(entity, share) }.group_by(&:percent)
+                              end.select { |share| can_buy?(entity, share.to_bundle) }.group_by(&:percent)
 
           if shares_by_percent.empty?
             return [Action::ProgramDisable.new(entity,
@@ -446,6 +446,10 @@ module Engine
           # Buy-then-Sell games need the pass.
           [Action::Pass.new(entity)]
         end
+      end
+
+      def from_market?(program)
+        program.from_market
       end
     end
   end

@@ -10,7 +10,7 @@ module Engine
 
       def actions(entity)
         # 1846 and a few others minors can't buy trains
-        return [] if entity.minor?
+        return [] unless can_entity_buy_train?(entity)
 
         # TODO: This needs to check it actually needs to sell shares.
         return ['sell_shares'] if entity == current_entity&.owner && can_ebuy_sell_shares?(current_entity)

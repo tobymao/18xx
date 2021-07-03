@@ -341,6 +341,12 @@ module Engine
           def sell_price(company)
             company.value
           end
+
+          # Override this to let auto buy always buy from market
+          # as there are no shares in IPO after parring
+          def from_market?(_program)
+            true
+          end
         end
       end
     end

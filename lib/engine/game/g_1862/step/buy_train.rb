@@ -117,7 +117,7 @@ module Engine
             else
               @log << "#{entity.name} will enter bankruptcy"
               @game.enter_bankruptcy!(entity)
-              @pass = true
+              @passed = true
             end
           end
 
@@ -132,7 +132,7 @@ module Engine
           end
 
           def receivership_buy(entity)
-            @pass = true
+            @passed = true
             if (buy_type = receivership_train(entity))
               @log << "#{entity.name} is in Receivership and must buy a train"
               train = @depot.depot_trains.first

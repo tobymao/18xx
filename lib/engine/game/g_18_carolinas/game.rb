@@ -4,7 +4,6 @@ require_relative 'meta'
 require_relative '../base'
 require_relative 'entities'
 require_relative 'map'
-require_relative 'step/buy_sell_par_shares_companies'
 
 module Engine
   module Game
@@ -14,7 +13,7 @@ module Engine
         include Entities
         include Map
 
-        attr_reader :tile_groups
+        attr_reader :tile_groups, :north_hexes, :south_hexes
 
         register_colors(green: '#237333',
                         red: '#d81e3e',
@@ -72,6 +71,13 @@ module Engine
             distance: 99,
             price: 1,
             num: 64,
+          },
+          {
+            name: 'Convert',
+            distance: [{ 'nodes' => %w[city offboard], 'pay' => 2, 'visit' => 2 },
+                       { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
+            price: 0,
+            num: 1,
           },
         ].freeze
 
@@ -157,6 +163,22 @@ module Engine
         COMPANY_SALE_FEE = 30
         ADDED_TOKEN_PRICE = 100
 
+        TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
+
+        MIN_TRAIN = {
+          '2' => 2,
+          '3' => 2,
+          '4' => 2,
+          '5' => 3,
+          '6' => 4,
+          '7' => 5,
+          '8' => 6,
+        }.freeze
+
+        MAX_TRAIN = 16
+
+        C_TILES = %w[C1 C2 C3 C4 C5 C6 C7 C8 C9].freeze
+
         def init_tile_groups
           [
             %w[1 1s],
@@ -170,7 +192,7 @@ module Engine
             %w[9 9s],
             %w[55 55s],
             %w[56 56s],
-            %w[57 7s],
+            %w[57 57s],
             %w[58 58s],
             %w[C1 C2],
             %w[C3 C4],
@@ -208,19 +230,51 @@ module Engine
           ]
         end
 
+        def update_opposites
+          by_name = @tiles.group_by(&:name)
+          @tile_groups.each do |grp|
+            next unless grp.size == 2
+
+            name_a, name_b = grp
+            num = by_name[name_a].size
+            if num != by_name[name_b].size
+              raise GameError, "Sides of double-sided tiles need to have same number (#{name_a}, #{name_b})"
+            end
+
+            num.times.each do |idx|
+              tile_a = tile_by_id("#{name_a}-#{idx}")
+              tile_b = tile_by_id("#{name_b}-#{idx}")
+
+              tile_a.opposite = tile_b
+              tile_b.opposite = tile_a
+            end
+          end
+        end
+
         def init_share_pool
           SharePool.new(self, allow_president_sale: true)
         end
 
         def setup
           @tile_groups = init_tile_groups
-          @highest_layer = 1
+          update_opposites
+          @unused_tiles = []
 
+          # find north and south hexes
+          @north_hexes = []
+          @south_hexes = []
+          @hexes.each do |hex|
+            tile = hex.tile
+            @north_hexes << hex if tile.frame&.color == NORTH_COLOR || tile.frame&.color2 == NORTH_COLOR
+            @south_hexes << hex if tile.frame&.color == SOUTH_COLOR || tile.frame&.color2 == SOUTH_COLOR
+          end
+
+          @highest_layer = 1
           # randomize layers (tranches) with one North and one South in each
           @layer_by_corp = {}
-          @north = @corporations.select { |c| NORTH_CORPORATIONS.include?(c.name) }.sort_by { rand }
-          @south = @corporations.select { |c| SOUTH_CORPORATIONS.include?(c.name) }.sort_by { rand }
-          @north.zip(@south).each_with_index do |corps, idx|
+          @north_corps = @corporations.select { |c| NORTH_CORPORATIONS.include?(c.name) }.sort_by { rand }
+          @south_corps = @corporations.select { |c| SOUTH_CORPORATIONS.include?(c.name) }.sort_by { rand }
+          @north_corps.zip(@south_corps).each_with_index do |corps, idx|
             layer = idx + 1
             corps.each do |corp|
               @layer_by_corp[corp] = layer
@@ -245,7 +299,7 @@ module Engine
               player.companies << company
               company.owner = player
             else
-              corp = [@north[0], @south[0]][idx - 4]
+              corp = [@north_corps[0], @south_corps[0]][idx - 4]
               price = par_prices(corp)[0]
               @stock_market.set_par(corp, price)
               share = corp.ipo_shares.first
@@ -256,6 +310,17 @@ module Engine
                                      allow_president_change: true)
               after_par(corp)
             end
+          end
+
+          @conversion_train = @depot.trains.find { |t| t.name == 'Convert' }
+
+          # initialize corp trains
+          @corporation_trains = {}
+          @corporation_power = {}
+          @corporations.each do |corp|
+            8.times { buy_train(corp, @depot.depot_trains[0], :free) }
+            @corporation_trains[corp] = nil
+            @corporation_power[corp] = 5 # FIXME: set to 0 after testing
           end
         end
 
@@ -297,12 +362,60 @@ module Engine
           Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             Engine::Step::HomeToken,
-            Engine::Step::Track,
+            G18Carolinas::Step::Track,
             Engine::Step::Token,
-            Engine::Step::Route,
-            Engine::Step::Dividend,
+            G18Carolinas::Step::Route,
+            G18Carolinas::Step::Dividend,
             Engine::Step::BuyTrain,
           ], round_num: round_num)
+        end
+
+        def upgrades_to?(from, to, special = false, selected_company: nil)
+          standard = to.paths.any? { |p| p.track == :broad }
+          southern = to.paths.any? { |p| p.track != :broad }
+
+          north = @north_hexes.include?(from.hex)
+          south = @south_hexes.include?(from.hex)
+
+          # Can only ever lay standard track in the North
+          return false if north && !south && southern
+
+          # Can only ever lay southern track in the South before phase 5
+          return false if !north && south && standard && !@phase.available?('5')
+
+          # handle C tiles specially
+          return false if from.label.to_s == 'C' && to.color == :yellow && from.cities.size != to.cities.size
+
+          super
+        end
+
+        def update_tile_lists!(tile, old_tile)
+          @tiles.delete(tile)
+          if tile.opposite
+            @tiles.delete(tile.opposite)
+            @unused_tiles << tile.opposite
+          end
+
+          return if old_tile.preprinted
+
+          @tiles << old_tile
+          return unless old_tile.opposite
+
+          @unused_tiles.delete(old_tile.opposite)
+          @tiles << old_tile.opposite
+        end
+
+        def flip_tile!(hex)
+          old = hex.tile
+          return if old.color != :yellow && old.color != :green
+          return if C_TILES.include?(old.name)
+
+          new = old.opposite
+          @log << "Flipping tile #{old.name} to #{new.name} in hex #{hex.id}"
+
+          new.rotate!(old.rotation)
+          update_tile_lists(new, old)
+          hex.lay(new)
         end
 
         def sorted_corporations
@@ -325,6 +438,139 @@ module Engine
           status << %w[Receivership bold] if corp.receivership?
 
           status
+        end
+
+        def conversion_trains
+          [@conversion_train]
+        end
+
+        def check_route_token(route, token)
+          return if route.train.name == 'Convert'
+
+          super
+        end
+
+        def enough_power?(entity)
+          return false unless entity.corporation?
+
+          @corporation_power[entity] >= MIN_TRAIN[@phase.name]
+        end
+
+        def load_corporation_trains(entity)
+          operating = entity.operating_history
+          last_run = operating[operating.keys.max]&.routes
+          return [] unless last_run
+
+          last_run.keys
+        end
+
+        def route_trains(entity)
+          @corporation_trains[entity] ||= load_corporation_trains(entity)
+
+          # adjust trains that don't meet lower limit
+          # - this may cause an illegal set of routes, but will preserve previous run
+          @corporation_trains[entity].each do |t|
+            if t.distance < MIN_TRAIN[@phase.name]
+              t.distance = MIN_TRAIN[@phase.name]
+              t.name = MIN_TRAIN[@phase.name].to_s
+            end
+          end
+
+          if @corporation_trains[entity].empty? && @corporation_power[entity] >= MIN_TRAIN[@phase.name]
+            train = entity.trains[0]
+            train.distance = MIN_TRAIN[@phase.name]
+            train.name = MIN_TRAIN[@phase.name].to_s
+            @corporation_trains[entity] = [train]
+          end
+          @corporation_trains[entity]
+        end
+
+        # after running routes, update sizes of trains actually used
+        def update_route_trains(entity, routes)
+          @corporation_trains[entity] = nil
+          routes.each do |route|
+            next if route.visited_stops.empty?
+
+            train = route.train
+            train.distance = route.visited_stops.size
+            train.name = train.distance.to_s
+          end
+        end
+
+        def adjustable_train_list?
+          true
+        end
+
+        def adjustable_train_sizes?
+          true
+        end
+
+        def reset_adjustable_trains!(routes)
+          @corporation_trains[routes[0].train.owner] = nil
+        end
+
+        def add_route_train(routes)
+          entity = routes[0].train.owner
+          trains = @corporation_trains[entity]
+          current_distance = trains.sum(&:distance)
+          return if @corporation_power[entity] - current_distance < MIN_TRAIN[@phase.name]
+
+          new_train = entity.trains.find { |t| !trains.include?(t) }
+          new_train.distance = MIN_TRAIN[@phase.name]
+          new_train.name = MIN_TRAIN[@phase.name].to_s
+          @corporation_trains[entity] << new_train
+        end
+
+        def delete_route_train(route)
+          train = route.train
+          @corporation_trains[train.owner].delete(train)
+        end
+
+        def increase_route_train(route)
+          train = route.train
+          corp = train.owner
+          return if train.distance == MAX_TRAIN
+          return if route.routes.sum { |r| r.train.distance } >= @corporation_power[corp]
+
+          train.distance += 1
+          train.name = train.distance.to_s
+        end
+
+        def decrease_route_train(route)
+          train = route.train
+          return if train.distance == MIN_TRAIN[@phase.name]
+
+          train.distance -= 1
+          train.name = train.distance.to_s
+        end
+
+        def check_distance(route, visits)
+          if route.train.name == 'Convert'
+            raise GameError, 'Route must be specified' if visits.empty?
+            raise GameError, 'Route cannot begin/end in a town' if visits.first.town? || visits.last.town?
+          end
+
+          super
+        end
+
+        def check_connected(route, token)
+          return if route.train.name == 'Convert'
+
+          super
+        end
+
+        def check_other(route)
+          if route.train.name == 'Convert'
+            raise GameError, 'Route must have Southern track' unless route.paths.any? { |p| p.track != :broad }
+          else
+            if route.routes.sum { |r| r.train.distance } > @corporation_power[route.train.owner]
+              raise GameError, 'Train sizes exceed train power'
+            end
+
+            track_types = {}
+            route.paths.each { |path| track_types[path.track] = 1 }
+            raise GameError, 'Train cannot use more than one gauge' unless track_types.keys.one?
+          end
         end
       end
     end

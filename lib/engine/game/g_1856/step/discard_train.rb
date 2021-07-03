@@ -39,7 +39,7 @@ module Engine
             train = action.train
             @game.depot.reclaim_train(train)
             done_discarding unless can_discard(@game.national)
-            @log << "#{action.entity.name} scraps a #{train.name} train"
+            @log << "#{action.entity.name} discards a #{train.name} train to the pool"
           end
 
           def pass!

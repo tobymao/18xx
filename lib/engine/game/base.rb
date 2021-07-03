@@ -949,6 +949,10 @@ module Engine
         end
       end
 
+      def shares_for_presidency_swap(shares, num_shares)
+        shares.take(num_shares)
+      end
+
       def num_certs(entity)
         certs = entity.shares.sum do |s|
           s.corporation.counts_for_limit && s.counts_for_limit ? s.cert_size : 0
@@ -1054,6 +1058,10 @@ module Engine
 
       def city_tokened_by?(city, entity)
         city.tokened_by?(entity)
+      end
+
+      def check_route_token(_route, token)
+        raise GameError, 'Route must contain token' unless token
       end
 
       def check_overlap(routes)
@@ -1537,7 +1545,21 @@ module Engine
           end
         end
 
+        close_companies_on_par!(corporation)
         place_home_token(corporation) if self.class::HOME_TOKEN_TIMING == :par
+      end
+
+      def close_companies_on_par!(entity)
+        @companies.each do |company|
+          next if company.closed?
+
+          abilities(company, :close, time: 'par') do |ability|
+            next if entity&.name != ability.corporation
+
+            company.close!
+            @log << "#{company.name} closes"
+          end
+        end
       end
 
       def train_help(_entity, _runnable_trains, _routes)
@@ -1707,6 +1729,10 @@ module Engine
         true
       end
 
+      def cannot_pay_interest_str
+        nil
+      end
+
       def hex_blocked_by_ability?(_entity, ability, hex)
         ability.hexes.include?(hex.id)
       end
@@ -1768,6 +1794,10 @@ module Engine
         add_extra_tile(tile) if tile.unlimited
         @tiles.delete(tile)
         @tiles << old_tile unless old_tile.preprinted
+      end
+
+      def local_length
+        2
       end
 
       private
@@ -2559,6 +2589,16 @@ module Engine
       def decorate_marker(_icon)
         nil
       end
+
+      def adjustable_train_list?
+        false
+      end
+
+      def adjustable_train_sizes?
+        false
+      end
+
+      def reset_adjustable_trains!; end
 
       def operation_round_short_name
         self.class::OPERATION_ROUND_SHORT_NAME

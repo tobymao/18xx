@@ -11,7 +11,6 @@ module Engine
 
         def initialize(sym:, name:, **opts)
           opts[:always_market_price] = true
-          opts[:float_percent] = 50
           super(sym: sym, name: name, **opts)
 
           @corporations = opts[:corporations]
@@ -22,6 +21,14 @@ module Engine
 
         def system?
           true
+        end
+
+        def floated?
+          @floated ||= (num_ipo_shares - num_ipo_reserved_shares) <= 4
+        end
+
+        def percent_to_float
+          super - (num_ipo_reserved_shares * 10)
         end
 
         def remove_train(train)

@@ -7,17 +7,8 @@ module Engine
     module G1824
       module Step
         class BuyTrain < Engine::Step::BuyTrain
-          def actions(entity)
-            # TODO: This needs to check it actually needs to sell shares.
-            return ['sell_shares'] if entity == current_entity.owner
-
-            return [] if entity != current_entity
-            # TODO: Not sure this is right
-            return %w[sell_shares buy_train] if president_may_contribute?(entity)
-
-            return %w[buy_train pass] if can_buy_train?(entity)
-
-            []
+          def can_entity_buy_train?(_entity)
+            true
           end
 
           def process_buy_train(action)

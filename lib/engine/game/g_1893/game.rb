@@ -41,8 +41,8 @@ module Engine
         # Sell zero or more, then Buy zero or one
         SELL_BUY_ORDER = :sell_buy
 
-        # New track must be usable
-        TRACK_RESTRICTION = :restrictive
+        # New track must be usable, or upgrade city value
+        TRACK_RESTRICTION = :semi_restrictive
 
         # Needed for RAG exchange selection when parring
         ALL_COMPANIES_ASSIGNABLE = true
@@ -174,15 +174,14 @@ module Engine
             'count' => 1,
             'color' => 'brown',
             'code' =>
-            'city=revenue:30,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
+            'city=revenue:40,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
               'path=a:5,b:_0;label=S',
           },
           'KV201' =>
           {
             'count' => 1,
             'color' => 'yellow',
-            'code' =>
-            'city=revenue:30;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;upgrade=cost:40,terrain:water;label=K',
+            'code' => 'city=revenue:30;path=a:1,b:_0;path=a:2,b:_0;upgrade=cost:40,terrain:water;label=K',
           },
           'KV255' =>
           {
@@ -740,6 +739,11 @@ module Engine
           end
         end
 
+        # Show minors in spreadsheet
+        def all_corporations
+          @minors + @corporations
+        end
+
         def store_player_info
           rsn = @round.class.short_name
           round_num = case @round
@@ -1111,7 +1115,7 @@ module Engine
 
         def mergers(target)
           reserved_shares = target == agv ? mergers_agv : mergers_hgk
-          reserved_shares.map { |info| info[:minor] || info[:private] }
+          reserved_shares.map { |info| info[:minor] || info[:company] }
         end
 
         def event_hgk_buyable!
@@ -1220,25 +1224,27 @@ module Engine
           else
             @log << "#{new_president.name} becomes the president of #{mergable.name}"
             mergable.owner = new_president
-            shares_for_presidency_swap(mergable, new_president).each do |s|
-              move_share(s, president_share.owner)
+            shares_for_presidency_swap(new_president.shares_of(mergable), 2).each do |s|
+              @share_pool.move_share(s, president_share.owner)
             end
-            move_share(president_share, new_president)
+            @share_pool.move_share(president_share, new_president)
           end
 
           # Give president the chance to discard any trains
           @potential_discard_trains << mergable unless mergable.trains.empty?
 
           mergable.ipoed = true
-          @log << "#{mergable.name} have been completly founded and now floats"
+          @log << "#{mergable.name} have been completely founded and now floats"
         end
 
-        def shares_for_presidency_swap(corporation, owner)
-          # Try to get 2 10%, otherwise (when owner has 1 10% and 1 20%) return the 20%
-          ten_percents = owner.shares_of(corporation).select { |s| s.percent == 10 }.take(2)
-          return ten_percents if ten_percent.size == 2
+        def shares_for_presidency_swap(shares, num_shares)
+          # The shares to exchange might contain a double share.
+          # If so, return that unless more than 2 certificates.
+          twenty_percent = shares.find(&:double_cert)
+          return super unless twenty_percent
+          return [twenty_percent] if shares.size <= num_shares && twenty_percent
 
-          owner.shares_of(corporation).select { |s| s.percent == 20 }
+          super(shares - [twenty_percent], num_shares)
         end
 
         def event_fdsd_closed!

@@ -8,7 +8,7 @@ module Engine
       module SharedMeta
         include Engine::Game::Meta
 
-        DEV_STAGE = :alpha
+        DEV_STAGE = :beta
 
         GAME_DESIGNER = 'Paolo Russo'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18ZOO'

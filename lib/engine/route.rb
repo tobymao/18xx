@@ -20,6 +20,7 @@ module Engine
       @subsidy = opts[:subsidy]
       @halts = opts[:halts]
       @abilities = opts[:abilities]
+      @local_length = @game.local_length
 
       @node_chains = {}
       @connection_data = opts[:connection_data]
@@ -130,7 +131,7 @@ module Engine
     end
 
     def touch_node(node)
-      if connection_data.any?
+      if !connection_data.empty? && !local_connection?
         case node
         when head[:left]
           if (chain = next_chain(head[:right], head[:chain], node))
@@ -155,7 +156,7 @@ module Engine
             connection_data << segment(chain, left: tail[:right])
           end
         end
-        connection_data.pop if @train.local? && connection_data.size == 2
+        connection_data.pop if @train.local? && connection_data.size == @local_length
       elsif @last_node == node
         @last_node = nil
         connection_data.clear
@@ -296,9 +297,9 @@ module Engine
           if !connection_data.empty? && visited.size < 2 && !@train.local?
             raise GameError, 'Route must have at least 2 stops'
           end
-          unless (token = visited.find { |stop| @game.city_tokened_by?(stop, corporation) })
-            raise GameError, 'Route must contain token'
-          end
+
+          token = visited.find { |stop| @game.city_tokened_by?(stop, corporation) }
+          @game.check_route_token(self, token)
 
           visited.flat_map(&:groups).flatten.group_by(&:itself).each do |key, group|
             raise GameError, "Cannot use group #{key} more than once" unless group.one?
@@ -448,6 +449,10 @@ module Engine
       end
 
       @connection_data
+    end
+
+    def local_connection?
+      @train.local? && connection_data && connection_data[0] && connection_data[0][:left] == connection_data[0][:right]
     end
   end
 end

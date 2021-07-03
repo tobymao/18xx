@@ -267,7 +267,7 @@ module Engine
           },
           {
             name: "2'",
-            on: "2+'",
+            on: '2+1',
             train_limit: 4,
             tiles: [:yellow],
             status: %w[escrow facing_3],
@@ -283,7 +283,7 @@ module Engine
           },
           {
             name: "3'",
-            on: "3+'",
+            on: "3+1'",
             train_limit: 4,
             tiles: %i[yellow green],
             operating_rounds: 2,
@@ -299,7 +299,7 @@ module Engine
           },
           {
             name: "4'",
-            on: "4+'",
+            on: "4+1'",
             train_limit: 3,
             tiles: %i[yellow green],
             operating_rounds: 2,
@@ -342,16 +342,20 @@ module Engine
         TRAINS = [{ name: '2', distance: 2, price: 100, rusts_on: '4', num: 4 },
                   {
                     name: '2+1',
-                    distance: [{ 'nodes' => %w[city offboard], 'pay' => 2, 'visit' => 2 },
-                               { 'nodes' => ['town'], 'pay' => 1, 'visit' => 1 }],
+                    distance: [
+                      { 'nodes' => ['town'], 'pay' => 1, 'visit' => 1 },
+                      { 'nodes' => %w[city offboard town], 'pay' => 2, 'visit' => 2 },
+                    ],
                     price: 125,
                     obsolete_on: '4',
                     num: 1,
                   },
                   {
                     name: '2+1`',
-                    distance: [{ 'nodes' => %w[city offboard], 'pay' => 2, 'visit' => 2 },
-                               { 'nodes' => ['town'], 'pay' => 1, 'visit' => 1 }],
+                    distance: [
+                      { 'nodes' => ['town'], 'pay' => 1, 'visit' => 1 },
+                      { 'nodes' => %w[city offboard town], 'pay' => 2, 'visit' => 2 },
+                    ],
                     price: 125,
                     obsolete_on: '4',
                     num: 1,
@@ -359,16 +363,20 @@ module Engine
                   { name: '3', distance: 3, price: 225, rusts_on: '6', num: 3 },
                   {
                     name: '3+1',
-                    distance: [{ 'nodes' => %w[city offboard], 'pay' => 3, 'visit' => 3 },
-                               { 'nodes' => ['town'], 'pay' => 1, 'visit' => 1 }],
+                    distance: [
+                      { 'nodes' => ['town'], 'pay' => 1, 'visit' => 1 },
+                      { 'nodes' => %w[city offboard town], 'pay' => 3, 'visit' => 3 },
+                    ],
                     price: 250,
                     obsolete_on: '6',
                     num: 1,
                   },
                   {
                     name: "3+1'",
-                    distance: [{ 'nodes' => %w[city offboard], 'pay' => 3, 'visit' => 3 },
-                               { 'nodes' => ['town'], 'pay' => 1, 'visit' => 1 }],
+                    distance: [
+                      { 'nodes' => ['town'], 'pay' => 1, 'visit' => 1 },
+                      { 'nodes' => %w[city offboard town], 'pay' => 3, 'visit' => 3 },
+                    ],
                     price: 250,
                     obsolete_on: '6',
                     num: 1,
@@ -376,16 +384,20 @@ module Engine
                   { name: '4', distance: 4, price: 350, rusts_on: '8', num: 2 },
                   {
                     name: '4+1',
-                    distance: [{ 'nodes' => %w[city offboard], 'pay' => 4, 'visit' => 4 },
-                               { 'nodes' => ['town'], 'pay' => 1, 'visit' => 1 }],
+                    distance: [
+                      { 'nodes' => ['town'], 'pay' => 1, 'visit' => 1 },
+                      { 'nodes' => %w[city offboard town], 'pay' => 4, 'visit' => 4 },
+                    ],
                     price: 375,
                     obsolete_on: '8', # also D
                     num: 1,
                   },
                   {
                     name: "4+1'",
-                    distance: [{ 'nodes' => %w[city offboard], 'pay' => 4, 'visit' => 4 },
-                               { 'nodes' => ['town'], 'pay' => 1, 'visit' => 1 }],
+                    distance: [
+                      { 'nodes' => ['town'], 'pay' => 1, 'visit' => 1 },
+                      { 'nodes' => %w[city offboard town], 'pay' => 4, 'visit' => 4 },
+                    ],
                     price: 375,
                     obsolete_on: '8', # also D
                     num: 1,
@@ -427,7 +439,12 @@ module Engine
                         discount: { '4' => 350, "4'" => 350, '5' => 350, "5'" => 350, '6' => 350 },
                       },
                     ],
-                  }].freeze
+                  },
+                  { name: '+1', distance: 0, price: 25, rusts_on: '5', available_on: '2', num: 5 },
+                  { name: '+2', distance: 0, price: 50, rusts_on: '8', available_on: '3', num: 4 },
+                  { name: '+3', distance: 0, price: 75, available_on: '5', num: 3 },
+                  { name: '+4', distance: 0, price: 100, available_on: '6', num: 2 },
+                  { name: '+5', distance: 0, price: 125, available_on: '8', num: 1 }].freeze
 
         COMPANIES = [
           {
@@ -608,7 +625,7 @@ module Engine
             logo: '18_ka/NM',
             simple_logo: '18_ka/NM.alt',
             tokens: [0, 40, 70, 100, 130],
-            coordinates: 'I19',
+            coordinates: 'J19',
             color: NM_NAVY,
             text_color: 'white',
           },
@@ -680,7 +697,7 @@ module Engine
             logo: '18_ka/JA',
             simple_logo: '18_ka/JA.alt',
             tokens: [0, 40, 60, 80, 100, 120],
-            coordinates: 'H6',
+            coordinates: 'H5',
             color: JOVIAN_ORANGE,
             text_color: 'black',
           },
@@ -730,6 +747,7 @@ module Engine
             dest_arr = Array(dest)
             d_goals = Array(dest_arr.first)
             d_start = dest_arr.size > 1 ? dest_arr.last : corporation_by_id(corp).coordinates
+            @destination_statuses[corp] = "Dest: Connect Home (#{d_start}) to #{d_goals}"
             dest_arr.each do |d|
               # Array(d).first allows us to treat 'E5' or %[O2 N3] identically
               hex_by_id(Array(d).first).original_tile.icons << Part::Icon.new(icon_path(corp))
@@ -741,7 +759,7 @@ module Engine
           'AF' => 'I14',
           'KM' => 'K16',
           'OL' => 'E16',
-          'WM' => %w[N21 N23],
+          'WM' => [%w[N21 N23]],
 
           'ATN' => 'I10',
           'C9S' => 'H11',
@@ -753,8 +771,8 @@ module Engine
           'IPM' => 'C12',
           'ICTN' => 'G20',
           'CMM' => 'K20',
-          'MWM' => %w[D5 E4],
-          'TiTaN' => %w[E24 F25],
+          'MWM' => [%w[D5 E4]],
+          'TiTaN' => [%w[E24 F25]],
         }.freeze
 
         # These cities upgrade to the common BarrieLondon green tile,
@@ -847,6 +865,7 @@ module Engine
 
         LAKE_HEXES = [].freeze
 
+        EXTRA_TRAIN_PULLMAN = %w[+1 +2 +3 +4 +5].freeze
         SELL_BUY_ORDER = :sell_buy_sell
         TRACK_RESTRICTION = :permissive
         TILE_RESERVATION_BLOCKS_OTHERS = true
@@ -923,10 +942,81 @@ module Engine
           national.add_ability(self.class::NATIONAL_FORCED_WITHHOLD_ABILITY)
         end
 
+        def route_distance_str(route)
+          towns = route.visited_stops.count(&:town?)
+          cities = route_distance(route) - towns
+          "#{cities}+#{towns}"
+        end
+
+        def revenue_for(route, stops)
+          stops.sum { |stop| stop.route_revenue(route.phase, route.train) }
+        end
+
+        def route_trains(entity)
+          entity.runnable_trains.reject { |t| pullman_train?(t) }
+        end
+
+        def pullman_train?(train)
+          self.class::EXTRA_TRAIN_PULLMAN.include?(train.name)
+        end
+
+        def must_buy_train?(entity)
+          entity.trains.none? { |t| !pullman_train?(t) } && @graph.route_info(entity)&.dig(:route_train_purchase)
+        end
+
+        def operating_round(round_num)
+          G1856::Round::Operating.new(self, [
+            G1856::Step::Bankrupt,
+            G1856::Step::CashCrisis,
+            # No exchanges.
+            G1856::Step::Assign,
+            G1856::Step::Loan,
+            G1856::Step::SpecialTrack,
+            G1856::Step::SpecialToken,
+            Engine::Step::BuyCompany,
+            Engine::Step::HomeToken,
+
+            # Nationalization!!
+            G1856::Step::NationalizationPayoff,
+            G1856::Step::RemoveTokens,
+            G1856::Step::NationalizationDiscardTrains,
+            # Re-enable to reenable rights
+            # G1856::Step::SpecialBuy,
+            G1856::Step::Track,
+            G1856::Step::Escrow,
+            G1856::Step::Token,
+            G1856::Step::BorrowTrain,
+            G18KA::Step::Route,
+            # Interest - See Loan
+            G1856::Step::Dividend,
+            Engine::Step::DiscardTrain,
+            G1856::Step::BuyTrain,
+            # Repay Loans - See Loan
+            [G1856::Step::BuyCompany, { blocks: true }],
+          ], round_num: round_num)
+        end
+
+        def stock_round
+          G1856::Round::Stock.new(self, [
+            Engine::Step::DiscardTrain,
+            Engine::Step::Exchange,
+            Engine::Step::SpecialTrack,
+            G1856::Step::BuySellParShares,
+          ])
+        end
+
         def icon_path(corp)
           super if corp == national
 
           "../logos/18_ka/#{corp}"
+        end
+
+        def format_currency(val)
+          # On dividends per share can be a float
+          # But don't show decimal points on all
+          return super if (val % 1).zero?
+
+          format('$%.1<val>c', val: val)
         end
       end
     end

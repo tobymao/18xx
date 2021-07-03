@@ -608,6 +608,14 @@ module Engine
 
           revenue
         end
+
+        def format_currency(val)
+          # On dividends per share can be a float
+          # But don't show decimal points on all
+          return super if (val % 1).zero?
+
+          format('%.1<val>fF', val: val)
+        end
       end
     end
   end

@@ -1436,6 +1436,20 @@ module Engine
           log_share_price(corporation, price) if self.class::SELL_MOVEMENT != :none
         end
 
+        def shares_for_presidency_swap(shares, num_shares)
+          return [] if shares.empty?
+          return [] unless num_shares
+          return shares if shares.one?
+
+          percent = num_shares * shares.first.corporation.share_percent
+          matching_bundles = (1..shares.size).flat_map do |n|
+            shares.combination(n).to_a.select { |b| b.sum(&:percent) == percent }
+          end
+
+          # we want the bundle with the most shares, as higher percent in fewer shares in more valuable
+          matching_bundles.max_by(&:size)
+        end
+
         def legal_tile_rotation?(_entity, _hex, tile)
           return false if TILES_FIXED_ROTATION.include?(tile.name) && tile.rotation != 0
 
