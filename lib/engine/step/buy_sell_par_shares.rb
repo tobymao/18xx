@@ -413,7 +413,7 @@ module Engine
                                                reason: "#{program.until_condition} share(s) bought in "\
                                                "#{corporation.name}, end condition met")]
           end
-          shares_by_percent = if program.from_market
+          shares_by_percent = if from_market?(program)
                                 source = 'market'
                                 @game.share_pool.shares_by_corporation[corporation]
                               else
@@ -446,6 +446,10 @@ module Engine
           # Buy-then-Sell games need the pass.
           [Action::Pass.new(entity)]
         end
+      end
+
+      def from_market?(program)
+        program.from_market
       end
     end
   end
