@@ -33,7 +33,7 @@ module Engine
                         blue: '#0189d1',
                         brown: '#7b352a')
 
-        CURRENCY_FORMAT_STR = '$%f'
+        CURRENCY_FORMAT_STR = '$%d'
 
         BANK_CASH = 12_000
 
