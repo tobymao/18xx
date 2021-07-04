@@ -2593,6 +2593,28 @@ module Engine
       def operation_round_name
         self.class::OPERATING_ROUND_NAME
       end
+
+      def trains_str(corporation)
+        (corporation.system? ? corporation.shells : [corporation]).map do |c|
+          if c.trains.empty?
+            'None'
+          else
+            c.trains.map { |t| t.obsolete ? "(#{t.name})" : t.name }.join(' ')
+          end
+        end
+      end
+
+      def on_train_header
+        'On Train'
+      end
+
+      def train_limit_header
+        'Train Limit'
+      end
+
+      def train_power?
+        false
+      end
     end
   end
 end

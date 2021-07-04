@@ -13,7 +13,7 @@ module Engine
         include Entities
         include Map
 
-        attr_reader :tile_groups, :north_hexes, :south_hexes
+        attr_reader :corporation_power, :north_hexes, :power_progress, :south_hexes, :tile_groups
 
         register_colors(green: '#237333',
                         red: '#d81e3e',
@@ -125,7 +125,7 @@ module Engine
             operating_rounds: 3,
           },
           {
-            name: '8a',
+            name: '8+',
             train_limit: 6,
             tiles: %w[yellow green brown gray],
             operating_rounds: 3,
@@ -160,6 +160,7 @@ module Engine
         HOME_TOKEN_TIMING = :operate
         SOLD_OUT_INCREASE = false
         SELL_MOVEMENT = :none
+        BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
         COMPANY_SALE_FEE = 30
         ADDED_TOKEN_PRICE = 100
 
@@ -173,11 +174,28 @@ module Engine
           '6' => 4,
           '7' => 5,
           '8' => 6,
+          '8+' => 6,
         }.freeze
 
         MAX_TRAIN = 16
 
+        POWER_COST = {
+          '2' => 30,
+          '3' => 40,
+          '4' => 50,
+          '5' => 60,
+          '6' => 70,
+          '7' => 80,
+          '8' => 90,
+          '8+' => 100,
+        }.freeze
+
+        MAX_PROGRESS = 15
+
         C_TILES = %w[C1 C2 C3 C4 C5 C6 C7 C8 C9].freeze
+        C7_HEXES = %w[D10 G9].freeze
+        C8_HEXES = %w[G19 J12].freeze
+        C8_ROTATION = 5
 
         def init_tile_groups
           [
@@ -316,12 +334,14 @@ module Engine
 
           # initialize corp trains
           @corporation_trains = {}
-          @corporation_power = {}
           @corporations.each do |corp|
             8.times { buy_train(corp, @depot.depot_trains[0], :free) }
             @corporation_trains[corp] = nil
-            @corporation_power[corp] = 5 # FIXME: set to 0 after testing
           end
+
+          # initialize power
+          @corporation_power = Hash.new(0)
+          @power_progress = 0
         end
 
         def can_ipo?(corp)
@@ -366,7 +386,7 @@ module Engine
             Engine::Step::Token,
             G18Carolinas::Step::Route,
             G18Carolinas::Step::Dividend,
-            Engine::Step::BuyTrain,
+            G18Carolinas::Step::BuyPower,
           ], round_num: round_num)
         end
 
@@ -377,8 +397,8 @@ module Engine
           north = @north_hexes.include?(from.hex)
           south = @south_hexes.include?(from.hex)
 
-          # Can only ever lay standard track in the North
-          return false if north && !south && southern
+          # Can only ever lay standard track in the North or anywhere after phase 5
+          return false if ((north && !south) || @phase.available?('5')) && southern
 
           # Can only ever lay southern track in the South before phase 5
           return false if !north && south && standard && !@phase.available?('5')
@@ -450,10 +470,64 @@ module Engine
           super
         end
 
+        def buy_power(entity, delta, cost, ebuy: false)
+          if !ebuy && @power_progress + delta > MAX_PROGRESS
+            @power_progress = ((@power_progress - 1 + delta) % MAX_PROGRESS) + 1
+            advance_phase!
+          elsif !ebuy
+            @power_progress += delta
+          end
+
+          @corporation_power[entity] += delta
+          entity.spend(cost, @bank)
+        end
+
+        def advance_phase!
+          return if @phase.name == '8+'
+
+          @phase.next!
+
+          # reduce corporation power
+          @corporations.each do |corp|
+            loss = (@corporation_power[corp] / 3).to_i
+            @corporation_power[corp] -= loss
+            @log << "#{corp.name} loses #{loss} power (to #{@corporation_power[corp]})" if loss.positive?
+          end
+
+          upgrade_c_hexes if @phase.name == '5'
+        end
+
+        def upgrade_c_hexes
+          C7_HEXES.each do |hexid|
+            hex = hex_by_id(hexid)
+            tile = @tiles.find { |t| t.name == 'C7' }
+            upgrade_tile(hex, tile, 0)
+          end
+          C8_HEXES.each do |hexid|
+            hex = hex_by_id(hexid)
+            tile = @tiles.find { |t| t.name == 'C8' }
+            upgrade_tile(hex, tile, C8_ROTATION)
+          end
+        end
+
+        # no checking
+        def upgrade_tile(hex, tile, rotation)
+          old_tile = hex.tile
+          tile.rotate!(rotation)
+          update_tile_lists(tile, old_tile)
+          hex.lay(tile)
+          @log << "Automatically upgrading hex #{hex.id} with tile #{tile.id}"
+          @graph.clear
+        end
+
+        def min_train
+          MIN_TRAIN[@phase.name]
+        end
+
         def enough_power?(entity)
           return false unless entity.corporation?
 
-          @corporation_power[entity] >= MIN_TRAIN[@phase.name]
+          !must_buy_power?(entity)
         end
 
         def load_corporation_trains(entity)
@@ -470,16 +544,16 @@ module Engine
           # adjust trains that don't meet lower limit
           # - this may cause an illegal set of routes, but will preserve previous run
           @corporation_trains[entity].each do |t|
-            if t.distance < MIN_TRAIN[@phase.name]
-              t.distance = MIN_TRAIN[@phase.name]
-              t.name = MIN_TRAIN[@phase.name].to_s
+            if t.distance < min_train
+              t.distance = min_train
+              t.name = min_train.to_s
             end
           end
 
-          if @corporation_trains[entity].empty? && @corporation_power[entity] >= MIN_TRAIN[@phase.name]
+          if @corporation_trains[entity].empty? && @corporation_power[entity] >= min_train
             train = entity.trains[0]
-            train.distance = MIN_TRAIN[@phase.name]
-            train.name = MIN_TRAIN[@phase.name].to_s
+            train.distance = min_train
+            train.name = min_train.to_s
             @corporation_trains[entity] = [train]
           end
           @corporation_trains[entity]
@@ -513,17 +587,18 @@ module Engine
           entity = routes[0].train.owner
           trains = @corporation_trains[entity]
           current_distance = trains.sum(&:distance)
-          return if @corporation_power[entity] - current_distance < MIN_TRAIN[@phase.name]
+          return if @corporation_power[entity] - current_distance < min_train
 
           new_train = entity.trains.find { |t| !trains.include?(t) }
-          new_train.distance = MIN_TRAIN[@phase.name]
-          new_train.name = MIN_TRAIN[@phase.name].to_s
+          new_train.distance = min_train
+          new_train.name = min_train.to_s
           @corporation_trains[entity] << new_train
         end
 
         def delete_route_train(route)
           train = route.train
           @corporation_trains[train.owner].delete(train)
+          route.reset!
         end
 
         def increase_route_train(route)
@@ -538,7 +613,7 @@ module Engine
 
         def decrease_route_train(route)
           train = route.train
-          return if train.distance == MIN_TRAIN[@phase.name]
+          return if train.distance == min_train
 
           train.distance -= 1
           train.name = train.distance.to_s
@@ -563,7 +638,8 @@ module Engine
           if route.train.name == 'Convert'
             raise GameError, 'Route must have Southern track' unless route.paths.any? { |p| p.track != :broad }
           else
-            if route.routes.sum { |r| r.train.distance } > @corporation_power[route.train.owner]
+            if route.routes.reject { |r| r.paths.empty? }
+                .sum { |r| r.train.distance } > @corporation_power[route.train.owner]
               raise GameError, 'Train sizes exceed train power'
             end
 
@@ -571,6 +647,57 @@ module Engine
             route.paths.each { |path| track_types[path.track] = 1 }
             raise GameError, 'Train cannot use more than one gauge' unless track_types.keys.one?
           end
+        end
+
+        def current_power_cost
+          POWER_COST[@phase.name]
+        end
+
+        def next_power_cost
+          POWER_COST[next_phase_name]
+        end
+
+        def next_phase_name
+          if @phase.name == '8+'
+            '8+'
+          else
+            @phase.upcoming[:name]
+          end
+        end
+
+        def must_buy_power?(corporation)
+          @corporation_power[corporation] < min_train
+        end
+
+        def current_corporation_power(corporation)
+          @corporation_power[corporation]
+        end
+
+        def trains_str(corporation)
+          "Power: #{@corporation_power[corporation]}"
+        end
+
+        def can_go_bankrupt?(player, corporation)
+          return false unless self.class::BANKRUPTCY_ALLOWED
+
+          total_emr_buying_power(player, corporation) <
+            (min_train - @corporation_power[corporation]) * current_power_cost * 2
+        end
+
+        def on_train_header
+          'Power Cost'
+        end
+
+        def train_limit_header
+          'Min Train'
+        end
+
+        def info_on_trains(phase)
+          format_currency(POWER_COST[phase[:name]])
+        end
+
+        def train_power?
+          true
         end
       end
     end

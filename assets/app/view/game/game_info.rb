@@ -22,14 +22,14 @@ module View
         when :discarded_trains
           @depot.discarded.empty? ? '' : discarded_trains
         when :upcoming_trains
-          upcoming_trains_card
+          @game.train_power? ? power_summary : upcoming_trains_card
         else
           h('div#game_info', render_body)
         end
       end
 
       def render_body
-        children = trains
+        children = @game.train_power? ? power : trains
         children.concat(discarded_trains) if @depot.discarded.any?
         children.concat(phases)
         children.concat(timeline) if timeline
@@ -114,10 +114,10 @@ module View
               h(:thead, [
                 h(:tr, [
                   h(:th, 'Phase'),
-                  h(:th, 'On Train'),
+                  h(:th, @game.on_train_header),
                   h(:th, { attrs: { title: "Number of #{@game.operation_round_name} Rounds" } },
                     @game.operation_round_short_name),
-                  h(:th, 'Train Limit'),
+                  h(:th, @game.train_limit_header),
                   h(:th, 'Tiles'),
                   *extra,
                 ]),
@@ -318,6 +318,27 @@ module View
         ]
       end
 
+      def power
+        props = {
+          style: {
+            textAlign: 'center',
+            width: 'max-content',
+          },
+        }
+
+        [
+          h(:h3, 'Power Progress'),
+          h(:div, { style: { overflowX: 'auto' } }, [
+            h(:table, [
+              h(:tbody, [
+                h(:tr, props, Array.new(15) { |p| h(:td, p + 1) }),
+                h(:tr, props, Array.new(15) { |p| h(:td, @game.power_progress == (p + 1) ? '↑' : '') }),
+              ]),
+            ]),
+          ]),
+        ]
+      end
+
       def price_str_class
         max_size = @game.depot.upcoming.group_by(&:name).map do |_name, trains|
           trains.first.names_to_prices.keys.size
@@ -452,6 +473,24 @@ module View
          h(:h3, 'Reasons for End of Game'),
          table,
         ]
+      end
+
+      def power_summary
+        title_props = {
+          style: {
+            padding: '0.4rem',
+            backgroundColor: color_for(:bg2),
+            color: color_for(:font2),
+            fontStyle: 'italic',
+          },
+        }
+
+        h('div#upcoming_trains.card', [
+          h('div.title', title_props, 'Power'),
+          h(:div, "Power Progress: #{@game.power_progress}"),
+          h(:div, "Current power cost: #{@game.format_currency(@game.current_power_cost)}"),
+          h(:div, "Next power cost: #{@game.format_currency(@game.next_power_cost)}"),
+        ])
       end
     end
   end
