@@ -179,15 +179,26 @@ module Engine
           def chart(entity)
             lines = []
             lines << %w[Power Cost]
-            if @game.must_buy_power?(entity)
-              lines << [min_power_needed(entity), @game.format_currency(min_cash_needed(entity))]
-            else
-              max_possible = @game.class::MAX_TRAIN - @game.current_corporation_power(entity)
-              max_possible.times do |p|
-                break unless entity.cash >= (cash = cash_needed(entity, p + 1))
+            min_possible = 1
+            min_possible = min_power_needed(entity) if @game.must_buy_power?(entity)
+            max_possible = @game.class::MAX_TRAIN - @game.current_corporation_power(entity)
+            max_possible.times do |p|
+              next unless p + 1 >= min_possible
 
-                lines << [p + 1, @game.format_currency(cash)]
+              if (p + 1) == min_possible && @game.must_buy_power?(entity) &&
+                  entity.cash < cash_needed(entity, p + 1)
+                lines << [(p + 1).to_s, @game.format_currency(ebuy_cash_needed(entity))]
+                break
               end
+
+              break if entity.cash < (cash = cash_needed(entity, p + 1))
+
+              change = ''
+              if (p + 1 + @game.power_progress) > @game.class::MAX_PROGRESS && @game.phase.name != '8+'
+                change = " (Phase #{@game.phase.upcoming[:name]})"
+              end
+
+              lines << ["#{p + 1}#{change}", @game.format_currency(cash)]
             end
             lines
           end
