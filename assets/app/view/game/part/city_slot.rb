@@ -120,7 +120,9 @@ module View
 
           event.JS.stopPropagation
 
-          if actions.include?('remove_token')
+          # if remove_token and place_token is possible, remove should only be called when a token is available
+          if actions.include?('remove_token') && !actions.include?('place_token') ||
+            actions.include?('remove_token') && @token
             return unless @token
 
             action = Engine::Action::RemoveToken.new(

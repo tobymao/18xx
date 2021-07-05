@@ -7,27 +7,42 @@ module Engine
     module G1840
       module Step
         class TrackAndToken < Engine::Step::TrackAndToken
-          def process_place_token(action)
-            entity = action.entity
+          def actions(entity)
+            actions = []
+            return actions if entity != current_entity
+
+            actions << 'lay_tile' if can_lay_tile?(entity)
+            actions << 'place_token' if can_place_token?(entity)
+            actions << 'remove_token'
+            actions << 'pass'
+            actions
+          end
+
+          def process_remove_token(action)
             city = action.city
+            entity = action.entity
             token = city.tokens[action.slot]
             hex = city.hex
 
-            if token&.corporation&.type == :city
-              check_connected(entity, city, hex)
-              spender = @game.owning_major_corporation(entity)
-              spender.spend(40, @game.bank)
-              @log << "#{entity.name} removes token from #{hex.name} (#{hex.location_name}) "\
-                      "for #{@game.format_currency(40)}"
-              token.destroy!
-            end
+            raise GameError, "Token in #{hex.name} cannot be removed" if
+             token&.corporation&.type != :city || @game.class::NO_TOKEN_REMOVE_HEX.include?(hex.coordinates)
+
+            spender = @game.owning_major_corporation(entity)
+            spender.spend(40, @game.bank)
+            @log << "#{entity.name} removes token from #{hex.name} (#{hex.location_name}) "\
+                    "for #{@game.format_currency(40)}"
+            token.destroy!
+          end
+
+          def process_place_token(action)
+            entity = action.entity
+            city = action.city
 
             spender = @game.owning_major_corporation(entity)
             place_token(entity, city, action.token, spender: spender)
 
             @game.city_graph.clear
             @tokened = true
-            pass! unless can_lay_tile?(entity)
           end
 
           def process_lay_tile(action)
@@ -36,7 +51,6 @@ module Engine
             tile = action.tile
 
             lay_tile_action(action, spender: spender)
-            pass! if !can_lay_tile?(entity) && @tokened
 
             if @game.orange_framed?(tile) && tile.color == :yellow
               @orange_placed = true
