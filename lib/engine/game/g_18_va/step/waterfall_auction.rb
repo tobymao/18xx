@@ -36,6 +36,15 @@ module Engine
             @game.players.sort_by! { |p| [p.cash, current_order.index(p)] }.reverse!
           end
 
+          def min_bid(company)
+            return unless company
+
+            high_bid = highest_bid(company)
+            return company.value - company.discount unless high_bid
+
+            high_bid.price + min_increment
+          end
+
           def all_passed!
             companies_without_bids = @companies.reject { |c| @bids[c] && !@bids[c].empty? }
 
