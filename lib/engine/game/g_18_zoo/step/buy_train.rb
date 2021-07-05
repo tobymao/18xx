@@ -43,9 +43,12 @@ module Engine
 
           def process_buy_train(action)
             entity ||= action.entity
+            is_discarded = @game.depot.discarded.include?(action.train)
             old_train = action.train.owned_by_corporation?
 
             super
+
+            return if is_discarded
 
             if !@round.any_train_brought && !old_train
               prev = entity.share_price.price
