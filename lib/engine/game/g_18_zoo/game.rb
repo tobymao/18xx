@@ -998,6 +998,7 @@ module Engine
         end
 
         def rust?(train)
+          return super if depot.discarded.include?(train)
           return true if !train.owner || !train.owner.corporation?
           return true if @round.trains_for_bandage&.include?(train)
 
@@ -1018,6 +1019,7 @@ module Engine
         end
 
         def rust(train)
+          return super if depot.discarded.include?(train)
           return if !train.owner || !train.owner.corporation?
           # Train protection cannot be applied if corporation has already 3 companies
           return super if patch.owner&.player? && train.owner.companies.count >= 3
