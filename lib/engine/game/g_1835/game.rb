@@ -215,7 +215,6 @@ module Engine
                                      end)
             i.ipoed = true
           end
-          
         end
 
         def init_round

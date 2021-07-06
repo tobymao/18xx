@@ -24,7 +24,7 @@ module Engine
             desc: 'Ostbayrische Bahn - 2 Tiles on M15, M17 extra (one per OR) and without cost',
             abilities: [
               {
-                type: 'tile_lay',
+                type: 'teleport',
                 description: "Place a free track tile at m15, M17 at any time during the corporation's operations.",
                 owner_type: 'player',
                 hexes: %w[M15 M17],
@@ -84,7 +84,7 @@ module Engine
               {
                 type: 'teleport',
                 owner_type: 'player',
-                free: true,
+                free_tile_lay: true,
                 hexes: ['L6'],
                 when: 'TrackAndToken',
                 tiles: %w[210 211 212 213 214 215],
