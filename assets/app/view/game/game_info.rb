@@ -326,13 +326,15 @@ module View
           },
         }
 
+        max = @game.class::MAX_PROGRESS
+
         [
           h(:h3, 'Power Progress'),
           h(:div, { style: { overflowX: 'auto' } }, [
             h(:table, [
               h(:tbody, [
-                h(:tr, props, Array.new(15) { |p| h(:td, p + 1) }),
-                h(:tr, props, Array.new(15) { |p| h(:td, @game.power_progress == (p + 1) ? '↑' : '') }),
+                h(:tr, props, Array.new(max) { |p| h(:td, p + 1) }),
+                h(:tr, props, Array.new(max) { |p| h(:td, @game.power_progress == (p + 1) ? '↑' : '') }),
               ]),
             ]),
           ]),
