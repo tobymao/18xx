@@ -148,12 +148,54 @@ module Engine
             ['E23'] => 'city=revenue:30;path=a:3,b:_0;path=a:5,b:_0;label=B',
           },
           green: {
-            ['H12'] => 'city=revenue:10,loc:2.5;'\
-            'path=a:1,b:_0;path=a:4,b:_0;path=a:1,b:4;path=a:5,b:_0;path=a:5,b:1',
+            ['H12'] => 'halt;halt'\
+            ';path=a:4,b:1;path=a:4,b:_0;path=a:1,b:_0'\
+            ';path=a:5,b:1;path=a:5,b:_1;path=a:1,b:_1',
           },
         }.freeze
 
         LAYOUT = :pointy
+
+        def place_home_token(corporation)
+          return super unless corporation == prr
+
+          return if corporation.tokens.first&.used
+
+          # There's a PRR icon on the map for this
+          hex_by_id('H12').tile.icons << Engine::Part::Icon.new('../logos/18_chesapeake/PRR')
+          hex_by_id('H12').tile.reservations.delete(prr)
+          corporation.tokens.first.used = true
+        end
+
+        def prr
+          corporation_by_id('PRR')
+        end
+
+        def setup
+          @prr_graph = Graph.new(self, home_as_token: true)
+        end
+
+        def graph_for_entity(entity)
+          entity == prr ? @prr_graph : @graph
+        end
+
+        def operating_round(round_num)
+          Round::Operating.new(self, [
+            Engine::Step::Bankrupt,
+            Engine::Step::Exchange,
+            Engine::Step::SpecialTrack,
+            Engine::Step::SpecialToken,
+            Engine::Step::BuyCompany,
+            Engine::Step::HomeToken,
+            Engine::Step::Track,
+            Engine::Step::Token,
+            Engine::Step::Route,
+            Engine::Step::Dividend,
+            Engine::Step::DiscardTrain,
+            Engine::Step::BuyTrain,
+            [Engine::Step::BuyCompany, { blocks: true }],
+          ], round_num: round_num)
+        end
       end
     end
   end
