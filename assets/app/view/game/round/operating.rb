@@ -47,6 +47,9 @@ module View
           if @current_actions.include?('buy_train')
             left << h(IssueShares) if @current_actions.include?('sell_shares')
             left << h(BuyTrains)
+          elsif @current_actions.include?('buy_power')
+            left << h(IssueShares) if @current_actions.include?('sell_shares')
+            left << h(BuyPower)
           elsif @current_actions.include?('borrow_train')
             left << h(BorrowTrain)
           elsif @current_actions.include?('sell_shares') && entity.player?

@@ -235,15 +235,7 @@ module View
       end
 
       def render_trains
-        trains = (@corporation.system? ? @corporation.shells : [@corporation]).map do |c|
-          if c.trains.empty?
-            'None'
-          else
-            c.trains.map { |t| t.obsolete ? "(#{t.name})" : t.name }.join(' ')
-          end
-        end
-
-        render_header_segment(trains, 'Trains')
+        render_header_segment(@game.trains_str(@corporation), 'Trains')
       end
 
       def render_header_segment(values, key)
