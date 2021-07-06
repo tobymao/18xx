@@ -3,6 +3,7 @@
 require_relative 'meta'
 require_relative '../base'
 require_relative 'map'
+require_relative 'entities'
 require_relative '../../round/operating'
 
 module Engine
@@ -35,7 +36,16 @@ module Engine
         BANKRUPTCY_ALLOWED = true
 
         BANK_CASH = 12_000
-
+        PAR_PRICES = {
+          'PR' => 154,
+          'BY' => 92,
+          'SX' => 88,
+          'BA' => 84,
+          'WT' => 84,
+          'HE' => 84,
+          'MS' => 80,
+          'OL' => 80,
+        }.freeze
         CERT_LIMIT = { 3 => 19, 4 => 15, 5 => 12, 6 => 11, 7 => 9 }.freeze
 
         STARTING_CASH = { 3 => 600, 4 => 475, 5 => 390, 6 => 340, 7 => 310 }.freeze
@@ -199,31 +209,13 @@ module Engine
         HOME_TOKEN_TIMING = :float
 
         def setup
-          @pr = @corporations.find { |c| c.id == 'PR' }
-          @bay = @corporations.find { |c| c.id == 'BY' }
-          @sax = @corporations.find { |c| c.id == 'SX' }
-          @ba = @corporations.find { |c| c.id == 'BA' }
-          @wt = @corporations.find { |c| c.id == 'WT' }
-          @he = @corporations.find { |c| c.id == 'HE' }
-          @ms = @corporations.find { |c| c.id == 'MS' }
-          @ol = @corporations.find { |c| c.id == 'OL' }
-
-          @stock_market.set_par(@pr, @stock_market.par_prices.find { |p| p.price == 154 })
-          @stock_market.set_par(@bay, @stock_market.par_prices.find { |p| p.price == 92 })
-          @stock_market.set_par(@sax, @stock_market.par_prices.find { |p| p.price == 88 })
-          @stock_market.set_par(@ba, @stock_market.par_prices.find { |p| p.price == 84 })
-          @stock_market.set_par(@wt, @stock_market.par_prices.find { |p| p.price == 84 })
-          @stock_market.set_par(@he, @stock_market.par_prices.find { |p| p.price == 84 })
-          @stock_market.set_par(@ms, @stock_market.par_prices.find { |p| p.price == 80 })
-          @stock_market.set_par(@ol, @stock_market.par_prices.find { |p| p.price == 80 })
-          @pr.ipoed = true
-          @bay.ipoed = true
-          @sax.ipoed = true
-          @ba.ipoed = true
-          @wt.ipoed = true
-          @he.ipoed = true
-          @ms.ipoed = true
-          @ol.ipoed = true
+          corporations.each do |i|
+            @stock_market.set_par(i, @stock_market.par_prices.find do |p|
+                                       p.price == PAR_PRICES[i.id]
+                                     end)
+            i.ipoed = true
+          end
+          
         end
 
         def init_round
