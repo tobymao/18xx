@@ -50,7 +50,8 @@ module Engine
 
             payout_corporation(payout[:corporation], entity)
 
-            payout_shares(entity, revenue - payout[:corporation]) if payout[:per_share].positive?
+            adjusted_revenue = subsidy ? revenue + subsidy : revenue
+            payout_shares(entity, adjusted_revenue - payout[:corporation]) if payout[:per_share].positive?
 
             change_share_price(entity, payout)
 

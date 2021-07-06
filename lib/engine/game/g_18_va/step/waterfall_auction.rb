@@ -28,12 +28,6 @@ module Engine
 
           def end_auction!
             resolve_bids
-
-            @game.log << 'Players are reordered based on remaining cash'
-
-            # players are reordered from most remaining cash to least with prior order as tie breaker
-            current_order = @game.players.dup.reverse
-            @game.players.sort_by! { |p| [p.cash, current_order.index(p)] }.reverse!
           end
 
           def min_bid(company)

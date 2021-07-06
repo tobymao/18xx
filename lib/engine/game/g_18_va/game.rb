@@ -613,6 +613,16 @@ module Engine
           ], round_num: round_num)
         end
 
+        def reorder_players(_order = nil)
+          # Only reorder players at the end of the initial auction round
+          return super if @round.operating? || @round.stock?
+
+          @log << 'Players are reordered based on remaining cash'
+          # players are reordered from most remaining cash to least with prior order as tie breaker
+          current_order = @players.dup.reverse
+          @players.sort_by! { |p| [p.cash, current_order.index(p)] }.reverse!
+        end
+
         def buy_train(operator, train, price = nil)
           return super(operator, train, :free) if price.zero?
 
