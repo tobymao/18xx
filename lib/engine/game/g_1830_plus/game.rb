@@ -171,6 +171,90 @@ module Engine
           corporation_by_id('PRR')
         end
 
+        def city_tokened_by?(stop, corporation)
+          return true if corporation == prr && stop.hex.id == 'H12'
+
+          super
+        end
+
+        def check_distance(route, visits)
+          distance = super
+
+          prr_halt_visits = route.stops.count(&:halt?)
+          prr_token_visits = route.stops.count { |s| s.city? && s.tokened_by?(prr) }
+          raise GameError, 'Only PRR may use PRR home halt' if prr_halt_visits.positive? && route.train.owner != prr
+          raise GameError, 'Train may not visit PRR home halt more than once' if prr_halt_visits > 1
+          raise GameError, 'Train must use PRR station or home halt' if route.train.owner == prr &&
+              prr_token_visits.zero? && prr_halt_visits.zero?
+        end
+
+        def max_halts(route)
+          route.train.owner == prr ? 1 : 0
+        end
+
+        def compute_stops(route)
+          # This only applies to PRR
+          unless route.train.owner == prr
+            route.halts = 0
+            return super
+          end
+
+          visits = route.visited_stops
+          return [] if visits.empty?
+
+          # The non-halts are always stops
+          stops = visits.reject(&:halt?)
+
+          allowance = [1, route.train.distance - stops.size].min
+
+          # add in halts requested (from previous run or UI button)
+          #
+          # reset requested halts to nil if no halts on route, ignoring halts, not using halt for subsidies,
+          # maximum halts allowed is zero, or requested halts is greater than maximum allowed
+          halts = visits.select(&:halt?)
+
+          halt_max = 1
+
+          route.halts = nil if halts.empty? || route.halts && route.halts > halt_max
+
+          num_halts = [halts.size, (route.halts || 0)].min
+          if num_halts.positive?
+            stops.concat(halts.take(num_halts))
+            allowance -= num_halts
+          end
+
+          # if requested halts is nil (i.e. this is first time for this route), add as many halts as possible if
+          # there are halts on route, there is room for some, and we aren't ignoring halts
+          if !route.halts && halts.any? && allowance.positive?
+            num_halts = [halts.size, allowance].min
+            stops.concat(halts.take(num_halts))
+          end
+
+          # update route halts
+          route.halts = num_halts if !halts.empty? || route.halts
+
+          stops
+        end
+
+        def route_distance(route)
+          route.stops.size
+        end
+
+        def revenue_for(route, stops)
+          revenue = super
+          # route halts default to YES
+          revenue += 10 if stops.any?(&:halt?) && !route.halts&.negative?
+          revenue
+        end
+
+        def routes_subsidy(_routes)
+          0
+        end
+
+        def subsidy_for(_route, _stops)
+          0
+        end
+
         def setup
           @prr_graph = Graph.new(self, home_as_token: true)
         end
