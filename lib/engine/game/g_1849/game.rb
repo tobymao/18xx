@@ -236,6 +236,10 @@ module Engine
           'Treasury'
         end
 
+        def status_str(_corp)
+          'Last Share is 20% Cert'
+        end
+
         def sms_hexes
           SMS_HEXES
         end
