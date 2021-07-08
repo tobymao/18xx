@@ -294,6 +294,10 @@ module Engine
 
       VARIABLE_FLOAT_PERCENTAGES = false
 
+      # Setting this to true is neccessary but insufficent to allow downgrading town tiles into plain track
+      # See 1856 for an example
+      ALLOW_REMOVING_TOWNS = false
+
       CACHABLE = [
         %i[players player],
         %i[corporations corporation],
