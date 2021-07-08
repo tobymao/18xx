@@ -217,7 +217,7 @@ module Engine
 
             options = available_company_options(entity).map(&:sum)
             if options.none? { |option| price >= option && price <= option + entity.cash }
-              valid_options = options
+              valid_options = options.sort.uniq
               .select { |o| o + entity.cash >= min_bid(corporation) }
               .map { |o| @game.format_currency(o) }
               .join(', ')
