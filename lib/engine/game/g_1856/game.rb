@@ -375,6 +375,8 @@ module Engine
                           hexes: ['I12'],
                           count: 1,
                           price: 0,
+                          teleport_price: 0,
+                          from_owner: true,
                         }],
             color: nil,
           },
