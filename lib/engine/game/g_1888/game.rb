@@ -141,12 +141,12 @@ module Engine
           'TJL' => 'H4',
           'LYR' => 'H14',
           'JZR' => 'B6',
-          'ZDR' => 'G11',
+          'ZDR' => 'F12',
         }.freeze
 
         DESTINATION_BONUS = {
           'JHR' => 30,
-          'SSL' => 40,
+          'SSL' => 20,
           'CDL' => 20,
           'HJR' => 20,
           'TJL' => 20,
