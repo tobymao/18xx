@@ -585,43 +585,41 @@ module Engine
         }.freeze
 
         BASE_2 = {
-          'G7' => [TILE_O, :white],
-          'G9' => [TILE_M, :white],
-          'G11' => ['', :white],
-          'H8' => [TILE_MM, :white],
-          'H10' => ['offboard=revenue:yellow_30|brown_60;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
+          'H8' => [TILE_O, :white],
+          'H10' => [TILE_M, :white],
+          'H12' => ['', :white],
+          'I9' => [TILE_MM, :white],
+          'I11' => ['offboard=revenue:yellow_30|brown_60;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
             'path=a:4,b:_0;path=a:5,b:_0;label=R', :red],
-          'H12' => [TILE_M, :white],
-          'I7' => [TILE_O, :white],
-          'I9' => [TILE_M, :white],
-          'I11' => ['', :white],
+          'I13' => [TILE_M, :white],
+          'J8' => [TILE_O, :white],
+          'J10' => [TILE_M, :white],
+          'J12' => ['', :white],
         }.freeze
 
         LOCATION_NAMES_BASE_2 = {
-          'G9' => 'M',
-          'G11' => nil,
-          'H8' => 'MM',
-          'H12' => 'M',
-          'I9' => 'M',
+          'H10' => 'M',
+          'I9' => 'MM',
+          'I13' => 'M',
+          'J10' => 'M',
         }.freeze
 
         BASE_3 = {
-          'G7' => ['path=a:0,b:3', :gray],
-          'G9' => [TILE_O, :white],
-          'G11' => [TILE_MM, :white],
-          'H8' => [TILE_MM, :white],
-          'H10' => [TILE_Y, :white],
-          'H12' => [TILE_O, :white],
-          'I7' => ['path=a:2,b:3;path=a:1,b:3', :gray],
-          'I9' => [TILE_O, :white],
-          'I11' => [TILE_MM, :white],
+          'H8' => ['path=a:0,b:3', :gray],
+          'H10' => [TILE_O, :white],
+          'H12' => [TILE_MM, :white],
+          'I9' => [TILE_MM, :white],
+          'I11' => [TILE_Y, :white],
+          'I13' => [TILE_O, :white],
+          'J8' => ['path=a:2,b:3;path=a:1,b:3', :gray],
+          'J10' => [TILE_O, :white],
+          'J12' => [TILE_MM, :white],
         }.freeze
 
         LOCATION_NAMES_BASE_3 = {
-          'G9' => nil,
-          'G11' => 'MM',
-          'H8' => 'MM',
-          'I11' => 'MM',
+          'H12' => 'MM',
+          'I9' => 'MM',
+          'J12' => 'MM',
         }.freeze
       end
     end
@@ -1026,30 +1024,28 @@ module Engine
         BASE_2 = G18ZOOMapC::Map::BASE_2
 
         LOCATION_NAMES_BASE_2 = {
-          'G9' => 'M',
-          'G11' => nil,
-          'H8' => 'MM',
-          'H12' => 'M',
-          'I9' => 'M',
+          'H10' => 'M',
+          'I9' => 'MM',
+          'I13' => 'M',
+          'J10' => 'M',
         }.freeze
 
         BASE_3 = {
-          'G7' => ['path=a:0,b:3', :gray],
-          'G9' => [TILE_O, :white],
-          'G11' => [TILE_MM, :white],
-          'H8' => [TILE_MM, :white],
-          'H10' => [TILE_Y, :white],
-          'H12' => [TILE_O, :white],
-          'I7' => ['path=a:2,b:3;path=a:1,b:3', :gray],
-          'I9' => [TILE_O, :white],
-          'I11' => [TILE_MM, :white],
+          'H8' => ['path=a:0,b:3', :gray],
+          'H10' => [TILE_O, :white],
+          'H12' => [TILE_MM, :white],
+          'I9' => [TILE_MM, :white],
+          'I11' => [TILE_Y, :white],
+          'I13' => [TILE_O, :white],
+          'J8' => ['path=a:2,b:3;path=a:1,b:3', :gray],
+          'J10' => [TILE_O, :white],
+          'J12' => [TILE_MM, :white],
         }.freeze
 
         LOCATION_NAMES_BASE_3 = {
-          'G9' => nil,
-          'G11' => 'MM',
-          'H8' => 'MM',
-          'I11' => 'MM',
+          'H12' => 'MM',
+          'I9' => 'MM',
+          'J12' => 'MM',
         }.freeze
       end
     end
