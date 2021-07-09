@@ -26,7 +26,7 @@ module BuyMinor
   end
 
   def draft_company(company, player)
-    @game.bank.companies&.delete(company)
+    company.owner.companies&.delete(company)
     company.owner = player
     player.companies << company
   end
