@@ -138,9 +138,12 @@ module View
                           @game.format_currency(@company.revenue)
                         end
 
+          company_name_str = @game.respond_to?(:company_size) ? "[#{@game.company_size(@company)}] " : ''
+          company_name_str += @company.name
+
           children = [
             h(:div, { style: header_style }, header_text),
-            h(:div, @company.name),
+            h(:div, company_name_str),
             h(:div, { style: description_style }, @company.desc),
             h(:div, { style: value_style }, "Value: #{@game.format_currency(@company.value)}"),
             h(:div, { style: revenue_style }, "Revenue: #{revenue_str}"),
@@ -180,9 +183,9 @@ module View
       end
 
       def render_company_on_card(company)
-        title_str = @game.respond_to?(:company_size) ? "#{@game.company_size(company)} company: " : ''
+        title_str = @game.respond_to?(:company_size) ? "[#{@game.company_size(company)}] company: " : ''
         title_str += company.name
-        company_name_str = @game.respond_to?(:company_size_str) ? "#{@game.company_size_str(company)} " : ''
+        company_name_str = @game.respond_to?(:company_size_str) ? "[#{@game.company_size_str(company)}] " : ''
         company_name_str += company.name
 
         extra = []
