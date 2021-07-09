@@ -584,7 +584,7 @@ module Engine
           },
           {
             sym: 'EVA',
-            name: 'Eisenbahnverkehrsmittel Aktiengesellschaft',
+            name: 'EVA (Eisenbahnverkehrsmittel Aktiengesellschaft)',
             value: 150,
             revenue: 30,
             desc: 'Leaves the game after the purchase of the first 6-train. This private cannot be sold to '\
@@ -739,6 +739,14 @@ module Engine
           end
         end
 
+        # EVA can be bought from other player
+        def purchasable_companies(entity)
+          return [] if eva.closed? || eva.owner == @bank
+          return [eva] if eva.owner != entity
+
+          []
+        end
+
         # Show minors in spreadsheet
         def all_corporations
           @minors + @corporations
@@ -859,6 +867,7 @@ module Engine
             Engine::Step::Bankrupt,
             Engine::Step::DiscardTrain,
             Engine::Step::HomeToken,
+            G1893::Step::BuyCompany,
             G1893::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
