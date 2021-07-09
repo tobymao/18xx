@@ -283,9 +283,10 @@ module Engine
 
         graph = @game.graph_for_entity(entity)
 
-        raise GameError, 'New track must override old one' if old_tile.city_towns.any? do |old_city|
-          new_tile.city_towns.none? { |new_city| (old_city.exits - new_city.exits).empty? }
-        end
+        raise GameError, 'New track must override old one' if !@game.class::ALLOW_REMOVING_TOWNS &&
+            old_tile.city_towns.any? do |old_city|
+              new_tile.city_towns.none? { |new_city| (old_city.exits - new_city.exits).empty? }
+            end
 
         old_paths = old_tile.paths
         changed_city = false

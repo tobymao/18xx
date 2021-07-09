@@ -732,6 +732,7 @@ module Engine
         SELL_MOVEMENT = :down_per_10
 
         HOME_TOKEN_TIMING = :operate
+        ALLOW_REMOVING_TOWNS = true
 
         RIGHT_COST = 50
 
