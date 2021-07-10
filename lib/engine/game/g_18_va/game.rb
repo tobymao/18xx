@@ -738,11 +738,19 @@ module Engine
             revenue += offboard_stop.route_revenue(@phase, train)
           end
           # Freight and doubler trains double ports
-          revenue += port_stop.route_revenue(@phase, train) if port_stop && %i[freight doubler].include?(train_type)
+          revenue += freight_port_bonus(port_stop, train) if port_stop && %i[freight doubler].include?(train_type)
 
           revenue += 20 * (train_size - 1) if cmd_stop
 
           revenue
+        end
+
+        def freight_port_bonus(port_stop, train)
+          doubled_stops = [port_stop]
+          if train_type(train) == :freight
+            doubled_stops << hex_by_id(PORT_TO_CITY[port_stop.hex.id]).tile.city_towns.first
+          end
+          doubled_stops.sum { |stop| stop.route_revenue(@phase, train) }
         end
 
         def status_array(corp)
