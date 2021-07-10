@@ -82,6 +82,10 @@ module Engine
             entity.value
           end
 
+          def min_increment
+            0
+          end
+
           def max_place_bid(_player, _object)
             0
           end
