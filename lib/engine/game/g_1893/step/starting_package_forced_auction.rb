@@ -114,6 +114,10 @@ module Engine
             entity.min_bid
           end
 
+          def min_increment
+            0
+          end
+
           def min_purchase(entity)
             entity.value / 2
           end
