@@ -1042,6 +1042,10 @@ module Engine
           @green_leverkusen_tile ||= @tiles.find { |t| t.name == LEVERKUSEN_GREEN_TILE }
         end
 
+        def available_programmed_actions
+          [Action::ProgramBuyShares, Action::ProgramBuyBonds, Action::ProgramSharePass]
+        end
+
         include StubsAreRestricted
 
         def leverkusen_upgrade_to_green?(hex, tile)

@@ -442,6 +442,8 @@ module Engine
           end
         when Action::SellShares
           'Shares were sold'
+        when Action::BuyBonds, Action::SellBonds
+          nil
         else
           "Unknown action #{action.type} disabling for safety"
         end
@@ -523,6 +525,35 @@ module Engine
 
           # Buy-then-Sell games need the pass.
           [Action::Pass.new(entity)]
+        end
+      end
+
+      def activate_program_buy_bonds(entity, program)
+        available_actions = actions(entity)
+        issuer = program.issuer
+
+        if available_actions.include?('buy_bonds')
+          # check if end condition met
+          if entity.bonds_of(issuer).size >= program.until_condition
+            return [Action::ProgramDisable.new(entity,
+                                               reason: "#{program.until_condition} bond(s) bought in "\
+                                               "#{issuer.name}, end condition met")]
+          end
+          buyable_bundle = @game.bundles_for_issuer(issuer, issuer).select { |b| b.count == 1 }
+
+          if buyable_bundle.count.zero?
+            return [Action::ProgramDisable.new(entity,
+                                               reason: "Cannot buy #{issuer.name} bond(s) from market")]
+          end
+
+          reason = should_stop_applying_program(entity, nil) unless @game.actions.last == program
+          return [Action::ProgramDisable.new(entity, reason: reason)] if reason
+
+          bond = buyable_bundle.first.bonds.first
+          [Action::BuyBonds.new(entity, bonds: bond)]
+        elsif available_actions.include?('pass')
+          [Action::ProgramDisable.new(entity,
+                                      reason: 'Buy of bonds no longer allowed')]
         end
       end
 

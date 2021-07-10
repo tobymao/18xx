@@ -23,6 +23,7 @@ module View
         if @game.players.find { |p| p.name == @user&.dig('name') }
           types = {
             Engine::Action::ProgramBuyShares => ->(settings) { render_buy_shares(settings) },
+            Engine::Action::ProgramBuyBonds => ->(settings) { render_buy_bonds(settings) },
             Engine::Action::ProgramMergerPass => ->(settings) { render_merger_pass(settings) },
             Engine::Action::ProgramSharePass => ->(settings) { render_share_pass(settings) },
           }.freeze
@@ -176,6 +177,22 @@ module View
         )
       end
 
+      def enable_buy_bonds(form)
+        settings = params(form)
+
+        issuer = @game.issuer_by_id(settings['issuer'])
+
+        until_condition = settings['buy_market'].to_i
+
+        process_action(
+          Engine::Action::ProgramBuyBonds.new(
+            sender,
+            issuer: issuer,
+            until_condition: until_condition
+          )
+        )
+      end
+
       AUTO_ACTIONS_WIKI = 'https://github.com/tobymao/18xx/wiki/Auto-actions'
       def render_share_choice(form, corporation, shares, name, print_name, selected, settings)
         owned = sender.num_shares_of(corporation, ceil: false)
@@ -306,6 +323,91 @@ module View
           children << h(:div, subchildren)
 
         end
+        children
+      end
+
+      def render_bond_choice(form, issuer, bonds, name, print_name, selected, settings)
+        owned = sender.bonds_of(issuer).size
+        default_value = owned + 1
+        default_value = settings&.until_condition if selected && settings
+        input = render_input(
+          "Buy from #{print_name} until at ",
+          id: "buy_#{name}",
+          type: :number,
+          inputs: form,
+          attrs: {
+            min: owned,
+            max: owned + bonds.size,
+            value: default_value,
+            required: true,
+          },
+          input_style: { width: '5rem' },
+          container_style: { margin: '0' },
+        )
+
+        h(:div, [render_input([input, 'bond(s)'],
+                              id: name,
+                              type: 'radio',
+                              name: 'mode',
+                              inputs: form,
+                              attrs: {
+                                name: 'mode_options',
+                                checked: selected,
+                              })])
+      end
+
+      def render_buy_bonds(settings)
+        form = {}
+        text = 'Auto Buy Bonds'
+        text += ' (Enabled)' if settings
+        children = [h(:h3, text)]
+        children << h(:p,
+                      'Automatically buy bonds from an issuer.'\
+                      ' This will deactivate itself if other players do actions that may impact you.')
+        children << h(:p,
+                      [h(:a, { attrs: { href: AUTO_ACTIONS_WIKI, target: '_blank' } },
+                         'Please read this for more details when it will deactivate')])
+
+        buyable = @game.all_issuers.select do |issuer|
+          issuer.issuable_bonds.any?
+        end
+
+        if buyable.empty?
+          children << h('p.bold', 'No issuers have bonds available to buy, cannot program!')
+        else
+          selected = @buy_issuer || settings&.issuer || buyable.first
+          values = buyable.map do |entity|
+            attrs = { value: entity.name }
+            attrs[:selected] = true if selected == entity
+            h(:option, { attrs: attrs }, entity.name)
+          end
+          buy_issuer_change = lambda do
+            iss = Native(form[:issuer]).elm&.value
+            store(:buy_issuer, @game.issuer_by_id(iss))
+          end
+          children << h(:div, [render_input('Issuer',
+                                            id: 'issuer',
+                                            el: 'select',
+                                            on: { input: buy_issuer_change },
+                                            children: values, inputs: form)])
+
+          children << h(Issuer, issuer: selected)
+          issuer_settings = settings if selected == settings&.issuer
+
+          checked = settings ? true : false
+          children << render_bond_choice(form,
+                                         selected,
+                                         selected.issuable_bonds,
+                                         'market',
+                                         'Market',
+                                         checked,
+                                         issuer_settings)
+
+          subchildren = [render_button(settings ? 'Update' : 'Enable') { enable_buy_bonds(form) }]
+          subchildren << render_disable(settings) if settings
+          children << h(:div, subchildren)
+        end
+
         children
       end
 
