@@ -62,7 +62,7 @@ module Engine
              275
              300
              325
-             350],
+             350e],
         ].freeze
 
         TRAINS = [
@@ -163,6 +163,8 @@ module Engine
         BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
         COMPANY_SALE_FEE = 30
         ADDED_TOKEN_PRICE = 100
+
+        GAME_END_CHECK = { stock_market: :current_or, bank: :current_or, bankrupt: :immediate }.freeze
 
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
 
@@ -380,10 +382,10 @@ module Engine
 
         def operating_round(round_num)
           Round::Operating.new(self, [
-            Engine::Step::Bankrupt,
+            G18Carolinas::Step::Bankrupt,
             Engine::Step::HomeToken,
             G18Carolinas::Step::Track,
-            Engine::Step::Token,
+            G18Carolinas::Step::Token,
             G18Carolinas::Step::Route,
             G18Carolinas::Step::Dividend,
             G18Carolinas::Step::BuyPower,
@@ -526,6 +528,7 @@ module Engine
 
         def enough_power?(entity)
           return false unless entity.corporation?
+          return true if entity.receivership?
 
           !must_buy_power?(entity)
         end
@@ -533,7 +536,9 @@ module Engine
         def load_corporation_trains(entity)
           operating = entity.operating_history
           last_run = operating[operating.keys.max]&.routes
+
           return [] unless last_run
+          return [] unless last_run.keys&.first
 
           last_run.keys
         end
@@ -541,16 +546,22 @@ module Engine
         def route_trains(entity)
           @corporation_trains[entity] ||= load_corporation_trains(entity)
 
-          # adjust trains that don't meet lower limit
-          # - this may cause an illegal set of routes, but will preserve previous run
-          @corporation_trains[entity].each do |t|
-            if t.distance < min_train
-              t.distance = min_train
-              t.name = min_train.to_s
+          if entity.receivership? && must_buy_power?(entity)
+            # remember single train if in receivership
+            @corporation_trains[entity] = [@corporation_trains[entity].first] unless @corporation_trains[entity].empty?
+          else
+            # adjust trains that don't meet lower limit
+            # - this may cause an illegal set of routes, but will preserve previous run
+            @corporation_trains[entity].each do |t|
+              if t.distance < min_train
+                t.distance = min_train
+                t.name = min_train.to_s
+              end
             end
           end
 
-          if @corporation_trains[entity].empty? && @corporation_power[entity] >= min_train
+          if @corporation_trains[entity].empty? && (@corporation_power[entity] >= min_train ||
+              (entity.receivership? && must_buy_power?(entity)))
             train = entity.trains[0]
             train.distance = min_train
             train.name = min_train.to_s
@@ -580,7 +591,7 @@ module Engine
         end
 
         def reset_adjustable_trains!(routes)
-          @corporation_trains[routes[0].train.owner] = nil
+          @corporation_trains[routes[0].train.owner] = nil if routes[0]
         end
 
         def add_route_train(routes)
@@ -588,6 +599,7 @@ module Engine
           trains = @corporation_trains[entity]
           current_distance = trains.sum(&:distance)
           return if @corporation_power[entity] - current_distance < min_train
+          return if entity.receivership? && must_buy_power?(entity)
 
           new_train = entity.trains.find { |t| !trains.include?(t) }
           new_train.distance = min_train
@@ -597,15 +609,24 @@ module Engine
 
         def delete_route_train(route)
           train = route.train
+          return if train.owner.receivership? && must_buy_power?(entity)
+          return if @corporation_trains[train.owner].one?
+
           @corporation_trains[train.owner].delete(train)
+          routes = route.routes
           route.reset!
+          routes.delete(route)
+        end
+
+        def loan_or_power(corp)
+          corp.receivership? && must_buy_power?(corp) ? min_train : @corporation_power[corp]
         end
 
         def increase_route_train(route)
           train = route.train
           corp = train.owner
           return if train.distance == MAX_TRAIN
-          return if route.routes.sum { |r| r.train.distance } >= @corporation_power[corp]
+          return if route.routes.sum { |r| r.train.distance } >= loan_or_power(corp)
 
           train.distance += 1
           train.name = train.distance.to_s
@@ -639,7 +660,7 @@ module Engine
             raise GameError, 'Route must have Southern track' unless route.paths.any? { |p| p.track != :broad }
           else
             if route.routes.reject { |r| r.paths.empty? }
-                .sum { |r| r.train.distance } > @corporation_power[route.train.owner]
+                .sum { |r| r.train.distance } > loan_or_power(route.train.owner)
               raise GameError, 'Train sizes exceed train power'
             end
 
@@ -698,6 +719,50 @@ module Engine
 
         def train_power?
           true
+        end
+
+        def emr_liquidity(player, emr_corp)
+          player.cash + player.shares_by_corporation.sum do |corporation, shares|
+            next 0 if shares.empty?
+
+            corporation == emr_corp ? value_for_sellable(player, corporation) : value_for_shares(player, corporation)
+          end
+        end
+
+        def value_for_shares(player, corporation)
+          max_bundle = bundles_for_corporation(player, corporation).max_by(&:price)
+          max_bundle&.price || 0
+        end
+
+        def bankrupt_corporation!(corp)
+          # un-IPO the corporation
+          corp.share_price.corporations.delete(corp)
+          corp.share_price = nil
+          corp.par_price = nil
+          corp.ipoed = false
+          corp.unfloat!
+
+          # return shares to IPO with no compensation
+          corp.share_holders.keys.each do |share_holder|
+            next if share_holder == corp
+
+            shares = share_holder.shares_by_corporation[corp].compact
+            corp.share_holders.delete(share_holder)
+            shares.each do |share|
+              share_holder.shares_by_corporation[corp].delete(share)
+              share.owner = corp
+              corp.shares_by_corporation[corp] << share
+            end
+          end
+          corp.shares_by_corporation[corp].sort_by!(&:index)
+          corp.share_holders[corp] = 100
+          corp.owner = nil
+
+          # remove any tokens for corporation placed on map and clear graph
+          corp.tokens.each(&:remove!)
+          @graph.clear
+
+          @log << "#{corp.name} is bankrupt"
         end
       end
     end
