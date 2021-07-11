@@ -9,6 +9,8 @@ module Engine
     module G1830Plus
       class Game < G1830::Game
         include_meta(G1830Plus::Meta)
+        attr_reader :prr_graph
+
         CERT_LIMIT = { 2 => 32, 3 => 27, 4 => 20, 5 => 16, 6 => 14, 7 => 13 }.freeze
 
         STARTING_CASH = { 2 => 1200, 3 => 800, 4 => 600, 5 => 480, 6 => 400, 7 => 350 }.freeze
@@ -177,9 +179,7 @@ module Engine
           super
         end
 
-        def check_distance(route, visits)
-          distance = super
-
+        def check_distance(route, _visits)
           prr_halt_visits = route.stops.count(&:halt?)
           prr_token_visits = route.stops.count { |s| s.city? && s.tokened_by?(prr) }
           raise GameError, 'Only PRR may use PRR home halt' if prr_halt_visits.positive? && route.train.owner != prr
@@ -271,8 +271,8 @@ module Engine
             Engine::Step::SpecialToken,
             Engine::Step::BuyCompany,
             Engine::Step::HomeToken,
-            Engine::Step::Track,
-            Engine::Step::Token,
+            G1830Plus::Step::Track,
+            G1830Plus::Step::Token,
             Engine::Step::Route,
             Engine::Step::Dividend,
             Engine::Step::DiscardTrain,

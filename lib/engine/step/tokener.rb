@@ -21,7 +21,7 @@ module Engine
           !@round.tokened &&
           !(tokens = available_tokens(entity)).empty? &&
           min_token_price(tokens) <= buying_power(entity) &&
-          @game.graph.can_token?(entity)
+          @game.graph_for_entity(entity).can_token?(entity)
       end
 
       # This is called to see if the cost of a PlaceToken action should be overriden
@@ -92,7 +92,7 @@ module Engine
         end
 
         @round.tokened = true unless extra_action
-        @game.graph.clear
+        @game.graph_for_entity(entity).clear
       end
 
       def pay_token_cost(entity, cost)
@@ -137,7 +137,7 @@ module Engine
           end
 
           token.price = ability.teleport_price if ability.teleport_price
-          token.price = ability.price(token) if @game.graph.reachable_hexes(entity)[hex]
+          token.price = ability.price(token) if @game.graph_for_entity(entity).reachable_hexes(entity)[hex]
           return [token, ability]
         end
 
@@ -145,7 +145,7 @@ module Engine
       end
 
       def check_connected(entity, city, hex)
-        return if @game.loading || @game.graph.connected_nodes(entity)[city]
+        return if @game.loading || @game.graph_for_entity(entity).connected_nodes(entity)[city]
 
         city_string = hex.tile.cities.size > 1 ? " city #{city.index}" : ''
         raise GameError, "Cannot place token on #{hex.name}#{city_string} because it is not connected"
