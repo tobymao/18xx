@@ -64,7 +64,7 @@ module View
           props[:class] = { active: true } if @selected_company == company
 
           company_name = company.name.truncate(company.owner.name.size < 5 ? 32 : 19)
-          company_name = "#{@game.company_size_str(company)} #{company_name}" if @game.respond_to?(:company_size_str)
+          company_name = "[#{@game.company_size_str(company)}] #{company_name}" if @game.respond_to?(:company_size_str)
 
           owner_name = company.owner.name.truncate
 
