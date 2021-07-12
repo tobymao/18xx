@@ -72,6 +72,7 @@ module Engine
             on: '',
             train_limit: { minor: 2, major: 4 },
             tiles: [:yellow],
+            status: ['minor_float_phase1'],
             operating_rounds: 1,
           },
           {
@@ -79,7 +80,7 @@ module Engine
             on: %w[2 3],
             train_limit: { minor: 2, major: 4 },
             tiles: [:yellow],
-            status: ['can_convert_concessions'],
+            status: %w[can_convert_concessions minor_float_phase2],
             operating_rounds: 2,
           },
           {
@@ -87,7 +88,7 @@ module Engine
             on: '3',
             train_limit: { minor: 2, major: 4 },
             tiles: %i[yellow green],
-            status: %w[can_buy_trains can_convert_concessions],
+            status: %w[can_buy_trains can_convert_concessions minor_float_phase3on],
             operating_rounds: 2,
           },
           {
@@ -95,7 +96,7 @@ module Engine
             on: '4',
             train_limit: { minor: 1, major: 3 },
             tiles: %i[yellow green],
-            status: %w[can_buy_trains can_convert_concessions],
+            status: %w[can_buy_trains can_convert_concessions minor_float_phase3on],
             operating_rounds: 2,
           },
           {
@@ -106,7 +107,8 @@ module Engine
             status: %w[can_buy_trains
                        can_acquire_minor_bidbox
                        can_par
-                       minors_green_upgrade],
+                       minors_green_upgrade
+                       minor_float_phase3on],
             operating_rounds: 2,
           },
           {
@@ -118,7 +120,8 @@ module Engine
                        can_acquire_minor_bidbox
                        can_par
                        full_capitalisation
-                       minors_green_upgrade],
+                       minors_green_upgrade
+                       minor_float_phase3on],
             operating_rounds: 2,
           },
           {
@@ -130,7 +133,8 @@ module Engine
                        can_acquire_minor_bidbox
                        can_par
                        full_capitalisation
-                       minors_green_upgrade],
+                       minors_green_upgrade
+                       minor_float_phase3on],
             operating_rounds: 2,
           },
         ].freeze
@@ -298,6 +302,13 @@ module Engine
           'can_par' => ['Majors 50% float', 'Majors companies require 50% sold to float'],
           'full_capitalisation' => ['Full capitalisation', 'Majors receives full capitalisation '\
                                     '(the remaining five shares are placed in the bank)'],
+          'minor_float_phase1' => ['Minors receive £100 in capital', 'Minors receive 100 capital with 50 stock value'],
+          'minor_float_phase2' => ['Minors receive 2X stock value in capital',
+                                   'Minors receive 2X stock value as capital '\
+                                   'and float at between 50 to 100 stock value based on bid'],
+          'minor_float_phase3on' => ['Minors receive winning bid as capital',
+                                     'Minors receive entire winning bid as capital '\
+                                     'and float at between 50 to 100 stock value based on bid'],
         ).freeze
 
         BIDDING_BOX_MINOR_COUNT = 4
