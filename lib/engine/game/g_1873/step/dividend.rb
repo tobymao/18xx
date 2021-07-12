@@ -156,6 +156,10 @@ module Engine
             @game.bank.spend(revenue, entity.owner)
           end
 
+          def payout_per_share(entity, revenue)
+            revenue * 1.0 / entity.total_shares
+          end
+
           def half_pay_withhold_amount(_entity, revenue)
             revenue / 2
           end
