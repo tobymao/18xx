@@ -13,6 +13,20 @@ module Engine
             ACTIONS
           end
 
+          def help
+            return super unless current_entity.receivership?
+
+            leasing = if @game.must_buy_power?(current_entity)
+                        'It is leasing train power corresponding to a minimum sized train from the bank. '
+                      else
+                        ''
+                      end
+
+            "#{current_entity.name} is in receivership (it has no president). Most of its "\
+              'actions are automated, but it must have a player manually run its trains. '\
+              "#{leasing}Please enter the best route you see for #{current_entity.name}."
+          end
+
           def chart(entity)
             curr_price = entity.share_price.price
             [

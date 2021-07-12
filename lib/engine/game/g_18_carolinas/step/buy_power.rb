@@ -11,6 +11,7 @@ module Engine
           include Engine::Step::EmergencyMoney
 
           def actions(entity)
+            return [] if entity.corporation? && entity.receivership?
             return ['sell_shares'] if entity == current_entity&.owner
             return [] if entity != current_entity
             return %w[sell_shares buy_power] if president_may_contribute?(entity)
@@ -25,6 +26,44 @@ module Engine
 
           def pass_description
             'Skip (Power)'
+          end
+
+          def skip!
+            entity = current_entity
+            return super if !entity.corporation? || !entity.receivership?
+
+            if entity.cash > @game.current_power_cost &&
+                @game.current_corporation_power(entity) < @game.class::MAX_TRAIN
+              quantity = (entity.cash / @game.current_power_cost).to_i
+              new_power = [@game.class::MAX_TRAIN, (@game.current_corporation_power(entity) + quantity)].min
+              delta = new_power - @game.current_corporation_power(entity)
+              cost = delta * @game.current_power_cost
+
+              @log << "#{entity.name} (in receivership) buys #{delta} power for #{@game.format_currency(cost)}"
+              @game.buy_power(entity, delta, cost, ebuy: true)
+            else
+              @log << "#{entity.name} (in receivership) skips buying power"
+            end
+            pass!
+          end
+
+          def sellable_bundle?(bundle)
+            seller = bundle.owner
+
+            corporation = bundle.corporation
+
+            return true unless corporation.president?(seller)
+            return true unless president_swap_concern?(corporation)
+
+            !causes_president_swap?(corporation, bundle)
+          end
+
+          def causes_president_swap?(corporation, bundle)
+            seller = bundle.owner
+            share_holders = corporation.player_share_holders
+            remaining = share_holders[seller] - bundle.percent
+            next_highest = share_holders.reject { |k, _| k == seller }.values.max || 0
+            remaining < next_highest || remaining < 20
           end
 
           def can_buy_power?(entity)

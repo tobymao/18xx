@@ -23,7 +23,7 @@ module View
         cash = @corporation.cash + player.cash
         share_funds_required = cash_needed - cash
         share_funds_allowed = share_funds_required
-        share_funds_possible = @game.liquidity(player, emergency: true) - player.cash
+        share_funds_possible = @game.emr_liquidity(player, @corporation) - player.cash
 
         if cash_needed > @corporation.cash
           children << h(:div, "#{player.name} #{verb} contribute "\

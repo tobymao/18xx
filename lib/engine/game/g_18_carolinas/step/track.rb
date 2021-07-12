@@ -13,6 +13,7 @@ module Engine
 
           def actions(entity)
             return [] unless entity == current_entity
+            return [] if entity.corporation? && entity.receivership?
             return [] if entity.company? || !can_lay_tile?(entity) && @mode == :new_track
             return ALL_ACTIONS if @game.loading && @game.phase.available?('5')
 
@@ -61,7 +62,8 @@ module Engine
           end
 
           def process_run_routes(action)
-            hexes_to_flip = action.routes[0].all_hexes.select { |h| h.tile.paths.any? { |p| p.track != :broad } }
+            hexes = action.routes[0].connection_hexes.flat_map.uniq { |h| @game.hex_by_id(h) }
+            hexes_to_flip = hexes.select { |h| h.tile.paths.any? { |p| p.track != :broad } }
             raise GameError, 'No tiles with Southern Track submitted' if hexes_to_flip.empty?
 
             hexes_to_flip.each { |h| @game.flip_tile!(h) }
