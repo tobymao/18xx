@@ -101,6 +101,7 @@ module Engine
               available_tokens(@entity)[0],
               connected: false,
               extra_action: true,
+              special_ability: @game.abilities(@entity, :token),
             )
             @destination = action.city.hex
 
