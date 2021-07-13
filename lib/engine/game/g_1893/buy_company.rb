@@ -8,7 +8,7 @@ module Engine
       module Step
         class BuyCompany < Engine::Step::BuyCompany
           def actions(entity)
-            return ['buy_company'] if purchasable_companies(entity).any?
+            return ['buy_company'] unless purchasable_companies(entity).empty?
 
             []
           end
