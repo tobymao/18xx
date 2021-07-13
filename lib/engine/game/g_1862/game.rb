@@ -637,7 +637,6 @@ module Engine
           players = @players.reject(&:bankrupt)
 
           if @round.is_a?(Engine::Game::G1862::Round::Stock)
-            puts "@round: #{@round}, class: #{@round.class.name}"
             # We're in a stock round
             # priority deal card goes to the player who will go first if
             # everyone passes starting now.  last_to_act is nil before
