@@ -63,6 +63,11 @@ module View
             radius -= 3
             token_attrs[:stroke] = 'white'
             token_attrs[:'stroke-width'] = '3px'
+          elsif @extra_token
+            radius -= 3
+            token_attrs[:stroke] = 'black'
+            token_attrs[:'stroke-width'] = '3px'
+            token_attrs[:'stroke-dasharray'] = '4'
           end
 
           children = [h(:circle, attrs: token_attrs)]
