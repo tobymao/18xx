@@ -644,7 +644,7 @@ module Engine
           # On acquired abilities
           on_acquired_train(company, entity) if self.class::PRIVATE_TRAINS.include?(company.id)
           on_aqcuired_remove_revenue(company) if self.class::PRIVATE_REMOVE_REVENUE.include?(company.id)
-          on_aqcuired_phase_revenue(company) if self.class::PRIVATE_PHASE_REVENUE.include?(company.id)
+          on_acquired_phase_revenue(company) if self.class::PRIVATE_PHASE_REVENUE.include?(company.id)
           on_aqcuired_midland_great_northern(company) if self.class::COMPANY_MGNR == company.id
         end
 
@@ -1726,7 +1726,7 @@ module Engine
           entity.tokens << Engine::Token.new(entity, price: self.class::TOKEN_PRICE)
         end
 
-        def on_aqcuired_phase_revenue(company)
+        def on_acquired_phase_revenue(company)
           revenue_player = @phase_revenue[company.id]
           @log << "#{company.owner.name} gains #{format_currency(revenue_player.cash)}"
           revenue_player.spend(revenue_player.cash, company.owner)
