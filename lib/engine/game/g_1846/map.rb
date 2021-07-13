@@ -170,7 +170,7 @@ module Engine
           gray: {
             %w[A15 C7] => 'path=a:0,b:5',
             ['F20'] => 'city=revenue:10;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:5,b:_0;'\
-            'border=edge:2,type:mountain,cost:40',
+                       'border=edge:2,type:mountain,cost:40',
             ['I5'] => 'city=revenue:10,slots:2;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:0,b:_0',
             ['I15'] => 'city=revenue:20;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
             ['E21'] => 'city=revenue:10;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0',

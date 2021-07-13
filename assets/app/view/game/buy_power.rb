@@ -71,7 +71,7 @@ module View
         if @step.can_buy_power?(@corporation) || @must_buy_power
           if @must_buy_power
             children << h(:div, "#{@corporation.name} must buy train power "\
-                          "(at least #{@step.min_power_needed(@corporation)})")
+                                "(at least #{@step.min_power_needed(@corporation)})")
           end
           children << h(:h3, 'Select Amount of Train Power to Buy')
           children << h(:div, render_buy(@corporation))
@@ -81,7 +81,7 @@ module View
         children << h(:div, "#{@corporation.name} has #{@game.format_currency(@corporation.cash)}.")
         children << h(:div, "Power Progress: #{@game.power_progress}")
         children << h(:div, "Current/Next power cost: #{@game.format_currency(@game.current_power_cost)} / "\
-                      "#{@game.format_currency(@game.next_power_cost)}")
+                            "#{@game.format_currency(@game.next_power_cost)}")
 
         if (@must_buy_train && @step.ebuy_president_can_contribute?(@corporation)) ||
            @step.president_may_contribute?(@corporation)

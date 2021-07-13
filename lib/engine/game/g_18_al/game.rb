@@ -521,7 +521,7 @@ module Engine
               location = get_location_name(hex_name)
               ability.description = "Historical objective: #{location}"
               ability.desc_detail = "If #{corporation.name} puts a token into #{location} (#{hex_name}) "\
-                "#{format_currency(100)} is added to its treasury."
+                                    "#{format_currency(100)} is added to its treasury."
             end
           end
 

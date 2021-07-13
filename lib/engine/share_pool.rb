@@ -73,7 +73,7 @@ module Engine
         when Company
           @log << if exchange_price
                     "#{entity.name} exchanges #{exchange.name} and #{@game.format_currency(price)}"\
-                    " from #{from} for #{share_str}"
+                      " from #{from} for #{share_str}"
                   else
                     "#{entity.name} exchanges #{exchange.name} from #{from} for #{share_str}"
                   end
@@ -83,8 +83,8 @@ module Engine
         swap_text = swap ? " + swap of a #{swap.percent}% share" : ''
         verb = entity == corporation ? 'redeems' : 'buys'
         @log << "#{entity.name} #{verb} #{share_str} "\
-          "from #{from} "\
-          "for #{@game.format_currency(price)}#{swap_text}"
+                "from #{from} "\
+                "for #{@game.format_currency(price)}#{swap_text}"
       end
 
       if price.zero?
@@ -123,7 +123,7 @@ module Engine
       swap_to_entity = swap ? entity : nil
 
       @log << "#{entity.name} #{verb} #{num_presentation(bundle)} " \
-        "of #{bundle.corporation.name} and receives #{@game.format_currency(price)}#{swap_text}"
+              "of #{bundle.corporation.name} and receives #{@game.format_currency(price)}#{swap_text}"
 
       transfer_shares(bundle,
                       self,

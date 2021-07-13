@@ -115,7 +115,7 @@ module View
         }
 
         instructions = 'Click revenue centers, again to cycle paths. '\
-          'Must be from city/offboard to city/offboard'
+                       'Must be from city/offboard to city/offboard'
         h3_text = 'Select Segment for Conversion'
 
         h(:div, div_props, [

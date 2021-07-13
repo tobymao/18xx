@@ -72,7 +72,7 @@ module Engine
             end
 
             @log << "#{chooser.name} becomes the new priority dealer by using the "\
-              "#{@game.priority_deal_chooser.name} ability"
+                    "#{@game.priority_deal_chooser.name} ability"
             @round.goto_entity!(chooser)
             @game.priority_deal_chooser.close!
           end

@@ -13,8 +13,8 @@ module Engine
             return super unless current_entity.type == :national
 
             "#{current_entity.name} is the National Railway. Most of its "\
-            'actions are automated, but it must have a player manually run its trains. '\
-            "Please enter the best route you see for #{current_entity.name} including bonuses for private companies."
+              'actions are automated, but it must have a player manually run its trains. '\
+              "Please enter the best route you see for #{current_entity.name} including bonuses for private companies."
           end
         end
       end

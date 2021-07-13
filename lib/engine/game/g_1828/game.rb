@@ -867,7 +867,7 @@ module Engine
           },
           yellow: {
             ['C15'] => 'city=revenue:20;path=a:0,b:_0;path=a:1,b:_0;path=a:4,b:_0;' \
-                      'upgrade=cost:80,terrain:water;border=edge:5,type:impassable',
+                       'upgrade=cost:80,terrain:water;border=edge:5,type:impassable',
             %w[D14 E9] =>
             'city=revenue:0;city=revenue:0;label=OO;upgrade=cost:80,terrain:water',
             %w[E15 H22] => 'city=revenue:0;city=revenue:0;label=OO',

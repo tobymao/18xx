@@ -88,16 +88,16 @@ module Engine
             'count' => 1,
             'color' => 'green',
             'code' => 'city=revenue:40,groups:Stockholm;city=revenue:40,groups:Stockholm;'\
-              'city=revenue:40,groups:Stockholm;city=revenue:40,groups:Stockholm;path=a:0,b:_0;path=a:_0,b:2;'\
-              'path=a:3,b:_1;path=a:_1,b:2;path=a:4,b:_2;path=a:_2,b:2;path=a:5,b:_3;path=a:_3,b:2;label=S',
+                      'city=revenue:40,groups:Stockholm;city=revenue:40,groups:Stockholm;path=a:0,b:_0;path=a:_0,b:2;'\
+                      'path=a:3,b:_1;path=a:_1,b:2;path=a:4,b:_2;path=a:_2,b:2;path=a:5,b:_3;path=a:_3,b:2;label=S',
           },
           '299SJ' =>
           {
             'count' => 1,
             'color' => 'brown',
             'code' => 'city=revenue:70,groups:Stockholm;city=revenue:70,groups:Stockholm;'\
-              'city=revenue:70,groups:Stockholm;city=revenue:70,groups:Stockholm;path=a:0,b:_0;path=a:_0,b:2;'\
-              'path=a:3,b:_1;path=a:_1,b:2;path=a:4,b:_2;path=a:_2,b:2;path=a:5,b:_3;path=a:_3,b:2;label=S',
+                      'city=revenue:70,groups:Stockholm;city=revenue:70,groups:Stockholm;path=a:0,b:_0;path=a:_0,b:2;'\
+                      'path=a:3,b:_1;path=a:_1,b:2;path=a:4,b:_2;path=a:_2,b:2;path=a:5,b:_3;path=a:_3,b:2;label=S',
           },
           '440' =>
           {
@@ -275,9 +275,9 @@ module Engine
             value: 40,
             revenue: 10,
             desc: 'Owning corporation may add a hex bonus to each train visit to any of the hexes E8, C8 and C16 '\
-              'in three different ORs. Each train can receive the bonus multiple times. The bonus are 50kr the first '\
-              'time this ability is used, 30kr the second and 20kr the third and last time. Using this ability '\
-              'will not close the prive.',
+                  'in three different ORs. Each train can receive the bonus multiple times. The bonus are 50kr the first '\
+                  'time this ability is used, 30kr the second and 20kr the third and last time. Using this ability '\
+                  'will not close the prive.',
             sym: 'GKB',
             abilities:
             [
@@ -296,7 +296,7 @@ module Engine
             value: 45,
             revenue: 15,
             desc: 'May lay or shift port token in Halmstad (A6), Ystad(C2), Kalmar (D5), Sundsvall (F19), Umeå (F23), '\
-              'and Luleå (G26).  Add 30 kr/symbol to all routes run to this location by owning company.',
+                  'and Luleå (G26).  Add 30 kr/symbol to all routes run to this location by owning company.',
             sym: 'SB',
             abilities:
             [
@@ -313,7 +313,7 @@ module Engine
             value: 70,
             revenue: 15,
             desc: 'Two extra track lays in hex E28 and F27.  Blocks hexes E28 and F27 if owned by a player. '\
-              'Reduce terrain cost in D29 and C30 to 25 kr for mountains and 50 kr for the Narvik border.',
+                  'Reduce terrain cost in D29 and C30 to 25 kr for mountains and 50 kr for the Narvik border.',
             sym: 'GC',
             abilities:
             [
@@ -347,8 +347,8 @@ module Engine
             value: 90,
             revenue: 15,
             desc: 'Owning corporation may do a premature buy of one or more trains, just before Run Routes. '\
-              'These trains can be run even if they have run earlier in the OR. If ability is used the owning '\
-              'corporation cannot buy any trains later in the same OR.',
+                  'These trains can be run even if they have run earlier in the OR. If ability is used the owning '\
+                  'corporation cannot buy any trains later in the same OR.',
             sym: 'MV',
             abilities:
             [
@@ -382,7 +382,7 @@ module Engine
             value: 140,
             revenue: 0,
             desc: 'Buy gives control to minor corporation with same name. The minor starts with a 2 train '\
-              'and a home token and splits revenue evenly with owner. The minor may never buy or sell trains.',
+                  'and a home token and splits revenue evenly with owner. The minor may never buy or sell trains.',
             sym: 'KHJ',
           },
           {
@@ -390,9 +390,9 @@ module Engine
             value: 220,
             revenue: 25,
             desc: "Receive president's share in a corporation randomly determined before auction. "\
-              'Buying player may once during the game take the priority deal at the beginning of one stock round '\
-              '(and this ability is not lost even if this private is closed). Cannot be bought by any corporation. '\
-              'Closes when the connected corporation buys its first train.',
+                  'Buying player may once during the game take the priority deal at the beginning of one stock round '\
+                  '(and this ability is not lost even if this private is closed). Cannot be bought by any corporation. '\
+                  'Closes when the connected corporation buys its first train.',
             sym: 'NE',
             abilities: [{ type: 'shares', shares: 'random_president' }, { type: 'no_buy' }],
           },
@@ -401,8 +401,8 @@ module Engine
             value: 0,
             revenue: 0,
             desc: 'This represents the ability to once during the game take over the priority deal at the beginning '\
-              "of a stock round. Cannot be bought by any corporation. This 'company' remains through the whole game, "\
-              'or until the ability is used.',
+                  "of a stock round. Cannot be bought by any corporation. This 'company' remains through the whole game, "\
+                  'or until the ability is used.',
             sym: 'NEFT',
             abilities: [{ type: 'no_buy' }, { type: 'close', on_phase: 'never', owner_type: 'player' }],
           },
@@ -411,7 +411,7 @@ module Engine
             value: 220,
             revenue: 30,
             desc: "Receive president's share in ÖKJ. Cannot be bought by any corporation. Closes when ÖKJ "\
-              'buys its first train.',
+                  'buys its first train.',
             sym: 'AEvR',
             abilities: [{ type: 'shares', shares: 'ÖKJ_0' },
                         { type: 'close', when: 'bought_train', corporation: 'ÖKJ' },
@@ -564,13 +564,13 @@ module Engine
         HEXES = {
           red: {
             ['A2'] => 'city=revenue:yellow_20|green_40|brown_50;path=a:4,b:_0,terminal:1;path=a:5,b:_0,terminal:1;'\
-              'icon=image:18_sj/V,sticky:1',
+                      'icon=image:18_sj/V,sticky:1',
             ['A10'] => 'city=revenue:yellow_20|green_40|brown_70;path=a:4,b:_0,terminal:1;path=a:5,b:_0,terminal:1;'\
-              'path=a:0,b:_0,terminal:1;icon=image:18_sj/V,sticky:1;icon=image:18_sj/b_lower_case,sticky:1',
+                       'path=a:0,b:_0,terminal:1;icon=image:18_sj/V,sticky:1;icon=image:18_sj/b_lower_case,sticky:1',
             ['B31'] => 'offboard=revenue:yellow_20|green_30|brown_70;path=a:0,b:_0;icon=image:18_sj/N,sticky:1;'\
-              'icon=image:18_sj/m_lower_case,sticky:1;border=edge:0,type:water,cost:150',
+                       'icon=image:18_sj/m_lower_case,sticky:1;border=edge:0,type:water,cost:150',
             ['H9'] => 'offboard=revenue:green_30|brown_40;path=a:3,b:_0;icon=image:18_sj/O,sticky:1;'\
-              'icon=image:18_sj/b_lower_case,sticky:1',
+                      'icon=image:18_sj/b_lower_case,sticky:1',
           },
           gray: {
             ['A6'] => 'city=revenue:20;path=a:5,b:_0;path=a:0,b:_0;icon=image:port;icon=image:port',
@@ -579,7 +579,7 @@ module Engine
             ['F19'] => 'city=revenue:20;path=a:2,b:_0;path=a:3,b:_0;icon=image:port',
             ['F23'] => 'city=revenue:20;path=a:2,b:_0;path=a:3,b:_0;icon=image:port;icon=image:port',
             ['G26'] => 'city=revenue:20,slots:2;path=a:2,b:_0;path=a:3,b:_0;icon=image:port;'\
-              'icon=image:18_sj/m_lower_case,sticky:1',
+                       'icon=image:18_sj/m_lower_case,sticky:1',
           },
           blue: {
             ['B1'] => 'path=a:4,b:5',
@@ -893,7 +893,7 @@ module Engine
 
           main_line_icon_name = main_line_icon.name
           @log << "Main line #{MAIN_LINE_DESCRIPTION[main_line_icon_name]} was "\
-            "#{main_line_completed?(main_line_icon_name) ? 'completed!' : 'improved'}"
+                  "#{main_line_completed?(main_line_icon_name) ? 'completed!' : 'improved'}"
           remove_icon(action.hex, [main_line_icon_name])
         end
 

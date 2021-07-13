@@ -226,7 +226,7 @@ module Engine
 
             if price > max_place_bid(entity, company)
               raise GameError, "Cannot afford #{@game.format_currency(price)} bid. "\
-                "Maximum possible bid is #{@game.format_currency(max_place_bid(entity, company))}"
+                               "Maximum possible bid is #{@game.format_currency(max_place_bid(entity, company))}"
             end
 
             player_bid = highest_player_bid(entity, company)
@@ -252,20 +252,20 @@ module Engine
 
             if price > max_move_bid(entity, company, from_price)
               raise GameError, "Cannot afford #{@game.format_currency(price)} movement bid. "\
-                "Maximum possible bid is #{@game.format_currency(max_move_bid(entity, company, from_price))}"
+                               "Maximum possible bid is #{@game.format_currency(max_move_bid(entity, company, from_price))}"
             end
 
             if price < from_price + min_increment
               raise GameError, "Bid of #{@game.format_currency(price)} is too low. "\
-                "Bid movement must increase original #{@game.format_currency(from_price)} bid "\
-                "by a multiple of #{@game.format_currency(min_increment)}"
+                               "Bid movement must increase original #{@game.format_currency(from_price)} bid "\
+                               "by a multiple of #{@game.format_currency(min_increment)}"
             end
 
             @bids[from_company].reject! { |b| b.entity == entity && b.price == from_price }
             @bids[company] << bid
 
             @log << "#{entity.name} moves #{@game.format_currency(from_price)} bid from "\
-              "#{from_company.name} to bid #{@game.format_currency(price)} for #{bid.company.name}"
+                    "#{from_company.name} to bid #{@game.format_currency(price)} for #{bid.company.name}"
           end
 
           def bids_for_player(player)

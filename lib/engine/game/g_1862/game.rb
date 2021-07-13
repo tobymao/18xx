@@ -721,7 +721,7 @@ module Engine
 
             if remaining_fine.positive? && can_sell_any_shares?(player)
               @log << "-- #{player.name} owes #{format_currency(remaining_fine)} on all obligations and is required"\
-               ' to sell some or all assets --'
+                      ' to sell some or all assets --'
               @round.pending_forced_sales << {
                 entity: player,
                 amount: remaining_fine,
@@ -854,7 +854,7 @@ module Engine
             remove_marker(corporation)
             graph.clear
             @log << "#{corporation.name} replaces #{old_token.corporation.name} token on #{hex.name} "\
-              'with home token'
+                    'with home token'
           end
         end
 
@@ -1757,7 +1757,7 @@ module Engine
           return unless rusted_trains.any?
 
           @log << "-- Event: #{rusted_trains.uniq.join(', ')} trains rust " \
-            "( #{owners.map { |c, t| "#{c} x#{t}" }.join(', ')}) --"
+                  "( #{owners.map { |c, t| "#{c} x#{t}" }.join(', ')}) --"
         end
 
         def highlight_token?(token)
@@ -1848,7 +1848,7 @@ module Engine
             new_price = compute_merger_share_price(survivor, nonsurvivor)
             new_par_price = find_valid_par_price(new_price.price)
             @log << "New share price: #{format_currency(new_price.price)} "\
-              "(par: #{format_currency(new_par_price.price)})"
+                    "(par: #{format_currency(new_par_price.price)})"
             @merge_data[:price] = new_price
             @merge_data[:par] = new_par_price
             old_price.corporations.delete(survivor)
@@ -1954,8 +1954,8 @@ module Engine
               plain_shares = entity_shares.reject(&:president)
               plain_shares.each { |s| transfer_share(s, @share_pool) }
               @log << "#{entity.name} cannot return #{swap_corp.name} director's certificate to market. "\
-                "#{entity.name} moves #{plain_shares.size} normal shares to market and director's certificate "\
-                'will be used as an option certificate.'
+                      "#{entity.name} moves #{plain_shares.size} normal shares to market and director's certificate "\
+                      'will be used as an option certificate.'
             end
           end
 
@@ -2026,7 +2026,7 @@ module Engine
                 transfer_share(os, donor)
                 transfer_share(swap_share, entity)
                 @log << "#{entity.name} swaps a #{@merge_data[:corps].last.name} share for a "\
-                  "#{@merge_data[:corps].first.name} share from #{donor.name}"
+                        "#{@merge_data[:corps].first.name} share from #{donor.name}"
                 odd_share = swap_share if os == odd_share
               else
                 price = (os == odd_share ? @merge_data[:price].price / 2 : @merge_data[:price].price).to_i

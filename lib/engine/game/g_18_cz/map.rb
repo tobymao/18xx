@@ -102,7 +102,7 @@ module Engine
             'color' => 'yellow',
             'code' =>
             'city=revenue:30,groups:Praha;city=revenue:30,groups:Praha;city=revenue:30,groups:Praha;path=a:2,b:_0;' \
-                  'path=a:3,b:_1;path=a:4,b:_2;label=P',
+            'path=a:3,b:_1;path=a:4,b:_2;label=P',
           },
           '8890' =>
           {
@@ -110,7 +110,7 @@ module Engine
             'color' => 'yellow',
             'code' =>
             'city=revenue:30,groups:Praha;city=revenue:30,groups:Praha;city=revenue:30,groups:Praha;path=a:0,b:_0;' \
-                'path=a:2,b:_1;path=a:4,b:_2;label=P',
+            'path=a:2,b:_1;path=a:4,b:_2;label=P',
           },
           '8891' =>
           {
@@ -118,7 +118,7 @@ module Engine
             'color' => 'green',
             'code' =>
             'city=revenue:40,groups:Praha;city=revenue:40,groups:Praha;city=revenue:40,groups:Praha;' \
-                  'city=revenue:40,groups:Praha;path=a:0,b:_0;path=a:2,b:_1;path=a:3,b:_2;path=a:4,b:_3;label=P',
+            'city=revenue:40,groups:Praha;path=a:0,b:_0;path=a:2,b:_1;path=a:3,b:_2;path=a:4,b:_3;label=P',
           },
           '8892' =>
           {
@@ -126,7 +126,7 @@ module Engine
             'color' => 'brown',
             'code' =>
             'city=revenue:60,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;' \
-                  'path=a:5,b:_0;label=P',
+            'path=a:5,b:_0;label=P',
           },
           '8893' =>
           {
@@ -134,7 +134,7 @@ module Engine
             'color' => 'gray',
             'code' =>
             'city=revenue:80,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;' \
-                  'path=a:5,b:_0;label=P',
+            'path=a:5,b:_0;label=P',
           },
           '8894' =>
           {
@@ -142,7 +142,7 @@ module Engine
             'color' => 'red',
             'code' =>
             'city=revenue:green_30|brown_40|gray_50;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;' \
-                  'icon=image:18_cz/50;label=Ug',
+            'icon=image:18_cz/50;label=Ug',
           },
           '8895' =>
           {
@@ -150,7 +150,7 @@ module Engine
             'color' => 'red',
             'code' =>
             'city=revenue:green_30|brown_40|gray_50;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;' \
-                  'icon=image:18_cz/50;label=kk',
+            'icon=image:18_cz/50;label=kk',
           },
           '8896' =>
           {
@@ -158,7 +158,7 @@ module Engine
             'color' => 'red',
             'code' =>
             'city=revenue:green_30|brown_40|gray_50;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;' \
-                  'icon=image:18_cz/50;label=SX',
+            'icon=image:18_cz/50;label=SX',
           },
           '8897' =>
           {
@@ -166,7 +166,7 @@ module Engine
             'color' => 'red',
             'code' =>
             'city=revenue:green_30|brown_40|gray_50;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;' \
-                  'icon=image:18_cz/50;label=PR',
+            'icon=image:18_cz/50;label=PR',
           },
           '8898' =>
           {
@@ -174,7 +174,7 @@ module Engine
             'color' => 'red',
             'code' =>
             'city=revenue:green_30|brown_40|gray_50;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;' \
-                  'icon=image:18_cz/50;label=BY',
+            'icon=image:18_cz/50;label=BY',
           },
           '8866p' =>
           {
@@ -224,7 +224,7 @@ module Engine
             'color' => 'brown',
             'code' =>
             'city=revenue:40,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;' \
-                  'frame=color:#800080',
+            'frame=color:#800080',
           },
           '216p' =>
           {
@@ -232,7 +232,7 @@ module Engine
             'color' => 'brown',
             'code' =>
             'city=revenue:50,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=Y;' \
-                  'frame=color:#800080',
+            'frame=color:#800080',
           },
           '8894p' =>
           {
@@ -240,7 +240,7 @@ module Engine
             'color' => 'brown',
             'code' =>
             'city=revenue:60,slots:2;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=OO;' \
-                  'frame=color:#800080',
+            'frame=color:#800080',
           },
           '8895p' =>
           {
@@ -248,7 +248,7 @@ module Engine
             'color' => 'brown',
             'code' =>
             'city=revenue:60,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=OO;' \
-                  'frame=color:#800080',
+            'frame=color:#800080',
           },
           '8896p' =>
           {
@@ -256,7 +256,7 @@ module Engine
             'color' => 'brown',
             'code' =>
             'city=revenue:60,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=OO;' \
-                  'frame=color:#800080',
+            'frame=color:#800080',
           },
           '8857p' =>
           {
@@ -264,7 +264,7 @@ module Engine
             'color' => 'gray',
             'code' =>
             'city=revenue:70,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;' \
-                  'path=a:5,b:_0;label=Y;frame=color:#800080',
+            'path=a:5,b:_0;label=Y;frame=color:#800080',
           },
           '595p' =>
           {
@@ -272,7 +272,7 @@ module Engine
             'color' => 'gray',
             'code' =>
             'city=revenue:60,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;' \
-                  'path=a:5,b:_0;frame=color:#800080',
+            'path=a:5,b:_0;frame=color:#800080',
           },
         }.freeze
 
@@ -368,7 +368,7 @@ module Engine
             ['C20'] => 'town=revenue:0;border=edge:2,type:offboard',
             %w[E14 F21 B15] => 'town=revenue:0;town=revenue:0',
             ['E12'] => 'city=revenue:20,groups:Praha;city=revenue:20,groups:Praha;'\
-                         'path=a:5,b:_0;path=a:3,b:_1;label=P;upgrade=cost:10,terrain:water',
+                       'path=a:5,b:_0;path=a:3,b:_1;label=P;upgrade=cost:10,terrain:water',
             %w[A8 B5] =>
               'label=SX;border=edge:0,type:offboard;border=edge:5,type:offboard;border=edge:4,type:offboard',
             ['B19'] =>

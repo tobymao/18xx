@@ -325,11 +325,11 @@ module Engine
           shannon = entity.companies.any? { |c| c.id == self.class::SHANNON_COMPANY }
 
           help = ['Trains only use broad gauge.'\
-          'Narrow gauge track is automatically added to connected revenue centers.']
+                  'Narrow gauge track is automatically added to connected revenue centers.']
 
           if shannon
             help << "#{self.class::SHANNON_COMPANY} automatically adds the value (including Narrow Gauge) of"\
-            ' Dromod or Limerick to the other city for one train.'
+                    ' Dromod or Limerick to the other city for one train.'
           end
           help
         end
@@ -539,7 +539,7 @@ module Engine
           return if @extra_trains.empty?
 
           @log << "-- Event: Rusted trains become #{@extra_trains.uniq.join(', ')},"\
-          ' and are available from the bank pool'
+                  ' and are available from the bank pool'
         end
 
         def get_par_prices(entity, _corp)
@@ -570,7 +570,7 @@ module Engine
                 # And buys a 2 train
                 train = @depot.upcoming.first
                 @log << "#{corporation.name} buys a #{train.name} train for "\
-                "#{format_currency(train.price)} from #{train.owner.name}"
+                        "#{format_currency(train.price)} from #{train.owner.name}"
                 buy_train(corporation, train, train.price)
 
               else

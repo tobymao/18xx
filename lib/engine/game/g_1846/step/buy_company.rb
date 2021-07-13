@@ -46,7 +46,7 @@ module Engine
               minor.tokens.first.remove!
             end
             @log << "#{entity.name} receives #{@game.format_currency(cash)}"\
-              ', a 2 train' + (gained_token ? ", and a token on #{minor.coordinates}" : '')
+                    ', a 2 train' + (gained_token ? ", and a token on #{minor.coordinates}" : '')
             @game.minors.delete(minor)
             @game.graph.clear
           end

@@ -296,8 +296,8 @@ module Engine
             discount: -20,
             revenue: 5,
             desc: 'The winner of this private gets Priority Deal in the first Stock Round. '\
-            'This may be closed to grant a corporation an additional yellow tile lay. '\
-            'Terrain costs must be paid for normally',
+                  'This may be closed to grant a corporation an additional yellow tile lay. '\
+                  'Terrain costs must be paid for normally',
             sym: 'TR',
             abilities: [
             {
@@ -321,7 +321,7 @@ module Engine
             discount: -30,
             revenue: 10,
             desc: 'Closing this private grants the operating Corporation a port token to place on a port city. '\
-            'The port token increases the value of that city by $20 for that corporation only',
+                  'The port token increases the value of that city by $20 for that corporation only',
             sym: 'POSC',
             abilities: [
               {
@@ -346,8 +346,8 @@ module Engine
             discount: -70,
             revenue: 15,
             desc: 'Allows a Corporation to place an extra token on a city tile of yellow or higher. '\
-            'This is an additional token and free. This token does not use a token slot in the city. '\
-            'This token can be disconnected',
+                  'This is an additional token and free. This token does not use a token slot in the city. '\
+                  'This token can be disconnected',
             sym: 'TC',
             min_players: 3,
             abilities: [
@@ -373,7 +373,7 @@ module Engine
             discount: -110,
             revenue: 20,
             desc: 'This Company comes with a single share of the Florida East Coast Railway. '\
-            'This company closes when the FECR buys its first train',
+                  'This company closes when the FECR buys its first train',
             sym: 'FECCTC',
             min_players: 4,
             abilities: [{ type: 'close', when: 'bought_train', corporation: 'FECR' },

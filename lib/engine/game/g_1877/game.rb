@@ -197,7 +197,7 @@ module Engine
             tokens: [0],
             always_market_price: true,
             text_color: 'black',
-            color: :"#FFD700",
+            color: :'#FFD700',
             reservation_color: nil,
           },
           {

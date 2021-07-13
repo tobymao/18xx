@@ -84,7 +84,7 @@ module Engine
         source = @depot.discarded.include?(train) ? 'The Discard' : train.owner.name
 
         @log << "#{entity.name} #{verb} a #{train.name} train for "\
-          "#{@game.format_currency(price)} from #{source}"
+                "#{@game.format_currency(price)} from #{source}"
 
         @game.buy_train(entity, train, price)
         @game.phase.buying_train!(entity, train)

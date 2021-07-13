@@ -22,7 +22,7 @@ module Engine
             sym: :optional_short_game,
             short_name: 'Short Game',
             desc: 'Play a shorter game by removing $6,000 and 2 Phase II ships from the game.  '\
-            'See bottom right of page 3 for more details.',
+                  'See bottom right of page 3 for more details.',
           },
           {
             sym: :optional_variant_start_pack,

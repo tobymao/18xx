@@ -35,8 +35,8 @@ module Lib
 
     def self.points(scale: 1.0)
       "#{(X_R * scale).round(3)},#{(Y_M * scale).round(3)} #{(X_M_R * scale).round(3)},#{(Y_B * scale).round(3)} "\
-      "#{(X_M_L * scale).round(3)},#{(Y_B * scale).round(3)} #{(X_L * scale).round(3)},#{(Y_M * scale).round(3)} "\
-      "#{(X_M_L * scale).round(3)},#{(Y_T * scale).round(3)} #{(X_M_R * scale).round(3)},#{(Y_T * scale).round(3)}"
+        "#{(X_M_L * scale).round(3)},#{(Y_B * scale).round(3)} #{(X_L * scale).round(3)},#{(Y_M * scale).round(3)} "\
+        "#{(X_M_L * scale).round(3)},#{(Y_T * scale).round(3)} #{(X_M_R * scale).round(3)},#{(Y_T * scale).round(3)}"
     end
   end
 end

@@ -111,8 +111,8 @@ module Engine
             company.discount += STANDARD_DEDUCTION
             price = company.value - company.discount
             @log << "#{company.name} min price reduced " \
-                     "by #{@game.format_currency(STANDARD_DEDUCTION)} " \
-                     "to #{@game.format_currency(price)}"
+                    "by #{@game.format_currency(STANDARD_DEDUCTION)} " \
+                    "to #{@game.format_currency(price)}"
           end
 
           protected

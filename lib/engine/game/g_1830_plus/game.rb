@@ -149,7 +149,7 @@ module Engine
           },
           green: {
             ['H12'] => 'city=revenue:10,loc:2.5;'\
-            'path=a:1,b:_0;path=a:4,b:_0;path=a:1,b:4;path=a:5,b:_0;path=a:5,b:1',
+                       'path=a:1,b:_0;path=a:4,b:_0;path=a:1,b:4;path=a:5,b:_0;path=a:5,b:1',
           },
         }.freeze
 

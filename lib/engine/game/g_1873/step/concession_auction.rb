@@ -125,8 +125,8 @@ module Engine
           def buy_company(player, company, price)
             if (available = max_bid(player, company)) < price
               raise GameError, "#{player.name} has #{@game.format_currency(available)} "\
-                'available and cannot spend '\
-                "#{@game.format_currency(price)}"
+                               'available and cannot spend '\
+                               "#{@game.format_currency(price)}"
             end
 
             company.owner = player
@@ -134,7 +134,7 @@ module Engine
             player.spend(price, @game.bank) if price.positive?
             @companies.delete(company)
             @log << "#{player.name} wins the auction for #{company.name} "\
-              "with a bid of #{@game.format_currency(price)}"
+                    "with a bid of #{@game.format_currency(price)}"
           end
 
           private

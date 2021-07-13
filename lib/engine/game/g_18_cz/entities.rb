@@ -332,7 +332,7 @@ module Engine
               revenue: 5,
               sym: 'S1',
               desc: 'May either ignore the cost to build a river tile or ' \
-                     'lay a purple-edged green upgrade to town/city hexes',
+                    'lay a purple-edged green upgrade to town/city hexes',
               abilities: [
               {
                 type: 'tile_lay',
@@ -393,7 +393,7 @@ module Engine
               revenue: 5,
               sym: 'S2',
               desc: 'May either ignore the cost to build a river tile or ' \
-                     'lay a purple-edged green upgrade to town/city hexes',
+                    'lay a purple-edged green upgrade to town/city hexes',
               abilities: [
                 {
                   type: 'tile_lay',
@@ -454,7 +454,7 @@ module Engine
               revenue: 5,
               sym: 'S3',
               desc: 'May either ignore the cost to build a river tile or ' \
-                     'lay a purple-edged green upgrade to town/city hexes',
+                    'lay a purple-edged green upgrade to town/city hexes',
               abilities: [
                 {
                   type: 'tile_lay',
@@ -515,7 +515,7 @@ module Engine
               revenue: 5,
               sym: 'S4',
               desc: 'May either ignore the cost to build a river tile or ' \
-                     'lay a purple-edged green upgrade to town/city hexes',
+                    'lay a purple-edged green upgrade to town/city hexes',
               abilities: [
                 {
                   type: 'tile_lay',
@@ -576,7 +576,7 @@ module Engine
               revenue: 5,
               sym: 'S5',
               desc: 'May either ignore the cost to build a river tile or ' \
-                     'lay a purple-edged green upgrade to town/city hexes',
+                    'lay a purple-edged green upgrade to town/city hexes',
               abilities: [
                 {
                   type: 'tile_lay',
@@ -637,7 +637,7 @@ module Engine
               revenue: 5,
               sym: 'S6',
               desc: 'May either ignore the cost to build a river tile or ' \
-                     'lay a purple-edged green upgrade to town/city hexes',
+                    'lay a purple-edged green upgrade to town/city hexes',
               abilities: [
                 {
                   type: 'tile_lay',
@@ -1768,7 +1768,7 @@ module Engine
               always_market_price: true,
               tokens: [0, 40],
               coordinates: %w[A8 B5],
-              color: :"#e31e24",
+              color: :'#e31e24',
               type: 'large',
               reservation_color: nil,
             },
@@ -1783,7 +1783,7 @@ module Engine
               always_market_price: true,
               tokens: [0, 40],
               coordinates: %w[A22 B19],
-              color: :"#2b2a29",
+              color: :'#2b2a29',
               type: 'large',
               reservation_color: nil,
             },
@@ -1798,7 +1798,7 @@ module Engine
               always_market_price: true,
               tokens: [0, 40],
               coordinates: %w[F3 H5],
-              color: :"#0971b7",
+              color: :'#0971b7',
               type: 'large',
               reservation_color: nil,
             },
@@ -1813,7 +1813,7 @@ module Engine
               always_market_price: true,
               tokens: [0, 40],
               coordinates: %w[J15 I18],
-              color: :"#cc6f3c",
+              color: :'#cc6f3c',
               type: 'large',
               reservation_color: nil,
             },
@@ -1828,7 +1828,7 @@ module Engine
               always_market_price: true,
               tokens: [0, 40],
               coordinates: %w[G28 I24],
-              color: :"#ae4a84",
+              color: :'#ae4a84',
               type: 'large',
               reservation_color: nil,
             },
@@ -1863,7 +1863,7 @@ module Engine
               tokens: [0, 40, 100],
               city: 0,
               coordinates: 'E12',
-              color: :"#e1af33",
+              color: :'#e1af33',
               text_color: 'black',
               type: 'medium',
               reservation_color: nil,
@@ -1897,7 +1897,7 @@ module Engine
               shares: [40, 20, 20, 20],
               tokens: [0, 40, 100],
               coordinates: 'D3',
-              color: :"#dbe285",
+              color: :'#dbe285',
               text_color: 'black',
               type: 'medium',
               reservation_color: nil,
@@ -1914,7 +1914,7 @@ module Engine
               shares: [40, 20, 20, 20],
               tokens: [0, 40, 100],
               coordinates: 'G20',
-              color: :"#a2d9f7",
+              color: :'#a2d9f7',
               text_color: 'black',
               type: 'medium',
               reservation_color: nil,
@@ -1964,7 +1964,7 @@ module Engine
               shares: [50, 25, 25],
               tokens: [0, 40, 100],
               coordinates: 'E16',
-              color: :"#fabc48",
+              color: :'#fabc48',
               text_color: 'black',
               type: 'small',
               reservation_color: nil,
@@ -1998,7 +1998,7 @@ module Engine
               shares: [50, 25, 25],
               tokens: [0, 40, 100],
               coordinates: 'I10',
-              color: :"#009846",
+              color: :'#009846',
               type: 'small',
               reservation_color: nil,
               fraction_shares: false,

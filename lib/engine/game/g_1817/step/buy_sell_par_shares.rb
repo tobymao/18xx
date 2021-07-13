@@ -222,7 +222,7 @@ module Engine
               .map { |o| @game.format_currency(o) }
               .join(', ')
               raise GameError, "Invalid bid, bids using privates include #{valid_options}"\
-              " and can be supplemented with cash between $0 and #{@game.format_currency(entity.cash)}"
+                               " and can be supplemented with cash between $0 and #{@game.format_currency(entity.cash)}"
             end
 
             if @auctioning
@@ -273,7 +273,7 @@ module Engine
             token_cost = tokens * TOKEN_COST
             if token_cost > entity.cash
               @log << "#{entity.name} cannot afford tokens #{tokens} token#{'s' if tokens > 1} for "\
-              "#{@game.format_currency(token_cost)}, must take loans before end of stock round"
+                      "#{@game.format_currency(token_cost)}, must take loans before end of stock round"
               return
             end
 
@@ -310,7 +310,7 @@ module Engine
             corporation.spend(company.value, entity)
 
             @log << "#{company.name} used for forming #{corporation.name} "\
-              "contributing #{@game.format_currency(company.value)} value"
+                    "contributing #{@game.format_currency(company.value)} value"
 
             @game.abilities(company, :additional_token) do |ability|
               corporation.tokens << Engine::Token.new(corporation)

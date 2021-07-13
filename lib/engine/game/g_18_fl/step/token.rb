@@ -31,8 +31,8 @@ module Engine
 
             if action.cost > action.entity.cash
               raise GameError, "#{action.entity.name} cannot afford "\
-                  "#{@game.format_currency(action.cost)} to lay token in "\
-                  "#{action.city.hex.tile.location_name}"
+                               "#{@game.format_currency(action.cost)} to lay token in "\
+                               "#{action.city.hex.tile.location_name}"
             end
 
             unless @game.loading

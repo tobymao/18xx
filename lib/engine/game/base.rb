@@ -458,21 +458,21 @@ module Engine
           @log << "#{self.class.title} is in prealpha state, no support is provided at all"
         when :alpha
           @log << "#{self.class.title} is currently considered 'alpha',"\
-            ' the rules implementation is likely to not be complete.'
+                  ' the rules implementation is likely to not be complete.'
           @log << 'As the implementation improves, games that are not compatible'\
-            ' with the latest version will be archived without notice.'
+                  ' with the latest version will be archived without notice.'
           @log << 'We suggest that any alpha quality game is concluded within 7 days.'
         when :beta
           @log << "#{self.class.title} is currently considered 'beta',"\
-            ' the rules implementation may allow illegal moves.'
+                  ' the rules implementation may allow illegal moves.'
           @log << 'As the implementation improves, games that are not compatible'\
-            ' with the latest version will be pinned but may be archived after 7 days.'
+                  ' with the latest version will be pinned but may be archived after 7 days.'
           @log << 'Because of this we suggest not playing games that may take months to complete.'
         end
 
         if self.class::PROTOTYPE
           @log << "#{self.class.title} is currently a prototype game, "\
-          ' the design is not final, and so may change at any time.'
+                  ' the design is not final, and so may change at any time.'
           unless self.class::DEV_STAGE == :alpha
             @log << 'If the game is modified due to a design change, games will be pinned'
           end
@@ -1001,7 +1001,7 @@ module Engine
         return unless from != to
 
         @log << "#{entity.name}'s share price changes from #{format_currency(from)} "\
-          "to #{format_currency(to)}"
+                "to #{format_currency(to)}"
       end
 
       def can_run_route?(entity)
@@ -1772,7 +1772,7 @@ module Engine
         return unless rusted_trains.any?
 
         @log << "-- Event: #{rusted_trains.uniq.join(', ')} trains rust " \
-            "( #{owners.map { |c, t| "#{c} x#{t}" }.join(', ')}) --"
+                "( #{owners.map { |c, t| "#{c} x#{t}" }.join(', ')}) --"
       end
 
       def show_progress_bar?

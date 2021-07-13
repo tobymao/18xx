@@ -148,7 +148,7 @@ module Engine
             @game.national.remove_ability(@game.class::FALSE_PRESIDENCY_ABILITY)
 
             @game.log << "#{entity.name} spends #{@game.format_currency(price)} to buy up to the "\
-            "presidency of the #{@game.national.name}"
+                         "presidency of the #{@game.national.name}"
           end
 
           def process_par(action)

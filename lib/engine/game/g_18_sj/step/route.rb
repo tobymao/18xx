@@ -43,7 +43,7 @@ module Engine
               current_amount = GKB_BONUS[count]
               next_amount = GKB_BONUS[count - 1]
               @game.log << "#{@game.gkb.name} bonus decrease from #{@game.format_currency(current_amount)} to "\
-                "#{@game.format_currency(next_amount)}"
+                           "#{@game.format_currency(next_amount)}"
               used_ability.amount = next_amount
             end
           end

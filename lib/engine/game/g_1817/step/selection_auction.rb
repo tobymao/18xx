@@ -110,7 +110,7 @@ module Engine
             price = bid.price
 
             @log << "#{entity.name} bids #{@game.format_currency(price)} for #{bid.company.name},"\
-            " bank will provide #{@game.format_currency(seed_money_provided(company, price))}"
+                    " bank will provide #{@game.format_currency(seed_money_provided(company, price))}"
           end
 
           def seed_money_provided(company, price)

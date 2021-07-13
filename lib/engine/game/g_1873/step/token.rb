@@ -62,7 +62,7 @@ module Engine
 
               entity.spend(TOKEN_REPLACE_COST, old_token.corporation)
               @game.log << "#{entity.name} replaces #{old_token.corporation.name} token on #{hex.id} for "\
-                "#{@game.format_currency(TOKEN_REPLACE_COST)} (paid to #{old_token.corporation.name})"
+                           "#{@game.format_currency(TOKEN_REPLACE_COST)} (paid to #{old_token.corporation.name})"
 
               @round.tokened = true
               @game.graph.clear

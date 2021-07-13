@@ -83,7 +83,7 @@ module Engine
               .map { |receiver, cash| "#{@game.format_currency(cash)} to #{receiver.name}" }.join(', ')
 
             @log << "#{entity.name} pays out #{@game.format_currency(amount)} = "\
-              "#{@game.format_currency(per_share)} (#{receivers})"
+                    "#{@game.format_currency(per_share)} (#{receivers})"
           end
 
           def corp_payout_entity(entity, holder, per_share, payouts, receiver = nil)
@@ -169,7 +169,7 @@ module Engine
 
           def help_str(max)
             "Select dividend per share to distribute to shareholders, between #{@game.format_currency(0)}"\
-            " and #{@game.format_currency(max)}."
+              " and #{@game.format_currency(max)}."
           end
 
           def chart

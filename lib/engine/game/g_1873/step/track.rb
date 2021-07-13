@@ -204,11 +204,11 @@ module Engine
             spender.spend(cost, @game.bank) if cost.positive?
 
             @log << "#{spender.name}"\
-              "#{spender == entity ? '' : " (#{entity.sym})"}"\
-              "#{cost.zero? ? '' : " spends #{@game.format_currency(cost)} and"}"\
-              " lays tile ##{tile.name}"\
-              " with rotation #{rotation} on #{hex.name}"\
-              "#{tile.location_name.to_s.empty? ? '' : " (#{tile.location_name})"}"
+                    "#{spender == entity ? '' : " (#{entity.sym})"}"\
+                    "#{cost.zero? ? '' : " spends #{@game.format_currency(cost)} and"}"\
+                    " lays tile ##{tile.name}"\
+                    " with rotation #{rotation} on #{hex.name}"\
+                    "#{tile.location_name.to_s.empty? ? '' : " (#{tile.location_name})"}"
 
             return unless reimburse && cost.positive?
 

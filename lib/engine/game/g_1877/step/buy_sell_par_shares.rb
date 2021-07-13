@@ -123,7 +123,7 @@ module Engine
             source = @depot.discarded.include?(train) ? 'The Discard' : train.owner.name
 
             @log << "#{entity.name} buys a #{train.name} train for "\
-              "#{@game.format_currency(price)} from #{source}"
+                    "#{@game.format_currency(price)} from #{source}"
 
             @game.flush_log!
 

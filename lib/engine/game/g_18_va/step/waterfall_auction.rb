@@ -50,7 +50,7 @@ module Engine
               company.discount += 10
               new_value = company.min_bid
               @game.log << "#{company.name} minimum bid decreases from "\
-                "#{@game.format_currency(value)} to #{@game.format_currency(new_value)}"
+                           "#{@game.format_currency(value)} to #{@game.format_currency(new_value)}"
 
               next unless new_value <= 0
 

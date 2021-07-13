@@ -1226,7 +1226,7 @@ module Engine
                           .map { |receiver, cash| "#{format_currency(cash)} to #{receiver.name}" }.join(', ')
 
             @log << "#{corporation.name} settles with shareholders #{format_currency(total_payout)} = "\
-                            "#{format_currency(per_share)} (#{receivers})"
+                    "#{format_currency(per_share)} (#{receivers})"
           end
 
           # Rules say if not enough tokens remain, do it in highest payout then randomly

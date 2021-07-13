@@ -28,13 +28,13 @@ module Engine
             text = ''
             if current_entity.receivership?
               text += "#{current_entity.name} is in receivership (it has no president). "\
-                'Most of its actions are automated, but it must have a player manually run '\
-                "its trains. Please enter the best route you see for #{current_entity.name}."
+                      'Most of its actions are automated, but it must have a player manually run '\
+                      "its trains. Please enter the best route you see for #{current_entity.name}."
             end
             text += ' In addition, ' if current_entity.receivership? && @game.insolvent?(current_entity)
             if @game.insolvent?(current_entity)
               text += "#{current_entity.name} is insolvent. It is running a train leased from "\
-                'the bank'
+                      'the bank'
             end
             text
           end
@@ -78,7 +78,7 @@ module Engine
 
               trains[train] = true
               @log << "#{entity.name} runs a #{train.name} train#{leased}for "\
-                "#{@game.format_currency(route.revenue)}: #{route.revenue_str}"
+                      "#{@game.format_currency(route.revenue)}: #{route.revenue_str}"
             end
             pass!
           end

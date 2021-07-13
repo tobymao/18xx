@@ -411,7 +411,7 @@ module Engine
           elsif entity.num_shares_of(corporation, ceil: false) >= program.until_condition
             return [Action::ProgramDisable.new(entity,
                                                reason: "#{program.until_condition} share(s) bought in "\
-                                               "#{corporation.name}, end condition met")]
+                                                       "#{corporation.name}, end condition met")]
           end
           shares_by_percent = if from_market?(program)
                                 source = 'market'
@@ -429,7 +429,7 @@ module Engine
           if shares_by_percent.size != 1
             return [Action::ProgramDisable.new(entity,
                                                reason: 'Shares of different sizes exist, cannot auto buy'\
-                                               " #{corporation.name} from #{source}")]
+                                                       " #{corporation.name} from #{source}")]
           end
 
           share = shares_by_percent.values.first.first

@@ -327,10 +327,10 @@ module Engine
         def init_companies(_players)
           mine_comps = game_minors.map do |gm|
             description = "Mine in #{gm[:coordinates]}. Machine revenue: "\
-              "#{gm[:extended][:machine_revenue].join('/')}. Switcher revenue: "\
-              "#{gm[:extended][:switcher_revenue].join('/')}"
+                          "#{gm[:extended][:machine_revenue].join('/')}. Switcher revenue: "\
+                          "#{gm[:extended][:switcher_revenue].join('/')}"
             revenue = "#{format_currency(gm[:extended][:machine_revenue].first)} - "\
-              "#{format_currency(gm[:extended][:machine_revenue].last + gm[:extended][:switcher_revenue].last)}"
+                      "#{format_currency(gm[:extended][:machine_revenue].last + gm[:extended][:switcher_revenue].last)}"
 
             Company.new(sym: gm[:sym], name: "#{gm[:sym]} #{gm[:name]}", value: gm[:extended][:value],
                         revenue: revenue, desc: description)
@@ -340,7 +340,7 @@ module Engine
 
             if gc[:extended][:type] == :railway
               description = "Concession for Railway #{gc[:name]} in #{gc[:coordinates].join(', ')}. "\
-               "Total concession tile cost: #{format_currency(gc[:extended][:concession_cost])}"
+                            "Total concession tile cost: #{format_currency(gc[:extended][:concession_cost])}"
               name = "#{gc[:sym]} Concession"
             else
               description = "Purchase Option for Public Mining Company #{gc[:name]}"
@@ -2056,7 +2056,7 @@ module Engine
               'count' => 1,
               'color' => 'green',
               'code' => 'city=revenue:20;city=revenue:20;path=a:1,b:_0,track:narrow;'\
-                'path=a:_0,b:2,track:narrow;path=a:3,b:_1,track:narrow;path=a:_1,b:5,track:narrow',
+                        'path=a:_0,b:2,track:narrow;path=a:3,b:_1,track:narrow;path=a:_1,b:5,track:narrow',
             },
             '968' => 2,
             '969' => 2,
@@ -2814,12 +2814,12 @@ module Engine
               %w[
                 I8
               ] => 'town=revenue:0;upgrade=cost:150,terrain:mountain;icon=image:1873/NWE,sticky:1;'\
-                  'border=edge:2,type:impassable;'\
-                  'icon=image:1873/8_open,sticky:1,large:1',
+                   'border=edge:2,type:impassable;'\
+                   'icon=image:1873/8_open,sticky:1,large:1',
               %w[
                 H7
               ] => 'upgrade=cost:100,terrain:mountain;icon=image:1873/NWE,sticky:1;'\
-                  'border=edge:5,type:impassable',
+                   'border=edge:5,type:impassable',
               %w[
                 E6
                 D7
@@ -2831,8 +2831,8 @@ module Engine
               %w[
                 G2
               ] => 'town=revenue:0;upgrade=cost:150,terrain:mountain;icon=image:1873/SHE,sticky:1;'\
-                  'border=edge:4,type:impassable;border=edge:5,type:impassable;'\
-                  'icon=image:1873/9_open,sticky:1,large:1',
+                   'border=edge:4,type:impassable;border=edge:5,type:impassable;'\
+                   'icon=image:1873/9_open,sticky:1,large:1',
               %w[
                 F3
               ] => 'town=revenue:0;upgrade=cost:150,terrain:mountain;icon=image:1873/SHE,sticky:1',
@@ -2840,23 +2840,23 @@ module Engine
               %w[
                 H3
               ] => 'upgrade=cost:100,terrain:mountain;icon=image:1873/KEZ,sticky:1;'\
-                  'border=edge:2,type:impassable',
+                   'border=edge:2,type:impassable',
               # WBE concession route
               %w[
                 C10
               ] => 'border=edge:5,type:impassable;'\
-                'icon=image:1873/lock;'\
-                'icon=image:1873/WBE,sticky:1',
+                   'icon=image:1873/lock;'\
+                   'icon=image:1873/WBE,sticky:1',
               %w[
                 C12
               ] => 'town=revenue:0;border=edge:0,type:impassable;border=edge:5,type:impassable;'\
-                'icon=image:1873/lock;'\
-                'icon=image:1873/WBE,sticky:1',
+                   'icon=image:1873/lock;'\
+                   'icon=image:1873/WBE,sticky:1',
               %w[
                 C14
               ] => 'town=revenue:0;border=edge:0,type:impassable;'\
-                'icon=image:1873/lock;'\
-                'icon=image:1873/WBE,sticky:1',
+                   'icon=image:1873/lock;'\
+                   'icon=image:1873/WBE,sticky:1',
               # empty tiles
               %w[
                 C18
@@ -2888,25 +2888,25 @@ module Engine
               %w[
                 D11
               ] => 'town=revenue:0;upgrade=cost:100,terrain:mountain;border=edge:1,type:impassable;'\
-                'border=edge:2,type:impassable;border=edge:3,type:impassable;'\
-                'icon=image:1873/4_open,sticky:1,large:1',
+                   'border=edge:2,type:impassable;border=edge:3,type:impassable;'\
+                   'icon=image:1873/4_open,sticky:1,large:1',
               %w[
                 D13
               ] => 'town=revenue:0;upgrade=cost:150,terrain:mountain;'\
-                'border=edge:2,type:impassable;border=edge:3,type:impassable;'\
-                'icon=image:1873/5_open,sticky:1,large:1',
+                   'border=edge:2,type:impassable;border=edge:3,type:impassable;'\
+                   'icon=image:1873/5_open,sticky:1,large:1',
               %w[
                 D17
               ] => 'town=revenue:0;',
               %w[
                 E8
               ] => 'town=revenue:0;upgrade=cost:100,terrain:mountain;border=edge:4,type:impassable;'\
-                'icon=image:1873/1_open,sticky:1,large:1',
+                   'icon=image:1873/1_open,sticky:1,large:1',
               %w[
                 E10
               ] => 'town=revenue:0;upgrade=cost:100,terrain:mountain;border=edge:1,type:impassable;'\
-                'border=edge:4,type:impassable;'\
-                'icon=image:1873/6_open,sticky:1,large:1',
+                   'border=edge:4,type:impassable;'\
+                   'icon=image:1873/6_open,sticky:1,large:1',
               %w[
                 E16
                 G12
@@ -2919,78 +2919,78 @@ module Engine
               %w[
                 I14
               ] => 'town=revenue:0;upgrade=cost:50,terrain:mountain;'\
-                'icon=image:1873/7_open,sticky:1,large:1',
+                   'icon=image:1873/7_open,sticky:1,large:1',
               %w[
                 I16
               ] => 'town=revenue:0;upgrade=cost:100,terrain:mountain;'\
-                'icon=image:1873/3_open,sticky:1,large:1',
+                   'icon=image:1873/3_open,sticky:1,large:1',
             },
             yellow: {
               %w[
                 D9
               ] => 'city=revenue:30;path=a:5,b:_0,track:narrow;upgrade=cost:50,terrain:mountain;'\
-                'border=edge:4,type:impassable;frame=color:#800080;'\
-                'icon=image:1873/10_open,sticky:1,large:1',
+                   'border=edge:4,type:impassable;frame=color:#800080;'\
+                   'icon=image:1873/10_open,sticky:1,large:1',
               %w[
                 D15
               ] => 'city=revenue:40,slots:2;path=a:1,b:_0,track:narrow;path=a:3,b:_0,track:narrow;'\
-                'path=a:5,b:_0,track:narrow;label=B;frame=color:#800080;'\
-                'icon=image:1873/12_open,sticky:1,large:1',
+                   'path=a:5,b:_0,track:narrow;label=B;frame=color:#800080;'\
+                   'icon=image:1873/12_open,sticky:1,large:1',
               %w[
                 E4
               ] => 'city=revenue:30;path=a:0,b:_0,track:narrow;upgrade=cost:50,terrain:mountain;'\
-                'border=edge:3,type:impassable;frame=color:#800080;'\
-                'icon=image:1873/2_open,sticky:1,large:1',
+                   'border=edge:3,type:impassable;frame=color:#800080;'\
+                   'icon=image:1873/2_open,sticky:1,large:1',
               %w[
                 F11
               ] => 'city=revenue:30;path=a:5,b:_0,track:narrow;upgrade=cost:50,terrain:mountain;'\
-                'frame=color:#800080;'\
-                'icon=image:1873/SM_open,sticky:1,large:1',
+                   'frame=color:#800080;'\
+                   'icon=image:1873/SM_open,sticky:1,large:1',
               %w[
                 G4
               ] => 'city=revenue:30;path=a:0,b:_0,track:narrow;upgrade=cost:50,terrain:mountain;'\
-                'border=edge:1,type:impassable;border=edge:3,type:impassable;frame=color:#800080;'\
-                'icon=image:1873/14_open,sticky:1,large:1',
+                   'border=edge:1,type:impassable;border=edge:3,type:impassable;frame=color:#800080;'\
+                   'icon=image:1873/14_open,sticky:1,large:1',
             },
             green: {
               %w[
                 B19
               ] => 'city=revenue:60;path=a:1,b:_0,track:narrow;path=a:2,b:_0;path=a:5,b:_0;'\
-                'frame=color:#800080;label=HQG',
+                   'frame=color:#800080;label=HQG',
               %w[
                 C16
               ] => 'city=revenue:30;path=a:0,b:_0,track:narrow;path=a:2,b:_0,track:narrow;'\
-                'path=a:3,b:_0,track:narrow',
+                   'path=a:3,b:_0,track:narrow',
               %w[
                 E20
               ] => 'city=revenue:60;path=a:1,b:_0,track:narrow;path=a:0,b:_0;path=a:3,b:_0;'\
-                'frame=color:#800080;label=HQG',
+                   'frame=color:#800080;label=HQG',
               %w[
                 F5
               ] => 'city=revenue:20;city=revenue:20;path=a:1,b:_0,track:narrow;path=a:4,b:_0,track:narrow;'\
-                'path=a:3,b:_1,track:narrow;path=a:5,b:_1,track:narrow;'\
-                'upgrade=cost:50,terrain:mountain;border=edge:0,type:impassable',
+                   'path=a:3,b:_1,track:narrow;path=a:5,b:_1,track:narrow;'\
+                   'upgrade=cost:50,terrain:mountain;border=edge:0,type:impassable',
               %w[
                 F7
               ] => 'city=revenue:20;city=revenue:20;path=a:1,b:_0,track:narrow;'\
-                'path=a:3,b:_1,track:narrow;upgrade=cost:50,terrain:mountain;'\
-                'icon=image:1873/11_open,sticky:1,large:1',
+                   'path=a:3,b:_1,track:narrow;upgrade=cost:50,terrain:mountain;'\
+                   'icon=image:1873/11_open,sticky:1,large:1',
               %w[
                 G6
               ] => 'city=revenue:40;path=a:2,b:_0,track:narrow;upgrade=cost:100,terrain:mountain;'\
-                'path=a:5,b:_0,track:narrow;frame=color:#800080',
+                   'path=a:5,b:_0,track:narrow;frame=color:#800080',
               %w[
                 G20
               ] => 'city=revenue:60;path=a:0,b:_0,track:narrow;path=a:2,b:_0;path=a:5,b:_0;'\
-                'frame=color:#800080;label=HQG',
+                   'frame=color:#800080;label=HQG',
               %w[
                 H13
               ] => 'city=revenue:40;path=a:2,b:_0,track:narrow;path=a:5,b:_0,track:narrow;'\
-                'upgrade=cost:50,terrain:mountain;frame=color:#800080',
+                   'upgrade=cost:50,terrain:mountain;frame=color:#800080',
               %w[
                 H17
               ] => 'city=revenue:30;path=a:0,b:_0,track:narrow;path=a:4,b:_0,track:narrow;'\
-                'path=a:5,b:_0,track:narrow;upgrade=cost:100,terrain:mountain',
+                   'path=a:5,b:_0,track:narrow;upgrade=cost:100,terrain:mountain',
             },
             gray: {
               %w[
@@ -2999,55 +2999,55 @@ module Engine
               %w[
                 B9
               ] => 'city=slots:2,revenue:yellow_60|green_80|brown_120|gray_150;'\
-                'path=a:1,b:_0;path=a:4,b:_0;path=a:0,b:_0,track:narrow;path=a:5,b:_0,track:narrow;'\
-                'frame=color:#800080',
+                   'path=a:1,b:_0;path=a:4,b:_0;path=a:0,b:_0,track:narrow;path=a:5,b:_0,track:narrow;'\
+                   'frame=color:#800080',
               %w[
                 B13
               ] => 'city=slots:2,revenue:yellow_30|green_70|brown_60|gray_60;'\
-                'path=a:4,b:_0,track:narrow;path=a:5,b:_0,track:narrow;'\
-                'frame=color:#800080;icon=image:1873/ZW_open,sticky:1,large:1',
+                   'path=a:4,b:_0,track:narrow;path=a:5,b:_0,track:narrow;'\
+                   'frame=color:#800080;icon=image:1873/ZW_open,sticky:1,large:1',
               %w[
                 C4
               ] => 'city=revenue:yellow_50|green_80|brown_120|gray_150;path=a:5,b:_0,track:narrow',
               %w[
                 C6
               ] => 'town=revenue:0;path=a:0,b:_0,track:narrow;'\
-                'icon=image:1873/SBC6_open,sticky:1,large:1',
+                   'icon=image:1873/SBC6_open,sticky:1,large:1',
               %w[
                 E18
               ] => 'city=revenue:30,slots:2;path=a:1,b:_0,track:narrow;'\
-                'path=a:2,b:_0,track:narrow;path=a:4,b:_0,track:narrow;'\
-                'icon=image:1873/PM_open,sticky:1,large:1',
+                   'path=a:2,b:_0,track:narrow;path=a:4,b:_0,track:narrow;'\
+                   'icon=image:1873/PM_open,sticky:1,large:1',
               %w[
                 F15
               ] => 'city=revenue:yellow_30|green_40|brown_60|gray_70;'\
-                'path=a:3,b:_0,track:narrow;path=a:4,b:_0;frame=color:#800080;'\
-                'icon=image:1873/15_open,sticky:1,large:1',
+                   'path=a:3,b:_0,track:narrow;path=a:4,b:_0;frame=color:#800080;'\
+                   'icon=image:1873/15_open,sticky:1,large:1',
               %w[
                 H9
               ] => 'city=revenue:30,slots:2;path=a:0,b:_0,track:narrow;'\
-                'path=a:1,b:_0,track:narrow;path=a:4,b:_0,track:narrow;'\
-                'icon=image:1873/SBH9_open,sticky:1,large:1',
+                   'path=a:1,b:_0,track:narrow;path=a:4,b:_0,track:narrow;'\
+                   'icon=image:1873/SBH9_open,sticky:1,large:1',
               %w[
                 H21
               ] => 'path=a:2,b:5,terminal:1',
               %w[
                 I2
               ] => 'city=revenue:yellow_40|green_50|brown_80|gray_120;path=a:1,b:_0;'\
-                'path=a:2,b:_0,track:narrow;path=a:4,b:_0;frame=color:#800080',
+                   'path=a:2,b:_0,track:narrow;path=a:4,b:_0;frame=color:#800080',
               %w[
                 I4
               ] => 'city=revenue:yellow_40|green_50|brown_80|gray_120;path=a:1,b:_0;'\
-                'path=a:2,b:_0,track:narrow;path=a:5,b:_0;frame=color:#800080',
+                   'path=a:2,b:_0,track:narrow;path=a:5,b:_0;frame=color:#800080',
               %w[
                 I18
               ] => 'city=revenue:yellow_30|green_40|brown_60|gray_70;'\
-                'path=a:2,b:_0,track:narrow;frame=color:#800080;'\
-                'icon=image:1873/13_open,sticky:1,large:1',
+                   'path=a:2,b:_0,track:narrow;frame=color:#800080;'\
+                   'icon=image:1873/13_open,sticky:1,large:1',
               %w[
                 J7
               ] => 'city=revenue:yellow_60|green_80|brown_120|gray_180;path=a:1,b:_0;'\
-                'path=a:3,b:_0,track:narrow;path=a:4,b:_0;frame=color:#800080',
+                   'path=a:3,b:_0,track:narrow;path=a:4,b:_0;frame=color:#800080',
               # implicit tiles
               %w[
                 C20

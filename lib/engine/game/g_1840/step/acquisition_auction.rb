@@ -192,7 +192,7 @@ module Engine
 
             @game.buy_tram_corporation(buying_corporation, corporation)
             @log << "#{buying_corporation.name} wins the auction for #{corporation.name} "\
-                  "with a bid of #{@game.format_currency(price)}"
+                    "with a bid of #{@game.format_currency(price)}"
 
             @round.corporation_bought_minor << {
               entity: buying_corporation,

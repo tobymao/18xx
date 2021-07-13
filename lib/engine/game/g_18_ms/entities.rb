@@ -10,10 +10,10 @@ module Engine
             value: 30,
             revenue: 15,
             desc: 'The owning Major Corporation may lay an extra yellow tile for free. '\
-              'This extra tile must extend existing track and could be used to extend from a yellow or green tile '\
-              "played as a Major Corporation's normal tile lay. This ability can only be used once, and using it "\
-              'does not close the Private Company. Alabama Great Southern Railroad can be bought for exactly face '\
-              'value during OR 1 by an operating Major Corporation if the president owns the Private Company.',
+                  'This extra tile must extend existing track and could be used to extend from a yellow or green tile '\
+                  "played as a Major Corporation's normal tile lay. This ability can only be used once, and using it "\
+                  'does not close the Private Company. Alabama Great Southern Railroad can be bought for exactly face '\
+                  'value during OR 1 by an operating Major Corporation if the president owns the Private Company.',
             sym: 'AGS',
             abilities: [
             {
@@ -34,10 +34,10 @@ module Engine
             value: 40,
             revenue: 10,
             desc: 'The owning Major Corporation may lay one or two extra yellow tiles for free. This extra tile lay '\
-              'must extend existing track and could be used to extend from a yellow or green tile played as a '\
-              "corporation's normal tile lay. This ability can only be used once during a single operating round, and"\
-              ' using it does not close the Private Company. Birmingham Southern Railroad can be bought for exactly '\
-              'face value during OR 1 by an operating Major Corporation if the president owns the Private Company.',
+                  'must extend existing track and could be used to extend from a yellow or green tile played as a '\
+                  "corporation's normal tile lay. This ability can only be used once during a single operating round, and"\
+                  ' using it does not close the Private Company. Birmingham Southern Railroad can be bought for exactly '\
+                  'face value during OR 1 by an operating Major Corporation if the president owns the Private Company.',
             sym: 'BS',
             abilities: [
               {
@@ -60,8 +60,8 @@ module Engine
             value: 50,
             revenue: 15,
             desc: 'The owning Major Corporation may lay their cheapest available token for half price. '\
-              'This is not an extra token placement. This ability can only be used once, '\
-              'and using it does not close the Private Company.',
+                  'This is not an extra token placement. This ability can only be used once, '\
+                  'and using it does not close the Private Company.',
             sym: 'M&M',
             abilities: [
               {
@@ -79,11 +79,11 @@ module Engine
             value: 60,
             revenue: 5,
             desc: 'The owning Major Corporation exchanges this private for a special 2+ train when purchased. '\
-              '(This 2+ train may not be sold.) This exchange occurs immediately when purchased. '\
-              'If this exchange would place the Major Corporation over the train limit of 3, '\
-              'the purchase is not allowed. If this Private Company is not purchased by the end of OR 4, '\
-              "it may not be sold to a Major Corporation and counts against the owner's certificate limit until "\
-              'it closes upon the start of Phase 6.',
+                  '(This 2+ train may not be sold.) This exchange occurs immediately when purchased. '\
+                  'If this exchange would place the Major Corporation over the train limit of 3, '\
+                  'the purchase is not allowed. If this Private Company is not purchased by the end of OR 4, '\
+                  "it may not be sold to a Major Corporation and counts against the owner's certificate limit until "\
+                  'it closes upon the start of Phase 6.',
             sym: 'MC',
           },
           {
@@ -91,9 +91,9 @@ module Engine
             value: 70,
             revenue: 5,
             desc: 'The owning Major Corporation may purchase an available 3+ Train or 4+ Train from the bank for a '\
-              'discount of $100. Using this discount closes this Private Company. The discounted purchase is subject '\
-              'to the normal rules governing train purchases - only during the train-buying step and train limits '\
-              'apply.',
+                  'discount of $100. Using this discount closes this Private Company. The discounted purchase is subject '\
+                  'to the normal rules governing train purchases - only during the train-buying step and train limits '\
+                  'apply.',
             sym: 'M&O',
             abilities: [
               {

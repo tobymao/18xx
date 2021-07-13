@@ -675,7 +675,7 @@ module Engine
           return unless from != to
 
           @log << "#{entity.name}'s share price changes from #{format_currency(from)} "\
-              "to #{format_currency(to)} #{additional_info}"
+                  "to #{format_currency(to)} #{additional_info}"
         end
 
         def revenue_for(route, stops)
@@ -739,7 +739,7 @@ module Engine
           count_holes = holes_in_route.size
           if count_holes > 2
             raise GameError, 'Hole cannot be used as a terminal and as a tunnel at the same time; neither can be used'\
-              ' multiple times as tunnel with the same squirrel (train)'
+                             ' multiple times as tunnel with the same squirrel (train)'
           end
 
           # Route cannot go in and out from the same hex
@@ -980,14 +980,14 @@ module Engine
                              end
           @timeline = [
             "ZOOTicket: the current value is #{format_currency(@ticket_zoo_current_value)}."\
-              ' Numbers 4,5,6…20 on the timeline are the value of a single ZOOTicket during each round'\
-              ' (i.e. a ZOOTicket is worth 9$N in the OR 2.2). At the end of game each non-sold ZOOTicket is worth'\
-              ' 20$N.',
+            ' Numbers 4,5,6…20 on the timeline are the value of a single ZOOTicket during each round'\
+            ' (i.e. a ZOOTicket is worth 9$N in the OR 2.2). At the end of game each non-sold ZOOTicket is worth'\
+            ' 20$N.',
           ]
           @timeline << "NEARBY FAMILY: #{near_family_text}" if near_family_text
           @timeline << 'SR 3: at the start of SR 3 the reserved R shares are available to buy.'
           @timeline << 'END: if during a forced train purchase the player doesn\'t have enough money, the bank covers'\
-              ' the expense; the player gets a negative debt (loan) equal to twice what the bank paid'
+                       ' the expense; the player gets a negative debt (loan) equal to twice what the bank paid'
         end
 
         def take_player_loan(player, debt)
@@ -1098,7 +1098,7 @@ module Engine
           bonus_share = bonus_payout_for_share(share_price)
           bonus_president = bonus_payout_for_president(share_price)
           "#{format_currency(bonus_share)}"\
-              "#{bonus_president.positive? ? '+' + format_currency(bonus_president) : ''}"
+            "#{bonus_president.positive? ? '+' + format_currency(bonus_president) : ''}"
         end
 
         def threshold_help

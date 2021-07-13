@@ -190,7 +190,7 @@ module Engine
         income = ability.income
         @game.bank.spend(income, company.owner)
         @log << "#{company.owner.name} earns #{@game.format_currency(income)}"\
-            " for the tile built by #{company.name}"
+                " for the tile built by #{company.name}"
       end
 
       def pay_terrain_tile_income(company, ability, terrain, entity, spender)
@@ -201,7 +201,7 @@ module Engine
         income = ability.income * terrain.count { |t| t == ability.terrain }
         @game.bank.spend(income, company.owner)
         @log << "#{company.owner.name} earns #{@game.format_currency(income)}"\
-          " for the #{ability.terrain} tile built by #{company.name}"
+                " for the #{ability.terrain} tile built by #{company.name}"
       end
 
       def update_tile_lists(tile, old_tile)
@@ -213,11 +213,11 @@ module Engine
         spender.spend(cost, @game.bank) if cost.positive?
 
         @log << "#{spender.name}"\
-          "#{spender == entity || !entity.company? ? '' : " (#{entity.sym})"}"\
-          "#{cost.zero? ? '' : " spends #{@game.format_currency(cost)} and"}"\
-          " lays tile ##{tile.name}"\
-          " with rotation #{rotation} on #{hex.name}"\
-          "#{tile.location_name.to_s.empty? ? '' : " (#{tile.location_name})"}"
+                "#{spender == entity || !entity.company? ? '' : " (#{entity.sym})"}"\
+                "#{cost.zero? ? '' : " spends #{@game.format_currency(cost)} and"}"\
+                " lays tile ##{tile.name}"\
+                " with rotation #{rotation} on #{hex.name}"\
+                "#{tile.location_name.to_s.empty? ? '' : " (#{tile.location_name})"}"
       end
 
       def update_token!(action, entity, tile, old_tile)

@@ -74,13 +74,13 @@ module Engine
             'count' => 1,
             'color' => 'brown',
             'code' => 'city=revenue:50,slots:2;label=Was;'\
-              'path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:0,b:_0',
+                      'path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:0,b:_0',
           },
           '170ric' => {
             'count' => 1,
             'color' => 'brown',
             'code' => 'city=revenue:50,slots:2;label=Ric;'\
-              'path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:0,b:_0',
+                      'path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:0,b:_0',
           },
 
           # washington
@@ -89,7 +89,7 @@ module Engine
             'count' => 1,
             'color' => 'gray',
             'code' => 'city=revenue:60,slots:2;label=Was;'\
-              'path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;path=a:0,b:_0',
+                      'path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;path=a:0,b:_0',
           },
 
           # richmond
@@ -98,7 +98,7 @@ module Engine
             'count' => 1,
             'color' => 'gray',
             'code' => 'city=revenue:60,slots:3;label=Ric;'\
-              'path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;path=a:0,b:_0',
+                      'path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;path=a:0,b:_0',
           },
         }.freeze
 
@@ -303,7 +303,7 @@ module Engine
             value: 40,
             revenue: 10,
             desc: 'Closing this private allows a corporation to increase the value of any one City (not offboard) '\
-                'by $10 permanently and exclusively for that corporation',
+                  'by $10 permanently and exclusively for that corporation',
             sym: 'P1',
             color: nil,
             abilities: [
@@ -327,7 +327,7 @@ module Engine
             value: 60,
             revenue: 15,
             desc: 'Closing this private grants the operating Corporation a $200 discount '\
-              'when buying a train from the depot',
+                  'when buying a train from the depot',
             sym: 'P2',
             color: nil,
             abilities: [
@@ -347,8 +347,8 @@ module Engine
             value: 80,
             revenue: 20,
             desc: 'The owning corporation may choose to close this private to permanently increase its train limit '\
-              'by one or to place an extra, free, disconnected, and nonblocking token '\
-              'in any hex that has a city slot (open or not)',
+                  'by one or to place an extra, free, disconnected, and nonblocking token '\
+                  'in any hex that has a city slot (open or not)',
             sym: 'P3',
             abilities: [
               {
@@ -504,7 +504,7 @@ module Engine
           yellow: {
             %w[H5] => 'city=revenue:20;path=a:2,b:_0;path=a:5,b:_0;border=edge:1,type:impassable',
             %w[H13] => 'city=revenue:20;path=a:2,b:_0;path=a:5,b:_0;'\
-              'border=edge:0,type:impassable;border=edge:1,type:impassable',
+                       'border=edge:0,type:impassable;border=edge:1,type:impassable',
             %w[H15] => 'city=revenue:20;path=a:2,b:_0;path=a:5,b:_0;border=edge:3,type:impassable',
           },
           red: {
@@ -518,7 +518,7 @@ module Engine
             ['A6'] => 'city=slots:2,revenue:20,groups:CMD;icon=image:18_co/mine,visit_cost:0;'\
                       'path=a:4,b:_0,terminal:1;path=a:5,b:_0,terminal:1',
             ['A12'] => 'city=slots:2,revenue:20,groups:CMD;icon=image:18_co/mine;'\
-                      'path=a:4,b:_0,terminal:1;path=a:5,b:_0,terminal:1',
+                       'path=a:4,b:_0,terminal:1;path=a:5,b:_0,terminal:1',
           },
           blue: {
             ['I4'] =>
@@ -565,9 +565,9 @@ module Engine
         ).freeze
         STATUS_TEXT = Base::STATUS_TEXT.merge(
           'cmd_token_bonus' => ['CMD Bonus Income', 'nG trains running to CMD zones with a corporation\'s token get '\
-              'a $20 x n bonus to their treasury'],
+                                                    'a $20 x n bonus to their treasury'],
           'offboard_token_bonus' => ['Offboard Bonus', 'n trains running to red offboards with a corporation\'s '\
-              'token in it double the value of the offboard'],
+                                                       'token in it double the value of the offboard'],
           'may_convert' => ['Corporations May Convert',
                             'At the start of a corporations Operating turn it
                            may choose to convert to a 10 share corporation'],
@@ -840,7 +840,7 @@ module Engine
         def sixth_share_capitalization(corporation)
           funding = 4 * corporation.share_price.price
           @log << "#{corporation.name}'s remaining shares are transferred "\
-              "to the Market and receives #{format_currency(funding)}"
+                  "to the Market and receives #{format_currency(funding)}"
           @bank.spend(funding, corporation)
           bundle = ShareBundle.new(corporation.shares_of(corporation))
           @share_pool.transfer_shares(bundle, @share_pool)

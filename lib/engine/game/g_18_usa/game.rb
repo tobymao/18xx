@@ -85,7 +85,7 @@ module Engine
             'count' => 1,
             'color' => 'green',
             'code' => 'city=revenue:60,slots:2;city=revenue:60;path=a:0,b:_0;path=a:3,b:_0;path=a:1,b:_1;path=a:2,'\
-            'b:_1;label=NY',
+                      'b:_1;label=NY',
           },
           'X13' => {
             'count' => 1,
@@ -96,7 +96,7 @@ module Engine
             'count' => 1,
             'color' => 'brown',
             'code' => 'city=revenue:80,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;'\
-            'label=DFW',
+                      'label=DFW',
           },
           'X15' => {
             'count' => 1,
@@ -117,7 +117,7 @@ module Engine
             'count' => 1,
             'color' => 'gray',
             'code' => 'city=revenue:80,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
-            'path=a:5,b:_0;label=DFW',
+                      'path=a:5,b:_0;label=DFW',
           },
           X19: {
             'count' => 1,
@@ -933,22 +933,22 @@ module Engine
           {
             red: {
               ['A27'] => "offboard=revenue:yellow_#{offboard[0][0]}|green_#{offboard[0][1]}"\
-              "|brown_#{offboard[0][2]}|gray_#{offboard[0][3]};"\
-              'path=a:5,b:_0;path=a:0,b:_0',
+                         "|brown_#{offboard[0][2]}|gray_#{offboard[0][3]};"\
+                         'path=a:5,b:_0;path=a:0,b:_0',
               ['J20'] => "offboard=revenue:yellow_#{offboard[1][0]}|green_#{offboard[1][1]}|brown_#{offboard[1][2]}"\
-              "|gray_#{offboard[1][3]};path=a:2,b:_0",
+                         "|gray_#{offboard[1][3]};path=a:2,b:_0",
               ['I5'] => "offboard=revenue:yellow_#{offboard[2][0]}|green_#{offboard[2][1]}|brown_#{offboard[2][2]}"\
-              "|gray_#{offboard[2][3]},groups:Mexico,hide:1;path=a:2,b:_0;path=a:3,b:_0;border=edge:4",
+                        "|gray_#{offboard[2][3]},groups:Mexico,hide:1;path=a:2,b:_0;path=a:3,b:_0;border=edge:4",
               %w[I7
                  I9] => "offboard=revenue:yellow_#{offboard[2][0]}|green_#{offboard[2][1]}|brown_#{offboard[2][2]}"\
-                 "|gray_#{offboard[2][3]},groups:Mexico,hide:1;path=a:2,b:_0;path=a:3,b:_0;border=edge:4;border=edge:1",
+                        "|gray_#{offboard[2][3]},groups:Mexico,hide:1;path=a:2,b:_0;path=a:3,b:_0;border=edge:4;border=edge:1",
               ['I11'] => "offboard=revenue:yellow_#{offboard[2][0]}|green_#{offboard[2][1]}|brown_#{offboard[2][2]}"\
-              "|gray_#{offboard[2][3]},groups:Mexico;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;border=edge:1;"\
-              'border=edge:5',
+                         "|gray_#{offboard[2][3]},groups:Mexico;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;border=edge:1;"\
+                         'border=edge:5',
               ['J12'] => "offboard=revenue:yellow_#{offboard[2][0]}|green_#{offboard[2][1]}|brown_#{offboard[2][2]}"\
-              "|gray_#{offboard[2][3]},groups:Mexico,hide:1;path=a:3,b:_0;border=edge:2;border=edge:5",
+                         "|gray_#{offboard[2][3]},groups:Mexico,hide:1;path=a:3,b:_0;border=edge:2;border=edge:5",
               ['K13'] => "offboard=revenue:yellow_#{offboard[2][0]}|green_#{offboard[2][1]}|brown_#{offboard[2][2]}"\
-              "|gray_#{offboard[2][3]},groups:Mexico,hide:1;path=a:3,b:_0;border=edge:2",
+                         "|gray_#{offboard[2][3]},groups:Mexico,hide:1;path=a:3,b:_0;border=edge:2",
             },
             white: {
               %w[E11 G3 H14 I15 H20 H22 F26 C29 D24] => 'city=revenue:0',
@@ -976,13 +976,13 @@ module Engine
             },
             gray: {
               ['A15'] => "town=revenue:yellow_#{offboard[3][0]}|green_#{offboard[3][1]}|brown_#{offboard[3][2]}"\
-              "|gray_#{offboard[3][3]};path=a:0,b:_0;path=a:5,b:_0",
+                         "|gray_#{offboard[3][3]};path=a:0,b:_0;path=a:5,b:_0",
               ['B2'] => "town=revenue:yellow_#{offboard[4][0]}|green_#{offboard[4][1]}|brown_#{offboard[4][2]}"\
-              "|gray_#{offboard[4][3]};path=a:4,b:_0;path=a:5,b:_0",
+                        "|gray_#{offboard[4][3]};path=a:4,b:_0;path=a:5,b:_0",
               ['J24'] => "town=revenue:yellow_#{offboard[5][0]}|green_#{offboard[5][1]}|brown_#{offboard[5][2]}"\
-              "|gray_#{offboard[5][3]};path=a:2,b:_0;path=a:3,b:_0",
+                         "|gray_#{offboard[5][3]};path=a:2,b:_0;path=a:3,b:_0",
               ['E1'] => "town=revenue:yellow_#{offboard[6][0]}|green_#{offboard[6][1]}|brown_#{offboard[6][2]}"\
-              "|gray_#{offboard[6][3]};path=a:4,b:_0;path=a:5,b:_0;path=a:3,b:_0",
+                        "|gray_#{offboard[6][3]};path=a:4,b:_0;path=a:5,b:_0;path=a:3,b:_0",
               ['B30'] => 'path=a:1,b:0',
               ['C23'] => 'town=revenue:yellow_30|green_40|brown_50|gray_60;path=a:4,b:_0;path=a:2,b:_0;path=a:0,b:_0',
               ['C25'] => 'town=revenue:yellow_20|green_30|brown_40|gray_50;path=a:1,b:_0;path=a:5,b:_0;path=a:3,b:_0',

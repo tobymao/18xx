@@ -179,7 +179,7 @@ module Engine
             end
             cannot_bid.each do |player|
               @game.log << "#{player.name} cannot afford minimum bid + 3 x minimum par of "\
-                "#{@game.format_currency(min_required(player))} and is out of the auction for #{auctioning.name}"
+                           "#{@game.format_currency(min_required(player))} and is out of the auction for #{auctioning.name}"
             end
             resolve_bids
           end
@@ -201,7 +201,7 @@ module Engine
             end
             passing.each do |player|
               @game.log << "#{player.name} cannot afford minimum bid + 3 x minimum par of "\
-                "#{@game.format_currency(min_required(player))} and is out of the auction for #{auctioning.name}"
+                           "#{@game.format_currency(min_required(player))} and is out of the auction for #{auctioning.name}"
               remove_from_auction(player)
             end
 

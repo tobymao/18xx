@@ -87,11 +87,11 @@ module Engine
             entity_cost = cost
             entity_cost = extra_cost if (cost - extra_cost).positive? && @round.terrain_token
             @log << "#{spender.name}"\
-              "#{spender == entity ? '' : " (#{entity.sym})"}"\
-              "#{entity_cost.zero? ? '' : " spends #{@game.format_currency(entity_cost)} and"}"\
-              " lays tile ##{tile.name}"\
-              " with rotation #{rotation} on #{hex.name}"\
-              "#{tile.location_name.to_s.empty? ? '' : " (#{tile.location_name})"}"
+                    "#{spender == entity ? '' : " (#{entity.sym})"}"\
+                    "#{entity_cost.zero? ? '' : " spends #{@game.format_currency(entity_cost)} and"}"\
+                    " lays tile ##{tile.name}"\
+                    " with rotation #{rotation} on #{hex.name}"\
+                    "#{tile.location_name.to_s.empty? ? '' : " (#{tile.location_name})"}"
 
             if extra_cost.positive?
               spender.spend(extra_cost, @game.skev)

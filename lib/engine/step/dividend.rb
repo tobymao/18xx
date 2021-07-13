@@ -188,7 +188,7 @@ module Engine
 
       def log_payout_shares(entity, revenue, per_share, receivers)
         @log << "#{entity.name} pays out #{@game.format_currency(revenue)} = "\
-                        "#{@game.format_currency(per_share)} per share (#{receivers})"
+                "#{@game.format_currency(per_share)} per share (#{receivers})"
       end
     end
   end

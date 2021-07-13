@@ -301,7 +301,7 @@ module Engine
                                          'to start location'],
           'can_par' => ['Majors 50% float', 'Majors companies require 50% sold to float'],
           'full_capitalisation' => ['Full capitalisation', 'Majors receives full capitalisation '\
-                                    '(the remaining five shares are placed in the bank)'],
+                                                           '(the remaining five shares are placed in the bank)'],
           'minor_float_phase1' => ['Minors receive £100 in capital', 'Minors receive 100 capital with 50 stock value'],
           'minor_float_phase2' => ['Minors receive 2X stock value in capital',
                                    'Minors receive 2X stock value as capital '\
@@ -1772,7 +1772,7 @@ module Engine
           else
             @player_debts[player] -= player.cash
             @log << "#{player.name} decreases their loan by #{format_currency(player.cash)} "\
-                      "(#{format_currency(@player_debts[player])})"
+                    "(#{format_currency(@player_debts[player])})"
             player.cash = 0
           end
         end

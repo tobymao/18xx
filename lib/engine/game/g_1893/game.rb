@@ -140,7 +140,7 @@ module Engine
             'color' => 'brown',
             'code' =>
             'city=revenue:50,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
-              'path=a:5,b:_0;label=L',
+            'path=a:5,b:_0;label=L',
           },
           'K201' =>
           {
@@ -175,7 +175,7 @@ module Engine
             'color' => 'brown',
             'code' =>
             'city=revenue:40,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
-              'path=a:5,b:_0;label=S',
+            'path=a:5,b:_0;label=S',
           },
           'KV201' =>
           {
@@ -189,7 +189,7 @@ module Engine
             'color' => 'brown',
             'code' =>
             'city=revenue:70,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
-              'upgrade=cost:60,terrain:water;label=K',
+            'upgrade=cost:60,terrain:water;label=K',
           },
           'KV259' =>
           {
@@ -197,7 +197,7 @@ module Engine
             'color' => 'gray',
             'code' =>
             'city=revenue:50,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
-              'path=a:5,b:_0',
+            'path=a:5,b:_0',
           },
           'KV269' =>
           {
@@ -205,7 +205,7 @@ module Engine
             'color' => 'green',
             'code' =>
             'city=revenue:50,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;upgrade=cost:40,'\
-              'terrain:water;label=K',
+            'terrain:water;label=K',
           },
           'KV333' =>
           {
@@ -455,9 +455,9 @@ module Engine
                 type: 'no_buy',
                 description: 'Unavailable in SR before phase 4',
                 desc_detail: 'During phase 4 it is possible to buy its shares from the market for 120M. '\
-                  'During each MR in phase 4 the share holders and owners of minor 1 (20%), 3 (10%) and 5 (20%), '\
-                  'will vote if AGV should form. If 50% vote yes, AGV will float, otherwise voting is repeated each '\
-                  'MR until Phase 5 when AGV float automatically during the first MR.',
+                             'During each MR in phase 4 the share holders and owners of minor 1 (20%), 3 (10%) and 5 (20%), '\
+                             'will vote if AGV should form. If 50% vote yes, AGV will float, otherwise voting is repeated each '\
+                             'MR until Phase 5 when AGV float automatically during the first MR.',
               },
             ],
             reservation_color: nil,
@@ -480,9 +480,9 @@ module Engine
                 type: 'no_buy',
                 description: 'Unavailable in SR before phase 5',
                 desc_detail: 'During phase 5 it is possible to buy its shares from the market for 120M. '\
-                  'During each MR in phase 4 the share holders and owners of minor 2 (20%), 4 (20%) and '\
-                  'HdSK (10%), will vote if HGK should form. If 50% vote yes, HGK will float, otherwise '\
-                  'voting is repeated each MR until Phase 6 when HGK float automatically during the first MR.',
+                             'During each MR in phase 4 the share holders and owners of minor 2 (20%), 4 (20%) and '\
+                             'HdSK (10%), will vote if HGK should form. If 50% vote yes, HGK will float, otherwise '\
+                             'voting is repeated each MR until Phase 6 when HGK float automatically during the first MR.',
               },
             ],
             reservation_color: nil,
@@ -563,11 +563,11 @@ module Engine
             value: 180,
             revenue: 20,
             desc: 'May be exchanged against 20% shares of the Rheinbahn AG in an SR (except the first one). '\
-              'If less than 20% remains in the market the exchange will be what remains. May also be exchanged '\
-              'to par RAG in which case the private is exchanged for the 20% presidency share. '\
-              'FdSD is closed either due to the exchange or if FdSD has not been exchanged to do an exchange '\
-              'after the first SR of phase 5. An exchange is handled as a Buy action. This private '\
-              'cannot be sold.',
+                  'If less than 20% remains in the market the exchange will be what remains. May also be exchanged '\
+                  'to par RAG in which case the private is exchanged for the 20% presidency share. '\
+                  'FdSD is closed either due to the exchange or if FdSD has not been exchanged to do an exchange '\
+                  'after the first SR of phase 5. An exchange is handled as a Buy action. This private '\
+                  'cannot be sold.',
             abilities: [
               {
                 type: 'no_buy',
@@ -588,7 +588,7 @@ module Engine
             value: 150,
             revenue: 30,
             desc: 'Leaves the game after the purchase of the first 6-train. This private cannot be sold to '\
-              'any corporation.',
+                  'any corporation.',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
           },
           {
@@ -605,8 +605,8 @@ module Engine
             value: 210,
             revenue: 0,
             desc: "Buyer takes control of minor 1 (EKB), and the price paid makes the minor's treasury. "\
-              "EKB minor and private are exchanged into the 20% president's certificate of AGV when AGV is formed. "\
-              'The private and minor cannot be sold.',
+                  "EKB minor and private are exchanged into the 20% president's certificate of AGV when AGV is formed. "\
+                  'The private and minor cannot be sold.',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
           },
           {
@@ -614,8 +614,8 @@ module Engine
             name: '2 Köln-Frechen-Benzelrather Eisenbahn',
             value: 200,
             desc: "Buyer takes control of minor 2 (KFBE), and the price paid makes the minor's treasury. "\
-              'KFBE minor and private are exchanged into the 20% certificate of HGK when HGK is formed. '\
-              'The private and minor cannot be sold.',
+                  'KFBE minor and private are exchanged into the 20% certificate of HGK when HGK is formed. '\
+                  'The private and minor cannot be sold.',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
           },
           {
@@ -623,8 +623,8 @@ module Engine
             name: '3 Kleinbahn Siegburg-Zündorf',
             value: 100,
             desc: "Buyer takes control of minor 3 (KSZ), and the price paid makes the minor's treasury. "\
-              'KSZ minor and private are exchanged into a 10% certificate of AGV when AGV is formed. '\
-              'The private and minor cannot be sold.',
+                  'KSZ minor and private are exchanged into a 10% certificate of AGV when AGV is formed. '\
+                  'The private and minor cannot be sold.',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
           },
           {
@@ -632,8 +632,8 @@ module Engine
             name: '4 Köln-Bonner Eisenbahn',
             value: 220,
             desc: "Buyer takes control of minor 4 (KBE), and the price paid makes the minor's treasury. "\
-              "KBE minor and private are exchanged into the 20% president's certificate of HGK when HGK is formed. "\
-              'The private and minor cannot be sold.',
+                  "KBE minor and private are exchanged into the 20% president's certificate of HGK when HGK is formed. "\
+                  'The private and minor cannot be sold.',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
           },
           {
@@ -641,8 +641,8 @@ module Engine
             name: '5 Bergheimer Kreisbahn',
             value: 180,
             desc: "Buyer takes control of minor 5 (BKB), and the price paid makes the minor's treasury. "\
-              'BKB minor and private are exchanged into a 20% certificate of AGV when AGV is formed. '\
-              'The private and minor cannot be sold.',
+                  'BKB minor and private are exchanged into a 20% certificate of AGV when AGV is formed. '\
+                  'The private and minor cannot be sold.',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
           },
         ].freeze
@@ -659,7 +659,7 @@ module Engine
           'hgk_buyable' => ['HGK buyable', 'HGK shares can be bought in the stockmarket'],
           'hgk_founded' => ['HGK founded', 'HGK is automatically founded in next Merge Round'],
           'fdsd_closed' => ['FdSD closed at end of SR', 'Fond der Stadt Düsseldorf is closed at end of next'\
-              'Stock Round'],
+                                                        'Stock Round'],
           'eva_closed' => ['EVA closed', 'EVA is closed']
         ).freeze
 
@@ -733,7 +733,7 @@ module Engine
               value: 100,
               revenue: 10,
               desc: 'Bond of the City of Cologne. Works like a private company but can be bought '\
-                'and sold during a SR, in a similar way as shares.',
+                    'and sold during a SR, in a similar way as shares.',
               color: 'orange',
             }
           end
@@ -1174,7 +1174,7 @@ module Engine
               extra_info = ''
             end
             @log << "#{player.name} exchanges ownership of #{company.name} for #{share.percent}%#{extra_info} "\
-              "share in #{share.corporation.name}"
+                    "share in #{share.corporation.name}"
             share.buyable = true
             @share_pool.transfer_shares(
               share.to_bundle,

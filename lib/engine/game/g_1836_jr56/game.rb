@@ -251,7 +251,7 @@ module Engine
             value: 40,
             revenue: 10,
             desc: 'Owning corporation may place a free tile on the E-SF hex B8 (the IJsselmeer Causeway) free of cost'\
-            ', in addition to its own tile placement. Blocks hex B8 while owned by player.',
+                  ', in addition to its own tile placement. Blocks hex B8 while owned by player.',
             sym: 'E-SF',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['B8'] },
                         {
@@ -270,9 +270,9 @@ module Engine
             value: 50,
             revenue: 10,
             desc: 'Owning corporation may place a tile and station token in the CdH hex J8 for only the F60 cost of'\
-            ' the mountain. The track is not required to be connected to existing track of this corporation (or any'\
-            " corporation), and can be used as a teleport. This counts as the corporation's track lay for that turn."\
-            ' Blocks hex J8 while owned by player.',
+                  ' the mountain. The track is not required to be connected to existing track of this corporation (or any'\
+                  " corporation), and can be used as a teleport. This counts as the corporation's track lay for that turn."\
+                  ' Blocks hex J8 while owned by player.',
             sym: 'CdH',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['J8'] },
                         {
@@ -290,7 +290,7 @@ module Engine
             value: 70,
             revenue: 15,
             desc: 'Owning Corporation may place the +"20" token on any City or Town. The value of the location is '\
-            ' increased by F20 for each and every time that Corporation\'s trains visit it',
+                  ' increased by F20 for each and every time that Corporation\'s trains visit it',
             sym: 'RdP',
             abilities: [
               {

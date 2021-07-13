@@ -114,7 +114,7 @@ module Engine
                 if minor_city.tokened_by?(entity)
                   @game.move_exchange_token(entity)
                   receiving << "one token from exchange to available since #{entity.id} cant have 2 tokens "\
-                             'in the same city'
+                               'in the same city'
                 else
                   @game.remove_exchange_token(entity)
                   token = Engine::Token.new(entity)

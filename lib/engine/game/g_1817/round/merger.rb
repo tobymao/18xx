@@ -45,7 +45,7 @@ module Engine
             corporation.spend(token_cost, @game.bank)
             tokens_needed.times { corporation.tokens << Engine::Token.new(corporation, price: 0) }
             @log << "#{corporation.name} pays #{@game.format_currency(token_cost)}"\
-              " for #{tokens_needed} token#{tokens_needed > 1 ? 's' : ''}"
+                    " for #{tokens_needed} token#{tokens_needed > 1 ? 's' : ''}"
             @tokens_needed = nil
           end
 
