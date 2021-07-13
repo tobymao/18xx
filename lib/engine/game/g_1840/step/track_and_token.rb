@@ -148,9 +148,7 @@ module Engine
           end
 
           def hex_neighbors(_entity, hex)
-            if @game.orange_framed?(hex.tile) && hex.tile == hex.original_tile
-              return @game.hex_by_id(hex.id).neighbors.keys
-            end
+            return @game.hex_by_id(hex.id).neighbors.keys if @game.orange_framed?(hex.tile) && hex.tile == hex.original_tile
 
             super
           end

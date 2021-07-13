@@ -109,9 +109,7 @@ module Engine
           end
 
           def legal_tile_rotation?(entity, hex, tile)
-            if entity.id == @game.class::COMPANY_LCDR && hex.name == @game.class::ENGLISH_CHANNEL_HEX
-              return tile.rotation.zero?
-            end
+            return tile.rotation.zero? if entity.id == @game.class::COMPANY_LCDR && hex.name == @game.class::ENGLISH_CHANNEL_HEX
             return legal_tile_rotation_mtonr?(entity.owner, hex, tile) if entity.id == @game.class::COMPANY_MTONR
 
             super

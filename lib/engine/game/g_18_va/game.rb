@@ -747,9 +747,7 @@ module Engine
 
         def freight_port_bonus(port_stop, train)
           doubled_stops = [port_stop]
-          if train_type(train) == :freight
-            doubled_stops << hex_by_id(PORT_TO_CITY[port_stop.hex.id]).tile.city_towns.first
-          end
+          doubled_stops << hex_by_id(PORT_TO_CITY[port_stop.hex.id]).tile.city_towns.first if train_type(train) == :freight
           doubled_stops.sum { |stop| stop.route_revenue(@phase, train) }
         end
 

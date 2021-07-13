@@ -33,9 +33,7 @@ module Engine
           end
 
           def hex_neighbors(entity, hex)
-            if entity == @game.ancient_maps
-              return @game.graph_for_entity(entity.owner).connected_hexes(entity.owner)[hex]
-            end
+            return @game.graph_for_entity(entity.owner).connected_hexes(entity.owner)[hex] if entity == @game.ancient_maps
 
             super
           end

@@ -67,9 +67,7 @@ module Engine
               verified_cost = token_cost_override(entity, hex, nil, verified_token)
               raise GameError, 'Error verifying token cost; is game out of sync?' unless cost == verified_cost
             end
-            if cost > entity.cash
-              raise GameError, "#{entity.name} cannot afford #{@game.format_currency(cost)} cost to lay hotel"
-            end
+            raise GameError, "#{entity.name} cannot afford #{@game.format_currency(cost)} cost to lay hotel" if cost > entity.cash
 
             @game.log << "#{entity.name} places a hotel on #{hex.name} for #{@game.format_currency(cost)}"
             entity.spend(cost, @game.bank)

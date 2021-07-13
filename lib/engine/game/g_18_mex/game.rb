@@ -959,9 +959,7 @@ module Engine
           end
 
           @mergeable_candidates = mergeable_corporations
-          if @mergeable_candidates.any?
-            @log << "Merge candidates: #{present_mergeable_candidates(@mergeable_candidates)}"
-          end
+          @log << "Merge candidates: #{present_mergeable_candidates(@mergeable_candidates)}" if @mergeable_candidates.any?
           possible_auto_merge
         end
 

@@ -6,9 +6,7 @@ module Engine
   module Step
     module EmergencyMoney
       def process_sell_shares(action)
-        unless can_sell?(action.entity, action.bundle)
-          raise GameError, "Cannot sell shares of #{action.bundle.corporation.name}"
-        end
+        raise GameError, "Cannot sell shares of #{action.bundle.corporation.name}" unless can_sell?(action.entity, action.bundle)
 
         @game.sell_shares_and_change_price(action.bundle)
 

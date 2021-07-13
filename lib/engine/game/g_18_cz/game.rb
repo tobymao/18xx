@@ -211,9 +211,7 @@ module Engine
 
         def init_companies(players)
           companies = super
-          unless multiplayer?
-            companies = companies.reject { |item| item.value >= TWO_PLAYER_COMPANIES_TO_REMOVE[item.revenue] }
-          end
+          companies = companies.reject { |item| item.value >= TWO_PLAYER_COMPANIES_TO_REMOVE[item.revenue] } unless multiplayer?
           companies
         end
 

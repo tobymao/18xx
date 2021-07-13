@@ -294,9 +294,7 @@ module Engine
       @revenue ||=
         begin
           visited = visited_stops
-          if !connection_data.empty? && visited.size < 2 && !@train.local?
-            raise GameError, 'Route must have at least 2 stops'
-          end
+          raise GameError, 'Route must have at least 2 stops' if !connection_data.empty? && visited.size < 2 && !@train.local?
 
           token = visited.find { |stop| @game.city_tokened_by?(stop, corporation) }
           @game.check_route_token(self, token)

@@ -1782,9 +1782,7 @@ module Engine
               next if ir == is
 
               # cannot intersect at a tokened-out city
-              if (untokened_stops(owner, r.visited_stops) & untokened_stops(owner, s.visited_stops)).any?
-                intersects[ir] << is
-              end
+              intersects[ir] << is if (untokened_stops(owner, r.visited_stops) & untokened_stops(owner, s.visited_stops)).any?
             end
             intersects[ir].uniq!
           end

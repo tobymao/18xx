@@ -601,9 +601,7 @@ module Engine
         # Check to see if it's OK to visit a mine (SNW power)
         def check_other(route)
           mines = route.visited_stops.select { |n| n.city? && n.tokens.any? { |t| t&.type == :neutral } }
-          if !mines.empty? && (!@round.rail_cars.include?('SNW') || other_snw_train?(route))
-            raise GameError, 'Cannot visit mine'
-          end
+          raise GameError, 'Cannot visit mine' if !mines.empty? && (!@round.rail_cars.include?('SNW') || other_snw_train?(route))
           raise GameError, 'Cannot visit multiple mines' if mines.size > 1
         end
 

@@ -26,9 +26,7 @@ module Engine
           def process_place_token(action)
             target = action.city.hex.name
             allowed = ability(action.entity).hexes
-            unless allowed.include?(target)
-              raise GameError, "#{target} not allowed for token. Only allowed: #{allowed}."
-            end
+            raise GameError, "#{target} not allowed for token. Only allowed: #{allowed}." unless allowed.include?(target)
 
             super
           end

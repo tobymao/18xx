@@ -40,9 +40,7 @@ module Engine
           end
 
           def skip!
-            if !@acted && current_entity && current_entity.corporation? && current_entity.type == :major
-              log_skip(current_entity)
-            end
+            log_skip(current_entity) if !@acted && current_entity && current_entity.corporation? && current_entity.type == :major
             pass!
           end
         end

@@ -208,9 +208,7 @@ module Engine
         sample_share = shares.first
         corporation = sample_share.corporation
         owner = sample_share.owner
-        if @round.players_sold[entity][corporation] || (bought? && !can_buy_multiple?(entity, corporation, owner))
-          return false
-        end
+        return false if @round.players_sold[entity][corporation] || (bought? && !can_buy_multiple?(entity, corporation, owner))
 
         min_share = nil
         shares.each do |share|
@@ -405,9 +403,7 @@ module Engine
         if available_actions.include?('buy_shares')
           # check if end condition met
           if program.until_condition == 'float'
-            if corporation.floated?
-              return [Action::ProgramDisable.new(entity, reason: "#{corporation.name} is floated")]
-            end
+            return [Action::ProgramDisable.new(entity, reason: "#{corporation.name} is floated")] if corporation.floated?
           elsif entity.num_shares_of(corporation, ceil: false) >= program.until_condition
             return [Action::ProgramDisable.new(entity,
                                                reason: "#{program.until_condition} share(s) bought in "\

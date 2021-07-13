@@ -44,9 +44,7 @@ module Engine
             hex = city.hex
             return super unless @game.class::LONDON_TOKEN_HEXES.include?(hex.id)
 
-            if !@game.loading && !london_reachable?(entity)
-              raise GameError, 'Must be connected to London to place rail link'
-            end
+            raise GameError, 'Must be connected to London to place rail link' if !@game.loading && !london_reachable?(entity)
 
             raise GameError, 'Cannot build rail link after laying track' unless @round.num_laid_track.zero?
             raise GameError, 'Token/rail link already placed this turn' if @round.tokened

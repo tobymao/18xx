@@ -41,9 +41,7 @@ module Engine
             return super unless @auctioning
 
             winning_bid = highest_bid(@auctioning)
-            if winning_bid
-              return [@active_bidders[(@active_bidders.index(winning_bid.entity) + 1) % @active_bidders.size]]
-            end
+            return [@active_bidders[(@active_bidders.index(winning_bid.entity) + 1) % @active_bidders.size]] if winning_bid
 
             super
           end

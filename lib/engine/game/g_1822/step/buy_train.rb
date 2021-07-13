@@ -44,9 +44,7 @@ module Engine
             return unless cost.positive?
             return unless cost > entity.cash
 
-            if sellable_shares?(entity)
-              raise GameError, "#{entity.name} still need to sell shares before a loan can be granted"
-            end
+            raise GameError, "#{entity.name} still need to sell shares before a loan can be granted" if sellable_shares?(entity)
 
             difference = cost - entity.cash
             @game.take_player_loan(entity, difference)

@@ -1577,9 +1577,7 @@ module Engine
         def check_distance(route, visits)
           raise GameError, 'Route cannot begin/end in a town' if visits.first.town? || visits.last.town?
           # could let super handle this, but this is a better error message
-          if train_type(route.train) == :local && visits.any?(&:offboard?)
-            raise GameError, 'Local train cannot visit an offboard'
-          end
+          raise GameError, 'Local train cannot visit an offboard' if train_type(route.train) == :local && visits.any?(&:offboard?)
           if (visits.first.tile.color == :red && visits.last.tile.color == :red) ||
             (visits.first.tile.color == :blue && visits.last.tile.color == :blue)
             raise GameError, 'Route cannot visit two red offboards or two ports'
@@ -1890,9 +1888,7 @@ module Engine
         # always return survivor shares first and director's first within those
         def affected_shares(entity, corps)
           affected = entity.shares.select { |s| s.corporation == corps.first }.sort_by(&:percent).reverse
-          unless corps.one?
-            affected.concat(entity.shares.select { |s| s.corporation == corps.last }.sort_by(&:percent).reverse)
-          end
+          affected.concat(entity.shares.select { |s| s.corporation == corps.last }.sort_by(&:percent).reverse) unless corps.one?
           affected
         end
 

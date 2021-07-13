@@ -183,9 +183,7 @@ module Engine
           end
 
           def enter_exchange_pairs_state
-            if !@players || @players.empty?
-              @players = @round.entities.rotate(@round.entities.index(@round.acting_player))
-            end
+            @players = @round.entities.rotate(@round.entities.index(@round.acting_player)) if !@players || @players.empty?
 
             while (player = @players.first)
               hide_odd_share(player)
@@ -201,9 +199,7 @@ module Engine
           end
 
           def enter_exchange_singles_state
-            if !@players || @players.empty?
-              @players = @round.entities.rotate(@round.entities.index(@round.acting_player) + 1)
-            end
+            @players = @round.entities.rotate(@round.entities.index(@round.acting_player) + 1) if !@players || @players.empty?
 
             while @players.any?
               exchange_singles(@players.first)

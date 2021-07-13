@@ -747,9 +747,7 @@ module Engine
             next if !company || company&.closed? || !@phase_revenue[company_id]
 
             @log << "#{company.name} closes"
-            if @phase_revenue[company.id].cash.positive?
-              @phase_revenue[company.id].spend(@phase_revenue[company.id].cash, @bank)
-            end
+            @phase_revenue[company.id].spend(@phase_revenue[company.id].cash, @bank) if @phase_revenue[company.id].cash.positive?
             @phase_revenue[company.id] = nil
             company.close!
           end
@@ -835,9 +833,7 @@ module Engine
           return self.class::COMPANY_HSBC_TILE_LAYS if entity.id == self.class::COMPANY_HSBC
 
           operator = entity.company? ? entity.owner : entity
-          if @phase.name.to_i >= 3 && operator.corporation? && operator.type == :major
-            return self.class::MAJOR_TILE_LAYS
-          end
+          return self.class::MAJOR_TILE_LAYS if @phase.name.to_i >= 3 && operator.corporation? && operator.type == :major
 
           super
         end
@@ -1081,9 +1077,7 @@ module Engine
           str = super
 
           destination_bonus = destination_bonus(route.routes)
-          if destination_bonus && destination_bonus[:route] == route
-            str += " (#{format_currency(destination_bonus[:revenue])})"
-          end
+          str += " (#{format_currency(destination_bonus[:revenue])})" if destination_bonus && destination_bonus[:route] == route
 
           str
         end

@@ -87,12 +87,8 @@ module View
               @game.total_loans.positive? && @corporation.can_buy?
           extras << render_buying_power
         end
-        if @corporation.corporation? && @corporation.respond_to?(:capitalization_type_desc)
-          extras << render_capitalization_type
-        end
-        if @corporation.corporation? && @corporation.respond_to?(:escrow) && @corporation.escrow
-          extras << render_escrow_account
-        end
+        extras << render_capitalization_type if @corporation.corporation? && @corporation.respond_to?(:capitalization_type_desc)
+        extras << render_escrow_account if @corporation.corporation? && @corporation.respond_to?(:escrow) && @corporation.escrow
         if extras.any?
           props = { style: { borderCollapse: 'collapse' } }
           children << h('table.center', props, [h(:tbody, extras)])
@@ -136,9 +132,7 @@ module View
           },
         }
 
-        if @corporation.trains.any? && !@corporation.floated?
-          children << h(:div, status_props, @game.float_str(@corporation))
-        end
+        children << h(:div, status_props, @game.float_str(@corporation)) if @corporation.trains.any? && !@corporation.floated?
         children << h(:div, status_props, @game.status_str(@corporation)) if @game.status_str(@corporation)
         if @game.status_array(@corporation)
           children << h(:div, status_array_props,

@@ -288,9 +288,7 @@ module Engine
             end
 
             owner_name = show_owner_name ? "#{minor.owner.name} receives" : 'Receive'
-            if share_num.zero?
-              return "#{owner_name} #{@game.format_currency(minor.share_price.price * 2)} from #{entity.id}"
-            end
+            return "#{owner_name} #{@game.format_currency(minor.share_price.price * 2)} from #{entity.id}" if share_num.zero?
 
             share_difference = pay_choice_difference(entity, minor, share_num)
             share_str = share_num == 1 ? '1 share' : '2 shares'
@@ -320,9 +318,7 @@ module Engine
           end
 
           def skip!
-            if !@acted && current_entity && current_entity.corporation? && current_entity.type == :major
-              log_skip(current_entity)
-            end
+            log_skip(current_entity) if !@acted && current_entity && current_entity.corporation? && current_entity.type == :major
             pass!
           end
         end

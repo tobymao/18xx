@@ -12,9 +12,7 @@ module Engine
               return 'Nikolaev must be the first corporation'
             end
 
-            if entity.type == :major && @game.home_token_locations(entity).empty?
-              return 'No home token locations are available'
-            end
+            return 'No home token locations are available' if entity.type == :major && @game.home_token_locations(entity).empty?
 
             super
           end

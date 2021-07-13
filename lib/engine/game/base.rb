@@ -473,9 +473,7 @@ module Engine
         if self.class::PROTOTYPE
           @log << "#{self.class.title} is currently a prototype game, "\
                   ' the design is not final, and so may change at any time.'
-          unless self.class::DEV_STAGE == :alpha
-            @log << 'If the game is modified due to a design change, games will be pinned'
-          end
+          @log << 'If the game is modified due to a design change, games will be pinned' unless self.class::DEV_STAGE == :alpha
 
         end
 
@@ -685,9 +683,7 @@ module Engine
       end
 
       def process_single_action(action)
-        if action.user
-          @log << "• Action(#{action.type}) via Master Mode by: #{player_by_id(action.user)&.name || 'Owner'}"
-        end
+        @log << "• Action(#{action.type}) via Master Mode by: #{player_by_id(action.user)&.name || 'Owner'}" if action.user
 
         preprocess_action(action)
 

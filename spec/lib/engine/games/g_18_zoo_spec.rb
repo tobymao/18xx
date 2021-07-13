@@ -373,9 +373,7 @@ module Engine
             item[:track_for_valid].each do |track_for_valid|
               describe "when hex tile is #{track_for_valid[:color] || 'empty'}" do
                 before do
-                  if track_for_valid[:lay]
-                    game.hex_by_id(corporation.coordinates).lay(game.tile_by_id(track_for_valid[:lay]))
-                  end
+                  game.hex_by_id(corporation.coordinates).lay(game.tile_by_id(track_for_valid[:lay])) if track_for_valid[:lay]
 
                   game.round.process_action(Action::Par.new(player_1, corporation: corporation,
                                                                       share_price: share_price))

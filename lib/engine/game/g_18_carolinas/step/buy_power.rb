@@ -90,9 +90,7 @@ module Engine
 
             return unless cash_needed(entity, delta) > entity.cash
 
-            if ebuy_power_needed(entity) != delta
-              raise GameError, 'Must buy exactly minimum required power during emergency buy'
-            end
+            raise GameError, 'Must buy exactly minimum required power during emergency buy' if ebuy_power_needed(entity) != delta
 
             return unless ebuy_cash_needed(entity) > entity.cash + entity.owner.cash
 

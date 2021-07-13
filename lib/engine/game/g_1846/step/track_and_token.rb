@@ -16,9 +16,7 @@ module Engine
 
           def lay_tile_action(action)
             super
-            if !@game.lake_shore_line || !@round.upgraded_track || !@game.class::LSL_HEXES.include?(action.hex.id)
-              return
-            end
+            return if !@game.lake_shore_line || !@round.upgraded_track || !@game.class::LSL_HEXES.include?(action.hex.id)
 
             action.tile.icons.reject! { |icon| icon.name == @game.class::LSL_ICON }
           end

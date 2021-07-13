@@ -69,9 +69,7 @@ module Engine
             else
               # place new token
               #
-              if @game.concession_blocks?(city)
-                raise GameError, "Cannot lay on #{city.id}. Must leave room for concession RR"
-              end
+              raise GameError, "Cannot lay on #{city.id}. Must leave room for concession RR" if @game.concession_blocks?(city)
 
               super
             end

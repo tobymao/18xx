@@ -452,9 +452,7 @@ module Engine
           end
 
           # Operating - Ancient Maps
-          if @round.is_a?(Engine::Round::Operating) && selected_company == ancient_maps && from.color != :white
-            return false
-          end
+          return false if @round.is_a?(Engine::Round::Operating) && selected_company == ancient_maps && from.color != :white
 
           super
         end

@@ -91,9 +91,7 @@ module Engine
           next if company.closed?
           next unless (ability = @game.abilities(company, :blocks_hexes))
 
-          if @game.hex_blocked_by_ability?(entity, ability, hex)
-            raise GameError, "#{hex.id} is blocked by #{company.name}"
-          end
+          raise GameError, "#{hex.id} is blocked by #{company.name}" if @game.hex_blocked_by_ability?(entity, ability, hex)
         end
 
         tile.rotate!(rotation)
