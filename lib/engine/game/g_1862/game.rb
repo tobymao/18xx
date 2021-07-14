@@ -633,6 +633,25 @@ module Engine
           hex.tile.icons.delete(marker) if marker
         end
 
+        def priority_deal_player
+          players = @players.reject(&:bankrupt)
+
+          if @round.is_a?(Engine::Game::G1862::Round::Stock)
+            # We're in a stock round
+            # priority deal card goes to the player who will go first if
+            # everyone passes starting now.  last_to_act is nil before
+            # anyone has gone, in which case the first player has PD.
+            last_to_act = @round.last_to_act
+            priority_idx = last_to_act ? (players.index(last_to_act) + 1) % players.size : 0
+            players[priority_idx]
+          else
+            # We're in a parliament or operating round
+            # The player list was already rotated when we
+            # left a player-focused round to put the PD player first.
+            players.first
+          end
+        end
+
         def share_prices
           repar_prices
         end
