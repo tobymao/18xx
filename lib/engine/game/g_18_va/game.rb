@@ -603,7 +603,7 @@ module Engine
             Engine::Step::BuyCompany,
             Engine::Step::Track,
             G18VA::Step::SpecialToken,
-            Engine::Step::Token,
+            G18VA::Step::Token,
             Engine::Step::Route,
             G18VA::Step::Dividend,
             Engine::Step::DiscardTrain,
