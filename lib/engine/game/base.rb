@@ -1800,6 +1800,8 @@ module Engine
         2
       end
 
+      def skip_route_track_type; end
+
       private
 
       def init_graph
