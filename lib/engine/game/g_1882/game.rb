@@ -290,6 +290,7 @@ module Engine
                 price: 0,
                 teleport_price: 0,
                 when: 'owning_corp_or_turn',
+                special_only: true,
                 count: 1,
                 from_owner: true,
               },
