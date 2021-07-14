@@ -103,7 +103,7 @@ module Engine
         }.freeze
 
         LOCATION_NAMES = {
-          'H1' => 'Philidelphia',
+          'H1' => 'Philadelphia',
           'E2' => 'Hagerstown',
           'F3' => 'Harper\'s Ferry',
           'H3' => 'Baltimore',
