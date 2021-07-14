@@ -372,7 +372,8 @@ module Engine
             ],
             color: nil,
           },
-          #P2
+          # P2
+          # TODO: Make it work as a combo with P27
           {
             name: 'Fox Bridge Works',
             value: 40,
@@ -399,7 +400,7 @@ module Engine
             ],
             color: nil,
           },
-          #P14
+          # P14
           {
             name: 'Pyramid Scheme',
             value: 60,
@@ -840,7 +841,7 @@ module Engine
                          "|gray_#{offboard[2][3]},groups:Mexico;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;border=edge:1;"\
                          'border=edge:5',
               ['J12'] => "offboard=revenue:yellow_#{offboard[2][0]}|green_#{offboard[2][1]}|brown_#{offboard[2][2]}"\
-                         "|gray_#{offboard[2][3]},groups:Mexico,hide:1;path=a:3,b:_0;border=edge:2;border=edge:5",
+                         "|gray_#{offboard[2][3]},groups:Mexico,hide:1;path=a:3,b:_0;path=a:4,b:_0;border=edge:2;border=edge:5",
               ['K13'] => "offboard=revenue:yellow_#{offboard[2][0]}|green_#{offboard[2][1]}|brown_#{offboard[2][2]}"\
                          "|gray_#{offboard[2][3]},groups:Mexico,hide:1;path=a:3,b:_0;border=edge:2",
             },
