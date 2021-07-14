@@ -3,12 +3,14 @@
 require 'lib/settings'
 require 'lib/text'
 require 'view/game/companies'
+require 'view/share_calculation'
 
 module View
   module Game
     class Player < Snabberb::Component
       include Lib::Settings
       include Lib::Text
+      include View::ShareCalculation
 
       needs :player
       needs :game
@@ -151,6 +153,10 @@ module View
         trs << h(:tr, [
           h(:td, 'Certs'),
           h('td.right', td_cert_props, @game.show_game_cert_limit? ? "#{num_certs}/#{cert_limit}" : num_certs.to_s),
+        ])
+        trs << h(:tr, [
+          h(:td, 'Shares'),
+          h('td.right', td_cert_props, (@game.all_corporations.sum { |c| c.minor? ? 0 : num_shares_of(@player, c) }).to_s),
         ])
 
         priority_props = {

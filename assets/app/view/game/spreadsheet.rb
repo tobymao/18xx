@@ -3,6 +3,7 @@
 require 'lib/settings'
 require 'lib/storage'
 require 'view/link'
+require 'view/share_calculation'
 require 'view/game/bank'
 require 'view/game/stock_market'
 require 'view/game/actionable'
@@ -12,6 +13,7 @@ module View
     class Spreadsheet < Snabberb::Component
       include Lib::Settings
       include Actionable
+      include View::ShareCalculation
 
       needs :game
 
@@ -578,12 +580,6 @@ module View
       end
 
       private
-
-      def num_shares_of(entity, corporation)
-        return corporation.president?(entity) ? 1 : 0 if corporation.minor?
-
-        entity.num_shares_of(corporation, ceil: false)
-      end
 
       def min_width(entity)
         PLAYER_COL_MAX_WIDTH if entity.companies.size > 1 || @game.format_currency(entity.value).size > 6
