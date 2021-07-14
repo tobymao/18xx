@@ -78,7 +78,10 @@ module Engine
         highest_bid(corporation).price + min_increment
       end
 
-      def max_bid(player, _corporation = nil)
+      def max_bid(player, corporation = nil)
+        # player cannot bid if they are at cert limit
+        return 0 if corporation && !can_gain?(player, corporation.shares.first&.to_bundle)
+
         player.cash
       end
 
