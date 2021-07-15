@@ -232,7 +232,7 @@ module View
             end
             train_props = { style: {} }
             unless @game.able_to_operate?(corporation, train, name)
-              color = StockMarket::COLOR_MAP[:yellow]
+              color = StockMarket::COLOR_MAP[:gray]
               train_props[:style][:backgroundColor] = color
               train_props[:style][:color] = contrast_on(color)
             end
@@ -350,7 +350,7 @@ module View
 
             train_props = { style: {} }
             unless @game.able_to_operate?(corporation, group[0], name)
-              color = StockMarket::COLOR_MAP[:yellow]
+              color = StockMarket::COLOR_MAP[:gray]
               train_props[:style][:backgroundColor] = color
               train_props[:style][:color] = contrast_on(color)
             end
