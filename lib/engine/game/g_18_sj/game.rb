@@ -713,13 +713,24 @@ module Engine
 
         GKB_HEXES = %w[C8 C16 E8].freeze
 
+        def oscarian_era
+          @optional_rules&.include?(:oscarian_era)
+        end
+
         def init_corporations(stock_market)
           corporations = super
           removed_corporation = select(OPTIONAL_PUBLIC)
           to_close = corporations.find { |corp| corp.name == removed_corporation }
           corporations.delete(to_close)
           @log << "Removed corporation: #{to_close.full_name} (#{to_close.name})"
-          corporations
+
+          return corporations unless oscarian_era
+
+          # Make all corporations full cap
+          corporations.map do |c|
+            c.capitalization = :full
+            c
+          end
         end
 
         def init_companies(players)
@@ -745,6 +756,21 @@ module Engine
           end
 
           companies - @removed_companies
+        end
+
+        def game_market
+          return self.class::MARKET unless oscarian_era
+
+          self.class::MARKET.map { |r| r.map { |c| c == '100p' ? '100' : c } }
+        end
+
+        def game_phases
+          return self.class::PHASES unless oscarian_era
+
+          self.class::PHASES.map do |p|
+            p[:status] -= ['fullcap']
+            p
+          end
         end
 
         def select(collection)
@@ -836,6 +862,13 @@ module Engine
 
           @e_train_bought = false
           @sj_tokens_passable = false
+
+          return unless oscarian_era
+
+          # Remove full cap event as all corporations are full cap
+          @depot.trains.each do |t|
+            t.events = t.events.reject { |e| e[:type] == 'full_cap' }
+          end
         end
 
         def cert_limit
@@ -1097,6 +1130,8 @@ module Engine
 
         def current_cert_limit
           available_corporations = @corporations.count { |c| !c.closed? }
+          available_corporations = 10 if available_corporations > 10
+
           certs_per_player = CERT_LIMITS[available_corporations]
           raise GameError, "No cert limit defined for #{available_corporations} corporations" unless certs_per_player
 
