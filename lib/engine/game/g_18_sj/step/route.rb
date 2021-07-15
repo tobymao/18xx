@@ -50,13 +50,13 @@ module Engine
 
           def chart(_entity)
             [
+              %w[Name Bonus],
               ['Lapplandspilen (N-S)', @game.format_currency(100)],
-              ['Öst-Väst 1 (Ö-V, Gbg)', @game.format_currency(120)],
-              ['Öst-Väst 2 (Ö-V, Malmö)', @game.format_currency(100)],
+              ['Öst-Väst (Ö-V)', @game.format_currency(120)],
               ['Malmfälten 1 (M-m)', @game.format_currency(50)],
               ['Malmfälten 2 (M-m-m)', @game.format_currency(100)],
               ['Bergslagen 1 (B-b)', @game.format_currency(50)],
-              ['Bergslagen 2 (B-b-b)', @game.format_currency(80)],
+              ['Bergslagen 2 (B-b-b)', @game.format_currency(100)],
             ]
           end
 
