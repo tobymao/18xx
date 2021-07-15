@@ -31,9 +31,7 @@ module View
 
         divs << h(Issuers, owner: @player, game: @game) if @player.bonds.any?
 
-        if @player.companies.any? || @show_hidden
-          divs << h(Companies, owner: @player, game: @game, show_hidden: @show_hidden)
-        end
+        divs << h(Companies, owner: @player, game: @game, show_hidden: @show_hidden) if @player.companies.any? || @show_hidden
 
         unless (minors = @game.player_card_minors(@player)).empty?
           divs << render_minors(minors)

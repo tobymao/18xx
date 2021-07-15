@@ -537,7 +537,7 @@ module Engine
           if entity.bonds_of(issuer).size >= program.until_condition
             return [Action::ProgramDisable.new(entity,
                                                reason: "#{program.until_condition} bond(s) bought in "\
-                                               "#{issuer.name}, end condition met")]
+                                                       "#{issuer.name}, end condition met")]
           end
           buyable_bundle = @game.bundles_for_issuer(issuer, issuer).select { |b| b.count == 1 }
 
