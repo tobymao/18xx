@@ -456,6 +456,7 @@ module Engine
                        { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             num: 3,
             price: 500,
+            events: [{ 'type' => 'close_companies' }],
           },
           {
             name: '6',
@@ -522,12 +523,20 @@ module Engine
           {
             name: 'Krefeld-Kempener Eisenbahn',
             sym: 'KKK',
-            float_percent: 50,
+            float_percent: 60,
             tokens: [0, 60],
             shares: [20, 20, 20, 10, 10, 10, 10],
             logo: '18Rhl/KKK',
             simple_logo: '18Rhl/KKK.alt',
             color: :orange,
+            coordinates: 'D7',
+            abilities: [
+              {
+                type: 'base',
+                description: 'Two double (20%) certificates',
+                desc_detail: 'The first two shares sold from IPO are double (20%) certificates',
+              },
+            ],
           },
           {
             name: 'Gladbach-Venloer Eisenbahn',
@@ -548,8 +557,14 @@ module Engine
             color: :blue,
             logo: '18Rhl/CCE',
             simple_logo: '18Rhl/CCE.alt',
-            coordinates: 'I10',
+            coordinates: %w[E6 I10],
             city: 1,
+            abilities: [
+              {
+                type: 'base',
+                description: 'Two home stations (Köln & Krefeld)',
+              },
+            ],
           },
           {
             name: 'Rheinische Eisenbahngesellschaft',
@@ -561,31 +576,54 @@ module Engine
             simple_logo: '18Rhl/RhE.alt',
             coordinates: 'I10',
             city: 0,
+            abilities: [
+              {
+                type: 'base',
+                description: 'Special par/float rules',
+                desc_detail: "When the president's share is acquired (via private No. 6) 3 10% shares are moved "\
+                             'from IPO to the Market. When RhE floats it does receive only the value of the '\
+                             "president's share, and the value of the 3 shares moved when parring will be paid "\
+                             "to RhE's treasury as soon as there is a railway link between Aachen and Köln via Düren.",
+              },
+            ],
           },
         ].freeze
 
         COMPANIES = [
           {
             sym: 'PWB',
-            name: 'Prinz Wilhelm-Bahn',
+            name: 'No. 1 Prinz Wilhelm-Bahn',
             value: 20,
             revenue: 5,
             desc: 'Blocks Hex E14. As director of a corporation the owner may place the first tile on this hex. '\
                   'An upgrade follows the normal track building rules. If there is still no tile on hex E14 after the '\
                   'purchase of the first 5 train, the blocking by the PWB ends.',
+            abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: %w[E14] }],
           },
           {
             sym: 'ATB',
-            name: 'Angertalbahn',
+            name: 'No. 1 Angertalbahn',
             value: 20,
             revenue: 5,
             desc: 'When acting as a director of a corporation the owner may place a tile on hex E12 for free during '\
                   'the green phase. The placement of this tile is in addition to the normal tile placement. '\
                   'The corporation needs an unblocked track link to hex E12.',
+            abilities: [
+              {
+                type: 'tile_lay',
+                owner_type: 'player',
+                hexes: %w[E12],
+                tiles: %w[1 2 55 56 69],
+                when: 'track',
+                free: 'true',
+                reachable: 'false',
+                count: 1,
+              },
+            ],
           },
           {
             sym: 'KEO',
-            name: 'Konzession Essen-Osterath',
+            name: 'No. 2 Konzession Essen-Osterath',
             value: 30,
             revenue: 0,
             desc: 'With the beginning of the green phase the special function case be used. As director of a '\
@@ -593,20 +631,41 @@ module Engine
                   'that hex or not. Directly after the tile placement the operating corporation may place a station '\
                   'token for free on that hex (the director must use the station token with the lowest cost). '\
                   'For further details see rules section 4.2.',
+            abilities: [
+              {
+                type: 'teleport',
+                owner_type: 'player',
+                tiles: %w[935],
+                hexes: %w[E8],
+                when: ['Phase 3', 'Phase 4'],
+              },
+            ],
           },
           {
             sym: 'Sz',
-            name: 'Seilzyganlage',
+            name: 'No. 3 Seilzyganlage',
             value: 50,
             revenue: 15,
             desc: 'As director of a corporation the owner may place a tile on a mountain hex for free during the '\
                   "corporation's track building phase. This tile placement is in addition to the corporation's normal "\
                   "track lay and there need not be a link to the corporation's network. This function can only be used "\
                   'once during the game.',
+            abilities: [
+              {
+                type: 'tile_lay',
+                owner_type: 'player',
+                hexes: %w[D13 E12 E14 F11 F13 G12 G14 H13 I12 I14 J13 K2 K12],
+                tiles: %w[1 2 3 4 5 6 7 8 9 23 24 25 30 55 57 58 69 930 934 937],
+                when: 'track',
+                free: 'true',
+                reachable: 'false',
+                count: 1,
+              },
+            ],
           },
           {
             sym: 'Tjt',
-            name: 'Trajektanstalt',
+            name: 'No. 4 Trajektanstalt',
             value: 80,
             revenue: 20,
             desc: 'As director of a corporation the owner may upgrade *one* of the yellow hexes of '\
@@ -614,19 +673,28 @@ module Engine
                   "corporation's normal tile lay. The corporation may place a station marker there in the same OR "\
                   "by paying the appropriate costs. There need not be a link to the corporation's network. "\
                   'For further details see rules section 4.2.',
+            abilities: [
+              {
+                type: 'teleport',
+                owner_type: 'player',
+                tiles: %w[921 922 923 924 925 926],
+                hexes: %w[D9 F9 I10],
+              },
+            ],
           },
           {
             sym: 'NLK',
-            name: 'Niederrheinische Licht- und Kraftwerke',
+            name: 'No. 5 Niederrheinische Licht- und Kraftwerke',
             value: 120,
             revenue: 25,
+            abilities: [{ type: 'shares', shares: 'GVE_1' }],
             desc: 'The player who purchased the Niederrheinische Licht- und Kraftwerke immediately receives a 10% '\
                   'share of the GVE for free. In order to float the GVE only 40% of the GVE needs to be sold from the '\
                   'Initial Offering.',
           },
           {
             sym: 'RhE',
-            name: "Director's Certificate of Rheinischen Eisenbahngesellschaft",
+            name: "No. 6 Director's Certificate of Rheinischen Eisenbahngesellschaft",
             value: 140,
             revenue: 0,
             abilities: [
@@ -670,12 +738,12 @@ module Engine
           base_map
         end
 
-        def games_companies
+        def game_companies
           # Private 1 is different in base game and in Ratingen Variant
           all = self.class::COMPANIES
-          return all.reject { |c| c.sym == 'ATB' } unless optional_ratingen_variant
+          return all.reject { |c| c[:sym] == 'ATB' } unless optional_ratingen_variant
 
-          all.reject { |c| c.sym == 'PWB' }
+          all.reject { |c| c[:sym] == 'PWB' }
         end
 
         def optional_tiles
@@ -704,12 +772,105 @@ module Engine
           @kkk_corporation ||= corporation_by_id('KKK')
         end
 
+        def rhe
+          @rhe_corporation ||= corporation_by_id('RhE')
+        end
+
         def setup
           kkk.shares[1].double_cert = true
           kkk.shares[2].double_cert = true
+
+          @aachen_connection = 0
+
+          @essen_tile ||= @tiles.find { |t| t.name == 'Essen' } if optional_promotion_tiles
+          @moers_tile_gray ||= @tiles.find { |t| t.name == '950' } if optional_promotion_tiles
+          @d_k_tile ||= @tiles.find { |t| t.name == '932V' } if optional_promotion_tiles
+          @d_du_k_tile ||= @tiles.find { |t| t.name == '932' } unless optional_promotion_tiles
+          @du_tile_gray ||= @tiles.find { |t| t.name == '949' } if optional_promotion_tiles
         end
 
         include StubsAreRestricted
+
+        def after_buy_company(player, company, _price)
+          super
+
+          return unless company.id == 'RhE'
+
+          @log << "Move 3 #{rhe.name} 10% shares to market"
+          rhe.shares[1..3].each do |s|
+            @share_pool.transfer_shares(s.to_bundle, @share_pool, price: 0, allow_president_change: false)
+          end
+        end
+
+        def float_corporation(corporation)
+          @log << "#{corporation.name} floats"
+
+          # Corporation receives par price for all shares sold from IPO to players
+          paid_to_treasury = 5
+
+          if corporation == rhe
+            @aachen_connection = rhe.par_price.price * 3
+            delayed = format_currency(@aachen_connection)
+            @log << "#{rhe.name} will receive #{delayed} when there is a link from Köln to Aachen via Düren"
+          else
+            @bank.spend(corporation.par_price.price * paid_to_treasury, corporation)
+            @log << "#{corporation.name} receives #{format_currency(corporation.cash)}"
+          end
+
+          corporation.capitalization = :incremental
+        end
+
+        def ipo_name(corporation)
+          return 'I/T' unless corporation
+
+          corporation.capitalization == :incremental ? 'Treasury' : 'IPO'
+        end
+
+        def upgrades_to?(from, to, _special = false, selected_company: nil)
+          # Osterath cannot be upgraded
+          return false if from.name == '935'
+
+          # Handle Moers upgrades
+          return to.name == '947' if from.color == :green && from.hex.name == 'D7'
+          return to.name == '950' if from.color == :brown && from.hex.name == 'D7'
+
+          if optional_promotion_tiles
+            # Essen can be upgraded to gray
+            return to.name == 'Essen' if from.color == :brown && from.name == '216'
+
+            # Dusseldorf and Cologne can be upgraded to gray 950
+            return to.name == '950' if from.color == :brown && %w[F9 I10].include?(from.hex.name)
+
+            # Duisburg can be upgraded to gray 929
+            return to.name == '929' if from.color == :brown && from.hex.name == 'D9'
+          elsif from.color == :brown && %w[D9 F9 I10].include?(from.hex.name)
+            return to.name == '932'
+          end
+          # Duisburg, Dusseldorf and Cologne can be upgraded to gray 932
+
+          super
+        end
+
+        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
+          # Osterath cannot be upgraded
+          return [] if tile.name == '935'
+
+          upgrades = super
+
+          return upgrades unless tile_manifest
+
+          # Handle Moers tile manifest
+          upgrades |= [@moers_tile_gray] if @moers_tile_gray && tile.name == '947'
+
+          # Tile manifest for 216 should show Essen if promotional tiles used
+          upgrades |= [@essen_tile] if @essen_tile && tile.name == '216'
+
+          upgrades |= [@d_k_tile] if @d_k_tile && %w[927 928].include?(tile.name)
+          upgrades |= [@d_du_k_tile] if @d_du_k_tile && %w[927 928 929].include?(tile.name)
+          upgrades |= [@du_tile_gray] if @du_tile_gray && tile.name == '929'
+
+          upgrades
+        end
 
         private
 
@@ -763,7 +924,6 @@ module Engine
                         'border=edge:4,type:water',
               ['C10'] => 'town=revenue:0;town=revenue:0;border=edge:1,type:water',
               %w[C12 D11] => 'city=revenue:0;city=revenue:0;label=OO',
-              ['D7'] => 'city=revenue:0',
               ['D13'] => 'city=revenue:0;upgrade=cost:30,terrain:mountain;label=Y',
               ['E6'] => 'city=revenue:0;label=Y',
               ['E8'] => 'town=revenue:0;town=revenue:0;border=edge:4,type:water',
@@ -794,8 +954,11 @@ module Engine
               ['I10'] => 'city=revenue:30;city=revenue:30;city=revenue:20;upgrade=cost:30,terrain:water;'\
                          'path=a:0,b:_0;path=a:2,b:_1;path=a:3,b:_2;label=K',
               ['I14'] => 'upgrade=cost:60,terrain:mountain;path=a:3,b:5',
-              ['K2'] => 'city=revenue:20;upgrade=cost:30,terrain:mountain;path=a:3,b:_0;path=a:4,b:_0;label=K',
+              ['K2'] => 'city=revenue:20;upgrade=cost:30,terrain:mountain;path=a:3,b:_0;path=a:4,b:_0;label=AC',
               ['K6'] => 'city=revenue:20;path=a:1,b:_0;path=a:4,b:_0',
+            },
+            green: {
+              ['D7'] => 'city=revenue:0',
             },
           }
         end
