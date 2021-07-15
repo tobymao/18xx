@@ -206,6 +206,10 @@ module Engine
           Graph.new(self, skip_track: :narrow)
         end
 
+        def skip_route_track_type
+          :narrow
+        end
+
         def tile_lays(entity)
           return super if !entity.corporation? || entity.companies.none? { |c| c.id == 'WDE' }
 
