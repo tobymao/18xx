@@ -344,6 +344,8 @@ module Engine
           # initialize power
           @corporation_power = Hash.new(0)
           @power_progress = 0
+
+          @bankrupted = {}
         end
 
         def can_ipo?(corp)
@@ -363,7 +365,7 @@ module Engine
 
         def current_layer
           layers = @layer_by_corp.select do |corp, _layer|
-            corp.num_ipo_shares.zero?
+            corp.num_ipo_shares.zero? || @bankrupted[corp]
           end.values
           layers.empty? ? 1 : [layers.max + 1, 4].min
         end
@@ -721,12 +723,20 @@ module Engine
           true
         end
 
+        def total_emr_buying_power(player, corporation)
+          corporation.cash +
+          emr_liquidity(player, corporation)
+        end
+
         def emr_liquidity(player, emr_corp)
-          player.cash + player.shares_by_corporation.sum do |corporation, shares|
+          total = player.cash
+          total += player.shares_by_corporation.sum do |corporation, shares|
             next 0 if shares.empty?
 
             corporation == emr_corp ? value_for_sellable(player, corporation) : value_for_shares(player, corporation)
           end
+          total += player.companies.sum { |company| company.value - COMPANY_SALE_FEE }
+          total
         end
 
         def value_for_shares(player, corporation)
@@ -762,7 +772,13 @@ module Engine
           corp.tokens.each(&:remove!)
           @graph.clear
 
+          @bankrupted[corp] = true
+
           @log << "#{corp.name} is bankrupt"
+        end
+
+        def company_sale_price(company)
+          company.value - COMPANY_SALE_FEE
         end
       end
     end

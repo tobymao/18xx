@@ -36,11 +36,11 @@ module View
         if @step.can_ebuy_sell_shares?(@corporation)
           if share_funds_allowed.positive?
             children << h(:div, "#{player.name} has #{@game.format_currency(share_funds_possible)} "\
-                                'in sellable shares.')
+                                'in sellable shares/companies.')
           end
 
           if share_funds_required.positive?
-            children << h(:div, "#{player.name} #{verb} sell shares to raise at least "\
+            children << h(:div, "#{player.name} #{verb} sell shares/companies to raise at least "\
                                 "#{@game.format_currency(share_funds_required)}.")
           end
         end
@@ -83,7 +83,7 @@ module View
         children << h(:div, "Current/Next power cost: #{@game.format_currency(@game.current_power_cost)} / "\
                             "#{@game.format_currency(@game.next_power_cost)}")
 
-        if (@must_buy_train && @step.ebuy_president_can_contribute?(@corporation)) ||
+        if (@must_buy_power && @step.ebuy_president_can_contribute?(@corporation)) ||
            @step.president_may_contribute?(@corporation)
           children.concat(render_president_contributions)
         end

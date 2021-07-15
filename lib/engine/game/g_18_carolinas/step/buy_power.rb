@@ -12,9 +12,17 @@ module Engine
 
           def actions(entity)
             return [] if entity.corporation? && entity.receivership?
-            return ['sell_shares'] if entity == current_entity&.owner
+            return %w[sell_shares sell_company] if entity == current_entity&.owner # for EMR action
             return [] if entity != current_entity
-            return %w[sell_shares buy_power] if president_may_contribute?(entity)
+
+            if must_buy_power?(entity)
+              actions = %w[buy_power]
+              if ebuy_president_can_contribute?(entity)
+                actions << 'sell_shares'
+                actions << 'sell_company' if sellable_companies(entity.owner).any?
+              end
+              return actions
+            end
             return %w[buy_power pass] if can_buy_power?(entity)
 
             []
@@ -45,6 +53,13 @@ module Engine
               @log << "#{entity.name} (in receivership) skips buying power"
             end
             pass!
+          end
+
+          def sellable_companies(entity)
+            return [] unless @game.turn > 1
+            return [] unless entity.player?
+
+            entity.companies
           end
 
           def sellable_bundle?(bundle)
@@ -111,7 +126,7 @@ module Engine
             if must_buy_power?(entity) && cost > entity.cash
               # emergency buy
               ebuy = true
-              cost = ebuy_cash_needed(entity) - entity.cash
+              cost = ebuy_cash_needed(entity)
               remaining = cost - entity.cash
               player = entity.owner
               player.spend(remaining, entity)
@@ -125,6 +140,18 @@ module Engine
             pass!
           end
 
+          def process_sell_company(action)
+            company = action.company
+            player = action.entity
+            price = action.price
+            raise GameError, "#{player.name} doesn't own #{company.name}" if player != company.owner
+
+            company.owner = @game.bank
+            player.companies.delete(company)
+            @game.bank.spend(price, player) if price.positive?
+            @log << "#{player.name} sells #{company.name} to bank for #{@game.format_currency(price)}"
+          end
+
           def must_buy_power?(entity)
             @game.must_buy_power?(entity)
           end
@@ -134,8 +161,8 @@ module Engine
             must_buy_power?(entity)
           end
 
-          def president_may_contribute?(entity)
-            must_buy_power?(entity)
+          def president_may_contribute?(_entity)
+            false
           end
 
           def ebuy_president_can_contribute?(corporation)
@@ -209,8 +236,8 @@ module Engine
             entity.cash + current_entity.cash
           end
 
-          def needed_cash(entity)
-            ebuy_cash_needed(entity)
+          def needed_cash(_entity)
+            ebuy_cash_needed(current_entity)
           end
 
           def chart(entity)
