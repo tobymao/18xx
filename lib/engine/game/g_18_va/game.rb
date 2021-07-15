@@ -218,12 +218,12 @@ module Engine
                        { 'nodes' => %w[offboard], 'pay' => 2, 'visit' => 2 },
                        { 'nodes' => %w[city], 'pay' => 3, 'visit' => 3 }],
             price: 200,
-            rusts_on: '6',
+            rusts_on: '5',
             num: 5,
             variants: [
               {
                 name: '2G',
-                rusts_on: '6',
+                rusts_on: '5',
                 distance: [{ 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 },
                            { 'nodes' => %w[offboard], 'pay' => 2, 'visit' => 2 },
                            { 'nodes' => %w[city], 'pay' => 3, 'visit' => 3 }],
