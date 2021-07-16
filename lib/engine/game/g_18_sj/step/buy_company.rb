@@ -8,6 +8,12 @@ module Engine
     module G18SJ
       module Step
         class BuyCompany < Engine::Step::BuyCompany
+          def actions(entity)
+            return [] if entity.player == @game.edelsward
+
+            super
+          end
+
           def process_buy_company(action)
             return super unless action.company == @game.company_khj
 

@@ -10,7 +10,7 @@ module Engine
           def finish_round
             @game.corporations.select(&:floated?).sort.each do |corp|
               prev = corp.share_price.price
-              sold_out_stock_movement(corp) if sold_out?(corp) && @game.class::SOLD_OUT_INCREASE
+              sold_out_stock_movement(corp) if sold_out?(corp) && @game.sold_out_increase?(corp)
               shares_in_pool = corp.num_market_shares
               price_drops = shares_in_pool * 2
               price_drops.times { @game.stock_market.move_down(corp) }
