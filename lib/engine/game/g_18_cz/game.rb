@@ -325,6 +325,10 @@ module Engine
           @timeline.append("Next set of Operating Rounds will have #{OR_SETS[@turn - 1]} ORs")
         end
 
+        def able_to_operate?(entity, _train, name)
+          TRAINS_FOR_CORPORATIONS[name] == entity.type
+        end
+
         def par_prices(corp)
           par_nodes = stock_market.par_prices
           available_par_prices = PAR_RANGE[corp.type]
