@@ -45,7 +45,6 @@ module Engine
           '597' => 'unlimited',
           '611' => 'unlimited',
           '619' => 'unlimited',
-          # Could make fun oil tiles like coal and iron but then we'd need to make 12 tiles (3y + 4grn + 3b + 2gry)
           '7coal' =>
           {
             'count' => 'unlimited',
@@ -64,41 +63,115 @@ module Engine
             'color' => 'yellow',
             'code' => 'offboard=revenue:10,hide:1;path=a:0,b:3;label=⛏️',
           },
-          '7iron1' =>
+          '7iron10' =>
           {
             'count' => 'unlimited',
             'color' => 'yellow',
-            'code' => 'offboard=revenue:10,hide:1;path=a:0,b:1;label=⚒️',
+            'code' => 'offboard=revenue:10,hide:1;path=a:0,b:1;path=a:_0,b:_0;label=⚒️',
           },
-          '8iron1' =>
+          '8iron10' =>
           {
             'count' => 'unlimited',
             'color' => 'yellow',
             'code' => 'offboard=revenue:10,hide:1;path=a:0,b:2;label=⚒️',
           },
-          '9iron1' =>
+          '9iron10' =>
           {
             'count' => 'unlimited',
             'color' => 'yellow',
             'code' => 'offboard=revenue:10,hide:1;path=a:0,b:3;label=⚒️',
           },
-          '7iron2' =>
+          '7iron20' =>
           {
             'count' => 'unlimited',
             'color' => 'green',
             'code' => 'offboard=revenue:20,hide:1;path=a:0,b:1;label=⚒️',
           },
-          '8iron2' =>
+          '8iron20' =>
           {
             'count' => 'unlimited',
             'color' => 'green',
             'code' => 'offboard=revenue:20,hide:1;path=a:0,b:2;label=⚒️',
           },
-          '9iron2' =>
+          '9iron20' =>
           {
             'count' => 'unlimited',
             'color' => 'green',
             'code' => 'offboard=revenue:20,hide:1;path=a:0,b:3;label=⚒️',
+          },
+          '7oil' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'yellow',
+            'code' => 'offboard=revenue:yellow_10|brown_20,hide:1;path=a:0,b:1;label=🛢️',
+          },
+          '8oil' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'yellow',
+            'code' => 'offboard=revenue:yellow_10|brown_20,hide:1;path=a:0,b:2;label=🛢️',
+          },
+          '9oil' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'yellow',
+            'code' => 'offboard=revenue:yellow_10|brown_20,hide:1;path=a:0,b:3;label=🛢️',
+          },
+          '544oil' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'brown',
+            'code' => 'junction;offboard=revenue:20,hide:1;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=🛢️',
+          },
+          '545oil' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'brown',
+            'code' => 'junction;offboard=revenue:20,hide:1;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;label=🛢️',
+          },
+          '546oil' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'brown',
+            'code' => 'junction;offboard=revenue:20,hide:1;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=🛢️',
+          },
+          '80oil' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'green',
+            'code' => 'junction;offboard=revenue:yellow_10|brown_20,hide:1;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;label=🛢️',
+          },
+          '81oil' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'green',
+            'code' => 'junction;offboard=revenue:yellow_10|brown_20,hide:1;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0;label=🛢️',
+          },
+          '82oil' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'green',
+            'code' => 'junction;offboard=revenue:yellow_10|brown_20,hide:1;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;label=🛢️',
+          },
+          '83oil' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'green',
+            'code' => 'junction;offboard=revenue:yellow_10|brown_20,hide:1;path=a:0,b:_0;path=a:5,b:_0;path=a:3,b:_0;label=🛢️',
+          },
+          '60oil' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'gray',
+            'code' => 'junction;offboard=revenue:20,hide:1;'\
+                      'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=🛢️',
+          },
+          'X17oil' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'gray',
+            'code' => 'junction;offboard=revenue:20,hide:1;'\
+                      'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=🛢️',
           },
           'X01' =>
           {
@@ -473,8 +546,8 @@ module Engine
             abilities: [
               {
                 type: 'tile_lay',
-                hexes: %w[B12 C7 C19 D16 E5 E9 G21 H6],
-                tiles: %w[7 8 9],
+                hexes: %w[B12 G15 H4 I17 I21 I23 J14],
+                tiles: %w[7oil 8oil 9oil],
                 free: false,
                 when: 'track',
                 discount: 15,
@@ -501,8 +574,8 @@ module Engine
             abilities: [
               {
                 type: 'tile_lay',
-                hexes: %w[B6 B10 B12 C9 D8 D10 D26 E19 E25 F8 F10 F16 F22 F24],
-                tiles: %w[7iron1 8iron1 9iron1],
+                hexes: %w[B10 C7 C19 D16 E5 E9 G21 H6],
+                tiles: %w[7iron10 8iron10 9iron10],
                 free: false,
                 when: 'track',
                 discount: 15,
@@ -520,7 +593,7 @@ module Engine
             value: 30,
             revenue: 0,
             desc: '$15 discount on mountains. No money is refunded if combined with the ability of another private that also '\
-            'negates the cost of difficult terrain',
+                  'negates the cost of difficult terrain',
             sym: 'P5',
             abilities: [
               {
@@ -547,7 +620,7 @@ module Engine
             abilities: [
               {
                 type: 'tile_lay',
-                hexes: %w[B12 C7 C19 D16 E5 E9 G21 H6],
+                hexes: %w[B12 G15 H4 I17 I21 I23 J14],
                 tiles: %w[7oil 8oil 9oil],
                 free: false,
                 when: 'track',
@@ -555,7 +628,7 @@ module Engine
                 consume_tile_lay: true,
                 closed_when_used_up: true,
                 owner_type: 'corporation',
-                count: 1,
+                count: 2,
               },
             ],
             color: nil,
@@ -655,8 +728,8 @@ module Engine
             abilities: [
               {
                 type: 'tile_lay',
-                hexes: %w[B6 B10 B12 C9 D8 D10 D26 E19 E25 F8 F10 F16 F22 F24],
-                tiles: %w[7iron1 8iron1 9iron1],
+                hexes: %w[B10 C7 C19 D16 E5 E9 G21 H6],
+                tiles: %w[7iron10 8iron10 9iron10],
                 free: false,
                 when: 'track',
                 discount: 15,
@@ -973,7 +1046,6 @@ module Engine
           'oil' => '/icons/1817/mine_token.svg',
         }.freeze
 
-
         SEED_MONEY = 200
         # Alphabetized. Not sure what official ordering is
 
@@ -1127,14 +1199,6 @@ module Engine
             Engine::Step::DiscardTrain,
             G1817::Step::BuyTrain,
           ], round_num: round_num)
-        end
-
-        def little_oil
-          @little_oil ||= company_by_id('P3')
-        end
-
-        def big_oil
-          @little_oil ||= company_by_id('P12qq')
         end
       end
     end

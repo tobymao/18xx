@@ -7,16 +7,6 @@ module Engine
     module G18USA
       module Step
         class SpecialTrack < Engine::Step::SpecialTrack
-          def process_lay_tile(action)
-            return super unless [@game.little_oil.id, @game.big_oil.id].include?(action.entity.id)
-
-            tile = action.tile
-            owner = action.entity.owner
-
-            tile.hex.assign!('oil')
-            @game.log << "#{owner.name} adds oil to #{tile.hex.name}"
-          end
-
           def hex_neighbors(entity, hex)
             # See 1817 and reinsert pittsburgh check for handling metros
 
@@ -35,7 +25,13 @@ module Engine
               .select { |t| @game.upgrades_to?(hex.tile, t) }
           end
 
+          # The oil/coal/iron tiles falsely pass as offboards, so we need to be more careful
+          def real_offboard?(tile)
+            tile.offboards&.any? && !tile.labels&.any?
+          end
+
           def legal_tile_rotation?(entity, hex, tile)
+            puts 'ltr?', tile.labels
             # See 1817 and reinsert pittsburgh check for handling metros
             super &&
             tile.exits.any? do |exit|
@@ -48,7 +44,7 @@ module Engine
               # potentially be updated in future.
               # 1817 doesn't have any coal next to towns but 1817NA does and
               #  Marc Voyer confirmed that coal should be able to connect to the gray pre-printed town
-              (ntile.cities&.any? || ntile.offboards&.any? || ntile.towns&.any?) &&
+              (ntile.cities&.any? || real_offboard?(ntile) || ntile.towns&.any?) &&
               (ntile.exits.any? { |e| e == Hex.invert(exit) } || potential_future_tiles(entity, neighbor).any?)
             end
           end
