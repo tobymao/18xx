@@ -62,7 +62,7 @@ module Engine
           end
 
           def process_run_routes(action)
-            hexes = action.routes[0].connection_hexes.flatten.uniq.map { |h| @game.hex_by_id(h) }.uniq
+            hexes = action.routes[0].connection_hexes.flatten.uniq.map { |h| @game.hex_by_id(h) }
             hexes_to_flip = hexes.select { |h| h.tile.paths.any? { |p| p.track != :broad } }
             raise GameError, 'No tiles with Southern Track submitted' if hexes_to_flip.empty?
 

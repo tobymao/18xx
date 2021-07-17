@@ -724,8 +724,7 @@ module Engine
         end
 
         def total_emr_buying_power(player, corporation)
-          corporation.cash +
-          emr_liquidity(player, corporation)
+          corporation.cash + emr_liquidity(player, corporation)
         end
 
         def emr_liquidity(player, emr_corp)
