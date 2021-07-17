@@ -430,12 +430,14 @@ module Engine
             tiles: %i[yellow green brown],
             operating_rounds: 2,
             corporation_sizes: [5, 10],
+            status: ['increased_oil'],
           },
           {
             name: '6',
             on: '6',
             train_limit: 2,
             tiles: %i[yellow green brown],
+            status: ['increased_oil'],
             operating_rounds: 2,
             corporation_sizes: [10],
           },
@@ -444,6 +446,7 @@ module Engine
             on: '7',
             train_limit: 2,
             tiles: %i[yellow green brown gray],
+            status: ['increased_oil'],
             operating_rounds: 2,
             corporation_sizes: [10],
           },
@@ -452,12 +455,19 @@ module Engine
             on: '8',
             train_limit: 2,
             tiles: %i[yellow green brown gray],
-            status: ['no_new_shorts'],
+            status: %w[increased_oil no_new_shorts],
             operating_rounds: 2,
             corporation_sizes: [10],
           },
         ].freeze
 
+        # Trying to do {static literal}.merge(super.static_literal) so that the capitalization shows up first.
+        STATUS_TEXT = {
+          'increased_oil' => [
+            'Increased Oil Prices',
+            'Oil is worth $20 instead of $10',
+          ],
+        }.merge(Base::STATUS_TEXT)
         TRAINS = [{ name: '2', distance: 2, price: 100, rusts_on: '4', num: 40 },
                   { name: '2+', distance: 2, price: 100, obsolete_on: '4', num: 4 },
                   { name: '3', distance: 3, price: 250, rusts_on: '6', num: 12 },
@@ -1199,6 +1209,22 @@ module Engine
             Engine::Step::DiscardTrain,
             G1817::Step::BuyTrain,
           ], round_num: round_num)
+        end
+
+        def revenue_for(route, stops)
+          revenue = super
+          revenue += 10 * stops.count { |stop| stop.hex.assigned?('bridge') }
+
+          raise GameError, 'Route visits same hex twice' if route.hexes.size != route.hexes.uniq.size
+
+          revenue += 10 * route.all_hexes.count { |hex| hex.tile.id.include?('coal') }
+          revenue += 10 * route.all_hexes.count { |hex| hex.tile.id.include?('iron10') }
+          revenue += 20 * route.all_hexes.count { |hex| hex.tile.id.include?('iron20') }
+          revenue += (increased_oil? ? 20 : 10) * route.all_hexes.count { |hex| hex.tile.id.include?('oil') }
+        end
+
+        def increased_oil?
+          @phase.status.include?('increased_oil')
         end
       end
     end
