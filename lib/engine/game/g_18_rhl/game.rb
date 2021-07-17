@@ -304,26 +304,31 @@ module Engine
         }.freeze
 
         LOCATION_NAMES = {
+          'A2' => 'Nimwegen',
+          'A6' => 'Arnheim',
           'A14' => 'Hamburg Münster',
           'B9' => 'Wesel',
           'B15' => 'Berlin Minden',
+          'C2' => 'Boxtel',
           'C12' => 'Herne Gelsenkirchen',
           'C14' => 'Östliches Rihrgebiet',
           'D7' => 'Moers',
           'D9' => 'Duisburg',
           'D11' => 'Oberhausen Mülheim',
           'D13' => 'Essen',
-          'D15' => 'Östliches Rihrgebiet',
+          'E2' => 'Venio',
           'E6' => 'Krefeld',
           'E12' => 'Ratingen',
           'F9' => 'Neuss Düsseldorf',
           'F13' => 'Elberfeld Barmen',
+          'G2' => 'Roermond',
           'G6' => 'M-Gladbach Rheydt',
           'G12' => 'Remshcheid Solingen',
           'I10' => 'Köln Deutz',
           'K2' => 'Aachen',
           'K6' => 'Düren',
           'K10' => 'Bonn',
+          'J1' => 'Maastrict',
           'J15' => 'Siegerland',
           'L1' => 'Liege',
           'L11' => 'Basel',
@@ -481,8 +486,8 @@ module Engine
             name: 'Aachen-Düsseldorf-Ruhrorter E.',
             sym: 'ADR',
             tokens: [0, 60, 80],
-            logo: '18Rhl/ADR',
-            simple_logo: '18Rhl/ADR.alt',
+            logo: '18_rhl/ADR',
+            simple_logo: '18_rhl/ADR.alt',
             color: :green,
             coordinates: 'K2',
           },
@@ -491,8 +496,8 @@ module Engine
             sym: 'BME',
             float_percent: 50,
             tokens: [0, 60, 80, 100],
-            logo: '18Rhl/BME',
-            simple_logo: '18Rhl/BME.alt',
+            logo: '18_rhl/BME',
+            simple_logo: '18_rhl/BME.alt',
             color: :brown,
             coordinates: 'F13',
             city: 1,
@@ -502,9 +507,9 @@ module Engine
             sym: 'CME',
             float_percent: 50,
             tokens: [0, 60, 80, 100],
-            color: :red,
-            logo: '18Rhl/CME',
-            simple_logo: '18Rhl/CME.alt',
+            color: '#CD5C5C',
+            logo: '18_rhl/CME',
+            simple_logo: '18_rhl/CME.alt',
             coordinates: 'I10',
             city: 2,
           },
@@ -513,10 +518,10 @@ module Engine
             sym: 'DEE',
             float_percent: 50,
             tokens: [0, 60],
-            logo: '18Rhl/DEE',
-            simple_logo: '18Rhl/DEE.alt',
+            logo: '18_rhl/DEE',
+            simple_logo: '18_rhl/DEE.alt',
             color: :yellow,
-            text_color: 'black',
+            text_color: :black,
             coordinates: 'F9',
             city: 1,
           },
@@ -526,15 +531,16 @@ module Engine
             float_percent: 60,
             tokens: [0, 60],
             shares: [20, 20, 20, 10, 10, 10, 10],
-            logo: '18Rhl/KKK',
-            simple_logo: '18Rhl/KKK.alt',
+            logo: '18_rhl/KKK',
+            simple_logo: '18_rhl/KKK.alt',
             color: :orange,
+            text_color: :black,
             coordinates: 'D7',
             abilities: [
               {
                 type: 'base',
                 description: 'Two double (20%) certificates',
-                desc_detail: 'The first two shares sold from IPO are double (20%) certificates',
+                desc_detail: 'The first two (non-president) shares sold from IPO are double (20%) certificates',
               },
             ],
           },
@@ -543,8 +549,8 @@ module Engine
             sym: 'GVE',
             float_percent: 50,
             tokens: [0, 60],
-            logo: '18Rhl/GVE',
-            simple_logo: '18Rhl/GVE.alt',
+            logo: '18_rhl/GVE',
+            simple_logo: '18_rhl/GVE.alt',
             color: :gray,
             coordinates: 'G6',
             city: 1,
@@ -555,8 +561,8 @@ module Engine
             float_percent: 50,
             tokens: [0, 0, 80],
             color: :blue,
-            logo: '18Rhl/CCE',
-            simple_logo: '18Rhl/CCE.alt',
+            logo: '18_rhl/CCE',
+            simple_logo: '18_rhl/CCE.alt',
             coordinates: %w[E6 I10],
             city: 1,
             abilities: [
@@ -572,8 +578,8 @@ module Engine
             float_percent: 50,
             tokens: [0, 60, 80, 100],
             color: :purple,
-            logo: '18Rhl/RhE',
-            simple_logo: '18Rhl/RhE.alt',
+            logo: '18_rhl/RhE',
+            simple_logo: '18_rhl/RhE.alt',
             coordinates: 'I10',
             city: 0,
             abilities: [
@@ -787,6 +793,41 @@ module Engine
           @d_k_tile ||= @tiles.find { |t| t.name == '932V' } if optional_promotion_tiles
           @d_du_k_tile ||= @tiles.find { |t| t.name == '932' } unless optional_promotion_tiles
           @du_tile_gray ||= @tiles.find { |t| t.name == '949' } if optional_promotion_tiles
+
+          @variable_placement = (rand % 9) + 1
+
+          # Put out K tokens
+          @k = Corporation.new(
+            sym: 'K',
+            name: 'Coal',
+            logo: '18_rhl/K',
+            simple_logo: '18_rhl/K.alt',
+            tokens: [0, 0, 0, 0],
+          )
+          @k.owner = @bank
+          c14 = hex_by_id('C14').tile
+          c14.cities[1].place_token(@k, @k.next_token, free: true)
+          d15 = hex_by_id('D15').tile
+          d15.cities[0].place_token(@k, @k.next_token, free: true)
+          extra_coal_mine = hex_by_id(variable_coal_mine)
+          extra_coal_mine.tile.icons << Part::Icon.new('../logos/18_rhl/K')
+          @log << "Variable coal mine added to #{extra_coal_mine.name}"
+
+          @s = Corporation.new(
+            sym: 'S',
+            name: 'Steel',
+            logo: '18_rhl/S',
+            simple_logo: '18_rhl/S.alt',
+            tokens: [0, 0, 0, 0],
+          )
+          @s.owner = @bank
+          c14.cities[0].place_token(@s, @s.next_token, free: true)
+          d15.cities[1].place_token(@s, @s.next_token, free: true)
+          k14 = hex_by_id('K14').tile
+          k14.cities[0].place_token(@s, @s.next_token, free: true)
+          extra_steel_mill = hex_by_id(variable_steel_mill).tile
+          extra_steel_mill.icons << Part::Icon.new('../logos/18_rhl/S')
+          @log << "Variable steel mill added to #{extra_steel_mill.name}"
         end
 
         include StubsAreRestricted
@@ -885,32 +926,34 @@ module Engine
             red: {
               ['A2'] => 'offboard=revenue:yellow_40|brown_60,hide:1,groups:Nimwegen',
               ['A4'] => 'offboard=revenue:yellow_40|brown_60,groups:Nimwegen;path=a:0,b:_0,terminal:1;'\
-                        'border=edge:4,type:water',
+                        'border=edge:4,type:water;icon=image:18_rhl/RGE',
               ['A6'] => 'offboard=revenue:yellow_40|brown_60;path=a:5,b:_0,terminal:1;border=edge:0,type:water;'\
-                        'border=edge:1,type:water',
+                        'border=edge:1,type:water;icon=image:18_rhl/RGE',
               ['A14'] => 'city=revenue:yellow_40|brown_60;path=a:0,b:_0,terminal:1',
               ['B15'] => 'city=revenue:yellow_50|brown_80;path=a:1,b:_0,terminal:1',
               ['C2'] => 'city=revenue:yellow_10|brown_30;path=a:4,b:_0,terminal:1',
               ['C14'] => 'city=revenue:10;city=revenue:10;path=a:0,b:_0,terminal:1;path=a:1,b:_1,terminal:1;'\
-                         'label=+10/link',
+                         'icon=image:18_rhl/ERh',
               ['D15'] => 'city=revenue:10;city=revenue:10;path=a:0,b:_0,terminal:1;path=a:1,b:_1,terminal:1;'\
-                         'label=+10/link',
+                         'label=+10/link;icon=image:18_rhl/ERh',
               ['E2'] => 'city=revenue:yellow_20|brown_40;path=a:3,b:_0;path=a:5,b:_0',
-              ['G2'] => 'city=revenue:yellow_10|brown_20;path=a:4,b:_0,terminal:1',
-              ['J1'] => 'city=revenue:yellow_20|brown_30;path=a:5,b:_0,terminal:1',
+              ['G2'] => 'city=revenue:yellow_10|brown_20,groups:Roermond;path=a:4,b:_0,terminal:1',
+              ['H1'] => 'offboard=revenue:yellow_10|brown_20,hide:1,groups:Roermond;icon=image:18_rhl/ERh',
+              ['J1'] => 'offboard=revenue:yellow_10|brown_30;path=a:5,b:_0,terminal:1',
               ['L1'] => 'offboard=revenue:yellow_30|brown_60;path=a:3,b:_0,terminal:1',
               %w[L3 L5 L7] => '',
               ['L9'] => 'town=revenue:10;path=a:2,b:_0;path=a:3,b:_0',
               ['L11'] => 'offboard=revenue:yellow_30|brown_70;border=edge:3,type:water;'\
-                         'border=edge:4,type:water;path=a:2,b:_0',
-              ['L13'] => 'offboard=revenue:yellow_30|brown_60;border=edge:1,type:water;path=a:2,b:_0',
+                         'border=edge:4,type:water;path=a:2,b:_0;icon=image:18_rhl/RGE',
+              ['L13'] => 'offboard=revenue:yellow_30|brown_60;border=edge:1,type:water;path=a:2,b:_0;'\
+                         'icon=image:18_rhl/RGE',
             },
             gray: {
-              %w[A8 A10 A12 B1 D1 F1 H1] => '',
+              %w[A8 A10 A12 B1 D1 F1] => '',
               %w[F15 H15] => 'path=a:0,b:2',
               ['I4'] => 'path=a:0,b:3',
               ['J15'] => 'city=revenue:yellow_20|brown_40;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0',
-              ['K14'] => 'path=a:1,b:3',
+              ['K14'] => 'city=revenue:0,loc:4.5;path=a:1,b:3',
             },
             white: {
               ['B5'] => 'border=edge:3,type:water;border=edge:4,type:water',
@@ -946,11 +989,11 @@ module Engine
               ['B3'] => 'path=a:3,b:5',
               ['D9'] => 'city=revenue:20;city=revenue:30;city=revenue:30;upgrade=cost:30,terrain:water;path=a:0,b:_0;'\
                         'path=a:3,b:_1;path=a:5,b:_2;label=DU',
-              ['F9'] => 'city=revenue:20;city=revenue:30;city=revenue:30;upgrade=cost:30,terrain:water;path=a:0,b:_0;'\
+              ['F9'] => 'city=revenue:20;city=revenue:30,loc:3.5;city=revenue:30;upgrade=cost:30,terrain:water;path=a:0,b:_0;'\
                         'path=a:4,b:_1;path=a:5,b:_2;label=D',
               ['F13'] => 'city=revenue:30;city=revenue:30;upgrade=cost:30,terrain:mountain;path=a:1,b:_0;'\
                          'path=a:_0,b:2;path=a:3,b:_1;path=a:_1,b:5;label=Y',
-              ['G6'] => 'city=revenue:0;city=revenue:0;path=a:0,b:_0;path=a:2,b:_1;label=OO',
+              ['G6'] => 'city=revenue:20;city=revenue:20;path=a:0,b:_0;path=a:2,b:_1;label=OO',
               ['I10'] => 'city=revenue:30;city=revenue:30;city=revenue:20;upgrade=cost:30,terrain:water;'\
                          'path=a:0,b:_0;path=a:2,b:_1;path=a:3,b:_2;label=K',
               ['I14'] => 'upgrade=cost:60,terrain:mountain;path=a:3,b:5',
@@ -958,9 +1001,35 @@ module Engine
               ['K6'] => 'city=revenue:20;path=a:1,b:_0;path=a:4,b:_0',
             },
             green: {
-              ['D7'] => 'city=revenue:0',
+              ['D7'] => 'city=revenue:0;icon=image:../logos/18_rhl/K',
             },
           }
+        end
+
+        def variable_coal_mine
+          case @variable_placement
+          when 1, 7
+            'J3'
+          when 2
+            'K4'
+          when 3, 4
+            'D9'
+          when 5, 6
+            'C12'
+          when 8, 9
+            'D11'
+          end
+        end
+
+        def variable_steel_mill
+          case @variable_placement
+          when 1, 3, 5, 8
+            'E6'
+          when 2, 6, 9
+            'D9'
+          when 4, 7
+            'D13'
+          end
         end
       end
     end
