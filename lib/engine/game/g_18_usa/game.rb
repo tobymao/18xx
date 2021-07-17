@@ -485,6 +485,10 @@ module Engine
                     events: [{ 'type' => 'signal_end_game' }],
                   }].freeze
 
+        OIL_HEXES = %w[B12 G15 H4 I17 I21 I23 J14].freeze
+        IRON_HEXES = %w[B10 C7 C19 D16 E5 E9 G21 H6].freeze
+        COAL_HEXES = %w[B6 B10 B12 C9 D8 D10 D26 E19 E25 F8 F10 F16 F22 F24].freeze
+        BRIDGE_CITY_HEXES = %w[C10 C17 D14 E15 E17 F20 G17].freeze
         COMPANIES = [
           # P1
           {
@@ -676,6 +680,47 @@ module Engine
                 closed_when_used_up: true,
                 owner_type: 'corporation',
                 count: 2,
+              },
+            ],
+            color: nil,
+          },
+          # P21
+          # TODO: Make it work as a combo with P27
+          {
+            name: 'Keystone Bridge Co.',
+            value: 80,
+            revenue: 0,
+            desc: 'Comes with one $10 bridge token that may be placed by the owning '\
+                  'corp in a city with $10 water cost, max one token '\
+                  'per city, regardless of connectivity.  Allows owning corp to '\
+                  'skip $10 river fee when placing track. '\
+                  'Also comes with one coal token and one ore token. (see rules on coal and ore) '\
+                  'You can only ever use one of these two; using one means you forfeit the other',
+            sym: 'P21',
+            abilities: [
+              {
+                type: 'tile_discount',
+                discount: 10,
+                terrain: 'water',
+                owner_type: 'corporation',
+              },
+              {
+                type: 'assign_hexes',
+                hexes: BRIDGE_CITY_HEXES,
+                count: 1,
+                when: 'owning_corp_or_turn',
+                owner_type: 'corporation',
+              },
+              {
+                type: 'tile_lay',
+                hexes: COAL_HEXES + IRON_HEXES,
+                tiles: %w[7coal 8coal 9coal 7iron10 8iron10 9iron10],
+                free: false,
+                when: 'track',
+                discount: 15,
+                consume_tile_lay: true,
+                owner_type: 'corporation',
+                count: 1,
               },
             ],
             color: nil,
@@ -1051,10 +1096,6 @@ module Engine
 
         LAYOUT = :pointy
 
-        OIL_HEXES = %w[B12 G15 H4 I17 I21 I23 J14].freeze
-        IRON_HEXES = %w[B10 C7 C19 D16 E5 E9 G21 H6].freeze
-        COAL_HEXES = %w[B6 B10 B12 C9 D8 D10 D26 E19 E25 F8 F10 F16 F22 F24].freeze
-        BRIDGE_CITY_HEXES = %w[C10 C17 D14 E15 E17 F20 G17].freeze
         ASSIGNMENT_TOKENS = {
           'bridge' => '/icons/1817/bridge_token.svg',
         }.freeze

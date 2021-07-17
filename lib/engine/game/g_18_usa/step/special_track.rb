@@ -31,7 +31,10 @@ module Engine
           end
 
           def legal_tile_rotation?(entity, hex, tile)
-            puts 'ltr?', tile.labels
+            # These are needed for the combo private (Keystone Bridge Co)
+            return false if tile.id.include?('iron') && !@game.class::IRON_HEXES.include?(hex.id)
+            return false if tile.id.include?('coal') && !@game.class::COAL_HEXES.include?(hex.id)
+
             # See 1817 and reinsert pittsburgh check for handling metros
             super &&
             tile.exits.any? do |exit|

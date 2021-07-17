@@ -17,7 +17,7 @@ module Engine
             end
 
             case company.id
-            when 'P2', 'P22'
+            when 'P2', 'P22', 'P21'
               id = 'bridge'
               raise GameError, "Bridge already on #{target.name}" if target.assigned?(id)
 
