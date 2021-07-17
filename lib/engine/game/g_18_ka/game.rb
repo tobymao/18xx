@@ -469,6 +469,7 @@ module Engine
             desc: 'The owning corporation may place the Farm (F) tile on an equitorial hex as a bonus disconnected '\
                   'tile lay. In exchange for closing this private the corporation may token it for free',
             sym: 'C',
+            abilities: [],
           },
           {
             name: 'Bob\'s Better Bridges',
@@ -502,6 +503,7 @@ module Engine
             desc: 'The owning corporation may place the Capitol (C) tile on an equitorial hex as a bonus disconnected '\
                   'tile lay. In exchange for closing this private the corporation may token it for free',
             sym: 'G',
+            abilities: [],
           },
           {
             name: 'Mole People',
@@ -519,6 +521,7 @@ module Engine
             desc: 'The owning corporation may place the Space Elevator (SE) tile on an equitorial hex as a bonus '\
                   'disconnected tile lay. In exchange for closing this private the corporation may token it for free',
             sym: 'I',
+            abilities: [],
           },
           {
             name: 'Protoype Maglev',
@@ -555,6 +558,7 @@ module Engine
           'RdP' => '/icons/1846/sc_token.svg',
         }.freeze
         PORT_HEXES = %w[A9 B8 B10 D6 E5 E11 F4 F10 G7 H2 H4 H6 H10 I3 I9 J6 J8 K11].freeze
+        EQUATOR_HEXES = %w[C16 G16 I16].freeze
         CORPORATIONS = [
           # Tier 1
           {
@@ -891,6 +895,30 @@ module Engine
           raise GameError, "'wsrc' Should not be used"
         end
 
+        def capitol_tile
+          tile_by_id('CAP1-0')
+        end
+
+        def capitol_blocked?
+          company_by_id('G').owned_by_player?
+        end
+
+        def farm_tile
+          tile_by_id('FARM1-0')
+        end
+
+        def farm_blocked?
+          company_by_id('C').owned_by_player?
+        end
+
+        def elevator_tile
+          tile_by_id('SE1-0')
+        end
+
+        def elevator_blocked?
+          company_by_id('I').owned_by_player?
+        end
+
         def setup
           @straight_city ||= @tiles.find { |t| t.name == '57' }
           @sharp_city ||= @tiles.find { |t| t.name == '5' }
@@ -1017,6 +1045,37 @@ module Engine
           return super if (val % 1).zero?
 
           format('$%.1<val>c', val: val)
+        end
+
+        #
+        # Get all possible upgrades for a tile
+        # tile: The tile to be upgraded
+        # tile_manifest: true/false Is this being called from the tile manifest screen
+        #
+        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
+          upgrades = super
+          return upgrades unless tile_manifest
+
+          upgrades |= [farm_tile] if EQUATOR_HEXES.include?(tile.name) && !farm_blocked?
+          upgrades |= [elevator_tile] if EQUATOR_HEXES.include?(tile.name) && !elevator_blocked?
+          upgrades |= [capitol_tile] if EQUATOR_HEXES.include?(tile.name) && !capitol_blocked?
+
+          upgrades
+        end
+
+        #
+        # Get the currently possible upgrades for a tile
+        # from: Tile - Tile to upgrade from
+        # to: Tile - Tile to upgrade to
+        # special - ???
+        def upgrades_to?(from, to, _special = false, selected_company: nil)
+          if EQUATOR_HEXES.include?(from.name) && @phase.tiles.include?(:green)
+            return !farm_blocked? if to.name == farm_tile.name
+            return !elevator_blocked? if to.name == elevator_tile.name
+            return !capitol_blocked? if to.name == capitol_tile.name
+          end
+
+          super
         end
       end
     end
