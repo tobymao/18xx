@@ -500,7 +500,7 @@ module Engine
             abilities: [
               {
                 type: 'tile_lay',
-                hexes: %w[B6 B10 B12 C9 D8 D10 D26 E19 E25 F8 F10 F16 F22 F24],
+                hexes: COAL_HEXES,
                 tiles: %w[7coal 8coal 9coal],
                 free: false,
                 when: 'track',
@@ -533,7 +533,7 @@ module Engine
               },
               {
                 type: 'assign_hexes',
-                hexes: %w[C10 C17 D14 E15 E17 F20 G17],
+                hexes: BRIDGE_CITY_HEXES,
                 count: 1,
                 when: 'owning_corp_or_turn',
                 owner_type: 'corporation',
@@ -556,7 +556,7 @@ module Engine
             abilities: [
               {
                 type: 'tile_lay',
-                hexes: %w[B12 G15 H4 I17 I21 I23 J14],
+                hexes: OIL_HEXES,
                 tiles: %w[7oil 8oil 9oil],
                 free: false,
                 when: 'track',
@@ -584,7 +584,7 @@ module Engine
             abilities: [
               {
                 type: 'tile_lay',
-                hexes: %w[B10 C7 C19 D16 E5 E9 G21 H6],
+                hexes: IRON_HEXES,
                 tiles: %w[7iron10 8iron10 9iron10],
                 free: false,
                 when: 'track',
@@ -630,7 +630,7 @@ module Engine
             abilities: [
               {
                 type: 'tile_lay',
-                hexes: %w[B12 G15 H4 I17 I21 I23 J14],
+                hexes: OIL_HEXES,
                 tiles: %w[7oil 8oil 9oil],
                 free: false,
                 when: 'track',
@@ -667,7 +667,7 @@ module Engine
             abilities: [
               {
                 type: 'tile_lay',
-                hexes: %w[B6 B10 B12 C9 D8 D10 D26 E19 E25 F8 F10 F16 F22 F24],
+                hexes: COAL_HEXES,
                 tiles: %w[7coal 8coal 9coal],
                 free: false,
                 when: 'track',
@@ -699,7 +699,7 @@ module Engine
               },
               {
                 type: 'assign_hexes',
-                hexes: %w[C10 C17 D14 E15 E17 F20 G17],
+                hexes: BRIDGE_CITY_HEXES,
                 count: 2,
                 when: 'owning_corp_or_turn',
                 owner_type: 'corporation',
@@ -738,7 +738,7 @@ module Engine
             abilities: [
               {
                 type: 'tile_lay',
-                hexes: %w[B10 C7 C19 D16 E5 E9 G21 H6],
+                hexes: IRON_HEXES,
                 tiles: %w[7iron10 8iron10 9iron10],
                 free: false,
                 when: 'track',
@@ -765,7 +765,7 @@ module Engine
             abilities: [
               {
                 type: 'tile_lay',
-                hexes: %w[B6 B10 B12 C9 D8 D10 D26 E19 E25 F8 F10 F16 F22 F24],
+                hexes: COAL_HEXES,
                 tiles: %w[7coal 8coal 9coal],
                 free: false,
                 when: 'track',
@@ -1051,6 +1051,10 @@ module Engine
 
         LAYOUT = :pointy
 
+        OIL_HEXES = %w[B12 G15 H4 I17 I21 I23 J14].freeze
+        IRON_HEXES = %w[B10 C7 C19 D16 E5 E9 G21 H6].freeze
+        COAL_HEXES = %w[B6 B10 B12 C9 D8 D10 D26 E19 E25 F8 F10 F16 F22 F24].freeze
+        BRIDGE_CITY_HEXES = %w[C10 C17 D14 E15 E17 F20 G17].freeze
         ASSIGNMENT_TOKENS = {
           'bridge' => '/icons/1817/bridge_token.svg',
         }.freeze
@@ -1219,7 +1223,7 @@ module Engine
           revenue += 10 * route.all_hexes.count { |hex| hex.tile.id.include?('coal') }
           revenue += 10 * route.all_hexes.count { |hex| hex.tile.id.include?('iron10') }
           revenue += 20 * route.all_hexes.count { |hex| hex.tile.id.include?('iron20') }
-          revenue += (increased_oil? ? 20 : 10) * route.all_hexes.count { |hex| hex.tile.id.include?('oil') }
+          revenue + (increased_oil? ? 20 : 10) * route.all_hexes.count { |hex| hex.tile.id.include?('oil') }
         end
 
         def increased_oil?
