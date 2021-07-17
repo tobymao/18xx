@@ -445,19 +445,19 @@ module Engine
           gray: {
             %w[
             I17
-            ] => 'junction;path=a:1,b:_0,terminal:1;path=a:2,b:_0,terminal:1',
+            ] => 'offboard=revenue:0;path=a:1,b:_0,terminal:1;path=a:2,b:_0,terminal:1',
             %w[
             A19
-            ] => 'junction;path=a:5,b:_0,terminal:1',
+            ] => 'offboard=revenue:0;path=a:5,b:_0,terminal:1',
             %w[
             B4
             ] => 'path=a:0,b:4,track:dual',
             %w[
             C3
-            ] => 'path=a:0,b:3,track:dual;junction;path=a:5,b:_0,terminal:1',
+            ] => 'path=a:0,b:3,track:dual;offboard=revenue:0;path=a:5,b:_0,terminal:1',
             %w[
             D2
-            ] => 'path=a:0,b:3,track:dual;junction;path=a:4,b:_0,terminal:1',
+            ] => 'path=a:0,b:3,track:dual;offboard=revenue:0;path=a:4,b:_0,terminal:1',
             %w[
             E1
             ] => 'path=a:3,b:4,track:dual',
