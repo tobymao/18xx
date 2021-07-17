@@ -521,8 +521,8 @@ module Engine
             revenue: 0,
             desc: 'Comes with one $10 bridge token that may be placed by the owning '\
                   'corp in a city with $10 water cost, max one token '\
-                  'per city, regardless of connectivity..  Allows owning corp to '\
-                  'skip $10 river fee when placing yellow tiles.',
+                  'per city, regardless of connectivity.  Allows owning corp to '\
+                  'skip $10 river fee when placing track.',
             sym: 'P2',
             abilities: [
               {
@@ -688,7 +688,7 @@ module Engine
             desc: 'Comes with two $10 bridge tokens that may be placed by the owning '\
                   'corp in a city with $10 water cost, max one token '\
                   'per city, regardless of connectivity..  Allows owning corp to '\
-                  'skip $10 river fee when placing yellow tiles.',
+                  'skip $10 river fee when placing track.',
             sym: 'P22',
             abilities: [
               {
