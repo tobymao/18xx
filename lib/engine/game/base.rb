@@ -18,6 +18,7 @@ require_relative '../corporation'
 require_relative '../depot'
 require_relative '../game_error'
 require_relative '../graph'
+require_relative '../issuer'
 require_relative '../hex'
 require_relative '../minor'
 require_relative '../phase'
@@ -79,7 +80,7 @@ module Engine
       include Game::Meta
 
       attr_reader :raw_actions, :actions, :bank, :cert_limit, :cities, :companies, :corporations,
-                  :depot, :finished, :graph, :hexes, :id, :loading, :loans, :log, :minors,
+                  :depot, :finished, :graph, :hexes, :id, :issuers, :loading, :loans, :log, :minors,
                   :phase, :players, :operating_rounds, :round, :share_pool, :stock_market, :tile_groups,
                   :tiles, :turn, :total_loans, :undo_possible, :redo_possible, :round_history, :all_tiles,
                   :optional_rules, :exception, :last_processed_action, :broken_action,
@@ -194,6 +195,8 @@ module Engine
       COMPANIES = [].freeze
 
       CORPORATIONS = [].freeze
+
+      ISSUERS = [].freeze
 
       MINORS = [].freeze
 
@@ -310,6 +313,8 @@ module Engine
         %i[cities city],
         %i[minors minor],
         %i[loans loan],
+        %i[issuers issuer],
+        %i[bonds bond],
       ].freeze
 
       # https://en.wikipedia.org/wiki/Linear_congruential_generator#Parameters_in_common_use
@@ -484,6 +489,7 @@ module Engine
         @total_loans = @loans.size
         @corporations = init_corporations(@stock_market)
         @bank = init_bank
+        @issuers = init_issuers
         @tiles = init_tiles
         @all_tiles = init_tiles
         optional_tiles
@@ -747,6 +753,10 @@ module Engine
         ipoed.sort + others
       end
 
+      def all_issuers
+        @issuers.reject(&:closed?)
+      end
+
       def operating_order
         @minors.select(&:floated?) + @corporations.select(&:floated?).sort
       end
@@ -797,6 +807,10 @@ module Engine
 
       def shares
         @corporations.flat_map(&:shares)
+      end
+
+      def bonds
+        @issuers.flat_map(&:bonds)
       end
 
       def share_prices
@@ -872,6 +886,11 @@ module Engine
             value += value_for_dumpable(player, corporation)
           end
         end
+        value += player.bonds_by_issuer.sum do |issuer, bonds|
+          next 0 if bonds.empty?
+
+          value_for_sellable_bonds(player, issuer)
+        end
         value
       end
 
@@ -895,6 +914,11 @@ module Engine
       def value_for_sellable(player, corporation)
         max_bundle = sellable_bundles(player, corporation).max_by(&:price)
         max_bundle&.price || 0
+      end
+
+      def value_for_sellable_bonds(player, issuer)
+        max_bundle = sellable_bond_bundles(player, issuer).max_by(&:value)
+        max_bundle&.value || 0
       end
 
       def value_for_dumpable(player, corporation)
@@ -953,10 +977,27 @@ module Engine
         shares.take(num_shares)
       end
 
+      def sellable_bond_bundles(player, issuer)
+        bundles = bundles_for_issuer(player, issuer)
+        bundles.select { |bundle| @round.active_step.can_sell_bonds?(player, bundle) }
+      end
+
+      def bundles_for_issuer(bonds_owner, issuer)
+        bonds = bonds_owner.bonds_of(issuer)
+
+        bundles = bonds.flat_map.with_index do |_bond, index|
+          bundle_bonds = bonds.take(index + 1)
+          [Engine::BondBundle.new(bundle_bonds)]
+        end
+
+        bundles.sort_by(&:value)
+      end
+
       def num_certs(entity)
         certs = entity.shares.sum do |s|
           s.corporation.counts_for_limit && s.counts_for_limit ? s.cert_size : 0
         end
+        certs += entity.bonds.size
         certs + (self.class::CERT_LIMIT_INCLUDES_PRIVATES ? entity.companies.size : 0)
       end
 
@@ -1226,6 +1267,24 @@ module Engine
           @bank.spend(revenue, owner)
           @log << "#{owner.name} collects #{format_currency(revenue)} from #{company.name}"
         end
+      end
+
+      def payout_bonds
+        all_issuers.each do |issuer|
+          revenue_per_bond = issuer.revenue
+          @players.each do |player|
+            bonds = player.bonds_of(issuer)
+            revenue = revenue_per_bond * bonds.size
+            next if revenue.zero?
+
+            @bank.spend(revenue, player)
+            @log << "#{player.name} collects #{format_currency(revenue)} for owning #{bonds_text(bonds)}"
+          end
+        end
+      end
+
+      def bonds_text(bonds)
+        "#{bonds.count == 1 ? 'a bond' : "#{bonds.count} bonds"} of #{bonds.first.issuer.name}"
       end
 
       def init_round_finished; end
@@ -1917,6 +1976,14 @@ module Engine
         self.class::CORPORATIONS
       end
 
+      def init_issuers
+        game_issuers.map { |issuer| Issuer.new(**issuer) }
+      end
+
+      def game_issuers
+        self.class::ISSUERS
+      end
+
       def init_hexes(companies, corporations)
         blockers = {}
         companies.each do |company|
@@ -2403,6 +2470,10 @@ module Engine
         true
       end
 
+      def issuer_available?(_entity)
+        true
+      end
+
       def or_description_short(turn, round)
         "#{turn}.#{round}"
       end
@@ -2415,6 +2486,8 @@ module Engine
       def corporation_size_name(_entity); end
 
       def company_status_str(_company); end
+
+      def issuer_status_str(_issuer); end
 
       def status_str(_corporation); end
 

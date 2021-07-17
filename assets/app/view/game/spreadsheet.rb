@@ -39,6 +39,7 @@ module View
           h(:table, table_props, [
             h(:thead, render_titles),
             h(:tbody, render_corporations),
+            @game.all_issuers.any? ? h(:tbody, render_issuers) : nil,
             h(:tfoot, [
               h(:tr, { style: { height: '1rem' } }, [
                 h(:td, { attrs: { colspan: @game.players.size + 8 } }, ''),
@@ -47,7 +48,7 @@ module View
                 h(:td, { attrs: { colspan: @halfpaid ? 6 : 3 } }, "[withheld]#{' ¦half-paid¦' if @halfpaid}"),
               ]),
             ]),
-          ]),
+          ].compact),
         ])
       end
 
@@ -60,9 +61,10 @@ module View
               render_player_value,
               render_player_liquidity,
               render_player_shares,
+              @game.all_issuers.any? ? render_player_bonds : nil,
               render_player_companies,
               render_player_certs,
-            ]),
+            ].compact),
             h(:thead, [
               h(:th, { style: { minWidth: '5rem' } }, ''),
               *@game.players.map do |p|
@@ -486,6 +488,63 @@ module View
         ])
       end
 
+      def render_issuers
+        @game.all_issuers.map do |issuer|
+          render_issuer(issuer)
+        end
+      end
+
+      def render_issuer(issuer)
+        border_style = "1px solid #{color_for(:font2)}"
+
+        name_props =
+          {
+            style: {
+              backgroundColor: 'orange',
+              color: 'black',
+            },
+          }
+
+        tr_props = tr_default_props
+
+        n_market_bonds = issuer.bonds.count(&:owned_by_issuer?)
+        h(:tr, tr_props, [
+          h(:th, name_props, issuer.name),
+          *@game.players.map do |p|
+            props = { style: {} }
+            if @game.round.active_step&.did_sell?(issuer, p)
+              props[:style][:backgroundColor] = '#9e0000'
+              props[:style][:color] = 'white'
+            end
+            n_bonds = num_bonds_of(p, issuer)
+            props[:style][:color] = 'transparent' if n_bonds.zero?
+            h('td.padded_number', props, n_bonds.to_s)
+          end,
+          h('td.padded_number', { style: { borderLeft: border_style } }, ''),
+          h('td.padded_number', {
+              style: {
+                borderRight: border_style,
+                color: n_market_bonds.zero? ? 'transparent' : 'inherit',
+              },
+            },
+            n_market_bonds),
+          h('td.padded_number', {}, ''),
+          h('td.padded_number', {
+              style: {
+                borderRight: border_style,
+                color: 'inherit',
+              },
+            },
+            @game.format_currency(issuer.value)),
+          h('td.padded_number', {}, ''),
+          h('td.padded_number', {}, ''),
+          h('td.padded_number', {}, ''),
+          h('td.padded_number', {}, ''),
+          h('td.padded_number', {}, ''),
+          h(:th, name_props, issuer.name),
+        ])
+      end
+
       def render_companies(entity)
         if entity.player?
           props = {
@@ -537,6 +596,15 @@ module View
         ])
       end
 
+      def render_player_bonds
+        h(:tr, tr_default_props, [
+          h('th.left', 'Bonds'),
+          *@game.players.map do |p|
+            h('td.padded_number', @game.all_issuers.sum { |i| num_bonds_of(p, i) })
+          end,
+        ])
+      end
+
       def render_player_certs
         cert_limit = @game.cert_limit
         props = { style: { color: 'red' } }
@@ -580,6 +648,10 @@ module View
       end
 
       private
+
+      def num_bonds_of(entity, issuer)
+        entity.bonds_of(issuer).size
+      end
 
       def min_width(entity)
         PLAYER_COL_MAX_WIDTH if entity.companies.size > 1 || @game.format_currency(entity.value).size > 6

@@ -23,6 +23,7 @@ module Engine
         @current_operator = nil
         @home_token_timing = @game.class::HOME_TOKEN_TIMING
         @game.payout_companies
+        @game.payout_bonds
         @entities.each { |c| @game.place_home_token(c) } if @home_token_timing == :operating_round
         (@game.corporations + @game.minors + @game.companies).each(&:reset_ability_count_this_or!)
         after_setup

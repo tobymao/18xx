@@ -18,6 +18,7 @@ module View
         include Actionable
         needs :selected_corporation, default: nil, store: true
         needs :selected_company, default: nil, store: true
+        needs :selected_issuer, default: nil, store: true
         needs :last_player, default: nil, store: true
         needs :show_other_players, default: nil, store: true
 
@@ -36,6 +37,7 @@ module View
           @current_entity = @step.current_entity
           if @last_player != @current_entity && !@auctioning_corporation
             store(:selected_corporation, nil, skip: true)
+            store(:selected_issuer, nil, skip: true)
             store(:last_player, @current_entity, skip: true)
           end
 
@@ -62,6 +64,7 @@ module View
           children << h(SpecialBuy) if @current_actions.include?('special_buy')
           children.concat(render_failed_merge) if @current_actions.include?('failed_merge')
           children.concat(render_corporations)
+          children.concat(render_issuers) unless @game.all_issuers.none?
           children.concat(render_mergeable_entities) if @current_actions.include?('merge')
           children.concat(render_player_companies) if @current_actions.include?('sell_company')
           children.concat(render_bank_companies)
@@ -263,6 +266,33 @@ module View
           end
 
           children
+        end
+
+        def render_issuers
+          props = {
+            style: {
+              display: 'inline-block',
+              verticalAlign: 'top',
+            },
+          }
+
+          issuers = @game.issuers
+          issuers.map do |issuer|
+            children = []
+            children << h(Issuer, issuer: issuer) # , interactive: input || choose || merging)
+            input = render_issuer_input(issuer) if @selected_issuer == issuer && @game.issuer_available?(issuer)
+            children << input if input && @selected_issuer == issuer
+
+            h(:div, props, children)
+          end.compact
+        end
+
+        def render_issuer_input(issuer)
+          inputs = [
+            h(BuySellBonds, issuer: issuer),
+          ]
+          inputs = inputs.compact
+          h('div.margined_bottom', { style: { width: '20rem' } }, inputs) if inputs.any?
         end
 
         def render_player_companies

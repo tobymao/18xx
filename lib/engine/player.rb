@@ -7,6 +7,7 @@ require_relative 'spender'
 
 module Engine
   class Player
+    include BondOwner
     include Entity
     include Passer
     include ShareHolder

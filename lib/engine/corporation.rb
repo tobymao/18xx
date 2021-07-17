@@ -2,6 +2,7 @@
 
 require_relative 'abilities'
 require_relative 'assignable'
+require_relative 'bond_owner'
 require_relative 'entity'
 require_relative 'operator'
 require_relative 'ownable'
@@ -15,6 +16,7 @@ module Engine
   class Corporation
     include Abilities
     include Assignable
+    include BondOwner
     include Entity
     include Operator
     include Ownable

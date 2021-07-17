@@ -13,7 +13,7 @@ module Engine
       include ShareBuying
       include Programmer
 
-      PURCHASE_ACTIONS = [Action::BuyCompany, Action::BuyShares, Action::Par].freeze
+      PURCHASE_ACTIONS = [Action::BuyCompany, Action::BuyShares, Action::Par, Action::BuyBonds].freeze
 
       def actions(entity)
         return [] unless entity == current_entity
@@ -21,9 +21,11 @@ module Engine
 
         actions = []
         actions << 'buy_shares' if can_buy_any?(entity)
+        actions << 'buy_bonds' if can_buy_any_bonds?(entity)
         actions << 'par' if can_ipo_any?(entity)
         actions << 'buy_company' unless purchasable_companies(entity).empty?
         actions << 'sell_shares' if can_sell_any?(entity)
+        actions << 'sell_bonds' if can_sell_any_bonds?(entity)
 
         actions << 'pass' unless actions.empty?
         actions
@@ -95,7 +97,7 @@ module Engine
 
         corporation = bundle.corporation
         entity.cash >= bundle.price &&
-          !@round.players_sold[entity][corporation] &&
+          !did_sell?(corporation, entity) &&
           (can_buy_multiple?(entity, corporation, bundle.owner) || !bought?) &&
           can_gain?(entity, bundle)
       end
@@ -121,6 +123,12 @@ module Engine
           can_sell_order? &&
           @game.share_pool.fit_in_bank?(bundle) &&
           bundle.can_dump?(entity)
+      end
+
+      def can_sell_bonds?(entity, bundle)
+        return unless bundle
+
+        entity == bundle.owner && can_sell_order?
       end
 
       def can_sell_order?
@@ -158,6 +166,49 @@ module Engine
       def process_sell_shares(action)
         sell_shares(action.entity, action.bundle, swap: action.swap)
         track_action(action, action.bundle.corporation)
+      end
+
+      def process_buy_bonds(action)
+        player = action.entity
+        bundle = action.bundle
+        issuer = bundle.issuer
+        price = bundle.value
+        bonds = bundle.bonds
+
+        @log << "#{player.name} buys #{@game.bonds_text(bonds)} from market for #{price}"
+        player.spend(price, @game.bank)
+        bonds.each do |bond|
+          move_bond(bond, player)
+        end
+
+        track_action(action, issuer)
+      end
+
+      def process_sell_bonds(action)
+        player = action.entity
+        bundle = action.bundle
+        issuer = bundle.issuer
+        price = bundle.value
+        bonds = bundle.bonds
+
+        raise GameError, "Cannot sell bonds of #{issuer.name}" unless can_sell_bonds?(player, bundle)
+
+        @round.players_sold[player][issuer] = :now
+
+        @log << "#{player.name} sells #{@game.bonds_text(bonds)} to market for #{price}"
+        @game.bank.spend(price, player)
+        bonds.each do |bond|
+          move_bond(bond, issuer)
+        end
+
+        track_action(action, issuer)
+      end
+
+      def move_bond(bond, to_entity)
+        issuer = bond.issuer
+        bond.owner.bonds_by_issuer[issuer].delete(bond)
+        to_entity.bonds_by_issuer[issuer] << bond
+        bond.owner = to_entity
       end
 
       def process_par(action)
@@ -202,13 +253,20 @@ module Engine
         end
       end
 
+      def can_sell_any_bonds?(entity)
+        @game.all_issuers.any? do |issuer|
+          bundles = @game.bundles_for_issuer(entity, issuer)
+          bundles.any? { |bundle| can_sell_bonds?(entity, bundle) }
+        end
+      end
+
       def can_buy_shares?(entity, shares)
         return false if shares.empty?
 
         sample_share = shares.first
         corporation = sample_share.corporation
         owner = sample_share.owner
-        return false if @round.players_sold[entity][corporation] || (bought? && !can_buy_multiple?(entity, corporation, owner))
+        return false if did_sell?(corporation, entity) || (bought? && !can_buy_multiple?(entity, corporation, owner))
 
         min_share = nil
         shares.each do |share|
@@ -243,6 +301,30 @@ module Engine
       def can_buy_any?(entity)
         (can_buy_any_from_market?(entity) ||
         can_buy_any_from_ipo?(entity))
+      end
+
+      def can_buy_bonds?(entity, bundle)
+        return if !bundle || !entity
+
+        issuer = bundle.issuer
+        entity.cash >= bundle.value &&
+          !did_sell?(issuer, entity) &&
+          !bought? && bundle.count == 1 &&
+          can_gain_bonds?(entity, bundle)
+      end
+
+      def can_gain_bonds?(entity, bundle)
+        return if !bundle || !entity
+
+        @game.num_certs(entity) + bundle.count <= @game.cert_limit
+      end
+
+      def can_buy_any_bonds?(entity)
+        @game.all_issuers.each do |issuer|
+          return true if @game.bundles_for_issuer(issuer, issuer).any? { |bundle| can_buy_bonds?(entity, bundle) }
+        end
+
+        false
       end
 
       def can_ipo_any?(entity)
@@ -360,6 +442,8 @@ module Engine
           end
         when Action::SellShares
           'Shares were sold'
+        when Action::BuyBonds, Action::SellBonds
+          nil
         else
           "Unknown action #{action.type} disabling for safety"
         end
