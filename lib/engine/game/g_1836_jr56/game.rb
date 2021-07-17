@@ -489,21 +489,21 @@ module Engine
         end
 
         def setup
-          @straight_city ||= @tiles.find { |t| t.name == '57' }
-          @sharp_city ||= @tiles.find { |t| t.name == '5' }
-          @gentle_city ||= @tiles.find { |t| t.name == '6' }
+          @straight_city ||= @all_tiles.find { |t| t.name == '57' }
+          @sharp_city ||= @all_tiles.find { |t| t.name == '5' }
+          @gentle_city ||= @all_tiles.find { |t| t.name == '6' }
 
-          @straight_track ||= @tiles.find { |t| t.name == '9' }
-          @sharp_track ||= @tiles.find { |t| t.name == '7' }
-          @gentle_track ||= @tiles.find { |t| t.name == '8' }
+          @straight_track ||= @all_tiles.find { |t| t.name == '9' }
+          @sharp_track ||= @all_tiles.find { |t| t.name == '7' }
+          @gentle_track ||= @all_tiles.find { |t| t.name == '8' }
 
-          @x_city ||= @tiles.find { |t| t.name == '14' }
-          @k_city ||= @tiles.find { |t| t.name == '15' }
+          @x_city ||= @all_tiles.find { |t| t.name == '14' }
+          @k_city ||= @all_tiles.find { |t| t.name == '15' }
 
-          @brown_london ||= @tiles.find { |t| t.name == '126' }
-          @brown_barrie ||= @tiles.find { |t| t.name == '127' }
+          @brown_london ||= @all_tiles.find { |t| t.name == '126' }
+          @brown_barrie ||= @all_tiles.find { |t| t.name == '127' }
 
-          @gray_hamilton ||= @tiles.find { |t| t.name == '123' }
+          @gray_hamilton ||= @all_tiles.find { |t| t.name == '123' }
 
           @post_nationalization = false
           @nationalization_train_discard_trigger = false
