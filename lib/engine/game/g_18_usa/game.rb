@@ -67,7 +67,7 @@ module Engine
           {
             'count' => 'unlimited',
             'color' => 'yellow',
-            'code' => 'offboard=revenue:10,hide:1;path=a:0,b:1;path=a:_0,b:_0;label=⚒️',
+            'code' => 'offboard=revenue:10,hide:1;path=a:0,b:1;label=⚒️',
           },
           '8iron10' =>
           {
@@ -1053,7 +1053,6 @@ module Engine
 
         ASSIGNMENT_TOKENS = {
           'bridge' => '/icons/1817/bridge_token.svg',
-          'oil' => '/icons/1817/mine_token.svg',
         }.freeze
 
         SEED_MONEY = 200
@@ -1201,7 +1200,7 @@ module Engine
             G1817::Step::CashCrisis,
             G18USA::Step::Loan,
             G18USA::Step::SpecialTrack,
-            G1817::Step::Assign,
+            G18USA::Step::Assign,
             G18USA::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
