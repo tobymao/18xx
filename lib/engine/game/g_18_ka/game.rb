@@ -446,6 +446,7 @@ module Engine
                   { name: '+4', distance: 0, price: 100, available_on: '6', num: 2 },
                   { name: '+5', distance: 0, price: 125, available_on: '8', num: 1 }].freeze
 
+        EQUATOR_HEXES = %w[C16 G16 I16].freeze
         COMPANIES = [
           {
             name: 'Platinum Credit Card',
@@ -469,7 +470,27 @@ module Engine
             desc: 'The owning corporation may place the Farm (F) tile on an equitorial hex as a bonus disconnected '\
                   'tile lay. In exchange for closing this private the corporation may token it for free',
             sym: 'C',
-            abilities: [],
+            abilities: [
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                free: false,
+                hexes: EQUATOR_HEXES,
+                tiles: %w[FARM1],
+                when: 'track',
+                count: 1,
+              },
+              {
+                type: 'token',
+                description: 'Token in the Farm tile for free',
+                hexes: EQUATOR_HEXES,
+                count: 1,
+                price: 0,
+                teleport_price: 0,
+                extra_action: true,
+                from_owner: true,
+              },
+            ],
           },
           {
             name: 'Bob\'s Better Bridges',
@@ -503,7 +524,27 @@ module Engine
             desc: 'The owning corporation may place the Capitol (C) tile on an equitorial hex as a bonus disconnected '\
                   'tile lay. In exchange for closing this private the corporation may token it for free',
             sym: 'G',
-            abilities: [],
+            abilities: [
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                free: false,
+                hexes: EQUATOR_HEXES,
+                tiles: %w[CAP1],
+                when: 'track',
+                count: 1,
+              },
+              {
+                type: 'token',
+                description: 'Token in the Captiol tile for free',
+                hexes: EQUATOR_HEXES,
+                count: 1,
+                price: 0,
+                teleport_price: 0,
+                extra_action: true,
+                from_owner: true,
+              },
+            ],
           },
           {
             name: 'Mole People',
@@ -521,7 +562,27 @@ module Engine
             desc: 'The owning corporation may place the Space Elevator (SE) tile on an equitorial hex as a bonus '\
                   'disconnected tile lay. In exchange for closing this private the corporation may token it for free',
             sym: 'I',
-            abilities: [],
+            abilities: [
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                free: false,
+                hexes: EQUATOR_HEXES,
+                tiles: %w[SE1],
+                when: 'track',
+                count: 1,
+              },
+              {
+                type: 'token',
+                description: 'Token in the Space Elevator tile for free',
+                hexes: EQUATOR_HEXES,
+                count: 1,
+                price: 0,
+                teleport_price: 0,
+                extra_action: true,
+                from_owner: true,
+              },
+            ],
           },
           {
             name: 'Protoype Maglev',
@@ -558,7 +619,6 @@ module Engine
           'RdP' => '/icons/1846/sc_token.svg',
         }.freeze
         PORT_HEXES = %w[A9 B8 B10 D6 E5 E11 F4 F10 G7 H2 H4 H6 H10 I3 I9 J6 J8 K11].freeze
-        EQUATOR_HEXES = %w[C16 G16 I16].freeze
         CORPORATIONS = [
           # Tier 1
           {
@@ -1000,7 +1060,7 @@ module Engine
             G1856::Step::Assign,
             G1856::Step::Loan,
             G1856::Step::SpecialTrack,
-            G1856::Step::SpecialToken,
+            G18KA::Step::SpecialToken,
             Engine::Step::BuyCompany,
             Engine::Step::HomeToken,
 
