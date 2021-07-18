@@ -490,6 +490,8 @@ module Engine
             simple_logo: '18_rhl/ADR.alt',
             color: :green,
             coordinates: 'K2',
+            always_market_price: true,
+            max_ownership_percent: 100,
           },
           {
             name: 'Bergisch-Märkische Eisenbahngesell.',
@@ -501,6 +503,8 @@ module Engine
             color: :brown,
             coordinates: 'F13',
             city: 1,
+            always_market_price: true,
+            max_ownership_percent: 100,
           },
           {
             name: 'Cöln-Mindener Eisenbahngesellschaft',
@@ -512,6 +516,8 @@ module Engine
             simple_logo: '18_rhl/CME.alt',
             coordinates: 'I10',
             city: 2,
+            always_market_price: true,
+            max_ownership_percent: 100,
           },
           {
             name: 'Düsseldorf Elberfelder Eisenbahn',
@@ -524,13 +530,16 @@ module Engine
             text_color: :black,
             coordinates: 'F9',
             city: 1,
+            always_market_price: true,
+            max_ownership_percent: 100,
           },
           {
             name: 'Krefeld-Kempener Eisenbahn',
             sym: 'KKK',
             float_percent: 60,
             tokens: [0, 60],
-            shares: [20, 20, 20, 10, 10, 10, 10],
+            # The 2nd share decided share percentage for shares
+            shares: [20, 10, 20, 20, 10, 10, 10],
             logo: '18_rhl/KKK',
             simple_logo: '18_rhl/KKK.alt',
             color: :orange,
@@ -543,6 +552,8 @@ module Engine
                 desc_detail: 'The first two (non-president) shares sold from IPO are double (20%) certificates',
               },
             ],
+            always_market_price: true,
+            max_ownership_percent: 100,
           },
           {
             name: 'Gladbach-Venloer Eisenbahn',
@@ -554,6 +565,8 @@ module Engine
             color: :gray,
             coordinates: 'G6',
             city: 1,
+            always_market_price: true,
+            max_ownership_percent: 100,
           },
           {
             name: 'Cöln-Crefelder Eisenbahn',
@@ -571,6 +584,8 @@ module Engine
                 description: 'Two home stations (Köln & Krefeld)',
               },
             ],
+            always_market_price: true,
+            max_ownership_percent: 100,
           },
           {
             name: 'Rheinische Eisenbahngesellschaft',
@@ -592,6 +607,8 @@ module Engine
                              "to RhE's treasury as soon as there is a railway link between Aachen and Köln via Düren.",
               },
             ],
+            always_market_price: true,
+            max_ownership_percent: 100,
           },
         ].freeze
 
@@ -774,6 +791,25 @@ module Engine
           end
         end
 
+        def stock_round
+          @newly_floated = []
+          G18Rhl::Round::Stock.new(self, [
+            Step::DiscardTrain,
+            Step::BuySellParShares,
+          ])
+        end
+
+        def next_sr_player_order
+          # Order is:
+          # 1. Most money
+          # 2. LOLA
+          max_cash = players @players.max_by(&:cash).cash
+          players_with_max_cash = @players.count { |p| p.cash == max_cash }
+          return :after_last_to_act if players_with_max_cash > 1
+
+          :most_cash
+        end
+
         def kkk
           @kkk_corporation ||= corporation_by_id('KKK')
         end
@@ -787,6 +823,7 @@ module Engine
           kkk.shares[2].double_cert = true
 
           @aachen_connection = 0
+          @newly_floated = []
 
           @essen_tile ||= @tiles.find { |t| t.name == 'Essen' } if optional_promotion_tiles
           @moers_tile_gray ||= @tiles.find { |t| t.name == '950' } if optional_promotion_tiles
@@ -838,15 +875,28 @@ module Engine
           return unless company.id == 'RhE'
 
           @log << "Move 3 #{rhe.name} 10% shares to market"
-          rhe.shares[1..3].each do |s|
+          rhe.shares[0..2].each do |s|
             @share_pool.transfer_shares(s.to_bundle, @share_pool, price: 0, allow_president_change: false)
           end
         end
 
         def float_corporation(corporation)
+          if current_phase >= 5
+            # When floated in phase 5 or later, do a "normal" float (ie 100% cap, be fullcap)
+            # and move unsold shares to market.
+            super
+
+            @log << 'Move remaining IPO shares to market'
+            corporation.shares.each do |s|
+              @share_pool.transfer_shares(s.to_bundle, @share_pool, price: 0, allow_president_change: false)
+            end
+            return
+          end
+
           @log << "#{corporation.name} floats"
 
-          # Corporation receives par price for all shares sold from IPO to players
+          # For floats before phase 5, corporation receives par price for all shares sold from IPO to players.
+          # The remaining shares end up in Treasury, and corporation becomes incremental.
           paid_to_treasury = 5
 
           if corporation == rhe
@@ -859,6 +909,20 @@ module Engine
           end
 
           corporation.capitalization = :incremental
+
+          # Corporations floated before phase 5 will increase one step at end of current SR
+          @newly_floated << corporation
+        end
+
+        def handle_share_price_increase_for_newly_floated_corporations
+          @newly_floated.each do |corp|
+            prev = corp.share_price.price
+
+            @log << "The share price of the newly floated #{corp.name} increases."
+            @game.stock_market.move_up(corp)
+            @game.log_share_price(corp, prev)
+          end
+          @newly_floated = []
         end
 
         def ipo_name(corporation)
