@@ -221,7 +221,7 @@ module Engine
           {
             'count' => 3,
             'color' => 'green',
-            'code' => 'city=revenue:30,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
+            'code' => 'city=revenue:40,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
                       'path=a:4,b:_0;label=Y',
           },
           '935' =>
@@ -803,7 +803,7 @@ module Engine
           # Order is:
           # 1. Most money
           # 2. LOLA
-          max_cash = players @players.max_by(&:cash).cash
+          max_cash = @players.max_by(&:cash).cash
           players_with_max_cash = @players.count { |p| p.cash == max_cash }
           return :after_last_to_act if players_with_max_cash > 1
 
@@ -842,10 +842,8 @@ module Engine
             tokens: [0, 0, 0, 0],
           )
           @k.owner = @bank
-          c14 = hex_by_id('C14').tile
-          c14.cities[1].place_token(@k, @k.next_token, free: true)
-          d15 = hex_by_id('D15').tile
-          d15.cities[0].place_token(@k, @k.next_token, free: true)
+          place_free_token(@k, 'C14', 1)
+          place_free_token(@k, 'D15', 0)
           extra_coal_mine = hex_by_id(variable_coal_mine)
           extra_coal_mine.tile.icons << Part::Icon.new('../logos/18_rhl/K')
           @log << "Variable coal mine added to #{extra_coal_mine.name}"
@@ -858,10 +856,9 @@ module Engine
             tokens: [0, 0, 0, 0],
           )
           @s.owner = @bank
-          c14.cities[0].place_token(@s, @s.next_token, free: true)
-          d15.cities[1].place_token(@s, @s.next_token, free: true)
-          k14 = hex_by_id('K14').tile
-          k14.cities[0].place_token(@s, @s.next_token, free: true)
+          place_free_token(@s, 'C14', 0)
+          place_free_token(@s, 'D15', 1)
+          place_free_token(@s, 'K14', 0)
           extra_steel_mill = hex_by_id(variable_steel_mill).tile
           extra_steel_mill.icons << Part::Icon.new('../logos/18_rhl/S')
           @log << "Variable steel mill added to #{extra_steel_mill.name}"
@@ -875,7 +872,7 @@ module Engine
           return unless company.id == 'RhE'
 
           @log << "Move 3 #{rhe.name} 10% shares to market"
-          rhe.shares[0..2].each do |s|
+          rhe.shares[1..3].each do |s|
             @share_pool.transfer_shares(s.to_bundle, @share_pool, price: 0, allow_president_change: false)
           end
         end
@@ -919,8 +916,8 @@ module Engine
             prev = corp.share_price.price
 
             @log << "The share price of the newly floated #{corp.name} increases."
-            @game.stock_market.move_up(corp)
-            @game.log_share_price(corp, prev)
+            stock_market.move_up(corp)
+            log_share_price(corp, prev)
           end
           @newly_floated = []
         end
@@ -975,6 +972,12 @@ module Engine
           upgrades |= [@du_tile_gray] if @du_tile_gray && tile.name == '929'
 
           upgrades
+        end
+
+        def check_distance(route, visits)
+          raise GameError, 'Route cannot begin/end in a town' if visits.first.town? || visits.last.town?
+
+          super
         end
 
         private
@@ -1098,6 +1101,12 @@ module Engine
 
         def brown_phase?
           @phase.name.to_i >= 5
+        end
+
+        def place_free_token(corporation, hex_name, city_number, silent: true)
+          hex = hex_by_id(hex_name).tile
+          hex.cities[city_number].place_token(corporation, corporation.next_token, free: true)
+          @log << "#{corporation.name} places a token on #{hex_name}" unless silent
         end
       end
     end
