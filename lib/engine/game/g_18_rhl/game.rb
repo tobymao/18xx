@@ -794,8 +794,8 @@ module Engine
         def stock_round
           @newly_floated = []
           G18Rhl::Round::Stock.new(self, [
-            Step::DiscardTrain,
-            Step::BuySellParShares,
+            Engine::Step::DiscardTrain,
+            G18Rhl::Step::BuySellParShares,
           ])
         end
 
@@ -819,8 +819,8 @@ module Engine
         end
 
         def setup
-          kkk.shares[1].double_cert = true
           kkk.shares[2].double_cert = true
+          kkk.shares[3].double_cert = true
 
           @aachen_connection = 0
           @newly_floated = []
@@ -881,7 +881,7 @@ module Engine
         end
 
         def float_corporation(corporation)
-          if current_phase >= 5
+          if brown_phase?
             # When floated in phase 5 or later, do a "normal" float (ie 100% cap, be fullcap)
             # and move unsold shares to market.
             super
@@ -897,7 +897,7 @@ module Engine
 
           # For floats before phase 5, corporation receives par price for all shares sold from IPO to players.
           # The remaining shares end up in Treasury, and corporation becomes incremental.
-          paid_to_treasury = 5
+          paid_to_treasury = corporation == kkk ? 6 : 5
 
           if corporation == rhe
             @aachen_connection = rhe.par_price.price * 3
@@ -1094,6 +1094,10 @@ module Engine
           when 4, 7
             'D13'
           end
+        end
+
+        def brown_phase?
+          @phase.name.to_i >= 5
         end
       end
     end
