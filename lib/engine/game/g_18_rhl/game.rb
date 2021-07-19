@@ -461,7 +461,6 @@ module Engine
                        { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             num: 3,
             price: 500,
-            events: [{ 'type' => 'close_companies' }],
           },
           {
             name: '6',
@@ -469,6 +468,7 @@ module Engine
                        { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             num: 6,
             price: 600,
+            events: [{ 'type' => 'close_companies' }],
           },
           {
             name: '8',
