@@ -86,211 +86,211 @@ module Engine
           {
             'count' => 1,
             'color' => 'yellow',
-            'code' => 'town=revenue:10;town=revenue:10;path=a:1,b:_0,track:dual;path=a:_0,b:3,track:dual;path=a:0,b:_1,track:dual;path=a:_1,b:4,track:dual',
+            'code' => 'town=revenue:20;town=revenue:20;path=a:1,b:_0,track:narrow;path=a:_0,b:3,track:narrow;path=a:0,b:_1,track:narrow;path=a:_1,b:4,track:narrow',
           },
           '2s' =>
           {
             'count' => 1,
             'color' => 'yellow',
-            'code' => 'town=revenue:10;town=revenue:10;path=a:0,b:_0,track:dual;path=a:_0,b:3,track:dual;path=a:1,b:_1,track:dual;path=a:_1,b:2,track:dual',
+            'code' => 'town=revenue:20;town=revenue:20;path=a:0,b:_0,track:narrow;path=a:_0,b:3,track:narrow;path=a:1,b:_1,track:narrow;path=a:_1,b:2,track:narrow',
           },
           '3s' =>
           {
             'count' => 2,
             'color' => 'yellow',
-            'code' => 'town=revenue:10;path=a:0,b:_0,track:dual;path=a:_0,b:1,track:dual',
+            'code' => 'town=revenue:20;path=a:0,b:_0,track:narrow;path=a:_0,b:1,track:narrow',
           },
           '4s' =>
           {
             'count' => 3,
             'color' => 'yellow',
-            'code' => 'town=revenue:10;path=a:0,b:_0,track:dual;path=a:_0,b:3,track:dual',
+            'code' => 'town=revenue:20;path=a:0,b:_0,track:narrow;path=a:_0,b:3,track:narrow',
           },
           '5s' =>
           {
             'count' => 4,
             'color' => 'yellow',
-            'code' => 'city=revenue:20;path=a:0,b:_0,track:dual;path=a:1,b:_0,track:dual',
+            'code' => 'city=revenue:20;path=a:0,b:_0,track:narrow;path=a:1,b:_0,track:narrow',
           },
           '6s' =>
           {
             'count' => 4,
             'color' => 'yellow',
-            'code' => 'city=revenue:20;path=a:0,b:_0,track:dual;path=a:2,b:_0,track:dual',
+            'code' => 'city=revenue:20;path=a:0,b:_0,track:narrow;path=a:2,b:_0,track:narrow',
           },
           '7s' =>
           {
             'count' => 3,
             'color' => 'yellow',
-            'code' => 'path=a:0,b:1,track:dual',
+            'code' => 'path=a:0,b:1,track:narrow',
           },
           '8s' =>
           {
             'count' => 13,
             'color' => 'yellow',
-            'code' => 'path=a:0,b:2,track:dual',
+            'code' => 'path=a:0,b:2,track:narrow',
           },
           '9s' =>
           {
             'count' => 10,
             'color' => 'yellow',
-            'code' => 'path=a:0,b:3,track:dual',
+            'code' => 'path=a:0,b:3,track:narrow',
           },
           '55s' =>
           {
             'count' => 1,
             'color' => 'yellow',
-            'code' => 'town=revenue:10;town=revenue:10;path=a:0,b:_0,track:dual;path=a:_0,b:3,track:dual;path=a:1,b:_1,track:dual;path=a:_1,b:4,track:dual',
+            'code' => 'town=revenue:20;town=revenue:20;path=a:0,b:_0,track:narrow;path=a:_0,b:3,track:narrow;path=a:1,b:_1,track:narrow;path=a:_1,b:4,track:narrow',
           },
           '56s' =>
           {
             'count' => 1,
             'color' => 'yellow',
-            'code' => 'town=revenue:10;town=revenue:10;path=a:0,b:_0,track:dual;path=a:_0,b:2,track:dual;path=a:1,b:_1,track:dual;path=a:_1,b:3,track:dual',
+            'code' => 'town=revenue:20;town=revenue:20;path=a:0,b:_0,track:narrow;path=a:_0,b:2,track:narrow;path=a:1,b:_1,track:narrow;path=a:_1,b:3,track:narrow',
           },
           '57s' =>
           {
             'count' => 4,
             'color' => 'yellow',
-            'code' => 'city=revenue:20;path=a:0,b:_0,track:dual;path=a:_0,b:3,track:dual',
+            'code' => 'city=revenue:20;path=a:0,b:_0,track:narrow;path=a:_0,b:3,track:narrow',
           },
           '58s' =>
           {
             'count' => 2,
             'color' => 'yellow',
-            'code' => 'town=revenue:10;path=a:0,b:_0,track:dual;path=a:_0,b:2,track:dual',
+            'code' => 'town=revenue:20;path=a:0,b:_0,track:narrow;path=a:_0,b:2,track:narrow',
           },
           'C1' =>
           {
             'count' => 2,
             'color' => 'yellow',
-            'code' => 'city=revenue:40,loc:1;city=revenue:40,loc:4;path=a:0,b:_0;path=a:5,b:_1,track:dual;label=C',
+            'code' => 'city=revenue:40,loc:1;city=revenue:40,loc:4;path=a:0,b:_0;path=a:5,b:_1,track:narrow;label=C',
           },
           'C2' =>
           {
             'count' => 2,
             'color' => 'yellow',
-            'code' => 'city=revenue:40;path=a:0,b:_0,track:dual;path=a:5,b:_0,track:dual;label=C',
+            'code' => 'city=revenue:40;path=a:0,b:_0,track:narrow;path=a:5,b:_0,track:narrow;label=C',
           },
           'C3' =>
           {
             'count' => 2,
             'color' => 'yellow',
-            'code' => 'city=revenue:40,loc:2;city=revenue:40,loc:4;path=a:1,b:_0;path=a:5,b:_1,track:dual;label=C',
+            'code' => 'city=revenue:40,loc:2;city=revenue:40,loc:4;path=a:1,b:_0;path=a:5,b:_1,track:narrow;label=C',
           },
           'C4' =>
           {
             'count' => 2,
             'color' => 'yellow',
-            'code' => 'city=revenue:40;path=a:1,b:_0,track:dual;path=a:5,b:_0,track:dual;label=C',
+            'code' => 'city=revenue:40;path=a:1,b:_0,track:narrow;path=a:5,b:_0,track:narrow;label=C',
           },
           '12s' =>
           {
             'count' => 3,
             'color' => 'green',
-            'code' => 'city=revenue:30;path=a:0,b:_0,track:dual;path=a:1,b:_0,track:dual;path=a:2,b:_0,track:dual',
+            'code' => 'city=revenue:30;path=a:0,b:_0,track:narrow;path=a:1,b:_0,track:narrow;path=a:2,b:_0,track:narrow',
           },
           '13s' =>
           {
             'count' => 8,
             'color' => 'green',
-            'code' => 'city=revenue:30;path=a:0,b:_0,track:dual;path=a:2,b:_0,track:dual;path=a:4,b:_0,track:dual',
+            'code' => 'city=revenue:30;path=a:0,b:_0,track:narrow;path=a:2,b:_0,track:narrow;path=a:4,b:_0,track:narrow',
           },
           '14s' =>
           {
             'count' => 3,
             'color' => 'green',
-            'code' => 'city=revenue:30,slots:2;path=a:0,b:_0,track:dual;path=a:1,b:_0,track:dual;path=a:3,b:_0,track:dual;path=a:4,b:_0,track:dual',
+            'code' => 'city=revenue:30,slots:2;path=a:0,b:_0,track:narrow;path=a:1,b:_0,track:narrow;path=a:3,b:_0,track:narrow;path=a:4,b:_0,track:narrow',
           },
           '15s' =>
           {
             'count' => 3,
             'color' => 'green',
-            'code' => 'city=revenue:30,slots:2;path=a:0,b:_0,track:dual;path=a:1,b:_0,track:dual;path=a:2,b:_0,track:dual;path=a:3,b:_0,track:dual',
+            'code' => 'city=revenue:30,slots:2;path=a:0,b:_0,track:narrow;path=a:1,b:_0,track:narrow;path=a:2,b:_0,track:narrow;path=a:3,b:_0,track:narrow',
           },
           '16s' =>
           {
             'count' => 1,
             'color' => 'green',
-            'code' => 'path=a:0,b:2,track:dual;path=a:1,b:3,track:dual',
+            'code' => 'path=a:0,b:2,track:narrow;path=a:1,b:3,track:narrow',
           },
           '19s' =>
           {
             'count' => 1,
             'color' => 'green',
-            'code' => 'path=a:0,b:3,track:dual;path=a:2,b:4,track:dual',
+            'code' => 'path=a:0,b:3,track:narrow;path=a:2,b:4,track:narrow',
           },
           '20s' =>
           {
             'count' => 1,
             'color' => 'green',
-            'code' => 'path=a:0,b:3,track:dual;path=a:1,b:4,track:dual',
+            'code' => 'path=a:0,b:3,track:narrow;path=a:1,b:4,track:narrow',
           },
           '23s' =>
           {
             'count' => 3,
             'color' => 'green',
-            'code' => 'path=a:0,b:3,track:dual;path=a:0,b:4,track:dual',
+            'code' => 'path=a:0,b:3,track:narrow;path=a:0,b:4,track:narrow',
           },
           '24s' =>
           {
             'count' => 3,
             'color' => 'green',
-            'code' => 'path=a:0,b:3,track:dual;path=a:0,b:2,track:dual',
+            'code' => 'path=a:0,b:3,track:narrow;path=a:0,b:2,track:narrow',
           },
           '25s' =>
           {
             'count' => 2,
             'color' => 'green',
-            'code' => 'path=a:0,b:2,track:dual;path=a:0,b:4,track:dual',
+            'code' => 'path=a:0,b:2,track:narrow;path=a:0,b:4,track:narrow',
           },
           '26s' =>
           {
             'count' => 1,
             'color' => 'green',
-            'code' => 'path=a:0,b:3,track:dual;path=a:0,b:5,track:dual',
+            'code' => 'path=a:0,b:3,track:narrow;path=a:0,b:5,track:narrow',
           },
           '27s' =>
           {
             'count' => 1,
             'color' => 'green',
-            'code' => 'path=a:0,b:3,track:dual;path=a:0,b:1,track:dual',
+            'code' => 'path=a:0,b:3,track:narrow;path=a:0,b:1,track:narrow',
           },
           '28s' =>
           {
             'count' => 2,
             'color' => 'green',
-            'code' => 'path=a:0,b:4,track:dual;path=a:0,b:5,track:dual',
+            'code' => 'path=a:0,b:4,track:narrow;path=a:0,b:5,track:narrow',
           },
           '29s' =>
           {
             'count' => 2,
             'color' => 'green',
-            'code' => 'path=a:0,b:2,track:dual;path=a:0,b:1,track:dual',
+            'code' => 'path=a:0,b:2,track:narrow;path=a:0,b:1,track:narrow',
           },
           '87s' =>
           {
             'count' => 2,
             'color' => 'green',
-            'code' => 'town=revenue:10;path=a:0,b:_0,track:dual;path=a:1,b:_0,track:dual;path=a:2,b:_0,track:dual;path=a:3,b:_0,track:dual',
+            'code' => 'town=revenue:20;path=a:0,b:_0,track:narrow;path=a:1,b:_0,track:narrow;path=a:2,b:_0,track:narrow;path=a:3,b:_0,track:narrow',
           },
           '88s' =>
           {
             'count' => 2,
             'color' => 'green',
-            'code' => 'town=revenue:10;path=a:0,b:_0,track:dual;path=a:1,b:_0,track:dual;path=a:3,b:_0,track:dual;path=a:4,b:_0,track:dual',
+            'code' => 'town=revenue:20;path=a:0,b:_0,track:narrow;path=a:1,b:_0,track:narrow;path=a:3,b:_0,track:narrow;path=a:4,b:_0,track:narrow',
           },
           'C5' =>
           {
             'count' => 4,
             'color' => 'green',
-            'code' => 'city=revenue:50,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0,track:dual;label=C',
+            'code' => 'city=revenue:50,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0,track:narrow;label=C',
           },
           'C6' =>
           {
             'count' => 4,
             'color' => 'green',
-            'code' => 'city=revenue:50,slots:2;path=a:0,b:_0,track:dual;path=a:1,b:_0,track:dual;path=a:5,b:_0,track:dual;label=C',
+            'code' => 'city=revenue:50,slots:2;path=a:0,b:_0,track:narrow;path=a:1,b:_0,track:narrow;path=a:5,b:_0,track:narrow;label=C',
           },
           'C7' =>
           {
@@ -385,7 +385,7 @@ module Engine
             ] => "city=revenue:0;upgrade=cost:40,terrain:water;frame=color:#{SOUTH_COLOR}",
             %w[
             D10
-            ] => "city=revenue:30,loc:5;city=revenue:0,loc:2;path=a:0,b:_0,track:dual;upgrade=cost:40,terrain:water;label=C;frame=color:#{NORTH_COLOR},color2:#{SOUTH_COLOR}",
+            ] => "city=revenue:30,loc:5;city=revenue:0,loc:2;path=a:0,b:_0,track:narrow;upgrade=cost:40,terrain:water;label=C;frame=color:#{NORTH_COLOR},color2:#{SOUTH_COLOR}",
             %w[
             G5
             F4
@@ -429,18 +429,18 @@ module Engine
             ] => "city=revenue:0;label=C;frame=color:#{SOUTH_COLOR}",
             %w[
             G19
-            ] => "city=revenue:30,loc:0;city=revenue:0,loc:3;path=a:1,b:_0,track:dual;label=C;frame=color:#{NORTH_COLOR},color2:#{SOUTH_COLOR}",
+            ] => "city=revenue:30,loc:0;city=revenue:0,loc:3;path=a:1,b:_0,track:narrow;label=C;frame=color:#{NORTH_COLOR},color2:#{SOUTH_COLOR}",
           },
           red: {
             %w[
             A7
-            ] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_80;path=a:0,b:_0',
+            ] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_80;path=a:0,b:_0,track:dual',
             %w[
             A23
             ] => 'offboard=revenue:yellow_40|green_50|brown_60|gray_80;path=a:0,b:_0',
             %w[
             G1
-            ] => 'offboard=revenue:yellow_40|green_60|brown_80|gray_100;path=a:4,b:_0',
+            ] => 'offboard=revenue:yellow_40|green_60|brown_80|gray_100;path=a:4,b:_0,track:dual',
           },
           gray: {
             %w[
@@ -451,16 +451,16 @@ module Engine
             ] => 'offboard=revenue:0;path=a:5,b:_0,terminal:1',
             %w[
             B4
-            ] => 'path=a:0,b:4,track:dual',
+            ] => 'path=a:0,b:4,track:narrow',
             %w[
             C3
-            ] => 'path=a:0,b:3,track:dual;offboard=revenue:0;path=a:5,b:_0,terminal:1',
+            ] => 'path=a:0,b:3,track:narrow;offboard=revenue:0;path=a:5,b:_0,terminal:1',
             %w[
             D2
-            ] => 'path=a:0,b:3,track:dual;offboard=revenue:0;path=a:4,b:_0,terminal:1',
+            ] => 'path=a:0,b:3,track:narrow;offboard=revenue:0;path=a:4,b:_0,terminal:1',
             %w[
             E1
-            ] => 'path=a:3,b:4,track:dual',
+            ] => 'path=a:3,b:4,track:narrow',
           },
         }.freeze
         # rubocop:enable Layout/LineLength

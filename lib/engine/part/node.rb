@@ -44,6 +44,7 @@ module Engine
       # visited_paths: a hashset of visited Paths
       # counter: a hash tracking edges and junctions to avoid reuse
       # skip_track: If passed, don't walk on track of that type (ie: :broad track for 1873)
+      # any_track: If passed, ignore track type for path walks
       # tile_type: if :lawson don't undo visited nodes
       #
       # This method recursively bubbles up yielded values from nested Node::Walk and Path::Walk calls
@@ -55,6 +56,7 @@ module Engine
         skip_paths: nil,
         counter: Hash.new(0),
         skip_track: nil,
+        any_track: nil,
         tile_type: :normal,
         &block
       )
@@ -69,6 +71,7 @@ module Engine
           node_path.walk(
             visited: visited_paths,
             skip_paths: skip_paths,
+            any_track: any_track,
             counter: counter,
             on: on,
             tile_type: tile_type,
@@ -88,6 +91,7 @@ module Engine
                 corporation: corporation,
                 visited_paths: vp,
                 skip_track: skip_track,
+                any_track: any_track,
                 skip_paths: skip_paths,
                 tile_type: tile_type,
                 &block

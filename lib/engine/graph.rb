@@ -16,6 +16,7 @@ module Engine
       @home_as_token = opts[:home_as_token] || false
       @no_blocking = opts[:no_blocking] || false
       @skip_track = opts[:skip_track]
+      @any_track = opts[:any_track]
       @check_tokens = opts[:check_tokens]
     end
 
@@ -154,7 +155,7 @@ module Engine
         visited = tokens.reject { |token, _| token == node }
         local_nodes = {}
 
-        node.walk(visited: visited, corporation: walk_corporation, skip_track: @skip_track,
+        node.walk(visited: visited, corporation: walk_corporation, any_track: @any_track, skip_track: @skip_track,
                   tile_type: @game.class::TILE_TYPE) do |path, _, _|
           next if paths[path]
 

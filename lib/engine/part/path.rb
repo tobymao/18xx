@@ -112,11 +112,13 @@ module Engine
       # on: A set of Paths mapping to 1 or 0. When `on` is set. Usage is currently limited to `select` in path & node
       # skip_track: If passed, don't walk on track of that type (ie: :broad track for 1873)
       # tile_type: if :lawson don't undo visited paths
+      # any_track: if set, ignore track type when walking
       def walk(
         skip: nil,
         jskip: nil,
         visited: {},
         skip_paths: nil,
+        any_track: nil,
         counter: Hash.new(0),
         on: nil,
         tile_type: :normal,
@@ -137,7 +139,8 @@ module Engine
           @junction.paths.each do |jp|
             next if on && !on[jp]
 
-            jp.walk(jskip: @junction, visited: visited, counter: counter, on: on, tile_type: tile_type, &block)
+            jp.walk(jskip: @junction, visited: visited, counter: counter, on: on, any_track: any_track,
+                    tile_type: tile_type, &block)
           end
         end
 
@@ -153,10 +156,10 @@ module Engine
           neighbor.paths[np_edge].each do |np|
             next if on && !on[np]
             next unless lane_match?(@exit_lanes[edge], np.exit_lanes[np_edge])
-            next unless tracks_match?(np, dual_ok: true)
+            next unless any_track || tracks_match?(np, dual_ok: true)
 
-            np.walk(skip: np_edge, visited: visited, counter: counter, on: on, skip_track: skip_track, tile_type: tile_type,
-&block)
+            np.walk(skip: np_edge, visited: visited, counter: counter, on: on, skip_track: skip_track,
+                    any_track: any_track, tile_type: tile_type, &block)
           end
 
           counter[edge_id] -= 1

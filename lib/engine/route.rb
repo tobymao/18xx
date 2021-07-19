@@ -27,6 +27,7 @@ module Engine
       @last_node = nil
       @last_offboard = []
       @stops = nil
+      @any_track = opts[:any_track]
     end
 
     def clear_cache!(all: false, only_routes: false)
@@ -102,7 +103,7 @@ module Engine
         begin
           new_chains = []
           start_node.paths.each do |start_path|
-            start_path.walk(skip_track: skip_track) do |current, visited|
+            start_path.walk(skip_track: skip_track, any_track: @any_track) do |current, visited|
               next unless current.nodes.include?(end_node)
 
               paths = visited.keys

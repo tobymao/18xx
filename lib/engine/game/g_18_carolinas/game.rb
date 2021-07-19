@@ -157,7 +157,7 @@ module Engine
         SELL_BUY_ORDER = :sell_buy
         SELL_AFTER = :first
         PRESIDENT_SALES_TO_MARKET = true
-        HOME_TOKEN_TIMING = :operate
+        HOME_TOKEN_TIMING = :operating_round
         SOLD_OUT_INCREASE = false
         SELL_MOVEMENT = :none
         BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
@@ -198,6 +198,10 @@ module Engine
         C7_HEXES = %w[D10 G9].freeze
         C8_HEXES = %w[G19 J12].freeze
         C8_ROTATION = 5
+
+        def init_graph
+          Graph.new(self, any_track: true)
+        end
 
         def init_tile_groups
           [
@@ -348,6 +352,11 @@ module Engine
           @bankrupted = {}
         end
 
+        def place_home_token(corporation)
+          super
+          @graph.clear
+        end
+
         def can_ipo?(corp)
           @layer_by_corp[corp] <= current_layer
         end
@@ -410,7 +419,46 @@ module Engine
           # handle C tiles specially
           return false if from.label.to_s == 'C' && to.color == :yellow && from.cities.size != to.cities.size
 
-          super
+          # correct color progression?
+          return false unless Engine::Tile::COLORS.index(to.color) == (Engine::Tile::COLORS.index(from.color) + 1)
+
+          # honors pre-existing track?
+          return false unless paths_are_subset_of?(from, to.paths)
+
+          # If special ability then remaining checks is not applicable
+          return true if special
+
+          # correct label?
+          return false unless upgrades_to_correct_label?(from, to)
+
+          # honors existing town/city counts?
+          # - allow labelled cities to upgrade regardless of count; they're probably
+          #   fine (e.g., 18Chesapeake's OO cities merge to one city in brown)
+          # - TODO: account for games that allow double dits to upgrade to one town
+          return false if from.towns.size != to.towns.size
+          return false if !from.label && from.cities.size != to.cities.size
+
+          # handle case where we are laying a yellow OO tile and want to exclude single-city tiles
+          return false if (from.color == :white) && from.label.to_s == 'OO' && from.cities.size != to.cities.size
+
+          true
+        end
+
+        # allow standard to upgrade southern after phase 5
+        def paths_are_subset_of?(tile, other_paths)
+          return tile.paths_are_subset_of?(other_paths) if !@phase.available?('5')
+
+          Engine::Tile::ALL_EDGES.any? do |ticks|
+            tile.paths.all? do |path|
+              path = path.rotate(ticks)
+              other_paths.any? { |other| path_subset?(path, other) }
+            end
+          end
+        end
+
+        def path_subset?(path, other)
+          other_ends = other.ends
+          path.ends.all? { |t| other_ends.any? { |o| t <= o } }
         end
 
         def update_tile_lists!(tile, old_tile)
@@ -661,6 +709,8 @@ module Engine
           if route.train.name == 'Convert'
             raise GameError, 'Route must have Southern track' unless route.paths.any? { |p| p.track != :broad }
           else
+            #raise GameError, 'Train below minimum size' if route.train.distance < min_train
+            #if route.routes
             if route.routes.reject { |r| r.paths.empty? }
                 .sum { |r| r.train.distance } > loan_or_power(route.train.owner)
               raise GameError, 'Train sizes exceed train power'
@@ -668,7 +718,7 @@ module Engine
 
             track_types = {}
             route.paths.each { |path| track_types[path.track] = 1 }
-            raise GameError, 'Train cannot use more than one gauge' unless track_types.keys.one?
+            raise GameError, 'Train cannot use more than one gauge' if track_types[:narrow] && track_types[:broad]
           end
         end
 

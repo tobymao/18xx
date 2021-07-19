@@ -34,12 +34,13 @@ module View
 
           entity = entity.owner if entity.company? && !round.active_entities.one?
 
+          modal_track = @step.respond_to?(:mode_enabled?)
+
           left = []
-          left << render_mode_button if @step.respond_to?(:mode_enabled?) && @step.mode_enabled?
+          left << render_mode_button if modal_track && @step.mode_enabled?
           left << h(SpecialBuy) if @current_actions.include?('special_buy')
-          if @current_actions.include?('run_routes')
-            left << (@step.conversion? ? h(TrackConversion) : h(RouteSelector))
-          end
+          left << h(RouteSelector) if @current_actions.include?('run_routes') && !modal_track
+          left << h(TrackConversion) if @current_actions.include?('run_routes') && modal_track && @step.conversion?
           left << h(Dividend) if @current_actions.include?('dividend')
           left << h(Convert) if @current_actions.include?('convert')
           left << h(SwitchTrains) if @current_actions.include?('switch_trains')
