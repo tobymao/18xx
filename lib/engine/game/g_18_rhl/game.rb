@@ -799,15 +799,25 @@ module Engine
           ])
         end
 
-        def next_sr_player_order
-          # Order is:
-          # 1. Most money
-          # 2. LOLA
-          max_cash = @players.max_by(&:cash).cash
-          players_with_max_cash = @players.count { |p| p.cash == max_cash }
-          return :after_last_to_act if players_with_max_cash > 1
+        def priority_deal_player
+          players_with_max_cash.size > 1 ? players_with_max_cash.first : super
+        end
 
-          :most_cash
+        def players_with_max_cash
+          max_cash = @players.max_by(&:cash).cash
+          @players.select { |p| p.cash == max_cash }
+        end
+
+        def reorder_players(_order = nil, log_player_order: false)
+          max_cash_players = players_with_max_cash
+          if max_cash_players.one?
+            @players.rotate!(@players.index(max_cash_players.first))
+            @log << "#{@players.first.name} has priority deal as having the most cash"
+          else
+            player = @players.reject(&:bankrupt)[@round.entity_index]
+            @players.rotate!(@players.index(player))
+            @log << "#{@players.first.name} has priority deal as being left of last to act, as several had the most cash"
+          end
         end
 
         def kkk
