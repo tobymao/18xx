@@ -67,10 +67,94 @@ module Engine
 
         TRAINS = [
           {
-            name: 'X',
-            distance: 99,
+            name: '2',
+            distance: 2,
             price: 1,
             num: 64,
+          },
+          {
+            name: '3',
+            distance: 3,
+            price: 1,
+            num: 40,
+          },
+          {
+            name: '4',
+            distance: 4,
+            price: 1,
+            num: 32,
+          },
+          {
+            name: '5',
+            distance: 5,
+            price: 1,
+            num: 24,
+          },
+          {
+            name: '6',
+            distance: 6,
+            price: 1,
+            num: 16,
+          },
+          {
+            name: '7',
+            distance: 7,
+            price: 1,
+            num: 16,
+          },
+          {
+            name: '8',
+            distance: 8,
+            price: 1,
+            num: 16,
+          },
+          {
+            name: '9',
+            distance: 9,
+            price: 1,
+            num: 8,
+          },
+          {
+            name: '10',
+            distance: 10,
+            price: 1,
+            num: 8,
+          },
+          {
+            name: '11',
+            distance: 11,
+            price: 1,
+            num: 8,
+          },
+          {
+            name: '12',
+            distance: 12,
+            price: 1,
+            num: 8,
+          },
+          {
+            name: '13',
+            distance: 13,
+            price: 1,
+            num: 8,
+          },
+          {
+            name: '14',
+            distance: 14,
+            price: 1,
+            num: 8,
+          },
+          {
+            name: '15',
+            distance: 15,
+            price: 1,
+            num: 8,
+          },
+          {
+            name: '16',
+            distance: 16,
+            price: 1,
+            num: 8,
           },
           {
             name: 'Convert',
@@ -336,20 +420,24 @@ module Engine
             end
           end
 
-          @conversion_train = @depot.trains.find { |t| t.name == 'Convert' }
-
           # initialize corp trains
           @corporation_trains = {}
           @corporations.each do |corp|
-            8.times { buy_train(corp, @depot.depot_trains[0], :free) }
             @corporation_trains[corp] = nil
           end
+
+          trains.each { |t| t.owner = nil }
+          @conversion_train = trains.find { |t| t.name == 'Convert' }
 
           # initialize power
           @corporation_power = Hash.new(0)
           @power_progress = 0
 
           @bankrupted = {}
+        end
+
+        def trains
+          @depot.trains
         end
 
         def place_home_token(corporation)
@@ -446,7 +534,7 @@ module Engine
 
         # allow standard to upgrade southern after phase 5
         def paths_are_subset_of?(tile, other_paths)
-          return tile.paths_are_subset_of?(other_paths) if !@phase.available?('5')
+          return tile.paths_are_subset_of?(other_paths) unless @phase.available?('5')
 
           Engine::Tile::ALL_EDGES.any? do |ticks|
             tile.paths.all? do |path|
@@ -583,53 +671,40 @@ module Engine
           !must_buy_power?(entity)
         end
 
-        def load_corporation_trains(entity)
-          operating = entity.operating_history
-          last_run = operating[operating.keys.max]&.routes
-
-          return [] unless last_run
-          return [] unless last_run.keys&.first
-
-          last_run.keys
+        def loan_or_power(corp)
+          corp.receivership? && must_buy_power?(corp) ? min_train : @corporation_power[corp]
         end
 
         def route_trains(entity)
-          @corporation_trains[entity] ||= load_corporation_trains(entity)
-
-          if entity.receivership? && must_buy_power?(entity)
-            # remember single train if in receivership
-            @corporation_trains[entity] = [@corporation_trains[entity].first] unless @corporation_trains[entity].empty?
-          else
-            # adjust trains that don't meet lower limit
-            # - this may cause an illegal set of routes, but will preserve previous run
-            @corporation_trains[entity].each do |t|
-              if t.distance < min_train
-                t.distance = min_train
-                t.name = min_train.to_s
-              end
-            end
+          # remember single train if in receivership
+          if entity.receivership? && must_buy_power?(entity) && !entity.trains.empty?
+            first = entity.trains.first
+            entity.trains.clear
+            entity.trains << first if first.distance == min_train
           end
 
-          if @corporation_trains[entity].empty? && (@corporation_power[entity] >= min_train ||
+          # if no trains, and legal to run a train, allocate a minimum size train
+          if entity.trains.empty? && (@corporation_power[entity] >= min_train ||
               (entity.receivership? && must_buy_power?(entity)))
-            train = entity.trains[0]
-            train.distance = min_train
-            train.name = min_train.to_s
-            @corporation_trains[entity] = [train]
+            new_train = trains.find { |t| t.distance == min_train && !t.owner }
+            raise GameError, "Unable to allocate train of distance #{min_train}" unless new_train
+
+            new_train.owner = entity
+            entity.trains << new_train
           end
-          @corporation_trains[entity]
+
+          entity.trains
         end
 
-        # after running routes, update sizes of trains actually used
+        # after running routes, update trains in corp. This is needed when loading
         def update_route_trains(entity, routes)
-          @corporation_trains[entity] = nil
+          entity.trains.clear
           routes.each do |route|
             next if route.visited_stops.empty?
 
-            train = route.train
-            train.distance = route.visited_stops.size
-            train.name = train.distance.to_s
+            entity.trains << route.train
           end
+          @corporation_trains[entity] = nil
         end
 
         def adjustable_train_list?
@@ -641,53 +716,87 @@ module Engine
         end
 
         def reset_adjustable_trains!(routes)
-          @corporation_trains[routes[0].train.owner] = nil if routes[0]
+          entity = routes[0].train.owner
+          raise GameError, 'Unable to find owner' unless entity
+
+          return unless @corporation_trains[entity]
+
+          entity.trains.each { |t| t.owner = nil }
+          entity.trains.clear
+          @corporation_trains[entity].each do |t|
+            t.owner = entity
+            entity.trains << t
+          end
         end
 
         def add_route_train(routes)
           entity = routes[0].train.owner
-          trains = @corporation_trains[entity]
-          current_distance = trains.sum(&:distance)
-          return if @corporation_power[entity] - current_distance < min_train
-          return if entity.receivership? && must_buy_power?(entity)
+          raise GameError, 'Unable to find owner' unless entity
 
-          new_train = entity.trains.find { |t| !trains.include?(t) }
-          new_train.distance = min_train
-          new_train.name = min_train.to_s
-          @corporation_trains[entity] << new_train
+          current_distance = entity.trains.sum(&:distance)
+          return false if @corporation_power[entity] - current_distance < min_train
+          return false if entity.receivership? && must_buy_power?(entity)
+
+          @corporation_trains[entity] ||= entity.trains.dup
+
+          new_train = trains.find { |t| t.distance == min_train && !t.owner }
+          raise GameError, "Unable to allocate train of distance #{min_train}" unless new_train
+
+          new_train.owner = entity
+          entity.trains << new_train
+          true
         end
 
         def delete_route_train(route)
           train = route.train
-          return if train.owner.receivership? && must_buy_power?(entity)
-          return if @corporation_trains[train.owner].one?
+          entity = train.owner
+          raise GameError, 'Unable to find owner' unless entity
 
-          @corporation_trains[train.owner].delete(train)
-          routes = route.routes
-          route.reset!
-          routes.delete(route)
-        end
+          return false if train.owner.receivership? && must_buy_power?(entity)
+          return false if entity.trains.one?
 
-        def loan_or_power(corp)
-          corp.receivership? && must_buy_power?(corp) ? min_train : @corporation_power[corp]
+          @corporation_trains[entity] ||= entity.trains.dup
+
+          train.owner = nil
+          entity.trains.delete(train)
+          true
         end
 
         def increase_route_train(route)
           train = route.train
-          corp = train.owner
-          return if train.distance == MAX_TRAIN
-          return if route.routes.sum { |r| r.train.distance } >= loan_or_power(corp)
+          entity = train.owner
+          raise GameError, 'Unable to find owner' unless entity
 
-          train.distance += 1
-          train.name = train.distance.to_s
+          return if train.distance == MAX_TRAIN
+          return if route.routes.sum { |r| r.train.distance } >= loan_or_power(entity)
+
+          @corporation_trains[entity] ||= entity.trains.dup
+
+          new_train = trains.find { |t| t.distance == (train.distance + 1) && !t.owner }
+          raise GameError, "Unable to allocate train of distance #{train.distance + 1}" unless new_train
+
+          train.owner = nil
+          new_train.owner = entity
+          entity.trains[entity.trains.find_index(train)] = new_train
+          route.train = new_train
         end
 
         def decrease_route_train(route)
           train = route.train
+          entity = train.owner
+          raise GameError, 'Unable to find owner' unless entity
+
           return if train.distance == min_train
 
-          train.distance -= 1
-          train.name = train.distance.to_s
+          @corporation_trains[entity] ||= entity.trains.dup
+
+          new_train = trains.find { |t| t.distance == (train.distance - 1) && !t.owner }
+          raise GameError, "Unable to allocate train of distance #{train.distance - 1}" unless new_train
+
+          train.owner = nil
+          new_train.owner = entity
+          entity.trains[entity.trains.find_index(train)] = new_train
+          route.train = new_train
         end
 
         def check_distance(route, visits)
@@ -709,10 +818,9 @@ module Engine
           if route.train.name == 'Convert'
             raise GameError, 'Route must have Southern track' unless route.paths.any? { |p| p.track != :broad }
           else
-            #raise GameError, 'Train below minimum size' if route.train.distance < min_train
-            #if route.routes
-            if route.routes.reject { |r| r.paths.empty? }
-                .sum { |r| r.train.distance } > loan_or_power(route.train.owner)
+            raise GameError, 'Train below minimum size' if route.train.distance < min_train
+
+            if route.routes.sum { |r| r.train.distance } > loan_or_power(route.train.owner)
               raise GameError, 'Train sizes exceed train power'
             end
 

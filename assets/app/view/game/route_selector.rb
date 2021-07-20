@@ -265,8 +265,12 @@ module View
         end
 
         delete_train = lambda do
-          @game.delete_route_train(@selected_route)
-          store(:routes, @routes)
+          if @game.delete_route_train(@selected_route)
+            @routes.delete(@selected_route)
+            @selected_route = nil
+            store(:selected_route, @selected_route)
+            store(:routes, @routes)
+          end
         end
 
         increase_train = lambda do

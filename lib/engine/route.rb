@@ -4,8 +4,8 @@ require_relative 'game_error'
 
 module Engine
   class Route
-    attr_accessor :halts, :routes
-    attr_reader :last_node, :phase, :train, :abilities
+    attr_accessor :halts, :routes, :train
+    attr_reader :last_node, :phase, :abilities
 
     def initialize(game, phase, train, **opts)
       @game = game
