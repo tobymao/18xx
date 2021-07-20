@@ -446,6 +446,7 @@ module Engine
                   { name: '+4', distance: 0, price: 100, available_on: '6', num: 2 },
                   { name: '+5', distance: 0, price: 125, available_on: '8', num: 1 }].freeze
 
+        EQUATOR_HEXES = %w[C16 G16 I16].freeze
         COMPANIES = [
           {
             name: 'Platinum Credit Card',
@@ -469,6 +470,27 @@ module Engine
             desc: 'The owning corporation may place the Farm (F) tile on an equitorial hex as a bonus disconnected '\
                   'tile lay. In exchange for closing this private the corporation may token it for free',
             sym: 'C',
+            abilities: [
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                free: false,
+                hexes: EQUATOR_HEXES,
+                tiles: %w[FARM1],
+                when: 'track',
+                count: 1,
+              },
+              {
+                type: 'token',
+                description: 'Token in the Farm tile for free',
+                hexes: EQUATOR_HEXES,
+                count: 1,
+                price: 0,
+                teleport_price: 0,
+                extra_action: true,
+                from_owner: true,
+              },
+            ],
           },
           {
             name: 'Bob\'s Better Bridges',
@@ -502,6 +524,27 @@ module Engine
             desc: 'The owning corporation may place the Capitol (C) tile on an equitorial hex as a bonus disconnected '\
                   'tile lay. In exchange for closing this private the corporation may token it for free',
             sym: 'G',
+            abilities: [
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                free: false,
+                hexes: EQUATOR_HEXES,
+                tiles: %w[CAP1],
+                when: 'track',
+                count: 1,
+              },
+              {
+                type: 'token',
+                description: 'Token in the Captiol tile for free',
+                hexes: EQUATOR_HEXES,
+                count: 1,
+                price: 0,
+                teleport_price: 0,
+                extra_action: true,
+                from_owner: true,
+              },
+            ],
           },
           {
             name: 'Mole People',
@@ -519,6 +562,27 @@ module Engine
             desc: 'The owning corporation may place the Space Elevator (SE) tile on an equitorial hex as a bonus '\
                   'disconnected tile lay. In exchange for closing this private the corporation may token it for free',
             sym: 'I',
+            abilities: [
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                free: false,
+                hexes: EQUATOR_HEXES,
+                tiles: %w[SE1],
+                when: 'track',
+                count: 1,
+              },
+              {
+                type: 'token',
+                description: 'Token in the Space Elevator tile for free',
+                hexes: EQUATOR_HEXES,
+                count: 1,
+                price: 0,
+                teleport_price: 0,
+                extra_action: true,
+                from_owner: true,
+              },
+            ],
           },
           {
             name: 'Protoype Maglev',
@@ -891,6 +955,30 @@ module Engine
           raise GameError, "'wsrc' Should not be used"
         end
 
+        def capitol_tile
+          tile_by_id('CAP1-0')
+        end
+
+        def capitol_blocked?
+          company_by_id('G').owned_by_player?
+        end
+
+        def farm_tile
+          tile_by_id('FARM1-0')
+        end
+
+        def farm_blocked?
+          company_by_id('C').owned_by_player?
+        end
+
+        def elevator_tile
+          tile_by_id('SE1-0')
+        end
+
+        def elevator_blocked?
+          company_by_id('I').owned_by_player?
+        end
+
         def setup
           @straight_city ||= @tiles.find { |t| t.name == '57' }
           @sharp_city ||= @tiles.find { |t| t.name == '5' }
@@ -972,7 +1060,7 @@ module Engine
             G1856::Step::Assign,
             G1856::Step::Loan,
             G1856::Step::SpecialTrack,
-            G1856::Step::SpecialToken,
+            G18KA::Step::SpecialToken,
             Engine::Step::BuyCompany,
             Engine::Step::HomeToken,
 
@@ -1017,6 +1105,37 @@ module Engine
           return super if (val % 1).zero?
 
           format('$%.1<val>c', val: val)
+        end
+
+        #
+        # Get all possible upgrades for a tile
+        # tile: The tile to be upgraded
+        # tile_manifest: true/false Is this being called from the tile manifest screen
+        #
+        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
+          upgrades = super
+          return upgrades unless tile_manifest
+
+          upgrades |= [farm_tile] if EQUATOR_HEXES.include?(tile.name) && !farm_blocked?
+          upgrades |= [elevator_tile] if EQUATOR_HEXES.include?(tile.name) && !elevator_blocked?
+          upgrades |= [capitol_tile] if EQUATOR_HEXES.include?(tile.name) && !capitol_blocked?
+
+          upgrades
+        end
+
+        #
+        # Get the currently possible upgrades for a tile
+        # from: Tile - Tile to upgrade from
+        # to: Tile - Tile to upgrade to
+        # special - ???
+        def upgrades_to?(from, to, _special = false, selected_company: nil)
+          if EQUATOR_HEXES.include?(from.name) && @phase.tiles.include?(:green)
+            return !farm_blocked? if to.name == farm_tile.name
+            return !elevator_blocked? if to.name == elevator_tile.name
+            return !capitol_blocked? if to.name == capitol_tile.name
+          end
+
+          super
         end
       end
     end
