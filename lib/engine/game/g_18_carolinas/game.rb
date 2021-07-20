@@ -484,6 +484,7 @@ module Engine
             G18Carolinas::Step::Bankrupt,
             Engine::Step::HomeToken,
             G18Carolinas::Step::Track,
+            G18Carolinas::Step::ConvertTrack,
             G18Carolinas::Step::Token,
             G18Carolinas::Step::Route,
             G18Carolinas::Step::Dividend,
@@ -702,6 +703,7 @@ module Engine
           routes.each do |route|
             next if route.visited_stops.empty?
 
+            route.train.owner = entity
             entity.trains << route.train
           end
           @corporation_trains[entity] = nil
@@ -819,6 +821,7 @@ module Engine
             raise GameError, 'Route must have Southern track' unless route.paths.any? { |p| p.track != :broad }
           else
             raise GameError, 'Train below minimum size' if route.train.distance < min_train
+            raise GameError, 'Train w/o owner' unless route.train.owner
 
             if route.routes.sum { |r| r.train.distance } > loan_or_power(route.train.owner)
               raise GameError, 'Train sizes exceed train power'

@@ -24,7 +24,6 @@ module View
     module Round
       class Operating < Snabberb::Component
         needs :game
-        needs :mode, store: true, default: nil
 
         def render
           round = @game.round
@@ -34,13 +33,12 @@ module View
 
           entity = entity.owner if entity.company? && !round.active_entities.one?
 
-          modal_track = @step.respond_to?(:mode_enabled?)
+          convert_track = @step.respond_to?(:conversion?) && @step.conversion?
 
           left = []
-          left << render_mode_button if modal_track && @step.mode_enabled?
           left << h(SpecialBuy) if @current_actions.include?('special_buy')
-          left << h(RouteSelector) if @current_actions.include?('run_routes') && !modal_track
-          left << h(TrackConversion) if @current_actions.include?('run_routes') && modal_track && @step.conversion?
+          left << h(RouteSelector) if @current_actions.include?('run_routes') && !convert_track
+          left << h(TrackConversion) if @current_actions.include?('run_routes') && convert_track
           left << h(Dividend) if @current_actions.include?('dividend')
           left << h(Convert) if @current_actions.include?('convert')
           left << h(SwitchTrains) if @current_actions.include?('switch_trains')
@@ -132,14 +130,6 @@ module View
           ]
 
           h(:div, children)
-        end
-
-        def render_mode_button
-          pressed = lambda do
-            store(:mode, @step.change_mode)
-          end
-
-          h('button.small', { on: { click: pressed } }, @step.mode_text)
         end
       end
     end

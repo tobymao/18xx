@@ -46,13 +46,9 @@ module View
       def render
         return nil if @hex.empty
 
-        step = @game.round.active_step
-        modal_track = step.respond_to?(:mode_enabled?)
-        lay_tile = @actions.include?('lay_tile') && (!modal_track || !step.conversion?)
-
         @selected = @hex == @tile_selector&.hex || @selected_route&.last_node&.hex == @hex
         @tile =
-          if @selected && lay_tile && @tile_selector&.tile
+          if @selected && @actions.include?('lay_tile') && @tile_selector&.tile
             @tile_selector.tile
           else
             @hex.tile
@@ -173,14 +169,9 @@ module View
           return store(:tile_selector, nil)
         end
 
-        step = @game.round.active_step
-        modal_track = step.respond_to?(:mode_enabled?)
-        lay_tile = @actions.include?('lay_tile') && (!modal_track || !step.conversion?)
-        run_routes = @actions.include?('run_routes') && (!modal_track || step.conversion?)
-
         nodes = @hex.tile.nodes
 
-        if run_routes
+        if @actions.include?('run_routes')
           touch_node(nodes[0]) if nodes.one?
           disambiguate_node(nodes) if nodes.count(&:offboard?) > 1
           return
@@ -190,6 +181,7 @@ module View
         when :map
           return process_action(Engine::Action::Assign.new(@entity, target: @hex)) if @actions.include?('assign')
 
+          step = @game.round.active_step
           if @actions.include?('hex_token')
             return if step.available_tokens(@entity).empty?
 
@@ -201,7 +193,7 @@ module View
               token_type: next_token
             ))
           end
-          return unless lay_tile
+          return unless @actions.include?('lay_tile')
 
           if @selected && (tile = @tile_selector&.tile)
             @tile_selector.rotate! if tile.hex != @hex
