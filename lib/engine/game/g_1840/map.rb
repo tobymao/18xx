@@ -299,9 +299,9 @@ module Engine
             %w[H30 C29] => 'town=revenue:10;path=a:1,b:_0;path=a:2,b:_0',
             ['F30'] => 'town=revenue:10;path=a:0,b:_0;path=a:1,b:_0',
             ['D28'] => 'town=revenue:20;path=a:0,b:_0;path=a:1,b:_0',
-            ['F8'] => 'town=revenue:20;path=a:0,b:_0;path=a:1,b:_0;town=revenue:20;path=a:2,b:_1;path=a:3,b:_1' \
+            ['F8'] => 'town=revenue:10;path=a:0,b:_0;path=a:1,b:_0;town=revenue:10;path=a:2,b:_1;path=a:3,b:_1' \
                       'border=edge:4',
-            ['F10'] => 'town=revenue:20;path=a:4,b:_0;path=a:5,b:_0;town=revenue:20;path=a:2,b:_1;path=a:3,b:_1' \
+            ['F10'] => 'town=revenue:10;path=a:4,b:_0;path=a:5,b:_0;town=revenue:10;path=a:2,b:_1;path=a:3,b:_1' \
                        'border=edge:1',
             ['A19'] => 'town=revenue:30;path=a:1,b:_0,track:narrow;path=a:5,b:_0,track:narrow',
             ['C7'] => 'city=revenue:30,slots:2;path=a:0,b:_0,track:narrow;path=a:4,b:_0,track:narrow;' \
