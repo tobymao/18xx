@@ -23,7 +23,7 @@ module Engine
 
         MUST_SELL_IN_BLOCKS = false
 
-        GAME_END_CHECK = { bankrupt: :immediate, bank: :full_or }.freeze
+        GAME_END_CHECK = { bank: :full_or }.freeze
 
         # Move down one step for a whole block, not per share
         SELL_MOVEMENT = :down_block
@@ -799,6 +799,20 @@ module Engine
           ])
         end
 
+        def operating_round(round_num)
+          Engine::Round::Operating.new(self, [
+            G18Rhl::Step::Bankrupt,
+            Engine::Step::HomeToken,
+            Engine::Step::SpecialTrack,
+            Engine::Step::Track,
+            Engine::Step::Token,
+            Engine::Step::Route,
+            Engine::Step::Dividend,
+            Engine::Step::DiscardTrain,
+            Engine::Step::BuyTrain,
+          ], round_num: round_num)
+        end
+
         def priority_deal_player
           players_with_max_cash.size > 1 ? players_with_max_cash.first : super
         end
@@ -818,6 +832,10 @@ module Engine
             @players.rotate!(@players.index(player))
             @log << "#{@players.first.name} has priority deal as being left of last to act, as several had the most cash"
           end
+        end
+
+        def cce
+          @cce_corporation ||= corporation_by_id('CCE')
         end
 
         def kkk
@@ -936,6 +954,13 @@ module Engine
           return 'I/T' unless corporation
 
           corporation.capitalization == :incremental ? 'Treasury' : 'IPO'
+        end
+
+        def place_home_token(corporation)
+          return super unless corporation == cce
+
+          place_free_token(cce, 'E6', 0, silent: false)
+          place_free_token(cce, 'I10', 1, silent: false)
         end
 
         def upgrades_to?(from, to, _special = false, selected_company: nil)
