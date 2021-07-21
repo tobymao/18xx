@@ -553,6 +553,7 @@ module Engine
         SELL_AFTER = :operate
         EBUY_OTHER_VALUE = true
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = true
+        CLOSED_CORP_TRAINS_REMOVED = false
         ONLY_HIGHEST_BID_COMMITTED = true
         BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
         CERT_LIMIT_COUNTS_BANKRUPTED = true
