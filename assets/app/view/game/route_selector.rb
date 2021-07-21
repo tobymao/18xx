@@ -269,7 +269,7 @@ module View
         delete_train = lambda do
           if @game.delete_route_train(@selected_route)
             @routes.delete(@selected_route)
-            @selected_route = nil
+            @selected_route = @routes[0]
             store(:selected_route, @selected_route, skip: true)
             store(:routes, @routes)
           end

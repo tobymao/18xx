@@ -279,6 +279,8 @@ module Engine
         MAX_PROGRESS = 15
 
         C_TILES = %w[C1 C2 C3 C4 C5 C6 C7 C8 C9].freeze
+        CHARLOTTE_HEX = 'D10'
+        WILMINGTON_HEX = 'G19'
         C7_HEXES = %w[D10 G9].freeze
         C8_HEXES = %w[G19 J12].freeze
         C8_ROTATION = 5
@@ -639,16 +641,14 @@ module Engine
         end
 
         def upgrade_c_hexes
-          C7_HEXES.each do |hexid|
-            hex = hex_by_id(hexid)
-            tile = @tiles.find { |t| t.name == 'C7' }
-            upgrade_tile(hex, tile, 0)
-          end
-          C8_HEXES.each do |hexid|
-            hex = hex_by_id(hexid)
-            tile = @tiles.find { |t| t.name == 'C8' }
-            upgrade_tile(hex, tile, C8_ROTATION)
-          end
+          # upgrade plain hexes in charlotte and wilmington to yellow first so reservations are handled correctly
+          charlotte = hex_by_id(CHARLOTTE_HEX)
+          wilmington = hex_by_id(WILMINGTON_HEX)
+          upgrade_tile(charlotte, @tiles.find { |t| t.name == 'C1' }, 1) if charlotte.tile.color == :white
+          upgrade_tile(wilmington, @tiles.find { |t| t.name == 'C1' }, 2) if wilmington.tile.color == :white
+
+          C7_HEXES.each { |hexid| upgrade_tile(hex_by_id(hexid), @tiles.find { |t| t.name == 'C7' }, 0) }
+          C8_HEXES.each { |hexid| upgrade_tile(hex_by_id(hexid), @tiles.find { |t| t.name == 'C8' }, C8_ROTATION) }
         end
 
         # no checking
@@ -676,12 +676,33 @@ module Engine
           corp.receivership? && must_buy_power?(corp) ? min_train : @corporation_power[corp]
         end
 
+        def remove_var_train(entity, train)
+          train.owner = nil
+          entity.trains.delete(train)
+        end
+
+        def remove_all_var_trains(entity)
+          entity.trains.each { |t| t.owner = nil }
+          entity.trains.clear
+        end
+
+        def append_var_train(entity, train)
+          train.owner = entity
+          entity.trains << train
+        end
+
+        def swap_var_train(entity, old_train, new_train)
+          old_train.owner = nil
+          new_train.owner = entity
+          entity.trains[entity.trains.find_index(old_train)] = new_train
+        end
+
         def route_trains(entity)
           # remember single train if in receivership
           if entity.receivership? && must_buy_power?(entity) && !entity.trains.empty?
             first = entity.trains.first
-            entity.trains.clear
-            entity.trains << first if first.distance == min_train
+            remove_all_var_trains(entity)
+            append_var_train(entity, first) if first.distance == min_train
           end
 
           # if no trains, and legal to run a train, allocate a minimum size train
@@ -690,8 +711,7 @@ module Engine
             new_train = trains.find { |t| t.distance == min_train && !t.owner }
             raise GameError, "Unable to allocate train of distance #{min_train}" unless new_train
 
-            new_train.owner = entity
-            entity.trains << new_train
+            append_var_train(entity, new_train)
           end
 
           entity.trains
@@ -699,12 +719,11 @@ module Engine
 
         # after running routes, update trains in corp. This is needed when loading
         def update_route_trains(entity, routes)
-          entity.trains.clear
+          remove_all_var_trains(entity)
           routes.each do |route|
             next if route.visited_stops.empty?
 
-            route.train.owner = entity
-            entity.trains << route.train
+            append_var_train(entity, route.train)
           end
           @corporation_trains[entity] = nil
         end
@@ -723,12 +742,8 @@ module Engine
 
           return unless @corporation_trains[entity]
 
-          entity.trains.each { |t| t.owner = nil }
-          entity.trains.clear
-          @corporation_trains[entity].each do |t|
-            t.owner = entity
-            entity.trains << t
-          end
+          remove_all_var_trains(entity)
+          @corporation_trains[entity].each { |t| append_var_train(entity, t) }
         end
 
         def add_route_train(routes)
@@ -740,12 +755,10 @@ module Engine
           return false if entity.receivership? && must_buy_power?(entity)
 
           @corporation_trains[entity] ||= entity.trains.dup
-
           new_train = trains.find { |t| t.distance == min_train && !t.owner }
           raise GameError, "Unable to allocate train of distance #{min_train}" unless new_train
 
-          new_train.owner = entity
-          entity.trains << new_train
+          append_var_train(entity, new_train)
           true
         end
 
@@ -758,9 +771,7 @@ module Engine
           return false if entity.trains.one?
 
           @corporation_trains[entity] ||= entity.trains.dup
-
-          train.owner = nil
-          entity.trains.delete(train)
+          remove_var_train(entity, train)
           true
         end
 
@@ -773,13 +784,10 @@ module Engine
           return if route.routes.sum { |r| r.train.distance } >= loan_or_power(entity)
 
           @corporation_trains[entity] ||= entity.trains.dup
-
           new_train = trains.find { |t| t.distance == (train.distance + 1) && !t.owner }
           raise GameError, "Unable to allocate train of distance #{train.distance + 1}" unless new_train
 
-          train.owner = nil
-          new_train.owner = entity
-          entity.trains[entity.trains.find_index(train)] = new_train
+          swap_var_train(entity, train, new_train)
           route.train = new_train
         end
 
@@ -791,13 +799,10 @@ module Engine
           return if train.distance == min_train
 
           @corporation_trains[entity] ||= entity.trains.dup
-
           new_train = trains.find { |t| t.distance == (train.distance - 1) && !t.owner }
           raise GameError, "Unable to allocate train of distance #{train.distance - 1}" unless new_train
 
-          train.owner = nil
-          new_train.owner = entity
-          entity.trains[entity.trains.find_index(train)] = new_train
+          swap_var_train(entity, train, new_train)
           route.train = new_train
         end
 

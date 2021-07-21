@@ -56,6 +56,7 @@ module Engine
           end
 
           def legal_tile_rotation?(entity, hex, tile)
+            return super unless @game.phase.available?('5')
             return false unless @game.legal_tile_rotation?(entity, hex, tile)
 
             old_paths = hex.tile.paths
