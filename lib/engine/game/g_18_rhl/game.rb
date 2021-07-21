@@ -735,6 +735,8 @@ module Engine
 
         AXES = { x: :number, y: :letter }.freeze
 
+        RGE_HEXES = %w[A4 A6 L11 L13].freeze
+
         RHINE_METROPOLIS_HEXES = %w[D9 F9 I10].freeze
 
         def num_trains(train)
@@ -809,7 +811,7 @@ module Engine
             Engine::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
-            Engine::Step::Dividend,
+            G18Rhl::Step::Dividend,
             Engine::Step::DiscardTrain,
             Engine::Step::BuyTrain,
           ], round_num: round_num)
@@ -960,6 +962,7 @@ module Engine
 
         def place_home_token(corporation)
           return super unless corporation == cce
+          return if corporation.tokens.first&.used == true
 
           place_free_token(cce, 'E6', 0, silent: false)
           place_free_token(cce, 'I10', 1, silent: false)
@@ -1019,7 +1022,15 @@ module Engine
                              "#{metropolis_info.last} twice"
           end
 
-          super
+          return super unless route.train.name == '8'
+
+          if visits.none? { |v| RGE_HEXES.include?(v.hex.name) }
+            raise GameError, 'Route for 8 trains must begin/end in an RGE hex'
+          end
+
+          return super unless visits.find { |v| !RGE_HEXES.include?(v.hex.name) && v.hex.tile.color == :red }
+
+          raise GameError, 'Route for 8 trains cannot include any off-board hexes besides RGE ones'
         end
 
         private
