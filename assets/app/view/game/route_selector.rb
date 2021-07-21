@@ -260,9 +260,7 @@ module View
         end
 
         add_train = lambda do
-          if @game.add_route_train(@routes)
-            store(:routes, @routes)
-          end
+          store(:routes, @routes) if @game.add_route_train(@routes)
         end
 
         delete_train = lambda do
