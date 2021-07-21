@@ -737,8 +737,6 @@ module Engine
 
         RGE_HEXES = %w[A4 A6 L11 L13].freeze
 
-        RHINE_METROPOLIS_HEXES = %w[D9 F9 I10].freeze
-
         def num_trains(train)
           return train[:num] unless train[:name] == '2'
 
@@ -1017,11 +1015,6 @@ module Engine
         def check_distance(route, visits)
           raise GameError, 'Route cannot begin/end in a town' if visits.first.town? || visits.last.town?
 
-          if (metropolis_info = double_visit_rhine_metropolis?(route))
-            raise GameError, "A route cannot visit #{metropolis_info.first} side of Rhine Metropolis in "\
-                             "#{metropolis_info.last} twice"
-          end
-
           return super unless route.train.name == '8'
 
           if visits.none? { |v| RGE_HEXES.include?(v.hex.name) }
@@ -1160,31 +1153,6 @@ module Engine
           hex = hex_by_id(hex_name).tile
           hex.cities[city_number].place_token(corporation, corporation.next_token, free: true)
           @log << "#{corporation.name} places a token on #{hex_name}" unless silent
-        end
-
-        def double_visit_rhine_metropolis?(route)
-          hexes_with_edge_visited = route.chains
-                                         .map { |c| c[:paths] }
-                                         .flatten
-                                         .flat_map { |p| [p.hex.name].product(p.exits) }
-                                         .uniq
-          found = nil
-          RHINE_METROPOLIS_HEXES.each do |metropolis_hex|
-            visited_hex = hexes_with_edge_visited.select { |hex_name, _| hex_name == metropolis_hex }
-            west, east = visited_hex.partition { |_, edge| edge < 3 }
-            found = ['West', "#{metropolis_name(metropolis_hex, true)} (#{metropolis_hex})"] if west.size > 1
-            found = ['East', "#{metropolis_name(metropolis_hex, false)} (#{metropolis_hex})"] if east.size > 1
-          end
-          found
-        end
-
-        def get_location_name(hex_name)
-          @hexes.find { |h| h.name == hex_name }.location_name
-        end
-
-        def metropolis_name(metropolis_hex_name, west)
-          location_names = get_location_name(metropolis_hex_name).split
-          west || location_names.one? ? location_names.first : location_name.last
         end
       end
     end
