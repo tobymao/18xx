@@ -607,7 +607,7 @@ module Engine
             Engine::Step::Route,
             G18VA::Step::Dividend,
             Engine::Step::DiscardTrain,
-            Engine::Step::SpecialBuyTrain,
+            G18VA::Step::SpecialBuyTrain,
             G18VA::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
