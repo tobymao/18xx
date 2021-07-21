@@ -261,7 +261,6 @@ module View
 
         add_train = lambda do
           if @game.add_route_train(@routes)
-            store(:selected_route, @selected_route, skip: true)
             store(:routes, @routes)
           end
         end
