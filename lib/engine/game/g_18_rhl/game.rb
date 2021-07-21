@@ -737,6 +737,8 @@ module Engine
 
         RGE_HEXES = %w[A4 A6 L11 L13].freeze
 
+        RHINE_METROPOLIS_HEXES = %w[D9 F9 I10].freeze
+
         def num_trains(train)
           return train[:num] unless train[:name] == '2'
 
@@ -1015,6 +1017,10 @@ module Engine
         def check_distance(route, visits)
           raise GameError, 'Route cannot begin/end in a town' if visits.first.town? || visits.last.town?
 
+          if (metropolis_name, rhine_side = illegal_double_visit_yellow_rhine_metropolis?(visits))
+            raise GameError, "A route cannot visit #{metropolis_name} side of Rhine Metropolis #{rhine_side} twice"
+          end
+
           return super unless route.train.name == '8'
 
           if visits.none? { |v| RGE_HEXES.include?(v.hex.name) }
@@ -1153,6 +1159,56 @@ module Engine
           hex = hex_by_id(hex_name).tile
           hex.cities[city_number].place_token(corporation, corporation.next_token, free: true)
           @log << "#{corporation.name} places a token on #{hex_name}" unless silent
+        end
+
+        def illegal_double_visit_yellow_rhine_metropolis?(visits)
+          # For yellow tiles in the three Rhine Metropolis hexes, the hexes are divided into
+          # a West and an East part, where one of the sides has two cities while the other
+          # has one. It is not allowed to have a route that include both the cities on one side
+          # but it is allowed to have a route that includes one city from each side of the hex.
+
+          yellow_rhine_metropolis_visits = visits.select do |v|
+            RHINE_METROPOLIS_HEXES.include?(v.hex.name) &&
+                              v.hex.tile.color == :yellow
+          end
+          return unless yellow_rhine_metropolis_visits.size > 1
+
+          yellow_rhine_metropolis_visits.map! { |v| [v.hex.name, visit_on_west_side?(v)] }
+
+          found = nil
+          RHINE_METROPOLIS_HEXES.each do |hex_name|
+            metropolis_visits = yellow_rhine_metropolis_visits.select { |name, _| name == hex_name }
+            next unless metropolis_visits.size > 1
+
+            west, east = metropolis_visits.partition { |_, is_west| is_west }
+            found = ['West', "#{metropolis_name(hex_name, true)} (#{hex_name})"] if west.size > 1
+            found = ['East', "#{metropolis_name(hex_name, false)} (#{hex_name})"] if east.size > 1
+          end
+          found
+        end
+
+        def visit_on_west_side?(visit)
+          # To figure out if the city is on the West or East side on the Rhine Metropolis
+          # yellow hex, use the index of the cities on the tile. Index 0 is always West,
+          # and index 2 always East. Index 1 is West on Cologne hex, and East on the other two.
+
+          case visit.hex.tile.cities.index(visit)
+          when 0
+            true
+          when 2
+            false
+          else
+            visit.hex.name == 'I10'
+          end
+        end
+
+        def get_location_name(hex_name)
+          @hexes.find { |h| h.name == hex_name }.location_name
+        end
+
+        def metropolis_name(metropolis_hex_name, is_west)
+          west_name, east_name = get_location_name(metropolis_hex_name).split
+          is_west || !east_name ? west_name : east_name
         end
       end
     end
