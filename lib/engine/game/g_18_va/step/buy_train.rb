@@ -34,14 +34,20 @@ module Engine
 
             # Trainbuying in 18VA is like 1836jr except 4D trains are exempt
             other_trains + (depot_trains.reject do |x|
-                              @depot_trains_bought.include?(x.sym) &&
+                              @round.bought_depot_trains.include?(x.sym) &&
                               !@game.depot.discarded.include?(x) && x.name != '4D'
                             end)
           end
 
+          def round_state
+            {
+              bought_depot_trains: [],
+            }
+          end
+
           def setup
             super
-            @depot_trains_bought = []
+            @round.bought_depot_trains = []
           end
 
           def choices_ability(entity)
@@ -77,7 +83,7 @@ module Engine
 
             return unless from_depot
 
-            @depot_trains_bought << action.train.sym
+            @round.bought_depot_trains << action.train.sym
 
             pass! if buyable_trains(action.entity).empty?
           end
