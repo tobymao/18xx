@@ -285,10 +285,6 @@ module Engine
         C8_HEXES = %w[G19 J12].freeze
         C8_ROTATION = 5
 
-        def init_graph
-          Graph.new(self, any_track: true)
-        end
-
         def init_tile_groups
           [
             %w[1 1s],
@@ -366,6 +362,8 @@ module Engine
         end
 
         def setup
+          @saved_tiles = @tiles.dup
+
           @tile_groups = init_tile_groups
           update_opposites
           @unused_tiles = []
@@ -436,6 +434,12 @@ module Engine
           @power_progress = 0
 
           @bankrupted = {}
+        end
+
+        def init_graph
+          Engine::Part::Path.ignore_gauge_walk = true
+
+          super
         end
 
         def trains
@@ -510,46 +514,7 @@ module Engine
           # handle C tiles specially
           return false if from.label.to_s == 'C' && to.color == :yellow && from.cities.size != to.cities.size
 
-          # correct color progression?
-          return false unless Engine::Tile::COLORS.index(to.color) == (Engine::Tile::COLORS.index(from.color) + 1)
-
-          # honors pre-existing track?
-          return false unless paths_are_subset_of?(from, to.paths)
-
-          # If special ability then remaining checks is not applicable
-          return true if special
-
-          # correct label?
-          return false unless upgrades_to_correct_label?(from, to)
-
-          # honors existing town/city counts?
-          # - allow labelled cities to upgrade regardless of count; they're probably
-          #   fine (e.g., 18Chesapeake's OO cities merge to one city in brown)
-          # - TODO: account for games that allow double dits to upgrade to one town
-          return false if from.towns.size != to.towns.size
-          return false if !from.label && from.cities.size != to.cities.size
-
-          # handle case where we are laying a yellow OO tile and want to exclude single-city tiles
-          return false if (from.color == :white) && from.label.to_s == 'OO' && from.cities.size != to.cities.size
-
-          true
-        end
-
-        # allow standard to upgrade southern after phase 5
-        def paths_are_subset_of?(tile, other_paths)
-          return tile.paths_are_subset_of?(other_paths) unless @phase.available?('5')
-
-          Engine::Tile::ALL_EDGES.any? do |ticks|
-            tile.paths.all? do |path|
-              path = path.rotate(ticks)
-              other_paths.any? { |other| path_subset?(path, other) }
-            end
-          end
-        end
-
-        def path_subset?(path, other)
-          other_ends = other.ends
-          path.ends.all? { |t| other_ends.any? { |o| t <= o } }
+          super
         end
 
         def update_tile_lists!(tile, old_tile)
@@ -637,7 +602,11 @@ module Engine
             @log << "#{corp.name} loses #{loss} power (to #{@corporation_power[corp]})" if loss.positive?
           end
 
-          upgrade_c_hexes if @phase.name == '5'
+          return unless @phase.name == '5'
+
+          Engine::Part::Path.ignore_gauge_compare = true
+          upgrade_c_hexes
+          @graph.clear_graph_for_all
         end
 
         def upgrade_c_hexes

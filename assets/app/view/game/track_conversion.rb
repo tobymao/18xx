@@ -33,8 +33,7 @@ module View
           end
 
         if !@selected_route && (first_train = trains[0])
-          route = Engine::Route.new(@game, @game.phase, first_train, abilities: @abilities,
-                                                                     routes: @routes, any_track: true)
+          route = Engine::Route.new(@game, @game.phase, first_train, abilities: @abilities, routes: @routes)
           @routes << route
           store(:routes, @routes, skip: true)
           store(:selected_route, route, skip: true)
@@ -45,8 +44,7 @@ module View
         trains = trains.flat_map do |train|
           onclick = lambda do
             unless (route = @routes.find { |t| t.train == train })
-              route = Engine::Route.new(@game, @game.phase, train, abilities: @abilities,
-                                                                   routes: @routes, any_track: true)
+              route = Engine::Route.new(@game, @game.phase, train, abilities: @abilities, routes: @routes)
               @routes << route
               store(:routes, @routes, skip: true)
             end

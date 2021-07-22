@@ -62,13 +62,29 @@ module Engine
         separate_parts
       end
 
+      def ignore_gauge_compare
+        @@ignore_gauge_compare ||= nil
+      end
+
+      def self.ignore_gauge_compare=(var)
+        @@ignore_gauge_compare = var
+      end
+
+      def ignore_gauge_walk
+        @@ignore_gauge_walk ||= nil
+      end
+
+      def self.ignore_gauge_walk=(var)
+        @@ignore_gauge_walk = var
+      end
+
       def <=>(other)
         id <=> other.id
       end
 
       def <=(other)
         other_ends = other.ends
-        ends.all? { |t| other_ends.any? { |o| t <= o } } && tracks_match?(other)
+        ends.all? { |t| other_ends.any? { |o| t <= o } } && (ignore_gauge_compare || tracks_match?(other))
       end
 
       def tracks_match?(other_path, dual_ok: false)
@@ -112,13 +128,11 @@ module Engine
       # on: A set of Paths mapping to 1 or 0. When `on` is set. Usage is currently limited to `select` in path & node
       # skip_track: If passed, don't walk on track of that type (ie: :broad track for 1873)
       # tile_type: if :lawson don't undo visited paths
-      # any_track: if set, ignore track type when walking
       def walk(
         skip: nil,
         jskip: nil,
         visited: {},
         skip_paths: nil,
-        any_track: nil,
         counter: Hash.new(0),
         on: nil,
         tile_type: :normal,
@@ -139,8 +153,7 @@ module Engine
           @junction.paths.each do |jp|
             next if on && !on[jp]
 
-            jp.walk(jskip: @junction, visited: visited, counter: counter, on: on, any_track: any_track,
-                    tile_type: tile_type, &block)
+            jp.walk(jskip: @junction, visited: visited, counter: counter, on: on, tile_type: tile_type, &block)
           end
         end
 
@@ -156,10 +169,10 @@ module Engine
           neighbor.paths[np_edge].each do |np|
             next if on && !on[np]
             next unless lane_match?(@exit_lanes[edge], np.exit_lanes[np_edge])
-            next unless any_track || tracks_match?(np, dual_ok: true)
+            next if !ignore_gauge_walk && !tracks_match?(np, dual_ok: true)
 
             np.walk(skip: np_edge, visited: visited, counter: counter, on: on, skip_track: skip_track,
-                    any_track: any_track, tile_type: tile_type, &block)
+                    tile_type: tile_type, &block)
           end
 
           counter[edge_id] -= 1

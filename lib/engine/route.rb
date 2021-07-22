@@ -4,8 +4,8 @@ require_relative 'game_error'
 
 module Engine
   class Route
-    attr_accessor :halts, :routes, :train
-    attr_reader :last_node, :phase, :abilities
+    attr_accessor :halts, :routes
+    attr_reader :last_node, :phase, :train, :abilities
 
     def initialize(game, phase, train, **opts)
       @game = game
@@ -27,7 +27,6 @@ module Engine
       @last_node = nil
       @last_offboard = []
       @stops = nil
-      @any_track = opts[:any_track]
     end
 
     def clear_cache!(all: false, only_routes: false)
@@ -56,6 +55,11 @@ module Engine
       @connection_data = nil
       @last_node = nil
       @last_offboard = []
+    end
+
+    def train=(new_train)
+      @train = new_train
+      clear_cache!
     end
 
     def cycle_halts
@@ -103,7 +107,7 @@ module Engine
         begin
           new_chains = []
           start_node.paths.each do |start_path|
-            start_path.walk(skip_track: skip_track, any_track: @any_track) do |current, visited|
+            start_path.walk(skip_track: skip_track) do |current, visited|
               next unless current.nodes.include?(end_node)
 
               paths = visited.keys
