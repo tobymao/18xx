@@ -3,11 +3,13 @@
 require_relative 'meta'
 require_relative '../base'
 require_relative '../company_price_50_to_150_percent'
+require_relative '../cities_plus_towns_route_distance_str'
 
 module Engine
   module Game
     module G18AL
       class Game < Game::Base
+        include CitiesPlusTownsRouteDistanceStr
         include_meta(G18AL::Meta)
 
         CURRENCY_FORMAT_STR = '$%d'

@@ -5,12 +5,14 @@ require_relative 'map'
 require_relative 'meta'
 require_relative '../base'
 require_relative '../company_price_50_to_150_percent'
+require_relative '../cities_plus_towns_route_distance_str'
 
 module Engine
   module Game
     module G18MS
       class Game < Game::Base
         include_meta(G18MS::Meta)
+        include CitiesPlusTownsRouteDistanceStr
         include Entities
         include Map
 

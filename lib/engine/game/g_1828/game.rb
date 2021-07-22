@@ -5,12 +5,14 @@ require_relative '../base'
 require_relative 'stock_market'
 require_relative 'system'
 require_relative 'shell'
+require_relative '../cities_plus_towns_route_distance_str'
 
 module Engine
   module Game
     module G1828
       class Game < Game::Base
         include_meta(G1828::Meta)
+        include CitiesPlusTownsRouteDistanceStr
 
         register_colors(hanBlue: '#446CCF',
                         steelBlue: '#4682B4',

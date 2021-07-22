@@ -7,12 +7,14 @@ require_relative '../base'
 require_relative '../company_price_up_to_face'
 require_relative '../interest_on_loans'
 require_relative '../stubs_are_restricted'
+require_relative '../cities_plus_towns_route_distance_str'
 
 module Engine
   module Game
     module G1867
       class Game < Game::Base
         include_meta(G1867::Meta)
+        include CitiesPlusTownsRouteDistanceStr
 
         register_colors(black: '#16190e',
                         blue: '#0189d1',
