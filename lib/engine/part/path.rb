@@ -5,8 +5,9 @@ require_relative 'base'
 module Engine
   module Part
     class Path < Base
-      attr_reader :a, :b, :city, :edges, :exit_lanes, :junction,
-                  :lanes, :nodes, :offboard, :stops, :terminal, :town, :track, :ignore
+      attr_reader :a, :b, :city, :edges, :exit_lanes, :junction, :lanes, :nodes, :offboard,
+                  :stops, :terminal, :town, :track, :ignore
+      attr_accessor :ignore_gauge_walk, :ignore_gauge_compare
 
       LANES = [[1, 0].freeze, [1, 0].freeze].freeze
       MATCHES_BROAD = %i[broad dual].freeze
@@ -22,7 +23,8 @@ module Engine
         end
       end
 
-      def self.make_lanes(a, b, terminal: nil, lanes: nil, a_lane: nil, b_lane: nil, track: nil, ignore: nil)
+      def self.make_lanes(a, b, terminal: nil, lanes: nil, a_lane: nil, b_lane: nil, track: nil, ignore: nil,
+                          ignore_gauge_walk: nil, ignore_gauge_compare: nil)
         track ||= :broad
         if lanes
           Array.new(lanes) do |index|
@@ -36,18 +38,23 @@ module Engine
                      terminal: terminal,
                      lanes: [a_lanes, b_lanes],
                      track: track,
-                     ignore: ignore)
+                     ignore: ignore,
+                     ignore_gauge_walk: ignore_gauge_walk,
+                     ignore_gauge_compare: ignore_gauge_compare)
           end
         else
           Path.new(a, b,
                    terminal: terminal,
                    lanes: [decode_lane_spec(a_lane), decode_lane_spec(b_lane)],
                    track: track,
-                   ignore: ignore)
+                   ignore: ignore,
+                   ignore_gauge_walk: ignore_gauge_walk,
+                   ignore_gauge_compare: ignore_gauge_compare)
         end
       end
 
-      def initialize(a, b, terminal: nil, lanes: LANES, track: :broad, ignore: nil)
+      def initialize(a, b, terminal: nil, lanes: LANES, track: :broad, ignore: nil,
+                     ignore_gauge_walk: nil, ignore_gauge_compare: nil)
         @a = a
         @b = b
         @terminal = terminal
@@ -58,24 +65,10 @@ module Engine
         @exit_lanes = {}
         @track = track
         @ignore = ignore
+        @ignore_gauge_walk = ignore_gauge_walk
+        @ignore_gauge_compare = ignore_gauge_compare
 
         separate_parts
-      end
-
-      def ignore_gauge_compare
-        @@ignore_gauge_compare ||= nil
-      end
-
-      def self.ignore_gauge_compare=(var)
-        @@ignore_gauge_compare = var
-      end
-
-      def ignore_gauge_walk
-        @@ignore_gauge_walk ||= nil
-      end
-
-      def self.ignore_gauge_walk=(var)
-        @@ignore_gauge_walk = var
       end
 
       def <=>(other)
@@ -84,7 +77,7 @@ module Engine
 
       def <=(other)
         other_ends = other.ends
-        ends.all? { |t| other_ends.any? { |o| t <= o } } && (ignore_gauge_compare || tracks_match?(other))
+        ends.all? { |t| other_ends.any? { |o| t <= o } } && (@ignore_gauge_compare || tracks_match?(other))
       end
 
       def tracks_match?(other_path, dual_ok: false)
@@ -169,7 +162,7 @@ module Engine
           neighbor.paths[np_edge].each do |np|
             next if on && !on[np]
             next unless lane_match?(@exit_lanes[edge], np.exit_lanes[np_edge])
-            next if !ignore_gauge_walk && !tracks_match?(np, dual_ok: true)
+            next if !@ignore_gauge_walk && !tracks_match?(np, dual_ok: true)
 
             np.walk(skip: np_edge, visited: visited, counter: counter, on: on, skip_track: skip_track,
                     tile_type: tile_type, &block)
@@ -256,7 +249,9 @@ module Engine
                         terminal: @terminal,
                         lanes: @lanes,
                         track: @track,
-                        ignore: @ignore)
+                        ignore: @ignore,
+                        ignore_gauge_walk: @ignore_gauge_walk,
+                        ignore_gauge_compare: @ignore_gauge_compare)
         path.index = index
         path.tile = @tile
         path

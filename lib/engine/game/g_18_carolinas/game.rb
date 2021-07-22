@@ -434,12 +434,10 @@ module Engine
           @power_progress = 0
 
           @bankrupted = {}
-        end
 
-        def init_graph
-          Engine::Part::Path.ignore_gauge_walk = true
-
-          super
+          @all_tiles.each { |t| t.ignore_gauge_walk = true }
+          @_tiles.values.each { |t| t.ignore_gauge_walk = true }
+          @graph.clear_graph_for_all
         end
 
         def trains
@@ -604,7 +602,8 @@ module Engine
 
           return unless @phase.name == '5'
 
-          Engine::Part::Path.ignore_gauge_compare = true
+          @all_tiles.each { |t| t.ignore_gauge_compare = true }
+          @_tiles.values.each { |t| t.ignore_gauge_compare = true }
           upgrade_c_hexes
           @graph.clear_graph_for_all
         end

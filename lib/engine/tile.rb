@@ -248,6 +248,16 @@ module Engine
       @_exits ||= @edges.map { |e| rotate(e.num, @rotation) }.uniq
     end
 
+    def ignore_gauge_walk=(val)
+      @paths.each { |p| p.ignore_gauge_walk = val }
+      @_paths = nil
+    end
+
+    def ignore_gauge_compare=(val)
+      @paths.each { |p| p.ignore_gauge_compare = val }
+      @_paths = nil
+    end
+
     def terrain
       @upgrades.flat_map(&:terrains).uniq
     end
