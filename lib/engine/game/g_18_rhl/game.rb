@@ -124,43 +124,43 @@ module Engine
           {
             'count' => 1,
             'color' => 'green',
-            'code' => 'city=revenue:yellow_30|green_40,slots:3;path=a:0,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
-                      'path=a:5,b:_0;label=D;upgrade=cost:50,terrain:river',
+            'code' => 'city=revenue:40,slots:3;path=a:0,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=D;'\
+                      'upgrade=cost:50,terrain:river;icon=image:18_rhl/trajekt,sticky:0',
           },
           '922' =>
           {
             'count' => 1,
             'color' => 'green',
-            'code' => 'city=revenue:yellow_30|green_40,slots:3;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0;'\
-                      'path=a:5,b:_0;label=D;upgrade=cost:50,terrain:river',
+            'code' => 'city=revenue:40,slots:3;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=D;'\
+                      'upgrade=cost:50,terrain:river;icon=image:18_rhl/trajekt,sticky:0',
           },
           '923' =>
           {
             'count' => 1,
             'color' => 'green',
-            'code' => 'city=revenue:yellow_30|green_40,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
-                      'path=a:3,b:_0;label=K;upgrade=cost:50,terrain:river',
+            'code' => 'city=revenue:40,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;label=K;'\
+                      'upgrade=cost:50,terrain:river;icon=image:18_rhl/trajekt,sticky:0',
           },
           '924' =>
           {
             'count' => 1,
             'color' => 'green',
-            'code' => 'city=revenue:yellow_30|green_40,slots:3;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
-                      'path=a:4,b:_0;label=K;upgrade=cost:50,terrain:river',
+            'code' => 'city=revenue:40,slots:3;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=K;'\
+                      'upgrade=cost:50,terrain:river;icon=image:18_rhl/trajekt,sticky:0',
           },
           '925' =>
           {
             'count' => 1,
             'color' => 'green',
-            'code' => 'city=revenue:yellow_30|green_40,slots:3;path=a:0,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
-                      'path=a:5,b:_0;label=DU;upgrade=cost:50,terrain:river',
+            'code' => 'city=revenue:40,slots:3;path=a:0,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=DU;'\
+                      'upgrade=cost:50,terrain:river;icon=image:18_rhl/trajekt,sticky:0',
           },
           '926' =>
           {
             'count' => 1,
             'color' => 'green',
-            'code' => 'city=revenue:yellow_30|green_40,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;'\
-                      'path=a:5,b:_0;label=DU;upgrade=cost:50,terrain:river',
+            'code' => 'city=revenue:40,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=DU;'\
+                      'upgrade=cost:50,terrain:river;icon=image:18_rhl/trajekt,sticky:0',
           },
           '927' =>
           {
@@ -473,7 +473,7 @@ module Engine
           {
             name: '8',
             distance: [{ 'nodes' => %w[city offboard], 'pay' => 8, 'visit' => 99 },
-                       { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
+                       { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
             num: 4,
             price: 800,
             available_on: '6',
@@ -638,8 +638,8 @@ module Engine
                 hexes: %w[E12],
                 tiles: %w[1 2 55 56 69],
                 when: 'track',
-                free: 'true',
-                reachable: 'false',
+                free: true,
+                reachable: false,
                 count: 1,
               },
             ],
@@ -680,8 +680,8 @@ module Engine
                 hexes: %w[D13 E12 E14 F11 F13 G12 G14 H13 I12 I14 J13 K2 K12],
                 tiles: %w[1 2 3 4 5 6 7 8 9 23 24 25 30 55 57 58 69 930 934 937],
                 when: 'track',
-                free: 'true',
-                reachable: 'false',
+                free: true,
+                reachable: false,
                 count: 1,
               },
             ],
@@ -735,9 +735,43 @@ module Engine
 
         AXES = { x: :number, y: :letter }.freeze
 
+        EASTERN_RUHR_CONNECTION_CHECK = %w[C12 D13 E14].freeze
+
+        EASTERN_RUHR_HEXES = %w[C14 D15].freeze
+
+        NIMWEGEN_ARNHEIM_OFFBOARD_HEXES = %(A4 A6).freeze
+
+        OUT_TOKENED_HEXES = %w[A14 B15 C2].freeze
+
         RGE_HEXES = %w[A4 A6 L11 L13].freeze
 
         RHINE_METROPOLIS_HEXES = %w[D9 F9 I10].freeze
+
+        SOUTHERN_OFFBOARD_HEXES = %w[L1 L11 L13].freeze
+
+        def aachen_hex
+          @aachen_hex ||= hex_by_id('K2')
+        end
+
+        def cologne_hex
+          @cologne_hex ||= hex_by_id('I10')
+        end
+
+        def duren_hex
+          @duren_hex ||= hex_by_id('K6')
+        end
+
+        def duisburg_hex
+          @duisburg_hex ||= hex_by_id('D9')
+        end
+
+        def dusseldorf_hex
+          @dusseldorf_hex ||= hex_by_id('F9')
+        end
+
+        def roermund_hex
+          @roermund_hex ||= hex_by_id('G2')
+        end
 
         def num_trains(train)
           return train[:num] unless train[:name] == '2'
@@ -807,8 +841,9 @@ module Engine
           Engine::Round::Operating.new(self, [
             G18Rhl::Step::Bankrupt,
             Engine::Step::HomeToken,
-            Engine::Step::SpecialTrack,
-            Engine::Step::Track,
+            G18Rhl::Step::SpecialTrack,
+            G18Rhl::Step::Track,
+            Engine::Step::SpecialToken,
             Engine::Step::Token,
             Engine::Step::Route,
             G18Rhl::Step::Dividend,
@@ -855,6 +890,7 @@ module Engine
           kkk.shares[3].double_cert = true
 
           @aachen_connection = 0
+          @eastern_ruhr_connections = []
           @newly_floated = []
 
           @essen_tile ||= @tiles.find { |t| t.name == 'Essen' } if optional_promotion_tiles
@@ -1021,6 +1057,18 @@ module Engine
             raise GameError, "A route cannot visit #{metropolis_name} side of Rhine Metropolis #{rhine_side} twice"
           end
 
+          if visits.count { |v| EASTERN_RUHR_HEXES.include?(v.hex.name) } > 1
+            raise GameError, 'A route cannot both begin and end at Eastern Ruhr off-board hexes'
+          end
+
+          if visits.count { |v| NIMWEGEN_ARNHEIM_OFFBOARD_HEXES.include?(v.hex.name) } > 1
+            raise GameError, 'A route cannot both begin and end at the Nimwegen and Arnheim off-board hexes'
+          end
+
+          if visits.count { |v| SOUTHERN_OFFBOARD_HEXES.include?(v.hex.name) } > 1
+            raise GameError, 'A route cannot both begin and end at the Southern off-board hexes'
+          end
+
           return super unless route.train.name == '8'
 
           if visits.none? { |v| RGE_HEXES.include?(v.hex.name) }
@@ -1029,7 +1077,70 @@ module Engine
 
           return super unless visits.find { |v| !RGE_HEXES.include?(v.hex.name) && v.hex.tile.color == :red }
 
-          raise GameError, 'Route for 8 trains cannot include any off-board hexes besides RGE ones'
+          raise GameError, 'Route for 8 trains cannot include any off-board hexes besides the RGE ones'
+        end
+
+        def revenue_for(route, stops)
+          revenue = super
+          revenue_info(route, stops).each { |b| revenue += b[:revenue] }
+
+          revenue
+        end
+
+        def revenue_str(route)
+          stops = route.stops
+          stop_hexes = stops.map(&:hex)
+          str = route.hexes.map do |h|
+            stop_hexes.include?(h) ? h&.name : "(#{h&.name})"
+          end.join('-')
+
+          revenue_info(route, stops).map { |b| b[:description] }.compact.each { |d| str += " + #{d}" }
+
+          str
+        end
+
+        def revenue_info(route, stops)
+          corporation = route.train.owner
+          [off_board_out_tokened_penalty(route, stops, corporation),
+           montan_bonus(route, stops),
+           eastern_ruhr_area_bonus(stops),
+           iron_rhine_bonus(stops, corporation),
+           trajekt_usage_penalty(route, stops),
+           rheingold_express_bonus(route, stops)]
+        end
+
+        def aachen_connection_check
+          # TODO: This code seem to sometimes cause problems with future tile lays
+          # so it is not yet enabled. It should be called from lay_tile_check.rb when it has been corrected.
+          return unless @aachen_connection.positive?
+          return if loading
+
+          aachen_duren = false
+          duren_cologne = false
+
+          @corporations.each do |c|
+            aachen_duren ||= check_aachen_duren_connection(c)
+            duren_cologne ||= check_duren_cologne_connection(c)
+          end
+          return unless aachen_duren && duren_cologne
+
+          @log << 'A link between Aachen, Düren and Köln has been established!'
+          @log << "#{rhe.name} adds #{format_currency(@aachen_connection)} to its treasury"
+          @bank.spend(@aachen_connection, rhe)
+          @aachen_connection = 0
+        end
+
+        def eastern_ruhr_connection_check(hex)
+          return if !EASTERN_RUHR_CONNECTION_CHECK.include?(hex.name) || @eastern_ruhr_connections.size == 4
+
+          [['C12', 4], ['D13', 3], ['D13', 4], ['E14', 3]].each do |check_hex, edge|
+            next unless check_hex == hex.name
+            next if @eastern_ruhr_connections.include?([check_hex, edge])
+            next unless hex.tile.exits.include?(edge)
+
+            @log << 'New link to Eastern Ruhr established'
+            @eastern_ruhr_connections << [check_hex, edge]
+          end
         end
 
         private
@@ -1043,11 +1154,11 @@ module Engine
           end
           {
             red: {
-              ['A2'] => 'offboard=revenue:yellow_40|brown_60,hide:1,groups:Nimwegen',
-              ['A4'] => 'offboard=revenue:yellow_40|brown_60,groups:Nimwegen;path=a:0,b:_0,terminal:1;'\
+              ['A2'] => 'offboard=revenue:yellow_40|brown_60,hide:1,groups:NorthWest',
+              ['A4'] => 'offboard=revenue:yellow_40|brown_60,groups:NorthWest;path=a:0,b:_0,terminal:1;'\
                         'border=edge:4,type:impassable;icon=image:18_rhl/RGE',
-              ['A6'] => 'offboard=revenue:yellow_40|brown_60;path=a:5,b:_0,terminal:1;border=edge:0,type:impassable;'\
-                        'border=edge:1,type:impassable;icon=image:18_rhl/RGE',
+              ['A6'] => 'offboard=revenue:yellow_40|brown_60,groups:NorthWest;path=a:5,b:_0,terminal:1;'\
+                        'border=edge:0,type:impassable;border=edge:1,type:impassable;icon=image:18_rhl/RGE',
               ['A14'] => 'city=revenue:yellow_40|brown_60;path=a:0,b:_0,terminal:1',
               ['B15'] => 'city=revenue:yellow_50|brown_80;path=a:1,b:_0,terminal:1',
               ['C2'] => 'city=revenue:yellow_10|brown_30;path=a:4,b:_0,terminal:1',
@@ -1209,6 +1320,166 @@ module Engine
         def metropolis_name(metropolis_hex_name, is_west)
           west_name, east_name = get_location_name(metropolis_hex_name).split
           is_west || !east_name ? west_name : east_name
+        end
+
+        def off_board_out_tokened_penalty(route, stops, corporation)
+          bonus = { revenue: 0 }
+
+          stops.each do |s|
+            next unless out_tokened_hex?(s.hex, corporation)
+
+            bonus[:revenue] -= s.route_revenue(route.phase, route.train)
+            block = "#{s.hex.name} tokened"
+            bonus[:description] = (bonus[:description] ? "#{bonus[:description]}, #{block}" : block)
+          end
+          bonus
+        end
+
+        def out_tokened_hex?(hex, corporation)
+          return false unless OUT_TOKENED_HEXES.include?(hex.name)
+
+          tile_cities = hex.tile.cities
+          return false if tile_cities.empty? || tile_cities.first.tokens.empty?
+
+          tile_cities.first.tokens.find { |t| t&.corporation != corporation }
+        end
+
+        def montan_bonus(route, stops)
+          bonus = { revenue: 0 }
+          return bonus if route.train.name == '8'
+
+          coal = 0
+          steel = 0
+          coal += visited_icons(stops, 'K')
+          steel += visited_icons(stops, 'S')
+          coal += 1 if stops.find { |s| EASTERN_RUHR_HEXES.include?(s.hex.id) && coal_edge_used?(route, s.hex.id) }
+          steel += 1 if stops.find { |s| EASTERN_RUHR_HEXES.include?(s.hex.id) && steel_edge_used?(route, s.hex.id) }
+          steel += 1 if stops.find { |s| s.hex.id == 'J15' }
+          return bonus if coal.zero? || steel.zero?
+
+          if coal > 1 && steel > 1
+            bonus[:revenue] = brown_phase? ? 80 : 40
+            bonus[:description] = 'Double Montan'
+          else
+            bonus[:revenue] = brown_phase? ? 40 : 20
+            bonus[:description] = 'Montan'
+          end
+          bonus
+        end
+
+        def eastern_ruhr_area_bonus(stops)
+          bonus = { revenue: 0 }
+          return bonus if stops.none? { |s| EASTERN_RUHR_HEXES.include?(s.hex.id) }
+
+          links = @eastern_ruhr_connections.size
+          bonus[:revenue] = 10 * links
+          bonus[:description] = "#{links} link#{links > 1 ? 's' : ''}"
+          bonus
+        end
+
+        def iron_rhine_bonus(stops, corporation)
+          bonus = { revenue: 0 }
+          return bonus if out_tokened_hex?(roermund_hex, corporation) ||
+                          stops.none? { |s| s.hex.id == roermund_hex.id } ||
+                          stops.none? { |s| eastern_ruhr.include?(s.hex.id) }
+
+          bonus[:revenue] = 80
+          bonus[:description] = 'Iron Rhine'
+          bonus
+        end
+
+        def trajekt_usage_penalty(route, _stops)
+          # For any green Rhine Metropolis hex, we need to find out if the route
+          # passes from East to West (or reverse), as that means the ferry
+          # (the trajekt) has been used. By using the route information, and
+          # check for which edges are used, we can figure out if such an East-West
+          # or West-East passge has occured in these hexes.
+
+          bonus = { revenue: 0 }
+          trajekts_used = 0
+
+          hexes_with_edge_visited = get_hexes_with_edge_visited(route)
+          [duisburg_hex, dusseldorf_hex, cologne_hex].each do |metropolis_hex|
+            next unless metropolis_hex.tile.color == :green
+
+            used_city = hexes_with_edge_visited.select { |h, _| h == metropolis_hex.name }
+            next unless used_city.size > 1
+
+            west, east = used_city.partition { |_, edge| edge < 3 }
+            next if west.empty? || east.empty?
+
+            trajekts = west.size
+            trajekts = east.size if east.size < west.size
+            trajekts_used += trajekts
+          end
+
+          return bonus unless trajekts_used.positive?
+
+          bonus[:revenue] = -10 * trajekts_used
+          bonus[:description] = "#{trajekts_used} trajekt#{trajekts_used > 1 ? 's' : ''}"
+          bonus
+        end
+
+        def get_hexes_with_edge_visited(route)
+          # Get a list of all uniq exists where each element is in the form [hex name, edge number]
+
+          route.chains.flat_map { |c| c[:paths] }.flat_map { |p| [p.hex.name].product(p.exits) }.uniq
+        end
+
+        def rheingold_express_bonus(route, stops)
+          bonus = { revenue: 0 }
+          return bonus unless route.train.name == '8'
+
+          # Double any Rhine Metropolis cities visited
+          stops.each do |s|
+            next unless RHINE_METROPOLIS_HEXES.include?(s.hex.name)
+
+            bonus[:revenue] += s.route_revenue(route.phase, route.train)
+          end
+
+          bonus[:description] = 'RGE'
+          bonus
+        end
+
+        def check_aachen_duren_connection(corp)
+          @graph.reachable_hexes(corp)[aachen_hex] && @graph.reachable_hexes(corp)[duren_hex]
+        end
+
+        def check_duren_cologne_connection(corp)
+          @graph.reachable_hexes(corp)[cologne_hex] && @graph.reachable_hexes(corp)[duren_hex]
+        end
+
+        def visited_icons(stops, icon_name)
+          stops.select { |s| s.hex.tile.icons.any? { |i| i.name == icon_name } }
+               .map { |s| s.hex.name }
+               .uniq
+               .size
+        end
+
+        def trajekts_used?(hex_name, route)
+          route.chains.any? { |c| western_edge_used?(hex_name, c) && eastern_edge_used?(hex_name, c) }
+        end
+
+        def western_edge_used?(hex_name, chain)
+          edge_used?(chain, hex_name, [0, 1, 2])
+        end
+
+        def eastern_edge_used?(hex_name, chain)
+          edge_used?(chain, hex_name, [3, 4, 5])
+        end
+
+        def coal_edge_used?(route, hex_name)
+          edge_of_interest = hex_name == 'C14' ? 1 : 0
+          route.chains.any? { |c| edge_used?(c, hex_name, [edge_of_interest]) }
+        end
+
+        def steel_edge_used?(route, hex_name)
+          edge_of_interest = hex_name == 'C14' ? 0 : 1
+          route.chains.any? { |c| edge_used?(c, hex_name, [edge_of_interest]) }
+        end
+
+        def edge_used?(chain, hex_name, edges_of_interest)
+          chain[:paths].any? { |p| p.hex.name == hex_name && !(p.exits & edges_of_interest).empty? }
         end
       end
     end
