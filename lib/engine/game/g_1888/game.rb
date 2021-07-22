@@ -152,7 +152,7 @@ module Engine
           'TJL' => 20,
           'LYR' => 20,
           'JZR' => 40,
-          'ZDR' => 30,
+          'ZDR' => 40,
         }.freeze
 
         MINE_HEX = 'C5'
@@ -173,6 +173,7 @@ module Engine
         ONLY_HIGHEST_BID_COMMITTED = false # FIXME: check with Lonny
         TRACK_RESTRICTION = :permissive # FIXME: check with Lonny
         SELL_BUY_ORDER = :sell_buy
+        EBUY_OTHER_VALUE = false
 
         def setup_company_price_50_to_150_percent
           @companies.each do |company|
