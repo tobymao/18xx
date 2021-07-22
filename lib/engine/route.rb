@@ -57,6 +57,11 @@ module Engine
       @last_offboard = []
     end
 
+    def train=(new_train)
+      @train = new_train
+      clear_cache!
+    end
+
     def cycle_halts
       return unless @halts
 

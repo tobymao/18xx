@@ -67,10 +67,94 @@ module Engine
 
         TRAINS = [
           {
-            name: 'X',
-            distance: 99,
+            name: '2',
+            distance: 2,
             price: 1,
             num: 64,
+          },
+          {
+            name: '3',
+            distance: 3,
+            price: 1,
+            num: 40,
+          },
+          {
+            name: '4',
+            distance: 4,
+            price: 1,
+            num: 32,
+          },
+          {
+            name: '5',
+            distance: 5,
+            price: 1,
+            num: 24,
+          },
+          {
+            name: '6',
+            distance: 6,
+            price: 1,
+            num: 16,
+          },
+          {
+            name: '7',
+            distance: 7,
+            price: 1,
+            num: 16,
+          },
+          {
+            name: '8',
+            distance: 8,
+            price: 1,
+            num: 16,
+          },
+          {
+            name: '9',
+            distance: 9,
+            price: 1,
+            num: 8,
+          },
+          {
+            name: '10',
+            distance: 10,
+            price: 1,
+            num: 8,
+          },
+          {
+            name: '11',
+            distance: 11,
+            price: 1,
+            num: 8,
+          },
+          {
+            name: '12',
+            distance: 12,
+            price: 1,
+            num: 8,
+          },
+          {
+            name: '13',
+            distance: 13,
+            price: 1,
+            num: 8,
+          },
+          {
+            name: '14',
+            distance: 14,
+            price: 1,
+            num: 8,
+          },
+          {
+            name: '15',
+            distance: 15,
+            price: 1,
+            num: 8,
+          },
+          {
+            name: '16',
+            distance: 16,
+            price: 1,
+            num: 8,
           },
           {
             name: 'Convert',
@@ -157,7 +241,7 @@ module Engine
         SELL_BUY_ORDER = :sell_buy
         SELL_AFTER = :first
         PRESIDENT_SALES_TO_MARKET = true
-        HOME_TOKEN_TIMING = :operate
+        HOME_TOKEN_TIMING = :operating_round
         SOLD_OUT_INCREASE = false
         SELL_MOVEMENT = :none
         BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
@@ -195,6 +279,8 @@ module Engine
         MAX_PROGRESS = 15
 
         C_TILES = %w[C1 C2 C3 C4 C5 C6 C7 C8 C9].freeze
+        CHARLOTTE_HEX = 'D10'
+        WILMINGTON_HEX = 'G19'
         C7_HEXES = %w[D10 G9].freeze
         C8_HEXES = %w[G19 J12].freeze
         C8_ROTATION = 5
@@ -276,6 +362,8 @@ module Engine
         end
 
         def setup
+          @saved_tiles = @tiles.dup
+
           @tile_groups = init_tile_groups
           update_opposites
           @unused_tiles = []
@@ -332,20 +420,33 @@ module Engine
             end
           end
 
-          @conversion_train = @depot.trains.find { |t| t.name == 'Convert' }
-
           # initialize corp trains
           @corporation_trains = {}
           @corporations.each do |corp|
-            8.times { buy_train(corp, @depot.depot_trains[0], :free) }
             @corporation_trains[corp] = nil
           end
+
+          trains.each { |t| t.owner = nil }
+          @conversion_train = trains.find { |t| t.name == 'Convert' }
 
           # initialize power
           @corporation_power = Hash.new(0)
           @power_progress = 0
 
           @bankrupted = {}
+
+          @all_tiles.each { |t| t.ignore_gauge_walk = true }
+          @_tiles.values.each { |t| t.ignore_gauge_walk = true }
+          @graph.clear_graph_for_all
+        end
+
+        def trains
+          @depot.trains
+        end
+
+        def place_home_token(corporation)
+          super
+          @graph.clear
         end
 
         def can_ipo?(corp)
@@ -387,6 +488,7 @@ module Engine
             G18Carolinas::Step::Bankrupt,
             Engine::Step::HomeToken,
             G18Carolinas::Step::Track,
+            G18Carolinas::Step::ConvertTrack,
             G18Carolinas::Step::Token,
             G18Carolinas::Step::Route,
             G18Carolinas::Step::Dividend,
@@ -498,20 +600,23 @@ module Engine
             @log << "#{corp.name} loses #{loss} power (to #{@corporation_power[corp]})" if loss.positive?
           end
 
-          upgrade_c_hexes if @phase.name == '5'
+          return unless @phase.name == '5'
+
+          @all_tiles.each { |t| t.ignore_gauge_compare = true }
+          @_tiles.values.each { |t| t.ignore_gauge_compare = true }
+          upgrade_c_hexes
+          @graph.clear_graph_for_all
         end
 
         def upgrade_c_hexes
-          C7_HEXES.each do |hexid|
-            hex = hex_by_id(hexid)
-            tile = @tiles.find { |t| t.name == 'C7' }
-            upgrade_tile(hex, tile, 0)
-          end
-          C8_HEXES.each do |hexid|
-            hex = hex_by_id(hexid)
-            tile = @tiles.find { |t| t.name == 'C8' }
-            upgrade_tile(hex, tile, C8_ROTATION)
-          end
+          # upgrade plain hexes in charlotte and wilmington to yellow first so reservations are handled correctly
+          charlotte = hex_by_id(CHARLOTTE_HEX)
+          wilmington = hex_by_id(WILMINGTON_HEX)
+          upgrade_tile(charlotte, @tiles.find { |t| t.name == 'C1' }, 1) if charlotte.tile.color == :white
+          upgrade_tile(wilmington, @tiles.find { |t| t.name == 'C1' }, 2) if wilmington.tile.color == :white
+
+          C7_HEXES.each { |hexid| upgrade_tile(hex_by_id(hexid), @tiles.find { |t| t.name == 'C7' }, 0) }
+          C8_HEXES.each { |hexid| upgrade_tile(hex_by_id(hexid), @tiles.find { |t| t.name == 'C8' }, C8_ROTATION) }
         end
 
         # no checking
@@ -535,53 +640,60 @@ module Engine
           !must_buy_power?(entity)
         end
 
-        def load_corporation_trains(entity)
-          operating = entity.operating_history
-          last_run = operating[operating.keys.max]&.routes
+        def loan_or_power(corp)
+          corp.receivership? && must_buy_power?(corp) ? min_train : @corporation_power[corp]
+        end
 
-          return [] unless last_run
-          return [] unless last_run.keys&.first
+        def remove_var_train(entity, train)
+          train.owner = nil
+          entity.trains.delete(train)
+        end
 
-          last_run.keys
+        def remove_all_var_trains(entity)
+          entity.trains.each { |t| t.owner = nil }
+          entity.trains.clear
+        end
+
+        def append_var_train(entity, train)
+          train.owner = entity
+          entity.trains << train
+        end
+
+        def swap_var_train(entity, old_train, new_train)
+          old_train.owner = nil
+          new_train.owner = entity
+          entity.trains[entity.trains.find_index(old_train)] = new_train
         end
 
         def route_trains(entity)
-          @corporation_trains[entity] ||= load_corporation_trains(entity)
-
-          if entity.receivership? && must_buy_power?(entity)
-            # remember single train if in receivership
-            @corporation_trains[entity] = [@corporation_trains[entity].first] unless @corporation_trains[entity].empty?
-          else
-            # adjust trains that don't meet lower limit
-            # - this may cause an illegal set of routes, but will preserve previous run
-            @corporation_trains[entity].each do |t|
-              if t.distance < min_train
-                t.distance = min_train
-                t.name = min_train.to_s
-              end
-            end
+          # remember single train if in receivership
+          if entity.receivership? && must_buy_power?(entity) && !entity.trains.empty?
+            first = entity.trains.first
+            remove_all_var_trains(entity)
+            append_var_train(entity, first) if first.distance == min_train
           end
 
-          if @corporation_trains[entity].empty? && (@corporation_power[entity] >= min_train ||
+          # if no trains, and legal to run a train, allocate a minimum size train
+          if entity.trains.empty? && (@corporation_power[entity] >= min_train ||
               (entity.receivership? && must_buy_power?(entity)))
-            train = entity.trains[0]
-            train.distance = min_train
-            train.name = min_train.to_s
-            @corporation_trains[entity] = [train]
+            new_train = trains.find { |t| t.distance == min_train && !t.owner }
+            raise GameError, "Unable to allocate train of distance #{min_train}" unless new_train
+
+            append_var_train(entity, new_train)
           end
-          @corporation_trains[entity]
+
+          entity.trains
         end
 
-        # after running routes, update sizes of trains actually used
+        # after running routes, update trains in corp. This is needed when loading
         def update_route_trains(entity, routes)
-          @corporation_trains[entity] = nil
+          remove_all_var_trains(entity)
           routes.each do |route|
             next if route.visited_stops.empty?
 
-            train = route.train
-            train.distance = route.visited_stops.size
-            train.name = train.distance.to_s
+            append_var_train(entity, route.train)
           end
+          @corporation_trains[entity] = nil
         end
 
         def adjustable_train_list?
@@ -593,53 +705,73 @@ module Engine
         end
 
         def reset_adjustable_trains!(routes)
-          @corporation_trains[routes[0].train.owner] = nil if routes[0]
+          entity = routes[0].train.owner
+          raise GameError, 'Unable to find owner' unless entity
+
+          return unless @corporation_trains[entity]
+
+          remove_all_var_trains(entity)
+          @corporation_trains[entity].each { |t| append_var_train(entity, t) }
         end
 
         def add_route_train(routes)
           entity = routes[0].train.owner
-          trains = @corporation_trains[entity]
-          current_distance = trains.sum(&:distance)
-          return if @corporation_power[entity] - current_distance < min_train
-          return if entity.receivership? && must_buy_power?(entity)
+          raise GameError, 'Unable to find owner' unless entity
 
-          new_train = entity.trains.find { |t| !trains.include?(t) }
-          new_train.distance = min_train
-          new_train.name = min_train.to_s
-          @corporation_trains[entity] << new_train
+          current_distance = entity.trains.sum(&:distance)
+          return false if @corporation_power[entity] - current_distance < min_train
+          return false if entity.receivership? && must_buy_power?(entity)
+
+          @corporation_trains[entity] ||= entity.trains.dup
+          new_train = trains.find { |t| t.distance == min_train && !t.owner }
+          raise GameError, "Unable to allocate train of distance #{min_train}" unless new_train
+
+          append_var_train(entity, new_train)
+          true
         end
 
         def delete_route_train(route)
           train = route.train
-          return if train.owner.receivership? && must_buy_power?(entity)
-          return if @corporation_trains[train.owner].one?
+          entity = train.owner
+          raise GameError, 'Unable to find owner' unless entity
 
-          @corporation_trains[train.owner].delete(train)
-          routes = route.routes
-          route.reset!
-          routes.delete(route)
-        end
+          return false if train.owner.receivership? && must_buy_power?(entity)
+          return false if entity.trains.one?
 
-        def loan_or_power(corp)
-          corp.receivership? && must_buy_power?(corp) ? min_train : @corporation_power[corp]
+          @corporation_trains[entity] ||= entity.trains.dup
+          remove_var_train(entity, train)
+          true
         end
 
         def increase_route_train(route)
           train = route.train
-          corp = train.owner
-          return if train.distance == MAX_TRAIN
-          return if route.routes.sum { |r| r.train.distance } >= loan_or_power(corp)
+          entity = train.owner
+          raise GameError, 'Unable to find owner' unless entity
 
-          train.distance += 1
-          train.name = train.distance.to_s
+          return if train.distance == MAX_TRAIN
+          return if route.routes.sum { |r| r.train.distance } >= loan_or_power(entity)
+
+          @corporation_trains[entity] ||= entity.trains.dup
+          new_train = trains.find { |t| t.distance == (train.distance + 1) && !t.owner }
+          raise GameError, "Unable to allocate train of distance #{train.distance + 1}" unless new_train
+
+          swap_var_train(entity, train, new_train)
+          route.train = new_train
         end
 
         def decrease_route_train(route)
           train = route.train
+          entity = train.owner
+          raise GameError, 'Unable to find owner' unless entity
+
           return if train.distance == min_train
 
-          train.distance -= 1
-          train.name = train.distance.to_s
+          @corporation_trains[entity] ||= entity.trains.dup
+          new_train = trains.find { |t| t.distance == (train.distance - 1) && !t.owner }
+          raise GameError, "Unable to allocate train of distance #{train.distance - 1}" unless new_train
+
+          swap_var_train(entity, train, new_train)
+          route.train = new_train
         end
 
         def check_distance(route, visits)
@@ -661,14 +793,16 @@ module Engine
           if route.train.name == 'Convert'
             raise GameError, 'Route must have Southern track' unless route.paths.any? { |p| p.track != :broad }
           else
-            if route.routes.reject { |r| r.paths.empty? }
-                .sum { |r| r.train.distance } > loan_or_power(route.train.owner)
+            raise GameError, 'Train below minimum size' if route.train.distance < min_train
+            raise GameError, 'Train w/o owner' unless route.train.owner
+
+            if route.routes.sum { |r| r.train.distance } > loan_or_power(route.train.owner)
               raise GameError, 'Train sizes exceed train power'
             end
 
             track_types = {}
             route.paths.each { |path| track_types[path.track] = 1 }
-            raise GameError, 'Train cannot use more than one gauge' unless track_types.keys.one?
+            raise GameError, 'Train cannot use more than one gauge' if track_types[:narrow] && track_types[:broad]
           end
         end
 
