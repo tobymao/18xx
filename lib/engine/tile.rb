@@ -137,7 +137,7 @@ module Engine
       when 'upgrade'
         Part::Upgrade.new(params['cost'], params['terrain']&.split('|'), params['size'])
       when 'border'
-        Part::Border.new(params['edge'], params['type'], params['cost'])
+        Part::Border.new(params['edge'], params['type'], params['cost'], params['color'])
       when 'junction'
         junction = Part::Junction.new
         cache << junction

@@ -40,6 +40,9 @@ module Engine
             expect(border.type).to eq(other_border.type),
                                    "Border types mismatch from:#{hex.name}:#{border.edge}"\
                                    " other:#{other_hex.name}:#{Hex.invert(border.edge)}"
+            expect(border.color).to eq(other_border.color),
+                                    "Border colors mismatch from:#{hex.name}:#{border.edge}"\
+                                    " other:#{other_hex.name}:#{Hex.invert(border.edge)}"
             expect(border.cost).to eq(other_border.cost),
                                    "Border costs mismatch from:#{hex.name}:#{border.edge}"\
                                    " other:#{other_hex.name}:#{Hex.invert(border.edge)}"
