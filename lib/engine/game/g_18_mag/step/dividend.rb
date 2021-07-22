@@ -9,12 +9,17 @@ module Engine
         class Dividend < Engine::Step::Dividend
           MIN_CORP_PAYOUT = 10
           CORP_TYPES = %i[variable withhold].freeze
+          STANDARD_CORP_TYPES = %i[payout withhold].freeze
 
           def actions(entity)
             return [] if entity.minor?
             return [] if !entity.corporation? || entity.receivership? || entity.cash < MIN_CORP_PAYOUT
 
             ACTIONS
+          end
+
+          def corp_revenue(entity)
+            (entity.cash / MIN_CORP_PAYOUT).to_i * MIN_CORP_PAYOUT
           end
 
           def skip!
@@ -25,12 +30,19 @@ module Engine
                 kind: revenue.positive? ? 'payout' : 'withhold',
               ))
             else
-              amount = (current_entity.cash / MIN_CORP_PAYOUT).to_i * MIN_CORP_PAYOUT
-              process_dividend(Action::Dividend.new(
-                current_entity,
-                kind: 'variable',
-                amount: amount,
-              ))
+              amount = corp_revenue(current_entity)
+              if @game.standard_divs?
+                process_dividend(Action::Dividend.new(
+                  current_entity,
+                  kind: amount.positive? ? 'payout' : 'withhold',
+                ))
+              else
+                process_dividend(Action::Dividend.new(
+                  current_entity,
+                  kind: 'variable',
+                  amount: amount,
+                ))
+              end
             end
           end
 
@@ -45,8 +57,18 @@ module Engine
             end
 
             entity = action.entity
-            kind = action.kind.to_sym
-            amount = action.amount || 0
+            action_kind = action.kind
+            case action_kind
+            when 'withhold'
+              amount = 0
+              action_kind = 'variable'
+            when 'payout'
+              amount = corp_revenue(entity)
+              action_kind = 'variable'
+            else
+              amount = action.amount || 0
+            end
+            kind = action_kind.to_sym
             payout = corp_dividend_options(entity, amount)[kind]
 
             raise GameError, "Amount must be multiples of #{MIN_CORP_PAYOUT}" if amount % MIN_CORP_PAYOUT != 0
@@ -98,19 +120,30 @@ module Engine
           def dividend_types
             return super if current_entity.minor?
 
-            self.class::CORP_TYPES
+            @game.standard_divs? ? self.class::STANDARD_CORP_TYPES : self.class::CORP_TYPES
+          end
+
+          def dividend_options(entity)
+            return super if entity.minor?
+
+            revenue = corp_revenue(entity)
+            dividend_types.map do |type|
+              payout = send(type, entity, revenue)
+              payout[:divs_to_corporation] = 0
+              [type, payout.merge(share_price_change(entity, revenue - payout[:corporation]))]
+            end.to_h
           end
 
           def corp_dividend_options(entity, amount = 0)
-            dividend_types.map do |type|
+            self.class::CORP_TYPES.map do |type|
               payout = send(type, entity, amount)
               payout[:divs_to_corporation] = 0
               [type, payout.merge(share_price_change(entity, amount - payout[:corporation]))]
             end.to_h
           end
 
-          def withhold(entity, _revenue)
-            return super if entity.minor?
+          def withhold(entity, revenue)
+            return super if entity.minor? || @game.standard_divs?
 
             { corporation: 0, per_share: 0 }
           end
