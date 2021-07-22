@@ -9,6 +9,7 @@ module Engine
       include Tokener
 
       def actions(entity)
+        return [] unless ability(entity)
         return [] if !ability(entity) || available_tokens(entity).empty?
 
         actions = ['place_token']

@@ -80,7 +80,9 @@ module Engine
         return unless ability.type == :teleport
 
         company = ability.owner
-        if company.owner.tokens_by_type.empty?
+        tokener = company.owner
+        tokener = @game.current_entity if tokener.player?
+        if tokener.tokens_by_type.empty?
           company.remove_ability(ability)
         else
           @round.teleported = company

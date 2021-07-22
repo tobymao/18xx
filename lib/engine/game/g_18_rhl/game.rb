@@ -227,9 +227,9 @@ module Engine
           '935' =>
           {
             'count' => 1,
-            'color' => 'yellow',
-            'code' => 'city=revenue:20,loc:center;town=revenue:10,loc:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
-                      'path=a:4,b:_0;path=a:5,b:_0;label=Osterath',
+            'color' => 'purple',
+            'code' => 'city=revenue:20,loc:center;town=revenue:10,loc:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_1;'\
+                      'path=a:_1,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=Osterath',
           },
           '937' =>
           {
@@ -637,10 +637,11 @@ module Engine
                 owner_type: 'player',
                 hexes: %w[E12],
                 tiles: %w[1 2 55 56 69],
-                when: 'track',
                 free: true,
                 reachable: false,
+                special: true,
                 count: 1,
+                when: %w[track owning_player_or_turn],
               },
             ],
           },
@@ -660,12 +661,13 @@ module Engine
                 owner_type: 'player',
                 tiles: %w[935],
                 hexes: %w[E8],
-                when: ['Phase 3', 'Phase 4'],
+                count: 1,
+                when: %w[track owning_player_or_turn],
               },
             ],
           },
           {
-            sym: 'Sz',
+            sym: 'Szl',
             name: 'No. 3 Seilzyganlage',
             value: 50,
             revenue: 15,
@@ -679,10 +681,10 @@ module Engine
                 owner_type: 'player',
                 hexes: %w[D13 E12 E14 F11 F13 G12 G14 H13 I12 I14 J13 K2 K12],
                 tiles: %w[1 2 3 4 5 6 7 8 9 23 24 25 30 55 57 58 69 930 934 937],
-                when: 'track',
                 free: true,
                 reachable: false,
                 count: 1,
+                when: %w[track owning_player_or_turn],
               },
             ],
           },
@@ -702,6 +704,8 @@ module Engine
                 owner_type: 'player',
                 tiles: %w[921 922 923 924 925 926],
                 hexes: %w[D9 F9 I10],
+                count: 1,
+                when: %w[track owning_player_or_turn],
               },
             ],
           },
@@ -838,12 +842,12 @@ module Engine
         end
 
         def operating_round(round_num)
-          Engine::Round::Operating.new(self, [
+          G18Rhl::Round::Operating.new(self, [
             G18Rhl::Step::Bankrupt,
             Engine::Step::HomeToken,
+            G18Rhl::Step::SpecialToken, # Must be before any track lay (due to private No. 4)
             G18Rhl::Step::SpecialTrack,
             G18Rhl::Step::Track,
-            Engine::Step::SpecialToken,
             Engine::Step::Token,
             Engine::Step::Route,
             G18Rhl::Step::Dividend,
@@ -885,6 +889,20 @@ module Engine
           @rhe_corporation ||= corporation_by_id('RhE')
         end
 
+        def prinz_wilhelm_bahn
+          return if optional_ratingen_variant
+
+          @prinz_wilhelm_bahn ||= company_by_id('PWB')
+        end
+
+        def konzession_essen_osterath
+          @konzession_essen_osterath ||= company_by_id('KEO')
+        end
+
+        def trajektanstalt
+          @trajektanstalt ||= company_by_id('Tjt')
+        end
+
         def setup
           kkk.shares[2].double_cert = true
           kkk.shares[3].double_cert = true
@@ -898,6 +916,7 @@ module Engine
           @d_k_tile ||= @tiles.find { |t| t.name == '932V' } if optional_promotion_tiles
           @d_du_k_tile ||= @tiles.find { |t| t.name == '932' } unless optional_promotion_tiles
           @du_tile_gray ||= @tiles.find { |t| t.name == '949' } if optional_promotion_tiles
+          @osteroth_tile ||= @tiles.find { |t| t.name == '935' }
 
           @variable_placement = (rand % 9) + 1
 
@@ -1004,9 +1023,31 @@ module Engine
           place_free_token(cce, 'I10', 1, silent: false)
         end
 
+        def start_trajektanstalt_teleport
+          @trajektanstalt_teleport = current_entity
+        end
+
+        def complete_trajektanstalt_teleport
+          @trajektanstalt_teleport = nil
+        end
+
+        def tile_lays(entity)
+          return super unless @trajektanstalt_teleport == entity
+
+          # The Trajektanstalt teleport consumes the regular tile lay so to allow
+          # for the current entity to also do a normalt tile lay (after the optional
+          # tokening) we give it an extra tile lay or upgrade. Note! This extra
+          # tile lay will be replaced with normal (one lay/upgrade) as soon as current
+          # entity has completed its current OR.
+          [{ lay: true, upgrade: true }, { lay: true, upgrade: true }]
+        end
+
         def upgrades_to?(from, to, _special = false, selected_company: nil)
           # Osterath cannot be upgraded
           return false if from.name == '935'
+
+          # Private No. 2 allows tile 935 to be put on E8 regardless
+          return true if from.hex.name == 'E8' && to.name == '935' && selected_company == konzession_essen_osterath
 
           # Handle Moers upgrades
           return to.name == '947' if from.color == :green && from.hex.name == 'D7'
@@ -1037,6 +1078,9 @@ module Engine
 
           return upgrades unless tile_manifest
 
+          # Handle potential upgrades to Osteroth tile
+          upgrades |= [@osteroth_tile] if OSTEROTH_POTENTIAL_TILE_UPGRADES_FROM.include?(tile.name)
+
           # Handle Moers tile manifest
           upgrades |= [@moers_tile_gray] if @moers_tile_gray && tile.name == '947'
 
@@ -1048,6 +1092,12 @@ module Engine
           upgrades |= [@du_tile_gray] if @du_tile_gray && tile.name == '929'
 
           upgrades
+        end
+
+        def hex_blocked_by_ability?(entity, ability, hex)
+          return false if entity.player == ability.owner.player && hex.name == 'E14'
+
+          super
         end
 
         def check_distance(route, visits)
