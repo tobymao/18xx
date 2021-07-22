@@ -120,6 +120,10 @@ module Engine
           @multiplayer ||= @players.size >= 3
         end
 
+        def standard_divs?
+          @optional_rules&.include?(:standard_divs)
+        end
+
         def location_name(coord)
           @location_names ||= game_location_names
 
