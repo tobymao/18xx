@@ -540,6 +540,15 @@ module Engine
           national.add_ability(self.class::NATIONAL_FORCED_WITHHOLD_ABILITY)
         end
 
+        def stock_round
+          G1856::Round::Stock.new(self, [
+            Engine::Step::DiscardTrain,
+            Engine::Step::Exchange,
+            Engine::Step::SpecialTrack,
+            G1856::Step::BuySellParShares,
+          ])
+        end
+
         def operating_round(round_num)
           G1856::Round::Operating.new(self, [
             G1856::Step::Bankrupt,
