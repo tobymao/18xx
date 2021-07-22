@@ -1082,14 +1082,7 @@ module Engine
 
         def revenue_for(route, stops)
           revenue = super
-          corporation = route.train.owner
-
-          [off_board_out_tokened_penalty(route, stops, corporation),
-           montan_bonus(route, stops),
-           eastern_ruhr_area_bonus(stops),
-           iron_rhine_bonus(stops, corporation),
-           trajekt_usage_penalty(route, stops),
-           rheingold_express_bonus(route, stops)].map { |b| b[:revenue] }.each { |r| revenue += r }
+          revenue_info(route, stops).each { |b| revenue += b[:revenue] }
 
           revenue
         end
@@ -1101,15 +1094,19 @@ module Engine
             stop_hexes.include?(h) ? h&.name : "(#{h&.name})"
           end.join('-')
 
+          revenue_info(route, stops).map { |b| b[:description] }.compact.each { |d| str += " + #{d}" }
+
+          str
+        end
+
+        def revenue_info(route, stops)
           corporation = route.train.owner
           [off_board_out_tokened_penalty(route, stops, corporation),
            montan_bonus(route, stops),
            eastern_ruhr_area_bonus(stops),
            iron_rhine_bonus(stops, corporation),
            trajekt_usage_penalty(route, stops),
-           rheingold_express_bonus(route, stops)].map { |b| b[:description] }.compact.each { |d| str += " + #{d}" }
-
-          str
+           rheingold_express_bonus(route, stops)]
         end
 
         def aachen_connection_check
