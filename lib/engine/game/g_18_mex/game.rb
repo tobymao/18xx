@@ -4,11 +4,13 @@ require_relative 'meta'
 require_relative 'share_pool'
 require_relative '../base'
 require_relative '../company_price_50_to_150_percent'
+require_relative '../cities_plus_towns_route_distance_str'
 module Engine
   module Game
     module G18MEX
       class Game < Game::Base
         include_meta(G18MEX::Meta)
+        include CitiesPlusTownsRouteDistanceStr
 
         attr_reader :merged_major
 

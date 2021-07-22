@@ -5,12 +5,14 @@ require_relative 'share_pool'
 require_relative 'stock_market'
 require_relative '../base'
 require_relative '../company_price_50_to_150_percent'
+require_relative '../cities_plus_towns_route_distance_str'
 
 module Engine
   module Game
     module G18CO
       class Game < Game::Base
         include_meta(G18CO::Meta)
+        include CitiesPlusTownsRouteDistanceStr
 
         attr_accessor :presidents_choice
 

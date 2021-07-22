@@ -3,12 +3,14 @@
 require_relative 'meta'
 require_relative '../base'
 require_relative 'round/operating'
+require_relative '../cities_plus_towns_route_distance_str'
 
 module Engine
   module Game
     module G18FL
       class Game < Game::Base
         include_meta(G18FL::Meta)
+        include CitiesPlusTownsRouteDistanceStr
 
         register_colors(black: '#37383a',
                         orange: '#f48221',
