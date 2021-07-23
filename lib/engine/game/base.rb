@@ -1504,6 +1504,10 @@ module Engine
         entity.cash + (issuable_shares(entity).map(&:price).max || 0)
       end
 
+      def company_sale_price(_company)
+        raise NotImplementedError
+      end
+
       def two_player?
         @two_player ||= @players.size == 2
       end
