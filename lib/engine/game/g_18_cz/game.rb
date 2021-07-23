@@ -788,6 +788,10 @@ module Engine
           COMPANY_REVENUE_TO_TYPE[company.revenue][0]
         end
 
+        def company_sale_price(company)
+          company.value
+        end
+
         def remove_ate_reservation
           hex = hex_by_id('B9')
           hex.tile.reservations.clear
