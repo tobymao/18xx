@@ -1002,8 +1002,8 @@ module Engine
           @newly_floated.each do |corp|
             prev = corp.share_price.price
 
-            @log << "The share price of the newly floated #{corp.name} increases."
             stock_market.move_up(corp)
+            @log << "The share price of the newly floated #{corp.name} increases" if prev != corp.share_price.price
             log_share_price(corp, prev)
           end
           @newly_floated = []
@@ -1193,6 +1193,11 @@ module Engine
           end
         end
 
+        def potential_icon_cleanup(tile)
+          # FIXME: Sticky:0 does not seem to work so remove trajekt icon manually
+          remove_trajekt_icon(tile) if RHINE_METROPOLIS_HEXES.include?(tile.hex.id) && tile.color == :brown
+        end
+
         private
 
         def base_map
@@ -1318,6 +1323,9 @@ module Engine
 
         def place_free_token(corporation, hex_name, city_number, silent: true)
           hex = hex_by_id(hex_name).tile
+
+          # If tile has been upgraded to green - then it is just one city with slots
+          city_number = 0 if hex.cities.one?
           hex.cities[city_number].place_token(corporation, corporation.next_token, free: true)
           @log << "#{corporation.name} places a token on #{hex_name}" unless silent
         end
@@ -1530,6 +1538,10 @@ module Engine
 
         def edge_used?(chain, hex_name, edges_of_interest)
           chain[:paths].any? { |p| p.hex.name == hex_name && !(p.exits & edges_of_interest).empty? }
+        end
+
+        def remove_trajekt_icon(tile)
+          tile.icons.reject! { |i| i.name == 'trajekt' }
         end
       end
     end

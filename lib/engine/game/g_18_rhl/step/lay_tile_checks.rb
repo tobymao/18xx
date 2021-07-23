@@ -5,6 +5,7 @@ module LayTileChecks
     super
 
     @game.eastern_ruhr_connection_check(action.tile.hex)
+    @game.potential_icon_cleanup(action.tile)
     return if action.tile.hex.name != 'E14' || !@game.prinz_wilhelm_bahn
 
     # Remove hex block
@@ -13,5 +14,6 @@ module LayTileChecks
       comp.desc = 'Special ability used up. No extra effect until closed in phase 6.'
       comp.remove_ability(a)
     end
+
   end
 end
