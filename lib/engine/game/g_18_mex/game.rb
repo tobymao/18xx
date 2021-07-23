@@ -69,7 +69,7 @@ module Engine
           '470' =>
           {
             'count' => 1,
-            'color' => 'orange',
+            'color' => 'yellow',
             'code' =>
             'town=revenue:20,loc:0;path=a:0,b:_0;path=a:3,b:_0;path=a:3,b:4;path=a:4,b:_0;label=CC',
           },
