@@ -410,7 +410,7 @@ module Engine
                   price: 800,
                 },
               ],
-              events: [{ 'type' => 'cert_limit_change' }, { 'type' => 'lner_trigger' }],
+              events: [{ 'type' => 'lner_trigger' }],
             },
           ]
         end
@@ -480,8 +480,6 @@ module Engine
         ).freeze
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
-           'cert_limit_change' => ['New Cert Limit',
-                                   'Certificate Limit Changes'],
            'lner_trigger' => ['LNER Trigger',
                               'LNER will form at end of OR set, game ends at end of following OR set'],
          ).freeze
@@ -1060,6 +1058,9 @@ module Engine
         def form_lner
           @log << '-- LNER Formed --'
 
+          @cert_limit = @players.map { |p| p.shares.sum(&:percent) }.max / 10
+          @log << "-- Certificate limit is now #{@cert_limit} per player --"
+
           # move all IPO stock to market
           @corporations.each do |corp|
             if @chartered[corp] && !(ipo_shares = corp.ipo_shares).empty?
@@ -1072,11 +1073,6 @@ module Engine
           @corporations.reject(&:ipoed).dup.each { |c| remove_corporation!(c) }
 
           @lner = true
-        end
-
-        def event_cert_limit_change!
-          @cert_limit = @players.map { |p| p.shares.sum(&:percent) }.max / 10
-          @log << "-- Certificate limit is now #{@cert_limit} per player --"
         end
 
         def event_lner_trigger!
@@ -1514,6 +1510,7 @@ module Engine
         # with another non-permanent freight trains and one permanent freight
         # train if it exists
         def check_freight_intersections(routes)
+          @cached_freight_sets = nil
           freight_sets = freight_sets(routes)
           # only one set can have non-perms
           if freight_sets.count { |set| set.any? { |r| nonpermanent_freight?(r.train) } } > 1
