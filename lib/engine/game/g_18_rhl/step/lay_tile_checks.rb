@@ -14,6 +14,5 @@ module LayTileChecks
       comp.desc = 'Special ability used up. No extra effect until closed in phase 6.'
       comp.remove_ability(a)
     end
-
   end
 end
