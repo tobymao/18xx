@@ -227,7 +227,7 @@ module Engine
           '935' =>
           {
             'count' => 1,
-            'color' => 'purple',
+            'color' => 'orange',
             'code' => 'city=revenue:20,loc:center;town=revenue:10,loc:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_1;'\
                       'path=a:_1,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=Osterath',
           },
