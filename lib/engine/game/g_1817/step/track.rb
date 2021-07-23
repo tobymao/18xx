@@ -15,10 +15,10 @@ module Engine
 
             super
 
-            return unless action.hex.name == @game.class::PITTSBURGH_PRIVATE_HEX
+            psm = @game.company_by_id(@game.class::PITTSBURGH_PRIVATE_NAME)
+            return if action.hex.name != @game.class::PITTSBURGH_PRIVATE_HEX || psm.owned_by_player?
 
             # PSM loses it's special if something else goes on F13
-            psm = @game.company_by_id(@game.class::PITTSBURGH_PRIVATE_NAME)
             @game.log << "#{psm.name} closes as it can no longer be used"
             psm.close!
           end
