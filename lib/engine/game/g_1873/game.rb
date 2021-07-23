@@ -1974,6 +1974,25 @@ module Engine
           false
         end
 
+        def value_for_dumpable(player, corporation)
+          max_bundle = bundles_for_corporation(player, corporation)
+            .select { |bundle| dumpable?(bundle, player) && @share_pool&.fit_in_bank?(bundle) }
+            .max_by(&:price)
+          max_bundle&.price || 0
+        end
+
+        def dumpable?(bundle, entity)
+          corporation = bundle.corporation
+
+          return true unless corporation.owner == entity
+          return true if corporation == @mhe
+          return true if corporation.share_holders[entity] - bundle.percent >= 20 # selling above pres
+          return false if concession_pending?(corporation)
+
+          sh = corporation.player_share_holders(corporate: true)
+          (sh.reject { |k, _| k == entity }.values.max || 0) >= 20
+        end
+
         def game_location_names
           {
             'B9' => 'Wernigerode',
