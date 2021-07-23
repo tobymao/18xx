@@ -10,7 +10,7 @@ module LayTileChecks
 
     # Remove hex block
     comp = @game.prinz_wilhelm_bahn
-    comp.all_abilities.each do |a|
+    comp.all_abilities.dup.each do |a|
       comp.desc = 'Special ability used up. No extra effect until closed in phase 6.'
       comp.remove_ability(a)
     end

@@ -33,8 +33,6 @@ module Engine
 
       def available_tokens(entity)
         token_holder = entity.company? ? entity.owner : entity
-        return [] if token_holder.player?
-
         token_holder.tokens_by_type
       end
 
