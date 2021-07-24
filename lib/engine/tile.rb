@@ -18,7 +18,7 @@ module Engine
                   :name, :opposite, :reservations, :upgrades, :color
     attr_reader :borders, :cities, :edges, :junction, :nodes, :labels,
                 :parts, :preprinted, :rotation, :stops, :towns, :offboards, :blockers,
-                :city_towns, :unlimited, :stubs, :partitions, :id, :frame, :hidden
+                :city_towns, :unlimited, :stubs, :partitions, :id, :frame, :stripes, :hidden
 
     ALL_EDGES = [0, 1, 2, 3, 4, 5].freeze
 
@@ -29,8 +29,22 @@ module Engine
         color = :yellow
       elsif (code = GREEN[name])
         color = :green
+      elsif (code = GREENBROWN[name])
+        color = :green
+        code = if code.size.positive?
+                 'stripes=color:brown;' + code
+               else
+                 'stripes=color:brown'
+               end
       elsif (code = BROWN[name])
         color = :brown
+      elsif (code = BROWNGRAY[name])
+        color = :brown
+        code = if code.size.positive?
+                 'stripes=color:gray;' + code
+               else
+                 'stripes=color:gray'
+               end
       elsif (code = GRAY[name])
         color = :gray
       elsif (code = RED[name])
@@ -151,6 +165,8 @@ module Engine
         Part::Partition.new(params['a'], params['b'], params['type'], params['restrict'])
       when 'frame'
         Part::Frame.new(params['color'], params['color2'])
+      when 'stripes'
+        Part::Stripes.new(params['color'])
       end
     end
 
@@ -184,6 +200,7 @@ module Engine
       @stops = nil
       @edges = nil
       @frame = nil
+      @stripes = nil
       @junction = nil
       @icons = []
       @location_name = location_name
@@ -532,6 +549,8 @@ module Engine
           @partitions << part
         elsif part.frame?
           @frame = part
+        elsif part.stripes?
+          @stripes = part
         else
           raise "Part #{part} not separated."
         end

@@ -78,6 +78,16 @@ module View
         end
         children << hex_highlight if @highlight
 
+        if (color = @tile&.stripes&.color)
+          Lib::Hex.stripe_points.each do |stripe|
+            attrs = {
+              fill: Lib::Hex::COLOR[color],
+              points: stripe,
+            }
+            children << h(:polygon, attrs: attrs)
+          end
+        end
+
         if @tile
           children << h(
             Tile,
