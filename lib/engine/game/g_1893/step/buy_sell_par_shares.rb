@@ -35,7 +35,7 @@ module Engine
           end
 
           def can_buy_company?(player, company = nil)
-            return false if first_sr_passed?(player)
+            return false if first_sr_passed?(player) || @game.num_certs(player) >= @game.cert_limit
             return buyable_company?(player, company) if company
 
             @game.buyable_companies.any? { |c| buyable_company?(player, c) }
