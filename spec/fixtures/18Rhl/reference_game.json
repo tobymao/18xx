@@ -250,16 +250,7 @@
       "entity": 222222,
       "entity_type": "player",
       "id": 26,
-      "created_at": 1626963047,
-      "auto_actions": [
-        {
-          "type": "destination_connection",
-          "entity": "GVE",
-          "entity_type": "corporation",
-	  "created_at": 1626963047,
-          "corporations": []
-        }
-      ]
+      "created_at": 1626963047
     },
     {
       "type": "lay_tile",
@@ -269,7 +260,16 @@
       "created_at": 1626963084,
       "hex": "F5",
       "tile": "56-0",
-      "rotation": 4
+      "rotation": 4,
+      "auto_actions": [
+        {
+          "type": "destination_connection",
+          "entity": "GVE",
+          "entity_type": "corporation",
+          "created_at": 1626963084,
+          "corporations": []
+        }
+      ]
     },
     {
       "type": "buy_train",
@@ -286,16 +286,7 @@
       "entity": "GVE",
       "entity_type": "corporation",
       "id": 29,
-      "created_at": 1626963093,
-      "auto_actions": [
-        {
-          "type": "destination_connection",
-          "entity": "BME",
-          "entity_type": "corporation",
-          "created_at": 1626963093,
-          "corporations": []
-        }
-      ]
+      "created_at": 1626963093
     },
     {
       "type": "lay_tile",
@@ -305,7 +296,16 @@
       "created_at": 1626963645,
       "hex": "E14",
       "tile": "9-0",
-      "rotation": 0
+      "rotation": 0,
+      "auto_actions": [
+        {
+          "type": "destination_connection",
+          "entity": "BME",
+          "entity_type": "corporation",
+          "created_at": 1626963645,
+          "corporations": []
+        }
+      ]
     },
     {
       "type": "buy_train",
@@ -332,16 +332,7 @@
       "entity": "BME",
       "entity_type": "corporation",
       "id": 33,
-      "created_at": 1626963675,
-      "auto_actions": [
-        {
-          "type": "destination_connection",
-          "entity": "ADR",
-          "entity_type": "corporation",
-          "created_at": 1626963675,
-          "corporations": []
-        }
-      ]
+      "created_at": 1626963675
     },
     {
       "type": "lay_tile",
@@ -351,7 +342,16 @@
       "created_at": 1626963682,
       "hex": "K4",
       "tile": "4-0",
-      "rotation": 1
+      "rotation": 1,
+      "auto_actions": [
+        {
+          "type": "destination_connection",
+          "entity": "ADR",
+          "entity_type": "corporation",
+          "created_at": 1626963682,
+          "corporations": []
+        }
+      ]
     },
     {
       "type": "pass",
@@ -375,16 +375,7 @@
       "entity": "ADR",
       "entity_type": "corporation",
       "id": 37,
-      "created_at": 1626963692,
-      "auto_actions": [
-        {
-          "type": "destination_connection",
-          "entity": "ADR",
-          "entity_type": "corporation",
-          "created_at": 1626963692,
-          "corporations": []
-        }
-      ]
+      "created_at": 1626963692
     },
     {
       "type": "lay_tile",
@@ -394,7 +385,16 @@
       "created_at": 1626964771,
       "hex": "F11",
       "tile": "9-1",
-      "rotation": 1
+      "rotation": 1,
+      "auto_actions": [
+        {
+          "type": "destination_connection",
+          "entity": "DEE",
+          "entity_type": "corporation",
+          "created_at": 1626964771,
+          "corporations": []
+        }
+      ]
     },
     {
       "type": "pass",
@@ -418,16 +418,7 @@
       "entity": "DEE",
       "entity_type": "corporation",
       "id": 41,
-      "created_at": 1626964782,
-      "auto_actions": [
-        {
-          "type": "destination_connection",
-          "entity": "RhE",
-          "entity_type": "corporation",
-          "created_at": 1626964782,
-          "corporations": []
-        }
-      ]
+      "created_at": 1626964782
     },
     {
       "type": "lay_tile",
@@ -437,7 +428,16 @@
       "created_at": 1626964788,
       "hex": "J9",
       "tile": "9-2",
-      "rotation": 0
+      "rotation": 0,
+      "auto_actions": [
+        {
+          "type": "destination_connection",
+          "entity": "RhE",
+          "entity_type": "corporation",
+          "created_at": 1626964788,
+          "corporations": []
+        }
+      ]
     },
     {
       "type": "undo",
@@ -454,7 +454,16 @@
       "created_at": 1626964806,
       "hex": "J9",
       "tile": "8-0",
-      "rotation": 3
+      "rotation": 3,
+      "auto_actions": [
+        {
+          "type": "destination_connection",
+          "entity": "RhE",
+          "entity_type": "corporation",
+          "created_at": 1626964806,
+          "corporations": []
+        }
+      ]
     },
     {
       "type": "buy_train",
@@ -492,16 +501,7 @@
       "entity": 111111,
       "entity_type": "player",
       "id": 49,
-      "created_at": 1626964825,
-      "auto_actions": [
-        {
-          "type": "destination_connection",
-          "entity": "GVE",
-          "entity_type": "corporation",
-          "created_at": 1626964825,
-          "corporations": []
-        }
-      ]
+      "created_at": 1626964825
     },
     {
       "type": "lay_tile",
@@ -511,7 +511,16 @@
       "created_at": 1626968170,
       "hex": "F3",
       "tile": "8-1",
-      "rotation": 2
+      "rotation": 2,
+      "auto_actions": [
+        {
+          "type": "destination_connection",
+          "entity": "GVE",
+          "entity_type": "corporation",
+          "created_at": 1626968170,
+          "corporations": []
+        }
+      ]
     },
     {
       "type": "pass",
@@ -563,16 +572,7 @@
       "entity": "GVE",
       "entity_type": "corporation",
       "id": 54,
-      "created_at": 1626968187,
-      "auto_actions": [
-        {
-          "type": "destination_connection",
-          "entity": "BME",
-          "entity_type": "corporation",
-          "created_at": 1626968187,
-          "corporations": []
-        }
-      ]
+      "created_at": 1626968187
     },
     {
       "type": "lay_tile",
@@ -582,7 +582,16 @@
       "created_at": 1626968195,
       "hex": "G14",
       "tile": "9-2",
-      "rotation": 2
+      "rotation": 2,
+      "auto_actions": [
+        {
+          "type": "destination_connection",
+          "entity": "BME",
+          "entity_type": "corporation",
+          "created_at": 1626968195,
+          "corporations": []
+        }
+      ]
     },
     {
       "type": "run_routes",
@@ -640,16 +649,7 @@
       "entity": "BME",
       "entity_type": "corporation",
       "id": 58,
-      "created_at": 1626968487,
-      "auto_actions": [
-        {
-          "type": "destination_connection",
-          "entity": "ADR",
-          "entity_type": "corporation",
-          "created_at": 1626968487,
-          "corporations": []
-        }
-      ]
+      "created_at": 1626968487
     },
     {
       "type": "pass",
@@ -673,7 +673,16 @@
       "created_at": 1626968530,
       "hex": "J3",
       "tile": "2-0",
-      "rotation": 3
+      "rotation": 3,
+      "auto_actions": [
+        {
+          "type": "destination_connection",
+          "entity": "ADR",
+          "entity_type": "corporation",
+          "created_at": 1626968530,
+          "corporations": []
+        }
+      ]
     },
     {
       "type": "pass",
@@ -734,16 +743,7 @@
       "entity": "ADR",
       "entity_type": "corporation",
       "id": 66,
-      "created_at": 1626968561,
-      "auto_actions": [
-        {
-          "type": "destination_connection",
-          "entity": "DEE",
-          "entity_type": "corporation",
-          "created_at": 1626968561,
-          "corporations": []
-        }
-      ]
+      "created_at": 1626968561
     },
     {
       "type": "lay_tile",
@@ -753,7 +753,16 @@
       "created_at": 1626968579,
       "hex": "E12",
       "tile": "56-1",
-      "rotation": 2
+      "rotation": 2,
+      "auto_actions": [
+        {
+          "type": "destination_connection",
+          "entity": "DEE",
+          "entity_type": "corporation",
+          "created_at": 1626968579,
+          "corporations": []
+        }
+      ]
     },
     {
       "type": "pass",
@@ -800,16 +809,7 @@
       "entity": "DEE",
       "entity_type": "corporation",
       "id": 71,
-      "created_at": 1626968596,
-      "auto_actions": [
-        {
-          "type": "destination_connection",
-          "entity": "RhE",
-          "entity_type": "corporation",
-          "created_at": 1626968596,
-          "corporations": []
-        }
-      ]
+      "created_at": 1626968596
     },
     {
       "type": "lay_tile",
@@ -819,7 +819,16 @@
       "created_at": 1626968602,
       "hex": "K10",
       "tile": "57-0",
-      "rotation": 2
+      "rotation": 2,
+      "auto_actions": [
+        {
+          "type": "destination_connection",
+          "entity": "RhE",
+          "entity_type": "corporation",
+          "created_at": 1626968602,
+          "corporations": []
+        }
+      ]
     },
     {
       "type": "run_routes",
@@ -982,16 +991,7 @@
       "entity": 222222,
       "entity_type": "player",
       "id": 88,
-      "created_at": 1626968696,
-      "auto_actions": [
-        {
-          "type": "destination_connection",
-          "entity": "BME",
-          "entity_type": "corporation",
-          "created_at": 1626968696,
-          "corporations": []
-        }
-      ]
+      "created_at": 1626968696
     },
     {
       "type": "lay_tile",
@@ -1001,7 +1001,16 @@
       "created_at": 1626968707,
       "hex": "K12",
       "tile": "58-0",
-      "rotation": 2
+      "rotation": 2,
+      "auto_actions": [
+        {
+          "type": "destination_connection",
+          "entity": "BME",
+          "entity_type": "corporation",
+          "created_at": 1626968707,
+          "corporations": []
+        }
+      ]
     },
     {
       "type": "pass",
@@ -1066,16 +1075,7 @@
       "entity": "BME",
       "entity_type": "corporation",
       "id": 93,
-      "created_at": 1626968725,
-      "auto_actions": [
-        {
-          "type": "destination_connection",
-          "entity": "DEE",
-          "entity_type": "corporation",
-          "created_at": 1626968725,
-          "corporations": []
-        }
-      ]
+      "created_at": 1626968725
     },
     {
       "type": "lay_tile",
@@ -1085,7 +1085,16 @@
       "created_at": 1626968733,
       "hex": "D13",
       "tile": "202-0",
-      "rotation": 4
+      "rotation": 4,
+      "auto_actions": [
+        {
+          "type": "destination_connection",
+          "entity": "DEE",
+          "entity_type": "corporation",
+          "created_at": 1626968733,
+          "corporations": []
+        }
+      ]
     },
     {
       "type": "pass",
@@ -1132,16 +1141,7 @@
       "entity": "DEE",
       "entity_type": "corporation",
       "id": 98,
-      "created_at": 1626968760,
-      "auto_actions": [
-        {
-          "type": "destination_connection",
-          "entity": "GVE",
-          "entity_type": "corporation",
-          "created_at": 1626968760,
-          "corporations": []
-        }
-      ]
+      "created_at": 1626968760
     },
     {
       "type": "lay_tile",
@@ -1151,7 +1151,16 @@
       "created_at": 1626968768,
       "hex": "D3",
       "tile": "9-3",
-      "rotation": 0
+      "rotation": 0,
+      "auto_actions": [
+        {
+          "type": "destination_connection",
+          "entity": "GVE",
+          "entity_type": "corporation",
+          "created_at": 1626968768,
+          "corporations": []
+        }
+      ]
     },
     {
       "type": "pass",
@@ -1213,16 +1222,7 @@
       "entity": "GVE",
       "entity_type": "corporation",
       "id": 104,
-      "created_at": 1626968781,
-      "auto_actions": [
-        {
-          "type": "destination_connection",
-          "entity": "ADR",
-          "entity_type": "corporation",
-          "created_at": 1626968760,
-          "corporations": []
-        }
-      ]
+      "created_at": 1626968781
     },
     {
       "type": "lay_tile",
@@ -1242,7 +1242,16 @@
       "created_at": 1626970544,
       "hex": "H5",
       "tile": "9-4",
-      "rotation": 0
+      "rotation": 0,
+      "auto_actions": [
+        {
+          "type": "destination_connection",
+          "entity": "ADR",
+          "entity_type": "corporation",
+          "created_at": 1626970544,
+          "corporations": []
+        }
+      ]
     },
     {
       "type": "pass",
@@ -1325,16 +1334,7 @@
       "entity": "ADR",
       "entity_type": "corporation",
       "id": 111,
-      "created_at": 1626970579,
-      "auto_actions": [
-        {
-          "type": "destination_connection",
-          "entity": "RhE",
-          "entity_type": "corporation",
-          "created_at": 1626970579,
-          "corporations": []
-        }
-      ]
+      "created_at": 1626970579
     },
     {
       "type": "lay_tile",
@@ -1344,7 +1344,16 @@
       "created_at": 1626970593,
       "hex": "I10",
       "tile": "924-0",
-      "rotation": 0
+      "rotation": 0,
+      "auto_actions": [
+        {
+          "type": "destination_connection",
+          "entity": "RhE",
+          "entity_type": "corporation",
+          "created_at": 1626970593,
+          "corporations": []
+        }
+      ]
     },
     {
       "type": "pass",
@@ -1485,16 +1494,7 @@
       "entity": 111111,
       "entity_type": "player",
       "id": 126,
-      "created_at": 1626973407,
-      "auto_actions": [
-        {
-          "type": "destination_connection",
-          "entity": "BME",
-          "entity_type": "corporation",
-          "created_at": 1626973407,
-          "corporations": []
-        }
-      ]
+      "created_at": 1626973407
     },
     {
       "type": "lay_tile",
@@ -1504,7 +1504,16 @@
       "created_at": 1626973462,
       "hex": "D9",
       "tile": "925-0",
-      "rotation": 0
+      "rotation": 0,
+      "auto_actions": [
+        {
+          "type": "destination_connection",
+          "entity": "BME",
+          "entity_type": "corporation",
+          "created_at": 1626973462,
+          "corporations": []
+        }
+      ]
     },
     {
       "type": "place_token",
@@ -1755,7 +1764,16 @@
       "created_at": 1627040352,
       "hex": "D11",
       "tile": "937-0",
-      "rotation": 1
+      "rotation": 1,
+      "auto_actions": [
+        {
+          "type": "destination_connection",
+          "entity": "BME",
+          "entity_type": "corporation",
+          "created_at": 1627040352,
+          "corporations": []
+        }
+      ]
     },
     {
       "type": "run_routes",
@@ -1810,16 +1828,7 @@
       "entity": "BME",
       "entity_type": "corporation",
       "id": 160,
-      "created_at": 1627040400,
-      "auto_actions": [
-        {
-          "type": "destination_connection",
-          "entity": "DEE",
-          "entity_type": "corporation",
-          "created_at": 1627040400,
-          "corporations": []
-        }
-      ]
+      "created_at": 1627040400
     },
     {
       "type": "lay_tile",
@@ -1829,7 +1838,16 @@
       "created_at": 1627040594,
       "hex": "F9",
       "tile": "921-0",
-      "rotation": 0
+      "rotation": 0,
+      "auto_actions": [
+        {
+          "type": "destination_connection",
+          "entity": "DEE",
+          "entity_type": "corporation",
+          "created_at": 1627040594,
+          "corporations": []
+        }
+      ]
     },
     {
       "type": "pass",
@@ -1886,16 +1904,7 @@
       "entity": "DEE",
       "entity_type": "corporation",
       "id": 166,
-      "created_at": 1627040605,
-      "auto_actions": [
-        {
-          "type": "destination_connection",
-          "entity": "ADR",
-          "entity_type": "corporation",
-          "created_at": 1627040605,
-          "corporations": []
-        }
-      ]
+      "created_at": 1627040605
     },
     {
       "type": "lay_tile",
@@ -1905,7 +1914,16 @@
       "created_at": 1627040614,
       "hex": "K8",
       "tile": "8-2",
-      "rotation": 5
+      "rotation": 5,
+      "auto_actions": [
+        {
+          "type": "destination_connection",
+          "entity": "ADR",
+          "entity_type": "corporation",
+          "created_at": 1627040614,
+          "corporations": []
+        }
+      ]
     },
     {
       "type": "pass",
@@ -1998,16 +2016,7 @@
       "entity": "ADR",
       "entity_type": "corporation",
       "id": 171,
-      "created_at": 1627040657,
-      "auto_actions": [
-        {
-          "type": "destination_connection",
-          "entity": "RhE",
-          "entity_type": "corporation",
-          "created_at": 1627040657,
-          "corporations": []
-        }
-      ]
+      "created_at": 1627040657
     },
     {
       "type": "lay_tile",
@@ -2017,7 +2026,16 @@
       "created_at": 1627040664,
       "hex": "K10",
       "tile": "15-0",
-      "rotation": 5
+      "rotation": 5,
+      "auto_actions": [
+        {
+          "type": "destination_connection",
+          "entity": "RhE",
+          "entity_type": "corporation",
+          "created_at": 1627040664,
+          "corporations": []
+        }
+      ]
     },
     {
       "type": "place_token",
@@ -2092,16 +2110,7 @@
       "entity": "RhE",
       "entity_type": "corporation",
       "id": 176,
-      "created_at": 1627040712,
-      "auto_actions": [
-        {
-          "type": "destination_connection",
-          "entity": "GVE",
-          "entity_type": "corporation",
-          "created_at": 1627040712,
-          "corporations": ["RhE"]
-        }
-      ]
+      "created_at": 1627040712
     },
     {
       "type": "lay_tile",
@@ -2120,7 +2129,16 @@
       "id": 178,
       "created_at": 1627041165,
       "city": "935-0-0",
-      "slot": 0
+      "slot": 0,
+      "auto_actions": [
+        {
+          "type": "destination_connection",
+          "entity": "GVE",
+          "entity_type": "corporation",
+          "created_at": 1627040847,
+          "corporations": ["RhE"]
+        }
+      ]
     },
     {
       "type": "run_routes",
