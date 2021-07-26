@@ -70,8 +70,8 @@ module View
 
         if @step.can_buy_power?(@corporation) || @must_buy_power
           if @must_buy_power
-            children << h(:div, "#{@corporation.name} must buy train power "\
-                                "(at least #{@step.min_power_needed(@corporation)})")
+            children << h(:div, "#{@corporation.name} must buy "\
+                                "#{@step.ebuy_power_needed(@corporation)} train power ")
           end
           children << h(:h3, 'Select Amount of Train Power to Buy')
           children << h(:div, render_buy(@corporation))

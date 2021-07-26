@@ -28,12 +28,38 @@ module Engine
             []
           end
 
+          def round_state
+            super.merge(
+              {
+                emergency_buy: false,
+              }
+            )
+          end
+
+          def setup
+            @round.emergency_buy = false
+          end
+
+          # go to EMR if pres has done normal buy, or if normal buy isn't possible
+          def must_buy_power?(entity)
+            @round.emergency_buy ||
+              (@game.must_buy_power?(entity) && entity.cash < @game.current_power_cost)
+          end
+
           def description
-            'Buy Train Power'
+            if must_buy_power?(current_entity)
+              'Emergency Buy Train Power'
+            else
+              'Buy Train Power'
+            end
           end
 
           def pass_description
-            'Skip (Power)'
+            if @game.must_buy_power?(current_entity)
+              'Skip (to Emergency Buy)'
+            else
+              'Skip (Power)'
+            end
           end
 
           def skip!
@@ -103,13 +129,22 @@ module Engine
               return
             end
 
-            return unless cash_needed(entity, delta) > entity.cash
-
             raise GameError, 'Must buy exactly minimum required power during emergency buy' if ebuy_power_needed(entity) != delta
 
             return unless ebuy_cash_needed(entity) > entity.cash + entity.owner.cash
 
             raise GameError, 'Not enough funds raised for emergency buy'
+          end
+
+          def process_pass(action)
+            if @game.must_buy_power?(action.entity)
+              @log << "#{action.entity.name} passes Buy Train Power, entering Emergency Buy"
+              @round.emergency_buy = true
+              return
+            end
+
+            log_pass(action.entity)
+            pass!
           end
 
           def process_buy_power(action)
@@ -123,19 +158,31 @@ module Engine
             raise GameError, 'Power purchased is too large' if delta > @game.class::MAX_TRAIN
             raise GameError, 'Power purchased is too small' unless delta.positive?
 
-            if must_buy_power?(entity) && cost > entity.cash
+            emergency = ''
+            if must_buy_power?(entity)
               # emergency buy
               ebuy = true
               cost = ebuy_cash_needed(entity)
               remaining = cost - entity.cash
-              player = entity.owner
-              player.spend(remaining, entity)
-              @log << "#{player.name} contributes #{@game.format_currency(remaining)}"
+              if remaining.positive?
+                player = entity.owner
+                player.spend(remaining, entity)
+                @log << "#{player.name} contributes #{@game.format_currency(remaining)}"
+              end
+              emergency = 'emergency '
             end
 
-            @log << "#{entity.name} buys #{delta} power for #{@game.format_currency(cost)}"
+            @log << "#{entity.name} #{emergency}buys #{delta} power for #{@game.format_currency(cost)}"
 
             @game.buy_power(entity, delta, cost, ebuy: ebuy)
+
+            if @game.must_buy_power?(action.entity)
+              @log << "Insufficient power purchased. #{action.entity.name} enters EMR"
+              raise GameError, 'Emergency Buy already true' if @round.emergency_buy
+
+              @round.emergency_buy = true
+              return
+            end
 
             pass!
           end
@@ -150,10 +197,6 @@ module Engine
             player.companies.delete(company)
             @game.bank.spend(price, player) if price.positive?
             @log << "#{player.name} sells #{company.name} to bank for #{@game.format_currency(price)}"
-          end
-
-          def must_buy_power?(entity)
-            @game.must_buy_power?(entity)
           end
 
           # So I don't have to create a new IssueShares view...
@@ -196,18 +239,18 @@ module Engine
             diff
           end
 
-          # ebuy doesn't affect progress track, but is twice as expensive
+          # ebuy doesn't affect progress track, but is twice as expensive and has a different target power
           def ebuy_cash_needed(corporation)
-            return 0 unless @game.corporation_power[corporation] < @game.class::MIN_TRAIN[@game.phase.name]
+            return 0 unless @game.corporation_power[corporation] < @game.min_ebuy_power
 
-            diff = @game.min_train - @game.corporation_power[corporation]
+            diff = @game.min_ebuy_power - @game.corporation_power[corporation]
             diff * @game.class::POWER_COST[@game.phase.name] * 2
           end
 
           def ebuy_power_needed(corporation)
-            return 0 unless @game.corporation_power[corporation] < @game.class::MIN_TRAIN[@game.phase.name]
+            return 0 unless @game.corporation_power[corporation] < @game.min_ebuy_power
 
-            @game.min_train - @game.corporation_power[corporation]
+            @game.min_ebuy_power - @game.corporation_power[corporation]
           end
 
           def cash_needed(_corporation, delta_power)
@@ -219,7 +262,11 @@ module Engine
           end
 
           def power_minmax(corporation)
-            min = [min_power_needed(corporation), 1].max
+            if must_buy_power?(corporation)
+              power = ebuy_power_needed(corporation)
+              return [power, power]
+            end
+            min = 1
             max = min
             max_possible = @game.class::MAX_TRAIN - @game.current_corporation_power(corporation)
             max_possible.times do |p|
@@ -243,26 +290,32 @@ module Engine
           def chart(entity)
             lines = []
             lines << %w[Power Cost]
-            min_possible = 1
-            min_possible = min_power_needed(entity) if @game.must_buy_power?(entity)
-            max_possible = @game.class::MAX_TRAIN - @game.current_corporation_power(entity)
+            min_possible = must_buy_power?(entity) ? ebuy_power_needed(entity) : 1
+            max_possible = if must_buy_power?(entity)
+                             ebuy_power_needed(entity)
+                           else
+                             @game.class::MAX_TRAIN - @game.current_corporation_power(entity)
+                           end
+
             max_possible.times do |p|
               next unless p + 1 >= min_possible
 
-              if (p + 1) == min_possible && @game.must_buy_power?(entity) &&
-                  entity.cash < cash_needed(entity, p + 1)
+              if (p + 1) == min_possible && must_buy_power?(entity) &&
                 lines << [(p + 1).to_s, @game.format_currency(ebuy_cash_needed(entity))]
                 break
               end
 
               break if entity.cash < (cash = cash_needed(entity, p + 1))
 
-              change = ''
+              note = ''
+              note = 'minimum' if (p + 1 + @game.current_corporation_power(entity)) == @game.min_train
               if (p + 1 + @game.power_progress) > @game.class::MAX_PROGRESS && @game.phase.name != '8+'
-                change = " (Phase #{@game.phase.upcoming[:name]})"
+                note += ', ' if note != ''
+                note += "Phase #{@game.phase.upcoming[:name]}"
               end
+              note = " (#{note})" if note != ''
 
-              lines << ["#{p + 1}#{change}", @game.format_currency(cash)]
+              lines << ["#{p + 1}#{note}", @game.format_currency(cash)]
             end
             lines
           end
