@@ -8,7 +8,7 @@ module Engine
       module Meta
         include Game::Meta
 
-        # DEV_STAGE = :alpha
+        DEV_STAGE = :alpha
         PROTOTYPE = true
 
         GAME_SUBTITLE = 'Southern Steam to the Piedmont Plateau'
