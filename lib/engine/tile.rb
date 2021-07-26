@@ -267,11 +267,15 @@ module Engine
 
     def ignore_gauge_walk=(val)
       @paths.each { |p| p.ignore_gauge_walk = val }
+      @nodes.each(&:clear!)
+      @junction&.clear!
       @_paths = nil
     end
 
     def ignore_gauge_compare=(val)
       @paths.each { |p| p.ignore_gauge_compare = val }
+      @nodes.each(&:clear!)
+      @junction&.clear!
       @_paths = nil
     end
 

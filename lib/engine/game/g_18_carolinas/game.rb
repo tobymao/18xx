@@ -263,6 +263,17 @@ module Engine
           '8+' => 6,
         }.freeze
 
+        MIN_EBUY_POWER = {
+          '2' => 2,
+          '3' => 3,
+          '4' => 4,
+          '5' => 5,
+          '6' => 6,
+          '7' => 7,
+          '8' => 8,
+          '8+' => 8,
+        }.freeze
+
         MAX_TRAIN = 16
 
         POWER_COST = {
@@ -611,26 +622,36 @@ module Engine
         def upgrade_c_hexes
           # upgrade plain hexes in charlotte and wilmington to yellow first so reservations are handled correctly
           charlotte = hex_by_id(CHARLOTTE_HEX)
+          if charlotte.tile.color == :white
+            temp_tile = @tiles.find { |t| t.name == 'C1' } || @tiles.find { |t| t.name == 'C3' }
+            upgrade_tile(charlotte, temp_tile, 1, logging: false)
+          end
           wilmington = hex_by_id(WILMINGTON_HEX)
-          upgrade_tile(charlotte, @tiles.find { |t| t.name == 'C1' }, 1) if charlotte.tile.color == :white
-          upgrade_tile(wilmington, @tiles.find { |t| t.name == 'C1' }, 2) if wilmington.tile.color == :white
+          if wilmington.tile.color == :white
+            temp_tile = @tiles.find { |t| t.name == 'C1' } || @tiles.find { |t| t.name == 'C3' }
+            upgrade_tile(wilmington, temp_tile, 2, logging: false)
+          end
 
           C7_HEXES.each { |hexid| upgrade_tile(hex_by_id(hexid), @tiles.find { |t| t.name == 'C7' }, 0) }
           C8_HEXES.each { |hexid| upgrade_tile(hex_by_id(hexid), @tiles.find { |t| t.name == 'C8' }, C8_ROTATION) }
         end
 
         # no checking
-        def upgrade_tile(hex, tile, rotation)
+        def upgrade_tile(hex, tile, rotation, logging: true)
           old_tile = hex.tile
           tile.rotate!(rotation)
           update_tile_lists(tile, old_tile)
           hex.lay(tile)
-          @log << "Automatically upgrading hex #{hex.id} with tile #{tile.id}"
+          @log << "Automatically upgrading hex #{hex.id} with tile #{tile.id}" if logging
           @graph.clear
         end
 
         def min_train
           MIN_TRAIN[@phase.name]
+        end
+
+        def min_ebuy_power
+          MIN_EBUY_POWER[@phase.name]
         end
 
         def enough_power?(entity)
@@ -646,22 +667,29 @@ module Engine
 
         def remove_var_train(entity, train)
           train.owner = nil
+          train.operated = false
           entity.trains.delete(train)
         end
 
         def remove_all_var_trains(entity)
-          entity.trains.each { |t| t.owner = nil }
+          entity.trains.each do |t|
+            t.owner = nil
+            t.operated = false
+          end
           entity.trains.clear
         end
 
         def append_var_train(entity, train)
           train.owner = entity
+          train.operated = false
           entity.trains << train
         end
 
         def swap_var_train(entity, old_train, new_train)
           old_train.owner = nil
+          old_train.operated = false
           new_train.owner = entity
+          new_train.operated = false
           entity.trains[entity.trains.find_index(old_train)] = new_train
         end
 
@@ -688,11 +716,7 @@ module Engine
         # after running routes, update trains in corp. This is needed when loading
         def update_route_trains(entity, routes)
           remove_all_var_trains(entity)
-          routes.each do |route|
-            next if route.visited_stops.empty?
-
-            append_var_train(entity, route.train)
-          end
+          routes.each { |route| append_var_train(entity, route.train) }
           @corporation_trains[entity] = nil
         end
 
