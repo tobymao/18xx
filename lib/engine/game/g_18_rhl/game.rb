@@ -848,6 +848,7 @@ module Engine
             G18Rhl::Step::SpecialToken, # Must be before any track lay (due to private No. 4)
             G18Rhl::Step::SpecialTrack,
             G18Rhl::Step::Track,
+            G18Rhl::Step::RheBonusCheck,
             Engine::Step::Token,
             Engine::Step::Route,
             G18Rhl::Step::Dividend,
@@ -907,7 +908,7 @@ module Engine
           kkk.shares[2].double_cert = true
           kkk.shares[3].double_cert = true
 
-          @aachen_connection = 0
+          @aachen_duren_cologne_link_bonus = 0
           @eastern_ruhr_connections = []
           @newly_floated = []
 
@@ -984,8 +985,8 @@ module Engine
           paid_to_treasury = corporation == kkk ? 6 : 5
 
           if corporation == rhe
-            @aachen_connection = rhe.par_price.price * 3
-            delayed = format_currency(@aachen_connection)
+            @aachen_duren_cologne_link_bonus = rhe.par_price.price * 3
+            delayed = format_currency(@aachen_duren_cologne_link_bonus)
             @log << "#{rhe.name} will receive #{delayed} when there is a link from Köln to Aachen via Düren"
           else
             @bank.spend(corporation.par_price.price * paid_to_treasury, corporation)
@@ -1159,25 +1160,29 @@ module Engine
            rheingold_express_bonus(route, stops)]
         end
 
-        def aachen_connection_check
-          # TODO: This code seem to sometimes cause problems with future tile lays
-          # so it is not yet enabled. It should be called from lay_tile_check.rb when it has been corrected.
-          return unless @aachen_connection.positive?
+        def aachen_duren_cologne_link_checkable?
+          @aachen_duren_cologne_link_bonus.positive?
+        end
+
+        def aachen_duren_cologne_link_established?
+          return unless aachen_duren_cologne_link_checkable?
           return if loading
 
-          aachen_duren = false
+          duren_aachen = false
           duren_cologne = false
 
-          @corporations.each do |c|
-            aachen_duren ||= check_aachen_duren_connection(c)
-            duren_cologne ||= check_duren_cologne_connection(c)
+          @corporations.select(&:operated?).each do |corp|
+            duren_aachen ||= check_connections(corp, aachen_hex)
+            duren_cologne ||= check_connections(corp, cologne_hex)
           end
-          return unless aachen_duren && duren_cologne
+          duren_aachen && duren_cologne
+        end
 
-          @log << 'A link between Aachen, Düren and Köln has been established!'
-          @log << "#{rhe.name} adds #{format_currency(@aachen_connection)} to its treasury"
-          @bank.spend(@aachen_connection, rhe)
-          @aachen_connection = 0
+        def aachen_duren_cologne_link_established!
+          @log << 'A link between Aachen and Köln, via Düren, has been established!'
+          @log << "#{rhe.name} adds #{format_currency(@aachen_duren_cologne_link_bonus)} to its treasury"
+          @bank.spend(@aachen_duren_cologne_link_bonus, rhe)
+          @aachen_duren_cologne_link_bonus = 0
         end
 
         def eastern_ruhr_connection_check(hex)
@@ -1501,12 +1506,14 @@ module Engine
           bonus
         end
 
-        def check_aachen_duren_connection(corp)
-          @graph.reachable_hexes(corp)[aachen_hex] && @graph.reachable_hexes(corp)[duren_hex]
-        end
+        def check_connections(corp, destination)
+          duren_node = duren_hex.tile.cities.first # Each tile with a city has exactly one node
 
-        def check_duren_cologne_connection(corp)
-          @graph.reachable_hexes(corp)[cologne_hex] && @graph.reachable_hexes(corp)[duren_hex]
+          destination.tile.nodes.first&.walk(corporation: corp) do |path, _, _|
+            return true if path.nodes.include?(duren_node)
+          end
+
+          false
         end
 
         def visited_icons(stops, icon_name)
@@ -1540,6 +1547,10 @@ module Engine
 
         def edge_used?(chain, hex_name, edges_of_interest)
           chain[:paths].any? { |p| p.hex.name == hex_name && !(p.exits & edges_of_interest).empty? }
+        end
+
+        def tile_has_specified_exits?(hex, specified_exits)
+          !(hex.tile.exits & specified_exits).empty?
         end
 
         def remove_trajekt_icon(tile)
