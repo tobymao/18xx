@@ -2,14 +2,12 @@
 
 require_relative 'meta'
 require_relative '../base'
-require_relative '../cities_plus_towns_route_distance_str'
 
 module Engine
   module Game
     module G18Mag
       class Game < Game::Base
         include_meta(G18Mag::Meta)
-        include CitiesPlusTownsRouteDistanceStr
 
         attr_reader :tile_groups, :unused_tiles, :sik, :skev, :ldsteg, :mavag, :raba, :snw, :gc, :terrain_tokens
 
