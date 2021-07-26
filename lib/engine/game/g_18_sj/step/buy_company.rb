@@ -23,11 +23,12 @@ module Engine
 
             @log << "#{minor.name} merges into #{buyer.name}"
 
-            @game.remove_duplicate_tokens(buyer, minor)
+            duplicate_count = @game.remove_duplicate_tokens(buyer, minor)
 
             @game.remove_reservation(minor)
 
-            @game.transfer_home_token(buyer, minor)
+            # If owner don't have token in KHJ home, transfer it to owner
+            @game.transfer_home_token(buyer, minor) unless duplicate_count.positive?
 
             transfer_trains(buyer, minor)
 
