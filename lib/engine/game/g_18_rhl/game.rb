@@ -680,7 +680,7 @@ module Engine
                 type: 'tile_lay',
                 owner_type: 'player',
                 hexes: %w[D13 E12 E14 F11 F13 G12 G14 H13 I12 I14 J13 K2 K12],
-                tiles: %w[1 2 3 4 5 6 7 8 9 23 24 25 30 55 57 58 69 930 934 937],
+                tiles: %w[1 2 3 4 5 6 7 8 9 23 24 25 30 55 56 57 58 69 930 934 937],
                 free: true,
                 reachable: false,
                 count: 1,
@@ -898,6 +898,10 @@ module Engine
 
         def konzession_essen_osterath
           @konzession_essen_osterath ||= company_by_id('KEO')
+        end
+
+        def seilzuganlage
+          @seilzuganlage ||= company_by_id('Szl')
         end
 
         def trajektanstalt
