@@ -1327,7 +1327,7 @@ module Engine
           },
           {
             sym: '30',
-            name: 'Shropshire and Montgomeryshire Railway',
+            name: 'Plymouth and Dartmoor Railway',
             logo: '1822/30',
             tokens: [0],
             type: 'minor',
