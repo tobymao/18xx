@@ -8,7 +8,7 @@ module Engine
         AXES = { x: :number, y: :letter }.freeze
 
         LOCATION_NAMES = {
-          'A7' => 'Knoxville',
+          'A5' => 'Knoxville',
           'A23' => 'Richmond',
           'B20' => 'Weldon',
           'C11' => 'Winston-Salem',
@@ -433,8 +433,8 @@ module Engine
           },
           red: {
             %w[
-            A7
-            ] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_80;path=a:0,b:_0,track:dual',
+            A5
+            ] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_80;path=a:5,b:_0,track:dual',
             %w[
             A23
             ] => 'offboard=revenue:yellow_40|green_50|brown_60|gray_80;path=a:0,b:_0',
@@ -445,19 +445,19 @@ module Engine
           gray: {
             %w[
             I17
-            ] => 'offboard=revenue:0;path=a:1,b:_0,terminal:1;path=a:2,b:_0,terminal:1',
+            ] => 'offboard=revenue:0,visit_cost:99;path=a:1,b:_0,terminal:1;path=a:2,b:_0,terminal:1',
             %w[
             A19
-            ] => 'offboard=revenue:0;path=a:5,b:_0,terminal:1',
+            ] => 'offboard=revenue:0,visit_cost:99;path=a:5,b:_0,terminal:1',
             %w[
             B4
             ] => 'path=a:0,b:4,track:narrow',
             %w[
             C3
-            ] => 'path=a:0,b:3,track:narrow;offboard=revenue:0;path=a:5,b:_0,terminal:1',
+            ] => 'path=a:0,b:3,track:narrow;offboard=revenue:0,visit_cost:99;path=a:5,b:_0,terminal:1',
             %w[
             D2
-            ] => 'path=a:0,b:3,track:narrow;offboard=revenue:0;path=a:4,b:_0,terminal:1',
+            ] => 'path=a:0,b:3,track:narrow;offboard=revenue:0,visit_cost:99;path=a:4,b:_0,terminal:1',
             %w[
             E1
             ] => 'path=a:3,b:4,track:narrow',
