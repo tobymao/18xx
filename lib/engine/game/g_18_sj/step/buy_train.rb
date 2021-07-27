@@ -20,16 +20,6 @@ module Engine
 
           def do_after_buy_train_action(_action, _entity); end
 
-          def buyable_trains(entity)
-            if entity.player == @game.edelsward
-              result = @depot.depot_trains[0..1]
-              puts result.to_s
-              result
-            end
-
-            super
-          end
-
           def must_buy_train?(entity)
             return false if entity.player == @game.edelsward
 
