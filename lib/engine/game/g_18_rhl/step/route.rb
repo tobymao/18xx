@@ -9,7 +9,7 @@ module Engine
       module Step
         class Route < Engine::Step::Route
           def chart(_entity)
-            [
+            bonuses = [
               ['Bonus/Penalty', 'Revenue'],
               ['Montan', "#{@game.format_currency(20)}/#{@game.format_currency(40)} per K/S pair"],
               ['Eastern Ruhr', "#{@game.format_currency(10)} per link"],
@@ -18,6 +18,8 @@ module Engine
               %w[RGE Special],
               ['Offboard', 'No revenue if out-tokened'],
             ]
+            bonuses << ['Ratingen', @game.format_currency(30)] if @game.ratingen_variant
+            bonuses
           end
         end
       end

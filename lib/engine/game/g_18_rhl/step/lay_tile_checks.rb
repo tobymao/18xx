@@ -6,13 +6,29 @@ module LayTileChecks
 
     @game.eastern_ruhr_connection_check(action.tile.hex)
     @game.potential_icon_cleanup(action.tile)
-    return if action.tile.hex.name != 'E14' || !@game.prinz_wilhelm_bahn
+
+    case action.tile.hex.name
+    when 'E12'
+      potentially_close_private(action, @game.angertalbahn)
+    when 'E14'
+      potentially_remove_ability_from_private(action, @game.prinz_wilhelm_bahn)
+    end
+  end
+
+  def potentially_remove_ability_from_private(action, comp)
+    return if !comp || comp.owner != action.entity.player
 
     # Remove hex block
-    comp = @game.prinz_wilhelm_bahn
     comp.all_abilities.dup.each do |a|
       comp.desc = 'Special ability used up. No extra effect until closed in phase 6.'
       comp.remove_ability(a)
     end
+  end
+
+  def potentially_close_private(action, comp)
+    return unless comp&.owner == action.entity.player
+
+    @log << "#{comp.name} closes"
+    comp.close!
   end
 end
