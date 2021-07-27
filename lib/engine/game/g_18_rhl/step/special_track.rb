@@ -39,6 +39,19 @@ module Engine
             # the normal one.
             @game.start_trajektanstalt_teleport if action.entity == @game.trajektanstalt
           end
+
+          # Private 3 (Sailzuganlage) has all possible tiles, that can be played in all
+          # hexes with mountain terrain, as candidates. The general code will let through
+          # hexes that are not allowed, so we need to remove illegal upgrades.
+          def potential_tiles(entity, hex)
+            return [] unless (tile_ability = abilities(entity))
+
+            candidates = super
+            return candidates if candidates.empty? || tile_ability.owner != @game.seilzuganlage
+
+            potentials = @game.all_potential_upgrades(hex.tile).map(&:name)
+            candidates.select { |t| @game.upgrades_to?(hex.tile, t) && potentials.include?(t.name) }
+          end
         end
       end
     end
