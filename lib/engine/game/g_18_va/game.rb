@@ -382,7 +382,7 @@ module Engine
 
         CORPORATIONS = [
           {
-            float_percent: 0o0,
+            float_percent: 20,
             sym: 'B&O',
             name: 'Baltimore & Ohio Railroad',
             logo: '18_va/BO',
