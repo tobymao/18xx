@@ -43,20 +43,20 @@ module Engine
               current_amount = GKB_BONUS[count]
               next_amount = GKB_BONUS[count - 1]
               @game.log << "#{@game.gkb.name} bonus decrease from #{@game.format_currency(current_amount)} to "\
-                "#{@game.format_currency(next_amount)}"
+                           "#{@game.format_currency(next_amount)}"
               used_ability.amount = next_amount
             end
           end
 
           def chart(_entity)
             [
+              %w[Name Bonus],
               ['Lapplandspilen (N-S)', @game.format_currency(100)],
-              ['Öst-Väst 1 (Ö-V, Gbg)', @game.format_currency(120)],
-              ['Öst-Väst 2 (Ö-V, Malmö)', @game.format_currency(100)],
+              ['Öst-Väst (Ö-V)', @game.format_currency(120)],
               ['Malmfälten 1 (M-m)', @game.format_currency(50)],
               ['Malmfälten 2 (M-m-m)', @game.format_currency(100)],
               ['Bergslagen 1 (B-b)', @game.format_currency(50)],
-              ['Bergslagen 2 (B-b-b)', @game.format_currency(80)],
+              ['Bergslagen 2 (B-b-b)', @game.format_currency(100)],
             ]
           end
 

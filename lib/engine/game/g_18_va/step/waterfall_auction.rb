@@ -28,12 +28,15 @@ module Engine
 
           def end_auction!
             resolve_bids
+          end
 
-            @game.log << 'Players are reordered based on remaining cash'
+          def min_bid(company)
+            return unless company
 
-            # players are reordered from most remaining cash to least with prior order as tie breaker
-            current_order = @game.players.dup.reverse
-            @game.players.sort_by! { |p| [p.cash, current_order.index(p)] }.reverse!
+            high_bid = highest_bid(company)
+            return company.value - company.discount unless high_bid
+
+            high_bid.price + min_increment
           end
 
           def all_passed!
@@ -47,7 +50,7 @@ module Engine
               company.discount += 10
               new_value = company.min_bid
               @game.log << "#{company.name} minimum bid decreases from "\
-                "#{@game.format_currency(value)} to #{@game.format_currency(new_value)}"
+                           "#{@game.format_currency(value)} to #{@game.format_currency(new_value)}"
 
               next unless new_value <= 0
 

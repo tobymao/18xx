@@ -134,7 +134,7 @@ module Engine
             player_interest_penalty[entity] = owed
             owed_fmt = @game.format_currency(owed)
             @log << "#{entity.name} cannot afford remaining "\
-            "#{owed_fmt} interest and president must cover the difference"
+                    "#{owed_fmt} interest and president must cover the difference"
             @cash_crisis_due_to_interest = entity
             entity.owner.spend(owed, bank, check_cash: false)
           end

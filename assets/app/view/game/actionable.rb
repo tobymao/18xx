@@ -75,12 +75,12 @@ module View
               if @game.active_players_id.include?(@user['id'])
                 unless @valid_actors.empty?
                   "Only #{@valid_actors.map(&:name).join(' and ')} "\
-                  'may perform that action. Turn on master mode under the Tools '\
-                  'menu to act for others.'
+                    'may perform that action. Turn on master mode under the Tools '\
+                    'menu to act for others.'
                 end
               else
                 'Not your turn. Turn on master mode under the Tools menu to act '\
-                'for others.'
+                  'for others.'
               end
             return store(:flash_opts, msg)
           end

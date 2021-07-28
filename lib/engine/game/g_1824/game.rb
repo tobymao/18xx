@@ -80,7 +80,7 @@ module Engine
             'color' => 'brown',
             'code' =>
             'city=revenue:60,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
-              'path=a:5,b:_0;label=Bu',
+            'path=a:5,b:_0;label=Bu',
           },
           '401' =>
           {
@@ -114,7 +114,7 @@ module Engine
             'color' => 'green',
             'code' =>
             'city=revenue:40;city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:5,b:_0;path=a:1,b:_1;'\
-              'path=a:2,b:_2;path=a:3,b:_2;path=a:4,b:_1;label=W',
+            'path=a:2,b:_2;path=a:3,b:_2;path=a:4,b:_1;label=W',
           },
           '493' =>
           {
@@ -122,7 +122,7 @@ module Engine
             'color' => 'brown',
             'code' =>
             'city=revenue:70;city=revenue:70,slots:3;path=a:0,b:_0;path=a:5,b:_0;path=a:2,b:_1;path=a:3,b:_1;'\
-              'path=a:4,b:_1;path=a:1,b:_1;label=W',
+            'path=a:4,b:_1;path=a:1,b:_1;label=W',
           },
           '494' =>
           {
@@ -137,7 +137,7 @@ module Engine
             'color' => 'gray',
             'code' =>
             'city=revenue:70,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
-              'path=a:5,b:_0;label=Bu',
+            'path=a:5,b:_0;label=Bu',
           },
           '496' =>
           {
@@ -145,7 +145,7 @@ module Engine
             'color' => 'gray',
             'code' =>
             'city=revenue:80,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
-              'path=a:5,b:_0;label=W',
+            'path=a:5,b:_0;label=W',
           },
           '497' =>
           {
@@ -167,7 +167,7 @@ module Engine
             'color' => 'yellow',
             'code' =>
             'city=revenue:40;city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:1,b:_1;path=a:2,b:_2;'\
-              'path=a:4,b:_1;label=W',
+            'path=a:4,b:_1;label=W',
           },
           '611' => 6,
           '619' => 4,
@@ -408,8 +408,8 @@ module Engine
             interval: [120, 140, 160, 180, 200],
             revenue: 0,
             desc: "Buyer take control of minor Coal Railway EPP (C1), which can be exchanged for the Director's "\
-              'certificate of Regional Railway BK during SRs in phase 3 or 4, or automatically when phase 5 starts. '\
-              'BK floats after exchange as soon as 50% or more are owned by players. This private cannot be sold.',
+                  'certificate of Regional Railway BK during SRs in phase 3 or 4, or automatically when phase 5 starts. '\
+                  'BK floats after exchange as soon as 50% or more are owned by players. This private cannot be sold.',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
             color: nil,
           },
@@ -420,8 +420,8 @@ module Engine
             interval: [120, 140, 160, 180, 200],
             revenue: 0,
             desc: "Buyer take control of minor Coal Railway EOD (C2), which can be exchanged for the Director's "\
-              'certificate of Regional Railway MS during SRs in phase 3 or 4, or automatically when phase 5 starts. '\
-              'MS floats after exchange as soon as 50% or more are owned by players. This private cannot be sold.',
+                  'certificate of Regional Railway MS during SRs in phase 3 or 4, or automatically when phase 5 starts. '\
+                  'MS floats after exchange as soon as 50% or more are owned by players. This private cannot be sold.',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
             color: nil,
           },
@@ -432,8 +432,8 @@ module Engine
             interval: [120, 140, 160, 180, 200],
             revenue: 0,
             desc: "Buyer take control of minor Coal Railway MLB (C3), which can be exchanged for the Director's "\
-              'certificate of Regional Railway CL during SRs in phase 3 or 4, or automatically when phase 5 starts. '\
-              'CL floats after exchange as soon as 50% or more are owned by players. This private cannot be sold.',
+                  'certificate of Regional Railway CL during SRs in phase 3 or 4, or automatically when phase 5 starts. '\
+                  'CL floats after exchange as soon as 50% or more are owned by players. This private cannot be sold.',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
             color: nil,
           },
@@ -444,8 +444,8 @@ module Engine
             interval: [120, 140, 160, 180, 200],
             revenue: 0,
             desc: "Buyer take control of minor Coal Railway SPB (C4), which can be exchanged for the Director's "\
-              'certificate of Regional Railway SB during SRs in phase 3 or 4, or automatically when phase 5 starts. '\
-              'SB floats after exchange as soon as 50% or more are owned by players. This private cannot be sold.',
+                  'certificate of Regional Railway SB during SRs in phase 3 or 4, or automatically when phase 5 starts. '\
+                  'SB floats after exchange as soon as 50% or more are owned by players. This private cannot be sold.',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
             color: nil,
           },
@@ -455,7 +455,7 @@ module Engine
             value: 240,
             revenue: 0,
             desc: "Buyer take control of pre-staatsbahn S1, which will be exchanged for the Director's certificate "\
-              'of SD when the first 4 train is sold. Pre-Staatsbahnen starts in Wien (E12). Cannot be sold.',
+                  'of SD when the first 4 train is sold. Pre-Staatsbahnen starts in Wien (E12). Cannot be sold.',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
             color: nil,
           },
@@ -465,7 +465,7 @@ module Engine
             value: 120,
             revenue: 0,
             desc: 'Buyer take control of pre-staatsbahn S2, which will be exchanged for a 10% share of SD when the '\
-              'first 4 train is sold. Pre-Staatsbahnen starts in Graz (G10). Cannot be sold.',
+                  'first 4 train is sold. Pre-Staatsbahnen starts in Graz (G10). Cannot be sold.',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
             color: nil,
           },
@@ -475,7 +475,7 @@ module Engine
             value: 120,
             revenue: 0,
             desc: 'Buyer take control of pre-staatsbahn S3, which will be exchanged for a 10% share of SD when the '\
-              'first 4 train is sold. Pre-Staatsbahnen starts in Innsbruck (G4). Cannot be sold.',
+                  'first 4 train is sold. Pre-Staatsbahnen starts in Innsbruck (G4). Cannot be sold.',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
             color: nil,
           },
@@ -485,8 +485,8 @@ module Engine
             value: 240,
             revenue: 0,
             desc: "Buyer take control of pre-staatsbahn U1, which will be exchanged for the Director's certificate "\
-              'of UG when the first 5 train is sold. Pre-Staatsbahnen starts in Pest (F17) in base 1824 and in '\
-              'Budapest (G12) for 3 players on the Cislethania map. Cannot be sold.',
+                  'of UG when the first 5 train is sold. Pre-Staatsbahnen starts in Pest (F17) in base 1824 and in '\
+                  'Budapest (G12) for 3 players on the Cislethania map. Cannot be sold.',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
             color: nil,
           },
@@ -496,7 +496,7 @@ module Engine
             value: 120,
             revenue: 0,
             desc: 'Buyer take control of pre-staatsbahn U2, which will be exchanged for a 10% share of UG when the '\
-              'first 5 train is sold. Pre-Staatsbahnen starts in Fünfkirchen (H15). Cannot be sold.',
+                  'first 5 train is sold. Pre-Staatsbahnen starts in Fünfkirchen (H15). Cannot be sold.',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
             color: nil,
           },
@@ -506,7 +506,7 @@ module Engine
             value: 240,
             revenue: 0,
             desc: "Buyer take control of pre-staatsbahn K1, which will be exchanged for the Director's certificate "\
-              'of KK when the first 6 train is sold. Pre-Staatsbahnen starts in Wien (E12). Cannot be sold.',
+                  'of KK when the first 6 train is sold. Pre-Staatsbahnen starts in Wien (E12). Cannot be sold.',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
             color: nil,
           },
@@ -516,7 +516,7 @@ module Engine
             value: 120,
             revenue: 0,
             desc: 'Buyer take control of pre-staatsbahn K2, which will be exchanged for a 10% share of KK when the '\
-              'first 6 train is sold. Pre-Staatsbahnen starts in Wien (E12). Cannot be sold.',
+                  'first 6 train is sold. Pre-Staatsbahnen starts in Wien (E12). Cannot be sold.',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
             color: nil,
           },
@@ -1346,22 +1346,22 @@ module Engine
         end
 
         DRESDEN_1 = 'offboard=revenue:yellow_10|green_20|brown_30|gray_40,hide:1,groups:Dresden;'\
-                        'path=a:4,b:_0,terminal:1;path=a:5,b:_0,terminal:1'
+                    'path=a:4,b:_0,terminal:1;path=a:5,b:_0,terminal:1'
         DRESDEN_2 = 'offboard=revenue:yellow_10|green_20|brown_30|gray_40,groups:Dresden;'\
-                        'path=a:4,b:_0,terminal:1'
+                    'path=a:4,b:_0,terminal:1'
         KIEW_1 = 'offboard=revenue:yellow_10|green_30|brown_40|gray_50,hide:1,groups:Kiew;'\
-                         'path=a:0,b:_0,terminal:1;path=a:5,b:_0,terminal:1'
+                 'path=a:0,b:_0,terminal:1;path=a:5,b:_0,terminal:1'
         KIEW_2 = 'offboard=revenue:yellow_10|green_30|brown_40|gray_50,groups:Kiew;'\
-                         'path=a:0,b:_0,terminal:1'
+                 'path=a:0,b:_0,terminal:1'
         MAINLAND_1 = 'offboard=revenue:yellow_10|green_30|brown_50|gray_70,hide:1,groups:Mainland;'\
-                        'path=a:3,b:_0,terminal:1;path=a:4,b:_0,terminal:1'
+                     'path=a:3,b:_0,terminal:1;path=a:4,b:_0,terminal:1'
         MAINLAND_2 = 'offboard=revenue:yellow_10|green_30|brown_50|gray_70,groups:Mainland;path=a:3,b:_0,terminal:1'
         BUKAREST_1 = 'offboard=revenue:yellow_10|green_30|brown_40|gray_50,hide:1,groups:Bukarest;'\
                      'path=a:1,b:_0,terminal:1'
         BUKAREST_2 = 'offboard=revenue:yellow_10|green_30|brown_40|gray_50,groups:Bukarest;path=a:2,b:_0,terminal:1'
         SARAJEVO = 'city=revenue:yellow_10|green_10|brown_50|gray_50;'\
-                     'path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;path=a:2,b:_0,terminal:1;'\
-                     'path=a:3,b:_0,terminal:1;path=a:4,b:_0,terminal:1;path=a:5,b:_0,terminal:1'
+                   'path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;path=a:2,b:_0,terminal:1;'\
+                   'path=a:3,b:_0,terminal:1;path=a:4,b:_0,terminal:1;path=a:5,b:_0,terminal:1'
         SARAJEVO_W = 'path=a:2,b:5;path=a:3,b:4'
         SARAJEVO_E = 'path=a:0,b:3;path=a:1,b:2'
         SARAJEVO_S = 'path=a:2,b:3'

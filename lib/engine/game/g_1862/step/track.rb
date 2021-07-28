@@ -20,9 +20,7 @@ module Engine
 
           def lay_tile_action(action, entity: nil, spender: nil)
             tile_lay = get_tile_lay(action.entity)
-            if action.tile.label.to_s == 'N' && !(tile_lay && tile_lay[:upgrade])
-              raise GameError, "Cannot lay an 'N' tile now"
-            end
+            raise GameError, "Cannot lay an 'N' tile now" if action.tile.label.to_s == 'N' && !(tile_lay && tile_lay[:upgrade])
 
             super
           end

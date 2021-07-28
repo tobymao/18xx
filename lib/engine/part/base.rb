@@ -105,6 +105,10 @@ module Engine
         false
       end
 
+      def stripes?
+        false
+      end
+
       def partition?
         false
       end

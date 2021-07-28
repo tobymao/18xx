@@ -33,7 +33,7 @@ module Engine
                         blue: '#0189d1',
                         brown: '#7b352a')
 
-        CURRENCY_FORMAT_STR = '$%f'
+        CURRENCY_FORMAT_STR = '$%d'
 
         BANK_CASH = 12_000
 
@@ -358,7 +358,7 @@ module Engine
             value: 40,
             revenue: 10,
             desc: 'The public company that owns this private company may place a free station marker and/or '\
-            'green #59 tile on the Kitchener hex (I12). This action closes the private company.',
+                  'green #59 tile on the Kitchener hex (I12). This action closes the private company.',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['I12'] },
                         {
                           type: 'tile_lay',
@@ -375,6 +375,8 @@ module Engine
                           hexes: ['I12'],
                           count: 1,
                           price: 0,
+                          teleport_price: 0,
+                          from_owner: true,
                         }],
             color: nil,
           },
@@ -384,8 +386,8 @@ module Engine
             value: 50,
             revenue: 10,
             desc: 'During its operating turn, the public company owning this private company may place a '\
-            'track tile in the hex occupied by this private company (H11). This track lay is in addition to '\
-            'the public company\'s normal track lay. This action does not close the private company.',
+                  'track tile in the hex occupied by this private company (H11). This track lay is in addition to '\
+                  'the public company\'s normal track lay. This action does not close the private company.',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['H11'] },
                         {
                           type: 'tile_lay',
@@ -404,9 +406,9 @@ module Engine
             value: 70,
             revenue: 15,
             desc: 'At any time during its operating turn, the owning public company may place the port marker in '\
-            'any one hex with the port symbol. The port marker raises the value of all revenue locations in that hex '\
-            'by $20 for that corporation. This marker may not be moved and will be removed when the first '\
-            '6 train is purchased. Placement of this marker closes the Great Lakes Shipping Company.',
+                  'any one hex with the port symbol. The port marker raises the value of all revenue locations in that hex '\
+                  'by $20 for that corporation. This marker may not be moved and will be removed when the first '\
+                  '6 train is purchased. Placement of this marker closes the Great Lakes Shipping Company.',
             abilities: [
               {
                 type: 'assign_hexes',
@@ -442,7 +444,7 @@ module Engine
             value: 100,
             revenue: 20,
             desc: 'The public company that owns this private company may add a $10 bonus when running '\
-            'to Buffalo (P17/P19). Other public companies may purchase the right for $50.',
+                  'to Buffalo (P17/P19). Other public companies may purchase the right for $50.',
             color: nil,
           },
           {
@@ -451,7 +453,7 @@ module Engine
             value: 100,
             revenue: 20,
             desc: 'The public company that owns this private company may add a $10 Port Huron bonus when running '\
-            'to Sarnia (B13). Other public companies may purchase the right for $50.',
+                  'to Sarnia (B13). Other public companies may purchase the right for $50.',
             color: nil,
           },
         ].freeze
@@ -730,6 +732,7 @@ module Engine
         SELL_MOVEMENT = :down_per_10
 
         HOME_TOKEN_TIMING = :operate
+        ALLOW_REMOVING_TOWNS = true
 
         RIGHT_COST = 50
 
@@ -949,21 +952,21 @@ module Engine
         end
 
         def setup
-          @straight_city ||= @tiles.find { |t| t.name == '57' }
-          @sharp_city ||= @tiles.find { |t| t.name == '5' }
-          @gentle_city ||= @tiles.find { |t| t.name == '6' }
+          @straight_city ||= @all_tiles.find { |t| t.name == '57' }
+          @sharp_city ||= @all_tiles.find { |t| t.name == '5' }
+          @gentle_city ||= @all_tiles.find { |t| t.name == '6' }
 
-          @straight_track ||= @tiles.find { |t| t.name == '9' }
-          @sharp_track ||= @tiles.find { |t| t.name == '7' }
-          @gentle_track ||= @tiles.find { |t| t.name == '8' }
+          @straight_track ||= @all_tiles.find { |t| t.name == '9' }
+          @sharp_track ||= @all_tiles.find { |t| t.name == '7' }
+          @gentle_track ||= @all_tiles.find { |t| t.name == '8' }
 
-          @x_city ||= @tiles.find { |t| t.name == '14' }
-          @k_city ||= @tiles.find { |t| t.name == '15' }
+          @x_city ||= @all_tiles.find { |t| t.name == '14' }
+          @k_city ||= @all_tiles.find { |t| t.name == '15' }
 
-          @brown_london ||= @tiles.find { |t| t.name == '126' }
-          @brown_barrie ||= @tiles.find { |t| t.name == '127' }
+          @brown_london ||= @all_tiles.find { |t| t.name == '126' }
+          @brown_barrie ||= @all_tiles.find { |t| t.name == '127' }
 
-          @gray_hamilton ||= @tiles.find { |t| t.name == '123' }
+          @gray_hamilton ||= @all_tiles.find { |t| t.name == '123' }
 
           @post_nationalization = false
           @nationalization_train_discard_trigger = false
@@ -1017,7 +1020,7 @@ module Engine
             d_goals = Array(dest_arr.first)
             d_start = dest_arr.size > 1 ? dest_arr.last : corporation_by_id(corp).coordinates
             @destination_statuses[corp] = "Dest: Connect #{hex_by_id(d_start).tile.location_name} (#{d_start}) to"\
-                  " #{hex_by_id(d_goals.first).tile.location_name} (#{d_goals})"
+                                          " #{hex_by_id(d_goals.first).tile.location_name} (#{d_goals})"
             dest_arr.each do |d|
               # Array(d).first allows us to treat 'E5' or %[O2 N3] identically
               hex_by_id(Array(d).first).original_tile.icons << Part::Icon.new(icon_path(corp))
@@ -1610,12 +1613,12 @@ module Engine
             @log << "#{player.name} becomes president of the #{national.name}"
             if shares_awarded == 1
               @log << "#{player.name} will need to buy the 2nd share of the #{national.name} "\
-                "president's cert in the next SR unless a new president is found"
+                      "president's cert in the next SR unless a new president is found"
               @false_national_president = player
               national.add_ability(FALSE_PRESIDENCY_ABILITY)
             elsif @false_national_president
               @log << "Since #{president.name} is no longer president of the #{national.name} "\
-                ' and is no longer obligated to buy a second share in the following SR'
+                      ' and is no longer obligated to buy a second share in the following SR'
               @false_national_president = nil
               national.remove_ability(FALSE_PRESIDENCY_ABILITY)
             end

@@ -211,9 +211,7 @@ module Engine
 
         def init_companies(players)
           companies = super
-          unless multiplayer?
-            companies = companies.reject { |item| item.value >= TWO_PLAYER_COMPANIES_TO_REMOVE[item.revenue] }
-          end
+          companies = companies.reject { |item| item.value >= TWO_PLAYER_COMPANIES_TO_REMOVE[item.revenue] } unless multiplayer?
           companies
         end
 
@@ -325,6 +323,10 @@ module Engine
           @timeline.append("Game ends after OR #{OR_SETS.size}.#{OR_SETS.last}")
           @timeline.append("Current value of each private company is #{COMPANY_VALUES[[0, @or - 1].max]}")
           @timeline.append("Next set of Operating Rounds will have #{OR_SETS[@turn - 1]} ORs")
+        end
+
+        def able_to_operate?(entity, _train, name)
+          TRAINS_FOR_CORPORATIONS[name] == entity.type
         end
 
         def par_prices(corp)
@@ -784,6 +786,10 @@ module Engine
 
         def company_size_str(company)
           COMPANY_REVENUE_TO_TYPE[company.revenue][0]
+        end
+
+        def company_sale_price(company)
+          company.value
         end
 
         def remove_ate_reservation

@@ -57,9 +57,7 @@ module Engine
             hex = city.hex
             entity = action.entity
 
-            unless available_hex(entity, hex)
-              raise GameError, "Cannot place token on #{hex.name} as the hex is not available"
-            end
+            raise GameError, "Cannot place token on #{hex.name} as the hex is not available" unless available_hex(entity, hex)
 
             if token&.corporation&.type == :city
               check_connected(entity, city, hex)

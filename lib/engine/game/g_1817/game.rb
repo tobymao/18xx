@@ -921,9 +921,9 @@ module Engine
           'no_new_shorts' => ['Cannot gain new shorts', 'Short selling is not permitted, existing shorts remain'],
         ).freeze
         MARKET_TEXT = Base::MARKET_TEXT.merge(safe_par: 'Minimum Price for a 2($55), 5($70) and 10($120) share'\
-        ' corporation taking maximum loans to ensure it avoids acquisition',
+                                                        ' corporation taking maximum loans to ensure it avoids acquisition',
                                               acquisition: 'Acquisition (Pay $40 dividend to move right, $80'\
-                                              ' to double jump)').freeze
+                                                           ' to double jump)').freeze
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(par: :gray).freeze
         MARKET_SHARE_LIMIT = 1000 # notionally unlimited shares in market
         CORPORATION_SIZES = { 2 => :small, 5 => :medium, 10 => :large }.freeze
@@ -1309,7 +1309,7 @@ module Engine
           short.counts_for_limit = false
 
           @log << "#{entity.name} shorts a #{percent}% " \
-            "share of #{corporation.name} for #{format_currency(price)}"
+                  "share of #{corporation.name} for #{format_currency(price)}"
 
           @bank.spend(price, entity)
           add_new_share(short)

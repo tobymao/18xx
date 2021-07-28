@@ -45,7 +45,7 @@ module Engine
             end
 
             @game.log << 'First stock round is finished - any unsold Pre-State Railways, Coal Railways, ' \
-              ' and Montain Railways are removed from the game'
+                         ' and Montain Railways are removed from the game'
 
             @game.companies.each do |c|
               next if c.owner&.player? || c.closed?
@@ -61,7 +61,7 @@ module Engine
                 # Private is a control of a pre-staatsbahn
                 state = @game.associated_state_railway(c)
                 @game.log << "Pre-Staatsbahn #{minor.name} closes; "\
-                  "corresponding share in #{state.name} is no longer reserved"
+                             "corresponding share in #{state.name} is no longer reserved"
 
                 close_minor(minor)
                 c.close!
@@ -71,7 +71,7 @@ module Engine
               # Private is a control of a Coal Railway
               regional = @game.associated_regional_railway(minor)
               @game.log << "Coal Railway #{minor.name} closes; #{regional.name}'s presidency share "\
-                'is no longer reserved'
+                           'is no longer reserved'
 
               close_minor(minor)
               c.close!

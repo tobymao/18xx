@@ -42,9 +42,7 @@ module View
           at_limit = purchasable_shares * @corporation.total_shares >= @corporation.max_ownership_percent
           flags = at_limit ? ' L' : ''
 
-          if @game.class::VARIABLE_FLOAT_PERCENTAGES
-            flags += " / #{@game.total_shares_to_float(@corporation, share_price.price)}"
-          end
+          flags += " / #{@game.total_shares_to_float(@corporation, share_price.price)}" if @game.class::VARIABLE_FLOAT_PERCENTAGES
 
           text = "#{@game.par_price_str(share_price)} (#{purchasable_shares}#{flags})"
           h('button.small.par_price', props, text)

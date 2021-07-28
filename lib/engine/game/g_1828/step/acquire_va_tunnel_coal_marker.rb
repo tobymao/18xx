@@ -5,9 +5,7 @@ module Engine
     module G1828
       module AcquireVaTunnelCoalMarker
         def process_lay_tile(action)
-          if action.hex.id == Engine::Game::G1828::Game::VA_TUNNEL_HEX
-            @game.acquire_va_tunnel_coal_marker(action.entity)
-          end
+          @game.acquire_va_tunnel_coal_marker(action.entity) if action.hex.id == Engine::Game::G1828::Game::VA_TUNNEL_HEX
 
           super
         end

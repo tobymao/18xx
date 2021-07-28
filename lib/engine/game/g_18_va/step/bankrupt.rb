@@ -65,6 +65,7 @@ module Engine
 
             corps_to_close.keys.each { |c| @game.close_corporation(c) }
 
+            player.spend(player.cash, @game.bank) if player.cash.positive?
             @game.declare_bankrupt(player)
           end
         end

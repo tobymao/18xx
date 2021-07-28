@@ -226,8 +226,8 @@ module Engine
           },
           yellow: {
             ['A9'] => 'label=A;city=revenue:30;upgrade=cost:80,terrain:mountain;'\
-                     'path=a:0,b:_0,track:narrow;path=a:1,b:_0,track:narrow;path=a:5,b:_0,track:narrow;'\
-                     'path=a:4,b:_0',
+                      'path=a:0,b:_0,track:narrow;path=a:1,b:_0,track:narrow;path=a:5,b:_0,track:narrow;'\
+                      'path=a:4,b:_0',
             ['P2'] => 'label=R;city=revenue:10;path=a:3,b:_0,track:narrow;path=a:4,b:_0',
             ['L18'] => 'label=T;city=revenue:20;path=a:2,b:_0,track:dual',
             ['G7'] => 'label=N;city=revenue:20;path=a:4,b:_0,track:narrow;path=a:5,b:_0',

@@ -80,7 +80,7 @@ module Engine
           def float_minor(bid)
             player = bid.entity
             company = bid.company
-            price = bid.price
+            bid_amount = bid.price
 
             # Find the correct minor in the corporations
             minor = @game.find_corporation(company)
@@ -89,16 +89,13 @@ module Engine
             # Get the correct par price according to phase
             current_phase = @game.phase.name.to_i
             max_par_price = @game.stock_market.par_prices.map(&:price).max
-            par_price_to_find = current_phase == 1 ? @game.class::MINOR_START_PAR_PRICE : price / 2
+            par_price_to_find = current_phase == 1 ? @game.class::MINOR_START_PAR_PRICE : bid_amount / 2
             par_price_to_find = max_par_price if par_price_to_find > max_par_price
 
             share_price = @game.stock_market.par_prices.find { |pp| pp.price <= par_price_to_find }
-            par_price = share_price.price
+            presidency_price = share_price.price * 2
 
-            # Temporarily give the player cash to buy the minors PAR shares
-            @game.bank.spend(share_price.price * 2, player)
-
-            # Set the parprice of the minor and let the player get the president share
+            # Set the par price of the minor, player buys presidency
             @game.stock_market.set_par(minor, share_price)
             share = minor.shares.first
             @game.share_pool.buy_shares(player, share.to_bundle)
@@ -109,27 +106,29 @@ module Engine
 
             # Move the correct amount to money to the minor. This is according to phase of the game
             treasury = if current_phase < 3
-                         par_price * 2
+                         presidency_price
                        else
-                         price
+                         bid_amount
                        end
-            @game.bank.spend(treasury, minor)
 
-            # Spend the whole amount the player have bid
-            player.spend(price, @game.bank)
+            # Spend the remaining bid amount
+            excess = bid_amount - presidency_price
+            player.spend(excess, @game.bank) unless excess.zero?
+
+            @game.bank.spend(treasury, minor)
 
             # Remove the proxy company for the minor
             @game.companies.delete(company)
 
             # If there is a difference between the treasury and the price. The rest is paid to the bank.
-            price_treasury_difference = price - treasury
+            price_treasury_difference = bid_amount - treasury
             if price_treasury_difference.positive?
               @log << "#{player.name} pays #{@game.format_currency(price_treasury_difference)} "\
                       'to the bank'
             end
 
             # If there is a difference between the treasury and the money the company get from the IPO
-            return if (treasury_par_diff = treasury - (par_price * 2)).zero?
+            return if (treasury_par_diff = treasury - presidency_price).zero?
 
             @log << "#{minor.name} receives an additional #{@game.format_currency(treasury_par_diff)} from the bid"
           end

@@ -45,6 +45,134 @@ module Engine
           '597' => 'unlimited',
           '611' => 'unlimited',
           '619' => 'unlimited',
+          '7coal' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'yellow',
+            'code' => 'offboard=revenue:10,hide:1;path=a:0,b:1;label=⛏️',
+          },
+          '8coal' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'yellow',
+            'code' => 'offboard=revenue:10,hide:1;path=a:0,b:2;label=⛏️',
+          },
+          '9coal' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'yellow',
+            'code' => 'offboard=revenue:10,hide:1;path=a:0,b:3;label=⛏️',
+          },
+          '7iron10' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'yellow',
+            'code' => 'offboard=revenue:10,hide:1;path=a:0,b:1;label=⚒️',
+          },
+          '8iron10' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'yellow',
+            'code' => 'offboard=revenue:10,hide:1;path=a:0,b:2;label=⚒️',
+          },
+          '9iron10' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'yellow',
+            'code' => 'offboard=revenue:10,hide:1;path=a:0,b:3;label=⚒️',
+          },
+          '7iron20' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'green',
+            'code' => 'offboard=revenue:20,hide:1;path=a:0,b:1;label=⚒️',
+          },
+          '8iron20' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'green',
+            'code' => 'offboard=revenue:20,hide:1;path=a:0,b:2;label=⚒️',
+          },
+          '9iron20' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'green',
+            'code' => 'offboard=revenue:20,hide:1;path=a:0,b:3;label=⚒️',
+          },
+          '7oil' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'yellow',
+            'code' => 'offboard=revenue:yellow_10|brown_20,hide:1;path=a:0,b:1;label=🛢️',
+          },
+          '8oil' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'yellow',
+            'code' => 'offboard=revenue:yellow_10|brown_20,hide:1;path=a:0,b:2;label=🛢️',
+          },
+          '9oil' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'yellow',
+            'code' => 'offboard=revenue:yellow_10|brown_20,hide:1;path=a:0,b:3;label=🛢️',
+          },
+          '544oil' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'brown',
+            'code' => 'junction;offboard=revenue:20,hide:1;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=🛢️',
+          },
+          '545oil' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'brown',
+            'code' => 'junction;offboard=revenue:20,hide:1;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;label=🛢️',
+          },
+          '546oil' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'brown',
+            'code' => 'junction;offboard=revenue:20,hide:1;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=🛢️',
+          },
+          '80oil' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'green',
+            'code' => 'junction;offboard=revenue:yellow_10|brown_20,hide:1;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;label=🛢️',
+          },
+          '81oil' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'green',
+            'code' => 'junction;offboard=revenue:yellow_10|brown_20,hide:1;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0;label=🛢️',
+          },
+          '82oil' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'green',
+            'code' => 'junction;offboard=revenue:yellow_10|brown_20,hide:1;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;label=🛢️',
+          },
+          '83oil' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'green',
+            'code' => 'junction;offboard=revenue:yellow_10|brown_20,hide:1;path=a:0,b:_0;path=a:5,b:_0;path=a:3,b:_0;label=🛢️',
+          },
+          '60oil' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'gray',
+            'code' => 'junction;offboard=revenue:20,hide:1;'\
+                      'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=🛢️',
+          },
+          'X17oil' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'gray',
+            'code' => 'junction;offboard=revenue:20,hide:1;'\
+                      'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=🛢️',
+          },
           'X01' =>
           {
             'count' => 'unlimited',
@@ -85,7 +213,7 @@ module Engine
             'count' => 1,
             'color' => 'green',
             'code' => 'city=revenue:60,slots:2;city=revenue:60;path=a:0,b:_0;path=a:3,b:_0;path=a:1,b:_1;path=a:2,'\
-            'b:_1;label=NY',
+                      'b:_1;label=NY',
           },
           'X13' => {
             'count' => 1,
@@ -96,7 +224,7 @@ module Engine
             'count' => 1,
             'color' => 'brown',
             'code' => 'city=revenue:80,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;'\
-            'label=DFW',
+                      'label=DFW',
           },
           'X15' => {
             'count' => 1,
@@ -108,7 +236,7 @@ module Engine
             'color' => 'brown',
             'code' => 'city=revenue:70,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;label=NY',
           },
-          X17: {
+          'X17' => {
             'count' => 'unlimited',
             'color' => 'gray',
             'code' => 'junction;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;',
@@ -117,9 +245,9 @@ module Engine
             'count' => 1,
             'color' => 'gray',
             'code' => 'city=revenue:80,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
-            'path=a:5,b:_0;label=DFW',
+                      'path=a:5,b:_0;label=DFW',
           },
-          X19: {
+          'X19' => {
             'count' => 1,
             'color' => 'gray',
             'code' => 'city=revenue:90,slots:4;path=a:0,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=LA',
@@ -302,12 +430,14 @@ module Engine
             tiles: %i[yellow green brown],
             operating_rounds: 2,
             corporation_sizes: [5, 10],
+            status: ['increased_oil'],
           },
           {
             name: '6',
             on: '6',
             train_limit: 2,
             tiles: %i[yellow green brown],
+            status: ['increased_oil'],
             operating_rounds: 2,
             corporation_sizes: [10],
           },
@@ -316,6 +446,7 @@ module Engine
             on: '7',
             train_limit: 2,
             tiles: %i[yellow green brown gray],
+            status: ['increased_oil'],
             operating_rounds: 2,
             corporation_sizes: [10],
           },
@@ -324,12 +455,19 @@ module Engine
             on: '8',
             train_limit: 2,
             tiles: %i[yellow green brown gray],
-            status: ['no_new_shorts'],
+            status: %w[increased_oil no_new_shorts],
             operating_rounds: 2,
             corporation_sizes: [10],
           },
         ].freeze
 
+        # Trying to do {static literal}.merge(super.static_literal) so that the capitalization shows up first.
+        STATUS_TEXT = {
+          'increased_oil' => [
+            'Increased Oil Prices',
+            'Oil is worth $20 instead of $10',
+          ],
+        }.merge(Base::STATUS_TEXT)
         TRAINS = [{ name: '2', distance: 2, price: 100, rusts_on: '4', num: 40 },
                   { name: '2+', distance: 2, price: 100, obsolete_on: '4', num: 4 },
                   { name: '3', distance: 3, price: 250, rusts_on: '6', num: 12 },
@@ -347,54 +485,49 @@ module Engine
                     events: [{ 'type' => 'signal_end_game' }],
                   }].freeze
 
+        OIL_HEXES = %w[B12 G15 H4 I17 I21 I23 J14].freeze
+        IRON_HEXES = %w[B10 C7 C19 D16 E5 E9 G21 H6].freeze
+        COAL_HEXES = %w[B6 B10 B12 C9 D8 D10 D26 E19 E25 F8 F10 F16 F22 F24].freeze
+        BRIDGE_CITY_HEXES = %w[C10 C17 D14 E15 E17 F20 G17].freeze
         COMPANIES = [
+          # P1
           {
-            name: 'Pittsburgh Steel Mill',
-            value: 40,
+            name: 'Lehigh Coal Mine Co.',
+            value: 30,
             revenue: 0,
-            desc: 'Owning corp may place special Pittsburgh yellow tile during tile-laying, '\
-                  'regardless of connectivity.  The hex is not reserved, and the power '\
-                  'is lost if another company builds there first.',
-            sym: 'PSM',
-            abilities: [
-            {
-              type: 'tile_lay',
-              hexes: ['F13'],
-              tiles: ['X00'],
-              when: 'track',
-              owner_type: 'corporation',
-              count: 1,
-            },
-          ],
-            color: nil,
-          },
-          {
-            name: 'Mountain Engineers',
-            value: 40,
-            revenue: 0,
-            desc: 'Owning company receives $20 after laying a yellow tile in a '\
-                  'mountain hex.  Any fees must be paid first.',
-            sym: 'ME',
+            desc: 'Comes with one coal mine marker. When placing a yellow '\
+                  'tile in a coal hex pointing to a revenue location, can place '\
+                  'token to avoid $15 terrain fee.  Marked yellow hexes cannot be '\
+                  'upgraded.  Hexes pay $10 extra revenue and do not count as a '\
+                  'stop.  May not start or end a route at a coal mine.',
+            sym: 'P1',
             abilities: [
               {
-                type: 'tile_income',
-                income: 20,
-                terrain: 'mountain',
+                type: 'tile_lay',
+                hexes: COAL_HEXES,
+                tiles: %w[7coal 8coal 9coal],
+                free: false,
+                when: 'track',
+                discount: 15,
+                consume_tile_lay: true,
+                closed_when_used_up: true,
                 owner_type: 'corporation',
-                owner_only: true,
+                count: 1,
               },
             ],
             color: nil,
           },
+          # P2
+          # TODO: Make it work as a combo with P27
           {
-            name: 'Ohio Bridge Company',
+            name: 'Fox Bridge Works',
             value: 40,
             revenue: 0,
             desc: 'Comes with one $10 bridge token that may be placed by the owning '\
-                  'corp in Louisville, Cincinnati, or Charleston, max one token '\
+                  'corp in a city with $10 water cost, max one token '\
                   'per city, regardless of connectivity.  Allows owning corp to '\
-                  'skip $10 river fee when placing yellow tiles.',
-            sym: 'OBC',
+                  'skip $10 river fee when placing track.',
+            sym: 'P2',
             abilities: [
               {
                 type: 'tile_discount',
@@ -404,7 +537,7 @@ module Engine
               },
               {
                 type: 'assign_hexes',
-                hexes: %w[H3 G6 H9],
+                hexes: BRIDGE_CITY_HEXES,
                 count: 1,
                 when: 'owning_corp_or_turn',
                 owner_type: 'corporation',
@@ -412,15 +545,158 @@ module Engine
             ],
             color: nil,
           },
+          # P3
           {
-            name: 'Union Bridge Company',
+            name: 'Reece Oil and Gas',
+            value: 30,
+            revenue: 0,
+            desc: 'Comes with one oil marker. When placing a yellow '\
+                  'tile in an oilfield hex pointing to a revenue location, can place '\
+                  'token.  Marked yellow hexes *can* be '\
+                  'upgraded.  Hexes pay $10 extra revenue and do not count as a '\
+                  'stop.  Hexes revenue bonus is upgraded automatically to $20 in phase 5. '\
+                  'May not start or end a route at an oilfield.',
+            sym: 'P3',
+            abilities: [
+              {
+                type: 'tile_lay',
+                hexes: OIL_HEXES,
+                tiles: %w[7oil 8oil 9oil],
+                free: false,
+                when: 'track',
+                discount: 15,
+                consume_tile_lay: true,
+                closed_when_used_up: true,
+                owner_type: 'corporation',
+                count: 1,
+              },
+            ],
+            color: nil,
+          },
+          # P4
+          {
+            name: 'Hendrickson Iron',
+            value: 40,
+            revenue: 0,
+            desc: 'Comes with one ore marker. When placing a yellow '\
+                  'tile in a mining hex pointing to a revenue location, can place '\
+                  'token to avoid $15 terrain fee.  Marked yellow hexes cannot be '\
+                  'upgraded.  Hexes pay $10 extra revenue and do not count as a '\
+                  'stop.  A tile lay action may be used to increase the revenue bonus to $20 in phase 3. '\
+                  '  May not start or end a route at an iron mine.',
+            sym: 'P4',
+            abilities: [
+              {
+                type: 'tile_lay',
+                hexes: IRON_HEXES,
+                tiles: %w[7iron10 8iron10 9iron10],
+                free: false,
+                when: 'track',
+                discount: 15,
+                consume_tile_lay: true,
+                closed_when_used_up: true,
+                owner_type: 'corporation',
+                count: 1,
+              },
+            ],
+            color: nil,
+          },
+          # P5
+          {
+            name: 'Nobel\'s Blasting Powder',
+            value: 30,
+            revenue: 0,
+            desc: '$15 discount on mountains. No money is refunded if combined with the ability of another private that also '\
+                  'negates the cost of difficult terrain',
+            sym: 'P5',
+            abilities: [
+              {
+                type: 'tile_discount',
+                discount: 15,
+                terrain: 'mountain',
+                owner_type: 'corporation',
+              },
+            ],
+            color: nil,
+          },
+          # P12
+          {
+            name: 'Standard Oil Co.',
+            value: 60,
+            revenue: 0,
+            desc: 'Comes with two oil markers. When placing a yellow '\
+                  'tile in an oilfield hex pointing to a revenue location, can place '\
+                  'token.  Marked yellow hexes *can* be '\
+                  'upgraded.  Hexes pay $10 extra revenue and do not count as a '\
+                  'stop.  Hexes revenue bonus is upgraded automatically to $20 in phase 5. '\
+                  'May not start or end a route at an oilfield.',
+            sym: 'P12',
+            abilities: [
+              {
+                type: 'tile_lay',
+                hexes: OIL_HEXES,
+                tiles: %w[7oil 8oil 9oil],
+                free: false,
+                when: 'track',
+                discount: 15,
+                consume_tile_lay: true,
+                closed_when_used_up: true,
+                owner_type: 'corporation',
+                count: 2,
+              },
+            ],
+            color: nil,
+          },
+          # P14
+          {
+            name: 'Pyramid Scheme',
+            value: 60,
+            revenue: 0,
+            desc: 'Does nothing',
+            sym: 'P14',
+            abilities: [],
+            color: nil,
+          },
+          # P18
+          {
+            name: 'Peabody Coal Company',
+            value: 30,
+            revenue: 0,
+            desc: 'Comes with two coal mine markers. When placing a yellow '\
+                  'tile in a mountain hex next to a revenue location, can place '\
+                  'token to avoid $15 terrain fee.  Marked yellow hexes cannot be '\
+                  'upgraded.  Hexes pay $10 extra revenue and do not count as a '\
+                  'stop.  May not start or end a route at a coal mine.',
+            sym: 'P18',
+            abilities: [
+              {
+                type: 'tile_lay',
+                hexes: COAL_HEXES,
+                tiles: %w[7coal 8coal 9coal],
+                free: false,
+                when: 'track',
+                discount: 15,
+                consume_tile_lay: true,
+                closed_when_used_up: true,
+                owner_type: 'corporation',
+                count: 2,
+              },
+            ],
+            color: nil,
+          },
+          # P21
+          # TODO: Make it work as a combo with P27
+          {
+            name: 'Keystone Bridge Co.',
             value: 80,
             revenue: 0,
-            desc: 'Comes with two $10 bridge token that may be placed by the owning '\
-                  'corp in Louisville, Cincinnati, or Charleston, max one token '\
-                  'per city, regardless of connectivity..  Allows owning corp to '\
-                  'skip $10 river fee when placing yellow tiles.',
-            sym: 'UBC',
+            desc: 'Comes with one $10 bridge token that may be placed by the owning '\
+                  'corp in a city with $10 water cost, max one token '\
+                  'per city, regardless of connectivity.  Allows owning corp to '\
+                  'skip $10 river fee when placing track. '\
+                  'Also comes with one coal token and one ore token. (see rules on coal and ore) '\
+                  'You can only ever use one of these two; using one means you forfeit the other',
+            sym: 'P21',
             abilities: [
               {
                 type: 'tile_discount',
@@ -430,7 +706,45 @@ module Engine
               },
               {
                 type: 'assign_hexes',
-                hexes: %w[H3 G6 H9],
+                hexes: BRIDGE_CITY_HEXES,
+                count: 1,
+                when: 'owning_corp_or_turn',
+                owner_type: 'corporation',
+              },
+              {
+                type: 'tile_lay',
+                hexes: COAL_HEXES + IRON_HEXES,
+                tiles: %w[7coal 8coal 9coal 7iron10 8iron10 9iron10],
+                free: false,
+                when: 'track',
+                discount: 15,
+                consume_tile_lay: true,
+                owner_type: 'corporation',
+                count: 1,
+              },
+            ],
+            color: nil,
+          },
+          # P22
+          {
+            name: 'American Bridge Company',
+            value: 80,
+            revenue: 0,
+            desc: 'Comes with two $10 bridge tokens that may be placed by the owning '\
+                  'corp in a city with $10 water cost, max one token '\
+                  'per city, regardless of connectivity..  Allows owning corp to '\
+                  'skip $10 river fee when placing track.',
+            sym: 'P22',
+            abilities: [
+              {
+                type: 'tile_discount',
+                discount: 10,
+                terrain: 'water',
+                owner_type: 'corporation',
+              },
+              {
+                type: 'assign_hexes',
+                hexes: BRIDGE_CITY_HEXES,
                 count: 2,
                 when: 'owning_corp_or_turn',
                 owner_type: 'corporation',
@@ -438,12 +752,13 @@ module Engine
             ],
             color: nil,
           },
+          # P23
           {
-            name: 'Train Station',
+            name: 'Bailey Yard',
             value: 80,
             revenue: 0,
             desc: 'Provides an additional station marker for the owning corp, awarded at time of purchase',
-            sym: 'TS',
+            sym: 'P23',
             abilities: [
               {
                 type: 'additional_token',
@@ -453,155 +768,57 @@ module Engine
             ],
             color: nil,
           },
+          # P24
           {
-            name: 'Minor Coal 18_usa/mine',
-            value: 30,
+            name: 'Anaconda Copper',
+            value: 90,
             revenue: 0,
-            desc: 'Comes with one coal 18_usa/mine marker.  When placing a yellow '\
-                  'tile in a mountain hex next to a revenue location, can place '\
+            desc: 'Comes with two ore markers. When placing a yellow '\
+                  'tile in a mining hex pointing to a revenue location, can place '\
                   'token to avoid $15 terrain fee.  Marked yellow hexes cannot be '\
                   'upgraded.  Hexes pay $10 extra revenue and do not count as a '\
-                  'stop.  May not start or end a route at a coal 18_usa/mine.',
-            sym: 'MINC',
+                  'stop.  A tile lay action may be used to increase the revenue bonus to $20 in phase 3. '\
+                  '  May not start or end a route at an iron mine.',
+            sym: 'P24',
             abilities: [
               {
                 type: 'tile_lay',
-                hexes: %w[B25
-                          C20
-                          C24
-                          E18
-                          F15
-                          G12
-                          G14
-                          H11
-                          H13
-                          H15
-                          I8
-                          I10],
-                tiles: %w[7 8 9],
+                hexes: IRON_HEXES,
+                tiles: %w[7iron10 8iron10 9iron10],
                 free: false,
                 when: 'track',
+                discount: 15,
+                consume_tile_lay: true,
+                closed_when_used_up: true,
                 owner_type: 'corporation',
                 count: 1,
               },
             ],
             color: nil,
           },
+          # P28
           {
-            name: 'Coal 18_usa/mine',
-            value: 60,
-            revenue: 0,
-            desc: 'Comes with two coal 18_usa/mine markers.  When placing a yellow '\
-                  'tile in a mountain hex next to a revenue location, can place '\
-                  'token to avoid $15 terrain fee.  Marked yellow hexes cannot be '\
-                  'upgraded.  Hexes pay $10 extra revenue and do not count as a '\
-                  'stop.  May not start or end a route at a coal 18_usa/mine.',
-            sym: 'CM',
-            abilities: [
-              {
-                type: 'tile_lay',
-                hexes: %w[B25
-                          C20
-                          C24
-                          E18
-                          F15
-                          G12
-                          G14
-                          H11
-                          H13
-                          H15
-                          I8
-                          I10],
-                tiles: %w[7 8 9],
-                free: false,
-                when: 'track',
-                owner_type: 'corporation',
-                count: 2,
-              },
-            ],
-            color: nil,
-          },
-          {
-            name: 'Major Coal 18_usa/mine',
+            name: 'Consolidation Coal Co.',
             value: 90,
             revenue: 0,
-            desc: 'Comes with three coal 18_usa/mine markers.  When placing a yellow '\
+            desc: 'Comes with three coal mine markers. When placing a yellow '\
                   'tile in a mountain hex next to a revenue location, can place '\
                   'token to avoid $15 terrain fee.  Marked yellow hexes cannot be '\
                   'upgraded.  Hexes pay $10 extra revenue and do not count as a '\
-                  'stop.  May not start or end a route at a coal 18_usa/mine.',
-            sym: 'MAJC',
+                  'stop.  May not start or end a route at a coal mine.',
+            sym: 'P28',
             abilities: [
               {
                 type: 'tile_lay',
-                hexes: %w[B25
-                          C20
-                          C24
-                          E18
-                          F15
-                          G12
-                          G14
-                          H11
-                          H13
-                          H15
-                          I8
-                          I10],
-                tiles: %w[7 8 9],
+                hexes: COAL_HEXES,
+                tiles: %w[7coal 8coal 9coal],
                 free: false,
                 when: 'track',
+                discount: 15,
+                consume_tile_lay: true,
+                closed_when_used_up: true,
                 owner_type: 'corporation',
                 count: 3,
-              },
-            ],
-            color: nil,
-          },
-          {
-            name: 'Minor Mail Contract',
-            value: 60,
-            revenue: 0,
-            desc: 'Pays owning corp $10 at the start of each operating round, as '\
-                  'long as the company has at least one train.',
-            sym: 'MINM',
-            abilities: [
-              {
-                type: 'revenue_change',
-                revenue: 10,
-                when: 'has_train',
-                owner_type: 'corporation',
-              },
-            ],
-            color: nil,
-          },
-          {
-            name: 'Mail Contract',
-            value: 90,
-            revenue: 0,
-            desc: 'Pays owning corp $15 at the start of each operating round, as '\
-                  'long as the company has at least one train.',
-            sym: 'MAIL',
-            abilities: [
-              {
-                type: 'revenue_change',
-                revenue: 15,
-                when: 'has_train',
-                owner_type: 'corporation',
-              },
-            ],
-            color: nil,
-          },
-          {
-            name: 'Major Mail Contract',
-            value: 120,
-            revenue: 0,
-            desc: 'Pays owning corp $20 at the start of each operating round, as '\
-                  'long as the company has at least one train.',
-            sym: 'MAJM',
-            abilities: [
-              {
-                type: 'revenue_change',
-                revenue: 20,
-                when: 'has_train',
-                owner_type: 'corporation',
               },
             ],
             color: nil,
@@ -879,8 +1096,9 @@ module Engine
 
         LAYOUT = :pointy
 
-        PITTSBURGH_PRIVATE_NAME = 'DTC'
-        PITTSBURGH_PRIVATE_HEX = 'F14'
+        ASSIGNMENT_TOKENS = {
+          'bridge' => '/icons/1817/bridge_token.svg',
+        }.freeze
 
         SEED_MONEY = 200
         # Alphabetized. Not sure what official ordering is
@@ -928,29 +1146,30 @@ module Engine
 
         def optional_hexes
           offboard = OFFBOARD_VALUES.sort_by { rand }
-          plain_hexes = %w[B20 B26 C5 C11 C13 C15 D2 D4 D12 D22 E13 E27 F2 F6 F12 F14 G9 G13 G19 G25 H10 H12 H16
+          plain_hexes = %w[B20 B26 C5 C11 C13 C15 D2 D4 D12 D22 E13 F2 F6 F12 F14 G9 G13 G19 G25 H10 H12 H16
                            H24 H26]
           {
             red: {
               ['A27'] => "offboard=revenue:yellow_#{offboard[0][0]}|green_#{offboard[0][1]}"\
-              "|brown_#{offboard[0][2]}|gray_#{offboard[0][3]};"\
-              'path=a:5,b:_0;path=a:0,b:_0',
+                         "|brown_#{offboard[0][2]}|gray_#{offboard[0][3]};"\
+                         'path=a:5,b:_0;path=a:0,b:_0',
               ['J20'] => "offboard=revenue:yellow_#{offboard[1][0]}|green_#{offboard[1][1]}|brown_#{offboard[1][2]}"\
-              "|gray_#{offboard[1][3]};path=a:2,b:_0",
+                         "|gray_#{offboard[1][3]};path=a:2,b:_0",
               ['I5'] => "offboard=revenue:yellow_#{offboard[2][0]}|green_#{offboard[2][1]}|brown_#{offboard[2][2]}"\
-              "|gray_#{offboard[2][3]},groups:Mexico,hide:1;path=a:2,b:_0;path=a:3,b:_0;border=edge:4",
+                        "|gray_#{offboard[2][3]},groups:Mexico,hide:1;path=a:2,b:_0;path=a:3,b:_0;border=edge:4",
               %w[I7
                  I9] => "offboard=revenue:yellow_#{offboard[2][0]}|green_#{offboard[2][1]}|brown_#{offboard[2][2]}"\
-                 "|gray_#{offboard[2][3]},groups:Mexico,hide:1;path=a:2,b:_0;path=a:3,b:_0;border=edge:4;border=edge:1",
+                        "|gray_#{offboard[2][3]},groups:Mexico,hide:1;path=a:2,b:_0;path=a:3,b:_0;border=edge:4;border=edge:1",
               ['I11'] => "offboard=revenue:yellow_#{offboard[2][0]}|green_#{offboard[2][1]}|brown_#{offboard[2][2]}"\
-              "|gray_#{offboard[2][3]},groups:Mexico;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;border=edge:1;"\
-              'border=edge:5',
+                         "|gray_#{offboard[2][3]},groups:Mexico;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;border=edge:1;"\
+                         'border=edge:5',
               ['J12'] => "offboard=revenue:yellow_#{offboard[2][0]}|green_#{offboard[2][1]}|brown_#{offboard[2][2]}"\
-              "|gray_#{offboard[2][3]},groups:Mexico,hide:1;path=a:3,b:_0;border=edge:2;border=edge:5",
+                         "|gray_#{offboard[2][3]},groups:Mexico,hide:1;path=a:3,b:_0;path=a:4,b:_0;border=edge:2;border=edge:5",
               ['K13'] => "offboard=revenue:yellow_#{offboard[2][0]}|green_#{offboard[2][1]}|brown_#{offboard[2][2]}"\
-              "|gray_#{offboard[2][3]},groups:Mexico,hide:1;path=a:3,b:_0;border=edge:2",
+                         "|gray_#{offboard[2][3]},groups:Mexico,hide:1;path=a:3,b:_0;border=edge:2",
             },
             white: {
+              %w[E27] => 'stub=edge:3',
               %w[E11 G3 H14 I15 H20 H22 F26 C29 D24] => 'city=revenue:0',
               %w[D6 E3 E7 G7 G11 H8 I13 I25 G27 E23] => 'city=revenue:0;icon=image:18_ms/coins',
               %w[C17 E15 E17 F20 G17 I19] => 'city=revenue:0;upgrade=cost:10,terrain:water;icon=image:18_usa/bridge',
@@ -963,7 +1182,8 @@ module Engine
               %w[D16 E5 H6] => 'icon=image:18_usa/mine',
               %w[G15 H4 I17 I21 I23 J14] => 'icon=image:18_usa/oil-derrick',
               %w[E19 F16] => 'icon=image:18_usa/coalcar',
-              %w[C9 D8 D10 D26 E25 F8 F10 F22 F24] => 'upgrade=cost:15,terrain:mountain;icon=image:18_usa/coalcar',
+              %w[C9 D8 D10 E25 F8 F10 F22 F24] => 'upgrade=cost:15,terrain:mountain;icon=image:18_usa/coalcar',
+              %w[D26] => 'upgrade=cost:15,terrain:mountain;icon=image:18_usa/coalcar;stub=edge:4',
               %w[B16 B18] => 'icon=image:18_usa/gnr',
               ['C19'] => 'icon=image:18_usa/gnr;icon=image:18_usa/mine',
               ['B10'] => 'icon=image:18_usa/gnr;icon=image:18_usa/coalcar;icon=image:18_usa/mine',
@@ -976,13 +1196,13 @@ module Engine
             },
             gray: {
               ['A15'] => "town=revenue:yellow_#{offboard[3][0]}|green_#{offboard[3][1]}|brown_#{offboard[3][2]}"\
-              "|gray_#{offboard[3][3]};path=a:0,b:_0;path=a:5,b:_0",
+                         "|gray_#{offboard[3][3]};path=a:0,b:_0;path=a:5,b:_0",
               ['B2'] => "town=revenue:yellow_#{offboard[4][0]}|green_#{offboard[4][1]}|brown_#{offboard[4][2]}"\
-              "|gray_#{offboard[4][3]};path=a:4,b:_0;path=a:5,b:_0",
+                        "|gray_#{offboard[4][3]};path=a:4,b:_0;path=a:5,b:_0",
               ['J24'] => "town=revenue:yellow_#{offboard[5][0]}|green_#{offboard[5][1]}|brown_#{offboard[5][2]}"\
-              "|gray_#{offboard[5][3]};path=a:2,b:_0;path=a:3,b:_0",
+                         "|gray_#{offboard[5][3]};path=a:2,b:_0;path=a:3,b:_0",
               ['E1'] => "town=revenue:yellow_#{offboard[6][0]}|green_#{offboard[6][1]}|brown_#{offboard[6][2]}"\
-              "|gray_#{offboard[6][3]};path=a:4,b:_0;path=a:5,b:_0;path=a:3,b:_0",
+                        "|gray_#{offboard[6][3]};path=a:4,b:_0;path=a:5,b:_0;path=a:3,b:_0",
               ['B30'] => 'path=a:1,b:0',
               ['C23'] => 'town=revenue:yellow_30|green_40|brown_50|gray_60;path=a:4,b:_0;path=a:2,b:_0;path=a:0,b:_0',
               ['C25'] => 'town=revenue:yellow_20|green_30|brown_40|gray_50;path=a:1,b:_0;path=a:5,b:_0;path=a:3,b:_0',
@@ -991,6 +1211,7 @@ module Engine
               ['D28'] => 'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:1,b:_1;path=a:3,b:_0;label=NY',
             },
             blue: {
+              ['F28'] => 'offboard=revenue:yellow_0,visit_cost:99;path=a:0,b:_0',
               %w[B24 C21] => '',
             },
           }
@@ -1023,15 +1244,31 @@ module Engine
             G1817::Step::Bankrupt,
             G1817::Step::CashCrisis,
             G18USA::Step::Loan,
-            G1817::Step::SpecialTrack,
-            G1817::Step::Assign,
-            G1817::Step::Track,
+            G18USA::Step::SpecialTrack,
+            G18USA::Step::Assign,
+            G18USA::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
             G18USA::Step::Dividend,
             Engine::Step::DiscardTrain,
             G1817::Step::BuyTrain,
           ], round_num: round_num)
+        end
+
+        def revenue_for(route, stops)
+          revenue = super
+          revenue += 10 * stops.count { |stop| stop.hex.assigned?('bridge') }
+
+          raise GameError, 'Route visits same hex twice' if route.hexes.size != route.hexes.uniq.size
+
+          revenue += 10 * route.all_hexes.count { |hex| hex.tile.id.include?('coal') }
+          revenue += 10 * route.all_hexes.count { |hex| hex.tile.id.include?('iron10') }
+          revenue += 20 * route.all_hexes.count { |hex| hex.tile.id.include?('iron20') }
+          revenue + (increased_oil? ? 20 : 10) * route.all_hexes.count { |hex| hex.tile.id.include?('oil') }
+        end
+
+        def increased_oil?
+          @phase.status.include?('increased_oil')
         end
       end
     end

@@ -424,8 +424,8 @@ module View
 
           if @need_arc
             props[:attrs][:d] = "M #{@begin_x} #{@begin_y} "\
-              "A #{@arc_parameters[:radius]} #{@arc_parameters[:radius]} "\
-              "0 0 #{@arc_parameters[:sweep]} #{@end_x} #{@end_y}"
+                                "A #{@arc_parameters[:radius]} #{@arc_parameters[:radius]} "\
+                                "0 0 #{@arc_parameters[:sweep]} #{@end_x} #{@end_y}"
           end
 
           # Calculate the correct x position of the terminal pointer

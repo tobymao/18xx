@@ -44,9 +44,7 @@ module Engine
         end
 
         def pay_tile_cost!(entity, tile, rotation, hex, spender, cost, _extra_cost)
-          if @game.insolvent?(spender) && cost.positive?
-            raise GameError, "#{spender.id} cannot pay for a tile when insolvent"
-          end
+          raise GameError, "#{spender.id} cannot pay for a tile when insolvent" if @game.insolvent?(spender) && cost.positive?
 
           super
         end

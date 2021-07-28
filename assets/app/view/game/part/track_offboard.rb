@@ -60,7 +60,7 @@ module View
             attrs: {
               transform: "rotate(#{rotate})",
               d: "M #{offboard_start_x} 75 L #{offboard_start_x} 87 L #{offboard_end_x} 87 "\
-                "L #{offboard_end_x} 75 L #{point_x} 48 Z",
+                 "L #{offboard_end_x} 75 L #{point_x} 48 Z",
               fill: color,
               stroke: 'none',
               'stroke-linecap': 'butt',

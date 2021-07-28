@@ -23,7 +23,7 @@ module Engine
               @bidders.clear
 
               @log << "#{@cheapest.name} minimum bid decreases from "\
-                "#{@game.format_currency(value)} to #{@game.format_currency(new_value)}"
+                      "#{@game.format_currency(value)} to #{@game.format_currency(new_value)}"
 
               if new_value <= 0
                 # It's now free so the next player is forced to take it.

@@ -123,10 +123,10 @@ module Engine
             end
             if kind == :hudson && payout[:corporation].negative?
               @log << "#{entity.name} spends #{@game.format_currency(-payout[:corporation])} "\
-                'for George Hudson Manoeuvre'
+                      'for George Hudson Manoeuvre'
             elsif kind == :hudson
               @log << "#{entity.name} earns reduced subsidy of #{@game.format_currency(payout[:corporation])} "\
-                'for George Hudson Manoeuvre'
+                      'for George Hudson Manoeuvre'
             elsif subsidy.positive?
               @log << "#{entity.name} earns subsidy of #{@game.format_currency(subsidy)}"
             end

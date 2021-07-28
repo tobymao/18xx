@@ -121,7 +121,7 @@ module Engine
           @game.stock_market.move_right(corporation)
           new_value = corporation.share_price.price
           @log << "-- #{current_entity.name} uses \"Days off\" for #{corporation.name}, "\
-                "moving from #{@game.format_currency(current_value)} to #{@game.format_currency(new_value)} --"
+                  "moving from #{@game.format_currency(current_value)} to #{@game.format_currency(new_value)} --"
 
           @game.days_off.close!
         end
@@ -140,7 +140,7 @@ module Engine
           corporation.add_ability(ability)
 
           @log << "#{current_entity.name} uses \"Whatsup\" for #{corporation.name}, "\
-              "paying #{@game.format_currency(train.price)} to buy a #{train.name}"
+                  "paying #{@game.format_currency(train.price)} to buy a #{train.name}"
 
           prev = corporation.share_price.price
           @game.stock_market.move_right(corporation)
@@ -152,7 +152,7 @@ module Engine
         def process_greek(_action)
           @game.it_is_all_greek_to_me.add_ability(Engine::Ability::Close.new(type: :close))
           @log << "#{current_entity.name} uses \"It’s all greek to me\", "\
-            'will get an additional round after passing this round'
+                  'will get an additional round after passing this round'
         end
       end
     end

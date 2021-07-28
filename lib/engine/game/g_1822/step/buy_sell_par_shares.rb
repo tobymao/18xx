@@ -237,9 +237,7 @@ module Engine
           end
 
           def should_stop_applying_program(entity, share_to_buy)
-            unless @bid_exceeded[entity].empty?
-              return "No longer winning bids on #{@bid_exceeded[entity].map(&:id).join(',')}"
-            end
+            return "No longer winning bids on #{@bid_exceeded[entity].map(&:id).join(',')}" unless @bid_exceeded[entity].empty?
 
             super
           end

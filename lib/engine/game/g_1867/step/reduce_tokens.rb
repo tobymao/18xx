@@ -19,8 +19,8 @@ module Engine
 
           def help
             'When merging more than 2 minor corporations the new corporation can only keep 2 tokens.'\
-            ' Choose which tokens to remove.'\
-            ' After merging an additional token will be available on the charter.'
+              ' Choose which tokens to remove.'\
+              ' After merging an additional token will be available on the charter.'
           end
 
           def available_hex(entity, hex)

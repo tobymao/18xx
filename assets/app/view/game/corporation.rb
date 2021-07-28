@@ -87,12 +87,8 @@ module View
               @game.total_loans.positive? && @corporation.can_buy?
           extras << render_buying_power
         end
-        if @corporation.corporation? && @corporation.respond_to?(:capitalization_type_desc)
-          extras << render_capitalization_type
-        end
-        if @corporation.corporation? && @corporation.respond_to?(:escrow) && @corporation.escrow
-          extras << render_escrow_account
-        end
+        extras << render_capitalization_type if @corporation.corporation? && @corporation.respond_to?(:capitalization_type_desc)
+        extras << render_escrow_account if @corporation.corporation? && @corporation.respond_to?(:escrow) && @corporation.escrow
         if extras.any?
           props = { style: { borderCollapse: 'collapse' } }
           children << h('table.center', props, [h(:tbody, extras)])
@@ -136,9 +132,7 @@ module View
           },
         }
 
-        if @corporation.trains.any? && !@corporation.floated?
-          children << h(:div, status_props, @game.float_str(@corporation))
-        end
+        children << h(:div, status_props, @game.float_str(@corporation)) if @corporation.trains.any? && !@corporation.floated?
         children << h(:div, status_props, @game.status_str(@corporation)) if @game.status_str(@corporation)
         if @game.status_array(@corporation)
           children << h(:div, status_array_props,
@@ -235,15 +229,7 @@ module View
       end
 
       def render_trains
-        trains = (@corporation.system? ? @corporation.shells : [@corporation]).map do |c|
-          if c.trains.empty?
-            'None'
-          else
-            c.trains.map { |t| t.obsolete ? "(#{t.name})" : t.name }.join(' ')
-          end
-        end
-
-        render_header_segment(trains, 'Trains')
+        render_header_segment(@game.trains_str(@corporation), 'Trains')
       end
 
       def render_header_segment(values, key)
@@ -567,7 +553,7 @@ module View
           h('tr.ipo', loan_props, [
             h('td.right', 'Loans'),
             h('td.padded_number', "#{@corporation.loans.size}/"\
-            "#{@game.maximum_loans(@corporation)}"),
+                                  "#{@game.maximum_loans(@corporation)}"),
           ]),
           h('tr.ipo', interest_props, [
             h('td.right', 'Interest Due'),

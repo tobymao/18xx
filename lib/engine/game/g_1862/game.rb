@@ -410,7 +410,7 @@ module Engine
                   price: 800,
                 },
               ],
-              events: [{ 'type' => 'cert_limit_change' }, { 'type' => 'lner_trigger' }],
+              events: [{ 'type' => 'lner_trigger' }],
             },
           ]
         end
@@ -480,8 +480,6 @@ module Engine
         ).freeze
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
-           'cert_limit_change' => ['New Cert Limit',
-                                   'Certificate Limit Changes'],
            'lner_trigger' => ['LNER Trigger',
                               'LNER will form at end of OR set, game ends at end of following OR set'],
          ).freeze
@@ -633,6 +631,25 @@ module Engine
           hex.tile.icons.delete(marker) if marker
         end
 
+        def priority_deal_player
+          players = @players.reject(&:bankrupt)
+
+          if @round.is_a?(Engine::Game::G1862::Round::Stock)
+            # We're in a stock round
+            # priority deal card goes to the player who will go first if
+            # everyone passes starting now.  last_to_act is nil before
+            # anyone has gone, in which case the first player has PD.
+            last_to_act = @round.last_to_act
+            priority_idx = last_to_act ? (players.index(last_to_act) + 1) % players.size : 0
+            players[priority_idx]
+          else
+            # We're in a parliament or operating round
+            # The player list was already rotated when we
+            # left a player-focused round to put the PD player first.
+            players.first
+          end
+        end
+
         def share_prices
           repar_prices
         end
@@ -721,7 +738,7 @@ module Engine
 
             if remaining_fine.positive? && can_sell_any_shares?(player)
               @log << "-- #{player.name} owes #{format_currency(remaining_fine)} on all obligations and is required"\
-               ' to sell some or all assets --'
+                      ' to sell some or all assets --'
               @round.pending_forced_sales << {
                 entity: player,
                 amount: remaining_fine,
@@ -854,7 +871,7 @@ module Engine
             remove_marker(corporation)
             graph.clear
             @log << "#{corporation.name} replaces #{old_token.corporation.name} token on #{hex.name} "\
-              'with home token'
+                    'with home token'
           end
         end
 
@@ -1041,6 +1058,9 @@ module Engine
         def form_lner
           @log << '-- LNER Formed --'
 
+          @cert_limit = @players.map { |p| p.shares.sum(&:percent) }.max / 10
+          @log << "-- Certificate limit is now #{@cert_limit} per player --"
+
           # move all IPO stock to market
           @corporations.each do |corp|
             if @chartered[corp] && !(ipo_shares = corp.ipo_shares).empty?
@@ -1053,11 +1073,6 @@ module Engine
           @corporations.reject(&:ipoed).dup.each { |c| remove_corporation!(c) }
 
           @lner = true
-        end
-
-        def event_cert_limit_change!
-          @cert_limit = @players.map { |p| p.shares.sum(&:percent) }.max / 10
-          @log << "-- Certificate limit is now #{@cert_limit} per player --"
         end
 
         def event_lner_trigger!
@@ -1495,6 +1510,7 @@ module Engine
         # with another non-permanent freight trains and one permanent freight
         # train if it exists
         def check_freight_intersections(routes)
+          @cached_freight_sets = nil
           freight_sets = freight_sets(routes)
           # only one set can have non-perms
           if freight_sets.count { |set| set.any? { |r| nonpermanent_freight?(r.train) } } > 1
@@ -1577,9 +1593,7 @@ module Engine
         def check_distance(route, visits)
           raise GameError, 'Route cannot begin/end in a town' if visits.first.town? || visits.last.town?
           # could let super handle this, but this is a better error message
-          if train_type(route.train) == :local && visits.any?(&:offboard?)
-            raise GameError, 'Local train cannot visit an offboard'
-          end
+          raise GameError, 'Local train cannot visit an offboard' if train_type(route.train) == :local && visits.any?(&:offboard?)
           if (visits.first.tile.color == :red && visits.last.tile.color == :red) ||
             (visits.first.tile.color == :blue && visits.last.tile.color == :blue)
             raise GameError, 'Route cannot visit two red offboards or two ports'
@@ -1757,7 +1771,7 @@ module Engine
           return unless rusted_trains.any?
 
           @log << "-- Event: #{rusted_trains.uniq.join(', ')} trains rust " \
-            "( #{owners.map { |c, t| "#{c} x#{t}" }.join(', ')}) --"
+                  "( #{owners.map { |c, t| "#{c} x#{t}" }.join(', ')}) --"
         end
 
         def highlight_token?(token)
@@ -1848,7 +1862,7 @@ module Engine
             new_price = compute_merger_share_price(survivor, nonsurvivor)
             new_par_price = find_valid_par_price(new_price.price)
             @log << "New share price: #{format_currency(new_price.price)} "\
-              "(par: #{format_currency(new_par_price.price)})"
+                    "(par: #{format_currency(new_par_price.price)})"
             @merge_data[:price] = new_price
             @merge_data[:par] = new_par_price
             old_price.corporations.delete(survivor)
@@ -1890,9 +1904,7 @@ module Engine
         # always return survivor shares first and director's first within those
         def affected_shares(entity, corps)
           affected = entity.shares.select { |s| s.corporation == corps.first }.sort_by(&:percent).reverse
-          unless corps.one?
-            affected.concat(entity.shares.select { |s| s.corporation == corps.last }.sort_by(&:percent).reverse)
-          end
+          affected.concat(entity.shares.select { |s| s.corporation == corps.last }.sort_by(&:percent).reverse) unless corps.one?
           affected
         end
 
@@ -1954,8 +1966,8 @@ module Engine
               plain_shares = entity_shares.reject(&:president)
               plain_shares.each { |s| transfer_share(s, @share_pool) }
               @log << "#{entity.name} cannot return #{swap_corp.name} director's certificate to market. "\
-                "#{entity.name} moves #{plain_shares.size} normal shares to market and director's certificate "\
-                'will be used as an option certificate.'
+                      "#{entity.name} moves #{plain_shares.size} normal shares to market and director's certificate "\
+                      'will be used as an option certificate.'
             end
           end
 
@@ -2026,7 +2038,7 @@ module Engine
                 transfer_share(os, donor)
                 transfer_share(swap_share, entity)
                 @log << "#{entity.name} swaps a #{@merge_data[:corps].last.name} share for a "\
-                  "#{@merge_data[:corps].first.name} share from #{donor.name}"
+                        "#{@merge_data[:corps].first.name} share from #{donor.name}"
                 odd_share = swap_share if os == odd_share
               else
                 price = (os == odd_share ? @merge_data[:price].price / 2 : @merge_data[:price].price).to_i

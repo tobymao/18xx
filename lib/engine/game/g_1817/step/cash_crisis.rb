@@ -16,7 +16,7 @@ module Engine
             if @active_entity.nil?
               @active_entity = entity
               @game.log << "#{@active_entity.name} enters Cash Crisis and owes"\
-              " the bank #{@game.format_currency(needed_cash(@active_entity))}"
+                           " the bank #{@game.format_currency(needed_cash(@active_entity))}"
             end
 
             ['sell_shares']

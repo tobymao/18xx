@@ -20,6 +20,10 @@ module Engine
             ]
           end
 
+          def description
+            'Escrow Calculation - Undo if you see this'
+          end
+
           def actions(_entity)
             ACTIONS
           end

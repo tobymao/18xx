@@ -23,11 +23,32 @@ module View
           children << h(:div, props, corp.compact)
         end
 
+        if @game.round.actions_for(entity).include?('sell_company')
+          player.companies.each do |company|
+            comp = [h(Company, company: company)]
+            comp << render_sell_company(player, company)
+            children << h(:div, props, comp.compact)
+          end
+        end
+
         if @game.round.actions_for(entity).include?('bankrupt') &&
            @game.can_go_bankrupt?(player, @corporation)
           children << render_bankruptcy
         end
         children
+      end
+
+      def render_sell_company(player, company)
+        price = @game.company_sale_price(company)
+        buy = lambda do
+          process_action(Engine::Action::SellCompany.new(
+            player,
+            company: company,
+            price: price
+          ))
+        end
+
+        h(:button, { on: { click: buy } }, "Sell #{company.sym} to Bank for #{@game.format_currency(price)}")
       end
 
       def render_bankruptcy

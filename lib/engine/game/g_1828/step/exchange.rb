@@ -54,9 +54,7 @@ module Engine
               @corporation = bundle.presidents_share.corporation
               @entity = company.owner
 
-              unless @game.can_par?(@corporation, @entity)
-                raise GameError, "#{@entity.name} cannot par #{@corporation.name}"
-              end
+              raise GameError, "#{@entity.name} cannot par #{@corporation.name}" unless @game.can_par?(@corporation, @entity)
               unless cash_to_par?(@entity, @corporation)
                 raise GameError, "#{@entity.name} does not have enough cash to par #{@corporation.name}"
               end

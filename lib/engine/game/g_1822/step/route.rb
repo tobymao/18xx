@@ -13,9 +13,7 @@ module Engine
 
             @pullman_train ||= nil
             actions = ACTIONS.dup
-            if !@pullman_train && find_pullman_train(entity) && !pullman_train_choices(entity).empty?
-              actions << 'choose'
-            end
+            actions << 'choose' if !@pullman_train && find_pullman_train(entity) && !pullman_train_choices(entity).empty?
             actions
           end
 

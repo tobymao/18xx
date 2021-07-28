@@ -10,7 +10,7 @@ module Engine
             value: 20,
             revenue: 5,
             desc: 'No company can build in the Wicklow hex until this company is either bought by'\
-            ' any company or closed.',
+                  ' any company or closed.',
             sym: 'DAR',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['J14'] }],
           },
@@ -19,7 +19,7 @@ module Engine
             value: 30,
             revenue: 7,
             desc: 'The owning Corporation can place two connected narrow gauge yellow tiles in the Donegal'\
-            ' hex and on adjacent hex. This action closes the company.',
+                  ' hex and on adjacent hex. This action closes the company.',
             sym: 'DR',
             abilities: [
               {
@@ -40,7 +40,7 @@ module Engine
             value: 40,
             revenue: 9,
             desc: 'The owning Corporation can place a yellow tile without payment of terrain costs.'\
-            ' The company closes once this ability has been used twice.',
+                  ' The company closes once this ability has been used twice.',
             sym: 'BoW',
             abilities: [
               {
@@ -61,8 +61,8 @@ module Engine
             value: 45,
             revenue: 10,
             desc: 'The owning Corporation can place the +£10 token on any port (Belfast, Londonderry or Rosslare).'\
-            ' This action closes the company, but the Corporation adds £10 to the' \
-            " port's revenue until the end of the game.",
+                  ' This action closes the company, but the Corporation adds £10 to the' \
+                  " port's revenue until the end of the game.",
             sym: 'CDSPC',
             abilities: [
               {
@@ -85,7 +85,7 @@ module Engine
             value: 50,
             revenue: 10,
             desc: 'The owning Corporation can place two connected narrow gauge yellow tiles in the'\
-            ' Tralee and Dingle hexes. This action closes the company.',
+                  ' Tralee and Dingle hexes. This action closes the company.',
             sym: 'TDR',
             abilities: [
               {
@@ -106,8 +106,8 @@ module Engine
             value: 60,
             revenue: 12,
             desc: 'No Corporation can build in the DCR hex (H4) until this company is bought by any Corporation'\
-            ' or closed. The owning Corporation may place a yellow tile, subject to normal track laying rules,'\
-            ' on that hex (H4) without using a tile action or paying terrain costs.',
+                  ' or closed. The owning Corporation may place a yellow tile, subject to normal track laying rules,'\
+                  ' on that hex (H4) without using a tile action or paying terrain costs.',
             sym: 'DCR',
             abilities: [
               {
@@ -131,7 +131,7 @@ module Engine
             value: 75,
             revenue: 15,
             desc: 'The owning Corporation can place the +£20 token on Galway. This action closes the company,'\
-            " but the Corporation adds £20 to the city's revenue until the end of the game.",
+                  " but the Corporation adds £20 to the city's revenue until the end of the game.",
             sym: 'TASPS',
             abilities: [
               {
@@ -154,7 +154,7 @@ module Engine
             value: 80,
             revenue: 10,
             desc: 'The owning Corporation controls a river link between Dromod and Limerick and adds the value of the'\
-          ' other city to one train ending at either Dromod or Limerick.',
+                  ' other city to one train ending at either Dromod or Limerick.',
             sym: 'RSSC',
           },
           {
@@ -162,7 +162,7 @@ module Engine
             value: 90,
             revenue: 10,
             desc: 'The owning Corporation can upgrade a second track tile during each'\
-            " OR at a cost of £30 from the Corporation's Treasury.",
+                  " OR at a cost of £30 from the Corporation's Treasury.",
             sym: 'WDE',
           },
           {
@@ -170,8 +170,8 @@ module Engine
             value: 110,
             revenue: 20,
             desc: 'The owning Corporation can place an off-board location tile adjacent'\
-            ' to one of: Londonderry, Kingstown, or Waterford. This action closes the company,'\
-            ' but any Corporation may run to the tile for the rest of the game.',
+                  ' to one of: Londonderry, Kingstown, or Waterford. This action closes the company,'\
+                  ' but any Corporation may run to the tile for the rest of the game.',
             sym: 'TIM',
             abilities: [
               {
@@ -190,8 +190,8 @@ module Engine
             value: 120,
             revenue: 0,
             desc: 'The owner of this company: Takes the DKR directorship; sets the share'\
-            ' price at half bid; places a 2H-Train on the charter; places the winning bid'\
-            ' in the DKR treasury less the cost of the train and discards this card.',
+                  ' price at half bid; places a 2H-Train on the charter; places the winning bid'\
+                  ' in the DKR treasury less the cost of the train and discards this card.',
             sym: 'DK',
             abilities: [
             { type: 'close', when: 'bought_train', corporation: 'DKR' },

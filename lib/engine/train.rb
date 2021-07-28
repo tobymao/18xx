@@ -72,8 +72,11 @@ module Engine
       "#{@sym}-#{@index}"
     end
 
-    def min_price
-      from_depot? ? @price : 1
+    # if set ability must be a :train_discount ability
+    def min_price(ability: nil)
+      return 1 unless from_depot?
+
+      ability&.discounted_price(self, @price) || @price
     end
 
     def from_depot?

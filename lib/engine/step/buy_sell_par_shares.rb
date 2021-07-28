@@ -208,9 +208,7 @@ module Engine
         sample_share = shares.first
         corporation = sample_share.corporation
         owner = sample_share.owner
-        if @round.players_sold[entity][corporation] || (bought? && !can_buy_multiple?(entity, corporation, owner))
-          return false
-        end
+        return false if @round.players_sold[entity][corporation] || (bought? && !can_buy_multiple?(entity, corporation, owner))
 
         min_share = nil
         shares.each do |share|
@@ -405,15 +403,13 @@ module Engine
         if available_actions.include?('buy_shares')
           # check if end condition met
           if program.until_condition == 'float'
-            if corporation.floated?
-              return [Action::ProgramDisable.new(entity, reason: "#{corporation.name} is floated")]
-            end
+            return [Action::ProgramDisable.new(entity, reason: "#{corporation.name} is floated")] if corporation.floated?
           elsif entity.num_shares_of(corporation, ceil: false) >= program.until_condition
             return [Action::ProgramDisable.new(entity,
                                                reason: "#{program.until_condition} share(s) bought in "\
-                                               "#{corporation.name}, end condition met")]
+                                                       "#{corporation.name}, end condition met")]
           end
-          shares_by_percent = if program.from_market
+          shares_by_percent = if from_market?(program)
                                 source = 'market'
                                 @game.share_pool.shares_by_corporation[corporation]
                               else
@@ -429,7 +425,7 @@ module Engine
           if shares_by_percent.size != 1
             return [Action::ProgramDisable.new(entity,
                                                reason: 'Shares of different sizes exist, cannot auto buy'\
-                                               " #{corporation.name} from #{source}")]
+                                                       " #{corporation.name} from #{source}")]
           end
 
           share = shares_by_percent.values.first.first
@@ -446,6 +442,10 @@ module Engine
           # Buy-then-Sell games need the pass.
           [Action::Pass.new(entity)]
         end
+      end
+
+      def from_market?(program)
+        program.from_market
       end
     end
   end

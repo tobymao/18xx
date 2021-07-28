@@ -30,7 +30,7 @@ module Engine
             corp = par_action.corporation
             xchange_company = player.companies.find do |company|
               company.abilities.any? do |ability|
-                ability.type == 'exchange' && ability.corporations.include?(corp.name)
+                ability.type == :exchange && ability.corporations.include?(corp.name)
               end
             end
             return false unless xchange_company

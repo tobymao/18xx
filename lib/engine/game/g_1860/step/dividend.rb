@@ -99,7 +99,7 @@ module Engine
               .map { |receiver, cash| "#{@game.format_currency(cash)} to #{receiver.name}" }.join(', ')
 
             @log << "#{entity.name} pays out #{@game.format_currency(revenue)} = "\
-              "#{@game.format_currency(per_share)} (#{receivers})"
+                    "#{@game.format_currency(per_share)} (#{receivers})"
           end
 
           def movement_str(times, dir)

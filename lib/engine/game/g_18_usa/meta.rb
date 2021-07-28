@@ -23,23 +23,7 @@ module Engine
         GAME_TITLE = '18USA'
 
         PLAYER_RANGE = [2, 7].freeze
-        OPTIONAL_RULES = [
-          {
-            sym: :short_squeeze,
-            short_name: 'Short Squeeze',
-            desc: 'Corporations with > 100% player ownership move a second time at end of SR',
-          },
-          {
-            sym: :five_shorts,
-            short_name: '5 Shorts',
-            desc: 'Only allow 5 shorts on 10 share corporations',
-          },
-          {
-            sym: :modern_trains,
-            short_name: 'Modern Trains',
-            desc: '7 & 8 trains earn $10 & $20 respectively for each station marker of the corporation',
-          },
-        ].freeze
+        OPTIONAL_RULES = [].freeze
       end
     end
   end

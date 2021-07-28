@@ -8,7 +8,7 @@ module Engine
       module Step
         class BuySellParShares < Engine::Step::BuySellParShares
           def can_sell?(entity, bundle)
-            super && bundle.corporation.floated?
+            super && (@game.oscarian_era || bundle.corporation.floated?)
           end
         end
       end

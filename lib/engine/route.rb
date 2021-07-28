@@ -57,6 +57,11 @@ module Engine
       @last_offboard = []
     end
 
+    def train=(new_train)
+      @train = new_train
+      clear_cache!
+    end
+
     def cycle_halts
       return unless @halts
 
@@ -97,11 +102,12 @@ module Engine
 
     # walk paths from start_node, and only keep connections that end at end_node
     def get_node_chains(start_node, end_node)
+      skip_track = @game.skip_route_track_type
       @node_chains[[start_node, end_node]] ||=
         begin
           new_chains = []
           start_node.paths.each do |start_path|
-            start_path.walk do |current, visited|
+            start_path.walk(skip_track: skip_track) do |current, visited|
               next unless current.nodes.include?(end_node)
 
               paths = visited.keys
@@ -294,9 +300,7 @@ module Engine
       @revenue ||=
         begin
           visited = visited_stops
-          if !connection_data.empty? && visited.size < 2 && !@train.local?
-            raise GameError, 'Route must have at least 2 stops'
-          end
+          raise GameError, 'Route must have at least 2 stops' if !connection_data.empty? && visited.size < 2 && !@train.local?
 
           token = visited.find { |stop| @game.city_tokened_by?(stop, corporation) }
           @game.check_route_token(self, token)

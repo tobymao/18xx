@@ -339,7 +339,7 @@ module Engine
             value: 120,
             revenue: 5,
             desc: 'Buyer recieves a TSI Share.  If owned by a corporation, may place 1 free Base on ANY'\
-            ' explored and unclaimed tile.',
+                  ' explored and unclaimed tile.',
             abilities: [
               { type: 'shares', shares: 'TSI_3' },
               {
@@ -358,7 +358,7 @@ module Engine
             value: 140,
             revenue: 10,
             desc: 'Buyer recieves a TSI Share.  If owned by a corporation, may place 1 free'\
-            ' Refueling Station within range.',
+                  ' Refueling Station within range.',
             abilities: [
               { type: 'shares', shares: 'TSI_2' },
               {
@@ -395,7 +395,7 @@ module Engine
             value: 180,
             revenue: 20,
             desc: "Buyer recieves TSI president's Share and flies probe if TSI isn't active.  May not be owned"\
-            ' by a corporation. Remove from the game after TSI buys a spaceship.',
+                  ' by a corporation. Remove from the game after TSI buys a spaceship.',
             abilities: [
               { type: 'shares', shares: 'TSI_0' },
               { type: 'no_buy' },
@@ -409,7 +409,7 @@ module Engine
             value: 180,
             revenue: 30,
             desc: "Forms Asteroid League, receiving its President's certificate.  May not be bought by a"\
-            ' corporation.  Remove from the game after AL aquires a spaceship.',
+                  ' corporation.  Remove from the game after AL aquires a spaceship.',
             abilities: [
               { type: 'close', when: 'bought_train', corporation: 'AL' },
               { type: 'no_buy' },
@@ -567,7 +567,7 @@ module Engine
             simple_logo: '1830/NYC.alt',
             tokens: [60, 100, 60, 100, 60],
             coordinates: 'J1',
-            color: :"#3eb75b",
+            color: :'#3eb75b',
             type: 'group_b',
             reservation_color: nil,
           },
@@ -603,7 +603,7 @@ module Engine
             simple_logo: '1830/CO.alt',
             tokens: [60, 100, 60, 100, 60, 100, 60],
             coordinates: 'J18',
-            color: :"#cc4f8c",
+            color: :'#cc4f8c',
             text_color: 'black',
             type: 'group_c',
             reservation_color: nil,
@@ -616,7 +616,7 @@ module Engine
             simple_logo: '1830/ERIE.alt',
             tokens: [60, 100, 60, 100, 60, 100, 60, 100],
             coordinates: 'F18',
-            color: :"#f8b34b",
+            color: :'#f8b34b',
             text_color: 'black',
             type: 'group_c',
             reservation_color: nil,
@@ -629,7 +629,7 @@ module Engine
             simple_logo: '1830/NYNH.alt',
             tokens: [60, 75, 100, 60, 75, 100, 60, 75, 100, 60, 75, 100, 60, 75, 100],
             coordinates: 'H10',
-            color: :"#fa3d58",
+            color: :'#fa3d58',
             type: 'groupD',
             reservation_color: nil,
           },

@@ -6,7 +6,7 @@ module Engine
       module Entities
         COMPANIES = [
           {
-            name: 'P1-BEC',
+            name: 'P1-BEC (5-Train)',
             sym: 'P1',
             value: 0,
             revenue: 5,
@@ -19,7 +19,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'P2-MtonR',
+            name: 'P2-MtonR (Remove Town)',
             sym: 'P2',
             value: 0,
             revenue: 10,
@@ -44,7 +44,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'P3-S&HR',
+            name: 'P3-S&HR (Permanent 2T)',
             sym: 'P3',
             value: 0,
             revenue: 0,
@@ -62,7 +62,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'P4-SDR',
+            name: 'P4-SDR (Permanent 2T)',
             sym: 'P4',
             value: 0,
             revenue: 0,
@@ -80,7 +80,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'P5-LC&DR',
+            name: 'P5-LC&DR (English Channel)',
             sym: 'P5',
             value: 0,
             revenue: 10,
@@ -112,7 +112,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'P6-L&SR',
+            name: 'P6-L&SR (Mail Contract)',
             sym: 'P6',
             value: 0,
             revenue: 10,
@@ -126,7 +126,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'P7-S&BR',
+            name: 'P7-S&BR (Mail Contract)',
             sym: 'P7',
             value: 0,
             revenue: 10,
@@ -140,7 +140,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'P8-E&GR',
+            name: 'P8-E&GR (Hill Discount)',
             sym: 'P8',
             value: 0,
             revenue: 10,
@@ -154,7 +154,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'P9-M&GNR',
+            name: 'P9-M&GNR (Double Cash)',
             sym: 'P9',
             value: 0,
             revenue: 10,
@@ -166,7 +166,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'P10-G&SWR',
+            name: 'P10-G&SWR (River Discount)',
             sym: 'P10',
             value: 0,
             revenue: 10,
@@ -196,7 +196,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'P11-B&ER',
+            name: 'P11-B&ER (Adv. Tile Lay)',
             sym: 'P11',
             value: 0,
             revenue: 10,
@@ -222,7 +222,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'P12-L&SR',
+            name: 'P12-L&SR (Extra Tile Lay)',
             sym: 'P12',
             value: 0,
             revenue: 10,
@@ -246,7 +246,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'P13-YN&BR',
+            name: 'P13-YN&BR (Pullman)',
             sym: 'P13',
             value: 0,
             revenue: 10,
@@ -258,7 +258,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'P14-K&TR',
+            name: 'P14-K&TR (Pullman)',
             sym: 'P14',
             value: 0,
             revenue: 10,
@@ -270,7 +270,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'P15-HR',
+            name: 'P15-HR (£10x Phase)',
             sym: 'P15',
             value: 0,
             revenue: 0,
@@ -283,7 +283,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'P16-TH',
+            name: 'P16-TH (Tax Haven)',
             sym: 'P16',
             value: 0,
             revenue: 0,
@@ -304,7 +304,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'P17-LUR',
+            name: 'P17-LUR (Move Card)',
             sym: 'P17',
             value: 0,
             revenue: 10,
@@ -316,7 +316,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'P18-C&HPR',
+            name: 'P18-C&HPR (Station Swap)',
             sym: 'P18',
             value: 0,
             revenue: 10,
@@ -327,7 +327,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'P19-AEC',
+            name: 'P19-AEC (Perm. L Train)',
             sym: 'P19',
             value: 0,
             revenue: 0,
@@ -344,7 +344,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'P20-C&WR',
+            name: 'P20-C&WR (£5x Phase)',
             sym: 'P20',
             value: 0,
             revenue: 0,
@@ -357,7 +357,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'P21-HSBC',
+            name: 'P21-HSBC (Grimsby/Hull Bridge)',
             sym: 'P21',
             value: 0,
             revenue: 10,

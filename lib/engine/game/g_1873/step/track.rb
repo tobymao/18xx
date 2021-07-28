@@ -118,12 +118,16 @@ module Engine
             @round.laid_hexes << action.hex
           end
 
+          def filter_double_lays(tiles)
+            tiles.reject { |t| @round.num_laid_track.positive? && !@game.double_lay?(t) }
+          end
+
           def potential_tiles(entity, hex)
             unless @game.concession_incomplete?(entity)
               # allow using reserved tile for this hex. Legality is checked after placement
-              return super unless @game.reserved_tiles[hex.id][:tile]
+              return filter_double_lays(super) unless @game.reserved_tiles[hex.id][:tile]
 
-              return (super + [@game.reserved_tiles[hex.id][:tile]]).uniq
+              return filter_double_lays((super + [@game.reserved_tiles[hex.id][:tile]]).uniq)
             end
 
             if !@game.concession_tile(hex)
@@ -160,8 +164,8 @@ module Engine
             if tile.cities.size == 2 && tile.color == :green
               # we have the special case of a single city yellow tile being upgraded to a
               # green tile with two cities. the super method doesn't check connectivity correctly
-              old_ct_edges = hex.tile.city_town_edges
-              new_ct_edges = tile.city_town_edges
+              old_ct_edges = hex.tile.city_town_edges.map(&:sort)
+              new_ct_edges = tile.city_town_edges.map(&:sort)
 
               # for each city on the old tile, make sure there is city on the new tile
               # that connects to the exact same edges
@@ -204,11 +208,11 @@ module Engine
             spender.spend(cost, @game.bank) if cost.positive?
 
             @log << "#{spender.name}"\
-              "#{spender == entity ? '' : " (#{entity.sym})"}"\
-              "#{cost.zero? ? '' : " spends #{@game.format_currency(cost)} and"}"\
-              " lays tile ##{tile.name}"\
-              " with rotation #{rotation} on #{hex.name}"\
-              "#{tile.location_name.to_s.empty? ? '' : " (#{tile.location_name})"}"
+                    "#{spender == entity ? '' : " (#{entity.sym})"}"\
+                    "#{cost.zero? ? '' : " spends #{@game.format_currency(cost)} and"}"\
+                    " lays tile ##{tile.name}"\
+                    " with rotation #{rotation} on #{hex.name}"\
+                    "#{tile.location_name.to_s.empty? ? '' : " (#{tile.location_name})"}"
 
             return unless reimburse && cost.positive?
 

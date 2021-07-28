@@ -24,9 +24,7 @@ module Engine
           def active_entities
             if @auctioning
               winning_bid = highest_bid(@auctioning)
-              if winning_bid
-                return [@active_bidders[(@active_bidders.index(winning_bid.entity) + 1) % @active_bidders.size]]
-              end
+              return [@active_bidders[(@active_bidders.index(winning_bid.entity) + 1) % @active_bidders.size]] if winning_bid
             end
 
             super
@@ -122,7 +120,7 @@ module Engine
 
             @companies.delete(company)
             @log << "#{player.name} wins the auction for #{company.name} "\
-                  "with a bid of #{@game.format_currency(price)}"
+                    "with a bid of #{@game.format_currency(price)}"
           end
 
           def forced_win(player, company)
@@ -131,7 +129,7 @@ module Engine
 
             @companies.delete(company)
             @log << "#{player.name} wins the auction for #{company.name} "\
-                  "for #{@game.format_currency(0)}"
+                    "for #{@game.format_currency(0)}"
           end
 
           def all_passed!
@@ -142,7 +140,7 @@ module Engine
               @cheapest.discount += 5
               new_value = @cheapest.min_bid
               @log << "#{@cheapest.name} minimum bid decreases from "\
-                "#{@game.format_currency(value)} to #{@game.format_currency(new_value)}"
+                      "#{@game.format_currency(value)} to #{@game.format_currency(new_value)}"
 
               if new_value <= 0
                 # It's now free so the next player is forced to take it.

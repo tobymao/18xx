@@ -62,7 +62,7 @@ module Engine
           price_for_player = company.value - price_for_corporation
 
           @log << "-- #{corporation.name} sells #{company.name} (owned by #{player.name}) "\
-            "for #{@game.format_currency(company.value)} --"
+                  "for #{@game.format_currency(company.value)} --"
 
           if price_for_player.positive?
             @game.bank.spend(price_for_player, player)

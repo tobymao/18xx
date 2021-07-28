@@ -3,11 +3,13 @@
 require_relative 'meta'
 require_relative '../base'
 require_relative '../company_price_50_to_150_percent'
+require_relative '../cities_plus_towns_route_distance_str'
 
 module Engine
   module Game
     module G18AL
       class Game < Game::Base
+        include CitiesPlusTownsRouteDistanceStr
         include_meta(G18AL::Meta)
 
         CURRENCY_FORMAT_STR = '$%d'
@@ -521,7 +523,7 @@ module Engine
               location = get_location_name(hex_name)
               ability.description = "Historical objective: #{location}"
               ability.desc_detail = "If #{corporation.name} puts a token into #{location} (#{hex_name}) "\
-                "#{format_currency(100)} is added to its treasury."
+                                    "#{format_currency(100)} is added to its treasury."
             end
           end
 

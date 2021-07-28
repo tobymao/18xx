@@ -8,7 +8,7 @@ module Engine
       module Step
         class BuyTrain < G1856::Step::BuyTrain
           def buyable_trains(entity)
-            super.reject { |x| x.from_depot? && @depot_trains_bought.include?(x.sym) }
+            super.reject { |x| x.from_depot? && @depot_trains_bought.include?(x.sym[0]) }
           end
 
           def setup
@@ -23,7 +23,7 @@ module Engine
 
             return unless from_depot
 
-            @depot_trains_bought << action.train.sym
+            @depot_trains_bought << action.train.sym[0]
 
             pass! if buyable_trains(action.entity).empty?
           end

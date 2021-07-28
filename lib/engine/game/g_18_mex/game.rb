@@ -4,11 +4,13 @@ require_relative 'meta'
 require_relative 'share_pool'
 require_relative '../base'
 require_relative '../company_price_50_to_150_percent'
+require_relative '../cities_plus_towns_route_distance_str'
 module Engine
   module Game
     module G18MEX
       class Game < Game::Base
         include_meta(G18MEX::Meta)
+        include CitiesPlusTownsRouteDistanceStr
 
         attr_reader :merged_major
 
@@ -728,7 +730,7 @@ module Engine
             train.buyable = false
             buy_train(minor, train, :free)
             hex = hex_by_id(minor.coordinates)
-            hex.tile.cities[0].place_token(minor, minor.next_token)
+            hex.tile.cities[0].place_token(minor, minor.next_token, free: true)
           end
 
           # Needed for special handling of minors in case inital auction not completed
@@ -959,9 +961,7 @@ module Engine
           end
 
           @mergeable_candidates = mergeable_corporations
-          if @mergeable_candidates.any?
-            @log << "Merge candidates: #{present_mergeable_candidates(@mergeable_candidates)}"
-          end
+          @log << "Merge candidates: #{present_mergeable_candidates(@mergeable_candidates)}" if @mergeable_candidates.any?
           possible_auto_merge
         end
 

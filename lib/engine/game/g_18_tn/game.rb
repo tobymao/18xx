@@ -575,9 +575,7 @@ module Engine
             company.owner&.player? && company.owner != entity
           end
 
-          if allowed_to_buy_during_operation_round_one?
-            candidates.reject! { |c| @round.company_sellers.value?(c.owner) }
-          end
+          candidates.reject! { |c| @round.company_sellers.value?(c.owner) } if allowed_to_buy_during_operation_round_one?
           candidates
         end
 

@@ -19,14 +19,14 @@ module BuyMinor
   def float_minor(minor_proxy, player, treasury)
     minor = @game.minor_by_id(minor_proxy.sym)
     @game.log << "Minor #{minor.name} floats and receives "\
-      "#{@game.format_currency(treasury)} in treasury"
+                 "#{@game.format_currency(treasury)} in treasury"
     minor.owner = player
     minor.float!
     @game.bank.spend(treasury, minor)
   end
 
   def draft_company(company, player)
-    @game.bank.companies&.delete(company)
+    company.owner.companies&.delete(company)
     company.owner = player
     player.companies << company
   end
