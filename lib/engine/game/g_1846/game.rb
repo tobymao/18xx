@@ -613,6 +613,11 @@ module Engine
 
         def event_remove_reservations!
           @log << '-- Event: Reserved token slots removed --'
+          @corporations.each do |corp|
+            abilities(corp, :token) do |ability|
+              ability.description = ability.description.sub('Reserved ', '')
+            end
+          end
         end
 
         def event_remove_markers!
