@@ -404,7 +404,7 @@ module Engine
               {
                 type: 'token',
                 description: 'Reserved $40 Centralia (I5) token',
-                desc_detail: 'May place $40 token in Centralia (I5). Token slot is reserved until '\
+                desc_detail: 'May place $40 token in Centralia (I5) if connected. Token slot is reserved until '\
                              'Phase IV.',
                 hexes: ['I5'],
                 count: 1,
