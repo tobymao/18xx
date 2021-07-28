@@ -36,6 +36,9 @@ services:
     <<: *rack
     command: bundle exec ruby queue.rb
 
+  redis:
+    restart: always
+
   db:
     environment:
       - POSTGRES_USER
