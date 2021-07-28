@@ -194,6 +194,27 @@ module Engine
             'code' => 'town=revenue:10;'\
                       'path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=R.J.',
           },
+          'CTownK' =>
+          {
+            'count' => 1,
+            'color' => 'yellow',
+            'code' => 'city=revenue:yellow_30|green_40|brown_50,slots:1;'\
+                      'path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=C.T.',
+          },
+          'CTownY' =>
+          {
+            'count' => 1,
+            'color' => 'yellow',
+            'code' => 'city=revenue:yellow_30|green_40|brown_50,slots:1;'\
+                      'path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=C.T.',
+          },
+          'CTownX' =>
+          {
+            'count' => 1,
+            'color' => 'yellow',
+            'code' => 'city=revenue:yellow_30|green_40|brown_50,slots:1;'\
+                      'path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=C.T.',
+          },
           'RHQ3' =>
           {
             'count' => 1,
@@ -888,6 +909,23 @@ module Engine
             ],
             color: nil,
           },
+          # P27
+          {
+            name: 'Company Town',
+            value: 90,
+            revenue: 0,
+            desc: 'Comes with 3 company town tiles, only one of which may be played. The owning corporation may place one '\
+                  'Company Town tile on any empty hex not adjacent to a metropolis. When placed, the owning corporation '\
+                  'receives one bonus station marker which must be placed on the Company Town tile. No other corporations may '\
+                  'place a token on the Company Town hex and receive $10 less for the city than the company with the station '\
+                  'marker in the city. The Company Town can be placed on any hex, city circle or not, as long as it is not '\
+                  'adjacent to a metropolis and has no track or station marker in it. If the Company Town tile is placed on a '\
+                  '$10 river hex, a bridge token may be used. Coal / Oil / Iron markers may not be used with the Company Town. '\
+                  'If the station marker in the Company Town hex is ever removed, no token may ever replace it',
+            sym: 'P27',
+            abilities: [],
+            color: nil,
+          },
           # P28
           {
             name: 'Consolidation Coal Co.',
@@ -1199,6 +1237,23 @@ module Engine
 
         def setup
           @rhq_tiles ||= @all_tiles.select { |t| t.name.include?('RHQ') }
+          @company_town_tiles ||= @all_tiles.select { |t| t.name.include?('CTown') }
+
+          # Place neutral tokens in the off board cities
+          neutral = Corporation.new(
+            sym: 'N',
+            name: 'Neutral',
+            logo: 'minus_ten',
+            simple_logo: 'minus_ten',
+            tokens: [0, 0, 0],
+          )
+          neutral.owner = @bank
+
+          neutral.tokens.each { |token| token.type = :neutral }
+          city_by_id('CTownK-0-0').place_token(neutral, neutral.next_token)
+          city_by_id('CTownX-0-0').place_token(neutral, neutral.next_token)
+          city_by_id('CTownY-0-0').place_token(neutral, neutral.next_token)
+
           metro = METROPOLITAN_HEXES.sort_by { rand }.take(3)
           metro.each do |i|
             case i
@@ -1224,6 +1279,8 @@ module Engine
         # to: Tile - Tile to upgrade to
         # special - ???
         def upgrades_to?(from, to, _special = false, selected_company: nil)
+          # TODO: Check if it's near a metropolis
+          return true if @company_town_tiles.map(&:name).include?(to.name) && from.color == :white
           return @phase.tiles.include?(:brown) if @rhq_tiles.map(&:name).include?(to.name) &&
               %w[5 6 7 14 15 619].include?(from.name)
 
@@ -1239,10 +1296,12 @@ module Engine
           return upgrades unless tile_manifest
 
           upgrades |= @rhq_tiles if @phase.tiles.include?(:brown) && %w[5 6 7 14 15 619].include?(tile.name)
+          upgrades |= @company_town_tiles if tile.color == :white
           upgrades
         end
 
         def legal_tile_rotation?(entity, hex, tile)
+          return company_by_id('P27').owner == entity && !company_by_id('P27').closed? if tile.name.include?('CTown')
           return company_by_id('P16').owner == entity && !company_by_id('P16').closed? if tile.name.include?('RHQ')
 
           super
