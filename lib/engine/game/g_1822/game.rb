@@ -72,6 +72,7 @@ module Engine
             on: '',
             train_limit: { minor: 2, major: 4 },
             tiles: [:yellow],
+            status: ['minor_float_phase1'],
             operating_rounds: 1,
           },
           {
@@ -79,7 +80,7 @@ module Engine
             on: %w[2 3],
             train_limit: { minor: 2, major: 4 },
             tiles: [:yellow],
-            status: ['can_convert_concessions'],
+            status: %w[can_convert_concessions minor_float_phase2],
             operating_rounds: 2,
           },
           {
@@ -87,7 +88,7 @@ module Engine
             on: '3',
             train_limit: { minor: 2, major: 4 },
             tiles: %i[yellow green],
-            status: %w[can_buy_trains can_convert_concessions],
+            status: %w[can_buy_trains can_convert_concessions minor_float_phase3on],
             operating_rounds: 2,
           },
           {
@@ -95,7 +96,7 @@ module Engine
             on: '4',
             train_limit: { minor: 1, major: 3 },
             tiles: %i[yellow green],
-            status: %w[can_buy_trains can_convert_concessions],
+            status: %w[can_buy_trains can_convert_concessions minor_float_phase3on],
             operating_rounds: 2,
           },
           {
@@ -106,7 +107,8 @@ module Engine
             status: %w[can_buy_trains
                        can_acquire_minor_bidbox
                        can_par
-                       minors_green_upgrade],
+                       minors_green_upgrade
+                       minor_float_phase3on],
             operating_rounds: 2,
           },
           {
@@ -118,7 +120,8 @@ module Engine
                        can_acquire_minor_bidbox
                        can_par
                        full_capitalisation
-                       minors_green_upgrade],
+                       minors_green_upgrade
+                       minor_float_phase3on],
             operating_rounds: 2,
           },
           {
@@ -130,7 +133,8 @@ module Engine
                        can_acquire_minor_bidbox
                        can_par
                        full_capitalisation
-                       minors_green_upgrade],
+                       minors_green_upgrade
+                       minor_float_phase3on],
             operating_rounds: 2,
           },
         ].freeze
@@ -297,7 +301,14 @@ module Engine
                                          'to start location'],
           'can_par' => ['Majors 50% float', 'Majors companies require 50% sold to float'],
           'full_capitalisation' => ['Full capitalisation', 'Majors receives full capitalisation '\
-                                    '(the remaining five shares are placed in the bank)'],
+                                                           '(the remaining five shares are placed in the bank)'],
+          'minor_float_phase1' => ['Minors receive £100 in capital', 'Minors receive 100 capital with 50 stock value'],
+          'minor_float_phase2' => ['Minors receive 2X stock value in capital',
+                                   'Minors receive 2X stock value as capital '\
+                                   'and float at between 50 to 100 stock value based on bid'],
+          'minor_float_phase3on' => ['Minors receive winning bid as capital',
+                                     'Minors receive entire winning bid as capital '\
+                                     'and float at between 50 to 100 stock value based on bid'],
         ).freeze
 
         BIDDING_BOX_MINOR_COUNT = 4
@@ -633,7 +644,7 @@ module Engine
           # On acquired abilities
           on_acquired_train(company, entity) if self.class::PRIVATE_TRAINS.include?(company.id)
           on_aqcuired_remove_revenue(company) if self.class::PRIVATE_REMOVE_REVENUE.include?(company.id)
-          on_aqcuired_phase_revenue(company) if self.class::PRIVATE_PHASE_REVENUE.include?(company.id)
+          on_acquired_phase_revenue(company) if self.class::PRIVATE_PHASE_REVENUE.include?(company.id)
           on_aqcuired_midland_great_northern(company) if self.class::COMPANY_MGNR == company.id
         end
 
@@ -736,9 +747,7 @@ module Engine
             next if !company || company&.closed? || !@phase_revenue[company_id]
 
             @log << "#{company.name} closes"
-            if @phase_revenue[company.id].cash.positive?
-              @phase_revenue[company.id].spend(@phase_revenue[company.id].cash, @bank)
-            end
+            @phase_revenue[company.id].spend(@phase_revenue[company.id].cash, @bank) if @phase_revenue[company.id].cash.positive?
             @phase_revenue[company.id] = nil
             company.close!
           end
@@ -824,9 +833,7 @@ module Engine
           return self.class::COMPANY_HSBC_TILE_LAYS if entity.id == self.class::COMPANY_HSBC
 
           operator = entity.company? ? entity.owner : entity
-          if @phase.name.to_i >= 3 && operator.corporation? && operator.type == :major
-            return self.class::MAJOR_TILE_LAYS
-          end
+          return self.class::MAJOR_TILE_LAYS if @phase.name.to_i >= 3 && operator.corporation? && operator.type == :major
 
           super
         end
@@ -1070,9 +1077,7 @@ module Engine
           str = super
 
           destination_bonus = destination_bonus(route.routes)
-          if destination_bonus && destination_bonus[:route] == route
-            str += " (#{format_currency(destination_bonus[:revenue])})"
-          end
+          str += " (#{format_currency(destination_bonus[:revenue])})" if destination_bonus && destination_bonus[:route] == route
 
           str
         end
@@ -1715,7 +1720,7 @@ module Engine
           entity.tokens << Engine::Token.new(entity, price: self.class::TOKEN_PRICE)
         end
 
-        def on_aqcuired_phase_revenue(company)
+        def on_acquired_phase_revenue(company)
           revenue_player = @phase_revenue[company.id]
           @log << "#{company.owner.name} gains #{format_currency(revenue_player.cash)}"
           revenue_player.spend(revenue_player.cash, company.owner)
@@ -1761,7 +1766,7 @@ module Engine
           else
             @player_debts[player] -= player.cash
             @log << "#{player.name} decreases their loan by #{format_currency(player.cash)} "\
-                      "(#{format_currency(@player_debts[player])})"
+                    "(#{format_currency(@player_debts[player])})"
             player.cash = 0
           end
         end

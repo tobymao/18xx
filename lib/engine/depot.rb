@@ -42,8 +42,9 @@ module Engine
       @depot_trains = nil
     end
 
-    def min_price(corporation)
-      available(corporation).map(&:min_price).min
+    # if set, ability must be a :train_discount ability
+    def min_price(corporation, ability: nil)
+      available(corporation).map { |train| train.min_price(ability: ability) }.min
     end
 
     def min_depot_train

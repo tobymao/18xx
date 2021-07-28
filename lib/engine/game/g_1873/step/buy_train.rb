@@ -213,20 +213,14 @@ module Engine
             train = action.train
             slots = action.slots
 
-            if train.owner == @game.depot && illegal_depot_buy?(train, entity)
-              raise GameError, 'Illegal depot train buy'
-            end
+            raise GameError, 'Illegal depot train buy' if train.owner == @game.depot && illegal_depot_buy?(train, entity)
             if train.owner != @game.depot && illegal_other_buy?(train, entity)
               raise GameError, 'Illegal train buy from another company'
             end
 
-            if action.price > train.price * 2
-              raise GameError, "Can only spend a maximum of #{train.price * 2} for this train"
-            end
+            raise GameError, "Can only spend a maximum of #{train.price * 2} for this train" if action.price > train.price * 2
 
-            if @game.concession_pending?(entity) && (entity != @game.nwe || train.distance > 1)
-              @game.concession_unpend!(entity)
-            end
+            @game.concession_unpend!(entity) if @game.concession_pending?(entity) && (entity != @game.nwe || train.distance > 1)
 
             scrap_mine_train(entity, action.train) if entity.minor?
 
@@ -300,9 +294,7 @@ module Engine
             slots_needed = submines.count { |m| minor_distance(m) < bought_train.distance }
             num_to_fill = [slots_needed, bought_train.distance].min
 
-            if !slots || num_to_fill != slots.size
-              raise GameError, "Need to select #{num_to_fill} target mines for machines"
-            end
+            raise GameError, "Need to select #{num_to_fill} target mines for machines" if !slots || num_to_fill != slots.size
 
             trains = @game.replicate_machines(bought_train, num_to_fill)
             slots.each do |slot|

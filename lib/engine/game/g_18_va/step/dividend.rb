@@ -50,7 +50,8 @@ module Engine
 
             payout_corporation(payout[:corporation], entity)
 
-            payout_shares(entity, revenue - payout[:corporation]) if payout[:per_share].positive?
+            adjusted_revenue = subsidy ? revenue + subsidy : revenue
+            payout_shares(entity, adjusted_revenue - payout[:corporation]) if payout[:per_share].positive?
 
             change_share_price(entity, payout)
 
@@ -58,7 +59,16 @@ module Engine
           end
 
           def log_run_payout(entity, kind, revenue, subsidy, action, payout)
-            super(entity, kind, revenue, action, payout)
+            unless Dividend::DIVIDEND_TYPES.include?(kind)
+              @log << "#{entity.name} runs for #{@game.format_currency(revenue)} and pays #{action.kind}"
+            end
+
+            withheld_amount =  payout[:corporation] - subsidy
+            if withheld_amount.positive?
+              @log << "#{entity.name} withholds #{@game.format_currency(withheld_amount)}"
+            elsif payout[:per_share].zero?
+              @log << "#{entity.name} does not run"
+            end
 
             @log << "#{entity.name} earns subsidy of #{@game.format_currency(subsidy)}" if subsidy.positive?
           end

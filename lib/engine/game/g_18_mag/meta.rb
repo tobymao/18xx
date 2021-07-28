@@ -18,6 +18,13 @@ module Engine
         GAME_RULES_URL = 'https://www.lonny.at/app/download/10197748784/18Mag_Rules_ENG_comp.pdf'
 
         PLAYER_RANGE = [2, 6].freeze
+        OPTIONAL_RULES = [
+         {
+           sym: :standard_divs,
+           short_name: 'Standard Dividends',
+           desc: 'Use standard rules for dividends (all or nothing)',
+         },
+        ].freeze
       end
     end
   end

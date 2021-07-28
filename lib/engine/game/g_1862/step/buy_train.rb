@@ -212,7 +212,7 @@ module Engine
             return unless action.entity.cash < action.price + (warranties * WARRANTY_COST)
 
             raise GameError "#{action.entity} cannot afford warranty cost of "\
-              "#{@game.format_currency(warranties * WARRANTY_COST)}"
+                            "#{@game.format_currency(warranties * WARRANTY_COST)}"
           end
 
           def buy_train_action(action)
@@ -228,7 +228,7 @@ module Engine
               entity.spend(warranties * WARRANTY_COST, @game.bank)
               suffix = warranties > 1 ? 'ies' : 'y'
               @log << "#{entity.name} pays #{@game.format_currency(warranties * WARRANTY_COST)} "\
-                "for #{warranties} warrant#{suffix}"
+                      "for #{warranties} warrant#{suffix}"
             end
 
             super

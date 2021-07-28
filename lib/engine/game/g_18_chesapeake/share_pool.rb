@@ -16,9 +16,7 @@ module Engine
 
           share_to_remove = shares_by_corporation[corporation].last
 
-          if !share_to_remove || (entity == corporation.owner) || (share_to_remove.owner != @game.share_pool)
-            return super
-          end
+          return super if !share_to_remove || (entity == corporation.owner) || (share_to_remove.owner != @game.share_pool)
 
           transfer_shares(share_to_remove.to_bundle, @game.bank)
           @log << "#{entity.name} removes a 10% share of #{corporation.name} from the game"

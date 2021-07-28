@@ -20,7 +20,7 @@ module Engine
 
         def exchange_share(minor, corporation)
           @game.log << "#{minor.owner.name} exchanges #{minor.name} for a "\
-            "10% share of #{corporation.name}"
+                       "10% share of #{corporation.name}"
 
           buy_shares(minor.owner, corporation.ipo_shares.first.to_bundle, exchange: true)
         end

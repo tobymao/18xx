@@ -74,13 +74,13 @@ module Engine
             'count' => 1,
             'color' => 'brown',
             'code' => 'city=revenue:50,slots:2;label=Was;'\
-              'path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:0,b:_0',
+                      'path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:0,b:_0',
           },
           '170ric' => {
             'count' => 1,
             'color' => 'brown',
             'code' => 'city=revenue:50,slots:2;label=Ric;'\
-              'path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:0,b:_0',
+                      'path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:0,b:_0',
           },
 
           # washington
@@ -89,7 +89,7 @@ module Engine
             'count' => 1,
             'color' => 'gray',
             'code' => 'city=revenue:60,slots:2;label=Was;'\
-              'path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;path=a:0,b:_0',
+                      'path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;path=a:0,b:_0',
           },
 
           # richmond
@@ -98,12 +98,12 @@ module Engine
             'count' => 1,
             'color' => 'gray',
             'code' => 'city=revenue:60,slots:3;label=Ric;'\
-              'path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;path=a:0,b:_0',
+                      'path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;path=a:0,b:_0',
           },
         }.freeze
 
         LOCATION_NAMES = {
-          'H1' => 'Philidelphia',
+          'H1' => 'Philadelphia',
           'E2' => 'Hagerstown',
           'F3' => 'Harper\'s Ferry',
           'H3' => 'Baltimore',
@@ -218,12 +218,12 @@ module Engine
                        { 'nodes' => %w[offboard], 'pay' => 2, 'visit' => 2 },
                        { 'nodes' => %w[city], 'pay' => 3, 'visit' => 3 }],
             price: 200,
-            rusts_on: '6',
+            rusts_on: '5',
             num: 5,
             variants: [
               {
                 name: '2G',
-                rusts_on: '6',
+                rusts_on: '5',
                 distance: [{ 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 },
                            { 'nodes' => %w[offboard], 'pay' => 2, 'visit' => 2 },
                            { 'nodes' => %w[city], 'pay' => 3, 'visit' => 3 }],
@@ -303,7 +303,7 @@ module Engine
             value: 40,
             revenue: 10,
             desc: 'Closing this private allows a corporation to increase the value of any one City (not offboard) '\
-                'by $10 permanently and exclusively for that corporation',
+                  'by $10 permanently and exclusively for that corporation',
             sym: 'P1',
             color: nil,
             abilities: [
@@ -327,7 +327,7 @@ module Engine
             value: 60,
             revenue: 15,
             desc: 'Closing this private grants the operating Corporation a $200 discount '\
-              'when buying a train from the depot',
+                  'when buying a train from the depot',
             sym: 'P2',
             color: nil,
             abilities: [
@@ -347,16 +347,15 @@ module Engine
             value: 80,
             revenue: 20,
             desc: 'The owning corporation may choose to close this private to permanently increase its train limit '\
-              'by one or to place an extra, free, disconnected, and nonblocking token '\
-              'in any hex that has a city slot (open or not)',
+                  'by one or to place an extra, free, disconnected, and nonblocking token '\
+                  'in any hex that has a city slot (open or not)',
             sym: 'P3',
             abilities: [
               {
-                when: 'any',
+                when: 'owning_corp_or_turn',
                 extra_action: true,
                 type: 'token',
                 owner_type: 'corporation',
-                count: 1,
                 from_owner: false,
                 extra_slot: true,
                 special_only: true,
@@ -370,29 +369,28 @@ module Engine
           {
             name: 'Baltimore & Ohio Presidency',
             value: 140,
-            desc: 'This Company comes with a single share of the Florida East Coast Railway. '\
-            'This company closes when the FECR buys its first train',
+            desc: 'This Company is the Baltimore & Ohio Presidency',
             sym: 'P4',
             abilities: [
               { type: 'shares', shares: 'first_president' },
+              { type: 'close', when: 'par', corporation: 'B&O' },
               { type: 'no_buy' },
             ],
             color: nil,
           },
         ].freeze
 
-        # TODO: Make real (or at least simple) tokens
         CORPORATIONS = [
           {
-            float_percent: 0o0,
+            float_percent: 20,
             sym: 'B&O',
             name: 'Baltimore & Ohio Railroad',
             logo: '18_va/BO',
-            simple_logo: '18_va/BO',
+            simple_logo: '18_va/BO.alt',
             shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
             tokens: [0, 40, 100, 100],
             coordinates: 'H3',
-            color: '#0189d1',
+            color: '#025aaa',
             type: 'large',
             always_market_price: true,
             reservation_color: nil,
@@ -402,11 +400,11 @@ module Engine
             sym: 'C&O',
             name: 'Chesapeake & Ohio Railway',
             logo: '18_va/CO',
-            simple_logo: '18_va/CO',
+            simple_logo: '18_va/CO.alt',
             shares: [40, 20, 20, 20],
             tokens: [0, 40],
             coordinates: 'D9',
-            color: '#a2dced',
+            color: '#ADD8E6',
             text_color: 'black',
             type: 'medium',
             always_market_price: true,
@@ -416,8 +414,8 @@ module Engine
             float_percent: 20,
             sym: 'SR',
             name: 'Southern Railway',
-            logo: '18_fl/SR',
-            simple_logo: '18_fl/SR',
+            logo: '18_va/SR',
+            simple_logo: '18_va/SR.alt',
             shares: [40, 20, 20, 20],
             tokens: [0, 40],
             coordinates: 'F11',
@@ -432,7 +430,7 @@ module Engine
             sym: 'N&W',
             name: 'Norfolk & Western Railway',
             logo: '18_va/NW',
-            simple_logo: '18_va/NW',
+            simple_logo: '18_va/NW.alt',
             shares: [40, 20, 20, 20],
             tokens: [0, 40],
             coordinates: 'F13',
@@ -447,7 +445,7 @@ module Engine
             sym: 'WMR',
             name: 'Western Maryland Railway',
             logo: '18_va/WMR',
-            simple_logo: '18_va/WMR',
+            simple_logo: '18_va/WMR.alt',
             shares: [40, 20, 20, 20],
             tokens: [0, 40],
             coordinates: 'C4',
@@ -461,7 +459,7 @@ module Engine
             sym: 'RFPR',
             name: 'Richmond, Fredericksburg & Potomac Railroad',
             logo: '18_va/RFPR',
-            simple_logo: '18_va/RFPR',
+            simple_logo: '18_va/RFPR.alt',
             shares: [40, 20, 20, 20],
             tokens: [0, 40],
             coordinates: 'F7',
@@ -475,7 +473,7 @@ module Engine
             sym: 'VR',
             name: 'Virginian Railway',
             logo: '18_va/VR',
-            simple_logo: '18_va/VR',
+            simple_logo: '18_va/VR.alt',
             shares: [40, 20, 20, 20],
             tokens: [0, 40],
             coordinates: 'C12',
@@ -506,7 +504,7 @@ module Engine
           yellow: {
             %w[H5] => 'city=revenue:20;path=a:2,b:_0;path=a:5,b:_0;border=edge:1,type:impassable',
             %w[H13] => 'city=revenue:20;path=a:2,b:_0;path=a:5,b:_0;'\
-              'border=edge:0,type:impassable;border=edge:1,type:impassable',
+                       'border=edge:0,type:impassable;border=edge:1,type:impassable',
             %w[H15] => 'city=revenue:20;path=a:2,b:_0;path=a:5,b:_0;border=edge:3,type:impassable',
           },
           red: {
@@ -520,7 +518,7 @@ module Engine
             ['A6'] => 'city=slots:2,revenue:20,groups:CMD;icon=image:18_co/mine,visit_cost:0;'\
                       'path=a:4,b:_0,terminal:1;path=a:5,b:_0,terminal:1',
             ['A12'] => 'city=slots:2,revenue:20,groups:CMD;icon=image:18_co/mine;'\
-                      'path=a:4,b:_0,terminal:1;path=a:5,b:_0,terminal:1',
+                       'path=a:4,b:_0,terminal:1;path=a:5,b:_0,terminal:1',
           },
           blue: {
             ['I4'] =>
@@ -555,9 +553,11 @@ module Engine
         SELL_AFTER = :operate
         EBUY_OTHER_VALUE = true
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = true
+        CLOSED_CORP_TRAINS_REMOVED = false
         ONLY_HIGHEST_BID_COMMITTED = true
         BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
         CERT_LIMIT_COUNTS_BANKRUPTED = true
+        MUST_BID_INCREMENT_MULTIPLE = true
         CMD_HEXES = %w[A6 A12].freeze
         MINE_HEXES = %w[B5 B7 B9 B11 B13].freeze
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
@@ -566,9 +566,9 @@ module Engine
         ).freeze
         STATUS_TEXT = Base::STATUS_TEXT.merge(
           'cmd_token_bonus' => ['CMD Bonus Income', 'nG trains running to CMD zones with a corporation\'s token get '\
-              'a $20 x n bonus to their treasury'],
+                                                    'a $20 x n bonus to their treasury'],
           'offboard_token_bonus' => ['Offboard Bonus', 'n trains running to red offboards with a corporation\'s '\
-              'token in it double the value of the offboard'],
+                                                       'token in it double the value of the offboard'],
           'may_convert' => ['Corporations May Convert',
                             'At the start of a corporations Operating turn it
                            may choose to convert to a 10 share corporation'],
@@ -603,15 +603,25 @@ module Engine
             Engine::Step::SpecialTrack,
             Engine::Step::BuyCompany,
             Engine::Step::Track,
-            Engine::Step::SpecialToken,
-            Engine::Step::Token,
+            G18VA::Step::SpecialToken,
+            G18VA::Step::Token,
             Engine::Step::Route,
             G18VA::Step::Dividend,
             Engine::Step::DiscardTrain,
-            Engine::Step::SpecialBuyTrain,
+            G18VA::Step::SpecialBuyTrain,
             G18VA::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
+        end
+
+        def reorder_players(_order = nil)
+          # Only reorder players at the end of the initial auction round
+          return super if @round.operating? || @round.stock?
+
+          @log << 'Players are reordered based on remaining cash'
+          # players are reordered from most remaining cash to least with prior order as tie breaker
+          current_order = @players.dup.reverse
+          @players.sort_by! { |p| [p.cash, current_order.index(p)] }.reverse!
         end
 
         def buy_train(operator, train, price = nil)
@@ -724,16 +734,22 @@ module Engine
           # Offboard cities are doubled if tokened, unless using a 4D in which case they are quadrupled
           if train_type == :doubler
             # It is doubled once by the main logic so double it again to quadruple
-            revenue += 2 * offboard_stop.route_revenue(@phase, train) if offboard_stop&.tokened_by?(train.owner)
+            revenue += 3 * offboard_stop.route_revenue(@phase, train) if offboard_stop&.tokened_by?(train.owner)
           elsif offboard_stop&.tokened_by?(train.owner)
             revenue += offboard_stop.route_revenue(@phase, train)
           end
           # Freight and doubler trains double ports
-          revenue += port_stop.route_revenue(@phase, train) if port_stop && %i[freight doubler].include?(train_type)
+          revenue += freight_port_bonus(port_stop, train) if port_stop && %i[freight doubler].include?(train_type)
 
           revenue += 20 * (train_size - 1) if cmd_stop
 
           revenue
+        end
+
+        def freight_port_bonus(port_stop, train)
+          doubled_stops = [port_stop]
+          doubled_stops << hex_by_id(PORT_TO_CITY[port_stop.hex.id]).tile.city_towns.first if train_type(train) == :freight
+          doubled_stops.sum { |stop| stop.route_revenue(@phase, train) }
         end
 
         def status_array(corp)
@@ -823,7 +839,7 @@ module Engine
         def sixth_share_capitalization(corporation)
           funding = 4 * corporation.share_price.price
           @log << "#{corporation.name}'s remaining shares are transferred "\
-              "to the Market and receives #{format_currency(funding)}"
+                  "to the Market and receives #{format_currency(funding)}"
           @bank.spend(funding, corporation)
           bundle = ShareBundle.new(corporation.shares_of(corporation))
           @share_pool.transfer_shares(bundle, @share_pool)

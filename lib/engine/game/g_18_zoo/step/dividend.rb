@@ -58,7 +58,7 @@ module Engine
 
             @game.bank.spend(bonus, entity.player, check_positive: false)
             @log << "President #{entity.player.name} earns #{@game.format_currency(bonus)}"\
-              " as a bonus from #{entity.name} run"
+                    " as a bonus from #{entity.name} run"
           end
 
           def process_dividend(action)
@@ -90,7 +90,7 @@ module Engine
 
           def log_payout_shares(entity, revenue, per_share, receivers)
             @log << "#{entity.name} collects #{@game.format_revenue_currency(revenue)}. "\
-                      "#{entity.name} pays #{@game.format_currency(per_share)} per share (#{receivers})"
+                    "#{entity.name} pays #{@game.format_currency(per_share)} per share (#{receivers})"
           end
         end
       end

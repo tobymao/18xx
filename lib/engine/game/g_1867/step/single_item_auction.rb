@@ -146,7 +146,7 @@ module Engine
             player.spend(price, @game.bank) if price.positive?
             @companies.delete(company)
             @log << "#{player.name} wins the auction for #{company.name} "\
-                  "with a bid of #{@game.format_currency(price)}"
+                    "with a bid of #{@game.format_currency(price)}"
           end
 
           def post_win_bid(winner, company)

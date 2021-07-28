@@ -25,7 +25,7 @@ module Engine
 
         CURRENCY_FORMAT_STR = '%d kr'
 
-        BANK_CASH = 12_000
+        BANK_CASH = 10_000
 
         CERT_LIMIT = { 2 => 28, 3 => 20, 4 => 16, 5 => 13, 6 => 11 }.freeze
 
@@ -36,8 +36,16 @@ module Engine
         MUST_SELL_IN_BLOCKS = false
 
         MARKET_TEXT = Base::MARKET_TEXT.merge(
-          max_price: '90 or more is required for double jump if double revenue',
+          endgame: 'Game end at end of current operating round',
+          max_price: 'Double jump if double revenue if stock price is at least 90 kr',
+          multiple_buy: 'Can buy more than one share in the corporation per turn, redeem all shares at no cost',
+          no_cert_limit: 'Corporation shares do not count towards cert limit, redeem one shares at half cost (rounded down)',
+          par: 'Available par values',
+          unlimited: 'Corporation shares can be held above 60%, redeem all shares at half cost (rounded down)',
         ).freeze
+
+        # New track must be usable, or upgrade city value
+        TRACK_RESTRICTION = :semi_restrictive
 
         TILES = {
           '5' => 4,
@@ -80,7 +88,7 @@ module Engine
             'count' => 1,
             'color' => 'gray',
             'code' =>
-            'city=revenue:90,slots:4;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=S',
+            'city=revenue:90,slots:4;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
           },
           '172' => 2,
           '298SJ' =>
@@ -88,16 +96,16 @@ module Engine
             'count' => 1,
             'color' => 'green',
             'code' => 'city=revenue:40,groups:Stockholm;city=revenue:40,groups:Stockholm;'\
-              'city=revenue:40,groups:Stockholm;city=revenue:40,groups:Stockholm;path=a:0,b:_0;path=a:_0,b:2;'\
-              'path=a:3,b:_1;path=a:_1,b:2;path=a:4,b:_2;path=a:_2,b:2;path=a:5,b:_3;path=a:_3,b:2;label=S',
+                      'city=revenue:40,groups:Stockholm;city=revenue:40,groups:Stockholm;path=a:0,b:_0;path=a:_0,b:2;'\
+                      'path=a:3,b:_1;path=a:_1,b:2;path=a:4,b:_2;path=a:_2,b:2;path=a:5,b:_3;path=a:_3,b:2',
           },
           '299SJ' =>
           {
             'count' => 1,
             'color' => 'brown',
             'code' => 'city=revenue:70,groups:Stockholm;city=revenue:70,groups:Stockholm;'\
-              'city=revenue:70,groups:Stockholm;city=revenue:70,groups:Stockholm;path=a:0,b:_0;path=a:_0,b:2;'\
-              'path=a:3,b:_1;path=a:_1,b:2;path=a:4,b:_2;path=a:_2,b:2;path=a:5,b:_3;path=a:_3,b:2;label=S',
+                      'city=revenue:70,groups:Stockholm;city=revenue:70,groups:Stockholm;path=a:0,b:_0;path=a:_0,b:2;'\
+                      'path=a:3,b:_1;path=a:_1,b:2;path=a:4,b:_2;path=a:_2,b:2;path=a:5,b:_3;path=a:_3,b:2',
           },
           '440' =>
           {
@@ -146,17 +154,17 @@ module Engine
         }.freeze
 
         MARKET = [
-          %w[60y 67 71 76 82m 90 100p 112 126 142 160 180 200 225 250 275 300 325 350 375e 400e],
-          %w[53y 60y 66 70 76 82m 90p 100 112 126 142 160 180 200 220 240 260 280 300],
-          %w[46y 55y 60y 65 70 76 82pm 90 100 111 125 140 155 170 185 200],
-          %w[39o 48y 54y 60y 66 71 76p 82m 90 100 110 120 130],
-          %w[32o 41o 48y 55y 62 67 71p 76 82m 90 100],
-          %w[25b 34o 42o 50y 58y 65 67p 71 75 80],
-          %w[18b 27b 36o 45o 54y 63 67 69 70],
-          %w[10b 12b 30b 40o 50y 60y 67 68],
-          ['', '10b', '20b', '30b', '40o', '50y', '60y'],
-          ['', '', '10b', '20b', '30b', '40o', '50y'],
-          ['', '', '', '10b', '20b', '30b', '40o'],
+          %w[82m 90 100p 110 125 140 160 180 200 225 250 275 300 325 350 375e 400e],
+          %w[76 82m 90p 100 110 125 140 160 180 200 220 240 260 280 300],
+          %w[71 76 82pm 90 100 111 125 140 155 170 185 200],
+          %w[67 71 76p 82m 90 100 110 120 140],
+          %w[65 67 71p 76 82m 90 100],
+          %w[63y 65 67p 71 76 82],
+          %w[60y 63y 65 67 71],
+          %w[50o 60y 63y 65],
+          %w[40b 50o 60y],
+          %w[30b 40b 50o],
+          %w[20b 30b 40b],
         ].freeze
 
         PHASES = [
@@ -231,7 +239,7 @@ module Engine
                   {
                     name: '5',
                     distance: 5,
-                    price: 450,
+                    price: 530,
                     num: 3,
                     events: [{ 'type' => 'close_companies' }, { 'type' => 'full_cap' }],
                   },
@@ -275,9 +283,9 @@ module Engine
             value: 40,
             revenue: 10,
             desc: 'Owning corporation may add a hex bonus to each train visit to any of the hexes E8, C8 and C16 '\
-              'in three different ORs. Each train can receive the bonus multiple times. The bonus are 50kr the first '\
-              'time this ability is used, 30kr the second and 20kr the third and last time. Using this ability '\
-              'will not close the prive.',
+                  'in three different ORs. Each train can receive the bonus multiple times. The bonus are 50kr the first '\
+                  'time this ability is used, 30kr the second and 20kr the third and last time. Using this ability '\
+                  'will not close the prive.',
             sym: 'GKB',
             abilities:
             [
@@ -296,7 +304,7 @@ module Engine
             value: 45,
             revenue: 15,
             desc: 'May lay or shift port token in Halmstad (A6), Ystad(C2), Kalmar (D5), Sundsvall (F19), Umeå (F23), '\
-              'and Luleå (G26).  Add 30 kr/symbol to all routes run to this location by owning company.',
+                  'and Luleå (G26).  Add 30 kr/symbol to all routes run to this location by owning company.',
             sym: 'SB',
             abilities:
             [
@@ -313,7 +321,7 @@ module Engine
             value: 70,
             revenue: 15,
             desc: 'Two extra track lays in hex E28 and F27.  Blocks hexes E28 and F27 if owned by a player. '\
-              'Reduce terrain cost in D29 and C30 to 25 kr for mountains and 50 kr for the Narvik border.',
+                  'Reduce terrain cost in D29 and C30 to 25 kr for mountains and 50 kr for the Narvik border.',
             sym: 'GC',
             abilities:
             [
@@ -347,8 +355,8 @@ module Engine
             value: 90,
             revenue: 15,
             desc: 'Owning corporation may do a premature buy of one or more trains, just before Run Routes. '\
-              'These trains can be run even if they have run earlier in the OR. If ability is used the owning '\
-              'corporation cannot buy any trains later in the same OR.',
+                  'These trains can be run even if they have run earlier in the OR. If ability is used the owning '\
+                  'corporation cannot buy any trains later in the same OR.',
             sym: 'MV',
             abilities:
             [
@@ -382,7 +390,7 @@ module Engine
             value: 140,
             revenue: 0,
             desc: 'Buy gives control to minor corporation with same name. The minor starts with a 2 train '\
-              'and a home token and splits revenue evenly with owner. The minor may never buy or sell trains.',
+                  'and a home token and splits revenue evenly with owner. The minor may never buy or sell trains.',
             sym: 'KHJ',
           },
           {
@@ -390,9 +398,9 @@ module Engine
             value: 220,
             revenue: 25,
             desc: "Receive president's share in a corporation randomly determined before auction. "\
-              'Buying player may once during the game take the priority deal at the beginning of one stock round '\
-              '(and this ability is not lost even if this private is closed). Cannot be bought by any corporation. '\
-              'Closes when the connected corporation buys its first train.',
+                  'Buying player may once during the game take the priority deal at the beginning of one stock round '\
+                  '(and this ability is not lost even if this private is closed). Cannot be bought by any corporation. '\
+                  'Closes when the connected corporation buys its first train.',
             sym: 'NE',
             abilities: [{ type: 'shares', shares: 'random_president' }, { type: 'no_buy' }],
           },
@@ -401,8 +409,8 @@ module Engine
             value: 0,
             revenue: 0,
             desc: 'This represents the ability to once during the game take over the priority deal at the beginning '\
-              "of a stock round. Cannot be bought by any corporation. This 'company' remains through the whole game, "\
-              'or until the ability is used.',
+                  "of a stock round. Cannot be bought by any corporation. This 'company' remains through the whole game, "\
+                  'or until the ability is used.',
             sym: 'NEFT',
             abilities: [{ type: 'no_buy' }, { type: 'close', on_phase: 'never', owner_type: 'player' }],
           },
@@ -411,7 +419,7 @@ module Engine
             value: 220,
             revenue: 30,
             desc: "Receive president's share in ÖKJ. Cannot be bought by any corporation. Closes when ÖKJ "\
-              'buys its first train.',
+                  'buys its first train.',
             sym: 'AEvR',
             abilities: [{ type: 'shares', shares: 'ÖKJ_0' },
                         { type: 'close', when: 'bought_train', corporation: 'ÖKJ' },
@@ -564,13 +572,13 @@ module Engine
         HEXES = {
           red: {
             ['A2'] => 'city=revenue:yellow_20|green_40|brown_50;path=a:4,b:_0,terminal:1;path=a:5,b:_0,terminal:1;'\
-              'icon=image:18_sj/V,sticky:1',
+                      'icon=image:18_sj/V,sticky:1;icon=image:18_sj/b_lower_case,sticky:1',
             ['A10'] => 'city=revenue:yellow_20|green_40|brown_70;path=a:4,b:_0,terminal:1;path=a:5,b:_0,terminal:1;'\
-              'path=a:0,b:_0,terminal:1;icon=image:18_sj/V,sticky:1;icon=image:18_sj/b_lower_case,sticky:1',
+                       'path=a:0,b:_0,terminal:1;icon=image:18_sj/V,sticky:1;icon=image:18_sj/b_lower_case,sticky:1',
             ['B31'] => 'offboard=revenue:yellow_20|green_30|brown_70;path=a:0,b:_0;icon=image:18_sj/N,sticky:1;'\
-              'icon=image:18_sj/m_lower_case,sticky:1;border=edge:0,type:water,cost:150',
+                       'icon=image:18_sj/m_lower_case,sticky:1;border=edge:0,type:water,cost:150',
             ['H9'] => 'offboard=revenue:green_30|brown_40;path=a:3,b:_0;icon=image:18_sj/O,sticky:1;'\
-              'icon=image:18_sj/b_lower_case,sticky:1',
+                      'icon=image:18_sj/b_lower_case,sticky:1;label=S;icon=image:18_sj/S,sticky:1',
           },
           gray: {
             ['A6'] => 'city=revenue:20;path=a:5,b:_0;path=a:0,b:_0;icon=image:port;icon=image:port',
@@ -579,7 +587,7 @@ module Engine
             ['F19'] => 'city=revenue:20;path=a:2,b:_0;path=a:3,b:_0;icon=image:port',
             ['F23'] => 'city=revenue:20;path=a:2,b:_0;path=a:3,b:_0;icon=image:port;icon=image:port',
             ['G26'] => 'city=revenue:20,slots:2;path=a:2,b:_0;path=a:3,b:_0;icon=image:port;'\
-              'icon=image:18_sj/m_lower_case,sticky:1',
+                       'icon=image:18_sj/m_lower_case,sticky:1',
           },
           blue: {
             ['B1'] => 'path=a:4,b:5',
@@ -589,8 +597,9 @@ module Engine
           white: {
             %w[A4 C6 D7] => 'icon=image:18_sj/M-S,sticky:1',
             ['D13'] => 'icon=image:18_sj/G-S,sticky:1',
-            %w[E14 E16 E18 E22 E24 F25 G12] =>
+            %w[E14 E16 E18 E24 F25 G12] =>
               'icon=image:18_sj/L-S,sticky:1',
+            ['E22'] => 'upgrade=cost:75,terrain:mountain;icon=image:18_sj/L-S,sticky:1',
             ['B5'] => 'city=revenue:0;icon=image:18_sj/M-S,sticky:1',
             ['E8'] =>
               'city=revenue:0;icon=image:18_sj/M-S,sticky:1;icon=image:18_sj/GKB,sticky:1',
@@ -626,7 +635,7 @@ module Engine
             ['G10'] =>
               'city=revenue:20,groups:Stockholm;city=revenue:20,groups:Stockholm;'\
               'city=revenue:20,groups:Stockholm;city=revenue:20,groups:Stockholm;path=a:1,b:_0;path=a:2,b:_1;'\
-              'path=a:3,b:_2;path=a:4,b:_3;label=S;icon=image:18_sj/S,sticky:1',
+              'path=a:3,b:_2;path=a:4,b:_3',
           },
         }.freeze
 
@@ -713,13 +722,24 @@ module Engine
 
         GKB_HEXES = %w[C8 C16 E8].freeze
 
+        def oscarian_era
+          @optional_rules&.include?(:oscarian_era)
+        end
+
         def init_corporations(stock_market)
           corporations = super
           removed_corporation = select(OPTIONAL_PUBLIC)
           to_close = corporations.find { |corp| corp.name == removed_corporation }
           corporations.delete(to_close)
           @log << "Removed corporation: #{to_close.full_name} (#{to_close.name})"
-          corporations
+
+          return corporations unless oscarian_era
+
+          # Make all corporations full cap
+          corporations.map do |c|
+            c.capitalization = :full
+            c
+          end
         end
 
         def init_companies(players)
@@ -745,6 +765,15 @@ module Engine
           end
 
           companies - @removed_companies
+        end
+
+        def game_phases
+          return self.class::PHASES unless oscarian_era
+
+          self.class::PHASES.map do |p|
+            p[:status] -= ['fullcap']
+            p
+          end
         end
 
         def select(collection)
@@ -834,8 +863,16 @@ module Engine
 
           @pending_nationalization = false
 
-          @e_train_bought = false
           @sj_tokens_passable = false
+
+          @stockholm_tile_gray ||= @tiles.find { |t| t.name == '131' }
+
+          return unless oscarian_era
+
+          # Remove full cap event as all corporations are full cap
+          @depot.trains.each do |t|
+            t.events = t.events.reject { |e| e[:type] == 'full_cap' }
+          end
         end
 
         def cert_limit
@@ -893,7 +930,7 @@ module Engine
 
           main_line_icon_name = main_line_icon.name
           @log << "Main line #{MAIN_LINE_DESCRIPTION[main_line_icon_name]} was "\
-            "#{main_line_completed?(main_line_icon_name) ? 'completed!' : 'improved'}"
+                  "#{main_line_completed?(main_line_icon_name) ? 'completed!' : 'improved'}"
           remove_icon(action.hex, [main_line_icon_name])
         end
 
@@ -905,12 +942,31 @@ module Engine
           return [] unless entity.corporation?
           return [] unless round.steps.find { |step| step.instance_of?(G18SJ::Step::IssueShares) }.active?
 
+          type = entity.share_price.type
+
           share_price = stock_market.find_share_price(entity, :right).price
+          share_price = 0 if brown?(type)
+          share_price /= 2 if orange?(type) || yellow?(type)
+
+          bundle_max_size = 1
+          bundle_max_size = 10 if orange?(type) || yellow?(type)
 
           bundles_for_corporation(share_pool, entity)
             .each { |bundle| bundle.share_price = share_price }
-            .reject { |bundle| bundle.shares.size > 1 }
+            .reject { |bundle| bundle.shares.size > bundle_max_size }
             .reject { |bundle| entity.cash < bundle.price }
+        end
+
+        def orange?(type)
+          type == :unlimited
+        end
+
+        def yellow?(type)
+          type == :no_cert_limit
+        end
+
+        def brown?(type)
+          type == :multiple_buy
         end
 
         def revenue_for(route, stops)
@@ -919,8 +975,7 @@ module Engine
           icons = visited_icons(stops)
 
           [lapplandspilen_bonus(icons),
-           stockholm_goteborg_bonus(icons, stops),
-           stockholm_malmo_bonus(icons, stops),
+           east_west_bonus(icons, stops),
            bergslagen_bonus(icons),
            orefields_bonus(icons),
            sveabolaget_bonus(route),
@@ -944,8 +999,7 @@ module Engine
           icons = visited_icons(stops)
 
           [lapplandspilen_bonus(icons),
-           stockholm_goteborg_bonus(icons, stops),
-           stockholm_malmo_bonus(icons, stops),
+           east_west_bonus(icons, stops),
            bergslagen_bonus(icons),
            orefields_bonus(icons),
            sveabolaget_bonus(route),
@@ -971,14 +1025,14 @@ module Engine
         # This is a workaround that is not perfect in case a
         # corporation has E train + other train, but very unlikely
         def make_sj_tokens_passable_for_electric_trains(entity)
-          return if !@e_train_bought || !owns_electric_train?(entity)
+          return unless owns_electric_train?(entity)
 
           @sj.tokens.each { |t| t.type = :neutral }
           @sj_tokens_passable = true
         end
 
         def make_sj_tokens_impassable
-          return if !@e_train_bought || !@sj_tokens_passable
+          return unless @sj_tokens_passable
 
           @sj.tokens.each { |t| t.type = :blocking }
           @sj_tokens_passable = false
@@ -1029,12 +1083,18 @@ module Engine
 
         # If there are 2 station markers on the same city the
         # merged corporation must remove one and return it to its charter.
+        # Return number of duplications.
         def remove_duplicate_tokens(target, merged)
           merged_tokens = merged.tokens.map(&:city).compact
+          duplicate_count = 0
           target.tokens.each do |token|
             city = token.city
-            token.remove! if merged_tokens.include?(city)
+            if merged_tokens.include?(city)
+              token.remove!
+              duplicate_count += 1
+            end
           end
+          duplicate_count
         end
 
         def remove_reservation(merged)
@@ -1060,8 +1120,29 @@ module Engine
           end
         end
 
-        def buy_electric_train
-          @e_train_bought = true
+        def entity_can_use_company?(entity, company)
+          return false if company == nydqvist_och_holm && company.owner != entity
+
+          super
+        end
+
+        def upgrades_to?(from, to, _special = false, selected_company: nil)
+          # Handle upgrade to Stockholm gray tile
+          return to.name == '131' if from.color == :brown && from.hex.name == 'G10'
+          return false if to.name == '131'
+
+          super
+        end
+
+        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
+          upgrades = super
+
+          return upgrades unless tile_manifest
+
+          # Handle Stockholm tile manifest
+          upgrades |= [@stockholm_tile_gray] if @stockholm_tile_gray && tile.name == '299SJ'
+
+          upgrades
         end
 
         private
@@ -1097,6 +1178,8 @@ module Engine
 
         def current_cert_limit
           available_corporations = @corporations.count { |c| !c.closed? }
+          available_corporations = 10 if available_corporations > 10
+
           certs_per_player = CERT_LIMITS[available_corporations]
           raise GameError, "No cert limit defined for #{available_corporations} corporations" unless certs_per_player
 
@@ -1187,25 +1270,13 @@ module Engine
           bonus
         end
 
-        def stockholm_goteborg_bonus(icons, stops)
+        def east_west_bonus(icons, stops)
           bonus = { revenue: 0 }
           hexes = stops.map { |s| s.hex.id }
 
-          if icons.include?('O') && icons.include?('V') && hexes.include?('G10') && hexes.include?('A10')
+          if icons.include?('O') && icons.include?('V') && hexes.include?('H9') && (hexes.include?('A2') || hexes.include?('A10'))
             bonus[:revenue] += 120
-            bonus[:description] = 'Ö/V[S/G]'
-          end
-
-          bonus
-        end
-
-        def stockholm_malmo_bonus(icons, stops)
-          bonus = { revenue: 0 }
-          hexes = stops.map { |s| s.hex.id }
-
-          if icons.include?('O') && icons.include?('V') && hexes.include?('G10') && hexes.include?('A2')
-            bonus[:revenue] += 100
-            bonus[:description] = 'Ö/V[S/M]'
+            bonus[:description] = 'Ö/V'
           end
 
           bonus
@@ -1219,7 +1290,7 @@ module Engine
             bonus[:description] = 'b/B'
           end
           if icons.include?('B') && icons.count('b_lower_case') > 1
-            bonus[:revenue] += 80
+            bonus[:revenue] += 100
             bonus[:description] = 'b/B/b'
           end
 
@@ -1316,7 +1387,7 @@ module Engine
 
         def friendly_city?(route, stop)
           corp = route.train.owner
-          tokened_hex_by(stop.hex, corp) || tokened_hex_by(stop.hex, @sj)
+          tokened_hex_by(stop.hex, corp)
         end
 
         def tokened_hex_by(hex, corporation)

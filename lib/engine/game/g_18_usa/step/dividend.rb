@@ -22,7 +22,7 @@ module Engine
             times = 2 if revenue >= price * 1
             times = 3 if revenue >= price * 1.5
             times = 4 if revenue >= price * 2
-            if times.positive?
+            if times&.positive?
               { share_direction: :right, share_times: times }
             else
               {}

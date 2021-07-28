@@ -183,9 +183,7 @@ module Engine
           end
 
           def enter_exchange_pairs_state
-            if !@players || @players.empty?
-              @players = @round.entities.rotate(@round.entities.index(@round.acting_player))
-            end
+            @players = @round.entities.rotate(@round.entities.index(@round.acting_player)) if !@players || @players.empty?
 
             while (player = @players.first)
               hide_odd_share(player)
@@ -201,9 +199,7 @@ module Engine
           end
 
           def enter_exchange_singles_state
-            if !@players || @players.empty?
-              @players = @round.entities.rotate(@round.entities.index(@round.acting_player) + 1)
-            end
+            @players = @round.entities.rotate(@round.entities.index(@round.acting_player) + 1) if !@players || @players.empty?
 
             while @players.any?
               exchange_singles(@players.first)
@@ -501,8 +497,6 @@ module Engine
           def complete_merger
             (@discard.shares_of(@merger) + @used.shares_of(@merger)).each { |s| s.transfer(s.corporation) }
             (@discard.shares_of(@target) + @used.shares_of(@target)).each { |s| s.transfer(s.corporation) }
-            @merger.close!
-            @target.close!
 
             # Selling either corporation this round constitutes as a sale of the system
             players = @round.entities
@@ -519,11 +513,19 @@ module Engine
               return
             end
 
-            unless @system.floated?
+            # Fix-up treasury for the case where one of the merging corporations wasn't floated
+            if !@merger.floated? || !@target.floated?
               @system.spend(@system.cash, @game.bank)
-              @log << "#{@system.name} not yet floated, discarding treasury."
+              if @system.floated?
+                @game.bank.spend(@system.share_price.price * 10, @system)
+                @log << "Setting #{@system.name}'s treasury to 10 times market price"
+              else
+                @log << "#{@system.name} not yet floated, discarding treasury"
+              end
             end
 
+            @merger.close!
+            @target.close!
             reset_merger_step
           end
 

@@ -30,7 +30,7 @@ module View
             end
 
             it 'counts the region every time it appears in the keys for '\
-              'region_weights' do
+               'region_weights' do
               region_weights = { [0, 1] => 2, [1] => 0.5 }
 
               actual = subject.combined_cost(region_weights)

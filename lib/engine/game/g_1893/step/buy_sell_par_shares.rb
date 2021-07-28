@@ -22,6 +22,10 @@ module Engine
             return [] if first_sr_passed?(entity)
 
             result = super
+            # This happens if a player can buy EVA from other player,
+            # but nothing else - ignore that case and just skip player
+            result = [] if result == %w[buy_company pass]
+
             result.concat(FIRST_SR_ACTIONS) if can_buy_company?(entity)
             result.concat(EXCHANGE_ACTIONS) if can_exchange?(entity)
             result.concat(SELL_COMPANY_ACTIONS) if can_sell_any_companies?(entity)
@@ -31,7 +35,7 @@ module Engine
           end
 
           def can_buy_company?(player, company = nil)
-            return false if first_sr_passed?(player)
+            return false if first_sr_passed?(player) || @game.num_certs(player) >= @game.cert_limit
             return buyable_company?(player, company) if company
 
             @game.buyable_companies.any? { |c| buyable_company?(player, c) }
@@ -340,6 +344,17 @@ module Engine
 
           def sell_price(company)
             company.value
+          end
+
+          # Override this to let auto buy always buy from market
+          # as there are no shares in IPO after parring
+          def from_market?(_program)
+            true
+          end
+
+          def purchasable_companies(entity = nil)
+            entity ||= @game.current_entity
+            @game.purchasable_companies(entity)
           end
         end
       end

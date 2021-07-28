@@ -82,9 +82,7 @@ module Engine
             company = action.entity
             player = company.owner
             bundle = action.bundle
-            unless can_exchange?(company, bundle)
-              raise GameError, "Cannot exchange #{company.id} for #{bundle.corporation.id}"
-            end
+            raise GameError, "Cannot exchange #{company.id} for #{bundle.corporation.id}" unless can_exchange?(company, bundle)
 
             bundle.share_price = 0
             @game.share_pool.buy_shares(player, bundle, exchange: company, exchange_price: 0)

@@ -29,13 +29,13 @@ module Engine
       @used = false
     end
 
-    def swap!(other_token, check_tokenable: true)
+    def swap!(other_token, check_tokenable: true, free: true)
       city = @city
       remove!
       corporation = other_token.corporation
-      return if check_tokenable && !city.tokenable?(corporation, free: true, tokens: [other_token])
+      return if check_tokenable && !city.tokenable?(corporation, free: free, tokens: [other_token])
 
-      city.place_token(corporation, other_token, check_tokenable: check_tokenable)
+      city.place_token(corporation, other_token, free: free, check_tokenable: check_tokenable)
     end
 
     def move!(new_city)

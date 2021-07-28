@@ -43,9 +43,12 @@ module Engine
 
           def process_buy_train(action)
             entity ||= action.entity
+            is_discarded = @game.depot.discarded.include?(action.train)
             old_train = action.train.owned_by_corporation?
 
             super
+
+            return if is_discarded
 
             if !@round.any_train_brought && !old_train
               prev = entity.share_price.price
@@ -91,9 +94,7 @@ module Engine
             return unless cost.positive?
             return unless cost > entity.cash
 
-            if sellable_shares?(entity)
-              raise GameError, "#{entity.name} still need to sell shares before a loan can be granted"
-            end
+            raise GameError, "#{entity.name} still need to sell shares before a loan can be granted" if sellable_shares?(entity)
 
             difference = (cost - entity.cash)
             @game.take_player_loan(entity, difference)

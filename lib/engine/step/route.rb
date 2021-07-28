@@ -21,8 +21,8 @@ module Engine
         return super unless current_entity.receivership?
 
         "#{current_entity.name} is in receivership (it has no president). Most of its "\
-        'actions are automated, but it must have a player manually run its trains. '\
-        "Please enter the best route you see for #{current_entity.name}."
+          'actions are automated, but it must have a player manually run its trains. '\
+          "Please enter the best route you see for #{current_entity.name}."
       end
 
       def process_run_routes(action)

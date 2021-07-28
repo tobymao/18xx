@@ -8,8 +8,6 @@ module BuyTrainAction
 
     @game.perform_nationalization if @game.pending_nationalization?
 
-    @game.buy_electric_train if action.train.name == 'E'
-
     return if !(exchange = action.exchange) || exchange.name == '4'
 
     @log << "The exchanged #{exchange.name} is removed from game"

@@ -113,7 +113,7 @@ module Engine
             @game.stock_market.move(corporation, *share_price.coordinates)
 
             @log << "#{corporation.name} merges with #{target.name} "\
-              "at share price #{@game.format_currency(price)} receiving #{receiving.join(', ')}"
+                    "at share price #{@game.format_currency(price)} receiving #{receiving.join(', ')}"
 
             owner = corporation.owner
             target_owner = target.owner
@@ -124,7 +124,7 @@ module Engine
                 owner.spend(price, corporation)
                 share = corporation.shares[0]
                 @log << "#{owner.name} buys a #{share.percent}% share for #{@game.format_currency(price)} "\
-                  "and receives the president's share"
+                        "and receives the president's share"
                 @game.share_pool.buy_shares(target_owner, share.to_bundle, exchange: :free)
               end
             else

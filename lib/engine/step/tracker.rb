@@ -91,9 +91,7 @@ module Engine
           next if company.closed?
           next unless (ability = @game.abilities(company, :blocks_hexes))
 
-          if @game.hex_blocked_by_ability?(entity, ability, hex)
-            raise GameError, "#{hex.id} is blocked by #{company.name}"
-          end
+          raise GameError, "#{hex.id} is blocked by #{company.name}" if @game.hex_blocked_by_ability?(entity, ability, hex)
         end
 
         tile.rotate!(rotation)
@@ -190,7 +188,7 @@ module Engine
         income = ability.income
         @game.bank.spend(income, company.owner)
         @log << "#{company.owner.name} earns #{@game.format_currency(income)}"\
-            " for the tile built by #{company.name}"
+                " for the tile built by #{company.name}"
       end
 
       def pay_terrain_tile_income(company, ability, terrain, entity, spender)
@@ -201,7 +199,7 @@ module Engine
         income = ability.income * terrain.count { |t| t == ability.terrain }
         @game.bank.spend(income, company.owner)
         @log << "#{company.owner.name} earns #{@game.format_currency(income)}"\
-          " for the #{ability.terrain} tile built by #{company.name}"
+                " for the #{ability.terrain} tile built by #{company.name}"
       end
 
       def update_tile_lists(tile, old_tile)
@@ -213,11 +211,11 @@ module Engine
         spender.spend(cost, @game.bank) if cost.positive?
 
         @log << "#{spender.name}"\
-          "#{spender == entity || !entity.company? ? '' : " (#{entity.sym})"}"\
-          "#{cost.zero? ? '' : " spends #{@game.format_currency(cost)} and"}"\
-          " lays tile ##{tile.name}"\
-          " with rotation #{rotation} on #{hex.name}"\
-          "#{tile.location_name.to_s.empty? ? '' : " (#{tile.location_name})"}"
+                "#{spender == entity || !entity.company? ? '' : " (#{entity.sym})"}"\
+                "#{cost.zero? ? '' : " spends #{@game.format_currency(cost)} and"}"\
+                " lays tile ##{tile.name}"\
+                " with rotation #{rotation} on #{hex.name}"\
+                "#{tile.location_name.to_s.empty? ? '' : " (#{tile.location_name})"}"
       end
 
       def update_token!(action, entity, tile, old_tile)
@@ -283,9 +281,10 @@ module Engine
 
         graph = @game.graph_for_entity(entity)
 
-        raise GameError, 'New track must override old one' if old_tile.city_towns.any? do |old_city|
-          new_tile.city_towns.none? { |new_city| (old_city.exits - new_city.exits).empty? }
-        end
+        raise GameError, 'New track must override old one' if !@game.class::ALLOW_REMOVING_TOWNS &&
+            old_tile.city_towns.any? do |old_city|
+              new_tile.city_towns.none? { |new_city| (old_city.exits - new_city.exits).empty? }
+            end
 
         old_paths = old_tile.paths
         changed_city = false

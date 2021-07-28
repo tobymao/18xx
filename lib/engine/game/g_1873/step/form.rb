@@ -99,7 +99,7 @@ module Engine
           def process_merge(action)
             mine = action.minor
             @log << "#{buyer.id} acquires #{mine.full_name} "\
-              "(face value #{@game.format_currency(@game.minor_info[mine][:value])})"
+                    "(face value #{@game.format_currency(@game.minor_info[mine][:value])})"
 
             # new corp gets formerly independent mines and their cash
             # machines and switchers stay with mines

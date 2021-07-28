@@ -88,10 +88,6 @@ def repair(game, original_actions, actions, broken_action)
     return
   elsif game.active_step.is_a?(Engine::Game::G18Ireland::Step::Merge)
     add_pass.call
-    return    
-  elsif game.active_step.is_a?(Engine::Game::G18Ireland::Step::BuySellParShares)
-    # After a bid, the turn order is wrong.
-    add_pass.call
     return
   elsif game.active_step.is_a?(Engine::Game::G1817::Step::Acquire) && broken_action['type'] != 'pass'
     add_pass.call

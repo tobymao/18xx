@@ -5,12 +5,14 @@ require_relative 'map'
 require_relative 'meta'
 require_relative '../base'
 require_relative '../company_price_50_to_150_percent'
+require_relative '../cities_plus_towns_route_distance_str'
 
 module Engine
   module Game
     module G18MS
       class Game < Game::Base
         include_meta(G18MS::Meta)
+        include CitiesPlusTownsRouteDistanceStr
         include Entities
         include Map
 
@@ -502,7 +504,7 @@ module Engine
           end
 
           @log << "-- Event: #{rusted_trains.map(&:name).uniq} trains rust " \
-            "( #{owners.map { |c, t| "#{c} x#{t}" }.join(', ')}) --"
+                  "( #{owners.map { |c, t| "#{c} x#{t}" }.join(', ')}) --"
           @log << "Corporations salvage #{format_currency(salvage)} from each rusted train"
         end
       end

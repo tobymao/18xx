@@ -15,11 +15,11 @@ module Engine
 
           def help
             'Buy or Pass. If you pass you cannot act more this round. This continues until just one ' \
-            'certificate remains after which regular share round commences. If everyone passes earlier ' \
-            'this means the game will skip the share round and go directly to operation round, and the ' \
-            'remaining privates will be auctioned out before the share round following the operation round. ' \
-            'Note! Only two lowest numbered remaining minors are available. If one is bought, the next one '\
-            'becomes available, and so on.'
+              'certificate remains after which regular share round commences. If everyone passes earlier ' \
+              'this means the game will skip the share round and go directly to operation round, and the ' \
+              'remaining privates will be auctioned out before the share round following the operation round. ' \
+              'Note! Only two lowest numbered remaining minors are available. If one is bought, the next one '\
+              'becomes available, and so on.'
           end
 
           def setup
@@ -80,6 +80,10 @@ module Engine
 
           def min_bid(entity)
             entity.value
+          end
+
+          def min_increment
+            0
           end
 
           def max_place_bid(_player, _object)

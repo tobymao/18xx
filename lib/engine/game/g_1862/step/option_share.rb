@@ -40,11 +40,11 @@ module Engine
               @game.bank.spend(pending_option[:sell_price], entity)
               @game.transfer_share(share, @game.share_pool)
               @log << "#{entity.name} sells #{pending_option[:share].corporation.name} #{pending_option[:percent]}% "\
-                "option share for #{@game.format_currency(pending_option[:sell_price])}"
+                      "option share for #{@game.format_currency(pending_option[:sell_price])}"
             else
               entity.spend(pending_option[:redeem_price], @game.bank)
               @log << "#{entity.name} redeems #{pending_option[:share].corporation.name} #{pending_option[:percent]}% "\
-                "option share for #{@game.format_currency(pending_option[:redeem_price])}"
+                      "option share for #{@game.format_currency(pending_option[:redeem_price])}"
             end
 
             @round.pending_options.shift
@@ -66,9 +66,9 @@ module Engine
             share_str = pending_option[:percent] > 10 ? "(Director's certificate) " : ''
             {
               sell: "Sell #{pending_option[:share].corporation.name} #{percent_str}option share #{share_str}"\
-                "for #{@game.format_currency(pending_option[:sell_price])}",
+                    "for #{@game.format_currency(pending_option[:sell_price])}",
               redeem: "Redeem (buy) #{pending_option[:share].corporation.name} #{percent_str}option share #{share_str}"\
-                "for #{@game.format_currency(pending_option[:redeem_price])}",
+                      "for #{@game.format_currency(pending_option[:redeem_price])}",
             }
           end
 

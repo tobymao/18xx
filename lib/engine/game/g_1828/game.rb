@@ -5,12 +5,14 @@ require_relative '../base'
 require_relative 'stock_market'
 require_relative 'system'
 require_relative 'shell'
+require_relative '../cities_plus_towns_route_distance_str'
 
 module Engine
   module Game
     module G1828
       class Game < Game::Base
         include_meta(G1828::Meta)
+        include CitiesPlusTownsRouteDistanceStr
 
         register_colors(hanBlue: '#446CCF',
                         steelBlue: '#4682B4',
@@ -867,7 +869,7 @@ module Engine
           },
           yellow: {
             ['C15'] => 'city=revenue:20;path=a:0,b:_0;path=a:1,b:_0;path=a:4,b:_0;' \
-                      'upgrade=cost:80,terrain:water;border=edge:5,type:impassable',
+                       'upgrade=cost:80,terrain:water;border=edge:5,type:impassable',
             %w[D14 E9] =>
             'city=revenue:0;city=revenue:0;label=OO;upgrade=cost:80,terrain:water',
             %w[E15 H22] => 'city=revenue:0;city=revenue:0;label=OO',

@@ -24,7 +24,7 @@ module Engine
 
             route = routes.find { |r| r.train == train }
             "Choose #{train.name}'s dividend (#{@game.format_currency(route.revenue)}) if "\
-            'this is to be different from the other trains'
+              'this is to be different from the other trains'
           end
 
           def choices

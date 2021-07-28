@@ -175,7 +175,7 @@ module Engine
             return unless winner
 
             @game.log << "#{winner.entity.name} wins the auction of #{winner.corporation.name}"\
-                    " for #{@game.format_currency(winner.price)}"
+                         " for #{@game.format_currency(winner.price)}"
             @winner = winner
           end
 
@@ -192,7 +192,7 @@ module Engine
             end
 
             @game.log << "Bank liquidates #{acquired_corp.name} for $0,"\
-            " removing tokens (#{tokens.size}: hexes #{tokens.compact})"
+                         " removing tokens (#{tokens.size}: hexes #{tokens.compact})"
 
             settle_president(acquired_corp)
           end
@@ -249,10 +249,10 @@ module Engine
               charter_tokens = tokens.size - tokens.compact.size
               receiving << 'and ' unless receiving.empty?
               receiving << "tokens (#{tokens.size}: #{tokens.compact.size} on hexes #{tokens.compact}"\
-              "#{charter_tokens.positive? ? " & #{charter_tokens} on the charter" : ''})"
+                           "#{charter_tokens.positive? ? " & #{charter_tokens} on the charter" : ''})"
             end
             @game.log << "#{buyer.name} acquires #{acquired_corp.name} "\
-              "receiving #{receiving.join(', ')}"
+                         "receiving #{receiving.join(', ')}"
 
             # Step 7, take mandatory loans and pay for the bid
             # Take mandatory loans automatically, then allow the player to take the optional loans if they can do.
@@ -286,7 +286,7 @@ module Engine
             # Player now chooses to pay off remaining loans
             if can_payoff?(@buyer)
               @log << "#{acquired_corp.name} has #{@unpaid_loans} outstanding loan, " \
-              "if unpaid will reduce #{@buyer.name} share price"
+                      "if unpaid will reduce #{@buyer.name} share price"
               return
             end
 
@@ -328,7 +328,7 @@ module Engine
               elsif loan_value.positive?
                 if president != @game.share_pool && @buyer
                   @game.log << "#{@buyer.name} settles #{acquired_corp.name} loans for "\
-                  "#{@game.format_currency(loan_value)}"
+                               "#{@game.format_currency(loan_value)}"
                 end
                 @shareholder_cash = @liquidation_cash - loan_value
               else
@@ -472,7 +472,7 @@ module Engine
             raise GameError, "Can only offer up #{@offer.name}" unless corporation == @offer
 
             @game.log << "#{corporation.name} is offered at auction, buying corporation will receive "\
-              "#{@game.format_currency(treasury_share_compensation(corporation))} for treasury shares"
+                         "#{@game.format_currency(treasury_share_compensation(corporation))} for treasury shares"
             @offer = nil
             auction_entity(corporation)
           end
@@ -527,7 +527,7 @@ module Engine
               corporation.loans.clear
 
               @game.log << "#{corporation.name} is being liquidated, bank offers $0, corporation had"\
-              " #{@game.format_currency(@liquidation_cash)} and #{@liquidation_loans.size} loans"
+                           " #{@game.format_currency(@liquidation_cash)} and #{@liquidation_loans.size} loans"
               @mode = :liquidate
               auction_entity(corporation)
               :liquidate
@@ -546,11 +546,11 @@ module Engine
 
               if bidders.any?
                 @game.log << "#{corporation.name} may be offered for sale for "\
-                  "#{@game.format_currency(starting_bid(corporation))}"
+                             "#{@game.format_currency(starting_bid(corporation))}"
                 @offer = corporation
               else
                 @game.log << "#{corporation.name} cannot be bought at "\
-                  "#{@game.format_currency(starting_bid(corporation))}, skipping"
+                             "#{@game.format_currency(starting_bid(corporation))}, skipping"
                 @round.offering.delete(corporation)
                 setup_auction
               end

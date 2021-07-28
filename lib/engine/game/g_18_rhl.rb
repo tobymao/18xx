@@ -2,7 +2,7 @@
 
 module Engine
   module Game
-    module G1830Plus
+    module G18Rhl
     end
   end
 end

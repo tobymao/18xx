@@ -169,14 +169,9 @@ module Engine
           'I3' => [1, 4],
         }.freeze
 
-        CITY_HOME_HEXES = {
-          'G' => %w[A17 I11],
-          'V' => %w[A17 G3],
-          'D' => %w[A17 F24],
-          'W' => %w[I1 F24],
-        }.freeze
-
         RED_TILES = %w[D20 E19 E21].freeze
+
+        NO_TOKEN_REMOVE_HEX = %w[I1 A17 I11 F24].freeze
 
         TILES_FIXED_ROTATION = %w[L30a L30b L31a L31b].freeze
         PURPLE_SPECIAL_TILES = {

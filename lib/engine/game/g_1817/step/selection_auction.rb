@@ -24,9 +24,7 @@ module Engine
           def active_entities
             if @auctioning
               winning_bid = highest_bid(@auctioning)
-              if winning_bid
-                return [@active_bidders[(@active_bidders.index(winning_bid.entity) + 1) % @active_bidders.size]]
-              end
+              return [@active_bidders[(@active_bidders.index(winning_bid.entity) + 1) % @active_bidders.size]] if winning_bid
             end
 
             super
@@ -110,7 +108,7 @@ module Engine
             price = bid.price
 
             @log << "#{entity.name} bids #{@game.format_currency(price)} for #{bid.company.name},"\
-            " bank will provide #{@game.format_currency(seed_money_provided(company, price))}"
+                    " bank will provide #{@game.format_currency(seed_money_provided(company, price))}"
           end
 
           def seed_money_provided(company, price)

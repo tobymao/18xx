@@ -103,14 +103,14 @@ module Engine
             'count' => 1,
             'color' => 'gray',
             'code' => 'city=revenue:60,slots:3;label=OO;'\
-            'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
+                      'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
           },
           'OO2' => {
             'count' => 1,
             'color' => 'gray',
             'code' => 'city=revenue:70,loc:0;city=revenue:70,loc:3;label=OO;'\
-            'path=a:0,b:_0;path=a:1,b:_0;path=a:4,b:_0;'\
-            'path=a:2,b:_1;path=a:3,b:_1;path=a:5,b:_1',
+                      'path=a:0,b:_0;path=a:1,b:_0;path=a:4,b:_0;'\
+                      'path=a:2,b:_1;path=a:3,b:_1;path=a:5,b:_1',
 
           },
           # NNNY
@@ -446,6 +446,7 @@ module Engine
                   { name: '+4', distance: 0, price: 100, available_on: '6', num: 2 },
                   { name: '+5', distance: 0, price: 125, available_on: '8', num: 1 }].freeze
 
+        EQUATOR_HEXES = %w[C16 G16 I16].freeze
         COMPANIES = [
           {
             name: 'Platinum Credit Card',
@@ -459,7 +460,7 @@ module Engine
             value: 20,
             revenue: 5,
             desc: 'The owning corporation gets 3 mountain Engineers and 1 mining Right. Other corporations can buy '\
-            'mining Rights from this corporation for 50c',
+                  'mining Rights from this corporation for 50c',
             sym: 'B',
           },
           {
@@ -467,15 +468,36 @@ module Engine
             value: 30,
             revenue: 10,
             desc: 'The owning corporation may place the Farm (F) tile on an equitorial hex as a bonus disconnected '\
-            'tile lay. In exchange for closing this private the corporation may token it for free',
+                  'tile lay. In exchange for closing this private the corporation may token it for free',
             sym: 'C',
+            abilities: [
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                free: false,
+                hexes: EQUATOR_HEXES,
+                tiles: %w[FARM1],
+                when: 'track',
+                count: 1,
+              },
+              {
+                type: 'token',
+                description: 'Token in the Farm tile for free',
+                hexes: EQUATOR_HEXES,
+                count: 1,
+                price: 0,
+                teleport_price: 0,
+                extra_action: true,
+                from_owner: true,
+              },
+            ],
           },
           {
             name: 'Bob\'s Better Bridges',
             value: 40,
             revenue: 10,
             desc: 'This private comes with 2 water Engineers and 2 Harbor Rights. Other corporations can buy harbor '\
-            'Rights from this corporation for 50c',
+                  'Rights from this corporation for 50c',
             sym: 'D',
           },
           {
@@ -483,7 +505,7 @@ module Engine
             value: 50,
             revenue: 10,
             desc: 'The owning corporation may close this company to upgrade the NNNY hex/tile for free and the owning '\
-            'corporation may also place a token on the NNNY hex for free, even without a connection',
+                  'corporation may also place a token on the NNNY hex for free, even without a connection',
             sym: 'E',
           },
           {
@@ -491,8 +513,8 @@ module Engine
             value: 60,
             revenue: 15,
             desc: 'This private comes with 1 water Engineer and 2 Harbor Rights. When bought by a corporation, '\
-            'the owning corporation may lay a second harbor marker on an harbor hex, doubling the harbor right bonus '\
-            'for that hex. Other coproraitons can buy harbor rights from this corporation for 50c',
+                  'the owning corporation may lay a second harbor marker on an harbor hex, doubling the harbor right bonus '\
+                  'for that hex. Other coproraitons can buy harbor rights from this corporation for 50c',
             sym: 'F',
           },
           {
@@ -500,16 +522,37 @@ module Engine
             value: 70,
             revenue: 15,
             desc: 'The owning corporation may place the Capitol (C) tile on an equitorial hex as a bonus disconnected '\
-            'tile lay. In exchange for closing this private the corporation may token it for free',
+                  'tile lay. In exchange for closing this private the corporation may token it for free',
             sym: 'G',
+            abilities: [
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                free: false,
+                hexes: EQUATOR_HEXES,
+                tiles: %w[CAP1],
+                when: 'track',
+                count: 1,
+              },
+              {
+                type: 'token',
+                description: 'Token in the Captiol tile for free',
+                hexes: EQUATOR_HEXES,
+                count: 1,
+                price: 0,
+                teleport_price: 0,
+                extra_action: true,
+                from_owner: true,
+              },
+            ],
           },
           {
             name: 'Mole People',
             value: 80,
             revenue: 20,
             desc: 'The private comes with 1 mining Engineer and 2 mining Rights. THe owning corporation may close '\
-            'this private to place a mining token in an empty, connected station as a neutral token. Other '\
-            'coprorations can buy mining rights from this corproation for 50c',
+                  'this private to place a mining token in an empty, connected station as a neutral token. Other '\
+                  'coprorations can buy mining rights from this corproation for 50c',
             sym: 'H',
           },
           {
@@ -517,18 +560,39 @@ module Engine
             value: 90,
             revenue: 20,
             desc: 'The owning corporation may place the Space Elevator (SE) tile on an equitorial hex as a bonus '\
-            'disconnected tile lay. In exchange for closing this private the corporation may token it for free',
+                  'disconnected tile lay. In exchange for closing this private the corporation may token it for free',
             sym: 'I',
+            abilities: [
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                free: false,
+                hexes: EQUATOR_HEXES,
+                tiles: %w[SE1],
+                when: 'track',
+                count: 1,
+              },
+              {
+                type: 'token',
+                description: 'Token in the Space Elevator tile for free',
+                hexes: EQUATOR_HEXES,
+                count: 1,
+                price: 0,
+                teleport_price: 0,
+                extra_action: true,
+                from_owner: true,
+              },
+            ],
           },
           {
             name: 'Protoype Maglev',
             value: 100,
             revenue: 25,
             desc: 'Comes with a 2T. The 2T train may be sold at any time (including SR) to any corporation '\
-            '(whose president\'s share has been bought) for any price from 1c up to 100c with consent from the '\
-            'buyer and seller. The buying company may offer IPO shares as part of the sale counting at market price '\
-            'with no monetary compensation to the selling corporation. The private is closed at the '\
-            'end of the initial private auction',
+                  '(whose president\'s share has been bought) for any price from 1c up to 100c with consent from the '\
+                  'buyer and seller. The buying company may offer IPO shares as part of the sale counting at market price '\
+                  'with no monetary compensation to the selling corporation. The private is closed at the '\
+                  'end of the initial private auction',
             sym: 'J',
           },
           {
@@ -536,7 +600,7 @@ module Engine
             value: 125,
             revenue: 30,
             desc: 'This private can be exchanged as a buy action during any stock round to buy an IPO share of a '\
-            'started corporation for free, with no compensation to the corporation',
+                  'started corporation for free, with no compensation to the corporation',
             sym: 'K',
           },
           {
@@ -544,9 +608,9 @@ module Engine
             value: 150,
             revenue: 35,
             desc: 'The owning corporation can close this company to repalce an existing token with a token of the '\
-            'corporation, with exceptions. This private may not be sold to a corporation. In a stock round this '\
-            'private can be exchanged to buy the presidency of a corporation with this private as '\
-            'the only compensation to the corporation',
+                  'corporation, with exceptions. This private may not be sold to a corporation. In a stock round this '\
+                  'private can be exchanged to buy the presidency of a corporation with this private as '\
+                  'the only compensation to the corporation',
             sym: 'L',
           },
         ].freeze
@@ -804,10 +868,10 @@ module Engine
           },
           red: {
             ['C12'] => 'offboard=revenue:yellow_30|brown_60|black_70;path=a:5,b:_0,terminal:1;'\
-            'path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;path=a:2,b:_0,terminal:1;path=a:3,b:_0,terminal:1;'\
-            'path=a:4,b:_0,terminal:1',
+                       'path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;path=a:2,b:_0,terminal:1;path=a:3,b:_0,terminal:1;'\
+                       'path=a:4,b:_0,terminal:1',
             ['I10'] => 'offboard=revenue:yellow_40|brown_30|black_20;path=a:5,b:_0,terminal:1;'\
-            'path=a:1,b:_0,terminal:1;path=a:3,b:_0,terminal:1;icon=image:18_ka/mine,sticky:1',
+                       'path=a:1,b:_0,terminal:1;path=a:3,b:_0,terminal:1;icon=image:18_ka/mine,sticky:1',
             ['D5'] =>
             'offboard=revenue:yellow_30|brown_40|black_50,hide:1,groups:Arcadian Bay;'\
             'path=a:0,b:_0,terminal:1;path=a:5,b:_0,terminal:1;border=edge:4',
@@ -842,14 +906,14 @@ module Engine
             %w[H3 J3] => 'border=edge:1;border=edge:5',
             %w[K4 L5] => 'border=edge:2;border=edge:5',
             ['I4'] => 'town=revenue:yellow_10|brown_20|black_30;path=a:1,b:_0;path=a:0,b:_0;path=a:5,b:_0;'\
-            'border=edge:2;border=edge:4;icon=image:port,sticky:1',
+                      'border=edge:2;border=edge:4;icon=image:port,sticky:1',
             %w[M6] => 'border=edge:2;border=edge:0',
             ['M8'] => 'offboard=revenue:yellow_20|brown_30|black_40;path=a:1,b:_0,terminal:1;path=a:2,b:_0,terminal:1;'\
-            'border=edge:3;border=edge:5;icon=image:port,sticky:1',
+                      'border=edge:3;border=edge:5;icon=image:port,sticky:1',
             %w[N9] => 'border=edge:2;border=edge:0',
             %w[N11 N13] => 'border=edge:3;border=edge:0',
             ['N15'] => 'offboard=revenue:yellow_20|brown_30|black_60;path=a:1,b:_0,terminal:1;'\
-            'path=a:2,b:_0,terminal:1;border=edge:3;border=edge:0;icon=image:port,sticky:1',
+                       'path=a:2,b:_0,terminal:1;border=edge:3;border=edge:0;icon=image:port,sticky:1',
             ['N17'] => 'border=edge:3;border=edge:1;border=edge:0',
             ['M18'] => 'border=edge:4;border=edge:5',
             ['N19'] => 'border=edge:2;border=edge:3',
@@ -889,6 +953,30 @@ module Engine
 
         def wsrc
           raise GameError, "'wsrc' Should not be used"
+        end
+
+        def capitol_tile
+          tile_by_id('CAP1-0')
+        end
+
+        def capitol_blocked?
+          company_by_id('G').owned_by_player?
+        end
+
+        def farm_tile
+          tile_by_id('FARM1-0')
+        end
+
+        def farm_blocked?
+          company_by_id('C').owned_by_player?
+        end
+
+        def elevator_tile
+          tile_by_id('SE1-0')
+        end
+
+        def elevator_blocked?
+          company_by_id('I').owned_by_player?
         end
 
         def setup
@@ -972,7 +1060,7 @@ module Engine
             G1856::Step::Assign,
             G1856::Step::Loan,
             G1856::Step::SpecialTrack,
-            G1856::Step::SpecialToken,
+            G18KA::Step::SpecialToken,
             Engine::Step::BuyCompany,
             Engine::Step::HomeToken,
 
@@ -1017,6 +1105,37 @@ module Engine
           return super if (val % 1).zero?
 
           format('$%.1<val>c', val: val)
+        end
+
+        #
+        # Get all possible upgrades for a tile
+        # tile: The tile to be upgraded
+        # tile_manifest: true/false Is this being called from the tile manifest screen
+        #
+        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
+          upgrades = super
+          return upgrades unless tile_manifest
+
+          upgrades |= [farm_tile] if EQUATOR_HEXES.include?(tile.name) && !farm_blocked?
+          upgrades |= [elevator_tile] if EQUATOR_HEXES.include?(tile.name) && !elevator_blocked?
+          upgrades |= [capitol_tile] if EQUATOR_HEXES.include?(tile.name) && !capitol_blocked?
+
+          upgrades
+        end
+
+        #
+        # Get the currently possible upgrades for a tile
+        # from: Tile - Tile to upgrade from
+        # to: Tile - Tile to upgrade to
+        # special - ???
+        def upgrades_to?(from, to, _special = false, selected_company: nil)
+          if EQUATOR_HEXES.include?(from.name) && @phase.tiles.include?(:green)
+            return !farm_blocked? if to.name == farm_tile.name
+            return !elevator_blocked? if to.name == elevator_tile.name
+            return !capitol_blocked? if to.name == capitol_tile.name
+          end
+
+          super
         end
       end
     end

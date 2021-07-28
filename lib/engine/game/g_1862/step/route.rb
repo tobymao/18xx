@@ -33,7 +33,7 @@ module Engine
               subsidy = route.subsidy
               if subsidy.positive?
                 @log << "#{entity.name} runs a #{route.train.name} train for a subsidy of "\
-                  "#{@game.format_currency(subsidy)}"
+                        "#{@game.format_currency(subsidy)}"
               end
             end
           end

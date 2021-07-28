@@ -14,7 +14,7 @@ module Engine
               amount = corporation.num_market_shares * 2
               @game.bank.spend(amount, corporation, check_cash: false, check_positive: false)
               @log << "#{corporation.name} earns #{@game.format_currency(amount)}"\
-                " (#{corporation.num_market_shares} certs in the Market)"
+                      " (#{corporation.num_market_shares} certs in the Market)"
             end
           end
 

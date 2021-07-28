@@ -17,7 +17,7 @@ Layout/FirstHashElementLineBreak:
   Enabled: true
 
 Layout/LineLength:
-  Max: 120
+  Max: 130
   Exclude:
     - 'assets/js/view/svg_tokens/**/*'
 

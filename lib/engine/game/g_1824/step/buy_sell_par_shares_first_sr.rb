@@ -55,7 +55,7 @@ module Engine
           def buy_pre_staatsbahn(pre_staatsbahn, buyer, action)
             treasury = action.price
             @game.log << "Pre-Staatsbahn #{pre_staatsbahn.full_name} floats and receives "\
-              "#{@game.format_currency(treasury)} in treasury"
+                         "#{@game.format_currency(treasury)} in treasury"
             pre_staatsbahn.owner = buyer
             pre_staatsbahn.float!
             @game.bank.spend(treasury, pre_staatsbahn)
@@ -70,8 +70,8 @@ module Engine
             g_train = @game.depot.upcoming.select { |t| @game.g_train?(t) }.shift
             treasury = price - g_train.price
             @game.log << "#{coal_railway.name} floats and buys a #{g_train.name} train from the depot "\
-            "for #{@game.format_currency(g_train.price)} and remaining #{@game.format_currency(treasury)} "\
-            'is put in treasury'
+                         "for #{@game.format_currency(g_train.price)} and remaining #{@game.format_currency(treasury)} "\
+                         'is put in treasury'
             @game.buy_train(coal_railway, g_train, g_train.price)
 
             share_price = @game.stock_market.par_prices.find { |s| s.price == price / 2 }

@@ -5,12 +5,14 @@ require_relative 'share_pool'
 require_relative 'stock_market'
 require_relative '../base'
 require_relative '../company_price_50_to_150_percent'
+require_relative '../cities_plus_towns_route_distance_str'
 
 module Engine
   module Game
     module G18CO
       class Game < Game::Base
         include_meta(G18CO::Meta)
+        include CitiesPlusTownsRouteDistanceStr
 
         attr_accessor :presidents_choice
 
@@ -598,7 +600,7 @@ module Engine
             simple_logo: '18_co/CS.alt',
             tokens: [0, 40, 100, 100],
             coordinates: 'K17',
-            color: :"#232b2b",
+            color: :'#232b2b',
             abilities: [{ type: 'description', description: 'Par Group - C' }],
             reservation_color: nil,
           },
@@ -613,7 +615,7 @@ module Engine
             tokens: [0, 40],
             city: 2,
             coordinates: 'E15',
-            color: :"#82009c",
+            color: :'#82009c',
             abilities: [{ type: 'description', description: 'Par Group - C' }],
             reservation_color: nil,
           },
@@ -658,7 +660,7 @@ module Engine
             simple_logo: '18_co/ATSF.alt',
             tokens: [0, 40, 80, 100, 100, 100],
             coordinates: 'J26',
-            color: :"#000e4b",
+            color: :'#000e4b',
             abilities: [{ type: 'description', description: 'Par Group - B' }],
             reservation_color: nil,
           },
@@ -701,7 +703,7 @@ module Engine
             simple_logo: '18_co/UP.alt',
             tokens: [0, 40, 80, 100, 100, 100, 100, 100],
             coordinates: 'A17',
-            color: :"#ffffeb",
+            color: :'#ffffeb',
             text_color: 'black',
             abilities: [{ type: 'description', description: 'Par Group - A' }],
             reservation_color: nil,
@@ -717,7 +719,7 @@ module Engine
             shares: [20, 10, 20, 20, 10, 10, 10],
             tokens: [0, 40],
             coordinates: 'K5',
-            color: :"#db00c0",
+            color: :'#db00c0',
             abilities: [
               {
                 type: 'description',
@@ -1302,7 +1304,7 @@ module Engine
           slot = city.get_slot(corporation)
           tile.add_reservation!(corporation, slot ? corporation.city : nil, slot)
           log << "#{corporation.name} reserves station on #{tile.hex.name}"\
-            "#{slot ? '' : " which must be upgraded to place the #{corporation.name} home station"}"
+                 "#{slot ? '' : " which must be upgraded to place the #{corporation.name} home station"}"
         end
 
         def check_distance(route, visits)

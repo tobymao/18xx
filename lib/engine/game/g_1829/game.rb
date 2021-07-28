@@ -35,6 +35,18 @@ module Engine
         GRAY_CITIES = %w[51].freeze
         GREEN_CITIES = %w[12 13 14 15].freeze
         YELLOW_TOWNS = %w[1a 2a 3a 4a 55a].freeze
+        STOCK_PRICES = {
+          'LNWR' => 100,
+          'GWR' => 90,
+          'Mid' => 82,
+          'LSWR' => 76,
+          'GNR' => 71,
+          'LBSC' => 67,
+          'GER' => 64,
+          'GCR' => 61,
+          'LYR' => 58,
+          'SECR' => 56,
+        }.freeze
 
         CERT_LIMIT = { 3 => 18, 4 => 18, 5 => 17, 6 => 14, 7 => 12, 8 => 10, 9 => 9 }.freeze
 
@@ -75,44 +87,6 @@ module Engine
              345
              350],
         ].freeze
-        STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
-          init1: :red,
-          init2: :green,
-          init3: :orange,
-          init4: :brightgreen,
-          init5: :lightblue,
-          init6: :yellow,
-          init7: :orange,
-          init8: :red,
-          init9: :blue,
-          init10: :orange,
-        ).freeze
-
-        PAR_RANGE = {
-          init1: [100],
-          init2: [90],
-          init3: [82],
-          init4: [76],
-          init5: [71],
-          init6: [67],
-          init7: [64],
-          init8: [61],
-          init9: [58],
-          init10: [56],
-        }.freeze
-
-        MARKET_TEXT = {
-          init1: 'Startkurs LNWR',
-          init2: 'Startkurs GWR',
-          init3: 'Startkurs Midland',
-          init4: 'Startkurs LSWR',
-          init5: 'Startkurs GNR',
-          init6: 'Startkurs LBSC',
-          init7: 'Startkurs GER',
-          init8: 'Startkurs GCR',
-          init9: 'Startkurs L&YR',
-          init10: 'Startkurs SECR',
-        }.freeze
 
         PHASES = [{ name: '2', train_limit: 4, tiles: [:yellow], operating_rounds: 1 },
                   {
@@ -157,14 +131,6 @@ module Engine
 
         LAYOUT = :pointy
 
-        def setup
-          @corporations.each do |corporation|
-            if corporation.type == 'init1'
-              # here should be the fixed parprices per corporation
-            end
-          end
-        end
-
         def upgrades_to?(from, to, _special = false, selected_company: nil)
           return GREEN_CITIES.include?(to.name) if YELLOW_TOWNS.include? from.hex.tile.name
           return BROWN_CITIES.include?(to.name) if GREEN_CITIES.include? from.hex.tile.name
@@ -182,6 +148,16 @@ module Engine
           upgrades
         end
 
+        def setup
+          STOCK_PRICES.each do |corporation, price|
+            corporation = corporation_by_id(corporation)
+            @stock_market.set_par(corporation, @stock_market.par_prices.find do |p|
+              p.price == price
+            end)
+            corporation.ipoed = true
+          end
+        end
+
         def init_round
           G1829::Round::Draft.new(self,
                                   [G1829::Step::Draft],
@@ -189,13 +165,13 @@ module Engine
         end
 
         def stock_round
-          G1829::Round::Stock.new(self, [
+          Engine::Round::Stock.new(self, [
             Engine::Step::BuySellParShares,
           ])
         end
 
         def operating_round(round_num)
-          G1829::Round::Operating.new(self, [
+          Engine::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
             Engine::Step::HomeToken,

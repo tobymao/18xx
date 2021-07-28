@@ -85,9 +85,7 @@ module Engine
           def active_entities
             if @auctioning && !@active_bidders.empty?
               winning_bid = highest_bid(@auctioning)
-              if winning_bid
-                return [@active_bidders[(@active_bidders.index(winning_bid.entity) + 1) % @active_bidders.size]]
-              end
+              return [@active_bidders[(@active_bidders.index(winning_bid.entity) + 1) % @active_bidders.size]] if winning_bid
             end
 
             super
@@ -192,7 +190,7 @@ module Engine
 
             @game.buy_tram_corporation(buying_corporation, corporation)
             @log << "#{buying_corporation.name} wins the auction for #{corporation.name} "\
-                  "with a bid of #{@game.format_currency(price)}"
+                    "with a bid of #{@game.format_currency(price)}"
 
             @round.corporation_bought_minor << {
               entity: buying_corporation,

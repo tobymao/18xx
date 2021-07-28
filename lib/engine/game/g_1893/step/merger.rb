@@ -50,9 +50,9 @@ module Engine
           def help
             names = @game.round.names(@game.round.merger_candidates_for(@game.round.current_entity))
             "Vote Yes or No to merge #{names} into #{@game.round.merge_target.name}. " \
-            '50% Yes votes is required to execute merge. If No votes exceed 50% merge is postponed. ' \
-            'Note! Even if declined, there is an automatic merge at the start of the Merge Round following '\
-            'the next phase change.'
+              '50% Yes votes is required to execute merge. If No votes exceed 50% merge is postponed. ' \
+              'Note! Even if declined, there is an automatic merge at the start of the Merge Round following '\
+              'the next phase change.'
           end
 
           def active?

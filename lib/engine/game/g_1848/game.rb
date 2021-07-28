@@ -236,7 +236,7 @@ module Engine
             discount: 10,
             revenue: 10,
             desc: 'Owning Public Company or its Director may build one (1) free tile on a desert hex (marked by'\
-            ' a cactus icon). This power does not go away after a 5/5+ train is purchased.',
+                  ' a cactus icon). This power does not go away after a 5/5+ train is purchased.',
             abilities: [
               {
                 type: 'tile_discount',
@@ -261,7 +261,7 @@ module Engine
             discount: 30,
             revenue: 15,
             desc: 'The Tasmania tile can be placed by a Public Company on one of the dark blue hexes. This is in'\
-            " addition to the company's normal build that turn.",
+                  " addition to the company's normal build that turn.",
           },
           {
             sym: 'P4',
@@ -270,7 +270,7 @@ module Engine
             discount: 50,
             revenue: 20,
             desc: 'Owning Public Company or its Director may receive a one-time discount of £100 on the purchase'\
-            ' of a 2E (Ghan) train. This power does not go away after a 5/5+ train is purchased.',
+                  ' of a 2E (Ghan) train. This power does not go away after a 5/5+ train is purchased.',
           },
           {
             sym: 'P5',
@@ -287,7 +287,7 @@ module Engine
             discount: -230,
             revenue: 30,
             desc: "The owner receives a Director's Share share in the CAR, which must start at a par value of £100."\
-            ' Cannot be bought by a corporation',
+                  ' Cannot be bought by a corporation',
           },
         ].freeze
 

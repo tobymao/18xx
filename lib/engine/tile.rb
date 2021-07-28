@@ -18,7 +18,7 @@ module Engine
                   :name, :opposite, :reservations, :upgrades, :color
     attr_reader :borders, :cities, :edges, :junction, :nodes, :labels,
                 :parts, :preprinted, :rotation, :stops, :towns, :offboards, :blockers,
-                :city_towns, :unlimited, :stubs, :partitions, :id, :frame, :hidden
+                :city_towns, :unlimited, :stubs, :partitions, :id, :frame, :stripes, :hidden
 
     ALL_EDGES = [0, 1, 2, 3, 4, 5].freeze
 
@@ -29,8 +29,22 @@ module Engine
         color = :yellow
       elsif (code = GREEN[name])
         color = :green
+      elsif (code = GREENBROWN[name])
+        color = :green
+        code = if code.size.positive?
+                 'stripes=color:brown;' + code
+               else
+                 'stripes=color:brown'
+               end
       elsif (code = BROWN[name])
         color = :brown
+      elsif (code = BROWNGRAY[name])
+        color = :brown
+        code = if code.size.positive?
+                 'stripes=color:gray;' + code
+               else
+                 'stripes=color:gray'
+               end
       elsif (code = GRAY[name])
         color = :gray
       elsif (code = RED[name])
@@ -137,7 +151,7 @@ module Engine
       when 'upgrade'
         Part::Upgrade.new(params['cost'], params['terrain']&.split('|'), params['size'])
       when 'border'
-        Part::Border.new(params['edge'], params['type'], params['cost'])
+        Part::Border.new(params['edge'], params['type'], params['cost'], params['color'])
       when 'junction'
         junction = Part::Junction.new
         cache << junction
@@ -151,6 +165,8 @@ module Engine
         Part::Partition.new(params['a'], params['b'], params['type'], params['restrict'])
       when 'frame'
         Part::Frame.new(params['color'], params['color2'])
+      when 'stripes'
+        Part::Stripes.new(params['color'])
       end
     end
 
@@ -184,6 +200,7 @@ module Engine
       @stops = nil
       @edges = nil
       @frame = nil
+      @stripes = nil
       @junction = nil
       @icons = []
       @location_name = location_name
@@ -246,6 +263,20 @@ module Engine
 
     def exits
       @_exits ||= @edges.map { |e| rotate(e.num, @rotation) }.uniq
+    end
+
+    def ignore_gauge_walk=(val)
+      @paths.each { |p| p.ignore_gauge_walk = val }
+      @nodes.each(&:clear!)
+      @junction&.clear!
+      @_paths = nil
+    end
+
+    def ignore_gauge_compare=(val)
+      @paths.each { |p| p.ignore_gauge_compare = val }
+      @nodes.each(&:clear!)
+      @junction&.clear!
+      @_paths = nil
     end
 
     def terrain
@@ -522,6 +553,8 @@ module Engine
           @partitions << part
         elsif part.frame?
           @frame = part
+        elsif part.stripes?
+          @stripes = part
         else
           raise "Part #{part} not separated."
         end

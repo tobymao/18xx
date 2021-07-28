@@ -59,9 +59,7 @@ module View
         children << render_tile_part(Part::Track, routes: @routes) if !@tile.paths.empty? || !@tile.stubs.empty?
         children << render_tile_part(Part::Cities, show_revenue: !render_revenue) unless @tile.cities.empty?
 
-        unless @tile.towns.empty?
-          children << render_tile_part(Part::Towns, routes: @routes, show_revenue: !render_revenue)
-        end
+        children << render_tile_part(Part::Towns, routes: @routes, show_revenue: !render_revenue) unless @tile.towns.empty?
 
         borders = render_tile_part(Part::Borders) if @tile.borders.any?(&:type)
         # OO tiles have different rules...

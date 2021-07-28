@@ -101,7 +101,7 @@ module Engine
             company.discount += 10
             new_price = company.min_bid
             @log << "#{company.name} price decreases from #{@game.format_currency(old_price)} "\
-              "to #{@game.format_currency(new_price)}"
+                    "to #{@game.format_currency(new_price)}"
 
             @round.next_entity_index!
 

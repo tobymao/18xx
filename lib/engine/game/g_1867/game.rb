@@ -7,12 +7,14 @@ require_relative '../base'
 require_relative '../company_price_up_to_face'
 require_relative '../interest_on_loans'
 require_relative '../stubs_are_restricted'
+require_relative '../cities_plus_towns_route_distance_str'
 
 module Engine
   module Game
     module G1867
       class Game < Game::Base
         include_meta(G1867::Meta)
+        include CitiesPlusTownsRouteDistanceStr
 
         register_colors(black: '#16190e',
                         blue: '#0189d1',
@@ -1196,9 +1198,7 @@ module Engine
 
           @log << "#{corporation.name} is nationalized"
 
-          while corporation.cash > @loan_value && !corporation.loans.empty?
-            repay_loan(corporation, corporation.loans.first)
-          end
+          repay_loan(corporation, corporation.loans.first) while corporation.cash >= @loan_value && !corporation.loans.empty?
 
           # Move once automatically
           price = corporation.share_price.price
@@ -1226,7 +1226,7 @@ module Engine
                           .map { |receiver, cash| "#{format_currency(cash)} to #{receiver.name}" }.join(', ')
 
             @log << "#{corporation.name} settles with shareholders #{format_currency(total_payout)} = "\
-                            "#{format_currency(per_share)} (#{receivers})"
+                    "#{format_currency(per_share)} (#{receivers})"
           end
 
           # Rules say if not enough tokens remain, do it in highest payout then randomly

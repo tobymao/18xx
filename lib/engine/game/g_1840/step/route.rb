@@ -49,7 +49,7 @@ module Engine
             )
 
             node_visited = []
-            start_node.walk(corporation: entity, skip_track: :broad) do |path, _, _|
+            start_node.walk(skip_track: :broad) do |path, _, _|
               next if path.nodes.empty? || node_visited.include?(path.nodes.first)
 
               route.touch_node(path.nodes.first)

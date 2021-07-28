@@ -251,7 +251,7 @@ module Engine
             value: 40,
             revenue: 10,
             desc: 'Owning corporation may place a free tile on the E-SF hex B8 (the IJsselmeer Causeway) free of cost'\
-            ', in addition to its own tile placement. Blocks hex B8 while owned by player.',
+                  ', in addition to its own tile placement. Blocks hex B8 while owned by player.',
             sym: 'E-SF',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['B8'] },
                         {
@@ -270,9 +270,9 @@ module Engine
             value: 50,
             revenue: 10,
             desc: 'Owning corporation may place a tile and station token in the CdH hex J8 for only the F60 cost of'\
-            ' the mountain. The track is not required to be connected to existing track of this corporation (or any'\
-            " corporation), and can be used as a teleport. This counts as the corporation's track lay for that turn."\
-            ' Blocks hex J8 while owned by player.',
+                  ' the mountain. The track is not required to be connected to existing track of this corporation (or any'\
+                  " corporation), and can be used as a teleport. This counts as the corporation's track lay for that turn."\
+                  ' Blocks hex J8 while owned by player.',
             sym: 'CdH',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['J8'] },
                         {
@@ -290,7 +290,7 @@ module Engine
             value: 70,
             revenue: 15,
             desc: 'Owning Corporation may place the +"20" token on any City or Town. The value of the location is '\
-            ' increased by F20 for each and every time that Corporation\'s trains visit it',
+                  ' increased by F20 for each and every time that Corporation\'s trains visit it',
             sym: 'RdP',
             abilities: [
               {
@@ -418,16 +418,17 @@ module Engine
           gray: { ['A9'] => 'city=revenue:10;path=a:0,b:_0;path=a:_0,b:5' },
           white: {
             %w[A11 B12 C11 D12 E9 H8 I5 I7 K5 J4] => 'blank',
-            ['C7'] => 'border=edge:4,type:impassable',
-            ['C9'] => 'border=edge:1,type:impassable',
-            ['G3'] => 'border=edge:3,type:impassable',
-            ['G5'] => 'border=edge:2,type:impassable;border=edge:3,type:impassable',
+            ['C7'] => 'border=edge:4,type:impassable,color:blue',
+            ['C9'] => 'border=edge:1,type:impassable,color:blue',
+            ['G3'] => 'border=edge:3,type:impassable,color:blue',
+            ['G5'] => 'border=edge:2,type:impassable,color:blue;border=edge:3,type:impassable,color:blue',
             ['B8'] => 'town=revenue:0;town=revenue:0;upgrade=cost:80,terrain:water',
             %w[B10 E7 G7 H4 J6] => 'city=revenue:0',
             %w[D8 D10 F8 G9 G11] => 'upgrade=cost:40,terrain:water',
             ['F4'] =>
-            'town=revenue:0;upgrade=cost:40,terrain:water;border=edge:0,type:impassable;border=edge:5,type:impassable',
-            ['F6'] => 'upgrade=cost:80,terrain:water;border=edge:0,type:impassable',
+            'town=revenue:0;upgrade=cost:40,terrain:water;'\
+            'border=edge:0,type:impassable,color:blue;border=edge:5,type:impassable,color:blue',
+            ['F6'] => 'upgrade=cost:80,terrain:water;border=edge:0,type:impassable,color:blue',
             %w[F10 H2] => 'town=revenue:0',
             %w[I11 J10 J12 K7 K9] => 'upgrade=cost:60,terrain:mountain',
             ['I9'] => 'city=revenue:0;upgrade=cost:40,terrain:water',
@@ -435,9 +436,9 @@ module Engine
             ['K11'] => 'town=revenue:0;town=revenue:0;upgrade=cost:60,terrain:mountain',
           },
           red: {
-            ['A13'] => 'offboard=revenue:yellow_40|brown_70;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1',
-            %w[E13 H12] => 'offboard=revenue:yellow_30|brown_50;path=a:1,b:_0,terminal:1',
-            ['K13'] => 'offboard=revenue:yellow_40|brown_70;path=a:1,b:_0,terminal:1;path=a:2,b:_0,terminal:1',
+            ['A13'] => 'offboard=revenue:yellow_40|brown_70;path=a:0,b:_0;path=a:1,b:_0',
+            %w[E13 H12] => 'offboard=revenue:yellow_30|brown_50;path=a:1,b:_0',
+            ['K13'] => 'offboard=revenue:yellow_40|brown_70;path=a:1,b:_0;path=a:2,b:_0',
           },
           yellow: {
             ['D6'] =>
@@ -489,21 +490,21 @@ module Engine
         end
 
         def setup
-          @straight_city ||= @tiles.find { |t| t.name == '57' }
-          @sharp_city ||= @tiles.find { |t| t.name == '5' }
-          @gentle_city ||= @tiles.find { |t| t.name == '6' }
+          @straight_city ||= @all_tiles.find { |t| t.name == '57' }
+          @sharp_city ||= @all_tiles.find { |t| t.name == '5' }
+          @gentle_city ||= @all_tiles.find { |t| t.name == '6' }
 
-          @straight_track ||= @tiles.find { |t| t.name == '9' }
-          @sharp_track ||= @tiles.find { |t| t.name == '7' }
-          @gentle_track ||= @tiles.find { |t| t.name == '8' }
+          @straight_track ||= @all_tiles.find { |t| t.name == '9' }
+          @sharp_track ||= @all_tiles.find { |t| t.name == '7' }
+          @gentle_track ||= @all_tiles.find { |t| t.name == '8' }
 
-          @x_city ||= @tiles.find { |t| t.name == '14' }
-          @k_city ||= @tiles.find { |t| t.name == '15' }
+          @x_city ||= @all_tiles.find { |t| t.name == '14' }
+          @k_city ||= @all_tiles.find { |t| t.name == '15' }
 
-          @brown_london ||= @tiles.find { |t| t.name == '126' }
-          @brown_barrie ||= @tiles.find { |t| t.name == '127' }
+          @brown_london ||= @all_tiles.find { |t| t.name == '126' }
+          @brown_barrie ||= @all_tiles.find { |t| t.name == '127' }
 
-          @gray_hamilton ||= @tiles.find { |t| t.name == '123' }
+          @gray_hamilton ||= @all_tiles.find { |t| t.name == '123' }
 
           @post_nationalization = false
           @nationalization_train_discard_trigger = false
@@ -538,6 +539,15 @@ module Engine
           create_destinations(DESTINATIONS)
           national.add_ability(self.class::NATIONAL_IMMOBILE_SHARE_PRICE_ABILITY)
           national.add_ability(self.class::NATIONAL_FORCED_WITHHOLD_ABILITY)
+        end
+
+        def stock_round
+          G1856::Round::Stock.new(self, [
+            Engine::Step::DiscardTrain,
+            Engine::Step::Exchange,
+            Engine::Step::SpecialTrack,
+            G1856::Step::BuySellParShares,
+          ])
         end
 
         def operating_round(round_num)

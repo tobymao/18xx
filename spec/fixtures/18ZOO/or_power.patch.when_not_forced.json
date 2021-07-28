@@ -960,10 +960,10 @@
   "created_at": "2021-05-24",
   "loaded": true,
   "result": {
-    "Player 4": 80,
-    "Player 3": 75,
+    "Player 4": 79,
+    "Player 3": 72,
     "Player 2": 59,
-    "Player 1": 22
+    "Player 1": 21
   },
   "turn": 2,
   "round": "Operating Round",

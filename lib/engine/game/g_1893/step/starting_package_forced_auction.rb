@@ -24,13 +24,13 @@ module Engine
             return 'Select a company to auction' unless @auctioning
 
             text = "Buy #{@auctioning.name} for #{format(min_bid(@auctioning))} or Pass. "\
-              "If everyone passes, the price is lowered by #{format(10)} "\
-              'and a new buy/pass opportunity is presented. This continues until someone buys it or until '\
-              "the price has been lowered to #{format(min_purchase(@auctioning))} (50%). "\
-              "If noone buys it #{@auction_triggerer.name} is forced to buy it. "
+                   "If everyone passes, the price is lowered by #{format(10)} "\
+                   'and a new buy/pass opportunity is presented. This continues until someone buys it or until '\
+                   "the price has been lowered to #{format(min_purchase(@auctioning))} (50%). "\
+                   "If noone buys it #{@auction_triggerer.name} is forced to buy it. "
             if @game.minor_proxy?(@auctioning) && min_purchase(@auctioning) < 100
               text += "Note! If purchase price is below #{format(100)}, bank will add so that the corresponding "\
-                "minor receives a treasury of #{format(100)}."
+                      "minor receives a treasury of #{format(100)}."
             end
             text
           end
@@ -114,6 +114,10 @@ module Engine
             entity.min_bid
           end
 
+          def min_increment
+            0
+          end
+
           def min_purchase(entity)
             entity.value / 2
           end
@@ -170,13 +174,13 @@ module Engine
             return { buyer: candidate,  price: price } unless price > candidate.cash
 
             @game.log << "#{candidate.name} would be forced to buy #{target.name} but cannot afford "\
-              "#{@game.format_currency(price)}"
+                         "#{@game.format_currency(price)}"
             entity_index = entities.find_index(candidate)
             entity_index = (entity_index + 1) % entities.size
             next_candidate = entities[entity_index]
             if next_candidate == first_candidate
               @game.log << "As noone can afford #{candidate.name} for #{@game.format_currency(price)}, "\
-              "price is reduced to whatever #{first_candidate.name} has in cash"
+                           "price is reduced to whatever #{first_candidate.name} has in cash"
               { buyer: first_candidate, price: first_candidate.cash }
             else
               return { buyer: next_candidate, price: price } unless price > next_candidate.cash

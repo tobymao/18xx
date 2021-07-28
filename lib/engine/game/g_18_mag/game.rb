@@ -120,6 +120,10 @@ module Engine
           @multiplayer ||= @players.size >= 3
         end
 
+        def standard_divs?
+          @optional_rules&.include?(:standard_divs)
+        end
+
         def location_name(coord)
           @location_names ||= game_location_names
 
@@ -601,9 +605,7 @@ module Engine
         # Check to see if it's OK to visit a mine (SNW power)
         def check_other(route)
           mines = route.visited_stops.select { |n| n.city? && n.tokens.any? { |t| t&.type == :neutral } }
-          if !mines.empty? && (!@round.rail_cars.include?('SNW') || other_snw_train?(route))
-            raise GameError, 'Cannot visit mine'
-          end
+          raise GameError, 'Cannot visit mine' if !mines.empty? && (!@round.rail_cars.include?('SNW') || other_snw_train?(route))
           raise GameError, 'Cannot visit multiple mines' if mines.size > 1
         end
 
@@ -781,13 +783,13 @@ module Engine
               'count' => 4,
               'color' => 'yellow',
               'code' => 'city=revenue:30,loc:2;city=revenue:0,loc:0;path=a:2,b:_0;label=OO;'\
-                'upgrade=cost:20,terrain:water',
+                        'upgrade=cost:20,terrain:water',
             },
             'L33' => {
               'count' => 1,
               'color' => 'yellow',
               'code' => 'city=revenue:30;city=revenue:30;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_1;path=a:0,b:_1;'\
-                'label=B;upgrade=cost:20,terrain:water',
+                        'label=B;upgrade=cost:20,terrain:water',
             },
             '16' => 2,
             '19' => 2,
@@ -805,7 +807,7 @@ module Engine
               'count' => 1,
               'color' => 'green',
               'code' => 'city=revenue:40,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
-                'path=a:5,b:_0;label=B',
+                        'path=a:5,b:_0;label=B',
             },
             '204' => 3,
             '88' => 6,
@@ -817,37 +819,37 @@ module Engine
               'count' => 1,
               'color' => 'green',
               'code' => 'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_1;path=a:5,b:_1;'\
-                'label=OO',
+                        'label=OO',
             },
             '8859' => {
               'count' => 1,
               'color' => 'green',
               'code' => 'city=revenue:40;city=revenue:40;path=a:1,b:_0;path=a:4,b:_0;path=a:0,b:_1;path=a:3,b:_1;'\
-                'label=OO',
+                        'label=OO',
             },
             '8858' => {
               'count' => 1,
               'color' => 'green',
               'code' => 'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:2,b:_0;path=a:1,b:_1;path=a:3,b:_1;'\
-                'label=OO',
+                        'label=OO',
             },
             '8863' => {
               'count' => 1,
               'color' => 'green',
               'code' => 'city=revenue:40,loc:1.5;city=revenue:40;path=a:1,b:_0;path=a:2,b:_0;path=a:0,b:_1;'\
-                'path=a:3,b:_1;label=OO',
+                        'path=a:3,b:_1;label=OO',
             },
             '8864' => {
               'count' => 1,
               'color' => 'green',
               'code' => 'city=revenue:40;city=revenue:40,loc:3.5;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_1;'\
-                'path=a:4,b:_1;label=OO',
+                        'path=a:4,b:_1;label=OO',
             },
             '8865' => {
               'count' => 1,
               'color' => 'green',
               'code' => 'city=revenue:40;city=revenue:40,loc:4.5;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_1;'\
-                'path=a:5,b:_1;label=OO',
+                        'path=a:5,b:_1;label=OO',
             },
             '39' => 2,
             '40' => 2,
@@ -869,13 +871,13 @@ module Engine
               'count' => multiplayer? ? 3 : 1,
               'color' => 'brown',
               'code' => 'city=revenue:60,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
-                'path=a:5,b:_0;label=OO',
+                        'path=a:5,b:_0;label=OO',
             },
             'L35' => {
               'count' => 1,
               'color' => 'brown',
               'code' => 'city=revenue:60,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
-                'path=a:4,b:_0;path=a:5,b:_0;label=B',
+                        'path=a:4,b:_0;path=a:5,b:_0;label=B',
             },
           }
           tiles_3p = {
@@ -891,14 +893,14 @@ module Engine
               'count' => 1,
               'color' => 'gray',
               'code' => 'town=revenue:30;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
-              'path=a:5,b:_0',
+                        'path=a:5,b:_0',
             },
             '455' => 2,
             'X9' => {
               'count' => 1,
               'color' => 'gray',
               'code' => 'city=revenue:70,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;'\
-              'path=a:5,b:_0;label=OO',
+                        'path=a:5,b:_0;label=OO',
             },
             'L36' => {
               'count' => 1,
@@ -909,7 +911,7 @@ module Engine
               'count' => 1,
               'color' => 'gray',
               'code' => 'city=revenue:80,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
-              'path=a:4,b:_0;path=a:5,b:_0;label=B',
+                        'path=a:4,b:_0;path=a:5,b:_0;label=B',
             },
           }
           tiles.merge!(tiles_3p) if multiplayer?
@@ -1507,11 +1509,11 @@ module Engine
               [
                 'E26',
               ] => 'city=revenue:yellow_30|brown_50,visit_cost:0;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
-                'path=a:5,b:_0',
+                   'path=a:5,b:_0',
               [
                 'I20',
               ] => 'city=revenue:yellow_30|brown_50,visit_cost:0;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
-                'path=a:3,b:_0',
+                   'path=a:3,b:_0',
             },
           }
           hexes_2player = {

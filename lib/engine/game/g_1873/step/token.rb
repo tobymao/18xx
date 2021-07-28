@@ -62,16 +62,14 @@ module Engine
 
               entity.spend(TOKEN_REPLACE_COST, old_token.corporation)
               @game.log << "#{entity.name} replaces #{old_token.corporation.name} token on #{hex.id} for "\
-                "#{@game.format_currency(TOKEN_REPLACE_COST)} (paid to #{old_token.corporation.name})"
+                           "#{@game.format_currency(TOKEN_REPLACE_COST)} (paid to #{old_token.corporation.name})"
 
               @round.tokened = true
               @game.graph.clear
             else
               # place new token
               #
-              if @game.concession_blocks?(city)
-                raise GameError, "Cannot lay on #{city.id}. Must leave room for concession RR"
-              end
+              raise GameError, "Cannot lay on #{city.id}. Must leave room for concession RR" if @game.concession_blocks?(city)
 
               super
             end

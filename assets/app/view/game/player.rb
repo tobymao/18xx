@@ -3,12 +3,14 @@
 require 'lib/settings'
 require 'lib/text'
 require 'view/game/companies'
+require 'view/share_calculation'
 
 module View
   module Game
     class Player < Snabberb::Component
       include Lib::Settings
       include Lib::Text
+      include View::ShareCalculation
 
       needs :player
       needs :game
@@ -29,9 +31,7 @@ module View
           render_body,
         ]
 
-        if @player.companies.any? || @show_hidden
-          divs << h(Companies, owner: @player, game: @game, show_hidden: @show_hidden)
-        end
+        divs << h(Companies, owner: @player, game: @game, show_hidden: @show_hidden) if @player.companies.any? || @show_hidden
 
         unless (minors = @game.player_card_minors(@player)).empty?
           divs << render_minors(minors)
@@ -154,6 +154,10 @@ module View
           h(:td, 'Certs'),
           h('td.right', td_cert_props, @game.show_game_cert_limit? ? "#{num_certs}/#{cert_limit}" : num_certs.to_s),
         ])
+        trs << h(:tr, [
+          h(:td, 'Shares'),
+          h('td.right', td_cert_props, (@game.all_corporations.sum { |c| c.minor? ? 0 : num_shares_of(@player, c) }).to_s),
+        ])
 
         priority_props = {
           attrs: { colspan: '2' },
@@ -222,7 +226,8 @@ module View
         children << h('td.center', td_props, [h(:div, div_props, [h(:img, logo_props)])]) unless @hide_logo
 
         president_marker = corporation.president?(@player) ? '*' : ''
-        children << h(:td, td_props, corporation.name + president_marker)
+        double_marker = shares.any?(&:double_cert) ? ' d' : ''
+        children << h(:td, td_props, corporation.name + president_marker + double_marker)
         children << h('td.right', td_props, "#{shares.sum(&:percent)}%")
         h('tr.row', children)
       end

@@ -45,6 +45,11 @@ module Engine
         company = action.company
         price = action.price
         owner = company.owner
+
+        buy_company(entity, company, price, owner)
+      end
+
+      def buy_company(entity, company, price, owner)
         raise GameError, "Cannot buy #{company.name} from #{owner.name}" unless @game.company_sellable(company)
 
         min = company.min_price

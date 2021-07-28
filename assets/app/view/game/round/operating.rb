@@ -24,7 +24,6 @@ module View
     module Round
       class Operating < Snabberb::Component
         needs :game
-        needs :mode, store: true, default: nil
 
         def render
           round = @game.round
@@ -34,12 +33,12 @@ module View
 
           entity = entity.owner if entity.company? && !round.active_entities.one?
 
+          convert_track = @step.respond_to?(:conversion?) && @step.conversion?
+
           left = []
-          left << render_mode_button if @step.respond_to?(:mode_enabled?) && @step.mode_enabled?
           left << h(SpecialBuy) if @current_actions.include?('special_buy')
-          if @current_actions.include?('run_routes')
-            left << (@step.conversion? ? h(TrackConversion) : h(RouteSelector))
-          end
+          left << h(RouteSelector) if @current_actions.include?('run_routes') && !convert_track
+          left << h(TrackConversion) if @current_actions.include?('run_routes') && convert_track
           left << h(Dividend) if @current_actions.include?('dividend')
           left << h(Convert) if @current_actions.include?('convert')
           left << h(SwitchTrains) if @current_actions.include?('switch_trains')
@@ -47,6 +46,9 @@ module View
           if @current_actions.include?('buy_train')
             left << h(IssueShares) if @current_actions.include?('sell_shares')
             left << h(BuyTrains)
+          elsif @current_actions.include?('buy_power')
+            left << h(IssueShares) if @current_actions.include?('sell_shares')
+            left << h(BuyPower)
           elsif @current_actions.include?('borrow_train')
             left << h(BorrowTrain)
           elsif @current_actions.include?('sell_shares') && entity.player?
@@ -128,14 +130,6 @@ module View
           ]
 
           h(:div, children)
-        end
-
-        def render_mode_button
-          pressed = lambda do
-            store(:mode, @step.change_mode)
-          end
-
-          h('button.small', { on: { click: pressed } }, @step.mode_text)
         end
       end
     end

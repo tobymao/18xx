@@ -53,7 +53,7 @@ module Engine
         end
         cannot_bid.each do |player|
           @game.log << "#{player.name} cannot bid #{@game.format_currency(min)}"\
-          " and is out of the auction for #{auctioning.name}"
+                       " and is out of the auction for #{auctioning.name}"
         end
         resolve_bids
       end
@@ -77,7 +77,7 @@ module Engine
         end
         passing.each do |player|
           @game.log << "#{player.name} cannot bid #{@game.format_currency(min)}"\
-          " and is out of the auction for #{auctioning.name}"
+                       " and is out of the auction for #{auctioning.name}"
           remove_from_auction(player)
         end
       end

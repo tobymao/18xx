@@ -294,6 +294,10 @@ module Engine
 
       VARIABLE_FLOAT_PERCENTAGES = false
 
+      # Setting this to true is neccessary but insufficent to allow downgrading town tiles into plain track
+      # See 1856 for an example
+      ALLOW_REMOVING_TOWNS = false
+
       CACHABLE = [
         %i[players player],
         %i[corporations corporation],
@@ -454,24 +458,22 @@ module Engine
           @log << "#{self.class.title} is in prealpha state, no support is provided at all"
         when :alpha
           @log << "#{self.class.title} is currently considered 'alpha',"\
-            ' the rules implementation is likely to not be complete.'
+                  ' the rules implementation is likely to not be complete.'
           @log << 'As the implementation improves, games that are not compatible'\
-            ' with the latest version will be archived without notice.'
+                  ' with the latest version will be archived without notice.'
           @log << 'We suggest that any alpha quality game is concluded within 7 days.'
         when :beta
           @log << "#{self.class.title} is currently considered 'beta',"\
-            ' the rules implementation may allow illegal moves.'
+                  ' the rules implementation may allow illegal moves.'
           @log << 'As the implementation improves, games that are not compatible'\
-            ' with the latest version will be pinned but may be archived after 7 days.'
+                  ' with the latest version will be pinned but may be archived after 7 days.'
           @log << 'Because of this we suggest not playing games that may take months to complete.'
         end
 
         if self.class::PROTOTYPE
           @log << "#{self.class.title} is currently a prototype game, "\
-          ' the design is not final, and so may change at any time.'
-          unless self.class::DEV_STAGE == :alpha
-            @log << 'If the game is modified due to a design change, games will be pinned'
-          end
+                  ' the design is not final, and so may change at any time.'
+          @log << 'If the game is modified due to a design change, games will be pinned' unless self.class::DEV_STAGE == :alpha
 
         end
 
@@ -681,9 +683,7 @@ module Engine
       end
 
       def process_single_action(action)
-        if action.user
-          @log << "• Action(#{action.type}) via Master Mode by: #{player_by_id(action.user)&.name || 'Owner'}"
-        end
+        @log << "• Action(#{action.type}) via Master Mode by: #{player_by_id(action.user)&.name || 'Owner'}" if action.user
 
         preprocess_action(action)
 
@@ -997,7 +997,7 @@ module Engine
         return unless from != to
 
         @log << "#{entity.name}'s share price changes from #{format_currency(from)} "\
-          "to #{format_currency(to)}"
+                "to #{format_currency(to)}"
       end
 
       def can_run_route?(entity)
@@ -1504,6 +1504,10 @@ module Engine
         entity.cash + (issuable_shares(entity).map(&:price).max || 0)
       end
 
+      def company_sale_price(_company)
+        raise NotImplementedError
+      end
+
       def two_player?
         @two_player ||= @players.size == 2
       end
@@ -1545,7 +1549,21 @@ module Engine
           end
         end
 
+        close_companies_on_par!(corporation)
         place_home_token(corporation) if self.class::HOME_TOKEN_TIMING == :par
+      end
+
+      def close_companies_on_par!(entity)
+        @companies.each do |company|
+          next if company.closed?
+
+          abilities(company, :close, time: 'par') do |ability|
+            next if entity&.name != ability.corporation
+
+            company.close!
+            @log << "#{company.name} closes"
+          end
+        end
       end
 
       def train_help(_entity, _runnable_trains, _routes)
@@ -1754,7 +1772,7 @@ module Engine
         return unless rusted_trains.any?
 
         @log << "-- Event: #{rusted_trains.uniq.join(', ')} trains rust " \
-            "( #{owners.map { |c, t| "#{c} x#{t}" }.join(', ')}) --"
+                "( #{owners.map { |c, t| "#{c} x#{t}" }.join(', ')}) --"
       end
 
       def show_progress_bar?
@@ -1785,6 +1803,8 @@ module Engine
       def local_length
         2
       end
+
+      def skip_route_track_type; end
 
       private
 
@@ -2592,6 +2612,28 @@ module Engine
 
       def operation_round_name
         self.class::OPERATING_ROUND_NAME
+      end
+
+      def trains_str(corporation)
+        (corporation.system? ? corporation.shells : [corporation]).map do |c|
+          if c.trains.empty?
+            'None'
+          else
+            c.trains.map { |t| t.obsolete ? "(#{t.name})" : t.name }.join(' ')
+          end
+        end
+      end
+
+      def on_train_header
+        'On Train'
+      end
+
+      def train_limit_header
+        'Train Limit'
+      end
+
+      def train_power?
+        false
       end
     end
   end

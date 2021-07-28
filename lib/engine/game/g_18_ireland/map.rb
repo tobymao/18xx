@@ -46,7 +46,7 @@ module Engine
             'count' => 1,
             'color' => 'yellow',
             'code' => 'town=revenue:10;city=revenue:10;path=a:0,b:_0;'\
-            'path=a:2,b:_1;path=a:_1,b:3;label=DD;upgrade=cost:40',
+                      'path=a:2,b:_1;path=a:_1,b:3;label=DD;upgrade=cost:40',
           },
           'IR3' => {
             'count' => 1,
@@ -68,13 +68,13 @@ module Engine
             'count' => 1, # @todo loc:3 should be center
             'color' => 'green',
             'code' => 'city=revenue:20,loc:2;town=revenue:10,loc:3;'\
-            'path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:0,b:_1;path=a:_1,b:3;label=DD',
+                      'path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:0,b:_1;path=a:_1,b:3;label=DD',
           },
           'IR8' => { # @todo layout could be better
             'count' => 1,
             'color' => 'green',
             'code' => 'city=revenue:20,loc:3;town=revenue:10,loc:2;'\
-            'path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:0,b:_1;path=a:_1,b:2;label=DD',
+                      'path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:0,b:_1;path=a:_1,b:2;label=DD',
           },
           'IR9' => {
             'count' => 1,
@@ -85,19 +85,19 @@ module Engine
             'count' => 1,
             'color' => 'green',
             'code' => 'city=revenue:20,slots:2;path=a:0,b:_0;path=a:1,b:_0;'\
-            'path=a:3,b:_0,track:narrow;path=a:4,b:_0;label=EM',
+                      'path=a:3,b:_0,track:narrow;path=a:4,b:_0;label=EM',
           },
           'IR11' => {
             'count' => 1,
             'color' => 'green',
             'code' => 'city=revenue:20,slots:2;path=a:0,b:_0;path=a:1,b:_0;'\
-            'path=a:3,b:_0;path=a:4,b:_0,track:narrow;label=EM',
+                      'path=a:3,b:_0;path=a:4,b:_0,track:narrow;label=EM',
           },
           'IR12' => {
             'count' => 1,
             'color' => 'green',
             'code' => 'city=revenue:20,slots:2;path=a:0,b:_0;path=a:1,b:_0,track:narrow;'\
-            'path=a:2,b:_0;path=a:4,b:_0;label=EM',
+                      'path=a:2,b:_0;path=a:4,b:_0;label=EM',
           },
           'IR13' => {
             'count' => 1,
@@ -218,97 +218,97 @@ module Engine
             'count' => 2,
             'color' => 'brown',
             'code' => 'city=revenue:50;city=revenue:50;path=a:0,b:_0;'\
-            'path=a:_0,b:1;path=a:2,b:_1;path=a:_1,b:3;label=BC',
+                      'path=a:_0,b:1;path=a:2,b:_1;path=a:_1,b:3;label=BC',
           },
           'IR45' => {
             'count' => 1,
             'color' => 'brown',
             'code' => 'city=revenue:50,slots:2,loc:1.5;city=revenue:50;city=revenue:50;'\
-            'path=a:1,b:_0;path=a:_0,b:2;path=a:0,b:_1;path=a:3,b:_2;label=DUB',
+                      'path=a:1,b:_0;path=a:_0,b:2;path=a:0,b:_1;path=a:3,b:_2;label=DUB',
           },
           'IR46' => {
             'count' => 1,
             'color' => 'brown',
             'code' => 'town=revenue:20;path=a:0,b:_0;path=a:1,b:_0;'\
-            'path=a:2,b:_0,track:narrow;path=a:3,b:_0,track:narrow;path=a:4,b:_0',
+                      'path=a:2,b:_0,track:narrow;path=a:3,b:_0,track:narrow;path=a:4,b:_0',
           },
           'IR47' => {
             'count' => 1,
             'color' => 'brown',
             'code' => 'town=revenue:20;path=a:0,b:_0;path=a:1,b:_0,track:narrow;'\
-            'path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0,track:narrow',
+                      'path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0,track:narrow',
           },
           'IR48' => {
             'count' => 1,
             'color' => 'brown',
             'code' => 'town=revenue:20;path=a:0,b:_0,track:narrow;path=a:1,b:_0;'\
-            'path=a:2,b:_0,track:narrow;path=a:3,b:_0;path=a:4,b:_0',
+                      'path=a:2,b:_0,track:narrow;path=a:3,b:_0;path=a:4,b:_0',
           },
           'IR49' => {
             'count' => 1,
             'color' => 'brown',
             'code' => 'town=revenue:20;path=a:0,b:_0;path=a:1,b:_0,track:narrow;'\
-            'path=a:2,b:_0,track:narrow;path=a:3,b:_0;path=a:4,b:_0',
+                      'path=a:2,b:_0,track:narrow;path=a:3,b:_0;path=a:4,b:_0',
           },
           'IR50' => {
             'count' => 1,
             'color' => 'brown',
             'code' => 'town=revenue:20;path=a:0,b:_0,track:narrow;path=a:1,b:_0;'\
-            'path=a:2,b:_0;path=a:3,b:_0,track:narrow;path=a:4,b:_0',
+                      'path=a:2,b:_0;path=a:3,b:_0,track:narrow;path=a:4,b:_0',
           },
           'IR51' => {
             'count' => 1,
             'color' => 'brown',
             'code' => 'town=revenue:20;path=a:0,b:_0;path=a:1,b:_0;'\
-            'path=a:2,b:_0,track:narrow;path=a:3,b:_0;path=a:4,b:_0,track:narrow',
+                      'path=a:2,b:_0,track:narrow;path=a:3,b:_0;path=a:4,b:_0,track:narrow',
           },
           'IR52' => {
             'count' => 1,
             'color' => 'brown',
             'code' => 'town=revenue:20;path=a:0,b:_0;path=a:1,b:_0,track:narrow;'\
-            'path=a:2,b:_0;path=a:3,b:_0,track:narrow;path=a:4,b:_0',
+                      'path=a:2,b:_0;path=a:3,b:_0,track:narrow;path=a:4,b:_0',
           },
           'IR53' => {
             'count' => 1,
             'color' => 'brown',
             'code' => 'town=revenue:20;path=a:0,b:_0,track:narrow;'\
-            'path=a:1,b:_0,track:narrow;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
+                      'path=a:1,b:_0,track:narrow;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
           },
           'IR54' => {
             'count' => 1,
             'color' => 'brown',
             'code' => 'town=revenue:20;path=a:0,b:_0;path=a:1,b:_0;'\
-            'path=a:2,b:_0;path=a:3,b:_0,track:narrow;path=a:4,b:_0,track:narrow',
+                      'path=a:2,b:_0;path=a:3,b:_0,track:narrow;path=a:4,b:_0,track:narrow',
           },
           'IR55' => {
             'count' => 1,
             'color' => 'brown',
             'code' => 'town=revenue:20;path=a:0,b:_0,track:narrow;path=a:1,b:_0;'\
-            'path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0,track:narrow',
+                      'path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0,track:narrow',
           },
           'IR56' => {
             'count' => 1,
             'color' => 'brown',
             'code' => 'town=revenue:10;path=a:0,b:_0,track:narrow;'\
-            'path=a:2,b:_0,track:narrow;path=a:3,b:_0,track:narrow',
+                      'path=a:2,b:_0,track:narrow;path=a:3,b:_0,track:narrow',
           },
           'IR57' => {
             'count' => 1,
             'color' => 'brown',
             'code' => 'town=revenue:10;path=a:0,b:_0,track:narrow;'\
-            'path=a:1,b:_0,track:narrow;path=a:3,b:_0,track:narrow',
+                      'path=a:1,b:_0,track:narrow;path=a:3,b:_0,track:narrow',
           },
           'IR58' => {
             'count' => 1,
             'color' => 'brown',
             'code' => 'town=revenue:10;path=a:0,b:_0,track:narrow;'\
-            'path=a:2,b:_0,track:narrow;path=a:4,b:_0,track:narrow',
+                      'path=a:2,b:_0,track:narrow;path=a:4,b:_0,track:narrow',
           },
           'IR59' => {
             'count' => 1,
             'color' => 'brown',
             'code' => 'path=a:0,b:2;path=a:0,b:1;path=a:1,b:2;'\
-            'path=a:3,b:4;path=a:3,b:5;path=a:4,b:5',
+                      'path=a:3,b:4;path=a:3,b:5;path=a:4,b:5',
           },
           'IR60' => {
             'count' => 1,
@@ -344,7 +344,7 @@ module Engine
             'count' => 1,
             'color' => 'brown',
             'code' => 'city=revenue:40,slots:2;path=a:0,b:_0;path=a:1,b:_0;'\
-            'path=a:2,b:_0;path=a:3,b:_0,track:narrow;path=a:4,b:_0;path=a:5,b:_0',
+                      'path=a:2,b:_0;path=a:3,b:_0,track:narrow;path=a:4,b:_0;path=a:5,b:_0',
           },
           'IR67' => {
             'count' => 2,
@@ -360,25 +360,25 @@ module Engine
             'count' => 1,
             'color' => 'gray',
             'code' => 'town=revenue:20;path=a:0,b:_0,track:narrow;path=a:1,b:_0;'\
-            'path=a:2,b:_0;path=a:3,b:_0,track:narrow;path=a:4,b:_0,track:narrow;path=a:5,b:_0',
+                      'path=a:2,b:_0;path=a:3,b:_0,track:narrow;path=a:4,b:_0,track:narrow;path=a:5,b:_0',
           },
           'IR70' => {
             'count' => 1,
             'color' => 'gray',
             'code' => 'town=revenue:20;path=a:0,b:_0,track:narrow;path=a:1,b:_0;'\
-            'path=a:2,b:_0;path=a:3,b:_0,track:narrow;path=a:4,b:_0;path=a:5,b:_0,track:narrow',
+                      'path=a:2,b:_0;path=a:3,b:_0,track:narrow;path=a:4,b:_0;path=a:5,b:_0,track:narrow',
           },
           'IR71' => {
             'count' => 1,
             'color' => 'gray',
             'code' => 'town=revenue:20;path=a:0,b:_0,track:narrow;path=a:1,b:_0,track:narrow;'\
-            'path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0,track:narrow',
+                      'path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0,track:narrow',
           },
           'IR72' => {
             'count' => 1,
             'color' => 'gray',
             'code' => 'town=revenue:20;path=a:0,b:_0,track:narrow;path=a:1,b:_0;'\
-            'path=a:2,b:_0,track:narrow;path=a:3,b:_0;path=a:4,b:_0,track:narrow;path=a:5,b:_0',
+                      'path=a:2,b:_0,track:narrow;path=a:3,b:_0;path=a:4,b:_0,track:narrow;path=a:5,b:_0',
           },
           'IM' => {
             'count' => 1,
@@ -450,7 +450,7 @@ module Engine
             %w[E1 A11 C21] => 'town=revenue:0;upgrade=cost:100,terrain:mountain',
             %w[A19
                D4] => 'town=revenue:0;border=edge:0,type:impassable;'\
-               'border=edge:5,type:impassable;upgrade=cost:100,terrain:mountain',
+                      'border=edge:5,type:impassable;upgrade=cost:100,terrain:mountain',
             ['A21'] => 'town=revenue:0;border=edge:3,type:impassable;upgrade=cost:100,terrain:mountain',
             ['B8'] => 'town=revenue:0;border=edge:0,type:impassable;upgrade=cost:100,terrain:mountain',
             ['B10'] => 'town=revenue:0;border=edge:3,type:impassable;upgrade=cost:100,terrain:mountain',

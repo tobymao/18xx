@@ -97,9 +97,7 @@ module Engine
                    end
                  end
 
-        if @game.class::CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT && can_buy_any_from_president?(entity)
-          source << entity.owner
-        end
+        source << entity.owner if @game.class::CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT && can_buy_any_from_president?(entity)
 
         source
       end

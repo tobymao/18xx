@@ -22,3 +22,6 @@ hotseat002: (needs replacement)
 
  hotseat006:
  * False Presidency game end
+
+ hotseat007:
+ * based off of #45471 - dit downgrade

@@ -148,7 +148,7 @@ module Engine
             @game.national.remove_ability(@game.class::FALSE_PRESIDENCY_ABILITY)
 
             @game.log << "#{entity.name} spends #{@game.format_currency(price)} to buy up to the "\
-            "presidency of the #{@game.national.name}"
+                         "presidency of the #{@game.national.name}"
           end
 
           def process_par(action)
@@ -164,6 +164,29 @@ module Engine
             buy_shares(entity, share.to_bundle)
             @game.after_par(corporation)
             track_action(action, corporation)
+          end
+
+          def train_to_operate
+            return "2 and 2'" if @game.phase.status.include?('facing_2')
+            return "3 and 3'" if @game.phase.status.include?('facing_3')
+            return "4 and 4'" if @game.phase.status.include?('facing_4')
+            return "5 and 5'" if @game.phase.status.include?('facing_5')
+            return "6 and 6'" if @game.phase.status.include?('facing_6')
+
+            # This shouldn't happen
+            raise NotImplementedError
+          end
+
+          def activate_program_buy_shares(entity, program)
+            corporation = program.corporation
+            if actions(entity).include?('buy_shares') &&
+                (program.until_condition == 'float' && !@game.phase.status.include?('facing_6')) && corporation.floatable?
+              return [Action::ProgramDisable.new(
+                entity, reason: "#{corporation.name} has enough shares sold to operate next OR"\
+                                " unless all of the #{train_to_operate} trains are sold out"
+              )]
+            end
+            super
           end
         end
       end

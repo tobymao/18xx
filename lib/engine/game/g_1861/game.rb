@@ -959,7 +959,7 @@ module Engine
             @operating_rounds = @final_operating_rounds = 3
             @final_turn = @turn
             @log << "First 8 train bought/exported, ending game at the end of #{@turn}.#{@final_operating_rounds},"\
-            ' skipping the next OR and SR'
+                    ' skipping the next OR and SR'
           else
             # Else finish this OR, do the stock round then 3 more ORs
             @final_operating_rounds = 3
