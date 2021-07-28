@@ -67,12 +67,13 @@ module Engine
 
           def process_assign_that_s_mine(action)
             hex = action.target
-            unless available_hex_for_mine?(action.entity, hex)
+            entity = action.entity
+            unless available_hex_for_mine?(entity, hex)
               raise GameError, "Cannot place token on #{hex.name} as the hex is not available"
             end
 
-            hex.tile.cities.first.add_reservation!(action.entity.owner)
-            @log << "#{action.entity.owner.name} reserves #{action.target.name}"
+            hex.tile.add_reservation!(entity.owner, 0)
+            @log << "#{entity.owner.name} reserves #{hex.name}"
 
             @game.that_s_mine.remove_ability(@game.that_s_mine.all_abilities[0])
 
