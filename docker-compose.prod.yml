@@ -11,6 +11,7 @@ x-rack: &rack
     SLACK_WEBHOOK_URL: $SLACK_WEBHOOK_URL
     RUBYOPTS: --jit
     PORT: 9292
+  restart: always
   build:
     args:
       RACK_ENV: production
@@ -40,8 +41,10 @@ services:
       - POSTGRES_USER
       - POSTGRES_PASSWORD
       - POSTGRES_DB
+    restart: always
 
   nginx:
+    restart: always
     build: ./nginx/
     ports:
       - 80:80
