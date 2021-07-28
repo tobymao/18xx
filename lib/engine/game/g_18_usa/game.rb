@@ -63,6 +63,62 @@ module Engine
             'color' => 'yellow',
             'code' => 'offboard=revenue:10,hide:1;path=a:0,b:3;label=⛏️',
           },
+          '544coal' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'brown',
+            'code' => 'junction;offboard=revenue:10,hide:1;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=⛏️',
+          },
+          '545coal' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'brown',
+            'code' => 'junction;offboard=revenue:10,hide:1;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;label=⛏️',
+          },
+          '546coal' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'brown',
+            'code' => 'junction;offboard=revenue:10,hide:1;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=⛏️',
+          },
+          '80coal' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'green',
+            'code' => 'junction;offboard=revenue:10,hide:1;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;label=⛏️',
+          },
+          '81coal' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'green',
+            'code' => 'junction;offboard=revenue:10,hide:1;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0;label=⛏️',
+          },
+          '82coal' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'green',
+            'code' => 'junction;offboard=revenue:10,hide:1;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;label=⛏️',
+          },
+          '83coal' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'green',
+            'code' => 'junction;offboard=revenue:10,hide:1;path=a:0,b:_0;path=a:5,b:_0;path=a:3,b:_0;label=⛏️',
+          },
+          '60coal' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'gray',
+            'code' => 'junction;offboard=revenue:10,hide:1;'\
+                      'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=⛏️',
+          },
+          'X17coal' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'gray',
+            'code' => 'junction;offboard=revenue:10,hide:1;'\
+                      'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=⛏️',
+          },
           '7iron10' =>
           {
             'count' => 'unlimited',
