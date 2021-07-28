@@ -476,7 +476,7 @@ module Engine
             name: '5',
             on: '5',
             train_limit: 3,
-            tiles: %i[yellow green brown],
+            tiles: %i[yellow green blue brown],
             operating_rounds: 2,
             corporation_sizes: [5, 10],
             status: ['increased_oil'],
@@ -485,7 +485,7 @@ module Engine
             name: '6',
             on: '6',
             train_limit: 2,
-            tiles: %i[yellow green brown],
+            tiles: %i[yellow green blue brown],
             status: ['increased_oil'],
             operating_rounds: 2,
             corporation_sizes: [10],
@@ -494,7 +494,7 @@ module Engine
             name: '7',
             on: '7',
             train_limit: 2,
-            tiles: %i[yellow green brown gray],
+            tiles: %i[yellow green blue brown gray],
             status: ['increased_oil'],
             operating_rounds: 2,
             corporation_sizes: [10],
@@ -503,7 +503,7 @@ module Engine
             name: '8',
             on: '8',
             train_limit: 2,
-            tiles: %i[yellow green brown gray],
+            tiles: %i[yellow green blue brown gray],
             status: %w[increased_oil no_new_shorts],
             operating_rounds: 2,
             corporation_sizes: [10],
@@ -711,10 +711,21 @@ module Engine
           },
           # P16 Regional Headquarters
           # TODO - make it so that tile lay can be restricted to be within a phase and onto a specific tile
+          {
+            name: 'Regional Headquarters',
+            value: 60,
+            revenue: 0,
+            desc: 'May upgrade a non-metropolis green or brown city to the RHQ tile after phase 5 starts',
+            sym: 'P16',
+            abilities: [
+              # Simply owning this company is the ability
+            ],
+            color: nil,
+          },
           # P18
           {
             name: 'Peabody Coal Company',
-            value: 30,
+            value: 60,
             revenue: 0,
             desc: 'Comes with two coal mine markers. When placing a yellow '\
                   'tile in a mountain hex next to a revenue location, can place '\
@@ -1187,6 +1198,7 @@ module Engine
         METROPOLITAN_HEXES = %w[G3 E11 H14 H22 I19 D20].freeze
 
         def setup
+          @rhq_tiles ||= @all_tiles.select { |t| t.name.include?('RHQ') }
           metro = METROPOLITAN_HEXES.sort_by { rand }.take(3)
           metro.each do |i|
             case i
@@ -1204,6 +1216,36 @@ module Engine
               @hexes.find { |h| h.id == i }.lay(@tiles.find { |t| t.name == 'X01' })
             end
           end
+        end
+
+        #
+        # Get the currently possible upgrades for a tile
+        # from: Tile - Tile to upgrade from
+        # to: Tile - Tile to upgrade to
+        # special - ???
+        def upgrades_to?(from, to, _special = false, selected_company: nil)
+          return @phase.tiles.include?(:brown) if @rhq_tiles.map(&:name).include?(to.name) &&
+              %w[5 6 7 14 15 619].include?(from.name)
+
+          super
+        end
+
+        # Get all possible upgrades for a tile
+        # tile: The tile to be upgraded
+        # tile_manifest: true/false Is this being called from the tile manifest screen
+        #
+        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
+          upgrades = super
+          return upgrades unless tile_manifest
+
+          upgrades |= @rhq_tiles if @phase.tiles.include?(:brown) && %w[5 6 7 14 15 619].include?(tile.name)
+          upgrades
+        end
+
+        def legal_tile_rotation?(entity, hex, tile)
+          return company_by_id('P16').owner == entity && !company_by_id('P16').closed? if tile.name.include?('RHQ')
+
+          super
         end
 
         def take_loan(entity, loan)
