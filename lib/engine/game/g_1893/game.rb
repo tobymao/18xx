@@ -1089,6 +1089,7 @@ module Engine
         end
 
         def event_remove_tile_block!
+          @log << "The tile block in #{TILE_BLOCK.join(' and ')} is now removed"
           @hexes
             .select { |hex| TILE_BLOCK.include?(hex.name) }
             .each { |hex| hex.tile.icons = [] }

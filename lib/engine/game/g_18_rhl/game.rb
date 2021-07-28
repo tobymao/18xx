@@ -37,6 +37,10 @@ module Engine
         # New track must be usable, or upgrade city value
         TRACK_RESTRICTION = :semi_restrictive
 
+        EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+          'remove_tile_block' => ['Remove tile block', 'Hex E12 can now be upgraded to yellow'],
+        ).freeze
+
         TILES = {
           '1' => 2,
           '2' => 1,
@@ -631,19 +635,18 @@ module Engine
             desc: 'When acting as a director of a corporation the owner may place a tile on hex E12 for free during '\
                   'the green phase. The placement of this tile is in addition to the normal tile placement. '\
                   'The corporation needs an unblocked track link to hex E12.',
-            abilities: [
-              {
-                type: 'tile_lay',
-                owner_type: 'player',
-                hexes: %w[E12],
-                tiles: %w[1 2 55 56 69],
-                free: true,
-                reachable: false,
-                special: true,
-                count: 1,
-                when: %w[track owning_player_or_turn],
-              },
-            ],
+            abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: %w[E12] },
+                        {
+                          type: 'tile_lay',
+                          owner_type: 'player',
+                          hexes: %w[E12],
+                          tiles: %w[1 2 55 56 69],
+                          free: true,
+                          reachable: false,
+                          special: true,
+                          count: 1,
+                          when: %w[track owning_player_or_turn],
+                        }],
           },
           {
             sym: 'KEO',
@@ -745,7 +748,11 @@ module Engine
 
         NIMWEGEN_ARNHEIM_OFFBOARD_HEXES = %(A4 A6).freeze
 
+        OSTEROTH_POTENTIAL_TILE_UPGRADES_FROM = %w[1 2 55 56 69].freeze
+
         OUT_TOKENED_HEXES = %w[A14 B15 C2].freeze
+
+        RATINGEN_HEX = 'E12'
 
         RGE_HEXES = %w[A4 A6 L11 L13].freeze
 
@@ -775,6 +782,23 @@ module Engine
 
         def roermund_hex
           @roermund_hex ||= hex_by_id('G2')
+        end
+
+        def yellow_block_hex
+          @yellow_block_hex ||= hex_by_id(RATINGEN_HEX)
+        end
+
+        def game_trains
+          trains = self.class::TRAINS
+          return trains unless optional_ratingen_variant
+
+          # Inject remove_tile_block event
+          trains.each do |t|
+            next unless t[:name] == '3'
+
+            t[:events] = [{ 'type' => 'remove_tile_block' }]
+          end
+          trains
         end
 
         def num_trains(train)
@@ -894,6 +918,12 @@ module Engine
           return if optional_ratingen_variant
 
           @prinz_wilhelm_bahn ||= company_by_id('PWB')
+        end
+
+        def angertalbahn
+          return unless optional_ratingen_variant
+
+          @angertalbahn ||= company_by_id('ATB')
         end
 
         def konzession_essen_osterath
@@ -1072,7 +1102,24 @@ module Engine
           end
           # Duisburg, Dusseldorf and Cologne can be upgraded to gray 932
 
-          super
+          return super unless optional_ratingen_variant
+
+          # Hex E10 have special tile for upgrade to yellow, and green, and no brown
+          if from.hex.name == 'E10'
+            case from.color
+            when :white
+              return to.name == '1910'
+            when :yellow
+              return to.name == '1911'
+            else
+              return false
+            end
+          end
+
+          # Hex E12 is blocked for upgrade in yellow phase
+          return super if from.hex.name != RATINGEN_HEX || phase.name != '2'
+
+          raise GameError, "Cannot place a tile in #{from.hex.name} until green phase"
         end
 
         def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
@@ -1086,12 +1133,13 @@ module Engine
           # Handle potential upgrades to Osteroth tile
           upgrades |= [@osteroth_tile] if OSTEROTH_POTENTIAL_TILE_UPGRADES_FROM.include?(tile.name)
 
-          # Handle Moers tile manifest
+          # Tile manifest for 947 should show Moers tile if Moers tile used
           upgrades |= [@moers_tile_gray] if @moers_tile_gray && tile.name == '947'
 
-          # Tile manifest for 216 should show Essen if promotional tiles used
+          # Tile manifest for 216 should show Essen tile if Essen tile used
           upgrades |= [@essen_tile] if @essen_tile && tile.name == '216'
 
+          # Show correct potential upgrades for Rhine Metropolis hexes
           upgrades |= [@d_k_tile] if @d_k_tile && %w[927 928].include?(tile.name)
           upgrades |= [@d_du_k_tile] if @d_du_k_tile && %w[927 928 929].include?(tile.name)
           upgrades |= [@du_tile_gray] if @du_tile_gray && tile.name == '929'
@@ -1099,10 +1147,22 @@ module Engine
           upgrades
         end
 
+        def legal_tile_rotation?(_entity, hex, tile)
+          return legal_if_stubbed?(hex, tile) unless tile.name == '1910'
+
+          # Need special handling - tile 1910 must match both stubs of base hex
+          hex.tile.stubs.map(&:edge) == tile.exits
+        end
+
         def hex_blocked_by_ability?(entity, ability, hex)
-          return false if entity.player == ability.owner.player && hex.name == 'E14'
+          return false if entity.player == ability.owner.player && (hex.name == 'E14' || hex == yellow_block_hex)
 
           super
+        end
+
+        def event_remove_tile_block!
+          @log << "Hex #{RATINGEN_HEX} is now possible to upgrade to yellow"
+          yellow_block_hex.tile.icons.reject! { |i| i.name == 'green_hex' }
         end
 
         def check_distance(route, visits)
@@ -1161,7 +1221,8 @@ module Engine
            eastern_ruhr_area_bonus(stops),
            iron_rhine_bonus(stops, corporation),
            trajekt_usage_penalty(route, stops),
-           rheingold_express_bonus(route, stops)]
+           rheingold_express_bonus(route, stops),
+           ratingen_bonus(route, stops)]
         end
 
         def aachen_duren_cologne_link_checkable?
@@ -1214,7 +1275,7 @@ module Engine
           e12_configuration = 'town=revenue:0;town=revenue:0;upgrade=cost:30,terrain:mountain'
           if optional_ratingen_variant
             e10_configuration += ';stub=edge:0;stub=edge:2;city=revenue:0'
-            e12_configuration += ';stub=edge:1'
+            e12_configuration += ';stub=edge:1;icon=image:1893/green_hex;icon=image:18_rhl/white_wooden_cube,sticky:1'
           end
           {
             red: {
@@ -1417,14 +1478,11 @@ module Engine
           bonus = { revenue: 0 }
           return bonus if route.train.name == '8'
 
-          coal = 0
-          steel = 0
-          coal += visited_icons(stops, 'K')
-          steel += visited_icons(stops, 'S')
-          coal += 1 if stops.find { |s| EASTERN_RUHR_HEXES.include?(s.hex.id) && coal_edge_used?(route, s.hex.id) }
-          steel += 1 if stops.find { |s| EASTERN_RUHR_HEXES.include?(s.hex.id) && steel_edge_used?(route, s.hex.id) }
-          steel += 1 if stops.find { |s| s.hex.id == 'J15' }
-          return bonus if coal.zero? || steel.zero?
+          coal = count_coal(route, stops)
+          return bonus if coal.zero?
+
+          steel = count_steel(route, stops)
+          return bonus if steel.zero?
 
           if coal > 1 && steel > 1
             bonus[:revenue] = brown_phase? ? 80 : 40
@@ -1434,6 +1492,19 @@ module Engine
             bonus[:description] = 'Montan'
           end
           bonus
+        end
+
+        def count_coal(route, stops)
+          coal = visited_icons(stops, 'K')
+          coal += 1 if stops.find { |s| EASTERN_RUHR_HEXES.include?(s.hex.id) && coal_edge_used?(route, s.hex.id) }
+          coal
+        end
+
+        def count_steel(route, stops)
+          steel = visited_icons(stops, 'S')
+          steel += 1 if stops.find { |s| EASTERN_RUHR_HEXES.include?(s.hex.id) && steel_edge_used?(route, s.hex.id) }
+          steel += 1 if stops.find { |s| s.hex.id == 'J15' }
+          steel
         end
 
         def eastern_ruhr_area_bonus(stops)
@@ -1507,6 +1578,18 @@ module Engine
           end
 
           bonus[:description] = 'RGE'
+          bonus
+        end
+
+        def ratingen_bonus(route, stops)
+          bonus = { revenue: 0 }
+          return bonus if !optional_ratingen_variant ||
+                          route.train.name == '8' ||
+                          stops.none? { |s| s.hex.id == RATINGEN_HEX } ||
+                          count_steel(route, stops).zero?
+
+          bonus[:revenue] = 30
+          bonus[:description] = 'Ratingen'
           bonus
         end
 
