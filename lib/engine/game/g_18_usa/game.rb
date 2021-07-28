@@ -1291,6 +1291,10 @@ module Engine
 
         METROPOLITAN_HEXES = %w[G3 E11 H14 H22 I19 D20].freeze
 
+        def active_metropolitan_hexes
+          @active_metropolitan_hexes ||= [@hexes.find { |h| h.id == 'D28' }]
+        end
+
         def setup
           @rhq_tiles ||= @all_tiles.select { |t| t.name.include?('RHQ') }
           @company_town_tiles ||= @all_tiles.select { |t| t.name.include?('CTown') }
@@ -1312,19 +1316,21 @@ module Engine
 
           metro = METROPOLITAN_HEXES.sort_by { rand }.take(3)
           metro.each do |i|
+            hex = @hexes.find { |h| h.id == i }
+            active_metropolitan_hexes << hex
             case i
             when 'H14'
-              @hexes.find { |h| h.id == i }.lay(@tiles.find { |t| t.name == 'X03' })
+              hex.lay(@tiles.find { |t| t.name == 'X03' })
             when 'E11'
               # Denver needs to be done at a later date
             when 'G3'
-              @hexes.find { |h| h.id == i }.lay(@tiles.find { |t| t.name == 'X05' }.rotate!(3))
+              hex.lay(@tiles.find { |t| t.name == 'X05' }.rotate!(3))
             when 'D20'
-              @hexes.find { |h| h.id == i }.lay(@tiles.find { |t| t.name == 'X02' }.rotate!(1))
+              hex.lay(@tiles.find { |t| t.name == 'X02' }.rotate!(1))
             when 'I19'
-              @hexes.find { |h| h.id == i }.lay(@tiles.find { |t| t.name == 'X06' })
+              hex.lay(@tiles.find { |t| t.name == 'X06' })
             when 'H22'
-              @hexes.find { |h| h.id == i }.lay(@tiles.find { |t| t.name == 'X01' })
+              hex.lay(@tiles.find { |t| t.name == 'X01' })
             end
           end
         end
