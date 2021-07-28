@@ -18,6 +18,14 @@ module Engine
         PLAYER_RANGE = [3, 5].freeze
         OPTIONAL_RULES = [
           {
+<<<<<<< HEAD
+=======
+            sym: :soft_rust_4t,
+            short_name: 'Soft rust',
+            desc: '4 trains get one more run after rusting',
+          },
+          {
+>>>>>>> fa4f9af4f7ca6bef019d05240230f4e89f10d043
             sym: :double_yellow_first_or,
             short_name: 'Extra yellow',
             desc: 'Allow corporation to lay 2 yellows its first OR',

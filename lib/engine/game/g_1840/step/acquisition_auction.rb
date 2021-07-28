@@ -180,7 +180,7 @@ module Engine
           def resolve_bids
             super
             @round.goto_entity!(@auction_triggerer)
-            next_entity!
+            next_entity! if @auction_triggerer.passed?
           end
 
           def win_bid(winner, _company)

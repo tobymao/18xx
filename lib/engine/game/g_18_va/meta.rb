@@ -14,7 +14,7 @@ module Engine
         GAME_DESIGNER = 'David Hecht'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18VA'
         GAME_LOCATION = 'Virginia, US'
-        GAME_RULES_URL = 'https://www.google.com'
+        GAME_RULES_URL = 'https://www.deepthoughtgames.com/games/18VA/Rules.pdf'
 
         PLAYER_RANGE = [2, 5].freeze
         OPTIONAL_RULES = [

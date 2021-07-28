@@ -142,6 +142,7 @@ module Engine
 
         def setup
           @or = 0
+          @operating_rounds = 1
           @last_or = OR_SETS.size
           @recently_floated = []
           @rusted_variants = []
@@ -377,7 +378,6 @@ module Engine
           @round =
             case @round
             when Engine::Round::Stock
-              @operating_rounds = OR_SETS[@turn - 1]
               reorder_players(log_player_order: true)
               new_operating_round
             when Engine::Round::Operating
@@ -388,6 +388,7 @@ module Engine
                 @turn += 1
                 or_round_finished
                 or_set_finished
+                @operating_rounds = OR_SETS[@turn - 1]
                 new_stock_round
               end
             when init_round.class
@@ -534,13 +535,13 @@ module Engine
         def rust_trains!(train, entity)
           rusted_trains = []
           owners = Hash.new(0)
+          # entity is nil when a train is exported. Then all trains are rusting
+          train_symbol_to_compare = entity.nil? ? train.variants.values.map { |item| item[:name] } : [train.name]
 
           trains.each do |t|
             next if t.rusted
             next if t.rusts_on.nil? || t.rusts_on.none?
 
-            # entity is nil when a train is exported. Then all trains are rusting
-            train_symbol_to_compare = entity.nil? ? train.variants.values.map { |item| item[:name] } : [train.name]
             should_rust = !(t.rusts_on & train_symbol_to_compare).empty?
             next unless should_rust
             next unless rust?(t)
@@ -553,9 +554,11 @@ module Engine
           all_varians = trains.flat_map do |item|
             item.variants.values
           end
+
           all_rusted_variants = all_varians.select do |item|
-            item[:rusts_on]&.include?(train.name)
+            item[:rusts_on] && !(item[:rusts_on] & train_symbol_to_compare).empty?
           end
+
           all_rusted_names = all_rusted_variants.map { |item| item[:name] }.uniq
 
           new_rusted = all_rusted_names - @rusted_variants

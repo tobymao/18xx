@@ -1715,6 +1715,10 @@ module Engine
         true
       end
 
+      def cannot_pay_interest_str
+        nil
+      end
+
       def hex_blocked_by_ability?(_entity, ability, hex)
         ability.hexes.include?(hex.id)
       end
@@ -2571,6 +2575,16 @@ module Engine
       def decorate_marker(_icon)
         nil
       end
+
+      def adjustable_train_list?
+        false
+      end
+
+      def adjustable_train_sizes?
+        false
+      end
+
+      def reset_adjustable_trains!; end
 
       def operation_round_short_name
         self.class::OPERATION_ROUND_SHORT_NAME

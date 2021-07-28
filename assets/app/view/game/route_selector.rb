@@ -238,6 +238,7 @@ module View
         end
 
         reset_all = lambda do
+          @game.reset_adjustable_trains!(@routes)
           @selected_route = nil
           store(:selected_route, @selected_route)
           @routes.clear
@@ -256,6 +257,26 @@ module View
             routes: @routes.reject { |r| r.paths.empty? },
           )
           store(:routes, @routes)
+        end
+
+        add_train = lambda do
+          @game.add_route_train(@routes)
+          store(:routes, @routes)
+        end
+
+        delete_train = lambda do
+          @game.delete_route_train(@selected_route)
+          store(:routes, @routes)
+        end
+
+        increase_train = lambda do
+          @game.increase_route_train(@selected_route)
+          store(:selected_route, @selected_route)
+        end
+
+        decrease_train = lambda do
+          @game.decrease_route_train(@selected_route)
+          store(:selected_route, @selected_route)
         end
 
         submit_style = {
@@ -279,6 +300,14 @@ module View
         ]
         if @game_data.dig('settings', 'auto_routing') || @game_data['mode'] == :hotseat
           buttons << h('button.small', { on: { click: auto } }, 'Auto')
+        end
+        if @game.adjustable_train_list?
+          buttons << h('button.small', { on: { click: add_train } }, '+Train')
+          buttons << h('button.small', { on: { click: delete_train } }, '-Train')
+        end
+        if @game.adjustable_train_sizes?
+          buttons << h('button.small', { on: { click: increase_train } }, '+Size')
+          buttons << h('button.small', { on: { click: decrease_train } }, '-Size')
         end
         h(:div, { style: { overflow: 'auto', marginBottom: '1rem' } }, [
           h(:div, buttons),

@@ -71,6 +71,36 @@ module Engine
           '466' => 1,
           '492' => 1,
           '611' => 2,
+          'Beg6' => {
+            'count' => 2,
+            'color' => 'yellow',
+            'code' => 'city=revenue:20;path=a:0,b:_0;path=a:2,b:_0',
+          },
+          'Beg7' => {
+            'count' => 1,
+            'color' => 'yellow',
+            'code' => 'path=a:0,b:1',
+          },
+          'Beg8' => {
+            'count' => 1,
+            'color' => 'yellow',
+            'code' => 'path=a:0,b:2',
+          },
+          'Beg9' => {
+            'count' => 1,
+            'color' => 'yellow',
+            'code' => 'path=a:0,b:3',
+          },
+          'Beg23' => {
+            'count' => 1,
+            'color' => 'green',
+            'code' => 'path=a:0,b:3;path=a:0,b:4',
+          },
+          'Beg24' => {
+            'count' => 1,
+            'color' => 'green',
+            'code' => 'path=a:0,b:3;path=a:0,b:2',
+          },
         }.freeze
 
         LOCATION_NAMES = {
@@ -297,7 +327,6 @@ module Engine
             revenue: 20,
             desc: 'No special abilities.',
             sym: 'SIR',
-            min_players: 3,
             color: nil,
           },
           {
@@ -438,6 +467,45 @@ module Engine
         EBUY_OTHER_VALUE = false # allow ebuying other corp trains for up to face
         HOME_TOKEN_TIMING = :operating_round
 
+        BEGINNER_GAME_PRIVATES = {
+          2 => %w[DR SIR],
+          3 => %w[DR SIR ER],
+          4 => %w[DR SIR ER SMR],
+          5 => %w[DR SIR ER SMR TR],
+          6 => %w[DR SIR ER SMR TR MF],
+        }.freeze
+
+        BEGINNER_GAME_PRIVATE_REVENUES = {
+          'TR' => 5,
+          'MF' => 15,
+          'ER' => 15,
+          'SMR' => 20,
+          'DR' => 20,
+          'SIR' => 25,
+        }.freeze
+
+        BEGINNER_GAME_PRIVATE_VALUES = {
+          'TR' => 20,
+          'MF' => 40,
+          'ER' => 40,
+          'SMR' => 60,
+          'DR' => 60,
+          'SIR' => 90,
+        }.freeze
+
+        def setup
+          remove_company(company_by_id('SIR')) if two_player? && !beginner_game?
+          return unless beginner_game?
+
+          neuter_private_companies
+          close_unused_privates
+          remove_blockers_and_icons
+
+          # companies are randomly distributed to players and they buy their company
+          @companies.sort_by! { rand }
+          @players.zip(@companies).each { |p, c| buy_company(p, c) }
+        end
+
         def operating_round(round_num)
           Round::Operating.new(self, [
             Engine::Step::Bankrupt,
@@ -454,11 +522,70 @@ module Engine
           ], round_num: round_num)
         end
 
+        def init_round
+          return super unless beginner_game?
+
+          stock_round
+        end
+
+        def optional_tiles
+          remove_beginner_tiles unless beginner_game?
+        end
+
         def active_players
           return super if @finished
 
           company = company_by_id('ER')
           current_entity == company ? [@round.company_sellers[company]] : super
+        end
+
+        def beginner_game?
+          @optional_rules.include?(:beginner_game)
+        end
+
+        def remove_beginner_tiles
+          @tiles.reject! { |tile| tile.id.start_with?('Beg') }
+          @all_tiles.reject! { |tile| tile.id.start_with?('Beg') }
+        end
+
+        def remove_blockers_and_icons
+          %w[C4 K4 B11 G10 I12 J9].each do |coords|
+            hex = hex_by_id(coords)
+            hex.tile.blockers.reject! { true }
+            hex.tile.icons.reject! { true }
+          end
+        end
+
+        def neuter_private_companies
+          @companies.each { |c| neuter_company(c) }
+        end
+
+        def neuter_company(company)
+          company_abilities = company.abilities.dup
+          company_abilities.each { |ability| company.remove_ability(ability) }
+          company.desc = 'Closes when the first 5 train is bought. Cannot be purchased by a corporation'
+          company.value = BEGINNER_GAME_PRIVATE_VALUES[company.sym]
+          company.revenue = BEGINNER_GAME_PRIVATE_REVENUES[company.sym]
+          company.add_ability(Ability::NoBuy.new(type: 'no_buy'))
+        end
+
+        def close_unused_privates
+          companies_dup = @companies.dup
+          companies_dup.each { |c| remove_company(c) unless BEGINNER_GAME_PRIVATES[@players.size].include?(c.sym) }
+        end
+
+        def remove_company(company)
+          company.close!
+          @round.active_step.companies.delete(company) unless beginner_game?
+          @companies.delete(company)
+        end
+
+        def buy_company(player, company)
+          price = company.value
+          company.owner = player
+          player.companies << company
+          player.spend(price, @bank)
+          @log << "#{player.name} buys #{company.name} for #{format_currency(price)}"
         end
       end
     end
