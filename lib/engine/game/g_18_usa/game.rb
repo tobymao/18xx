@@ -173,6 +173,55 @@ module Engine
             'code' => 'junction;offboard=revenue:20,hide:1;'\
                       'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=🛢️',
           },
+          'RuralK' =>
+          {
+            'count' => 1,
+            'color' => 'yellow',
+            'code' => 'town=revenue:10;'\
+                      'path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=R.J.',
+          },
+          'RuralY' =>
+          {
+            'count' => 1,
+            'color' => 'yellow',
+            'code' => 'town=revenue:10;'\
+                      'path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=R.J.',
+          },
+          'RuralX' =>
+          {
+            'count' => 1,
+            'color' => 'yellow',
+            'code' => 'town=revenue:10;'\
+                      'path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=R.J.',
+          },
+          'RHQ3' =>
+          {
+            'count' => 1,
+            'color' => 'blue',
+            'code' => 'city=slots:3,revenue:50;label=RHQ;'\
+                      'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0',
+          },
+          'RHQ4' =>
+          {
+            'count' => 1,
+            'color' => 'blue',
+            'code' => 'city=slots:3,revenue:50;label=RHQ;'\
+                      'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0',
+          },
+          'RHQ5' =>
+          {
+            'count' => 1,
+            'color' => 'blue',
+            'code' => 'city=slots:3,revenue:50;label=RHQ;'\
+                      'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
+          },
+          'RHQ6' =>
+          {
+            'count' => 1,
+            'color' => 'blue',
+            'code' => 'city=slots:3,revenue:50;label=RHQ;'\
+                      'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
+          },
           'X01' =>
           {
             'count' => 'unlimited',
@@ -485,6 +534,9 @@ module Engine
                     events: [{ 'type' => 'signal_end_game' }],
                   }].freeze
 
+        CITY_HEXES =
+          %w[B8 B14 C3 C17 C29 D6 D14 D20 D24 E3 E7 E11 E15 E17 E23 F20 F26 G3 G7 G11 G17 G27 H8 H14 H20 H22 I13 I15 I19
+             I25].freeze
         OIL_HEXES = %w[B12 G15 H4 I17 I21 I23 J14].freeze
         IRON_HEXES = %w[B10 C7 C19 D16 E5 E9 G21 H6].freeze
         COAL_HEXES = %w[B6 B10 B12 C9 D8 D10 D26 E19 E25 F8 F10 F16 F22 F24].freeze
@@ -657,6 +709,8 @@ module Engine
             abilities: [],
             color: nil,
           },
+          # P16 Regional Headquarters
+          # TODO - make it so that tile lay can be restricted to be within a phase and onto a specific tile
           # P18
           {
             name: 'Peabody Coal Company',
@@ -792,6 +846,33 @@ module Engine
                 closed_when_used_up: true,
                 owner_type: 'corporation',
                 count: 1,
+              },
+            ],
+            color: nil,
+          },
+          # P26
+          {
+            name: 'Rural Junction',
+            value: 90,
+            revenue: 0,
+            desc: 'Comes with three rural junction tiles. Rural junctions can be placed in empty city hexes and fulfill the '\
+                  'revenue center requirement for coal, iron, and oil markers and can receive bridge tokens. Rural junctions '\
+                  'are not towns and do not count against the number of stops for a train and furthermore they may not be the '\
+                  'start or end of a route. Rural junctions may never be upgraded; a train may not run through the same rural '\
+                  'junction twice',
+            sym: 'P26',
+            abilities: [
+              {
+                type: 'tile_lay',
+                hexes: CITY_HEXES,
+                tiles: %w[RuralX RuralY RuralK],
+                free: false,
+                reachable: true,
+                when: 'track',
+                consume_tile_lay: true,
+                closed_when_used_up: true,
+                owner_type: 'corporation',
+                count: 3,
               },
             ],
             color: nil,
