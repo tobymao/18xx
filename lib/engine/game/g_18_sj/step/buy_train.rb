@@ -19,6 +19,18 @@ module Engine
           end
 
           def do_after_buy_train_action(_action, _entity); end
+
+          def must_buy_train?(entity)
+            return false if entity.player == @game.edelsward
+
+            super
+          end
+
+          def can_entity_buy_train?(entity)
+            return false if entity.player == @game.edelsward
+
+            super
+          end
         end
       end
     end

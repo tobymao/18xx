@@ -992,6 +992,10 @@ module Engine
         log_share_price(corporation, price) if self.class::SELL_MOVEMENT != :none
       end
 
+      def sold_out_increase?(_corporation)
+        self.class::SOLD_OUT_INCREASE
+      end
+
       def log_share_price(entity, from)
         to = entity.share_price.price
         return unless from != to

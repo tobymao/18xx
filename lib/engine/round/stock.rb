@@ -66,7 +66,7 @@ module Engine
         corporations_to_move_price.sort.each do |corp|
           prev = corp.share_price.price
 
-          sold_out_stock_movement(corp) if sold_out?(corp) && @game.class::SOLD_OUT_INCREASE
+          sold_out_stock_movement(corp) if sold_out?(corp) && @game.sold_out_increase?(corp)
           pool_share_drop = @game.class::POOL_SHARE_DROP
           price_drops =
             if (pool_share_drop == :none) || (shares_in_pool = corp.num_market_shares).zero?
