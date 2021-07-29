@@ -730,6 +730,8 @@ module Engine
 
         GKB_HEXES = %w[C8 C16 E8].freeze
 
+        EDELSWARD_PLAYER_ID = -1
+
         def oscarian_era
           @optional_rules&.include?(:oscarian_era)
         end
@@ -847,7 +849,11 @@ module Engine
         end
 
         def bot_corporation?(entity)
-          two_player_variant && entity&.corporation? && entity.player == @edelsward
+          two_player_variant && entity&.corporation? && bot_player?(entity.player)
+        end
+
+        def bot_player?(player)
+          two_player_variant && player&.id == EDELSWARD_PLAYER_ID
         end
 
         def ipo_name(entity)
@@ -898,7 +904,7 @@ module Engine
           @requisition_turn = 0
 
           if two_player_variant && @players.size == 2
-            @edelsward = Player.new(-1, 'A.W. Edelswärd')
+            @edelsward = Player.new(EDELSWARD_PLAYER_ID, 'A.W. Edelswärd')
             @players << @edelsward
           end
 
@@ -1318,7 +1324,7 @@ module Engine
         end
 
         def player_value(player)
-          return 0 if player == @edelsward
+          return 0 if bot_player?(player)
 
           super
         end
@@ -1326,7 +1332,7 @@ module Engine
         def result
           return super unless two_player_variant
 
-          @players.reject { |p| p == @edelsward }
+          @players.reject { |p| bot_player?(p) }
             .map { |p| [p.name, player_value(p)] }
             .sort_by { |_, v| v }
             .reverse
@@ -1335,12 +1341,12 @@ module Engine
 
         def operator_for_edelsward_corporation
           # The player to act as bot during OR has the highest value (with nearest to PD as tie breaker)
-          @players.reject { |p| p == @edelsward }.min_by { |p| [-p.value, @players.index(p)] }
+          @players.reject { |p| bot_player?(p) }.min_by { |p| [-p.value, @players.index(p)] }
         end
 
         def operator_for_edelsward_requisition
           # The player to select requisition has the lowest value (with nearest to PD as tie breaker)
-          @players.reject { |p| p == @edelsward }.min_by { |p| [p.value, @players.index(p)] }
+          @players.reject { |p| bot_player?(p) }.min_by { |p| [p.value, @players.index(p)] }
         end
 
         private
