@@ -181,7 +181,7 @@ module View
             if @tile.cities.one? && (@tile.cities.first.slots > 1)
               [P_LEFT_CORNER[layout]]
             else
-              [SINGLE_CITY_ONE_SLOT[layout], SINGLE_CITY_ONE_SLOT_RIGHT[layout]]
+              [SINGLE_CITY_ONE_SLOT[layout], SINGLE_CITY_ONE_SLOT_RIGHT[layout], P_RIGHT_CORNER[layout]]
             end
           elsif @tile.city_towns.size > 1 && layout == :flat
             MULTI_CITY_LOCATIONS
