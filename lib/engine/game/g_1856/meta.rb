@@ -15,7 +15,6 @@ module Engine
         GAME_LOCATION = 'Ontario, Canada'
         GAME_RULES_URL = 'https://www.google.com/search?q=1856+rules'
 
-        # See: https://www.facebook.com/groups/1824321454265528/permalink/4157468544284129
         GAME_PUBLISHER = :sea_horse
 
         PLAYER_RANGE = [3, 6].freeze
@@ -29,6 +28,11 @@ module Engine
             sym: :unlimited_bonus_tokens,
             short_name: 'Unlimited +10 bonus tokens',
             desc: 'Unlimited Bridge & Tunnel Tokens (As opposed to normal limit of 3 each)',
+          },
+          {
+            sym: :swap_d_for_8t,
+            short_name: 'Diesels replaced with 8Ts',
+            desc: 'Diesel trains are replaced with $1000 8Ts',
           },
         ].freeze
       end

@@ -292,12 +292,12 @@ module Engine
         #     color: nil,
         #   },
         #   {
-        #     name: 'Crédit Mobilier',
+        #     name: 'Credit Mobilier',
         #     value: 40,
         #     revenue: 10,
         #     desc: 'If the Union Pacific corporation purchases this company, it may pay up to triple the value to'\
-        #           ' the owner of the Crédit Mobilier. If the Crédit Mobilier is owned by any Corporation, the president'\
-        #           ' always gets the $10 income. The corporation owning the Crédit Mobilier may do one extra yellow track'\
+        #           ' the owner of the Credit Mobilier. If the Credit Mobilier is owned by any Corporation, the president'\
+        #           ' always gets the $10 income. The corporation owning the Credit Mobilier may do one extra yellow track'\
         #           ' lay west of the Mississippi River. This company survices until phase six as a non-revenue paying'\
         #           ' company if the extra track lay has not been done.',
         #     sym: 'CM',

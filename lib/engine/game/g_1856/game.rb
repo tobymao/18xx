@@ -1003,6 +1003,8 @@ module Engine
           )
           national.add_ability(self.class::NATIONAL_IMMOBILE_SHARE_PRICE_ABILITY)
           national.add_ability(self.class::NATIONAL_FORCED_WITHHOLD_ABILITY)
+
+          change_diesels_for_8t if @optional_rules&.include?(:swap_d_for_8t)
         end
 
         def unlimited_bonus_tokens?
@@ -1872,6 +1874,23 @@ module Engine
           return super if (val % 1).zero?
 
           format('$%.1<val>f', val: val)
+        end
+
+        def change_diesels_for_8t
+          @depot.trains.select { |t| t.name == 'D' }.each { |t| change_trains(t, '8', 8, 1000) }
+          # @depot.trains.select { |t| t.name == '4' }.each { |t| change_rust(t, '8') }
+          # @depot.trains.select { |t| t.name == "4'" }.each { |t| change_rust(t, '8') }
+        end
+
+        def change_trains(t, name, distance, price)
+          t.name = name
+          t.distance = distance
+          t.price = price
+          t.variants.each { |_, v| v.merge!(name: name, distance: distance, price: price) }
+        end
+
+        def change_rust(t, rusts)
+          t.rusts_on = rusts
         end
       end
     end
