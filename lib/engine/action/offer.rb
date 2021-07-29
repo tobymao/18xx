@@ -5,9 +5,9 @@ require_relative 'base'
 module Engine
   module Action
     class Offer < Base
-      attr_reader :entity, :corporation, :company, :price
+      attr_reader :corporation, :company, :price
 
-      def initialize(entity, corporation:, company:, price:)
+      def initialize(entity, corporation: nil, company: nil, price: nil)
         super(entity)
         @corporation = corporation
         @company = company
@@ -24,8 +24,8 @@ module Engine
 
       def args_to_h
         {
-          'corporation' => @corporation.id,
-          'company' => @company.id,
+          'corporation' => @corporation&.id,
+          'company' => @company&.id,
           'price' => @price,
         }
       end

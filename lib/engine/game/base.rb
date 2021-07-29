@@ -153,7 +153,12 @@ module Engine
 
       CAPITALIZATION = :full
 
+      # Must sell all shares of a company in one action per turn
       MUST_SELL_IN_BLOCKS = false
+
+      # Percent of one company you are allowed to sell in one turn. Nil means
+      # unlimited and is the default
+      TURN_SELL_LIMIT = nil
 
       # when can a share holder sell shares
       # first           -- after first stock round
@@ -230,6 +235,7 @@ module Engine
       MUST_BUY_TRAIN = :route # When must the company buy a train if it doesn't have one (route, never, always)
 
       ALLOW_TRAIN_BUY_FROM_OTHERS = true # Allows train buy from other corporations
+      ALLOW_TRAIN_BUY_FROM_OTHER_PLAYERS = true # Allows train buy from other player's corporations
 
       # Default tile lay, one tile either upgrade or lay at zero cost
       # allows multiple lays, value must be either true, false or :not_if_upgraded
@@ -546,8 +552,12 @@ module Engine
         "#{self.class.name} - #{self.class.title} #{players.map(&:name)}"
       end
 
-      def result
+      def result_players
         @players
+      end
+
+      def result
+        result_players
           .map { |p| [p.name, player_value(p)] }
           .sort_by { |_, v| v }
           .reverse
@@ -1292,6 +1302,8 @@ module Engine
       end
 
       def get(type, id)
+        return nil unless type && id
+
         send("#{type}_by_id", id)
       end
 
@@ -1303,8 +1315,8 @@ module Engine
         end
       end
 
-      def payout_companies
-        companies = @companies.select { |c| c.owner && c.revenue.positive? }
+      def payout_companies(ignore: [])
+        companies = @companies.select { |c| c.owner && c.revenue.positive? && !ignore.include?(c.id) }
 
         companies.sort_by! do |company|
           [
@@ -1518,7 +1530,7 @@ module Engine
       def float_corporation(corporation)
         @log << "#{corporation.name} floats"
 
-        return if corporation.capitalization == :incremental
+        return if %i[incremental none].include?(corporation.capitalization)
 
         @bank.spend(corporation.par_price.price * corporation.total_shares, corporation)
         @log << "#{corporation.name} receives #{format_currency(corporation.cash)}"
@@ -1827,8 +1839,11 @@ module Engine
       end
 
       def exchange_corporations(exchange_ability)
-        candidates = if exchange_ability.corporations == 'any'
+        candidates = case exchange_ability.corporations
+                     when 'any'
                        corporations
+                     when 'ipoed'
+                       corporations.select(&:ipoed)
                      else
                        exchange_ability.corporations.map { |c| corporation_by_id(c) }
                      end
@@ -2057,6 +2072,11 @@ module Engine
         blockers = {}
         (companies + minors + corporations).each do |company|
           abilities(company, :blocks_hexes) do |ability|
+            ability.hexes.each do |hex|
+              blockers[hex] = company
+            end
+          end
+          abilities(company, :blocks_hexes_consent) do |ability|
             ability.hexes.each do |hex|
               blockers[hex] = company
             end
@@ -2418,7 +2438,7 @@ module Engine
           player = @players.reject(&:bankrupt)[@round.entity_index]
           @players.rotate!(@players.index(player))
         when :first_to_pass
-          @players = @round.pass_order if @round.pass_order.any?
+          @players = @round.pass_order unless @round.pass_order.empty?
         when :most_cash
           current_order = @players.dup.reverse
           @players.sort_by! { |p| [p.cash, current_order.index(p)] }.reverse!
@@ -2586,7 +2606,7 @@ module Engine
       end
 
       def show_value_of_companies?(entity)
-        entity.player?
+        entity&.player?
       end
 
       # minors to show on player cards

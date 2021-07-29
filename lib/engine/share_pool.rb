@@ -29,7 +29,8 @@ module Engine
       nil
     end
 
-    def buy_shares(entity, shares, exchange: nil, exchange_price: nil, swap: nil, allow_president_change: true, silent: nil)
+    def buy_shares(entity, shares, exchange: nil, exchange_price: nil, swap: nil,
+                   allow_president_change: true, silent: nil, borrow_from: nil)
       bundle = shares.is_a?(ShareBundle) ? shares : ShareBundle.new(shares)
       if @allow_president_sale && bundle.presidents_share && bundle.owner == self
         bundle = ShareBundle.new(bundle.shares, bundle.corporation.share_percent)
@@ -83,11 +84,13 @@ module Engine
       else
         price -= swap.price if swap
         swap_text = swap ? " + swap of a #{swap.percent}% share" : ''
+        borrowed = borrow_from ? (price - entity.cash) : 0
+        borrowed_text = borrowed.positive? ? " by borrowing #{@game.format_currency(borrowed)} from #{borrow_from.name}" : ''
         verb = entity == corporation ? 'redeems' : 'buys'
         unless silent
           @log << "#{entity.name} #{verb} #{share_str} "\
                   "from #{from} "\
-                  "for #{@game.format_currency(price)}#{swap_text}"
+                  "for #{@game.format_currency(price)}#{swap_text}#{borrowed_text}"
         end
       end
 
@@ -109,6 +112,7 @@ module Engine
           price: price,
           swap: swap,
           swap_to_entity: swap ? self : nil,
+          borrow_from: borrow_from,
           allow_president_change: allow_president_change
         )
       end
@@ -159,6 +163,7 @@ module Engine
                         price: nil,
                         allow_president_change: true,
                         swap: nil,
+                        borrow_from: nil,
                         swap_to_entity: nil)
       corporation = bundle.corporation
       owner = bundle.owner
@@ -189,7 +194,7 @@ module Engine
           corporation.escrow += price
         end
       elsif spender && receiver && price.positive?
-        spender.spend(price, receiver)
+        spender.spend(price, receiver, borrow_from: borrow_from)
       end
 
       bundle.shares.each { |s| move_share(s, to_entity) }

@@ -153,6 +153,9 @@ module Engine
       def change_share_price(entity, payout)
         return unless payout[:share_direction]
 
+        # For any company without a share price, skip price movement
+        return unless entity.share_price
+
         prev = entity.share_price.price
 
         right_times = 0

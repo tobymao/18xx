@@ -40,7 +40,7 @@ module View
           new_share = entity.share_price
 
           direction =
-            if option[:share_direction]
+            if new_share && option[:share_direction]
               moves = Array(option[:share_times]).zip(Array(option[:share_direction]))
 
               moves.map do |times, dir|
@@ -54,7 +54,7 @@ module View
 
           if entity.loans.any? && !@game.can_pay_interest?(entity, corp_income) && @game.cannot_pay_interest_str
             text += " #{@game.cannot_pay_interest_str}"
-          elsif new_share.acquisition?
+          elsif new_share&.acquisition?
             text += ' (Acquisition)'
           end
 

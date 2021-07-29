@@ -63,6 +63,10 @@ module Engine
         false
       end
 
+      def may_offer?(_company)
+        false
+      end
+
       def current_bid_amount(player, company)
         bids[company]&.find { |b| b.entity == player }&.price || 0
       end
