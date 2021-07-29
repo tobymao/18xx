@@ -9,7 +9,7 @@ module Engine
       module Step
         class BuyCompany < Engine::Step::BuyCompany
           def actions(entity)
-            return [] if entity.player == @game.edelsward
+            return [] if @game.bot_corporation?(entity)
 
             super
           end
