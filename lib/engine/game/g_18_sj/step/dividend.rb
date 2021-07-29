@@ -13,7 +13,7 @@ module Engine
           ONLY_PAYOUT = %i[payout].freeze
 
           def share_price_change(entity, revenue = 0)
-            return {} if entity.minor? || (@game.two_player_variant && current_entity.player == @game.edelsward)
+            return {} if entity.minor? || @game.bot_corporation?(entity)
 
             price = entity.share_price.price
             return { share_direction: :left, share_times: 1 } if revenue.zero? && entity.player != @game.edelsward
@@ -46,7 +46,7 @@ module Engine
           end
 
           def dividend_types
-            if @game.two_player_variant && current_entity.player == @game.edelsward &&
+            if @game.two_player_variant && @game.bot_corporation?(current_entity) &&
               !current_entity.trains.empty? && @game.routes_revenue(routes).positive?
               return ONLY_PAYOUT
             end
@@ -55,7 +55,7 @@ module Engine
           end
 
           def change_share_price(entity, payout)
-            return if @game.two_player_variant && entity.player == @game.edelsward
+            return if @game.two_player_variant && @game.bot_corporation?(entity)
 
             super
           end

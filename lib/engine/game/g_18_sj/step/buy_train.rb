@@ -21,13 +21,13 @@ module Engine
           def do_after_buy_train_action(_action, _entity); end
 
           def must_buy_train?(entity)
-            return false if entity.player == @game.edelsward
+            return false if @game.bot_corporation?(entity)
 
             super
           end
 
           def can_entity_buy_train?(entity)
-            return false if entity.player == @game.edelsward
+            return false if @game.bot_corporation?(entity)
 
             super
           end

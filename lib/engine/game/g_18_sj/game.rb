@@ -730,6 +730,8 @@ module Engine
 
         GKB_HEXES = %w[C8 C16 E8].freeze
 
+        EDELSWARD_PLAYER_ID = -1
+
         def oscarian_era
           @optional_rules&.include?(:oscarian_era)
         end
@@ -846,6 +848,14 @@ module Engine
           @gc ||= company_by_id('GC')
         end
 
+        def bot_corporation?(entity)
+          two_player_variant && entity&.corporation? && bot_player?(entity.player)
+        end
+
+        def bot_player?(player)
+          two_player_variant && player&.id == EDELSWARD_PLAYER_ID
+        end
+
         def ipo_name(entity)
           entity&.capitalization == :incremental ? 'Treasury' : 'IPO'
         end
@@ -894,7 +904,7 @@ module Engine
           @requisition_turn = 0
 
           if two_player_variant && @players.size == 2
-            @edelsward = Player.new(-1, 'A.W. Edelswärd')
+            @edelsward = Player.new(EDELSWARD_PLAYER_ID, 'A.W. Edelswärd')
             @players << @edelsward
           end
 
@@ -999,16 +1009,16 @@ module Engine
         end
 
         def acting_for_entity(entity)
-          return super if !two_player_variant || entity.player? || entity.player != @edelsward
+          return super unless bot_corporation?(entity)
 
           WithNameAdapter.new(@edelsward, operator_for_edelsward_corporation)
         end
 
         def place_home_token(entity)
-          return super if !two_player_variant || entity.player != @edelsward
+          return super unless bot_corporation?(entity)
 
           entity_or_order = @round.entities.index(entity)
-          return super if @round.entities.find { |e| e.player == @edelsward && @round.entities.index(e) < entity_or_order }
+          return super if @round.entities.find { |e| bot_corporation?(e) && @round.entities.index(e) < entity_or_order }
 
           @log << "-- #{operator_for_edelsward_corporation.name} has the highest value at the moment, and should use "\
                   "Master Mode to make actions for any of #{@edelsward.name}'s corporations"
@@ -1124,7 +1134,7 @@ module Engine
 
           make_sj_tokens_impassable
 
-          require_automa_trains(entity) if entity.player == @edelsward
+          require_automa_trains(entity) if bot_corporation?(entity)
         end
 
         # Make SJ passable if current corporation has E train
@@ -1162,7 +1172,7 @@ module Engine
         end
 
         def buying_power(entity, **)
-          return 999 if entity.player == @edelsward
+          return 999 if bot_corporation?(entity)
 
           super
         end
@@ -1206,7 +1216,7 @@ module Engine
         def perform_nationalization
           @pending_nationalization = false
           candidates = @corporations.select { |c| !c.closed? && c.operated? && c.trains.empty? }
-          candidates.reject! { |c| c.player == @edelsward } if two_player_variant
+          candidates.reject! { |c| bot_corporation?(c) } if two_player_variant
           if candidates.empty?
             extra = two_player_variant ? " (excluding any run by #{@edelsward.name})" : ''
             @log << "Nationalization skipped as no trainless floated corporations#{extra}"
@@ -1293,36 +1303,36 @@ module Engine
         end
 
         def sold_out_increase?(corporation)
-          corporation.player != @edelsward
+          !bot_corporation?(corporation)
         end
 
         def operating_order
-          floated, floated_edelsward = @corporations.select(&:floated?).partition { |c| c.player != @edelsward }
+          floated_edelsward, floated = @corporations.select(&:floated?).partition { |c| bot_corporation?(c) }
           @minors.select(&:floated?) + floated.sort + floated_edelsward.sort_by(&:name)
         end
 
         def purchasable_companies(entity)
-          return [] if entity&.player == @edelsward
+          return [] if bot_corporation?(entity)
 
           super
         end
 
         def entity_can_use_company?(entity, company)
-          return false if entity.player == @edelsward || (company == nydqvist_och_holm && company.owner != entity)
+          return false if bot_corporation?(entity) || (company == nydqvist_och_holm && company.owner != entity)
 
           super
         end
 
         def player_value(player)
-          return 0 if player == @edelsward
+          return 0 if bot_player?(player)
 
           super
         end
 
         def result
-          return super unless @edelsward
+          return super unless two_player_variant
 
-          @players.reject { |p| p == @edelsward }
+          @players.reject { |p| bot_player?(p) }
             .map { |p| [p.name, player_value(p)] }
             .sort_by { |_, v| v }
             .reverse
@@ -1331,12 +1341,12 @@ module Engine
 
         def operator_for_edelsward_corporation
           # The player to act as bot during OR has the highest value (with nearest to PD as tie breaker)
-          @players.reject { |p| p == @edelsward }.min_by { |p| [-p.value, @players.index(p)] }
+          @players.reject { |p| bot_player?(p) }.min_by { |p| [-p.value, @players.index(p)] }
         end
 
         def operator_for_edelsward_requisition
           # The player to select requisition has the lowest value (with nearest to PD as tie breaker)
-          @players.reject { |p| p == @edelsward }.min_by { |p| [p.value, @players.index(p)] }
+          @players.reject { |p| bot_player?(p) }.min_by { |p| [p.value, @players.index(p)] }
         end
 
         private

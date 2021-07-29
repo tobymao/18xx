@@ -8,7 +8,7 @@ module Engine
       module Step
         class Token < Engine::Step::Token
           def place_token(entity, city, token)
-            token.price = 0 if entity.player == @game.edelsward
+            token.price = 0 if @game.bot_corporation?(entity)
             super(entity, city, token)
           end
         end
