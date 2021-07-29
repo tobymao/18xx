@@ -1501,7 +1501,6 @@ module Engine
 
         def revenue_for(route, stops)
           revenue = super
-          revenue += 10 * stops.count { |stop| stop.hex.assigned?('bridge') }
 
           raise GameError, 'Route visits same hex twice' if route.hexes.size != route.hexes.uniq.size
 
@@ -1514,6 +1513,12 @@ module Engine
         def increased_oil?
           @phase.status.include?('increased_oil')
         end
+
+        def check_distance(route, visits)
+          super
+          #raise GameError, 'Train cannot start or end on a rural junction' if visits.first.tile.name.include?('Rural') || visits.last.tile.name.include?('Rural')
+        end
+
       end
     end
   end

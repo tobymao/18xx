@@ -19,6 +19,19 @@ module Engine
             @game.graph.connected_hexes(owner)[hex]
           end
 
+          def lay_tile_action(action, entity: nil, spender: nil)
+            tile = action.tile
+            check_rural_junction(tile, action.hex) if tile.name.include?('Rural')
+
+            super
+          end
+
+          def check_rural_junction(_tile, hex)
+            return unless hex.neighbors.values.any? { |h| h.tile.name.include?('Rural') }
+
+            raise GameError, 'Cannot place rural junctions adjacent to each other'
+          end
+
           def potential_future_tiles(_entity, hex)
             @game.tiles
               .uniq(&:name)
