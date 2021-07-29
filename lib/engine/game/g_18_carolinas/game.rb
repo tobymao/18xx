@@ -514,8 +514,8 @@ module Engine
           north = @north_hexes.include?(from.hex)
           south = @south_hexes.include?(from.hex)
 
-          # Can only ever lay standard track in the North or anywhere after phase 5
-          return false if ((north && !south) || @phase.available?('5')) && southern
+          # Can only ever lay northern track in the North before phase 5
+          return false if north && !south && southern && !@phase.available?('5')
 
           # Can only ever lay southern track in the South before phase 5
           return false if !north && south && standard && !@phase.available?('5')
@@ -773,7 +773,6 @@ module Engine
           raise GameError, 'Unable to find owner' unless entity
 
           return if train.distance == MAX_TRAIN
-          return if route.routes.sum { |r| r.train.distance } >= loan_or_power(entity)
 
           @corporation_trains[entity] ||= entity.trains.dup
           new_train = trains.find { |t| t.distance == (train.distance + 1) && !t.owner }
