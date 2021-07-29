@@ -617,7 +617,13 @@ module Engine
         OIL_HEXES = %w[B12 G15 H4 I17 I21 I23 J14].freeze
         IRON_HEXES = %w[B10 C7 C19 D16 E5 E9 G21 H6].freeze
         COAL_HEXES = %w[B6 B10 B12 C9 D8 D10 D26 E19 E25 F8 F10 F16 F22 F24].freeze
-        BRIDGE_CITY_HEXES = %w[C10 C17 D14 E15 E17 F20 G17].freeze
+        BRIDGE_CITY_HEXES = %w[I19 C10 C17 D14 E15 E17 F20 G17].freeze
+        BRIDGE_TILE_HEXES = %w[B4 D18 E21 F18 H18].freeze
+
+        def bridge_city_hex?(hex_id)
+          BRIDGE_CITY_HEXES.include?(hex_id)
+        end
+
         COMPANIES = [
           # P1
           {
@@ -666,7 +672,7 @@ module Engine
               },
               {
                 type: 'assign_hexes',
-                hexes: BRIDGE_CITY_HEXES,
+                hexes: BRIDGE_CITY_HEXES + BRIDGE_TILE_HEXES,
                 count: 1,
                 when: 'owning_corp_or_turn',
                 owner_type: 'corporation',
@@ -848,7 +854,7 @@ module Engine
               },
               {
                 type: 'assign_hexes',
-                hexes: BRIDGE_CITY_HEXES,
+                hexes: BRIDGE_CITY_HEXES + BRIDGE_TILE_HEXES,
                 count: 1,
                 when: 'owning_corp_or_turn',
                 owner_type: 'corporation',
@@ -886,7 +892,7 @@ module Engine
               },
               {
                 type: 'assign_hexes',
-                hexes: BRIDGE_CITY_HEXES,
+                hexes: BRIDGE_CITY_HEXES + BRIDGE_TILE_HEXES,
                 count: 2,
                 when: 'owning_corp_or_turn',
                 owner_type: 'corporation',
@@ -1295,6 +1301,10 @@ module Engine
           @active_metropolitan_hexes ||= [@hexes.find { |h| h.id == 'D28' }]
         end
 
+        def metro_new_orleans
+          @metro_new_orleans ||= false
+        end
+
         def setup
           @rhq_tiles ||= @all_tiles.select { |t| t.name.include?('RHQ') }
           @company_town_tiles ||= @all_tiles.select { |t| t.name.include?('CTown') }
@@ -1329,6 +1339,7 @@ module Engine
               hex.lay(@tiles.find { |t| t.name == 'X02' }.rotate!(1))
             when 'I19'
               hex.lay(@tiles.find { |t| t.name == 'X06' })
+              @metro_new_orleans = true
             when 'H22'
               hex.lay(@tiles.find { |t| t.name == 'X01' })
             end
@@ -1344,7 +1355,7 @@ module Engine
           # TODO: Check if it's near a metropolis
           return true if @company_town_tiles.map(&:name).include?(to.name) && from.color == :white
           return @phase.tiles.include?(:brown) if @rhq_tiles.map(&:name).include?(to.name) &&
-              %w[5 6 7 14 15 619].include?(from.name)
+              %w[14 15 619 63 611 448].include?(from.name)
 
           super
         end
@@ -1357,7 +1368,7 @@ module Engine
           upgrades = super
           return upgrades unless tile_manifest
 
-          upgrades |= @rhq_tiles if @phase.tiles.include?(:brown) && %w[5 6 7 14 15 619].include?(tile.name)
+          upgrades |= @rhq_tiles if @phase.tiles.include?(:brown) && %w[14 15 619 63 611 448].include?(tile.name)
           upgrades |= @company_town_tiles if tile.color == :white
           upgrades
         end
@@ -1516,9 +1527,9 @@ module Engine
 
         def check_distance(route, visits)
           super
-          #raise GameError, 'Train cannot start or end on a rural junction' if visits.first.tile.name.include?('Rural') || visits.last.tile.name.include?('Rural')
+          raise GameError, 'Train cannot start or end on a rural junction' if
+              visits.first.tile.name.include?('Rural') || visits.last.tile.name.include?('Rural')
         end
-
       end
     end
   end

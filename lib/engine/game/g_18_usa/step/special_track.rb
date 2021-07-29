@@ -45,6 +45,7 @@ module Engine
 
           def legal_tile_rotation?(entity, hex, tile)
             # These are needed for the combo private (Keystone Bridge Co)
+            return super if tile.name.include?('Rural')
             return false if tile.id.include?('iron') && !@game.class::IRON_HEXES.include?(hex.id)
             return false if tile.id.include?('coal') && !@game.class::COAL_HEXES.include?(hex.id)
 
