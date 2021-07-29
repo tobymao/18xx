@@ -315,7 +315,7 @@ module Engine
           'B15' => 'Berlin Minden',
           'C2' => 'Boxtel',
           'C12' => 'Herne Gelsenkirchen',
-          'C14' => 'Östliches Rihrgebiet',
+          'C14' => 'Östliches Ruhrgebiet',
           'D7' => 'Moers',
           'D9' => 'Duisburg',
           'D11' => 'Oberhausen Mülheim',
@@ -980,7 +980,6 @@ module Engine
           @s.owner = @bank
           place_free_token(@s, 'C14', 0)
           place_free_token(@s, 'D15', 1)
-          place_free_token(@s, 'K14', 0)
           extra_steel_mill = hex_by_id(variable_steel_mill).tile
           extra_steel_mill.icons << Part::Icon.new('../logos/18_rhl/S')
           @log << "Variable steel mill added to #{extra_steel_mill.name}"
@@ -1307,8 +1306,9 @@ module Engine
               %w[A8 A10 A12 B1 D1 F1] => '',
               %w[F15 H15] => 'path=a:0,b:2',
               ['I4'] => 'path=a:0,b:3',
-              ['J15'] => 'city=revenue:yellow_20|brown_40;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0',
-              ['K14'] => 'city=revenue:0,loc:4.5;path=a:1,b:3',
+              ['J15'] => 'city=revenue:yellow_20|brown_40,loc:1;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
+                         'icon=image:../logos/18_rhl/S',
+              ['K14'] => 'path=a:1,b:3',
             },
             white: {
               ['B5'] => 'border=edge:3,type:impassable,color:blue;border=edge:4,type:impassable,color:blue',
