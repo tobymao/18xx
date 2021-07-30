@@ -31,9 +31,14 @@ module Engine
 
           def process_company_town(tile)
             corporation = @game.company_by_id('P27').owner
-            bonus_token = Engine::Token.new(corporation)
-            corporation.tokens << bonus_token
-            tile.cities.first.place_token(corporation, bonus_token, free: true, check_tokenable: false, extra_slot: true)
+            if corporation.tokens.size < 8
+              @game.log << "#{corporation.name} gets a free token to place on the Company Town"
+              bonus_token = Engine::Token.new(corporation)
+              corporation.tokens << bonus_token
+              tile.cities.first.place_token(corporation, bonus_token, free: true, check_tokenable: false, extra_slot: true)
+            else
+              @game.log << "#{corporation.name} forfeits the Company Town token as they are at token limit of 8"
+            end
             @game.graph.clear
             @game.company_by_id('P27').close!
           end

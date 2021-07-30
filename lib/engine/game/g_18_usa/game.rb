@@ -793,7 +793,6 @@ module Engine
             color: nil,
           },
           # P16 Regional Headquarters
-          # TODO - make it so that tile lay can be restricted to be within a phase and onto a specific tile
           {
             name: 'Regional Headquarters',
             value: 60,
@@ -1513,7 +1512,13 @@ module Engine
         def revenue_for(route, stops)
           revenue = super
 
+          corporation = route.train.owner
+
           raise GameError, 'Route visits same hex twice' if route.hexes.size != route.hexes.uniq.size
+
+          company_tile = route.all_hexes.find { |hex| hex.tile.id.include?('CTown') }&.tile
+
+          revenue -= 10 if company_tile && !company_tile.cities.first.tokened_by?(corporation)
 
           revenue += 10 * route.all_hexes.count { |hex| hex.tile.id.include?('coal') }
           revenue += 10 * route.all_hexes.count { |hex| hex.tile.id.include?('iron10') }
