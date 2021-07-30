@@ -119,7 +119,7 @@ module Engine
       end
 
       def exchange_token(token, cheater: false, extra_slot: false)
-        token.place(self)
+        token.place(self, extra: extra_slot)
         return @extra_tokens << token if extra_slot
 
         @tokens[get_slot(token.corporation, cheater: cheater)] = token

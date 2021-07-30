@@ -19,6 +19,19 @@ module Engine
             @game.graph.connected_hexes(owner)[hex]
           end
 
+          def lay_tile_action(action, entity: nil, spender: nil)
+            tile = action.tile
+            check_rural_junction(tile, action.hex) if tile.name.include?('Rural')
+
+            super
+          end
+
+          def check_rural_junction(_tile, hex)
+            return unless hex.neighbors.values.any? { |h| h.tile.name.include?('Rural') }
+
+            raise GameError, 'Cannot place rural junctions adjacent to each other'
+          end
+
           def potential_future_tiles(_entity, hex)
             @game.tiles
               .uniq(&:name)
@@ -32,6 +45,7 @@ module Engine
 
           def legal_tile_rotation?(entity, hex, tile)
             # These are needed for the combo private (Keystone Bridge Co)
+            return super if tile.name.include?('Rural')
             return false if tile.id.include?('iron') && !@game.class::IRON_HEXES.include?(hex.id)
             return false if tile.id.include?('coal') && !@game.class::COAL_HEXES.include?(hex.id)
 

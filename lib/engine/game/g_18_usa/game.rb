@@ -63,6 +63,62 @@ module Engine
             'color' => 'yellow',
             'code' => 'offboard=revenue:10,hide:1;path=a:0,b:3;label=⛏️',
           },
+          '544coal' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'brown',
+            'code' => 'junction;offboard=revenue:10,hide:1;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=⛏️',
+          },
+          '545coal' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'brown',
+            'code' => 'junction;offboard=revenue:10,hide:1;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;label=⛏️',
+          },
+          '546coal' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'brown',
+            'code' => 'junction;offboard=revenue:10,hide:1;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=⛏️',
+          },
+          '80coal' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'green',
+            'code' => 'junction;offboard=revenue:10,hide:1;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;label=⛏️',
+          },
+          '81coal' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'green',
+            'code' => 'junction;offboard=revenue:10,hide:1;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0;label=⛏️',
+          },
+          '82coal' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'green',
+            'code' => 'junction;offboard=revenue:10,hide:1;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;label=⛏️',
+          },
+          '83coal' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'green',
+            'code' => 'junction;offboard=revenue:10,hide:1;path=a:0,b:_0;path=a:5,b:_0;path=a:3,b:_0;label=⛏️',
+          },
+          '60coal' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'gray',
+            'code' => 'junction;offboard=revenue:10,hide:1;'\
+                      'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=⛏️',
+          },
+          'X17coal' =>
+          {
+            'count' => 'unlimited',
+            'color' => 'gray',
+            'code' => 'junction;offboard=revenue:10,hide:1;'\
+                      'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=⛏️',
+          },
           '7iron10' =>
           {
             'count' => 'unlimited',
@@ -172,6 +228,76 @@ module Engine
             'color' => 'gray',
             'code' => 'junction;offboard=revenue:20,hide:1;'\
                       'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=🛢️',
+          },
+          'RuralK' =>
+          {
+            'count' => 1,
+            'color' => 'yellow',
+            'code' => 'town=revenue:10;'\
+                      'path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=R.J.',
+          },
+          'RuralY' =>
+          {
+            'count' => 1,
+            'color' => 'yellow',
+            'code' => 'town=revenue:10;'\
+                      'path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=R.J.',
+          },
+          'RuralX' =>
+          {
+            'count' => 1,
+            'color' => 'yellow',
+            'code' => 'town=revenue:10;'\
+                      'path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=R.J.',
+          },
+          'CTownK' =>
+          {
+            'count' => 1,
+            'color' => 'yellow',
+            'code' => 'city=revenue:yellow_30|green_40|brown_50,slots:1;'\
+                      'path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=C.T.',
+          },
+          'CTownY' =>
+          {
+            'count' => 1,
+            'color' => 'yellow',
+            'code' => 'city=revenue:yellow_30|green_40|brown_50,slots:1;'\
+                      'path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=C.T.',
+          },
+          'CTownX' =>
+          {
+            'count' => 1,
+            'color' => 'yellow',
+            'code' => 'city=revenue:yellow_30|green_40|brown_50,slots:1;'\
+                      'path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=C.T.',
+          },
+          'RHQ3' =>
+          {
+            'count' => 1,
+            'color' => 'blue',
+            'code' => 'city=slots:3,revenue:50;label=RHQ;'\
+                      'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0',
+          },
+          'RHQ4' =>
+          {
+            'count' => 1,
+            'color' => 'blue',
+            'code' => 'city=slots:3,revenue:50;label=RHQ;'\
+                      'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0',
+          },
+          'RHQ5' =>
+          {
+            'count' => 1,
+            'color' => 'blue',
+            'code' => 'city=slots:3,revenue:50;label=RHQ;'\
+                      'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
+          },
+          'RHQ6' =>
+          {
+            'count' => 1,
+            'color' => 'blue',
+            'code' => 'city=slots:3,revenue:50;label=RHQ;'\
+                      'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
           },
           'X01' =>
           {
@@ -427,7 +553,7 @@ module Engine
             name: '5',
             on: '5',
             train_limit: 3,
-            tiles: %i[yellow green brown],
+            tiles: %i[yellow green blue brown],
             operating_rounds: 2,
             corporation_sizes: [5, 10],
             status: ['increased_oil'],
@@ -436,7 +562,7 @@ module Engine
             name: '6',
             on: '6',
             train_limit: 2,
-            tiles: %i[yellow green brown],
+            tiles: %i[yellow green blue brown],
             status: ['increased_oil'],
             operating_rounds: 2,
             corporation_sizes: [10],
@@ -445,7 +571,7 @@ module Engine
             name: '7',
             on: '7',
             train_limit: 2,
-            tiles: %i[yellow green brown gray],
+            tiles: %i[yellow green blue brown gray],
             status: ['increased_oil'],
             operating_rounds: 2,
             corporation_sizes: [10],
@@ -454,7 +580,7 @@ module Engine
             name: '8',
             on: '8',
             train_limit: 2,
-            tiles: %i[yellow green brown gray],
+            tiles: %i[yellow green blue brown gray],
             status: %w[increased_oil no_new_shorts],
             operating_rounds: 2,
             corporation_sizes: [10],
@@ -485,10 +611,19 @@ module Engine
                     events: [{ 'type' => 'signal_end_game' }],
                   }].freeze
 
+        CITY_HEXES =
+          %w[B8 B14 C3 C17 C29 D6 D14 D20 D24 E3 E7 E11 E15 E17 E23 F20 F26 G3 G7 G11 G17 G27 H8 H14 H20 H22 I13 I15 I19
+             I25].freeze
         OIL_HEXES = %w[B12 G15 H4 I17 I21 I23 J14].freeze
         IRON_HEXES = %w[B10 C7 C19 D16 E5 E9 G21 H6].freeze
         COAL_HEXES = %w[B6 B10 B12 C9 D8 D10 D26 E19 E25 F8 F10 F16 F22 F24].freeze
-        BRIDGE_CITY_HEXES = %w[C10 C17 D14 E15 E17 F20 G17].freeze
+        BRIDGE_CITY_HEXES = %w[I19 C10 C17 D14 E15 E17 F20 G17].freeze
+        BRIDGE_TILE_HEXES = %w[B4 D18 E21 F18 H18].freeze
+
+        def bridge_city_hex?(hex_id)
+          BRIDGE_CITY_HEXES.include?(hex_id)
+        end
+
         COMPANIES = [
           # P1
           {
@@ -537,7 +672,7 @@ module Engine
               },
               {
                 type: 'assign_hexes',
-                hexes: BRIDGE_CITY_HEXES,
+                hexes: BRIDGE_CITY_HEXES + BRIDGE_TILE_HEXES,
                 count: 1,
                 when: 'owning_corp_or_turn',
                 owner_type: 'corporation',
@@ -657,10 +792,22 @@ module Engine
             abilities: [],
             color: nil,
           },
+          # P16 Regional Headquarters
+          {
+            name: 'Regional Headquarters',
+            value: 60,
+            revenue: 0,
+            desc: 'May upgrade a non-metropolis green or brown city to the RHQ tile after phase 5 starts',
+            sym: 'P16',
+            abilities: [
+              # Simply owning this company is the ability
+            ],
+            color: nil,
+          },
           # P18
           {
             name: 'Peabody Coal Company',
-            value: 30,
+            value: 60,
             revenue: 0,
             desc: 'Comes with two coal mine markers. When placing a yellow '\
                   'tile in a mountain hex next to a revenue location, can place '\
@@ -706,7 +853,7 @@ module Engine
               },
               {
                 type: 'assign_hexes',
-                hexes: BRIDGE_CITY_HEXES,
+                hexes: BRIDGE_CITY_HEXES + BRIDGE_TILE_HEXES,
                 count: 1,
                 when: 'owning_corp_or_turn',
                 owner_type: 'corporation',
@@ -744,7 +891,7 @@ module Engine
               },
               {
                 type: 'assign_hexes',
-                hexes: BRIDGE_CITY_HEXES,
+                hexes: BRIDGE_CITY_HEXES + BRIDGE_TILE_HEXES,
                 count: 2,
                 when: 'owning_corp_or_turn',
                 owner_type: 'corporation',
@@ -794,6 +941,50 @@ module Engine
                 count: 1,
               },
             ],
+            color: nil,
+          },
+          # P26
+          {
+            name: 'Rural Junction',
+            value: 90,
+            revenue: 0,
+            desc: 'Comes with three rural junction tiles. Rural junctions can be placed in empty city hexes and fulfill the '\
+                  'revenue center requirement for coal, iron, and oil markers and can receive bridge tokens. Rural junctions '\
+                  'are not towns and do not count against the number of stops for a train and furthermore they may not be the '\
+                  'start or end of a route. Rural junctions may never be upgraded; a train may not run through the same rural '\
+                  'junction twice',
+            sym: 'P26',
+            abilities: [
+              {
+                type: 'tile_lay',
+                hexes: CITY_HEXES,
+                tiles: %w[RuralX RuralY RuralK],
+                free: false,
+                reachable: true,
+                when: 'track',
+                consume_tile_lay: true,
+                closed_when_used_up: true,
+                owner_type: 'corporation',
+                count: 3,
+              },
+            ],
+            color: nil,
+          },
+          # P27
+          {
+            name: 'Company Town',
+            value: 90,
+            revenue: 0,
+            desc: 'Comes with 3 company town tiles, only one of which may be played. The owning corporation may place one '\
+                  'Company Town tile on any empty hex not adjacent to a metropolis. When placed, the owning corporation '\
+                  'receives one bonus station marker which must be placed on the Company Town tile. No other corporations may '\
+                  'place a token on the Company Town hex and receive $10 less for the city than the company with the station '\
+                  'marker in the city. The Company Town can be placed on any hex, city circle or not, as long as it is not '\
+                  'adjacent to a metropolis and has no track or station marker in it. If the Company Town tile is placed on a '\
+                  '$10 river hex, a bridge token may be used. Coal / Oil / Iron markers may not be used with the Company Town. '\
+                  'If the station marker in the Company Town hex is ever removed, no token may ever replace it',
+            sym: 'P27',
+            abilities: [],
             color: nil,
           },
           # P28
@@ -1105,24 +1296,87 @@ module Engine
 
         METROPOLITAN_HEXES = %w[G3 E11 H14 H22 I19 D20].freeze
 
+        def active_metropolitan_hexes
+          @active_metropolitan_hexes ||= [@hexes.find { |h| h.id == 'D28' }]
+        end
+
+        def metro_new_orleans
+          @metro_new_orleans ||= false
+        end
+
         def setup
+          @rhq_tiles ||= @all_tiles.select { |t| t.name.include?('RHQ') }
+          @company_town_tiles ||= @all_tiles.select { |t| t.name.include?('CTown') }
+
+          # Place neutral tokens in the off board cities
+          neutral = Corporation.new(
+            sym: 'N',
+            name: 'Neutral',
+            logo: 'minus_ten',
+            simple_logo: 'minus_ten',
+            tokens: [0, 0, 0],
+          )
+          neutral.owner = @bank
+
+          neutral.tokens.each { |token| token.type = :neutral }
+          city_by_id('CTownK-0-0').place_token(neutral, neutral.next_token)
+          city_by_id('CTownX-0-0').place_token(neutral, neutral.next_token)
+          city_by_id('CTownY-0-0').place_token(neutral, neutral.next_token)
+
           metro = METROPOLITAN_HEXES.sort_by { rand }.take(3)
           metro.each do |i|
+            hex = @hexes.find { |h| h.id == i }
+            active_metropolitan_hexes << hex
             case i
             when 'H14'
-              @hexes.find { |h| h.id == i }.lay(@tiles.find { |t| t.name == 'X03' })
+              hex.lay(@tiles.find { |t| t.name == 'X03' })
             when 'E11'
               # Denver needs to be done at a later date
             when 'G3'
-              @hexes.find { |h| h.id == i }.lay(@tiles.find { |t| t.name == 'X05' }.rotate!(3))
+              hex.lay(@tiles.find { |t| t.name == 'X05' }.rotate!(3))
             when 'D20'
-              @hexes.find { |h| h.id == i }.lay(@tiles.find { |t| t.name == 'X02' }.rotate!(1))
+              hex.lay(@tiles.find { |t| t.name == 'X02' }.rotate!(1))
             when 'I19'
-              @hexes.find { |h| h.id == i }.lay(@tiles.find { |t| t.name == 'X06' })
+              hex.lay(@tiles.find { |t| t.name == 'X06' })
+              @metro_new_orleans = true
             when 'H22'
-              @hexes.find { |h| h.id == i }.lay(@tiles.find { |t| t.name == 'X01' })
+              hex.lay(@tiles.find { |t| t.name == 'X01' })
             end
           end
+        end
+
+        #
+        # Get the currently possible upgrades for a tile
+        # from: Tile - Tile to upgrade from
+        # to: Tile - Tile to upgrade to
+        # special - ???
+        def upgrades_to?(from, to, _special = false, selected_company: nil)
+          # TODO: Check if it's near a metropolis
+          return true if @company_town_tiles.map(&:name).include?(to.name) && from.color == :white
+          return @phase.tiles.include?(:brown) if @rhq_tiles.map(&:name).include?(to.name) &&
+              %w[14 15 619 63 611 448].include?(from.name)
+
+          super
+        end
+
+        # Get all possible upgrades for a tile
+        # tile: The tile to be upgraded
+        # tile_manifest: true/false Is this being called from the tile manifest screen
+        #
+        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
+          upgrades = super
+          return upgrades unless tile_manifest
+
+          upgrades |= @rhq_tiles if @phase.tiles.include?(:brown) && %w[14 15 619 63 611 448].include?(tile.name)
+          upgrades |= @company_town_tiles if tile.color == :white
+          upgrades
+        end
+
+        def legal_tile_rotation?(entity, hex, tile)
+          return company_by_id('P27').owner == entity && !company_by_id('P27').closed? if tile.name.include?('CTown')
+          return company_by_id('P16').owner == entity && !company_by_id('P16').closed? if tile.name.include?('RHQ')
+
+          super
         end
 
         def take_loan(entity, loan)
@@ -1257,9 +1511,14 @@ module Engine
 
         def revenue_for(route, stops)
           revenue = super
-          revenue += 10 * stops.count { |stop| stop.hex.assigned?('bridge') }
+
+          corporation = route.train.owner
 
           raise GameError, 'Route visits same hex twice' if route.hexes.size != route.hexes.uniq.size
+
+          company_tile = route.all_hexes.find { |hex| hex.tile.id.include?('CTown') }&.tile
+
+          revenue -= 10 if company_tile && !company_tile.cities.first.tokened_by?(corporation)
 
           revenue += 10 * route.all_hexes.count { |hex| hex.tile.id.include?('coal') }
           revenue += 10 * route.all_hexes.count { |hex| hex.tile.id.include?('iron10') }
@@ -1269,6 +1528,12 @@ module Engine
 
         def increased_oil?
           @phase.status.include?('increased_oil')
+        end
+
+        def check_distance(route, visits)
+          super
+          raise GameError, 'Train cannot start or end on a rural junction' if
+              visits.first.tile.name.include?('Rural') || visits.last.tile.name.include?('Rural')
         end
       end
     end
