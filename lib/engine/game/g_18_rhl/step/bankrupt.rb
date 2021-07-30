@@ -33,6 +33,8 @@ module Engine
               @game.sell_shares_and_change_price(bundle)
             end
 
+            president_contribution = player.cash
+
             # finally, the president discards all their remaining shares, regardless of 50% and
             # presidency restrictions, not changing any share prices
             player.shares_by_corporation(sorted: true).each do |corporation, shares|
@@ -42,10 +44,11 @@ module Engine
               bundle = ShareBundle.new(shares)
               @game.share_pool.transfer_shares(bundle, @game.share_pool, allow_president_change: true)
 
-              if corporation.owner == player && corporation.share_price.price.positive?
-                @log << "-- #{corporation.name} enters receivership (it has no president) --"
-                corporation.owner = @game.share_pool
-              end
+              next unless corporation.owner == player && corporation.share_price.price.positive?
+
+              @log << "-- #{corporation.name} enters receivership (it has no president) --"
+              @log << 'As long as it is in receivership it cannot lay track or put token - and will withhold'
+              corporation.owner = @game.share_pool
             end
 
             # reset last share sold stuff so that the new president isn't
@@ -64,6 +67,24 @@ module Engine
             end
 
             @game.declare_bankrupt(player)
+
+            return unless corp.owner == @game.share_pool
+
+            cheapest = @game.depot.min_depot_train
+            price = cheapest.price
+            source = cheapest.owner.name
+            @log << "#{corp.name} receives a #{cheapest.name} train from #{source}, using previous president's "\
+                    "#{format(president_contribution)}, the Bank paying the rest"
+            @game.buy_train(corp, cheapest, :free)
+            @game.phase.buying_train!(corp, cheapest)
+            fee = 100
+            bank_loan = price - corp.cash - president_contribution + fee
+            corp.spend(bank_loan, @game.bank, check_cash: false)
+            @log << "#{corp.name} need to borrow #{format(bank_loan)} from the Bank, including the #{format(fee)} fee"
+          end
+
+          def format(amount)
+            @game.format_currency(amount)
           end
         end
       end
