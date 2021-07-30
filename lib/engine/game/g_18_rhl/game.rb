@@ -37,6 +37,9 @@ module Engine
         # New track must be usable, or upgrade city value
         TRACK_RESTRICTION = :semi_restrictive
 
+        # Cannot buy other corp trains during emergency buy (rule 13.2)
+        EBUY_OTHER_VALUE = false
+
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'remove_tile_block' => ['Remove tile block', 'Hex E12 can now be upgraded to yellow'],
         ).freeze
@@ -877,7 +880,7 @@ module Engine
             Engine::Step::Route,
             G18Rhl::Step::Dividend,
             Engine::Step::DiscardTrain,
-            Engine::Step::BuyTrain,
+            G18Rhl::Step::BuyTrain,
           ], round_num: round_num)
         end
 
@@ -1047,6 +1050,18 @@ module Engine
           return 'I/T' unless corporation
 
           corporation.capitalization == :incremental ? 'Treasury' : 'IPO'
+        end
+
+        class WithNameAdapter
+          def name
+            'Receivership'
+          end
+        end
+
+        def acting_for_entity(entity)
+          return super if entity.owned_by_player?
+
+          WithNameAdapter.new
         end
 
         def place_home_token(corporation)
@@ -1265,6 +1280,16 @@ module Engine
         def potential_icon_cleanup(tile)
           # FIXME: Sticky:0 does not seem to work so remove trajekt icon manually
           remove_trajekt_icon(tile) if RHINE_METROPOLIS_HEXES.include?(tile.hex.id) && tile.color == :brown
+        end
+
+        def shares_for_presidency_swap(shares, num_shares)
+          # The shares to exchange might contain a double share.
+          # If so, return that unless more than 2 certificates.
+          twenty_percent = shares.find(&:double_cert)
+          return super unless twenty_percent
+          return [twenty_percent] if shares.size <= num_shares && twenty_percent
+
+          super(shares - [twenty_percent], num_shares)
         end
 
         private
