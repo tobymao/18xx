@@ -19,6 +19,8 @@ module View
       message = <<~MESSAGE
         <p>18Carolinas (prototype from All-Aboard Games) is now in alpha. 1836jr56 and 1893 is now in beta</p>
         <p>18SJ prototype now updated to version 0.8 - and two variants added, including a 2 player variant.</p>
+        <p>1830 now supports 2-player games.</p>
+
         <p>We now support Slack/Discord notifications. Learn how to use them <a href='https://github.com/tobymao/18xx/wiki/Notifications'>here</a>.</p>
         <p>Please submit problem reports and make suggestions for improvements on
         <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>.</p>
