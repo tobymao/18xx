@@ -268,7 +268,6 @@ module Engine
             shares: [100],
             max_ownership_percent: 100,
             coordinates: 'E17',
-            city: 0,
             color: '#ffffff',
             text_color: 'black',
             reservation_color: nil,

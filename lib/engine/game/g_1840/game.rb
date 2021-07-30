@@ -554,7 +554,7 @@ module Engine
         end
 
         def restock_tram_corporations
-          count_new_tram_corporations = @players.size + 1 - @tram_corporations.size
+          count_new_tram_corporations = @players.size + 1
           return if count_new_tram_corporations.zero?
 
           new_tram_corporations = @unavailable_tram_corporations.sort_by { rand }.first(count_new_tram_corporations)
@@ -562,6 +562,9 @@ module Engine
           @tram_corporations.concat(new_tram_corporations)
           @corporations.concat(new_tram_corporations)
           @unavailable_tram_corporations -= new_tram_corporations
+
+          @log << '-- New Tram Lines available for next round: ' \
+            "#{new_tram_corporations.sort_by { |item| item.id.to_i }.map(&:id).join(', ')} --"
         end
 
         def payout_companies

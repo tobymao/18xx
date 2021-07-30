@@ -32,6 +32,8 @@ module Engine
             @log << "#{entity.name} removes token from #{hex.name} (#{hex.location_name}) "\
                     "for #{@game.format_currency(40)}"
             token.destroy!
+
+            @game.graph_for_entity(entity).clear
           end
 
           def process_place_token(action)
