@@ -1622,14 +1622,30 @@ module Engine
           false
         end
 
+        # adjust end of set of routes to neighbor node if end is an offboard
+        def adjust_end(set, setend)
+          return setend unless setend.offboard?
+
+          # find route in set that has this end
+          end_route = set.find { |r| r.visited_stops.include?(setend) }
+          # find chain in route that has this end
+          end_chain = end_route.chains.find { |c| c[:nodes].include?(setend) }
+          # return other node in chain
+          end_chain[:nodes].find { |n| n != setend }
+        end
+
         # from https://www.redblobgames.com/grids/hexagons
         def doubleheight_coordinates(hex)
           [hex.id[0].ord - 'A'.ord, hex.id[1..-1].to_i]
         end
 
         # given a freight route set, find number of intervening hexes
-        # between ends.
-        def hex_crow_distance(_set, end_a, end_b)
+        # between ends. If an end is an offboard, calculate distance as if end
+        # is last hex before offboard and add 1
+        def hex_crow_distance(set, setend_a, setend_b)
+          end_a = adjust_end(set, setend_a)
+          end_b = adjust_end(set, setend_b)
+
           x_a, y_a = doubleheight_coordinates(end_a.hex)
           x_b, y_b = doubleheight_coordinates(end_b.hex)
 
@@ -1637,7 +1653,11 @@ module Engine
           # this game essentially uses double-height coordinates
           dx = (x_a - x_b).abs
           dy = (y_a - y_b).abs
-          distance = [0, dx + [0, (dy - dx) / 2].max - 1].max
+          distance = end_a == end_b ? -1 : [0, dx + [0, (dy - dx) / 2].max - 1].max
+
+          # adjust for offboards
+          distance += 1 if end_a != setend_a
+          distance += 1 if end_b != setend_b
 
           [0, distance].max
         end
