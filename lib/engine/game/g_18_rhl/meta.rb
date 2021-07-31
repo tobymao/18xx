@@ -12,7 +12,7 @@ module Engine
 
         GAME_SUBTITLE = 'Rhineland'
         GAME_DESIGNER = 'Wolfram Janich'
-        GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18Rhl'
+        GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18Rhl:-Rhineland'
         GAME_LOCATION = 'Rhineland, Germany'
         GAME_PUBLISHER = :marflow_games
         GAME_RULES_URL = 'https://18xx-marflow-games.de/onewebmedia/18Rhl%20-%20Rules%20%20EN.pdf'

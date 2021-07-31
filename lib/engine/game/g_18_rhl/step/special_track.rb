@@ -33,11 +33,6 @@ module Engine
             # as the ability does not belong to current entity, but to
             # player owned ability.
             @round.teleport_ability = ability
-
-            # Need special handling for the Trajektanstalt teleport, as this requires
-            # that the current entity gets an extra tile lay, as the teleport consumes
-            # the normal one.
-            @game.start_trajektanstalt_teleport if action.entity == @game.trajektanstalt
           end
 
           # Private 3 (Sailzuganlage) has all possible tiles, that can be played in all
