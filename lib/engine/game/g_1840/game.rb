@@ -564,7 +564,7 @@ module Engine
           @unavailable_tram_corporations -= new_tram_corporations
 
           @log << '-- New Tram Lines available for next round: ' \
-            "#{new_tram_corporations.sort_by { |item| item.id.to_i }.map(&:id).join(', ')} --"
+                  "#{new_tram_corporations.sort_by { |item| item.id.to_i }.map(&:id).join(', ')} --"
         end
 
         def payout_companies
