@@ -445,7 +445,6 @@ module Engine
             tokens: [0, 40, 100],
             coordinates: 'A10',
             color: '#7b352a',
-            always_market_price: true,
           },
           {
             float_percent: 60,
@@ -457,7 +456,6 @@ module Engine
             coordinates: 'C16',
             color: :pink,
             text_color: 'black',
-            always_market_price: true,
           },
           {
             float_percent: 60,
@@ -469,7 +467,6 @@ module Engine
             coordinates: 'A2',
             color: '#FFF500',
             text_color: 'black',
-            always_market_price: true,
           },
           {
             float_percent: 60,
@@ -481,7 +478,6 @@ module Engine
             coordinates: 'E8',
             color: :turquoise,
             text_color: 'black',
-            always_market_price: true,
           },
           {
             float_percent: 60,
@@ -492,7 +488,6 @@ module Engine
             tokens: [0, 40, 100, 100],
             coordinates: 'G26',
             color: :blue,
-            always_market_price: true,
           },
           {
             float_percent: 60,
@@ -503,7 +498,6 @@ module Engine
             tokens: [0, 40, 100, 100],
             coordinates: 'F19',
             color: '#0a0a0a',
-            always_market_price: true,
           },
           {
             float_percent: 60,
@@ -515,7 +509,6 @@ module Engine
             coordinates: 'G10',
             city: 2,
             color: '#237333',
-            always_market_price: true,
           },
           {
             float_percent: 60,
@@ -526,7 +519,6 @@ module Engine
             tokens: [0, 40, 100, 100],
             coordinates: 'D19',
             color: '#f48221',
-            always_market_price: true,
           },
           {
             float_percent: 60,
@@ -538,7 +530,6 @@ module Engine
             coordinates: 'F13',
             color: :lime,
             text_color: 'black',
-            always_market_price: true,
           },
           {
             float_percent: 60,
@@ -549,7 +540,6 @@ module Engine
             tokens: [0, 40],
             coordinates: 'C12',
             color: :purple,
-            always_market_price: true,
           },
           {
             float_percent: 60,
@@ -560,7 +550,6 @@ module Engine
             tokens: [0, 40, 100],
             coordinates: 'C2',
             color: '#d81e3e',
-            always_market_price: true,
           },
         ].freeze
 
@@ -781,6 +770,11 @@ module Engine
           end
 
           companies - @removed_companies
+        end
+
+        def game_corporations
+          self.class::CORPORATIONS.each { |c| c[:always_market_price] = !oscarian_era }
+          self.class::CORPORATIONS
         end
 
         def game_phases
