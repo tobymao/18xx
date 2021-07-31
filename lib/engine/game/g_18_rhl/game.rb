@@ -609,9 +609,9 @@ module Engine
                 type: 'base',
                 description: 'Special par/float rules',
                 desc_detail: "When the president's share is acquired (via private No. 6) 3 10% shares are moved "\
-                             'from IPO to the Market. When RhE floats it does receive only the value of the '\
-                             "president's share, and the value of the 3 shares moved when parring will be paid "\
-                             "to RhE's treasury as soon as there is a railway link between Aachen and Köln via Düren.",
+                             "from IPO to the Market. When RhE floats it receives only the value of the president's "\
+                             "share, and the initial value of the 3 shares moved when parring will be paid to RhE's "\
+                             'treasury as soon as there is a track link from Köln to Aachen via Düren.',
               },
             ],
             always_market_price: true,
@@ -636,8 +636,9 @@ module Engine
             value: 20,
             revenue: 5,
             desc: 'When acting as a director of a corporation the owner may place a tile on hex E12 for free during '\
-                  'the green phase. The placement of this tile is in addition to the normal tile placement. '\
-                  'The corporation needs an unblocked track link to hex E12.',
+                  'the green phase. The placement of this tile is in addition to the normal tile placement of the '\
+                  'corporation. However the corporation needs an unblocked track link from one of its stations to '\
+                  'the hex E12. This action closes the "Angertalhabn".',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: %w[E12] },
                         {
                           type: 'tile_lay',
@@ -656,11 +657,17 @@ module Engine
             name: 'No. 2 Konzession Essen-Osterath',
             value: 30,
             revenue: 0,
-            desc: 'With the beginning of the green phase the special function case be used. As director of a '\
-                  'corporation the owner may lay the special tile # 935 on hex E8 regardless whether there is a tile on '\
-                  'that hex or not. Directly after the tile placement the operating corporation may place a station '\
-                  'token for free on that hex (the director must use the station token with the lowest cost). '\
-                  'For further details see rules section 4.2.',
+            desc: 'With the beginning of the green phase the special function can be used. As director of a '\
+                  'corporation the owner may lay the orange tile # 935 on hex E8 regardless whether there is a tile '\
+                  'on that hex or not. Directly after the tile placement the operating corporation may place a '\
+                  'station token for free on that hex (the director must use the station token with the lowest '\
+                  'cost). If the corporation places this station token it is the only station token the corporation '\
+                  'may place in that Operating Round. When the corporation does not place the station token, any '\
+                  'other corporation may place a station marker on hex E8 according to the normal rules. If the '\
+                  'corporation places the station token in hex E8 during a later Operating Round it has to pay for '\
+                  'the station token. After the purchase of the first 5-train the tile # 935 may no longer be laid. '\
+                  'After the placement of the station marker the corporation may not place a tile even when it has '\
+                  'not used its normal tile lay (placing a station token is always the step after the tile lay!).',
             abilities: [
               {
                 type: 'teleport',
@@ -679,7 +686,7 @@ module Engine
             revenue: 15,
             desc: 'As director of a corporation the owner may place a tile on a mountain hex for free during the '\
                   "corporation's track building phase. This tile placement is in addition to the corporation's normal "\
-                  "track lay and there need not be a link to the corporation's network. This function can only be used "\
+                  "tile lay and there need not be a link to the corporation's network. This function can only be used "\
                   'once during the game.',
             abilities: [
               {
@@ -701,9 +708,12 @@ module Engine
             revenue: 20,
             desc: 'As director of a corporation the owner may upgrade *one* of the yellow hexes of '\
                   'Köln / Düsseldorf / Duisburg for free. This tile placement is in addition to the '\
-                  "corporation's normal tile lay. The corporation may place a station marker there in the same OR "\
+                  "corporation's normal tile lay. The corporation may place a station token there in the same OR "\
                   "by paying the appropriate costs. There need not be a link to the corporation's network. "\
-                  'For further details see rules section 4.2.',
+                  'If the station marker is not placed in the same Operating Round but later, the corporation '\
+                  'must have a track connection to that hex. After the placement of the station token the '\
+                  'corporation may not place a tile even when it has not used its normal tile lay (placing a '\
+                  'station marker is always the step after the tile lay!).',
             abilities: [
               {
                 type: 'teleport',
@@ -1076,25 +1086,6 @@ module Engine
 
           place_free_token(cce, 'E6', 0, silent: false)
           place_free_token(cce, 'I10', 1, silent: false)
-        end
-
-        def start_trajektanstalt_teleport
-          @trajektanstalt_teleport = current_entity
-        end
-
-        def complete_trajektanstalt_teleport
-          @trajektanstalt_teleport = nil
-        end
-
-        def tile_lays(entity)
-          return super unless @trajektanstalt_teleport == entity
-
-          # The Trajektanstalt teleport consumes the regular tile lay so to allow
-          # for the current entity to also do a normalt tile lay (after the optional
-          # tokening) we give it an extra tile lay or upgrade. Note! This extra
-          # tile lay will be replaced with normal (one lay/upgrade) as soon as current
-          # entity has completed its current OR.
-          [{ lay: true, upgrade: true }, { lay: true, upgrade: true }]
         end
 
         def upgrades_to?(from, to, _special = false, selected_company: nil)
