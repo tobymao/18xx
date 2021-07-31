@@ -1048,16 +1048,17 @@ module Engine
 
         def redeemable_shares(entity)
           return [] unless entity.corporation?
+          return [] unless entity.capitalization == :incremental
           return [] unless round.steps.find { |step| step.instance_of?(G18SJ::Step::IssueShares) }.active?
 
           type = entity.share_price.type
 
-          share_price = stock_market.find_share_price(entity, :right).price
+          share_price = stock_market.find_share_price(entity, :current).price
           share_price = 0 if brown?(type)
-          share_price /= 2 if orange?(type) || yellow?(type)
+          share_price = (share_price.to_f / 2).floor if orange?(type) || yellow?(type)
 
           bundle_max_size = 1
-          bundle_max_size = 10 if orange?(type) || yellow?(type)
+          bundle_max_size = 10 if brown?(type) || orange?(type)
 
           bundles_for_corporation(share_pool, entity)
             .each { |bundle| bundle.share_price = share_price }
