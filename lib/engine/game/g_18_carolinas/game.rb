@@ -408,27 +408,16 @@ module Engine
           # Rules call for randomizing privates, assigning to players then reordering players
           # based on worth of private
           # Instead, just pass out privates from least to most expensive since player order is already
-          # random
+          # random. Skip first one or two players for 5P or 6P games
           sorted_companies = @companies.sort_by(&:value)
           @players.each_with_index do |player, idx|
-            if idx < 4
-              company = sorted_companies.shift
-              @log << "#{player.name} receives #{company.name} and pays #{format_currency(company.value)}"
-              player.spend(company.value, @bank)
-              player.companies << company
-              company.owner = player
-            else
-              corp = [@north_corps[0], @south_corps[0]][idx - 4]
-              price = par_prices(corp)[0]
-              @stock_market.set_par(corp, price)
-              share = corp.ipo_shares.first
-              @share_pool.buy_shares(player,
-                                     share.to_bundle,
-                                     exchange: nil,
-                                     swap: nil,
-                                     allow_president_change: true)
-              after_par(corp)
-            end
+            next unless idx >= (@players.size - 4)
+
+            company = sorted_companies.shift
+            @log << "#{player.name} receives #{company.name} and pays #{format_currency(company.value)}"
+            player.spend(company.value, @bank)
+            player.companies << company
+            company.owner = player
           end
 
           # initialize corp trains
