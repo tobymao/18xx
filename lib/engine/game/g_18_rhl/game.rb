@@ -720,7 +720,13 @@ module Engine
             name: 'No. 5 Niederrheinische Licht- und Kraftwerke',
             value: 120,
             revenue: 25,
-            abilities: [{ type: 'shares', shares: 'GVE_1' }],
+            abilities: [{ type: 'shares', shares: 'GVE_1' },
+                        # block_partition has no effect, except it makes it possible to show Rhine in hex D9, F9 and I10
+                        # (the three Rhine Metropolis hexes). When upgrading these hexes to green the partition is removed.
+                        {
+                          type: 'blocks_partition',
+                          partition_type: 'water',
+                        }],
             desc: 'The player who purchased the Niederrheinische Licht- und Kraftwerke immediately receives a 10% '\
                   'share of the GVE for free. In order to float the GVE only 40% of the GVE needs to be sold from the '\
                   'Initial Offering.',
@@ -1370,14 +1376,14 @@ module Engine
             yellow: {
               ['B3'] => 'path=a:3,b:5',
               ['D9'] => 'city=revenue:20;city=revenue:30;city=revenue:30;upgrade=cost:30,terrain:water;path=a:0,b:_0;'\
-                        'path=a:3,b:_1;path=a:5,b:_2;label=DU',
+                        'path=a:3,b:_1;path=a:5,b:_2;label=DU;partition=a:0,b:3,type:water',
               ['F9'] => 'city=revenue:20;city=revenue:30,loc:3.5;city=revenue:30;upgrade=cost:30,terrain:water;path=a:0,b:_0;'\
-                        'path=a:4,b:_1;path=a:5,b:_2;label=D',
+                        'path=a:4,b:_1;path=a:5,b:_2;label=D;partition=a:0,b:3,type:water',
               ['F13'] => 'city=revenue:30;city=revenue:30;upgrade=cost:30,terrain:mountain;path=a:1,b:_0;'\
                          'path=a:_0,b:2;path=a:3,b:_1;path=a:_1,b:5;label=Y',
               ['G6'] => 'city=revenue:20;city=revenue:20;path=a:0,b:_0;path=a:2,b:_1;label=OO',
               ['I10'] => 'city=revenue:30;city=revenue:30;city=revenue:20;upgrade=cost:30,terrain:water;'\
-                         'path=a:0,b:_0;path=a:2,b:_1;path=a:3,b:_2;label=K',
+                         'path=a:0,b:_0;path=a:2,b:_1;path=a:3,b:_2;label=K;partition=a:0,b:3,type:water',
               ['I14'] => 'upgrade=cost:60,terrain:mountain;path=a:3,b:5',
               ['K2'] => 'city=revenue:20;upgrade=cost:30,terrain:mountain;path=a:3,b:_0;path=a:4,b:_0;label=AC',
               ['K6'] => 'city=revenue:20;path=a:1,b:_0;path=a:4,b:_0',
