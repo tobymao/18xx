@@ -831,6 +831,18 @@ module Engine
             ],
             color: nil,
           },
+          # P19
+          {
+            name: 'Union Switch & Signal',
+            value: 80,
+            revenue: 0,
+            desc: 'One train per turn may attach the Switcher to skip over a city (even a blocked city)',
+            sym: 'P19',
+            abilities: [
+              # Owning the private is the ability
+            ],
+            color: nil,
+          },
           # P21
           # TODO: Make it work as a combo with P27
           {
@@ -1011,6 +1023,18 @@ module Engine
                 owner_type: 'corporation',
                 count: 3,
               },
+            ],
+            color: nil,
+          },
+          # P30
+          {
+            name: 'Double Heading',
+            value: 120,
+            revenue: 0,
+            desc: 'Each turn one non-permanent train may attach the Extender to run to one extra city',
+            sym: 'P30',
+            abilities: [
+              # Owning the private is the ability
             ],
             color: nil,
           },
@@ -1502,7 +1526,7 @@ module Engine
             G18USA::Step::Assign,
             G18USA::Step::Track,
             Engine::Step::Token,
-            Engine::Step::Route,
+            G18USA::Step::Route,
             G18USA::Step::Dividend,
             Engine::Step::DiscardTrain,
             G1817::Step::BuyTrain,
@@ -1523,7 +1547,33 @@ module Engine
           revenue += 10 * route.all_hexes.count { |hex| hex.tile.id.include?('coal') }
           revenue += 10 * route.all_hexes.count { |hex| hex.tile.id.include?('iron10') }
           revenue += 20 * route.all_hexes.count { |hex| hex.tile.id.include?('iron20') }
-          revenue + (increased_oil? ? 20 : 10) * route.all_hexes.count { |hex| hex.tile.id.include?('oil') }
+          revenue += (increased_oil? ? 20 : 10) * route.all_hexes.count { |hex| hex.tile.id.include?('oil') }
+
+          if @round.train_upgrade_assignments[route.train]&.any? { |upgrade| upgrade['id'] == '/' }
+            revenue -= (skipped_stop(route, stops)&.route_revenue(@phase, route.train) || 0)
+          end
+          revenue
+        end
+
+        def skipped_stop(route, stops)
+          # Blocked stop is highest priority as it may stop route from being legal
+          t = tokened_out_stop(route)
+          return t if t
+
+          counted_stops = stops.select { |stop| stop&.visit_cost&.positive? }
+
+          # Skipping is optional - if we are using STRICTLY fewer stops than distance (jumping adds 1) we don't need to skip
+          return nil if counted_stops.size < route.train.distance
+
+          # Count how many of our tokens are on the route; if only one we cannot skip that one.
+          our_tokened_stops = counted_stops.select { |stop| stop&.tokened_by?(route.train.owner) }
+
+          # Skip the worst stop if enough tokened stops
+          return counted_stops.min_by { |stop| stop.route_revenue(@game.phase, route.train) } if our_tokened_stops.size > 1
+
+          # Otherwise skip the worst untokened stop
+          untokened_stops = counted_stops.reject { |stop| stop&.tokened_by(route.train.owner) }
+          untokened_stops.min_by { |stop| stop.route_revenue(@game.phase, route.train) }
         end
 
         def increased_oil?
@@ -1534,6 +1584,38 @@ module Engine
           super
           raise GameError, 'Train cannot start or end on a rural junction' if
               visits.first.tile.name.include?('Rural') || visits.last.tile.name.include?('Rural')
+        end
+
+        def check_connected(route, token)
+          return super unless @round.train_upgrade_assignments[route.train]&.any? { |upgrade| upgrade['id'] == '/' }
+
+          visits = route.visited_stops
+          blocked = nil
+
+          if visits.size > 2
+            corporation = route.corporation
+            visits[1..-2].each do |node|
+              next if !node.city? || !node.blocks?(corporation)
+              raise GameError, 'Route can only bypass one tokened-out city' if blocked
+
+              blocked = node
+            end
+          end
+
+          paths_ = route.paths.uniq
+          token = blocked if blocked
+
+          return if token.select(paths_, corporation: route.corporation).size == paths_.size
+
+          raise GameError, 'Route is not connected'
+        end
+
+        def tokened_out_stop(route)
+          visits = route.visited_stops
+          return false unless visits.size > 2
+
+          corporation = route.corporation
+          visits[1..-2].find { |node| node.city? && node.blocks?(corporation) }
         end
       end
     end
