@@ -10,7 +10,6 @@ module Engine
       @connected_nodes = {}
       @connected_paths = {}
       @reachable_hexes = {}
-      @jump_connected_hexes = {}
       @tokenable_cities = {}
       @routes = {}
       @tokens = {}
@@ -24,7 +23,7 @@ module Engine
       @connected_hexes.clear
       @connected_nodes.clear
       @connected_paths.clear
-      @jump_connected_hexes.clear
+      @reachable_hexes.clear
       @tokenable_cities.clear
       @tokens.clear
       @routes.delete_if do |_, route|
@@ -94,18 +93,10 @@ module Engine
       @reachable_hexes[corporation]
     end
 
-    # connected_hexes, but can jump over tokens
-    def jump_connected_hexes(corporation)
-      compute(corporation, jump: true) unless @jump_connected_hexes[corporation]
-      @jump_connected_hexes[corporation]
-    end
-
-    def compute(corporation, routes_only: false, jump: false)
+    def compute(corporation, routes_only: false)
       hexes = Hash.new { |h, k| h[k] = {} }
       nodes = {}
       paths = {}
-      jump_paths = {}
-      jump_hexes = Hash.new { |h, k| h[k] = {} }
 
       @game.hexes.each do |hex|
         hex.tile.cities.each do |city|
@@ -183,24 +174,6 @@ module Engine
           end
         end
 
-        if jump
-          # Again, but this time skip tokened locations
-          jump_visited = tokens.reject { |token, _| token == node }
-          node.walk(visited: jump_visited, skip_track: @skip_track,
-                    tile_type: @game.class::TILE_TYPE) do |path, _, _|
-            next if jump_paths[path]
-
-            jump_paths[path] = true
-
-            hex = path.hex
-
-            path.exits.each do |edge|
-              jump_hexes[hex][edge] = true
-              jump_hexes[hex.neighbors[edge]][hex.invert(edge)] = true
-            end
-          end
-        end
-
         next if routes[:route_train_purchase]
 
         mandatory_nodes = 0
@@ -226,14 +199,10 @@ module Engine
       hexes.default = nil
       hexes.transform_values!(&:keys)
 
-      jump_hexes.default = nil
-      jump_hexes.transform_values!(&:keys)
-
       @routes[corporation] = routes
       @connected_hexes[corporation] = hexes
       @connected_nodes[corporation] = nodes
       @connected_paths[corporation] = paths
-      @jump_connected_hexes[corporation] = jump_hexes if jump
       @reachable_hexes[corporation] = paths.map { |path, _| [path.hex, true] }.to_h
     end
   end

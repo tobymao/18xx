@@ -33,7 +33,7 @@ module Engine
             return super if @game.company_by_id('P19').closed? || @game.company_by_id('P19').owner != entity
 
             # This corporation owns the jumper; we need to be able to jump over tokens
-            @game.graph_for_entity(entity).jump_connected_hexes(entity)[hex]
+            @game.jump_graph.connected_hexes(entity)[hex]
           end
 
           def choice_name

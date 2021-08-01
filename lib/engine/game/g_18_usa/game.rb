@@ -9,6 +9,8 @@ module Engine
       class Game < G1817::Game
         include_meta(G18USA::Meta)
 
+        attr_reader :jump_graph
+
         CURRENCY_FORMAT_STR = '$%d'
 
         BANK_CASH = 99_999
@@ -1332,6 +1334,8 @@ module Engine
           @rhq_tiles ||= @all_tiles.select { |t| t.name.include?('RHQ') }
           @company_town_tiles ||= @all_tiles.select { |t| t.name.include?('CTown') }
 
+          @jump_graph = Graph.new(self, no_blocking: true)
+
           # Place neutral tokens in the off board cities
           neutral = Corporation.new(
             sym: 'N',
@@ -1525,12 +1529,55 @@ module Engine
             G18USA::Step::SpecialTrack,
             G18USA::Step::Assign,
             G18USA::Step::Track,
-            Engine::Step::Token,
+            G18USA::Step::Token,
             G18USA::Step::Route,
             G18USA::Step::Dividend,
             Engine::Step::DiscardTrain,
             G1817::Step::BuyTrain,
           ], round_num: round_num)
+        end
+
+        def next_round!
+          @interest_paid = {}
+          @round =
+            case @round
+            when Engine::Round::Stock
+              @operating_rounds = @final_operating_rounds || @phase.operating_rounds
+              reorder_players
+              new_operating_round
+            when Engine::Round::Operating
+              or_round_finished
+              # Store the share price of each corp to determine if they can be acted upon in the AR
+              @stock_prices_start_merger = @corporations.map { |corp| [corp, corp.share_price] }.to_h
+              @log << "-- #{round_description('Merger and Conversion', @round.round_num)} --"
+              G1817::Round::Merger.new(self, [
+                G18USA::Step::ReduceTokens,
+                Engine::Step::DiscardTrain,
+                G1817::Step::PostConversion,
+                G1817::Step::PostConversionLoans,
+                G1817::Step::Conversion,
+              ], round_num: @round.round_num)
+            when G1817::Round::Merger
+              @log << "-- #{round_description('Acquisition', @round.round_num)} --"
+              G1817::Round::Acquisition.new(self, [
+                Engine::Step::ReduceTokens,
+                G1817::Step::Bankrupt,
+                G1817::Step::CashCrisis,
+                Engine::Step::DiscardTrain,
+                G1817::Step::Acquire,
+              ], round_num: @round.round_num)
+            when G1817::Round::Acquisition
+              if @round.round_num < @operating_rounds
+                new_operating_round(@round.round_num + 1)
+              else
+                @turn += 1
+                or_set_finished
+                new_stock_round
+              end
+            when init_round.class
+              reorder_players
+              new_stock_round
+            end
         end
 
         def revenue_for(route, stops)
