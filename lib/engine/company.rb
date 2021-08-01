@@ -10,8 +10,8 @@ module Engine
     include Entity
     include Ownable
 
-    attr_accessor :desc, :max_price, :min_price, :revenue, :discount, :value
-    attr_reader :name, :sym, :min_auction_price, :treasury, :interval, :color, :text_color
+    attr_accessor :name, :desc, :max_price, :min_price, :revenue, :discount, :value
+    attr_reader :sym, :min_auction_price, :treasury, :interval, :color, :text_color
 
     def initialize(sym:, name:, value:, revenue: 0, desc: '', abilities: [], **opts)
       @sym = sym

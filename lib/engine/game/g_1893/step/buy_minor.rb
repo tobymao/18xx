@@ -2,7 +2,6 @@
 
 module BuyMinor
   def draft_object(object, player, price, forced: false)
-    # TODO: Remove to_company when cleaning up
     company = @game.to_company(object)
 
     player.spend(price, @game.bank)

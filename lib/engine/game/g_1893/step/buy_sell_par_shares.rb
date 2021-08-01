@@ -29,7 +29,6 @@ module Engine
             result.concat(FIRST_SR_ACTIONS) if can_buy_company?(entity)
             result.concat(EXCHANGE_ACTIONS) if can_exchange?(entity)
             result.concat(SELL_COMPANY_ACTIONS) if can_sell_any_companies?(entity)
-            # TODO: Next line to be removed - is to handle obsolete buy minor
             result.concat(BUY_MINOR_ACTIONS) if can_buy_company?(entity)
             result
           end
@@ -38,7 +37,7 @@ module Engine
             return false if first_sr_passed?(player) || @game.num_certs(player) >= @game.cert_limit
             return buyable_company?(player, company) if company
 
-            @game.buyable_companies.any? { |c| buyable_company?(player, c) }
+            @game.buyable_bank_owned_companies.any? { |c| buyable_company?(player, c) }
           end
 
           def buyable_company?(player, company)
@@ -118,6 +117,7 @@ module Engine
 
           def handle_buy_company(company, player, price)
             draft_object(company, player, price)
+            @game.set_bond_names! if @game.bond?(company)
             return unless @game.draftables.one?
 
             @game.corporations.each do |c|
@@ -127,7 +127,6 @@ module Engine
             end
           end
 
-          # TODO: Rmove this when code cleaned up
           def process_buy_corporation(action)
             company = action.minor
             player = action.entity
@@ -158,6 +157,7 @@ module Engine
             price = action.price
             raise GameError, "Cannot sell #{company.id}" unless can_sell_company?(company)
 
+            @game.set_bond_names! if @game.bond?(company)
             @log << "#{player.name} sells #{company.name} for #{@game.format_currency(price)} to the bank"
             @game.bank.spend(price, player)
             company.owner = @game.bank

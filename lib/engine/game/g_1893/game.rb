@@ -601,48 +601,48 @@ module Engine
           },
           {
             sym: 'EKB',
-            name: '1 Euskirchener Kreisbahn',
+            name: 'Minor 1 Euskirchener Kreisbahn',
             value: 210,
             revenue: 0,
-            desc: "Buyer takes control of minor 1 (EKB), and the price paid makes the minor's treasury. "\
-                  "EKB minor and private are exchanged into the 20% president's certificate of AGV when AGV is formed. "\
-                  'The private and minor cannot be sold.',
+            desc: "Owner controls Minor 1 (EKB), and the price paid makes up the Minor's starting treasury. "\
+                  "The EKB private company and Minor are exchanged into the 20% president's certificate of AGV "\
+                  'when AGV is formed. The EKB private company and Minor corporation cannot be sold.',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
           },
           {
             sym: 'KFBE',
-            name: '2 Köln-Frechen-Benzelrather Eisenbahn',
+            name: 'Minor 2 Köln-Frechen-Benzelrather Eisenbahn',
             value: 200,
-            desc: "Buyer takes control of minor 2 (KFBE), and the price paid makes the minor's treasury. "\
-                  'KFBE minor and private are exchanged into the 20% certificate of HGK when HGK is formed. '\
-                  'The private and minor cannot be sold.',
+            desc: "Owner controls Minor 2 (KFBE), and the price paid makes up the Minor's starting treasury. "\
+                  'The KFBE private company Minor and are exchanged into the 20% certificate of HGK '\
+                  'when HGK is formed. The KFBE private company and Minor cannot be sold.',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
           },
           {
             sym: 'KSZ',
-            name: '3 Kleinbahn Siegburg-Zündorf',
+            name: 'Minor 3 Kleinbahn Siegburg-Zündorf',
             value: 100,
-            desc: "Buyer takes control of minor 3 (KSZ), and the price paid makes the minor's treasury. "\
-                  'KSZ minor and private are exchanged into a 10% certificate of AGV when AGV is formed. '\
-                  'The private and minor cannot be sold.',
+            desc: "Owner controls Minor 3 (KSZ), and the price paid makes up the Minor's starting treasury. "\
+                  'The KSZ private company and Minor are exchanged into a 10% certificate of AGV '\
+                  'when AGV is formed. The KSZ private company and Minor cannot be sold.',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
           },
           {
             sym: 'KBE',
-            name: '4 Köln-Bonner Eisenbahn',
+            name: 'Minor 4 Köln-Bonner Eisenbahn',
             value: 220,
-            desc: "Buyer takes control of minor 4 (KBE), and the price paid makes the minor's treasury. "\
-                  "KBE minor and private are exchanged into the 20% president's certificate of HGK when HGK is formed. "\
-                  'The private and minor cannot be sold.',
+            desc: "Owner controls Minor 4 (KBE), and the price paid makes up the Minor's starting treasury. "\
+                  "The KBE private company and Minor are exchanged into the 20% president's certificate of HGK "\
+                  'when HGK is formed. The KBE private company and Minor cannot be sold.',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
           },
           {
             sym: 'BKB',
-            name: '5 Bergheimer Kreisbahn',
+            name: 'Minor 5 Bergheimer Kreisbahn',
             value: 180,
-            desc: "Buyer takes control of minor 5 (BKB), and the price paid makes the minor's treasury. "\
-                  'BKB minor and private are exchanged into a 20% certificate of AGV when AGV is formed. '\
-                  'The private and minor cannot be sold.',
+            desc: "Owner controls Minor 5 (BKB), and the price paid makes up the Minor's starting treasury. "\
+                  'The BKB private company and Minor are exchanged into a 20% certificate of AGV '\
+                  'when AGV is formed. The BKB private company and Minor cannot be sold.',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
           },
         ].freeze
@@ -729,11 +729,11 @@ module Engine
           @all_companies ||= COMPANIES + (1..10).map do |x|
             {
               sym: "AdSK-#{x}",
-              name: "Anleihen der Stadt Köln #{x}",
+              name: 'Anleihen der Stadt Köln',
               value: 100,
               revenue: 10,
-              desc: 'Bond of the City of Cologne. Works like a private company but can be bought '\
-                    'and sold during a SR, in a similar way as shares.',
+              desc: 'Bond of the City of Cologne (Anleihen der Stadt Köln). Works like a private company but can be '\
+                    'bought and sold during a SR, in a similar way as shares.',
               color: 'orange',
             }
           end
@@ -820,7 +820,7 @@ module Engine
                 init_round_finished
                 reorder_player_pass_order
                 # If one certificate remains, continue with SR
-                buyable_companies.one? ? new_stock_round : new_operating_round
+                buyable_bank_owned_companies.one? ? new_stock_round : new_operating_round
               else
                 new_stock_round
               end
@@ -1048,6 +1048,8 @@ module Engine
           @potential_discard_trains = []
 
           @green_leverkusen_tile ||= @tiles.find { |t| t.name == LEVERKUSEN_GREEN_TILE }
+
+          set_bond_names!
         end
 
         include StubsAreRestricted
@@ -1288,13 +1290,14 @@ module Engine
           entity.all_abilities.none? { |a| a.type == :no_buy }
         end
 
-        def buyable_companies
-          @companies.select { |c| !c.closed? && c.owner == @bank }
+        def buyable_bank_owned_companies
+          bonds, non_bonds = @companies.select { |c| !c.closed? && c.owner == @bank }.partition { |c| bond?(c) }
+          (non_bonds << bonds[0]).compact
         end
 
         def draftables
           # Privates A-C always buyable, minors topmost 2
-          privates, minor_proxies = buyable_companies
+          privates, minor_proxies = buyable_bank_owned_companies
             .reject { |c| bond?(c) }
             .partition { |c| private?(c) }
           privates + (minor_proxies.size < 2 ? minor_proxies : minor_proxies[0..1])
@@ -1304,6 +1307,19 @@ module Engine
           return false unless company.company?
 
           company.sym.start_with?('AdSK')
+        end
+
+        def set_bond_names!
+          bonds_count = @companies.count { |c| !c.closed? && c.owner == @bank && bond?(c) }
+          @companies.each do |c|
+            next unless bond?(c)
+
+            c.name = if c.owner == @bank
+                       "#{bonds_count} Anleihen#{bonds_count.positive? ? 's' : ''} der Stadt Köln"
+                     else
+                       'Anleihen der Stadt Köln'
+                     end
+          end
         end
 
         def minor_proxy?(company)
