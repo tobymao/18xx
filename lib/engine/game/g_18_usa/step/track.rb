@@ -22,6 +22,11 @@ module Engine
             process_company_town(tile) if tile.name.include?('CTown')
           end
 
+          def lay_tile(action, extra_cost: 0, entity: nil, spender: nil)
+            super
+            @game.jump_graph.clear
+          end
+
           def check_company_town(_tile, hex)
             raise GameError, 'Cannot use Company Town in a tokened hex' if hex.tile.cities&.first&.tokens&.first
             return if (hex.neighbors.values & @game.active_metropolitan_hexes).empty?
