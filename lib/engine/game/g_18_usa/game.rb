@@ -611,7 +611,8 @@ module Engine
                     price: 1100,
                     num: 40,
                     events: [{ 'type' => 'signal_end_game' }],
-                  }].freeze
+                  },
+                  { name: 'P', distance: 0, price: 200, available_on: '5', num: 20 }].freeze
 
         CITY_HEXES =
           %w[B8 B14 C3 C17 C29 D6 D14 D20 D24 E3 E7 E11 E15 E17 E23 F20 F26 G3 G7 G11 G17 G27 H8 H14 H20 H22 I13 I15 I19
@@ -1522,7 +1523,7 @@ module Engine
             end
           end
 
-          G1817::Round::Operating.new(self, [
+          G18USA::Round::Operating.new(self, [
             G1817::Step::Bankrupt,
             G1817::Step::CashCrisis,
             G18USA::Step::Loan,
@@ -1533,7 +1534,7 @@ module Engine
             G18USA::Step::Route,
             G18USA::Step::Dividend,
             Engine::Step::DiscardTrain,
-            G1817::Step::BuyTrain,
+            G18USA::Step::BuyTrain,
           ], round_num: round_num)
         end
 
@@ -1596,8 +1597,16 @@ module Engine
           revenue += 20 * route.all_hexes.count { |hex| hex.tile.id.include?('iron20') }
           revenue += (increased_oil? ? 20 : 10) * route.all_hexes.count { |hex| hex.tile.id.include?('oil') }
 
+          pullman_assigned = @round.train_upgrade_assignments[route.train]&.any? { |upgrade| upgrade['id'] == 'P' }
+          revenue += 20 * stops.count if pullman_assigned
+
           if @round.train_upgrade_assignments[route.train]&.any? { |upgrade| upgrade['id'] == '/' }
-            revenue -= (skipped_stop(route, stops)&.route_revenue(@phase, route.train) || 0)
+            stop_skipped = skipped_stop(route, stops)
+            if stop_skipped
+              revenue -= stop_skipped.route_revenue(@phase, route.train)
+              # remove the pullman bonus if a pullman is used on this train
+              revenue -= 20 if pullman_assigned
+            end
           end
           revenue
         end
@@ -1663,6 +1672,14 @@ module Engine
 
           corporation = route.corporation
           visits[1..-2].find { |node| node.city? && node.blocks?(corporation) }
+        end
+
+        def route_trains(entity)
+          entity.runnable_trains.reject { |t| pullman_train?(t) }
+        end
+
+        def pullman_train?(train)
+          train.name == 'P'
         end
       end
     end

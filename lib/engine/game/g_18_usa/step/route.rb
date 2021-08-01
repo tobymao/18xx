@@ -25,8 +25,8 @@ module Engine
             @upgrade_train_assignments[upgrade] = train
             @round.train_upgrade_assignments[train] = [] unless @round.train_upgrade_assignments[train]
             @round.train_upgrade_assignments[train] << upgrade
-            train.name = train.name + "#{upgrade['id']}#{upgrade['size']}"
-            train.distance = train.distance + upgrade['size']
+            train.name = train.name + (upgrade['size'] ? "#{upgrade['id']}#{upgrade['size']}" : upgrade['id'])
+            train.distance = train.distance + upgrade['size'] if upgrade['size']
           end
 
           def available_hex(entity, hex)
@@ -56,8 +56,8 @@ module Engine
 
           def detach_upgrades
             @upgrade_train_assignments.each do |upgrade, train|
-              train.name = train.name.gsub("#{upgrade['id']}#{upgrade['size']}", '')
-              train.distance = train.distance - upgrade['size']
+              train.name = train.name.gsub(upgrade['size'] ? "#{upgrade['id']}#{upgrade['size']}" : upgrade['id'], '')
+              train.distance = train.distance - upgrade['size'] if upgrade['size']
             end
             @upgrade_train_assignments = {}
             @round.train_upgrade_assignments = {}
@@ -76,6 +76,9 @@ module Engine
               @game.company_by_id('P19').owner == entity
             choices << { name: 'Extender', id: '+', size: 1, permanents: false } if !@game.company_by_id('P30').closed? &&
               @game.company_by_id('P30').owner == entity
+            choices << { name: 'Pullman', id: 'P', size: nil, permanents: true } if entity.runnable_trains.any? do |t|
+                                                                                      @game.pullman_train?(t)
+                                                                                    end
             choices.reject { |upgrade| @upgrade_train_assignments[upgrade] }
           end
 
