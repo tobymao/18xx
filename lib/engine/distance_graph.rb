@@ -70,6 +70,8 @@ module Engine
         distance = [distance.first, distance.last + 1]
       end
 
+      return if corporation && node.blocks?(corporation) # This is different from node.walk
+
       node.paths.each do |node_path|
         path_distance_walk(
           node_path,
@@ -83,7 +85,6 @@ module Engine
 
           path.nodes.each do |next_node|
             next if next_node == node
-            next if corporation && next_node.blocks?(corporation)
 
             node_distance_walk(
               next_node,
@@ -135,9 +136,9 @@ module Engine
         end
       end
 
-      path.exits.each do |edge|
+      path.edges.each do |edge|
         edge_id = edge.id
-        edge = edge.name
+        edge = edge.num
         next if edge == skip
         next unless (neighbor = path.hex.neighbors[edge])
 

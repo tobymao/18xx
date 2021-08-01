@@ -2,6 +2,7 @@
 
 require_relative 'meta'
 require_relative '../base'
+require_relative '../../distance_graph'
 
 module Engine
   module Game
@@ -942,6 +943,7 @@ module Engine
         end
 
         def setup
+          @distance_graph = DistanceGraph.new(self)
           @bankrupt_corps = []
           @insolvent_corps = []
           @nationalized_corps = []
@@ -1573,20 +1575,42 @@ module Engine
           @node_distances.clear
           @path_distances.clear
           @hex_distances.clear
+          @distance_graph.clear
         end
 
         def node_distances(corporation)
           compute_distance_graph(corporation) unless @node_distances[corporation]
+          if @node_distances[corporation] != @distance_graph.node_distances(corporation)
+            puts "node_distances difference!"
+            puts "@node_distances[#{corporation.name}]:"
+            puts @node_distances[corporation]
+            puts "@distance_graph.node_distances(#{corporation.name}):"
+            puts @distance_graph.node_distances(corporation)
+          end
           @node_distances[corporation]
         end
 
         def path_distances(corporation)
           compute_distance_graph(corporation) unless @path_distances[corporation]
+          if @path_distances[corporation] != @distance_graph.path_distances(corporation)
+            puts "path_distances difference!"
+            puts "@path_distances[#{corporation.name}]:"
+            puts @path_distances[corporation]
+            puts "@distance_graph.path_distances(#{corporation.name}):"
+            puts @distance_graph.path_distances(corporation)
+          end
           @path_distances[corporation]
         end
 
         def hex_distances(corporation)
           compute_distance_graph(corporation) unless @hex_distances[corporation]
+          if @hex_distances[corporation] != @distance_graph.hex_distances(corporation)
+            puts "hex_distances difference!"
+            puts "@hex_distances[#{corporation.name}]:"
+            puts @hex_distances[corporation]
+            puts "@distance_graph.hex_distances(#{corporation.name}):"
+            puts @distance_graph.hex_distances(corporation)
+          end
           @hex_distances[corporation]
         end
 
