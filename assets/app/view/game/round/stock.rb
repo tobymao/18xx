@@ -307,7 +307,7 @@ module View
             },
           }
 
-          @game.companies.select { |c| c.owner == @game.bank }.map do |company|
+          @game.buyable_bank_owned_companies.map do |company|
             children = []
             children << h(Company, company: company,
                                    bids: (@current_actions.include?('bid') ? @step.bids[company] : nil))

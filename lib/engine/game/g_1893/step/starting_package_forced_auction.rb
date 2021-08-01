@@ -125,7 +125,7 @@ module Engine
           def may_purchase?(entity)
             return false unless !!@auctioning
 
-            @game.buyable_companies.include?(entity)
+            @game.buyable_bank_owned_companies.include?(entity)
           end
 
           def may_choose?(_entity)

@@ -832,6 +832,10 @@ module Engine
         end
       end
 
+      def buyable_bank_owned_companies
+        @companies.select { |c| !c.closed? && c.owner == @bank }
+      end
+
       def after_buy_company(player, company, _price)
         abilities(company, :shares) do |ability|
           ability.shares.each do |share|
