@@ -1322,107 +1322,107 @@ module Engine
         # Alphabetized. Not sure what official ordering is
 
         METROPOLITAN_HEXES = %w[G3 E11 H14 H22 I19 D20].freeze
-        SUBSIDIZED_HEXES = %w[B8 B14 C3 D6 D14 E3 E7 E23 G7 G11 G27 H8 I13 I25]
+        SUBSIDIZED_HEXES = %w[B8 B14 C3 D6 D14 E3 E7 E23 G7 G11 G27 H8 I13 I25].freeze
         SUBSIDIES = [
           # Temporarily commenting out the first two subsidies to guarantee all "interesting" subsidies
           # come out during randomization during pre-alpha development
-          #{
-            #icon: 'subsidy_none',
-            #abilities: [],
-            #id: 's1',
-            #desc: 'No Subsidy'
-          #},
-          #{
-            #icon: 'subsidy_none',
-            #abilities: [],
-            #id: 's2',
-            #desc: 'No Subsidy'
-          #},
+          # {
+          # icon: 'subsidy_none',
+          # abilities: [],
+          # id: 's1',
+          # desc: 'No Subsidy'
+          # },
+          # {
+          # icon: 'subsidy_none',
+          # abilities: [],
+          # id: 's2',
+          # desc: 'No Subsidy'
+          # },
           {
             icon: 'subsidy_none',
             abilities: [],
             id: 's3',
-            desc: 'No Subsidy'
+            desc: 'No Subsidy',
           },
           {
             icon: 'subsidy_none',
             abilities: [],
             id: 's4',
-            desc: 'No Subsidy'
+            desc: 'No Subsidy',
           },
           {
             icon: 'subsidy_none',
             abilities: [],
             id: 's5',
-            desc: 'No Subsidy'
+            desc: 'No Subsidy',
           },
           {
             icon: 'subsidy_none',
             abilities: [],
             id: 's6',
-            desc: 'No Subsidy'
+            desc: 'No Subsidy',
           },
           {
             icon: 'subsidy_none',
             abilities: [],
             id: 's7',
-            desc: 'No Subsidy'
+            desc: 'No Subsidy',
           },
           {
             icon: 'subsidy_boomtown',
             abilities: [],
             id: 's8',
-            desc: 'Boomtown'
+            desc: 'Boomtown',
           },
           {
             icon: 'subsidy_free_station',
             abilities: [],
             id: 's9',
-            desc: 'Free Station'
+            desc: 'Free Station',
           },
           {
             icon: 'subsidy_plus_ten',
             abilities: [],
             id: 's10',
-            desc: '+10'
+            desc: '+10',
           },
           {
             icon: 'subsidy_plus_ten_twenty',
             abilities: [],
             id: 's11',
-            desc: '+10 / +11'
+            desc: '+10 / +11',
           },
           {
             icon: 'subsidy_thirty',
             abilities: [],
             id: 's12',
-            desc: '$30 Subisdy'
+            desc: '$30 Subisdy',
           },
           {
             icon: 'subsidy_thirty',
             abilities: [],
             id: 's13',
-            desc: '$30 Subisdy'
+            desc: '$30 Subisdy',
           },
           {
             icon: 'subsidy_forty',
             abilities: [],
             id: 's14',
-            desc: '$40 Subisdy'
+            desc: '$40 Subisdy',
           },
           {
             icon: 'subsidy_fifty',
             abilities: [],
             id: 's15',
-            desc: '$50 Subisdy'
+            desc: '$50 Subisdy',
           },
           {
             icon: 'subsidy_resource',
             abilities: [],
             id: 's16',
-            desc: 'Resource Subsidy'
+            desc: 'Resource Subsidy',
           },
-        ]
+        ].freeze
 
         def active_metropolitan_hexes
           @active_metropolitan_hexes ||= [@hexes.find { |h| h.id == 'D28' }]
@@ -1480,7 +1480,7 @@ module Engine
         def randomize_subsidies
           randomized_subsidies = SUBSIDIES.sort_by { rand }.take(SUBSIDIZED_HEXES.size)
           @subsidies_by_hex = {}
-          SUBSIDIZED_HEXES.zip(randomized_subsidies).each do | hex_id, subsidy |
+          SUBSIDIZED_HEXES.zip(randomized_subsidies).each do |hex_id, subsidy|
             hex = hex_by_id(hex_id)
             @subsidies_by_hex[hex_id] = subsidy
             hex.tile.icons.reject! { |icon| icon.name == 'coins' }
@@ -1621,7 +1621,7 @@ module Engine
           G18USA::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
             Engine::Step::HomeToken,
-            G1817::Step::BuySellParShares,
+            G18USA::Step::BuySellParShares,
           ])
         end
 
