@@ -9,7 +9,7 @@ module Engine
       class Game < G1817::Game
         include_meta(G18USA::Meta)
 
-        attr_reader :jump_graph
+        attr_reader :jump_graph, :subsidies_by_hex
 
         CURRENCY_FORMAT_STR = '$%d'
 
@@ -1330,97 +1330,117 @@ module Engine
           # icon: 'subsidy_none',
           # abilities: [],
           # id: 's1',
-          # desc: 'No Subsidy'
+          # name: 'No Subsidy',
+          # desc: 'No effect',
           # },
           # {
           # icon: 'subsidy_none',
           # abilities: [],
           # id: 's2',
-          # desc: 'No Subsidy'
+          # name: 'No Subsidy'
+          # desc: 'No effect',
           # },
           {
             icon: 'subsidy_none',
             abilities: [],
             id: 's3',
-            desc: 'No Subsidy',
+            name: 'No Subsidy',
+            desc: 'No effect',
           },
           {
             icon: 'subsidy_none',
             abilities: [],
             id: 's4',
-            desc: 'No Subsidy',
+            name: 'No Subsidy',
+            desc: 'No effect',
           },
           {
             icon: 'subsidy_none',
             abilities: [],
             id: 's5',
-            desc: 'No Subsidy',
+            name: 'No Subsidy',
+            desc: 'No effect',
           },
           {
             icon: 'subsidy_none',
             abilities: [],
             id: 's6',
-            desc: 'No Subsidy',
+            name: 'No Subsidy',
+            desc: 'No effect',
           },
           {
             icon: 'subsidy_none',
             abilities: [],
             id: 's7',
-            desc: 'No Subsidy',
+            name: 'No Subsidy',
+            desc: 'No effect',
           },
           {
             icon: 'subsidy_boomtown',
             abilities: [],
             id: 's8',
-            desc: 'Boomtown',
+            name: 'Boomtown',
+            desc: 'On it\'s first operating turn, this corporation may upgrade its home to green as a free action. This does '\
+            'not count as an additional track placement and does not incur any cost for doing so',
           },
           {
             icon: 'subsidy_free_station',
             abilities: [],
             id: 's9',
-            desc: 'Free Station',
+            name: 'Free Station',
+            desc: 'The free station is a special token (which counts toward the 8 token limit) that can be placed in any city '\
+            'the corporation can trace a legal route to, even if no open station circle is currently available in the city. '\
+            'If a open station circle becomes available later, the token will immediately fill the opening'
           },
           {
             icon: 'subsidy_plus_ten',
             abilities: [],
             id: 's10',
-            desc: '+10',
+            name: '+10',
+            desc: 'This corporation\'s home city is worth $10 for the rest of the game',
           },
           {
             icon: 'subsidy_plus_ten_twenty',
             abilities: [],
             id: 's11',
-            desc: '+10 / +11',
+            name: '+10 / +20',
+            desc: 'This corporation\'s home city is worth $10 until phase 5, after which it is worth '\
+            ' $20 more for the rest of the game'
           },
           {
             icon: 'subsidy_thirty',
             abilities: [],
             id: 's12',
-            desc: '$30 Subisdy',
+            name: '$30 Subsidy',
+            desc: 'The bank will contribute $30 towards the bid for this corporation'
           },
           {
             icon: 'subsidy_thirty',
             abilities: [],
             id: 's13',
-            desc: '$30 Subisdy',
+            name: '$30 Subsidy',
+            desc: 'The bank will contribute $30 towards the bid for this corporation'
           },
           {
             icon: 'subsidy_forty',
             abilities: [],
             id: 's14',
-            desc: '$40 Subisdy',
+            name: '$40 Subsidy',
+            desc: 'The bank will contribute $40 towards the bid for this corporation'
           },
           {
             icon: 'subsidy_fifty',
             abilities: [],
             id: 's15',
-            desc: '$50 Subisdy',
+            name: '$50 Subsidy',
+            desc: 'The bank will contribute $50 towards the bid for this corporation'
           },
           {
             icon: 'subsidy_resource',
             abilities: [],
             id: 's16',
-            desc: 'Resource Subsidy',
+            name: 'Resource Subsidy',
+            desc: 'PLACEHOLDER DESCRIPTION'
           },
         ].freeze
 
@@ -1620,7 +1640,7 @@ module Engine
 
           G18USA::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
-            Engine::Step::HomeToken,
+            G18USA::Step::HomeToken,
             G18USA::Step::BuySellParShares,
           ])
         end
