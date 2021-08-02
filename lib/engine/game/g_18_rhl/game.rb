@@ -904,7 +904,9 @@ module Engine
         end
 
         def priority_deal_player
-          players_with_max_cash.size > 1 ? players_with_max_cash.first : super
+          return players_with_max_cash.first if @round.is_a?(Engine::Round::Stock) && players_with_max_cash.one?
+
+          super
         end
 
         def players_with_max_cash
@@ -912,7 +914,15 @@ module Engine
           @players.select { |p| p.cash == max_cash }
         end
 
+        def show_priority_deal_player?(_order)
+          true
+        end
+
         def reorder_players(_order = nil, log_player_order: false)
+          # Player order is the player with most cash (followed by seating order)
+          # and if multiple players have most cast, left of last to act (followed
+          # by seating order).
+
           max_cash_players = players_with_max_cash
           if max_cash_players.one?
             @players.rotate!(@players.index(max_cash_players.first))

@@ -2251,6 +2251,10 @@ module Engine
         @corporations.dup.each { |c| close_corporation(c) if c.share_price&.type == :close }
       end
 
+      def show_priority_deal_player?(order)
+        order == :after_last_to_act
+      end
+
       def priority_deal_player
         players = @players.reject(&:bankrupt)
 
