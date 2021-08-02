@@ -48,7 +48,7 @@ module Engine
     end
 
     def merge_distance(a, b)
-      a&.each_with_index&.map { |x, idx| [x, b[idx]].min } || b
+      a&.each_with_index&.map { |x, idx| [x, b[idx]].min } || b.dup
     end
 
     def node_walk(
@@ -63,27 +63,23 @@ module Engine
       return if smaller_or_equal_distance?(node_distances[node], distance)
 
       node_distances[node] = merge_distance(node_distances[node], distance)
-      if node.city? || node.town? && !@separate_node_types
-        new_distance = distance.dup
-        new_distance[0] = distance[0] + 1
-      elsif node.town? && !node.halt?
-        new_distance = distance.dup
-        new_distance[1] = distance[1] + 1
-      else
-        new_distance = distance
-      end
-
       return if corporation && node.blocks?(corporation)
 
+      if node.city? || node.town? && !@separate_node_types
+        distance[0] += 1
+      elsif node.town? && !node.halt?
+        distance[1] += 1
+      end
+
       node.paths.each do |node_path|
-        next if smaller_or_equal_distance?(path_distances[node_path], new_distance)
+        next if smaller_or_equal_distance?(path_distances[node_path], distance)
 
         node_path.walk(
           counter: counter,
         ) do |path, _vp, ct|
-          path_distances[path] = merge_distance(path_distances[path], new_distance)
+          path_distances[path] = merge_distance(path_distances[path], distance)
 
-          ret = yield path, new_distance
+          ret = yield path, distance
           next if ret == :abort
           next if path.terminal?
 
@@ -92,7 +88,7 @@ module Engine
 
             node_walk(
               next_node,
-              distance: new_distance,
+              distance: distance,
               node_distances: node_distances,
               path_distances: path_distances,
               corporation: corporation,
@@ -101,6 +97,12 @@ module Engine
             )
           end
         end
+      end
+
+      if node.city? || node.town? && !@separate_node_types
+        distance[0] -= 1
+      elsif node.town? && !node.halt?
+        distance[1] -= 1
       end
     end
 
@@ -122,9 +124,6 @@ module Engine
           h_distances[hex] = merge_distance(h_distances[hex], dist)
         end
       end
-
-      puts "Path Distances for #{corporation.name}:"
-      p_distances.each { |p, d| puts "#{p.inspect} = #{d}" }
 
       @node_distances[corporation] = n_distances
       @path_distances[corporation] = p_distances
