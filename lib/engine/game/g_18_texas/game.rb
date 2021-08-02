@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+# add rules: 1/2 tile lays, half/full pay,
+# sell/buy certs from bank, no sales until complete OR
+
 require_relative 'meta'
 require_relative '../base'
 
@@ -164,8 +167,8 @@ module Engine
             num: 2,
             events: [{ 'type' => 'close_companies' }],
           },
-          { name: '6', distance: 6, price: 600, num: 2  },
-          { name: '8', distance: 8, price: 800, num: 4  },
+          { name: '6', distance: 6, price: 600, num: 2 },
+          { name: '8', distance: 8, price: 800, num: 4 },
         ].freeze
 
         COMPANIES = [
@@ -411,7 +414,6 @@ module Engine
             ['J1'] => 'offboard=revenue:yellow_40|brown_50;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
             ['N1'] => 'offboard=revenue:yellow_40|brown_50;path=a:3,b:_0;path=a:4,b:_0',
           },
-
         }.freeze
       end
     end
