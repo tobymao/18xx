@@ -110,6 +110,12 @@ module Engine
               ability.use!
             end
 
+            if company.id == 'P29' && corporation.companies.any? { |c| c.name == 'No Subsidy' }
+              @game.log << "#{corporation.name} immediately gets a free 2 train and #{company.name} closes"
+              @game.buy_train(corporation, @game.depot.depot_trains.first, :free)
+              company.close!
+            end
+
             par_corporation if available_subsidiaries(entity).empty?
           end
         end

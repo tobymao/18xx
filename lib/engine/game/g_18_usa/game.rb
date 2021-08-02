@@ -1029,6 +1029,19 @@ module Engine
             ],
             color: nil,
           },
+          # P29
+          {
+            name: 'Bankrupt Railroad',
+            value: 120,
+            revenue: 0,
+            desc: 'If this company starts in a city with a No Subsidy tile it immediately takes a free 2-train which it may '\
+                  'run in its first OR',
+            sym: 'P29',
+            abilities: [
+              # Owning the private is the ability
+            ],
+            color: nil,
+          },
           # P30
           {
             name: 'Double Heading',
