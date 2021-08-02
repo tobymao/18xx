@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/track'
+require_relative '../../../part/upgrade'
 
 module Engine
   module Game
@@ -10,7 +11,7 @@ module Engine
           include Engine::Step::Tracker
 
           def process_lay_tile(action)
-            # TODO: Mountain to Rough change
+            action.tile.upgrades << Part::Upgrade.new(60, ['mountain'], nil) if action.hex.tile.upgrades.sum(&:cost) == 120
 
             super
           end
