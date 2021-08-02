@@ -35,7 +35,7 @@ module Engine
           def reachable_path?(entity, path, max_distance)
             return false if max_distance[0].zero?
 
-            path_distances = @game.path_distances(entity)
+            path_distances = @game.distance_graph.path_distances(entity)
             path_distances[path][0] <= max_distance[0] && path_distances[path][-1] <= max_distance[-1]
           end
 
@@ -60,7 +60,7 @@ module Engine
           def reachable_node?(entity, node, max_distance)
             return false if max_distance[0].zero?
 
-            node_distances = @game.node_distances(entity)
+            node_distances = @game.distance_graph.node_distances(entity)
             return false unless node_distances[node]
 
             if node.city?
@@ -73,8 +73,8 @@ module Engine
           end
 
           def reachable_hex?(entity, hex, max_distance)
-            node_distances = @game.node_distances(entity)
-            path_distances = @game.path_distances(entity)
+            node_distances = @game.distance_graph.node_distances(entity)
+            path_distances = @game.distance_graph.path_distances(entity)
             return false unless hex.tile.paths.any? { |p| path_distances[p] }
 
             # tile currently on network
@@ -116,7 +116,7 @@ module Engine
 
             return true if reachable_hex?(entity, hex, max_distance)
 
-            path_distances = @game.path_distances(entity)
+            path_distances = @game.distance_graph.path_distances(entity)
 
             # tile is currently not on the reachable network (it should be a neighbor to one that is)
             # We err on the side of caution, final determination needs to be based on actual tile placed

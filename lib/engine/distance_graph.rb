@@ -7,6 +7,7 @@ module Engine
       @node_distances = {}
       @path_distances = {}
       @hex_distances = {}
+      @separate_node_types = opts[:separate_node_types] || false
     end
 
     def clear
@@ -43,122 +44,64 @@ module Engine
     end
 
     def smaller_or_equal_distance?(a, b)
-      a ||= [999, 999]
-      a.first <= b.first && a.last <= b.last
+      a&.each_with_index&.all? { |x, idx| x <= b[idx] }
     end
 
     def merge_distance(a, b)
-      a ||= [999, 999]
-      [[a.first, b.first].min, [a.last, b.last].min]
+      a&.each_with_index&.map { |x, idx| [x, b[idx]].min } || b
     end
 
-    def node_distance_walk(
+    def node_walk(
       node,
-      distance,
-      node_distances: {}, # instead of visited, hashset of minimum distances to nodes
+      distance: nil,
+      node_distances: {},
+      path_distances: {},
       corporation: nil,
-      path_distances: {}, # instead of visited_paths, hashset of minimum distances to paths
       counter: Hash.new(0),
       &block
     )
       return if smaller_or_equal_distance?(node_distances[node], distance)
 
       node_distances[node] = merge_distance(node_distances[node], distance)
-      if node.city?
-        distance = [distance.first + 1, distance.last]
+      if node.city? || node.town? && !@separate_node_types
+        new_distance = distance.dup
+        new_distance[0] = distance[0] + 1
       elsif node.town? && !node.halt?
-        distance = [distance.first, distance.last + 1]
+        new_distance = distance.dup
+        new_distance[1] = distance[1] + 1
+      else
+        new_distance = distance
       end
 
-      return if corporation && node.blocks?(corporation) # This is different from node.walk
+      return if corporation && node.blocks?(corporation)
 
       node.paths.each do |node_path|
-        path_distance_walk(
-          node_path,
-          distance,
-          path_distances: path_distances,
+        next if smaller_or_equal_distance?(path_distances[node_path], new_distance)
+
+        node_path.walk(
           counter: counter,
-        ) do |path, pd, ct|
-          ret = yield path, distance
+        ) do |path, _vp, ct|
+          path_distances[path] = merge_distance(path_distances[path], new_distance)
+
+          ret = yield path, new_distance
           next if ret == :abort
           next if path.terminal?
 
           path.nodes.each do |next_node|
             next if next_node == node
 
-            node_distance_walk(
+            node_walk(
               next_node,
-              distance,
+              distance: new_distance,
               node_distances: node_distances,
-              counter: ct,
+              path_distances: path_distances,
               corporation: corporation,
-              path_distances: pd,
+              counter: ct,
               &block
             )
           end
         end
       end
-    end
-
-    def lane_match?(lanes0, lanes1)
-      lanes0 && lanes1 && lanes1[0] == lanes0[0] && lanes1[1] == (lanes0[0] - lanes0[1] - 1)
-    end
-
-    def path_distance_walk(
-      path,
-      distance,
-      skip: nil,
-      jskip: nil,
-      path_distances: {},
-      skip_paths: nil,
-      counter: Hash.new(0),
-      &block
-    )
-      return if smaller_or_equal_distance?(path_distances[path], distance)
-      return if path.junction && counter[path.junction] > 1
-      return if path.edges.sum { |edge| counter[edge.id] }.positive?
-
-      path_distances[path] = merge_distance(path_distances[path], distance)
-      counter[path.junction] += 1 if path.junction
-
-      yield path, path_distances, counter
-
-      if path.junction && path.junction != jskip
-        path.junction.paths.each do |jp|
-          path_distance_walk(
-            jp,
-            distance,
-            jskip: path.junction,
-            path_distances: path_distances,
-            counter: counter,
-            &block
-          )
-        end
-      end
-
-      path.edges.each do |edge|
-        edge_id = edge.id
-        edge = edge.num
-        next if edge == skip
-        next unless (neighbor = path.hex.neighbors[edge])
-
-        counter[edge_id] += 1
-        np_edge = path.hex.invert(edge)
-
-        neighbor.paths[np_edge].each do |np|
-          next unless lane_match?(path.exit_lanes[edge], np.exit_lanes[np_edge])
-
-          path_distance_walk(
-            np,
-            distance,
-            skip: np_edge,
-            path_distances: path_distances,
-            counter: counter,
-            &block)
-        end
-        counter[edge_id] -= 1
-      end
-      counter[path.junction] -= 1 if path.junction
     end
 
     def compute(corporation)
@@ -168,17 +111,20 @@ module Engine
       h_distances = {}
 
       tokens.each do |node|
-        node_distance_walk(
+        node_walk(
           node,
-          [0, 0],
+          distance: @separate_node_types ? [0, 0] : [0],
           node_distances: n_distances,
+          path_distances: p_distances,
           corporation: corporation,
-          path_distances: p_distances
         ) do |path, dist|
           hex = path.hex
           h_distances[hex] = merge_distance(h_distances[hex], dist)
         end
       end
+
+      puts "Path Distances for #{corporation.name}:"
+      p_distances.each { |p, d| puts "#{p.inspect} = #{d}" }
 
       @node_distances[corporation] = n_distances
       @path_distances[corporation] = p_distances
