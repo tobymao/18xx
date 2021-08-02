@@ -1300,7 +1300,7 @@ module Engine
           return unless corporation.coordinates
 
           tile = hex_by_id(corporation.coordinates).tile
-          city = tile.cities[corporation.city || 0]
+          city = tile.cities[corporation.city || 0] || tile.cities[0]
           slot = city.get_slot(corporation)
           tile.add_reservation!(corporation, slot ? corporation.city : nil, slot)
           log << "#{corporation.name} reserves station on #{tile.hex.name}"\
