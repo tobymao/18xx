@@ -1381,7 +1381,7 @@ module Engine
             id: 's8',
             name: 'Boomtown',
             desc: 'On it\'s first operating turn, this corporation may upgrade its home to green as a free action. This does '\
-            'not count as an additional track placement and does not incur any cost for doing so',
+                  'not count as an additional track placement and does not incur any cost for doing so',
           },
           {
             icon: 'subsidy_free_station',
@@ -1389,8 +1389,8 @@ module Engine
             id: 's9',
             name: 'Free Station',
             desc: 'The free station is a special token (which counts toward the 8 token limit) that can be placed in any city '\
-            'the corporation can trace a legal route to, even if no open station circle is currently available in the city. '\
-            'If a open station circle becomes available later, the token will immediately fill the opening'
+                  'the corporation can trace a legal route to, even if no open station circle is currently available in the '\
+                  'city. If a open station circle becomes available later, the token will immediately fill the opening',
           },
           {
             icon: 'subsidy_plus_ten',
@@ -1405,42 +1405,42 @@ module Engine
             id: 's11',
             name: '+10 / +20',
             desc: 'This corporation\'s home city is worth $10 until phase 5, after which it is worth '\
-            ' $20 more for the rest of the game'
+                  ' $20 more for the rest of the game',
           },
           {
             icon: 'subsidy_thirty',
             abilities: [],
             id: 's12',
             name: '$30 Subsidy',
-            desc: 'The bank will contribute $30 towards the bid for this corporation'
+            desc: 'The bank will contribute $30 towards the bid for this corporation',
           },
           {
             icon: 'subsidy_thirty',
             abilities: [],
             id: 's13',
             name: '$30 Subsidy',
-            desc: 'The bank will contribute $30 towards the bid for this corporation'
+            desc: 'The bank will contribute $30 towards the bid for this corporation',
           },
           {
             icon: 'subsidy_forty',
             abilities: [],
             id: 's14',
             name: '$40 Subsidy',
-            desc: 'The bank will contribute $40 towards the bid for this corporation'
+            desc: 'The bank will contribute $40 towards the bid for this corporation',
           },
           {
             icon: 'subsidy_fifty',
             abilities: [],
             id: 's15',
             name: '$50 Subsidy',
-            desc: 'The bank will contribute $50 towards the bid for this corporation'
+            desc: 'The bank will contribute $50 towards the bid for this corporation',
           },
           {
             icon: 'subsidy_resource',
             abilities: [],
             id: 's16',
             name: 'Resource Subsidy',
-            desc: 'PLACEHOLDER DESCRIPTION'
+            desc: 'PLACEHOLDER DESCRIPTION',
           },
         ].freeze
 
@@ -1632,6 +1632,43 @@ module Engine
               %w[B24 C21] => '',
             },
           }
+        end
+
+        def timeline
+          @timeline = [
+            'After SR 1 all unused subsidies are removed from the map',
+            'After OR 1.1 all unsold 2 trains are exported.',
+            'After OR 1.2 all unsold 2+ trains are exported.',
+            'After OR 2.1 no trains are exported',
+            'After OR 2.2 all unsold 3 trains are exported',
+            'After OR 3.1 and further ORs the next available train will be exported '\
+            '(removed, triggering phase change as if purchased)',
+          ].freeze
+        end
+
+        def new_operating_round
+          remove_subsidies if @round.stock? && @turn == 1 && @round.round_num == 1
+          super
+        end
+
+        def remove_subsidies
+          @log << 'All unused subsidies are removed from the game'
+          @subsidies_by_hex = {}
+          SUBSIDIZED_HEXES.each do |hex_id|
+            hex = hex_by_id(hex_id)
+            hex.tile.icons.reject! { |icon| icon.name.include?('subsidy') }
+          end
+        end
+
+        def or_round_finished
+          turn = "#{@turn}.#{@round.round_num}"
+          case turn
+          when '1.1' then @depot.export_all!('2')
+          when '1.2' then @depot.export_all!('2+')
+          when '2.2' then @depot.export_all!('3')
+          else
+            @depot.export! unless turn == '2.1'
+          end
         end
 
         def stock_round
