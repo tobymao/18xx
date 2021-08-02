@@ -115,9 +115,9 @@ module Engine
           '3Ee' => :large,
           '4Ef' => :large,
           '4Eg' => :large,
-          '5E' => :large,
-          '6E' => :large,
-          '8E' => :large,
+          '5Eh' => :large,
+          '6Ei' => :large,
+          '8Ej' => :large,
         }.freeze
 
         COMPANY_REVENUE_TO_TYPE = {
