@@ -17,7 +17,7 @@ module View
 
     def render_notification
       message = <<~MESSAGE
-        <p>18Carolinas (prototype from All-Aboard Games) is now in alpha. 1836jr56 and 1893 is now in beta</p>
+        <p>18Carolinas (prototype from All-Aboard Games) is now in alpha. 1836jr56, 1893 and 1840 are now in beta</p>
         <p>18SJ prototype now updated to version 0.8 - and two variants added, including a 2 player variant.</p>
         <p>1830 now supports 2-player games.</p>
 
