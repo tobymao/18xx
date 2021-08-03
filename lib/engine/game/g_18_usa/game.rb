@@ -9,7 +9,7 @@ module Engine
       class Game < G1817::Game
         include_meta(G18USA::Meta)
 
-        attr_reader :jump_graph
+        attr_reader :jump_graph, :subsidies_by_hex
 
         CURRENCY_FORMAT_STR = '$%d'
 
@@ -1029,6 +1029,19 @@ module Engine
             ],
             color: nil,
           },
+          # P29
+          {
+            name: 'Bankrupt Railroad',
+            value: 120,
+            revenue: 0,
+            desc: 'If this company starts in a city with a No Subsidy tile it immediately takes a free 2-train which it may '\
+                  'run in its first OR',
+            sym: 'P29',
+            abilities: [
+              # Owning the private is the ability
+            ],
+            color: nil,
+          },
           # P30
           {
             name: 'Double Heading',
@@ -1322,6 +1335,143 @@ module Engine
         # Alphabetized. Not sure what official ordering is
 
         METROPOLITAN_HEXES = %w[G3 E11 H14 H22 I19 D20].freeze
+        SUBSIDIZED_HEXES = %w[B8 B14 C3 D6 D14 E3 E7 E23 G7 G11 G27 H8 I13 I25].freeze
+        SUBSIDIES = [
+          # Temporarily commenting out the first two subsidies to guarantee all "interesting" subsidies
+          # come out during randomization during pre-alpha development
+          # {
+          # icon: 'subsidy_none',
+          # abilities: [],
+          # id: 's1',
+          # name: 'No Subsidy',
+          # desc: 'No effect',
+          # value: nil,
+          # },
+          # {
+          # icon: 'subsidy_none',
+          # abilities: [],
+          # id: 's2',
+          # name: 'No Subsidy'
+          # desc: 'No effect',
+          # value: nil,
+          # },
+          {
+            icon: 'subsidy_none',
+            abilities: [],
+            id: 's3',
+            name: 'No Subsidy',
+            desc: 'No effect',
+            value: nil,
+          },
+          {
+            icon: 'subsidy_none',
+            abilities: [],
+            id: 's4',
+            name: 'No Subsidy',
+            desc: 'No effect',
+            value: nil,
+          },
+          {
+            icon: 'subsidy_none',
+            abilities: [],
+            id: 's5',
+            name: 'No Subsidy',
+            desc: 'No effect',
+            value: nil,
+          },
+          {
+            icon: 'subsidy_none',
+            abilities: [],
+            id: 's6',
+            name: 'No Subsidy',
+            desc: 'No effect',
+            value: nil,
+          },
+          {
+            icon: 'subsidy_none',
+            abilities: [],
+            id: 's7',
+            name: 'No Subsidy',
+            desc: 'No effect',
+            value: nil,
+          },
+          {
+            icon: 'subsidy_boomtown',
+            abilities: [],
+            id: 's8',
+            name: 'Boomtown',
+            desc: 'On it\'s first operating turn, this corporation may upgrade its home to green as a free action. This does '\
+                  'not count as an additional track placement and does not incur any cost for doing so',
+            value: nil,
+          },
+          {
+            icon: 'subsidy_free_station',
+            abilities: [],
+            id: 's9',
+            name: 'Free Station',
+            desc: 'The free station is a special token (which counts toward the 8 token limit) that can be placed in any city '\
+                  'the corporation can trace a legal route to, even if no open station circle is currently available in the '\
+                  'city. If a open station circle becomes available later, the token will immediately fill the opening',
+            value: nil,
+          },
+          {
+            icon: 'subsidy_plus_ten',
+            abilities: [],
+            id: 's10',
+            name: '+10',
+            desc: 'This corporation\'s home city is worth $10 for the rest of the game',
+            value: nil,
+          },
+          {
+            icon: 'subsidy_plus_ten_twenty',
+            abilities: [],
+            id: 's11',
+            name: '+10 / +20',
+            desc: 'This corporation\'s home city is worth $10 until phase 5, after which it is worth '\
+                  ' $20 more for the rest of the game',
+            value: nil,
+          },
+          {
+            icon: 'subsidy_thirty',
+            abilities: [],
+            id: 's12',
+            name: '$30 Subsidy',
+            desc: 'The bank will contribute $30 towards the bid for this corporation',
+            value: 30,
+          },
+          {
+            icon: 'subsidy_thirty',
+            abilities: [],
+            id: 's13',
+            name: '$30 Subsidy',
+            desc: 'The bank will contribute $30 towards the bid for this corporation',
+            value: 30,
+          },
+          {
+            icon: 'subsidy_forty',
+            abilities: [],
+            id: 's14',
+            name: '$40 Subsidy',
+            desc: 'The bank will contribute $40 towards the bid for this corporation',
+            value: 40,
+          },
+          {
+            icon: 'subsidy_fifty',
+            abilities: [],
+            id: 's15',
+            name: '$50 Subsidy',
+            desc: 'The bank will contribute $50 towards the bid for this corporation',
+            value: 50,
+          },
+          {
+            icon: 'subsidy_resource',
+            abilities: [],
+            id: 's16',
+            name: 'Resource Subsidy',
+            desc: 'PLACEHOLDER DESCRIPTION',
+            value: nil,
+          },
+        ].freeze
 
         def active_metropolitan_hexes
           @active_metropolitan_hexes ||= [@hexes.find { |h| h.id == 'D28' }]
@@ -1371,6 +1521,19 @@ module Engine
             when 'H22'
               hex.lay(@tiles.find { |t| t.name == 'X01' })
             end
+          end
+
+          randomize_subsidies
+        end
+
+        def randomize_subsidies
+          randomized_subsidies = SUBSIDIES.sort_by { rand }.take(SUBSIDIZED_HEXES.size)
+          @subsidies_by_hex = {}
+          SUBSIDIZED_HEXES.zip(randomized_subsidies).each do |hex_id, subsidy|
+            hex = hex_by_id(hex_id)
+            @subsidies_by_hex[hex_id] = subsidy
+            hex.tile.icons.reject! { |icon| icon.name == 'coins' }
+            hex.tile.icons << Engine::Part::Icon.new("18_usa/#{subsidy['icon']}")
           end
         end
 
@@ -1500,14 +1663,51 @@ module Engine
           }
         end
 
+        def timeline
+          @timeline = [
+            'After SR 1 all unused subsidies are removed from the map',
+            'After OR 1.1 all unsold 2 trains are exported.',
+            'After OR 1.2 all unsold 2+ trains are exported.',
+            'After OR 2.1 no trains are exported',
+            'After OR 2.2 all unsold 3 trains are exported',
+            'After OR 3.1 and further ORs the next available train will be exported '\
+            '(removed, triggering phase change as if purchased)',
+          ].freeze
+        end
+
+        def new_operating_round
+          remove_subsidies if @round.stock? && @turn == 1 && @round.round_num == 1
+          super
+        end
+
+        def remove_subsidies
+          @log << 'All unused subsidies are removed from the game'
+          @subsidies_by_hex = {}
+          SUBSIDIZED_HEXES.each do |hex_id|
+            hex = hex_by_id(hex_id)
+            hex.tile.icons.reject! { |icon| icon.name.include?('subsidy') }
+          end
+        end
+
+        def or_round_finished
+          turn = "#{@turn}.#{@round.round_num}"
+          case turn
+          when '1.1' then @depot.export_all!('2')
+          when '1.2' then @depot.export_all!('2+')
+          when '2.2' then @depot.export_all!('3')
+          else
+            @depot.export! unless turn == '2.1'
+          end
+        end
+
         def stock_round
           close_bank_shorts
           @interest_fixed = nil
 
           G18USA::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
-            Engine::Step::HomeToken,
-            G1817::Step::BuySellParShares,
+            G18USA::Step::HomeToken,
+            G18USA::Step::BuySellParShares,
           ])
         end
 
@@ -1598,7 +1798,14 @@ module Engine
           revenue += (increased_oil? ? 20 : 10) * route.all_hexes.count { |hex| hex.tile.id.include?('oil') }
 
           pullman_assigned = @round.train_upgrade_assignments[route.train]&.any? { |upgrade| upgrade['id'] == 'P' }
-          revenue += 20 * stops.count if pullman_assigned
+          revenue += 20 * stops.count { |s| !s.tile.name.include?('Rural') } if pullman_assigned
+
+          revenue += 10 if route.all_hexes.any? { |hex| hex.tile.icons.any? { |icon| icon.name == 'plus_ten' } }
+          revenue += @phase.tiles.include?(:brown) ? 20 : 10 if route.all_hexes.any? do |hex|
+                                                                  hex.tile.icons.any? do |icon|
+                                                                    icon.name == 'plus_ten_twenty'
+                                                                  end
+                                                                end
 
           if @round.train_upgrade_assignments[route.train]&.any? { |upgrade| upgrade['id'] == '/' }
             stop_skipped = skipped_stop(route, stops)
