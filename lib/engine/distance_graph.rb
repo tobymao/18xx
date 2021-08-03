@@ -44,11 +44,13 @@ module Engine
     end
 
     def smaller_or_equal_distance?(a, b)
-      a&.each_with_index&.all? { |x, idx| x <= b[idx] }
+      a&.all? { |k, v| v <= b[k] }
     end
 
     def merge_distance(a, b)
-      a&.each_with_index&.map { |x, idx| [x, b[idx]].min } || b.dup
+      return b.dup unless a
+
+      a.map { |k, v| [k, [v, b[k]].min] }.to_h
     end
 
     def node_walk(
@@ -66,9 +68,9 @@ module Engine
       return if corporation && node.blocks?(corporation)
 
       if node.city? || node.town? && !@separate_node_types
-        distance[0] += 1
+        distance[:city] += 1
       elsif node.town? && !node.halt?
-        distance[1] += 1
+        distance[:town] += 1
       end
 
       node.paths.each do |node_path|
@@ -100,9 +102,9 @@ module Engine
       end
 
       if node.city? || node.town? && !@separate_node_types
-        distance[0] -= 1
+        distance[:city] -= 1
       elsif node.town? && !node.halt?
-        distance[1] -= 1
+        distance[:town] -= 1
       end
     end
 
@@ -115,7 +117,7 @@ module Engine
       tokens.each do |node|
         node_walk(
           node,
-          distance: @separate_node_types ? [0, 0] : [0],
+          distance: @separate_node_types ? { city: 0, town: 0 } : { city: 0 },
           node_distances: n_distances,
           path_distances: p_distances,
           corporation: corporation,

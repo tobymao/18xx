@@ -36,25 +36,25 @@ module Engine
             return false if max_distance[0].zero?
 
             path_distances = @game.distance_graph.path_distances(entity)
-            path_distances[path][0] <= max_distance[0] && path_distances[path][-1] <= max_distance[-1]
+            path_distances[path][:city] <= max_distance[0] && path_distances[path][:town] <= max_distance[-1]
           end
 
           def reachable_city?(node_distance, train_distance)
-            unused = train_distance[0] - node_distance[0] - 1
+            unused = train_distance[0] - node_distance[:city] - 1
 
-            node_distance[0] < train_distance[0] && node_distance[-1] <= train_distance[-1] + unused
+            node_distance[:city] < train_distance[0] && node_distance[:town] <= train_distance[-1] + unused
           end
 
           def reachable_town?(node_distance, train_distance)
-            unused = train_distance[0] - node_distance[0]
+            unused = train_distance[0] - node_distance[:city]
 
-            node_distance[0] <= train_distance[0] && node_distance[-1] < train_distance[-1] + unused
+            node_distance[:city] <= train_distance[0] && node_distance[:town] < train_distance[-1] + unused
           end
 
           def reachable_halt?(node_distance, train_distance)
-            unused = train_distance[0] - node_distance[0]
+            unused = train_distance[0] - node_distance[:city]
 
-            node_distance[0] <= train_distance[0] && node_distance[-1] <= train_distance[-1] + unused
+            node_distance[:city] <= train_distance[0] && node_distance[:town] <= train_distance[-1] + unused
           end
 
           def reachable_node?(entity, node, max_distance)
