@@ -5,6 +5,7 @@
 
 require_relative 'meta'
 require_relative '../base'
+require_relative 'corporation'
 
 module Engine
   module Game
@@ -22,6 +23,8 @@ module Engine
         LAYOUT = :pointy
         AXES = { x: :number, y: :letter }.freeze
         SELL_BUY_ORDER = :sell_buy
+        SELL_AFTER = :operate
+        TREASURY_SHARE_LIMIT = 50
 
         # rubocop:disable Layout/LineLength
         TILES = {
@@ -202,6 +205,7 @@ module Engine
             desc: 'The purchaser of this private company receives a share of '\
                   'the T&P Railroad.',
             abilities: [{ type: 'shares', shares: 'T&P_1' }],
+            min_players: 4,
             sym: 'D',
           },          {
             name: 'E',
@@ -210,6 +214,7 @@ module Engine
             desc: 'The purchaser of this private company receives a share of '\
                   'the T&P Railroad.',
             abilities: [{ type: 'shares', shares: 'T&P_2' }],
+            min_players: 5,
             sym: 'E',
           }
         ].freeze
@@ -220,10 +225,10 @@ module Engine
            sym: 'T&P',
            name: 'Texas and Pacific Railway',
            logo: '18_texas/TP',
-           token_fee: 100,
-           tokens: [0, 0, 0],
+           token_fee: 120,
+           tokens: [0, 0, 0, 0, 0],
+           city: 0,
            coordinates: 'D9',
-           city: 1,
            color: 'darkmagenta',
            text_color: 'white',
            reservation_color: nil,
@@ -234,7 +239,7 @@ module Engine
            name: 'Missouri–Kansas–Texas Railway',
            logo: '18_texas/MKT',
            token_fee: 100,
-           tokens: [0, 0, 0],
+           tokens: [0, 0, 0, 0],
            coordinates: 'B11',
            color: 'green',
            text_color: 'white',
@@ -245,8 +250,8 @@ module Engine
            sym: 'SP',
            name: 'Southern Pacific Railroad',
            logo: '18_texas/SP',
-           token_fee: 100,
-           tokens: [0, 0, 0, 0],
+           token_fee: 120,
+           tokens: [0, 0, 0, 0, 0],
            coordinates: 'I14',
            color: 'orange',
            text_color: 'white',
@@ -260,7 +265,7 @@ module Engine
            token_fee: 100,
            tokens: [0, 0, 0, 0],
            coordinates: 'G10',
-           color: 'indigo',
+           color: 'red',
            text_color: 'white',
            reservation_color: nil,
          },
@@ -269,9 +274,9 @@ module Engine
            sym: 'SSW',
            name: 'St. Louis Southwestern Railway',
            logo: '18_texas/SSW',
-           token_fee: 100,
-           tokens: [0, 0, 0, 0],
-           coordinates: 'D13',
+           token_fee: 80,
+           tokens: [0, 0, 0],
+           coordinates: 'D15',
            color: 'mediumpurple',
            text_color: 'white',
            reservation_color: nil,
@@ -281,7 +286,7 @@ module Engine
            sym: 'SAA',
            name: 'San Antonio and Aransas Pass',
            logo: '18_texas/SAA',
-           token_fee: 100,
+           token_fee: 80,
            tokens: [0, 0, 0],
            coordinates: 'J5',
            color: 'black',
@@ -298,10 +303,13 @@ module Engine
           'D1' => 'El Paso',
           'D9' => 'Fort Worth & Dallas',
           'D15' => 'Marshall',
-          'D17' => 'Shreveport',
-          'D19' => 'Jackson',
+          'D19' => 'Shreveport',
+          'E4' => 'Cisco',
+
           'F9' => 'Waco',
           'F13' => 'Palestine',
+          'F15' => 'Lufkin',
+
           'G10' => 'College Station',
           'H7' => 'Austin',
           'H19' => 'Lafayette',
@@ -309,6 +317,7 @@ module Engine
           'J1' => 'Piedras Negras',
           'J5' => 'San Antonio',
           'J15' => 'Galveston',
+          'K10' => 'Victoria',
           'M2' => 'Laredo',
           'M8' => 'Corpus Christi',
           'N1' => 'Monterrey',
@@ -325,12 +334,12 @@ module Engine
             C8
             C10
             C12
+            C14
             C18
-            D3
-            D5
+            D7
             D11
-            E2
-            E4
+            D13
+            D17
             E6
             E8
             E10
@@ -338,32 +347,21 @@ module Engine
             E14
             E16
             E18
-            F3
-            F5
             F7
             F11
-            F15
-            F17
-            G4
             G6
             G8
             G12
-            G14
-            G16
             G18
-            H3
-            H5
             H9
+            H11
             H13
             H15
             H17
-            I2
-            I4
+            I6
             I8
-            I10
             I16
             I18
-            J3
             J7
             J9
             J11
@@ -372,49 +370,180 @@ module Engine
             K4
             K6
             K8
-            K10
-            K12
             L1
             L3
             L5
             L7
-            L9
             M4
             M6
             N3
             N5
             ] => '',
-            %w['C14
-               D7
+            %w[
+            F17
+            G14
+            G16
+            K12
+            L9
+            ] =>
+            'upgrade=cost:40,terrain:water',
+            %w[
+            D3
+            D5
+            E2
+            E4
+            F3
+            F5
+            G2
+            G4
+            H3
+            H5
+            I2
+            I4
+            J3
+            ] =>
+            'upgrade=cost:40,terrain:desert',
+
+            ['E4'] => 'city=revenue:0;upgrade=cost:40,terrain:desert',
+            %w[B11
                F13
-               H11
-               I6
-               I12'] => 'town=revenue:0',
-            %w['B11
                C16
-               D9
-               D13
                D15
-               D17
                F9
                G10
+               K10
+               M2] => 'city=revenue:0',
+            ['F15'] => 'city=revenue:0;upgrade=cost:40,terrain:water',
+
+            %w[
                H7
-               I14
                J5
-               J15
-               M2
-               M8'] => 'city=revenue:0',
+              ] => 'city=revenue:0;label=Y',
           },
           red: {
-            ['A12'] => 'offboard=revenue:yellow_10|brown_40;path=a:0,b:_0;path=a:5,b:_0',
-            ['A18'] => 'offboard=revenue:yellow_20|brown_40;path=a:0,b:_0;path=a:5,b:_0',
-            ['D1'] => 'offboard=revenue:yellow_40|brown_60;path=a:4,b:_0;path=a:5,b:_0',
-            ['D19'] => 'offboard=revenue:yellow_40|brown_60;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0',
-            ['H19'] => 'offboard=revenue:yellow_40|brown_50;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0',
-            ['J1'] => 'offboard=revenue:yellow_40|brown_50;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
-            ['N1'] => 'offboard=revenue:yellow_40|brown_50;path=a:3,b:_0;path=a:4,b:_0',
+            ['A12'] => 'offboard=revenue:yellow_20|brown_40;path=a:0,b:_0;path=a:5,b:_0',
+            ['A18'] => 'offboard=revenue:yellow_30|brown_50;path=a:0,b:_0;path=a:5,b:_0',
+            ['D1'] => 'offboard=revenue:yellow_50|brown_80;path=a:4,b:_0;path=a:5,b:_0',
+            ['D19'] => 'offboard=revenue:yellow_20|brown_40;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0',
+            ['H19'] => 'offboard=revenue:yellow_30|brown_50;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0',
+            ['J1'] => 'offboard=revenue:yellow_30|brown_50;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
+            ['N1'] => 'offboard=revenue:yellow_60|brown_80;path=a:3,b:_0;path=a:4,b:_0',
+          },
+          gray: {
+            ['J15'] => 'town=revenue:yellow_20|brown_50;path=a:1,b:_0;path=a:2,b:_0',
+            ['M8'] => 'town=revenue:yellow_30|brown_50;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0',
+          },
+          yellow: {
+            ['D9'] => 'city=revenue:30;city=revenue:30;label=Y;path=a:1,b:_0;path=a:_0,b:_1;path=a:_1,b:3',
+
+            ['I14'] => 'city=revenue:30;label=Y;path=a:1,b:_0;path=a:5,b:_0',
+            %w[I10 I12] => 'path=a:1,b:4',
           },
         }.freeze
+
+        def setup
+          # Distribute privates
+          # Rules call for randomizing privates, assigning to players then reordering players
+          # based on worth of private
+          # Instead, just pass out privates from least to most expensive since player order is already
+          # random
+          sorted_companies = @companies.sort_by(&:value)
+          @players.each_with_index do |player, idx|
+            #  next unless idx < 5
+
+            company = sorted_companies.shift
+            @log << "#{player.name} receives #{company.name} and pays #{format_currency(company.value)}"
+            player.spend(company.value, @bank)
+            player.companies << company
+            company.owner = player if idx <= players.size
+            after_buy_company(player, company, company.value)
+          end
+        end
+
+        def new_auction_round
+          Round::Auction.new(self, [
+            Step::CompanyPendingPar,
+          ])
+        end
+
+        def stock_round
+          Engine::Round::Stock.new(self, [
+            G18Texas::Step::CompanyPendingPar,
+            Engine::Step::BuySellParShares,
+          ])
+        end
+
+        def init_corporations(stock_market)
+          min_price = stock_market.par_prices.map(&:price).min
+
+          self.class::CORPORATIONS.map do |corporation|
+            G18Texas::Corporation.new(
+              min_price: min_price,
+              capitalization: self.class::CAPITALIZATION,
+              **corporation.merge(corporation_opts),
+            )
+          end
+        end
+
+        def float_str(entity)
+          if entity.corporation? && entity.floatable
+            "#{entity.percent_to_float}% to float, #{format_currency(entity.token_fee)} token fee"
+          end
+        end
+
+        def ipo_name(_entity = nil)
+          'Treasury'
+        end
+
+        def float_corporation(corporation)
+          @log << "#{corporation.name} floats"
+          stock_market.move_up(corporation)
+          @log << "#{corporation.name} share value moves up one space to #{corporation.share_price.price}"
+          corporation.spend(corporation.token_fee, @bank)
+          @log << "#{corporation.name} spends #{format_currency(corporation.token_fee)}
+                 for tokens"
+        end
+
+        def operating_round(round_num)
+          Engine::Round::Operating.new(self, [
+            Engine::Step::Bankrupt,
+            Engine::Step::Track,
+            Engine::Step::Token,
+            Engine::Step::Route,
+            G18Texas::Step::Dividend,
+            Engine::Step::DiscardTrain,
+            Engine::Step::BuyTrain,
+            Engine::Step::IssueShares,
+          ], round_num: round_num)
+        end
+
+        def issuable_shares(entity)
+          return [] unless entity.operating_history.size > 1
+          return [] unless entity.corporation?
+
+          bundles_for_corporation(entity, entity)
+            .select { |bundle| @share_pool.fit_in_bank?(bundle) }
+        end
+
+        def redeemable_shares(entity)
+          return [] unless entity.corporation?
+
+          bundles_for_corporation(share_pool, entity)
+            .select { |bundle| fit_in_treasury?(entity, bundle) }
+            .reject { |bundle| entity.cash < bundle.price }
+        end
+
+        def fit_in_treasury?(entity, bundle)
+          (bundle.percent + entity.percent_of(bundle.corporation)) <= TREASURY_SHARE_LIMIT
+        end
+
+        def tile_lays(_entity)
+          if @phase.available?('3')
+            [{ lay: true, upgrade: true, cost: 0 }, { lay: true, upgrade: :not_if_upgraded }]
+          else
+            [{ lay: true, upgrade: true, cost: 0 }]
+          end
+        end
       end
     end
   end
