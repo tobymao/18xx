@@ -486,9 +486,9 @@ module Engine
         end
 
         def float_str(entity)
-          if entity.corporation? && entity.floatable
-            "#{entity.percent_to_float}% to float, #{format_currency(entity.token_fee)} token fee"
-          end
+          return unless entity.corporation? && entity.floatable
+
+          "#{entity.percent_to_float}% to float, #{format_currency(entity.token_fee)} token fee"
         end
 
         def ipo_name(_entity = nil)
