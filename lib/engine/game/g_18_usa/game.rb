@@ -1345,6 +1345,7 @@ module Engine
           # id: 's1',
           # name: 'No Subsidy',
           # desc: 'No effect',
+          # value: nil,
           # },
           # {
           # icon: 'subsidy_none',
@@ -1352,6 +1353,7 @@ module Engine
           # id: 's2',
           # name: 'No Subsidy'
           # desc: 'No effect',
+          # value: nil,
           # },
           {
             icon: 'subsidy_none',
@@ -1359,6 +1361,7 @@ module Engine
             id: 's3',
             name: 'No Subsidy',
             desc: 'No effect',
+            value: nil,
           },
           {
             icon: 'subsidy_none',
@@ -1366,6 +1369,7 @@ module Engine
             id: 's4',
             name: 'No Subsidy',
             desc: 'No effect',
+            value: nil,
           },
           {
             icon: 'subsidy_none',
@@ -1373,6 +1377,7 @@ module Engine
             id: 's5',
             name: 'No Subsidy',
             desc: 'No effect',
+            value: nil,
           },
           {
             icon: 'subsidy_none',
@@ -1380,6 +1385,7 @@ module Engine
             id: 's6',
             name: 'No Subsidy',
             desc: 'No effect',
+            value: nil,
           },
           {
             icon: 'subsidy_none',
@@ -1387,6 +1393,7 @@ module Engine
             id: 's7',
             name: 'No Subsidy',
             desc: 'No effect',
+            value: nil,
           },
           {
             icon: 'subsidy_boomtown',
@@ -1395,6 +1402,7 @@ module Engine
             name: 'Boomtown',
             desc: 'On it\'s first operating turn, this corporation may upgrade its home to green as a free action. This does '\
                   'not count as an additional track placement and does not incur any cost for doing so',
+            value: nil,
           },
           {
             icon: 'subsidy_free_station',
@@ -1404,6 +1412,7 @@ module Engine
             desc: 'The free station is a special token (which counts toward the 8 token limit) that can be placed in any city '\
                   'the corporation can trace a legal route to, even if no open station circle is currently available in the '\
                   'city. If a open station circle becomes available later, the token will immediately fill the opening',
+            value: nil,
           },
           {
             icon: 'subsidy_plus_ten',
@@ -1411,6 +1420,7 @@ module Engine
             id: 's10',
             name: '+10',
             desc: 'This corporation\'s home city is worth $10 for the rest of the game',
+            value: nil,
           },
           {
             icon: 'subsidy_plus_ten_twenty',
@@ -1419,6 +1429,7 @@ module Engine
             name: '+10 / +20',
             desc: 'This corporation\'s home city is worth $10 until phase 5, after which it is worth '\
                   ' $20 more for the rest of the game',
+            value: nil,
           },
           {
             icon: 'subsidy_thirty',
@@ -1426,6 +1437,7 @@ module Engine
             id: 's12',
             name: '$30 Subsidy',
             desc: 'The bank will contribute $30 towards the bid for this corporation',
+            value: 30,
           },
           {
             icon: 'subsidy_thirty',
@@ -1433,6 +1445,7 @@ module Engine
             id: 's13',
             name: '$30 Subsidy',
             desc: 'The bank will contribute $30 towards the bid for this corporation',
+            value: 30,
           },
           {
             icon: 'subsidy_forty',
@@ -1440,6 +1453,7 @@ module Engine
             id: 's14',
             name: '$40 Subsidy',
             desc: 'The bank will contribute $40 towards the bid for this corporation',
+            value: 40,
           },
           {
             icon: 'subsidy_fifty',
@@ -1447,6 +1461,7 @@ module Engine
             id: 's15',
             name: '$50 Subsidy',
             desc: 'The bank will contribute $50 towards the bid for this corporation',
+            value: 50,
           },
           {
             icon: 'subsidy_resource',
@@ -1454,6 +1469,7 @@ module Engine
             id: 's16',
             name: 'Resource Subsidy',
             desc: 'PLACEHOLDER DESCRIPTION',
+            value: nil,
           },
         ].freeze
 
@@ -1783,6 +1799,13 @@ module Engine
 
           pullman_assigned = @round.train_upgrade_assignments[route.train]&.any? { |upgrade| upgrade['id'] == 'P' }
           revenue += 20 * stops.count if pullman_assigned
+
+          revenue += 10 if route.all_hexes.any? { |hex| hex.tile.icons.any? { |icon| icon.name == 'plus_ten' } }
+          revenue += @phase.tiles.include?(:brown) ? 20 : 10 if route.all_hexes.any? do |hex|
+                                                                  hex.tile.icons.any? do |icon|
+                                                                    icon.name == 'plus_ten_twenty'
+                                                                  end
+                                                                end
 
           if @round.train_upgrade_assignments[route.train]&.any? { |upgrade| upgrade['id'] == '/' }
             stop_skipped = skipped_stop(route, stops)

@@ -12,7 +12,7 @@ module Engine
                                   sym: subsidy['id'],
                                   name: subsidy['name'],
                                   desc: subsidy['desc'],
-                                  value: 0,
+                                  value: subsidy['value'] || 0,
                                 })
           end
 

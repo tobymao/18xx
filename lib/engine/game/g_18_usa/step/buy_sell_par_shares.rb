@@ -68,9 +68,17 @@ module Engine
             # Clear the corporation of 'share' cash
             corporation.spend(corporation.cash, @game.bank)
 
+            @subsidy = find_bank_subsidy(corporation)
+            if @subsidy
+              @game.log << "Bank provides a #{@game.format_currency(@subsidy.value)} "\
+                           "subsidy to #{entity.name}"
+            end
+
+            transfer_subsidy_ownership(entity) if @subsidy
+
             # Player spends cash to the *BANK* to start corporation, even if it forces them negative
             # which they'll need to sort by adding companeis.
-            entity.spend(price, @game.bank, check_cash: false)
+            entity.spend(price, @game.bank, check_cash: false) # min bid is 100, max subsidy is 50; no if needed.
 
             # The bank gives the corporation 2x par price
             @game.bank.spend(share_price.price * 2, corporation)
@@ -79,6 +87,17 @@ module Engine
             size_corporation(@game.phase.corporation_sizes.first) if @game.phase.corporation_sizes.one?
 
             par_corporation if available_subsidiaries(winner.entity).none?
+          end
+
+          def transfer_subsidy_ownership(to)
+            from = @subsidy.owner
+            @subsidy.owner = to
+            from.companies.delete(@subsidy)
+            to.companies << @subsidy
+          end
+
+          def find_bank_subsidy(corporation)
+            corporation.companies.find { |c| c.value.positive? }
           end
 
           def available_subsidiaries(entity)
@@ -117,6 +136,42 @@ module Engine
             end
 
             par_corporation if available_subsidiaries(entity).empty?
+          end
+
+          def handle_plus_ten(subsidy_company)
+            subsidy_company.owner.tokens.first.hex.tile.icons << Engine::Part::Icon.new('18_usa/plus_ten', sticky: true)
+            subsidy_company.close!
+          end
+
+          def handle_plus_ten_twenty(subsidy_company)
+            subsidy_company.owner.tokens.first.hex.tile.icons << Engine::Part::Icon.new('18_usa/plus_ten_twenty', sticky: true)
+            subsidy_company.close!
+          end
+
+          def par_corporation
+            return unless @corporation_size
+
+            corporation = @winning_bid.corporation
+            corporation.companies.each { |c| c.close! if c.name == 'No Subsidy' }
+            corporation.companies.each { |c| handle_plus_ten(c) if c.name == '+10' }
+            corporation.companies.each { |c| handle_plus_ten_twenty(c) if c.name == '+10 / +20' }
+
+            # Close all unused value subsidies. Don't get greedy
+            corporation.owner.companies.each do |c|
+              if c.value.positive?
+                @game.log << "#{corporation.owner.name} forfeits the #{@game.format_currency(c.value)} subsidy"
+                c.close!
+              end
+            end
+
+            @log << "#{corporation.name} starts with #{@game.format_currency(corporation.cash)} "\
+                    "and #{@corporation_size} shares"
+
+            try_buy_tokens(corporation)
+
+            @auctioning = nil
+            @winning_bid = nil
+            pass!
           end
         end
       end
