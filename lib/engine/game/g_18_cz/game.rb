@@ -523,6 +523,9 @@ module Engine
 
         def upgrades_to?(from, to, _special = false, selected_company: nil)
           return true if from.color == :white && to.color == :red
+
+          return false unless from.paths_are_subset_of?(to.paths)
+
           if purple_tile?(to) && from.towns.size == 2 && !to.towns.empty? && from.color == :yellow && to.color == :green
             return true
           end
