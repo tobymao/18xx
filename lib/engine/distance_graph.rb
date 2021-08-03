@@ -67,7 +67,9 @@ module Engine
       node_distances[node] = merge_distance(node_distances[node], distance)
       return if corporation && node.blocks?(corporation)
 
-      if node.city? || node.town? && !@separate_node_types
+      if !@separate_node_types
+        distance[:node] += 1
+      elsif node.city?
         distance[:city] += 1
       elsif node.town? && !node.halt?
         distance[:town] += 1
@@ -101,7 +103,9 @@ module Engine
         end
       end
 
-      if node.city? || node.town? && !@separate_node_types
+      if !@separate_node_types
+        distance[:node] -= 1
+      elsif node.city?
         distance[:city] -= 1
       elsif node.town? && !node.halt?
         distance[:town] -= 1
@@ -117,7 +121,7 @@ module Engine
       tokens.each do |node|
         node_walk(
           node,
-          distance: @separate_node_types ? { city: 0, town: 0 } : { city: 0 },
+          distance: @separate_node_types ? { city: 0, town: 0 } : { node: 0 },
           node_distances: n_distances,
           path_distances: p_distances,
           corporation: corporation,
