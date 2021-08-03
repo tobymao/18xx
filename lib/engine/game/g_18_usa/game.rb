@@ -1798,7 +1798,7 @@ module Engine
           revenue += (increased_oil? ? 20 : 10) * route.all_hexes.count { |hex| hex.tile.id.include?('oil') }
 
           pullman_assigned = @round.train_upgrade_assignments[route.train]&.any? { |upgrade| upgrade['id'] == 'P' }
-          revenue += 20 * stops.count if pullman_assigned
+          revenue += 20 * stops.count { |s| !s.tile.name.include?('Rural') } if pullman_assigned
 
           revenue += 10 if route.all_hexes.any? { |hex| hex.tile.icons.any? { |icon| icon.name == 'plus_ten' } }
           revenue += @phase.tiles.include?(:brown) ? 20 : 10 if route.all_hexes.any? do |hex|
