@@ -191,7 +191,7 @@ module Engine
                 },
                 {
                   name: '3Ed',
-                  rusts_on: %w[6E 8E],
+                  rusts_on: %w[6Ei 8Ej],
                   distance: [{ 'nodes' => %w[city offboard], 'pay' => 3, 'visit' => 3 },
                              { 'nodes' => ['town'], 'pay' => 3, 'visit' => 99 }],
                   price: 250,
@@ -214,7 +214,7 @@ module Engine
                 },
                 {
                   name: '3Ee',
-                  rusts_on: %w[6E 8E],
+                  rusts_on: %w[6Ei 8Ej],
                   distance: [{ 'nodes' => %w[city offboard], 'pay' => 3, 'visit' => 3 },
                              { 'nodes' => ['town'], 'pay' => 3, 'visit' => 99 }],
                   price: 250,
@@ -235,7 +235,7 @@ module Engine
                 },
                 {
                   name: '4Ef',
-                  rusts_on: ['8E'],
+                  rusts_on: ['8Ej'],
                   distance: [{ 'nodes' => %w[city offboard], 'pay' => 4, 'visit' => 4 },
                              { 'nodes' => ['town'], 'pay' => 3, 'visit' => 99 }],
                   price: 350,
@@ -256,7 +256,7 @@ module Engine
                 },
                 {
                   name: '4Eg',
-                  rusts_on: ['8E'],
+                  rusts_on: ['8Ej'],
                   distance: [{ 'nodes' => %w[city offboard], 'pay' => 4, 'visit' => 4 },
                              { 'nodes' => ['town'], 'pay' => 3, 'visit' => 99 }],
                   price: 350,
@@ -276,7 +276,7 @@ module Engine
                   price: 500,
                 },
                 {
-                  name: '5E',
+                  name: '5Eh',
                   distance: [{ 'nodes' => %w[city offboard], 'pay' => 5, 'visit' => 5 },
                              { 'nodes' => ['town'], 'pay' => 3, 'visit' => 99 }],
                   price: 700,
@@ -296,7 +296,7 @@ module Engine
                   price: 500,
                 },
                 {
-                  name: '6E',
+                  name: '6Ei',
                   distance: [{ 'nodes' => %w[city offboard], 'pay' => 6, 'visit' => 6 },
                              { 'nodes' => ['town'], 'pay' => 3, 'visit' => 99 }],
                   price: 800,
@@ -316,7 +316,7 @@ module Engine
                   price: 500,
                 },
                 {
-                  name: '8E',
+                  name: '8Ej',
                   distance: [{ 'nodes' => %w[city offboard], 'pay' => 8, 'visit' => 8 },
                              { 'nodes' => ['town'], 'pay' => 3, 'visit' => 99 }],
                   price: 1000,
