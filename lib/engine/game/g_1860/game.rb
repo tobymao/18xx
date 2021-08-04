@@ -2,6 +2,7 @@
 
 require_relative 'meta'
 require_relative '../base'
+require_relative '../../distance_graph'
 
 module Engine
   module Game
@@ -9,7 +10,7 @@ module Engine
       class Game < Game::Base
         include_meta(G1860::Meta)
 
-        attr_reader :nationalization, :sr_after_southern
+        attr_reader :nationalization, :sr_after_southern, :distance_graph
 
         register_colors(black: '#000000',
                         orange: '#f48221',
@@ -942,6 +943,7 @@ module Engine
         end
 
         def setup
+          @distance_graph = DistanceGraph.new(self, separate_node_types: true)
           @bankrupt_corps = []
           @insolvent_corps = []
           @nationalized_corps = []
@@ -1485,130 +1487,6 @@ module Engine
           end
         end
 
-        def get_token_cities(corporation)
-          tokens = []
-          hexes.each do |hex|
-            hex.tile.cities.each do |city|
-              next unless city.tokened_by?(corporation)
-
-              tokens << city
-            end
-          end
-          tokens
-        end
-
-        def smaller_or_equal_distance?(a, b)
-          a ||= [999, 999]
-          a.first <= b.first && a.last <= b.last
-        end
-
-        def merge_distance(a, b)
-          a ||= [999, 999]
-          [[a.first, b.first].min, [a.last, b.last].min]
-        end
-
-        def node_distance_walk(node, distance, node_distances: {}, corporation: nil, path_distances: {}, &block)
-          return if smaller_or_equal_distance?(node_distances[node], distance)
-
-          node_distances[node] = merge_distance(node_distances[node], distance)
-          if node.city?
-            distance = [distance.first + 1, distance.last]
-          elsif node.town? && !node.halt?
-            distance = [distance.first, distance.last + 1]
-          end
-
-          return if corporation && node.blocks?(corporation)
-
-          node.paths.each do |node_path|
-            path_distance_walk(node_path, distance, path_distances: path_distances) do |path|
-              yield path, distance
-              path.nodes.each do |next_node|
-                next if next_node == node
-                next if path.terminal?
-
-                node_distance_walk(
-                  next_node,
-                  distance,
-                  node_distances: node_distances,
-                  corporation: corporation,
-                  path_distances: path_distances, &block
-                )
-              end
-            end
-          end
-        end
-
-        def lane_match?(lanes0, lanes1)
-          lanes0 && lanes1 && lanes1[0] == lanes0[0] && lanes1[1] == (lanes0[0] - lanes0[1] - 1)
-        end
-
-        def path_distance_walk(path, distance, skip: nil, jskip: nil, path_distances: {}, &block)
-          return if smaller_or_equal_distance?(path_distances[path], distance)
-
-          path_distances[path] = merge_distance(path_distances[path], distance)
-
-          yield path
-
-          if path.junction && path.junction != jskip
-            path.junction.paths.each do |jp|
-              path_distance_walk(jp, distance, jskip: @junction, path_distances: path_distances, &block)
-            end
-          end
-
-          path.exits.each do |edge|
-            next if edge == skip
-            next unless (neighbor = path.hex.neighbors[edge])
-
-            np_edge = path.hex.invert(edge)
-
-            neighbor.paths[np_edge].each do |np|
-              next unless lane_match?(path.exit_lanes[edge], np.exit_lanes[np_edge])
-
-              path_distance_walk(np, distance, skip: np_edge, path_distances: path_distances, &block)
-            end
-          end
-        end
-
-        def clear_distances
-          @node_distances.clear
-          @path_distances.clear
-          @hex_distances.clear
-        end
-
-        def node_distances(corporation)
-          compute_distance_graph(corporation) unless @node_distances[corporation]
-          @node_distances[corporation]
-        end
-
-        def path_distances(corporation)
-          compute_distance_graph(corporation) unless @path_distances[corporation]
-          @path_distances[corporation]
-        end
-
-        def hex_distances(corporation)
-          compute_distance_graph(corporation) unless @hex_distances[corporation]
-          @hex_distances[corporation]
-        end
-
-        def compute_distance_graph(corporation)
-          tokens = get_token_cities(corporation)
-          n_distances = {}
-          p_distances = {}
-          h_distances = {}
-
-          tokens.each do |node|
-            node_distance_walk(node, [0, 0], node_distances: n_distances,
-                                             corporation: corporation, path_distances: p_distances) do |path, dist|
-              hex = path.hex
-              h_distances[hex] = merge_distance(h_distances[hex], dist)
-            end
-          end
-
-          @node_distances[corporation] = n_distances
-          @path_distances[corporation] = p_distances
-          @hex_distances[corporation] = h_distances
-        end
-
         # needed for custom_node_walk
         def custom_node_select(node, paths, corporation: nil)
           on = paths.map { |p| [p, 0] }.to_h
@@ -1666,7 +1544,7 @@ module Engine
 
         # at least one route must include home token
         def check_home_token(corporation, routes)
-          tokens = get_token_cities(corporation)
+          tokens = @distance_graph.get_token_cities(corporation)
           home_city = tokens.find { |c| c.hex == hex_by_id(corporation.coordinates) }
           found = false
           routes.each { |r| found ||= r.visited_stops.include?(home_city) } if home_city

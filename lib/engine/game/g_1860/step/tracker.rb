@@ -58,7 +58,7 @@ module Engine
         end
 
         def check_track_restrictions!(entity, old_tile, new_tile)
-          @game.clear_distances
+          @game.distance_graph.clear
           return if @game.loading || !entity.operator?
 
           tr_distance = @game.biggest_train_distance(entity)
