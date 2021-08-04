@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-# add rules: 1/2 tile lays, half/full pay,
-# sell/buy certs from bank, no sales until complete OR
-
 require_relative 'meta'
 require_relative '../base'
 
