@@ -1,0 +1,417 @@
+* {
+  font-family: Lato, sans;
+  word-spacing: 1px;
+  line-height: 1.25;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: currentColor;
+  text-underline-offset: 0.2em;
+}
+
+button, .button_link {
+  font-size: 14px;
+  background-color: gainsboro;
+  color: black;
+  border: solid 1px black;
+  border-radius: 5px;
+  padding: 0.2rem 1rem;
+  margin: 0.5rem 1rem 0 0;
+  line-height: 1rem;
+  cursor: pointer;
+  text-decoration: none;
+}
+.button_link {
+  display: inline-block; /* else padding doesn’t work => different height than button */
+  box-sizing: border-box;
+  text-align: center;
+}
+button.small {
+  padding: 0.2rem 0.5rem;
+  margin-right: 0.5rem;
+}
+button:last-child, button.par_price:nth-of-type(6n), button.sell_share:nth-of-type(3n) {
+  margin-right: 0;
+}
+button:disabled {
+  background-color: gray;
+}
+
+h2 {
+  font-size: 1.2rem;
+}
+h3 {
+  font-size: 1.1rem;
+  margin-bottom: 0.4rem;
+}
+h4 {
+  font-size: 1.0rem;
+  margin-top: 0.7rem;
+  margin-bottom: 0.4rem;
+}
+#game #left h3 {
+  margin: 0.5rem 0 0.2rem 0;
+}
+
+/* prevent hover effects on mobile devices */
+@media(hover: hover) and (pointer: fine) {
+  a:hover {
+    text-decoration: underline dotted;
+    opacity: 0.8;
+  }
+  a:active {
+    outline: 0;
+  }
+  button:hover:not([disabled]), .button_link:hover {
+    background-color: black;
+    border-color: gainsboro;
+    color: gainsboro;
+    text-decoration: none;
+  }
+  button, .button_link {
+    outline: 0;
+  }
+  button:active, .button_link:active, button:focus, .button_link:focus {
+    outline: 0;
+    opacity: 0.8;
+  }
+}
+
+button.active {
+  background-color: lightblue;
+  color: black;
+}
+
+input, select, textarea {
+  cursor: pointer;
+}
+input:not([type=radio]):not([type=checkbox]), select, textarea {
+  background: gainsboro;
+  border-radius: 5px;
+  padding: 0 0.5rem;
+  box-sizing: border-box;
+  margin: 0.5rem;
+}
+input:not([type=radio]):not([type=checkbox]), select:not([multiple]) {
+  height: 1.7rem;
+}
+input + label, select + label {
+  margin-left: 0.5rem;
+}
+.input-container {
+  display: inline-block;
+  margin-right: 1rem;
+}
+
+p {
+  margin: 0.7rem 0;
+}
+p:first-child {
+  margin-top: 0;
+}
+p:last-child {
+  margin-bottom: 0;
+}
+
+th, td {
+  padding: 0 0.3rem;
+  vertical-align: top;
+}
+
+svg {
+  user-select: none;
+  -ms-user-select: none;
+  -webkit-user-select: none;
+}
+
+#game_info tbody > tr:hover, #bank.card tr:hover, #upcoming_trains.card tr:hover {
+  background-color: gainsboro;
+  color: black;
+}
+#spreadsheet > div:not(#extra_cards) tbody > tr:nth-child(2n) {
+  background-image: linear-gradient(rgba(255,255,255,0.4),rgba(255,255,255,0.4));
+}
+#spreadsheet > div:not(#extra_cards) tbody > tr:hover {
+  filter: drop-shadow(1px 0px 2px #555);
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: black;
+    color: gainsboro;
+  }
+
+  button, .button_link, input, select, textarea {
+    background-color: gainsboro;
+  }
+}
+
+nav#game_menu {
+  padding: 1rem 2vmin 1rem 2vmin;
+}
+/* Safari 10.1+ hack, affects most browsers on iOS => more space for scroll bar */
+@media not all and (min-resolution:.001dpcm) { @media {
+  nav#game_menu {
+    padding-bottom: 1.5rem;
+  }
+}}
+
+.nowrap {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.center {
+  text-align: center;
+}
+.left {
+  text-align: left;
+}
+.right {
+  text-align: right;
+}
+.top {
+  vertical-align: top;
+}
+.middle {
+  vertical-align: middle;
+}
+
+.italic {
+  font-style: italic;
+}
+.bold {
+  font-weight: bold;
+}
+
+#profile-settings > div * {
+  vertical-align: middle;
+}
+#profile-settings input[type=color] {
+  border: 0;
+  border-radius: 2px;
+  padding: 0;
+  height: 1.8rem;
+  width: 2.7rem;
+}
+::-webkit-color-swatch {
+    background-color: inherit; /* fix iOS/macOS black color inputs */
+}
+::-webkit-color-swatch-wrapper {
+    border: 1px solid gainsboro;
+    padding: 0;
+}
+#settings__options .input-container {
+  display: block;
+}
+#settings__colors label  {
+    display: inline-block;
+    width: 11.5rem;
+}
+#settings__tiles .input-container {
+  margin: 0;
+}
+#settings__tiles input[type=color] {
+  margin: 3px;
+}
+
+.card_header {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin: 1rem 0;
+}
+.card_header h2, #left h2 {
+  margin: 0;
+}
+
+.back {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin: 1rem 0;
+}
+
+.half {
+  width: 100%;
+  display: inline-block;
+}
+@media only screen and (min-width: 900px) {
+  .half {
+    width: 49%;
+  }
+  #welcome.half {
+    margin-right: 1rem;
+  }
+}
+
+.inline {
+  display: inline
+}
+.inline-block {
+  display: inline-block
+}
+
+.margined {
+  margin: 1rem 1rem 1rem 0;
+}
+.margined_half {
+  margin: 0.5rem 0.5rem 0.5rem 0;
+}
+.margined_bottom {
+  margin-bottom: 1rem;
+}
+.no_margin {
+  margin: 0;
+}
+
+.padded {
+  padding: 1rem;
+}
+.no_padding {
+  padding: 0;
+}
+.padded_number {
+  text-align: right;
+  padding-right: 0.5em;
+}
+
+text.number {
+  font-size: 21px;
+  font-weight: 300;
+}
+
+.small_font {
+  font-size: 90%;
+}
+.xsmall_font {
+  font-size: 80%;
+}
+
+.tile {
+   fill: none;
+   stroke-width: 1;
+   text-anchor: middle;
+}
+.tile__block {
+  display: inline-block;
+  padding: 0.1em;
+  margin: 0 1px 0 0;
+  outline-style: solid;
+  outline-width: thin;
+}
+.tile__water {
+  fill: none;
+  stroke: #147ebe;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+.tile__text {
+  fill: black;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  pointer-events: none;
+}
+
+.title {
+  font-weight: bold;
+  text-align: center;
+}
+
+.card {
+  display: inline-block;
+  box-sizing: border-box;
+  width: 20rem;
+  overflow: hidden;
+  vertical-align: top;
+  margin: 0.5rem 0.5rem 0 0;
+  border: 1px solid gainsboro;
+  border-radius: 0.7rem;
+  align-self: start;
+}
+.game.card {
+  margin: 0 0.5rem 0.5rem 0;
+}
+#entities .card {
+  margin: 0.5rem 0 0 0;
+  width: 100%;
+  max-width: 20rem;
+}
+@media only screen and (max-width: 420px) {
+  .card, #entities .card, #left {
+    width: 95.8vw;
+    max-width: 95.8vw;
+  }
+  .game.card, .card {
+    margin-right: 0;
+  }
+}
+#buy_trains .card {
+  margin: 0;
+}
+
+@media only screen and (min-width: 421px) {
+  #left {
+    width: 20rem;
+    margin-right: 1rem;
+  }
+}
+
+.name {
+  min-width: 3.5rem;
+  max-width: 5rem;
+}
+
+.corp div, .player div {
+  display: grid;
+}
+.corp__title *, .corp__holdings * {
+  align-self: center;
+  justify-self: center;
+}
+
+table.center {
+  margin: 0.2rem auto;
+}
+
+#chatlog {
+  height: 200px;
+  resize: vertical;
+}
+@media only screen and (min-width: 900px) {
+  #homepage #chatlog {
+    height: 350px;
+  }
+}
+.timestamp.hidden {
+  visibility: hidden;
+}
+.chatline:hover > .timestamp.hidden {
+  visibility: visible;
+}
+
+div.game.card em {
+  font-style: normal;
+  text-decoration: underline;
+}
+
+div#game:focus {
+  outline: none; /* prevent default outline of some browsers */
+}
+
+#history {
+  float: left;
+}
+
+#undo_redo {
+  float: right;
+}
+
+@media only screen and (max-width: 420px) {
+  #undo_redo {
+    float: left;
+  }
+}

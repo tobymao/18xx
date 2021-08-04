@@ -1,0 +1,320 @@
+# frozen_string_literal: true
+
+require 'view/game/part/base'
+
+module View
+  module Game
+    module Part
+      class LocationName < Base
+        LINE_HEIGHT = 15
+        CHARACTER_WIDTH = 8
+        BACKGROUND_COLOR = '#FFFFFF'
+        BACKGROUND_OPACITY = '0.5'
+
+        def edge_at_bottom?(edge)
+          edge&.zero? || edge&.to_i == 5
+        end
+
+        def preferred_render_locations
+          return [l_center, l_up24, l_down24] if @tile.offboards.any?
+
+          return [l_center, l_up40, l_down40] if @tile.towns.one? && @tile.cities.empty?
+
+          if @tile.cities.one? && @tile.towns.empty?
+            return case @tile.cities.first.slots
+                   when 3
+                     [l_down50, l_top]
+                   when 4
+                     [l_top, l_bottom]
+                   else
+                     [l_center, l_up40, l_down40, l_down24]
+                   end
+          end
+
+          if @tile.city_towns.size > 1
+            center = l_center
+
+            # if top and bottom edges are both used, we might end up rendering the
+            # name in the middle, so try to shift out of the way of track
+            if ([0, 3] - @tile.exits).empty?
+              width, = box_dimensions
+              shift = 79 - (width / 2)
+              if ([1, 2] - @tile.exits).empty?
+                center[:x] += shift
+              elsif ([4, 5] - @tile.exits).empty?
+                center[:x] - shift
+              end
+            end
+
+            ct_edges = @tile.city_towns.map { |c| @tile.preferred_city_town_edges[c] }
+            # flat map: if two cities, and they are on edges 0 and 3, pick the center.
+            if layout == :flat && @tile.cities.size == 2 &&
+                ([0, 3] - ct_edges).empty?
+              return [center]
+            end
+
+            # flat map: if three cities, and they are on edges [0, 2, 4] or [1, 3, 5], pick the center.
+            if layout == :flat && @tile.cities.size == 3 &&
+                (([0, 2, 4] - ct_edges).empty? || ([1, 3, 5] - ct_edges).empty?)
+              return [center]
+            end
+
+            # pointy map: if two cities or towns, and neither of them are on edges 1 or 4 or in the center,
+            # pick the center.
+            if layout == :pointy && @tile.city_towns.size == 2 &&
+                ([1, 4] - ct_edges).size == 2 &&
+                @tile.city_towns.all? { |ct| @tile.preferred_city_town_edges[ct] }
+              return [center]
+            end
+
+            # pointy map: if many cities or there is a single town at the bottom, allow name at very
+            # top or bottom
+            if layout == :pointy && (@tile.cities.size > 2 ||
+                @tile.towns.one? && edge_at_bottom?(@tile.preferred_city_town_edges[@tile.towns[0]]))
+              return [center, l_up40, l_down40, l_bottom, l_top]
+            end
+
+            # if pointy map, or no exits and no cities, avoid very top or bottom
+            return [center, l_up40, l_down40] if layout == :pointy || @tile.exits.empty? && @tile.cities.empty?
+
+            return [center, l_up40, l_down40, l_bottom, l_top]
+          end
+
+          @tile.parts.reject { |p| p.path? || p.border? }.any? ? [l_down40] : [l_center]
+        end
+
+        def load_from_tile
+          @name_segments = self.class.name_segments(@tile.location_name)
+        end
+
+        def render_part
+          attrs = {
+            transform: "scale(1.1) #{translate}",
+            'stroke-width': 0.5,
+          }
+
+          rendered_name = @name_segments.map.with_index do |segment, index|
+            x = 0
+            y = index * LINE_HEIGHT + 1
+            h(:text, { attrs: { transform: "translate(#{x} #{y})" } }, segment)
+          end
+
+          h(:g, { attrs: { transform: rotation_for_layout } }, [
+            h('g.tile__text', { attrs: attrs }, [
+              render_background_box,
+              *rendered_name,
+            ]),
+          ])
+        end
+
+        def box_dimensions
+          @box_dimensions ||=
+            begin
+              lines = @name_segments.size
+              characters = @name_segments.map(&:size).max
+
+              buffer_x = CHARACTER_WIDTH
+              buffer_y = 4
+
+              width = buffer_x + (characters * CHARACTER_WIDTH)
+              height = buffer_y + (lines * LINE_HEIGHT)
+
+              [width, height]
+            end
+        end
+
+        def render_background_box
+          width, height = box_dimensions
+
+          attrs = {
+            height: height,
+            width: width,
+            fill: BACKGROUND_COLOR,
+            'fill-opacity': BACKGROUND_OPACITY,
+            stroke: 'none',
+            x: -width / 2,
+            y: -(((CHARACTER_WIDTH / 2) + LINE_HEIGHT) / 2),
+          }
+
+          h(:rect, attrs: attrs)
+        end
+
+        # adjustment for translation based on the number of segments in the name
+        #
+        # currently only used when the name is rendered above center, as new lines
+        # are added below the first one; names above center need to start higher
+        # up, but names below center don't
+        def delta_y
+          @delta_y ||= (@name_segments.size - 1) * LINE_HEIGHT
+        end
+
+        # split the location name to render across multiple lines; each "segment"
+        # that is returned gets rendered on its own line
+        def self.name_segments(name, max_size: 12)
+          return [name] if name.size <= max_size
+
+          segments = name.split
+
+          case segments.size
+          when 3
+            # join the middle word with the shorter of the first and last words;
+            # prefer joining with first if the first and last words are the same
+            # length
+            if segments[0].size > segments[2].size
+              [segments[0], segments[1..2].join(' ')]
+            else
+              [segments[0..1].join(' '), segments[2]]
+            end
+          when 4
+            # join first two words together, and join last two words together
+            segments.each_slice(2).map { |pair| pair.join(' ') }
+          when 5
+            # join the middle word with the shorter of the front or back 2 words
+            front = segments[0..1].join(' ')
+            back = segments[3..5].join(' ')
+            if front.size > back.size
+              [front + ' ' + segments[2], back]
+            else
+              [front, segments[2] + ' ' + back]
+            end
+          else
+            segments
+          end
+        end
+
+        private
+
+        def l_top
+          case layout
+          when :flat
+            y = @name_segments.size > 1 ? 54 : 61
+            {
+              region_weights_in: {
+                TRACK_TO_EDGE_3 => 1,
+                TOP_ROW => 2,
+              },
+              region_weights_out: { TOP_ROW => 1 },
+              x: 0,
+              y: -(y + delta_y),
+            }
+          when :pointy
+            y = @name_segments.size > 1 ? 63 : 70
+            {
+              region_weights: {
+                [0, 1] => 1,
+                [2, 3, 5, 6] => 0.5,
+              },
+              x: 0,
+              y: -(y + delta_y),
+            }
+          end
+        end
+
+        def l_up40
+          y = -(40 + delta_y)
+
+          loc = { x: 0, y: y }
+
+          if layout == :flat
+            loc[:region_weights] = {
+              [0, 2, 4, 6, 8, 10] => 0.7,
+              [1, 3, 7, 9] => 0.2,
+            }
+          else
+            # slight extra nudge to clear the revenue circle
+            loc[:y] -= 2
+
+            loc[:region_weights] = {
+              [2, 3, 5, 6] => 1,
+              [0, 1, 7, 8] => 0.2,
+            }
+          end
+          loc
+        end
+
+        def l_up24
+          loc = {
+            x: 0,
+            y: -(24 + delta_y),
+          }
+          loc[:region_weights] = layout == :flat ? TOP_MIDDLE_ROW : [2, 4, 6, 7, 8, 12]
+          loc
+        end
+
+        def l_center
+          {
+            region_weights: CENTER,
+            x: 0,
+            y: -delta_y / 2,
+          }
+        end
+
+        def l_down24
+          loc = { x: 0, y: 24 }
+
+          case layout
+          when :flat
+            loc[:region_weights] = {
+              [13, 15, 17] => 1,
+              [12, 14, 16, 18] => 0.4,
+            }
+          when :pointy
+            loc[:region_weights] = {
+              [11, 15, 16, 19] => 0.8,
+              [9, 10, 13, 14] => 0.2,
+            }
+          end
+          loc
+        end
+
+        def l_down40
+          loc = { x: 0, y: 40 }
+
+          case layout
+          when :flat
+            loc[:region_weights] = {
+              [13, 15, 17, 19, 21, 23] => 0.7,
+              [14, 16, 20, 22] => 0.2,
+            }
+          when :pointy
+            loc[:region_weights] = {
+              [17, 18, 20, 21] => 1,
+              [15, 16, 22, 23] => 0.2,
+            }
+          end
+          loc
+        end
+
+        def l_down50
+          loc = { x: 0, y: 50 }
+
+          loc[:region_weights_in] = { TRACK_TO_EDGE_0 => 1, BOTTOM_ROW => 0.1 }
+          loc[:region_weights_out] = { BOTTOM_ROW => 1 }
+          loc
+        end
+
+        def l_bottom
+          y = if @name_segments.size > 1
+                39
+              else
+                layout == :flat ? 56 : 65
+              end
+
+          loc = { x: 0, y: y + delta_y }
+
+          case layout
+          when :flat
+            loc[:region_weights_in] = { TRACK_TO_EDGE_0 => 1, BOTTOM_ROW => 1.5 }
+            loc[:region_weights_out] = { BOTTOM_ROW => 1 }
+          when :pointy
+            loc[:region_weights] = {
+              [22, 23] => 1,
+              [17, 18, 20, 21] => 0.5,
+            }
+          end
+          loc
+        end
+      end
+    end
+  end
+end
