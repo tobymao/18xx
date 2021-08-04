@@ -455,7 +455,6 @@ module Engine
           # random
           sorted_companies = @companies.sort_by(&:value)
           @players.each_with_index do |player, idx|
-
             company = sorted_companies.shift
             @log << "#{player.name} receives #{company.name} and pays #{format_currency(company.value)}"
             player.spend(company.value, @bank)
