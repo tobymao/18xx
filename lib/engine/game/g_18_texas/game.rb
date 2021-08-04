@@ -5,7 +5,6 @@
 
 require_relative 'meta'
 require_relative '../base'
-require_relative 'corporation'
 
 module Engine
   module Game
@@ -25,6 +24,15 @@ module Engine
         SELL_BUY_ORDER = :sell_buy
         SELL_AFTER = :operate
         TREASURY_SHARE_LIMIT = 50
+
+        TOKEN_FEE = {
+          'T&P' => 120,
+          'SP' => 120,
+          'MP' => 100,
+          'MKT' => 80,
+          'SSW' => 80,
+          'SAA' => 80,
+        }.freeze
 
         # rubocop:disable Layout/LineLength
         TILES = {
@@ -225,73 +233,73 @@ module Engine
            sym: 'T&P',
            name: 'Texas and Pacific Railway',
            logo: '18_texas/TP',
-           token_fee: 120,
            tokens: [0, 0, 0, 0, 0],
            city: 0,
            coordinates: 'D9',
            color: 'darkmagenta',
            text_color: 'white',
            reservation_color: nil,
+           always_market_price: true,
          },
          {
            float_percent: 50,
            sym: 'MKT',
            name: 'Missouri–Kansas–Texas Railway',
            logo: '18_texas/MKT',
-           token_fee: 100,
            tokens: [0, 0, 0, 0],
            coordinates: 'B11',
            color: 'green',
            text_color: 'white',
            reservation_color: nil,
+           always_market_price: true,
          },
          {
            float_percent: 50,
            sym: 'SP',
            name: 'Southern Pacific Railroad',
            logo: '18_texas/SP',
-           token_fee: 120,
            tokens: [0, 0, 0, 0, 0],
            coordinates: 'I14',
            color: 'orange',
            text_color: 'white',
            reservation_color: nil,
+           always_market_price: true,
          },
          {
            float_percent: 50,
            sym: 'MP',
            name: 'Missouri Pacific Railroad',
            logo: '18_texas/MP',
-           token_fee: 100,
            tokens: [0, 0, 0, 0],
            coordinates: 'G10',
            color: 'red',
            text_color: 'white',
            reservation_color: nil,
+           always_market_price: true,
          },
          {
            float_percent: 50,
            sym: 'SSW',
            name: 'St. Louis Southwestern Railway',
            logo: '18_texas/SSW',
-           token_fee: 80,
            tokens: [0, 0, 0],
            coordinates: 'D15',
            color: 'mediumpurple',
            text_color: 'white',
            reservation_color: nil,
+           always_market_price: true,
          },
          {
            float_percent: 50,
            sym: 'SAA',
            name: 'San Antonio and Aransas Pass',
            logo: '18_texas/SAA',
-           token_fee: 80,
            tokens: [0, 0, 0],
            coordinates: 'J5',
            color: 'black',
            text_color: 'white',
            reservation_color: nil,
+           always_market_price: true,
          },
        ].freeze
 
@@ -305,11 +313,9 @@ module Engine
           'D15' => 'Marshall',
           'D19' => 'Shreveport',
           'E4' => 'Cisco',
-
           'F9' => 'Waco',
           'F13' => 'Palestine',
           'F15' => 'Lufkin',
-
           'G10' => 'College Station',
           'H7' => 'Austin',
           'H19' => 'Lafayette',
@@ -473,35 +479,14 @@ module Engine
           ])
         end
 
-        def init_corporations(stock_market)
-          min_price = stock_market.par_prices.map(&:price).min
+        def status_array(corp)
+          return if corp.floated?
 
-          self.class::CORPORATIONS.map do |corporation|
-            G18Texas::Corporation.new(
-              min_price: min_price,
-              capitalization: self.class::CAPITALIZATION,
-              **corporation.merge(corporation_opts),
-            )
-          end
-        end
-
-        def float_str(entity)
-          return unless entity.corporation? && entity.floatable
-
-          "#{entity.percent_to_float}% to float, #{format_currency(entity.token_fee)} token fee"
+          [["Token Fee: #{format_currency(TOKEN_FEE[corp.id])}"]]
         end
 
         def ipo_name(_entity = nil)
           'Treasury'
-        end
-
-        def float_corporation(corporation)
-          @log << "#{corporation.name} floats"
-          stock_market.move_up(corporation)
-          @log << "#{corporation.name} share value moves up one space to #{corporation.share_price.price}"
-          corporation.spend(corporation.token_fee, @bank)
-          @log << "#{corporation.name} spends #{format_currency(corporation.token_fee)}
-                 for tokens"
         end
 
         def operating_round(round_num)
@@ -515,6 +500,15 @@ module Engine
             Engine::Step::BuyTrain,
             Engine::Step::IssueShares,
           ], round_num: round_num)
+        end
+
+        def float_corporation(corporation)
+          @log << "#{corporation.name} floats"
+          stock_market.move_up(corporation)
+          @log << "#{corporation.name} share value moves up one space to #{corporation.share_price.price}"
+          fee = TOKEN_FEE[corporation.id]
+          corporation.spend(fee, @bank)
+          @log << "#{corporation.name} spends #{format_currency(fee)} for tokens"
         end
 
         def issuable_shares(entity)
@@ -539,7 +533,7 @@ module Engine
 
         def tile_lays(_entity)
           if @phase.available?('3')
-            [{ lay: true, upgrade: true, cost: 0 }, { lay: true, upgrade: :not_if_upgraded }]
+            [{ lay: true, upgrade: true, cost: 0 }, { lay: :not_if_upgraded, upgrade: false }]
           else
             [{ lay: true, upgrade: true, cost: 0 }]
           end
