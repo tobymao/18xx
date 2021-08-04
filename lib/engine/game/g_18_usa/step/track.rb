@@ -51,6 +51,12 @@ module Engine
           def check_track_restrictions!(entity, old_tile, new_tile)
             old_tile.name.include?('iron') && new_tile.name.include?('iron') ? true : super
           end
+
+          def track_upgrade?(from, to, _hex)
+            # yellow+ -> something else, or fast tracking plain track
+            super || (from.cities.size.zero? && to.cities.size.zero? &&
+              (@game.class::SUPER_CHARGE_COST_TABLE[to.color] - @game.class::SUPER_CHARGE_COST_TABLE[from.color]).positive?)
+          end
         end
       end
     end

@@ -23,6 +23,32 @@ module Engine
 
         MUST_SELL_IN_BLOCKS = false
 
+        YELLOW_PLAIN_TRACK_TILES = %w[
+          7 7coal 7iron10 7iron20 7oil
+          8 8coal 8iron10 8iron20 8oil
+          9 9coal 9iron10 9iron20 9oil
+        ].freeze
+
+        GREEN_PLAIN_TRACK_TILES = %w[
+          80 80coal 80oil
+          81 81coal 81oil
+          82 82coal 82oil
+          83 83coal 83oil
+        ].freeze
+        BROWN_PLAIN_TRACK_TILES = %w[
+          544 544coal 544oil
+          545 545coal 545oil
+          546 546coal 546oil
+        ].freeze
+        GRAY_PLAIN_TRACK_TILES = %w[
+          X17coal X17oil X17
+          60 60coal 60oil
+        ].freeze
+        PLAIN_TRACK_TILES = YELLOW_PLAIN_TRACK_TILES + GREEN_PLAIN_TRACK_TILES + BROWN_PLAIN_TRACK_TILES + GRAY_PLAIN_TRACK_TILES
+
+        PLAIN_GREEN_CITY_TILES = %w[14 15 619].freeze
+        PLAIN_YELLOW_CITY_TILES = %w[5 6 57].freeze
+
         TILES = {
           '6' => 'unlimited',
           '5' => 'unlimited',
@@ -301,60 +327,85 @@ module Engine
             'code' => 'city=slots:3,revenue:50;label=RHQ;'\
                       'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
           },
-          'X01' =>
+          'ATL1' =>
           {
-            'count' => 'unlimited',
+            'count' => 1,
             'color' => 'yellow',
             'code' => 'city=revenue:30;path=a:1,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=B',
           },
-          'X02' => {
-            'count' => 'unlimited',
+          'CHI1' => {
+            'count' => 1,
             'color' => 'yellow',
             'code' => 'city=revenue:30;path=a:1,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=B',
           },
-          'X06' => {
-            'count' => 'unlimited',
+          'NO1' => {
+            'count' => 1,
             'color' => 'yellow',
             'code' => 'city=revenue:30;path=a:1,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=B',
           },
-          'X03' => {
+          'D0' => {
+            'count' => 1,
+            'color' => 'white',
+            'code' => 'city=revenue:0;label=D',
+          },
+          'D1' => {
+            'count' => 1,
+            'color' => 'yellow',
+            'code' => 'city=revenue:30;path=a:1,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=D',
+          },
+          'D2' => {
+            'count' => 1,
+            'color' => 'green',
+            'code' => 'city=slots:2,revenue:50;path=a:1,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=D',
+          },
+          'D3' => {
+            'count' => 1,
+            'color' => 'brown',
+            'code' => 'city=slots:3,revenue:60;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=D',
+          },
+          'D4' => {
+            'count' => 1,
+            'color' => 'gray',
+            'code' => 'city=slots:3,revenue:80;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=D',
+          },
+          'DFW1' => {
             'count' => 1,
             'color' => 'yellow',
             'code' => 'city=revenue:30;path=a:1,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=DFW',
           },
-          'X05' => {
+          'LA1' => {
             'count' => 1,
             'color' => 'yellow',
             'code' => 'city=revenue:30;path=a:1,b:_0;path=a:2,b:_0;path=a:5,b:_0;label=LA',
           },
-          'X10' => {
+          'DFW2' => {
             'count' => 1,
             'color' => 'green',
             'code' => 'city=revenue:50,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=DFW',
           },
-          'X11' => {
+          'LA2' => {
             'count' => 1,
             'color' => 'green',
             'code' => 'city=revenue:50,slots:2;path=a:1,b:_0;path=a:2,b:_0;path=a:5,b:_0;label=LA',
           },
-          'X12' => {
+          'NY2' => {
             'count' => 1,
             'color' => 'green',
             'code' => 'city=revenue:60,slots:2;city=revenue:60;path=a:0,b:_0;path=a:3,b:_0;path=a:1,b:_1;path=a:2,'\
                       'b:_1;label=NY',
           },
-          'X13' => {
+          'CL' => {
             'count' => 1,
             'color' => 'brown',
             'code' => 'city=revenue:50,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:5,b:_0;label=CL',
           },
-          'X14' => {
+          'DFW3' => {
             'count' => 1,
             'color' => 'brown',
             'code' => 'city=revenue:80,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;'\
                       'label=DFW',
           },
-          'X15' => {
+          'LA3' => {
             'count' => 1,
             'color' => 'brown',
             'code' => 'city=revenue:70,slots:3;path=a:0,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=LA',
@@ -364,23 +415,23 @@ module Engine
             'color' => 'brown',
             'code' => 'city=revenue:70,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;label=NY',
           },
-          'X17' => {
+          'NY3' => {
             'count' => 'unlimited',
             'color' => 'gray',
             'code' => 'junction;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;',
           },
-          'X18' => {
+          'DFW4' => {
             'count' => 1,
             'color' => 'gray',
             'code' => 'city=revenue:80,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
                       'path=a:5,b:_0;label=DFW',
           },
-          'X19' => {
+          'LA4' => {
             'count' => 1,
             'color' => 'gray',
             'code' => 'city=revenue:90,slots:4;path=a:0,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=LA',
           },
-          'X30' => {
+          'NY4' => {
             'count' => 1,
             'color' => 'gray',
             'code' => 'city=revenue:100,slots:4;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=NY',
@@ -1484,6 +1535,12 @@ module Engine
         def setup
           @rhq_tiles ||= @all_tiles.select { |t| t.name.include?('RHQ') }
           @company_town_tiles ||= @all_tiles.select { |t| t.name.include?('CTown') }
+          @yellow_plain_tiles ||= @all_tiles.select { |t| YELLOW_PLAIN_TRACK_TILES.include?(t.name) }
+          @green_plain_tiles ||= @all_tiles.select { |t| GREEN_PLAIN_TRACK_TILES.include?(t.name) }
+          @brown_plain_tiles ||= @all_tiles.select { |t| BROWN_PLAIN_TRACK_TILES.include?(t.name) }
+          @gray_plain_tiles ||= @all_tiles.select { |t| GRAY_PLAIN_TRACK_TILES.include?(t.name) }
+          @plain_green_city_tiles ||= @all_tiles.select { |t| PLAIN_GREEN_CITY_TILES.include?(t.name) }
+          @plain_yellow_city_tiles ||= @all_tiles.select { |t| PLAIN_YELLOW_CITY_TILES.include?(t.name) }
 
           @jump_graph = Graph.new(self, no_blocking: true)
 
@@ -1496,6 +1553,7 @@ module Engine
             tokens: [0, 0, 0],
           )
           neutral.owner = @bank
+          @recently_floated = []
 
           neutral.tokens.each { |token| token.type = :neutral }
           city_by_id('CTownK-0-0').place_token(neutral, neutral.next_token)
@@ -1508,18 +1566,19 @@ module Engine
             active_metropolitan_hexes << hex
             case i
             when 'H14'
-              hex.lay(@tiles.find { |t| t.name == 'X03' })
+              hex.lay(@tiles.find { |t| t.name == 'DFW1' })
             when 'E11'
               # Denver needs to be done at a later date
+              hex.lay(@tiles.find { |t| t.name == 'D0' })
             when 'G3'
-              hex.lay(@tiles.find { |t| t.name == 'X05' }.rotate!(3))
+              hex.lay(@tiles.find { |t| t.name == 'LA1' }.rotate!(3))
             when 'D20'
-              hex.lay(@tiles.find { |t| t.name == 'X02' }.rotate!(1))
+              hex.lay(@tiles.find { |t| t.name == 'CHI1' }.rotate!(1))
             when 'I19'
-              hex.lay(@tiles.find { |t| t.name == 'X06' })
+              hex.lay(@tiles.find { |t| t.name == 'NO1' })
               @metro_new_orleans = true
             when 'H22'
-              hex.lay(@tiles.find { |t| t.name == 'X01' })
+              hex.lay(@tiles.find { |t| t.name == 'ATL1' })
             end
           end
 
@@ -1544,9 +1603,34 @@ module Engine
         # special - ???
         def upgrades_to?(from, to, _special = false, selected_company: nil)
           # TODO: Check if it's near a metropolis
-          return true if @company_town_tiles.map(&:name).include?(to.name) && from.color == :white
+          puts from, from.label
+          return true if @company_town_tiles.map(&:name).include?(to.name) && from.color == :white && !from.label
           return @phase.tiles.include?(:brown) if @rhq_tiles.map(&:name).include?(to.name) &&
               %w[14 15 619 63 611 448].include?(from.name)
+
+          # Phase5+ plain track skips
+          # from white
+          # white to green skip requires brown
+          return @phase.tiles.include?(:brown) if GREEN_PLAIN_TRACK_TILES.include?(to.name) &&
+              from.color == :white && from.cities.size.zero? && from.label == to.label
+          return @phase.tiles.include?(:brown) if BROWN_PLAIN_TRACK_TILES.include?(to.name) &&
+              from.color == :white && from.cities.size.zero? && from.label == to.label
+          return @phase.tiles.include?(:gray) if GRAY_PLAIN_TRACK_TILES.include?(to.name) &&
+              from.color == :white && from.cities.size.zero? && from.label == to.label
+          # from yellow
+          return @phase.tiles.include?(:brown) if BROWN_PLAIN_TRACK_TILES.include?(to.name) &&
+              @yellow_plain_tiles.include?(from.name) && from.cities.size.zero? && from.label == to.label
+          return @phase.tiles.include?(:gray) if GRAY_PLAIN_TRACK_TILES.include?(to.name) &&
+              @yellow_plain_tiles.include?(from.name) && from.cities.size.zero? && from.label == to.label
+          # from green
+          return @phase.tiles.include?(:gray) if GRAY_PLAIN_TRACK_TILES.include?(to.name) &&
+              @green_plain_tiles.include?(from.name) && from.cities.size.zero? && from.label == to.label
+
+          return @phase.tiles.include?(:brown) if PLAIN_GREEN_CITY_TILES.include?(to.name) &&
+              from.color == :white && from.cities.size.positive? && !from.label
+          # Laying a yellow city tile in phase 5 beyond is forbidden
+          return !@phase.tiles.include?(:brown) if PLAIN_YELLOW_CITY_TILES.include?(to.name) &&
+              from.color == :white && from.cities.size.positive? && !from.label
 
           super
         end
@@ -1560,7 +1644,7 @@ module Engine
           return upgrades unless tile_manifest
 
           upgrades |= @rhq_tiles if @phase.tiles.include?(:brown) && %w[14 15 619 63 611 448].include?(tile.name)
-          upgrades |= @company_town_tiles if tile.color == :white
+          upgrades |= @company_town_tiles if tile.color == :white && !tile.label
           upgrades
         end
 
@@ -1690,6 +1774,7 @@ module Engine
         end
 
         def or_round_finished
+          @recently_floated = []
           turn = "#{@turn}.#{@round.round_num}"
           case turn
           when '1.1' then @depot.export_all!('2')
@@ -1887,6 +1972,28 @@ module Engine
 
         def pullman_train?(train)
           train.name == 'P'
+        end
+
+        SUPER_CHARGE_COST_TABLE = {
+          white: 0,
+          yellow: 0,
+          green: 10,
+          brown: 20,
+          gray: 30,
+        }.freeze
+
+        def upgrade_cost(old_tile, hex, entity, spender)
+          new_tile = hex.tile
+          super_charge_cost = 0
+          if ((old_tile.color == :white && old_tile.cities.size.zero?) || PLAIN_TRACK_TILES.include?(old_tile.name)) &&
+                PLAIN_TRACK_TILES.include?(new_tile.name)
+            super_charge_cost = SUPER_CHARGE_COST_TABLE[new_tile.color] - SUPER_CHARGE_COST_TABLE[old_tile.color]
+          end
+          if super_charge_cost.positive?
+            @log << "#{entity.name} owes #{format_currency(super_charge_cost)} "\
+                    'for fast track upgrade charge'
+          end
+          super_charge_cost + super
         end
       end
     end
