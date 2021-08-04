@@ -366,6 +366,7 @@ module Engine
             H17
             I6
             I8
+            I10
             I16
             I18
             J7
@@ -397,7 +398,6 @@ module Engine
             D3
             D5
             E2
-            E4
             F3
             F5
             G2
@@ -443,7 +443,7 @@ module Engine
             ['D9'] => 'city=revenue:30;city=revenue:30;label=Y;path=a:1,b:_0;path=a:_0,b:_1;path=a:_1,b:3',
 
             ['I14'] => 'city=revenue:30;label=Y;path=a:1,b:_0;path=a:5,b:_0',
-            %w[I10 I12] => 'path=a:1,b:4',
+            %w[I12] => 'path=a:1,b:4',
           },
         }.freeze
 
@@ -455,7 +455,6 @@ module Engine
           # random
           sorted_companies = @companies.sort_by(&:value)
           @players.each_with_index do |player, idx|
-            #  next unless idx < 5
 
             company = sorted_companies.shift
             @log << "#{player.name} receives #{company.name} and pays #{format_currency(company.value)}"
@@ -498,7 +497,7 @@ module Engine
             G18Texas::Step::Dividend,
             Engine::Step::DiscardTrain,
             Engine::Step::BuyTrain,
-            Engine::Step::IssueShares,
+            G18Texas::Step::IssueShares,
           ], round_num: round_num)
         end
 

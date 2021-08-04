@@ -8,7 +8,7 @@ module Engine
       module Meta
         include Game::Meta
 
-        DEV_STAGE = :prealpha
+        DEV_STAGE = :alpha
         PROTOTYPE = true
 
         GAME_LOCATION = 'Texas, United States'
