@@ -58,9 +58,9 @@ module Engine
     def node_walk(
       node,
       distance,
-      node_distances: {},
-      path_distances: {},
-      corporation: nil,
+      node_distances,
+      path_distances,
+      corporation,
       counter: Hash.new(0),
       &block
     )
@@ -93,9 +93,9 @@ module Engine
             node_walk(
               next_node,
               distance,
-              node_distances: node_distances,
-              path_distances: path_distances,
-              corporation: corporation,
+              node_distances,
+              path_distances,
+              corporation,
               counter: ct,
               &block
             )
@@ -122,9 +122,9 @@ module Engine
         node_walk(
           node,
           @separate_node_types ? { city: 0, town: 0 } : { node: 0 },
-          node_distances: n_distances,
-          path_distances: p_distances,
-          corporation: corporation,
+          n_distances,
+          p_distances,
+          corporation,
         ) do |path, dist|
           merge_distance(h_distances, path.hex, dist)
         end
