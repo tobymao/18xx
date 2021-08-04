@@ -7,7 +7,7 @@ module Engine
       @node_distances = {}
       @path_distances = {}
       @hex_distances = {}
-      @separate_node_types = opts[:separate_node_types] || false
+      @separate_node_types = opts[:separate_node_types]
     end
 
     def clear
@@ -49,7 +49,7 @@ module Engine
 
     def merge_distance(dict, key, b)
       if (a = dict[key])
-        a.keys.each { |k| a[k] = [a[k], b[k]].min }
+        a.each { |k, v| a[k] = [v, b[k]].min }
       else
         dict[key] = b.dup
       end
