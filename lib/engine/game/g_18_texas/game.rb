@@ -533,6 +533,19 @@ module Engine
             [{ lay: true, upgrade: true, cost: 0 }]
           end
         end
+
+        def check_overlap(routes)
+          paths = {}
+          routes.each do |route|
+            route.paths.each do |path|
+              raise GameError, "Route cannot reuse track on #{path.hex.id}" if paths[path]
+
+              paths[path] = true
+            end
+          end
+
+          super
+        end
       end
     end
   end
