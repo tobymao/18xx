@@ -47,15 +47,17 @@ module Engine
       a&.all? { |k, v| v <= b[k] }
     end
 
-    def merge_distance(a, b)
-      return b.dup unless a
-
-      a.map { |k, v| [k, [v, b[k]].min] }.to_h
+    def merge_distance(dict, key, b)
+      if (a = dict[key])
+        a.keys.each { |k| a[k] = [a[k], b[k]].min }
+      else
+        dict[key] = b.dup
+      end
     end
 
     def node_walk(
       node,
-      distance: nil,
+      distance,
       node_distances: {},
       path_distances: {},
       corporation: nil,
@@ -64,7 +66,7 @@ module Engine
     )
       return if smaller_or_equal_distance?(node_distances[node], distance)
 
-      node_distances[node] = merge_distance(node_distances[node], distance)
+      merge_distance(node_distances, node, distance)
       return if corporation && node.blocks?(corporation)
 
       if !@separate_node_types
@@ -78,10 +80,8 @@ module Engine
       node.paths.each do |node_path|
         next if smaller_or_equal_distance?(path_distances[node_path], distance)
 
-        node_path.walk(
-          counter: counter,
-        ) do |path, _vp, ct|
-          path_distances[path] = merge_distance(path_distances[path], distance)
+        node_path.walk(counter: counter) do |path, _vp, ct|
+          merge_distance(path_distances, path, distance)
 
           ret = yield path, distance
           next if ret == :abort
@@ -92,7 +92,7 @@ module Engine
 
             node_walk(
               next_node,
-              distance: distance,
+              distance,
               node_distances: node_distances,
               path_distances: path_distances,
               corporation: corporation,
@@ -121,13 +121,12 @@ module Engine
       tokens.each do |node|
         node_walk(
           node,
-          distance: @separate_node_types ? { city: 0, town: 0 } : { node: 0 },
+          @separate_node_types ? { city: 0, town: 0 } : { node: 0 },
           node_distances: n_distances,
           path_distances: p_distances,
           corporation: corporation,
         ) do |path, dist|
-          hex = path.hex
-          h_distances[hex] = merge_distance(h_distances[hex], dist)
+          merge_distance(h_distances, path.hex, dist)
         end
       end
 
