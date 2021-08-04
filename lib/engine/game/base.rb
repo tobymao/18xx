@@ -1097,6 +1097,9 @@ module Engine
             if a.edge? && b.town? && (nedge = b.tile.preferred_city_town_edges[b]) && nedge != a.num
               check.call([path.hex, b, path.lanes[1][1]])
             end
+
+            # check intra-tile paths between nodes
+            check.call([path.hex, path]) if path.nodes.size > 1
           end
         end
       end
