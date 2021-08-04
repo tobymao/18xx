@@ -497,17 +497,23 @@ module Engine
         end
 
         def upgrades_to?(from, to, special = false, selected_company: nil)
-          standard = to.paths.any? { |p| p.track == :broad }
-          southern = to.paths.any? { |p| p.track != :broad }
+          from_standard = from.paths.any? { |p| p.track == :broad }
+          from_southern = from.paths.any? { |p| p.track != :broad }
+
+          to_standard = to.paths.any? { |p| p.track == :broad }
+          to_southern = to.paths.any? { |p| p.track != :broad }
 
           north = @north_hexes.include?(from.hex)
           south = @south_hexes.include?(from.hex)
 
           # Can only ever lay northern track in the North before phase 5
-          return false if north && !south && southern && !@phase.available?('5')
+          return false if north && !south && to_southern && !@phase.available?('5')
 
           # Can only ever lay southern track in the South before phase 5
-          return false if !north && south && standard && !@phase.available?('5')
+          return false if !north && south && to_standard && !@phase.available?('5')
+
+          # Can never updgrade pure standard track to southern track
+          return false if from_standard && !from_southern && to_southern
 
           # handle C tiles specially
           return false if from.label.to_s == 'C' && to.color == :yellow && from.cities.size != to.cities.size
@@ -540,7 +546,10 @@ module Engine
           @log << "Flipping tile #{old.name} to #{new.name} in hex #{hex.id}"
 
           new.rotate!(old.rotation)
-          update_tile_lists(new, old)
+
+          @unused_tiles << old
+          @unused_tiles.delete(new)
+
           hex.lay(new)
         end
 
