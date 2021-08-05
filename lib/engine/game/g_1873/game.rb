@@ -1747,15 +1747,17 @@ module Engine
         end
 
         def check_other(route)
+          # make sure a single route doesn't visit cities in a given hex twice
+          check_hex_reentry(route)
+
+          return if route.routes.empty?
+
           # make sure routes from same supertrain intersect
           super_routes = route.routes.reject do |r|
             r.chains.empty? ||
               @supertrains[route.train] != @supertrains[r.train]
           end
           check_intersection(@supertrains[route.train], super_routes)
-
-          # make sure a single route doesn't visit cities in a given hex twice
-          check_hex_reentry(route)
 
           check_diesel_nodes(route) if diesel?(route.train)
 

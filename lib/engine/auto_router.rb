@@ -47,9 +47,13 @@ module Engine
           chain = []
           left = nil
           right = nil
+          last_left = nil
+          last_right = nil
 
           complete = lambda do
             chains << { nodes: [left, right], paths: chain }
+            last_left = left
+            last_right = right
             left, right = nil
             chain = []
           end
@@ -63,12 +67,24 @@ module Engine
             end
           end
 
+          assign_both = lambda do |a, b|
+            if a == last_left || b == last_right
+              left = b
+              right = a
+            else
+              left = a
+              right = b
+            end
+            complete.call
+          end
+
           paths.each do |path|
             chain << path
             a, b = path.nodes
 
-            assign.call(a) if a
-            assign.call(b) if b
+            assign.call(a) if a && !b
+            assign.call(b) if b && !a
+            assign_both.call(a, b) if a && b
           end
 
           next if chains.empty?
@@ -88,28 +104,18 @@ module Engine
       now = Time.now
       train_routes = Hash.new { |h, k| h[k] = [] }
       connections.each do |_, connection|
-        corporation.runnable_trains.each do |train|
+        @game.route_trains(corporation).each do |train|
           route = Engine::Route.new(
             @game,
             @game.phase,
             train,
             connection_data: connection,
           )
-          #<roseundy
-          puts "train: #{train.id} trying route: #{route.hexes.map(&:id).join(',')}"
-          #roseundy>
           route.revenue
           train_routes[train] << route
         rescue GameError # rubocop:disable Lint/SuppressedException
         end
       end
-      #<roseundy
-      puts "train_routes:"
-      train_routes.each do |k, v|
-        puts "  Train: #{k.id}"
-        v.each { |r| puts "    Route: #{r.hexes.map(&:id).join(',')}" }
-      end
-      #roseundy>
       puts "Pruned paths to #{train_routes.map { |k, v| k.name + ':' + v.size.to_s }.join(', ')} in: #{Time.now - now}"
 
       static.each { |route| train_routes[route.train] = [route] }
@@ -119,13 +125,6 @@ module Engine
       end
 
       train_routes = train_routes.values.sort_by(&:size)
-
-      #<roseundy
-      puts "train_routes:"
-      train_routes.each do |v|
-        v.each { |r| puts "   Train: #{r.train.id} Route: #{r.hexes.map(&:id).join(',')}" }
-      end
-      #roseundy>
 
       combos = [[]]
       possibilities = []
@@ -146,11 +145,6 @@ module Engine
               puts "#{counter} / #{limit}"
               raise if Time.now - now > route_timeout
             end
-
-            #<roseundy
-            puts "trying combo:"
-            combo.each { |r| puts "   Train: #{r.train.id} Route: #{r.hexes.map(&:id).join(',')}" }
-            #roseundy>
 
             route.revenue
             possibilities << combo

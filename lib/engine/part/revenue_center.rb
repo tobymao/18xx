@@ -57,6 +57,7 @@ module Engine
         return (@revenue[:diesel]) if train.name.upcase == 'D' && @revenue[:diesel]
 
         phase.tiles.reverse_each { |color| return (@revenue[color]) if @revenue[color] }
+        1
       end
 
       def revenue_multiplier(train)
@@ -68,6 +69,8 @@ module Engine
         row = distance.index do |h|
           h['nodes'].include?(type)
         end
+        return base_multiplier unless row
+
         distance[row].fetch('multiplier', base_multiplier)
       end
 
