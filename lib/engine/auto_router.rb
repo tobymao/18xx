@@ -60,7 +60,13 @@ module Engine
 
           assign = lambda do |a, b|
             if a && b
-              left, right = a == last_left || b == last_right ? [b, a] : [a, b]
+              if a == last_left || b == last_right
+                left = b
+                right = a
+              else
+                left = a
+                right = b
+              end
               complete.call
             elsif !left
               left = a || b
