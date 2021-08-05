@@ -95,11 +95,21 @@ module Engine
             train,
             connection_data: connection,
           )
+          #<roseundy
+          puts "train: #{train.id} trying route: #{route.hexes.map(&:id).join(',')}"
+          #roseundy>
           route.revenue
           train_routes[train] << route
         rescue GameError # rubocop:disable Lint/SuppressedException
         end
       end
+      #<roseundy
+      puts "train_routes:"
+      train_routes.each do |k, v|
+        puts "  Train: #{k.id}"
+        v.each { |r| puts "    Route: #{r.hexes.map(&:id).join(',')}" }
+      end
+      #roseundy>
       puts "Pruned paths to #{train_routes.map { |k, v| k.name + ':' + v.size.to_s }.join(', ')} in: #{Time.now - now}"
 
       static.each { |route| train_routes[route.train] = [route] }
@@ -109,6 +119,13 @@ module Engine
       end
 
       train_routes = train_routes.values.sort_by(&:size)
+
+      #<roseundy
+      puts "train_routes:"
+      train_routes.each do |v|
+        v.each { |r| puts "   Train: #{r.train.id} Route: #{r.hexes.map(&:id).join(',')}" }
+      end
+      #roseundy>
 
       combos = [[]]
       possibilities = []
@@ -129,6 +146,12 @@ module Engine
               puts "#{counter} / #{limit}"
               raise if Time.now - now > route_timeout
             end
+
+            #<roseundy
+            puts "trying combo:"
+            combo.each { |r| puts "   Train: #{r.train.id} Route: #{r.hexes.map(&:id).join(',')}" }
+            #roseundy>
+
             route.revenue
             possibilities << combo
             combo
