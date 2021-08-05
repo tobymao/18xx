@@ -57,7 +57,7 @@ module Engine
         return (@revenue[:diesel]) if train.name.upcase == 'D' && @revenue[:diesel]
 
         phase.tiles.reverse_each { |color| return (@revenue[color]) if @revenue[color] }
-        1
+        0
       end
 
       def revenue_multiplier(train)

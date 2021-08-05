@@ -58,15 +58,6 @@ module Engine
             chain = []
           end
 
-          assign = lambda do |n|
-            if !left
-              left = n
-            elsif !right
-              right = n
-              complete.call
-            end
-          end
-
           assign_both = lambda do |a, b|
             if a == last_left || b == last_right
               left = b
@@ -78,13 +69,23 @@ module Engine
             complete.call
           end
 
+          assign = lambda do |a, b|
+            n = a || b
+            if a && b
+              assign_both.call(a, b)
+            elsif !left
+              left = n
+            elsif !right
+              right = n
+              complete.call
+            end
+          end
+
           paths.each do |path|
             chain << path
             a, b = path.nodes
 
-            assign.call(a) if a && !b
-            assign.call(b) if b && !a
-            assign_both.call(a, b) if a && b
+            assign.call(a, b) if a || b
           end
 
           next if chains.empty?
