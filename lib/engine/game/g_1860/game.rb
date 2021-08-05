@@ -1487,45 +1487,6 @@ module Engine
           end
         end
 
-        # needed for custom_node_walk
-        def custom_node_select(node, paths, corporation: nil)
-          on = paths.map { |p| [p, 0] }.to_h
-
-          custom_node_walk(node, on: on, corporation: corporation) do |path|
-            on[path] = 1 if on[path]
-          end
-
-          on.keys.select { |p| on[p] == 1 }
-        end
-
-        # needed for custom_blocks?
-        def custom_node_walk(node, visited: nil, on: nil, corporation: nil, visited_paths: {}, &block)
-          return if visited&.[](node)
-
-          visited = visited&.dup || {}
-          visited[node] = true
-
-          node.paths.each do |node_path|
-            node_path.walk(visited: visited_paths, on: on) do |path, vp|
-              yield path
-              path.nodes.each do |next_node|
-                next if next_node == node
-                next if corporation && custom_blocks?(next_node, corporation)
-                next if path.terminal?
-
-                custom_node_walk(
-                  next_node,
-                  visited: visited,
-                  on: on,
-                  corporation: corporation,
-                  visited_paths: visited_paths.merge(vp), &block
-                )
-              end
-            end
-          end
-        end
-
-        # needed for :flipped check
         def custom_blocks?(node, corporation)
           return false unless node.city?
           return false unless corporation
@@ -1588,6 +1549,24 @@ module Engine
           visits[1..-2].any? { |node| node.city? && custom_blocks?(node, corporation) }
         end
 
+        # change all bankrupt flipped tokens to neutral
+        def flipped_to_neutral
+          @bankrupt_corps.each do |corp|
+            corp.tokens.each do |token|
+              token.status = :neutral if token.staus == :flipped
+            end
+          end
+        end
+
+        # change all bankrupt neutral tokens to flipped
+        def neutral_to_flipped
+          @bankrupt_corps.each do |corp|
+            corp.tokens.each do |token|
+              token.status = :flipped if token.staus == :neutral
+            end
+          end
+        end
+
         def check_connected(route, token)
           visits = route.visited_stops
           blocked = nil
@@ -1604,9 +1583,11 @@ module Engine
 
           paths_ = route.paths.uniq
           token = blocked if blocked
-          if custom_node_select(token, paths_, corporation: route.corporation).size != paths_.size
-            raise GameError, 'Route is not connected'
-          end
+
+          flipped_to_neutral
+          raise GameError, 'Route is not connected' if token.select(paths_, corporation: route.corporation).size != paths_.size
+
+          neutral_to_flipped
 
           return unless blocked && route.routes.any? { |r| r != route && tokened_out?(r) }
 
