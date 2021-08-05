@@ -58,25 +58,14 @@ module Engine
             chain = []
           end
 
-          assign_both = lambda do |a, b|
-            if a == last_left || b == last_right
-              left = b
-              right = a
-            else
-              left = a
-              right = b
-            end
-            complete.call
-          end
-
           assign = lambda do |a, b|
-            n = a || b
             if a && b
-              assign_both.call(a, b)
+              left, right = a == last_left || b == last_right ? [b, a] : [a, b]
+              complete.call
             elsif !left
-              left = n
+              left = a || b
             elsif !right
-              right = n
+              right = a || b
               complete.call
             end
           end
