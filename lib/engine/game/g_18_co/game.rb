@@ -1495,7 +1495,7 @@ module Engine
         end
 
         def emergency_issuable_bundles(entity)
-          [issuable_shares(entity).find { |bundle| bundle.price + entity.cash >= @depot.min_depot_price }]
+          issuable_shares(entity)
         end
 
         def issuable_shares(entity)
