@@ -1349,6 +1349,8 @@ module Engine
 
         # Brute force it. Theoretical max combos is 729, but realistic max is order of magnitude lower
         def global_optimize(routes)
+          return [] if routes.empty?
+
           route_stops = routes.map { |r| revenue_stop_options(r) }
           possibilities = if routes.one?
                             route_stops[0].product
@@ -1368,8 +1370,9 @@ module Engine
         end
 
         def optimize_stops(route, _num_pay, _total_stops)
-          @global_stops ||= global_optimize(route.routes)
+          return [] if route.routes.empty?
 
+          @global_stops ||= global_optimize(route.routes)
           @global_stops[route.routes.index(route)]
         end
 
@@ -1530,6 +1533,8 @@ module Engine
         # - route intersection requirement
         # - freight track end-to-end requirements
         def check_overlap(routes)
+          return if routes.empty?
+
           check_home_token(current_entity, routes)
           check_intersection(routes)
           check_freight_intersections(routes)

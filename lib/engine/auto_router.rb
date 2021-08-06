@@ -47,18 +47,31 @@ module Engine
           chain = []
           left = nil
           right = nil
+          last_left = nil
+          last_right = nil
 
           complete = lambda do
             chains << { nodes: [left, right], paths: chain }
+            last_left = left
+            last_right = right
             left, right = nil
             chain = []
           end
 
-          assign = lambda do |n|
-            if !left
-              left = n
+          assign = lambda do |a, b|
+            if a && b
+              if a == last_left || b == last_right
+                left = b
+                right = a
+              else
+                left = a
+                right = b
+              end
+              complete.call
+            elsif !left
+              left = a || b
             elsif !right
-              right = n
+              right = a || b
               complete.call
             end
           end
@@ -67,8 +80,7 @@ module Engine
             chain << path
             a, b = path.nodes
 
-            assign.call(a) if a
-            assign.call(b) if b
+            assign.call(a, b) if a || b
           end
 
           next if chains.empty?
@@ -88,7 +100,7 @@ module Engine
       now = Time.now
       train_routes = Hash.new { |h, k| h[k] = [] }
       connections.each do |_, connection|
-        corporation.runnable_trains.each do |train|
+        @game.route_trains(corporation).each do |train|
           route = Engine::Route.new(
             @game,
             @game.phase,
@@ -129,6 +141,7 @@ module Engine
               puts "#{counter} / #{limit}"
               raise if Time.now - now > route_timeout
             end
+
             route.revenue
             possibilities << combo
             combo

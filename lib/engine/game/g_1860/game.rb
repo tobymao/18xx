@@ -1644,8 +1644,8 @@ module Engine
 
         def check_other(route)
           check_hex_reentry(route)
-          check_home_token(current_entity, route.routes)
-          check_intersection(route.routes)
+          check_home_token(current_entity, route.routes) unless route.routes.empty?
+          check_intersection(route.routes) unless route.routes.empty?
         end
 
         # must stop at all towns on route or must maximize revenue
