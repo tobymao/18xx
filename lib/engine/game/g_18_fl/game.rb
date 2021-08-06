@@ -190,7 +190,7 @@ module Engine
         PHASES = [
           {
             name: '2',
-            train_limit: { medium: 2 },
+            train_limit: { five_share: 2 },
             tiles: [:yellow],
             corporation_sizes: [5],
             operating_rounds: 1,
@@ -198,7 +198,7 @@ module Engine
           {
             name: '3',
             on: '3',
-            train_limit: { medium: 2, large: 4 },
+            train_limit: { five_share: 2, ten_share: 4 },
             tiles: %i[yellow green],
             corporation_sizes: [5, 10],
             operating_rounds: 2,
@@ -207,7 +207,7 @@ module Engine
           {
             name: '4',
             on: '4',
-            train_limit: { medium: 1, large: 3 },
+            train_limit: { five_share: 1, ten_share: 3 },
             tiles: %i[yellow green],
             corporation_sizes: [5, 10],
             operating_rounds: 2,
@@ -216,7 +216,7 @@ module Engine
           {
             name: '5',
             on: '5',
-            train_limit: { large: 2 },
+            train_limit: { ten_share: 2 },
             tiles: %i[yellow green brown],
             corporation_sizes: [10],
             operating_rounds: 3,
@@ -225,7 +225,7 @@ module Engine
           {
             name: '6',
             on: %w[6 3E],
-            train_limit: { large: 2 },
+            train_limit: { ten_share: 2 },
             tiles: %i[yellow green brown gray],
             corporation_sizes: [10],
             operating_rounds: 3,
@@ -395,7 +395,7 @@ module Engine
             tokens: [0, 20, 20, 20],
             coordinates: 'B5',
             color: :darkblue,
-            type: 'medium',
+            type: 'five_share',
             always_market_price: true,
             reservation_color: nil,
           },
@@ -410,7 +410,7 @@ module Engine
             coordinates: 'B15',
             color: :deepskyblue,
             text_color: 'black',
-            type: 'medium',
+            type: 'five_share',
             always_market_price: true,
             reservation_color: nil,
           },
@@ -425,7 +425,7 @@ module Engine
             coordinates: 'B23',
             city: 1,
             color: '#76a042',
-            type: 'medium',
+            type: 'five_share',
             always_market_price: true,
             reservation_color: nil,
           },
@@ -440,7 +440,7 @@ module Engine
             coordinates: 'B23',
             city: 0,
             color: '#f48221',
-            type: 'medium',
+            type: 'five_share',
             always_market_price: true,
             reservation_color: nil,
           },
@@ -454,7 +454,7 @@ module Engine
             tokens: [0, 20, 20, 20],
             coordinates: 'G20',
             color: :purple,
-            type: 'medium',
+            type: 'five_share',
             always_market_price: true,
             reservation_color: nil,
           },
@@ -468,7 +468,7 @@ module Engine
             tokens: [0, 20, 20, 20],
             coordinates: 'K28',
             color: '#d81e3e',
-            type: 'medium',
+            type: 'five_share',
             always_market_price: true,
             reservation_color: nil,
           },
@@ -707,7 +707,7 @@ module Engine
         # 5 => 10 share conversion logic
         def event_forced_conversions!
           @log << '-- Event: All 5 share corporations must convert to 10 share corporations immediately --'
-          @corporations.select { |c| c.type == :medium }.each { |c| convert(c, funding: c.share_price) }
+          @corporations.select { |c| c.type == :five_share }.each { |c| convert(c, funding: c.share_price) }
         end
 
         def process_convert(action)
@@ -721,11 +721,11 @@ module Engine
           corporation.share_holders.clear
 
           case corporation.type
-          when :medium
+          when :five_share
             shares.each { |share| share.percent = 10 }
             shares[0].percent = 20
             new_shares = Array.new(5) { |i| Share.new(corporation, percent: 10, index: i + 4) }
-            corporation.type = :large
+            corporation.type = :ten_share
           else
             raise GameError, 'Cannot convert 10 share corporation'
           end

@@ -18,7 +18,7 @@ module Engine
             times = 0
             times = 1 if revenue >= price
             times = 2 if revenue >= price * 2
-            if times.positive? && (entity.type != :medium || !entity.share_price.types.include?(:max_price))
+            if times.positive? && (entity.type != :five_share || !entity.share_price.types.include?(:max_price))
               { share_direction: :right, share_times: times }
             else
               {}
