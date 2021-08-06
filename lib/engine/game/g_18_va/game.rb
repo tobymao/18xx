@@ -143,7 +143,7 @@ module Engine
             tiles: [:yellow],
             corporation_sizes: [5],
             operating_rounds: 1,
-            status: %w[offboard_token_bonus cmd_token_bonus],
+            status: %w[offboard_token_bonus cmd_token_bonus limited_train_buy],
           },
           {
             name: '3',
@@ -152,7 +152,7 @@ module Engine
             tiles: %i[yellow green],
             corporation_sizes: [5],
             operating_rounds: 2,
-            status: %w[offboard_token_bonus cmd_token_bonus can_buy_companies may_convert],
+            status: %w[offboard_token_bonus cmd_token_bonus can_buy_companies may_convert limited_train_buy],
           },
           {
             name: '4',
@@ -161,7 +161,7 @@ module Engine
             tiles: %i[yellow green],
             corporation_sizes: [5],
             operating_rounds: 2,
-            status: %w[offboard_token_bonus cmd_token_bonus can_buy_companies may_convert],
+            status: %w[offboard_token_bonus cmd_token_bonus can_buy_companies may_convert limited_train_buy],
           },
           {
             name: '5',
@@ -170,7 +170,7 @@ module Engine
             tiles: %i[yellow green brown],
             corporation_sizes: [10],
             operating_rounds: 3,
-            status: %w[offboard_token_bonus cmd_token_bonus can_buy_companies],
+            status: %w[offboard_token_bonus cmd_token_bonus can_buy_companies limited_train_buy],
           },
           {
             name: '6',
@@ -572,6 +572,7 @@ module Engine
           'may_convert' => ['Corporations May Convert',
                             'At the start of a corporations Operating turn it
                            may choose to convert to a 10 share corporation'],
+          'limited_train_buy' => ['Limited Train Buy', 'Corporations may only buy one train of each type from the bank per OR'],
         ).freeze
 
         include CompanyPrice50To150Percent
