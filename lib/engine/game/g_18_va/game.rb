@@ -139,7 +139,7 @@ module Engine
         PHASES = [
           {
             name: '2',
-            train_limit: { medium: 2, large: 4 },
+            train_limit: { five_share: 2, ten_share: 4 },
             tiles: [:yellow],
             corporation_sizes: [5],
             operating_rounds: 1,
@@ -148,7 +148,7 @@ module Engine
           {
             name: '3',
             on: %w[3 2G],
-            train_limit: { medium: 2, large: 4 },
+            train_limit: { five_share: 2, ten_share: 4 },
             tiles: %i[yellow green],
             corporation_sizes: [5],
             operating_rounds: 2,
@@ -157,7 +157,7 @@ module Engine
           {
             name: '4',
             on: %w[4 3G],
-            train_limit: { medium: 1, large: 3 },
+            train_limit: { five_share: 1, ten_share: 3 },
             tiles: %i[yellow green],
             corporation_sizes: [5],
             operating_rounds: 2,
@@ -166,7 +166,7 @@ module Engine
           {
             name: '5',
             on: %w[5 4G],
-            train_limit: { large: 2 },
+            train_limit: { ten_share: 2 },
             tiles: %i[yellow green brown],
             corporation_sizes: [10],
             operating_rounds: 3,
@@ -175,7 +175,7 @@ module Engine
           {
             name: '6',
             on: %w[6 5G],
-            train_limit: { large: 2 },
+            train_limit: { ten_share: 2 },
             tiles: %i[yellow green brown],
             corporation_sizes: [10],
             operating_rounds: 3,
@@ -184,7 +184,7 @@ module Engine
           {
             name: '4D',
             on: %w[4D],
-            train_limit: { large: 2 },
+            train_limit: { ten_share: 2 },
             tiles: %i[yellow green brown gray],
             corporation_sizes: [10],
             operating_rounds: 3,
@@ -391,7 +391,7 @@ module Engine
             tokens: [0, 40, 100, 100],
             coordinates: 'H3',
             color: '#025aaa',
-            type: 'large',
+            type: 'ten_share',
             always_market_price: true,
             reservation_color: nil,
           },
@@ -406,7 +406,7 @@ module Engine
             coordinates: 'D9',
             color: '#ADD8E6',
             text_color: 'black',
-            type: 'medium',
+            type: 'five_share',
             always_market_price: true,
             reservation_color: nil,
           },
@@ -421,7 +421,7 @@ module Engine
             coordinates: 'F11',
             city: 1,
             color: '#76a042',
-            type: 'medium',
+            type: 'five_share',
             always_market_price: true,
             reservation_color: nil,
           },
@@ -436,7 +436,7 @@ module Engine
             coordinates: 'F13',
             city: 0,
             color: '#7b352a',
-            type: 'medium',
+            type: 'five_share',
             always_market_price: true,
             reservation_color: nil,
           },
@@ -450,7 +450,7 @@ module Engine
             tokens: [0, 40],
             coordinates: 'C4',
             color: '#f48221',
-            type: 'medium',
+            type: 'five_share',
             always_market_price: true,
             reservation_color: nil,
           },
@@ -464,7 +464,7 @@ module Engine
             tokens: [0, 40],
             coordinates: 'F7',
             color: '#d81e3e',
-            type: 'medium',
+            type: 'five_share',
             always_market_price: true,
             reservation_color: nil,
           },
@@ -478,7 +478,7 @@ module Engine
             tokens: [0, 40],
             coordinates: 'C12',
             color: :purple,
-            type: 'medium',
+            type: 'five_share',
             always_market_price: true,
             reservation_color: nil,
           },
@@ -752,8 +752,8 @@ module Engine
         end
 
         def status_array(corp)
-          return ['5-Share'] if corp.type == :medium
-          return ['10-Share'] if corp.type == :large
+          return ['5-Share'] if corp.type == :five_share
+          return ['10-Share'] if corp.type == :ten_share
         end
 
         def corporation_opts
@@ -767,7 +767,7 @@ module Engine
         # 5 => 10 share conversion logic
         def event_forced_conversions!
           @log << '-- Event: All 5 share corporations must convert to 10 share corporations immediately --'
-          @corporations.select { |c| c.type == :medium }.each { |c| convert(c) }
+          @corporations.select { |c| c.type == :five_share }.each { |c| convert(c) }
         end
 
         def process_convert(action)
@@ -803,11 +803,11 @@ module Engine
           corporation.share_holders.clear
 
           case corporation.type
-          when :medium
+          when :five_share
             shares.each { |share| share.percent = 10 }
             shares[0].percent = 20
             new_shares = Array.new(5) { |i| Share.new(corporation, percent: 10, index: i + 4) }
-            corporation.type = :large
+            corporation.type = :ten_share
             2.times { corporation.tokens << Engine::Token.new(corporation, price: 100) }
           else
             raise GameError, 'Cannot convert 10 share corporation'
