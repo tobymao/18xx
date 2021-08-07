@@ -152,17 +152,17 @@ module Engine
           end
 
           if @units[1] && !@units[2] && @units[3]
-            raise GameError, 'Cannot combine Units 1 and 3 without Unit 1'
+            raise GameError, 'Cannot combine Units 1 and 3 without Unit 2'
           end
 
           # FIXME: update for regional kits when added
-          p_range = case @units.keys.sort.map(&:to_s)
+          p_range = case @units.keys.sort.map(&:to_s).join
           when '1'
-            [2,5]
+            [2, 5]
           when '2'
-            [2,4]
+            [2, 4]
           when '3'
-            [2,3]
+            [2]
           when '12'
             [3,7]
           when '23'
@@ -170,19 +170,57 @@ module Engine
           else # all units
             [4,8]
           end
-          raise GameError, 'Selected options do not support player count' unless p_range.include?(@players.size)
+          unless p_range.first <= @players.size && p_range.last >= @players.size && 
+            ok_range = p_range.map(&:to_s).join('-')
+            raise GameError, "Selected options require a player count of #{ok_range}"
+          end
 
           optional_rules
         end
 
+        def bank_by_options
+          case @units.keys.sort.map(&:to_s).join
+          when '1'
+            6_000
+          when '2'
+            5_000
+          when '3'
+            4_000
+          when '12'
+            11_000
+          when '23'
+            9_000
+          else # all units
+            15_000
+          end
+        end
+
         def cash_by_options
-          
+          case @units.keys.sort.map(&:to_s).join
+          when '1'
+           { 2 => 1200, 3 => 830, 4 => 630, 5 => 504}
+          when '2'
+           { 2 => 1200, 3 => 800, 4 => 600}
+          when '3'
+           { 2 => 750 }
+          when '12'
+           { 3 => 840, 4 => 630, 5 => 504, 6 => 420, 7 => 360}
+          when '23'
+           { 3 => 840, 4 => 630, 5 => 504}
+          else # all units
+           { 3 => 840, 4 => 630, 5 => 504, 6 => 420, 7 => 360, 8 => 315, 9 => 280}
+          end
         end
 
         def init_bank
-          cash = cash_by_options[players.size];
+          Bank.new(bank_by_options, log: @log)
+        end
 
-          Bank.new(cash, log: @log)
+        def init_starting_cash
+          cash = cash_by_options[players.size]
+          players.each do |player|
+            bank.spend(cash, player)
+          end
         end
 
 
