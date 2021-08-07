@@ -1495,7 +1495,9 @@ module Engine
         end
 
         def emergency_issuable_bundles(entity)
-          issuable_shares(entity)
+          eligible, remaining = issuable_shares(entity)
+            .partition { |bundle| bundle.price + entity.cash < @depot.min_depot_price }
+          eligible.concat(remaining.take(1))
         end
 
         def issuable_shares(entity)
