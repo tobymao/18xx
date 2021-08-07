@@ -1237,9 +1237,9 @@ module Engine
             @log << "#{new_president.name} becomes the president of #{mergable.name}"
             mergable.owner = new_president
             shares_for_presidency_swap(new_president.shares_of(mergable), 2).each do |s|
-              @share_pool.move_share(s, president_share.owner)
+              move_share(s, president_share.owner)
             end
-            @share_pool.move_share(president_share, new_president)
+            move_share(president_share, new_president)
           end
 
           # Give president the chance to discard any trains
@@ -1385,6 +1385,13 @@ module Engine
         end
 
         private
+
+        def move_share(share, to_entity)
+          corporation = share.corporation
+          share.owner.shares_by_corporation[corporation].delete(share)
+          to_entity.shares_by_corporation[corporation] << share
+          share.owner = to_entity
+        end
 
         def base_map
           simple_city = %w[I2 I8 L3 O2 O4 T3]
