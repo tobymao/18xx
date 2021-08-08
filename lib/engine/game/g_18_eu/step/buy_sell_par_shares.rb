@@ -18,6 +18,14 @@ module Engine
             actions
           end
 
+          def round_state
+            super.merge(
+              {
+                pending_acquisition: nil,
+              }
+            )
+          end
+
           def process_buy_shares(action)
             entity = action.entity
             if entity.minor?

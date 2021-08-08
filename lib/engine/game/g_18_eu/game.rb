@@ -828,6 +828,7 @@ module Engine
           Round::Stock.new(self, [
             G18EU::Step::DiscardTrain,
             G18EU::Step::HomeToken,
+            G18EU::Step::ReplaceToken,
             G18EU::Step::BuySellParShares,
           ])
         end
