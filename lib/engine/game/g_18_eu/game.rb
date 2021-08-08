@@ -991,6 +991,13 @@ module Engine
 
           all_minor_hexes(corporation)
         end
+
+        def exchange_corporations(exchange_ability)
+          return super if !exchange_ability.owner.minor? || @loading
+
+          parts = graph.connected_nodes(exchange_ability.owner).keys
+          parts.select(&:city?).flat_map { |c| c.tokens.compact.map(&:corporation) }
+        end
       end
     end
   end
