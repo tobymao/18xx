@@ -38,9 +38,6 @@ module Engine
             @companies.select { |c| c.owner == @bank && c.revenue > 20 }
           end
 
-          def available
-            @companies.select { |c| !c.closed? && c.owner == @bank && c.revenue > 20 }
-          end
         end
       end
     end
