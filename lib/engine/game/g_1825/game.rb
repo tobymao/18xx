@@ -56,18 +56,18 @@ module Engine
 
         MARKET = [
           %w[0c
-             5
-             10
-             16
-             24
-             34
-             42
-             49
+             5y
+             10y
+             16y
+             24y
+             34y
+             42y
+             49y
              55
              61
-             67
+             67p
              71
-             76
+             76p
              82
              90
              100
@@ -82,7 +82,7 @@ module Engine
              280
              300
              320
-             340],
+             340e],
         ].freeze
 
         PHASES = [
@@ -119,16 +119,30 @@ module Engine
                     distance: 3,
                     price: 370,
                     num: 2,
-                    available_on: '5',
+                    available_on: '3',
                   },
                   {
                     name: 'U3',
                     distance: 3,
                     price: 410,
                     num: 2,
-                    available_on: '5',
+                    available_on: '3',
                   },
                   { name: '7', distance: 7, price: 720, num: 2 }].freeze
+
+        MINOR_INFO = {
+          'GNoS' => { min_par: 55, train: '5' },
+          'HR' => { min_par: 42, train: 'U3' },
+          'M&C' => { min_par: 42, train: '3T' },
+          'CAM' => { min_par: 42, train: 'U3' },
+          'FR' => { min_par: 55, train: '5' },
+          'HR' => { min_par: 42, train: 'U3' },
+          'LT&S' => { min_par: 61, train: '2+2' },
+          'M&GN' => { min_par: 49, train: '4T' },
+          'NSR' => { min_par: 42, train: '3T' },
+          'S&DR' => { min_par: 55, train: '5' },
+          'TV' => { min_par: 49, train: '4T' },
+        }.freeze
 
         SELL_MOVEMENT = :down_per_10
 
@@ -138,18 +152,41 @@ module Engine
 
         CERT_LIMIT = { 2 => 17, 3 => 15 }.freeze
 
-        STARTING_CASH = { 2 => 750, 3 => 750 }.freeze
-
         def init_optional_rules(optional_rules)
           optional_rules = (optional_rules || []).map(&:to_sym)
           optional_rules << :unit_1 if optional_rules.empty?
 
+          if optional_rules.include?(:unit_1) && optional_rules.include?(:unit_2) &&
+              optional_rules.include?(:unit_3)
+            optional_rules.delete(:unit_1)
+            optional_rules.delete(:unit_2)
+            optional_rules.delete(:unit_3)
+            optional_rules << :unit_123
+          elsif optional_rules.include?(:unit_1) && optional_rules.include?(:unit_2)
+            optional_rules.delete(:unit_1)
+            optional_rules.delete(:unit_2)
+            optional_rules << :unit_12
+          elsif optional_rules.include?(:unit_2) && optional_rules.include?(:unit_3)
+            optional_rules.delete(:unit_2)
+            optional_rules.delete(:unit_3)
+            optional_rules << :unit_23
+          end
+
           # sanity check player count and illegal combination of options
           @units = {}
-          3.times.each do |i|
-            unit = i + 1
-            @units[unit] = true if optional_rules.include?("unit_#{unit}".to_sym)
-          end
+
+          @units[1] = true if optional_rules.include?("unit_1".to_sym)
+          @units[1] = true if optional_rules.include?("unit_12".to_sym)
+          @units[1] = true if optional_rules.include?("unit_123".to_sym)
+
+          @units[2] = true if optional_rules.include?("unit_2".to_sym)
+          @units[2] = true if optional_rules.include?("unit_12".to_sym)
+          @units[2] = true if optional_rules.include?("unit_23".to_sym)
+          @units[2] = true if optional_rules.include?("unit_123".to_sym)
+
+          @units[3] = true if optional_rules.include?("unit_3".to_sym)
+          @units[3] = true if optional_rules.include?("unit_23".to_sym)
+          @units[3] = true if optional_rules.include?("unit_123".to_sym)
 
           if @units[1] && !@units[2] && @units[3]
             raise GameError, 'Cannot combine Units 1 and 3 without Unit 2'
@@ -208,7 +245,24 @@ module Engine
           when '23'
            { 3 => 840, 4 => 630, 5 => 504}
           else # all units
-           { 3 => 840, 4 => 630, 5 => 504, 6 => 420, 7 => 360, 8 => 315, 9 => 280}
+           { 4 => 630, 5 => 504, 6 => 420, 7 => 360, 8 => 315, 9 => 280}
+          end
+        end
+
+        def certs_by_options
+          case @units.keys.sort.map(&:to_s).join
+          when '1'
+           { 2 => 24, 3 => 16, 4 => 12, 5 => 10}
+          when '2'
+           { 2 => 24, 3 => 16, 4 => 12}
+          when '3'
+           { 2 => 17 }
+          when '12'
+           { 3 => 31, 4 => 23, 5 => 19, 6 => 16, 7 => 14}
+          when '23'
+           { 3 => 29, 4 => 23, 5 => 18}
+          else # all units
+           { 4 => 33, 5 => 28, 6 => 23, 7 => 19, 8 => 17, 9 => 15}
           end
         end
 
@@ -223,6 +277,9 @@ module Engine
           end
         end
 
+        def init_cert_limit
+          cert_limit = certs_by_options[players.size]
+        end
 
         def setup
           @minors.each do |minor|
@@ -233,15 +290,11 @@ module Engine
 
         def operating_round(round_num)
           Round::Operating.new(self, [
-            Step::Bankrupt,
-            Step::Exchange,
-            Step::BuyCompany,
             Step::Track,
             Step::Token,
             Step::Route,
             Step::Dividend,
             Step::BuyTrain,
-            [Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
       end

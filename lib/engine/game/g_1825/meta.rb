@@ -20,17 +20,32 @@ module Engine
           {
             sym: :unit_1,
             short_name: 'Unit 1',
-            desc: 'Unit 1 [default]',
+            desc: '2-5 players [default]',
           },
           {
             sym: :unit_2,
             short_name: 'Unit 2',
-            desc: 'Unit 2',
+            desc: '2-3 players',
           },
           {
             sym: :unit_3,
             short_name: 'Unit 3',
-            desc: 'Unit 3',
+            desc: '2 players',
+          },
+          {
+            sym: :unit_12,
+            short_name: 'Units 1+2',
+            desc: '3-7 players',
+          },
+          {
+            sym: :unit_23,
+            short_name: 'Units 2+3',
+            desc: '3-5 players',
+          },
+          {
+            sym: :unit_123,
+            short_name: 'Units 1+2+3',
+            desc: '4-8 players',
           },
         ].freeze
       end
