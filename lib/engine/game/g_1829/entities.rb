@@ -11,7 +11,6 @@ module Engine
             name: 'Swansea & Mumbles',
             sym: 'SM',
             value: 30,
-            type: 'private',
             revenue: 5,
             desc: 'No special abilities.',
           },
@@ -19,7 +18,6 @@ module Engine
             name: 'Cromford & High Peak',
             sym: 'CH',
             value: 75,
-            type: 'private',
             revenue: 10,
             desc: 'No special abilities. Blocks D11, while owned by a player.',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['D11'] }],
@@ -27,7 +25,6 @@ module Engine
           {
             name: 'Canterbury & Whitstable',
             sym: 'CW',
-            type: 'private',
             value: 130,
             revenue: 15,
             desc: 'No special abilities. Blocks K22, while owned by a player.',
@@ -37,7 +34,6 @@ module Engine
             name: 'Liverpool & Manchester',
             sym: 'LM',
             value: 210,
-            type: 'private',
             revenue: 20,
             desc: 'No special abilities. Blocks Liverpool (C6,C8), while owned by a player.',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: %w[C6 C8] }],
@@ -99,8 +95,12 @@ module Engine
                 type: 'teleport',
                 owner_type: 'player',
                 free_tile_lay: true,
-                hexes: %w[B7 B9 B11 B13 B15 C6 C8 C10 C12 C16 D3 D7 D9 D11 D13 D15 D17],
-                tiles: %w[8],
+                hexes: %w[B7 B9 B11 B13 B15 C6 C8 C10 C12 C16 D3 D7 D9 D11 D13 D15 D17 E2 E4 E6 E8 E10 E12 E14 E16 F3 F5 F7 F9 F11
+                          F13 F15 F17 F19 F21 G4 G6 G8 G10 G12 G14 G16 G18 G20 G22 H1 H3 H5 H7 H9 H11 H13 H15 H17 H19 H21 I2 I4
+                          I6 I8 I10 I12 I14 I16 I18 I20 J5 J7 J9 J13 J15 J17 K8 K10 K12 K14 K16 K18 K20 K22 L1 L3 L5 L7 L9 L11
+                          L13 L15 L17 L19 M2 M4 M6 M8],
+                tiles: %w[1a 2a 3a 4a 5 6 7 8 9 10 11s 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33s 34 35
+                          36 37 38 39 40 41 42 43 44 45 46 47 48 49 50s 51 60 59s 55a],
               },
             ],
             type: 'init1',
@@ -118,6 +118,19 @@ module Engine
             min_price: 90,
             type: 'init2',
             color: 'darkgreen',
+            abilities: [
+              {
+                type: 'teleport',
+                owner_type: 'player',
+                free_tile_lay: true,
+                hexes: %w[B7 B9 B11 B13 B15 C6 C8 C10 C12 C16 D3 D7 D9 D11 D13 D15 D17 E2 E4 E6 E8 E10 E12 E14 E16 F3 F5 F7 F9 F11
+                          F13 F15 F17 F19 F21 G4 G6 G8 G10 G12 G14 G16 G18 G20 G22 H1 H3 H5 H7 H9 H11 H13 H15 H17 H19 H21 I2 I4
+                          I6 I8 I10 I12 I14 I16 I18 I20 J5 J7 J9 J13 J15 J17 K8 K10 K12 K14 K16 K18 K20 K22 L1 L3 L5 L7 L9 L11
+                          L13 L15 L17 L19 M2 M4 M6 M8],
+                tiles: %w[1a 2a 3a 4a 5 6 7 8 9 10 11s 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33s 34 35
+                          36 37 38 39 40 41 42 43 44 45 46 47 48 49 50s 51 60 59s 55a],
+              },
+            ],
           },
           {
             float_percent: 60,
@@ -131,6 +144,19 @@ module Engine
             min_price: 82,
             color: 'red',
             type: 'init3',
+            abilities: [
+              {
+                type: 'teleport',
+                owner_type: 'player',
+                free_tile_lay: true,
+                hexes: %w[B7 B9 B11 B13 B15 C6 C8 C10 C12 C16 D3 D7 D9 D11 D13 D15 D17 E2 E4 E6 E8 E10 E12 E14 E16 F3 F5 F7 F9 F11
+                          F13 F15 F17 F19 F21 G4 G6 G8 G10 G12 G14 G16 G18 G20 G22 H1 H3 H5 H7 H9 H11 H13 H15 H17 H19 H21 I2 I4
+                          I6 I8 I10 I12 I14 I16 I18 I20 J5 J7 J9 J13 J15 J17 K8 K10 K12 K14 K16 K18 K20 K22 L1 L3 L5 L7 L9 L11
+                          L13 L15 L17 L19 M2 M4 M6 M8],
+                tiles: %w[1a 2a 3a 4a 5 6 7 8 9 10 11s 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33s 34 35
+                          36 37 38 39 40 41 42 43 44 45 46 47 48 49 50s 51 60 59s 55a],
+              },
+            ],
           },
           {
             float_percent: 60,
@@ -145,6 +171,19 @@ module Engine
             type: 'init4',
             color: 'lightgreen',
             text_color: 'black',
+            abilities: [
+              {
+                type: 'teleport',
+                owner_type: 'player',
+                free_tile_lay: true,
+                hexes: %w[B7 B9 B11 B13 B15 C6 C8 C10 C12 C16 D3 D7 D9 D11 D13 D15 D17 E2 E4 E6 E8 E10 E12 E14 E16 F3 F5 F7 F9 F11
+                          F13 F15 F17 F19 F21 G4 G6 G8 G10 G12 G14 G16 G18 G20 G22 H1 H3 H5 H7 H9 H11 H13 H15 H17 H19 H21 I2 I4
+                          I6 I8 I10 I12 I14 I16 I18 I20 J5 J7 J9 J13 J15 J17 K8 K10 K12 K14 K16 K18 K20 K22 L1 L3 L5 L7 L9 L11
+                          L13 L15 L17 L19 M2 M4 M6 M8],
+                tiles: %w[1a 2a 3a 4a 5 6 7 8 9 10 11s 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33s 34 35
+                          36 37 38 39 40 41 42 43 44 45 46 47 48 49 50s 51 60 59s 55a],
+              },
+            ],
           },
           {
             float_percent: 60,
@@ -157,6 +196,19 @@ module Engine
             coordinates: 'C14',
             color: 'blue',
             type: 'init5',
+            abilities: [
+              {
+                type: 'teleport',
+                owner_type: 'player',
+                free_tile_lay: true,
+                hexes: %w[B7 B9 B11 B13 B15 C6 C8 C10 C12 C16 D3 D7 D9 D11 D13 D15 D17 E2 E4 E6 E8 E10 E12 E14 E16 F3 F5 F7 F9 F11
+                          F13 F15 F17 F19 F21 G4 G6 G8 G10 G12 G14 G16 G18 G20 G22 H1 H3 H5 H7 H9 H11 H13 H15 H17 H19 H21 I2 I4
+                          I6 I8 I10 I12 I14 I16 I18 I20 J5 J7 J9 J13 J15 J17 K8 K10 K12 K14 K16 K18 K20 K22 L1 L3 L5 L7 L9 L11
+                          L13 L15 L17 L19 M2 M4 M6 M8],
+                tiles: %w[1a 2a 3a 4a 5 6 7 8 9 10 11s 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33s 34 35
+                          36 37 38 39 40 41 42 43 44 45 46 47 48 49 50s 51 60 59s 55a],
+              },
+            ],
           },
           {
             float_percent: 60,
@@ -170,6 +222,19 @@ module Engine
             color: 'sandybrown',
             text_color: 'black',
             type: 'init6',
+            abilities: [
+              {
+                type: 'teleport',
+                owner_type: 'player',
+                free_tile_lay: true,
+                hexes: %w[B7 B9 B11 B13 B15 C6 C8 C10 C12 C16 D3 D7 D9 D11 D13 D15 D17 E2 E4 E6 E8 E10 E12 E14 E16 F3 F5 F7 F9 F11
+                          F13 F15 F17 F19 F21 G4 G6 G8 G10 G12 G14 G16 G18 G20 G22 H1 H3 H5 H7 H9 H11 H13 H15 H17 H19 H21 I2 I4
+                          I6 I8 I10 I12 I14 I16 I18 I20 J5 J7 J9 J13 J15 J17 K8 K10 K12 K14 K16 K18 K20 K22 L1 L3 L5 L7 L9 L11
+                          L13 L15 L17 L19 M2 M4 M6 M8],
+                tiles: %w[1a 2a 3a 4a 5 6 7 8 9 10 11s 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33s 34 35
+                          36 37 38 39 40 41 42 43 44 45 46 47 48 49 50s 51 60 59s 55a],
+              },
+            ],
           },
           {
             float_percent: 60,
@@ -183,6 +248,19 @@ module Engine
             city: 2,
             type: 'init7',
             color: 'darkblue',
+            abilities: [
+              {
+                type: 'teleport',
+                owner_type: 'player',
+                free_tile_lay: true,
+                hexes: %w[B7 B9 B11 B13 B15 C6 C8 C10 C12 C16 D3 D7 D9 D11 D13 D15 D17 E2 E4 E6 E8 E10 E12 E14 E16 F3 F5 F7 F9 F11
+                          F13 F15 F17 F19 F21 G4 G6 G8 G10 G12 G14 G16 G18 G20 G22 H1 H3 H5 H7 H9 H11 H13 H15 H17 H19 H21 I2 I4
+                          I6 I8 I10 I12 I14 I16 I18 I20 J5 J7 J9 J13 J15 J17 K8 K10 K12 K14 K16 K18 K20 K22 L1 L3 L5 L7 L9 L11
+                          L13 L15 L17 L19 M2 M4 M6 M8],
+                tiles: %w[1a 2a 3a 4a 5 6 7 8 9 10 11s 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33s 34 35
+                          36 37 38 39 40 41 42 43 44 45 46 47 48 49 50s 51 60 59s 55a],
+              },
+            ],
           },
           {
             float_percent: 60,
@@ -195,6 +273,19 @@ module Engine
             coordinates: 'C12',
             type: 'init8',
             color: 'lightskyblue',
+            abilities: [
+              {
+                type: 'teleport',
+                owner_type: 'player',
+                free_tile_lay: true,
+                hexes: %w[B7 B9 B11 B13 B15 C6 C8 C10 C12 C16 D3 D7 D9 D11 D13 D15 D17 E2 E4 E6 E8 E10 E12 E14 E16 F3 F5 F7 F9 F11
+                          F13 F15 F17 F19 F21 G4 G6 G8 G10 G12 G14 G16 G18 G20 G22 H1 H3 H5 H7 H9 H11 H13 H15 H17 H19 H21 I2 I4
+                          I6 I8 I10 I12 I14 I16 I18 I20 J5 J7 J9 J13 J15 J17 K8 K10 K12 K14 K16 K18 K20 K22 L1 L3 L5 L7 L9 L11
+                          L13 L15 L17 L19 M2 M4 M6 M8],
+                tiles: %w[1a 2a 3a 4a 5 6 7 8 9 10 11s 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33s 34 35
+                          36 37 38 39 40 41 42 43 44 45 46 47 48 49 50s 51 60 59s 55a],
+              },
+            ],
           },
           {
             float_percent: 60,
@@ -208,6 +299,19 @@ module Engine
             city: 1,
             type: 'init9',
             color: 'peru',
+            abilities: [
+              {
+                type: 'teleport',
+                owner_type: 'player',
+                free_tile_lay: true,
+                hexes: %w[B7 B9 B11 B13 B15 C6 C8 C10 C12 C16 D3 D7 D9 D11 D13 D15 D17 E2 E4 E6 E8 E10 E12 E14 E16 F3 F5 F7 F9 F11
+                          F13 F15 F17 F19 F21 G4 G6 G8 G10 G12 G14 G16 G18 G20 G22 H1 H3 H5 H7 H9 H11 H13 H15 H17 H19 H21 I2 I4
+                          I6 I8 I10 I12 I14 I16 I18 I20 J5 J7 J9 J13 J15 J17 K8 K10 K12 K14 K16 K18 K20 K22 L1 L3 L5 L7 L9 L11
+                          L13 L15 L17 L19 M2 M4 M6 M8],
+                tiles: %w[1a 2a 3a 4a 5 6 7 8 9 10 11s 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33s 34 35
+                          36 37 38 39 40 41 42 43 44 45 46 47 48 49 50s 51 60 59s],
+              },
+            ],
           },
           {
             float_percent: 60,
@@ -221,6 +325,19 @@ module Engine
             type: 'init10',
             color: 'yellow',
             text_color: 'black',
+            abilities: [
+              {
+                type: 'teleport',
+                owner_type: 'player',
+                free_tile_lay: true,
+                hexes: %w[B7 B9 B11 B13 B15 C6 C8 C10 C12 C16 D3 D7 D9 D11 D13 D15 D17 E2 E4 E6 E8 E10 E12 E14 E16 F3 F5 F7 F9 F11
+                          F13 F15 F17 F19 F21 G4 G6 G8 G10 G12 G14 G16 G18 G20 G22 H1 H3 H5 H7 H9 H11 H13 H15 H17 H19 H21 I2 I4
+                          I6 I8 I10 I12 I14 I16 I18 I20 J5 J7 J9 J13 J15 J17 K8 K10 K12 K14 K16 K18 K20 K22 L1 L3 L5 L7 L9 L11
+                          L13 L15 L17 L19 M2 M4 M6 M8],
+                tiles: %w[1a 2a 3a 4a 5 6 7 8 9 10 11s 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33s 34 35
+                          36 37 38 39 40 41 42 43 44 45 46 47 48 49 50s 51 60 59s],
+              },
+            ],
           },
         ].freeze
       end

@@ -16,7 +16,7 @@ module Engine
           end
 
           def available
-            @companies
+            @companies.select { |c| !c.closed? && c.owner == @bank && c.revenue <= 20 }
           end
 
           def may_purchase?(_company)
@@ -52,7 +52,7 @@ module Engine
           def actions(entity)
             return [] if finished?
 
-            unless @companies.any? { |c| current_entity.cash >= min_bid(c) }
+            unless @companies.any? { |c| !c.closed? && c.owner == @bank && c.revenue <= 20 }
               @log << "#{current_entity.name} has no valid actions and passes"
               return []
             end
@@ -71,17 +71,10 @@ module Engine
             @companies.delete(company)
 
             @log << "#{player.name} buys #{company.name} for #{@game.format_currency(price)}"
-            action.entity.unpass!
-            # entities.each(&:unpass!)
+
+            entities.each(&:unpass!)
             @round.next_entity_index!
-
             action_finalized
-          end
-
-          def track_action(action, corporation, player_action = true)
-            @round.last_to_act = action.entity.player
-            @round.current_actions << action if player_action
-            @round.players_history[action.entity.player][corporation] << action
           end
 
           def process_pass(action)
@@ -94,7 +87,7 @@ module Engine
           def action_finalized
             return unless finished?
 
-            @round.next_entity!
+            @round.reset_entity_index!
           end
 
           def committed_cash(_player, _show_hidden = false)

@@ -18,7 +18,6 @@ module Engine
             'color' => 'yellow',
             'code' => 'town=revenue:10;town=revenue:10;path=a:0,b:_0;path=a:_0,b:3;path=a:1,b:_1;path=a:_1,b:2',
           },
-          '2' => 2,
           '3a' =>
           {
             'count' => 2,
@@ -141,6 +140,7 @@ module Engine
                   'city=revenue:70;city=revenue:70;city=revenue:70;path=a:1,b:_0;path=a:2,b:_0'\
                   ';path=a:4,b:_1;path=a:5,b:_1;path=a:0,b:_2;path=a:3,b:_2;label=BGM',
               },
+
         }.freeze
         HEXES = {
           white: {

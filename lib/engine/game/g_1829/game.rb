@@ -35,6 +35,8 @@ module Engine
         GRAY_CITIES = %w[51].freeze
         GREEN_CITIES = %w[12 13 14 15].freeze
         YELLOW_TOWNS = %w[1a 2a 3a 4a 55a].freeze
+        PRIVATES = %w[SM LM CH CW].freeze
+        STEAM = %w[HU PR HO HA DO].freeze
         STOCK_PRICES = {
           'LNWR' => 100,
           'GWR' => 90,
@@ -156,6 +158,11 @@ module Engine
             end)
             corporation.ipoed = true
           end
+          @corporations.concat(companies.select { |c| !c.closed? && c.owner == @bank && c.revenue > 20 })
+        end
+
+        def buyable_bank_owned_companies
+          @companies.select { |c| c.owner == @bank && c.revenue > 20 }
         end
 
         def init_round
