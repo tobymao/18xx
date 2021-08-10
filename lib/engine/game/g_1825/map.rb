@@ -461,7 +461,7 @@ module Engine
             ['Z8'] => 'offboard=revenue:0,visit_cost:99;path=a:3,b:_0',
             ['Z10'] => 'offboard=revenue:0,visit_cost:99;path=a:2,b:_0;path=a:3,b:_0',
             ['Z12'] => 'offboard=revenue:0,visit_cost:99;path=a:2,b:_0',
-          }
+          },
         }.freeze
 
         UNIT2_OFFMAP_HEXES = {
@@ -478,7 +478,7 @@ module Engine
                R16
                R18] => 'offboard=revenue:0,visit_cost:99;path=a:2,b:_0;path=a:3,b:_0',
             ['R20'] => 'offboard=revenue:0,visit_cost:99;path=a:2,b:_0',
-          }
+          },
         }.freeze
 
         UNIT3_OFFMAP_HEXES = {
@@ -493,41 +493,36 @@ module Engine
                L12
                L14] => 'offboard=revenue:0,visit_cost:99;path=a:2,b:_0;path=a:3,b:_0',
             ['L16'] => 'offboard=revenue:0,visit_cost:99;path=a:2,b:_0',
-          }
+          },
         }.freeze
         # rubocop:enable Layout/LineLength
 
         def append_game_hexes(ghexes, new_hexes)
           existing_coords = []
-          ghexes.each { |color, hex_hash| existing_coords.concat(hex_hash.keys) }
+          ghexes.each { |_color, hex_hash| existing_coords.concat(hex_hash.keys) }
           existing_coords.flatten!
 
           new_hexes.each do |color, hex_hash|
             hex_hash.each do |coords, value|
-              #puts "reading color:#{color} coords:[#{coords}] value:'#{value}'"
               # skip over a coordinate that has already been defined, regardless of color
-              skip = false
               coords.dup.each do |new_coord|
                 coords.delete(new_coord) if existing_coords.include?(new_coord)
               end
               next if coords.empty?
 
               if ghexes[color]
-                hexes_coords, _ = ghexes[color].find { |_, v| v == value }
+                hexes_coords, = ghexes[color].find { |_, v| v == value }
                 if hexes_coords
                   # this defintion is already used for this color => add the new coordinates to it
                   ghexes[color].delete(hexes_coords)
                   hexes_coords.concat(coords)
-                  #puts "appending [#{coords} -> #{hexes_coords}] => '#{value}' to ghexes[#{color}]"
                   ghexes[color][hexes_coords] = value
                 else
                   # new definition for this color
-                  #puts "adding [#{coords}] => '#{value}' to ghexes[#{color}]"
                   ghexes[color][coords] = value
                 end
               else
-               # new color
-                #puts "creating new color [#{coords}] => '#{value}' to ghexes[#{color}]"
+                # new color
                 ghexes[color] = {}
                 ghexes[color][coords] = value
               end
@@ -545,14 +540,6 @@ module Engine
           append_game_hexes(ghexes, UNIT1_OFFMAP_HEXES) if @units[1]
           append_game_hexes(ghexes, UNIT2_OFFMAP_HEXES) if @units[2]
           append_game_hexes(ghexes, UNIT3_OFFMAP_HEXES) if @units[3]
-          #puts "hexes:"
-          #ghexes.each do |color, hex_hash|
-          #  puts "color #{color}:"
-          #  hex_hash.each do |coords, definition|
-          #    puts "      [#{coords}] =>"
-          #    puts "      '#{definition}'"
-          #  end
-          #end
           ghexes
         end
       end

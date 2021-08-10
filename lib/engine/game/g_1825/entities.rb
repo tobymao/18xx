@@ -120,7 +120,7 @@ module Engine
             tokens: [0, 40, 100, 100, 100],
             coordinates: 'V14',
             city: 0,
-            color: 'dark green',
+            color: 'darkgreen',
             text_color: 'white',
             reservation_color: nil,
           },
@@ -131,7 +131,7 @@ module Engine
             tokens: [0, 40, 100, 100],
             coordinates: 'V20',
             city: 4,
-            color: 'dark blue',
+            color: 'darkblue',
             text_color: 'white',
             reservation_color: nil,
           },
@@ -142,7 +142,8 @@ module Engine
             tokens: [0, 40, 100, 100],
             coordinates: 'V20',
             city: 0,
-            color: 'light green',
+            color: 'lightgreen',
+            text_color: 'black',
             reservation_color: nil,
           },
           {
@@ -153,6 +154,7 @@ module Engine
             coordinates: 'W23',
             city: 0,
             color: 'yellow',
+            text_color: 'black',
             reservation_color: nil,
           },
           {
@@ -163,6 +165,7 @@ module Engine
             coordinates: 'X20',
             city: 0,
             color: 'orange',
+            text_color: 'black',
             reservation_color: nil,
           },
         ].freeze
@@ -197,7 +200,7 @@ module Engine
             tokens: [0, 40, 100, 100],
             coordinates: 'L14',
             city: 0,
-            color: 'lime green',
+            color: 'limegreen',
             reservation_color: nil,
           },
           {
@@ -207,7 +210,8 @@ module Engine
             tokens: [0, 40, 100],
             coordinates: 'O15',
             city: 0,
-            color: 'light blue',
+            color: 'lightblue',
+            text_color: 'black',
             reservation_color: nil,
           },
           {
@@ -271,7 +275,7 @@ module Engine
             tokens: [0],
             coordinates: 'B12',
             city: 0,
-            color: '#0c6b0c',
+            color: 'green',
           },
           {
             sym: 'HR',
@@ -299,12 +303,8 @@ module Engine
         def game_companies
           comps = []
           comps.concat(UNIT1_COMPANIES) if @units[1]
-          if @units[3]
-            comps.concat(UNIT3_COMPANIES.reject { |c| comps.any? { |comp| comp[:value] == c[:value] } })
-          end
-          if @units[2]
-            comps.concat(UNIT2_COMPANIES.reject { |c| comps.any? { |comp| comp[:value] == c[:value] } })
-          end
+          comps.concat(UNIT3_COMPANIES.reject { |c| comps.any? { |comp| comp[:value] == c[:value] } }) if @units[3]
+          comps.concat(UNIT2_COMPANIES.reject { |c| comps.any? { |comp| comp[:value] == c[:value] } }) if @units[2]
           comps
         end
 
@@ -315,7 +315,7 @@ module Engine
             corps.concat(UNIT2_CORPORATIONS)
           elsif @units[1] && @units[2]
             corps.concat(UNIT2_CORPORATIONS.reject { |corp| corp[:sym] == 'LNWR' })
-            lnwr = corps.find { |corp| corp[:sym] == 'LNWR'}
+            lnwr = corps.find { |corp| corp[:sym] == 'LNWR' }
             lnwr[:tokens] = [0, 0, 40, 100, 100, 100, 100]
             lnwr[:coordinates] = %w[T16 Q11]
           end

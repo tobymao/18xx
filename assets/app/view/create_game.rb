@@ -287,9 +287,8 @@ module View
       game_params = params
       if @mode == :multi
         begin
-          game = create_game(params)
-          return game
-        rescue GameError => e
+          return create_game(params)
+        rescue Engine::OptionError => e
           return store(:flash_opts, e.message)
         end
       end
@@ -315,18 +314,14 @@ module View
         }
       end
 
-      begin
-        create_hotseat(
-         id: Time.now.to_i,
-         players: players.map { |name| { name: name } },
-         title: game_params[:title],
-         description: game_params[:description],
-         max_players: game_params[:max_players],
-         **game_data,
-        )
-      rescue GameError => e
-        return store(:flash_opts, e.message)
-      end
+      create_hotseat(
+        id: Time.now.to_i,
+        players: players.map { |name| { name: name } },
+        title: game_params[:title],
+        description: game_params[:description],
+        max_players: game_params[:max_players],
+        **game_data,
+      )
     end
 
     def params

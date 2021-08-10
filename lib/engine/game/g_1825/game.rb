@@ -1,27 +1,8 @@
 # frozen_string_literal: true
 
-# TODO: list for 1825.
-# (working on unit 3 to start)
-# map - done
-# map labels - done
-# tileset - done
-# weird promotion rules
-# trains - done
-# phases
-# companies + minors - done
-# privates - done
-# market - done
-# minor floating rules (train value)
-# share price movemennt
-#
-# PHASE 2.
-# Unit 2, with options for choosing which units you play with.
-#
-# PHASE 3
-# Unit 1 + regional kits.
-
 require_relative 'meta'
 require_relative '../base'
+require_relative '../../option_error'
 require_relative 'entities'
 require_relative 'map'
 
@@ -138,7 +119,6 @@ module Engine
           'M&C' => { min_par: 42, train: '3T' },
           'CAM' => { min_par: 42, train: 'U3' },
           'FR' => { min_par: 55, train: '5' },
-          'HR' => { min_par: 42, train: 'U3' },
           'LT&S' => { min_par: 61, train: '2+2' },
           'M&GN' => { min_par: 49, train: '4T' },
           'NSR' => { min_par: 42, train: '3T' },
@@ -177,41 +157,39 @@ module Engine
           # sanity check player count and illegal combination of options
           @units = {}
 
-          @units[1] = true if optional_rules.include?("unit_1".to_sym)
-          @units[1] = true if optional_rules.include?("unit_12".to_sym)
-          @units[1] = true if optional_rules.include?("unit_123".to_sym)
+          @units[1] = true if optional_rules.include?(:unit_1)
+          @units[1] = true if optional_rules.include?(:unit_12)
+          @units[1] = true if optional_rules.include?(:unit_123)
 
-          @units[2] = true if optional_rules.include?("unit_2".to_sym)
-          @units[2] = true if optional_rules.include?("unit_12".to_sym)
-          @units[2] = true if optional_rules.include?("unit_23".to_sym)
-          @units[2] = true if optional_rules.include?("unit_123".to_sym)
+          @units[2] = true if optional_rules.include?(:unit_2)
+          @units[2] = true if optional_rules.include?(:unit_12)
+          @units[2] = true if optional_rules.include?(:unit_23)
+          @units[2] = true if optional_rules.include?(:unit_123)
 
-          @units[3] = true if optional_rules.include?("unit_3".to_sym)
-          @units[3] = true if optional_rules.include?("unit_23".to_sym)
-          @units[3] = true if optional_rules.include?("unit_123".to_sym)
+          @units[3] = true if optional_rules.include?(:unit_3)
+          @units[3] = true if optional_rules.include?(:unit_23)
+          @units[3] = true if optional_rules.include?(:unit_123)
 
-          if @units[1] && !@units[2] && @units[3]
-            raise GameError, 'Cannot combine Units 1 and 3 without Unit 2'
-          end
+          raise OptionError, 'Cannot combine Units 1 and 3 without Unit 2' if @units[1] && !@units[2] && @units[3]
 
           # FIXME: update for regional kits when added
           p_range = case @units.keys.sort.map(&:to_s).join
-          when '1'
-            [2, 5]
-          when '2'
-            [2, 4]
-          when '3'
-            [2]
-          when '12'
-            [3,7]
-          when '23'
-            [3,5]
-          else # all units
-            [4,8]
-          end
-          unless p_range.first <= @players.size && p_range.last >= @players.size && 
+                    when '1'
+                      [2, 5]
+                    when '2'
+                      [2, 4]
+                    when '3'
+                      [2]
+                    when '12'
+                      [3, 7]
+                    when '23'
+                      [3, 5]
+                    else # all units
+                      [4, 8]
+                    end
+          unless p_range.first <= @players.size && p_range.last >= @players.size
             ok_range = p_range.map(&:to_s).join('-')
-            raise GameError, "Selected options require a player count of #{ok_range}"
+            raise OptionError, "Selected options require a player count of #{ok_range}"
           end
 
           optional_rules
@@ -237,34 +215,34 @@ module Engine
         def cash_by_options
           case @units.keys.sort.map(&:to_s).join
           when '1'
-           { 2 => 1200, 3 => 830, 4 => 630, 5 => 504}
+            { 2 => 1200, 3 => 830, 4 => 630, 5 => 504 }
           when '2'
-           { 2 => 1200, 3 => 800, 4 => 600}
+            { 2 => 1200, 3 => 800, 4 => 600 }
           when '3'
-           { 2 => 750 }
+            { 2 => 750 }
           when '12'
-           { 3 => 840, 4 => 630, 5 => 504, 6 => 420, 7 => 360}
+            { 3 => 840, 4 => 630, 5 => 504, 6 => 420, 7 => 360 }
           when '23'
-           { 3 => 840, 4 => 630, 5 => 504}
+            { 3 => 840, 4 => 630, 5 => 504 }
           else # all units
-           { 4 => 630, 5 => 504, 6 => 420, 7 => 360, 8 => 315, 9 => 280}
+            { 4 => 630, 5 => 504, 6 => 420, 7 => 360, 8 => 315, 9 => 280 }
           end
         end
 
         def certs_by_options
           case @units.keys.sort.map(&:to_s).join
           when '1'
-           { 2 => 24, 3 => 16, 4 => 12, 5 => 10}
+            { 2 => 24, 3 => 16, 4 => 12, 5 => 10 }
           when '2'
-           { 2 => 24, 3 => 16, 4 => 12}
+            { 2 => 24, 3 => 16, 4 => 12 }
           when '3'
-           { 2 => 17 }
+            { 2 => 17 }
           when '12'
-           { 3 => 31, 4 => 23, 5 => 19, 6 => 16, 7 => 14}
+            { 3 => 31, 4 => 23, 5 => 19, 6 => 16, 7 => 14 }
           when '23'
-           { 3 => 29, 4 => 23, 5 => 18}
+            { 3 => 29, 4 => 23, 5 => 18 }
           else # all units
-           { 4 => 33, 5 => 28, 6 => 23, 7 => 19, 8 => 17, 9 => 15}
+            { 4 => 33, 5 => 28, 6 => 23, 7 => 19, 8 => 17, 9 => 15 }
           end
         end
 
@@ -280,7 +258,7 @@ module Engine
         end
 
         def init_cert_limit
-          cert_limit = certs_by_options[players.size]
+          certs_by_options[players.size]
         end
 
         def operating_round(round_num)

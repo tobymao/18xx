@@ -436,7 +436,7 @@ module Engine
       GRAY = {
         '48' => 'city=revenue:100;city=revenue:100;city=revenue:100;city=revenue:100;city=revenue:100;city=revenue:100',
         '49' => 'city=revenue:70,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;label=L',
-        '50' => 'city=revenue:70;city=revenue:70;city=revenue:70;path=a:0,b:_0;path=a:_0,b:3;path=a:1,b:_0;path=a:_0,b:2;path=a:4,b:_0;path=a:_0,b:5;label=BGM',
+        '50' => 'city=revenue:70,loc:1.5;city=revenue:70,loc:3;city=revenue:70,loc:4.5;path=a:0,b:_1;path=a:_1,b:3;path=a:1,b:_0;path=a:_0,b:2;path=a:4,b:_2;path=a:_2,b:5;label=BGM',
         '51' => 'city=revenue:50,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
         '60' => 'junction;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
         '109' => 'city=revenue:50,slots:2;path=a:0,b:_0,track:dual;path=a:1,b:_0,track:dual;path=a:2,b:_0,track:dual;path=a:3,b:_0,track:dual;path=a:4,b:_0,track:dual',
