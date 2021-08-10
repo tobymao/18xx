@@ -291,7 +291,7 @@ module Engine
       }.freeze
 
       BROWN = {
-        '32' => 'city=revenue:70;city=revenue:70;city=revenue:70;city=revenue:70;city=revenue:70;city=revenue:70',
+        '32' => 'city=revenue:70;city=revenue:70;city=revenue:70;city=revenue:70;city=revenue:70;city=revenue:70;path=a:0,b:_0;path=a:1,b:_1;path=a:2,b:_2;path=a:3,b:_3;path=a:4,b:_4;path=a:5,b:_5;label=L',
         '33' => 'city=revenue:50;city=revenue:50;city=revenue:50;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;label=L',
         '34' => 'city=revenue:50,loc:1.5;city=revenue:50,loc:4.5;city=revenue:50,loc:3;path=a:0,b:_2;path=a:_2,b:3;path=a:2,b:_0;path=a:4,b:_1;label=BGM',
         '35' => 'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:_0,b:2;path=a:1,b:_1;path=a:_1,b:3',

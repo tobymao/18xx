@@ -196,7 +196,7 @@ module Engine
             capitalization: :full,
             tokens: [0, 40, 100, 100],
             coordinates: 'L14',
-            city: 4,
+            city: 0,
             color: 'lime green',
             reservation_color: nil,
           },
@@ -297,30 +297,30 @@ module Engine
 
         # combining is based on http://fwtwr.com/fwtwr/18xx/1825/privates.asp
         def game_companies
-          companies = []
-          companies << UNIT1_COMPANIES if @unit[1]
-          if @unit[3]
-            companies << UNIT3_COMPANIES.reject { |c| companies.any? { |comp| comp[:value] == c[:value] } }
+          comps = []
+          comps.concat(UNIT1_COMPANIES) if @units[1]
+          if @units[3]
+            comps.concat(UNIT3_COMPANIES.reject { |c| comps.any? { |comp| comp[:value] == c[:value] } })
           end
-          if @unit[2]
-            companies << UNIT2_COMPANIES.reject { |c| companies.any? { |comp| comp[:value] == c[:value] } }
+          if @units[2]
+            comps.concat(UNIT2_COMPANIES.reject { |c| comps.any? { |comp| comp[:value] == c[:value] } })
           end
-          companies
+          comps
         end
 
         def game_corporations
-          corporations = []
-          corporations << UNIT1_CORPORATIONS if @unit[1]
-          if !@unit[1] && @unit[2]
-            corporations << UNIT2_CORPORATIONS
-          elsif @unit[1] && unit[2]
-            corporations << UNIT2_CORPORATIONS.reject { |corp| c[:sym] == 'LNWR' }
-            lnwr = corporations.find { |corp| corp[:sym] == 'LNWR'}
-            lnwr.tokens = [0, 0, 40, 100, 100, 100, 100]
-            lnwr.coordinates = %w[T16 Q11]
+          corps = []
+          corps.concat(UNIT1_CORPORATIONS) if @units[1]
+          if !@units[1] && @units[2]
+            corps.concat(UNIT2_CORPORATIONS)
+          elsif @units[1] && @units[2]
+            corps.concat(UNIT2_CORPORATIONS.reject { |corp| corp[:sym] == 'LNWR' })
+            lnwr = corps.find { |corp| corp[:sym] == 'LNWR'}
+            lnwr[:tokens] = [0, 0, 40, 100, 100, 100, 100]
+            lnwr[:coordinates] = %w[T16 Q11]
           end
-          corporations << UNIT3_CORPORATIONS if @unit[3]
-          corporations
+          corps.concat(UNIT3_CORPORATIONS) if @units[3]
+          corps
         end
       end
     end

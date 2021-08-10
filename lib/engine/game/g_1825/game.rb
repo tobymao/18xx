@@ -33,6 +33,8 @@ module Engine
         include Entities
         include Map
 
+        attr_reader :units
+
         register_colors(black: '#37383a',
                         seRed: '#f72d2d',
                         bePurple: '#2d0047',
@@ -279,13 +281,6 @@ module Engine
 
         def init_cert_limit
           cert_limit = certs_by_options[players.size]
-        end
-
-        def setup
-          @minors.each do |minor|
-            hex = hex_by_id(minor.coordinates)
-            hex.tile.add_reservation!(minor, minor.city)
-          end
         end
 
         def operating_round(round_num)
