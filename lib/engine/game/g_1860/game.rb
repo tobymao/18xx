@@ -1553,7 +1553,7 @@ module Engine
         def flipped_to_neutral
           @bankrupt_corps.each do |corp|
             corp.tokens.each do |token|
-              token.status = :neutral if token.staus == :flipped
+              token.status = :neutral if token.status == :flipped
             end
           end
         end
@@ -1562,7 +1562,7 @@ module Engine
         def neutral_to_flipped
           @bankrupt_corps.each do |corp|
             corp.tokens.each do |token|
-              token.status = :flipped if token.staus == :neutral
+              token.status = :flipped if token.status == :neutral
             end
           end
         end
