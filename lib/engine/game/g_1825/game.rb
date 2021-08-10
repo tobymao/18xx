@@ -187,9 +187,22 @@ module Engine
                     else # all units
                       [4, 8]
                     end
-          unless p_range.first <= @players.size && p_range.last >= @players.size
-            ok_range = p_range.map(&:to_s).join('-')
-            raise OptionError, "Selected options require a player count of #{ok_range}"
+          if p_range.first > @players.size || p_range.last < @players.size
+            @log << 'Invalid options for number of players'
+            optional_rules.clear
+            @units.clear
+            case @players.size
+            when 2, 3, 4, 5
+              optional_rules << :unit_1
+              @units[1] = true
+              @log << 'Setting to Unit 1'
+            when 6, 7, 8, 9
+              optional_rules << :unit_123
+              @units[1] = true
+              @units[2] = true
+              @units[3] = true
+              @log << 'Setting to Unit 1+2+3'
+            end
           end
 
           optional_rules
@@ -250,7 +263,7 @@ module Engine
           Bank.new(bank_by_options, log: @log)
         end
 
-        def init_starting_cash
+        def init_starting_cash(players, bank)
           cash = cash_by_options[players.size]
           players.each do |player|
             bank.spend(cash, player)

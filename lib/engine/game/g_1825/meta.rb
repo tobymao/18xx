@@ -15,7 +15,7 @@ module Engine
         GAME_LOCATION = 'United Kingdom'
         GAME_RULES_URL = 'http://google.com'
 
-        PLAYER_RANGE = [2, 9].freeze
+        PLAYER_RANGE = [2, 8].freeze
         OPTIONAL_RULES = [
           {
             sym: :unit_1,
