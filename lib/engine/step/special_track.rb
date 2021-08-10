@@ -127,7 +127,7 @@ module Engine
           .compact
           .select do |t|
           @game.phase.tiles.include?(t.color) && @game.upgrades_to?(hex.tile, t, special,
-                                                                    selected_company: entity)
+                                                                    selected_company: entity, laying_entity: entity)
         end
       end
 

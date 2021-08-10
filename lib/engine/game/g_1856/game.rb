@@ -1083,7 +1083,7 @@ module Engine
         # from: Tile - Tile to upgrade from
         # to: Tile - Tile to upgrade to
         # special - ???
-        def upgrades_to?(from, to, _special = false, selected_company: nil)
+        def upgrades_to?(from, to, _special = false, selected_company: nil, laying_entity: nil)
           return false if from.name == '470'
           # double dits upgrade to Green cities in gray
           return gray_phase? if to.name == '14' && %w[55 1].include?(from.name)
@@ -1127,7 +1127,7 @@ module Engine
         # tile: The tile to be upgraded
         # tile_manifest: true/false Is this being called from the tile manifest screen
         #
-        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
+        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil, laying_entity: nil)
           upgrades = super
           return upgrades unless tile_manifest
 

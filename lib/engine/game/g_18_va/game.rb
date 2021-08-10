@@ -845,7 +845,7 @@ module Engine
           @share_pool.transfer_shares(bundle, @share_pool)
         end
 
-        def upgrades_to?(from, to, _special = false, selected_company: nil)
+        def upgrades_to?(from, to, _special = false, selected_company: nil, laying_entity: nil)
           return to.name == '170ric' if from.color == :green && from.hex.name == self.class::RIC_HEX
           return to.name == '170was' if from.color == :green && from.hex.name == self.class::WAS_HEX
           return to.name == '170' if from.color == :green && self.class::P_HEXES.include?(from.hex.name)
@@ -854,7 +854,7 @@ module Engine
           super
         end
 
-        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
+        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil, laying_entity: nil)
           upgrades = super
           return upgrades unless tile_manifest
 

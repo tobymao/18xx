@@ -496,7 +496,7 @@ module Engine
           ], round_num: round_num)
         end
 
-        def upgrades_to?(from, to, special = false, selected_company: nil)
+        def upgrades_to?(from, to, special = false, selected_company: nil, laying_entity: nil)
           from_standard = from.paths.any? { |p| p.track == :broad }
           from_southern = from.paths.any? { |p| p.track != :broad }
 

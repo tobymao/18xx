@@ -1373,7 +1373,7 @@ module Engine
             (from.name == '956' && LEGAL_956_DBL_UPGRADES.include?(to.name))
         end
 
-        def upgrades_to?(from, to, special = false, selected_company: nil)
+        def upgrades_to?(from, to, special = false, selected_company: nil, laying_entity: nil)
           # correct color progression?
           if !(reserved_tiles[from.hex.id] && reserved_tiles[from.hex.id][:tile] == to) &&
             (Engine::Tile::COLORS.index(to.color) != (Engine::Tile::COLORS.index(from.color) + 1))

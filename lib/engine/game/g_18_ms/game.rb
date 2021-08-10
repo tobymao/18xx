@@ -390,7 +390,7 @@ module Engine
           end
         end
 
-        def upgrades_to?(from, to, _special = false, selected_company: nil)
+        def upgrades_to?(from, to, _special = false, selected_company: nil, laying_entity: nil)
           # Only allow tile gray tile (446) in Montgomery (E11) or Birmingham (C9)
           return to.name == '446' if from.color == :brown && HEXES_FOR_GRAY_TILE.include?(from.hex.name)
 
@@ -400,7 +400,7 @@ module Engine
           super
         end
 
-        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
+        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil, laying_entity: nil)
           upgrades = super
 
           return upgrades unless tile_manifest

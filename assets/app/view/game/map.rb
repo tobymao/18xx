@@ -82,7 +82,8 @@ module View
               h(TileConfirmation, zoom: map_zoom)
             else
               tiles = step.upgradeable_tiles(current_entity, @tile_selector.hex)
-              all_upgrades = @game.all_potential_upgrades(@tile_selector.hex.tile, selected_company: @selected_company)
+              all_upgrades = @game.all_potential_upgrades(@tile_selector.hex.tile, selected_company: @selected_company,
+                                                                                   laying_entity: current_entity)
 
               select_tiles = all_upgrades.map do |tile|
                 real_tile = tiles.find { |t| t.name == tile.name }

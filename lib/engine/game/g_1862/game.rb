@@ -927,7 +927,7 @@ module Engine
           to.towns.size == from.towns.size + 1
         end
 
-        def upgrades_to?(from, to, special = false, selected_company: nil)
+        def upgrades_to?(from, to, special = false, selected_company: nil, laying_entity: nil)
           return true if adding_town?(from, to)
 
           super

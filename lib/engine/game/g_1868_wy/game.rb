@@ -544,11 +544,11 @@ module Engine
           @tiles.find { |t| t.name == "#{tile_name}B" && !t.hex }
         end
 
-        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
+        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil, laying_entity: nil)
           @pending_boom_tile_lays[tile.hex] || super
         end
 
-        def upgrades_to?(from, to, special = false, selected_company: nil)
+        def upgrades_to?(from, to, special = false, selected_company: nil, laying_entity: nil)
           hex = from.hex
           if @pending_boom_tile_lays[hex]
             from.name == to.name.downcase

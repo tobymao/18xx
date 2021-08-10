@@ -795,7 +795,7 @@ module Engine
             end
         end
 
-        def upgrades_to?(from, to, _special = false, selected_company: nil)
+        def upgrades_to?(from, to, _special = false, selected_company: nil, laying_entity: nil)
           return false if to.name == '171K' && from.hex.name != 'B11'
           return false if to.name == '172L' && from.hex.name != 'C18'
 

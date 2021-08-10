@@ -612,7 +612,7 @@ module Engine
           @lnr ||= company_by_id('LNR')
         end
 
-        def upgrades_to?(from, to, _special = false, selected_company: nil)
+        def upgrades_to?(from, to, _special = false, selected_company: nil, laying_entity: nil)
           # When upgrading from green to brown:
           #   If Memphis (H3), Chattanooga (H15), Nashville (F11)
           #   only brown P tile (#170) are allowed.
@@ -624,7 +624,7 @@ module Engine
           super
         end
 
-        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
+        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil, laying_entity: nil)
           upgrades = super
 
           return upgrades unless tile_manifest

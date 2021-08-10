@@ -590,7 +590,7 @@ module Engine
           tile.frame&.color == '#ffa500'
         end
 
-        def upgrades_to?(from, to, special = false, selected_company: nil)
+        def upgrades_to?(from, to, special = false, selected_company: nil, laying_entity: nil)
           if from.towns.empty? && from.cities.empty? && !to.towns.empty? && to.cities.empty? &&
             from.color == :white && to.color == :yellow
             return true

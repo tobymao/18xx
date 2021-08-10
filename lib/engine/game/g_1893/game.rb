@@ -1067,7 +1067,7 @@ module Engine
           (water_borders & tile.exits).empty?
         end
 
-        def upgrades_to?(from, to, _special = false, selected_company: nil)
+        def upgrades_to?(from, to, _special = false, selected_company: nil, laying_entity: nil)
           if from.color == :yellow && from.hex.name == LEVERKUSEN_HEX_NAME
             # Leverkusen can upgrade double dits to one city
             return to.name == LEVERKUSEN_GREEN_TILE
@@ -1080,7 +1080,7 @@ module Engine
           raise GameError, "Cannot place a tile in #{from.hex.name} until green phase"
         end
 
-        def all_potential_upgrades(tile, tile_manifest: false)
+        def all_potential_upgrades(tile, tile_manifest: false, laying_entity: nil)
           upgrades = super
           return upgrades if !tile_manifest || !LEVERKUSEN_YELLOW_TILES.include?(tile.name)
 

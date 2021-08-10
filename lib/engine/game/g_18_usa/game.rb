@@ -1542,7 +1542,7 @@ module Engine
         # from: Tile - Tile to upgrade from
         # to: Tile - Tile to upgrade to
         # special - ???
-        def upgrades_to?(from, to, _special = false, selected_company: nil)
+        def upgrades_to?(from, to, _special = false, selected_company: nil, laying_entity: nil)
           # TODO: Check if it's near a metropolis
           return true if @company_town_tiles.map(&:name).include?(to.name) && from.color == :white
           return @phase.tiles.include?(:brown) if @rhq_tiles.map(&:name).include?(to.name) &&
@@ -1555,7 +1555,7 @@ module Engine
         # tile: The tile to be upgraded
         # tile_manifest: true/false Is this being called from the tile manifest screen
         #
-        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
+        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil, laying_entity: nil)
           upgrades = super
           return upgrades unless tile_manifest
 

@@ -1355,7 +1355,7 @@ module Engine
         self.class::TILE_LAYS
       end
 
-      def upgrades_to?(from, to, special = false, selected_company: nil)
+      def upgrades_to?(from, to, special = false, selected_company: nil, laying_entity: nil)
         # correct color progression?
         return false unless Engine::Tile::COLORS.index(to.color) == (Engine::Tile::COLORS.index(from.color) + 1)
 
@@ -2382,12 +2382,12 @@ module Engine
         @bank.cash
       end
 
-      def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
+      def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil, laying_entity: nil)
         colors = Array(@phase.phases.last[:tiles])
         @all_tiles
           .select { |t| colors.include?(t.color) }
           .uniq(&:name)
-          .select { |t| upgrades_to?(tile, t, selected_company: selected_company) }
+          .select { |t| upgrades_to?(tile, t, selected_company: selected_company, laying_entity: laying_entity) }
           .reject(&:blocks_lay)
       end
 

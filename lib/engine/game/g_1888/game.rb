@@ -198,7 +198,7 @@ module Engine
           @terracotta ||= company_by_id('TA')
         end
 
-        def upgrades_to?(from, to, special = false, selected_company: nil)
+        def upgrades_to?(from, to, special = false, selected_company: nil, laying_entity: nil)
           if special && selected_company == yanda
             return ((from.hex.id == DALIAN_HEX && to.name == DALIAN_FERRY_TILE) ||
                     (from.hex.id == YANTAI_HEX && to.name == YANTAI_FERRY_TILE))

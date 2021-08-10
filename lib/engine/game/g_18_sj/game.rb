@@ -1263,7 +1263,7 @@ module Engine
           end
         end
 
-        def upgrades_to?(from, to, _special = false, selected_company: nil)
+        def upgrades_to?(from, to, _special = false, selected_company: nil, laying_entity: nil)
           # Handle upgrade to Stockholm gray tile
           return to.name == '131' if from.color == :brown && from.hex.name == 'G10'
           return false if to.name == '131'
@@ -1271,7 +1271,7 @@ module Engine
           super
         end
 
-        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
+        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil, laying_entity: nil)
           upgrades = super
 
           return upgrades unless tile_manifest

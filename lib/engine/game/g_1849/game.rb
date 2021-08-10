@@ -653,7 +653,7 @@ module Engine
           end
         end
 
-        def upgrades_to?(from, to, _special = false, selected_company: nil)
+        def upgrades_to?(from, to, _special = false, selected_company: nil, laying_entity: nil)
           super && (from.hex.id != 'B14' || @messina_upgradeable)
         end
 

@@ -541,7 +541,7 @@ module Engine
           super
         end
 
-        def upgrades_to?(from, to, _special = false, selected_company: nil)
+        def upgrades_to?(from, to, _special = false, selected_company: nil, laying_entity: nil)
           # Augusta (D10) use standard tiles for yellow, and special tile for green
           return to.name == '453a' if from.color == :yellow && from.hex.name == 'D10'
 
@@ -557,7 +557,7 @@ module Engine
           super
         end
 
-        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
+        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil, laying_entity: nil)
           upgrades = super
 
           return upgrades unless tile_manifest

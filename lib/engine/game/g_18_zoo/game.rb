@@ -428,7 +428,7 @@ module Engine
           Array.new(@round.bonus_tracks) { |_| { lay: true } } if @round.bonus_tracks.positive?
         end
 
-        def upgrades_to?(from, to, special = false, selected_company: nil)
+        def upgrades_to?(from, to, special = false, selected_company: nil, laying_entity: nil)
           return false if to.name == 'TI_455' && from.hex.coordinates != game_corporation_coordinates['TI']
           return false if to.name == 'GI_455' && from.hex.coordinates != game_corporation_coordinates['GI']
           return false if to.name == 'BB_455' && from.hex.coordinates != game_corporation_coordinates['BB']
@@ -1325,7 +1325,7 @@ module Engine
           rust_trains!(train_by_id('4J-0'), nil)
         end
 
-        def all_potential_upgrades(tile, tile_manifest: nil, selected_company: nil)
+        def all_potential_upgrades(tile, tile_manifest: nil, selected_company: nil, laying_entity: nil)
           if selected_company == rabbits
             return all_potential_upgrades_for_rabbits(tile, tile_manifest,
                                                       selected_company)

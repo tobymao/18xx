@@ -131,7 +131,7 @@ module Engine
 
         LAYOUT = :pointy
 
-        def upgrades_to?(from, to, _special = false, selected_company: nil)
+        def upgrades_to?(from, to, _special = false, selected_company: nil, laying_entity: nil)
           return GREEN_CITIES.include?(to.name) if YELLOW_TOWNS.include? from.hex.tile.name
           return BROWN_CITIES.include?(to.name) if GREEN_CITIES.include? from.hex.tile.name
           return GRAY_CITIES.include?(to.name) if BROWN_CITIES.include? from.hex.tile.name
@@ -139,7 +139,7 @@ module Engine
           super
         end
 
-        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
+        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil, laying_entity: nil)
           # upgrade for 1,2,3,4,55 in 12,13,14,15
           upgrades = super
           return upgrades unless tile_manifest

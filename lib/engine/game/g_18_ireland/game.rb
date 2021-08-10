@@ -591,7 +591,7 @@ module Engine
           close_corporation(protect)
         end
 
-        def upgrades_to?(from, to, special = false, selected_company: nil)
+        def upgrades_to?(from, to, special = false, selected_company: nil, laying_entity: nil)
           # The Irish Mail
           return true if special && from.color == :blue && to.color == :red
 

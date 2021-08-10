@@ -291,7 +291,7 @@ module Engine
           @erie_canal_private.close!
         end
 
-        def upgrades_to?(from, to, special = false, selected_company: nil)
+        def upgrades_to?(from, to, special = false, selected_company: nil, laying_entity: nil)
           return true if town_to_city_upgrade?(from, to)
 
           super

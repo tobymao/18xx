@@ -1088,7 +1088,7 @@ module Engine
           place_free_token(cce, 'I10', 1, silent: false)
         end
 
-        def upgrades_to?(from, to, _special = false, selected_company: nil)
+        def upgrades_to?(from, to, _special = false, selected_company: nil, laying_entity: nil)
           # Osterath cannot be upgraded
           return false if from.name == '935'
 
@@ -1133,7 +1133,7 @@ module Engine
           raise GameError, "Cannot place a tile in #{from.hex.name} until green phase"
         end
 
-        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
+        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil, laying_entity: nil)
           # Osterath cannot be upgraded
           return [] if tile.name == '935'
 
