@@ -29,7 +29,7 @@ module View
 
       def player_notification
         h('div.margined', [
-          h(:label, "You can send any player a notification (via email/webhooks) by tagging them in game chat: @username"),
+          h(:label, 'Send any player a notification (via email/webhooks) by tagging them in game chat: @username'),
         ])
       end
 
