@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../../../step/tracker'
+require_relative 'tracker'
 require_relative '../../../step/track'
 require_relative '../../../step/upgrade_track_max_exits'
 require_relative '../../../game_error'
@@ -11,23 +11,28 @@ module Engine
       module Step
         class Track < Engine::Step::Track
           include Engine::Step::UpgradeTrackMaxExits
+          include Tracker
 
-          def lay_tile_action(action, entity: nil, spender: nil)
+          def actions(entity)
+            actions = super
+            return actions unless entity.corporation?
+
+            actions << 'choose' if choice_available?(entity)
+            actions << 'pass' if actions.size == 1
+            actions
+          end
+
+          def lay_tile(action, extra_cost: 0, entity: nil, spender: nil)
             tile = action.tile
 
             check_company_town(tile, action.hex) if tile.name.include?('CTown')
 
             super
+
             @game.company_by_id('P16').close! if tile.name.include?('RHQ')
             process_company_town(tile) if tile.name.include?('CTown')
-          end
-
-          def lay_tile(action, extra_cost: 0, entity: nil, spender: nil)
-            super
-            puts action.hex.neighbors, action.tile.exits
             if @game.metro_denver && @game.hex_by_id('E11').tile.color == :white &&
                 action.hex.neighbors.any? { |exit, hex| action.hex.tile.exits.include?(exit) && hex.name == 'E11' }
-              puts 'WOAAAAA', @game.hex_by_id('E11'), action.entity.name
               @round.pending_tracks << { entity: action.entity, hexes: [@game.hex_by_id('E11')] }
             end
             @game.jump_graph.clear
@@ -56,6 +61,10 @@ module Engine
 
           def check_track_restrictions!(entity, old_tile, new_tile)
             old_tile.name.include?('iron') && new_tile.name.include?('iron') ? true : super
+          end
+
+          def available_hex(entity, hex)
+            custom_tracker_available_hex(entity, hex)
           end
 
           def track_upgrade?(from, to, _hex)

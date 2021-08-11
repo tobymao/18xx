@@ -9,7 +9,7 @@ module Engine
       class Game < G1817::Game
         include_meta(G18USA::Meta)
 
-        attr_reader :jump_graph, :subsidies_by_hex
+        attr_reader :jump_graph, :subsidies_by_hex, :recently_floated
 
         CURRENCY_FORMAT_STR = '$%d'
 
@@ -46,8 +46,9 @@ module Engine
         ].freeze
         PLAIN_TRACK_TILES = YELLOW_PLAIN_TRACK_TILES + GREEN_PLAIN_TRACK_TILES + BROWN_PLAIN_TRACK_TILES + GRAY_PLAIN_TRACK_TILES
 
-        PLAIN_GREEN_CITY_TILES = %w[14 15 619].freeze
         PLAIN_YELLOW_CITY_TILES = %w[5 6 57].freeze
+        PLAIN_GREEN_CITY_TILES = %w[14 15 619].freeze
+        PLAIN_BROWN_CITY_TILES = %w[63 611 448].freeze
 
         TILES = {
           '6' => 'unlimited',
@@ -299,13 +300,6 @@ module Engine
             'code' => 'city=revenue:yellow_30|green_40|brown_50,slots:1;'\
                       'path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=C.T.',
           },
-          'RHQ3' =>
-          {
-            'count' => 1,
-            'color' => 'blue',
-            'code' => 'city=slots:3,revenue:50;label=RHQ;'\
-                      'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0',
-          },
           'RHQ4' =>
           {
             'count' => 1,
@@ -410,12 +404,12 @@ module Engine
             'color' => 'brown',
             'code' => 'city=revenue:70,slots:3;path=a:0,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=LA',
           },
-          'X16' => {
+          'NY3' => {
             'count' => 1,
             'color' => 'brown',
             'code' => 'city=revenue:70,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;label=NY',
           },
-          'NY3' => {
+          'X17' => {
             'count' => 'unlimited',
             'color' => 'gray',
             'code' => 'junction;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;',
@@ -704,7 +698,7 @@ module Engine
                 count: 1,
               },
             ],
-            color: nil,
+            color: 'white',
           },
           # P2
           # TODO: Make it work as a combo with P27
@@ -732,7 +726,7 @@ module Engine
                 owner_type: 'corporation',
               },
             ],
-            color: nil,
+            color: 'white',
           },
           # P3
           {
@@ -760,7 +754,7 @@ module Engine
                 count: 1,
               },
             ],
-            color: nil,
+            color: 'white',
           },
           # P4
           {
@@ -788,7 +782,7 @@ module Engine
                 count: 1,
               },
             ],
-            color: nil,
+            color: 'white',
           },
           # P5
           {
@@ -806,7 +800,32 @@ module Engine
                 owner_type: 'corporation',
               },
             ],
-            color: nil,
+            color: 'blue',
+          },
+          # P7
+          {
+            name: 'Track Engineers',
+            value: 40,
+            revenue: 0,
+            desc: 'May lay two extra yellow tiles instead of one when paying $20.',
+            sym: 'P7',
+            abilities: [
+              # Owning the private is the ability
+            ],
+            color: 'cyan',
+          },
+          # P11
+          {
+            name: 'Pettibone & Mulliken',
+            value: 40,
+            revenue: 0,
+            desc: 'May upgrade non-city track one color higher than currently allowed. '\
+                  ' May make an extra non-city track upgrade (instead of yellow tile lay) per OR when paying $20',
+            sym: 'P11',
+            abilities: [
+              # Owning the private is the ability
+            ],
+            color: 'cyan',
           },
           # P12
           {
@@ -834,7 +853,7 @@ module Engine
                 count: 2,
               },
             ],
-            color: nil,
+            color: 'green',
           },
           # P14
           {
@@ -844,7 +863,7 @@ module Engine
             desc: 'Does nothing',
             sym: 'P14',
             abilities: [],
-            color: nil,
+            color: 'green',
           },
           # P16 Regional Headquarters
           {
@@ -856,7 +875,21 @@ module Engine
             abilities: [
               # Simply owning this company is the ability
             ],
-            color: nil,
+            color: 'green',
+          },
+          # P17
+          {
+            name: 'Great Northern Railway',
+            value: 60,
+            revenue: 0,
+            desc: 'One extra yellow lay per turn on the hexes marked with railroad track icons on the map '\
+                  '(near the northern US border), ignoring terrain fees. +$30 revenue bonus per train that runs Fargo - Helena. '\
+                  '+$60 revenue bonus per train that runs Seattle-Fargo-Helena-Chicago',
+            sym: 'P17',
+            abilities: [
+              # Owning the private is the ability
+            ],
+            color: 'green',
           },
           # P18
           {
@@ -883,7 +916,7 @@ module Engine
                 count: 2,
               },
             ],
-            color: nil,
+            color: 'green',
           },
           # P19
           {
@@ -895,7 +928,7 @@ module Engine
             abilities: [
               # Owning the private is the ability
             ],
-            color: nil,
+            color: 'yellow',
           },
           # P21
           # TODO: Make it work as a combo with P27
@@ -936,7 +969,7 @@ module Engine
                 count: 1,
               },
             ],
-            color: nil,
+            color: 'yellow',
           },
           # P22
           {
@@ -963,7 +996,7 @@ module Engine
                 owner_type: 'corporation',
               },
             ],
-            color: nil,
+            color: 'yellow',
           },
           # P23
           {
@@ -979,7 +1012,7 @@ module Engine
                 owner_type: 'corporation',
               },
             ],
-            color: nil,
+            color: 'yellow',
           },
           # P24
           {
@@ -1007,7 +1040,7 @@ module Engine
                 count: 1,
               },
             ],
-            color: nil,
+            color: 'orange',
           },
           # P26
           {
@@ -1034,7 +1067,7 @@ module Engine
                 count: 3,
               },
             ],
-            color: nil,
+            color: 'orange',
           },
           # P27
           {
@@ -1051,7 +1084,7 @@ module Engine
                   'If the station marker in the Company Town hex is ever removed, no token may ever replace it',
             sym: 'P27',
             abilities: [],
-            color: nil,
+            color: 'orange',
           },
           # P28
           {
@@ -1078,7 +1111,7 @@ module Engine
                 count: 3,
               },
             ],
-            color: nil,
+            color: 'orange',
           },
           # P29
           {
@@ -1091,7 +1124,7 @@ module Engine
             abilities: [
               # Owning the private is the ability
             ],
-            color: nil,
+            color: 'red',
           },
           # P30
           {
@@ -1103,7 +1136,7 @@ module Engine
             abilities: [
               # Owning the private is the ability
             ],
-            color: nil,
+            color: 'red',
           },
         ].freeze
 
@@ -1543,8 +1576,16 @@ module Engine
           @green_plain_tiles ||= @all_tiles.select { |t| GREEN_PLAIN_TRACK_TILES.include?(t.name) }
           @brown_plain_tiles ||= @all_tiles.select { |t| BROWN_PLAIN_TRACK_TILES.include?(t.name) }
           @gray_plain_tiles ||= @all_tiles.select { |t| GRAY_PLAIN_TRACK_TILES.include?(t.name) }
-          @plain_green_city_tiles ||= @all_tiles.select { |t| PLAIN_GREEN_CITY_TILES.include?(t.name) }
           @plain_yellow_city_tiles ||= @all_tiles.select { |t| PLAIN_YELLOW_CITY_TILES.include?(t.name) }
+          @plain_green_city_tiles ||= @all_tiles.select { |t| PLAIN_GREEN_CITY_TILES.include?(t.name) }
+          @plain_brown_city_tiles ||= @all_tiles.select { |t| PLAIN_BROWN_CITY_TILES.include?(t.name) }
+
+          @brown_ny_tile ||= @all_tiles.find { |t| t.name == 'NY3' }
+          @brown_dfw_tile ||= @all_tiles.find { |t| t.name == 'DFW3' }
+          @brown_la_tile ||= @all_tiles.find { |t| t.name == 'LA3' }
+          @brown_d_tile ||= @all_tiles.find { |t| t.name == 'D3' }
+          @brown_cl_tile ||= @all_tiles.find { |t| t.name == 'CL' }
+          @brown_b_tile ||= @all_tiles.find { |t| t.name == '593' }
 
           @jump_graph = Graph.new(self, no_blocking: true)
 
@@ -1601,12 +1642,21 @@ module Engine
           end
         end
 
+        def home_hex_for(corporation)
+          corporation.tokens.first.hex
+        end
+
+        #
+        # Aggressively allows upgrading to brown tiles; the rules depend on who is laying and the current phase
+        # so the track step will need to clamp down on this
         #
         # Get the currently possible upgrades for a tile
         # from: Tile - Tile to upgrade from
         # to: Tile - Tile to upgrade to
         # special - ???
         def upgrades_to?(from, to, _special = false, selected_company: nil)
+          laying_entity = @round.current_entity
+          home_hex = home_hex_for(laying_entity)
           # TODO: Check if it's near a metropolis
           return true if @company_town_tiles.map(&:name).include?(to.name) && from.color == :white && !from.label
           return @phase.tiles.include?(:brown) if @rhq_tiles.map(&:name).include?(to.name) &&
@@ -1636,6 +1686,48 @@ module Engine
           return !@phase.tiles.include?(:brown) if PLAIN_YELLOW_CITY_TILES.include?(to.name) &&
               from.color == :white && from.cities.size.positive? && !from.label
 
+          # Cleveland hex gets special brown upgrade
+          return @phase.tiles.include?(:brown) && from.hex.id == 'D24' if to.name == 'CL' &&
+              from.name == '15' && from.hex.id == home_hex.id
+          return @phase.tiles.include?(:brown) && from.hex.id != 'D24' if to.name == '448' &&
+              from.name == '15' && from.hex.id == home_hex.id
+
+          # Brown phase brown tile skips
+          # metro yellow to brown
+
+          # NY is preprinted
+          return @phase.tiles.include?(:brown) if to.name == 'NY3' && from.color == :yelow &&
+              from.hex.id == 'D28' && from.hex.id == home_hex.id && @round&.tile_lay_mode == :brown_home
+
+          return @phase.tiles.include?(:brown) if to.name == '593' && from.name == 'ATL1' && from.hex.id == home_hex.id &&
+              @round&.tile_lay_mode == :brown_home
+          return @phase.tiles.include?(:brown) if to.name == '593' && from.name == 'CHI1' && from.hex.id == home_hex.id &&
+          @round&.tile_lay_mode == :brown_home
+          return @phase.tiles.include?(:brown) if to.name == '593' && from.name == 'NO1' && from.hex.id == home_hex.id &&
+          @round&.tile_lay_mode == :brown_home
+          return @phase.tiles.include?(:brown) if to.name == 'D3' && from.name == 'D1' && from.hex.id == home_hex.id &&
+          @round&.tile_lay_mode == :brown_home
+          return @phase.tiles.include?(:brown) if to.name == 'DFW3' && from.name == 'DFW1' && from.hex.id == home_hex.id &&
+          @round&.tile_lay_mode == :brown_home
+          return @phase.tiles.include?(:brown) if to.name == 'LA3' && from.name == 'LA1' && from.hex.id == home_hex.id &&
+          @round&.tile_lay_mode == :brown_home
+
+          # plain yellow to brown
+          return @phase.tiles.include?(:brown) if PLAIN_BROWN_CITY_TILES.any? { |name| name == to.name } &&
+              PLAIN_YELLOW_CITY_TILES.any? { |name| name == from.name } && from.hex.id != 'D24' && from.hex.id == home_hex.id &&
+              @round&.tile_lay_mode == :brown_home
+
+          # Plain unlaid city to brown
+          return @phase.tiles.include?(:brown) if PLAIN_BROWN_CITY_TILES.any? { |name| name == to.name } &&
+              from.color == :white && from.cities.size.positive? && !from.label &&
+              from.hex.id != 'D24' && from.hex.id == home_hex.id && @round&.tile_lay_mode == :brown_home
+
+          # Cleveland straight to brown
+          return @phase.tiles.include?(:brown) if to.name == 'CL' && from.color == :white &&
+              from.hex.id == 'D24' && from.hex.id == home_hex.id && @round&.tile_lay_mode == :brown_home
+          return @phase.tiles.include?(:brown) if to.name == 'CL' && from.color == :yellow &&
+              from.hex.id == 'D24' && from.hex.id == home_hex.id && @round&.tile_lay_mode == :brown_home
+
           super
         end
 
@@ -1647,8 +1739,11 @@ module Engine
           upgrades = super
           return upgrades unless tile_manifest
 
-          upgrades |= @rhq_tiles if @phase.tiles.include?(:brown) && %w[14 15 619 63 611 448].include?(tile.name)
+          upgrades << @brown_cl_tile if tile.name == '15' # only K green city that fits clevelands hex
+          upgrades |= @rhq_tiles if %w[14 15 619 63 611 448].include?(tile.name)
           upgrades |= @company_town_tiles if tile.color == :white && !tile.label
+
+          # Don't include the tile skips; those follow normal tile lay rules, they upgrade multiple times in a row
           upgrades
         end
 
@@ -1872,7 +1967,13 @@ module Engine
             end
         end
 
+        GNR_FULL_BONUS = 60
+        GNR_FULL_BONUS_HEXES = %w[B2 B8 B14 D20].freeze
+        GNR_HALF_BONUS = 30
+        GNR_HALF_BONUS_HEXES = %w[B8 B14].freeze
+
         def revenue_for(route, stops)
+          stop_hexes = stops.map { |stop| stop.hex.id }
           revenue = super
 
           corporation = route.train.owner
@@ -1897,6 +1998,12 @@ module Engine
                                                                     icon.name == 'plus_ten_twenty'
                                                                   end
                                                                 end
+
+          if GNR_FULL_BONUS_HEXES.difference(stop_hexes).empty?
+            revenue += GNR_FULL_BONUS
+          elsif GNR_HALF_BONUS_HEXES.difference(stop_hexes).empty?
+            revenue += GNR_HALF_BONUS
+          end
 
           if @round.train_upgrade_assignments[route.train]&.any? { |upgrade| upgrade['id'] == '/' }
             stop_skipped = skipped_stop(route, stops)
