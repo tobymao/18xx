@@ -52,7 +52,7 @@ module Engine
           def actions(entity)
             return [] if finished?
 
-            unless @companies.any? { |c| !c.closed? && c.owner == @bank && c.revenue <= 20 }
+            unless available.any?
               @log << "#{current_entity.name} has no valid actions and passes"
               return []
             end

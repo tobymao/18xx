@@ -150,6 +150,10 @@ module Engine
           upgrades
         end
 
+        def buyable_bank_owned_companies
+          @companies.select { |c| c.owner == @bank && c.revenue > 20 }
+        end
+
         def setup
           STOCK_PRICES.each do |corporation, price|
             corporation = corporation_by_id(corporation)
@@ -158,11 +162,6 @@ module Engine
             end)
             corporation.ipoed = true
           end
-          @corporations.concat(companies.select { |c| !c.closed? && c.owner == @bank && c.revenue > 20 })
-        end
-
-        def buyable_bank_owned_companies
-          @companies.select { |c| c.owner == @bank && c.revenue > 20 }
         end
 
         def init_round

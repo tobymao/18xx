@@ -25,7 +25,7 @@ module Engine
           end
 
           def buyable_bank_owned_companies
-            @companies.select { |c| c.owner == @bank && c.revenue > 20 }
+            @companies.select { |c| !c.closed? && c.owner == @bank && c.revenue > 20 }
           end
         end
       end
