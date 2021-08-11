@@ -23,12 +23,12 @@ module Engine
         TREASURY_SHARE_LIMIT = 50
 
         TOKEN_FEE = {
-          'T&P' => 120,
-          'SP' => 120,
+          'T&P' => 140,
+          'SP' => 140,
           'MP' => 100,
-          'MKT' => 80,
-          'SSW' => 80,
-          'SAA' => 80,
+          'MKT' => 100,
+          'SSW' => 60,
+          'SAA' => 60,
         }.freeze
 
         # rubocop:disable Layout/LineLength
@@ -364,6 +364,7 @@ module Engine
             I6
             I8
             I10
+            I12
             I16
             I18
             J7
@@ -440,7 +441,6 @@ module Engine
             ['D9'] => 'city=revenue:30;city=revenue:30;label=Y;path=a:1,b:_0;path=a:_0,b:_1;path=a:_1,b:3',
 
             ['I14'] => 'city=revenue:30;label=Y;path=a:1,b:_0;path=a:5,b:_0',
-            %w[I12] => 'path=a:1,b:4',
           },
         }.freeze
 
