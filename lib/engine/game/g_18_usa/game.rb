@@ -1532,6 +1532,10 @@ module Engine
           @metro_new_orleans ||= false
         end
 
+        def metro_denver
+          @metro_denver ||= false
+        end
+
         def setup
           @rhq_tiles ||= @all_tiles.select { |t| t.name.include?('RHQ') }
           @company_town_tiles ||= @all_tiles.select { |t| t.name.include?('CTown') }
@@ -1570,6 +1574,7 @@ module Engine
             when 'E11'
               # Denver needs to be done at a later date
               hex.lay(@tiles.find { |t| t.name == 'D0' })
+              @metro_denver = true
             when 'G3'
               hex.lay(@tiles.find { |t| t.name == 'LA1' }.rotate!(3))
             when 'D20'
@@ -1603,7 +1608,6 @@ module Engine
         # special - ???
         def upgrades_to?(from, to, _special = false, selected_company: nil)
           # TODO: Check if it's near a metropolis
-          puts from, from.label
           return true if @company_town_tiles.map(&:name).include?(to.name) && from.color == :white && !from.label
           return @phase.tiles.include?(:brown) if @rhq_tiles.map(&:name).include?(to.name) &&
               %w[14 15 619 63 611 448].include?(from.name)
@@ -1791,6 +1795,7 @@ module Engine
 
           G18USA::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
+            G18USA::Step::DenverTrack,
             G18USA::Step::HomeToken,
             G18USA::Step::BuySellParShares,
           ])
@@ -1815,6 +1820,7 @@ module Engine
             G18USA::Step::SpecialTrack,
             G18USA::Step::Assign,
             G18USA::Step::Track,
+            G18USA::Step::DenverTrack,
             G18USA::Step::Token,
             G18USA::Step::Route,
             G18USA::Step::Dividend,
@@ -1972,6 +1978,12 @@ module Engine
 
         def pullman_train?(train)
           train.name == 'P'
+        end
+
+        def float_corporation(corporation)
+          @recently_floated << corporation
+
+          super
         end
 
         SUPER_CHARGE_COST_TABLE = {

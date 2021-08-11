@@ -24,6 +24,12 @@ module Engine
 
           def lay_tile(action, extra_cost: 0, entity: nil, spender: nil)
             super
+            puts action.hex.neighbors, action.tile.exits
+            if @game.metro_denver && @game.hex_by_id('E11').tile.color == :white &&
+                action.hex.neighbors.any? { |exit, hex| action.hex.tile.exits.include?(exit) && hex.name == 'E11' }
+              puts 'WOAAAAA', @game.hex_by_id('E11'), action.entity.name
+              @round.pending_tracks << { entity: action.entity, hexes: [@game.hex_by_id('E11')] }
+            end
             @game.jump_graph.clear
           end
 

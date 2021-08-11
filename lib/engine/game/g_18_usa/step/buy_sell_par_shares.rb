@@ -169,6 +169,13 @@ module Engine
 
             try_buy_tokens(corporation)
 
+            if corporation.tokens.first.hex.id == 'E11' && @game.metro_denver
+              @round.pending_tracks << {
+                entity: corporation,
+                hexes: [corporation.tokens.first.hex],
+              }
+            end
+
             @auctioning = nil
             @winning_bid = nil
             pass!
