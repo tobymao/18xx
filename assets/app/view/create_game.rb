@@ -285,7 +285,13 @@ module View
 
     def submit
       game_params = params
-      return create_game(params) if @mode == :multi
+      if @mode == :multi
+        begin
+          return create_game(params)
+        rescue Engine::OptionError => e
+          return store(:flash_opts, e.message)
+        end
+      end
 
       players = game_params
         .select { |k, _| k.start_with?('player_') }
