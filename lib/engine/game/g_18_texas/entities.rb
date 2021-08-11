@@ -59,7 +59,7 @@ module Engine
            name: 'Texas and Pacific Railway',
            logo: '18_texas/TP',
            tokens: [0, 0, 0, 0, 0],
-           city: 0,
+           city: 1,
            coordinates: 'D9',
            color: 'darkmagenta',
            text_color: 'white',
