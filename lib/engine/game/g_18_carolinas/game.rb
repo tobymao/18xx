@@ -13,7 +13,8 @@ module Engine
         include Entities
         include Map
 
-        attr_reader :corporation_power, :north_hexes, :power_progress, :south_hexes, :tile_groups
+        attr_reader :corporation_power, :final_gauge, :north_hexes, :power_progress, :south_hexes,
+                    :tile_groups
 
         register_colors(green: '#237333',
                         red: '#d81e3e',
@@ -175,7 +176,7 @@ module Engine
           {
             name: '3',
             train_limit: 2,
-            tiles: %w[yellow green],
+            tiles: %w[yellow],
             operating_rounds: 2,
           },
           {
@@ -187,8 +188,9 @@ module Engine
           {
             name: '5',
             train_limit: 3,
-            tiles: %w[yellow green brown],
+            tiles: %w[yellow green],
             operating_rounds: 3,
+            status: ['track_conversion'],
           },
           {
             name: '6',
@@ -199,7 +201,7 @@ module Engine
           {
             name: '7',
             train_limit: 5,
-            tiles: %w[yellow green brown gray],
+            tiles: %w[yellow green brown],
             operating_rounds: 3,
           },
           {
@@ -228,6 +230,11 @@ module Engine
           2 => 3,
           3 => 3,
           4 => 2,
+        }.freeze
+
+        STATUS_TEXT = {
+          'track_conversion' =>
+          ['Track Conversion', 'Track will be standardized to either Northern or Southern gauge'],
         }.freeze
 
         NORTH_CORPORATIONS = %w[NCR SEA WNC WW].freeze
@@ -330,20 +337,20 @@ module Engine
             %w[87 87s],
             %w[88 88s],
             %w[C5 C6],
-            %w[38],
-            %w[39],
-            %w[40],
-            %w[41],
-            %w[42],
-            %w[43],
-            %w[44],
-            %w[45],
-            %w[46],
-            %w[47],
-            %w[70],
-            %w[C7],
-            %w[C8],
-            %w[C9],
+            %w[38 38s],
+            %w[39 39s],
+            %w[40 40s],
+            %w[41 41s],
+            %w[42 42s],
+            %w[43 43s],
+            %w[44 44s],
+            %w[45 45s],
+            %w[46 46s],
+            %w[47 47s],
+            %w[70 70s],
+            %w[C7 C7s],
+            %w[C8 C8s],
+            %w[C9 C9s],
           ]
         end
 
@@ -438,6 +445,8 @@ module Engine
           @all_tiles.each { |t| t.ignore_gauge_walk = true }
           @_tiles.values.each { |t| t.ignore_gauge_walk = true }
           @graph.clear_graph_for_all
+
+          @final_gauge = nil
         end
 
         def trains
@@ -506,14 +515,17 @@ module Engine
           north = @north_hexes.include?(from.hex)
           south = @south_hexes.include?(from.hex)
 
-          # Can only ever lay northern track in the North before phase 5
-          return false if north && !south && to_southern && !@phase.available?('5')
+          # Can only ever lay northern track in the North before vote
+          return false if north && !south && to_southern && !@final_gauge
 
-          # Can only ever lay southern track in the South before phase 5
-          return false if !north && south && to_standard && !@phase.available?('5')
+          # Can only ever lay southern track in the South before vote
+          return false if !north && south && to_standard && !@final_gauge
 
-          # Can never updgrade pure standard track to southern track
-          return false if from_standard && !from_southern && to_southern
+          # Can never updgrade pure standard track to southern track if final track is standard
+          return false if from_standard && !from_southern && to_southern && @final_gauge == :broad
+
+          # Can never updgrade pure southern track to standard track if final track is southern
+          return false if from_southern && !from_standard && to_standard && @final_gauge == :narrow
 
           # handle C tiles specially
           return false if from.label.to_s == 'C' && to.color == :yellow && from.cities.size != to.cities.size
@@ -611,6 +623,31 @@ module Engine
 
           return unless @phase.name == '5'
 
+          # count track types and see whether there are more pure standard
+          # or southern track tiles
+          standard_count = 0
+          southern_count = 0
+          @hexes.each do |hex|
+            broad = hex.tile.paths.any? { |path| path.track == :broad }
+            narrow = hex.tile.paths.any? { |path| path.track == :narrow }
+            standard_count += 1 if broad && !narrow
+            southern_count += 1 if !broad && narrow
+          end
+          @final_gauge = if standard_count > southern_count
+                           :broad
+                         elsif standard_count < southern_count
+                           :narrow
+                         else
+                           # tie breaker: Northern or Southern company
+                           SOUTH_CORPORATIONS.include?(current_entity.name) ? :narrow : :broad
+                         end
+
+          @log << if @final_gauge == :broad
+                    'More Standard track than Southern. Can now only upgrade to Standard track'
+                  else
+                    'More Southern track than Standard. Can now only upgrade to Southern track'
+                  end
+
           @all_tiles.each { |t| t.ignore_gauge_compare = true }
           @_tiles.values.each { |t| t.ignore_gauge_compare = true }
           upgrade_c_hexes
@@ -630,8 +667,13 @@ module Engine
             upgrade_tile(wilmington, temp_tile, 2, logging: false)
           end
 
-          C7_HEXES.each { |hexid| upgrade_tile(hex_by_id(hexid), @tiles.find { |t| t.name == 'C7' }, 0) }
-          C8_HEXES.each { |hexid| upgrade_tile(hex_by_id(hexid), @tiles.find { |t| t.name == 'C8' }, C8_ROTATION) }
+          if @final_gauge == :broad
+            C7_HEXES.each { |hexid| upgrade_tile(hex_by_id(hexid), @tiles.find { |t| t.name == 'C7' }, 0) }
+            C8_HEXES.each { |hexid| upgrade_tile(hex_by_id(hexid), @tiles.find { |t| t.name == 'C8' }, C8_ROTATION) }
+          else
+            C7_HEXES.each { |hexid| upgrade_tile(hex_by_id(hexid), @tiles.find { |t| t.name == 'C7s' }, 0) }
+            C8_HEXES.each { |hexid| upgrade_tile(hex_by_id(hexid), @tiles.find { |t| t.name == 'C8s' }, C8_ROTATION) }
+          end
         end
 
         # no checking
@@ -811,8 +853,10 @@ module Engine
         end
 
         def check_other(route)
-          if route.train.name == 'Convert'
+          if route.train.name == 'Convert' && @final_gauge == :broad
             raise GameError, 'Route must have Southern track' unless route.paths.any? { |p| p.track != :broad }
+          elsif route.train.name == 'Convert' && @final_gauge == :narrow
+            raise GameError, 'Route must have Standard track' unless route.paths.any? { |p| p.track == :broad }
           else
             raise GameError, 'Train below minimum size' if route.train.distance < min_train
             raise GameError, 'Train w/o owner' unless route.train.owner

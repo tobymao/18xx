@@ -19,7 +19,7 @@ module Engine
           end
 
           def conversion_available?
-            @game.phase.available?('5') && @round.num_laid_track.zero?
+            @game.final_gauge && @round.num_laid_track.zero?
           end
 
           def round_state
