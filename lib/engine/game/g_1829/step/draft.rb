@@ -16,7 +16,7 @@ module Engine
           end
 
           def available
-            @companies.select { |c| !c.closed? && c.owner == @bank && c.revenue <= 20 }
+            @companies.select { |c| !c.closed? && c.owner == @bank }
           end
 
           def may_purchase?(_company)
@@ -52,7 +52,7 @@ module Engine
           def actions(entity)
             return [] if finished?
 
-            unless available.any?
+            unless available.any? { |c| c.revenue <= 20 }
               @log << "#{current_entity.name} has no valid actions and passes"
               return []
             end

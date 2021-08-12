@@ -31,6 +31,8 @@ module Engine
         MUST_BUY_TRAIN = :never
         POOL_SHARE_DROP = :none
         SOLD_OUT_INCREASE = false
+        TRAIN_PRICE_MIN = 10
+        TRAIN_PRICE_MULTIPLE = 10
         BROWN_CITIES = %w[48].freeze
         GRAY_CITIES = %w[51].freeze
         GREEN_CITIES = %w[12 13 14 15].freeze
@@ -49,7 +51,18 @@ module Engine
           'LYR' => 58,
           'SECR' => 56,
         }.freeze
-
+        LAYER_BY_NAME = {
+          'LNWR' => 1,
+          'GWR' => 2,
+          'Mid' => 3,
+          'LSWR' => 4,
+          'GNR' => 5,
+          'LBSC' => 6,
+          'GER' => 7,
+          'GCR' => 8,
+          'LYR' => 9,
+          'SECR' => 10,
+        }.freeze
         CERT_LIMIT = { 3 => 18, 4 => 18, 5 => 17, 6 => 14, 7 => 12, 8 => 10, 9 => 9 }.freeze
 
         STARTING_CASH = { 3 => 840, 4 => 630, 5 => 504, 6 => 420, 7 => 360, 8 => 315, 9 => 280 }.freeze
@@ -150,10 +163,6 @@ module Engine
           upgrades
         end
 
-        def buyable_bank_owned_companies
-          @companies.select { |c| c.owner == @bank && c.revenue > 20 }
-        end
-
         def setup
           STOCK_PRICES.each do |corporation, price|
             corporation = corporation_by_id(corporation)
@@ -162,6 +171,7 @@ module Engine
             end)
             corporation.ipoed = true
           end
+          @highest_layer = 1
         end
 
         def init_round
@@ -170,9 +180,36 @@ module Engine
                                   snake_order: false)
         end
 
+        def corp_layer(corp)
+          LAYER_BY_NAME[corp.name]
+        end
+
+        def status_array(corp)
+          layer_str = "Layer #{corp_layer(corp)}"
+          layer_str += ' (N/A)' unless corp_layer(corp) <= @highest_layer
+          status = [[layer_str]]
+          status << %w[Receivership bold] if corp.receivership?
+
+          status
+        end
+
+        def check_new_layer
+          layer = current_layer
+          @log << "-- Layer #{layer} corporations now available --" if layer > @highest_layer
+          @highest_layer = layer
+        end
+
+        def current_layer
+          layers = LAYER_BY_NAME.select do |name, _layer|
+            corp = @corporations.find { |c| c.name == name }
+            corp.num_ipo_shares.zero?
+          end.values
+          layers.empty? ? 1 : [layers.max + 1, 10].min
+        end
+
         def stock_round
           Engine::Round::Stock.new(self, [
-            Engine::Step::BuySellParShares,
+             G1829::Step::BuySellParSharesCompanies,
           ])
         end
 
@@ -187,7 +224,7 @@ module Engine
             Engine::Step::Dividend,
             Engine::Step::DiscardTrain,
             Engine::Step::BuyTrain,
-            [Engine::Step::BuyCompany, { blocks: false }],
+            [Engine::Step::BuySellParSharesCompanies, { blocks: false }],
           ], round_num: round_num)
         end
       end
