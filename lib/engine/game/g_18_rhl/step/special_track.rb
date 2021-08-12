@@ -21,6 +21,18 @@ module Engine
             super
           end
 
+          def legal_tile_rotations(entity, hex, tile)
+            return [1] if lay_of_osterath_tile?(entity, hex, tile)
+
+            super
+          end
+
+          def legal_tile_rotation?(entity, hex, tile)
+            return true if lay_of_osterath_tile?(entity, hex, tile)
+
+            super
+          end
+
           def process_lay_tile(action)
             ability = abilities(action.entity)
             super
@@ -33,6 +45,9 @@ module Engine
             # as the ability does not belong to current entity, but to
             # player owned ability.
             @round.teleport_ability = ability
+
+            # Set location name to Osterath to make the name appear when tokening city in tile
+            @game.osterath_tile.hex.location_name = 'Osterath' if action.tile == @game.osterath_tile
           end
 
           # Private 3 (Sailzuganlage) has all possible tiles, that can be played in all
@@ -42,10 +57,17 @@ module Engine
             return [] unless (tile_ability = abilities(entity))
 
             candidates = super
+            candidates << @game.osterath_tile if hex.name == 'E8' && entity == @game.konzession_essen_osterath
             return candidates if candidates.empty? || tile_ability.owner != @game.seilzuganlage
 
             potentials = @game.all_potential_upgrades(hex.tile).map(&:name)
             candidates.select { |t| @game.upgrades_to?(hex.tile, t) && potentials.include?(t.name) }
+          end
+
+          private
+
+          def lay_of_osterath_tile?(entity, hex, tile)
+            hex.name == 'E8' && entity == @game.konzession_essen_osterath && tile == @game.osterath_tile
           end
         end
       end
