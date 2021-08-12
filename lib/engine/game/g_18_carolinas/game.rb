@@ -177,7 +177,7 @@ module Engine
             name: '3',
             train_limit: 2,
             tiles: %w[yellow],
-            operating_rounds: 2,
+            operating_rounds: 1,
           },
           {
             name: '4',
@@ -189,14 +189,14 @@ module Engine
             name: '5',
             train_limit: 3,
             tiles: %w[yellow green],
-            operating_rounds: 3,
-            status: ['track_conversion'],
+            operating_rounds: 2,
           },
           {
             name: '6',
             train_limit: 4,
             tiles: %w[yellow green brown],
             operating_rounds: 3,
+            status: ['track_conversion'],
           },
           {
             name: '7',
@@ -217,6 +217,8 @@ module Engine
             operating_rounds: 3,
           },
         ].freeze
+
+        CONVERT_PHASE = '6'
 
         PAR_BY_LAYER = {
           1 => 90,
@@ -621,8 +623,10 @@ module Engine
             @log << "#{corp.name} loses #{loss} power (to #{@corporation_power[corp]})" if loss.positive?
           end
 
-          return unless @phase.name == '5'
+          vote_and_convert if @phase.name == CONVERT_PHASE
+        end
 
+        def vote_and_convert
           # count track types and see whether there are more pure standard
           # or southern track tiles
           standard_count = 0
