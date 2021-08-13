@@ -566,7 +566,7 @@ module Engine
             ] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_80;path=a:5,b:_0,track:dual',
             %w[
             A23
-            ] => 'offboard=revenue:yellow_40|green_50|brown_60|gray_80;path=a:0,b:_0',
+            ] => 'offboard=revenue:yellow_40|green_50|brown_60|gray_80;path=a:0,b:_0,track:dual',
             %w[
             G1
             ] => 'offboard=revenue:yellow_40|green_60|brown_80|gray_100;path=a:4,b:_0,track:dual',
