@@ -10,6 +10,8 @@ module Engine
       class Game < Game::Base
         include_meta(G18Rhl::Meta)
 
+        attr_reader :osterath_tile
+
         CURRENCY_FORMAT_STR = '%dM'
 
         BANK_CASH = 9000
@@ -42,6 +44,7 @@ module Engine
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'remove_tile_block' => ['Remove tile block', 'Hex E12 can now be upgraded to yellow'],
+          'keo_ability_removed' => ['KEO ability removed', 'Hex E8 can no longer be upgraded to special tile #935']
         ).freeze
 
         TILES = {
@@ -469,6 +472,7 @@ module Engine
                        { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             num: 3,
             price: 500,
+            events: [{ 'type' => 'keo_ability_removed' }],
           },
           {
             name: '6',
@@ -659,14 +663,14 @@ module Engine
             value: 30,
             revenue: 0,
             desc: 'With the beginning of the green phase the special function can be used. As director of a '\
-                  'corporation the owner may lay the orange tile # 935 on hex E8 regardless whether there is a tile '\
+                  'corporation the owner may lay the orange tile #935 on hex E8 regardless whether there is a tile '\
                   'on that hex or not. Directly after the tile placement the operating corporation may place a '\
                   'station token for free on that hex (the director must use the station token with the lowest '\
                   'cost). If the corporation places this station token it is the only station token the corporation '\
                   'may place in that Operating Round. When the corporation does not place the station token, any '\
                   'other corporation may place a station marker on hex E8 according to the normal rules. If the '\
                   'corporation places the station token in hex E8 during a later Operating Round it has to pay for '\
-                  'the station token. After the purchase of the first 5-train the tile # 935 may no longer be laid. '\
+                  'the station token. After the purchase of the first 5-train the tile #935 may no longer be laid. '\
                   'After the placement of the station marker the corporation may not place a tile even when it has '\
                   'not used its normal tile lay (placing a station token is always the step after the tile lay!).',
             abilities: [
@@ -768,7 +772,7 @@ module Engine
 
         NIMWEGEN_ARNHEIM_OFFBOARD_HEXES = %(A4 A6).freeze
 
-        OSTEROTH_POTENTIAL_TILE_UPGRADES_FROM = %w[1 2 55 56 69].freeze
+        OSTERATH_POTENTIAL_TILE_UPGRADES_FROM = %w[1 2 55 56 69].freeze
 
         OUT_TOKENED_HEXES = %w[A14 B15 C2].freeze
 
@@ -971,7 +975,7 @@ module Engine
           @d_k_tile ||= @tiles.find { |t| t.name == '932V' } if optional_promotion_tiles
           @d_du_k_tile ||= @tiles.find { |t| t.name == '932' } unless optional_promotion_tiles
           @du_tile_gray ||= @tiles.find { |t| t.name == '949' } if optional_promotion_tiles
-          @osteroth_tile ||= @tiles.find { |t| t.name == '935' }
+          @osterath_tile ||= @tiles.find { |t| t.name == '935' }
 
           @variable_placement = (rand % 9) + 1
 
@@ -1090,11 +1094,14 @@ module Engine
         end
 
         def upgrades_to?(from, to, _special = false, selected_company: nil)
-          # Osterath cannot be upgraded
-          return false if from.name == '935'
+          # Osterath cannot be upgraded at all, and cannot be upgraded to in phase 5 or later
+          return false if from.name == @osterath_tile&.name ||
+                          (to.name == @osterath_tile&.name && @phase.name.to_i >= 5)
 
-          # Private No. 2 allows tile 935 to be put on E8 regardless
-          return true if from.hex.name == 'E8' && to.name == '935' && selected_company == konzession_essen_osterath
+          # Private No. 2 allows Osterath tile to be put on E8 regardless
+          return true if from.hex.name == 'E8' &&
+                         to.name == @osterath_tile&.name &&
+                         selected_company == konzession_essen_osterath
 
           # Handle Moers upgrades
           return to.name == '947' if from.color == :green && from.hex.name == 'D7'
@@ -1136,14 +1143,14 @@ module Engine
 
         def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
           # Osterath cannot be upgraded
-          return [] if tile.name == '935'
+          return [] if tile.name == @osteroth_tile&.name
 
           upgrades = super
 
           return upgrades unless tile_manifest
 
-          # Handle potential upgrades to Osteroth tile
-          upgrades |= [@osteroth_tile] if OSTEROTH_POTENTIAL_TILE_UPGRADES_FROM.include?(tile.name)
+          # Handle potential upgrades to Osterath tile
+          upgrades |= [@osterath_tile] if OSTERATH_POTENTIAL_TILE_UPGRADES_FROM.include?(tile.name)
 
           # Tile manifest for 947 should show Moers tile if Moers tile used
           upgrades |= [@moers_tile_gray] if @moers_tile_gray && tile.name == '947'
@@ -1175,6 +1182,17 @@ module Engine
         def event_remove_tile_block!
           @log << "Hex #{RATINGEN_HEX} is now possible to upgrade to yellow"
           yellow_block_hex.tile.icons.reject! { |i| i.name == 'green_hex' }
+        end
+
+        def event_keo_ability_removed!
+          comp = @konzession_essen_osterath
+          return if comp.all_abilities.empty?
+
+          comp.desc = 'Osterath special upgrade cannot be used in phase 5. No extra effect until closed in phase 6.'
+          comp.all_abilities.dup.each do |a|
+            comp.remove_ability(a)
+          end
+          @log << "#{@konzession_essen_osterath.name} can no longer upgrade hex E8 to tile #935"
         end
 
         def check_distance(route, visits)
