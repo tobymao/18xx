@@ -31,13 +31,7 @@ module Engine
                         blue: '#0189d1',
                         brown: '#7b352a')
 
-        CURRENCY_FORMAT_STR = '£%d'
-
-        CAPITALIZATION = :full
-
-        MUST_SELL_IN_BLOCKS = false
-
-        MARKET = [
+        SMALL_MARKET = [
           %w[0c
              5y
              10y
@@ -49,11 +43,11 @@ module Engine
              55
              61
              67p
-             71
+             71p
              76p
-             82
-             90
-             100
+             82p
+             90p
+             100p
              112
              126
              142
@@ -68,75 +62,180 @@ module Engine
              340e],
         ].freeze
 
-        PHASES = [
+        LARGE_MARKET = [
+          %w[0c
+             5y
+             10y
+             16y
+             24y
+             34y
+             42y
+             49y
+             55
+             61
+             67p
+             71p
+             76p
+             82p
+             90p
+             100p
+             112
+             126
+             142
+             160
+             180
+             205
+             230
+             255
+             280
+             300
+             320
+             340
+             360
+             380
+             400
+             420
+             440
+             460
+             480
+             500e],
+        ].freeze
+
+        def game_market
+          @units[2] ? LARGE_MARKET : SMALL_MARKET
+        end
+
+        COMMON_PHASES = [
           {
             name: '1',
             on: '2',
-            train_limit: { minor: 4, major: 4 },
+            train_limit: 4,
             tiles: [:yellow],
             operating_rounds: 1,
           },
           {
             name: '2',
             on: '3',
-            train_limit: { minor: 4, major: 4 },
+            train_limit: 4,
             tiles: %i[yellow green],
             operating_rounds: 2,
           },
           {
             name: '3',
             on: '5',
-            train_limit: { minor: 3, major: 3 },
+            train_limit: 3,
             tiles: %i[yellow green brown],
             operating_rounds: 3,
           },
         ].freeze
 
-        # Unit 3 train set.
-        TRAINS = [{ name: '2', distance: 2, price: 180, rusts_on: '5', num: 5 },
-                  { name: '3', distance: 3, price: 300, num: 3 },
-                  { name: '4', distance: 4, price: 430, num: 1 },
-                  { name: '5', distance: 5, price: 550, num: 2 },
-                  {
-                    name: '3T',
-                    distance: 3,
-                    price: 370,
-                    num: 2,
-                    available_on: '3',
-                  },
-                  {
-                    name: 'U3',
-                    distance: 3,
-                    price: 410,
-                    num: 2,
-                    available_on: '3',
-                  },
-                  { name: '7', distance: 7, price: 720, num: 2 }].freeze
+        UNIT2_PHASES = [
+          {
+            name: '4a',
+            on: '6',
+            train_limit: 99,
+            tiles: %i[yellow green brown gray],
+            operating_rounds: 3,
+          },
+        ].freeze
 
-        MINOR_INFO = {
-          'GNoS' => { min_par: 55, train: '5' },
-          'HR' => { min_par: 42, train: 'U3' },
-          'M&C' => { min_par: 42, train: '3T' },
-          'CAM' => { min_par: 42, train: 'U3' },
-          'FR' => { min_par: 55, train: '5' },
-          'LT&S' => { min_par: 61, train: '2+2' },
-          'M&GN' => { min_par: 49, train: '4T' },
-          'NSR' => { min_par: 42, train: '3T' },
-          'S&DR' => { min_par: 55, train: '5' },
-          'TV' => { min_par: 49, train: '4T' },
+        UNIT3_PHASES = [
+          {
+            name: '4b',
+            on: '7',
+            train_limit: 99,
+            tiles: %i[yellow green brown gray],
+            operating_rounds: 3,
+          },
+        ].freeze
+
+        def game_phases
+          gphases = COMMON_PHASES
+          gphases.concat(UNIT2_PHASES) if @units[2]
+          gphases.concat(UNIT3_PHASES) if @units[3]
+          gphases
+        end
+
+        # FIXME: 3T/4T/2+2/4+4E definition and/or handling
+        ALL_TRAINS = {
+          '2' => { distance: 2, price: 180, rusts_on: '5' },
+          '3' => { distance: 3, price: 300, rusts_on: '7' },
+          '4' => { distance: 4, price: 430 },
+          '5' => { distance: 5, price: 550 },
+          '3T' => { distance: 3, price: 370, available_on: '3' },
+          'U3' => { distance: 3, price: 410, available_on: '3' },
+          '4T' => { distance: 3, price: 480, available_on: '6' },
+          '2+2' => { distance: 2, price: 600, available_on: '6' },
+          '6' => { distance: 7, price: 650 },
+          '7' => { distance: 7, price: 720 },
+          '4+4E' => { distance: 4, price: 830, available_on: '7' },
         }.freeze
 
-        SELL_MOVEMENT = :down_per_10
+        def build_train_list(thash)
+          thash.keys.map do |t|
+            new_hash = {}
+            new_hash[:name] = t
+            new_hash[:num] = thash[t]
+            new_hash.merge!(ALL_TRAINS[t])
+          end
+        end
 
+        # FIXME: add option for additonal 3T/U3 for Unit 3
+        # FIXME: add K2 trains
+        # FIXME: add K3 trains
+        def game_trains
+          case @units.keys.sort.map(&:to_s).join
+          when '1'
+            build_train_list({ '2' => 6, '3' => 4, '4' => 3, '5' => 4 })
+          when '2'
+            build_train_list({ '2' => 5, '3' => 3, '4' => 2, '5' => 3, '6' => 2 })
+          when '3'
+            # extra 5/3T/U3 for minors
+            build_train_list({ '2' => 5, '3' => 3, '4' => 1, '5' => 3, '7' => 2, '3T' => 1, 'U3' => 1 })
+          when '12'
+            build_train_list({ '2' => 7, '3' => 6, '4' => 4, '5' => 5, '6' => 2 })
+          when '23'
+            # extra 5/3T/U3 for minors
+            build_train_list({ '2' => 5, '3' => 5, '4' => 4, '5' => 6, '6' => 2, '7' => 2, '3T' => 1, 'U3' => 1 })
+          else # all units
+            # extra 5/3T/U3 for minors
+            build_train_list({ '2' => 7, '3' => 6, '4' => 5, '5' => 6, '6' => 2, '7' => 2, '3T' => 1, 'U3' => 1 })
+          end
+        end
+
+        CURRENCY_FORMAT_STR = '£%d'
+        CAPITALIZATION = :full
+        MUST_SELL_IN_BLOCKS = false
+        SELL_MOVEMENT = :none
+        SELL_BUY_ORDER = :sell_buy_sell
+        SOLD_OUT_INCREASE = false
+        PRESIDENT_SALES_TO_MARKET = true
         HOME_TOKEN_TIMING = :operating_round
-
-        BANK_CASH = 7_000
-
-        CERT_LIMIT = { 2 => 17, 3 => 15 }.freeze
+        BANK_CASH = 50_000
+        COMPANY_SALE_FEE = 30
 
         def init_optional_rules(optional_rules)
           optional_rules = (optional_rules || []).map(&:to_sym)
-          optional_rules << :unit_1 if optional_rules.empty?
+
+          if optional_rules.empty?
+            case @players.size
+            when 2
+              optional_rules << :unit_3
+              @log << 'Using Unit 3 based on player count'
+            when 3
+              optional_rules << :unit_2
+              @log << 'Using Unit 2 based on player count'
+            when 4, 5
+              optional_rules << :unit_1
+              @log << 'Using Unit 1 based on player count'
+            when 6, 7
+              optional_rules << :unit_12
+              @log << 'Using Units 1+2 based on player count'
+            when 8, 9
+              optional_rules << :unit_123
+              @log << 'Using Units 1+2+3 based on player count'
+            end
+          end
 
           if optional_rules.include?(:unit_1) && optional_rules.include?(:unit_2) &&
               optional_rules.include?(:unit_3)
@@ -188,41 +287,28 @@ module Engine
                       [4, 8]
                     end
           if p_range.first > @players.size || p_range.last < @players.size
-            @log << 'Invalid options for number of players'
-            optional_rules.clear
-            @units.clear
-            case @players.size
-            when 2, 3, 4, 5
-              optional_rules << :unit_1
-              @units[1] = true
-              @log << 'Setting to Unit 1'
-            when 6, 7, 8, 9
-              optional_rules << :unit_123
-              @units[1] = true
-              @units[2] = true
-              @units[3] = true
-              @log << 'Setting to Unit 1+2+3'
-            end
+            raise OptionError, 'Invalid option(s) for number of players'
           end
 
           optional_rules
         end
 
         def bank_by_options
-          case @units.keys.sort.map(&:to_s).join
-          when '1'
-            6_000
-          when '2'
-            5_000
-          when '3'
-            4_000
-          when '12'
-            11_000
-          when '23'
-            9_000
-          else # all units
-            15_000
-          end
+          @bank_by_options ||=
+            case @units.keys.sort.map(&:to_s).join
+            when '1'
+              6_000
+            when '2'
+              5_000
+            when '3'
+              4_000
+            when '12'
+              11_000
+            when '23'
+              9_000
+            else # all units
+              15_000
+            end
         end
 
         def cash_by_options
@@ -260,7 +346,16 @@ module Engine
         end
 
         def init_bank
-          Bank.new(bank_by_options, log: @log)
+          # amount doesn't matter here
+          Bank.new(BANK_CASH, log: @log, check: false)
+        end
+
+        def bank_cash
+          bank_by_options - @players.sum(&:cash)
+        end
+
+        def check_bank_broken!
+          @bank.break! if bank_cash.negative?
         end
 
         def init_starting_cash(players, bank)
@@ -274,14 +369,162 @@ module Engine
           certs_by_options[players.size]
         end
 
+        def init_share_pool
+          SharePool.new(self, allow_president_sale: true)
+        end
+
+        def setup
+          @highest_layer = 0
+          @layer_by_corp = {}
+
+          pars = @corporations.map { |c| PAR_BY_CORPORATION[c.name] }.compact.uniq.sort.reverse
+          @corporations.each do |corp|
+            next unless PAR_BY_CORPORATION[corp.name]
+
+            @layer_by_corp[corp] = pars.index(PAR_BY_CORPORATION[corp.name]) + 1
+          end
+
+          @minor_trigger_layer = pars.include?(71) ? pars.index(71) + 2 : pars.index(76) + 2
+
+          # Distribute privates
+          # Rules call for randomizing privates, assigning to players then reordering players
+          # based on worth of private
+          # Instead, just pass out privates from least to most expensive since player order is already
+          # random. Throw in LNWR pres shares then LNWR reg shares when out of companies (not an issue when
+          # playing with just Unit 3 since it only supports 2 players).
+          sorted_companies = @companies.sort_by(&:value)
+          size = sorted_companies.size
+          @players.each_with_index do |player, idx|
+            if idx < size
+              company = sorted_companies.shift
+              @log << "#{player.name} receives #{company.name} and pays #{format_currency(company.value)}"
+              player.spend(company.value, @bank)
+              player.companies << company
+              company.owner = player
+            elsif idx == size
+              lnwr = corporation_by_id('LNWR')
+              price = par_prices(lnwr).first
+              @stock_market.set_par(lnwr, price)
+              share = lnwr.ipo_shares.first
+              @share_pool.buy_shares(player, share.to_bundle, exchange: nil, swap: nil, allow_president_change: true)
+              after_par(lnwr)
+            else
+              lnwr = corporation_by_id('LNWR')
+              share = lnwr.ipo_shares.find { |s| !s.owner&.player? }
+              @share_pool.buy_shares(player, share.to_bundle, exchange: nil, swap: nil, allow_president_change: true)
+            end
+          end
+          @highest_layer = 1 if unbought_companies.empty?
+        end
+
+        def can_ipo?(corp)
+          if @layer_by_corp[corp]
+            @layer_by_corp[corp] <= current_layer
+          else
+            @minor_trigger_layer <= current_layer
+          end
+        end
+
+        def minor_required_train(corp)
+          return unless REQUIRED_TRAIN[corp.name]
+
+          @depot.trains.find { |t| t.name == REQUIRED_TRAIN[corp.name] }
+        end
+
+        def minor_par_prices(corp)
+          price = minor_required_train(corp).price
+          stock_market.market.first.select { |p| (p.price * 10) > price }.reject { |p| p.type == :endgame }
+        end
+
+        def par_prices(corp)
+          if (price = PAR_BY_CORPORATION[corp.name])
+            stock_market.par_prices.select { |p| p.price == price }
+          else
+            minor_par_prices(corp)
+          end
+        end
+
+        def check_new_layer
+          layer = current_layer
+          @log << "-- Band #{layer} corporations now available --" if layer > @highest_layer
+          @highest_layer = layer
+        end
+
+        def current_layer
+          # undistributed privates must be sold before any corps
+          return 0 if @companies.any? { |c| !c.owner && c.abilities.empty? }
+
+          layers = @layer_by_corp.select do |corp, _layer|
+            corp.num_ipo_shares.zero?
+          end.values
+          layers.empty? ? 1 : [layers.max + 1, 4].min
+        end
+
+        def init_round
+          @log << "-- #{round_description('Stock', 1)} --"
+          @round_counter += 1
+          stock_round
+        end
+
+        def stock_round
+          Engine::Round::Stock.new(self, [
+            G1825::Step::BuySellParSharesCompanies,
+          ])
+        end
+
         def operating_round(round_num)
           Round::Operating.new(self, [
-            Step::Track,
-            Step::Token,
-            Step::Route,
-            Step::Dividend,
-            Step::BuyTrain,
+            Engine::Step::Track,
+            Engine::Step::Token,
+            Engine::Step::Route,
+            Engine::Step::Dividend,
+            Engine::Step::BuyTrain,
           ], round_num: round_num)
+        end
+
+        def unbought_companies
+          @companies.select { |c| !c.closed? && !c.owner }
+        end
+
+        def buyable_bank_owned_companies
+          if (unbought = unbought_companies).empty?
+            @companies.select { |c| !c.closed? && (!c.owner || c.owner == @bank) }
+          else
+            [unbought.min_by(&:value)]
+          end
+        end
+
+        def sorted_corporations
+          @corporations.sort_by { |c| @layer_by_corp[c] || @minor_trigger_layer }
+        end
+
+        def corporation_available?(entity)
+          entity.corporation? && can_ipo?(entity)
+        end
+
+        def status_array(corp)
+          if @layer_by_corp[corp]
+            layer_str = "Band #{@layer_by_corp[corp]}"
+            layer_str += ' (N/A)' unless can_ipo?(corp)
+
+            prices = par_prices(corp).map(&:price).sort
+            par_str = ("Par #{prices[0]}" unless corp.ipoed)
+          else
+            layer_str = "Band #{@minor_trigger_layer}"
+            layer_str += ' (N/A)' unless can_ipo?(corp)
+
+            prices = par_prices(corp).map(&:price).sort
+            par_str = ("Par #{prices[0]}-#{prices[-1]}" unless corp.ipoed)
+          end
+
+          status = []
+          status << %w[Minor bold] unless @layer_by_corp[corp]
+          status << ["Required Train: #{minor_required_train(corp).name}"] if !@layer_by_corp[corp] && corp.trains.empty?
+          status << [layer_str]
+          status << [par_str] if par_str
+          status << %w[Receivership bold] if corp.receivership?
+
+          status
         end
       end
     end

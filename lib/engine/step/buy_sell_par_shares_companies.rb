@@ -25,7 +25,14 @@ module Engine
       end
 
       def description
-        'Sell then Buy Certificates'
+        case @game.class::SELL_BUY_ORDER
+        when :sell_buy_or_buy_sell
+          'Buy or Sell Certificates'
+        when :sell_buy
+          'Sell then Buy Certificates'
+        when :sell_buy_sell
+          'Sell/Buy/Sell Certificates'
+        end
       end
 
       def pass_description
