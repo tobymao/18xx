@@ -19,7 +19,7 @@ module LayTileChecks
     return if !comp || comp.owner != action.entity.player
 
     # Remove hex block
-    comp.desc = 'Special ability used up. No extra effect until closed in phase 6.'
+    comp.desc = 'Special ability used up. No extra effect until closed in phase 5.'
     comp.all_abilities.dup.each do |a|
       comp.remove_ability(a)
     end
