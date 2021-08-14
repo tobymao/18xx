@@ -44,7 +44,6 @@ module Engine
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'remove_tile_block' => ['Remove tile block', 'Hex E12 can now be upgraded to yellow'],
-          'keo_ability_removed' => ['KEO ability removed', 'Hex E8 can no longer be upgraded to special tile #935']
         ).freeze
 
         TILES = {
@@ -472,7 +471,7 @@ module Engine
                        { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             num: 3,
             price: 500,
-            events: [{ 'type' => 'keo_ability_removed' }],
+            events: [{ 'type' => 'close_companies' }],
           },
           {
             name: '6',
@@ -480,7 +479,6 @@ module Engine
                        { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             num: 6,
             price: 600,
-            events: [{ 'type' => 'close_companies' }],
           },
           {
             name: '8',
@@ -1182,17 +1180,6 @@ module Engine
         def event_remove_tile_block!
           @log << "Hex #{RATINGEN_HEX} is now possible to upgrade to yellow"
           yellow_block_hex.tile.icons.reject! { |i| i.name == 'green_hex' }
-        end
-
-        def event_keo_ability_removed!
-          comp = @konzession_essen_osterath
-          return if comp.all_abilities.empty?
-
-          comp.desc = 'Osterath special upgrade cannot be used in phase 5. No extra effect until closed in phase 6.'
-          comp.all_abilities.dup.each do |a|
-            comp.remove_ability(a)
-          end
-          @log << "#{@konzession_essen_osterath.name} can no longer upgrade hex E8 to tile #935"
         end
 
         def check_distance(route, visits)
