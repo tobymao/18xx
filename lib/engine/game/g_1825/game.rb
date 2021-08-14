@@ -150,7 +150,7 @@ module Engine
         ].freeze
 
         def game_phases
-          gphases = COMMON_PHASES
+          gphases = COMMON_PHASES.dup
           gphases.concat(UNIT2_PHASES) if @units[2]
           gphases.concat(UNIT3_PHASES) if @units[3]
           gphases
