@@ -10,6 +10,8 @@ module Engine
         class SelectionAuction < Engine::Step::Base
           include Engine::Step::PassableAuction
           ACTIONS = %w[bid pass].freeze
+          ACTIONS_WITH_PASS = %w[bid assign pass].freeze
+
 
           attr_reader :companies
 
@@ -41,13 +43,17 @@ module Engine
 
           def selection_bid(bid)
             add_bid(bid)
-            auction_entity(bid_target(bid))
+            next_entity!
+          end
+
+          def auctioneer?
+            false
           end
 
           def actions(entity)
-            return [] if @companies.empty?
+            return [] if @companies.empty? || !entity.player? || (entity != current_entity)
 
-            entity == current_entity ? ACTIONS : []
+            entity.player.companies.empty? ? ACTIONS : ACTIONS_WITH_PASS
           end
 
           def min_increment

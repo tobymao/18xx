@@ -121,15 +121,7 @@ module Engine
           { name: '8', distance: 8, price: 800, num: 4 },
         ].freeze
 
-        def setup
 
-          gould_corporation = abilities(gould, :shares).shares.first.corporation
-
-        end
-
-        def gould
-          @gould ||= @companies.find { |company| company.name == 'Jay Gould' }
-        end
 
         def new_auction_round
           Engine::Round::Auction.new(self, [
