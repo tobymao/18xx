@@ -200,7 +200,7 @@ module Engine
             ['N1'] => 'offboard=revenue:yellow_60|brown_80;path=a:3,b:_0;path=a:4,b:_0',
           },
           gray: {
-                      ['J1'] => 'town=revenue:yellow_10|brown_40;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
+            ['J1'] => 'town=revenue:yellow_10|brown_40;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
             ['J15'] => 'town=revenue:yellow_20|brown_50;path=a:1,b:_0;path=a:2,b:_0',
             ['M8'] => 'town=revenue:yellow_20|brown_40;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0',
           },

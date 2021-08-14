@@ -121,26 +121,9 @@ module Engine
           { name: '8', distance: 8, price: 800, num: 4 },
         ].freeze
 
-        def setup
-          # Distribute privates
-          # Rules call for randomizing privates, assigning to players then reordering players
-          # based on worth of private
-          # Instead, just pass out privates from least to most expensive since player order is already
-          # random
-          sorted_companies = @companies.sort_by(&:value)
-          @players.each_with_index do |player, idx|
-            company = sorted_companies.shift
-            @log << "#{player.name} receives #{company.name} and pays #{format_currency(company.value)}"
-            player.spend(company.value, @bank)
-            player.companies << company
-            company.owner = player if idx <= players.size
-            after_buy_company(player, company, company.value)
-          end
-        end
-
         def new_auction_round
-          Round::Auction.new(self, [
-            Step::CompanyPendingPar,
+          Engine::Round::Auction.new(self, [
+            G18Texas::Step::SelectionAuction,
           ])
         end
 
