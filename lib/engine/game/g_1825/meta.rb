@@ -20,7 +20,7 @@ module Engine
           {
             sym: :unit_1,
             short_name: 'Unit 1',
-            desc: '2-5 players [default]',
+            desc: '2-5 players',
           },
           {
             sym: :unit_2,

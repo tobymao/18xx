@@ -11,7 +11,6 @@ module Engine
             value: 30,
             revenue: 5,
             color: :Green,
-            abilities: [{ type: 'no_buy' }],
           },
           {
             name: 'Cromford & High Peak Railway',
@@ -19,7 +18,6 @@ module Engine
             value: 75,
             revenue: 12,
             color: :Green,
-            abilities: [{ type: 'no_buy' }],
           },
           {
             name: 'Canterbury & Whitstable Railway',
@@ -27,7 +25,6 @@ module Engine
             value: 130,
             revenue: 20,
             color: :Green,
-            abilities: [{ type: 'no_buy' }],
           },
           {
             name: 'Liverpool & Manchester Railway',
@@ -35,7 +32,6 @@ module Engine
             value: 210,
             revenue: 30,
             color: :Green,
-            abilities: [{ type: 'no_buy' }],
           },
         ].freeze
 
@@ -46,7 +42,6 @@ module Engine
             value: 30,
             revenue: 5,
             color: :Green,
-            abilities: [{ type: 'no_buy' }],
           },
           {
             name: 'Cromford & High Peak Railway',
@@ -54,7 +49,6 @@ module Engine
             value: 75,
             revenue: 12,
             color: :Green,
-            abilities: [{ type: 'no_buy' }],
           },
           {
             name: 'Stockton & Darlington',
@@ -62,7 +56,6 @@ module Engine
             value: 160,
             revenue: 25,
             color: :Green,
-            abilities: [{ type: 'no_buy' }],
           },
           {
             name: 'Liverpool & Manchester Railway',
@@ -70,7 +63,6 @@ module Engine
             value: 210,
             revenue: 30,
             color: :Green,
-            abilities: [{ type: 'no_buy' }],
           },
         ].freeze
 
@@ -81,7 +73,6 @@ module Engine
             value: 30,
             revenue: 5,
             color: :Green,
-            abilities: [{ type: 'no_buy' }],
           },
           {
             name: 'Tanfield Wagon Way',
@@ -89,7 +80,6 @@ module Engine
             value: 60,
             revenue: 10,
             color: :Green,
-            abilities: [{ type: 'no_buy' }],
           },
           {
             name: 'Stockton & Darlington',
@@ -97,7 +87,6 @@ module Engine
             value: 160,
             revenue: 25,
             color: :Green,
-            abilities: [{ type: 'no_buy' }],
           },
         ].freeze
 
@@ -299,6 +288,36 @@ module Engine
           },
         ].freeze
 
+        PAR_BY_CORPORATION = {
+          'LNWR' => 100,
+          'GWR' => 90,
+          'MR' => 82,
+          'NER' => 82,
+          'CR' => 76,
+          'GER' => 76,
+          'LSWR' => 76,
+          'NBR' => 76,
+          'GCR' => 71,
+          'GNR' => 71,
+          'L&YR' => 71,
+          'SECR' => 71,
+          'GSWR' => 67,
+          'LBSC' => 67,
+        }.freeze
+
+        REQUIRED_TRAIN = {
+          'GNoS' => '5',
+          'HR' => 'U3',
+          'M&C' => '3T',
+          'C' => 'U3',
+          'FR' => '5',
+          'LT&S' => '2+2',
+          'M&GN' => '4T',
+          'NSR' => '3T',
+          'S&DR' => '5',
+          'TV' => '4T',
+        }.freeze
+
         # combining is based on http://fwtwr.com/fwtwr/18xx/1825/privates.asp
         def game_companies
           comps = []
@@ -308,6 +327,7 @@ module Engine
           comps
         end
 
+        # FIXME: R1, R2, R3, K5, K7
         def game_corporations
           corps = []
           corps.concat(UNIT1_CORPORATIONS) if @units[1]
