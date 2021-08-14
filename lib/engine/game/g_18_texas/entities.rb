@@ -9,44 +9,39 @@ module Engine
       module Entities
         COMPANIES = [
           {
-            name: 'A',
+            name: 'Buffalo Bayou, Brazos and Colorado Railway Company',
             value: 50,
             revenue: 10,
             desc: 'No special ability',
             sym: 'A',
           },
           {
-            name: 'B',
+            name: 'Galveston and Red River Railway Company',
             value: 80,
             revenue: 15,
             desc: 'No special ability',
             sym: 'B',
           },          {
-            name: 'C',
+            name: 'Jay Gould',
             value: 200,
             revenue: 5,
-            desc: 'The purchaser of this private company receives the president\'s certificate of '\
-                  'the T&P Railroad and must immediately set its par value. The T&P automatically '\
-                  'floats once this private company is purchased and is an exception to the normal '\
-                  'rule.',
-            abilities: [{ type: 'shares', shares: 'T&P_0' }],
+            abilities: [{ type: 'shares', shares: 'random_president' }],
             sym: 'C',
           },          {
-            name: 'D',
+            name: 'International–Great Northern',
             value: 210,
             revenue: 20,
-            desc: 'The purchaser of this private company receives a share of '\
-                  'the T&P Railroad.',
-            abilities: [{ type: 'shares', shares: 'T&P_1' }],
+            desc: 'The purchaser of this private company receives a 10% share of a randomly determined corporation.',
+            abilities: [{ type: 'shares', shares: 'random_share' }],
             min_players: 4,
             sym: 'D',
           },          {
-            name: 'E',
+            name: 'New Orleans Pacific Railroad',
             value: 240,
             revenue: 25,
-            desc: 'The purchaser of this private company receives a share of '\
-                  'the T&P Railroad.',
-            abilities: [{ type: 'shares', shares: 'T&P_2' }],
+                        desc: 'The purchaser of this private company receives a 10% share of a randomly determined corporation.',
+
+            abilities: [{ type: 'shares', shares: 'random_share' }],
             min_players: 5,
             sym: 'E',
           }
