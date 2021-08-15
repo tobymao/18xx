@@ -1935,7 +1935,7 @@ module Engine
 
       def init_hexes(companies, corporations)
         blockers = {}
-        companies.each do |company|
+        blocker_companies.each do |company|
           abilities(company, :blocks_hexes) do |ability|
             ability.hexes.each do |hex|
               blockers[hex] = company
@@ -2005,6 +2005,10 @@ module Engine
             end
           end
         end.flatten.compact
+      end
+
+      def blocker_companies
+        companies
       end
 
       def partition_companies

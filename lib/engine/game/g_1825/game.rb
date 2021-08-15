@@ -214,6 +214,10 @@ module Engine
         BANK_CASH = 50_000
         COMPANY_SALE_FEE = 30
 
+        def blocker_companies
+          corporations
+        end
+
         def init_optional_rules(optional_rules)
           optional_rules = (optional_rules || []).map(&:to_sym)
 
