@@ -1,19 +1,26 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/base'
-require_relative '../../../step/passable_auction'
+require_relative '../../../step/auctioner'
 
 module Engine
   module Game
     module G18Texas
       module Step
-        class SelectionAuction < Engine::Step::Base
-          include Engine::Step::PassableAuction
-          ACTIONS = %w[bid pass].freeze
-          ACTIONS_WITH_PASS = %w[bid assign pass].freeze
-
+        class SimultaneousAuction < Engine::Step::Base
+          include Engine::Step::Auctioner
 
           attr_reader :companies
+
+          def actions(entity)
+            return [] if !entity.player? || (entity != current_entity) || !bids_for_player(entity).empty?
+
+            ['bid']
+          end
+
+          def auctioning
+            nil
+          end
 
           def description
             'Bid on Companies'
@@ -23,37 +30,36 @@ module Engine
             @companies
           end
 
-          def process_pass(_action)
-            return all_passed! if entities.all?(&:passed?)
-
+          def skip!
+            current_entity.pass!
             next_entity!
           end
 
           def next_entity!
+            return all_passed! if entities.all?(&:passed?)
+
             @round.next_entity_index!
             entity = entities[entity_index]
             next_entity! if entity&.passed?
           end
 
           def process_bid(action)
-            action.entity.unpass!
+            action.entity.pass!
 
-            selection_bid(action)
-          end
+            company = action.company
+            price = action.price
+            entity = action.entity
+            @log << "#{entity.name} bids #{@game.format_currency(price)} for #{company.name}"
 
-          def selection_bid(bid)
-            add_bid(bid)
+            # unpass previous bidder
+            prev_bidder = @bids[company].first&.entity
+            prev_bidder.unpass! if prev_bidder
+            replace_bid(action)
             next_entity!
           end
 
           def auctioneer?
             false
-          end
-
-          def actions(entity)
-            return [] if @companies.empty? || !entity.player? || (entity != current_entity)
-
-            entity.player.companies.empty? ? ACTIONS : ACTIONS_WITH_PASS
           end
 
           def min_increment
@@ -103,16 +109,18 @@ module Engine
           end
 
           def all_passed!
+            resolve_bids
             # Need to move entity round once more to be back to the priority deal player
             @round.next_entity_index!
             pass!
           end
 
           def resolve_bids
-            super
-            entities.each(&:unpass!)
-            @round.goto_entity!(@auction_triggerer)
-            next_entity!
+            @bids.keys.each { |company| win_bid(@bids[company].first, company) }
+          end
+
+          def committed_cash(player, _show_hidden = false)
+            bids_for_player(player).sum(&:price)
           end
         end
       end
