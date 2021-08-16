@@ -585,30 +585,8 @@ module Engine
         end
 
         def vote_and_convert
-          # count track types and see whether there are more pure standard
-          # or southern track tiles
-          standard_count = 0
-          southern_count = 0
-          @hexes.each do |hex|
-            broad = hex.tile.paths.any? { |path| path.track == :broad }
-            narrow = hex.tile.paths.any? { |path| path.track == :narrow }
-            standard_count += 1 if broad && !narrow
-            southern_count += 1 if !broad && narrow
-          end
-          @final_gauge = if standard_count > southern_count
-                           :broad
-                         elsif standard_count < southern_count
-                           :narrow
-                         else
-                           # tie breaker: Northern or Southern company
-                           SOUTH_CORPORATIONS.include?(current_entity.name) ? :narrow : :broad
-                         end
-
-          @log << if @final_gauge == :broad
-                    'More Standard track than Southern. Can now only upgrade to Standard track'
-                  else
-                    'More Southern track than Standard. Can now only upgrade to Southern track'
-                  end
+          @final_gauge = :broad
+          @log << 'Standard gauge is now the dominant gauge. Can now only upgrade to Standard track'
 
           @all_tiles.each { |t| t.ignore_gauge_compare = true }
           @_tiles.values.each { |t| t.ignore_gauge_compare = true }

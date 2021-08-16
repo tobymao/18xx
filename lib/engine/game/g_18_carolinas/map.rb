@@ -292,83 +292,11 @@ module Engine
             'color' => 'green',
             'code' => 'city=revenue:50,slots:2;path=a:0,b:_0,track:narrow;path=a:1,b:_0,track:narrow;path=a:5,b:_0,track:narrow;label=C',
           },
-          '38s' =>
-          {
-            'count' => 4,
-            'color' => 'brown',
-            'code' => 'city=revenue:40,slots:2;path=a:0,b:_0,track:narrow;path=a:2,b:_0,track:narrow;path=a:3,b:_0,track:narrow;path=a:4,b:_0,track:narrow',
-          },
-          '39s' =>
-          {
-            'count' => 1,
-            'color' => 'brown',
-            'code' => 'path=a:0,b:2,track:narrow;path=a:0,b:1,track:narrow;path=a:1,b:2,track:narrow',
-          },
-          '40s' =>
-          {
-            'count' => 1,
-            'color' => 'brown',
-            'code' => 'path=a:0,b:2,track:narrow;path=a:2,b:4,track:narrow;path=a:0,b:4,track:narrow',
-          },
-          '41s' =>
-          {
-            'count' => 1,
-            'color' => 'brown',
-            'code' => 'path=a:0,b:3,track:narrow;path=a:0,b:1,track:narrow;path=a:1,b:3,track:narrow',
-          },
-          '42s' =>
-          {
-            'count' => 1,
-            'color' => 'brown',
-            'code' => 'path=a:0,b:3,track:narrow;path=a:3,b:5,track:narrow;path=a:0,b:5,track:narrow',
-          },
-          '43s' =>
-          {
-            'count' => 1,
-            'color' => 'brown',
-            'code' => 'path=a:0,b:3,track:narrow;path=a:0,b:2,track:narrow;path=a:1,b:3,track:narrow;path=a:1,b:2,track:narrow',
-          },
-          '44s' =>
-          {
-            'count' => 1,
-            'color' => 'brown',
-            'code' => 'path=a:0,b:3,track:narrow;path=a:1,b:4,track:narrow;path=a:0,b:1,track:narrow;path=a:3,b:4,track:narrow',
-          },
-          '45s' =>
-          {
-            'count' => 1,
-            'color' => 'brown',
-            'code' => 'path=a:0,b:3,track:narrow;path=a:2,b:4,track:narrow;path=a:0,b:4,track:narrow;path=a:2,b:3,track:narrow',
-          },
-          '46s' =>
-          {
-            'count' => 1,
-            'color' => 'brown',
-            'code' => 'path=a:0,b:3,track:narrow;path=a:2,b:4,track:narrow;path=a:3,b:4,track:narrow;path=a:0,b:2,track:narrow',
-          },
-          '47s' =>
-          {
-            'count' => 1,
-            'color' => 'brown',
-            'code' => 'path=a:0,b:3,track:narrow;path=a:1,b:4,track:narrow;path=a:1,b:3,track:narrow;path=a:0,b:4,track:narrow',
-          },
-          '70s' =>
-          {
-            'count' => 1,
-            'color' => 'brown',
-            'code' => 'path=a:0,b:1,track:narrow;path=a:0,b:2,track:narrow;path=a:1,b:3,track:narrow;path=a:2,b:3,track:narrow',
-          },
           'C7' =>
           {
             'count' => 2,
             'color' => 'brown',
             'code' => 'city=revenue:60,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=C',
-          },
-          'C7s' =>
-          {
-            'count' => 2,
-            'color' => 'brown',
-            'code' => 'city=revenue:60,slots:2;path=a:0,b:_0,track:narrow;path=a:1,b:_0,track:narrow;path=a:2,b:_0,track:narrow;path=a:3,b:_0,track:narrow;path=a:4,b:_0,track:narrow;path=a:5,b:_0,track:narrow;label=C',
           },
           'C8' =>
           {
@@ -376,37 +304,25 @@ module Engine
             'color' => 'brown',
             'code' => 'city=revenue:60,slots:2;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=C',
           },
-          'C8s' =>
-          {
-            'count' => 2,
-            'color' => 'brown',
-            'code' => 'city=revenue:60,slots:2;path=a:2,b:_0,track:narrow;path=a:3,b:_0,track:narrow;path=a:4,b:_0,track:narrow;label=C',
-          },
           'C9' =>
           {
             'count' => 2,
             'color' => 'gray',
             'code' => 'city=revenue:70,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=C',
           },
-          'C9s' =>
-          {
-            'count' => 2,
-            'color' => 'gray',
-            'code' => 'city=revenue:70,slots:3;path=a:0,b:_0,track:narrow;path=a:1,b:_0,track:narrow;path=a:2,b:_0,track:narrow;path=a:3,b:_0,track:narrow;path=a:4,b:_0,track:narrow;path=a:5,b:_0,track:narrow;label=C',
-          },
         }.freeze
         # rubocop:enable Layout/LineLength
 
         DIT_UPGRADES = {
-          # yellow double-dit to green K or X city
-          '1' => ['14'],
-          '1s' => ['14s'],
-          '2' => ['15'],
-          '2s' => ['15s'],
-          '55' => ['14'],
-          '55s' => ['14s'],
-          '56' => ['15'],
-          '56s' => ['15s'],
+          # yellow double-dit to green single-dit or K or X city
+          '1' => %w[14 88],
+          '1s' => %w[14s 88s],
+          '2' => %w[15 87],
+          '2s' => %w[15s 87s],
+          '55' => %w[14 88],
+          '55s' => %w[14s 88s],
+          '56' => %w[15 87],
+          '56s' => %w[15s 87s],
           # yellow single-dit to green city
           '3' => %w[12 14 15],
           '3s' => %w[12s 14s 15s],
@@ -450,20 +366,20 @@ module Engine
             %w[87 87s],
             %w[88 88s],
             %w[C5 C6],
-            %w[38 38s],
-            %w[39 39s],
-            %w[40 40s],
-            %w[41 41s],
-            %w[42 42s],
-            %w[43 43s],
-            %w[44 44s],
-            %w[45 45s],
-            %w[46 46s],
-            %w[47 47s],
-            %w[70 70s],
-            %w[C7 C7s],
-            %w[C8 C8s],
-            %w[C9 C9s],
+            %w[38],
+            %w[39],
+            %w[40],
+            %w[41],
+            %w[42],
+            %w[43],
+            %w[44],
+            %w[45],
+            %w[46],
+            %w[47],
+            %w[70],
+            %w[C7],
+            %w[C8],
+            %w[C9],
           ]
         end
 

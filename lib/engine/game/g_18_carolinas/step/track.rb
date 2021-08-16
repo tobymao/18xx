@@ -92,6 +92,34 @@ module Engine
               old_paths.all? { |path| new_paths.any? { |p| path_subset?(p, path) } } &&
               (!multi_city_upgrade || old_ctedges.all? { |oldct| new_ctedges.one? { |newct| (oldct & newct) == oldct } })
           end
+
+          def check_track_restrictions!(entity, old_tile, new_tile)
+            return if @game.loading || !entity.operator?
+
+            super
+
+            # if this is a yellow tile, make sure it is either
+            # 1) the first tile lay for a corporation
+            # 2) extends track of the same gauge being laid
+            return unless new_tile.color == :yellow
+
+            any_neighbor = false
+            connected_paths = @game.graph_for_entity(entity).connected_paths(entity)
+            return if new_tile.paths.any? do |path|
+              next unless connected_paths.include?(path) # needed for Charlotte and Wilmington
+
+              path.edges.any? do |edge|
+                edge = edge.num
+                next unless (neighbor = new_tile.hex.neighbors[edge])
+
+                np_edge = new_tile.hex.invert(edge)
+                any_neighbor = true unless neighbor.paths[np_edge].empty?
+                neighbor.paths[np_edge].any? { |np| connected_paths.include?(np) && path.tracks_match?(np, dual_ok: true) }
+              end
+            end
+
+            raise GameError, 'Tile must extend a route with the same gauge of track' if any_neighbor
+          end
         end
       end
     end
