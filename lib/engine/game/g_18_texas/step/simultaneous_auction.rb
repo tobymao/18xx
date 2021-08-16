@@ -52,8 +52,7 @@ module Engine
             @log << "#{entity.name} bids #{@game.format_currency(price)} for #{company.name}"
 
             # unpass previous bidder
-            prev_bidder = @bids[company].first&.entity
-            prev_bidder.unpass! if prev_bidder
+            @bids[company].first&.entity&.unpass!
             replace_bid(action)
             next_entity!
           end
