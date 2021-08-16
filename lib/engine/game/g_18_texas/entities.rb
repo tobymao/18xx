@@ -18,7 +18,7 @@ module Engine
           {
             name: 'Galveston and Red River Railway Company',
             value: 80,
-            revenue: 15,
+            revenue: 20,
             desc: 'No special ability',
             sym: 'B',
           },          {
@@ -30,7 +30,7 @@ module Engine
           },          {
             name: 'International–Great Northern',
             value: 210,
-            revenue: 20,
+            revenue: 30,
             desc: 'The purchaser of this private company receives a 10% share of a randomly determined corporation.',
             abilities: [{ type: 'shares', shares: 'random_share' }],
             min_players: 4,
@@ -38,7 +38,7 @@ module Engine
           },          {
             name: 'New Orleans Pacific Railroad',
             value: 240,
-            revenue: 25,
+            revenue: 40,
             desc: 'The purchaser of this private company receives a 10% share of a randomly determined corporation.',
 
             abilities: [{ type: 'shares', shares: 'random_share' }],
