@@ -247,7 +247,7 @@ module Engine
         CAPITALIZATION = :full
         MUST_SELL_IN_BLOCKS = false
         MARKET_SHARE_LIMIT = 100
-        SELL_BUY_ORDER = :sell_buy_sell
+        SELL_BUY_ORDER = :sell_buy
         SELL_AFTER = :first
         PRESIDENT_SALES_TO_MARKET = true
         HOME_TOKEN_TIMING = :operating_round
