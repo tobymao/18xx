@@ -121,11 +121,9 @@ module Engine
           { name: '8', distance: 8, price: 800, num: 4 },
         ].freeze
 
-
-
         def new_auction_round
           Engine::Round::Auction.new(self, [
-            G18Texas::Step::SelectionAuction,
+            G18Texas::Step::SimultaneousAuction,
           ])
         end
 

@@ -39,7 +39,7 @@ module Engine
             name: 'New Orleans Pacific Railroad',
             value: 240,
             revenue: 25,
-                        desc: 'The purchaser of this private company receives a 10% share of a randomly determined corporation.',
+            desc: 'The purchaser of this private company receives a 10% share of a randomly determined corporation.',
 
             abilities: [{ type: 'shares', shares: 'random_share' }],
             min_players: 5,
