@@ -86,25 +86,25 @@ module Engine
           {
             'count' => 1,
             'color' => 'yellow',
-            'code' => 'town=revenue:10;town=revenue:10;path=a:1,b:_0,track:narrow;path=a:_0,b:3,track:narrow;path=a:0,b:_1,track:narrow;path=a:_1,b:4,track:narrow',
+            'code' => 'town=revenue:20;town=revenue:20;path=a:1,b:_0,track:narrow;path=a:_0,b:3,track:narrow;path=a:0,b:_1,track:narrow;path=a:_1,b:4,track:narrow',
           },
           '2s' =>
           {
             'count' => 1,
             'color' => 'yellow',
-            'code' => 'town=revenue:10;town=revenue:10;path=a:0,b:_0,track:narrow;path=a:_0,b:3,track:narrow;path=a:1,b:_1,track:narrow;path=a:_1,b:2,track:narrow',
+            'code' => 'town=revenue:20;town=revenue:20;path=a:0,b:_0,track:narrow;path=a:_0,b:3,track:narrow;path=a:1,b:_1,track:narrow;path=a:_1,b:2,track:narrow',
           },
           '3s' =>
           {
             'count' => 2,
             'color' => 'yellow',
-            'code' => 'town=revenue:10;path=a:0,b:_0,track:narrow;path=a:_0,b:1,track:narrow',
+            'code' => 'town=revenue:20;path=a:0,b:_0,track:narrow;path=a:_0,b:1,track:narrow',
           },
           '4s' =>
           {
             'count' => 3,
             'color' => 'yellow',
-            'code' => 'town=revenue:10;path=a:0,b:_0,track:narrow;path=a:_0,b:3,track:narrow',
+            'code' => 'town=revenue:20;path=a:0,b:_0,track:narrow;path=a:_0,b:3,track:narrow',
           },
           '5s' =>
           {
@@ -140,13 +140,13 @@ module Engine
           {
             'count' => 1,
             'color' => 'yellow',
-            'code' => 'town=revenue:10;town=revenue:10;path=a:0,b:_0,track:narrow;path=a:_0,b:3,track:narrow;path=a:1,b:_1,track:narrow;path=a:_1,b:4,track:narrow',
+            'code' => 'town=revenue:20;town=revenue:20;path=a:0,b:_0,track:narrow;path=a:_0,b:3,track:narrow;path=a:1,b:_1,track:narrow;path=a:_1,b:4,track:narrow',
           },
           '56s' =>
           {
             'count' => 1,
             'color' => 'yellow',
-            'code' => 'town=revenue:10;town=revenue:10;path=a:0,b:_0,track:narrow;path=a:_0,b:2,track:narrow;path=a:1,b:_1,track:narrow;path=a:_1,b:3,track:narrow',
+            'code' => 'town=revenue:20;town=revenue:20;path=a:0,b:_0,track:narrow;path=a:_0,b:2,track:narrow;path=a:1,b:_1,track:narrow;path=a:_1,b:3,track:narrow',
           },
           '57s' =>
           {
@@ -158,7 +158,7 @@ module Engine
           {
             'count' => 2,
             'color' => 'yellow',
-            'code' => 'town=revenue:10;path=a:0,b:_0,track:narrow;path=a:_0,b:2,track:narrow',
+            'code' => 'town=revenue:20;path=a:0,b:_0,track:narrow;path=a:_0,b:2,track:narrow',
           },
           'C1' =>
           {
@@ -272,13 +272,13 @@ module Engine
           {
             'count' => 2,
             'color' => 'green',
-            'code' => 'town=revenue:10;path=a:0,b:_0,track:narrow;path=a:1,b:_0,track:narrow;path=a:2,b:_0,track:narrow;path=a:3,b:_0,track:narrow',
+            'code' => 'town=revenue:20;path=a:0,b:_0,track:narrow;path=a:1,b:_0,track:narrow;path=a:2,b:_0,track:narrow;path=a:3,b:_0,track:narrow',
           },
           '88s' =>
           {
             'count' => 2,
             'color' => 'green',
-            'code' => 'town=revenue:10;path=a:0,b:_0,track:narrow;path=a:1,b:_0,track:narrow;path=a:3,b:_0,track:narrow;path=a:4,b:_0,track:narrow',
+            'code' => 'town=revenue:20;path=a:0,b:_0,track:narrow;path=a:1,b:_0,track:narrow;path=a:3,b:_0,track:narrow;path=a:4,b:_0,track:narrow',
           },
           'C5' =>
           {
@@ -507,7 +507,7 @@ module Engine
             ] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_80;path=a:5,b:_0,track:dual',
             %w[
             A23
-            ] => 'offboard=revenue:yellow_40|green_50|brown_60|gray_80;path=a:0,b:_0,track:dual',
+            ] => 'offboard=revenue:yellow_40|green_50|brown_60|gray_80;path=a:0,b:_0',
             %w[
             G1
             ] => 'offboard=revenue:yellow_40|green_60|brown_80|gray_100;path=a:4,b:_0,track:dual',
