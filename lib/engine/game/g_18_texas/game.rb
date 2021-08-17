@@ -158,37 +158,6 @@ module Engine
           ], round_num: round_num)
         end
 
-        def init_company_abilities
-          @companies.each do |company|
-            next unless (ability = abilities(company, :shares))
-
-            real_shares = []
-            ability.shares.each do |share|
-              case share
-              when 'random_president', 'first_president'
-                idx = share == 'first_president' ? 0 : rand % @corporations.size
-                @idx = idx
-                corporation = @corporations[idx]
-                share = corporation.shares[0]
-                real_shares << share
-                company.desc = "Purchasing player takes a president's share (20%) of #{corporation.name} \
-              and immediately sets its par value. #{company.desc}"
-                @log << "#{company.name} comes with the president's share of #{corporation.name}"
-              when 'match_share'
-                corporation = @corporations[@idx]
-                share = corporation.shares.find { |s| !s.president }
-                real_shares << share
-                company.desc = "#{company.desc} This private company comes with a #{share.percent}% share of #{corporation.name}."
-                @log << "#{company.name} comes with a #{share.percent}% share of #{corporation.name}"
-              else
-                real_shares << share_by_id(share)
-              end
-            end
-
-            ability.shares = real_shares
-          end
-        end
-
         def float_corporation(corporation)
           @log << "#{corporation.name} floats"
           stock_market.move_up(corporation)
