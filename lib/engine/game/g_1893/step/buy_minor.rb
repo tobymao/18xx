@@ -1,9 +1,7 @@
 # frozen_string_literal: true
 
 module BuyMinor
-  def draft_object(object, player, price, forced: false)
-    company = @game.to_company(object)
-
+  def draft_object(company, player, price, forced: false)
     player.spend(price, @game.bank)
     verb = forced ? 'is forced to buy' : 'buys'
     @log << "#{player.name} #{verb} \"#{company.name}\" for #{@game.format_currency(price)}"

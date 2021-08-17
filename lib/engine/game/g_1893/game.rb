@@ -783,11 +783,7 @@ module Engine
               end
             when Engine::Round::Stock
               @operating_rounds = @phase.operating_rounds
-              if @turn == 1
-                reorder_player_pass_order
-              else
-                reorder_players
-              end
+              reorder_players
               if hgk.floated?
                 new_operating_round
               else
@@ -815,20 +811,15 @@ module Engine
                 new_merger_round(3)
               end
             when Engine::Round::Draft
-              if @is_init_round
-                @is_init_round = false
-                init_round_finished
-                reorder_player_pass_order
-                # If one certificate remains, continue with SR
-                buyable_bank_owned_companies.one? ? new_stock_round : new_operating_round
-              else
-                new_stock_round
-              end
+              reorder_player_pass_order
+              buyable_bank_owned_companies.count { |c| !bond?(c) } <= 1 ? new_stock_round : new_operating_round
             end
         end
 
         def reorder_player_pass_order
-          return reorder_players(:after_last_to_act) if @passers_first_stock_round.empty?
+          # If all passes during draft, first to pass will be priority dealer in the next SR.
+          # Otherwise it is always the last to buy/sell (but not bid)
+          return reorder_players if @passers_first_stock_round.size < @players.size
 
           pd = @passers_first_stock_round.first
           @players.rotate!(@players.index(pd))
@@ -837,7 +828,6 @@ module Engine
 
         def init_round
           @log << '-- Draft of starting package'
-          @is_init_round = true
           Engine::Round::Draft.new(self, [
             G1893::Step::StartingPackageInitialAuction,
           ])
@@ -1033,7 +1023,6 @@ module Engine
           city_by_id('J5-0-0').place_token(hgk, hgk.next_token)
 
           @passers_first_stock_round = []
-          @is_init_round = false
           @after_merger_round = nil
           @agv_mergable = false
           @hgk_mergable = false
@@ -1332,13 +1321,6 @@ module Engine
           return false unless company.company?
 
           NAME_OF_PRIVATES.include?(company.sym)
-        end
-
-        # TODO: This is a temporary solution - might be removed
-        def to_company(entity)
-          return entity if entity.company?
-
-          company_by_id(entity.name)
         end
 
         def can_par?(corporation, entity)
