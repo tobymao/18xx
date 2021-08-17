@@ -101,45 +101,43 @@ module Engine
             player.companies << company
 
             player.spend(price, @game.bank) if price.positive?
-                            @game.after_buy_company(player, company, price)
+            @game.after_buy_company(player, company, price)
             @companies.delete(company)
             @log <<
                 "#{player.name} wins the auction for #{company.name} "\
                 "with a bid of #{@game.format_currency(price)}"
-
           end
 
-      def init_company_abilities
-        @companies.each do |company|
-          next unless (ability = abilities(company, :shares))
+          def init_company_abilities
+            @companies.each do |company|
+              next unless (ability = abilities(company, :shares))
 
-          real_shares = []
-          ability.shares.each do |share|
-            case share
-            when 'random_president', 'first_president'
-              idx = share == 'first_president' ? 0 : rand % @corporations.size
-              corporation = @corporations[idx]
-              share = corporation.shares[0]
-              real_shares << share
-              company.desc = "Purchasing player takes a president's share (20%) of #{corporation.name} \
+              real_shares = []
+              ability.shares.each do |share|
+                case share
+                when 'random_president', 'first_president'
+                  idx = share == 'first_president' ? 0 : rand % @corporations.size
+                  corporation = @corporations[idx]
+                  share = corporation.shares[0]
+                  real_shares << share
+                  company.desc = "Purchasing player takes a president's share (20%) of #{corporation.name} \
               and immediately sets its par value. #{company.desc}"
-              @log << "#{company.name} comes with the president's share of #{corporation.name}"
-            when 'random_share'
-              corporations = ability.corporations&.map { |id| corporation_by_id(id) } || @corporations
-              corporation = corporations[rand % corporations.size]
-              share = corporation.shares.find { |s| !s.president }
-              real_shares << share
-              company.desc = "#{company.desc} The random corporation in this game is #{corporation.name}."
-              @log << "#{company.name} comes with a #{share.percent}% share of #{corporation.name}"
-            else
-              real_shares << share_by_id(share)
+                  @log << "#{company.name} comes with the president's share of #{corporation.name}"
+                when 'random_share'
+                  corporations = ability.corporations&.map { |id| corporation_by_id(id) } || @corporations
+                  corporation = corporations[rand % corporations.size]
+                  share = corporation.shares.find { |s| !s.president }
+                  real_shares << share
+                  company.desc = "#{company.desc} The random corporation in this game is #{corporation.name}."
+                  @log << "#{company.name} comes with a #{share.percent}% share of #{corporation.name}"
+                else
+                  real_shares << share_by_id(share)
+                end
+              end
+
+              ability.shares = real_shares
             end
           end
-
-          ability.shares = real_shares
-        end
-      end
-
 
           def all_passed!
             resolve_bids
