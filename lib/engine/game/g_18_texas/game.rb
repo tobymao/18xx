@@ -137,6 +137,7 @@ module Engine
 
         def init_company_abilities
           random_corporation = @corporations[rand % @corporations.size]
+          random_shares = []
           @companies.each do |company|
             next unless (ability = abilities(company, :shares))
 
@@ -144,17 +145,19 @@ module Engine
             ability.shares.each do |share|
               case share
               when 'random_president'
-                share = random_corporation.shares[0]
-                real_shares << share
+                new_share = random_corporation.shares[0]
+                real_shares << new_share
+                random_shares << new_share
                 company.desc = "Purchasing player takes a president's share (20%) of #{random_corporation.name} \
               and immediately sets its par value. #{company.desc}"
                 @log << "#{company.name} comes with the president's share of #{random_corporation.name}"
               when 'match_share'
-                share = random_corporation.shares.find { |s| !s.president }
-                real_shares << share
-                company.desc = "#{company.desc} This private company comes with a #{share.percent}% share of \
+                new_share = random_corporation.shares.find { |s| !random_shares.include?(s) }
+                real_shares << new_share
+                random_shares << new_share
+                company.desc = "#{company.desc} This private company comes with a #{new_share.percent}% share of \
                 #{random_corporation.name}."
-                @log << "#{company.name} comes with a #{share.percent}% share of #{random_corporation.name}"
+                @log << "#{company.name} comes with a #{new_share.percent}% share of #{random_corporation.name}"
               else
                 real_shares << share_by_id(share)
               end
