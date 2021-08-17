@@ -123,6 +123,7 @@ module Engine
 
         def new_auction_round
           Engine::Round::Auction.new(self, [
+            G18Texas::Step::CompanyPendingPar,
             G18Texas::Step::SimultaneousAuction,
           ])
         end
