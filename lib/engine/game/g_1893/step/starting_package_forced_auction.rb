@@ -17,7 +17,7 @@ module Engine
           ACTIONS = %w[bid pass].freeze
 
           def description
-            'Drafting Auction for Remaining Starting Package Certificates'
+            'Drafting Auction for remaining Starting Package Certificates'
           end
 
           def help
@@ -49,6 +49,7 @@ module Engine
             @reduction_step = 10
             @auction_triggerer = nil
             @current_reduction = 0
+            @green_train_holder = @game.players.first
 
             setup_auction
           end
@@ -142,8 +143,7 @@ module Engine
 
           def selection_bid(bid)
             @auction_triggerer = bid.entity
-            # TODO: Remove to_company when cleaning up
-            target = @game.to_company(bid_target(bid))
+            target = bid_target(bid)
 
             @game.log << "#{@auction_triggerer.name} selects #{target.name} for auction"
             auction_entity(target)
@@ -190,8 +190,7 @@ module Engine
           end
 
           def purchase(bid)
-            # TODO: Remove to_company when cleaning up code
-            target = @game.to_company(bid_target(bid))
+            target = bid_target(bid)
             bidder = bid.entity
             price = bid.price
 
@@ -220,10 +219,16 @@ module Engine
             post_win_bid(winner, target)
 
             entities.each(&:unpass!)
-            @round.goto_entity!(@auction_triggerer)
-            @auction_triggerer = nil
-            @current_reduction = 0
-            next_entity!
+            if available.empty?
+              # First player when forced auction started stays as priority dealer (green train holder)
+              @game.players.rotate!(@game.players.index(@green_train_holder))
+              @round.reset_entity_index!
+            else
+              @round.goto_entity!(@auction_triggerer)
+              @auction_triggerer = nil
+              @current_reduction = 0
+              next_entity!
+            end
           end
 
           private
