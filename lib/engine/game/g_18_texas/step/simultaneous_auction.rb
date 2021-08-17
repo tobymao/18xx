@@ -77,7 +77,7 @@ module Engine
           def min_bid(company)
             return unless company
 
-            return starting_bid(company) unless @bids[company].any?
+            return starting_bid(company) if @bids[company].empty?
 
             high_bid = highest_bid(company)
             (high_bid.price || company.min_bid) + min_increment
