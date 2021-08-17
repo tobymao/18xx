@@ -31,17 +31,15 @@ module Engine
             name: 'International–Great Northern',
             value: 210,
             revenue: 30,
-            desc: 'The purchaser of this private company receives a 10% share of a randomly determined corporation.',
-            abilities: [{ type: 'shares', shares: 'random_share' }],
+            abilities: [{ type: 'shares', shares: 'match_share' }],
             min_players: 4,
             sym: 'D',
           },          {
             name: 'New Orleans Pacific Railroad',
             value: 240,
             revenue: 40,
-            desc: 'The purchaser of this private company receives a 10% share of a randomly determined corporation.',
 
-            abilities: [{ type: 'shares', shares: 'random_share' }],
+            abilities: [{ type: 'shares', shares: 'match_share' }],
             min_players: 5,
             sym: 'E',
           }

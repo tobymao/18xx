@@ -2071,6 +2071,7 @@ module Engine
             case share
             when 'random_president', 'first_president'
               idx = share == 'first_president' ? 0 : rand % @corporations.size
+              @idx = idx
               corporation = @corporations[idx]
               share = corporation.shares[0]
               real_shares << share
@@ -2083,6 +2084,12 @@ module Engine
               share = corporation.shares.find { |s| !s.president }
               real_shares << share
               company.desc = "#{company.desc} The random corporation in this game is #{corporation.name}."
+              @log << "#{company.name} comes with a #{share.percent}% share of #{corporation.name}"
+            when 'match_share'
+              corporation = @corporations[@idx]
+              share = corporation.shares.find { |s| !s.president }
+              real_shares << share
+              company.desc = "#{company.desc} This private company comes with a #{share.percent}% share of #{corporation.name}."
               @log << "#{company.name} comes with a #{share.percent}% share of #{corporation.name}"
             else
               real_shares << share_by_id(share)
