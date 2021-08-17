@@ -41,7 +41,7 @@ module Engine
         }.freeze
 
         MARKET = [
-          %w[0
+          %w[0c
              10
              20
              30
@@ -305,57 +305,6 @@ module Engine
         C8_HEXES = %w[G19 J12].freeze
         C8_ROTATION = 5
 
-        def init_tile_groups
-          [
-            %w[1n 1s],
-            %w[2n 2s],
-            %w[3n 3s],
-            %w[4n 4s],
-            %w[5 5s],
-            %w[6 6s],
-            %w[7 7s],
-            %w[8 8s],
-            %w[9 9s],
-            %w[55n 55s],
-            %w[56n 56s],
-            %w[57 57s],
-            %w[58n 58s],
-            %w[C1 C2],
-            %w[C3 C4],
-            %w[12 12s],
-            %w[13 13s],
-            %w[14 14s],
-            %w[15 15s],
-            %w[16 16s],
-            %w[19 19s],
-            %w[20 20s],
-            %w[23 23s],
-            %w[24 24s],
-            %w[25 25s],
-            %w[26 26s],
-            %w[27 27s],
-            %w[28 28s],
-            %w[29 29s],
-            %w[87n 87s],
-            %w[88n 88s],
-            %w[C5 C6],
-            %w[38 38s],
-            %w[39 39s],
-            %w[40 40s],
-            %w[41 41s],
-            %w[42 42s],
-            %w[43 43s],
-            %w[44 44s],
-            %w[45 45s],
-            %w[46 46s],
-            %w[47 47s],
-            %w[70 70s],
-            %w[C7 C7s],
-            %w[C8 C8s],
-            %w[C9 C9s],
-          ]
-        end
-
         def update_opposites
           by_name = @tiles.group_by(&:name)
           @tile_groups.each do |grp|
@@ -378,7 +327,7 @@ module Engine
         end
 
         def init_share_pool
-          SharePool.new(self, allow_president_sale: true)
+          SharePool.new(self, allow_president_sale: self.class::PRESIDENT_SALES_TO_MARKET)
         end
 
         def setup
@@ -532,7 +481,16 @@ module Engine
           # handle C tiles specially
           return false if from.label.to_s == 'C' && to.color == :yellow && from.cities.size != to.cities.size
 
+          # handle special-case upgrades
+          return true if force_dit_upgrade?(from, to)
+
           super
+        end
+
+        def force_dit_upgrade?(from, to)
+          return false unless (list = DIT_UPGRADES[from.name])
+
+          list.include?(to.name)
         end
 
         def update_tile_lists!(tile, old_tile)
@@ -627,30 +585,8 @@ module Engine
         end
 
         def vote_and_convert
-          # count track types and see whether there are more pure standard
-          # or southern track tiles
-          standard_count = 0
-          southern_count = 0
-          @hexes.each do |hex|
-            broad = hex.tile.paths.any? { |path| path.track == :broad }
-            narrow = hex.tile.paths.any? { |path| path.track == :narrow }
-            standard_count += 1 if broad && !narrow
-            southern_count += 1 if !broad && narrow
-          end
-          @final_gauge = if standard_count > southern_count
-                           :broad
-                         elsif standard_count < southern_count
-                           :narrow
-                         else
-                           # tie breaker: Northern or Southern company
-                           SOUTH_CORPORATIONS.include?(current_entity.name) ? :narrow : :broad
-                         end
-
-          @log << if @final_gauge == :broad
-                    'More Standard track than Southern. Can now only upgrade to Standard track'
-                  else
-                    'More Southern track than Standard. Can now only upgrade to Southern track'
-                  end
+          @final_gauge = :broad
+          @log << 'Standard gauge is now the dominant gauge. Can now only upgrade to Standard track'
 
           @all_tiles.each { |t| t.ignore_gauge_compare = true }
           @_tiles.values.each { |t| t.ignore_gauge_compare = true }
@@ -842,12 +778,21 @@ module Engine
         end
 
         def check_distance(route, visits)
+          super
+          raise GameError, 'Route cannot begin/end in a town' if visits.first.town? || visits.last.town?
+
           if route.train.name == 'Convert'
             raise GameError, 'Route must be specified' if visits.empty?
-            raise GameError, 'Route cannot begin/end in a town' if visits.first.town? || visits.last.town?
+
+            return
           end
 
-          super
+          node_hexes = {}
+          visits.each do |node|
+            raise GameError, 'Cannot visit multiple towns/cities in same hex' if node_hexes[node.hex]
+
+            node_hexes[node.hex] = true
+          end
         end
 
         def check_connected(route, token)
