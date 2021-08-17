@@ -135,6 +135,35 @@ module Engine
           ])
         end
 
+        def init_company_abilities
+          random_corporation = @corporations[rand % @corporations.size]
+          @companies.each do |company|
+            next unless (ability = abilities(company, :shares))
+
+            real_shares = []
+            ability.shares.each do |share|
+              case share
+              when 'random_president'
+                share = random_corporation.shares[0]
+                real_shares << share
+                company.desc = "Purchasing player takes a president's share (20%) of #{random_corporation.name} \
+              and immediately sets its par value. #{company.desc}"
+                @log << "#{company.name} comes with the president's share of #{random_corporation.name}"
+              when 'match_share'
+                share = random_corporation.shares.find { |s| !s.president }
+                real_shares << share
+                company.desc = "#{company.desc} This private company comes with a #{share.percent}% share of \
+                #{random_corporation.name}."
+                @log << "#{company.name} comes with a #{share.percent}% share of #{random_corporation.name}"
+              else
+                real_shares << share_by_id(share)
+              end
+            end
+
+            ability.shares = real_shares
+          end
+        end
+
         def status_array(corp)
           return if corp.floated?
 
