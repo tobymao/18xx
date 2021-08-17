@@ -3,6 +3,7 @@ require: rubocop-performance
 AllCops:
   TargetRubyVersion: 3.0.1
   NewCops: enable
+  SuggestExtensions: false
 
 Layout/EndOfLine:
   EnforcedStyle: lf
