@@ -56,7 +56,7 @@ module Engine
 
           def pass_description
             if @game.must_buy_power?(current_entity)
-              'Skip (to Emergency Buy)'
+              'Skip (to Forced Power Purchase)'
             else
               'Skip (Power)'
             end
