@@ -1687,7 +1687,7 @@ module Engine
               stop_on_other_route?(route, stop) ? 0 : game_route_revenue(stop, route.phase, route.train)
             end
           end
-          return rev unless route == route_set.first
+          return rev unless route == route_set&.first
 
           rev + (hex_crow_distance(route_set, set_ends.first, set_ends.last) * freight_bonus(route_set))
         end
