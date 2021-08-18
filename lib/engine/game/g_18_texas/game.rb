@@ -2,12 +2,16 @@
 
 require_relative 'meta'
 require_relative '../base'
+require_relative 'map'
+require_relative 'entities'
 
 module Engine
   module Game
     module G18Texas
       class Game < Game::Base
         include_meta(G18Texas::Meta)
+        include Entities
+        include Map
 
         CURRENCY_FORMAT_STR = '$%d'
         BANK_CASH = 8_000
@@ -16,81 +20,19 @@ module Engine
         CAPITALIZATION = :incremental
         HOME_TOKEN_TIMING = :float
         TRACK_RESTRICTION = :semi_restrictive
-        LAYOUT = :pointy
         AXES = { x: :number, y: :letter }.freeze
         SELL_BUY_ORDER = :sell_buy
         SELL_AFTER = :operate
         TREASURY_SHARE_LIMIT = 50
 
         TOKEN_FEE = {
-          'T&P' => 120,
-          'SP' => 120,
+          'T&P' => 140,
+          'SP' => 140,
           'MP' => 100,
-          'MKT' => 80,
-          'SSW' => 80,
-          'SAA' => 80,
+          'MKT' => 100,
+          'SSW' => 60,
+          'SAA' => 60,
         }.freeze
-
-        # rubocop:disable Layout/LineLength
-        TILES = {
-          '5' => 4,
-          '6' => 4,
-          '7' => 5,
-          '8' => 18,
-          '9' => 18,
-          '57' => 4,
-          '202' => 3,
-          '14' => 3,
-          '15' => 4,
-          '16' => 1,
-          '17' => 1,
-          '18' => 1,
-          '19' => 1,
-          '20' => 1,
-          '21' => 1,
-          '22' => 1,
-          '23' => 4,
-          '24' => 4,
-          '25' => 2,
-          '26' => 1,
-          '27' => 1,
-          '28' => 1,
-          '29' => 1,
-          '30' => 1,
-          '31' => 1,
-          '619' => 3,
-          '624' => 1,
-          '625' => 1,
-          '626' => 1,
-          '39' => 1,
-          '40' => 1,
-          '41' => 3,
-          '42' => 3,
-          '43' => 2,
-          '44' => 1,
-          '45' => 2,
-          '46' => 2,
-          '47' => 1,
-          '70' => 1,
-          '216' => 3,
-          '611' => 5,
-          '627' => 1,
-          '628' => 1,
-          '629' => 1,
-          '511' =>
-          {
-            'count' => 4,
-            'color' => 'green',
-            'code' => 'city=revenue:40,slots:2;label=Y;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0',
-          },
-          '512' =>
-          {
-            'count' => 1,
-            'color' => 'gray',
-            'code' => 'city=revenue:60,slots:3;label=Y;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
-          },
-        }.freeze
-        # rubocop:enable Layout/LineLength
 
         MARKET = [
           %w[82 90 100 110 122 135 150 165 180 200 220 245 270 300 330 360 400],
@@ -179,291 +121,10 @@ module Engine
           { name: '8', distance: 8, price: 800, num: 4 },
         ].freeze
 
-        COMPANIES = [
-          {
-            name: 'A',
-            value: 50,
-            revenue: 10,
-            desc: 'No special ability',
-            sym: 'A',
-          },
-          {
-            name: 'B',
-            value: 80,
-            revenue: 15,
-            desc: 'No special ability',
-            sym: 'B',
-          },          {
-            name: 'C',
-            value: 200,
-            revenue: 5,
-            desc: 'The purchaser of this private company receives the president\'s certificate of '\
-                  'the T&P Railroad and must immediately set its par value. The T&P automatically '\
-                  'floats once this private company is purchased and is an exception to the normal '\
-                  'rule.',
-            abilities: [{ type: 'shares', shares: 'T&P_0' }],
-            sym: 'C',
-          },          {
-            name: 'D',
-            value: 210,
-            revenue: 20,
-            desc: 'The purchaser of this private company receives a share of '\
-                  'the T&P Railroad.',
-            abilities: [{ type: 'shares', shares: 'T&P_1' }],
-            min_players: 4,
-            sym: 'D',
-          },          {
-            name: 'E',
-            value: 240,
-            revenue: 25,
-            desc: 'The purchaser of this private company receives a share of '\
-                  'the T&P Railroad.',
-            abilities: [{ type: 'shares', shares: 'T&P_2' }],
-            min_players: 5,
-            sym: 'E',
-          }
-        ].freeze
-
-        CORPORATIONS = [
-         {
-           float_percent: 50,
-           sym: 'T&P',
-           name: 'Texas and Pacific Railway',
-           logo: '18_texas/TP',
-           tokens: [0, 0, 0, 0, 0],
-           city: 0,
-           coordinates: 'D9',
-           color: 'darkmagenta',
-           text_color: 'white',
-           reservation_color: nil,
-           always_market_price: true,
-         },
-         {
-           float_percent: 50,
-           sym: 'MKT',
-           name: 'Missouri–Kansas–Texas Railway',
-           logo: '18_texas/MKT',
-           tokens: [0, 0, 0, 0],
-           coordinates: 'B11',
-           color: 'green',
-           text_color: 'white',
-           reservation_color: nil,
-           always_market_price: true,
-         },
-         {
-           float_percent: 50,
-           sym: 'SP',
-           name: 'Southern Pacific Railroad',
-           logo: '18_texas/SP',
-           tokens: [0, 0, 0, 0, 0],
-           coordinates: 'I14',
-           color: 'orange',
-           text_color: 'white',
-           reservation_color: nil,
-           always_market_price: true,
-         },
-         {
-           float_percent: 50,
-           sym: 'MP',
-           name: 'Missouri Pacific Railroad',
-           logo: '18_texas/MP',
-           tokens: [0, 0, 0, 0],
-           coordinates: 'G10',
-           color: 'red',
-           text_color: 'white',
-           reservation_color: nil,
-           always_market_price: true,
-         },
-         {
-           float_percent: 50,
-           sym: 'SSW',
-           name: 'St. Louis Southwestern Railway',
-           logo: '18_texas/SSW',
-           tokens: [0, 0, 0],
-           coordinates: 'D15',
-           color: 'mediumpurple',
-           text_color: 'white',
-           reservation_color: nil,
-           always_market_price: true,
-         },
-         {
-           float_percent: 50,
-           sym: 'SAA',
-           name: 'San Antonio and Aransas Pass',
-           logo: '18_texas/SAA',
-           tokens: [0, 0, 0],
-           coordinates: 'J5',
-           color: 'black',
-           text_color: 'white',
-           reservation_color: nil,
-           always_market_price: true,
-         },
-       ].freeze
-
-        LOCATION_NAMES = {
-          'A12' => 'Oklahoma City',
-          'A18' => 'Little Rock',
-          'B11' => 'Denison',
-          'C16' => 'Texarkana',
-          'D1' => 'El Paso',
-          'D9' => 'Fort Worth & Dallas',
-          'D15' => 'Marshall',
-          'D19' => 'Shreveport',
-          'E4' => 'Cisco',
-          'F9' => 'Waco',
-          'F13' => 'Palestine',
-          'F15' => 'Lufkin',
-          'G10' => 'College Station',
-          'H7' => 'Austin',
-          'H19' => 'Lafayette',
-          'I14' => 'Houston',
-          'J1' => 'Piedras Negras',
-          'J5' => 'San Antonio',
-          'J15' => 'Galveston',
-          'K10' => 'Victoria',
-          'M2' => 'Laredo',
-          'M8' => 'Corpus Christi',
-          'N1' => 'Monterrey',
-        }.freeze
-
-        HEXES = {
-          white: {
-            %w[
-            B9
-            B13
-            B15
-            B17
-            B19
-            C8
-            C10
-            C12
-            C14
-            C18
-            D7
-            D11
-            D13
-            D17
-            E6
-            E8
-            E10
-            E12
-            E14
-            E16
-            E18
-            F7
-            F11
-            G6
-            G8
-            G12
-            G18
-            H9
-            H11
-            H13
-            H15
-            H17
-            I6
-            I8
-            I10
-            I16
-            I18
-            J7
-            J9
-            J11
-            J13
-            K2
-            K4
-            K6
-            K8
-            L1
-            L3
-            L5
-            L7
-            M4
-            M6
-            N3
-            N5
-            ] => '',
-            %w[
-            F17
-            G14
-            G16
-            K12
-            L9
-            ] =>
-            'upgrade=cost:40,terrain:water',
-            %w[
-            D3
-            D5
-            E2
-            F3
-            F5
-            G2
-            G4
-            H3
-            H5
-            I2
-            I4
-            J3
-            ] =>
-            'upgrade=cost:40,terrain:desert',
-
-            ['E4'] => 'city=revenue:0;upgrade=cost:40,terrain:desert',
-            %w[B11
-               F13
-               C16
-               D15
-               F9
-               G10
-               K10
-               M2] => 'city=revenue:0',
-            ['F15'] => 'city=revenue:0;upgrade=cost:40,terrain:water',
-
-            %w[
-               H7
-               J5
-              ] => 'city=revenue:0;label=Y',
-          },
-          red: {
-            ['A12'] => 'offboard=revenue:yellow_20|brown_40;path=a:0,b:_0;path=a:5,b:_0',
-            ['A18'] => 'offboard=revenue:yellow_30|brown_50;path=a:0,b:_0;path=a:5,b:_0',
-            ['D1'] => 'offboard=revenue:yellow_50|brown_80;path=a:4,b:_0;path=a:5,b:_0',
-            ['D19'] => 'offboard=revenue:yellow_20|brown_40;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0',
-            ['H19'] => 'offboard=revenue:yellow_30|brown_50;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0',
-            ['J1'] => 'offboard=revenue:yellow_30|brown_50;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
-            ['N1'] => 'offboard=revenue:yellow_60|brown_80;path=a:3,b:_0;path=a:4,b:_0',
-          },
-          gray: {
-            ['J15'] => 'town=revenue:yellow_20|brown_50;path=a:1,b:_0;path=a:2,b:_0',
-            ['M8'] => 'town=revenue:yellow_30|brown_50;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0',
-          },
-          yellow: {
-            ['D9'] => 'city=revenue:30;city=revenue:30;label=Y;path=a:1,b:_0;path=a:_0,b:_1;path=a:_1,b:3',
-
-            ['I14'] => 'city=revenue:30;label=Y;path=a:1,b:_0;path=a:5,b:_0',
-            %w[I12] => 'path=a:1,b:4',
-          },
-        }.freeze
-
-        def setup
-          # Distribute privates
-          # Rules call for randomizing privates, assigning to players then reordering players
-          # based on worth of private
-          # Instead, just pass out privates from least to most expensive since player order is already
-          # random
-          sorted_companies = @companies.sort_by(&:value)
-          @players.each_with_index do |player, idx|
-            company = sorted_companies.shift
-            @log << "#{player.name} receives #{company.name} and pays #{format_currency(company.value)}"
-            player.spend(company.value, @bank)
-            player.companies << company
-            company.owner = player if idx <= players.size
-            after_buy_company(player, company, company.value)
-          end
-        end
-
         def new_auction_round
-          Round::Auction.new(self, [
-            Step::CompanyPendingPar,
+          Engine::Round::Auction.new(self, [
+            G18Texas::Step::CompanyPendingPar,
+            G18Texas::Step::SimultaneousAuction,
           ])
         end
 
@@ -472,6 +133,38 @@ module Engine
             G18Texas::Step::CompanyPendingPar,
             Engine::Step::BuySellParShares,
           ])
+        end
+
+        def init_company_abilities
+          random_corporation = @corporations[rand % @corporations.size]
+          random_shares = []
+          @companies.each do |company|
+            next unless (ability = abilities(company, :shares))
+
+            real_shares = []
+            ability.shares.each do |share|
+              case share
+              when 'random_president'
+                new_share = random_corporation.shares[0]
+                real_shares << new_share
+                random_shares << new_share
+                company.desc = "Purchasing player takes a president's share (20%) of #{random_corporation.name} \
+              and immediately sets its par value. #{company.desc}"
+                @log << "#{company.name} comes with the president's share of #{random_corporation.name}"
+              when 'match_share'
+                new_share = random_corporation.shares.find { |s| !random_shares.include?(s) }
+                real_shares << new_share
+                random_shares << new_share
+                company.desc = "#{company.desc} This private company comes with a #{new_share.percent}% share of \
+                #{random_corporation.name}."
+                @log << "#{company.name} comes with a #{new_share.percent}% share of #{random_corporation.name}"
+              else
+                real_shares << share_by_id(share)
+              end
+            end
+
+            ability.shares = real_shares
+          end
         end
 
         def status_array(corp)
