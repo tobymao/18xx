@@ -7,12 +7,15 @@ module Engine
   module Step
     module Tokener
       def round_state
-        {
-          tokened: false,
-        }
+        super.merge(
+          {
+            tokened: false,
+          }
+        )
       end
 
       def setup
+        super
         @round.tokened = false
       end
 

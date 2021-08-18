@@ -1818,6 +1818,10 @@ module Engine
 
       def skip_route_track_type; end
 
+      def track_blockers
+        blocker_companies
+      end
+
       private
 
       def init_graph

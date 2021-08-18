@@ -230,6 +230,21 @@ module Engine
           '118' => 1,
         }.freeze
 
+        DIT_UPGRADES = {
+          # yellow double-dit to green K or X city
+          '1' => %w[14],
+          '2' => %w[15],
+          '55' => %w[14],
+          '56' => %w[15],
+          '69' => %w[119],
+          '198' => %w[119],
+          '199' => %w[119],
+          # yellow single-dit to green city (also brown/green city)
+          '3' => %w[12 14 15 119],
+          '4' => %w[14 15 119],
+          '58' => %w[12 13 14 15 119],
+        }.freeze
+
         def append_game_tiles(gtiles, new_tiles)
           new_tiles.each do |k, v|
             if gtiles[k] && v.is_a?(Hash)

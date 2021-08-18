@@ -3,6 +3,7 @@
 require_relative 'meta'
 require_relative '../base'
 require_relative '../../option_error'
+require_relative '../../distance_graph'
 require_relative 'entities'
 require_relative 'map'
 
@@ -14,7 +15,7 @@ module Engine
         include Entities
         include Map
 
-        attr_reader :units
+        attr_reader :units, :distance_graph
 
         register_colors(black: '#37383a',
                         seRed: '#f72d2d',
@@ -213,6 +214,8 @@ module Engine
         HOME_TOKEN_TIMING = :operating_round
         BANK_CASH = 50_000
         COMPANY_SALE_FEE = 30
+        TRACK_RESTRICTION = :restrictive
+        TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
 
         def blocker_companies
           corporations
@@ -378,6 +381,8 @@ module Engine
         end
 
         def setup
+          @distance_graph = DistanceGraph.new(self, separate_node_types: false)
+          @formed = []
           @highest_layer = 0
           @layer_by_corp = {}
 
@@ -421,6 +426,19 @@ module Engine
           @highest_layer = 1 if unbought_companies.empty?
         end
 
+        def upgrades_to?(from, to, special = false, selected_company: nil)
+          # handle special-case upgrades
+          return true if force_dit_upgrade?(from, to)
+
+          super
+        end
+
+        def force_dit_upgrade?(from, to)
+          return false unless (list = DIT_UPGRADES[from.name])
+
+          list.include?(to.name)
+        end
+
         def can_ipo?(corp)
           if @layer_by_corp[corp]
             @layer_by_corp[corp] <= current_layer
@@ -429,10 +447,19 @@ module Engine
           end
         end
 
-        def minor_required_train(corp)
-          return unless REQUIRED_TRAIN[corp.name]
+        def major?(corp)
+          corp.presidents_share.percent == 20
+        end
 
-          @depot.trains.find { |t| t.name == REQUIRED_TRAIN[corp.name] }
+        def minor?(corp)
+          corp.presidents_share.percent != 20
+        end
+
+        def minor_required_train(corp)
+          return unless minor?(corp)
+
+          rtrain = REQUIRED_TRAIN[corp.name]
+          @depot.trains.find { |t| t.name == rtrain }
         end
 
         def minor_par_prices(corp)
@@ -441,7 +468,8 @@ module Engine
         end
 
         def par_prices(corp)
-          if (price = PAR_BY_CORPORATION[corp.name])
+          if major?(corp)
+            price = PAR_BY_CORPORATION[corp.name]
             stock_market.par_prices.select { |p| p.price == price }
           else
             minor_par_prices(corp)
@@ -472,18 +500,52 @@ module Engine
 
         def stock_round
           Engine::Round::Stock.new(self, [
+            Engine::Step::DiscardTrain,
             G1825::Step::BuySellParSharesCompanies,
           ])
         end
 
         def operating_round(round_num)
           Round::Operating.new(self, [
-            Engine::Step::Track,
-            Engine::Step::Token,
+            G1825::Step::TrackAndToken,
             Engine::Step::Route,
             Engine::Step::Dividend,
+            Engine::Step::DiscardTrain,
             Engine::Step::BuyTrain,
           ], round_num: round_num)
+        end
+
+        # Formation isn't flotation for minors
+        def formed?(corp)
+          @formed.include?(corp)
+        end
+
+        def check_formation(corp)
+          return if formed?(corp)
+
+          if major?(corp)
+            @formed << corp if corp.floated?
+          elsif corp.cash >= minor_required_train(corp).price
+            # note, not flotation, but when minor can purchase its required train
+            @formed << corp
+          end
+        end
+
+        # -1 if a has a higher par price than b
+        # 1 if a has a lower par price than b
+        # if they are the same, then use the order of formation (generally flotation)
+        def par_compare(a, b)
+          if a.par_price.price > b.par_price.price
+            -1
+          elsif a.par_price.price < b.par_price.price
+            1
+          else
+            @formed.find_index(a) < @formed.find_index(b) ? -1 : 1
+          end
+        end
+
+        def operating_order
+          @corporations.select { |c| formed?(c) }.sort { |a, b| par_compare(a, b) }.partition { |c| major?(c) }.flatten
         end
 
         def unbought_companies
@@ -529,6 +591,13 @@ module Engine
           status << %w[Receivership bold] if corp.receivership?
 
           status
+        end
+
+        # FIXME: change after implementing trains with non-scalar distances
+        def biggest_train_distance(entity)
+          return 0 if entity.trains.empty?
+
+          entity.trains.map(&:distance).max
         end
       end
     end

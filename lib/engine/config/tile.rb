@@ -94,7 +94,7 @@ module Engine
         '29' => 'path=a:0,b:2;path=a:0,b:1',
         '30' => 'path=a:0,b:4;path=a:0,b:1',
         '31' => 'path=a:0,b:2;path=a:0,b:5',
-        '52' => 'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:2,b:_1',
+        '52' => 'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:2,b:_1;label=OO',
         '53' => 'city=revenue:50;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0;label=B',
         '54' => 'city=revenue:60,loc:0.5;city=revenue:60,loc:2.5;path=a:0,b:_0;path=a:_0,b:1;path=a:2,b:_1;path=a:_1,b:3;label=NY',
         '59' => 'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:2,b:_1;label=OO',
