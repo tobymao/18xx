@@ -295,7 +295,7 @@ module View
                 textDecoration: 'underline',
               },
             },
-            @hide_not_floated ? 'floated' : 'all'),
+            @hide_not_floated ? 'Show unfloated' : 'Hide unfloated'),
           ')',
          ])
       end
