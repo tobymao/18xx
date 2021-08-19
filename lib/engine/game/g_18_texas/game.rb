@@ -207,6 +207,10 @@ module Engine
             .select { |bundle| @share_pool.fit_in_bank?(bundle) }
         end
 
+        def buying_power(entity, **)
+          entity.cash
+        end
+
         def redeemable_shares(entity)
           return [] unless entity.corporation?
 
