@@ -1628,15 +1628,16 @@ module Engine
         end
 
         # adjust end of set of routes to neighbor node if end is an offboard
+        # always returns hex of end
         def adjust_end(set, setend)
-          return setend unless setend.offboard?
+          return setend.hex unless setend.offboard?
 
           # find route in set that has this end
           end_route = set.find { |r| r.visited_stops.include?(setend) }
           # find chain in route that has this end
           end_chain = end_route.chains.find { |c| c[:nodes].include?(setend) }
-          # return other node in chain
-          end_chain[:nodes].find { |n| n != setend }
+          # return previous hex in chain
+          end_chain[:hexes][0] == setend.hex ? end_chain[:hexes][1] : end_chain[:hexes][-2]
         end
 
         # from https://www.redblobgames.com/grids/hexagons
@@ -1648,21 +1649,21 @@ module Engine
         # between ends. If an end is an offboard, calculate distance as if end
         # is last hex before offboard and add 1
         def hex_crow_distance(set, setend_a, setend_b)
-          end_a = adjust_end(set, setend_a)
-          end_b = adjust_end(set, setend_b)
+          hex_a = adjust_end(set, setend_a)
+          hex_b = adjust_end(set, setend_b)
 
-          x_a, y_a = doubleheight_coordinates(end_a.hex)
-          x_b, y_b = doubleheight_coordinates(end_b.hex)
+          x_a, y_a = doubleheight_coordinates(hex_a)
+          x_b, y_b = doubleheight_coordinates(hex_b)
 
           # from https://www.redblobgames.com/grids/hexagons#distances
           # this game essentially uses double-height coordinates
           dx = (x_a - x_b).abs
           dy = (y_a - y_b).abs
-          distance = end_a == end_b ? -1 : [0, dx + [0, (dy - dx) / 2].max - 1].max
+          distance = hex_a == hex_b ? -1 : [0, dx + [0, (dy - dx) / 2].max - 1].max
 
           # adjust for offboards
-          distance += 1 if end_a != setend_a
-          distance += 1 if end_b != setend_b
+          distance += 1 if hex_a != setend_a.hex
+          distance += 1 if hex_b != setend_b.hex
 
           [0, distance].max
         end
