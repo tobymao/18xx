@@ -62,10 +62,6 @@ module Engine
       true
     end
 
-    def border?
-      false
-    end
-
     def path?
       false
     end

@@ -49,6 +49,19 @@ module Engine
             @game.check_bank_broken!
           end
 
+          def process_buy_shares(action)
+            super
+
+            @game.check_formation(action.bundle.corporation)
+          end
+
+          def process_par(action)
+            super
+
+            # possible for a minor to form on par
+            @game.check_formation(action.corporation)
+          end
+
           def process_buy_company(action)
             player = action.entity
             company = action.company
@@ -63,6 +76,7 @@ module Engine
             player.spend(price, owner)
             track_action(action, company)
             @log << "#{player.name} buys #{company.name} from #{owner.name} for #{@game.format_currency(price)}"
+            @game.check_new_layer
           end
 
           def process_sell_company(action)

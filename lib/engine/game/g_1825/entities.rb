@@ -101,6 +101,7 @@ module Engine
             color: 'black',
             text_color: 'white',
             reservation_color: nil,
+            abilities: [{ type: 'blocks_hexes', owner_type: nil, hexes: ['U17'] }],
           },
           {
             sym: 'GWR',
@@ -112,6 +113,7 @@ module Engine
             color: 'darkgreen',
             text_color: 'white',
             reservation_color: nil,
+            abilities: [{ type: 'blocks_hexes', owner_type: nil, hexes: ['V18'] }],
           },
           {
             sym: 'GER',
@@ -134,6 +136,7 @@ module Engine
             color: 'lightgreen',
             text_color: 'black',
             reservation_color: nil,
+            abilities: [{ type: 'blocks_hexes', owner_type: nil, hexes: ['W19'] }],
           },
           {
             sym: 'SECR',
@@ -156,6 +159,7 @@ module Engine
             color: 'orange',
             text_color: 'black',
             reservation_color: nil,
+            abilities: [{ type: 'blocks_hexes', owner_type: nil, hexes: ['X20'] }],
           },
         ].freeze
 
@@ -181,6 +185,7 @@ module Engine
             color: 'red',
             text_color: 'white',
             reservation_color: nil,
+            abilities: [{ type: 'blocks_hexes', owner_type: nil, hexes: ['Q15'] }],
           },
           {
             sym: 'NER',
@@ -191,6 +196,7 @@ module Engine
             city: 0,
             color: 'limegreen',
             reservation_color: nil,
+            abilities: [{ type: 'blocks_hexes', owner_type: nil, hexes: ['L14'] }],
           },
           {
             sym: 'GCR',
@@ -222,6 +228,7 @@ module Engine
             city: 0,
             color: 'purple',
             reservation_color: nil,
+            abilities: [{ type: 'blocks_hexes', owner_type: nil, hexes: ['N10'] }],
           },
         ].freeze
 
@@ -255,11 +262,13 @@ module Engine
             city: 0,
             color: '#8c1b2f',
             reservation_color: nil,
+            abilities: [{ type: 'blocks_hexes', owner_type: nil, hexes: ['H4'] }],
           },
           {
             sym: 'GNoS',
             name: 'Great North of Scotland Railway',
             capitalization: :incremental,
+            float_percent: 40,
             shares: [40, 20, 20, 20],
             tokens: [0],
             coordinates: 'B12',
@@ -270,6 +279,7 @@ module Engine
             sym: 'HR',
             name: 'Highland Railway',
             capitalization: :incremental,
+            float_percent: 40,
             shares: [40, 20, 20, 20],
             tokens: [0],
             coordinates: 'B8',
@@ -280,6 +290,7 @@ module Engine
             sym: 'M&C',
             name: 'Maryport and Carslisle Railway Company',
             capitalization: :incremental,
+            float_percent: 40,
             shares: [40, 20, 20, 20],
             tokens: [0],
             coordinates: 'K7',
@@ -340,6 +351,7 @@ module Engine
             lnwr[:coordinates] = %w[T16 Q11]
           end
           corps.concat(UNIT3_CORPORATIONS) if @units[3]
+          # FIXME: Modify GWR (Unit 1) if playing with R2
           corps
         end
       end
