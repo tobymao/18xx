@@ -305,7 +305,6 @@ module Engine
     end
 
     def add_blocker!(private_company)
-      @parts << private_company
       @blockers << private_company
     end
 

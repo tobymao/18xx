@@ -217,10 +217,6 @@ module Engine
         TRACK_RESTRICTION = :restrictive
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
 
-        def blocker_companies
-          corporations
-        end
-
         def init_optional_rules(optional_rules)
           optional_rules = (optional_rules || []).map(&:to_sym)
 
@@ -513,6 +509,22 @@ module Engine
             Engine::Step::DiscardTrain,
             Engine::Step::BuyTrain,
           ], round_num: round_num)
+        end
+
+        def place_home_token(corporation)
+          return if corporation.tokens.first&.used
+          return super unless corporation.coordinates.is_a?(Array)
+
+          corporation.coordinates.each do |coord|
+            hex = hex_by_id(coord)
+            tile = hex&.tile
+            cities = tile.cities
+            city = cities.find { |c| c.reserved_by?(corporation) } || cities.first
+            token = corporation.find_token_by_type
+
+            @log << "#{corporation.name} places a token on #{hex.name}"
+            city.place_token(corporation, token)
+          end
         end
 
         # Formation isn't flotation for minors

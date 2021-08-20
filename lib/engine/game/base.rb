@@ -1818,10 +1818,6 @@ module Engine
 
       def skip_route_track_type; end
 
-      def track_blockers
-        blocker_companies
-      end
-
       private
 
       def init_graph
@@ -1939,7 +1935,7 @@ module Engine
 
       def init_hexes(companies, corporations)
         blockers = {}
-        blocker_companies.each do |company|
+        (companies + corporations).each do |company|
           abilities(company, :blocks_hexes) do |ability|
             ability.hexes.each do |hex|
               blockers[hex] = company
@@ -2009,10 +2005,6 @@ module Engine
             end
           end
         end.flatten.compact
-      end
-
-      def blocker_companies
-        companies
       end
 
       def partition_companies

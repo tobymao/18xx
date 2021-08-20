@@ -86,7 +86,7 @@ module Engine
         old_tile = hex.tile
         graph = @game.graph_for_entity(entity)
 
-        @game.track_blockers.each do |company|
+        (@game.companies + @game.corporations).each do |company|
           break if @game.loading
           next if company.closed? || company == entity
           next unless (ability = @game.abilities(company, :blocks_hexes))

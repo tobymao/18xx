@@ -54,7 +54,7 @@ module View
         }.freeze
 
         def preferred_render_locations
-          if @tile.parts.reject(&:border?).one?
+          if @tile.parts.reject(&:border?).empty?
             [
               P_CENTER,
             ]
@@ -104,7 +104,7 @@ module View
                 y: -5,
               },
             },
-            @blocker.sym)
+            @blocker.company? ? @blocker.sym : @blocker.name)
         end
 
         def render_barbell

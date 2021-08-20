@@ -255,14 +255,6 @@ module Engine
       @second_share&.percent || presidents_percent / 2
     end
 
-    def border?
-      false
-    end
-
-    def sym
-      @name
-    end
-
     def closed?
       @closed
     end
