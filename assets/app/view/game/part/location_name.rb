@@ -80,7 +80,8 @@ module View
             return [center, l_up40, l_down40, l_bottom, l_top]
           end
 
-          @tile.parts.reject { |p| p.path? || p.border? }.any? || @tile.blockers.any? ? [l_down40] : [l_center]
+          # if there are any parts not a path or border, or if there is a blocker: don't center
+          @tile.parts.any? { |p| !p.path? && !p.border? } || !@tile.blockers.empty? ? [l_down40] : [l_center]
         end
 
         def load_from_tile

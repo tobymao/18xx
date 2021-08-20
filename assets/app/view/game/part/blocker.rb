@@ -54,7 +54,7 @@ module View
         }.freeze
 
         def preferred_render_locations
-          if @tile.parts.reject(&:border?).empty?
+          if @tile.parts.all?(&:border?) # are the only parts borders?
             [
               P_CENTER,
             ]
