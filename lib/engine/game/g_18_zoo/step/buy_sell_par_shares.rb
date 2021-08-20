@@ -14,7 +14,7 @@ module Engine
 
             actions = super
             actions << 'choose_ability' if entity.player? && can_choose_any_ability?(entity)
-            actions << 'buy_company' unless purchasable_companies?.empty?
+            actions << 'buy_company' unless available_companies.empty?
             actions << 'pass' unless actions.empty?
             actions.uniq
           end
@@ -61,7 +61,7 @@ module Engine
             @log << "#{entity.name} declines to buy shares"
           end
 
-          def purchasable_companies?
+          def available_companies
             return [] if bought?
 
             @game.available_companies
