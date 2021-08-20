@@ -14,6 +14,7 @@ module Engine
 
             actions = super
             actions << 'choose_ability' if entity.player? && can_choose_any_ability?(entity)
+            actions << 'buy_company' unless purchasable_companies?.empty?
             actions << 'pass' unless actions.empty?
             actions.uniq
           end
@@ -23,6 +24,12 @@ module Engine
           end
 
           def process_buy_company(action)
+            price = action.price
+            company = action.company
+            owner = company.owner
+
+            raise GameError, "Cannot buy #{company.name} from #{owner.name}" if owner == @game.bank && price != company.value
+
             super
 
             @game.available_companies.delete(action.company)
@@ -54,7 +61,7 @@ module Engine
             @log << "#{entity.name} declines to buy shares"
           end
 
-          def purchasable_companies(_entity)
+          def purchasable_companies?
             return [] if bought?
 
             @game.available_companies

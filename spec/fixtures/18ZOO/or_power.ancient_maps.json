@@ -24,7 +24,7 @@
       "id": 3,
       "created_at": 1618843074,
       "company": "ANCIENT_MAPS",
-      "price": 1
+      "price": 2
     },
     {
       "type": "pass",
@@ -308,7 +308,7 @@
   "loaded": true,
   "mode": "hotseat",
   "result": {
-    "Player 1": 102,
+    "Player 1": 101,
     "Player 2": 101
   },
   "round": "Operating Round",
