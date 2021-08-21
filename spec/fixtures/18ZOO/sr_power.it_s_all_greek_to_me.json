@@ -50,7 +50,7 @@
       "id": 6,
       "created_at": 1616074747,
       "company": "ANCIENT_MAPS",
-      "price": 1
+      "price": 2
     },
     {
       "type": "pass",
@@ -87,7 +87,7 @@
   "mode": "hotseat",
   "result": {
     "Player 2": 100,
-    "Player 1": 95
+    "Player 1": 94
   },
   "round": "Stock Round",
   "settings": {

@@ -22,7 +22,7 @@
       "id": 3,
       "created_at": 1618164889,
       "company": "A_TIP_OF_SUGAR",
-      "price": 3
+      "price": 2
     },
     {
       "type": "pass",
@@ -233,7 +233,7 @@
   "created_at": "2021-04-08",
   "loaded": true,
   "result": {
-    "Player 1": 100,
+    "Player 1": 101,
     "Player 2": 62
   },
   "turn": 1,
