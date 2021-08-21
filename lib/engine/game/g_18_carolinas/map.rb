@@ -316,20 +316,20 @@ module Engine
         DIT_UPGRADES = {
           # yellow double-dit to green single-dit or K or X city
           '1' => %w[14 88],
-          '1s' => %w[14s 88s],
+          '1s' => %w[14 14s 88 88s],
           '2' => %w[15 87],
-          '2s' => %w[15s 87s],
+          '2s' => %w[15 15s 87 87s],
           '55' => %w[14 88],
-          '55s' => %w[14s 88s],
+          '55s' => %w[14 14s 88 88s],
           '56' => %w[15 87],
-          '56s' => %w[15s 87s],
+          '56s' => %w[15 15s 87 87s],
           # yellow single-dit to green city
           '3' => %w[12 14 15],
-          '3s' => %w[12s 14s 15s],
+          '3s' => %w[12 12s 14 14s 15 15s],
           '4' => %w[14 15],
-          '4s' => %w[14s 15s],
+          '4s' => %w[14 14s 15 15s],
           '58' => %w[12 13 14 15],
-          '58s' => %w[12s 13s 14s 15s],
+          '58s' => %w[12 12s 13 13s 14 14s 15 15s],
         }.freeze
 
         def init_tile_groups
