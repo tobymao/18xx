@@ -42,6 +42,13 @@ module View
         end
       end
 
+      prevent_default = lambda do |event|
+        event = Native(event)
+        event.preventDefault
+      end
+
+      form_props = { on: { submit: prevent_default } }
+
       chatbar_props = {
         attrs: {
           autocomplete: 'off',
@@ -59,7 +66,7 @@ module View
         on: { keyup: enter },
       }
 
-      children << h('input#chatbar', chatbar_props) if @user
+      children << h(:form, form_props, [h('input#chatbar', chatbar_props)]) if @user
 
       props = {
         key: 'global_chat',
