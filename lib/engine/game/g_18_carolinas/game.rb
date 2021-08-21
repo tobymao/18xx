@@ -456,6 +456,21 @@ module Engine
           ], round_num: round_num)
         end
 
+        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
+          if tile_manifest && !@final_gauge && tile.paths.any? { |p| p.track != :broad } && !tile.label
+            # allow tile manifest to see what upgrades will look like after final_gauge is set
+            tile.ignore_gauge_compare = true
+          end
+          colors = Array(@phase.phases.last[:tiles])
+          result = @all_tiles
+            .select { |t| colors.include?(t.color) }
+            .uniq(&:name)
+            .select { |t| upgrades_to?(tile, t, selected_company: selected_company) }
+            .reject(&:blocks_lay)
+          tile.ignore_gauge_compare = false if tile_manifest && !@final_gauge
+          result
+        end
+
         def upgrades_to?(from, to, special = false, selected_company: nil)
           from_standard = from.paths.any? { |p| p.track == :broad }
           from_southern = from.paths.any? { |p| p.track != :broad }
