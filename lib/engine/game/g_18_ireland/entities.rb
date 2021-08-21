@@ -19,7 +19,7 @@ module Engine
             value: 30,
             revenue: 7,
             desc: 'The owning Corporation can place two connected narrow gauge yellow tiles in the Donegal'\
-                  ' hex and on adjacent hex. This action closes the company.',
+                  ' hex and one adjacent hex. This action closes the company.',
             sym: 'DR',
             abilities: [
               {
