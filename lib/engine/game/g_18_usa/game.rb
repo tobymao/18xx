@@ -1672,13 +1672,14 @@ module Engine
           return @phase.tiles.include?(:gray) if GRAY_PLAIN_TRACK_TILES.include?(to.name) &&
               from.color == :white && from.cities.size.zero? && from.label == to.label
           # from yellow
+
           return @phase.tiles.include?(:brown) if BROWN_PLAIN_TRACK_TILES.include?(to.name) &&
-              @yellow_plain_tiles.include?(from.name) && from.cities.size.zero? && from.label == to.label
+              YELLOW_PLAIN_TRACK_TILES.include?(from.name) && from.cities.size.zero? && from.label == to.label
           return @phase.tiles.include?(:gray) if GRAY_PLAIN_TRACK_TILES.include?(to.name) &&
-              @yellow_plain_tiles.include?(from.name) && from.cities.size.zero? && from.label == to.label
+              YELLOW_PLAIN_TRACK_TILES.include?(from.name) && from.cities.size.zero? && from.label == to.label
           # from green
           return @phase.tiles.include?(:gray) if GRAY_PLAIN_TRACK_TILES.include?(to.name) &&
-              @green_plain_tiles.include?(from.name) && from.cities.size.zero? && from.label == to.label
+              GREEN_PLAIN_TRACK_TILES.include?(from.name) && from.cities.size.zero? && from.label == to.label
 
           return @phase.tiles.include?(:brown) if PLAIN_GREEN_CITY_TILES.include?(to.name) &&
               from.color == :white && from.cities.size.positive? && !from.label
@@ -1702,15 +1703,15 @@ module Engine
           return @phase.tiles.include?(:brown) if to.name == '593' && from.name == 'ATL1' && from.hex.id == home_hex.id &&
               @round&.tile_lay_mode == :brown_home
           return @phase.tiles.include?(:brown) if to.name == '593' && from.name == 'CHI1' && from.hex.id == home_hex.id &&
-          @round&.tile_lay_mode == :brown_home
+              @round&.tile_lay_mode == :brown_home
           return @phase.tiles.include?(:brown) if to.name == '593' && from.name == 'NO1' && from.hex.id == home_hex.id &&
-          @round&.tile_lay_mode == :brown_home
+              @round&.tile_lay_mode == :brown_home
           return @phase.tiles.include?(:brown) if to.name == 'D3' && from.name == 'D1' && from.hex.id == home_hex.id &&
-          @round&.tile_lay_mode == :brown_home
+              @round&.tile_lay_mode == :brown_home
           return @phase.tiles.include?(:brown) if to.name == 'DFW3' && from.name == 'DFW1' && from.hex.id == home_hex.id &&
-          @round&.tile_lay_mode == :brown_home
+              @round&.tile_lay_mode == :brown_home
           return @phase.tiles.include?(:brown) if to.name == 'LA3' && from.name == 'LA1' && from.hex.id == home_hex.id &&
-          @round&.tile_lay_mode == :brown_home
+              @round&.tile_lay_mode == :brown_home
 
           # plain yellow to brown
           return @phase.tiles.include?(:brown) if PLAIN_BROWN_CITY_TILES.any? { |name| name == to.name } &&

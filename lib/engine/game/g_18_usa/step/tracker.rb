@@ -6,12 +6,22 @@ module Engine
   module Game
     module G18USA
       module Tracker
+        TRACK_ENGINEER_TILE_LAYS = [ # Three lays with one being an upgrade, second tile costs 20, third tile free
+            { lay: true, upgrade: true },
+            { lay: true, upgrade: :not_if_upgraded, cost: 20, cannot_reuse_same_hex: true },
+            { lay: true, upgrade: :not_if_upgraded, cost: 0, cannot_reuse_same_hex: true },
+          ].freeze
+
+        NORMAL_TILE_LAYS = [ # Two lays with one being an upgrade, second tile costs 20
+            { lay: true, upgrade: true },
+            { lay: true, upgrade: :not_if_upgraded, cost: 20, cannot_reuse_same_hex: true },
+          ].freeze
+
         def round_state
           super.merge({
                         tile_lay_mode: :standard,
                         great_northern_track: false,
-                        extra_yellow_track: false,
-                        extra_plain_track_upgrade: false,
+                        pettibone_upgrade: false,
                       })
         end
 
@@ -56,27 +66,28 @@ module Engine
 
         def could_do_track_engineers?(entity)
           corporation = entity&.company? ? entity.owner : entity
-          !@game.company_by_id('P7').closed? && @game.company_by_id('P7').owner == corporation && !@round.extra_yellow_track
+          !@game.company_by_id('P7').closed? && @game.company_by_id('P7').owner == corporation
         end
 
-        def tile_lay_eligible_for_track_engineers?(old_tile, new_tile, entity)
-          could_do_track_engineers?(entity) &&
-            old_tile.color == :white &&
-            new_tile.color == :yellow &&
-            @round.num_laid_track >= 2
+        def tile_lay_eligible_for_track_engineers?(old_tile, new_tile, _entity)
+          old_tile.color == :white &&
+          new_tile.color == :yellow &&
+          @round.num_laid_track >= 2
         end
 
         def could_do_pettibone?(entity)
           corporation = entity&.company? ? entity.owner : entity
           !@game.company_by_id('P11').closed? &&
               @game.company_by_id('P11').owner == corporation &&
-              !@round.extra_plain_track_upgrade
+              !@round.pettibone_upgrade
         end
 
-        def tile_lay_eligible_for_pettibone?(old_tile, new_tile, entity)
-          could_do_pettibone?(entity) &&
-            old_tile.cities.empty? && new_tile.cities.empty? && # plain track only
-            new_tile.color != :yellow # not a lay; must be upgrade
+        def tile_lay_eligible_for_pettibone?(old_tile, new_tile, _entity)
+          old_tile.cities.empty? && new_tile.cities.empty? && # plain track only
+          # must be an upgrade
+          track_upgrade?(old_tile, new_tile) &&
+          # the power not used yet
+          !@round.pettibone_upgrade
         end
 
         def get_tile_lay(entity)
@@ -84,15 +95,13 @@ module Engine
           return great_northern_action if @round.tile_lay_mode == :gnr && could_do_great_northern?(entity)
           return brown_home_action if @round.tile_lay_mode == :brown_home && could_do_brown_home_tile_lay?(entity)
 
-          # 18USA specific:
-          # 0 - full lay and upgrade
-          # 1 - lay, upgrade if 0 was not upgrade
-          # 2 - (loop) full again
-          action = @game.tile_lays(corporation)[@round.num_laid_track]&.clone
+          tile_lays = (could_do_track_engineers?(corporation) ? TRACK_ENGINEER_TILE_LAYS : NORMAL_TILE_LAYS)
+          action = tile_lays[@round.num_laid_track]&.clone
           return unless action
 
           action[:lay] = !@round.upgraded_track if action[:lay] == :not_if_upgraded
           action[:upgrade] = !@round.upgraded_track if action[:upgrade] == :not_if_upgraded
+          action[:upgrade] = true if @round.tile_lay_mode == :pettibone
           action[:cost] = action[:cost] || 0
           action[:upgrade_cost] = action[:upgrade_cost] || action[:cost]
           action[:cannot_reuse_same_hex] = action[:cannot_reuse_same_hex] || false
@@ -113,15 +122,24 @@ module Engine
           if @round.tile_lay_mode == :brown_home && (action.hex != @game.home_hex_for(action.entity) || tile.color != :brown)
             raise GameError, "Must upgrade home to brown in #{tile_lay_mode_desc(@round.tile_lay_mode)} mode"
           end
+          if @round.tile_lay_mode == :pettibone && !tile_lay_eligible_for_pettibone?(old_tile, tile, entity)
+            raise GameError, 'Only plain track upgrades can be used for Pettibone & Mulliken power'
+          end
 
           extra_cost = tile.color == :yellow ? tile_lay[:cost] : tile_lay[:upgrade_cost]
 
           lay_tile(action, extra_cost: extra_cost || 0, entity: entity, spender: spender)
-          @round.upgraded_track = true if track_upgrade?(old_tile, tile, action.hex)
 
-          if @round.tile_lay_mode == :gnr
+          # Only record the upgrade if not a pettibone upgrade; the pettibone upgrade is tracked separately
+          @round.upgraded_track = true if track_upgrade?(old_tile, tile, action.hex) && @round.tile_lay_mode != :pettibone
+
+          case @round.tile_lay_mode
+          when :gnr
             @round.great_northern_track = true
-          elsif @round.tile_lay_mode != :brown_home
+          when :pettibone
+            @round.pettibone_upgrade = true
+            @round.num_laid_track += 1
+          when :standard
             @round.num_laid_track += 1
           end
 
@@ -135,6 +153,7 @@ module Engine
           # GNR mode aggressively uses GNR tile lay
           return 'GNR Track' if mode == :gnr
           return 'Brown Home' if mode == :brown_home
+          return 'P&M Upgrade' if mode == :pettibone
 
           'unknown'
         end
@@ -144,7 +163,7 @@ module Engine
         # upgrade check
         def potential_tiles(entity, hex)
           super.reject do |tile|
-            tile.color == :brown && hex.tile.color != :green &&
+            !tile.cities.empty? && tile.color == :brown && hex.tile.color != :green &&
                 hex != @game.home_hex_for(entity) && @round.tile_lay_mode != :brown_home
           end
         end
@@ -176,6 +195,7 @@ module Engine
           }.freeze
           choices[:gnr] = 'Great Northern Railway tile lay' if could_do_great_northern?(entity)
           choices[:brown_home] = 'Brown Home tile lay' if could_do_brown_home_tile_lay?(entity)
+          choices[:pettibone] = 'P&M tile lay' if could_do_pettibone?(entity)
           choices # .reject { |key, _| key == @round.tile_lay_mode }
         end
 
