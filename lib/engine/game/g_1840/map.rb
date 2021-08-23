@@ -306,8 +306,8 @@ module Engine
             ['A19'] => 'town=revenue:30;path=a:1,b:_0,track:narrow;path=a:5,b:_0,track:narrow',
             ['C7'] => 'city=revenue:30,slots:2;path=a:0,b:_0,track:narrow;path=a:4,b:_0,track:narrow;' \
                       'path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0',
-            ['I11'] => 'city=revenue:30;town=revenue:10;path=a:3,b:_0,track:narrow;path=a:1,b:4,track:narrow;' \
-                       'path=a:0,b:_1;path=a:5,b:_1',
+            ['I11'] => 'city=revenue:30;town=revenue:10;town=revenue:30;path=a:3,b:_0,track:narrow;path=a:1,b:_2,track:narrow;' \
+                       'path=a:0,b:_1;path=a:5,b:_1;path=a:4,b:_2,track:narrow',
           },
           white: {
             %w[B4 B6 B8 B18 B24 C3 C5 C11 C19 C23 C25 C27 D2 D8 D10 D14 D16 E5 E9 E25 E27 F4 F16 F26 G7 G9 G13 G27 G29
