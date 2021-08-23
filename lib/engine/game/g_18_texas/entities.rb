@@ -7,43 +7,87 @@ module Engine
   module Game
     module G18Texas
       module Entities
+        # rubocop:disable Layout/LineLength
+
         COMPANIES = [
           {
             name: 'Buffalo Bayou, Brazos and Colorado Railway Company',
             value: 50,
             revenue: 10,
             desc: 'No special ability',
-            sym: 'A',
+            sym: 'BBBCRC',
+            abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['J13'] },
+                        {
+                          type: 'tile_lay',
+                          when: 'owning_player_or_turn',
+                          owner_type: 'player',
+                          hexes: ['J13'],
+                          tiles: %w[8 9],
+                          count: 1,
+                        }],
+
           },
           {
             name: 'Galveston and Red River Railway Company',
             value: 80,
             revenue: 20,
-            desc: 'No special ability',
-            sym: 'B',
-          },          {
+            desc: 'The owning corporation may place a tile in hex I14. The corporation does not need to have a route to this hex. The tile placed counts as the corporation’s tile lay action and the corporation must pay the terrain cost. The corporation may then immediately place a station token there.',
+            sym: 'GRRRC',
+            abilities: [
+                        {
+                          type: 'teleport',
+                          when: 'owning_player_or_turn',
+                          reachable: false,
+                          owner_type: 'player',
+                          tiles: ['511'],
+                          hexes: ['I14'],
+                        },
+                       ],
+          },
+          {
             name: 'Jay Gould',
             value: 200,
             revenue: 5,
             abilities: [{ type: 'shares', shares: 'random_president' }],
-            sym: 'C',
-          },          {
+            sym: 'JG',
+          }, {
             name: 'International–Great Northern',
             value: 210,
             revenue: 30,
-            abilities: [{ type: 'shares', shares: 'match_share' }],
             min_players: 4,
-            sym: 'D',
-          },          {
+            sym: 'IGN',
+            abilities: [{ type: 'shares', shares: 'match_share' },
+                        { type: 'blocks_hexes', owner_type: 'player', hexes: %w[D13 E12] },
+                        {
+                          type: 'tile_lay',
+                          when: 'owning_player_or_turn',
+                          owner_type: 'player',
+                          hexes: %w[D13 E12],
+                          tiles: %w[8 9],
+                          count: 2,
+                        }],
+          },
+          {
             name: 'New Orleans Pacific Railroad',
             value: 240,
             revenue: 40,
-
-            abilities: [{ type: 'shares', shares: 'match_share' }],
             min_players: 5,
-            sym: 'E',
+            sym: 'NOPR',
+            desc: 'The owning corporation may place a tile in hex J5. The corporation does not need to have a route to this hex. The tile placed counts as the corporation’s tile lay action and the corporation must pay the terrain cost. The corporation may then immediately place a station token there.',
+
+            abilities: [{ type: 'shares', shares: 'match_share' },
+
+                        {
+                          type: 'teleport',
+                          reachable: false,
+                          when: 'owning_player_or_turn',
+                          owner_type: 'player',
+                          tiles: ['511'],
+                          hexes: ['J5'],
+                        }],
           }
         ].freeze
+        # rubocop:enable Layout/LineLength
 
         CORPORATIONS = [
          {

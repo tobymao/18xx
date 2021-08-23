@@ -90,6 +90,7 @@ module Engine
           'M8' => 'Corpus Christi',
           'N1' => 'Monterrey',
         }.freeze
+        # rubocop:disable Layout/LineLength
 
         HEXES = {
           white: {
@@ -193,7 +194,7 @@ module Engine
               ] => 'city=revenue:0;label=Y',
           },
           red: {
-            ['A12'] => 'offboard=revenue:yellow_20|brown_40;path=a:0,b:_0;path=a:5,b:_0',
+            ['A12'] => 'offboard=revenue:yellow_20|brown_40;path=a:0,b:_0',
             ['A18'] => 'offboard=revenue:yellow_30|brown_50;path=a:0,b:_0;path=a:5,b:_0',
             ['D1'] => 'offboard=revenue:yellow_50|brown_80;path=a:5,b:_0',
             %w[D19 H19] => 'offboard=revenue:yellow_30|brown_50;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0',
@@ -205,10 +206,11 @@ module Engine
             ['M8'] => 'town=revenue:yellow_20|brown_40;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0',
           },
           yellow: {
-            ['D9'] => 'city=revenue:30;city=revenue:30;label=Y;path=a:1,b:_0;path=a:_0,b:_1;path=a:_1,b:3',
-            ['I14'] => 'city=revenue:30;label=Y;path=a:1,b:_0;path=a:5,b:_0',
+            ['D9'] => 'city=revenue:10;city=revenue:20;label=Y;path=a:1,b:_0;path=a:_0,b:_1;path=a:_1,b:3;upgrade=cost:60,terrain:water',
+            ['I14'] => 'city=revenue:30;label=Y;path=a:1,b:_0;path=a:5,b:_0;upgrade=cost:60,terrain:water',
           },
         }.freeze
+        # rubocop:enable Layout/LineLength
 
         LAYOUT = :pointy
       end
