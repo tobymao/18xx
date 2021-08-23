@@ -1193,7 +1193,12 @@ module Engine
         end
 
         def check_distance(route, visits)
-          raise GameError, 'Route cannot begin/end in a town' if visits.first.town? || visits.last.town?
+          first = visits.first
+          last = visits.last
+          corp = route.train.owner
+          raise GameError, 'Route cannot begin/end in a town' if first.town? || last.town?
+          raise GameError, 'Route to out-tokened off-board hex not allowed' if out_tokened_hex?(first.hex, corp) ||
+                                                                               out_tokened_hex?(last.hex, corp)
 
           if (metropolis_name, rhine_side = illegal_double_visit_yellow_rhine_metropolis?(visits))
             raise GameError, "A route cannot visit #{metropolis_name} side of Rhine Metropolis #{rhine_side} twice"
@@ -1243,8 +1248,7 @@ module Engine
 
         def revenue_info(route, stops)
           corporation = route.train.owner
-          [off_board_out_tokened_penalty(route, stops, corporation),
-           montan_bonus(route, stops),
+          [montan_bonus(route, stops),
            eastern_ruhr_area_bonus(stops),
            iron_rhine_bonus(stops, corporation),
            trajekt_usage_penalty(route, stops),
@@ -1488,19 +1492,6 @@ module Engine
         def metropolis_name(metropolis_hex_name, is_west)
           west_name, east_name = get_location_name(metropolis_hex_name).split
           is_west || !east_name ? west_name : east_name
-        end
-
-        def off_board_out_tokened_penalty(route, stops, corporation)
-          bonus = { revenue: 0 }
-
-          stops.each do |s|
-            next unless out_tokened_hex?(s.hex, corporation)
-
-            bonus[:revenue] -= s.route_revenue(route.phase, route.train)
-            block = "#{s.hex.name} tokened"
-            bonus[:description] = (bonus[:description] ? "#{bonus[:description]}, #{block}" : block)
-          end
-          bonus
         end
 
         def out_tokened_hex?(hex, corporation)
