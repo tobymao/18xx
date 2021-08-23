@@ -41,6 +41,11 @@ module View
           end
         end
 
+        prevent_default = lambda do |event|
+          event = Native(event)
+          event.preventDefault
+        end
+
         if participant?
           children << h(:div, {
                           style: {
@@ -55,18 +60,23 @@ module View
                   margin: 'auto 0',
                 },
               }, [@user['name'] + ':']),
-            h('input#chatbar',
-              attrs: {
-                autocomplete: 'off',
-                title: 'hotkey: c – esc to leave',
-                type: 'text',
-                value: @chat_input,
-              },
-              style: {
-                marginLeft: '0.5rem',
-                flex: '1',
-              },
-              on: { keyup: key_event }),
+            h(:form, {
+                style: { display: 'contents' },
+                on: { submit: prevent_default },
+              }, [
+              h('input#chatbar',
+                attrs: {
+                  autocomplete: 'off',
+                  title: 'hotkey: c – esc to leave',
+                  type: 'text',
+                  value: @chat_input,
+                },
+                style: {
+                  marginLeft: '0.5rem',
+                  flex: '1',
+                },
+                on: { keyup: key_event }),
+              ]),
             ])
         end
 
