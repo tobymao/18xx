@@ -1247,10 +1247,9 @@ module Engine
         end
 
         def revenue_info(route, stops)
-          corporation = route.train.owner
           [montan_bonus(route, stops),
            eastern_ruhr_area_bonus(stops),
-           iron_rhine_bonus(stops, corporation),
+           iron_rhine_bonus(stops),
            trajekt_usage_penalty(route, stops),
            rheingold_express_bonus(route, stops),
            ratingen_bonus(route, stops)]
@@ -1546,11 +1545,10 @@ module Engine
           bonus
         end
 
-        def iron_rhine_bonus(stops, corporation)
+        def iron_rhine_bonus(stops)
           bonus = { revenue: 0 }
-          return bonus if out_tokened_hex?(roermund_hex, corporation) ||
-                          stops.none? { |s| s.hex.id == roermund_hex.id } ||
-                          stops.none? { |s| eastern_ruhr.include?(s.hex.id) }
+          return bonus if stops.none? { |s| s.hex.id == roermund_hex.id } ||
+                          stops.none? { |s| EASTERN_RUHR_HEXES.include?(s.hex.id) }
 
           bonus[:revenue] = 80
           bonus[:description] = 'Iron Rhine'
