@@ -14,7 +14,7 @@ module Engine
             name: 'Buffalo Bayou, Brazos and Colorado Railway Company',
             value: 50,
             revenue: 10,
-            desc: 'No special ability',
+            desc: 'Blocks hex J13 until Phase 5. The owning president may place a #8 or #9 tile in this hex as an extra tile lay during the track laying step of a corporation for which they are president.',
             sym: 'BBBCRC',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['J13'] },
                         {
@@ -31,7 +31,7 @@ module Engine
             name: 'Galveston and Red River Railway Company',
             value: 80,
             revenue: 20,
-            desc: 'The owning corporation may place a tile in hex I14. The corporation does not need to have a route to this hex. The tile placed counts as the corporation’s tile lay action and the corporation must pay the terrain cost. The corporation may then immediately place a station token there.',
+            desc: 'The owning president may place a tile in hex I14 (Houston). The corporation does not need to have a route to this hex. The tile placed counts as the corporation’s tile lay action and the corporation must pay the terrain cost. The corporation may then immediately place a station token there.',
             sym: 'GRRRC',
             abilities: [
                         {
@@ -55,6 +55,7 @@ module Engine
             value: 210,
             revenue: 30,
             min_players: 4,
+            desc: 'Blocks hexes D13 and E12 until Phase 5. The owning president may place #8 and #9 tiles in these hexes as an extra tile lay during the track laying step of a corporation for which they are president. The tiles must connect to each other.',
             sym: 'IGN',
             abilities: [{ type: 'shares', shares: 'match_share' },
                         { type: 'blocks_hexes', owner_type: 'player', hexes: %w[D13 E12] },
@@ -73,7 +74,7 @@ module Engine
             revenue: 40,
             min_players: 5,
             sym: 'NOPR',
-            desc: 'The owning corporation may place a tile in hex J5. The corporation does not need to have a route to this hex. The tile placed counts as the corporation’s tile lay action and the corporation must pay the terrain cost. The corporation may then immediately place a station token there.',
+            desc: 'The owning president may place a tile in hex J5 (San Antonio). The corporation does not need to have a route to this hex. The tile placed counts as the corporation’s tile lay action. The corporation may then immediately place a station token there.',
 
             abilities: [{ type: 'shares', shares: 'match_share' },
 
