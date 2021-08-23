@@ -82,7 +82,6 @@ module Engine
 
       def available_tokens(entity)
         ability = ability(entity)
-
         return super unless ability&.type == :token && ability.extra_action
 
         [Engine::Token.new(entity.owner)]
