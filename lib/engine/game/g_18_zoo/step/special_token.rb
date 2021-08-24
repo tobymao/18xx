@@ -14,6 +14,15 @@ module Engine
             super
           end
 
+          def process_place_token(action)
+            super
+
+            return if action.entity.closed? || !action.entity.all_abilities.empty?
+
+            action.entity.close!
+            @log << "'#{action.entity.name}' is closed"
+          end
+
           private
 
           def available_hex_for_on_a_diet?(entity, hex)
