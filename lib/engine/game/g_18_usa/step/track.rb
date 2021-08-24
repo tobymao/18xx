@@ -10,7 +10,6 @@ module Engine
     module G18USA
       module Step
         class Track < Engine::Step::Track
-          include Engine::Step::UpgradeTrackMaxExits
           include Tracker
 
           def actions(entity)
@@ -70,7 +69,7 @@ module Engine
           def track_upgrade?(from, to, _hex)
             # yellow+ -> something else, or fast tracking plain track
             super || (from.cities.size.zero? && to.cities.size.zero? &&
-              (@game.class::SUPER_CHARGE_COST_TABLE[to.color] - @game.class::SUPER_CHARGE_COST_TABLE[from.color]).positive?)
+              (Engine::Tile::COLORS.index(to.color) - Engine::Tile::COLORS.index(from.color) > 1))
           end
         end
       end

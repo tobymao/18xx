@@ -1646,6 +1646,18 @@ module Engine
           corporation.tokens.first.hex
         end
 
+        def filter_by_max_edges(tiles)
+          # group by: Color, NumCities, Label
+          tiles.group_by(&:color).transform_values do |tiles_by_color|
+            tiles_by_color.group_by { |t2| t2.cities&.size }.transform_values do |tiles_by_color_by_cities|
+              tiles_by_color_by_cities.group_by(&:labels).transform_values do |grouped_tiles|
+                max_edges = grouped_tiles.map { |t| t.edges.length }.max
+                grouped_tiles.select { |t| t.edges.size == max_edges }
+              end.values.flatten
+            end.values.flatten
+          end.values.flatten
+        end
+
         #
         # Aggressively allows upgrading to brown tiles; the rules depend on who is laying and the current phase
         # so the track step will need to clamp down on this
@@ -1669,16 +1681,19 @@ module Engine
               from.color == :white && from.cities.size.zero? && from.label == to.label
           return @phase.tiles.include?(:brown) if BROWN_PLAIN_TRACK_TILES.include?(to.name) &&
               from.color == :white && from.cities.size.zero? && from.label == to.label
-          return @phase.tiles.include?(:gray) if GRAY_PLAIN_TRACK_TILES.include?(to.name) &&
+          return @phase.tiles.include?(:gray) || (@round.tile_lay_mode == :pettibone && @phase.tiles.include?(:brown)) \
+            if GRAY_PLAIN_TRACK_TILES.include?(to.name) &&
               from.color == :white && from.cities.size.zero? && from.label == to.label
           # from yellow
 
           return @phase.tiles.include?(:brown) if BROWN_PLAIN_TRACK_TILES.include?(to.name) &&
               YELLOW_PLAIN_TRACK_TILES.include?(from.name) && from.cities.size.zero? && from.label == to.label
-          return @phase.tiles.include?(:gray) if GRAY_PLAIN_TRACK_TILES.include?(to.name) &&
+          return @phase.tiles.include?(:gray) || (@round.tile_lay_mode == :pettibone && @phase.tiles.include?(:brown)) \
+            if GRAY_PLAIN_TRACK_TILES.include?(to.name) &&
               YELLOW_PLAIN_TRACK_TILES.include?(from.name) && from.cities.size.zero? && from.label == to.label
           # from green
-          return @phase.tiles.include?(:gray) if GRAY_PLAIN_TRACK_TILES.include?(to.name) &&
+          return @phase.tiles.include?(:gray) || (@round.tile_lay_mode == :pettibone && @phase.tiles.include?(:brown)) \
+            if GRAY_PLAIN_TRACK_TILES.include?(to.name) &&
               GREEN_PLAIN_TRACK_TILES.include?(from.name) && from.cities.size.zero? && from.label == to.label
 
           return @phase.tiles.include?(:brown) if PLAIN_GREEN_CITY_TILES.include?(to.name) &&
@@ -1732,13 +1747,19 @@ module Engine
           super
         end
 
+        def tile_color_valid_for_phase(tile, phase_color_cache: nil)
+          colors = phase_color_cache || @phase.tiles
+          colors.include?(tile.color) || (tile.cities.empty? && @round.tile_lay_mode == :pettibone && (tile.color == :green ||
+            (tile.color == :brown && colors.include?(:green)) || (tile.color == :gray && colors.include?(:brown))))
+        end
+
         # Get all possible upgrades for a tile
         # tile: The tile to be upgraded
         # tile_manifest: true/false Is this being called from the tile manifest screen
         #
         def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
           upgrades = super
-          return upgrades unless tile_manifest
+          return filter_by_max_edges(upgrades) unless tile_manifest
 
           upgrades << @brown_cl_tile if tile.name == '15' # only K green city that fits clevelands hex
           upgrades |= @rhq_tiles if %w[14 15 619 63 611 448].include?(tile.name)
@@ -2094,21 +2115,11 @@ module Engine
           super
         end
 
-        SUPER_CHARGE_COST_TABLE = {
-          white: 0,
-          yellow: 0,
-          green: 10,
-          brown: 20,
-          gray: 30,
-        }.freeze
-
         def upgrade_cost(old_tile, hex, entity, spender)
           new_tile = hex.tile
           super_charge_cost = 0
-          if ((old_tile.color == :white && old_tile.cities.size.zero?) || PLAIN_TRACK_TILES.include?(old_tile.name)) &&
-                PLAIN_TRACK_TILES.include?(new_tile.name)
-            super_charge_cost = SUPER_CHARGE_COST_TABLE[new_tile.color] - SUPER_CHARGE_COST_TABLE[old_tile.color]
-          end
+          upgrade_level = (Engine::Tile::COLORS.index(new_tile.color) - Engine::Tile::COLORS.index(old_tile.color))
+          super_charge_cost = 10 * (upgrade_level - 1) if old_tile.cities.size.zero? && upgrade_level > 1
           if super_charge_cost.positive?
             @log << "#{entity.name} owes #{format_currency(super_charge_cost)} "\
                     'for fast track upgrade charge'

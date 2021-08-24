@@ -83,13 +83,12 @@ module View
             else
               tiles = step.upgradeable_tiles(current_entity, @tile_selector.hex)
               all_upgrades = @game.all_potential_upgrades(@tile_selector.hex.tile, selected_company: @selected_company)
-
               select_tiles = all_upgrades.map do |tile|
                 real_tile = tiles.find { |t| t.name == tile.name }
                 if real_tile
                   tiles.delete(real_tile)
                   [real_tile, nil]
-                elsif !@game.phase.tiles.include?(tile.color)
+                elsif !@game.tile_color_valid_for_phase(tile)
                   [tile, 'Later Phase']
                 elsif @game.tiles.none? { |t| t.name == tile.name }
                   [tile, 'None Left']

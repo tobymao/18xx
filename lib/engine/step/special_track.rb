@@ -126,8 +126,7 @@ module Engine
         tiles
           .compact
           .select do |t|
-          @game.phase.tiles.include?(t.color) && @game.upgrades_to?(hex.tile, t, special,
-                                                                    selected_company: entity)
+          @game.tile_color_valid_for_phase(t) && @game.upgrades_to?(hex.tile, t, special, selected_company: entity)
         end
       end
 

@@ -158,6 +158,13 @@ module Engine
           'unknown'
         end
 
+        def upgradeable_tiles(_entity, hex)
+          tiles = super
+          @game.filter_by_max_edges(tiles)
+          # When upgrading normal cities to brown, players must use tiles with as many exits as will fit.
+          # Find maximum number of exits
+        end
+
         # super references @game.upgrades_to? which doesn't have the context of entity
         # which means we need to clamp down here on if it is legal do to the yellow/white -> brown
         # upgrade check
