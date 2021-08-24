@@ -65,12 +65,6 @@ module Engine
           def available_hex(entity, hex)
             custom_tracker_available_hex(entity, hex)
           end
-
-          def track_upgrade?(from, to, _hex)
-            # yellow+ -> something else, or fast tracking plain track
-            super || (from.cities.size.zero? && to.cities.size.zero? &&
-              (Engine::Tile::COLORS.index(to.color) - Engine::Tile::COLORS.index(from.color) > 1))
-          end
         end
       end
     end

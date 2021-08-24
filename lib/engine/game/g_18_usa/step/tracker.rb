@@ -25,6 +25,12 @@ module Engine
                       })
         end
 
+        def track_upgrade?(from, to, _hex)
+          # yellow+ -> something else, or fast tracking plain track
+          super || (from.cities.size.zero? && to.cities.size.zero? &&
+            (Engine::Tile::COLORS.index(to.color) - Engine::Tile::COLORS.index(from.color) > 1))
+        end
+
         def can_lay_tile?(entity)
           super || could_do_great_northern?(entity)
         end
@@ -131,7 +137,8 @@ module Engine
           lay_tile(action, extra_cost: extra_cost || 0, entity: entity, spender: spender)
 
           # Only record the upgrade if not a pettibone upgrade; the pettibone upgrade is tracked separately
-          @round.upgraded_track = true if track_upgrade?(old_tile, tile, action.hex) && @round.tile_lay_mode != :pettibone
+          @round.upgraded_track = true if track_upgrade?(old_tile, tile, action.hex) &&
+              ![:pettibone, :brown_home].include?(@round.tile_lay_mode)
 
           case @round.tile_lay_mode
           when :gnr
