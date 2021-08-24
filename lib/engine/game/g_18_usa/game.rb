@@ -1650,7 +1650,7 @@ module Engine
           # group by: Color, NumCities, Label
           tiles.group_by(&:color).transform_values do |tiles_by_color|
             tiles_by_color.group_by { |t2| t2.cities&.size }.transform_values do |tiles_by_color_by_cities|
-              tiles_by_color_by_cities.group_by(&:labels).transform_values do |grouped_tiles|
+              tiles_by_color_by_cities.group_by { |t| t.label.to_s }.transform_values do |grouped_tiles|
                 max_edges = grouped_tiles.map { |t| t.edges.length }.max
                 grouped_tiles.select { |t| t.edges.size == max_edges }
               end.values.flatten

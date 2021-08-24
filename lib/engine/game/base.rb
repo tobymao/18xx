@@ -1818,6 +1818,11 @@ module Engine
 
       def skip_route_track_type; end
 
+      def tile_color_valid_for_phase(tile, phase_color_cache: nil)
+        phase_color_cache ||= @phase.tiles
+        phase_color_cache.include?(tile.color)
+      end
+
       private
 
       def init_graph
@@ -2385,11 +2390,6 @@ module Engine
 
       def bank_cash
         @bank.cash
-      end
-
-      def tile_color_valid_for_phase(tile, phase_color_cache: nil)
-        phase_color_cache ||= @phase.tiles
-        phase_color_cache.include?(tile.color)
       end
 
       def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
