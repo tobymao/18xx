@@ -19,7 +19,7 @@ module Engine
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['J13'] },
                         {
                           type: 'tile_lay',
-                          when: 'owning_player_or_turn',
+                          when: 'owning_player_track',
                           owner_type: 'player',
                           hexes: ['J13'],
                           tiles: %w[8 9],
@@ -36,7 +36,7 @@ module Engine
             abilities: [
                         {
                           type: 'teleport',
-                          when: 'owning_player_or_turn',
+                          when: 'owning_player_track',
                           owner_type: 'player',
                           tiles: ['511'],
                           hexes: ['I14'],
@@ -60,7 +60,7 @@ module Engine
                         { type: 'blocks_hexes', owner_type: 'player', hexes: %w[D13 E12] },
                         {
                           type: 'tile_lay',
-                          when: 'owning_player_or_turn',
+                          when: 'owning_player_track',
                           owner_type: 'player',
                           hexes: %w[D13 E12],
                           tiles: %w[8 9],
@@ -79,7 +79,7 @@ module Engine
 
                         {
                           type: 'teleport',
-                          when: 'owning_player_or_turn',
+                          when: 'owning_player_track',
                           owner_type: 'player',
                           tiles: ['511'],
                           hexes: ['J5'],

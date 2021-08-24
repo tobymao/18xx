@@ -144,6 +144,7 @@ module Engine
           '%current_step%',
           'owning_corp_or_turn',
           'owning_player_or_turn',
+          'owning_player_track',
           'or_between_turns',
           'stock_round',
         ]
