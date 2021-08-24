@@ -33,7 +33,7 @@ module Engine
       end
 
       def round_state
-        state = @round.respond_to?(:teleported) ? {} : { teleported: nil }
+        state = @round.respond_to?(:teleported) ? {} : { teleported: nil, teleport_tokener: nil }
         state.merge(super)
       end
 
@@ -53,7 +53,7 @@ module Engine
         raise GameError, "Cannot place token on #{hex.name}#{city_string}" unless available_hex(entity, hex)
 
         place_token(
-          entity.owner,
+          entity.owner.player? ? @round.teleport_tokener : entity.owner,
           action.city,
           action.token,
           connected: false,
@@ -82,9 +82,10 @@ module Engine
 
       def available_tokens(entity)
         ability = ability(entity)
-        return super unless ability&.type == :token && ability.extra_action
+        return [Engine::Token.new(entity.owner)] if ability&.type == :token && ability.extra_action
+        return super(@round.teleport_tokener) if entity.company? && entity.owner&.player?
 
-        [Engine::Token.new(entity.owner)]
+        super
       end
 
       def min_token_price(tokens)
@@ -103,6 +104,12 @@ module Engine
         @game.abilities(entity, :teleport) do |ability, _company|
           return ability if ability.used?
         end
+
+        nil
+      end
+
+      def token_owner(entity)
+        return @round.teleport_tokener if entity.company? && entity.owner&.player?
 
         nil
       end

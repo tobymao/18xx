@@ -33,7 +33,7 @@ module Engine
       end
 
       def round_state
-        state = @round.respond_to?(:teleported) ? {} : { teleported: nil }
+        state = @round.respond_to?(:teleported) ? {} : { teleported: nil, teleport_tokener: nil }
         state.merge(super)
       end
 
@@ -86,6 +86,7 @@ module Engine
           company.remove_ability(ability)
         else
           @round.teleported = company
+          @round.teleport_tokener = tokener
         end
       end
 

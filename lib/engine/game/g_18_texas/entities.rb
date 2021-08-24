@@ -37,7 +37,6 @@ module Engine
                         {
                           type: 'teleport',
                           when: 'owning_player_or_turn',
-                          reachable: false,
                           owner_type: 'player',
                           tiles: ['511'],
                           hexes: ['I14'],
@@ -80,7 +79,6 @@ module Engine
 
                         {
                           type: 'teleport',
-                          reachable: false,
                           when: 'owning_player_or_turn',
                           owner_type: 'player',
                           tiles: ['511'],
