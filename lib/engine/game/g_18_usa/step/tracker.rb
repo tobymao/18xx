@@ -138,7 +138,7 @@ module Engine
 
           # Only record the upgrade if not a pettibone upgrade; the pettibone upgrade is tracked separately
           @round.upgraded_track = true if track_upgrade?(old_tile, tile, action.hex) &&
-              ![:pettibone, :brown_home].include?(@round.tile_lay_mode)
+              !%i[pettibone brown_home].include?(@round.tile_lay_mode)
 
           case @round.tile_lay_mode
           when :gnr

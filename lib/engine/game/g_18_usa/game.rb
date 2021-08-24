@@ -1749,6 +1749,8 @@ module Engine
 
         def tile_color_valid_for_phase(tile, phase_color_cache: nil)
           colors = phase_color_cache || @phase.tiles
+          return tile.color == :brown if @round.tile_lay_mode == :brown_home
+
           colors.include?(tile.color) || (tile.cities.empty? && @round.tile_lay_mode == :pettibone && (tile.color == :green ||
             (tile.color == :brown && colors.include?(:green)) || (tile.color == :gray && colors.include?(:brown))))
         end
