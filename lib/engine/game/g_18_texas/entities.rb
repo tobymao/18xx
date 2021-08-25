@@ -16,15 +16,7 @@ module Engine
             revenue: 10,
             desc: 'Extra Tile Lay. Blocks hex J13 until Phase 5. The owning president may place a #8 or #9 tile in this hex as an extra tile lay during the track laying step of a corporation for which they are president.',
             sym: 'BBBCRC',
-            abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['J13'] },
-                        {
-                          type: 'tile_lay',
-                          when: 'owning_player_track',
-                          owner_type: 'player',
-                          hexes: ['J13'],
-                          tiles: %w[8 9],
-                          count: 1,
-                        }],
+            abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['J13'] }],
 
           },
           {
