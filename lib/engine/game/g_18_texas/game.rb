@@ -232,6 +232,16 @@ module Engine
             [{ lay: true, upgrade: true, cost: 0 }]
           end
         end
+
+        def token_owner(entity)
+          if entity.company? && entity.owner&.player?
+            @round.teleport_tokener
+          elsif entity.company?
+            entity.owner
+          else
+            entity
+          end
+        end
       end
     end
   end

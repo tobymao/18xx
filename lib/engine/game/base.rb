@@ -1818,6 +1818,10 @@ module Engine
 
       def skip_route_track_type; end
 
+      def token_owner(entity)
+        entity&.company? ? entity.owner : entity
+      end
+
       private
 
       def init_graph
