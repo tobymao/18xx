@@ -746,6 +746,7 @@ module Engine
 
         MIN_BID_INCREMENT = 5
         MUST_BID_INCREMENT_MULTIPLE = true
+        TOKENS_FEE = 100
 
         FIRST_OR_MINOR_TILE_LAYS = [{ lay: true, upgrade: false }, { lay: true, upgrade: false }].freeze
         MINOR_TILE_LAYS = [{ lay: true, upgrade: false }].freeze
@@ -998,6 +999,12 @@ module Engine
 
           parts = graph.connected_nodes(exchange_ability.owner).keys
           parts.select(&:city?).flat_map { |c| c.tokens.compact.map(&:corporation) }
+        end
+
+        def after_par(corporation)
+          @log << "#{corporation.name} spends #{format_currency(TOKENS_FEE)} for four additional tokens"
+
+          corporation.spend(TOKENS_FEE, @bank)
         end
       end
     end
