@@ -22,14 +22,16 @@ module View
         @size = @token_size / 2
         @distance = @token_size
 
-        tokens = @game.current_entity.tokens_by_type
+        tokener = @game.token_owner(@game.current_entity)
+        tokens = tokener.tokens_by_type
         tokens = list_coordinates(tokens, @distance, @size).map do |token, left, bottom|
           click = lambda do
             action = Engine::Action::PlaceToken.new(
               @game.current_entity,
               city: @tile_selector.city,
               slot: @tile_selector.slot_index,
-              token_type: token.type
+              token_type: token.type,
+              tokener: tokener,
             )
             process_action(action)
           end
