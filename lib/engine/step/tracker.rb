@@ -318,7 +318,7 @@ module Engine
       def potential_tiles(_entity, hex)
         colors = @game.phase.tiles
         @game.tiles
-          .select { |tile| @game.tile_color_valid_for_phase(tile, phase_color_cache: colors) }
+          .select { |tile| @game.tile_color_valid_for_phase?(tile, phase_color_cache: colors) }
           .uniq(&:name)
           .select { |t| @game.upgrades_to?(hex.tile, t) }
           .reject(&:blocks_lay)

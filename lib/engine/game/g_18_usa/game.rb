@@ -1747,7 +1747,7 @@ module Engine
           super
         end
 
-        def tile_color_valid_for_phase(tile, phase_color_cache: nil)
+        def tile_color_valid_for_phase?(tile, phase_color_cache: nil)
           colors = phase_color_cache || @phase.tiles
           return tile.color == :brown if @round.tile_lay_mode == :brown_home
 

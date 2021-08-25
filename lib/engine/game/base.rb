@@ -1818,7 +1818,7 @@ module Engine
 
       def skip_route_track_type; end
 
-      def tile_color_valid_for_phase(tile, phase_color_cache: nil)
+      def tile_color_valid_for_phase?(tile, phase_color_cache: nil)
         phase_color_cache ||= @phase.tiles
         phase_color_cache.include?(tile.color)
       end
@@ -2395,7 +2395,7 @@ module Engine
       def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
         colors = Array(@phase.phases.last[:tiles])
         @all_tiles
-          .select { |t| tile_color_valid_for_phase(t, phase_color_cache: colors) }
+          .select { |t| tile_color_valid_for_phase?(t, phase_color_cache: colors) }
           .uniq(&:name)
           .select { |t| upgrades_to?(tile, t, selected_company: selected_company) }
           .reject(&:blocks_lay)
