@@ -145,7 +145,7 @@ module Engine
            logo: '18_texas/SSW',
            tokens: [0, 0, 0],
            coordinates: 'D15',
-           color: 'mediumpurple',
+           color: 'blue',
            text_color: 'white',
            reservation_color: nil,
            always_market_price: true,
