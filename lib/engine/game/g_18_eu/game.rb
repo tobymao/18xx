@@ -18,6 +18,8 @@ module Engine
         include G18EU::Trains
         include CitiesPlusTownsRouteDistanceStr
 
+        attr_accessor :corporations_operated
+
         HOME_TOKEN_TIMING = :par
         MIN_BID_INCREMENT = 5
         MUST_BID_INCREMENT_MULTIPLE = true
@@ -61,6 +63,7 @@ module Engine
           add_optional_train('4') if @optional_rules&.include?(:extra_four_train)
 
           @minor_exchange = nil
+          @corporations_operated = []
         end
 
         # this could be a useful function in depot itself
@@ -91,7 +94,7 @@ module Engine
             Engine::Step::Route,
             G18EU::Step::Dividend,
             G18EU::Step::BuyTrain,
-            Engine::Step::IssueShares,
+            G18EU::Step::IssueShares,
             G18EU::Step::DiscardTrain,
           ], round_num: round_num)
         end
@@ -205,7 +208,6 @@ module Engine
 
           bundles_for_corporation(entity, entity)
             .select { |bundle| @share_pool.fit_in_bank?(bundle) }
-            .map { |bundle| reduced_bundle_price_for_market_drop(bundle) }
         end
 
         def redeemable_shares(entity)
@@ -213,18 +215,6 @@ module Engine
 
           bundles_for_corporation(share_pool, entity)
             .reject { |bundle| entity.cash < bundle.price }
-        end
-
-        def reduced_bundle_price_for_market_drop(bundle)
-          return bundle if bundle.num_shares == 1
-
-          new_price = (1..bundle.num_shares).sum do |max_drops|
-            @stock_market.find_share_price(bundle.corporation, (1..max_drops).map { |_| :up }).price
-          end
-
-          bundle.share_price = new_price / bundle.num_shares
-
-          bundle
         end
 
         def owns_any_minor?(entity)
