@@ -22,9 +22,8 @@ module View
         @size = @token_size / 2
         @distance = @token_size
 
-        step = @game.active_step
-        tokener = step.respond_to?(:token_owner) && step.token_owner(@game.current_entity)
-        tokens = tokener ? tokener.tokens_by_type : @game.current_entity.tokens_by_type
+        tokener = @game.token_owner(@game.current_entity)
+        tokens = tokener.tokens_by_type
         tokens = list_coordinates(tokens, @distance, @size).map do |token, left, bottom|
           click = lambda do
             action = Engine::Action::PlaceToken.new(
