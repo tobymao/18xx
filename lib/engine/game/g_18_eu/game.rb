@@ -814,7 +814,7 @@ module Engine
         def operating_round(round_num)
           Round::Operating.new(self, [
             G18EU::Step::Bankrupt,
-            Engine::Step::Track,
+            G18EU::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
             G18EU::Step::Dividend,
