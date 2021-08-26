@@ -49,6 +49,15 @@ module Engine
           ]
         ).freeze
 
+        RED_TO_RED_BONUS = {
+          '2' => [0, 0],
+          '3' => [10, 10],
+          '4' => [10, 10],
+          '5' => [20, 80],
+          '6' => [20, 80],
+          '8' => [30, 150],
+        }.freeze
+
         def setup
           @minors.each do |minor|
             train = @depot.upcoming[0]
@@ -182,23 +191,35 @@ module Engine
           (minors.sort_by { |m| m.name.to_i } + majors.sort_by(&:name)).group_by(&:owner)
         end
 
-        # def revenue_for(route, stops)
-        # revenue = super
+        def route_ends_red?(stops)
+          return false unless stops.length > 1
 
-        # TODO: Token Bonus
-        # TODO: Pullman Car
+          stops.first.hex.tile.color == :red && stops.last.hex.tile.color == :red
+        end
 
-        # revenue
-        # end
+        def revenue_for_red_to_red_bonus(route, stops)
+          return 0 unless route_ends_red?(stops)
 
-        # def revenue_str(route)
-        # str = super
+          per_token, max_bonus = RED_TO_RED_BONUS[@phase.name]
+          [stops.sum do |stop|
+            next per_token if stop.city? && stop.tokened_by?(route.train.owner)
 
-        # TODO: Token Bonus
-        # TODO: Pullman Car
+            0
+          end, max_bonus].min
+        end
 
-        # str
-        # end
+        def revenue_for(route, stops)
+          super + revenue_for_red_to_red_bonus(route, stops)
+        end
+
+        def revenue_str(route)
+          str = super
+
+          bonus = revenue_for_red_to_red_bonus(route, route.stops)
+          str += " + R2R(#{bonus})" if bonus.positive
+
+          str
+        end
 
         def emergency_issuable_cash(corporation)
           emergency_issuable_bundles(corporation).max_by(&:num_shares)&.price || 0
