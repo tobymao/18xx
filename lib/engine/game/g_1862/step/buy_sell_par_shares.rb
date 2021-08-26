@@ -113,6 +113,14 @@ module Engine
             @game.repar_prices.select { |p| p.price * 3 <= entity.cash }
           end
 
+          def must_sell?(entity)
+            return false unless can_sell_any?(entity)
+            return true if @game.num_certs(entity) > @game.cert_limit && !@game.lner
+
+            !@game.can_hold_above_corp_limit?(entity) &&
+              @game.corporations.any? { |corp| !corp.holding_ok?(entity) }
+          end
+
           def round_state
             super.merge(
               {

@@ -17,6 +17,7 @@ require_relative '../company'
 require_relative '../corporation'
 require_relative '../depot'
 require_relative '../game_error'
+require_relative '../option_error'
 require_relative '../graph'
 require_relative '../hex'
 require_relative '../minor'
@@ -1817,6 +1818,10 @@ module Engine
 
       def skip_route_track_type; end
 
+      def token_owner(entity)
+        entity&.company? ? entity.owner : entity
+      end
+
       private
 
       def init_graph
@@ -1934,7 +1939,7 @@ module Engine
 
       def init_hexes(companies, corporations)
         blockers = {}
-        companies.each do |company|
+        (companies + corporations).each do |company|
           abilities(company, :blocks_hexes) do |ability|
             ability.hexes.each do |hex|
               blockers[hex] = company
@@ -2250,6 +2255,10 @@ module Engine
         @corporations.dup.each { |c| close_corporation(c) if c.share_price&.type == :close }
       end
 
+      def show_priority_deal_player?(order)
+        order == :after_last_to_act
+      end
+
       def priority_deal_player
         players = @players.reject(&:bankrupt)
 
@@ -2544,6 +2553,8 @@ module Engine
             @round.operating? && @round.current_operator == ability.corporation
           when 'owning_player_or_turn'
             @round.operating? && @round.current_operator.player == ability.player
+          when 'owning_player_track'
+            @round.operating? && @round.current_operator.player == ability.player && current_step.is_a?(Step::Track)
           when 'owning_player_sr_turn'
             @round.stock? && @round.current_entity == ability.player
           when 'or_between_turns'

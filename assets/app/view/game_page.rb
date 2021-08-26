@@ -54,6 +54,10 @@ module View
       h(:div, { style: { 'margin-bottom': '25px' } }, inner)
     end
 
+    def render_bad_options(s)
+      h(:div, "Option Error: #{s}")
+    end
+
     def cursor
       @cursor ||= Lib::Params['action']&.to_i
     end
@@ -74,13 +78,20 @@ module View
 
       title = @game_data['title']
       load_game_class(title, load_game_with_class)
-      load_game_with_class.call if @game_classes_loaded[title]
+      return unless @game_classes_loaded[title]
+
+      load_game_with_class.call
     end
 
     def render
       @pin = @game_data.dig('settings', 'pin')
 
-      load_game
+      begin
+        load_game
+      rescue Engine::OptionError => e
+        return render_bad_options(e.message)
+      end
+
       return h('div.padded', 'Loading game...') unless @game
 
       page =

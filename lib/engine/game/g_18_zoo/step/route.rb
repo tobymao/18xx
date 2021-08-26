@@ -30,7 +30,7 @@ module Engine
 
             track_running_trains(action.entity)
 
-            return unless @game.two_barrels.all_abilities.empty?
+            return if @game.two_barrels.closed? || !@game.two_barrels.all_abilities.empty?
 
             # Close 'Two Barrels' if used and no more usage
             @game.two_barrels.close!

@@ -98,8 +98,7 @@ module Engine
             player = action.entity
             price = action.price
 
-            # TODO: Use only action.company when cleaning up code (this is to keep games that did not use proxy minors)
-            draft_object(@game.to_company(action.minor || action.company), player, price)
+            draft_object(action.company, player, price)
 
             action_finalized
           end
@@ -120,7 +119,9 @@ module Engine
           def action_finalized
             @round.next_entity_index!
             if finished?
-              @round.reset_entity_index!
+              # Do not call reset_entity_index, as we need to keep "left of last to act" entity
+              # (or first passer) as priority dealer for next draft/stock round.
+              @game.next_turn!
             else
               entity = entities[entity_index]
               return unless @game.passers_first_stock_round.include?(entity)

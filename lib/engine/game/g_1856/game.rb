@@ -1673,7 +1673,7 @@ module Engine
 
           @share_pool.buy_shares(
             @share_pool,
-            ShareBundle.new(national.shares_by_corporation[national][-1 * national_market_share_count..-1]),
+            ShareBundle.new(national.shares_by_corporation[national][(-1 * national_market_share_count)..-1]),
             exchange: :free
           )
         end

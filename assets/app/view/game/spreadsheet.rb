@@ -295,7 +295,7 @@ module View
                 textDecoration: 'underline',
               },
             },
-            @hide_not_floated ? 'floated' : 'all'),
+            @hide_not_floated ? 'Show unfloated' : 'Hide unfloated'),
           ')',
          ])
       end
@@ -389,7 +389,7 @@ module View
       end
 
       def render_corporation(corporation, operating_order, current_round)
-        return '' if @hide_not_floated && !corporation.floated?
+        return '' if @hide_not_floated && !@game.operating_order.include?(corporation)
 
         border_style = "1px solid #{color_for(:font2)}"
 
@@ -403,7 +403,7 @@ module View
 
         tr_props = tr_default_props
         market_props = { style: { borderRight: border_style } }
-        if !corporation.floated?
+        if !@game.operating_order.include?(corporation)
           tr_props[:style][:opacity] = '0.5'
         elsif corporation.share_price&.highlight? &&
           (color = StockMarket::COLOR_MAP[@game.class::STOCKMARKET_COLORS[corporation.share_price.type]])

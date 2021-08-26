@@ -1297,12 +1297,12 @@ module Engine
 
           return if corporation.capitalization == :incremental
 
-          case corporation.name
-          when 'BK', 'MS', 'CL', 'SB'
-            floating_capital = corporation.par_price.price * 8
-          else
-            floating_capital = corporation.par_price.price * corporation.total_shares
-          end
+          floating_capital = case corporation.name
+                             when 'BK', 'MS', 'CL', 'SB'
+                               corporation.par_price.price * 8
+                             else
+                               corporation.par_price.price * corporation.total_shares
+                             end
 
           @bank.spend(floating_capital, corporation)
           @log << "#{corporation.name} receives floating capital of #{format_currency(floating_capital)}"

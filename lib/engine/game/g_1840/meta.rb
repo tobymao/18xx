@@ -17,7 +17,7 @@ module Engine
 
         PLAYER_RANGE = [2, 6].freeze
 
-        DEV_STAGE = :alpha
+        DEV_STAGE = :beta
 
         OPTIONAL_RULES = [
           {

@@ -13,7 +13,8 @@ module Engine
         include Entities
         include Map
 
-        attr_reader :corporation_power, :north_hexes, :power_progress, :south_hexes, :tile_groups
+        attr_reader :corporation_power, :final_gauge, :north_hexes, :power_progress, :south_hexes,
+                    :tile_groups
 
         register_colors(green: '#237333',
                         red: '#d81e3e',
@@ -40,7 +41,7 @@ module Engine
         }.freeze
 
         MARKET = [
-          %w[0
+          %w[0c
              10
              20
              30
@@ -175,8 +176,8 @@ module Engine
           {
             name: '3',
             train_limit: 2,
-            tiles: %w[yellow green],
-            operating_rounds: 2,
+            tiles: %w[yellow],
+            operating_rounds: 1,
           },
           {
             name: '4',
@@ -187,19 +188,20 @@ module Engine
           {
             name: '5',
             train_limit: 3,
-            tiles: %w[yellow green brown],
-            operating_rounds: 3,
+            tiles: %w[yellow green],
+            operating_rounds: 2,
           },
           {
             name: '6',
             train_limit: 4,
             tiles: %w[yellow green brown],
             operating_rounds: 3,
+            status: ['track_conversion'],
           },
           {
             name: '7',
             train_limit: 5,
-            tiles: %w[yellow green brown gray],
+            tiles: %w[yellow green brown],
             operating_rounds: 3,
           },
           {
@@ -216,6 +218,8 @@ module Engine
           },
         ].freeze
 
+        CONVERT_PHASE = '6'
+
         PAR_BY_LAYER = {
           1 => 90,
           2 => 80,
@@ -228,6 +232,11 @@ module Engine
           2 => 3,
           3 => 3,
           4 => 2,
+        }.freeze
+
+        STATUS_TEXT = {
+          'track_conversion' =>
+          ['Track Conversion', 'Track will be standardized to either Northern or Southern gauge'],
         }.freeze
 
         NORTH_CORPORATIONS = %w[NCR SEA WNC WW].freeze
@@ -296,57 +305,6 @@ module Engine
         C8_HEXES = %w[G19 J12].freeze
         C8_ROTATION = 5
 
-        def init_tile_groups
-          [
-            %w[1 1s],
-            %w[2 2s],
-            %w[3 3s],
-            %w[4 4s],
-            %w[5 5s],
-            %w[6 6s],
-            %w[7 7s],
-            %w[8 8s],
-            %w[9 9s],
-            %w[55 55s],
-            %w[56 56s],
-            %w[57 57s],
-            %w[58 58s],
-            %w[C1 C2],
-            %w[C3 C4],
-            %w[12 12s],
-            %w[13 13s],
-            %w[14 14s],
-            %w[15 15s],
-            %w[16 16s],
-            %w[19 19s],
-            %w[20 20s],
-            %w[23 23s],
-            %w[24 24s],
-            %w[25 25s],
-            %w[26 26s],
-            %w[27 27s],
-            %w[28 28s],
-            %w[29 29s],
-            %w[87 87s],
-            %w[88 88s],
-            %w[C5 C6],
-            %w[38],
-            %w[39],
-            %w[40],
-            %w[41],
-            %w[42],
-            %w[43],
-            %w[44],
-            %w[45],
-            %w[46],
-            %w[47],
-            %w[70],
-            %w[C7],
-            %w[C8],
-            %w[C9],
-          ]
-        end
-
         def update_opposites
           by_name = @tiles.group_by(&:name)
           @tile_groups.each do |grp|
@@ -369,7 +327,7 @@ module Engine
         end
 
         def init_share_pool
-          SharePool.new(self, allow_president_sale: true)
+          SharePool.new(self, allow_president_sale: self.class::PRESIDENT_SALES_TO_MARKET)
         end
 
         def setup
@@ -438,6 +396,8 @@ module Engine
           @all_tiles.each { |t| t.ignore_gauge_walk = true }
           @_tiles.values.each { |t| t.ignore_gauge_walk = true }
           @graph.clear_graph_for_all
+
+          @final_gauge = nil
         end
 
         def trains
@@ -496,6 +456,21 @@ module Engine
           ], round_num: round_num)
         end
 
+        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
+          if tile_manifest && !@final_gauge && tile.paths.any? { |p| p.track != :broad } && !tile.label
+            # allow tile manifest to see what upgrades will look like after final_gauge is set
+            tile.ignore_gauge_compare = true
+          end
+          colors = Array(@phase.phases.last[:tiles])
+          result = @all_tiles
+            .select { |t| colors.include?(t.color) }
+            .uniq(&:name)
+            .select { |t| upgrades_to?(tile, t, selected_company: selected_company) }
+            .reject(&:blocks_lay)
+          tile.ignore_gauge_compare = false if tile_manifest && !@final_gauge
+          result
+        end
+
         def upgrades_to?(from, to, special = false, selected_company: nil)
           from_standard = from.paths.any? { |p| p.track == :broad }
           from_southern = from.paths.any? { |p| p.track != :broad }
@@ -506,19 +481,31 @@ module Engine
           north = @north_hexes.include?(from.hex)
           south = @south_hexes.include?(from.hex)
 
-          # Can only ever lay northern track in the North before phase 5
-          return false if north && !south && to_southern && !@phase.available?('5')
+          # Can only ever lay northern track in the North before vote
+          return false if north && !south && to_southern && !@final_gauge
 
-          # Can only ever lay southern track in the South before phase 5
-          return false if !north && south && to_standard && !@phase.available?('5')
+          # Can only ever lay southern track in the South before vote
+          return false if !north && south && to_standard && !@final_gauge
 
-          # Can never updgrade pure standard track to southern track
-          return false if from_standard && !from_southern && to_southern
+          # Can never updgrade pure standard track to southern track if final track is standard
+          return false if from_standard && !from_southern && to_southern && @final_gauge == :broad
+
+          # Can never updgrade pure southern track to standard track if final track is southern
+          return false if from_southern && !from_standard && to_standard && @final_gauge == :narrow
 
           # handle C tiles specially
           return false if from.label.to_s == 'C' && to.color == :yellow && from.cities.size != to.cities.size
 
+          # handle special-case upgrades
+          return true if force_dit_upgrade?(from, to)
+
           super
+        end
+
+        def force_dit_upgrade?(from, to)
+          return false unless (list = DIT_UPGRADES[from.name])
+
+          list.include?(to.name)
         end
 
         def update_tile_lists!(tile, old_tile)
@@ -609,7 +596,12 @@ module Engine
             @log << "#{corp.name} loses #{loss} power (to #{@corporation_power[corp]})" if loss.positive?
           end
 
-          return unless @phase.name == '5'
+          vote_and_convert if @phase.name == CONVERT_PHASE
+        end
+
+        def vote_and_convert
+          @final_gauge = :broad
+          @log << 'Standard gauge is now the dominant gauge. Can now only upgrade to Standard track'
 
           @all_tiles.each { |t| t.ignore_gauge_compare = true }
           @_tiles.values.each { |t| t.ignore_gauge_compare = true }
@@ -630,8 +622,13 @@ module Engine
             upgrade_tile(wilmington, temp_tile, 2, logging: false)
           end
 
-          C7_HEXES.each { |hexid| upgrade_tile(hex_by_id(hexid), @tiles.find { |t| t.name == 'C7' }, 0) }
-          C8_HEXES.each { |hexid| upgrade_tile(hex_by_id(hexid), @tiles.find { |t| t.name == 'C8' }, C8_ROTATION) }
+          if @final_gauge == :broad
+            C7_HEXES.each { |hexid| upgrade_tile(hex_by_id(hexid), @tiles.find { |t| t.name == 'C7' }, 0) }
+            C8_HEXES.each { |hexid| upgrade_tile(hex_by_id(hexid), @tiles.find { |t| t.name == 'C8' }, C8_ROTATION) }
+          else
+            C7_HEXES.each { |hexid| upgrade_tile(hex_by_id(hexid), @tiles.find { |t| t.name == 'C7s' }, 0) }
+            C8_HEXES.each { |hexid| upgrade_tile(hex_by_id(hexid), @tiles.find { |t| t.name == 'C8s' }, C8_ROTATION) }
+          end
         end
 
         # no checking
@@ -796,12 +793,21 @@ module Engine
         end
 
         def check_distance(route, visits)
+          super
+          raise GameError, 'Route cannot begin/end in a town' if visits.first.town? || visits.last.town?
+
           if route.train.name == 'Convert'
             raise GameError, 'Route must be specified' if visits.empty?
-            raise GameError, 'Route cannot begin/end in a town' if visits.first.town? || visits.last.town?
+
+            return
           end
 
-          super
+          node_hexes = {}
+          visits.each do |node|
+            raise GameError, 'Cannot visit multiple towns/cities in same hex' if node_hexes[node.hex]
+
+            node_hexes[node.hex] = true
+          end
         end
 
         def check_connected(route, token)
@@ -811,8 +817,10 @@ module Engine
         end
 
         def check_other(route)
-          if route.train.name == 'Convert'
+          if route.train.name == 'Convert' && @final_gauge == :broad
             raise GameError, 'Route must have Southern track' unless route.paths.any? { |p| p.track != :broad }
+          elsif route.train.name == 'Convert' && @final_gauge == :narrow
+            raise GameError, 'Route must have Standard track' unless route.paths.any? { |p| p.track == :broad }
           else
             raise GameError, 'Train below minimum size' if route.train.distance < min_train
             raise GameError, 'Train w/o owner' unless route.train.owner

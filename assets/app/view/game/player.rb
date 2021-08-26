@@ -169,7 +169,7 @@ module View
         }
 
         order = @game.next_sr_player_order
-        trs << render_priority_deal(priority_props) if order == :after_last_to_act &&
+        trs << render_priority_deal(priority_props) if @game.show_priority_deal_player?(order) &&
                                                        @player == @game.priority_deal_player
         trs << render_next_sr_position(priority_props) if %i[first_to_pass most_cash least_cash].include?(order) &&
                                                           @game.next_sr_position(@player)
@@ -226,8 +226,8 @@ module View
         children << h('td.center', td_props, [h(:div, div_props, [h(:img, logo_props)])]) unless @hide_logo
 
         president_marker = corporation.president?(@player) ? '*' : ''
-        double_marker = shares.any?(&:double_cert) ? ' d' : ''
-        children << h(:td, td_props, corporation.name + president_marker + double_marker)
+        double_markers = 'd' * shares.count(&:double_cert)
+        children << h(:td, td_props, corporation.name + president_marker + double_markers)
         children << h('td.right', td_props, "#{shares.sum(&:percent)}%")
         h('tr.row', children)
       end

@@ -1921,12 +1921,12 @@ module Engine
 
           # Set the min bid on the Concessions and Minors
           @companies.each do |c|
-            case c.id[0]
-            when self.class::COMPANY_CONCESSION_PREFIX, self.class::COMPANY_MINOR_PREFIX
-              c.min_price = c.value
-            else
-              c.min_price = 0
-            end
+            c.min_price = case c.id[0]
+                          when self.class::COMPANY_CONCESSION_PREFIX, self.class::COMPANY_MINOR_PREFIX
+                            c.value
+                          else
+                            0
+                          end
             c.max_price = 10_000
           end
 

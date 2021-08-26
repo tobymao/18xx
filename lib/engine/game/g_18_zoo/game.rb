@@ -956,26 +956,32 @@ module Engine
         end
 
         def timeline
-          near_family_text = case @near_families_purchasable.size
-                             when 1
-                               corporation = corporation_by_id(@near_families_purchasable[0][:id])
-                               ordered = @corporations.sort_by(&:full_name).cycle(2).to_a
-                               corporations = @near_families_direction == 'reverse' ? ordered.reverse : ordered
-                               following_corporations = corporations.drop_while { |c| c.id != corporation.id }
-                                                                    .take(@corporations.size)
-                                                                    .reject(&:ipoed)
-                                                                    .map(&:full_name)
-                                                                    .join(', ')
-                               return if following_corporations.empty?
-
-                               "open company in strict order: #{following_corporations}"
-                             when 2
-                               next_family = corporation_by_id(@near_families_purchasable[0][:id])
-                               prev_family = corporation_by_id(@near_families_purchasable[1][:id])
-                               "open only either #{next_family.full_name} or #{prev_family.full_name}"
+          near_family_text = case @players.size
+                             when 5
+                               'may open any company - the neighbor rule is not enforced in a 5 players game'
                              else
-                               'open any company'
+                               case @near_families_purchasable.size
+                               when 1
+                                 corporation = corporation_by_id(@near_families_purchasable[0][:id])
+                                 ordered = @corporations.sort_by(&:full_name).cycle(2).to_a
+                                 corporations = @near_families_direction == 'reverse' ? ordered.reverse : ordered
+                                 following_corporations = corporations.drop_while { |c| c.id != corporation.id }
+                                                                      .take(@corporations.size)
+                                                                      .reject(&:ipoed)
+                                                                      .map(&:full_name)
+                                                                      .join(', ')
+                                 return if following_corporations.empty?
+
+                                 "open company in strict order: #{following_corporations}"
+                               when 2
+                                 next_family = corporation_by_id(@near_families_purchasable[0][:id])
+                                 prev_family = corporation_by_id(@near_families_purchasable[1][:id])
+                                 "open only either #{next_family.full_name} or #{prev_family.full_name}"
+                               else
+                                 'open any company'
+                               end
                              end
+
           @timeline = [
             "ZOOTicket: the current value is #{format_currency(@ticket_zoo_current_value)}."\
             ' Numbers 4,5,6…20 on the timeline are the value of a single ZOOTicket during each round'\

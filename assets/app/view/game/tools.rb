@@ -27,6 +27,12 @@ module View
         ])
       end
 
+      def player_notification
+        h('div.margined', [
+          h(:label, 'Send any player a notification (via email/webhooks) by tagging them in game chat: @username'),
+        ])
+      end
+
       def master_mode
         mode = @settings[:master_mode] || false
         toggle = lambda do
@@ -64,7 +70,7 @@ module View
       end
 
       def render_tools
-        children = [master_mode]
+        children = [player_notification, master_mode]
         children << end_game unless @game.finished
         children
       end

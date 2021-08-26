@@ -56,7 +56,7 @@
       {
          "id":2,
          "type":"bid",
-         "minor":"KFBE",
+         "company":"KFBE",
          "price":200,
          "entity":1048,
          "entity_type":"player",
@@ -103,7 +103,7 @@
       {
          "id":7,
          "type":"bid",
-         "minor":"EKB",
+         "company":"EKB",
          "price":210,
          "entity":7785,
          "entity_type":"player",
@@ -113,7 +113,7 @@
       {
          "id":8,
          "type":"bid",
-         "minor":"KSZ",
+         "company":"KSZ",
          "price":100,
          "entity":3864,
          "entity_type":"player",
@@ -123,7 +123,7 @@
       {
          "id":9,
          "type":"bid",
-         "minor":"KBE",
+         "company":"KBE",
          "price":220,
          "entity":1048,
          "entity_type":"player",
@@ -151,7 +151,7 @@
       {
          "id":12,
          "type":"bid",
-         "minor":"BKB",
+         "company":"BKB",
          "price":190,
          "entity":5909,
          "entity_type":"player",
