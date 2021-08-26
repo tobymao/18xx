@@ -17,6 +17,8 @@ module View
 
     def render_notification
       message = <<~MESSAGE
+        <p>18ZOO is now in production</p>
+
         <p>Auto-Routing should work in most games now.</p>
         <p>We now support Slack/Discord notifications. Learn how to use them <a href='https://github.com/tobymao/18xx/wiki/Notifications'>here</a>.</p>
         <p>Please submit problem reports and make suggestions for improvements on
