@@ -14,7 +14,7 @@ module Engine
             name: 'Buffalo Bayou, Brazos and Colorado Railway Company',
             value: 50,
             revenue: 10,
-            desc: 'Extra Tile Lay. Blocks hex J13 until Phase 5. The owning president may place a #8 or #9 tile in this hex as an extra tile lay during the track laying step of a corporation for which they are president.',
+            desc: 'Blocks hex J13 until Phase 5.',
             sym: 'BBBCRC',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['J13'] }],
 
