@@ -7,6 +7,7 @@ module Engine
         CORPORATIONS = [
           {
             float_percent: 50,
+            always_market_price: true,
             sym: 'BNR',
             name: 'Belgian National Railways',
             logo: '18_eu/BNR',
@@ -17,6 +18,7 @@ module Engine
           },
           {
             float_percent: 50,
+            always_market_price: true,
             sym: 'DR',
             name: 'Dutch Railways',
             logo: '18_eu/DR',
@@ -27,6 +29,7 @@ module Engine
           },
           {
             float_percent: 50,
+            always_market_price: true,
             sym: 'FS',
             name: 'Italian State Railways',
             logo: '18_eu/FS',
@@ -36,6 +39,7 @@ module Engine
           },
           {
             float_percent: 50,
+            always_market_price: true,
             sym: 'RBSR',
             name: 'Royal Bavarian State Railroad',
             logo: '18_eu/RBSR',
@@ -46,6 +50,7 @@ module Engine
           },
           {
             float_percent: 50,
+            always_market_price: true,
             sym: 'RPR',
             name: 'Royal Prussian Railway',
             logo: '18_eu/RPR',
@@ -55,6 +60,7 @@ module Engine
           },
           {
             float_percent: 50,
+            always_market_price: true,
             sym: 'AIRS',
             name: 'Austrian Imperial Royal State',
             logo: '18_eu/AIRS',
@@ -65,6 +71,7 @@ module Engine
           },
           {
             float_percent: 50,
+            always_market_price: true,
             sym: 'SNCF',
             name: 'SNCF',
             logo: '18_eu/SNCF',
@@ -74,6 +81,7 @@ module Engine
           },
           {
             float_percent: 50,
+            always_market_price: true,
             sym: 'GSR',
             name: 'German State Railways',
             logo: '18_eu/GSR',
