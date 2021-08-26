@@ -150,6 +150,12 @@ module Engine
           @phase.name.to_i > 3 ? 1 : 2
         end
 
+        def must_buy_train?(entity)
+          return false if entity.minor?
+
+          super
+        end
+
         def tile_lays(entity)
           return FIRST_OR_MINOR_TILE_LAYS if entity.minor? && !entity.operated?
           return MINOR_TILE_LAYS if entity.minor?
