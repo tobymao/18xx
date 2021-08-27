@@ -216,6 +216,7 @@ module Engine
         COMPANY_SALE_FEE = 30
         TRACK_RESTRICTION = :restrictive
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
+        GAME_END_CHECK = { bank: :current_or, stock_market: :immediate }.freeze
 
         def init_optional_rules(optional_rules)
           optional_rules = (optional_rules || []).map(&:to_sym)
@@ -612,13 +613,12 @@ module Engine
           entity.trains.map(&:distance).max
         end
 
-
         def double_header_pair?(a, b)
           corporation = train_owner(a.train)
           return false if (common = (a.visited_stops & b.visited_stops)).empty?
+
           common = common.first
           return false if common.city? && common.blocks?(corporation)
-
 
           a_tokened = a.visited_stops.any? { |n| city_tokened_by?(n, corporation) }
           b_tokened = b.visited_stops.any? { |n| city_tokened_by?(n, corporation) }
@@ -627,7 +627,6 @@ module Engine
 
           !(a_tokened && b_tokened)
         end
-
 
         # look for pairs of 2-trains that:
         # - have exactly two visited nodes each
@@ -726,6 +725,18 @@ module Engine
                       ''
                     end
           "#{route.hexes.map(&:name).join('-')}#{postfix}"
+        end
+
+        def price_movement_chart
+          [
+            ['Dividend', 'Share Price Change'],
+            ['0', '1 ←'],
+            ['≤ stock value/2', 'none'],
+            ['> stock value/2', '1 →'],
+            ['≥ 2× stock value', '2 →'],
+            ['≥ 3× stock value', '3 →'],
+            ['≥ 4× stock value', '3 →'],
+          ]
         end
       end
     end
