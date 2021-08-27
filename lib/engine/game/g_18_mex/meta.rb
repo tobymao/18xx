@@ -14,7 +14,7 @@ module Engine
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18MEX'
         GAME_LOCATION = 'Mexico'
         GAME_PUBLISHER = :all_aboard_games
-        GAME_RULES_URL = 'https://secure.deepthoughtgames.com/games/18MEX/rules.pdf'
+        GAME_RULES_URL = 'https://drive.google.com/file/d/17ahTfEG04vHhLiJ8fVsp2ya_-pCEt6q0/view?usp=sharing'
 
         PLAYER_RANGE = [3, 5].freeze
         OPTIONAL_RULES = [
