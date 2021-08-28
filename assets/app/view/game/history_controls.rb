@@ -36,17 +36,15 @@ module View
           prev_action =
             if @game.exception
               @game.last_processed_action
-            elsif cursor
-              cursor - 1
             else
-              @num_actions - 1
+              @game.previous_game_action_id_from(@game.last_game_action_id)
             end
           divs << history_link('<', 'Previous Action', prev_action,
                                { gridColumnStart: '4', **style_extra }, true, 'ArrowLeft')
         end
 
         if cursor && !@game.exception
-          divs << history_link('>', 'Next Action', @game.next_game_action_id,
+          divs << history_link('>', 'Next Action', @game.next_game_action_id_from(@game.last_game_action_id),
                                { gridColumnStart: '5', **style_extra }, true, 'ArrowRight')
           store(:round_history, @game.round_history, skip: true) unless @round_history
           next_round = @round_history[@game.round_history.size]

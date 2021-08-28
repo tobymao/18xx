@@ -764,9 +764,17 @@ module Engine
         @last_game_action_id || 0
       end
 
-      def next_game_action_id
+      def previous_game_action_id_from(action_id)
         action =
-          @raw_filtered_actions.find { |a| a['id'] > last_game_action_id && a['type'] != 'message' }
+          @raw_filtered_actions.reverse_each.find { |a| a['id'] < action_id && a['type'] != 'message' }
+        return action['id'] if action
+
+        nil
+      end
+
+      def next_game_action_id_from(action_id)
+        action =
+          @raw_filtered_actions.find { |a| a['id'] > action_id && a['type'] != 'message' }
         return action['id'] if action
 
         nil
