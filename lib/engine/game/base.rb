@@ -69,10 +69,8 @@ module Engine
         optional_rules ||= data.settings['optional_rules'] || []
       end
 
-      actions = actions.take(at_action) if at_action
-
       Engine.game_by_title(title).new(
-        names, id: id, actions: actions, pin: pin, optional_rules: optional_rules, user: user, **kwargs
+        names, id: id, actions: actions, at_action: at_action, pin: pin, optional_rules: optional_rules, user: user, **kwargs
       )
     end
 
@@ -425,7 +423,7 @@ module Engine
         true
       end
 
-      def initialize(names, id: 0, actions: [], pin: nil, strict: false, optional_rules: [], user: nil)
+      def initialize(names, id: 0, actions: [], at_action: nil, pin: nil, strict: false, optional_rules: [], user: nil)
         @id = id
         @turn = 1
         @final_turn = nil
@@ -518,7 +516,7 @@ module Engine
         log_optional_rules
         setup
 
-        initialize_actions(actions)
+        initialize_actions(actions, at_action: at_action)
 
         return unless pin
 
@@ -622,14 +620,16 @@ module Engine
       end
 
       # Initialize actions respecting the undo state
-      def initialize_actions(actions)
+      def initialize_actions(actions, at_action: nil)
         @loading = true unless @strict
 
         filtered_actions, active_undos = self.class.filtered_actions(actions)
+        @raw_filtered_actions = filtered_actions.compact
         @undo_possible = false
         # replay all actions with a copy
         filtered_actions.each.with_index do |action, index|
           next if @exception
+          break if at_action && action && action['id'] > at_action
 
           if action
             action = action.copy(self) if action.is_a?(Action::Base)
@@ -762,6 +762,23 @@ module Engine
 
       def last_game_action_id
         @last_game_action_id || 0
+      end
+
+      def next_game_action_id
+        action =
+          @raw_filtered_actions.find { |a| a['id'] > last_game_action_id && a['type'] != 'message' }
+        return action['id'] if action
+
+        nil
+      end
+
+      def process_to_action(id)
+        @raw_filtered_actions.each do |action|
+          next if action['id'] <= last_game_action_id
+          break if action['id'] > id
+
+          process_action(action)
+        end
       end
 
       def next_turn!

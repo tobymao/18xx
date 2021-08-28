@@ -46,7 +46,7 @@ module View
         end
 
         if cursor && !@game.exception
-          divs << history_link('>', 'Next Action', cursor + 1 < @num_actions ? cursor + 1 : nil,
+          divs << history_link('>', 'Next Action', @game.next_game_action_id,
                                { gridColumnStart: '5', **style_extra }, true, 'ArrowRight')
           store(:round_history, @game.round_history, skip: true) unless @round_history
           next_round = @round_history[@game.round_history.size]
