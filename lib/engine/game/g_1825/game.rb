@@ -216,6 +216,7 @@ module Engine
         COMPANY_SALE_FEE = 30
         TRACK_RESTRICTION = :restrictive
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
+        GAME_END_CHECK = { bank: :current_or, stock_market: :immediate }.freeze
 
         def init_optional_rules(optional_rules)
           optional_rules = (optional_rules || []).map(&:to_sym)
@@ -610,6 +611,132 @@ module Engine
           return 0 if entity.trains.empty?
 
           entity.trains.map(&:distance).max
+        end
+
+        def double_header_pair?(a, b)
+          corporation = train_owner(a.train)
+          return false if (common = (a.visited_stops & b.visited_stops)).empty?
+
+          common = common.first
+          return false if common.city? && common.blocks?(corporation)
+
+          a_tokened = a.visited_stops.any? { |n| city_tokened_by?(n, corporation) }
+          b_tokened = b.visited_stops.any? { |n| city_tokened_by?(n, corporation) }
+          return false if !a_tokened && !b_tokened
+          return true if common.town?
+
+          !(a_tokened && b_tokened)
+        end
+
+        # look for pairs of 2-trains that:
+        # - have exactly two visited nodes each
+        # - share exactly one non-tokened out endpoint
+        # - and one or both of the following is true
+        #   1. one has a token and the other does not
+        #   2. the shared endpoint is a town
+        #
+        # if multiple possibilities exist, pick first pair found
+        def find_double_headers(routes)
+          dhs = []
+          routes.each do |route_a|
+            next if route_a.train.distance != 2
+            next if route_a.visited_stops.size != 2
+            next if dhs.flatten.include?(route_a)
+
+            partner = routes.find do |route_b|
+              next false if route_b.train.distance != 2
+              next false if route_b.visited_stops.size != 2
+              next false if route_b == route_a
+              next false if dhs.flatten.include?(route_b)
+
+              double_header_pair?(route_a, route_b)
+            end
+            next unless partner
+
+            dhs << [route_a, partner]
+          end
+          dhs
+        end
+
+        def double_header?(route)
+          find_double_headers(route.routes).flatten.include?(route)
+        end
+
+        def find_double_header_buddies(route)
+          double_headers = find_double_headers(route.routes)
+          double_headers.each do |buddies|
+            return buddies if buddies.include?(route)
+          end
+          []
+        end
+
+        def check_distance(route, visits)
+          super
+          return if %w[3T 4T].include?(route.train.name)
+
+          raise GameError, 'Route cannot begin/end in a town' if visits.first.town? && visits.last.town?
+
+          end_town = visits.first.town? || visits.last.town?
+          end_town = false if end_town && route.train.distance == 2 && double_header?(route)
+          raise GameError, 'Route cannot begin/end in a town' if end_town
+
+          node_hexes = {}
+          visits.each do |node|
+            raise GameError, 'Cannot visit multiple towns/cities in same hex' if node_hexes[node.hex]
+
+            node_hexes[node.hex] = true
+          end
+        end
+
+        def check_route_token(route, token)
+          raise GameError, 'Route must contain token' if !token && !double_header?(route)
+        end
+
+        def check_connected(route, token)
+          # no need if distance is 2, avoids dealing with double-header route missing a token
+          return if route.train.distance == 2
+
+          paths_ = route.paths.uniq
+
+          return if token.select(paths_, corporation: route.corporation).size == paths_.size
+
+          raise GameError, 'Route is not connected'
+        end
+
+        def revenue_for(route, stops)
+          buddies = find_double_header_buddies(route)
+          if buddies.empty?
+            stops.sum { |stop| stop.route_revenue(route.phase, route.train) }
+          else
+            stops.sum do |stop|
+              if buddies[-1] == route && buddies[0].stops.include?(stop)
+                0
+              else
+                stop.route_revenue(route.phase, route.train)
+              end
+            end
+          end
+        end
+
+        def revenue_str(route)
+          postfix = if double_header?(route)
+                      ' [3 train]'
+                    else
+                      ''
+                    end
+          "#{route.hexes.map(&:name).join('-')}#{postfix}"
+        end
+
+        def price_movement_chart
+          [
+            ['Dividend', 'Share Price Change'],
+            ['0', '1 ←'],
+            ['≤ stock value/2', 'none'],
+            ['> stock value/2', '1 →'],
+            ['≥ 2× stock value', '2 →'],
+            ['≥ 3× stock value', '3 →'],
+            ['≥ 4× stock value', '3 →'],
+          ]
         end
       end
     end

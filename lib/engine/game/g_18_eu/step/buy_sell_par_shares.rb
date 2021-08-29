@@ -18,6 +18,14 @@ module Engine
             actions
           end
 
+          def round_state
+            super.merge(
+              {
+                pending_acquisition: nil,
+              }
+            )
+          end
+
           def process_buy_shares(action)
             entity = action.entity
             if entity.minor?
@@ -41,6 +49,7 @@ module Engine
 
           def can_gain?(entity, bundle, exchange: false)
             return false if exchange && !bundle.corporation.ipoed
+            return false if exchange && @game.corporations_operated.include?(bundle.corporation)
 
             super
           end

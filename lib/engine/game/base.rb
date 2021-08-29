@@ -1823,6 +1823,10 @@ module Engine
         phase_color_cache.include?(tile.color)
       end
 
+      def token_owner(entity)
+        entity&.company? ? entity.owner : entity
+      end
+
       private
 
       def init_graph
@@ -2554,6 +2558,8 @@ module Engine
             @round.operating? && @round.current_operator == ability.corporation
           when 'owning_player_or_turn'
             @round.operating? && @round.current_operator.player == ability.player
+          when 'owning_player_track'
+            @round.operating? && @round.current_operator.player == ability.player && current_step.is_a?(Step::Track)
           when 'owning_player_sr_turn'
             @round.stock? && @round.current_entity == ability.player
           when 'or_between_turns'

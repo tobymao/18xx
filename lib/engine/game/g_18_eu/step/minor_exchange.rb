@@ -9,13 +9,19 @@ module Engine
         include Engine::Step::ShareBuying
 
         def merge_minor!(minor, corporation)
-          minor.tokens.first.remove!
+          maybe_remove_token(minor, corporation)
 
           transfer_treasury(minor, corporation)
           transfer_trains(minor, corporation)
 
-          @game.close_corporation(minor, quiet: false)
-          minor.close!
+          @game.close_corporation(minor, quiet: false) unless @round.pending_acquisition
+          minor.close! unless @round.pending_acquisition
+        end
+
+        def maybe_remove_token(minor, corporation)
+          return minor.tokens.first.remove! unless corporation.tokens.first&.used
+
+          @round.pending_acquisition = { minor: minor, corporation: corporation }
         end
 
         def exchange_share(minor, corporation)

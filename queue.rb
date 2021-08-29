@@ -29,7 +29,8 @@ MessageBus.subscribe '/turn' do |msg|
     next if (user.settings['webhook_user_id']&.strip || '') == ''
 
     begin
-      message = "<@#{user.settings['webhook_user_id']}> #{data['type']} #{data['game_url']}"
+      message = "<@#{user.settings['webhook_user_id']}> #{data['type']} in #{game.title} \"#{game.description}\" " \
+                "(#{game.round} #{game.turn})\n#{data['game_url']}"
       Hooks.send(user, message)
     rescue Exception => e # rubocop:disable Lint/RescueException
       puts e.backtrace

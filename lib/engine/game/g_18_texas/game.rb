@@ -180,6 +180,8 @@ module Engine
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
+            Engine::Step::SpecialTrack,
+            Engine::Step::SpecialToken,
             Engine::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
@@ -228,6 +230,16 @@ module Engine
             [{ lay: true, upgrade: true, cost: 0 }, { lay: :not_if_upgraded, upgrade: false }]
           else
             [{ lay: true, upgrade: true, cost: 0 }]
+          end
+        end
+
+        def token_owner(entity)
+          if entity.company? && entity.owner&.player?
+            @round.teleport_tokener
+          elsif entity.company?
+            entity.owner
+          else
+            entity
           end
         end
       end
