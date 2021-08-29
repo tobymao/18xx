@@ -1646,16 +1646,21 @@ module Engine
           corporation.tokens.first.hex
         end
 
+        #
+        # In 18USA you need to use the maximum number of exits for a given tile, but unlike 1817 there are more types of tiles
+        # that this applies to:
+        # Gray plain track
+        # Brown cities
+        # Gray plain track with labels
+        # and at a given time it's possible to have multiple legal color choices to lay
+        # so we need to be able to filter within each group
         def filter_by_max_edges(tiles)
-          # group by: Color, NumCities, Label
-          tiles.group_by(&:color).transform_values do |tiles_by_color|
-            tiles_by_color.group_by { |t2| t2.cities&.size }.transform_values do |tiles_by_color_by_cities|
-              tiles_by_color_by_cities.group_by { |t| t.label.to_s }.transform_values do |grouped_tiles|
-                max_edges = grouped_tiles.map { |t| t.edges.length }.max
-                grouped_tiles.select { |t| t.edges.size == max_edges }
-              end.values.flatten
-            end.values.flatten
-          end.values.flatten
+          tiles.group_by { |t| [t.color, t.cities&.size, t.label&.to_s] }.flat_map do |grouped_tiles|
+            # flat_map on the hash flattens the hash into [[key, value], [key value], [key, value], ...]
+            grouped_tiles = grouped_tiles.last
+            max_edges = grouped_tiles.map { |t| t.edges.size }.max
+            grouped_tiles.select { |t| t.edges.size == max_edges }
+          end
         end
 
         #
