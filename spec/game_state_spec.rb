@@ -326,20 +326,22 @@ module Engine
             'entity_type' => 'player',
           }
           expect(corporation.cash).to eq(28)
+          expect(game.log.index { |item| item.message == 'GI earns 4$N (2 certs in the Market)' }).to be_nil
 
           game.process_action(action)
 
           expect(corporation.cash).to eq(32)
-          expect(game.log.index { |item| item.message == 'GI earns 4$N (2 certs in the Market)' }).to eq(30)
+          expect(game.log.index { |item| item.message == 'GI earns 4$N (2 certs in the Market)' }).to be_truthy
         end
       end
 
       describe 5 do
         it 'log messages after buy / pass / sell' do
           game = game_at_action(game_file, 10)
-          expect(game.log[17].message).to_not eq('Player 1 declines to sell shares') # Buy, Pass
-          expect(game.log[18].message).to eq('Player 1 passes') # Pass
-          expect(game.log[21].message).to eq('Player 2 declines to buy shares') # Sell, Pass
+
+          expect(game.log.index { |item| item.action_id == 7 }).to be_nil # Buy, Pass
+          expect(game.log.find { |item| item.action_id == 8 }.message).to eq('Player 1 passes') # Pass
+          expect(game.log.find { |item| item.action_id == 10 }.message).to eq('Player 2 declines to buy shares') # Pass
         end
       end
 

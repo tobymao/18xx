@@ -42,6 +42,19 @@ module Engine
               @game.clear_insolvent(entity)
             end
           end
+
+          def start_operating
+            entity = @entities[@entity_index]
+            @current_operator = entity
+            @current_operator_acted = false
+            entity.trains.each { |train| train.operated = false }
+            @log << "#{@game.acting_for_entity(entity).name} operates #{entity.name}" unless finished?
+            @game.place_home_token(entity) if @home_token_timing == :operate
+            @game.update_crowded(entity)
+            clear_cache!
+            skip_steps
+            next_entity! if finished?
+          end
         end
       end
     end
