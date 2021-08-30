@@ -622,9 +622,12 @@ module Engine
       # Initialize actions respecting the undo state
       def initialize_actions(actions, at_action: nil)
         @loading = true unless @strict
-
         filtered_actions, active_undos = self.class.filtered_actions(actions)
-        @raw_filtered_actions = filtered_actions.compact
+
+        # Store all actions for history navigation
+        @raw_all_actions = actions
+        filtered_actions.each.with_index { |action, index| @raw_all_actions[index]['skip'] = true unless action }
+
         @undo_possible = false
         # replay all actions with a copy
         filtered_actions.each.with_index do |action, index|
@@ -765,27 +768,31 @@ module Engine
       end
 
       def previous_game_action_id_from(action_id)
-        action =
-          @raw_filtered_actions.reverse_each.find { |a| a['id'] < action_id && a['type'] != 'message' }
-        return action['id'] if action
+        if (action = @raw_all_actions.reverse.find { |a| a['id'] < action_id && !a['skip'] && a['type'] != 'message' })
+          return action['id']
+        end
 
         nil
       end
 
       def next_game_action_id_from(action_id)
-        action =
-          @raw_filtered_actions.find { |a| a['id'] > action_id && a['type'] != 'message' }
-        return action['id'] if action
+        if (action = @raw_all_actions.find { |a| a['id'] > action_id && !a['skip'] && a['type'] != 'message' })
+          return action['id']
+        end
 
         nil
       end
 
       def process_to_action(id)
-        @raw_filtered_actions.each do |action|
-          next if action['id'] <= last_game_action_id
-          break if action['id'] > id
+        @raw_all_actions.each.with_index do |action, index|
+          next if index < last_game_action_id
+          break if index >= id
 
-          process_action(action)
+          if action['skip']
+            @raw_actions << action
+          else
+            process_action(action)
+          end
         end
       end
 
