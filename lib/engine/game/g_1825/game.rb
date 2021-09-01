@@ -666,7 +666,7 @@ module Engine
           @depot.trains.find { |t| t.name == rtrain }
         end
 
-        # minor share price is for a 20% share
+        # minor share price is for a 10% share
         def minor_par_prices(corp)
           price = minor_required_train(corp).price
           stock_market.market.first.select { |p| (p.price * 10) > price }.reject { |p| p.type == :endgame }
