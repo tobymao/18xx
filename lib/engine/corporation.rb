@@ -26,7 +26,7 @@ module Engine
                   :type, :floatable, :original_par_price, :reservation_color, :min_price, :ipo_owner,
                   :always_market_price
     attr_reader :companies, :name, :full_name, :fraction_shares, :id, :needs_token_to_par,
-                :presidents_share
+                :presidents_share, :price_multiplier
     attr_writer :par_price, :share_price
 
     SHARES = ([20] + Array.new(8, 10)).freeze
@@ -75,6 +75,8 @@ module Engine
       @type = opts[:type]&.to_sym
       @hide_shares = opts[:hide_shares] || false
       @reservation_color = opts[:reservation_color]
+      @price_percent = opts[:price_percent] || @second_share&.percent || @presidents_share.percent / 2
+      @price_multiplier = (@second_share&.percent || @presidents_share.percent / 2) / @price_percent
 
       init_abilities(opts[:abilities])
       init_operator(opts)

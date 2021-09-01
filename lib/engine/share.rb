@@ -43,7 +43,8 @@ module Engine
 
     def price_per_share
       share_price = @owner == corporation.ipo_owner ? corporation.par_price : corporation.share_price
-      share_price&.price || corporation.min_price
+      # annoyingly, this doesn't work: share_price&.price&.* corporation.multiplier (Opal bug?)
+      share_price&.price ? share_price.price * corporation.price_multiplier : corporation.min_price
     end
 
     def price
