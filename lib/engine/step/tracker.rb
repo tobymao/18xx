@@ -50,7 +50,8 @@ module Engine
         tile = action.tile
         old_tile = action.hex.tile
         tile_lay = get_tile_lay(action.entity)
-        raise GameError, 'Cannot lay an upgrade now' if old_tile.color != :white && !(tile_lay && tile_lay[:upgrade])
+        raise GameError, 'Cannot lay an upgrade now' if track_upgrade?(old_tile, tile,
+                                                                       action.hex) && !(tile_lay && tile_lay[:upgrade])
         raise GameError, 'Cannot lay a yellow now' if tile.color == :yellow && !(tile_lay && tile_lay[:lay])
         if tile_lay[:cannot_reuse_same_hex] && @round.laid_hexes.include?(action.hex)
           raise GameError, "#{action.hex.id} cannot be layed as this hex was already layed on this turn"
@@ -59,13 +60,13 @@ module Engine
         extra_cost = tile.color == :yellow ? tile_lay[:cost] : tile_lay[:upgrade_cost]
 
         lay_tile(action, extra_cost: extra_cost, entity: entity, spender: spender)
-        upgraded_track(old_tile, tile, action.hex)
+        @round.upgraded_track = true if track_upgrade?(old_tile, tile, action.hex)
         @round.num_laid_track += 1
         @round.laid_hexes << action.hex
       end
 
-      def upgraded_track(from, _to, _hex)
-        @round.upgraded_track = true if from.color != :white
+      def track_upgrade?(from, _to, _hex)
+        from.color != :white
       end
 
       def tile_lay_abilities_should_block?(entity)
@@ -317,7 +318,7 @@ module Engine
       def potential_tiles(_entity, hex)
         colors = @game.phase.tiles
         @game.tiles
-          .select { |tile| colors.include?(tile.color) }
+          .select { |tile| @game.tile_color_valid_for_phase?(tile, phase_color_cache: colors) }
           .uniq(&:name)
           .select { |t| @game.upgrades_to?(hex.tile, t) }
           .reject(&:blocks_lay)

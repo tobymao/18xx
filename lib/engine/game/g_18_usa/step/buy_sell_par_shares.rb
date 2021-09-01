@@ -117,9 +117,11 @@ module Engine
             entity.companies.delete(company)
             corporation.companies << company
             company_contribution = [company.value, corporation.cash].min
+            bank_contribution = company.value - company_contribution
 
             # Pay the player for the company
             corporation.spend(company_contribution, entity) if company_contribution.positive?
+            @game.bank.spend(bank_contribution, entity) if bank_contribution.positive?
 
             @log << "#{company.name} used for forming #{corporation.name} "\
                     "contributing #{@game.format_currency(company_contribution)} value"
@@ -152,13 +154,13 @@ module Engine
             return unless @corporation_size
 
             corporation = @winning_bid.corporation
-            corporation.companies.each { |c| c.close! if c.name == 'No Subsidy' }
-            corporation.companies.each { |c| handle_plus_ten(c) if c.name == '+10' }
-            corporation.companies.each { |c| handle_plus_ten_twenty(c) if c.name == '+10 / +20' }
+            corporation.companies.dup.each { |c| c.close! if c.name == 'No Subsidy' }
+            corporation.companies.dup.each { |c| handle_plus_ten(c) if c.name == '+10' }
+            corporation.companies.dup.each { |c| handle_plus_ten_twenty(c) if c.name == '+10 / +20' }
 
             # Close all unused value subsidies. Don't get greedy
-            corporation.owner.companies.each do |c|
-              if c.value.positive?
+            corporation.owner.companies.dup.each do |c|
+              if c.value.positive? && c.id[0] == 's' # don't close the players privates!
                 @game.log << "#{corporation.owner.name} forfeits the #{@game.format_currency(c.value)} subsidy"
                 c.close!
               end
@@ -168,6 +170,13 @@ module Engine
                     "and #{@corporation_size} shares"
 
             try_buy_tokens(corporation)
+
+            if corporation.tokens.first.hex.id == 'E11' && @game.metro_denver
+              @round.pending_tracks << {
+                entity: corporation,
+                hexes: [corporation.tokens.first.hex],
+              }
+            end
 
             @auctioning = nil
             @winning_bid = nil

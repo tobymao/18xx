@@ -95,8 +95,8 @@ module Engine
               old_paths.all? { |path| new_paths.any? { |p| path <= p } }
           end
 
-          def upgraded_track(_from, to, _hex)
-            @round.upgraded_track = true if to.color != :yellow && to.color != :red
+          def track_upgrade?(_from, to, _hex)
+            to.color != :yellow && to.color != :red
           end
         end
       end
