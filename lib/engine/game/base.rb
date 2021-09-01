@@ -767,20 +767,14 @@ module Engine
         @last_game_action_id || 0
       end
 
-      def previous_game_action_id_from(action_id)
-        if (action = @raw_all_actions.reverse.find { |a| a['id'] < action_id && !a['skip'] && a['type'] != 'message' })
-          return action['id']
-        end
-
-        nil
+      def previous_action_id_from(action_id)
+        # Skips messages and undone actions
+        @raw_all_actions.reverse.find { |a| a['id'] < action_id && !a['skip'] && a['type'] != 'message' }&.fetch('id')
       end
 
-      def next_game_action_id_from(action_id)
-        if (action = @raw_all_actions.find { |a| a['id'] > action_id && !a['skip'] && a['type'] != 'message' })
-          return action['id']
-        end
-
-        nil
+      def next_action_id_from(action_id)
+        # Skips messages and undone actions
+        @raw_all_actions.find { |a| a['id'] > action_id && !a['skip'] && a['type'] != 'message' }&.fetch('id')
       end
 
       def process_to_action(id)
