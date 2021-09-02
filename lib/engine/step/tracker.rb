@@ -310,6 +310,8 @@ module Engine
           raise GameError, 'Must use new track' unless used_new_track
         when :semi_restrictive
           raise GameError, 'Must use new track or change city value' if !used_new_track && !changed_city
+        when :station_restrictive
+          raise GameError, 'Must use new track' if !used_new_track && new_tile.nodes.empty?
         else
           raise
         end

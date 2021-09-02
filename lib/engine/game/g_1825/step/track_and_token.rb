@@ -7,6 +7,27 @@ module Engine
     module G1825
       module Step
         class TrackAndToken < Engine::Step::TrackAndToken
+          def description
+            return 'Lay Home Track' if @game.minor_deferred_token?(current_entity)
+
+            'Place a Token or Lay Track'
+          end
+
+          # handle updating tile reservation if there is now only one tokenable city on tile
+          def update_tile_reservation(tile)
+            return unless tile.reservations.one?
+            return if tile.cities.empty?
+
+            corp = tile.reservations[0]
+            return unless tile.cities.count { |c| c.tokenable?(corp) } == 1
+
+            city = tile.cities.find { |c| c.tokenable?(corp) }
+            return unless (slot = city.get_slot(corp))
+
+            city.add_reservation!(corp, slot)
+            tile.reservations.delete(corp)
+          end
+
           # 1825: it is only an "upgrade" if the new tile replaces another laid tile
           def lay_tile_action(action, entity: nil, spender: nil)
             tile = action.tile
@@ -27,6 +48,11 @@ module Engine
             upgraded_track(old_tile, tile, action.hex)
             @round.num_laid_track += 1
             @round.laid_hexes << action.hex
+
+            update_tile_reservation(tile)
+
+            # handle deferred tile lay
+            @game.place_home_token(entity) if @game.minor_deferred_token?(entity) && @game.can_place_home_token?(entity)
 
             return unless (ability = @game.abilities(entity, :blocks_hexes))
 
@@ -84,30 +110,45 @@ module Engine
               (!multi_city_upgrade || old_ctedges.all? { |oldct| new_ctedges.one? { |newct| (oldct & newct) == oldct } })
           end
 
-          def reachable_node?(entity, node, max_distance)
-            return false if max_distance.zero?
+          def reachable_node?(entity, node, max_node_distance, max_city_distance)
+            if max_node_distance.positive?
+              node_distances = @game.node_distance_graph.node_distances(entity)
+              return false unless node_distances[node]
+              return true if node_distances[node][:node] < max_node_distance
+            end
 
-            node_distances = @game.distance_graph.node_distances(entity)
-            return false unless node_distances[node]
+            if max_city_distance.positive?
+              city_distances = @game.city_distance_graph.node_distances(entity)
+              return false unless city_distances[node]
+              return true if city_distances[node][:city] < max_city_distance
+            end
 
-            node_distances[node][:node] < max_distance
+            false
           end
 
           # 1825 rule: any upgraded station must be reachable with a train
           def check_track_restrictions!(entity, old_tile, new_tile)
             return if @game.loading || !entity.operator?
 
+            # allow a placement on home hex if minor home token hasn't been laid
+            # This should only apply to three of the minors (Cambrian, Taff Vale, North Staffordshire)
+            return if @game.minor_deferred_token?(entity) && new_tile.hex.id == entity.coordinates
+
             super
 
             return if old_tile.preprinted || new_tile.nodes.empty?
 
-            if (max_distance = @game.biggest_train_distance(entity)).zero?
-              raise GameError, 'Cannot upgrade a city/town without a train'
-            end
+            raise GameError, 'Cannot upgrade a city/town without a train' if entity.trains.empty?
 
-            @game.distance_graph.clear
+            # a 4+4E train can reach any tile on the network
+            return if (max_node_distance = @game.biggest_node_distance(entity)) == 99
+
+            max_city_distance = @game.biggest_city_distance(entity)
+
+            @game.node_distance_graph.clear
+            @game.city_distance_graph.clear
             new_tile.nodes.each do |node|
-              unless reachable_node?(entity, node, max_distance)
+              unless reachable_node?(entity, node, max_node_distance, max_city_distance)
                 raise GameError, 'Unable to reach city/town on upgraded tile with any train'
               end
             end
@@ -122,9 +163,18 @@ module Engine
           end
 
           def available_hex(entity, hex)
+            return true if @game.minor_deferred_token?(entity) && hex.id == entity.coordinates
             return true if can_lay_tile?(entity) && super
 
             tokenable_hex?(entity, hex)
+          end
+
+          def hex_neighbors(entity, hex)
+            return super if !@game.minor_deferred_token?(entity) || hex.id != entity.coordinates
+
+            neighbors = {}
+            hex.neighbors.each { |e, _| neighbors[e] = true }
+            neighbors.keys
           end
         end
       end
