@@ -194,6 +194,7 @@ module Engine
             other_trains = @game.lner ? [] : @depot.other_trains(entity)
 
             other_trains.reject! { |t| entity.cash < @game.used_train_price(t) }
+            other_trains.reject! { |t| t.owner.receivership? }
             other_trains.select! { |t| room_for_type?(entity, @game.train_type(t)) }
 
             @round.emergency_buy ? depot_trains : depot_trains + other_trains
