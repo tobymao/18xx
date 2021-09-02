@@ -111,9 +111,13 @@ module Engine
             if can_sell_stock?(entity, delta)
               @log << "#{entity.name} will sell treasury shares"
               @game.raise_money!(entity, delta)
+              receivership_buy(entity) if entity.receivership?
+              @round.clear_cache!
             elsif can_refinance?(entity, delta)
               @log << "#{entity.name} will refinance"
               @game.refinance!(entity)
+              receivership_buy(entity) if entity.receivership?
+              @round.clear_cache!
             else
               @log << "#{entity.name} will enter bankruptcy"
               @game.enter_bankruptcy!(entity)
