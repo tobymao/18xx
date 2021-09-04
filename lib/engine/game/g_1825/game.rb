@@ -189,12 +189,13 @@ module Engine
           },
           '6' => { distance: 7, price: 650 },
           '4T' => { distance: 3, price: 480, available_on: '6' },
-          '2+2' => { distance: 2, price: 600, available_on: '6' },
+          '2+2' => { distance: 2, price: 600, multiplier: 2, available_on: '6' },
           '7' => { distance: 7, price: 720 },
           '4+4E' => {
             distance: [{ 'nodes' => ['city'], 'pay' => 4, 'visit' => 99 },
                        { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
             price: 830,
+            multipler: 2,
             available_on: '7',
           },
         }.freeze
@@ -624,6 +625,35 @@ module Engine
           stock_market.market.first
         end
 
+        def active_players
+          players_ = @round.active_entities.map(&:player).compact
+
+          players_.empty? ? acting_when_empty : players_
+        end
+
+        def acting_when_empty
+          if (active_entity = @round && @round.active_entities[0])
+            [acting_for_entity(active_entity)]
+          else
+            @players
+          end
+        end
+
+        # for receivership:
+        # find first player from PD not a director
+        # o.w. PD
+        def acting_for_entity(entity)
+          return entity if entity.player?
+          return entity.owner if entity.owner.player?
+
+          acting = @players.find { |p| !director?(p) }
+          acting || @players.first
+        end
+
+        def director?(player)
+          @corporations.any? { |c| c.owner == player }
+        end
+
         def upgrades_to?(from, to, special = false, selected_company: nil)
           # handle special-case upgrades
           return true if force_dit_upgrade?(from, to)
@@ -718,10 +748,10 @@ module Engine
           G1825::Round::Operating.new(self, [
             Engine::Step::HomeToken,
             G1825::Step::TrackAndToken,
-            Engine::Step::Route,
+            G1825::Step::Route,
             G1825::Step::Dividend,
             Engine::Step::DiscardTrain,
-            Engine::Step::BuyTrain,
+            G1825::Step::BuyTrain,
           ], round_num: round_num)
         end
 
@@ -816,6 +846,14 @@ module Engine
           entity.corporation? && can_ipo?(entity)
         end
 
+        def silent_receivership?(entity)
+          entity.corporation? && entity.receivership? && minor?(entity) && (@units[1] || @units[2])
+        end
+
+        def can_run_route?(entity)
+          super && !silent_receivership?(entity)
+        end
+
         def status_array(corp)
           if major?(corp)
             layer_str = "Band #{@layer_by_corp[corp]}"
@@ -875,12 +913,20 @@ module Engine
           entity.trains.map { |t| city_distance(t) }.max
         end
 
+        def route_trains(entity)
+          (super + [@round.leased_train]).compact
+        end
+
         def double_header_pair?(a, b)
           corporation = train_owner(a.train)
           return false if (common = (a.visited_stops & b.visited_stops)).empty?
 
           common = common.first
           return false if common.city? && common.blocks?(corporation)
+
+          a_other = a.visited_stops.reject(common).first
+          b_other = b.visited_stops.reject(common).first
+          return false if a_other.town? || b_other.town? # still can't end in a town
 
           a_tokened = a.visited_stops.any? { |n| city_tokened_by?(n, corporation) }
           b_tokened = b.visited_stops.any? { |n| city_tokened_by?(n, corporation) }
@@ -965,16 +1011,23 @@ module Engine
           raise GameError, 'Route is not connected'
         end
 
+        # only T trains get halt revenue
+        def stop_revenue(stop, phase, train)
+          return 0 if stop.tile.label.to_s == 'HALT' && train.name != '3T' && train.name != '4T'
+
+          stop.route_revenue(phase, train)
+        end
+
         def revenue_for(route, stops)
           buddies = find_double_header_buddies(route)
           if buddies.empty?
-            stops.sum { |stop| stop.route_revenue(route.phase, route.train) }
+            stops.sum { |stop| stop_revenue(stop, route.phase, route.train) }
           else
             stops.sum do |stop|
               if buddies[-1] == route && buddies[0].stops.include?(stop)
                 0
               else
-                stop.route_revenue(route.phase, route.train)
+                stop_revenue(stop, route.phase, route.train)
               end
             end
           end

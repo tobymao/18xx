@@ -261,7 +261,12 @@ module Engine
             'color' => 'green',
             'code' => 'city=revenue:30,loc:0;city=revenue:30,loc:3;path=a:5,b:_0;path=a:2,b:_1;label=OO',
           },
-          '11' => 1,
+          '11' =>
+          {
+            'count' => 1,
+            'color' => 'green',
+            'code' => 'town=revenue:10,visit_cost:0;path=a:0,b:2;path=a:2,b:_0;path=a:_0,b:4;path=a:0,b:4;label=HALT',
+          },
           '13' => 1,
           '14' => 1,
           '23' => 1,
@@ -309,7 +314,12 @@ module Engine
         R3_TILES = {
           '8' => 1,
           '9' => 2,
-          '11' => 1,
+          '11' =>
+          {
+            'count' => 1,
+            'color' => 'green',
+            'code' => 'town=revenue:10,visit_cost:0;path=a:0,b:2;path=a:2,b:_0;path=a:_0,b:4;path=a:0,b:4;label=HALT',
+          },
           '14' => 1,
         }.freeze
 
@@ -365,7 +375,7 @@ module Engine
 
               gtiles[k] += v
             else
-              gtiles[k] = v
+              gtiles[k] = v.dup
             end
           end
         end
