@@ -12,7 +12,12 @@ module Engine
             @current_operator = entity
             @current_operator_acted = false
             entity.trains.each { |train| train.operated = false }
-            @log << "#{@game.acting_for_entity(entity).name} operates #{entity.name}" unless finished?
+            actor = @game.acting_for_entity(entity)
+            if actor == entity.owner
+              @log << "#{actor.name} operates #{entity.name}" unless finished?
+            else
+              @log << "#{actor.name} selected to operate #{entity.name} (in Receivership)" unless finished?
+            end
             @game.place_home_token(entity) if @home_token_timing == :operate || @game.minor_deferred_token?(entity)
             skip_steps
             next_entity! if finished?

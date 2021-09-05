@@ -7,10 +7,29 @@ module Engine
     module G1825
       module Step
         class TrackAndToken < Engine::Step::TrackAndToken
+          def actions(entity)
+            return [] if @game.silent_receivership?(entity)
+
+            super
+          end
+
           def description
             return 'Lay Home Track' if @game.minor_deferred_token?(current_entity)
 
             'Place a Token or Lay Track'
+          end
+
+          def setup
+            @round.receivership_loan = 0
+            super
+          end
+
+          def round_state
+            super.merge(
+              {
+                receivership_loan: 0,
+              }
+            )
           end
 
           # handle updating tile reservation if there is now only one tokenable city on tile
@@ -58,6 +77,58 @@ module Engine
 
             # if this corp laid a hex on its reserved hex, remove the ability
             entity.abilities.delete(ability) if @game.hex_blocked_by_ability?(entity, ability, action.hex)
+          end
+
+          def pay_tile_cost!(entity, tile, rotation, hex, spender, cost, _extra_cost)
+            if spender.cash >= cost
+              spender.spend(cost, @game.bank) if cost.positive?
+            else
+              diff = cost - spender.cash
+              spender.spend(spender.cash, @game.bank) if spender.cash.positive?
+              @round.receivership_loan += diff
+            end
+
+            @log << "#{spender.name}"\
+                    "#{spender == entity || !entity.company? ? '' : " (#{entity.sym})"}"\
+                    "#{cost.zero? ? '' : " spends #{@game.format_currency(cost)} and"}"\
+                    " lays tile ##{tile.name}"\
+                    " with rotation #{rotation} on #{hex.name}"\
+                    "#{tile.location_name.to_s.empty? ? '' : " (#{tile.location_name})"}"
+          end
+
+          def buying_power(entity, **)
+            entity.cash + (entity.receivership? ? 200 : 0)
+          end
+
+          def place_token(entity, city, token, connected: true, extra_action: false,
+                          special_ability: nil, check_tokenable: true, spender: nil)
+
+            return super unless entity.receivership?
+
+            hex = city.hex
+            check_connected(entity, city, hex) if connected
+
+            raise GameError, 'Token already placed this turn' if !extra_action && @round.tokened
+
+            tokener = entity.name
+            raise GameError, 'Token is already used' if token.used
+
+            city.place_token(entity, token, free: true, check_tokenable: check_tokenable,
+                                            cheater: false, extra_slot: false, spender: spender)
+
+            spender ||= entity
+            if spender.cash >= token.price
+              pay_token_cost(spender, token.price) if token.price.positive?
+            else
+              diff = token.price - spender.cash
+              pay_token_cost(spender, spender.cash) if spender.cash.positive?
+              @round.receivership_loan += diff
+            end
+
+            @log << "#{tokener} places a token on #{hex.name} (#{hex.location_name}) for #{@game.format_currency(token.price)}"
+
+            @round.tokened = true unless extra_action
+            @game.graph.clear
           end
 
           def upgraded_track(from, _to, _hex)

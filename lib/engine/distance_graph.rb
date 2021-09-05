@@ -69,12 +69,14 @@ module Engine
       merge_distance(node_distances, node, distance)
       return if corporation && node.blocks?(corporation)
 
+      count = node.visit_cost.positive? ? 1 : 0
+
       if !@separate_node_types
-        distance[:node] += 1
+        distance[:node] += count
       elsif node.city?
-        distance[:city] += 1
+        distance[:city] += count
       elsif node.town? && !node.halt?
-        distance[:town] += 1
+        distance[:town] += count
       end
 
       node.paths.each do |node_path|
@@ -104,11 +106,11 @@ module Engine
       end
 
       if !@separate_node_types
-        distance[:node] -= 1
+        distance[:node] -= count
       elsif node.city?
-        distance[:city] -= 1
+        distance[:city] -= count
       elsif node.town? && !node.halt?
-        distance[:town] -= 1
+        distance[:town] -= count
       end
     end
 
