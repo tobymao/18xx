@@ -67,10 +67,11 @@ module Engine
             programmed_auto_actions(entity)
           end
 
-          def activate_program_independent_mines(entity, _program)
+          def activate_program_independent_mines(entity, program)
             available_actions = actions(entity)
             return unless available_actions.include?('pass')
             return unless entity.minor?
+            return unless program.skip_close
 
             [Action::Pass.new(entity)]
           end

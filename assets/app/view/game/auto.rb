@@ -340,13 +340,31 @@ module View
       def enable_independent_mines(form)
         settings = params(form)
 
+        skip_track = settings['skip_track']
+        skip_buy = settings['skip_buy']
+        skip_close = settings['skip_close']
         indefinite = settings['indefinite']
 
         process_action(
           Engine::Action::ProgramIndependentMines.new(
             sender,
+            skip_track: skip_track,
+            skip_buy: skip_buy,
+            skip_close: skip_close,
             indefinite: indefinite
           )
+        )
+      end
+
+      def render_checkbox(label, id, form, checked)
+        render_input(
+          label,
+          id: id,
+          type: 'checkbox',
+          inputs: form,
+          attrs: {
+            checked: checked,
+          }
         )
       end
 
@@ -356,19 +374,18 @@ module View
         text += ' (Enabled)' if settings
         children = [h(:h3, text)]
         children << h(:p,
-                      'Automatically skip closing independent mines, and optionally also laying track.'\
+                      'Automatically skip independent mine actions.'\
                       ' This will deactivate itself in the next SR, unless set to indefinite.'\
                       ' It will also deactivate itself when a mine has negative income.')
 
-        indefinite = settings ? settings&.indefinite : false
-        children << h(:div, [render_input(
-          'Indefinite (normally stops after one OR set)',
-          id: 'indefinite',
-          type: 'checkbox',
-          inputs: form,
-          attrs: {
-            checked: indefinite,
-          })])
+        children << h(:div, [
+          render_checkbox('Skip track lay', 'skip_track', form, settings ? settings.skip_track : true),
+          render_checkbox('Skip switchers', 'skip_buy', form, settings ? settings.skip_buy : true),
+          render_checkbox('Skip close mine', 'skip_close', form, settings ? settings.skip_close : true),
+        ])
+        children << h(:div, [
+          render_checkbox('Indefinite (normally stops after one OR set)', 'indefinite', form, settings&.indefinite),
+        ])
 
         subchildren = [render_button(settings ? 'Update' : 'Enable') { enable_independent_mines(form) }]
         subchildren << render_disable(settings) if settings
