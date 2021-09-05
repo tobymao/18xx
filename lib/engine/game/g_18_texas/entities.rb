@@ -75,7 +75,6 @@ module Engine
                           type: 'teleport',
                           on_phase: %w[3 4],
                           when: 'owning_player_track',
-                          consume_tile_lay: true,
                           owner_type: 'player',
                           tiles: ['511'],
                           hexes: ['J5'],
