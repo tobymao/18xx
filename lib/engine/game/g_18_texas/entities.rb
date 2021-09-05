@@ -28,6 +28,7 @@ module Engine
             abilities: [
                         {
                           type: 'teleport',
+                          on_phase: %w[3 4],
                           when: 'owning_player_track',
                           owner_type: 'player',
                           tiles: ['511'],
@@ -52,6 +53,7 @@ module Engine
                         { type: 'blocks_hexes', owner_type: 'player', hexes: %w[D13 E12] },
                         {
                           type: 'tile_lay',
+                          on_phase: %w[3 4],
                           when: 'owning_player_track',
                           owner_type: 'player',
                           hexes: %w[D13 E12],
@@ -71,7 +73,9 @@ module Engine
 
                         {
                           type: 'teleport',
+                          on_phase: %w[3 4],
                           when: 'owning_player_track',
+                          consume_tile_lay: true,
                           owner_type: 'player',
                           tiles: ['511'],
                           hexes: ['J5'],
