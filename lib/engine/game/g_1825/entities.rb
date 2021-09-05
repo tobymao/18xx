@@ -95,6 +95,7 @@ module Engine
             sym: 'LNWR',
             name: 'London & North Western Railway Company',
             capitalization: :full,
+            max_ownership_percent: 100,
             tokens: [0, 40, 100, 100, 100],
             coordinates: 'T16',
             city: 0,
@@ -107,6 +108,7 @@ module Engine
             sym: 'GWR',
             name: 'Great Western Railway Company',
             capitalization: :full,
+            max_ownership_percent: 100,
             tokens: [0, 40, 100, 100, 100],
             coordinates: 'V14',
             city: 0,
@@ -119,17 +121,20 @@ module Engine
             sym: 'GER',
             name: 'Great Eastern Railway Company',
             capitalization: :full,
+            max_ownership_percent: 100,
             tokens: [0, 40, 100, 100],
             coordinates: 'V20',
             city: 4,
             color: 'darkblue',
             text_color: 'white',
             reservation_color: nil,
+            abilities: [{ type: 'blocks_hexes', owner_type: nil, hexes: ['U23'] }],
           },
           {
             sym: 'LSWR',
             name: 'London & South Western Railway Company',
             capitalization: :full,
+            max_ownership_percent: 100,
             tokens: [0, 40, 100, 100],
             coordinates: 'V20',
             city: 0,
@@ -142,6 +147,7 @@ module Engine
             sym: 'SECR',
             name: 'South Eastern & Chatham Railway Company',
             capitalization: :full,
+            max_ownership_percent: 100,
             tokens: [0, 40, 100, 100],
             coordinates: 'W23',
             city: 0,
@@ -153,6 +159,7 @@ module Engine
             sym: 'LBSC',
             name: 'London Brighton & South Coast Railway Company',
             capitalization: :full,
+            max_ownership_percent: 100,
             tokens: [0, 40, 100],
             coordinates: 'X20',
             city: 0,
@@ -168,6 +175,7 @@ module Engine
             sym: 'LNWR',
             name: 'London & North Western Railway Company',
             capitalization: :full,
+            max_ownership_percent: 100,
             tokens: [0, 40, 100, 100],
             coordinates: 'Q11',
             city: 0,
@@ -179,6 +187,7 @@ module Engine
             sym: 'MR',
             name: 'Midland Railway Company',
             capitalization: :full,
+            max_ownership_percent: 100,
             tokens: [0, 40, 100, 100],
             coordinates: 'Q15',
             city: 0,
@@ -191,6 +200,7 @@ module Engine
             sym: 'NER',
             name: 'North Eastern Railway Company',
             capitalization: :full,
+            max_ownership_percent: 100,
             tokens: [0, 40, 100, 100],
             coordinates: 'L14',
             city: 0,
@@ -202,6 +212,7 @@ module Engine
             sym: 'GCR',
             name: 'Great Central Railway Company',
             capitalization: :full,
+            max_ownership_percent: 100,
             tokens: [0, 40, 100],
             coordinates: 'O15',
             city: 0,
@@ -213,6 +224,7 @@ module Engine
             sym: 'GNR',
             name: 'Great Northern Railway Company',
             capitalization: :full,
+            max_ownership_percent: 100,
             tokens: [0, 40, 100],
             coordinates: 'O15',
             city: 1,
@@ -223,9 +235,10 @@ module Engine
             sym: 'L&YR',
             name: 'Lancashire & Yorkshire Railway Company',
             capitalization: :full,
+            max_ownership_percent: 100,
             tokens: [0, 40, 100],
             coordinates: 'O11',
-            city: 0,
+            city: 1,
             color: 'purple',
             reservation_color: nil,
             abilities: [{ type: 'blocks_hexes', owner_type: nil, hexes: ['N10'] }],
@@ -237,6 +250,7 @@ module Engine
             sym: 'CR',
             name: 'Caledonia Railway',
             capitalization: :full,
+            max_ownership_percent: 100,
             tokens: [0, 40, 100, 100],
             coordinates: 'G5',
             city: 2,
@@ -247,6 +261,7 @@ module Engine
             sym: 'NBR',
             name: 'North British Railway',
             capitalization: :full,
+            max_ownership_percent: 100,
             tokens: [0, 40, 100, 100],
             coordinates: 'G5',
             city: 1,
@@ -257,6 +272,7 @@ module Engine
             sym: 'GSWR',
             name: 'Glasgow & South West Railway Company',
             capitalization: :full,
+            max_ownership_percent: 100,
             tokens: [0, 40, 100],
             coordinates: 'G5',
             city: 0,
@@ -270,6 +286,8 @@ module Engine
             capitalization: :incremental,
             float_percent: 40,
             shares: [40, 20, 20, 20],
+            price_percent: 10,
+            max_ownership_percent: 100,
             tokens: [0],
             coordinates: 'B12',
             city: 0,
@@ -281,6 +299,8 @@ module Engine
             capitalization: :incremental,
             float_percent: 40,
             shares: [40, 20, 20, 20],
+            price_percent: 10,
+            max_ownership_percent: 100,
             tokens: [0],
             coordinates: 'B8',
             city: 0,
@@ -292,9 +312,111 @@ module Engine
             capitalization: :incremental,
             float_percent: 40,
             shares: [40, 20, 20, 20],
+            price_percent: 10,
+            max_ownership_percent: 100,
             tokens: [0],
             coordinates: 'K7',
             city: 0,
+            color: '#1b967a',
+          },
+        ].freeze
+
+        R1_CORPORATIONS = [
+          {
+            sym: 'Cam',
+            name: 'Cambrian Railway',
+            capitalization: :incremental,
+            float_percent: 40,
+            shares: [40, 20, 20, 20],
+            price_percent: 10,
+            max_ownership_percent: 100,
+            tokens: [0],
+            coordinates: 'R8',
+            color: '#1b967a',
+            abilities: [{ type: 'blocks_hexes', owner_type: nil, hexes: ['R8'] }],
+          },
+          {
+            sym: 'TV',
+            name: 'Taff Vale Railway',
+            capitalization: :incremental,
+            float_percent: 40,
+            shares: [40, 20, 20, 20],
+            price_percent: 10,
+            max_ownership_percent: 100,
+            tokens: [0],
+            coordinates: 'V8',
+            color: '#1b967a',
+          },
+        ].freeze
+
+        R2_CORPORATIONS = [
+          {
+            sym: 'S&DR',
+            name: 'Somerset & Dorset Railway',
+            capitalization: :incremental,
+            float_percent: 40,
+            shares: [40, 20, 20, 20],
+            price_percent: 10,
+            max_ownership_percent: 100,
+            tokens: [0],
+            coordinates: 'W9',
+            color: '#1b967a',
+          },
+        ].freeze
+
+        R3_CORPORATIONS = [
+          {
+            sym: 'M&GN',
+            name: 'Midland & Great Northern Joint Railway',
+            capitalization: :incremental,
+            float_percent: 40,
+            shares: [40, 20, 20, 20],
+            price_percent: 10,
+            max_ownership_percent: 100,
+            tokens: [0],
+            coordinates: 'Q23',
+            color: '#1b967a',
+          },
+        ].freeze
+
+        K5_CORPORATIONS = [
+          {
+            sym: 'FR',
+            name: 'Furness Railway',
+            capitalization: :incremental,
+            float_percent: 40,
+            shares: [40, 20, 20, 20],
+            price_percent: 10,
+            max_ownership_percent: 100,
+            tokens: [0],
+            coordinates: 'M9',
+            color: '#1b967a',
+          },
+          {
+            sym: 'NS',
+            name: 'North Staffordshire Railway',
+            capitalization: :incremental,
+            float_percent: 40,
+            shares: [40, 20, 20, 20],
+            price_percent: 10,
+            max_ownership_percent: 100,
+            tokens: [0],
+            coordinates: 'Q13',
+            color: '#1b967a',
+          },
+        ].freeze
+
+        K7_CORPORATIONS = [
+          {
+            sym: 'LT&S',
+            name: 'London, Tilbury & Southend Railway',
+            capitalization: :incremental,
+            float_percent: 40,
+            shares: [40, 20, 20, 20],
+            price_percent: 10,
+            max_ownership_percent: 100,
+            tokens: [0],
+            coordinates: 'V22',
             color: '#1b967a',
           },
         ].freeze
@@ -320,11 +442,11 @@ module Engine
           'GNoS' => '5',
           'HR' => 'U3',
           'M&C' => '3T',
-          'C' => 'U3',
+          'Cam' => 'U3',
           'FR' => '5',
           'LT&S' => '2+2',
           'M&GN' => '4T',
-          'NSR' => '3T',
+          'NS' => '3T',
           'S&DR' => '5',
           'TV' => '4T',
         }.freeze
@@ -338,7 +460,6 @@ module Engine
           comps
         end
 
-        # FIXME: R1, R2, R3, K5, K7
         def game_corporations
           corps = []
           corps.concat(UNIT1_CORPORATIONS) if @units[1]
@@ -351,7 +472,17 @@ module Engine
             lnwr[:coordinates] = %w[T16 Q11]
           end
           corps.concat(UNIT3_CORPORATIONS) if @units[3]
-          # FIXME: Modify GWR (Unit 1) if playing with R2
+          corps.concat(R1_CORPORATIONS) if @regionals[1]
+          # Modify GWR (Unit 1) if playing with R2
+          if @regionals[2]
+            corps.concat(R2_CORPORATIONS)
+            gwr = corps.find { |corp| corp[:sym] == 'GWR' }
+            gwr[:tokens] = [0, 0, 40, 100, 100, 100, 100]
+            gwr[:coordinates] = %w[V14 Y7]
+          end
+          corps.concat(R3_CORPORATIONS) if @regionals[3]
+          corps.concat(K5_CORPORATIONS) if @kits[5]
+          corps.concat(K7_CORPORATIONS) if @kits[7]
           corps
         end
       end

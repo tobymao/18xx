@@ -111,9 +111,13 @@ module Engine
             if can_sell_stock?(entity, delta)
               @log << "#{entity.name} will sell treasury shares"
               @game.raise_money!(entity, delta)
+              receivership_buy(entity) if entity.receivership?
+              @round.clear_cache!
             elsif can_refinance?(entity, delta)
               @log << "#{entity.name} will refinance"
               @game.refinance!(entity)
+              receivership_buy(entity) if entity.receivership?
+              @round.clear_cache!
             else
               @log << "#{entity.name} will enter bankruptcy"
               @game.enter_bankruptcy!(entity)
@@ -190,6 +194,7 @@ module Engine
             other_trains = @game.lner ? [] : @depot.other_trains(entity)
 
             other_trains.reject! { |t| entity.cash < @game.used_train_price(t) }
+            other_trains.reject! { |t| t.owner.receivership? }
             other_trains.select! { |t| room_for_type?(entity, @game.train_type(t)) }
 
             @round.emergency_buy ? depot_trains : depot_trains + other_trains

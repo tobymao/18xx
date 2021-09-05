@@ -28,7 +28,7 @@ module Engine
       },
     }.freeze
 
-    LETTERS = ('A'..'Z').to_a
+    LETTERS = ('A'..'Z').to_a + ('AA'..'AZ').to_a
     NEGATIVE_LETTERS = [0] + ('a'..'z').to_a
 
     COORD_LETTER = /([A-Za-z]+)/.freeze
