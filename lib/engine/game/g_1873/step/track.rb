@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative '../../../step/programmer'
 require_relative '../../../step/track'
 
 module Engine
@@ -7,6 +8,8 @@ module Engine
     module G1873
       module Step
         class Track < Engine::Step::Track
+          include Engine::Step::Programmer
+
           def round_state
             {
               non_double_tile: false,
@@ -228,6 +231,18 @@ module Engine
             @log << "#{entity.name} had portions of concession route previously built"
             @log << "#{entity.name} pays remaining concession cost of #{@game.format_currency(total_cost)}"
             entity.spend(total_cost, @game.bank)
+          end
+
+          def auto_actions(entity)
+            programmed_auto_actions(entity)
+          end
+
+          def activate_program_independent_mines(entity, _program)
+            available_actions = actions(entity)
+            return unless available_actions.include?('pass')
+            return unless entity.minor?
+
+            [Action::Pass.new(entity)]
           end
         end
       end

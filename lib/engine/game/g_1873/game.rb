@@ -3171,6 +3171,12 @@ module Engine
             },
           ]
         end
+
+        def available_programmed_actions
+          super + [
+            Action::ProgramIndependentMines,
+          ]
+        end
       end
     end
   end

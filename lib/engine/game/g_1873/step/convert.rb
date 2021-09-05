@@ -1,12 +1,15 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/base'
+require_relative '../../../step/programmer'
 
 module Engine
   module Game
     module G1873
       module Step
         class Convert < Engine::Step::Base
+          include Engine::Step::Programmer
+
           def actions(entity)
             return [] if entity.minor? && !entity.owner
             return %w[convert pass] if can_convert?(entity)
@@ -58,6 +61,18 @@ module Engine
             end
 
             pass!
+          end
+
+          def auto_actions(entity)
+            programmed_auto_actions(entity)
+          end
+
+          def activate_program_independent_mines(entity, _program)
+            available_actions = actions(entity)
+            return unless available_actions.include?('pass')
+            return unless entity.minor?
+
+            [Action::Pass.new(entity)]
           end
         end
       end

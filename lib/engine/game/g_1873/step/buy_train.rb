@@ -1,12 +1,15 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/buy_train'
+require_relative '../../../step/programmer'
 
 module Engine
   module Game
     module G1873
       module Step
         class BuyTrain < Engine::Step::BuyTrain
+          include Engine::Step::Programmer
+
           def setup
             super
           end
@@ -344,6 +347,18 @@ module Engine
 
           def president_may_contribute?(_corporation, _active_shell)
             false
+          end
+
+          def auto_actions(entity)
+            programmed_auto_actions(entity)
+          end
+
+          def activate_program_independent_mines(entity, _program)
+            available_actions = actions(entity)
+            return unless available_actions.include?('pass')
+            return unless entity.minor?
+
+            [Action::Pass.new(entity)]
           end
         end
       end
