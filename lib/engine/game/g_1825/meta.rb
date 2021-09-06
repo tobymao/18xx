@@ -62,11 +62,11 @@ module Engine
             short_name: 'R3',
             desc: 'Regional Kit 3 - North Norfolk',
           },
-          # {
-          #  sym: :k1,
-          #  short_name: 'K1',
-          #  desc: 'Extension Kit 1 - Suplementary Tiles',
-          # },
+          {
+            sym: :k1,
+            short_name: 'K1',
+            desc: 'Extension Kit 1 - Suplementary Tiles',
+          },
           {
             sym: :k2,
             short_name: 'K2',
@@ -82,21 +82,21 @@ module Engine
             short_name: 'K5',
             desc: 'Extension Kit 5 - Minors for Unit 2',
           },
-          # {
-          #  sym: :k6,
-          #  short_name: 'K6',
-          #  desc: 'Extension Kit 6 - Advanced Tiles',
-          # },
+          {
+            sym: :k6,
+            short_name: 'K6',
+            desc: 'Extension Kit 6 - Advanced Tiles',
+          },
           {
             sym: :k7,
             short_name: 'K7',
             desc: 'Extension Kit 7 - London, Tilbury and Southend Railway',
           },
-          # {
-          #  sym: :d1,
-          #  short_name: 'K7',
-          #  desc: 'Extension Kit 7 - London, Tilbury and Southend Railway',
-          # },
+          {
+            sym: :d1,
+            short_name: 'D1',
+            desc: 'Development Kit 1 - Additional Tiles',
+          },
           {
             sym: :u3p,
             short_name: 'U3+',

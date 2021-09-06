@@ -305,6 +305,9 @@ module Engine
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
         GAME_END_CHECK = { bank: :current_or, stock_market: :immediate }.freeze
         TRAIN_PRICE_MIN = 10
+        IMPASSABLE_HEX_COLORS = %i[blue sepia red].freeze
+
+        TILE200_HEXES = %w[Q11 T16 V14].freeze
 
         BANK_UNIT1 = 5000
         BANK_UNIT2 = 5000
@@ -389,6 +392,7 @@ module Engine
           raise OptionError, 'K2 not supported with just Unit 3' if @kits[2] && !@units[1] && !@units[2] && @units[3]
           raise OptionError, 'K2 not supported without K3' if @kits[2] && !@kits[3]
           raise OptionError, 'Cannot use extra Unit 3 trains without Unit 3' if !@units[3] && optional_rules.include?(:u3p)
+          raise OptionError, 'Cannot use K1 or K6 with D1' if (@kits[1] || @kits[6]) && optional_rules.include?(:d1)
 
           p_range = case @units.keys.sort.map(&:to_s).join
                     when '1'
@@ -642,9 +646,13 @@ module Engine
 
           # deal with striped tiles
           # 119 upgrades from yellow, but upgrades to gray
-          return false if (from.name == '119') && (to.color == :brown)
-          # 166 upgrades from green, but doesn't upgrade to gray
-          return false if (from.name == '166') && (to.color == :gray)
+          return false if from.name == '119' && to.color == :brown
+          # 166 upgrades from green, but doesn't upgrade
+          return false if from.name == '166'
+          # 200 upgrades from pre-printed brown tiles on Crewe, Wolverton or Swindon, doesn't upgrade
+          return false if from.name == '200'
+          return false if to.name == '200' && from.color != :sepia
+          return true if to.name == '200' && TILE200_HEXES.include?(from.hex&.id)
 
           super
         end
