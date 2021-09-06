@@ -152,10 +152,10 @@ module Engine
             corporation = action.bundle.corporation
             return if entity.cash >= corporation.par_price.price && entity.percent_of(corporation) < 50
 
-            @log << if entity.cash < corporation.par_price.price
-                      "#{entity.name} skips buying additional shares"
-                    else
+            @log << if entity.percent_of(corporation) >= 50
                       "#{entity.name} finishes buying additional shares"
+                    else
+                      "#{entity.name} skips buying additional shares"
                     end
 
             pass!

@@ -14,7 +14,7 @@ module Engine
             name: 'Buffalo Bayou, Brazos and Colorado Railway Company',
             value: 50,
             revenue: 10,
-            desc: 'Extra Tile Lay. Blocks hex J13 until Phase 5.',
+            desc: 'Blocks hex J13 until Phase 5.',
             sym: 'BBBCRC',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['J13'] }],
 
@@ -28,6 +28,7 @@ module Engine
             abilities: [
                         {
                           type: 'teleport',
+                          on_phase: %w[3 4],
                           when: 'owning_player_track',
                           owner_type: 'player',
                           tiles: ['511'],
@@ -52,6 +53,7 @@ module Engine
                         { type: 'blocks_hexes', owner_type: 'player', hexes: %w[D13 E12] },
                         {
                           type: 'tile_lay',
+                          on_phase: %w[3 4],
                           when: 'owning_player_track',
                           owner_type: 'player',
                           hexes: %w[D13 E12],
@@ -71,6 +73,7 @@ module Engine
 
                         {
                           type: 'teleport',
+                          on_phase: %w[3 4],
                           when: 'owning_player_track',
                           owner_type: 'player',
                           tiles: ['511'],

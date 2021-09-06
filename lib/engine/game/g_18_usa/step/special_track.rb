@@ -1,12 +1,14 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/special_track'
+require_relative 'tracker'
 
 module Engine
   module Game
     module G18USA
       module Step
         class SpecialTrack < Engine::Step::SpecialTrack
+          include Tracker
           def hex_neighbors(entity, hex)
             # See 1817 and reinsert pittsburgh check for handling metros
 
@@ -19,7 +21,7 @@ module Engine
             @game.graph.connected_hexes(owner)[hex]
           end
 
-          def lay_tile_action(action, entity: nil, spender: nil)
+          def lay_tile(action, extra_cost: 0, entity: nil, spender: nil)
             tile = action.tile
             check_rural_junction(tile, action.hex) if tile.name.include?('Rural')
 
@@ -41,6 +43,14 @@ module Engine
           # The oil/coal/iron tiles falsely pass as offboards, so we need to be more careful
           def real_offboard?(tile)
             tile.offboards&.any? && !tile.labels&.any?
+          end
+
+          def available_hex(entity, hex)
+            return unless (ability = abilities(entity))
+            return custom_tracker_available_hex(entity, hex, special_override: true) if \
+                ability.hexes&.empty? && ability.consume_tile_lay
+
+            hex_neighbors(entity, hex)
           end
 
           def legal_tile_rotation?(entity, hex, tile)

@@ -69,10 +69,8 @@ module Engine
         optional_rules ||= data.settings['optional_rules'] || []
       end
 
-      actions = actions.take(at_action) if at_action
-
       Engine.game_by_title(title).new(
-        names, id: id, actions: actions, pin: pin, optional_rules: optional_rules, user: user, **kwargs
+        names, id: id, actions: actions, at_action: at_action, pin: pin, optional_rules: optional_rules, user: user, **kwargs
       )
     end
 
@@ -425,7 +423,7 @@ module Engine
         true
       end
 
-      def initialize(names, id: 0, actions: [], pin: nil, strict: false, optional_rules: [], user: nil)
+      def initialize(names, id: 0, actions: [], at_action: nil, pin: nil, strict: false, optional_rules: [], user: nil)
         @id = id
         @turn = 1
         @final_turn = nil
@@ -518,7 +516,7 @@ module Engine
         log_optional_rules
         setup
 
-        initialize_actions(actions)
+        initialize_actions(actions, at_action: at_action)
 
         return unless pin
 
@@ -622,14 +620,19 @@ module Engine
       end
 
       # Initialize actions respecting the undo state
-      def initialize_actions(actions)
+      def initialize_actions(actions, at_action: nil)
         @loading = true unless @strict
-
         filtered_actions, active_undos = self.class.filtered_actions(actions)
+
+        # Store all actions for history navigation
+        @raw_all_actions = actions
+        filtered_actions.each.with_index { |action, index| @raw_all_actions[index]['skip'] = true unless action }
+
         @undo_possible = false
         # replay all actions with a copy
         filtered_actions.each.with_index do |action, index|
           next if @exception
+          break if at_action && action && action['id'] > at_action
 
           if action
             action = action.copy(self) if action.is_a?(Action::Base)
@@ -762,6 +765,29 @@ module Engine
 
       def last_game_action_id
         @last_game_action_id || 0
+      end
+
+      def previous_action_id_from(action_id)
+        # Skips messages and undone actions
+        @raw_all_actions.reverse.find { |a| a['id'] < action_id && !a['skip'] && a['type'] != 'message' }&.fetch('id')
+      end
+
+      def next_action_id_from(action_id)
+        # Skips messages and undone actions
+        @raw_all_actions.find { |a| a['id'] > action_id && !a['skip'] && a['type'] != 'message' }&.fetch('id')
+      end
+
+      def process_to_action(id)
+        @raw_all_actions.each.with_index do |action, index|
+          next if index < last_game_action_id
+          break if index >= id
+
+          if action['skip']
+            @raw_actions << action
+          else
+            process_action(action)
+          end
+        end
       end
 
       def next_turn!
@@ -1818,6 +1844,11 @@ module Engine
 
       def skip_route_track_type; end
 
+      def tile_color_valid_for_phase?(tile, phase_color_cache: nil)
+        phase_color_cache ||= @phase.tiles
+        phase_color_cache.include?(tile.color)
+      end
+
       def token_owner(entity)
         entity&.company? ? entity.owner : entity
       end
@@ -2394,7 +2425,7 @@ module Engine
       def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
         colors = Array(@phase.phases.last[:tiles])
         @all_tiles
-          .select { |t| colors.include?(t.color) }
+          .select { |t| tile_color_valid_for_phase?(t, phase_color_cache: colors) }
           .uniq(&:name)
           .select { |t| upgrades_to?(tile, t, selected_company: selected_company) }
           .reject(&:blocks_lay)

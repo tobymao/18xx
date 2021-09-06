@@ -71,6 +71,8 @@ module View
          (!cursor && @game.raw_actions.size == @num_actions) ||
          (cursor == @game.raw_actions.size))
 
+      return @game.process_to_action(cursor) if game_id == @game&.id && cursor && cursor > @game.raw_actions.size
+
       load_game_with_class = lambda do
         @game = Engine::Game.load(@game_data, at_action: cursor, user: @user&.dig('id'))
         store(:game, @game, skip: true)

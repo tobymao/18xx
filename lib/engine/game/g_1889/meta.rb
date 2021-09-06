@@ -14,7 +14,7 @@ module Engine
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1889'
         GAME_LOCATION = 'Shikoku, Japan'
         GAME_PUBLISHER = :grand_trunk_games
-        GAME_RULES_URL = 'https://secure.deepthoughtgames.com/games/1889/Rules.pdf'
+        GAME_RULES_URL = 'https://drive.google.com/file/d/1BLgIE3ihEXIjomzbEl4sIrMAz2rTlkvN/view?usp=sharing'
         GAME_SUPERTITLE = 'Shikoku'
         GAME_ALIASES = ['History of Shikoku Railways'].freeze
         GAME_DROPDOWN_TITLE = 'Shikoku: 1889'

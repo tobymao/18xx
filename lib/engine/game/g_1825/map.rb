@@ -82,6 +82,23 @@ module Engine
           'X22' => 'Hastings',
           'Y11' => 'Weymouth',
           'Y13' => 'Bournemouth',
+          # R1
+          'P4' => 'Holyhead',
+          'Q5' => 'Portmodoc',
+          'S5' => 'Aberystwyth',
+          'T2' => 'Fishguard',
+          'U1' => 'MilfordHaven',
+          'V6' => 'Swansea',
+          # R2
+          'X4' => 'Barnstaple',
+          'Y7' => 'Exeter',
+          'Z2' => 'Fowey',
+          'Z4' => 'Devonport & Plymouth',
+          'Z6' => 'Torquay',
+          'AA-1' => 'Penzance',
+          'AA1' => 'Falmouth',
+          # R3
+          'Q23' => 'Melton Constable',
         }.freeze
 
         UNIT1_TILES = {
@@ -98,7 +115,7 @@ module Engine
           '56' => 1,
           '12' => 2,
           '13' => 1,
-          '14' => 3,
+          '14' => 2,
           '15' => 2,
           '16' => 1,
           '19' => 1,
@@ -135,7 +152,7 @@ module Engine
           '4' => 1,
           '5' => 2,
           '6' => 2,
-          '7' => 2,
+          '7' => 3,
           '8' => 4,
           '9' => 4,
           '55' => 1,
@@ -179,7 +196,7 @@ module Engine
           '68' => 1,
           '49' => 1,
           '50' => 1,
-          '51' => 1,
+          '51' => 2,
         }.freeze
 
         UNIT3_TILES = {
@@ -230,7 +247,107 @@ module Engine
           '118' => 1,
         }.freeze
 
+        R1_TILES = {
+          '2' => 1,
+          '3' => 1,
+          '4' => 1,
+          '6' => 2,
+          '7' => 2,
+          '8' => 2,
+          '69' => 1,
+          '10' =>
+          {
+            'count' => 1,
+            'color' => 'green',
+            'code' => 'city=revenue:30,loc:0;city=revenue:30,loc:3;path=a:5,b:_0;path=a:2,b:_1;label=OO',
+          },
+          '11' =>
+          {
+            'count' => 1,
+            'color' => 'green',
+            'code' => 'town=revenue:10,visit_cost:0;path=a:0,b:2;path=a:2,b:_0;path=a:_0,b:4;path=a:0,b:4;label=HALT',
+          },
+          '13' => 1,
+          '14' => 1,
+          '23' => 1,
+          '24' => 1,
+          '35' =>
+          {
+            'count' => 1,
+            'color' => 'brown',
+            'code' => 'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:_0,b:2;path=a:1,b:_1;path=a:_1,b:3;label=OO',
+          },
+          '37' =>
+          {
+            'count' => 1,
+            'color' => 'brown',
+            'code' => 'city=revenue:40,loc:0;city=revenue:40,loc:3;path=a:2,b:_0;path=a:5,b:_1;path=a:2,b:5;label=OO',
+          },
+          '38' => 1,
+          '66' => 1,
+        }.freeze
+
+        R2_TILES = {
+          '3' => 1,
+          '58' => 1,
+          '115' => 1,
+          '10' =>
+          {
+            'count' => 1,
+            'color' => 'green',
+            'code' => 'city=revenue:30,loc:0;city=revenue:30,loc:3;path=a:5,b:_0;path=a:2,b:_1;label=OO',
+          },
+          '35' =>
+          {
+            'count' => 1,
+            'color' => 'brown',
+            'code' => 'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:_0,b:2;path=a:1,b:_1;path=a:_1,b:3;label=OO',
+          },
+          '37' =>
+          {
+            'count' => 1,
+            'color' => 'brown',
+            'code' => 'city=revenue:40,loc:0;city=revenue:40,loc:3;path=a:2,b:_0;path=a:5,b:_1;path=a:2,b:5;label=OO',
+          },
+        }.freeze
+
+        R3_TILES = {
+          '8' => 1,
+          '9' => 2,
+          '11' =>
+          {
+            'count' => 1,
+            'color' => 'green',
+            'code' => 'town=revenue:10,visit_cost:0;path=a:0,b:2;path=a:2,b:_0;path=a:_0,b:4;path=a:0,b:4;label=HALT',
+          },
+          '14' => 1,
+        }.freeze
+
+        K3_TILES = {
+          '48' => 1,
+          '49' => 1,
+          '50' => 2,
+          '51' => 3,
+          '60' => 2,
+          '166' => 4,
+          '167' => 4,
+          '168' =>
+          {
+            'count' => 2,
+            'color' => 'gray',
+            'code' => 'city=revenue:40,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;label=OO',
+          },
+        }.freeze
+
+        K5_TILES = {
+          '15' => 1,
+          '69' => 1,
+          '119' => 1,
+        }.freeze
+
         DIT_UPGRADES = {
+          # gentle curve to three curves with a halt
+          '8' => %w[11],
           # yellow double-dit to green K or X city
           '1' => %w[14],
           '2' => %w[15],
@@ -243,6 +360,8 @@ module Engine
           '3' => %w[12 14 15 119],
           '4' => %w[14 15 119],
           '58' => %w[12 13 14 15 119],
+          # HACK: for 119 (green/brown tile that upgrades to gray)
+          '119' => %w[51],
         }.freeze
 
         def append_game_tiles(gtiles, new_tiles)
@@ -250,13 +369,13 @@ module Engine
             if gtiles[k] && v.is_a?(Hash)
               raise GameError, "conflicting tile definitions for tile #{k}" unless gtiles[k].is_a?(Hash)
 
-              gtiles[k].count += v.count
+              gtiles[k]['count'] += v['count']
             elsif gtiles[k]
               raise GameError, "conflicting tile definitions for tile #{k}" if gtiles[k].is_a?(Hash)
 
               gtiles[k] += v
             else
-              gtiles[k] = v
+              gtiles[k] = v.dup
             end
           end
         end
@@ -266,6 +385,11 @@ module Engine
           append_game_tiles(gtiles, UNIT1_TILES) if @units[1]
           append_game_tiles(gtiles, UNIT2_TILES) if @units[2]
           append_game_tiles(gtiles, UNIT3_TILES) if @units[3]
+          append_game_tiles(gtiles, R1_TILES) if @regionals[1]
+          append_game_tiles(gtiles, R2_TILES) if @regionals[2]
+          append_game_tiles(gtiles, R3_TILES) if @regionals[3]
+          append_game_tiles(gtiles, K3_TILES) if @kits[3]
+          append_game_tiles(gtiles, K5_TILES) if @kits[5]
           gtiles
         end
 
@@ -338,6 +462,7 @@ module Engine
           },
           gray: {
             ['T16'] => 'city=revenue:10;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0',
+            ['U25'] => 'city=revenue:20;path=a:1,b:_0',
             ['V14'] => 'city=revenue:10;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:5,b:_0',
             ['V22'] => 'city=revenue:20,loc:4;path=a:1,b:_0;path=a:1,b:3;path=a:0,b:5',
             ['W9'] => 'path=a:0,b:3;path=a:0,b:4;path=a:3,b:4',
@@ -391,7 +516,7 @@ module Engine
             ['M9'] => 'city=revenue:10;town=revenue:10;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_1;path=a:5,b:_1',
             ['O15'] => 'city=revenue:20,loc:0.5;city=revenue:20,loc:3.5;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0;path=a:2,b:_1;path=a:3,b:_1;path=a:4,b:_1',
             ['P8'] => 'path=a:1,b:4;path=a:4,b:5;path=a:1,b:5',
-            ['Q11'] => 'city=revenue:10,slots:2;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0',
+            ['Q11'] => 'city=revenue:10;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0',
           },
         }.freeze
 
@@ -455,6 +580,60 @@ module Engine
           },
         }.freeze
 
+        R1_HEXES = {
+          white: {
+            %w[R6
+               T4
+               U3
+               U5] => '',
+            %w[Q7
+               S7
+               T6] => 'upgrade=cost:100,terrain:mountain',
+            ['P6'] => 'upgrade=cost:40,terrain:water',
+            %w[Q5
+               S5] => 'town=revenue:0',
+            ['U7'] => 'town=revenue:0;town=revenue:0',
+            %w[R8
+               T2] => 'city=revenue:0',
+          },
+          gray: {
+            ['P4'] => 'city=revenue:20;path=a:4,b:_0;path=a:5,b:_0',
+            ['U1'] => 'city=revenue:10;path=a:3,b:_0;path=a:4,b:_0',
+            ['V6'] => 'city=revenue:20;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
+          },
+        }.freeze
+
+        R2_HEXES = {
+          white: {
+            %w[Y1
+               Y3
+               Z0] => '',
+            %w[X6
+               Y5] => 'upgrade=cost:100,terrain:mountain',
+            %w[X4
+               Z2
+               Z6
+               AA-1] => 'town=revenue:0',
+            %w[Y7
+               AA1] => 'city=revenue:0',
+          },
+          yellow: {
+            ['Z4'] => 'city=revenue:0;city=revenue:0;label=OO',
+          },
+          gray: {
+            ['W9'] => 'city=revenue:10,loc:4.5;path=a:0,b:3;path=a:_0,b:3;path=a:_0,b:4;path=a:_0,b:5',
+          },
+        }.freeze
+
+        R3_HEXES = {
+          white: {
+            ['Q25'] => '',
+          },
+          gray: {
+            ['Q23'] => 'city=revenue:10;path=a:0,b:_0;path=a:4,b:_0;path=a:5,b:_0',
+          },
+        }.freeze
+
         UNIT1_OFFMAP_HEXES = {
           gray: {
             ['Q7'] => 'offboard=revenue:0,visit_cost:99;path=a:5,b:_0',
@@ -473,9 +652,6 @@ module Engine
             %w[S7
                U7] => 'offboard=revenue:0,visit_cost:99;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
             ['Y7'] => 'offboard=revenue:0,visit_cost:99;path=a:3,b:_0;path=a:4,b:_0',
-            ['Z8'] => 'offboard=revenue:0,visit_cost:99;path=a:3,b:_0',
-            ['Z10'] => 'offboard=revenue:0,visit_cost:99;path=a:2,b:_0;path=a:3,b:_0',
-            ['Z12'] => 'offboard=revenue:0,visit_cost:99;path=a:2,b:_0',
           },
         }.freeze
 
@@ -508,6 +684,13 @@ module Engine
                L12
                L14] => 'offboard=revenue:0,visit_cost:99;path=a:2,b:_0;path=a:3,b:_0',
             ['L16'] => 'offboard=revenue:0,visit_cost:99;path=a:2,b:_0',
+          },
+        }.freeze
+
+        R1_OFFMAP_HEXES = {
+          gray: {
+            ['P8'] => 'offboard=revenue:0,visit_cost:99;path=a:0,b:_0;path=a:1,b:_0',
+            ['Q9'] => 'offboard=revenue:0,visit_cost:99;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0',
           },
         }.freeze
         # rubocop:enable Layout/LineLength
@@ -547,11 +730,15 @@ module Engine
 
         def game_hexes
           ghexes = {}
+          append_game_hexes(ghexes, R1_HEXES) if @regionals[1]
+          append_game_hexes(ghexes, R2_HEXES) if @regionals[2]
+          append_game_hexes(ghexes, R3_HEXES) if @regionals[3]
           append_game_hexes(ghexes, UNIT1_HEXES) if @units[1]
           append_game_hexes(ghexes, UNIT2_HEXES) if @units[2]
           append_game_hexes(ghexes, UNIT3_HEXES) if @units[3]
 
           # append_game_hexes will ignore "spike" hexes if they are already defined
+          append_game_hexes(ghexes, R1_OFFMAP_HEXES) if @regionals[1]
           append_game_hexes(ghexes, UNIT1_OFFMAP_HEXES) if @units[1]
           append_game_hexes(ghexes, UNIT2_OFFMAP_HEXES) if @units[2]
           append_game_hexes(ghexes, UNIT3_OFFMAP_HEXES) if @units[3]

@@ -180,7 +180,7 @@ module Engine
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
-            Engine::Step::SpecialTrack,
+            G18Texas::Step::SpecialTrack,
             Engine::Step::SpecialToken,
             Engine::Step::Track,
             Engine::Step::Token,
@@ -231,6 +231,18 @@ module Engine
           else
             [{ lay: true, upgrade: true, cost: 0 }]
           end
+        end
+
+        def upgrades_to?(from, to, special = false, selected_company: nil)
+          return true if selected_company&.sym == 'NOPR' && from.color == :white && to.name == '511' && from.hex.name == 'J5'
+
+          super
+        end
+
+        def ability_right_time?(ability, time, on_phase, passive_ok, strict_time)
+          return false if ability.on_phase.is_a?(Array) && !ability.on_phase.include?(@phase.name)
+
+          super
         end
 
         def token_owner(entity)

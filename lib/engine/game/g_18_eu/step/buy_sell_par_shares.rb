@@ -49,6 +49,7 @@ module Engine
 
           def can_gain?(entity, bundle, exchange: false)
             return false if exchange && !bundle.corporation.ipoed
+            return false if exchange && @game.corporations_operated.include?(bundle.corporation)
 
             super
           end

@@ -105,6 +105,8 @@ module Engine
 
             any_neighbor = false
             connected_paths = @game.graph_for_entity(entity).connected_paths(entity)
+            raise 'Track must connect to existing track' if new_tile.paths.none? { |p| connected_paths.include?(p) }
+
             return if new_tile.paths.any? do |path|
               next unless connected_paths.include?(path) # needed for Charlotte and Wilmington
 

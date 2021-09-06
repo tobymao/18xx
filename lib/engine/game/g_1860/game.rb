@@ -961,6 +961,7 @@ module Engine
           @southern_formed = false
           @sr_after_southern = false
           @nationalization = false
+          @entity_crowded = []
         end
 
         def corporation_opts
@@ -977,7 +978,6 @@ module Engine
 
         def stock_round
           Engine::Round::Stock.new(self, [
-            Engine::Step::DiscardTrain,
             G1860::Step::HomeTrack,
             G1860::Step::Exchange,
             G1860::Step::BuySellParSharesCompanies,
@@ -986,11 +986,11 @@ module Engine
 
         def operating_round(round_num)
           G1860::Round::Operating.new(self, [
+            G1860::Step::DiscardTrain,
             G1860::Step::Track,
             G1860::Step::Token,
             G1860::Step::Route,
             G1860::Step::Dividend,
-            Engine::Step::DiscardTrain,
             G1860::Step::BuyTrain,
           ], round_num: round_num)
         end
@@ -1780,6 +1780,14 @@ module Engine
 
         def entity_can_use_company?(entity, company)
           company.owner == entity
+        end
+
+        def update_crowded(entity)
+          @entity_crowded = crowded_corps.select { |c| c == entity }
+        end
+
+        def entity_crowded_corps
+          @entity_crowded
         end
       end
     end

@@ -15,7 +15,7 @@ module Engine
         include Entities
         include Map
 
-        attr_reader :units, :distance_graph
+        attr_reader :units, :node_distance_graph, :city_distance_graph
 
         register_colors(black: '#37383a',
                         seRed: '#f72d2d',
@@ -130,19 +130,26 @@ module Engine
           },
         ].freeze
 
-        UNIT2_PHASES = [
+        UNIT2_PHASES_NO_K3 = [
           {
-            name: '4a',
+            name: '3a',
             on: '6',
-            train_limit: 99,
+            train_limit: 3,
             tiles: %i[yellow green brown gray],
             operating_rounds: 3,
           },
         ].freeze
 
-        UNIT3_PHASES = [
+        PHASES_K3 = [
           {
-            name: '4b',
+            name: '4',
+            on: '6',
+            train_limit: 99,
+            tiles: %i[yellow green brown gray],
+            operating_rounds: 3,
+          },
+          {
+            name: '4a',
             on: '7',
             train_limit: 99,
             tiles: %i[yellow green brown gray],
@@ -152,24 +159,34 @@ module Engine
 
         def game_phases
           gphases = COMMON_PHASES.dup
-          gphases.concat(UNIT2_PHASES) if @units[2]
-          gphases.concat(UNIT3_PHASES) if @units[3]
+          gphases.concat(UNIT2_PHASES_NO_K3) if @units[2] && !@kits[3]
+          gphases.concat(PHASES_K3) if @kits[3]
           gphases
         end
 
-        # FIXME: 3T/4T/2+2/4+4E definition and/or handling
         ALL_TRAINS = {
           '2' => { distance: 2, price: 180, rusts_on: '5' },
-          '3' => { distance: 3, price: 300, rusts_on: '7' },
+          '3' => { distance: 3, price: 300 },
           '4' => { distance: 4, price: 430 },
           '5' => { distance: 5, price: 550 },
           '3T' => { distance: 3, price: 370, available_on: '3' },
-          'U3' => { distance: 3, price: 410, available_on: '3' },
-          '4T' => { distance: 3, price: 480, available_on: '6' },
-          '2+2' => { distance: 2, price: 600, available_on: '6' },
+          'U3' => {
+            distance: [{ 'nodes' => ['city'], 'pay' => 3, 'visit' => 3 },
+                       { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
+            price: 410,
+            available_on: '3',
+          },
           '6' => { distance: 7, price: 650 },
+          '4T' => { distance: 3, price: 480, available_on: '4' },
+          '2+2' => { distance: 2, price: 600, multiplier: 2, available_on: '4' },
           '7' => { distance: 7, price: 720 },
-          '4+4E' => { distance: 4, price: 830, available_on: '7' },
+          '4+4E' => {
+            distance: [{ 'nodes' => ['city'], 'pay' => 4, 'visit' => 99 },
+                       { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
+            price: 830,
+            multipler: 2,
+            available_on: '4a',
+          },
         }.freeze
 
         def build_train_list(thash)
@@ -178,30 +195,99 @@ module Engine
             new_hash[:name] = t
             new_hash[:num] = thash[t]
             new_hash.merge!(ALL_TRAINS[t])
+            new_hash
+          end
+        end
+
+        def add_train_list(tlist, thash)
+          thash.keys.each do |t|
+            if (item = tlist.find { |h| h[:name] == t })
+              item[:num] += thash[t]
+            else
+              new_hash = {}
+              new_hash[:name] = t
+              new_hash[:num] = thash[t]
+              new_hash.merge!(ALL_TRAINS[t])
+
+              tlist << new_hash
+            end
+          end
+        end
+
+        # throw out available_on specifiers if that phase isn't in this game
+        # this should only apply to minor trains
+        def fix_train_availables(tlist)
+          phase_list = %w[1 2 3]
+          phase_list << '3a' if @units[2] && !@kits[3]
+          phase_list.concat(%w[4 4a]) if @kits[3]
+          tlist.each do |h|
+            h.delete(:available_on) if h[:available_on] && !phase_list.include?(h[:available_on])
           end
         end
 
         # FIXME: add option for additonal 3T/U3 for Unit 3
-        # FIXME: add K2 trains
-        # FIXME: add K3 trains
         def game_trains
+          trains = build_train_list({
+                                      '2' => 0,
+                                      '3' => 0,
+                                      '4' => 0,
+                                      '5' => 0,
+                                      '3T' => 0,
+                                      'U3' => 0,
+                                      '6' => 0,
+                                      '2+2' => 0,
+                                      '4T' => 0,
+                                      '7' => 0,
+                                      '4+4E' => 0,
+                                    })
+
           case @units.keys.sort.map(&:to_s).join
           when '1'
-            build_train_list({ '2' => 6, '3' => 4, '4' => 3, '5' => 4 })
+            add_train_list(trains, { '2' => 6, '3' => 4, '4' => 3, '5' => 4  })
           when '2'
-            build_train_list({ '2' => 5, '3' => 3, '4' => 2, '5' => 3, '6' => 2 })
+            add_train_list(trains, { '2' => 5, '3' => 3, '4' => 2, '5' => 3, '6' => 2 })
           when '3'
             # extra 5/3T/U3 for minors
-            build_train_list({ '2' => 5, '3' => 3, '4' => 1, '5' => 3, '7' => 2, '3T' => 1, 'U3' => 1 })
+            add_train_list(trains, { '2' => 5, '3' => 3, '4' => 1, '5' => 3, '3T' => 1, 'U3' => 1, '7' => 2 })
           when '12'
-            build_train_list({ '2' => 7, '3' => 6, '4' => 4, '5' => 5, '6' => 2 })
+            add_train_list(trains, { '2' => 7, '3' => 6, '4' => 4, '5' => 5, '6' => 2, '7' => 0 })
           when '23'
             # extra 5/3T/U3 for minors
-            build_train_list({ '2' => 5, '3' => 5, '4' => 4, '5' => 6, '6' => 2, '7' => 2, '3T' => 1, 'U3' => 1 })
+            add_train_list(trains, { '2' => 5, '3' => 5, '4' => 4, '5' => 6, '3T' => 1, 'U3' => 1, '7' => 2 })
           else # all units
             # extra 5/3T/U3 for minors
-            build_train_list({ '2' => 7, '3' => 6, '4' => 5, '5' => 6, '6' => 2, '7' => 2, '3T' => 1, 'U3' => 1 })
+            add_train_list(trains, { '2' => 7, '3' => 6, '4' => 5, '5' => 6, '3T' => 1, 'U3' => 1, '6' => 2, '7' => 2 })
           end
+
+          add_train_list(trains, { '3T' => 2, 'U3' => 2 }) if @optional_rules.include?(:u3p)
+          add_train_list(trains, { 'U3' => 1, '4T' => 1 }) if @regionals[1]
+          add_train_list(trains, { '5' => 1 }) if @regionals[2]
+          add_train_list(trains, { '4T' => 1 }) if @regionals[3]
+          add_train_list(trains, { '5' => -1, '6' => 3, '7' => 2 }) if @kits[3]
+          add_train_list(trains, { '3T' => 1, '5' => 1 }) if @kits[5]
+          add_train_list(trains, { '2+2' => 1 }) if @kits[7]
+
+          # handle K2
+          if @kits[2]
+            case @units.keys.sort.map(&:to_s).join
+            when '1', '2'
+              add_train_list(trains, { '3T' => 3, 'U3' => 1, '2+2' => 3, '4T' => 2, '4+4E' => 2 })
+              add_train_list(trains, { '3' => -1, '4' => -1 }) if @kits[3]
+            when '12'
+              add_train_list(trains, { '3T' => 4, 'U3' => 2, '2+2' => 3, '4T' => 2, '4+4E' => 2 })
+              add_train_list(trains, { '3' => -1, '4' => -1, '5' => -1 }) if @kits[3]
+            when '23'
+              add_train_list(trains, { '3T' => 4, 'U3' => 2, '2+2' => 3, '4T' => 2, '4+4E' => 2 })
+              add_train_list(trains, { '3' => -1, '5' => -1 }) if @kits[3]
+            when '123'
+              add_train_list(trains, { '3T' => 5, 'U3' => 3, '2+2' => 3, '4T' => 2, '4+4E' => 2 })
+              add_train_list(trains, { '3' => -1, '4' => -1, '5' => -1 }) if @kits[3]
+            end
+          end
+
+          fix_train_availables(trains)
+
+          trains
         end
 
         CURRENCY_FORMAT_STR = '£%d'
@@ -211,11 +297,18 @@ module Engine
         SELL_BUY_ORDER = :sell_buy_sell
         SOLD_OUT_INCREASE = false
         PRESIDENT_SALES_TO_MARKET = true
+        MARKET_SHARE_LIMIT = 100
         HOME_TOKEN_TIMING = :operating_round
         BANK_CASH = 50_000
         COMPANY_SALE_FEE = 30
-        TRACK_RESTRICTION = :restrictive
+        TRACK_RESTRICTION = :station_restrictive
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
+        GAME_END_CHECK = { bank: :current_or, stock_market: :immediate }.freeze
+        TRAIN_PRICE_MIN = 10
+
+        BANK_UNIT1 = 5000
+        BANK_UNIT2 = 5000
+        BANK_UNIT3 = 4000
 
         def init_optional_rules(optional_rules)
           optional_rules = (optional_rules || []).map(&:to_sym)
@@ -234,9 +327,12 @@ module Engine
             when 6, 7
               optional_rules << :unit_12
               @log << 'Using Units 1+2 based on player count'
-            when 8, 9
+            when 8
               optional_rules << :unit_123
               @log << 'Using Units 1+2+3 based on player count'
+            when 9
+              optional_rules.concat(%i[unit_123 r1 r2 r3])
+              @log << 'Using Units 1+2+3 and R1+R2+R3 based on player count'
             end
           end
 
@@ -258,6 +354,8 @@ module Engine
 
           # sanity check player count and illegal combination of options
           @units = {}
+          @kits = {}
+          @regionals = {}
 
           @units[1] = true if optional_rules.include?(:unit_1)
           @units[1] = true if optional_rules.include?(:unit_12)
@@ -272,9 +370,26 @@ module Engine
           @units[3] = true if optional_rules.include?(:unit_23)
           @units[3] = true if optional_rules.include?(:unit_123)
 
-          raise OptionError, 'Cannot combine Units 1 and 3 without Unit 2' if @units[1] && !@units[2] && @units[3]
+          @kits[1] = true if optional_rules.include?(:k1)
+          @kits[2] = true if optional_rules.include?(:k2)
+          @kits[3] = true if optional_rules.include?(:k3)
+          @kits[5] = true if optional_rules.include?(:k5)
+          @kits[6] = true if optional_rules.include?(:k6)
+          @kits[7] = true if optional_rules.include?(:k7)
 
-          # FIXME: update for regional kits when added
+          @regionals[1] = true if optional_rules.include?(:r1)
+          @regionals[2] = true if optional_rules.include?(:r2)
+          @regionals[3] = true if optional_rules.include?(:r3)
+
+          raise OptionError, 'Must select at least one Unit if using other options' if !@units[1] && !@units[2] && !@units[3]
+          raise OptionError, 'Cannot combine Units 1 and 3 without Unit 2' if @units[1] && !@units[2] && @units[3]
+          raise OptionError, 'Cannot add Regionals without Unit 1' if !@regionals.keys.empty? && !@units[1]
+          raise OptionError, 'Cannot add K5 without Unit 2' if @kits[5] && !@units[2]
+          raise OptionError, 'Cannot add K7 without Unit 1' if @kits[7] && !@units[1]
+          raise OptionError, 'K2 not supported with just Unit 3' if @kits[2] && !@units[1] && !@units[2] && @units[3]
+          raise OptionError, 'K2 not supported without K3' if @kits[2] && !@kits[3]
+          raise OptionError, 'Cannot use extra Unit 3 trains without Unit 3' if !@units[3] && optional_rules.include?(:u3p)
+
           p_range = case @units.keys.sort.map(&:to_s).join
                     when '1'
                       [2, 5]
@@ -287,7 +402,7 @@ module Engine
                     when '23'
                       [3, 5]
                     else # all units
-                      [4, 8]
+                      @regionals.empty? ? [4, 8] : [4, 9]
                     end
           if p_range.first > @players.size || p_range.last < @players.size
             raise OptionError, 'Invalid option(s) for number of players'
@@ -296,22 +411,30 @@ module Engine
           optional_rules
         end
 
+        def calculate_bank_cash
+          bank_cash = 0
+          if @optional_rules.include?(:big_bank)
+            bank_cash += BANK_UNIT1 if @units[1]
+            bank_cash += BANK_UNIT2 if @units[2]
+            bank_cash += BANK_UNIT3 if @units[3]
+          else
+            bank_cash = BANK_UNIT1 if @units[1]
+            bank_cash = BANK_UNIT2 if @units[2] && bank_cash.zero?
+            bank_cash = BANK_UNIT3 if @units[3] && bank_cash.zero?
+          end
+
+          # add in minor and kit changes (Mike Hutton clarification)
+          unless @optional_rules.include?(:strict_bank)
+            bank_cash += 2000 if @kits[2]
+            bank_cash += 2000 if @kits[3]
+            bank_cash += 1000 * num_minors
+          end
+
+          bank_cash
+        end
+
         def bank_by_options
-          @bank_by_options ||=
-            case @units.keys.sort.map(&:to_s).join
-            when '1'
-              6_000
-            when '2'
-              5_000
-            when '3'
-              4_000
-            when '12'
-              11_000
-            when '23'
-              9_000
-            else # all units
-              15_000
-            end
+          @bank_by_options ||= calculate_bank_cash
         end
 
         def cash_by_options
@@ -331,21 +454,60 @@ module Engine
           end
         end
 
-        def certs_by_options
-          case @units.keys.sort.map(&:to_s).join
-          when '1'
-            { 2 => 24, 3 => 16, 4 => 12, 5 => 10 }
-          when '2'
-            { 2 => 24, 3 => 16, 4 => 12 }
-          when '3'
-            { 2 => 17 }
-          when '12'
-            { 3 => 31, 4 => 23, 5 => 19, 6 => 16, 7 => 14 }
-          when '23'
-            { 3 => 29, 4 => 23, 5 => 18 }
-          else # all units
-            { 4 => 33, 5 => 28, 6 => 23, 7 => 19, 8 => 17, 9 => 15 }
+        def num_minors
+          num_minors = 0
+          num_minors += 2 if @regionals[1]
+          num_minors += 1 if @regionals[2]
+          num_minors += 1 if @regionals[2]
+          num_minors += 2 if @kits[5]
+          num_minors += 1 if @kits[7]
+          num_minors
+        end
+
+        def adjust_certs(certs, chash)
+          chash.keys.each do |nplayers|
+            if certs[nplayers]
+              certs[nplayers] += chash[nplayers]
+            else
+              certs[nplayers] = chash[nplayers]
+            end
           end
+        end
+
+        def certs_by_options
+          certs = case @units.keys.sort.map(&:to_s).join
+                  when '1'
+                    { 2 => 24, 3 => 16, 4 => 12, 5 => 10 }
+                  when '2'
+                    { 2 => 24, 3 => 16, 4 => 12 }
+                  when '3'
+                    { 2 => 17 }
+                  when '12'
+                    { 3 => 31, 4 => 23, 5 => 19, 6 => 16, 7 => 14 }
+                  when '23'
+                    { 3 => 29, 4 => 23, 5 => 18 }
+                  else # all units
+                    { 4 => 33, 5 => 28, 6 => 23, 7 => 19, 8 => 17, 9 => 15 }
+                  end
+
+          case num_minors
+          when 1
+            adjust_certs(certs, { 2 => 1, 3 => 1, 4 => 1 })
+          when 2
+            adjust_certs(certs, { 2 => 2, 3 => 2, 4 => 1, 5 => 1, 6 => 1 })
+          when 3
+            adjust_certs(certs, { 2 => 3, 3 => 2, 4 => 2, 5 => 2, 6 => 1, 7 => 1, 8 => 1, 9 => 1 })
+          when 4
+            adjust_certs(certs, { 2 => 4, 3 => 3, 4 => 2, 5 => 2, 6 => 2, 7 => 2, 8 => 1, 9 => 1 })
+          when 5
+            adjust_certs(certs, { 2 => 5, 3 => 4, 4 => 3, 5 => 2, 6 => 2, 7 => 2, 8 => 2, 9 => 1 })
+          when 6
+            adjust_certs(certs, { 3 => 5, 4 => 3, 5 => 3, 6 => 3, 7 => 2, 8 => 2, 9 => 1 })
+          when 7
+            adjust_certs(certs, { 3 => 5, 4 => 4, 5 => 3, 6 => 3, 7 => 2, 8 => 2, 9 => 2 })
+          end
+
+          certs
         end
 
         def init_bank
@@ -377,7 +539,10 @@ module Engine
         end
 
         def setup
-          @distance_graph = DistanceGraph.new(self, separate_node_types: false)
+          @log << "Bank starts with #{format_currency(bank_by_options)}"
+
+          @node_distance_graph = DistanceGraph.new(self, separate_node_types: false)
+          @city_distance_graph = DistanceGraph.new(self, separate_node_types: true)
           @formed = []
           @highest_layer = 0
           @layer_by_corp = {}
@@ -388,8 +553,9 @@ module Engine
 
             @layer_by_corp[corp] = pars.index(PAR_BY_CORPORATION[corp.name]) + 1
           end
-
           @minor_trigger_layer = pars.include?(71) ? pars.index(71) + 2 : pars.index(76) + 2
+          @max_layers = @layer_by_corp.values.max
+          @max_layers = [@max_layers, @minor_trigger_layer].max if @units[3] || num_minors.positive?
 
           # Distribute privates
           # Rules call for randomizing privates, assigning to players then reordering players
@@ -420,11 +586,65 @@ module Engine
             end
           end
           @highest_layer = 1 if unbought_companies.empty?
+
+          # pull out minor trains from depot
+          @minor_trains = []
+          corporations.each do |minor|
+            next unless (name = REQUIRED_TRAIN[minor.name])
+
+            req_train = @depot.upcoming.find { |t| t.name == name }
+            raise GameError, "Unable to find train #{name} for minor #{minor.name}" unless req_train
+
+            req_train.buyable = false
+            req_train.reserved = true
+            @minor_trains << req_train
+            @depot.remove_train(req_train)
+          end
+        end
+
+        # cache all stock prices
+        def share_prices
+          stock_market.market.first
+        end
+
+        def active_players
+          players_ = @round.active_entities.map(&:player).compact
+
+          players_.empty? ? acting_when_empty : players_
+        end
+
+        def acting_when_empty
+          if (active_entity = @round && @round.active_entities[0])
+            [acting_for_entity(active_entity)]
+          else
+            @players
+          end
+        end
+
+        # for receivership:
+        # find first player from PD not a director
+        # o.w. PD
+        def acting_for_entity(entity)
+          return entity if entity.player?
+          return entity.owner if entity.owner.player?
+
+          acting = @players.find { |p| !director?(p) }
+          acting || @players.first
+        end
+
+        def director?(player)
+          @corporations.any? { |c| c.owner == player }
         end
 
         def upgrades_to?(from, to, special = false, selected_company: nil)
           # handle special-case upgrades
           return true if force_dit_upgrade?(from, to)
+
+          # deal with striped tiles
+          # 119 upgrades from yellow, but upgrades to gray
+          return false if (from.name == '119') && (to.color == :brown)
+          # 166 upgrades from green, but doesn't upgrade to gray
+          return false if (from.name == '166') && (to.color == :gray)
 
           super
         end
@@ -444,11 +664,11 @@ module Engine
         end
 
         def major?(corp)
-          corp.presidents_share.percent == 20
+          corp&.corporation? && corp.presidents_share.percent == 20
         end
 
         def minor?(corp)
-          corp.presidents_share.percent != 20
+          corp&.corporation? && corp.presidents_share.percent != 20
         end
 
         def minor_required_train(corp)
@@ -458,6 +678,7 @@ module Engine
           @depot.trains.find { |t| t.name == rtrain }
         end
 
+        # minor share price is for a 10% share
         def minor_par_prices(corp)
           price = minor_required_train(corp).price
           stock_market.market.first.select { |p| (p.price * 10) > price }.reject { |p| p.type == :endgame }
@@ -485,7 +706,11 @@ module Engine
           layers = @layer_by_corp.select do |corp, _layer|
             corp.num_ipo_shares.zero?
           end.values
-          layers.empty? ? 1 : [layers.max + 1, 4].min
+          layers.empty? ? 1 : [layers.max + 1, @max_layers].min
+        end
+
+        def minor_deferred_token?(entity)
+          minor?(entity) && !entity.tokens.first&.used
         end
 
         def init_round
@@ -502,17 +727,30 @@ module Engine
         end
 
         def operating_round(round_num)
-          Round::Operating.new(self, [
+          G1825::Round::Operating.new(self, [
+            Engine::Step::HomeToken,
             G1825::Step::TrackAndToken,
-            Engine::Step::Route,
-            Engine::Step::Dividend,
+            G1825::Step::Route,
+            G1825::Step::Dividend,
             Engine::Step::DiscardTrain,
-            Engine::Step::BuyTrain,
+            G1825::Step::BuyTrain,
           ], round_num: round_num)
+        end
+
+        # Minors need to have a tile with cities and paths before they can lay
+        # their home token
+        def can_place_home_token?(entity)
+          return true unless minor?(entity)
+
+          home_hex = hex_by_id(entity.coordinates)
+          raise GameError, "can't find home hex for #{entity.name}" unless home_hex
+
+          !home_hex.tile.paths.empty? && !home_hex.tile.cities.empty?
         end
 
         def place_home_token(corporation)
           return if corporation.tokens.first&.used
+          return unless can_place_home_token?(corporation)
           return super unless corporation.coordinates.is_a?(Array)
 
           corporation.coordinates.each do |coord|
@@ -525,6 +763,7 @@ module Engine
             @log << "#{corporation.name} places a token on #{hex.name}"
             city.place_token(corporation, token)
           end
+          @graph.clear
         end
 
         # Formation isn't flotation for minors
@@ -532,14 +771,23 @@ module Engine
           @formed.include?(corp)
         end
 
+        # For minors: not flotation, but when minor can purchase its required train
         def check_formation(corp)
           return if formed?(corp)
 
-          if major?(corp)
-            @formed << corp if corp.floated?
-          elsif corp.cash >= minor_required_train(corp).price
-            # note, not flotation, but when minor can purchase its required train
+          if major?(corp) && corp.floated?
             @formed << corp
+            @log << "#{corp.name} forms"
+          elsif minor?(corp) && corp.cash >= (r_train = minor_required_train(corp)).price
+            @formed << corp
+            @log << "Minor #{corp.name} forms"
+
+            # buy required train (no phase-change side-effects)
+            @minor_trains.delete(r_train)
+            corp.trains << r_train
+            r_train.owner = corp
+            corp.spend(r_train.price, @bank)
+            @log << "Minor #{corp.name} spends #{format_currency(r_train.price)} for required train (#{r_train.name})"
           end
         end
 
@@ -580,8 +828,16 @@ module Engine
           entity.corporation? && can_ipo?(entity)
         end
 
+        def silent_receivership?(entity)
+          entity.corporation? && entity.receivership? && minor?(entity) && (@units[1] || @units[2])
+        end
+
+        def can_run_route?(entity)
+          super && !silent_receivership?(entity)
+        end
+
         def status_array(corp)
-          if @layer_by_corp[corp]
+          if major?(corp)
             layer_str = "Band #{@layer_by_corp[corp]}"
             layer_str += ' (N/A)' unless can_ipo?(corp)
 
@@ -596,8 +852,11 @@ module Engine
           end
 
           status = []
-          status << %w[Minor bold] unless @layer_by_corp[corp]
-          status << ["Required Train: #{minor_required_train(corp).name}"] if !@layer_by_corp[corp] && corp.trains.empty?
+          status << %w[Minor bold] unless major?(corp)
+          if minor?(corp) && !formed?(corp)
+            train = minor_required_train(corp)
+            status << ["Train: #{train.name} (#{format_currency(train.price)})"]
+          end
           status << [layer_str]
           status << [par_str] if par_str
           status << %w[Receivership bold] if corp.receivership?
@@ -605,11 +864,181 @@ module Engine
           status
         end
 
-        # FIXME: change after implementing trains with non-scalar distances
+        def node_distance(train)
+          return 0 if train.name == 'U3'
+
+          train.distance.is_a?(Numeric) ? train.distance : 99
+        end
+
         def biggest_train_distance(entity)
+          biggest_node_distance(entity)
+        end
+
+        def biggest_node_distance(entity)
           return 0 if entity.trains.empty?
 
-          entity.trains.map(&:distance).max
+          biggest = entity.trains.map { |t| node_distance(t) }.max
+          return 3 if biggest == 2 & entity.trains.count { |t| t.distance == 2 } > 1
+
+          biggest
+        end
+
+        def city_distance(train)
+          return 0 unless train.name == 'U3'
+
+          3
+        end
+
+        def biggest_city_distance(entity)
+          return 0 if entity.trains.empty?
+
+          entity.trains.map { |t| city_distance(t) }.max
+        end
+
+        def route_trains(entity)
+          (super + [@round.leased_train]).compact
+        end
+
+        def double_header_pair?(a, b)
+          corporation = train_owner(a.train)
+          return false if (common = (a.visited_stops & b.visited_stops)).empty?
+
+          common = common.first
+          return false if common.city? && common.blocks?(corporation)
+
+          a_other = a.visited_stops.reject(common).first
+          b_other = b.visited_stops.reject(common).first
+          return false if a_other.town? || b_other.town? # still can't end in a town
+
+          a_tokened = a.visited_stops.any? { |n| city_tokened_by?(n, corporation) }
+          b_tokened = b.visited_stops.any? { |n| city_tokened_by?(n, corporation) }
+          return false if !a_tokened && !b_tokened
+          return true if common.town?
+
+          !(a_tokened && b_tokened)
+        end
+
+        # look for pairs of 2-trains that:
+        # - have exactly two visited nodes each
+        # - share exactly one non-tokened out endpoint
+        # - and one or both of the following is true
+        #   1. one has a token and the other does not
+        #   2. the shared endpoint is a town
+        #
+        # if multiple possibilities exist, pick first pair found
+        def find_double_headers(routes)
+          dhs = []
+          routes.each do |route_a|
+            next if route_a.train.distance != 2
+            next if route_a.visited_stops.size != 2
+            next if dhs.flatten.include?(route_a)
+
+            partner = routes.find do |route_b|
+              next false if route_b.train.distance != 2
+              next false if route_b.visited_stops.size != 2
+              next false if route_b == route_a
+              next false if dhs.flatten.include?(route_b)
+
+              double_header_pair?(route_a, route_b)
+            end
+            next unless partner
+
+            dhs << [route_a, partner]
+          end
+          dhs
+        end
+
+        def double_header?(route)
+          find_double_headers(route.routes).flatten.include?(route)
+        end
+
+        def find_double_header_buddies(route)
+          double_headers = find_double_headers(route.routes)
+          double_headers.each do |buddies|
+            return buddies if buddies.include?(route)
+          end
+          []
+        end
+
+        def check_distance(route, visits)
+          super
+          return if %w[3T 4T].include?(route.train.name)
+
+          node_hexes = {}
+          visits.each do |node|
+            raise GameError, 'Cannot visit multiple towns/cities in same hex' if node_hexes[node.hex]
+
+            node_hexes[node.hex] = true
+          end
+          return if %w[U3 2+2].include?(route.train.name)
+
+          raise GameError, 'Route cannot begin/end in a town' if visits.first.town? && visits.last.town?
+
+          end_town = visits.first.town? || visits.last.town?
+          end_town = false if end_town && route.train.distance == 2 && double_header?(route)
+          raise GameError, 'Route cannot begin/end in a town' if end_town
+        end
+
+        def check_route_token(route, token)
+          raise GameError, 'Route must contain token' if !token && !double_header?(route)
+        end
+
+        def check_connected(route, token)
+          # no need if distance is 2, avoids dealing with double-header route missing a token
+          return if route.train.distance == 2
+
+          paths_ = route.paths.uniq
+
+          return if token.select(paths_, corporation: route.corporation).size == paths_.size
+
+          raise GameError, 'Route is not connected'
+        end
+
+        # only T trains get halt revenue
+        def stop_revenue(stop, phase, train)
+          return 0 if stop.tile.label.to_s == 'HALT' && train.name != '3T' && train.name != '4T'
+
+          stop.route_revenue(phase, train)
+        end
+
+        def revenue_for(route, stops)
+          buddies = find_double_header_buddies(route)
+          if buddies.empty?
+            stops.sum { |stop| stop_revenue(stop, route.phase, route.train) }
+          else
+            stops.sum do |stop|
+              if buddies[-1] == route && buddies[0].stops.include?(stop)
+                0
+              else
+                stop_revenue(stop, route.phase, route.train)
+              end
+            end
+          end
+        end
+
+        def revenue_str(route)
+          postfix = if double_header?(route)
+                      ' [3 train]'
+                    else
+                      ''
+                    end
+          "#{route.hexes.map(&:name).join('-')}#{postfix}"
+        end
+
+        def price_movement_chart
+          [
+            ['Dividend', 'Share Price Change'],
+            ['0', '1 ←'],
+            ['≤ stock value/2', 'none'],
+            ['> stock value/2', '1 →'],
+            ['≥ 2× stock value', '2 →'],
+            ['≥ 3× stock value', '3 →'],
+            ['≥ 4× stock value', '3 →'],
+          ]
+        end
+
+        def must_buy_train?(_entity)
+          false
         end
       end
     end
