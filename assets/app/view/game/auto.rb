@@ -23,6 +23,7 @@ module View
         if @game.players.find { |p| p.name == @user&.dig('name') }
           types = {
             Engine::Action::ProgramBuyShares => ->(settings) { render_buy_shares(settings) },
+            Engine::Action::ProgramIndependentMines => ->(settings) { render_independent_mines(settings) },
             Engine::Action::ProgramMergerPass => ->(settings) { render_merger_pass(settings) },
             Engine::Action::ProgramSharePass => ->(settings) { render_share_pass(settings) },
           }.freeze
@@ -330,6 +331,63 @@ module View
                          'Please read this for more details when it will deactivate')])
 
         subchildren = [render_button(settings ? 'Update' : 'Enable') { enable_share_pass }]
+        subchildren << render_disable(settings) if settings
+        children << h(:div, subchildren)
+
+        children
+      end
+
+      def enable_independent_mines(form)
+        settings = params(form)
+
+        skip_track = settings['skip_track']
+        skip_buy = settings['skip_buy']
+        skip_close = settings['skip_close']
+        indefinite = settings['indefinite']
+
+        process_action(
+          Engine::Action::ProgramIndependentMines.new(
+            sender,
+            skip_track: skip_track,
+            skip_buy: skip_buy,
+            skip_close: skip_close,
+            indefinite: indefinite
+          )
+        )
+      end
+
+      def render_checkbox(label, id, form, checked)
+        render_input(
+          label,
+          id: id,
+          type: 'checkbox',
+          inputs: form,
+          attrs: {
+            checked: checked,
+          }
+        )
+      end
+
+      def render_independent_mines(settings)
+        form = {}
+        text = 'Auto Independent Mines'
+        text += ' (Enabled)' if settings
+        children = [h(:h3, text)]
+        children << h(:p,
+                      'Automatically skip independent mine actions.'\
+                      ' This will deactivate itself in the next SR, unless set to indefinite.'\
+                      ' It will also deactivate itself when a mine has negative income.')
+
+        children << h(:div, [
+          render_checkbox('Skip track lay', 'skip_track', form, settings ? settings.skip_track : true),
+          render_checkbox('Skip switchers', 'skip_buy', form, settings ? settings.skip_buy : true),
+          render_checkbox('Skip close mine', 'skip_close', form, settings ? settings.skip_close : true),
+        ])
+        children << h(:div, [
+          render_checkbox('Indefinite (normally stops after one OR set)', 'indefinite', form, settings&.indefinite),
+        ])
+
+        subchildren = [render_button(settings ? 'Update' : 'Enable') { enable_independent_mines(form) }]
         subchildren << render_disable(settings) if settings
         children << h(:div, subchildren)
 
