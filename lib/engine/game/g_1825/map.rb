@@ -101,6 +101,7 @@ module Engine
           'Q23' => 'Melton Constable',
         }.freeze
 
+        # rubocop:disable Layout/LineLength
         UNIT1_TILES = {
           '1' => 1,
           '2' => 1,
@@ -130,7 +131,12 @@ module Engine
           '52' => 2,
           '87' => 1,
           '88' => 1,
-          '32' => 1,
+          '32' =>
+          {
+            'count' => 1,
+            'color' => 'brown',
+            'code' => 'city=revenue:70;city=revenue:70;city=revenue:70;city=revenue:70;city=revenue:70;city=revenue:70;path=a:0,b:_0;path=a:1,b:_1;path=a:2,b:_2;path=a:3,b:_3;path=a:4,b:_4;path=a:5,b:_5;label=LD',
+          },
           '34' => 1,
           '38' => 2,
           '41' => 1,
@@ -144,6 +150,7 @@ module Engine
           '67' => 1,
           '68' => 1,
         }.freeze
+        # rubocop:enable Layout/LineLength
 
         UNIT2_TILES = {
           '1' => 1,
@@ -323,8 +330,32 @@ module Engine
           '14' => 1,
         }.freeze
 
+        K1_TILES = {
+          '17' => 1,
+          '18' => 1,
+          '21' => 1,
+          '22' => 1,
+          '28' => 1,
+          '29' => 1,
+          '30' => 1,
+          '31' => 1,
+          '39' => 1,
+          '40' => 1,
+          '41' => 1,
+          '42' => 1,
+          '43' => 1,
+          '44' => 1,
+          '47' => 1,
+        }.freeze
+
+        # rubocop:disable Layout/LineLength
         K3_TILES = {
-          '48' => 1,
+          '48' =>
+          {
+            'count' => 1,
+            'color' => 'gray',
+            'code' => 'city=revenue:100;city=revenue:100;city=revenue:100;city=revenue:100;city=revenue:100;city=revenue:100;path=a:0,b:_0;path=a:1,b:_1;path=a:2,b:_2;path=a:3,b:_3;path=a:4,b:_4;path=a:5,b:_5;label=LD',
+          },
           '49' => 1,
           '50' => 2,
           '51' => 3,
@@ -338,12 +369,100 @@ module Engine
             'code' => 'city=revenue:40,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;label=OO',
           },
         }.freeze
+        # rubocop:enable Layout/LineLength
 
         K5_TILES = {
           '15' => 1,
           '69' => 1,
           '119' => 1,
         }.freeze
+
+        K6_TILES = {
+          '58' => 2,
+          '198' =>
+          {
+            'count' => 1,
+            'color' => 'yellow',
+            'code' => 'town=revenue:10;town=revenue:10;path=a:0,b:_0;path=a:5,b:_0;path=a:2,b:_1;path=a:4,b:_1;label=OO',
+          },
+          '199' =>
+          {
+            'count' => 1,
+            'color' => 'yellow',
+            'code' => 'town=revenue:10;town=revenue:10;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_1;path=a:4,b:_1;label=OO',
+          },
+          '11' =>
+          {
+            'count' => 2,
+            'color' => 'green',
+            'code' => 'town=revenue:10,visit_cost:0;path=a:0,b:2;path=a:2,b:_0;path=a:_0,b:4;path=a:0,b:4;label=HALT',
+          },
+          '82' =>
+          {
+            'count' => 1,
+            'color' => 'green',
+            'code' => 'path=a:0,b:1;path=a:1,b:3;path=a:0,b:3',
+          },
+          '83' =>
+          {
+            'count' => 1,
+            'color' => 'green',
+            'code' => 'path=a:0,b:5;path=a:5,b:3;path=a:0,b:3',
+          },
+          '119' => 2,
+          '200' => 2,
+        }.freeze
+
+        # rubocop:disable Layout/LineLength
+        D1_TILES = {
+          '7' => 2,
+          '58' => 2,
+          '115' => 2,
+          '10' => 3,
+          '11' =>
+          {
+            'count' => 3,
+            'color' => 'green',
+            'code' => 'town=revenue:10,visit_cost:0;path=a:0,b:2;path=a:2,b:_0;path=a:_0,b:4;path=a:0,b:4;label=HALT',
+          },
+          '17' => 1,
+          '18' => 1,
+          '20' => 1,
+          '21' => 1,
+          '22' => 1,
+          '30' => 1,
+          '31' => 1,
+          '82' =>
+          {
+            'count' => 1,
+            'color' => 'green',
+            'code' => 'path=a:0,b:1;path=a:1,b:3;path=a:0,b:3',
+          },
+          '83' =>
+          {
+            'count' => 1,
+            'color' => 'green',
+            'code' => 'path=a:0,b:5;path=a:5,b:3;path=a:0,b:3',
+          },
+          '35' => 1,
+          '36' => 1,
+          '37' => 1,
+          '38' => 1,
+          '39' => 1,
+          '40' => 1,
+          '43' => 1,
+          '44' => 1,
+          '47' => 1,
+          '119' => 2,
+          '174' =>
+          {
+            'count' => 2,
+            'color' => 'brown',
+            'code' => 'city=revenue:50,loc:0.5;city=revenue:50,loc:4.5;path=a:0,b:_0;path=a:1,b:_0;path=a:4,b:_1;path=a:5,b:_1;path=a:1,b:4;label=OO',
+          },
+          '200' => 2,
+        }.freeze
+        # rubocop:enable Layout/LineLength
 
         DIT_UPGRADES = {
           # gentle curve to three curves with a halt
@@ -388,8 +507,11 @@ module Engine
           append_game_tiles(gtiles, R1_TILES) if @regionals[1]
           append_game_tiles(gtiles, R2_TILES) if @regionals[2]
           append_game_tiles(gtiles, R3_TILES) if @regionals[3]
+          append_game_tiles(gtiles, K1_TILES) if @kits[1]
           append_game_tiles(gtiles, K3_TILES) if @kits[3]
           append_game_tiles(gtiles, K5_TILES) if @kits[5]
+          append_game_tiles(gtiles, K6_TILES) if @kits[6]
+          append_game_tiles(gtiles, D1_TILES) if @optional_rules.include?(:d1)
           gtiles
         end
 
@@ -458,9 +580,9 @@ module Engine
           green: {
             ['S13'] => 'city=revenue:40;city=revenue:40;city=revenue:40;path=a:1,b:_0;path=a:3,b:_1;path=a:5,b:_2;label=BGM',
             ['V10'] => 'city=revenue:30;path=a:0,b:_0;path=a:4,b:_0',
-            ['V20'] => 'city=revenue:50;city=revenue:50;city=revenue:50;city=revenue:50;city=revenue:50;city=revenue:50;path=a:0,b:_0;path=a:1,b:_1;path=a:2,b:_2;path=a:3,b:_3;path=a:4,b:_4;path=a:5,b:_5;label=L',
+            ['V20'] => 'city=revenue:50;city=revenue:50;city=revenue:50;city=revenue:50;city=revenue:50;city=revenue:50;path=a:0,b:_0;path=a:1,b:_1;path=a:2,b:_2;path=a:3,b:_3;path=a:4,b:_4;path=a:5,b:_5;label=LD',
           },
-          gray: {
+          sepia: {
             ['T16'] => 'city=revenue:10;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0',
             ['U25'] => 'city=revenue:20;path=a:1,b:_0',
             ['V14'] => 'city=revenue:10;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:5,b:_0',
@@ -512,7 +634,7 @@ module Engine
             ['O9'] => 'city=revenue:40;city=revenue:40;path=a:3,b:_0;path=a:5,b:_1;label=L',
             ['O11'] => 'city=revenue:40;city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:2,b:_1;path=a:4,b:_2;label=BGM',
           },
-          gray: {
+          sepia: {
             ['M9'] => 'city=revenue:10;town=revenue:10;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_1;path=a:5,b:_1',
             ['O15'] => 'city=revenue:20,loc:0.5;city=revenue:20,loc:3.5;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0;path=a:2,b:_1;path=a:3,b:_1;path=a:4,b:_1',
             ['P8'] => 'path=a:1,b:4;path=a:4,b:5;path=a:1,b:5',
@@ -569,9 +691,9 @@ module Engine
           green: {
             ['G5'] => 'city=revenue:40;path=a:1,b:_0;city=revenue:40;path=a:3,b:_1;city=revenue:40;path=a:5,b:_2',
           },
-          gray: {
+          sepia: {
             ['B8'] => 'city=revenue:20,loc:5.5;path=a:0,b:_0;path=a:5,b:_0',
-            ['B12'] => 'city=revenue:30,loc:0;path=a:0,b:_0',
+            ['B12'] => 'city=revenue:30;path=a:0,b:_0',
             ['E1'] => 'city=revenue:20,loc:2.5;path=a:3,b:_0;path=a:4,b:_0',
             ['E7'] => 'city=revenue:10,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0',
             ['F2'] => 'town=revenue:10,loc:4;path=a:4,b:_0;town=revenue:10,loc:1;path=a:5,b:_1',
@@ -596,7 +718,7 @@ module Engine
             %w[R8
                T2] => 'city=revenue:0',
           },
-          gray: {
+          sepia: {
             ['P4'] => 'city=revenue:20;path=a:4,b:_0;path=a:5,b:_0',
             ['U1'] => 'city=revenue:10;path=a:3,b:_0;path=a:4,b:_0',
             ['V6'] => 'city=revenue:20;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
@@ -620,7 +742,7 @@ module Engine
           yellow: {
             ['Z4'] => 'city=revenue:0;city=revenue:0;label=OO',
           },
-          gray: {
+          sepia: {
             ['W9'] => 'city=revenue:10,loc:4.5;path=a:0,b:3;path=a:_0,b:3;path=a:_0,b:4;path=a:_0,b:5',
           },
         }.freeze
@@ -629,29 +751,29 @@ module Engine
           white: {
             ['Q25'] => '',
           },
-          gray: {
+          sepia: {
             ['Q23'] => 'city=revenue:10;path=a:0,b:_0;path=a:4,b:_0;path=a:5,b:_0',
           },
         }.freeze
 
         UNIT1_OFFMAP_HEXES = {
           gray: {
-            ['Q7'] => 'offboard=revenue:0,visit_cost:99;path=a:5,b:_0',
-            %w[Q9
+            %w[Q7
+               Q9
                Q11
                Q13
                Q15
                Q17
                Q19
                Q23
-               Q25] => 'offboard=revenue:0,visit_cost:99;path=a:0,b:_0;path=a:5,b:_0',
-            %w[R6
+               Q25
+               R6
                T6
                V6
-               X6] => 'offboard=revenue:0,visit_cost:99;path=a:4,b:_0',
-            %w[S7
-               U7] => 'offboard=revenue:0,visit_cost:99;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
-            ['Y7'] => 'offboard=revenue:0,visit_cost:99;path=a:3,b:_0;path=a:4,b:_0',
+               X6
+               S7
+               U7
+               Y7] => '',
           },
         }.freeze
 
@@ -660,37 +782,37 @@ module Engine
             %w[K9
                K11
                K13
-               K15] => 'offboard=revenue:0,visit_cost:99;path=a:0,b:_0;path=a:5,b:_0',
-            ['Q7'] => 'offboard=revenue:0,visit_cost:99;path=a:4,b:_0',
-            ['R8'] => 'offboard=revenue:0,visit_cost:99;path=a:3,b:_0',
-            %w[R10
+               K15
+               Q7
+               R8
+               R10
                R12
                R14
                R16
-               R18] => 'offboard=revenue:0,visit_cost:99;path=a:2,b:_0;path=a:3,b:_0',
-            ['R20'] => 'offboard=revenue:0,visit_cost:99;path=a:2,b:_0',
+               R18
+               R20] => '',
           },
         }.freeze
 
         UNIT3_OFFMAP_HEXES = {
           gray: {
             %w[B6
-               C1] => 'offboard=revenue:0,visit_cost:99;path=a:5,b:_0',
-            %w[B10
-               C3] => 'offboard=revenue:0,visit_cost:99;path=a:0,b:_0;path=a:5,b:_0',
-            ['C5'] => 'offboard=revenue:0,visit_cost:99;path=a:0,b:_0;path=a:5,b:_0;path=a:4,b:_0',
-            %w[L8
+               C1
+               B10
+               C3
+               C5
+               L8
                L10
                L12
-               L14] => 'offboard=revenue:0,visit_cost:99;path=a:2,b:_0;path=a:3,b:_0',
-            ['L16'] => 'offboard=revenue:0,visit_cost:99;path=a:2,b:_0',
+               L14
+               L16] => '',
           },
         }.freeze
 
         R1_OFFMAP_HEXES = {
           gray: {
-            ['P8'] => 'offboard=revenue:0,visit_cost:99;path=a:0,b:_0;path=a:1,b:_0',
-            ['Q9'] => 'offboard=revenue:0,visit_cost:99;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0',
+            %w[P8
+               Q9] => '',
           },
         }.freeze
         # rubocop:enable Layout/LineLength
@@ -737,7 +859,7 @@ module Engine
           append_game_hexes(ghexes, UNIT2_HEXES) if @units[2]
           append_game_hexes(ghexes, UNIT3_HEXES) if @units[3]
 
-          # append_game_hexes will ignore "spike" hexes if they are already defined
+          # append_game_hexes will ignore offboard hexes if they are already defined
           append_game_hexes(ghexes, R1_OFFMAP_HEXES) if @regionals[1]
           append_game_hexes(ghexes, UNIT1_OFFMAP_HEXES) if @units[1]
           append_game_hexes(ghexes, UNIT2_OFFMAP_HEXES) if @units[2]

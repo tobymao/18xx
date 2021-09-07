@@ -210,7 +210,7 @@ module View
 
         # center two-exit town on the track if there isn't any more track on the tile
         def center_town?(tile, town)
-          town.exits.size == 2 && tile.exits.size == 2
+          town.exits.size == 2 && (tile.exits.size == 2 || tile.exits.size == 3)
         end
 
         # Returns an array of weights, location and rotations
