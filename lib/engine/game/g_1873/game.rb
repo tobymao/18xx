@@ -50,6 +50,7 @@ module Engine
         SELL_BUY_ORDER = :sell_buy
         MARKET_SHARE_LIMIT = 80
         SOLD_OUT_INCREASE = false
+        MUST_BID_INCREMENT_MULTIPLE = true
 
         TRACK_RESTRICTION = :restrictive
 
