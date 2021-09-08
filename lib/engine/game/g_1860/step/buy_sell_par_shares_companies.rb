@@ -24,8 +24,13 @@ module Engine
 
           # special case: player just parred a company AND has the private that can
           # be exchanged for a share AND Fishbourne is available
+          # This also needs to happen when a player buys any private and the Fishbourne is available
           def last_chance_to_exchange?(player)
-            return false unless (par_action = @round.current_actions.find { |x| x.is_a?(Action::Par) })
+            par_action = @round.current_actions.find { |x| x.is_a?(Action::Par) }
+            company_buy_action = @round.current_actions.find { |x| x.is_a?(Action::BuyCompany) }
+            return false if !par_action && !company_buy_action
+            return false if company_buy_action && company_buy_action.company.sym == 'FFC'
+            return true if company_buy_action && @game.phase.available?('6')
 
             corp = par_action.corporation
             xchange_company = player.companies.find do |company|
