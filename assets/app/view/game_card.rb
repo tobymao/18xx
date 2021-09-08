@@ -39,6 +39,10 @@ module View
       user_owns_game?(@user, @gdata)
     end
 
+    def player?
+      user_in_game?(@user, @gdata)
+    end
+
     def players
       @gdata['players']
     end
@@ -56,7 +60,7 @@ module View
       bg_color =
         case @gdata['status']
         when 'new'
-          buttons << render_invite_link if owner?
+          buttons << render_invite_link if player? || owner?
           if user_in_game?(@user, @gdata)
             buttons << render_button('Leave', -> { leave_game(@gdata) })
           elsif players.size < @gdata['max_players']
