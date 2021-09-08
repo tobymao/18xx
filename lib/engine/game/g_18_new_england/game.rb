@@ -238,6 +238,7 @@ module Engine
           },
         ].freeze
 
+        # retain this until draft is implemented to allow game to start
         COMPANIES = [
                   {
                     name: 'Delaware and Raritan Canal',
@@ -254,7 +255,7 @@ module Engine
             sym: 'AWS',
             name: 'Albany and West Stockbridge Railroad',
             coordinates: 'C3',
-            city: 0,
+            city: 1,
             logo: '18_new_england/AWS',
             color: 'red',
             tokens: [0],
@@ -267,7 +268,7 @@ module Engine
             sym: 'BL',
             name: 'Boston and Lowell Railroad',
             coordinates: 'M5',
-            city: 1,
+            city: 0,
             logo: '18_new_england/BL',
             color: 'orange',
             tokens: [0],
@@ -317,7 +318,7 @@ module Engine
             sym: 'ER',
             name: 'Eastern Railroad',
             coordinates: 'M5',
-            city: 0,
+            city: 1,
             logo: '18_new_england/ER',
             color: 'purple',
             tokens: [0],
@@ -354,7 +355,7 @@ module Engine
             sym: 'HNH',
             name: 'Hartford and New Haven',
             coordinates: 'G13',
-            city: 0,
+            city: 1,
             logo: '18_new_england/HNH',
             color: 'magenta',
             tokens: [0],
@@ -367,7 +368,7 @@ module Engine
             sym: 'HRR',
             name: 'Hudson Railroad',
             coordinates: 'C3',
-            city: 1,
+            city: 0,
             logo: '18_new_england/HRR',
             color: 'navy',
             tokens: [0],
@@ -380,7 +381,7 @@ module Engine
             sym: 'NLN',
             name: 'New London Northern Railroad',
             coordinates: 'G13',
-            city: 1,
+            city: 2,
             logo: '18_new_england/NLN',
             color: 'lightBlue',
             tokens: [0],
@@ -393,7 +394,7 @@ module Engine
             sym: 'NYNH',
             name: 'New York New Haven Railroad',
             coordinates: 'G13',
-            city: 2,
+            city: 0,
             logo: '18_new_england/NYNH',
             color: 'darkOrange',
             tokens: [0],
@@ -443,14 +444,14 @@ module Engine
         # rubocop:disable Layout/LineLength
         HEXES = {
           white: {
-            %w[B16 B6 C13 D10 D12 D14 D16 D2 D6 D8 E3 G3 G7 G9 I11 I3 I9 J10 J12 J4 J8 K11 K13 K7 L2 M11 M9 N10 N8 O9 L6] => 'blank',
+            %w[B16 B6 C13 D10 D12 D14 D16 D2 D6 D8 E3 G3 G7 G9 I11 I3 I9 J10 J12 J4 J8 K11 K13 K7 L2 M11 M9 N10 N8 O9 L6] => '',
             %w[E11 E5 E7 E9 F10 F6 F8 G5 I5 I7] => 'upgrade=cost:40,terrain:mountain',
             %w[B10 B14 B18 B8 C15 C7 H12 H2 K9 M3] => 'upgrade=cost:20,terrain:water',
             %w[C17 C9 D4 F14 G11 H14 H6 J14 K5 L8] => 'town=revenue:0',
             %w[C5 E15 F12 F4 I13] => 'city=revenue:0',
             %w[B12 E13 H4] => 'city=revenue:0;upgrade=cost:20,terrain:water',
-            %w[M7] => 'town=revenue:20,loc:1;city=revenue:20,loc:center;path=a:_1,b:_0',
-            %w[N4] => 'town=revenue:10;path=a:1,b:_0;upgrade=cost:20,terrain:water',
+            #  %w[M7] => 'town=revenue:20,loc:1;city=revenue:20,loc:center;path=a:_1,b:_0',
+            #  %w[N4] => 'town=revenue:10;path=a:1,b:_0;upgrade=cost:20,terrain:water',
           },
           yellow: {
             %w[L10] => 'city=revenue:30;path=a:_0,b:2;path=a:_0,b:3;upgrade=cost:20,terrain:water;label=Y',
@@ -461,7 +462,7 @@ module Engine
             %w[H8] => 'city=revenue:20;city=revenue:20;path=a:_0,b:1;path=a:_1,b:3',
             %w[J6] => 'city=revenue:20;path=a:_0,b:4;path=a:_0,b:5',
             %w[K3] => 'city=revenue:20;path=a:_0,b:0;path=a:_0,b:1;upgrade=cost:20,terrain:water',
-            %w[L4] => 'city=revenue:20,loc:center;town=revenue:10,loc:5;path=a:5,b:_0',
+            #   %w[L4] => 'city=revenue:20,loc:center;town=revenue:10,loc:5;path=a:5,b:_0',
             %w[M5] => 'city=revenue:30;city=revenue:30;path=a:2,b:_0;path=a:4,b:_1;label=B',
           },
           gray: {
@@ -469,7 +470,7 @@ module Engine
             %w[B4] => 'path=a:4,b:5',
             %w[E17] => 'path=a:2,b:3',
             %w[G15] => 'path=a:2,b:3;path=a:3,b:4',
-            %w[O11] => 'town=revenue:40;path=a:2,b:_0;path=a:_0,b:3',
+            #  %w[O11] => 'town=revenue:40;path=a:2,b:_0;path=a:3,b:_0',
           },
           red: {
             %w[B2] => 'offboard=revenue:yellow_0|green_20|brown_30|gray_30;path=a:5,b:_0',
