@@ -240,13 +240,13 @@ module Engine
 
         COMPANIES = [
                   {
-            name: 'Delaware and Raritan Canal',
-            value: 20,
-            revenue: 5,
-            desc: 'No special ability. Blocks hex K3 while owned by a player.',
-            sym: 'D&R',
-            color: nil,
-          },
+                    name: 'Delaware and Raritan Canal',
+                    value: 20,
+                    revenue: 5,
+                    desc: 'No special ability. Blocks hex K3 while owned by a player.',
+                    sym: 'D&R',
+                    color: nil,
+                  },
         ].freeze
 
         CORPORATIONS = [
@@ -254,7 +254,7 @@ module Engine
             sym: 'AWS',
             name: 'Albany and West Stockbridge Railroad',
             coordinates: 'C3',
-           city: 0,
+            city: 0,
             logo: '18_new_england/AWS',
             color: 'red',
             tokens: [0],
@@ -267,7 +267,7 @@ module Engine
             sym: 'BL',
             name: 'Boston and Lowell Railroad',
             coordinates: 'M5',
-                       city: 1,
+            city: 1,
             logo: '18_new_england/BL',
             color: 'orange',
             tokens: [0],
@@ -292,7 +292,7 @@ module Engine
             sym: 'CR',
             name: 'Connecticut River',
             coordinates: 'GH',
-                       city: 0,
+            city: 0,
             logo: '18_new_england/CR',
             color: 'brown',
             tokens: [0],
@@ -317,7 +317,7 @@ module Engine
             sym: 'ER',
             name: 'Eastern Railroad',
             coordinates: 'M5',
-                       city: 0,
+            city: 0,
             logo: '18_new_england/ER',
             color: 'purple',
             tokens: [0],
@@ -354,7 +354,7 @@ module Engine
             sym: 'HNH',
             name: 'Hartford and New Haven',
             coordinates: 'G13',
-                       city: 0,
+            city: 0,
             logo: '18_new_england/HNH',
             color: 'magenta',
             tokens: [0],
@@ -367,7 +367,7 @@ module Engine
             sym: 'HRR',
             name: 'Hudson Railroad',
             coordinates: 'C3',
-                       city: 1,
+            city: 1,
             logo: '18_new_england/HRR',
             color: 'navy',
             tokens: [0],
@@ -380,7 +380,7 @@ module Engine
             sym: 'NLN',
             name: 'New London Northern Railroad',
             coordinates: 'G13',
-                       city: 1,
+            city: 1,
             logo: '18_new_england/NLN',
             color: 'lightBlue',
             tokens: [0],
@@ -393,7 +393,7 @@ module Engine
             sym: 'NYNH',
             name: 'New York New Haven Railroad',
             coordinates: 'G13',
-                       city: 2,
+            city: 2,
             logo: '18_new_england/NYNH',
             color: 'darkOrange',
             tokens: [0],
@@ -491,7 +491,7 @@ module Engine
         # Two lays or one upgrade
         TILE_LAYS = [
           { lay: true, upgrade: true },
-          { lay: true, upgrade: :not_if_upgraded},
+          { lay: true, upgrade: :not_if_upgraded },
         ].freeze
       end
     end
