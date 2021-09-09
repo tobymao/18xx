@@ -17,9 +17,9 @@ module Engine
 
         BANK_CASH = 7760
 
-        CERT_LIMIT = { 3 => 19, 4 => 14, 5 => 12, 6 => 10 }.freeze
+        CERT_LIMIT = { 4 => 14, 5 => 12, 6 => 10 }.freeze
 
-        STARTING_CASH = { 3 => 500, 4 => 375, 5 => 330, 6 => 300 }.freeze
+        STARTING_CASH = { 4 => 375, 5 => 330, 6 => 300 }.freeze
 
         MUST_SELL_IN_BLOCKS = true
 
@@ -95,10 +95,9 @@ module Engine
                     rusts_on: '10H',
                     events: [{ 'type' => 'green_par' }],
                   },
-                  { name: '8H', num: 4, distance: 8, price: 350, rusts_on: '16H' },
+                  { name: '8H', distance: 8, price: 350, rusts_on: '16H' },
                   {
                     name: '10H',
-                    num: 3,
                     distance: 10,
                     price: 550,
                     events: [{ 'type' => 'brown_par' }],
@@ -209,10 +208,10 @@ module Engine
           fewer = @players.size < 5
           puts fewer
           case train[:name]
-          when '6H' || '8H'
+          when '8H'
             fewer ? 3 : 4
-          when '16H'
-            6
+          when '10H'
+            fewer ? 2 : 3
           end
         end
 
