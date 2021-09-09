@@ -24,7 +24,7 @@ module Engine
         GAME_TITLE = '1849: Kingdom of the Two Sicilies'
         GAME_ALIASES = ['1849K2S'].freeze
 
-        PLAYER_RANGE = [3, 6].freeze
+        PLAYER_RANGE = [4, 6].freeze
       end
     end
   end

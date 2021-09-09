@@ -212,6 +212,8 @@ module Engine
             fewer ? 3 : 4
           when '10H'
             fewer ? 2 : 3
+          when '16H'
+            6
           end
         end
 
