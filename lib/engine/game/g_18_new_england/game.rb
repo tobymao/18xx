@@ -1,14 +1,12 @@
 # frozen_string_literal: true
 
 require_relative 'meta'
-# require_relative 'stock_market'
 require_relative '../base'
 
 module Engine
   module Game
     module G18NewEngland
       class Game < Game::Base
-        # class Game < G1867::Game
         include_meta(G18NewEngland::Meta)
 
         register_colors(black: '#16190e',
@@ -33,15 +31,10 @@ module Engine
                         yellow: '#ffdea8')
 
         CURRENCY_FORMAT_STR = '$%d'
-
         BANK_CASH = 12_000
-
         CERT_LIMIT = { 3 => 20, 4 => 16, 5 => 13 }.freeze
-
         STARTING_CASH = { 3 => 400, 4 => 280, 5 => 280 }.freeze
-
         CAPITALIZATION = :incremental
-
         MUST_SELL_IN_BLOCKS = false
 
         TILES = {
@@ -245,13 +238,24 @@ module Engine
           },
         ].freeze
 
-        COMPANIES = [].freeze
+        # retain this until draft is implemented to allow game to start
+        COMPANIES = [
+                  {
+                    name: 'Delaware and Raritan Canal',
+                    value: 20,
+                    revenue: 5,
+                    desc: 'No special ability. Blocks hex K3 while owned by a player.',
+                    sym: 'D&R',
+                    color: nil,
+                  },
+        ].freeze
 
         CORPORATIONS = [
           {
             sym: 'AWS',
             name: 'Albany and West Stockbridge Railroad',
-            coordinates: 'B3',
+            coordinates: 'C3',
+            city: 1,
             logo: '18_new_england/AWS',
             color: 'red',
             tokens: [0],
@@ -263,7 +267,8 @@ module Engine
           {
             sym: 'BL',
             name: 'Boston and Lowell Railroad',
-            coordinates: 'L5',
+            coordinates: 'M5',
+            city: 0,
             logo: '18_new_england/BL',
             color: 'orange',
             tokens: [0],
@@ -275,9 +280,9 @@ module Engine
           {
             sym: 'BP',
             name: 'Boston & Providence',
-            coordinates: 'K10',
+            coordinates: 'L10',
             logo: '18_new_england/BP',
-            color: 'mustard',
+            color: 'black',
             tokens: [0],
             float_percent: 100,
             shares: [100],
@@ -287,7 +292,8 @@ module Engine
           {
             sym: 'CR',
             name: 'Connecticut River',
-            coordinates: 'G8',
+            coordinates: 'GH',
+            city: 0,
             logo: '18_new_england/CR',
             color: 'brown',
             tokens: [0],
@@ -299,7 +305,7 @@ module Engine
           {
             sym: 'CV',
             name: 'Connecticut Valley',
-            coordinates: 'E2',
+            coordinates: 'F2',
             logo: '18_new_england/CV',
             color: 'yellow',
             tokens: [0],
@@ -311,7 +317,8 @@ module Engine
           {
             sym: 'ER',
             name: 'Eastern Railroad',
-            coordinates: 'L5',
+            coordinates: 'M5',
+            city: 1,
             logo: '18_new_england/ER',
             color: 'purple',
             tokens: [0],
@@ -323,7 +330,7 @@ module Engine
           {
             sym: 'FRR',
             name: 'Fitchburg Railroad',
-            coordinates: 'J4',
+            coordinates: 'K3',
             logo: '18_new_england/FRR',
             color: 'green',
             tokens: [0],
@@ -335,7 +342,7 @@ module Engine
           {
             sym: 'GR',
             name: 'Granite Railway',
-            coordinates: 'J7',
+            coordinates: 'M7',
             logo: '18_new_england/GR',
             color: 'olive',
             tokens: [0],
@@ -347,7 +354,8 @@ module Engine
           {
             sym: 'HNH',
             name: 'Hartford and New Haven',
-            coordinates: 'F13',
+            coordinates: 'G13',
+            city: 1,
             logo: '18_new_england/HNH',
             color: 'magenta',
             tokens: [0],
@@ -359,7 +367,8 @@ module Engine
           {
             sym: 'HRR',
             name: 'Hudson Railroad',
-            coordinates: 'B3',
+            coordinates: 'C3',
+            city: 0,
             logo: '18_new_england/HRR',
             color: 'navy',
             tokens: [0],
@@ -371,7 +380,8 @@ module Engine
           {
             sym: 'NLN',
             name: 'New London Northern Railroad',
-            coordinates: 'F13',
+            coordinates: 'G13',
+            city: 2,
             logo: '18_new_england/NLN',
             color: 'lightBlue',
             tokens: [0],
@@ -383,7 +393,8 @@ module Engine
           {
             sym: 'NYNH',
             name: 'New York New Haven Railroad',
-            coordinates: 'F13',
+            coordinates: 'G13',
+            city: 0,
             logo: '18_new_england/NYNH',
             color: 'darkOrange',
             tokens: [0],
@@ -395,7 +406,7 @@ module Engine
           {
             sym: 'NYW',
             name: 'New York Westchester Boston',
-            coordinates: 'B19',
+            coordinates: 'C19',
             logo: '18_new_england/NYW',
             color: 'red',
             tokens: [0],
@@ -407,9 +418,9 @@ module Engine
           {
             sym: 'PE',
             name: 'Poughkeepsie and Eastern Railway',
-            coordinates: 'B11',
+            coordinates: 'C11',
             logo: '18_new_england/PE',
-            color: 'rose',
+            color: 'black',
             tokens: [0],
             float_percent: 100,
             shares: [100],
@@ -419,7 +430,7 @@ module Engine
           {
             sym: 'WNR',
             name: 'Worcester, Nashua and Rochester Railroad',
-            coordinates: 'I6',
+            coordinates: 'J6',
             logo: '18_new_england/WNR',
             color: 'black',
             tokens: [0],
@@ -433,14 +444,14 @@ module Engine
         # rubocop:disable Layout/LineLength
         HEXES = {
           white: {
-            %w[B16 B6 C13 D10 D12 D14 D16 D2 D6 D8 E3 G3 G7 G9 I11 I3 I9 J10 J12 J4 J8 K11 K13 K7 L2 M11 M9 N10 N8 O9 L6] => 'blank',
+            %w[B16 B6 C13 D10 D12 D14 D16 D2 D6 D8 E3 G3 G7 G9 I11 I3 I9 J10 J12 J4 J8 K11 K13 K7 L2 M11 M9 N10 N8 O9 L6] => '',
             %w[E11 E5 E7 E9 F10 F6 F8 G5 I5 I7] => 'upgrade=cost:40,terrain:mountain',
             %w[B10 B14 B18 B8 C15 C7 H12 H2 K9 M3] => 'upgrade=cost:20,terrain:water',
             %w[C17 C9 D4 F14 G11 H14 H6 J14 K5 L8] => 'town=revenue:0',
             %w[C5 E15 F12 F4 I13] => 'city=revenue:0',
             %w[B12 E13 H4] => 'city=revenue:0;upgrade=cost:20,terrain:water',
-            %w[M7] => 'town=revenue:20,loc:1;city=revenue:20,loc:center;path=a:_1,b:_0',
-            %w[N4] => 'town=revenue:10;path=a:1,b:_0;upgrade=cost:20,terrain:water',
+            #  %w[M7] => 'town=revenue:20,loc:1;city=revenue:20,loc:center;path=a:_1,b:_0',
+            #  %w[N4] => 'town=revenue:10;path=a:1,b:_0;upgrade=cost:20,terrain:water',
           },
           yellow: {
             %w[L10] => 'city=revenue:30;path=a:_0,b:2;path=a:_0,b:3;upgrade=cost:20,terrain:water;label=Y',
@@ -451,7 +462,7 @@ module Engine
             %w[H8] => 'city=revenue:20;city=revenue:20;path=a:_0,b:1;path=a:_1,b:3',
             %w[J6] => 'city=revenue:20;path=a:_0,b:4;path=a:_0,b:5',
             %w[K3] => 'city=revenue:20;path=a:_0,b:0;path=a:_0,b:1;upgrade=cost:20,terrain:water',
-            %w[L4] => 'city=revenue:20,loc:center;town=revenue:10,loc:5;path=a:5,b:_0',
+            #   %w[L4] => 'city=revenue:20,loc:center;town=revenue:10,loc:5;path=a:5,b:_0',
             %w[M5] => 'city=revenue:30;city=revenue:30;path=a:2,b:_0;path=a:4,b:_1;label=B',
           },
           gray: {
@@ -459,7 +470,7 @@ module Engine
             %w[B4] => 'path=a:4,b:5',
             %w[E17] => 'path=a:2,b:3',
             %w[G15] => 'path=a:2,b:3;path=a:3,b:4',
-            %w[O11] => 'town=revenue:40;path=a:2,b:_0;path=a:_0,b:3',
+            #  %w[O11] => 'town=revenue:40;path=a:2,b:_0;path=a:3,b:_0',
           },
           red: {
             %w[B2] => 'offboard=revenue:yellow_0|green_20|brown_30|gray_30;path=a:5,b:_0',
@@ -474,28 +485,14 @@ module Engine
         LAYOUT = :flat
 
         HOME_TOKEN_TIMING = :float
-        MUST_BID_INCREMENT_MULTIPLE = true
         MUST_BUY_TRAIN = :always # mostly true, needs custom code
-        POOL_SHARE_DROP = :none
         SELL_MOVEMENT = :down_block_pres
-        ALL_COMPANIES_ASSIGNABLE = true
-        SELL_AFTER = :operate
         SELL_BUY_ORDER = :sell_buy
-        EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
-        GAME_END_CHECK = { bank: :current_or, custom: :one_more_full_or_set }.freeze
 
-        CERT_LIMIT_CHANGE_ON_BANKRUPTCY = true
-
-        STATUS_TEXT = Base::STATUS_TEXT.merge(
-          'export_train' => ['Train Export to CN',
-                             'At the end of each OR the next available train will be exported
-                            (given to the CN, triggering phase change as if purchased)'],
-        ).freeze
-
-        # Two lays with one being an upgrade, second tile costs 20
+        # Two lays or one upgrade
         TILE_LAYS = [
           { lay: true, upgrade: true },
-          { lay: true, upgrade: :not_if_upgraded, cost: 20, cannot_reuse_same_hex: true },
+          { lay: true, upgrade: :not_if_upgraded },
         ].freeze
       end
     end
