@@ -206,11 +206,11 @@ module Engine
         end
 
         def num_trains(train)
+          fewer = @players.size < 5
+          puts fewer
           case train[:name]
-          when '6H', '8H'
-            4
-          when '16H'
-            6
+          when '6H' || '8H'
+            fewer ? 3 : 4
           end
         end
 
