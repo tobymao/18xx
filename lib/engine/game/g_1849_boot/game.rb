@@ -211,6 +211,8 @@ module Engine
           case train[:name]
           when '6H' || '8H'
             fewer ? 3 : 4
+          when '16H'
+            6
           end
         end
 
