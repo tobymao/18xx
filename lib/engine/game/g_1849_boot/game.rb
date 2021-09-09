@@ -109,7 +109,7 @@ module Engine
                     price: 800,
                     events: [{ 'type' => 'close_companies' }, { 'type' => 'earthquake' }],
                   },
-                  { name: '16H', num: 6, distance: 16, price: 1100 },
+                  { name: '16H', distance: 16, price: 1100 },
                   { name: 'R6H', num: 2, available_on: '16H', distance: 6, price: 600 }].freeze
 
         CORP_CHOOSES_HOME = 'SFR'
@@ -206,7 +206,6 @@ module Engine
 
         def num_trains(train)
           fewer = @players.size < 5
-          puts fewer
           case train[:name]
           when '8H'
             fewer ? 3 : 4
