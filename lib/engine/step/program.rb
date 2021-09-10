@@ -5,7 +5,7 @@ require_relative 'base'
 module Engine
   module Step
     class Program < Base
-      ACTIONS = %w[program_buy_shares program_merger_pass program_share_pass program_disable].freeze
+      ACTIONS = %w[program_buy_shares program_independent_mines program_merger_pass program_share_pass program_disable].freeze
 
       def actions(entity)
         return [] unless entity.player?
@@ -16,6 +16,10 @@ module Engine
       def process_program_buy_shares(action)
         raise GameError, 'Until condition is unset' if !@game.loading && !action.until_condition
 
+        process_program_enable(action)
+      end
+
+      def process_program_independent_mines(action)
         process_program_enable(action)
       end
 

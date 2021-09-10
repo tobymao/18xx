@@ -185,8 +185,8 @@ module Engine
                F9
                F15
                G10
-               K10
                M2] => 'city=revenue:0',
+            ['K10'] => 'city=revenue:0;upgrade=cost:40,terrain:water',
 
             %w[
                H7

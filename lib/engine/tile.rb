@@ -51,6 +51,13 @@ module Engine
         color = :red
       elsif (code = BLUE[name])
         color = :blue
+      elsif (code = BROWNSEPIA[name])
+        color = :brown
+        code = if code.size.positive?
+                 'stripes=color:sepia;' + code
+               else
+                 'stripes=color:sepia'
+               end
       else
         raise Engine::GameError, "Tile '#{name}' not found"
       end

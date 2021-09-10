@@ -93,6 +93,16 @@ module Engine
             desc: 'Extension Kit 7 - London, Tilbury and Southend Railway',
           },
           {
+            sym: :d1,
+            short_name: 'D1',
+            desc: 'Development Kit 1 - Additional Tiles',
+          },
+          {
+            sym: :u3p,
+            short_name: 'U3+',
+            desc: 'Include 2 addtional 3T and U3 trains with Unit 3',
+          },
+          {
             sym: :big_bank,
             short_name: 'BigBank',
             desc: 'When combining units, add banks from each unit',

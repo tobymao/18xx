@@ -1241,7 +1241,6 @@ module Engine
           end
 
           # find new priority deal: player with lowest total share count
-          @players.rotate!(@players.index(priority_deal_player))
           player = @players.min_by { |p| p.shares.sum(&:percent) }
           @players.rotate!(@players.index(player))
           @log << "#{@players.first.name} has priority deal"
@@ -1340,8 +1339,14 @@ module Engine
           layers.empty? ? 1 : [layers.max + 1, 4].min
         end
 
+        def move_marker_to_bottom!(corporation)
+          @stock_market.move_left(corporation)
+          @stock_market.move_right(corporation)
+        end
+
         def float_corporation(corporation)
           clear_bankrupt!(corporation)
+          move_marker_to_bottom!(corporation)
           super
         end
 
@@ -1553,7 +1558,7 @@ module Engine
         def flipped_to_neutral
           @bankrupt_corps.each do |corp|
             corp.tokens.each do |token|
-              token.status = :neutral if token.status == :flipped
+              token.type = :neutral if token.status == :flipped
             end
           end
         end
@@ -1562,7 +1567,7 @@ module Engine
         def neutral_to_flipped
           @bankrupt_corps.each do |corp|
             corp.tokens.each do |token|
-              token.status = :flipped if token.status == :neutral
+              token.type = :normal if token.status == :flipped
             end
           end
         end
@@ -1585,7 +1590,10 @@ module Engine
           token = blocked if blocked
 
           flipped_to_neutral
-          raise GameError, 'Route is not connected' if token.select(paths_, corporation: route.corporation).size != paths_.size
+          if token.select(paths_, corporation: route.corporation).size != paths_.size
+            neutral_to_flipped
+            raise GameError, 'Route is not connected'
+          end
 
           neutral_to_flipped
 

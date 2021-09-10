@@ -140,26 +140,16 @@ module Engine
           },
         ].freeze
 
-        UNIT3_PHASES_NO_K3 = [
-          {
-            name: '3b',
-            on: '7',
-            train_limit: 3,
-            tiles: %i[yellow green brown gray],
-            operating_rounds: 3,
-          },
-        ].freeze
-
         PHASES_K3 = [
           {
-            name: '4a',
+            name: '4',
             on: '6',
             train_limit: 99,
             tiles: %i[yellow green brown gray],
             operating_rounds: 3,
           },
           {
-            name: '4b',
+            name: '4a',
             on: '7',
             train_limit: 99,
             tiles: %i[yellow green brown gray],
@@ -170,57 +160,32 @@ module Engine
         def game_phases
           gphases = COMMON_PHASES.dup
           gphases.concat(UNIT2_PHASES_NO_K3) if @units[2] && !@kits[3]
-          gphases.concat(UNIT3_PHASES_NO_K3) if @units[3] && !@kits[3]
           gphases.concat(PHASES_K3) if @kits[3]
           gphases
         end
 
-        ALL_TRAINS_NO_K3 = {
+        ALL_TRAINS = {
           '2' => { distance: 2, price: 180, rusts_on: '5' },
           '3' => { distance: 3, price: 300 },
           '4' => { distance: 4, price: 430 },
           '5' => { distance: 5, price: 550 },
-          '3T' => { distance: 3, price: 370, available_on: '5' },
+          '3T' => { distance: 3, price: 370, available_on: '3' },
           'U3' => {
             distance: [{ 'nodes' => ['city'], 'pay' => 3, 'visit' => 3 },
                        { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             price: 410,
-            available_on: '5',
+            available_on: '3',
           },
           '6' => { distance: 7, price: 650 },
-          '4T' => { distance: 3, price: 480, available_on: '6' },
-          '2+2' => { distance: 2, price: 600, multiplier: 2, available_on: '6' },
+          '4T' => { distance: 3, price: 480, available_on: '4' },
+          '2+2' => { distance: 2, price: 600, multiplier: 2, available_on: '4' },
           '7' => { distance: 7, price: 720 },
           '4+4E' => {
             distance: [{ 'nodes' => ['city'], 'pay' => 4, 'visit' => 99 },
                        { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
             price: 830,
             multipler: 2,
-            available_on: '7',
-          },
-        }.freeze
-
-        ALL_TRAINS_K3 = {
-          '2' => { distance: 2, price: 180, rusts_on: '5' },
-          '3' => { distance: 3, price: 300, rusts_on: '7' },
-          '4' => { distance: 4, price: 430 },
-          '5' => { distance: 5, price: 550 },
-          '3T' => { distance: 3, price: 370, available_on: '5' },
-          'U3' => {
-            distance: [{ 'nodes' => ['city'], 'pay' => 3, 'visit' => 3 },
-                       { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
-            price: 410,
-            available_on: '5',
-          },
-          '6' => { distance: 7, price: 650 },
-          '4T' => { distance: 3, price: 480, available_on: '6' },
-          '2+2' => { distance: 2, price: 600, available_on: '6' },
-          '7' => { distance: 7, price: 720 },
-          '4+4E' => {
-            distance: [{ 'nodes' => ['city'], 'pay' => 4, 'visit' => 99 },
-                       { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
-            price: 830,
-            available_on: '7',
+            available_on: '4a',
           },
         }.freeze
 
@@ -229,8 +194,7 @@ module Engine
             new_hash = {}
             new_hash[:name] = t
             new_hash[:num] = thash[t]
-            new_hash.merge!(ALL_TRAINS_NO_K3[t]) unless @kits[3]
-            new_hash.merge!(ALL_TRAINS_K3[t]) if @kits[3]
+            new_hash.merge!(ALL_TRAINS[t])
             new_hash
           end
         end
@@ -243,43 +207,59 @@ module Engine
               new_hash = {}
               new_hash[:name] = t
               new_hash[:num] = thash[t]
-              new_hash.merge!(ALL_TRAINS_NO_K3[t]) unless @kits[3]
-              new_hash.merge!(ALL_TRAINS_K3[t]) if @kits[3]
+              new_hash.merge!(ALL_TRAINS[t])
 
               tlist << new_hash
             end
           end
         end
 
-        # throw out available_on specifiers if that train isn't in the list for this game
+        # throw out available_on specifiers if that phase isn't in this game
         # this should only apply to minor trains
         def fix_train_availables(tlist)
-          all_trains = tlist.map { |h| h[:name] }
+          phase_list = %w[1 2 3]
+          phase_list << '3a' if @units[2] && !@kits[3]
+          phase_list.concat(%w[4 4a]) if @kits[3]
           tlist.each do |h|
-            h.delete(:available_on) if h[:available_on] && !all_trains.include?(h[:available_on])
+            h.delete(:available_on) if h[:available_on] && !phase_list.include?(h[:available_on])
           end
         end
 
         # FIXME: add option for additonal 3T/U3 for Unit 3
-        # FIXME: add K2 trains
         def game_trains
-          trains = case @units.keys.sort.map(&:to_s).join
-                   when '1'
-                     build_train_list({ '2' => 6, '3' => 4, '4' => 3, '5' => 4 })
-                   when '2'
-                     build_train_list({ '2' => 5, '3' => 3, '4' => 2, '5' => 3, '6' => 2 })
-                   when '3'
-                     # extra 5/3T/U3 for minors
-                     build_train_list({ '2' => 5, '3' => 3, '4' => 1, '5' => 3, '7' => 2, '3T' => 1, 'U3' => 1 })
-                   when '12'
-                     build_train_list({ '2' => 7, '3' => 6, '4' => 4, '5' => 5, '6' => 2 })
-                   when '23'
-                     # extra 5/3T/U3 for minors
-                     build_train_list({ '2' => 5, '3' => 5, '4' => 4, '5' => 6, '7' => 2, '3T' => 1, 'U3' => 1 })
-                   else # all units
-                     # extra 5/3T/U3 for minors
-                     build_train_list({ '2' => 7, '3' => 6, '4' => 5, '5' => 6, '6' => 2, '7' => 2, '3T' => 1, 'U3' => 1 })
-                   end
+          trains = build_train_list({
+                                      '2' => 0,
+                                      '3' => 0,
+                                      '4' => 0,
+                                      '5' => 0,
+                                      '3T' => 0,
+                                      'U3' => 0,
+                                      '6' => 0,
+                                      '2+2' => 0,
+                                      '4T' => 0,
+                                      '7' => 0,
+                                      '4+4E' => 0,
+                                    })
+
+          case @units.keys.sort.map(&:to_s).join
+          when '1'
+            add_train_list(trains, { '2' => 6, '3' => 4, '4' => 3, '5' => 4  })
+          when '2'
+            add_train_list(trains, { '2' => 5, '3' => 3, '4' => 2, '5' => 3, '6' => 2 })
+          when '3'
+            # extra 5/3T/U3 for minors
+            add_train_list(trains, { '2' => 5, '3' => 3, '4' => 1, '5' => 3, '3T' => 1, 'U3' => 1, '7' => 2 })
+          when '12'
+            add_train_list(trains, { '2' => 7, '3' => 6, '4' => 4, '5' => 5, '6' => 2, '7' => 0 })
+          when '23'
+            # extra 5/3T/U3 for minors
+            add_train_list(trains, { '2' => 5, '3' => 5, '4' => 4, '5' => 6, '3T' => 1, 'U3' => 1, '7' => 2 })
+          else # all units
+            # extra 5/3T/U3 for minors
+            add_train_list(trains, { '2' => 7, '3' => 6, '4' => 5, '5' => 6, '3T' => 1, 'U3' => 1, '6' => 2, '7' => 2 })
+          end
+
+          add_train_list(trains, { '3T' => 2, 'U3' => 2 }) if @optional_rules.include?(:u3p)
           add_train_list(trains, { 'U3' => 1, '4T' => 1 }) if @regionals[1]
           add_train_list(trains, { '5' => 1 }) if @regionals[2]
           add_train_list(trains, { '4T' => 1 }) if @regionals[3]
@@ -325,6 +305,9 @@ module Engine
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
         GAME_END_CHECK = { bank: :current_or, stock_market: :immediate }.freeze
         TRAIN_PRICE_MIN = 10
+        IMPASSABLE_HEX_COLORS = %i[blue sepia red].freeze
+
+        TILE200_HEXES = %w[Q11 T16 V14].freeze
 
         BANK_UNIT1 = 5000
         BANK_UNIT2 = 5000
@@ -401,12 +384,15 @@ module Engine
           @regionals[2] = true if optional_rules.include?(:r2)
           @regionals[3] = true if optional_rules.include?(:r3)
 
+          raise OptionError, 'Must select at least one Unit if using other options' if !@units[1] && !@units[2] && !@units[3]
           raise OptionError, 'Cannot combine Units 1 and 3 without Unit 2' if @units[1] && !@units[2] && @units[3]
           raise OptionError, 'Cannot add Regionals without Unit 1' if !@regionals.keys.empty? && !@units[1]
           raise OptionError, 'Cannot add K5 without Unit 2' if @kits[5] && !@units[2]
           raise OptionError, 'Cannot add K7 without Unit 1' if @kits[7] && !@units[1]
           raise OptionError, 'K2 not supported with just Unit 3' if @kits[2] && !@units[1] && !@units[2] && @units[3]
           raise OptionError, 'K2 not supported without K3' if @kits[2] && !@kits[3]
+          raise OptionError, 'Cannot use extra Unit 3 trains without Unit 3' if !@units[3] && optional_rules.include?(:u3p)
+          raise OptionError, 'Cannot use K1 or K6 with D1' if (@kits[1] || @kits[6]) && optional_rules.include?(:d1)
 
           p_range = case @units.keys.sort.map(&:to_s).join
                     when '1'
@@ -660,9 +646,13 @@ module Engine
 
           # deal with striped tiles
           # 119 upgrades from yellow, but upgrades to gray
-          return false if (from.name == '119') && (to.color == :brown)
-          # 166 upgrades from green, but doesn't upgrade to gray
-          return false if (from.name == '166') && (to.color == :gray)
+          return false if from.name == '119' && to.color == :brown
+          # 166 upgrades from green, but doesn't upgrade
+          return false if from.name == '166'
+          # 200 upgrades from pre-printed brown tiles on Crewe, Wolverton or Swindon, doesn't upgrade
+          return false if from.name == '200'
+          return false if to.name == '200' && from.color != :sepia
+          return true if to.name == '200' && TILE200_HEXES.include?(from.hex&.id)
 
           super
         end
@@ -982,18 +972,19 @@ module Engine
           super
           return if %w[3T 4T].include?(route.train.name)
 
-          raise GameError, 'Route cannot begin/end in a town' if visits.first.town? && visits.last.town?
-
-          end_town = visits.first.town? || visits.last.town?
-          end_town = false if end_town && route.train.distance == 2 && double_header?(route)
-          raise GameError, 'Route cannot begin/end in a town' if end_town
-
           node_hexes = {}
           visits.each do |node|
             raise GameError, 'Cannot visit multiple towns/cities in same hex' if node_hexes[node.hex]
 
             node_hexes[node.hex] = true
           end
+          return if %w[U3 2+2].include?(route.train.name)
+
+          raise GameError, 'Route cannot begin/end in a town' if visits.first.town? && visits.last.town?
+
+          end_town = visits.first.town? || visits.last.town?
+          end_town = false if end_town && route.train.distance == 2 && double_header?(route)
+          raise GameError, 'Route cannot begin/end in a town' if end_town
         end
 
         def check_route_token(route, token)

@@ -50,6 +50,7 @@ module Engine
         SELL_BUY_ORDER = :sell_buy
         MARKET_SHARE_LIMIT = 80
         SOLD_OUT_INCREASE = false
+        MUST_BID_INCREMENT_MULTIPLE = true
 
         TRACK_RESTRICTION = :restrictive
 
@@ -3169,6 +3170,12 @@ module Engine
               operating_rounds: 3,
               status: ['maintenance_level_3'],
             },
+          ]
+        end
+
+        def available_programmed_actions
+          super + [
+            Action::ProgramIndependentMines,
           ]
         end
       end
