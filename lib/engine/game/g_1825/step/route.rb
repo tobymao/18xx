@@ -13,7 +13,7 @@ module Engine
             return [] if !entity.operator? || (entity.runnable_trains.empty? && !entity.receivership?)
             return [] unless @game.can_run_route?(entity)
 
-            return ACTIONS + %w[special_buy] if entity.receivership? && !@round.leased_train
+            return ACTIONS + %w[special_buy] if entity.receivership? && !@round.leased_train && !@game.depot.upcoming.empty?
 
             ACTIONS
           end

@@ -14,10 +14,8 @@ module Engine
           end
 
           def buyable_trains(entity)
-            depot_trains = @depot.depot_trains
+            depot_trains = @depot.depot_trains.reject { |t| entity.cash < t.price }
             other_trains = @depot.other_trains(entity)
-
-            depot_trains.reject! { |t| entity.cash < t.price }
             other_trains = [] if entity.cash < @game.class::TRAIN_PRICE_MIN || entity.receivership?
 
             depot_trains + other_trains
@@ -42,7 +40,7 @@ module Engine
           def receivership_buy(entity)
             @passed = true
             train = @depot.depot_trains.first
-            if entity.cash >= train.price && @game.can_run_route?(entity) && room?(entity)
+            if train && entity.cash >= train.price && @game.can_run_route?(entity) && room?(entity)
               @log << "#{entity.name} is in Receivership and must buy a train"
 
               buy_train_action(
