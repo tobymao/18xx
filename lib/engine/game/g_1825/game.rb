@@ -333,7 +333,7 @@ module Engine
             when 8
               optional_rules << :unit_123
               @log << 'Using Units 1+2+3 based on player count'
-            when 9
+            else
               optional_rules.concat(%i[unit_123 r1 r2 r3])
               @log << 'Using Units 1+2+3 and R1+R2+R3 based on player count'
             end
@@ -408,7 +408,7 @@ module Engine
                     else # all units
                       @regionals.empty? ? [4, 8] : [4, 9]
                     end
-          if p_range.first > @players.size || p_range.last < @players.size
+          if (p_range.first > @players.size || p_range.last < @players.size) && @players.size.positive?
             raise OptionError, 'Invalid option(s) for number of players'
           end
 
