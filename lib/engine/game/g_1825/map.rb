@@ -832,11 +832,14 @@ module Engine
 
               if ghexes[color]
                 hexes_coords, = ghexes[color].find { |_, v| v == value }
+
                 if hexes_coords
+                  next unless (hexes_coords & coords).empty?
+
                   # this defintion is already used for this color => add the new coordinates to it
                   ghexes[color].delete(hexes_coords)
-                  hexes_coords.concat(coords)
-                  ghexes[color][hexes_coords] = value
+                  new_coords = hexes_coords + coords
+                  ghexes[color][new_coords] = value
                 else
                   # new definition for this color
                   ghexes[color][coords] = value
