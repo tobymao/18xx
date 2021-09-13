@@ -177,7 +177,7 @@ module Engine
             available_on: '3',
           },
           '6' => { distance: 7, price: 650 },
-          '4T' => { distance: 3, price: 480, available_on: '4' },
+          '4T' => { distance: 4, price: 480, available_on: '4' },
           '2+2' => { distance: 2, price: 600, multiplier: 2, available_on: '4' },
           '7' => { distance: 7, price: 720 },
           '4+4E' => {
@@ -333,7 +333,7 @@ module Engine
             when 8
               optional_rules << :unit_123
               @log << 'Using Units 1+2+3 based on player count'
-            when 9
+            else
               optional_rules.concat(%i[unit_123 r1 r2 r3])
               @log << 'Using Units 1+2+3 and R1+R2+R3 based on player count'
             end
@@ -408,7 +408,7 @@ module Engine
                     else # all units
                       @regionals.empty? ? [4, 8] : [4, 9]
                     end
-          if p_range.first > @players.size || p_range.last < @players.size
+          if (p_range.first > @players.size || p_range.last < @players.size) && @players.size.positive?
             raise OptionError, 'Invalid option(s) for number of players'
           end
 
@@ -907,6 +907,10 @@ module Engine
           (super + [@round.leased_train]).compact
         end
 
+        def train_owner(train)
+          train&.owner == @depot ? current_entity : train&.owner
+        end
+
         def double_header_pair?(a, b)
           corporation = train_owner(a.train)
           return false if (common = (a.visited_stops & b.visited_stops)).empty?
@@ -914,9 +918,8 @@ module Engine
           common = common.first
           return false if common.city? && common.blocks?(corporation)
 
-          a_other = a.visited_stops.reject(common).first
-          b_other = b.visited_stops.reject(common).first
-          return false if a_other.town? || b_other.town? # still can't end in a town
+          # Neither route can have two towns
+          return false if a.visited_stops.all?(&:town?) || b.visited_stops.all?(&:town?)
 
           a_tokened = a.visited_stops.any? { |n| city_tokened_by?(n, corporation) }
           b_tokened = b.visited_stops.any? { |n| city_tokened_by?(n, corporation) }
@@ -1048,6 +1051,17 @@ module Engine
         def must_buy_train?(_entity)
           false
         end
+
+        def check_bankrupt!(entity)
+          return unless entity.corporation?
+          return unless entity.share_price&.type == :close
+
+          @log << "-- #{entity.name} is now bankrupt and will be removed from the game --"
+          close_corporation(entity, quiet: true)
+          entity.close!
+        end
+
+        def action_processed(_action); end
       end
     end
   end

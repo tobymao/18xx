@@ -80,6 +80,8 @@ module Engine
           end
 
           def pay_tile_cost!(entity, tile, rotation, hex, spender, cost, _extra_cost)
+            return super unless entity.receivership?
+
             if spender.cash >= cost
               spender.spend(cost, @game.bank) if cost.positive?
             else
@@ -218,11 +220,9 @@ module Engine
 
             @game.node_distance_graph.clear
             @game.city_distance_graph.clear
-            new_tile.nodes.each do |node|
-              unless reachable_node?(entity, node, max_node_distance, max_city_distance)
-                raise GameError, 'Unable to reach city/town on upgraded tile with any train'
-              end
-            end
+            return if new_tile.nodes.any? { |node| reachable_node?(entity, node, max_node_distance, max_city_distance) }
+
+            raise GameError, 'Unable to reach a city/town on upgraded tile with any train'
           end
 
           def tokenable_hex?(entity, hex)

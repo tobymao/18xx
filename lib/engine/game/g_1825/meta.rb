@@ -8,12 +8,12 @@ module Engine
       module Meta
         include Game::Meta
 
-        DEV_STAGE = :prealpha
+        DEV_STAGE = :alpha
 
         GAME_DESIGNER = 'Francis Tresham'
-        GAME_INFO_URL = 'https://google.com'
+        GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1825'
         GAME_LOCATION = 'United Kingdom'
-        GAME_RULES_URL = 'http://google.com'
+        GAME_RULES_URL = 'https://github.com/tobymao/18xx/wiki/1825_Rules'
 
         PLAYER_RANGE = [2, 9].freeze
         OPTIONAL_RULES = [
@@ -21,31 +21,37 @@ module Engine
             sym: :unit_1,
             short_name: 'Unit 1',
             desc: '2-5 players',
+            players: [2, 3, 4, 5],
           },
           {
             sym: :unit_2,
             short_name: 'Unit 2',
             desc: '2-3 players',
+            players: [2, 3],
           },
           {
             sym: :unit_3,
             short_name: 'Unit 3',
             desc: '2 players',
+            players: [2],
           },
           {
             sym: :unit_12,
             short_name: 'Units 1+2',
             desc: '3-7 players',
+            players: [3, 4, 5, 6, 7],
           },
           {
             sym: :unit_23,
             short_name: 'Units 2+3',
             desc: '3-5 players',
+            players: [3, 4, 5],
           },
           {
             sym: :unit_123,
             short_name: 'Units 1+2+3',
-            desc: '4-8 players',
+            desc: '4-8 players (4-9 with regionals)',
+            players: [4, 5, 6, 7, 8, 9],
           },
           {
             sym: :r1,

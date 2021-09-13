@@ -431,16 +431,19 @@ module View
     def render_game
       @round = @game.round
 
-      h('div.game', [
-        render_round,
-        h(Game::GameLog, user: @user, scroll_pos: @scroll_pos, chat_input: @chat_input),
-        h(Game::HistoryAndUndo, num_actions: @num_actions),
-        h(Game::EntityOrder, round: @round),
-        h(Game::Abilities, user: @user, game: @game),
-        h(Game::Pass, before_process_pass: @before_process_pass, actions: current_entity_actions),
-        h(Game::Help, game: @game),
-        render_action,
-      ])
+      children = []
+      children << render_round
+      children << h(Game::GameLog, user: @user, scroll_pos: @scroll_pos, chat_input: @chat_input)
+      children << h(Game::HistoryAndUndo, num_actions: @num_actions)
+      children << h(Game::EntityOrder, round: @round)
+      unless @game.finished
+        children << h(Game::Abilities, user: @user, game: @game)
+        children << h(Game::Pass, before_process_pass: @before_process_pass, actions: current_entity_actions)
+        children << h(Game::Help, game: @game)
+      end
+      children << render_action
+
+      h('div.game', children)
     end
 
     def current_entity_actions
