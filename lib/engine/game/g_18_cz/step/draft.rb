@@ -79,7 +79,7 @@ module Engine
 
             @companies.delete(company)
 
-            @log << "#{player.name} buys #{company.name} for #{@game.format_currency(price)}"
+            @log << "#{player.name} buys [#{@game.company_size(company)}] #{company.name} for #{@game.format_currency(price)}"
 
             entities.each(&:unpass!)
             @round.next_entity_index!
