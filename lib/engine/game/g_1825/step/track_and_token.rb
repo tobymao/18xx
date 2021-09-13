@@ -80,6 +80,8 @@ module Engine
           end
 
           def pay_tile_cost!(entity, tile, rotation, hex, spender, cost, _extra_cost)
+            return super unless entity.receivership?
+
             if spender.cash >= cost
               spender.spend(cost, @game.bank) if cost.positive?
             else
