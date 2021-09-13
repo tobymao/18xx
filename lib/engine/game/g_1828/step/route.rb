@@ -37,6 +37,12 @@ module Engine
 
             false
           end
+
+          def available_hex(entity, hex)
+            return @game.coal_marker?(entity) if hex.id == Engine::Game::G1828::Game::VA_COALFIELDS_HEX
+
+            super
+          end
         end
       end
     end
