@@ -215,8 +215,7 @@ module Engine
                                      end)
             i.ipoed = true
           end
-          @companies = @game.companies.select +
-          @game.corporations.select { |c| @game.corp_layer(c) == 1 }
+
         end
 
         def init_round
