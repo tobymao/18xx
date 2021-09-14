@@ -17,10 +17,8 @@ module View
 
     def render_notification
       message = <<~MESSAGE
-        <p>1825 is now in alpha</p>
-        <p>1862 and 18ZOO are now in production</p>
+        <p>1825 is now in alpha. 18VA is now in beta.</p>
 
-        <p>Auto-Routing should work in most games now.</p>
         <p>We now support Slack/Discord notifications. Learn how to use them <a href='https://github.com/tobymao/18xx/wiki/Notifications'>here</a>.</p>
         <p>Please submit problem reports and make suggestions for improvements on
         <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>.</p>

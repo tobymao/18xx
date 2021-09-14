@@ -8,7 +8,7 @@ module Engine
       module Meta
         include Game::Meta
 
-        DEV_STAGE = :alpha
+        DEV_STAGE = :beta
 
         GAME_SUBTITLE = 'The Railroads Come to Virginia'
         GAME_DESIGNER = 'David Hecht'
