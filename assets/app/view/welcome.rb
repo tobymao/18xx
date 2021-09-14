@@ -18,6 +18,7 @@ module View
     def render_notification
       message = <<~MESSAGE
         <p>1825 is now in alpha</p>
+        <p>18VA is now in beta</p>
         <p>1862 and 18ZOO are now in production</p>
 
         <p>Auto-Routing should work in most games now.</p>
