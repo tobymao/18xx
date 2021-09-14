@@ -4,64 +4,18 @@ module Engine
   module Game
     module G1829
       module Map
-        TILES = {
-          # Yellow
-          '1a' =>
-          {
-            'count' => 2,
-            'color' => 'yellow',
-            'code' => 'town=revenue:10;town=revenue:10;path=a:1,b:_0;path=a:_0,b:3;path=a:0,b:_1;path=a:_1,b:4',
-          },
-          '2a' =>
-          {
-            'count' => 2,
-            'color' => 'yellow',
-            'code' => 'town=revenue:10;town=revenue:10;path=a:0,b:_0;path=a:_0,b:3;path=a:1,b:_1;path=a:_1,b:2',
-          },
-          '3a' =>
-          {
-            'count' => 2,
-            'color' => 'yellow',
-            'code' => 'town=revenue:10,to_city:1;path=a:0,b:_0;path=a:_0,b:1',
-          },
-          '4a' =>
-          {
-            'count' => 6,
-            'color' => 'yellow',
-            'code' => 'town=revenue:10,to_city:1;path=a:0,b:_0;path=a:_0,b:3',
-          },
+        LAYOUT = :pointy
+
+        UNIT1_TILES = {
+          # '1' => 2,
+          # '2' => 2,
+          # '3' => 3,
+          # '4' => 6,
           '5' => 4,
           '6' => 4,
-          '7' => 4,
+          '7' => 7,
           '8' => 8,
           '9' => 10,
-          '55a' =>
-          {
-            'count' => 2,
-            'color' => 'yellow',
-            'code' => 'town=revenue:10;town=revenue:10;path=a:0,b:_0;path=a:_0,b:3;path=a:1,b:_1;path=a:_1,b:4',
-          },
-          '59s' =>
-          {
-            'count' => 2,
-            'color' => 'yellow',
-            'code' =>
-              'city=revenue:20;path=a:0,b:_0',
-          },
-          # green
-          '10' =>
-          {
-            'count' => 3,
-            'color' => 'green',
-            'code' => 'city=revenue:30;city=revenue:30;path=a:0,b:_0;path=a:3,b:_1;label=OO',
-          },
-          '11s' =>
-              {
-                'count' => 1,
-                'color' => 'green',
-                'code' =>
-                  'town=revenue:10;path=a:0,b:_0;path=a:_0,b:2;path=a:2,b:4;path=a:0,b:4',
-              },
           '12' => 3,
           '13' => 3,
           '14' => 3,
@@ -82,45 +36,17 @@ module Engine
           '29' => 1,
           '30' => 1,
           '31' => 1,
-          # brown
-          '32' =>
-          {
-            'count' => 1,
-            'color' => 'brown',
-            'code' =>
-            'city=revenue:70;city=revenue:70;city=revenue:70;city=revenue:70;city=revenue:70;city=revenue:70' \
-            ';path=a:0,b:_0;path=a:1,b:_1;path=a:2,b:_2;path=a:3,b:_3;path=a:4,b:_4;path=a:5,b:_5;label=LD',
-          },
-          '33s' =>
-              {
-                'count' => 1,
-                'color' => 'brown',
-                'code' =>
-                  'city=revenue:50;city=revenue:50;city=revenue:50;path=a:0,b:_0;path=a:1,b:_1'\
-                  ';path=a:2,b:_2;label=L',
-              },
+          '32' => 1,
+          '33' => 1,
           '34' => 1,
-          '35' => 1,
-          '36' => 1,
-          '37s' =>
-              {
-                'count' => 1,
-                'color' => 'brown',
-                'code' =>
-                  'city=revenue:40,loc:1.5;city=revenue:40,loc:4.5;path=a:0,b:_0;path=a:3,b:_1'\
-                  ';path=a:0,b:3;label=OO',
-              },
           '38' => 6,
           '39' => 1,
           '40' => 1,
-          '41' => 2,
-          '42' => 2,
-          '43' => 1,
-          '44' => 1,
-          '45' => 2,
-          '46' => 2,
+          '41' => 1,
+          '42' => 1,
+          '45' => 1,
+          '46' => 1,
           '47' => 1,
-          # gray
           '48' =>
           {
             'count' => 1,
@@ -130,19 +56,98 @@ module Engine
             ';path=a:0,b:_0;path=a:1,b:_1;path=a:2,b:_2;path=a:3,b:_3;path=a:4,b:_4;path=a:5,b:_5;label=LD',
           },
           '49' => 1,
+          '50' => 2,
           '51' => 3,
-          '60' => 2,
-          '50s' =>
-              {
-                'count' => 1,
-                'color' => 'gray',
-                'code' =>
-                  'city=revenue:70;city=revenue:70;city=revenue:70;path=a:1,b:_0;path=a:2,b:_0'\
-                  ';path=a:4,b:_1;path=a:5,b:_1;path=a:0,b:_2;path=a:3,b:_2;label=BGM',
-              },
-
         }.freeze
-        HEXES = {
+
+        K1_TILES = {
+          '60' => 2,
+          '166' => 4,
+        }.freeze
+
+        K5_TILES = {
+          '55' => 2,
+          '56' => 2,
+          '11' =>
+          {
+            'count' => 1,
+            'color' => 'green',
+            'code' =>
+              'town=revenue:10;path=a:0,b:_0;path=a:_0,b:2;path=a:2,b:4;path=a:0,b:4',
+          },
+          '59' =>
+          {
+            'count' => 2,
+            'color' => 'yellow',
+            'code' =>
+              'city=revenue:20;path=a:0,b:_0',
+          },
+        }.freeze
+
+        K6_TILES = {
+          '52' => 3,
+          '64' => 1,
+          '65' => 1,
+          '66' => 1,
+          '67' => 1,
+        }.freeze
+        K6_TILES_ALT = {
+          '10' =>
+          {
+            'count' => 3,
+            'color' => 'green',
+            'code' => 'city=revenue:30;city=revenue:30;path=a:0,b:_0;path=a:3,b:_1;label=OO',
+          },
+          '35' => 1,
+          '36' => 1,
+          '37' => 1,
+        }.freeze
+
+        DIT_UPGRADES = {
+          # gentle curve to three curves with a halt
+          '8' => %w[11],
+          # yellow double-dit to green K or X city
+          '1' => %w[14],
+          '2' => %w[15],
+          '55' => %w[14],
+          '56' => %w[15],
+          '59' => %w[12 13],
+          # yellow single-dit to green city (also brown/green city)
+          '3' => %w[12 14 15],
+          '4' => %w[14 15],
+          '58' => %w[12 13 14 15],
+          # HACK: for 14/15 (green/brown tile that upgrades to browngray)
+          '14' => %w[166],
+          '15' => %w[166],
+        }.freeze
+
+        def append_game_tiles(gtiles, new_tiles)
+          new_tiles.each do |k, v|
+            if gtiles[k] && v.is_a?(Hash)
+              raise GameError, "conflicting tile definitions for tile #{k}" unless gtiles[k].is_a?(Hash)
+
+              gtiles[k]['count'] += v['count']
+            elsif gtiles[k]
+              raise GameError, "conflicting tile definitions for tile #{k}" if gtiles[k].is_a?(Hash)
+
+              gtiles[k] += v
+            else
+              gtiles[k] = v.dup
+            end
+          end
+        end
+
+        def game_tiles
+          gtiles = {}
+          append_game_tiles(gtiles, UNIT1_TILES) if @units[1]
+          append_game_tiles(gtiles, K1_TILES) if @kits[1]
+          append_game_tiles(gtiles, K5_TILES) if @kits[5]
+          append_game_tiles(gtiles, K6_TILES) if @kits[6]
+          append_game_tiles(gtiles, K6_TILES_ALT) unless @kits[6]
+          gtiles
+        end
+
+        UNIT1_HEXES = {
           white: {
             %w[B7] => 'city=revenue:0;upgrade=cost:40,terrain:water',
             %w[D15 E2 E10 F7 F13 H13 H17 H21 I18 J13 K20] => 'town',
@@ -211,7 +216,7 @@ module Engine
             ['J17'] => 'city=revenue:50;city=revenue:50;city=revenue:50;path=a:0,b:_0;path=a:2,b:_1;path=a:4,b:_2
                        ;upgrade=cost:40,terrain:water;label=LD',
           },
-          brown: {
+          sepia: {
             ['A6'] => 'path=a:4,b:5',
             ['A8'] => 'path=a:4,b:1;path=a:0,b:5',
             ['A10'] => 'path=a:1,b:5;path=a:0,b:4',
@@ -222,8 +227,8 @@ module Engine
             ['D1'] => 'city=revenue:20;path=a:5,b:_0;path=a:4,b:_0;label=Holyhead',
             ['D5'] => 'path=a:1,b:4;path=a:1,b:5',
             ['E8'] => 'city=revenue:10;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0',
-            ['F23'] => 'town=revenue:10;path=a:1,b:_0;path=b:_0,a:0',
-            ['G2'] => 'town=revenue:10;path=a:0,b:_0;path=b:_0,a:3',
+            ['F23'] => 'town=revenue:10',
+            ['G2'] => 'town=revenue:10',
             ['I22'] => 'city=revenue:20;path=a:1,b:_0;path=a:2,b:_0;label=Harwich',
             ['J3'] => 'city=revenue:20;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=S&M',
             ['J11'] => 'city=revenue:10;path=a:1,b:_0;path=a:2,b:_0;path=a:0,b:_0;path=a:4,b:_0',
@@ -236,6 +241,45 @@ module Engine
             ['N3'] => 'path=a:1,b:3',
           },
         }.freeze
+
+        def append_game_hexes(ghexes, new_hexes)
+          existing_coords = []
+          ghexes.each { |_color, hex_hash| existing_coords.concat(hex_hash.keys) }
+          existing_coords.flatten!
+
+          new_hexes.each do |color, hex_hash|
+            hex_hash.each do |coords, value|
+              # skip over a coordinate that has already been defined, regardless of color
+              coords.dup.each do |new_coord|
+                coords.delete(new_coord) if existing_coords.include?(new_coord)
+              end
+              next if coords.empty?
+
+              if ghexes[color]
+                hexes_coords, = ghexes[color].find { |_, v| v == value }
+                if hexes_coords
+                  # this defintion is already used for this color => add the new coordinates to it
+                  ghexes[color].delete(hexes_coords)
+                  hexes_coords.concat(coords)
+                  ghexes[color][hexes_coords] = value
+                else
+                  # new definition for this color
+                  ghexes[color][coords] = value
+                end
+              else
+                # new color
+                ghexes[color] = {}
+                ghexes[color][coords] = value
+              end
+            end
+          end
+        end
+
+        def game_hexes
+          ghexes = {}
+          append_game_hexes(ghexes, UNIT1_HEXES)
+          ghexes
+        end
       end
     end
   end

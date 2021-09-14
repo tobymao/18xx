@@ -1,18 +1,17 @@
 # frozen_string_literal: true
 
-# frozen_string_literal: true
-
 module Engine
   module Game
     module G1829
       module Entities
-        COMPANIES = [
+        UNIT1_COMPANIES = [
           {
             name: 'Swansea & Mumbles',
             sym: 'SM',
             value: 30,
             revenue: 5,
             desc: 'No special abilities.',
+            abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['J3'] }],
           },
           {
             name: 'Cromford & High Peak',
@@ -80,7 +79,11 @@ module Engine
           },
         ].freeze
 
-        CORPORATIONS = [
+        UNIT2_COMPANIES = [].freeze
+
+        UNIT3_COMPANIES = [].freeze
+
+        UNIT1_CORPORATIONS = [
           {
             float_percent: 60,
             sym: 'LNWR',
@@ -340,6 +343,35 @@ module Engine
             ],
           },
         ].freeze
+
+        PAR_BY_CORPORATION = {
+          'LNWR' => 100,
+          'GWR' => 90,
+          'Mid' => 82,
+          'LSWR' => 76,
+          'GNR' => 71,
+          'LBSC' => 67,
+          'GER' => 64,
+          'GCR' => 61,
+          'LYR' => 58,
+          'SECR' => 56,
+        }.freeze
+
+        REQUIRED_TRAIN = {
+        }.freeze
+
+        # combining is based on http://fwtwr.com/fwtwr/18xx/1829/privates.asp
+        def game_companies
+          comps = []
+          comps.concat(UNIT1_COMPANIES) if @units[1]
+          comps
+        end
+
+        def game_corporations
+          corps = []
+          corps.concat(UNIT1_CORPORATIONS) if @units[1]
+          corps
+        end
       end
     end
   end
