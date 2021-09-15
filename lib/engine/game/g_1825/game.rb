@@ -189,12 +189,38 @@ module Engine
           },
         }.freeze
 
+        ALL_TRAINS_K3 = {
+          '2' => { distance: 2, price: 180, rusts_on: '5' },
+          '3' => { distance: 3, price: 300, rusts_on: '7' },
+          '4' => { distance: 4, price: 430 },
+          '5' => { distance: 5, price: 550 },
+          '3T' => { distance: 3, price: 370, available_on: '3' },
+          'U3' => {
+            distance: [{ 'nodes' => ['city'], 'pay' => 3, 'visit' => 3 },
+                       { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
+            price: 410,
+            available_on: '3',
+          },
+          '6' => { distance: 7, price: 650 },
+          '4T' => { distance: 4, price: 480, available_on: '4' },
+          '2+2' => { distance: 2, price: 600, multiplier: 2, available_on: '4' },
+          '7' => { distance: 7, price: 720 },
+          '4+4E' => {
+            distance: [{ 'nodes' => ['city'], 'pay' => 4, 'visit' => 99 },
+                       { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
+            price: 830,
+            multipler: 2,
+            available_on: '4a',
+          },
+        }.freeze
+
         def build_train_list(thash)
           thash.keys.map do |t|
             new_hash = {}
             new_hash[:name] = t
             new_hash[:num] = thash[t]
-            new_hash.merge!(ALL_TRAINS[t])
+            new_hash.merge!(ALL_TRAINS[t]) unless @kits[3]
+            new_hash.merge!(ALL_TRAINS_K3[t]) if @kits[3]
             new_hash
           end
         end
@@ -207,7 +233,8 @@ module Engine
               new_hash = {}
               new_hash[:name] = t
               new_hash[:num] = thash[t]
-              new_hash.merge!(ALL_TRAINS[t])
+              new_hash.merge!(ALL_TRAINS[t]) unless @kits[3]
+              new_hash.merge!(ALL_TRAINS_K3[t]) if @kits[3]
 
               tlist << new_hash
             end
@@ -763,9 +790,15 @@ module Engine
 
           corporation.coordinates.each do |coord|
             hex = hex_by_id(coord)
+            next unless hex
+
             tile = hex&.tile
+            next unless tile
+
             cities = tile.cities
             city = cities.find { |c| c.reserved_by?(corporation) } || cities.first
+            next unless city
+
             token = corporation.find_token_by_type
 
             @log << "#{corporation.name} places a token on #{hex.name}"

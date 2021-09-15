@@ -517,38 +517,44 @@ module Engine
           'TV' => '4T',
         }.freeze
 
+        def add_entities(corps, clist)
+          clist.each do |chash|
+            corps << chash.dup
+          end
+        end
+
         # combining is based on http://fwtwr.com/fwtwr/18xx/1825/privates.asp
         def game_companies
           comps = []
-          comps.concat(UNIT1_COMPANIES) if @units[1]
-          comps.concat(UNIT3_COMPANIES.reject { |c| comps.any? { |comp| comp[:value] == c[:value] } }) if @units[3]
-          comps.concat(UNIT2_COMPANIES.reject { |c| comps.any? { |comp| comp[:value] == c[:value] } }) if @units[2]
+          add_entities(comps, UNIT1_COMPANIES) if @units[1]
+          add_entities(comps, UNIT3_COMPANIES.reject { |c| comps.any? { |comp| comp[:value] == c[:value] } }) if @units[3]
+          add_entities(comps, UNIT2_COMPANIES.reject { |c| comps.any? { |comp| comp[:value] == c[:value] } }) if @units[2]
           comps
         end
 
         def game_corporations
           corps = []
-          corps.concat(UNIT1_CORPORATIONS) if @units[1]
+          add_entities(corps, UNIT1_CORPORATIONS) if @units[1]
           if !@units[1] && @units[2]
-            corps.concat(UNIT2_CORPORATIONS)
+            add_entities(corps, UNIT2_CORPORATIONS)
           elsif @units[1] && @units[2]
-            corps.concat(UNIT2_CORPORATIONS.reject { |corp| corp[:sym] == 'LNWR' })
+            add_entities(corps, UNIT2_CORPORATIONS.reject { |corp| corp[:sym] == 'LNWR' })
             lnwr = corps.find { |corp| corp[:sym] == 'LNWR' }
             lnwr[:tokens] = [0, 0, 40, 100, 100, 100, 100]
             lnwr[:coordinates] = %w[T16 Q11]
           end
-          corps.concat(UNIT3_CORPORATIONS) if @units[3]
-          corps.concat(R1_CORPORATIONS) if @regionals[1]
+          add_entities(corps, UNIT3_CORPORATIONS) if @units[3]
+          add_entities(corps, R1_CORPORATIONS) if @regionals[1]
           # Modify GWR (Unit 1) if playing with R2
           if @regionals[2]
-            corps.concat(R2_CORPORATIONS)
+            add_entities(corps, R2_CORPORATIONS)
             gwr = corps.find { |corp| corp[:sym] == 'GWR' }
             gwr[:tokens] = [0, 0, 40, 100, 100, 100, 100]
             gwr[:coordinates] = %w[V14 Y7]
           end
-          corps.concat(R3_CORPORATIONS) if @regionals[3]
-          corps.concat(K5_CORPORATIONS) if @kits[5]
-          corps.concat(K7_CORPORATIONS) if @kits[7]
+          add_entities(corps, R3_CORPORATIONS) if @regionals[3]
+          add_entities(corps, K5_CORPORATIONS) if @kits[5]
+          add_entities(corps, K7_CORPORATIONS) if @kits[7]
           corps
         end
       end
