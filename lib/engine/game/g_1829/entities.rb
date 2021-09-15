@@ -4,7 +4,7 @@ module Engine
   module Game
     module G1829
       module Entities
-        UNIT1_COMPANIES = [
+        COMPANIES = [
           {
             name: 'Swansea & Mumbles',
             sym: 'SM',
@@ -79,11 +79,7 @@ module Engine
           },
         ].freeze
 
-        UNIT2_COMPANIES = [].freeze
-
-        UNIT3_COMPANIES = [].freeze
-
-        UNIT1_CORPORATIONS = [
+        CORPORATIONS = [
           {
             float_percent: 60,
             sym: 'LNWR',
@@ -356,22 +352,6 @@ module Engine
           'LYR' => 58,
           'SECR' => 56,
         }.freeze
-
-        REQUIRED_TRAIN = {
-        }.freeze
-
-        # combining is based on http://fwtwr.com/fwtwr/18xx/1829/privates.asp
-        def game_companies
-          comps = []
-          comps.concat(UNIT1_COMPANIES) if @units[1]
-          comps
-        end
-
-        def game_corporations
-          corps = []
-          corps.concat(UNIT1_CORPORATIONS) if @units[1]
-          corps
-        end
       end
     end
   end

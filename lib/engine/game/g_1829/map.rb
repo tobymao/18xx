@@ -6,11 +6,11 @@ module Engine
       module Map
         LAYOUT = :pointy
 
-        UNIT1_TILES = {
-          # '1' => 2,
-          # '2' => 2,
-          # '3' => 3,
-          # '4' => 6,
+        BASE_TILES = {
+          '1' => 2,
+          '2' => 2,
+          '3' => 3,
+          '4' => 6,
           '5' => 4,
           '6' => 4,
           '7' => 7,
@@ -139,7 +139,7 @@ module Engine
 
         def game_tiles
           gtiles = {}
-          append_game_tiles(gtiles, UNIT1_TILES) if @units[1]
+          append_game_tiles(gtiles, BASE_TILES) if @units[1]
           append_game_tiles(gtiles, K1_TILES) if @kits[1]
           append_game_tiles(gtiles, K5_TILES) if @kits[5]
           append_game_tiles(gtiles, K6_TILES) if @kits[6]
@@ -147,7 +147,7 @@ module Engine
           gtiles
         end
 
-        UNIT1_HEXES = {
+        HEXES = {
           white: {
             %w[B7] => 'city=revenue:0;upgrade=cost:40,terrain:water',
             %w[D15 E2 E10 F7 F13 H13 H17 H21 I18 J13 K20] => 'town',
@@ -227,8 +227,8 @@ module Engine
             ['D1'] => 'city=revenue:20;path=a:5,b:_0;path=a:4,b:_0;label=Holyhead',
             ['D5'] => 'path=a:1,b:4;path=a:1,b:5',
             ['E8'] => 'city=revenue:10;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0',
-            ['F23'] => 'town=revenue:10',
-            ['G2'] => 'town=revenue:10',
+            ['F23'] => 'town=revenue:10;path=a:0,b:_0;path=a:_0,b:1',
+            ['G2'] => 'town=revenue:10;path=a:0,b:_0;path=a:_0,b:3',
             ['I22'] => 'city=revenue:20;path=a:1,b:_0;path=a:2,b:_0;label=Harwich',
             ['J3'] => 'city=revenue:20;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=S&M',
             ['J11'] => 'city=revenue:10;path=a:1,b:_0;path=a:2,b:_0;path=a:0,b:_0;path=a:4,b:_0',
@@ -241,45 +241,6 @@ module Engine
             ['N3'] => 'path=a:1,b:3',
           },
         }.freeze
-
-        def append_game_hexes(ghexes, new_hexes)
-          existing_coords = []
-          ghexes.each { |_color, hex_hash| existing_coords.concat(hex_hash.keys) }
-          existing_coords.flatten!
-
-          new_hexes.each do |color, hex_hash|
-            hex_hash.each do |coords, value|
-              # skip over a coordinate that has already been defined, regardless of color
-              coords.dup.each do |new_coord|
-                coords.delete(new_coord) if existing_coords.include?(new_coord)
-              end
-              next if coords.empty?
-
-              if ghexes[color]
-                hexes_coords, = ghexes[color].find { |_, v| v == value }
-                if hexes_coords
-                  # this defintion is already used for this color => add the new coordinates to it
-                  ghexes[color].delete(hexes_coords)
-                  hexes_coords.concat(coords)
-                  ghexes[color][hexes_coords] = value
-                else
-                  # new definition for this color
-                  ghexes[color][coords] = value
-                end
-              else
-                # new color
-                ghexes[color] = {}
-                ghexes[color][coords] = value
-              end
-            end
-          end
-        end
-
-        def game_hexes
-          ghexes = {}
-          append_game_hexes(ghexes, UNIT1_HEXES)
-          ghexes
-        end
       end
     end
   end

@@ -32,7 +32,26 @@ module Engine
                         blue: '#0189d1',
                         brown: '#7b352a')
 
-        SMALL_MARKET = [
+        CURRENCY_FORMAT_STR = '£%d'
+        CAPITALIZATION = :full
+        MUST_SELL_IN_BLOCKS = false
+        SELL_MOVEMENT = :none
+        SELL_BUY_ORDER = :sell_buy_sell
+        SOLD_OUT_INCREASE = false
+        PRESIDENT_SALES_TO_MARKET = true
+        MARKET_SHARE_LIMIT = 100
+        HOME_TOKEN_TIMING = :operating_round
+        BANK_CASH = 50_000
+        COMPANY_SALE_FEE = 30
+        TRACK_RESTRICTION = :station_restrictive
+        TILE_LAYS = [{ lay: true, upgrade: true }].freeze
+        GAME_END_CHECK = { bank: :current_or, stock_market: :immediate }.freeze
+        TRAIN_PRICE_MIN = 10
+        STARTING_CASH = { 2 => 1260, 3 => 840, 4 => 630, 5 => 504, 6 => 420, 7 => 360, 8 => 315, 9 => 280 }.freeze
+
+        CERT_LIMIT = { 2 => 18, 3 => 18, 4 => 18, 5 => 17, 6 => 14, 7 => 12, 8 => 10, 9 => 9 }.freeze
+
+        MARKET = [
           %w[0c
              10y
              20y
@@ -65,10 +84,6 @@ module Engine
              345
              350],
         ].freeze
-
-        def game_market
-          SMALL_MARKET
-        end
 
         COMMON_PHASES = [
           {
@@ -206,33 +221,12 @@ module Engine
           trains
         end
 
-        CURRENCY_FORMAT_STR = '£%d'
-        CAPITALIZATION = :full
-        MUST_SELL_IN_BLOCKS = false
-        SELL_MOVEMENT = :none
-        SELL_BUY_ORDER = :sell_buy_sell
-        SOLD_OUT_INCREASE = false
-        PRESIDENT_SALES_TO_MARKET = true
-        MARKET_SHARE_LIMIT = 100
-        HOME_TOKEN_TIMING = :operating_round
-        BANK_CASH = 50_000
-        COMPANY_SALE_FEE = 30
-        TRACK_RESTRICTION = :station_restrictive
-        TILE_LAYS = [{ lay: true, upgrade: true }].freeze
-        GAME_END_CHECK = { bank: :current_or, stock_market: :immediate }.freeze
-        TRAIN_PRICE_MIN = 10
-
-        BANK_UNIT1 = 5000
-        BANK_UNIT2 = 5000
-        BANK_UNIT3 = 4000
-
         def init_optional_rules(optional_rules)
           optional_rules = (optional_rules || []).map(&:to_sym)
 
           # sanity check player count and illegal combination of options
           @units = {}
           @kits = {}
-          @regionals = {}
 
           @units[1] = true
 
