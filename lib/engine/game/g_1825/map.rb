@@ -251,7 +251,12 @@ module Engine
           '63' => 2,
           '66' => 2,
           '67' => 1,
-          '118' => 1,
+          '118' =>
+          {
+            'count' => 1,
+            'color' => 'brown',
+            'code' => 'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:_0,b:1;path=a:2,b:_1;path=a:_1,b:3;label=OO',
+          },
         }.freeze
 
         R1_TILES = {
@@ -418,7 +423,12 @@ module Engine
           '7' => 2,
           '58' => 2,
           '115' => 2,
-          '10' => 3,
+          '10' =>
+          {
+            'count' => 3,
+            'color' => 'green',
+            'code' => 'city=revenue:30,loc:0;city=revenue:30,loc:3;path=a:5,b:_0;path=a:2,b:_1;label=OO',
+          },
           '11' =>
           {
             'count' => 3,
@@ -444,8 +454,18 @@ module Engine
             'color' => 'green',
             'code' => 'path=a:0,b:5;path=a:5,b:3;path=a:0,b:3',
           },
-          '35' => 1,
-          '36' => 1,
+          '35' =>
+          {
+            'count' => 1,
+            'color' => 'brown',
+            'code' => 'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:_0,b:2;path=a:1,b:_1;path=a:_1,b:3;label=OO',
+          },
+          '36' =>
+          {
+            'count' => 1,
+            'color' => 'brown',
+            'code' => 'city=revenue:40;city=revenue:40;path=a:1,b:_0;path=a:_0,b:3;path=a:0,b:_1;path=a:_1,b:4;label=OO',
+          },
           '37' => 1,
           '38' => 1,
           '39' => 1,
@@ -685,8 +705,8 @@ module Engine
             ['K15'] => 'town=revenue:0;town=revenue:0',
           },
           yellow: {
-            ['G9'] => 'city=revenue:0,loc:1;city=revenue:0,loc:3',
-            ['J14'] => 'city=revenue:0,loc:5;city=revenue:0,loc:2;upgrade=cost:40,terrain:water',
+            ['G9'] => 'city=revenue:0,loc:1;city=revenue:0,loc:3;label=OO',
+            ['J14'] => 'city=revenue:0,loc:5;city=revenue:0,loc:2;upgrade=cost:40,terrain:water;label=OO',
           },
           green: {
             ['G5'] => 'city=revenue:40;path=a:1,b:_0;city=revenue:40;path=a:3,b:_1;city=revenue:40;path=a:5,b:_2',
