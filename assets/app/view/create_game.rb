@@ -17,6 +17,7 @@ module View
     needs :selected_variant, default: nil, store: true
     needs :title, default: nil
     needs :production, default: nil
+    needs :optional_rules, default: [], store: true
 
     def render_content
       @label_style = { display: 'block' }
@@ -136,8 +137,8 @@ module View
       ]
 
       @game_variants = selected_game.game_variants
-      @visible_optional_rules = selected_game_or_variant::OPTIONAL_RULES
-      inputs << render_optional if !@game_variants.empty? || !@visible_optional_rules.empty?
+      @visible_optional_rules = selected_game_or_variant::OPTIONAL_RULES.reject { |rule| filtered_rule?(rule) }
+      inputs << render_optional if !@game_variants.empty? || !selected_game_or_variant::OPTIONAL_RULES.empty?
 
       div_props = {}
       div_props[:style] = { display: 'none' } if @mode == :json
@@ -152,9 +153,19 @@ module View
     end
 
     def uncheck_optional_rules
-      @visible_optional_rules&.each do |o_r|
-        Native(@inputs[o_r[:sym]]).elm&.checked = false
+      selected_game_or_variant::OPTIONAL_RULES.each do |o_r|
+        Native(@inputs[o_r[:sym]])&.elm&.checked = false
       end
+    end
+
+    def sync_rules
+      selected_game_or_variant::OPTIONAL_RULES.each do |o_r|
+        Native(@inputs[o_r[:sym]])&.elm&.checked = @optional_rules.include?(o_r[:sym])
+      end
+    end
+
+    def sync_rule(sym)
+      Native(@inputs[sym])&.elm&.checked = @optional_rules.include?(sym)
     end
 
     def toggle_game_variant(sym)
@@ -171,13 +182,30 @@ module View
       end
     end
 
+    def uncheck_mutex(sym)
+      return if selected_game_or_variant::MUTEX_RULES.empty?
+
+      selected_game_or_variant::MUTEX_RULES.each do |set|
+        next unless set.include?(sym)
+
+        set.each do |s|
+          next if s == sym
+
+          @optional_rules.delete(s)
+          sync_rule(s)
+        end
+      end
+    end
+
     def toggle_optional_rule(sym)
       lambda do
         if (@optional_rules ||= []).include?(sym)
           @optional_rules.delete(sym)
         else
           @optional_rules << sym
+          uncheck_mutex(sym)
         end
+        store(:optional_rules, @optional_rules)
       end
     end
 
@@ -199,13 +227,13 @@ module View
         )])
       end
 
-      optional_rules = @visible_optional_rules.map do |o_r|
+      optional_rules = selected_game_or_variant::OPTIONAL_RULES.map do |o_r|
         label_text = "#{o_r[:short_name]}: #{o_r[:desc]}"
         h(:li, [render_input(
           label_text,
           type: 'checkbox',
           id: o_r[:sym],
-          attrs: { value: o_r[:sym] },
+          attrs: { value: o_r[:sym], disabled: !@visible_optional_rules.find { |vo_r| vo_r[:sym] == o_r[:sym] } },
           on: { input: toggle_optional_rule(o_r[:sym]) },
         )])
       end
@@ -218,10 +246,23 @@ module View
         },
       }
 
-      h(:div, [
+      info = selected_game_or_variant.respond_to?(:check_options) &&
+        selected_game_or_variant.check_options(@optional_rules, @num_players)
+
+      if info
+        h(:div, [
+          h(:label, 'Game Variants / Optional Rules'),
+          h(:ul, ul_props, [*game_variants, *optional_rules]),
+          h(:h4, 'Option Info/Errors'),
+          h(:div, info),
+          h(:br),
+        ])
+      else
+        h(:div, [
           h(:label, 'Game Variants / Optional Rules'),
           h(:ul, ul_props, [*game_variants, *optional_rules]),
         ])
+      end
     end
 
     def render_upload_button
@@ -363,6 +404,10 @@ module View
       @selected_variant ? @selected_variant[:meta] : selected_game
     end
 
+    def filtered_rule?(rule)
+      rule[:players] && !rule[:players].include?(@num_players)
+    end
+
     def update_inputs
       title = selected_game_or_variant.title
 
@@ -383,9 +428,17 @@ module View
       `window.history.replaceState(window.history.state, null, '?title=' + encodeURIComponent(#{title}))`
       root.store_app_route
 
-      visible_rules = selected_game::OPTIONAL_RULES.reject do |rule|
-        rule[:players] && !rule[:players].include?(@num_players)
+      visible_rules = []
+      selected_game::OPTIONAL_RULES.each do |rule|
+        if filtered_rule?(rule)
+          @optional_rules.delete(rule[:sym])
+        else
+          visible_rules << rule
+        end
       end
+      sync_rules
+
+      store(:optional_rules, @optional_rules, skip: true)
       store(:visible_optional_rules, visible_rules)
     end
   end

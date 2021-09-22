@@ -29,6 +29,7 @@ module Engine
       # full game class
       PLAYER_RANGE = nil
       OPTIONAL_RULES = [].freeze
+      MUTEX_RULES = [].freeze
 
       def self.included(klass)
         klass.extend(ClassMethods)
