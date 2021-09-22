@@ -503,6 +503,12 @@ module Engine
           '119' => %w[51],
         }.freeze
 
+        ILLEGAL_UPGRADES = {
+          '81' => %w[40],
+          '82' => %w[41],
+          '83' => %w[42],
+        }.freeze
+
         def append_game_tiles(gtiles, new_tiles)
           new_tiles.each do |k, v|
             if gtiles[k] && v.is_a?(Hash)

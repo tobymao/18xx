@@ -667,14 +667,27 @@ module Engine
           @corporations.any? { |c| c.owner == player }
         end
 
+        def tile_color_valid_for_phase?(tile, phase_color_cache: nil)
+          phase_color_cache ||= @phase.tiles
+
+          # 119 upgrades from yellow in phase 3
+          return false if tile.name == '119' && !phase_color_cache.include?(:brown)
+
+          # 166 upgrades from green in phase 4
+          return false if tile.name == '166' && !phase_color_cache.include?(:gray)
+
+          phase_color_cache.include?(tile.color)
+        end
+
         def upgrades_to?(from, to, special = false, selected_company: nil)
           # handle special-case upgrades
           return true if force_dit_upgrade?(from, to)
+          return false if illegal_upgrade?(from, to) # only really needed for upgrades shown on tile manifest
 
           # deal with striped tiles
-          # 119 upgrades from yellow, but upgrades to gray
+          # 119 upgrades from yellow in phase 3, and upgrades to gray
           return false if from.name == '119' && to.color == :brown
-          # 166 upgrades from green, but doesn't upgrade
+          # 166 upgrades from green in phase 4, but doesn't upgrade
           return false if from.name == '166'
           # 200 upgrades from pre-printed brown tiles on Crewe, Wolverton or Swindon, doesn't upgrade
           return false if from.name == '200'
@@ -686,6 +699,12 @@ module Engine
 
         def force_dit_upgrade?(from, to)
           return false unless (list = DIT_UPGRADES[from.name])
+
+          list.include?(to.name)
+        end
+
+        def illegal_upgrade?(from, to)
+          return false unless (list = ILLEGAL_UPGRADES[from.name])
 
           list.include?(to.name)
         end
