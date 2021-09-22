@@ -205,7 +205,7 @@ module View
           @optional_rules << sym
           uncheck_mutex(sym)
         end
-        update_options
+        store(:optional_rules, @optional_rules)
       end
     end
 
@@ -440,10 +440,6 @@ module View
 
       store(:optional_rules, @optional_rules, skip: true)
       store(:visible_optional_rules, visible_rules)
-    end
-
-    def update_options
-      store(:optional_rules, @optional_rules)
     end
   end
 end
