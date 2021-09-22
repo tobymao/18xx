@@ -709,7 +709,7 @@ module Engine
             ['J14'] => 'city=revenue:0,loc:5;city=revenue:0,loc:2;upgrade=cost:40,terrain:water;label=OO',
           },
           green: {
-            ['G5'] => 'city=revenue:40;path=a:1,b:_0;city=revenue:40;path=a:3,b:_1;city=revenue:40;path=a:5,b:_2',
+            ['G5'] => 'city=revenue:40;path=a:1,b:_0;city=revenue:40;path=a:3,b:_1;city=revenue:40;path=a:5,b:_2;label=BGM',
           },
           sepia: {
             ['B8'] => 'city=revenue:20,loc:5.5;path=a:0,b:_0;path=a:5,b:_0',
