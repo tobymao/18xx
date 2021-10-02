@@ -7,6 +7,14 @@ module Engine
     module G1825
       module Step
         class BuySellParSharesCompanies < Engine::Step::BuySellParSharesCompanies
+          def actions(entity)
+            return [] unless entity == current_entity
+            return super unless must_sell?(entity)
+            return %w[sell_shares sell_company] if can_sell_any_companies?(entity)
+
+            ['sell_shares']
+          end
+
           # only purchase actions count for keeping the round going and for determining priority deal
           def pass!
             super
