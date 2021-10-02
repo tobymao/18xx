@@ -240,6 +240,21 @@ module Engine
             tokenable_hex?(entity, hex)
           end
 
+          def tracker_available_hex(entity, hex)
+            connected = hex_neighbors(entity, hex)
+            return nil unless connected
+
+            tile_lay = get_tile_lay(entity)
+            return nil unless tile_lay
+
+            preprinted = hex.tile.preprinted
+            return nil if preprinted && !tile_lay[:lay]
+            return nil if !preprinted && !tile_lay[:upgrade]
+            return nil if !preprinted && tile_lay[:cannot_reuse_same_hex] && @round.laid_hexes.include?(hex)
+
+            connected
+          end
+
           def hex_neighbors(entity, hex)
             return super if !@game.minor_deferred_token?(entity) || hex.id != entity.coordinates
 

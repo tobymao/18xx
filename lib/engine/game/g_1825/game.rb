@@ -732,6 +732,13 @@ module Engine
           @depot.trains.find { |t| t.name == rtrain }
         end
 
+        def minor_get_train(corp)
+          return unless minor?(corp)
+
+          rtrain = REQUIRED_TRAIN[corp.name]
+          @minor_trains.find { |t| t.name == rtrain }
+        end
+
         # minor share price is for a 10% share
         def minor_par_prices(corp)
           price = minor_required_train(corp).price
@@ -838,11 +845,12 @@ module Engine
           if major?(corp) && corp.floated?
             @formed << corp
             @log << "#{corp.name} forms"
-          elsif minor?(corp) && corp.cash >= (r_train = minor_required_train(corp)).price
+          elsif minor?(corp) && corp.cash >= minor_required_train(corp).price
             @formed << corp
             @log << "Minor #{corp.name} forms"
 
             # buy required train (no phase-change side-effects)
+            r_train = minor_get_train(corp)
             @minor_trains.delete(r_train)
             corp.trains << r_train
             r_train.owner = corp
