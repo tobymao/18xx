@@ -867,7 +867,7 @@ module Engine
           return false unless self.class::BANKRUPTCY_ALLOWED
 
           total_emr_buying_power(player, corporation) <
-            (min_train - @corporation_power[corporation]) * current_power_cost * 2
+            (min_ebuy_power - @corporation_power[corporation]) * current_power_cost * 2
         end
 
         def on_train_header
