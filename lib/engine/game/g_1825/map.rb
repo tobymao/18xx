@@ -466,7 +466,12 @@ module Engine
             'color' => 'brown',
             'code' => 'city=revenue:40;city=revenue:40;path=a:1,b:_0;path=a:_0,b:3;path=a:0,b:_1;path=a:_1,b:4;label=OO',
           },
-          '37' => 1,
+          '37' =>
+          {
+            'count' => 1,
+            'color' => 'brown',
+            'code' => 'city=revenue:40,loc:0;city=revenue:40,loc:3;path=a:2,b:_0;path=a:5,b:_1;path=a:2,b:5;label=OO',
+          },
           '38' => 1,
           '39' => 1,
           '40' => 1,
