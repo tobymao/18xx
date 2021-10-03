@@ -371,7 +371,7 @@ module Engine
           hex_id = self.class::REMOVED_CORP_SECOND_TOKEN[corporation.id]
           token = corporation.find_token_by_type
           hex_by_id(hex_id).tile.cities.first.place_token(corporation, token, check_tokenable: false, cheater: cheater)
-          @log << "#{corporation.id} places a token on #{hex_id}"
+          @log << "#{corporation.id} places a token on #{hex_id} (#{hex_by_id(hex_id).location_name})"
         end
 
         def num_trains(train)
