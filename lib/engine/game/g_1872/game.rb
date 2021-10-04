@@ -3,6 +3,7 @@
 require_relative '../base'
 require_relative 'meta'
 require_relative 'step/draft_distribution'
+require_relative 'step/buy_company'
 require_relative '../../step/company_pending_par'
 
 module Engine
@@ -48,13 +49,13 @@ module Engine
           '9' => 'unlimited',
           '14' => 3,
           '15' => 3,
-          '16' => 1,
-          '17' => 1,
-          '18' => 1,
-          '19' => 1,
-          '20' => 1,
-          '21' => 1,
-          '22' => 1,
+          # '16' => 1,
+          # '17' => 1,
+          # '18' => 1,
+          # '19' => 1,
+          # '20' => 1,
+          # '21' => 1,
+          # '22' => 1,
           '23' => 3,
           '24' => 3,
           '25' => 2,
@@ -80,14 +81,14 @@ module Engine
           '88' => 2,
           '201' => 2,
           '202' => 2,
-          '204' => 1,
+          '204' => 2,
           '207' => 2,
           '208' => 2,
           '611' => 3,
           '619' => 3,
           '621' => 2,
           '622' => 2,
-          '915' => 2,
+          '915' => 1,
           'X1' =>
           {
             'count' => 1,
@@ -141,7 +142,7 @@ module Engine
         }.freeze
 
         LOCATION_NAMES = {
-          'A11' => 'Chūgoku',
+          'A9' => 'Chūgoku',
           'A15' => 'Shikoku',
           'B8' => 'Maizuru',
           'B14' => 'Kobe',
@@ -170,31 +171,32 @@ module Engine
           'K9' => 'Tsukuba',
           'K11' => 'Chiba',
           'L6' => 'Utsunomiya',
-          'M3' => 'Sendai',
+          'M3' => 'Aomori',
+          'M5' => 'Sendai',
         }
 
         HEXES = {
           white: {
-            %w[C11 D14 D16 E11 E13 G11 H10 K7 L8 L10 M5 M7] => '',
-            %w[B10 B12 C9 D8 E15 F10 G9 H4 H6 H8 I3 I7 J2 J6 K3 K5 L4] => 'upgrade=cost:40,terrain:mountain',
+            %w[C11 D14 D16 E11 E13 G11 H10 K7 L8 M7] => '',
+            %w[B10 B12 C9 D8 E15 F8 F10 G9 H4 H6 H8 I3 I7 J2 J6 K3 K5 L4] => 'upgrade=cost:40,terrain:mountain',
             %w[B8 D12 F14 I5 I9 J8 K9 K11 L6] => 'town=revenue:0',
             %w[G7] => 'town=revenue:0;upgrade=cost:40,terrain:mountain',
-            %w[B14 F6 G5 I11] => 'city=revenue:0',
+            %w[B14 F6 G5 I11 M5] => 'city=revenue:0',
             %w[D10 F12 J4] => 'city=revenue:0;label=Y',
           },
           red: {
-            ['A11'] =>
-              'offboard=revenue:yellow_20|green_30|brown_40|gray_60,hide:1,groups:Chuugoku;path=a:4,b:_0;path=a:5,b:_0;border=edge:0',
             ['A9'] =>
-              'offboard=revenue:yellow_20|green_30|brown_40|gray_60,groups:Chuugoku;path=a:4,b:_0;path=a:5,b:_0;border=edge:3;border=edge:0',
+              'offboard=revenue:yellow_10|green_20|brown_30|gray_60,groups:Chuugoku;path=a:4,b:_0;path=a:5,b:_0;border=edge:3;border=edge:0',
+            ['A11'] =>
+              'offboard=revenue:yellow_10|green_20|brown_30|gray_60,hide:1,groups:Chuugoku;path=a:4,b:_0;path=a:5,b:_0;border=edge:0',
             # ['A13'] =>
             #   'offboard=revenue:yellow_20|green_30|brown_40|gray_60,hide:1,groups:Chuugoku;path=a:4,b:_0;path=a:5,b:_0;border=edge:3',
             ['A15'] =>
               'offboard=revenue:yellow_10|green_20|brown_30|gray_40;path=a:4,b:_0',
             ['K1'] =>
-              'offboard=revenue:yellow_20|green_30|brown_40|gray_60;path=a:0,b:_0;path=a:1,b:_0',
+              'offboard=revenue:yellow_10|green_20|brown_30|gray_60;path=a:0,b:_0;path=a:1,b:_0',
             ['M3'] =>
-              'offboard=revenue:yellow_20|green_30|brown_40|gray_60;path=a:0,b:_0;path=a:1,b:_0',
+              'offboard=revenue:yellow_10|green_20|brown_30|gray_60;path=a:0,b:_0;path=a:1,b:_0',
           },
           gray: {
             ['A13'] => 'path=a:5,b:4',
@@ -208,12 +210,12 @@ module Engine
               'city=revenue:30;city=revenue:30;path=a:1,b:_0;path=a:4,b:_1;label=OO',
           },
           blue: {
-            %w[E9, F8] => '',
-            ['B16'] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_60;path=a:3,b:_0',
+            %w[E9] => '',
+            ['B16'] => 'offboard=revenue:yellow_10|green_20|brown_30|gray_60;path=a:3,b:_0',
             ['F4'] =>
               'offboard=revenue:yellow_10|green_20|brown_30|gray_40;path=a:0,b:_0;path=a:5,b:_0',
             ['J12'] =>
-              'offboard=revenue:yellow_20|green_40|brown_60|gray_80;path=a:2,b:_0;path=a:3,b:_0',
+              'offboard=revenue:yellow_20|green_30|brown_40|gray_80;path=a:2,b:_0;path=a:3,b:_0',
           }
         }.freeze
 
@@ -330,7 +332,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'Shinjuku Station',
+            name: 'Station Subsidy',
             value: 60,
             revenue: 10,
             desc: 'Provides an additional station marker for the owning corporation, awarded at time of purchase.',
@@ -382,7 +384,7 @@ module Engine
             name: "San'yō-tetsudō",
             logo: '18_chesapeake/PRR',
             simple_logo: '18_chesapeake/PRR.alt',
-            tokens: [0, 40],
+            tokens: [0, 40, 60],
             coordinates: 'B14',
             color: '#237333',
             reservation_color: nil,
@@ -416,7 +418,7 @@ module Engine
             name: 'Tetsudō-shō',
             logo: '18_chesapeake/BO',
             simple_logo: '18_chesapeake/BO.alt',
-            tokens: [0, 40, 60],
+            tokens: [0, 40],
             coordinates: 'I11',
             color: '#0189d1',
             reservation_color: nil,
@@ -440,7 +442,7 @@ module Engine
             name: 'Shinano-tetsudō',
             logo: '18_chesapeake/LV',
             simple_logo: '18_chesapeake/LV.alt',
-            tokens: [0, 40, 60],
+            tokens: [0, 40, 60, 80],
             coordinates: 'J4',
             color: '#FFF500',
             text_color: 'black',
@@ -521,24 +523,37 @@ module Engine
             Engine::Step::Bankrupt,
             Engine::Step::SpecialTrack,
             Engine::Step::SpecialToken,
-            Engine::Step::BuyCompany,
+            G1872::Step::BuyCompany,
             Engine::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
             Engine::Step::Dividend,
             Engine::Step::DiscardTrain,
             Engine::Step::BuyTrain,
-            [Engine::Step::BuyCompany, { blocks: true }],
+            [G1872::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
+        end
+
+        def best_sleeper_route(routes)
+          best = nil
+          routes.routes.each do |r|
+            if best.nil? || sleeper_bonus(r) > sleeper_bonus(best)
+              best = r
+            end
+          end
+          best
+        end
+
+        def sleeper_bonus(route)
+          return 0 unless route
+          stops = route.visited_stops.select { |s| s.is_a? Engine::Part::City }.length * 10
         end
 
         def revenue_for(route, stops)
           revenue = super
 
-          if route.train.owner.companies.include?(sleeper_train)
-            longest = route.routes.max_by { |r| [r.visited_stops.size, r.train.id] }
-            log << "#{longest.stops}"
-            revenue += route.visited_stops.size * 10 if route == longest
+          if route.train.owner.companies.include?(sleeper_train) && route == best_sleeper_route(route)
+            revenue += sleeper_bonus(best_sleeper_route(route))
           end
 
           revenue
@@ -552,8 +567,7 @@ module Engine
           end.join('-')
 
           if route.train.owner.companies.include?(sleeper_train)
-            longest = route.routes.max_by { |r| [r.visited_stops.size, r.train.id] }
-            str += ' + Sleeper Train' if route == longest
+            str += ' + Sleeper Train' if route == best_sleeper_route(route)
           end
 
           str
