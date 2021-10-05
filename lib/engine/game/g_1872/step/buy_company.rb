@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative '../../../step/buy_company'
 
 module Engine
@@ -5,7 +7,6 @@ module Engine
     module G1872
       module Step
         class BuyCompany < Engine::Step::BuyCompany
-
           def process_token(entity, company)
             company.owner = nil
             entity.companies.delete(company)
@@ -21,10 +22,12 @@ module Engine
             company = action.company
             price = action.price
             owner = company.owner
-    
+
             buy_company(entity, company, price, owner)
-            process_token(entity, company) if company.id == "STATION"
-            process_sleeper(company) if company.id == "SLEEP"
+            # Single quote style is objectively inferior, rubocop, and whoever agreed to that should
+            # feel bad about themselves and their life choices, but I'm not going to fight you on this
+            process_token(entity, company) if company.id == 'STATION'
+            process_sleeper(company) if company.id == 'SLEEP'
           end
         end
       end

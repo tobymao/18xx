@@ -101,7 +101,7 @@ module Engine
 
           def round_state
             {
-              companies_pending_par: []
+              companies_pending_par: [],
             }
           end
         end

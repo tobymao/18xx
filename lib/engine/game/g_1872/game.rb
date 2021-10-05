@@ -29,13 +29,13 @@ module Engine
         MUST_SELL_IN_BLOCKS = false
 
         MARKET = [
-          %w[80 85 90 100 110 125 140 160 180 200 225 250 275 300 325 350 375],
-          %w[75 80 85 90 100 110 125 140 160 180 200 225 250 275 300 325 350],
-          %w[70 75 80 85 95p 105 115 130 145 160 180 200],
-          %w[65 70 75 80p 85 95 105 115 130 145],
+          %w[75 80 85 90 100 110 125 140 160 180 200 225 250 275 300 325 360 400],
+          %w[70 75 80 85 95p 105 115 130 145 160 180 200 225 250 275 300 325 360],
+          %w[65 70 75 80p 85 95 105 115 130 145 160 180],
           %w[60 65 70p 75 80 85 95 105],
           %w[55 60 65 70 75 80],
           %w[50 55 60 65],
+          %w[45 50 55],
           %w[40 45],
         ].freeze
 
@@ -87,35 +87,35 @@ module Engine
             'count' => 1,
             'color' => 'green',
             'code' =>
-            'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:_0,b:2;path=a:3,b:_1;path=a:_1,b:5;label=OO',
+              'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:_0,b:2;path=a:3,b:_1;path=a:_1,b:5;label=OO',
           },
           'X2' =>
           {
             'count' => 1,
             'color' => 'green',
             'code' =>
-            'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:_0,b:1;path=a:2,b:_1;path=a:_1,b:3;label=OO',
+              'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:_0,b:1;path=a:2,b:_1;path=a:_1,b:3;label=OO',
           },
           'X3' =>
           {
             'count' => 1,
             'color' => 'green',
             'code' =>
-            'city=revenue:40;city=revenue:40;path=a:3,b:_0;path=a:_0,b:5;path=a:0,b:_1;path=a:_1,b:4;label=OO',
+              'city=revenue:40;city=revenue:40;path=a:3,b:_0;path=a:_0,b:5;path=a:0,b:_1;path=a:_1,b:4;label=OO',
           },
           'X4' =>
           {
             'count' => 2,
             'color' => 'brown',
             'code' =>
-            'city=revenue:60,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:5,b:_0;path=a:4,b:_0;label=OO',
+              'city=revenue:60,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:5,b:_0;path=a:4,b:_0;label=OO',
           },
           'X5' =>
           {
             'count' => 3,
             'color' => 'brown',
             'code' =>
-              'city=revenue:50,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
+              'city=revenue:50,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;' \
               'path=a:4,b:_0;label=Y',
           },
           'X6' =>
@@ -123,7 +123,8 @@ module Engine
             'count' => 1,
             'color' => 'gray',
             'code' =>
-            'city=revenue:70,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=OO',
+              'city=revenue:70,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;' \
+              'path=a:4,b:_0;path=a:5,b:_0;label=OO',
           },
           'X7' =>
           {
@@ -144,14 +145,17 @@ module Engine
           'C15' => 'Sakai',
           'D10' => 'Kyōto',
           'D12' => 'Nara',
+          'E5' => 'Nihon-kai',
           'E7' => 'Tsuruga',
-          'F4' => 'Nihon-kai',
+          'E9' => 'Biwa-ko',
           'F6' => 'Kanazawa',
           'F12' => 'Nagoya',
           'F14' => 'Tsu',
+          'G3' => 'Toyama-wan',
           'G5' => 'Toyama',
           'G7' => 'Takayama',
           'G13' => 'Hamamatsu',
+          'H10' => 'Fuji-san',
           'H12' => 'Shizuoka',
           'I5' => 'Matsumoto',
           'I9' => 'Saitama',
@@ -166,20 +170,21 @@ module Engine
           'L6' => 'Koriyama',
           'M3' => 'Aomori',
           'M5' => 'Sendai',
-        }
+        }.freeze
 
         HEXES = {
           white: {
-            %w[C11 D14 D16 E11 E13 G11 H10 K7] => '',
-            %w[B10 B12 C9 D8 E15 F8 F10 G9 H4 H6 H8 I3 I7 J2 J6 K3 K5 L4] => 'upgrade=cost:40,terrain:mountain',
-            %w[B8 D12 F14 I5 I9 J8 K9 K11 L6] => 'town=revenue:0',
+            %w[C11 D14 D16 E11 E13 F4 G11 K7] => '',
+            %w[B10 B12 C9 D8 E15 F8 F10 G9 H4 H6 H8 H10 I3 I7 J2 J6 K3 K5 L4] => 'upgrade=cost:40,terrain:mountain',
+            %w[B8 D12 E7 F14 I5 I9 J8 K9 K11 L6] => 'town=revenue:0',
             %w[G7] => 'town=revenue:0;upgrade=cost:40,terrain:mountain',
             %w[B14 F6 G5 I11 M5] => 'city=revenue:0',
             %w[D10 F12] => 'city=revenue:0;label=Y',
           },
           red: {
             ['A9'] =>
-              'offboard=revenue:yellow_20|brown_30|gray_60,groups:Chuugoku;path=a:4,b:_0;path=a:5,b:_0;border=edge:3;border=edge:0',
+              'offboard=revenue:yellow_20|brown_30|gray_60,groups:Chuugoku;path=a:4,b:_0;' \
+              'path=a:5,b:_0;border=edge:3;border=edge:0',
             ['A11'] =>
               'offboard=revenue:yellow_20|brown_30|gray_60,hide:1,groups:Chuugoku;path=a:4,b:_0;path=a:5,b:_0;border=edge:0',
             ['A15'] =>
@@ -192,7 +197,6 @@ module Engine
           gray: {
             ['A13'] => 'path=a:5,b:4',
             ['C15'] => 'town=revenue:0;path=a:3,b:_0;path=a:_0,b:5',
-            ['E7'] => 'town=revenue:0;path=a:1,b:_0;path=a:_0,b:4',
             ['G13'] => 'town=revenue:20;path=a:2,b:_0;path=a:_0,b:4',
             ['H12'] => 'town=revenue:20;path=a:1,b:_0;path=a:_0,b:4',
           },
@@ -209,11 +213,13 @@ module Engine
           blue: {
             ['E9'] => '',
             ['B16'] => 'offboard=revenue:yellow_20|brown_30|gray_60;path=a:3,b:_0',
-            ['F4'] =>
-              'offboard=revenue:yellow_20|brown_30|gray_40;path=a:0,b:_0;path=a:5,b:_0',
+            ['E5'] =>
+              'offboard=revenue:yellow_20|brown_30|gray_40;path=a:5,b:_0',
+            ['G3'] =>
+              'offboard=revenue:yellow_20|brown_30|gray_40;path=a:0,b:_0',
             ['J12'] =>
               'offboard=revenue:yellow_20|brown_40|gray_80;path=a:2,b:_0;path=a:3,b:_0',
-          }
+          },
         }.freeze
 
         PHASES = [
@@ -332,7 +338,8 @@ module Engine
             name: 'Station Subsidy',
             value: 60,
             revenue: 10,
-            desc: 'Provides an additional station marker to corporation that buys this private from a player, awarded at time of purchase, then closes.',
+            desc: 'Provides an additional station marker to corporation that buys this private from a player,' \
+                  ' awarded at time of purchase, then closes.',
             sym: 'STATION',
             abilities: [
               {
@@ -347,7 +354,8 @@ module Engine
             name: 'Sleeper Train',
             value: 80,
             revenue: 10,
-            desc: 'Adds $10 per city (not town, port, or connection) visited by any one train of the owning corporation. Never closes once purchased by a corporation. Pays no other revenue to corporation.',
+            desc: 'Adds $10 per city (not town, port, or connection) visited by any one train of the owning ' \
+                  'corporation. Never closes once purchased by a corporation. Pays no other revenue to corporation.',
             sym: 'SLEEP',
             abilities: [{ type: 'close', on_phase: 'never', owner_type: 'corporation' }],
             color: nil,
@@ -356,7 +364,8 @@ module Engine
             name: 'Tetsudō-shō',
             value: 100,
             revenue: 0,
-            desc: 'Purchasing player immediately takes a 10% share of the JGR. This does not close the private company. This private company has no other special ability.',
+            desc: 'Purchasing player immediately takes a 10% share of the JGR. This does not close the private' \
+                  'company. This private company has no other special ability.',
             sym: 'JGRSTOCK',
             abilities: [{ type: 'shares', shares: 'JGR_1' }],
             color: nil,
@@ -365,7 +374,8 @@ module Engine
             name: 'Inoue Masaru',
             value: 200,
             revenue: 20,
-            desc: 'This private closes when the associated corporation buys its first train. It cannot be bought by a corporation.',
+            desc: 'This private closes when the associated corporation buys its first train. It cannot be bought ' \
+                  'by a corporation.',
             sym: 'INOUESAN',
             abilities: [{ type: 'shares', shares: 'random_president' },
                         { type: 'no_buy' }],
@@ -454,7 +464,7 @@ module Engine
 
         def setup
           @reverse = true
-          @d_train_exported
+          @d_train_exported = false
           inoue.add_ability(Ability::Close.new(
             type: :close,
             when: 'bought_train',
@@ -464,8 +474,11 @@ module Engine
 
         def init_round
           Engine::Round::Draft.new(self,
-                           [ Engine::Step::CompanyPendingPar, G1872::Step::DraftDistribution ],
-                           snake_order: true)
+                                   [
+                                     Engine::Step::CompanyPendingPar,
+                                     G1872::Step::DraftDistribution,
+                                   ],
+                                   snake_order: true)
         end
 
         def init_round_finished
@@ -526,16 +539,15 @@ module Engine
         def best_sleeper_route(routes)
           best = nil
           routes.routes.each do |r|
-            if best.nil? || sleeper_bonus(r) > sleeper_bonus(best)
-              best = r
-            end
+            best = r if best.nil? || sleeper_bonus(r) > sleeper_bonus(best)
           end
           best
         end
 
         def sleeper_bonus(route)
           return 0 unless route # Autorouter gets unhappy when empty routes blow up
-          stops = route.visited_stops.select { |s| s.is_a? Engine::Part::City }.length * 10
+
+          route.visited_stops.count { |s| s.is_a? Engine::Part::City } * 10
         end
 
         def revenue_for(route, stops)
@@ -553,21 +565,20 @@ module Engine
             stop_hexes.include?(h) ? h&.name : "(#{h&.name})"
           end.join('-')
 
-          if route.train.owner.companies.include?(sleeper_train)
-            str += ' + Sleeper Train' if route == best_sleeper_route(route)
-          end
+          str += ' + Sleeper Train' if route.train.owner.companies.include?(sleeper_train) && route == best_sleeper_route(route)
 
           str
         end
 
         def timeline
           @timeline = [
-            'At the end of each set of ORs the next available train will be exported (removed, triggering phase change as if purchased, until phase D triggered)',
+            'At the end of each set of ORs the next available train will be exported (removed, triggering ' \
+            'phase change as if purchased, until phase D triggered)',
           ]
         end
 
         def inoue
-          @sleeper_train ||= company_by_id('INOUESAN')
+          @inoue ||= company_by_id('INOUESAN')
         end
 
         def sleeper_train
@@ -576,9 +587,8 @@ module Engine
 
         def or_set_finished
           return if @d_train_exported
-          if depot.upcoming.first.name == 'D'
-            @d_train_exported = true
-          end
+
+          @d_train_exported = true if depot.upcoming.first.name == 'D'
           depot.export!
         end
       end
