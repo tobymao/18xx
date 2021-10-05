@@ -12,6 +12,10 @@ module Engine
             entity.tokens.insert(entity.tokens.index { |t| t.hex.nil? }, Engine::Token.new(entity))
           end
 
+          def process_sleeper(company)
+            company.revenue = 0
+          end
+
           def process_buy_company(action)
             entity = action.entity
             company = action.company
@@ -19,7 +23,8 @@ module Engine
             owner = company.owner
     
             buy_company(entity, company, price, owner)
-            process_token(entity, company) if company.id == "SS"
+            process_token(entity, company) if company.id == "STATION"
+            process_sleeper(company) if company.id == "SLEEP"
           end
         end
       end

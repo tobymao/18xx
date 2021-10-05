@@ -23,8 +23,8 @@ module Engine
         TRACK_RESTRICTION = :permissive
         CURRENCY_FORMAT_STR = '¥%d'
         BANK_CASH = 6000
-        CERT_LIMIT = { 2 => 15, 3 => 15, 4 => 12 }.freeze
-        STARTING_CASH = { 2 => 900, 3 => 600, 4 => 400 }.freeze
+        CERT_LIMIT = { 2 => 24, 3 => 16, 4 => 12 }.freeze
+        STARTING_CASH = { 2 => 900, 3 => 600, 4 => 520 }.freeze
         CAPITALIZATION = :full
         MUST_SELL_IN_BLOCKS = false
 
@@ -49,20 +49,13 @@ module Engine
           '9' => 'unlimited',
           '14' => 3,
           '15' => 3,
-          # '16' => 1,
-          # '17' => 1,
-          # '18' => 1,
-          # '19' => 1,
-          # '20' => 1,
-          # '21' => 1,
-          # '22' => 1,
-          '23' => 3,
-          '24' => 3,
-          '25' => 2,
-          '26' => 2,
-          '27' => 2,
-          '28' => 2,
-          '29' => 2,
+          '23' => 2,
+          '24' => 2,
+          '25' => 1,
+          '26' => 1,
+          '27' => 1,
+          '28' => 1,
+          '29' => 1,
           '30' => 1,
           '31' => 1,
           '39' => 1,
@@ -77,8 +70,8 @@ module Engine
           '57' => 3,
           '58' => 4,
           '70' => 1,
-          '87' => 2,
-          '88' => 2,
+          '87' => 1,
+          '88' => 1,
           '201' => 2,
           '202' => 2,
           '204' => 2,
@@ -122,7 +115,7 @@ module Engine
             'count' => 3,
             'color' => 'brown',
             'code' =>
-              'city=revenue:50,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
+              'city=revenue:50,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
               'path=a:4,b:_0;label=Y',
           },
           'X6' =>
@@ -130,7 +123,7 @@ module Engine
             'count' => 1,
             'color' => 'gray',
             'code' =>
-            'city=revenue:80,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=OO',
+            'city=revenue:70,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=OO',
           },
           'X7' =>
           {
@@ -170,33 +163,31 @@ module Engine
           'K1' => 'Niigata',
           'K9' => 'Tsukuba',
           'K11' => 'Chiba',
-          'L6' => 'Utsunomiya',
+          'L6' => 'Koriyama',
           'M3' => 'Aomori',
           'M5' => 'Sendai',
         }
 
         HEXES = {
           white: {
-            %w[C11 D14 D16 E11 E13 G11 H10 K7 L8 M7] => '',
+            %w[C11 D14 D16 E11 E13 G11 H10 K7] => '',
             %w[B10 B12 C9 D8 E15 F8 F10 G9 H4 H6 H8 I3 I7 J2 J6 K3 K5 L4] => 'upgrade=cost:40,terrain:mountain',
             %w[B8 D12 F14 I5 I9 J8 K9 K11 L6] => 'town=revenue:0',
             %w[G7] => 'town=revenue:0;upgrade=cost:40,terrain:mountain',
             %w[B14 F6 G5 I11 M5] => 'city=revenue:0',
-            %w[D10 F12 J4] => 'city=revenue:0;label=Y',
+            %w[D10 F12] => 'city=revenue:0;label=Y',
           },
           red: {
             ['A9'] =>
-              'offboard=revenue:yellow_10|green_20|brown_30|gray_60,groups:Chuugoku;path=a:4,b:_0;path=a:5,b:_0;border=edge:3;border=edge:0',
+              'offboard=revenue:yellow_20|brown_30|gray_60,groups:Chuugoku;path=a:4,b:_0;path=a:5,b:_0;border=edge:3;border=edge:0',
             ['A11'] =>
-              'offboard=revenue:yellow_10|green_20|brown_30|gray_60,hide:1,groups:Chuugoku;path=a:4,b:_0;path=a:5,b:_0;border=edge:0',
-            # ['A13'] =>
-            #   'offboard=revenue:yellow_20|green_30|brown_40|gray_60,hide:1,groups:Chuugoku;path=a:4,b:_0;path=a:5,b:_0;border=edge:3',
+              'offboard=revenue:yellow_20|brown_30|gray_60,hide:1,groups:Chuugoku;path=a:4,b:_0;path=a:5,b:_0;border=edge:0',
             ['A15'] =>
-              'offboard=revenue:yellow_10|green_20|brown_30|gray_40;path=a:4,b:_0',
+              'offboard=revenue:yellow_20|brown_30|gray_40;path=a:4,b:_0',
             ['K1'] =>
-              'offboard=revenue:yellow_10|green_20|brown_30|gray_60;path=a:0,b:_0;path=a:1,b:_0',
+              'offboard=revenue:yellow_20|brown_30|gray_40;path=a:0,b:_0;path=a:1,b:_0',
             ['M3'] =>
-              'offboard=revenue:yellow_10|green_20|brown_30|gray_60;path=a:0,b:_0;path=a:1,b:_0',
+              'offboard=revenue:yellow_20|brown_30|gray_60;path=a:0,b:_0;path=a:1,b:_0',
           },
           gray: {
             ['A13'] => 'path=a:5,b:4',
@@ -208,14 +199,20 @@ module Engine
           yellow: {
             %w[C13 J10] =>
               'city=revenue:30;city=revenue:30;path=a:1,b:_0;path=a:4,b:_1;label=OO',
+            ['J4'] =>
+              'city=revenue:30;path=a:0,b:_0;path=a:1,b:_0;path=a:4,b:_0;label=Y',
+            ['L8'] =>
+              'path=a:1,b:4',
+            ['M7'] =>
+              'path=a:1,b:3',
           },
           blue: {
-            %w[E9] => '',
-            ['B16'] => 'offboard=revenue:yellow_10|green_20|brown_30|gray_60;path=a:3,b:_0',
+            ['E9'] => '',
+            ['B16'] => 'offboard=revenue:yellow_20|brown_30|gray_60;path=a:3,b:_0',
             ['F4'] =>
-              'offboard=revenue:yellow_10|green_20|brown_30|gray_40;path=a:0,b:_0;path=a:5,b:_0',
+              'offboard=revenue:yellow_20|brown_30|gray_40;path=a:0,b:_0;path=a:5,b:_0',
             ['J12'] =>
-              'offboard=revenue:yellow_20|green_30|brown_40|gray_80;path=a:2,b:_0;path=a:3,b:_0',
+              'offboard=revenue:yellow_20|brown_40|gray_80;path=a:2,b:_0;path=a:3,b:_0',
           }
         }.freeze
 
@@ -311,16 +308,16 @@ module Engine
             value: 20,
             revenue: 5,
             desc: 'No special ability. Blocks hex D10 while owned by a player.',
-            sym: 'KT',
+            sym: 'KYOTO',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['D10'] }],
             color: nil,
           },
           {
-            name: 'Tunnel Blasting Company',
+            name: 'Osakayama Tunnel',
             value: 40,
             revenue: 10,
             desc: 'Reduces, for the owning corporation, the cost of laying all mountain tiles by $20.',
-            sym: 'TBC',
+            sym: 'TUNNEL',
             abilities: [
               {
                 type: 'tile_discount',
@@ -335,8 +332,8 @@ module Engine
             name: 'Station Subsidy',
             value: 60,
             revenue: 10,
-            desc: 'Provides an additional station marker for the owning corporation, awarded at time of purchase.',
-            sym: 'SS',
+            desc: 'Provides an additional station marker to corporation that buys this private from a player, awarded at time of purchase, then closes.',
+            sym: 'STATION',
             abilities: [
               {
                 type: 'additional_token',
@@ -350,19 +347,18 @@ module Engine
             name: 'Sleeper Train',
             value: 80,
             revenue: 10,
-            desc: 'Adds $10 per city visited by any one train of the owning corporation. Never '\
-                  'closes once purchased by a corporation.',
+            desc: 'Adds $10 per city (not town, port, or connection) visited by any one train of the owning corporation. Never closes once purchased by a corporation. Pays no other revenue to corporation.',
             sym: 'SLEEP',
             abilities: [{ type: 'close', on_phase: 'never', owner_type: 'corporation' }],
             color: nil,
           },
           {
-            name: 'Edmund Morel',
+            name: 'Tetsudō-shō',
             value: 100,
             revenue: 0,
-            desc: 'Purchasing player immediately takes a 10% share of the IGR. This does not close the private company. This private company has no other special ability.',
-            sym: 'EM',
-            abilities: [{ type: 'shares', shares: 'IGR_1' }],
+            desc: 'Purchasing player immediately takes a 10% share of the JGR. This does not close the private company. This private company has no other special ability.',
+            sym: 'JGRSTOCK',
+            abilities: [{ type: 'shares', shares: 'JGR_1' }],
             color: nil,
           },
           {
@@ -370,7 +366,7 @@ module Engine
             value: 200,
             revenue: 20,
             desc: 'This private closes when the associated corporation buys its first train. It cannot be bought by a corporation.',
-            sym: 'IM',
+            sym: 'INOUESAN',
             abilities: [{ type: 'shares', shares: 'random_president' },
                         { type: 'no_buy' }],
             color: nil,
@@ -417,10 +413,10 @@ module Engine
           },
           {
             float_percent: 60,
-            sym: 'IGR',
+            sym: 'JGR',
             name: 'Tetsudō-shō',
-            logo: '1872/IGR',
-            simple_logo: '1872/IGR.alt',
+            logo: '1872/JGR',
+            simple_logo: '1872/JGR.alt',
             tokens: [0, 40],
             coordinates: 'I11',
             color: '#ef2f2f',
@@ -458,6 +454,7 @@ module Engine
 
         def setup
           @reverse = true
+          @d_train_exported
           inoue.add_ability(Ability::Close.new(
             type: :close,
             when: 'bought_train',
@@ -485,11 +482,16 @@ module Engine
           current_order = @players.dup
           if @reverse
             @reverse = false
-            @players.sort_by! { |p| [p.id, current_order.index(p)] }.reverse!
+            @players.reverse!
           else
             @players.sort_by! { |p| [p.cash, current_order.index(p)] }
           end
           @log << "Priority order: #{@players.reject(&:bankrupt).map(&:name).join(', ')}"
+        end
+
+        def priority_deal_player
+          # Don't move around priority deal marker; only changes when players are reordered at beginning of stock round
+          players.first
         end
 
         def new_stock_round
@@ -504,23 +506,6 @@ module Engine
             Engine::Step::BuySellParShares,
           ])
         end
-
-        # def preprocess_action(action)
-        #   case action
-        #   when Action::LayTile
-        #     queue_log! do
-        #       check_special_tile_lay(action, baltimore)
-        #       check_special_tile_lay(action, columbia)
-        #     end
-        #   end
-        # end
-
-        # def action_processed(action)
-        #   case action
-        #   when Action::LayTile
-        #     flush_log!
-        #   end
-        # end
 
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
@@ -549,17 +534,15 @@ module Engine
         end
 
         def sleeper_bonus(route)
-          return 0 unless route
+          return 0 unless route # Autorouter gets unhappy when empty routes blow up
           stops = route.visited_stops.select { |s| s.is_a? Engine::Part::City }.length * 10
         end
 
         def revenue_for(route, stops)
           revenue = super
-
           if route.train.owner.companies.include?(sleeper_train) && route == best_sleeper_route(route)
             revenue += sleeper_bonus(best_sleeper_route(route))
           end
-
           revenue
         end
 
@@ -577,50 +560,14 @@ module Engine
           str
         end
 
-        # def next_round!
-        #   @round =
-        #     case @round
-        #     when Engine::Round::Draft
-        #       init_round_finished
-        #       new_stock_round
-        #     # when Engine::Round::Auction
-        #     #   new_stock_round
-        #     when Engine::Round::Stock
-        #       @operating_rounds = @phase.operating_rounds
-        #       new_operating_round
-        #     when Engine::Round::Operating
-        #       if @round.round_num < @operating_rounds
-        #         or_round_finished
-        #         new_operating_round(@round.round_num + 1)
-        #       else
-        #         @turn += 1
-        #         or_round_finished
-        #         or_set_finished
-        #         new_stock_round
-        #       end
-        #     end
-        # end
-
         def timeline
           @timeline = [
-            'At the end of each set of ORs the next available non-permanent (2, 3 or 4) train will be exported
-           (removed, triggering phase change as if purchased)',
+            'At the end of each set of ORs the next available train will be exported (removed, triggering phase change as if purchased, until phase D triggered)',
           ]
         end
 
-        # def check_special_tile_lay(action, company)
-        #   abilities(company, :tile_lay, time: 'any') do |ability|
-        #     hexes = ability.hexes
-        #     next unless hexes.include?(action.hex.id)
-        #     next if company.closed? || action.entity == company
-
-        #     company.remove_ability(ability)
-        #     @log << "#{company.name} loses the ability to lay #{hexes}"
-        #   end
-        # end
-
         def inoue
-          @inoue ||= @companies.find { |company| company.name == 'Inoue Masaru' }
+          @sleeper_train ||= company_by_id('INOUESAN')
         end
 
         def sleeper_train
@@ -628,7 +575,11 @@ module Engine
         end
 
         def or_set_finished
-          depot.export! if %w[2 3 4].include?(@depot.upcoming.first.name)
+          return if @d_train_exported
+          if depot.upcoming.first.name == 'D'
+            @d_train_exported = true
+          end
+          depot.export!
         end
       end
     end
