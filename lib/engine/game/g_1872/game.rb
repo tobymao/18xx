@@ -120,18 +120,26 @@ module Engine
           },
           'X6' =>
           {
-            'count' => 1,
+            'count' => 2,
             'color' => 'gray',
             'code' =>
-              'city=revenue:70,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;' \
-              'path=a:4,b:_0;path=a:5,b:_0;label=OO',
+            'city=revenue:60,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=Y',
           },
           'X7' =>
           {
             'count' => 1,
             'color' => 'gray',
             'code' =>
-            'city=revenue:60,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=Y',
+              'city=revenue:70,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;' \
+              'path=a:4,b:_0;path=a:5,b:_0;label=O',
+          },
+          'X8' =>
+          {
+            'count' => 1,
+            'color' => 'gray',
+            'code' =>
+              'city=revenue:90,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;' \
+              'path=a:4,b:_0;path=a:5,b:_0;label=T',
           },
         }.freeze
 
@@ -140,21 +148,21 @@ module Engine
           'A15' => 'Shikoku',
           'B8' => 'Maizuru',
           'B14' => 'Kobe',
-          'B16' => 'Ōsaka-wan',
           'C13' => 'Ōsaka',
-          'C15' => 'Sakai',
+          'C15' => 'Ōsaka-wan',
           'D10' => 'Kyōto',
-          'D12' => 'Nara',
+          'D14' => 'Nara',
           'E5' => 'Nihon-kai',
           'E7' => 'Tsuruga',
           'E9' => 'Biwa-ko',
+          'E13' => 'Tsu',
           'F6' => 'Kanazawa',
-          'F12' => 'Nagoya',
-          'F14' => 'Tsu',
+          'F10' => 'Nagoya',
+          'F12' => 'Ise-wan',
           'G3' => 'Toyama-wan',
           'G5' => 'Toyama',
           'G7' => 'Takayama',
-          'G13' => 'Hamamatsu',
+          'G11' => 'Hamamatsu',
           'H10' => 'Fuji-san',
           'H12' => 'Shizuoka',
           'I5' => 'Matsumoto',
@@ -174,12 +182,12 @@ module Engine
 
         HEXES = {
           white: {
-            %w[C11 D14 D16 E11 E13 F4 G11 K7] => '',
-            %w[B10 B12 C9 D8 E15 F8 F10 G9 H4 H6 H8 H10 I3 I7 J2 J6 K3 K5 L4] => 'upgrade=cost:40,terrain:mountain',
-            %w[B8 D12 E7 F14 I5 I9 J8 K9 K11 L6] => 'town=revenue:0',
+            %w[D12 E11 F4 G9 K7 L4] => '',
+            %w[B10 B12 C9 C11 D8 F8 H4 H6 H8 H10 I3 I7 J2 J6 K3 K5] => 'upgrade=cost:40,terrain:mountain',
+            %w[B8 D14 E7 E13 I5 I9 J8 K9 K11 L6] => 'town=revenue:0',
             %w[G7] => 'town=revenue:0;upgrade=cost:40,terrain:mountain',
             %w[B14 F6 G5 I11 M5] => 'city=revenue:0',
-            %w[D10 F12] => 'city=revenue:0;label=Y',
+            %w[D10 F10] => 'city=revenue:0;label=Y',
           },
           red: {
             ['A9'] =>
@@ -196,13 +204,14 @@ module Engine
           },
           gray: {
             ['A13'] => 'path=a:5,b:4',
-            ['C15'] => 'town=revenue:0;path=a:3,b:_0;path=a:_0,b:5',
-            ['G13'] => 'town=revenue:20;path=a:2,b:_0;path=a:_0,b:4',
-            ['H12'] => 'town=revenue:20;path=a:1,b:_0;path=a:_0,b:4',
+            ['G11'] => 'town=revenue:20;path=a:2,b:_0;path=a:_0,b:5',
+            ['H12'] => 'town=revenue:20;path=a:2,b:_0;path=a:_0,b:4',
           },
           yellow: {
-            %w[C13 J10] =>
-              'city=revenue:30;city=revenue:30;path=a:1,b:_0;path=a:4,b:_1;label=OO',
+            ['C13'] =>
+              'city=revenue:30;city=revenue:30;path=a:1,b:_0;path=a:4,b:_1;label=OO;label=O',
+            ['J10'] =>
+              'city=revenue:30;city=revenue:30;path=a:1,b:_0;path=a:4,b:_1;label=OO;label=T',
             ['J4'] =>
               'city=revenue:30;path=a:0,b:_0;path=a:1,b:_0;path=a:4,b:_0;label=Y',
             ['L8'] =>
@@ -212,15 +221,34 @@ module Engine
           },
           blue: {
             ['E9'] => '',
-            ['B16'] => 'offboard=revenue:yellow_20|brown_30|gray_60;path=a:3,b:_0',
+            ['C15'] => 'offboard=revenue:yellow_20|brown_30|gray_60;path=a:2,b:_0;path=a:3,b:_0',
             ['E5'] =>
               'offboard=revenue:yellow_20|brown_30|gray_40;path=a:5,b:_0',
+            ['F12'] =>
+              'offboard=revenue:yellow_20|brown_30|gray_40;path=a:3,b:_0',
             ['G3'] =>
               'offboard=revenue:yellow_20|brown_30|gray_40;path=a:0,b:_0',
             ['J12'] =>
-              'offboard=revenue:yellow_20|brown_40|gray_80;path=a:2,b:_0;path=a:3,b:_0',
+              'offboard=revenue:yellow_30|brown_50|gray_80;path=a:2,b:_0;path=a:3,b:_0',
           },
         }.freeze
+
+        # O and T labelled tile upgrades to OOs until Grey
+        HEX_WITH_O_LABEL = %w[C13].freeze
+        HEX_UPGRADES_FOR_O = %w[X1 X2 X3 X4 X7].freeze
+        HEX_WITH_T_LABEL = %w[J10].freeze
+        HEX_UPGRADES_FOR_T = %w[X1 X2 X3 X4 X8].freeze
+
+        def upgrades_to?(from, to, _special = false, selected_company: nil)
+          if self.class::HEX_WITH_O_LABEL.include?(from.hex.name)
+            return false unless self.class::HEX_UPGRADES_FOR_O.include?(to.name)
+          elsif self.class::HEX_WITH_T_LABEL.include?(from.hex.name)
+            return false unless self.class::HEX_UPGRADES_FOR_T.include?(to.name)
+          else
+            return super
+          end
+          super(from, to, true)
+        end
 
         PHASES = [
           {
@@ -274,7 +302,7 @@ module Engine
             distance: 2,
             price: 80,
             rusts_on: '4',
-            num: 6,
+            num: 7,
           },
           {
             name: '3',
@@ -416,7 +444,7 @@ module Engine
             logo: '1872/ARC',
             simple_logo: '1872/ARC.alt',
             tokens: [0, 40, 60],
-            coordinates: 'F12',
+            coordinates: 'F10',
             color: '#2f2f9f',
             text_color: 'white',
             reservation_color: nil,
