@@ -48,7 +48,7 @@ module Engine
         HOME_TOKEN_TIMING = :float
         SELL_AFTER = :first
         SELL_BUY_ORDER = :sell_buy
-        MARKET_SHARE_LIMIT = 80
+        MARKET_SHARE_LIMIT = 100
         SOLD_OUT_INCREASE = false
         MUST_BID_INCREMENT_MULTIPLE = true
 
