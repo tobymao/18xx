@@ -1454,6 +1454,9 @@ module Engine
         end
 
         def merge_major(major)
+          raise GameError, "#{major.name} cannot merge twice" if @nationalized_corps.include?(major)
+          raise GameError, "#{major.name} isn't eligible for merging" unless nationalizables.include?(major)
+
           @national_formed = true
           @log << "-- #{major.name} merges into #{national.name} --"
           # Trains are transferred
@@ -1844,6 +1847,9 @@ module Engine
         end
 
         def nationalization_president_payoff(major, owed)
+          raise GameError, "#{major.name} cannot pay off loans twice" if @nationalized_corps.include?(major)
+          raise GameError, "#{major.name} isn't eligible for paying off loans" unless nationalizables.include?(major)
+
           major.spend(major.cash, @bank) if major.cash.positive?
           major.owner.spend(owed, @bank)
           @loans << major.loans.pop(major.loans.size)
