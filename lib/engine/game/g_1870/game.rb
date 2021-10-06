@@ -492,7 +492,7 @@ module Engine
             ['M20'] => 'city=revenue:0;icon=image:port',
             %w[C14 C16 G2 H5] => 'upgrade=cost:40,terrain:water',
             %w[H7 I8 J11 K10] => 'upgrade=cost:60,terrain:water',
-            ['B11'] => 'city=revenue:0;upgrade=cost:40,terrain:water;label=P',
+            ['B11'] => 'city=revenue:0;upgrade=cost:40,terrain:water;label=P;label=K',
             ['L11'] => 'city=revenue:0;upgrade=cost:60,terrain:water',
             %w[A10 B13 H3] => 'town=revenue:0;upgrade=cost:40,terrain:water',
             %w[I10 E20] =>
@@ -509,7 +509,7 @@ module Engine
             ['O18'] =>
                    'upgrade=cost:100,terrain:river;partition=a:0-,b:2-,type:water;border=edge:3,type:impassable',
             ['C18'] =>
-                   'city=revenue:0;upgrade=cost:40,terrain:river;partition=a:0+,b:2+,type:water,restrict:inner;label=P',
+                   'city=revenue:0;upgrade=cost:40,terrain:river;partition=a:0+,b:2+,type:water,restrict:inner;label=P;label=L',
             ['M14'] =>
                    'city=revenue:0;upgrade=cost:80,terrain:river;icon=image:port;'\
                    'partition=a:0-,b:2+,type:water,restrict:outer',
@@ -798,6 +798,7 @@ module Engine
         def upgrades_to?(from, to, _special = false, selected_company: nil)
           return false if to.name == '171K' && from.hex.name != 'B11'
           return false if to.name == '172L' && from.hex.name != 'C18'
+          return true if to.name == '170' && (from.hex.name != 'B11' || from.hex.name != 'C18')
 
           super
         end
