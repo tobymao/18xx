@@ -66,7 +66,7 @@ module Engine
             player.companies << company
             price = company.min_bid
             player.spend(price, @game.bank)
-            @game.after_buy_company(player, company)
+            @game.after_buy_company(player, company, company.value)
 
             @log << "#{player.name} buys #{company.name} for #{@game.format_currency(price)}"
           end
