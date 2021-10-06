@@ -138,7 +138,7 @@ module Engine
             'count' => 1,
             'color' => 'gray',
             'code' =>
-              'city=revenue:90,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;' \
+              'city=revenue:80,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;' \
               'path=a:4,b:_0;path=a:5,b:_0;label=T',
           },
         }.freeze
@@ -163,7 +163,6 @@ module Engine
           'G5' => 'Toyama',
           'G7' => 'Takayama',
           'G11' => 'Hamamatsu',
-          'H10' => 'Fuji-san',
           'H12' => 'Shizuoka',
           'I5' => 'Matsumoto',
           'I9' => 'Saitama',
@@ -189,19 +188,6 @@ module Engine
             %w[B14 F6 G5 I11 M5] => 'city=revenue:0',
             %w[D10 F10] => 'city=revenue:0;label=Y',
           },
-          red: {
-            ['A9'] =>
-              'offboard=revenue:yellow_20|brown_30|gray_60,groups:Chuugoku;path=a:4,b:_0;' \
-              'path=a:5,b:_0;border=edge:3;border=edge:0',
-            ['A11'] =>
-              'offboard=revenue:yellow_20|brown_30|gray_60,hide:1,groups:Chuugoku;path=a:4,b:_0;path=a:5,b:_0;border=edge:0',
-            ['A15'] =>
-              'offboard=revenue:yellow_20|brown_30|gray_40;path=a:4,b:_0',
-            ['K1'] =>
-              'offboard=revenue:yellow_20|brown_30|gray_40;path=a:0,b:_0;path=a:1,b:_0',
-            ['M3'] =>
-              'offboard=revenue:yellow_20|brown_30|gray_60;path=a:0,b:_0;path=a:1,b:_0',
-          },
           gray: {
             ['A13'] => 'path=a:5,b:4',
             ['G11'] => 'town=revenue:20;path=a:2,b:_0;path=a:_0,b:5',
@@ -219,21 +205,34 @@ module Engine
             ['M7'] =>
               'path=a:1,b:3',
           },
+          red: {
+            ['A9'] =>
+              'offboard=revenue:yellow_20|brown_30|gray_50,groups:Chuugoku;path=a:4,b:_0;' \
+              'path=a:5,b:_0;border=edge:3;border=edge:0',
+            ['A11'] =>
+              'offboard=revenue:yellow_20|brown_30|gray_50,hide:1,groups:Chuugoku;path=a:4,b:_0;path=a:5,b:_0;border=edge:0',
+            ['A15'] =>
+              'offboard=revenue:yellow_20|gray_30;path=a:4,b:_0',
+            ['K1'] =>
+              'offboard=revenue:yellow_20|gray_30;path=a:0,b:_0;path=a:1,b:_0',
+            ['M3'] =>
+              'offboard=revenue:yellow_20|brown_30|gray_50;path=a:0,b:_0;path=a:1,b:_0',
+          },
           blue: {
             ['E9'] => '',
-            ['C15'] => 'offboard=revenue:yellow_20|brown_30|gray_60;path=a:2,b:_0;path=a:3,b:_0',
+            ['C15'] => 'offboard=revenue:yellow_20|brown_30|gray_50;path=a:2,b:_0;path=a:3,b:_0',
             ['E5'] =>
-              'offboard=revenue:yellow_20|brown_30|gray_40;path=a:5,b:_0',
+              'offboard=revenue:yellow_20|gray_30;path=a:5,b:_0',
             ['F12'] =>
-              'offboard=revenue:yellow_20|brown_30|gray_40;path=a:3,b:_0',
+              'offboard=revenue:yellow_20|gray_30;path=a:3,b:_0',
             ['G3'] =>
-              'offboard=revenue:yellow_20|brown_30|gray_40;path=a:0,b:_0',
+              'offboard=revenue:yellow_20|gray_30;path=a:0,b:_0',
             ['J12'] =>
-              'offboard=revenue:yellow_30|brown_50|gray_80;path=a:2,b:_0;path=a:3,b:_0',
+              'offboard=revenue:yellow_30|brown_40|gray_60;path=a:2,b:_0;path=a:3,b:_0',
           },
         }.freeze
 
-        # O and T labelled tile upgrades to OOs until Grey
+        # O and T labelled tile upgrade to OOs until Grey
         HEX_WITH_O_LABEL = %w[C13].freeze
         HEX_UPGRADES_FOR_O = %w[X1 X2 X3 X4 X7].freeze
         HEX_WITH_T_LABEL = %w[J10].freeze
@@ -480,7 +479,7 @@ module Engine
             name: 'Shinano-tetsudō',
             logo: '1872/SR',
             simple_logo: '1872/SR.alt',
-            tokens: [0, 40, 60, 80],
+            tokens: [0, 40, 60],
             coordinates: 'J4',
             color: '#efef4f',
             text_color: 'black',
