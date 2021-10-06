@@ -22,7 +22,7 @@ module Engine
 
         TRACK_RESTRICTION = :permissive
         CURRENCY_FORMAT_STR = '¥%d'
-        BANK_CASH = 6000
+        BANK_CASH = 7200
         CERT_LIMIT = { 2 => 24, 3 => 16, 4 => 12 }.freeze
         STARTING_CASH = { 2 => 900, 3 => 600, 4 => 520 }.freeze
         CAPITALIZATION = :full
@@ -144,7 +144,7 @@ module Engine
         }.freeze
 
         LOCATION_NAMES = {
-          'A9' => 'Chūgoku',
+          'A11' => 'Chūgoku',
           'A15' => 'Shikoku',
           'B8' => 'Maizuru',
           'B14' => 'Kobe',
@@ -207,28 +207,28 @@ module Engine
           },
           red: {
             ['A9'] =>
-              'offboard=revenue:yellow_20|brown_30|gray_50,groups:Chuugoku;path=a:4,b:_0;' \
-              'path=a:5,b:_0;border=edge:3;border=edge:0',
+              'offboard=revenue:yellow_30|brown_40|gray_50,hide:1,groups:Chuugoku;path=a:4,b:_0;' \
+              'path=a:5,b:_0;border=edge:0',
             ['A11'] =>
-              'offboard=revenue:yellow_20|brown_30|gray_50,hide:1,groups:Chuugoku;path=a:4,b:_0;path=a:5,b:_0;border=edge:0',
+              'offboard=revenue:yellow_30|brown_40|gray_50,groups:Chuugoku;path=a:4,b:_0;path=a:5,b:_0;border=edge:3',
             ['A15'] =>
-              'offboard=revenue:yellow_20|gray_30;path=a:4,b:_0',
+              'offboard=revenue:yellow_20|brown_30|gray_40;path=a:4,b:_0',
             ['K1'] =>
-              'offboard=revenue:yellow_20|gray_30;path=a:0,b:_0;path=a:1,b:_0',
+              'offboard=revenue:yellow_20|brown_30|gray_40;path=a:0,b:_0;path=a:1,b:_0',
             ['M3'] =>
-              'offboard=revenue:yellow_20|brown_30|gray_50;path=a:0,b:_0;path=a:1,b:_0',
+              'offboard=revenue:yellow_30|brown_40|gray_50;path=a:0,b:_0;path=a:1,b:_0',
           },
           blue: {
             ['E9'] => '',
-            ['C15'] => 'offboard=revenue:yellow_20|brown_30|gray_50;path=a:2,b:_0;path=a:3,b:_0',
+            ['C15'] => 'offboard=revenue:yellow_30|brown_40|gray_50;path=a:2,b:_0;path=a:3,b:_0',
             ['E5'] =>
-              'offboard=revenue:yellow_20|gray_30;path=a:5,b:_0',
+              'offboard=revenue:yellow_20|brown_30|gray_40;path=a:5,b:_0',
             ['F12'] =>
-              'offboard=revenue:yellow_20|gray_30;path=a:3,b:_0',
+              'offboard=revenue:yellow_20|brown_30|gray_40;path=a:3,b:_0',
             ['G3'] =>
-              'offboard=revenue:yellow_20|gray_30;path=a:0,b:_0',
+              'offboard=revenue:yellow_20|brown_30|gray_40;path=a:0,b:_0',
             ['J12'] =>
-              'offboard=revenue:yellow_30|brown_40|gray_60;path=a:2,b:_0;path=a:3,b:_0',
+              'offboard=revenue:yellow_40|brown_50|gray_80;path=a:2,b:_0;path=a:3,b:_0',
           },
         }.freeze
 
@@ -341,8 +341,8 @@ module Engine
             value: 20,
             revenue: 5,
             desc: 'No special ability. Blocks hex D10 while owned by a player.',
-            sym: 'KYOTO',
-            abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['D10'] }],
+            sym: 'KR',
+            abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['E11'] }],
             color: nil,
           },
           {
