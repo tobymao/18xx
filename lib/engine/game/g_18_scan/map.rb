@@ -52,24 +52,24 @@ module Engine
           'A20' => 'Kiruna',
           'B5' => 'Bergen',
           'B11' => 'Trondheim',
-          'B19' => 'Gallivare',
+          'B19' => 'Gällivare',
           'C4' => 'Stavanger',
-          'C12' => 'Ostersund',
-          'C18' => 'Lulea',
+          'C12' => 'Östersund',
+          'C18' => 'Luleå',
           'D5' => 'Kristiansand',
           'D7' => 'Oslo',
           'D15' => 'Umea',
           'D19' => 'Oulu',
           'E4' => 'Arhus',
           'E6' => 'Goteborg',
-          'E10' => 'Gavle',
+          'E10' => 'Gävle',
           'F3' => 'Odense & Copenhagen',
-          'F7' => 'Norrkoping',
+          'F7' => 'Norrköping',
           'F11' => 'Stockholm',
           'F13' => 'Turku',
           'F15' => 'Tampere',
           'G2' => 'Stettin',
-          'G4' => 'Malmo',
+          'G4' => 'Malmö',
           'G14' => 'Helsinki',
           'G16' => 'Lahti',
           'H13' => 'Tallin',
@@ -120,11 +120,11 @@ module Engine
             # TODO: Malmo
             ['G4'] => 'city=revenue:30;upgrade=cost:40,terrain:water',
 
-            # TODO: Special
-            ['G12'] => 'label=Special',
-
             # TODO: Helsinki
             ['G14'] => 'city=revenue:30;label=Y',
+          },
+          gray: {
+            ['G12'] => 'path=a:2,b:3,track:narrow',
           }
         }.freeze
 
