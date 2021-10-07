@@ -8,14 +8,12 @@ module Engine
       module Meta
         include Game::Meta
 
-        DEV_STAGE = :alpha
+        DEV_STAGE = :prealpha
         PROTOTYPE = true
 
         GAME_SUBTITLE = 'Nippon'
         GAME_DESIGNER = 'Douglas Triggs'
-        GAME_IMPLEMENTER = 'Douglas Triggs'
         GAME_LOCATION = 'Honshū, Japan'
-        # GAME_PUBLISHER = ''
         # GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/'
         # GAME_RULES_URL = ''
 

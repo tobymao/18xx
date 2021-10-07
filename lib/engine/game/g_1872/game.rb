@@ -15,14 +15,12 @@ module Engine
         register_colors(green: '#237333',
                         red: '#d81e3e',
                         blue: '#0189d1',
-                        # lightBlue: '#a2dced',
                         yellow: '#FFF500',
                         orange: '#f48221',
                         brown: '#7b352a')
 
         TRACK_RESTRICTION = :permissive
         CURRENCY_FORMAT_STR = '¥%d'
-        BANK_CASH = 7200
         CERT_LIMIT = { 2 => 24, 3 => 16, 4 => 12 }.freeze
         STARTING_CASH = { 2 => 900, 3 => 600, 4 => 520 }.freeze
         CAPITALIZATION = :full
@@ -49,8 +47,8 @@ module Engine
           '9' => 'unlimited',
           '14' => 3,
           '15' => 3,
-          '23' => 2,
-          '24' => 2,
+          '23' => 3,
+          '24' => 3,
           '25' => 1,
           '26' => 1,
           '27' => 1,
@@ -331,9 +329,18 @@ module Engine
             price: 900,
             num: 20,
             available_on: '6',
+            events: [{ 'type' => 'signal_end_game' }],
             discount: { '4' => 200, '5' => 200, '6' => 200 },
           },
         ].freeze
+
+        EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+          'signal_end_game' => [
+            'Signal End Game',
+            'Game ends after next set of ORs when D train purchased or exported, ' \
+            'purchasing a D train triggers a stock round immediately after current OR',
+          ]
+        )
 
         COMPANIES = [
           {
@@ -365,8 +372,8 @@ module Engine
             name: 'Station Subsidy',
             value: 60,
             revenue: 10,
-            desc: 'Provides an additional station marker to corporation that buys this private from a player,' \
-                  ' awarded at time of purchase, then closes.',
+            desc: 'Provides an additional station marker to corporation that buys this private from a player, ' \
+                  'awarded at time of purchase, then closes.',
             sym: 'STATION',
             abilities: [
               {
@@ -391,7 +398,7 @@ module Engine
             name: 'Tetsudō-shō',
             value: 100,
             revenue: 0,
-            desc: 'Purchasing player immediately takes a 10% share of the JGR. This does not close the private' \
+            desc: 'Purchasing player immediately takes a 10% share of the JGR. This does not close the private ' \
                   'company. This private company has no other special ability.',
             sym: 'JGRSTOCK',
             abilities: [{ type: 'shares', shares: 'JGR_1' }],
@@ -563,6 +570,59 @@ module Engine
           ], round_num: round_num)
         end
 
+        def next_round!
+          @round =
+            case @round
+            when Engine::Round::Draft
+              init_round_finished
+              new_stock_round
+            when Engine::Round::Stock
+              @operating_rounds = @phase.operating_rounds
+              @need_last_stock_round = false
+              new_operating_round
+            when Engine::Round::Operating
+              if @need_last_stock_round
+                @turn += 1
+                new_stock_round
+              elsif @round.round_num < @operating_rounds
+                new_operating_round(@round.round_num + 1)
+              else
+                @turn += 1
+                or_set_finished
+                new_stock_round
+              end
+            end
+        end
+
+        GAME_END_CHECK = { bankrupt: :immediate, final_phase: :full_or }.freeze
+
+        def event_signal_end_game!
+          @need_last_stock_round = true
+          game_end_check
+          @log << 'First D train bought/exported, end game triggered'
+        end
+
+        def game_ending_description
+          _, after = game_end_check
+          return unless after
+
+          ending_or = @need_last_stock_round && round.class.short_name != 'SR' ? turn + 1 : turn
+          "Game ends at conclusion of OR #{ending_or}.#{operating_rounds}"
+        end
+
+        def end_now?(after)
+          return false if @need_last_stock_round
+
+          super
+        end
+
+        def or_set_finished
+          return if @d_train_exported
+
+          @d_train_exported = true if depot.upcoming.first.name == 'D'
+          depot.export!
+        end
+
         def best_sleeper_route(routes)
           best = nil
           routes.routes.each do |r|
@@ -600,7 +660,7 @@ module Engine
         def timeline
           @timeline = [
             'At the end of each set of ORs the next available train will be exported (removed, triggering ' \
-            'phase change as if purchased, until phase D triggered)',
+            'phase change as if purchased)',
           ]
         end
 
@@ -610,13 +670,6 @@ module Engine
 
         def sleeper_train
           @sleeper_train ||= company_by_id('SLEEP')
-        end
-
-        def or_set_finished
-          return if @d_train_exported
-
-          @d_train_exported = true if depot.upcoming.first.name == 'D'
-          depot.export!
         end
       end
     end
