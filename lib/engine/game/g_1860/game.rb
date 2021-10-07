@@ -1107,6 +1107,10 @@ module Engine
           super
         end
 
+        def show_game_cert_limit?
+          !@no_price_drop_on_sale
+        end
+
         def event_fishbourne_to_bank!
           ffc = @companies.find { |c| c.sym == 'FFC' }
           ffc.owner = @bank
