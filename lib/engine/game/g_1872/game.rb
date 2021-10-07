@@ -186,11 +186,6 @@ module Engine
             %w[B14 F6 G5 I11 M5] => 'city=revenue:0',
             %w[D10 F10] => 'city=revenue:0;label=Y',
           },
-          gray: {
-            ['A13'] => 'path=a:5,b:4',
-            ['G11'] => 'town=revenue:20;path=a:2,b:_0;path=a:_0,b:5',
-            ['H12'] => 'town=revenue:20;path=a:2,b:_0;path=a:_0,b:4',
-          },
           yellow: {
             ['C13'] =>
               'city=revenue:30;city=revenue:30;path=a:1,b:_0;path=a:4,b:_1;label=OO;label=O',
@@ -202,6 +197,11 @@ module Engine
               'path=a:1,b:4',
             ['M7'] =>
               'path=a:1,b:3',
+          },
+          gray: {
+            ['A13'] => 'path=a:5,b:4',
+            ['G11'] => 'town=revenue:20;path=a:2,b:_0;path=a:_0,b:5',
+            ['H12'] => 'town=revenue:20;path=a:2,b:_0;path=a:_0,b:4',
           },
           red: {
             ['A9'] =>
@@ -229,6 +229,8 @@ module Engine
               'offboard=revenue:yellow_40|brown_50|gray_80;path=a:2,b:_0;path=a:3,b:_0',
           },
         }.freeze
+
+        LAYOUT = :flat
 
         # O and T labelled tile upgrade to OOs until Grey
         HEX_WITH_O_LABEL = %w[C13].freeze
@@ -336,7 +338,7 @@ module Engine
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'signal_end_game' => [
-            'Signal End Game',
+            'Triggers End Game',
             'Game ends after next set of ORs when D train purchased or exported, ' \
             'purchasing a D train triggers a stock round immediately after current OR',
           ]
@@ -400,7 +402,7 @@ module Engine
             revenue: 0,
             desc: 'Purchasing player immediately takes a 10% share of the JGR. This does not close the private ' \
                   'company. This private company has no other special ability.',
-            sym: 'JGRSTOCK',
+            sym: 'STOCK',
             abilities: [{ type: 'shares', shares: 'JGR_1' }],
             color: nil,
           },
@@ -416,6 +418,14 @@ module Engine
             color: nil,
           },
         ].freeze
+
+        def inoue
+          @inoue ||= company_by_id('INOUESAN')
+        end
+
+        def sleeper_train
+          @sleeper_train ||= company_by_id('SLEEP')
+        end
 
         CORPORATIONS = [
           {
@@ -494,8 +504,6 @@ module Engine
           },
         ].freeze
 
-        LAYOUT = :flat
-
         def setup
           @reverse = true
           @d_train_exported = false
@@ -507,12 +515,11 @@ module Engine
         end
 
         def init_round
-          Engine::Round::Draft.new(self,
-                                   [
-                                     Engine::Step::CompanyPendingPar,
-                                     G1872::Step::DraftDistribution,
-                                   ],
-                                   snake_order: true)
+          Engine::Round::Draft.new(
+            self,
+            [Engine::Step::CompanyPendingPar, G1872::Step::DraftDistribution],
+            snake_order: true
+          )
         end
 
         def init_round_finished
@@ -525,7 +532,7 @@ module Engine
 
         SELL_BUY_ORDER = :sell_buy
 
-        def sp_reorder_players
+        def reorder_players_by_cash
           current_order = @players.dup
           if @reverse
             @reverse = false
@@ -543,7 +550,7 @@ module Engine
 
         def new_stock_round
           @log << "-- #{round_description('Stock')} --"
-          sp_reorder_players
+          reorder_players_by_cash
           stock_round
         end
 
@@ -624,15 +631,13 @@ module Engine
         end
 
         def best_sleeper_route(routes)
-          best = nil
-          routes.routes.each do |r|
-            best = r if best.nil? || sleeper_bonus(r) > sleeper_bonus(best)
+          routes.routes.reduce(nil) do |best, r|
+            best.nil? || sleeper_bonus(r) > sleeper_bonus(best) ? r : best
           end
-          best
         end
 
         def sleeper_bonus(route)
-          return 0 unless route # Autorouter gets unhappy when empty routes blow up
+          return 0 unless route # Autorouter blows up with empty routes
 
           route.visited_stops.count { |s| s.is_a? Engine::Part::City } * 10
         end
@@ -652,9 +657,7 @@ module Engine
             stop_hexes.include?(h) ? h&.name : "(#{h&.name})"
           end.join('-')
 
-          str += ' + Sleeper Train' if route.train.owner.companies.include?(sleeper_train) && route == best_sleeper_route(route)
-
-          str
+          str + ' + Sleeper Train' if route.train.owner.companies.include?(sleeper_train) && route == best_sleeper_route(route)
         end
 
         def timeline
@@ -662,14 +665,6 @@ module Engine
             'At the end of each set of ORs the next available train will be exported (removed, triggering ' \
             'phase change as if purchased)',
           ]
-        end
-
-        def inoue
-          @inoue ||= company_by_id('INOUESAN')
-        end
-
-        def sleeper_train
-          @sleeper_train ||= company_by_id('SLEEP')
         end
       end
     end
