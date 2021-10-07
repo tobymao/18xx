@@ -27,6 +27,12 @@ module Engine
             end
           end
 
+          def get_par_prices(entity, corp)
+            return super unless @game.minor?(corp)
+
+            @game.par_prices(corp).reject { |p| p.price * 4 > entity.cash }
+          end
+
           def can_buy_any_companies?(entity)
             return false if bought? ||
               !entity.cash.positive? ||
