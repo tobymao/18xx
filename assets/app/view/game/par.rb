@@ -37,9 +37,12 @@ module View
           if step.respond_to?(:available_par_cash)
             available_cash = step.available_par_cash(entity, @corporation, share_price: share_price)
           end
+          # Needed for 1825 minors (where share price is for a 10% share, but certs are 20% and 40%)
+          multiplier = @corporation.price_multiplier
           purchasable_shares = [(available_cash / share_price.price).to_i,
-                                (@corporation.max_ownership_percent / 100) * @corporation.total_shares].min
-          at_limit = purchasable_shares * @corporation.total_shares >= @corporation.max_ownership_percent
+                                (@corporation.max_ownership_percent / 100) * @corporation.total_shares * multiplier].min
+          purchasable_shares = (purchasable_shares / multiplier).to_i * multiplier
+          at_limit = purchasable_shares / multiplier * @corporation.total_shares >= @corporation.max_ownership_percent
           flags = at_limit ? ' L' : ''
 
           flags += " / #{@game.total_shares_to_float(@corporation, share_price.price)}" if @game.class::VARIABLE_FLOAT_PERCENTAGES
