@@ -4,7 +4,7 @@ require_relative '../../../step/buy_company'
 
 module Engine
   module Game
-    module G1872
+    module G18Tokaido
       module Step
         class BuyCompany < Engine::Step::BuyCompany
           def process_token(entity, company)

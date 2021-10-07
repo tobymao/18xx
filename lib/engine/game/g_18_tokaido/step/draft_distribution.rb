@@ -4,7 +4,7 @@ require_relative '../../../step/base'
 
 module Engine
   module Game
-    module G1872
+    module G18Tokaido
       module Step
         class DraftDistribution < Engine::Step::Base
           attr_reader :companies, :choices

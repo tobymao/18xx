@@ -4,16 +4,16 @@ require_relative '../meta'
 
 module Engine
   module Game
-    module G1872
+    module G18Tokaido
       module Meta
         include Game::Meta
 
         DEV_STAGE = :prealpha
         PROTOTYPE = true
 
-        GAME_SUBTITLE = 'Nippon'
+        GAME_TITLE = '18 Tokaido'
         GAME_DESIGNER = 'Douglas Triggs'
-        GAME_LOCATION = 'Honshū, Japan'
+        GAME_LOCATION = 'Central Japan'
         # GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/'
         # GAME_RULES_URL = ''
 

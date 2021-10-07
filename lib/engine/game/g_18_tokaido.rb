@@ -2,7 +2,7 @@
 
 module Engine
   module Game
-    module G1872
+    module G18Tokaido
     end
   end
 end

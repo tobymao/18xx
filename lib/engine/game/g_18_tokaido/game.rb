@@ -8,9 +8,9 @@ require_relative '../../step/company_pending_par'
 
 module Engine
   module Game
-    module G1872
+    module G18Tokaido
       class Game < Game::Base
-        include_meta(G1872::Meta)
+        include_meta(G18Tokaido::Meta)
 
         register_colors(green: '#237333',
                         red: '#d81e3e',
@@ -146,12 +146,13 @@ module Engine
           'A15' => 'Shikoku',
           'B8' => 'Maizuru',
           'B14' => 'Kobe',
+          'C11' => 'Kyōto',
           'C13' => 'Ōsaka',
           'C15' => 'Ōsaka-wan',
-          'D10' => 'Kyōto',
-          'D14' => 'Nara',
+          'D8' => 'Tsuruga',
+          'D12' => 'Nara',
+          'D14' => 'Sakai',
           'E5' => 'Nihon-kai',
-          'E7' => 'Tsuruga',
           'E9' => 'Biwa-ko',
           'E13' => 'Tsu',
           'F6' => 'Kanazawa',
@@ -179,12 +180,12 @@ module Engine
 
         HEXES = {
           white: {
-            %w[D12 E11 F4 G9 K7 L4] => '',
-            %w[B10 B12 C9 C11 D8 F8 H4 H6 H8 H10 I3 I7 J2 J6 K3 K5] => 'upgrade=cost:40,terrain:mountain',
-            %w[B8 D14 E7 E13 I5 I9 J8 K9 K11 L6] => 'town=revenue:0',
+            %w[D10 E11 F4 G9 K7 L4] => '',
+            %w[B10 B12 C9 F8 H4 H6 H8 H10 I3 I7 J2 J6 K3 K5] => 'upgrade=cost:40,terrain:mountain',
+            %w[B8 D12 D8 D14 E13 I5 I9 J8 K9 K11 L6] => 'town=revenue:0',
             %w[G7] => 'town=revenue:0;upgrade=cost:40,terrain:mountain',
             %w[B14 F6 G5 I11 M5] => 'city=revenue:0',
-            %w[D10 F10] => 'city=revenue:0;label=Y',
+            %w[C11 F10] => 'city=revenue:0;label=Y',
           },
           yellow: {
             ['C13'] =>
@@ -351,7 +352,7 @@ module Engine
             revenue: 5,
             desc: 'No special ability. Blocks hex D10 while owned by a player.',
             sym: 'KR',
-            abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['E11'] }],
+            abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['D10'] }],
             color: nil,
           },
           {
@@ -432,8 +433,8 @@ module Engine
             float_percent: 60,
             sym: 'SRC',
             name: "San'yō-tetsudō",
-            logo: '1872/SRC',
-            simple_logo: '1872/SRC.alt',
+            logo: '18_tokaido/SRC',
+            simple_logo: '18_tokaido/SRC.alt',
             tokens: [0, 40, 60],
             coordinates: 'B14',
             color: '#ef8f2f',
@@ -444,8 +445,8 @@ module Engine
             float_percent: 60,
             sym: 'KRC',
             name: 'Kansai-tetsudō',
-            logo: '1872/KRC',
-            simple_logo: '1872/KRC.alt',
+            logo: '18_tokaido/KRC',
+            simple_logo: '18_tokaido/KRC.alt',
             tokens: [0, 40, 60],
             coordinates: 'C13',
             city: 1,
@@ -457,8 +458,8 @@ module Engine
             float_percent: 60,
             sym: 'ARC',
             name: 'Aichi-tetsudō',
-            logo: '1872/ARC',
-            simple_logo: '1872/ARC.alt',
+            logo: '18_tokaido/ARC',
+            simple_logo: '18_tokaido/ARC.alt',
             tokens: [0, 40, 60],
             coordinates: 'F10',
             color: '#2f2f9f',
@@ -469,8 +470,8 @@ module Engine
             float_percent: 60,
             sym: 'JGR',
             name: 'Tetsudō-shō',
-            logo: '1872/JGR',
-            simple_logo: '1872/JGR.alt',
+            logo: '18_tokaido/JGR',
+            simple_logo: '18_tokaido/JGR.alt',
             tokens: [0, 40],
             coordinates: 'I11',
             color: '#ef2f2f',
@@ -481,8 +482,8 @@ module Engine
             float_percent: 60,
             sym: 'NRC',
             name: 'Nippon-tetsudō',
-            logo: '1872/NRC',
-            simple_logo: '1872/NRC.alt',
+            logo: '18_tokaido/NRC',
+            simple_logo: '18_tokaido/NRC.alt',
             tokens: [0, 40],
             coordinates: 'J10',
             city: 1,
@@ -494,8 +495,8 @@ module Engine
             float_percent: 60,
             sym: 'SR',
             name: 'Shinano-tetsudō',
-            logo: '1872/SR',
-            simple_logo: '1872/SR.alt',
+            logo: '18_tokaido/SR',
+            simple_logo: '18_tokaido/SR.alt',
             tokens: [0, 40, 60],
             coordinates: 'J4',
             color: '#efef4f',
@@ -517,7 +518,7 @@ module Engine
         def init_round
           Engine::Round::Draft.new(
             self,
-            [Engine::Step::CompanyPendingPar, G1872::Step::DraftDistribution],
+            [Engine::Step::CompanyPendingPar, G18Tokaido::Step::DraftDistribution],
             snake_order: true
           )
         end
@@ -566,14 +567,14 @@ module Engine
             Engine::Step::Bankrupt,
             Engine::Step::SpecialTrack,
             Engine::Step::SpecialToken,
-            G1872::Step::BuyCompany,
+            G18Tokaido::Step::BuyCompany,
             Engine::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
             Engine::Step::Dividend,
             Engine::Step::DiscardTrain,
             Engine::Step::BuyTrain,
-            [G1872::Step::BuyCompany, { blocks: true }],
+            [G18Tokaido::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 
