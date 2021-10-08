@@ -22,7 +22,7 @@ module Engine
         TRACK_RESTRICTION = :permissive
         CURRENCY_FORMAT_STR = '¥%d'
         CERT_LIMIT = { 2 => 24, 3 => 16, 4 => 12 }.freeze
-        STARTING_CASH = { 2 => 900, 3 => 600, 4 => 520 }.freeze
+        STARTING_CASH = { 2 => 720, 3 => 550, 4 => 480 }.freeze
         CAPITALIZATION = :full
         MUST_SELL_IN_BLOCKS = false
 
@@ -100,7 +100,7 @@ module Engine
             'count' => 1,
             'color' => 'green',
             'code' =>
-              'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:_0,b:1;path=a:2,b:_1;path=a:_1,b:3;label=O',
+              'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:_0,b:1;path=a:3,b:_1;path=a:_1,b:4;label=O',
           },
           'X11' =>
           {
@@ -136,7 +136,7 @@ module Engine
             'count' => 1,
             'color' => 'green',
             'code' =>
-              'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:_0,b:1;path=a:2,b:_1;path=a:_1,b:3;label=T',
+              'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:_0,b:1;path=a:3,b:_1;path=a:_1,b:4;label=T',
           },
           'X22' =>
           {
@@ -193,7 +193,7 @@ module Engine
           'K1' => 'Niigata',
           'K9' => 'Tsukuba',
           'K11' => 'Chiba',
-          'L6' => 'Koriyama',
+          'L6' => 'Fukushima',
           'M3' => 'Aomori',
           'M5' => 'Sendai',
         }.freeze
@@ -355,7 +355,7 @@ module Engine
             value: 20,
             revenue: 5,
             desc: 'No special ability. Blocks hex D10 while owned by a player.',
-            sym: 'KR',
+            sym: 'KT',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['D10'] }],
             color: nil,
           },
@@ -364,7 +364,7 @@ module Engine
             value: 40,
             revenue: 10,
             desc: 'Reduces, for the owning corporation, the cost of laying all mountain tiles by $20.',
-            sym: 'TUNNEL',
+            sym: 'OT',
             abilities: [
               {
                 type: 'tile_discount',
@@ -376,12 +376,38 @@ module Engine
             color: nil,
           },
           {
-            name: 'Station Subsidy',
+            name: 'Fish Market',
+            value: 60,
+            revenue: 10,
+            desc: 'The owning corporation may assign the Fish Market to any port location (C15, E5, F12, G3, or J12) ' \
+                  'to add $20 to all routes it runs to this location until the end of the game. Pays no other revenue to ' \
+                  'corporation.',
+            sym: 'FM',
+            abilities: [
+              { type: 'close', on_phase: 'never', owner_type: 'corporation' },
+              {
+                type: 'assign_hexes',
+                when: 'owning_corp_or_turn',
+                hexes: %w[C15 E5 F12 G3 J12],
+                count: 1,
+                owner_type: 'corporation',
+              },
+              {
+                type: 'assign_corporation',
+                when: 'any',
+                count: 1,
+                owner_type: 'corporation',
+              },
+            ],
+            color: nil,
+          },
+          {
+            name: 'Stationmaster Tama',
             value: 60,
             revenue: 10,
             desc: 'Provides an additional station marker to corporation that buys this private from a player, ' \
                   'awarded at time of purchase, then closes.',
-            sym: 'STATION',
+            sym: 'SMT',
             abilities: [
               {
                 type: 'additional_token',
@@ -394,42 +420,35 @@ module Engine
           {
             name: 'Sleeper Train',
             value: 80,
-            revenue: 10,
+            revenue: 0,
             desc: 'Adds $10 per city (not town, port, or connection) visited by any one train of the owning ' \
-                  'corporation. Never closes once purchased by a corporation. Pays no other revenue to corporation.',
-            sym: 'SLEEP',
+                  'corporation. Never closes once purchased by a corporation.',
+            sym: 'ST',
             abilities: [{ type: 'close', on_phase: 'never', owner_type: 'corporation' }],
             color: nil,
           },
           {
-            name: 'Tetsudō-shō',
+            name: 'Inoue Masaru',
             value: 100,
             revenue: 0,
             desc: 'Purchasing player immediately takes a 10% share of the JGR. This does not close the private ' \
                   'company. This private company has no other special ability.',
-            sym: 'STOCK',
+            sym: 'IM',
             abilities: [{ type: 'shares', shares: 'JGR_1' }],
-            color: nil,
-          },
-          {
-            name: 'Inoue Masaru',
-            value: 200,
-            revenue: 20,
-            desc: 'This private closes when the associated corporation buys its first train. It cannot be bought ' \
-                  'by a corporation.',
-            sym: 'INOUESAN',
-            abilities: [{ type: 'shares', shares: 'random_president' },
-                        { type: 'no_buy' }],
             color: nil,
           },
         ].freeze
 
-        def inoue
-          @inoue ||= company_by_id('INOUESAN')
+        ASSIGNMENT_TOKENS = {
+          'FM' => '/icons/18_tokaido/fm_token.svg',
+        }.freeze
+
+        def fish_market
+          @@fish_market ||= company_by_id('FM')
         end
 
         def sleeper_train
-          @sleeper_train ||= company_by_id('SLEEP')
+          @sleeper_train ||= company_by_id('ST')
         end
 
         CORPORATIONS = [
@@ -512,11 +531,6 @@ module Engine
         def setup
           @reverse = true
           @d_train_exported = false
-          inoue.add_ability(Ability::Close.new(
-            type: :close,
-            when: 'bought_train',
-            corporation: abilities(inoue, :shares).shares.first.corporation.name,
-          ))
         end
 
         def init_round
@@ -569,9 +583,8 @@ module Engine
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
-            Engine::Step::SpecialTrack,
-            Engine::Step::SpecialToken,
             G18Tokaido::Step::BuyCompany,
+            Engine::Step::Assign,
             Engine::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
@@ -642,13 +655,16 @@ module Engine
         end
 
         def sleeper_bonus(route)
-          return 0 unless route # Autorouter blows up with empty routes
+          return 0 unless route
 
           route.visited_stops.count { |s| s.is_a? Engine::Part::City } * 10
         end
 
         def revenue_for(route, stops)
           revenue = super
+          if route.train.owner.companies.include?(fish_market) && stops.find { |s| s.hex.assigned?(fish_market&.id) }
+            revenue += 20
+          end
           if route.train.owner.companies.include?(sleeper_train) && route == best_sleeper_route(route)
             revenue += sleeper_bonus(best_sleeper_route(route))
           end
@@ -657,12 +673,12 @@ module Engine
 
         def revenue_str(route)
           stops = route.stops
-          stop_hexes = stops.map(&:hex)
-          str = route.hexes.map do |h|
-            stop_hexes.include?(h) ? h&.name : "(#{h&.name})"
-          end.join('-')
-
-          str + ' + Sleeper Train' if route.train.owner.companies.include?(sleeper_train) && route == best_sleeper_route(route)
+          str = super
+          if route.train.owner.companies.include?(fish_market) && stops.find { |s| s.hex.assigned?(fish_market&.id) }
+            str += ' + Fish Market'
+          end
+          str += ' + Sleeper Train' if route.train.owner.companies.include?(sleeper_train) && route == best_sleeper_route(route)
+          str
         end
 
         def timeline

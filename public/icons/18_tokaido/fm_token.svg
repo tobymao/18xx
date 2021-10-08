@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <circle cx="16" cy="16" r="15" fill="#CCF" style="stroke:#000;stroke-width:1"/>
+  <text x="15.25" y="16.5" text-anchor="middle" font-weight="700" font-size="15.0" textLength="22.0" lengthAdjust="spacingAndGlyphs" font-family="Arial" fill="#000">+20</text>
+  <path fill="#DDD" style="stroke:#000;stroke-width:1" d="
+    m 10.5 21.5
+    a 12 10 0 0 1 17 0
+    a 12 10 0 0 1 -17 0
+    a 8 8 0 0 0 -5.5 -2.7
+    a 1 2 0 0 1 0 5.4
+    a 8 8 0 0 0 5.5 -2.7
+    m 12 -1
+    a 2 2 0 0 1 -1 3.6"/>
+</svg>
