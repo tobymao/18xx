@@ -163,13 +163,13 @@ module Engine
         }.freeze
 
         LOCATION_NAMES = {
-          'A11' => 'Chūgoku',
+          'A11' => 'Chugoku',
           'A15' => 'Shikoku',
           'B8' => 'Maizuru',
           'B14' => 'Kobe',
-          'C11' => 'Kyōto',
-          'C13' => 'Ōsaka',
-          'C15' => 'Ōsaka-wan',
+          'C11' => 'Kyoto',
+          'C13' => 'Osaka',
+          'C15' => 'Osaka-wan',
           'D8' => 'Tsuruga',
           'D12' => 'Nara',
           'D14' => 'Sakai',
@@ -188,8 +188,8 @@ module Engine
           'I11' => 'Yokohama',
           'J4' => 'Nagano',
           'J8' => 'Takasaki',
-          'J10' => 'Tōkyō',
-          'J12' => 'Tōkyō-wan',
+          'J10' => 'Tokyo',
+          'J12' => 'Tokyo-wan',
           'K1' => 'Niigata',
           'K9' => 'Tsukuba',
           'K11' => 'Chiba',
@@ -351,7 +351,7 @@ module Engine
 
         COMPANIES = [
           {
-            name: 'Kyōto-tetsudō',
+            name: 'Kyoto-tetsudo',
             value: 20,
             revenue: 5,
             desc: 'No special ability. Blocks hex D10 while owned by a player.',
@@ -363,7 +363,7 @@ module Engine
             name: 'Osakayama Tunnel',
             value: 40,
             revenue: 10,
-            desc: 'Reduces, for the owning corporation, the cost of laying all mountain tiles by $20.',
+            desc: 'Reduces, for the owning corporation, the cost of laying all mountain tiles by ¥20.',
             sym: 'OT',
             abilities: [
               {
@@ -380,8 +380,8 @@ module Engine
             value: 60,
             revenue: 10,
             desc: 'The owning corporation may assign the Fish Market to any port location (C15, E5, F12, G3, or J12) ' \
-                  'to add $20 to all routes it runs to this location until the end of the game. Pays no other revenue to ' \
-                  'corporation.',
+                  'to add ¥20 to all routes it runs to this location until the end of the game. Pays no other revenue to ' \
+                  'a corporation.',
             sym: 'FM',
             abilities: [
               { type: 'close', on_phase: 'never', owner_type: 'corporation' },
@@ -405,8 +405,8 @@ module Engine
             name: 'Stationmaster Tama',
             value: 60,
             revenue: 10,
-            desc: 'Provides an additional station marker to corporation that buys this private from a player, ' \
-                  'awarded at time of purchase, then closes.',
+            desc: 'Provides an additional free station marker (that costs ¥0 to place) to corporation that buys this private ' \
+                  'from a player, awarded at time of purchase.  Closes when purchased by a corporation.',
             sym: 'SMT',
             abilities: [
               {
@@ -421,7 +421,7 @@ module Engine
             name: 'Sleeper Train',
             value: 80,
             revenue: 0,
-            desc: 'Adds $10 per city (not town, port, or connection) visited by any one train of the owning ' \
+            desc: 'Adds ¥10 per city (not town, port, or connection) visited by any one train of the owning ' \
                   'corporation. Never closes once purchased by a corporation.',
             sym: 'ST',
             abilities: [{ type: 'close', on_phase: 'never', owner_type: 'corporation' }],
@@ -455,7 +455,7 @@ module Engine
           {
             float_percent: 60,
             sym: 'SRC',
-            name: "San'yō-tetsudō",
+            name: "San'yo-tetsudo",
             logo: '18_tokaido/SRC',
             simple_logo: '18_tokaido/SRC.alt',
             tokens: [0, 40, 60],
@@ -467,7 +467,7 @@ module Engine
           {
             float_percent: 60,
             sym: 'KRC',
-            name: 'Kansai-tetsudō',
+            name: 'Kansai-tetsudo',
             logo: '18_tokaido/KRC',
             simple_logo: '18_tokaido/KRC.alt',
             tokens: [0, 40, 60],
@@ -480,7 +480,7 @@ module Engine
           {
             float_percent: 60,
             sym: 'ARC',
-            name: 'Aichi-tetsudō',
+            name: 'Aichi-tetsudo',
             logo: '18_tokaido/ARC',
             simple_logo: '18_tokaido/ARC.alt',
             tokens: [0, 40, 60],
@@ -492,7 +492,7 @@ module Engine
           {
             float_percent: 60,
             sym: 'JGR',
-            name: 'Tetsudō-shō',
+            name: 'Tetsudo-sho',
             logo: '18_tokaido/JGR',
             simple_logo: '18_tokaido/JGR.alt',
             tokens: [0, 40],
@@ -504,7 +504,7 @@ module Engine
           {
             float_percent: 60,
             sym: 'NRC',
-            name: 'Nippon-tetsudō',
+            name: 'Nippon-tetsudo',
             logo: '18_tokaido/NRC',
             simple_logo: '18_tokaido/NRC.alt',
             tokens: [0, 40, 60],
@@ -517,7 +517,7 @@ module Engine
           {
             float_percent: 60,
             sym: 'SR',
-            name: 'Shinano-tetsudō',
+            name: 'Shinano-tetsudo',
             logo: '18_tokaido/SR',
             simple_logo: '18_tokaido/SR.alt',
             tokens: [0, 40, 60],
